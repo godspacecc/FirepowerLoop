@@ -640,8 +640,12 @@ namespace Game
             if (sharedWeaponAnimationActive)
             {
                 if (held == null || !held.IsProjectile) return;
-                if (presentationAlive && animator != null)
-                    animator.SetTrigger(AttackAnimatorParameter);
+                if (presentationAlive && rangedAimSuppressionRemainingSeconds <= 0f && animator != null)
+                {
+                    var presenter = GetComponent<CharacterWeaponPresenter>();
+                    if (presenter.UsesUpperBodyGunFire) presenter.PlayUpperBodyGunFire();
+                    else animator.SetTrigger(AttackAnimatorParameter);
+                }
                 PlaySharedMuzzleFlash(held.MuzzleFlash);
                 return;
             }
@@ -935,6 +939,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            GetComponent<CharacterWeaponPresenter>()?.TickUpperBodyGunFire(deltaTime);
             if (singleAttackSpeedResetRemainingSeconds > 0f)
             {
                 singleAttackSpeedResetRemainingSeconds -= deltaTime;
@@ -1149,6 +1154,7 @@ namespace Game
         /// <summary>切装或既有中断发生时撤销攻击速度及旧触发，不抢占受击和死亡状态。</summary>
         internal void ResetWeaponAttackPresentation(bool switchingWeapon = false)
         {
+            GetComponent<CharacterWeaponPresenter>()?.ClearUpperBodyGunFire();
             singleAttackSpeedResetRemainingSeconds = 0f;
             SetAttackPlaybackSpeed(1f);
             if (animator != null) animator.ResetTrigger(AttackAnimatorParameter);

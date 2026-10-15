@@ -31,6 +31,45 @@ namespace Game
         private WeaponPoseSettingsSystem poseSettings;
         /// <summary>当前换弹阶段，仅供握持姿态解析；动作结束或武器替换时清空。</summary>
         private CharacterAnimationDefinition reloadDefinition;
+        /// <summary>共享枪械独立上身层；基础层继续负责行走和近战全身动作。</summary>
+        private const string GunFireLayer = "Shared Gun Upper Body";
+        private float gunFireRemainingSeconds;
+
+        /// <summary>仅枪械与发射器使用上身射击；弓和投掷动作保留原有完整动作。</summary>
+        public bool UsesUpperBodyGunFire => current != null && current.IsProjectile &&
+            (current.Category & (CharacterAnimationDefinition.Categories.Pistol |
+                                 CharacterAnimationDefinition.Categories.Rifle |
+                                 CharacterAnimationDefinition.Categories.Launcher)) != 0;
+
+        /// <summary>每次权威开火只重启上身片段，不触发基础层 Attack，也不改变玩法冷却。</summary>
+        public void PlayUpperBodyGunFire()
+        {
+            if (!UsesUpperBodyGunFire || animator == null || reloadDefinition != null) return;
+            int layer = animator.GetLayerIndex(GunFireLayer);
+            if (layer < 0) return;
+            gunFireRemainingSeconds = current.Animations.Attack.Clip.length;
+            animator.SetLayerWeight(layer, 1f);
+            animator.Play(GunFireLayer + ".Fire", layer, 0f);
+        }
+
+        /// <summary>复用本机及远端既有表现帧，动作结束后撤销覆盖，恢复完整移动姿态。</summary>
+        public void TickUpperBodyGunFire(float deltaSeconds)
+        {
+            if (gunFireRemainingSeconds <= 0f) return;
+            gunFireRemainingSeconds = Mathf.Max(0f, gunFireRemainingSeconds - deltaSeconds);
+            if (gunFireRemainingSeconds <= 0f) ClearUpperBodyGunFire();
+        }
+
+        /// <summary>切装、禁用、受击与死亡共同撤销上身射击，避免旧武器姿态残留。</summary>
+        public void ClearUpperBodyGunFire()
+        {
+            gunFireRemainingSeconds = 0f;
+            if (animator == null) return;
+            int layer = animator.GetLayerIndex(GunFireLayer);
+            if (layer < 0) return;
+            animator.SetLayerWeight(layer, 0f);
+            if (animator.isActiveAndEnabled) animator.Play(GunFireLayer + ".Empty", layer, 0f);
+        }
 
         /// <summary>按照权威换弹进度采样上半身，两段片段按原始时长比例分配现有计时。</summary>
         public void ShowReload(float progress01)
@@ -45,6 +84,7 @@ namespace Game
             }
             var layer = animator.GetLayerIndex("RifleReload");
             if (layer < 0) return;
+            ClearUpperBodyGunFire();
             var reload = profile.RifleReload;
             var bolt = profile.RiflePullBolt;
             var time = Mathf.Clamp01(progress01) * (reload.Clip.length + bolt.Clip.length);
@@ -64,7 +104,11 @@ namespace Game
             if (layer >= 0) animator.SetLayerWeight(layer, 0f);
         }
 
-        private void OnDisable() => ClearReload();
+        private void OnDisable()
+        {
+            ClearReload();
+            ClearUpperBodyGunFire();
+        }
 
         /// <summary>预览和独立测试可注入同一姿态系统；正式实例在运行时使用游戏架构服务。</summary>
         public void ConfigurePoseSettings(WeaponPoseSettingsSystem settings) => poseSettings = settings;
@@ -231,6 +275,7 @@ namespace Game
 
         private void ClearCurrentVisual()
         {
+            ClearUpperBodyGunFire();
             GetComponent<PlayerView>()?.ResetWeaponAttackPresentation(switchingWeapon: true);
             ClearReload();
             current = null;
@@ -565,7 +610,7 @@ namespace Game
             SetVisualPose(position, rotation, scale);
         }
 
-        /// <summary>正式 Animator 按基础层片段权重混合挂点，过渡期间避免位置与角度突跳。</summary>
+        /// <summary>优先使用活动射击层的片段解析挂点，其余时刻按基础层动作混合。</summary>
         private void ApplyCurrentAnimationPose()
         {
             if (reloadDefinition != null)
@@ -579,8 +624,11 @@ namespace Game
             var scaleSum = Vector3.zero;
             var rotation = current.HandLocalRotation;
             var weightSum = 0f;
-            Accumulate(animator.GetCurrentAnimatorClipInfo(0));
-            if (animator.IsInTransition(0)) Accumulate(animator.GetNextAnimatorClipInfo(0));
+            int gunLayer = animator.GetLayerIndex(GunFireLayer);
+            int poseLayer = gunLayer >= 0 && gunFireRemainingSeconds > 0f && animator.GetLayerWeight(gunLayer) > 0f
+                ? gunLayer : 0;
+            Accumulate(animator.GetCurrentAnimatorClipInfo(poseLayer));
+            if (animator.IsInTransition(poseLayer)) Accumulate(animator.GetNextAnimatorClipInfo(poseLayer));
             if (weightSum <= 0.0001f)
             {
                 ApplyAnimationPose(null);
