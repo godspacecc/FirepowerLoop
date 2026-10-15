@@ -324,6 +324,9 @@ namespace Game
             ViewRef?.SetArcadePresentationActive(active);
         }
 
+        /// <summary>把合并后的有效保护交给角色实例呈现，随实例隐藏、死亡及释放。</summary>
+        public void SetArcadeProtectionActive(bool active) => ViewRef?.SetArcadeProtectionActive(active);
+
         public bool TryGetWeaponAttachRoot(global::PlayerWeaponAttachPoint attachPoint, out Transform root)
         {
             root = null;

@@ -142,7 +142,7 @@ namespace Game
             Vector2 authoritative = new(self.PositionX, self.PositionZ);
             if (Vector2.Distance(predictedLocalPosition, authoritative) > SnapDistance) predictedLocalPosition = authoritative;
             Vector2 facing = input.Aim.sqrMagnitude > .01f ? input.Aim : new Vector2(self.AimX, self.AimZ);
-            view.SetPlayer(predictedLocalPosition, facing, true, self.Invulnerable);
+            view.SetPlayer(predictedLocalPosition, facing, true, self.Invulnerable || self.DashSeconds > 0);
             SyncPlayerEffects(self, predictedLocalPosition);
         }
 
@@ -188,13 +188,13 @@ namespace Game
                     else predictedLocalPosition = Vector2.Lerp(predictedLocalPosition, position, .35f);
                     hasPrediction = true;
                     displayPosition = predictedLocalPosition;
-                    view.SetPlayer(predictedLocalPosition, facing, player.Alive, player.Invulnerable);
+                    view.SetPlayer(predictedLocalPosition, facing, player.Alive, player.Invulnerable || player.DashSeconds > 0);
                     view.SetPlayerHealth(player.CurrentHealth, player.MaxHealth);
                 }
                 else
                 {
                     seenIds.Add(player.PlayerId);
-                    view.SetRemotePlayer(player.PlayerId, position, facing, player.Alive, player.Invulnerable,
+                    view.SetRemotePlayer(player.PlayerId, position, facing, player.Alive, player.Invulnerable || player.DashSeconds > 0,
                         player.CurrentHealth, player.MaxHealth);
                 }
                 SyncPlayerCombat(player, selfId);
@@ -212,9 +212,6 @@ namespace Game
                 if (shieldCharges > 0) shieldChargesByPlayer[player.PlayerId] = shieldCharges;
                 else shieldChargesByPlayer.Remove(player.PlayerId);
                 SyncPlayerEffects(player, displayPosition);
-                view.SetProtection(player.PlayerId,
-                    catalog.Powerups.FirstOrDefault(p => p.Behavior == global::ArcadePowerupBehavior.Shield), displayPosition,
-                    player.Alive && (player.Invulnerable || player.DashSeconds > 0));
             }
             view.EndEffectSync();
 

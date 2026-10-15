@@ -1621,7 +1621,7 @@ namespace Game
             view.SetOpening(runtime.InTreasureRoom || runtime.IsChallenge ? default : arena.Opening,
                 ArcadeOpeningRules.CampfireActive(arena.Opening, runtime.WaveIndex, runtime.IsChallenge || runtime.IsFinalBoss,
                     runtime.WaveClearAwarded, runtime.AwaitingExit, runtime.InTreasureRoom, runtime.RespawnRemaining > 0));
-            if (runtime.InTreasureRoom) { view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, true); view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth); return; }
+            if (runtime.InTreasureRoom) { view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f); view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth); return; }
             view.SetExits(runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
             view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit ? Array.Empty<AnotherDay.Arcade.ArcadeHazardParameters>() : arena.Hazards,
@@ -1645,9 +1645,6 @@ namespace Game
             foreach (var drop in runtime.Drops.Values)
                 view.SetDrop(drop.Id, drop.Definition, drop.Position);
             view.BeginEffectSync();
-            var protection = catalog.Powerups.FirstOrDefault(p => p.Behavior == global::ArcadePowerupBehavior.Shield);
-            view.SetProtection(0, protection, runtime.PlayerPosition,
-                runtime.RespawnRemaining <= 0 && (runtime.PlayerInvulnerability > 0 || runtime.DashRemaining > 0));
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
                 view.SetPowerup(powerup.Definition,
                     powerup.Definition.VisualFollowPlayer ? runtime.PlayerPosition : powerup.Position,

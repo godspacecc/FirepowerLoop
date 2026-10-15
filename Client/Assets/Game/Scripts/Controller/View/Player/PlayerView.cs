@@ -189,6 +189,8 @@ namespace Game
         // 受击暂时关闭上半身武器层；恢复时根据当前控制器选定的姿态重新计算。
         private float rangedAimSuppressionRemainingSeconds;
         private bool arcadePresentationActive;
+        /// <summary>当前角色独占的保护表现；不保存保护时长或无敌来源。</summary>
+        private ArcadeProtectionPresentation arcadeProtection;
 
 
         public CharacterController CharacterController
@@ -280,6 +282,8 @@ namespace Game
 
         private void OnDestroy()
         {
+            arcadeProtection?.Dispose();
+            arcadeProtection = null;
             swimmingPresenter?.Dispose();swimmingPresenter=null;
             groundContact?.Dispose();
             if (bowAnimatorController == null) return;
@@ -332,6 +336,7 @@ namespace Game
             }
 
             SetActive(arcadePlayerMarker, alive && arcadePresentationActive);
+            if (!alive) arcadeProtection?.SetActive(false);
             SetActive(meleeWeaponAttachRoot != null ? meleeWeaponAttachRoot.gameObject : null, alive);
             SetActive(rangedWeaponAttachRoot != null ? rangedWeaponAttachRoot.gameObject : null, alive);
             if (!alive)
@@ -479,6 +484,19 @@ namespace Game
         {
             arcadePresentationActive = active;
             SetActive(arcadePlayerMarker, presentationAlive && active);
+            if (!active)
+            {
+                arcadeProtection?.Dispose();
+                arcadeProtection = null;
+            }
+        }
+
+        /// <summary>仅镜像战斗权威合并后的有效保护；死亡和隐藏时禁止留下悬空表现。</summary>
+        public void SetArcadeProtectionActive(bool active)
+        {
+            active &= arcadePresentationActive && presentationAlive && isActiveAndEnabled;
+            if (active && arcadeProtection == null) arcadeProtection = new ArcadeProtectionPresentation(transform);
+            arcadeProtection?.SetActive(active);
         }
 
         private static void SetActive(GameObject target, bool active)
@@ -1017,6 +1035,7 @@ namespace Game
 
         private void OnDisable()
         {
+            arcadeProtection?.SetActive(false);
             ResetWeaponAttackPresentation();
             SetSprinting(false);
             SetMovementSpeed(0f);

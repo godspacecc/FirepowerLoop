@@ -64,7 +64,6 @@ namespace Game
         /// <summary>仅在权威补给拾取成功后调用，added 是上限截断后的实际增加次数。</summary>
         void PlaySupplyPickup(ArcadeDropDefinition definition, int added) { }
         void BeginEffectSync() { }
-        void SetProtection(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 position, bool active) { }
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
             SetPowerup(definition, anchorPosition);
@@ -340,6 +339,7 @@ namespace Game
         {
             if (playerMotor == null || !playerMotor.IsValid || mapRoot == null) return;
             playerMotor.SetAlivePresentation(visible);
+            playerMotor.SetArcadeProtectionActive(visible && invulnerable);
             if (!visible)
             {
                 hasPlayerHealthBaseline = false;
@@ -596,14 +596,6 @@ namespace Game
             SetPowerup(0, definition, anchorPosition);
         }
 
-        /// <summary>读取真实保护状态复用原护罩资源；不消费护盾次数，过期由同一视觉同步回收。</summary>
-        public void SetProtection(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 position, bool active)
-        {
-            if (!active || string.IsNullOrEmpty(definition.ActiveVisualPrefabAddress)) return;
-            SetEffectVisual($"protection:{ownerPlayerId}", "Protection", definition.ActiveVisualPrefabAddress,
-                position, definition.VisualOffset);
-        }
-
         /// <summary>按玩家身份隔离同类强化视觉；联机双方持有相同强化时不会覆盖彼此。</summary>
         public void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition)
         {
@@ -680,6 +672,7 @@ namespace Game
             entry.Position = position;
             entry.Facing = facing;
             entry.Visible = visible;
+            entry.Invulnerable = invulnerable;
             entry.CurrentHealth = currentHealth;
             entry.MaximumHealth = maximumHealth;
             entry.HasHealthBaseline = visible;
@@ -787,6 +780,7 @@ namespace Game
             Vector3 local = new(entry.Position.x, 0f, entry.Position.y);
             if (snap) entry.View.Snap(local, yaw); else entry.View.SetTarget(local, yaw);
             entry.View.SetAlive(entry.Visible);
+            entry.View.Instance?.GetComponent<PlayerView>()?.SetArcadeProtectionActive(entry.Visible && entry.Invulnerable);
             ApplyRemotePlayerCombat(entry);
         }
 
@@ -806,6 +800,8 @@ namespace Game
             public Vector2 Position;
             public Vector2 Facing;
             public bool Visible;
+            /// <summary>远端异步创建期间缓存最新合并保护状态，首次就绪不补播过期保护。</summary>
+            public bool Invulnerable;
             public int CurrentHealth;
             public int MaximumHealth;
             /// <summary>异步实例创建前也保留生命基线，防止首帧快照被误判为受击。</summary>

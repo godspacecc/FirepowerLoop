@@ -37,6 +37,8 @@ namespace Game
                 weapon.ProjectileFirePointLocalPosition);
         /// <summary>切换街机专用单位识别表现；不改变玩家碰撞、生命或移动状态。</summary>
         void SetArcadePresentationActive(bool active) { }
+        /// <summary>同步实际有效保护的纯视觉状态，不改变保护时长或受伤规则。</summary>
+        void SetArcadeProtectionActive(bool active) { }
         void SetTiliRing(float current, float maximum, bool isSprinting, bool exhausted);
         void ShowActionProgress(float progress01, string iconAddress)
         {
