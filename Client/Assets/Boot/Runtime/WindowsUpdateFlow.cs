@@ -74,8 +74,8 @@ namespace Boot
             return false;
         }
 
-        /// <summary>旧资源服 404、无效描述及超时都返回 null；取消传播给启动所有者。</summary>
-        public static async UniTask<WindowsUpdateManifest> CheckAsync(string server, int currentRelease, CancellationToken cancellation)
+        /// <summary>Boot 默认失败放行；游戏版本查询启用失败传播，避免失败熄灭红点。</summary>
+        public static async UniTask<WindowsUpdateManifest> CheckAsync(string server, int currentRelease, CancellationToken cancellation, bool throwOnFailure = false)
         {
             using (var handler = new LimitedTextHandler())
             using (var request = new UnityWebRequest(server.TrimEnd('/') + "/app-update-windows.json", "GET", handler, null))
@@ -87,9 +87,13 @@ namespace Boot
                 {
                     await request.SendWebRequest().ToUniTask(cancellationToken: cancellation);
                     return request.result == UnityWebRequest.Result.Success
-                        ? WindowsUpdateManifest.ParseAvailable(handler.Text, currentRelease) : null;
+                        ? WindowsUpdateManifest.ParseAvailable(handler.Text, currentRelease, throwOnFailure) : null;
                 }
-                catch (UnityWebRequestException) { return null; }
+                catch (UnityWebRequestException)
+                {
+                    if (throwOnFailure) throw;
+                    return null;
+                }
             }
         }
 

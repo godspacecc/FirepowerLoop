@@ -23,12 +23,13 @@ namespace Game
 
         public bool CanCheck => YooAssets.TryGetPackage(PackageName) != null;
 
-        public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds)
+        public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds, bool versionOnly = false)
         {
-            return CheckInternal(Math.Max(1, timeoutSeconds));
+            return CheckInternal(Math.Max(1, timeoutSeconds), versionOnly);
         }
 
-        private static async UniTask<ResourceUpdateCheckResult> CheckInternal(int timeoutSeconds)
+        /// <summary>静默入口只查询版本；主动入口继续预取清单并计算下载规模。</summary>
+        private static async UniTask<ResourceUpdateCheckResult> CheckInternal(int timeoutSeconds, bool versionOnly)
         {
             var package = YooAssets.TryGetPackage(PackageName);
             if (package == null)
@@ -58,6 +59,13 @@ namespace Game
                     0,
                     0,
                     string.Empty));
+            }
+
+            if (versionOnly)
+            {
+                return ResourceUpdateCheckResult.Ok(new ResourceUpdateSnapshot(
+                    ResourceUpdateStatus.UpdateAvailable, currentVersion, targetVersion, 0, 0, string.Empty,
+                    requiresRestartToUpdate: true, hasKnownDownloadSize: false));
             }
 
             var preDownloadOperation = package.PreDownloadContentAsync(targetVersion, timeoutSeconds);

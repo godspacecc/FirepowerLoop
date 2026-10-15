@@ -8,12 +8,15 @@ using QFramework;
 namespace Game
 {
     /// <summary>
-    /// 协调资源版本、公告及主动 APK 检查；资源快照独立于安装包候选，不下载、不替换或安装。
+    /// 协调资源与当前平台安装包版本查询；公告仅由主动入口读取，不下载、不替换或安装。
     /// </summary>
     public sealed class ResourceUpdateSystem : AbstractSystem
     {
         private const int DefaultTimeoutSeconds = 5;
+        /// <summary>资源查询的在途请求，自动和手动入口共享。</summary>
         private Task<ResourceUpdateSnapshot> currentCheck;
+        /// <summary>资源与安装包查询的共同事务，不包含公告与 UI 提示。</summary>
+        private Task<ResourceUpdateCheckWithNoticeResult> currentVersionCheck;
         /// <summary>主动综合检查的在途事务；重复点击复用请求，完成后允许再次提示同一 APK。</summary>
         private Task<ResourceUpdateCheckWithNoticeResult> currentManualCheck;
         private CancellationTokenSource cancellation;
@@ -28,6 +31,7 @@ namespace Game
 
         protected override void OnDeinit()
         {
+            generation++;
             cancellation?.Cancel();
             cancellation?.Dispose();
             cancellation = null;
@@ -35,6 +39,19 @@ namespace Game
 
         public void InitializeStartupInfo(BootResourceStartupInfo info)
         {
+            // 启动上下文变化后旧请求失效，候选和已知结果不得串到另一个资源服务器。
+            generation++;
+            cancellation?.Cancel();
+            cancellation?.Dispose();
+            cancellation = new CancellationTokenSource();
+            currentCheck = null;
+            currentVersionCheck = null;
+            currentManualCheck = null;
+            var model = this.GetModel<ResourceUpdateModel>();
+            model.ResourceUpdateAvailable = false;
+            model.ApkUpdateAvailable = false;
+            model.WindowsUpdateAvailable = false;
+            model.PendingKnownUpdate = false;
             Publish(new ResourceUpdateSnapshot(
                 ResourceUpdateStatus.NotChecked,
                 info.ActiveVersion,
@@ -62,51 +79,90 @@ namespace Game
             return currentCheck.AsUniTask();
         }
 
-        /// <summary>主动检查同时返回 APK 候选；静默检查维持资源语义，下载与安装仍由 Boot 负责。</summary>
+        /// <summary>自动与手动共用版本查询；只有手动入口读取公告，下载与安装仍由 Boot 负责。</summary>
         public UniTask<ResourceUpdateCheckWithNoticeResult> CheckWithNoticeAsync(bool userInitiated)
         {
-            if (!userInitiated) return CheckWithNoticeInternal(false).AsUniTask();
+            if (!userInitiated) return CheckVersionsAsync(false).AsUniTask();
             if (currentManualCheck == null || currentManualCheck.IsCompleted)
                 currentManualCheck = CheckWithNoticeInternal(true);
             return currentManualCheck.AsUniTask();
         }
 
+        /// <summary>手动展示事务在版本查询完成后单独读取公告，不让自动入口触发公告查询。</summary>
         private async Task<ResourceUpdateCheckWithNoticeResult> CheckWithNoticeInternal(bool userInitiated)
         {
             var token = cancellation.Token;
+            var versions = await CheckVersionsAsync(userInitiated);
+            if (token.IsCancellationRequested) return new ResourceUpdateCheckWithNoticeResult(Snapshot, ResourceUpdateNoticeResult.NoNotice);
+            var notice = await FetchNoticeAfterSuccessfulManualCheck(userInitiated, versions.Snapshot);
+            if (token.IsCancellationRequested) return new ResourceUpdateCheckWithNoticeResult(Snapshot, ResourceUpdateNoticeResult.NoNotice);
+            return new ResourceUpdateCheckWithNoticeResult(versions.Snapshot, notice, versions.ApplicationUpdate, versions.WindowsUpdate);
+        }
+
+        /// <summary>综合查询完成前复用同一 Task；查询结束后下次返回可重新检查。</summary>
+        private Task<ResourceUpdateCheckWithNoticeResult> CheckVersionsAsync(bool userInitiated)
+        {
+            if (currentVersionCheck == null || currentVersionCheck.IsCompleted)
+                currentVersionCheck = CheckVersionsInternal(userInitiated);
+            return currentVersionCheck;
+        }
+
+        /// <summary>保存每个版本源的成功结果；失败保留已知值，检查期间保留原有更新提示。</summary>
+        private async Task<ResourceUpdateCheckWithNoticeResult> CheckVersionsInternal(bool userInitiated)
+        {
+            var token = cancellation.Token;
+            var model = this.GetModel<ResourceUpdateModel>();
+            model.PendingKnownUpdate = model.HasKnownUpdate;
             var snapshot = await CheckAsync(userInitiated);
-            var notice = await FetchNoticeAfterSuccessfulManualCheck(userInitiated, snapshot);
+            bool allSucceeded = snapshot.Status == ResourceUpdateStatus.NoUpdate || snapshot.Status == ResourceUpdateStatus.UpdateAvailable;
             ApkUpdateManifest applicationUpdate = null;
             var checker = this.GetUtility<IApplicationUpdateChecker>();
-            if (userInitiated && checker != null && !token.IsCancellationRequested &&
+            if (checker != null && !token.IsCancellationRequested &&
                 !string.IsNullOrWhiteSpace(snapshot.ResourceServer))
             {
-                try { applicationUpdate = await checker.CheckAsync(snapshot.ResourceServer, token); }
-                catch (OperationCanceledException) { }
-                catch (Exception exception) { Log.Warning($"[ResourceUpdateSystem] 安装包检查不可用：{exception.GetType().Name}"); }
+                try
+                {
+                    applicationUpdate = await checker.CheckAsync(snapshot.ResourceServer, token);
+                    if (!token.IsCancellationRequested) model.ApkUpdateAvailable = applicationUpdate != null;
+                }
+                catch (OperationCanceledException) { allSucceeded = false; }
+                catch (Exception exception) { allSucceeded = false; Log.Warning($"[ResourceUpdateSystem] 安装包检查不可用：{exception.GetType().Name}"); }
                 // 架构已释放或服务器已切换时，晚到的候选不能进入新界面。
                 if (token.IsCancellationRequested || snapshot.ResourceServer != Snapshot.ResourceServer)
                     applicationUpdate = null;
             }
+            else allSucceeded = false;
             WindowsUpdateManifest windowsUpdate = null;
             var windowsChecker = this.GetUtility<IWindowsApplicationUpdateChecker>();
-            if (userInitiated && windowsChecker != null && !token.IsCancellationRequested &&
+            if (windowsChecker != null && !token.IsCancellationRequested &&
                 !string.IsNullOrWhiteSpace(snapshot.ResourceServer))
             {
-                try { windowsUpdate = await windowsChecker.CheckAsync(snapshot.ResourceServer, token); }
-                catch (OperationCanceledException) { }
-                catch (Exception e) { Log.Warning($"[ResourceUpdateSystem] PC 安装包检查不可用：{e.GetType().Name}"); }
+                try
+                {
+                    windowsUpdate = await windowsChecker.CheckAsync(snapshot.ResourceServer, token);
+                    if (!token.IsCancellationRequested) model.WindowsUpdateAvailable = windowsUpdate != null;
+                }
+                catch (OperationCanceledException) { allSucceeded = false; }
+                catch (Exception e) { allSucceeded = false; Log.Warning($"[ResourceUpdateSystem] PC 安装包检查不可用：{e.GetType().Name}"); }
                 if (token.IsCancellationRequested || snapshot.ResourceServer != Snapshot.ResourceServer)
                     windowsUpdate = null;
             }
-            return new ResourceUpdateCheckWithNoticeResult(snapshot, notice, applicationUpdate, windowsUpdate);
+            else allSucceeded = false;
+            if (!token.IsCancellationRequested)
+            {
+                if (allSucceeded) model.PendingKnownUpdate = false;
+                this.SendEvent(new ResourceUpdateChangedEvent(Snapshot));
+            }
+            return new ResourceUpdateCheckWithNoticeResult(snapshot, ResourceUpdateNoticeResult.NoNotice, applicationUpdate, windowsUpdate);
         }
 
+        /// <summary>发布资源查询状态；晚到结果不覆盖已切换的启动上下文。</summary>
         private async Task<ResourceUpdateSnapshot> CheckInternal(bool userInitiated, int requestGeneration)
         {
+            var token = cancellation.Token;
             if (Snapshot.ResourceSource == BootResourceSource.BuiltinFallback)
             {
-                return await CheckBuiltinFallback(userInitiated, requestGeneration);
+                return await CheckBuiltinFallback(requestGeneration);
             }
 
             var checker = this.GetUtility<IResourceUpdateRuntimeChecker>();
@@ -135,8 +191,8 @@ namespace Game
 
             try
             {
-                var result = await checker.CheckAsync(DefaultTimeoutSeconds);
-                if (cancellation.IsCancellationRequested || requestGeneration != generation)
+                var result = await checker.CheckAsync(DefaultTimeoutSeconds, versionOnly: !userInitiated);
+                if (token.IsCancellationRequested || requestGeneration != generation)
                 {
                     return new ResourceUpdateSnapshot(ResourceUpdateStatus.CheckFailed,
                         Snapshot.CurrentVersion,
@@ -166,6 +222,7 @@ namespace Game
             }
             catch (Exception e)
             {
+                if (token.IsCancellationRequested || requestGeneration != generation) return Snapshot;
                 var failed = new ResourceUpdateSnapshot(ResourceUpdateStatus.CheckFailed,
                     Snapshot.CurrentVersion,
                     string.Empty,
@@ -179,13 +236,10 @@ namespace Game
             }
         }
 
-        private async Task<ResourceUpdateSnapshot> CheckBuiltinFallback(bool userInitiated, int requestGeneration)
+        /// <summary>内置兜底同样只探测服务器版本，不激活清单或下载资源。</summary>
+        private async Task<ResourceUpdateSnapshot> CheckBuiltinFallback(int requestGeneration)
         {
-            if (!userInitiated)
-            {
-                return Snapshot;
-            }
-
+            var token = cancellation.Token;
             Publish(new ResourceUpdateSnapshot(
                 ResourceUpdateStatus.Checking,
                 Snapshot.CurrentVersion,
@@ -209,7 +263,7 @@ namespace Game
             try
             {
                 var result = await probe.ProbeAsync(Snapshot.ResourceServer, DefaultTimeoutSeconds);
-                if (cancellation.IsCancellationRequested || requestGeneration != generation)
+                if (token.IsCancellationRequested || requestGeneration != generation)
                 {
                     return BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, Snapshot.TargetVersion, "资源服务器版本探测已取消或请求已过期", false);
                 }
@@ -233,6 +287,7 @@ namespace Game
             }
             catch (Exception e)
             {
+                if (token.IsCancellationRequested || requestGeneration != generation) return Snapshot;
                 var failed = BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, $"资源服务器版本探测异常：{e.Message}", false);
                 Publish(failed);
                 return failed;
@@ -279,7 +334,7 @@ namespace Game
                 Snapshot.ResourceSource,
                 Snapshot.ResourceServer,
                 differentVersion,
-                true);
+                snapshot.HasKnownDownloadSize);
         }
 
         private async UniTask<ResourceUpdateNoticeResult> FetchNoticeAfterSuccessfulManualCheck(
@@ -318,7 +373,10 @@ namespace Game
 
         private void Publish(ResourceUpdateSnapshot snapshot)
         {
-            this.GetModel<ResourceUpdateModel>().Snapshot.Value = snapshot;
+            var model = this.GetModel<ResourceUpdateModel>();
+            if (snapshot.Status == ResourceUpdateStatus.UpdateAvailable || snapshot.Status == ResourceUpdateStatus.NoUpdate)
+                model.ResourceUpdateAvailable = snapshot.Status == ResourceUpdateStatus.UpdateAvailable;
+            model.Snapshot.Value = snapshot;
             this.SendEvent(new ResourceUpdateChangedEvent(snapshot));
         }
     }

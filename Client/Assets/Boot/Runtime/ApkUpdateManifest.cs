@@ -23,23 +23,35 @@ namespace Boot
         public long sizeBytes;
         public string sha256;
 
-        /// <summary>无效、不兼容或非新版描述返回 null；不得阻断原有资源启动。</summary>
-        public static ApkUpdateManifest ParseAvailable(string json, string currentPackage, string currentVersion, int currentCode)
+        /// <summary>默认无效或非新版返回 null；游戏查询可要求无效描述抛错，以保留已知更新。</summary>
+        public static ApkUpdateManifest ParseAvailable(string json, string currentPackage, string currentVersion, int currentCode, bool throwOnInvalid = false)
         {
-            if (string.IsNullOrWhiteSpace(json) || json.Length > 65536) return null;
+            if (string.IsNullOrWhiteSpace(json) || json.Length > 65536)
+            {
+                if (throwOnInvalid) throw new FormatException("APK 更新描述为空或超长");
+                return null;
+            }
             try
             {
                 var data = JsonUtility.FromJson<ApkUpdateManifest>(json);
                 if (data == null || data.schemaVersion != 1 || data.platform != "Android" ||
-                    data.packageName != currentPackage || data.versionCode <= 0 || data.versionCode < currentCode ||
+                    data.packageName != currentPackage || data.versionCode <= 0 ||
                     data.sizeBytes <= 0 || data.sizeBytes > 8L * 1024 * 1024 * 1024 ||
                     !Regex.IsMatch(data.apkFileName ?? "", @"\A[A-Za-z0-9][A-Za-z0-9._-]{0,150}\.apk\z") ||
                     !Regex.IsMatch(data.sha256 ?? "", @"\A[0-9a-fA-F]{64}\z") ||
-                    !TryVersion(data.versionName, out var next) || !TryVersion(currentVersion, out var current) ||
-                    next.CompareTo(current) <= 0) return null;
+                    !TryVersion(data.versionName, out var next) || !TryVersion(currentVersion, out var current))
+                {
+                    if (throwOnInvalid) throw new FormatException("APK 更新描述无效或不兼容");
+                    return null;
+                }
+                if (data.versionCode < currentCode || next.CompareTo(current) <= 0) return null;
                 return data;
             }
-            catch (ArgumentException) { return null; }
+            catch (ArgumentException)
+            {
+                if (throwOnInvalid) throw;
+                return null;
+            }
         }
 
         private static bool TryVersion(string value, out Version version)

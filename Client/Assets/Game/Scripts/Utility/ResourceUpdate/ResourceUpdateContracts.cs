@@ -96,7 +96,8 @@ namespace Game
     public interface IResourceUpdateRuntimeChecker : IUtility
     {
         bool CanCheck { get; }
-        UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds);
+        /// <summary>versionOnly 为 true 时只读版本，不预取清单或计算下载规模。</summary>
+        UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds, bool versionOnly = false);
     }
 
     /// <summary>

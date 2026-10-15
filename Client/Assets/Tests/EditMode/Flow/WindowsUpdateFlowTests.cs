@@ -30,6 +30,23 @@ namespace Game.Tests
         [UnityTest] public IEnumerator ValidDownloadCommitsVerifiedFile() => DownloadCheck(true, false).ToCoroutine();
         [UnityTest] public IEnumerator InvalidDownloadDoesNotCommitFile() => DownloadCheck(false, false).ToCoroutine();
         [UnityTest] public IEnumerator PlayerCancellationRemovesPartialFile() => DownloadCheck(true, true).ToCoroutine();
+        [UnityTest] public IEnumerator GameQueryDistinguishesFailureFromCurrentVersion() => StrictCheck().ToCoroutine();
+
+        private static async UniTask StrictCheck()
+        {
+            foreach (int status in new[] { 404, 500, 200 })
+            {
+                using (var server = new OneReplyServer(status, "invalid"))
+                {
+                    bool failed = false;
+                    try { await WindowsUpdateFlow.CheckAsync(server.Url, 2, CancellationToken.None, throwOnFailure: true); }
+                    catch (Exception) { failed = true; }
+                    Assert.That(failed, Is.True, "HTTP " + status + " must not confirm no update");
+                }
+            }
+            using (var server = new OneReplyServer(200, Valid))
+                Assert.That(await WindowsUpdateFlow.CheckAsync(server.Url, 2, CancellationToken.None, throwOnFailure: true), Is.Null);
+        }
 
         private static async UniTask DownloadCheck(bool validHash, bool cancel)
         {

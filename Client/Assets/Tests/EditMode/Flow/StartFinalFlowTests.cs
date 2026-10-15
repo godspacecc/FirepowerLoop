@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using Boot;
 using Cysharp.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -29,6 +30,7 @@ namespace Game.Tests
         private FakeRestart restart;
         private FakeClock clock;
         private FakeNoticeClient noticeClient;
+        private FakeApkChecker apk;
         private int hudPrefabLoadCount;
 
         [SetUp]
@@ -44,6 +46,7 @@ namespace Game.Tests
             restart = new FakeRestart();
             clock = new FakeClock(DateTime.Parse("2026-07-20T00:00:00Z").ToUniversalTime());
             noticeClient = new FakeNoticeClient();
+            apk = new FakeApkChecker();
             hudPrefabLoadCount = 0;
             Architecture<Game>.OnRegisterPatch = architecture =>
             {
@@ -52,13 +55,13 @@ namespace Game.Tests
                 architecture.RegisterUtility<IMapContentLoader>(loader);
                 architecture.RegisterUtility<IApplicationRestartUtility>(restart);
                 architecture.RegisterUtility<IResourceUpdateNoticeClient>(noticeClient);
+                architecture.RegisterUtility<IApplicationUpdateChecker>(apk);
                 architecture.RegisterUtility<IRuntimeConfigProvider>(new StartRuntimeConfigProvider());
             };
             ResourceLoader.SetLoaderForTests(new LocalizationLoader());
             LocalizationLanguages.ResetForTests();
             UIHelper.SetPrefabLoaderForTests(CreatePrefab);
             CreateTestUIRoot();
-            ResetSilentCheckStarted();
         }
 
         [TearDown]
@@ -79,7 +82,6 @@ namespace Game.Tests
             DestroySceneObject("EventSystem");
             DestroySceneObject("Main Camera");
             DestroySceneObject(SceneRoot.PoolRootName);
-            ResetSilentCheckStarted();
         }
 
         [Test]
@@ -199,7 +201,7 @@ namespace Game.Tests
             Assert.That(message.GetComponent<Image>().color.a, Is.LessThanOrEqualTo(0.25f));
             Assert.That(message.BtnRestart, Is.Not.Null);
             Assert.That(message.BtnLater, Is.Not.Null);
-            Assert.That(message.TitleText.text, Is.EqualTo(Texts.StartUpdateAvailable));
+            Assert.That(message.TitleText.text, Is.EqualTo(Texts.StartUpdateRestartRequired));
             Assert.That(buttons.Length, Is.EqualTo(2));
             Assert.That(buttons[0].ButtonText.text, Is.EqualTo(Texts.StartUpdateRestartNow));
             Assert.That(buttons[1].ButtonText.text, Is.EqualTo(Texts.StartUpdateLater));
@@ -247,7 +249,7 @@ namespace Game.Tests
             var message = GetBaseUI<ResourceUpdateMessageUI>(UIHelper.GetUICtrl<ResourceUpdateMessageUICtrl>());
             var buttons = message.GetComponentsInChildren<MessageButtonBoxUI>(false);
             Assert.That(message.TitleText.text, Is.EqualTo("公告标题"));
-            Assert.That(message.ContentText.text, Is.EqualTo("\u516c\u544a\u6458\u8981\n1. \u7b2c\u4e00\u9879\n2. \u7b2c\u4e8c\u9879"));
+            Assert.That(message.ContentText.text, Is.EqualTo(Texts.StartUpdateRestartRequiredContent("2") + "\n\n公告摘要\n1. 第一项\n2. 第二项"));
             Assert.That(buttons.Length, Is.EqualTo(2));
             Assert.That(buttons[0].ButtonText.text, Is.EqualTo(Texts.StartUpdateRestartNow));
             Assert.That(buttons[1].ButtonText.text, Is.EqualTo(Texts.StartUpdateLater));
@@ -278,8 +280,8 @@ namespace Game.Tests
 
             yield return WaitUntilUi<ResourceUpdateMessageUICtrl>();
             var message = GetBaseUI<ResourceUpdateMessageUI>(UIHelper.GetUICtrl<ResourceUpdateMessageUICtrl>());
-            Assert.That(message.TitleText.text, Is.EqualTo(Texts.StartUpdateAvailable));
-            Assert.That(message.ContentText.text, Is.EqualTo("公告摘要"));
+            Assert.That(message.TitleText.text, Is.EqualTo(Texts.StartUpdateRestartRequired));
+            Assert.That(message.ContentText.text, Is.EqualTo(Texts.StartUpdateCachedContent("1", "2") + "\n\n公告摘要"));
         }
 
         [UnityTest]
@@ -329,15 +331,15 @@ namespace Game.Tests
             var start = UIHelper.ShowUI<StartUICtrl>();
             var ui = GetBaseUI<StartUI>(start);
 
+            var initial = Game.Interface.GetSystem<ResourceUpdateSystem>().CheckWithNoticeAsync(false).AsTask();
+            yield return WaitForCondition(() => initial.IsCompleted);
+
             checker.Next = ResourceUpdateCheckResult.Fail("1", "offline");
             var errors = new List<string>();
             using (CaptureErrors(errors))
             {
                 ui.BtnCheckUpdate.onClick.Invoke();
-                for (var i = 0; i < 5; i++)
-                {
-                    yield return null;
-                }
+                yield return WaitForCondition(() => errors.Count > 0);
             }
 
             AssertHasError(errors, "offline");
@@ -346,22 +348,73 @@ namespace Game.Tests
         }
 
         [Test]
-        public void BuiltinFallbackOnShowDoesNotAutomaticallyProbe()
+        public void BuiltinFallbackOnShowAutomaticallyProbesWithoutPrompt()
         {
             InitializeBuiltinFallback();
 
             var start = UIHelper.ShowUI<StartUICtrl>();
             var ui = GetBaseUI<StartUI>(start);
 
-            Assert.That(probe.CallCount, Is.EqualTo(0));
+            Assert.That(probe.CallCount, Is.EqualTo(1));
             Assert.IsFalse(ui.UpdateStatusText.gameObject.activeSelf);
             Assert.IsTrue(ui.VersionText.gameObject.activeSelf);
             Assert.That(ui.VersionText.text, Is.EqualTo("vbuiltin-1"));
             Assert.IsFalse(Game.Interface.GetSystem<RedPointSystem>().GetState(RedPointIds.StartResourceUpdate).Active);
         }
 
+        [UnityTest]
+        public IEnumerator ReturningToStartChecksAgainWithoutShowingUpdateDialog()
+        {
+            InitializeHostLatest();
+            var start = UIHelper.ShowUI<StartUICtrl>();
+            yield return null;
+            Assert.That(checker.CallCount, Is.EqualTo(1));
+            start.Hide();
+            checker.Next = ResourceUpdateCheckResult.Ok(new ResourceUpdateSnapshot(ResourceUpdateStatus.UpdateAvailable, "1", "2", 0, 0, null));
+            start.Show();
+            yield return null;
+            LifeCycle.LateUpdate();
+            Assert.That(checker.CallCount, Is.EqualTo(2));
+            Assert.That(GetBaseUI<StartUI>(start).UpdateRedPoint.gameObject.activeInHierarchy, Is.True);
+            Assert.That(Game.Interface.GetSystem<RedPointSystem>().GetState(RedPointIds.StartResourceUpdate).Active, Is.True);
+            Assert.That(UIHelper.GetUICtrl<ResourceUpdateMessageUICtrl>()?.IsShow() ?? false, Is.False);
+            Assert.That(noticeClient.CallCount, Is.Zero);
+            Assert.That(restart.Called, Is.False);
+        }
+
+        [UnityTest]
+        public IEnumerator SilentCompletionKeepsManualButtonBusyUntilNoticeCompletes()
+        {
+            InitializeHostLatest();
+            apk.Gate = new TaskCompletionSource<ApkUpdateManifest>();
+            noticeClient.Gate = new TaskCompletionSource<ResourceUpdateNoticeResult>();
+            var start = UIHelper.ShowUI<StartUICtrl>();
+            var ui = GetBaseUI<StartUI>(start);
+            yield return WaitForCondition(() => apk.Calls == 1);
+            Assert.That(ui.BtnCheckUpdate.interactable, Is.True);
+            ui.BtnCheckUpdate.onClick.Invoke();
+            apk.Gate.SetResult(null);
+            yield return WaitForCondition(() => noticeClient.CallCount == 1);
+            // 等自动入口退出 finally，再验证其没有释放手动入口持有的忙碌状态。
+            var deadline = DateTime.UtcNow.AddMilliseconds(150);
+            while (DateTime.UtcNow < deadline) yield return null;
+            Assert.That(ui.BtnCheckUpdate.interactable, Is.False);
+            ui.BtnCheckUpdate.onClick.Invoke();
+            Assert.That(noticeClient.CallCount, Is.EqualTo(1));
+            noticeClient.Gate.SetResult(ResourceUpdateNoticeResult.NoNotice);
+            yield return WaitForCondition(() => ui.BtnCheckUpdate.interactable);
+            Assert.That(noticeClient.CallCount, Is.EqualTo(1));
+        }
+
+        private static IEnumerator WaitForCondition(Func<bool> condition)
+        {
+            var deadline = DateTime.UtcNow.AddSeconds(5);
+            while (!condition() && DateTime.UtcNow < deadline) yield return null;
+            Assert.That(condition(), Is.True, "Async UI condition did not complete within five seconds");
+        }
+
         [Test]
-        public void UnknownVersionAndIdleUpdateStatusStayHidden()
+        public void UnknownVersionStaysHiddenWhileAutomaticProbeRefreshesStatus()
         {
             Game.Interface.GetSystem<ResourceUpdateSystem>()
                 .InitializeStartupInfo(new BootResourceStartupInfo(
@@ -374,7 +427,8 @@ namespace Game.Tests
             var ui = GetBaseUI<StartUI>(start);
 
             Assert.IsFalse(ui.VersionText.gameObject.activeSelf);
-            Assert.IsFalse(ui.UpdateStatusText.gameObject.activeSelf);
+            Assert.IsTrue(ui.UpdateStatusText.gameObject.activeSelf);
+            Assert.That(probe.CallCount, Is.EqualTo(1));
         }
 
         [UnityTest]
@@ -389,7 +443,7 @@ namespace Game.Tests
             using (CaptureErrors(errors))
             {
                 ui.BtnCheckUpdate.onClick.Invoke();
-                yield return null;
+                yield return WaitForCondition(() => errors.Count > 0);
             }
 
             AssertHasError(errors, "offline");
@@ -793,13 +847,6 @@ namespace Game.Tests
             LifeCycle.ClearForTests();
         }
 
-        private static void ResetSilentCheckStarted()
-        {
-            typeof(StartUICtrl)
-                .GetField("silentCheckStarted", BindingFlags.Static | BindingFlags.NonPublic)
-                ?.SetValue(null, false);
-        }
-
         private static void InitializeBuiltinFallback()
         {
             Game.Interface.GetSystem<ResourceUpdateSystem>()
@@ -842,9 +889,11 @@ namespace Game.Tests
                 ResourceUpdateCheckResult.Ok(new ResourceUpdateSnapshot(ResourceUpdateStatus.NoUpdate, "1", "1", 0, 0, null));
 
             public bool CanCheck => true;
+            public int CallCount;
 
-            public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds)
+            public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds, bool versionOnly = false)
             {
+                CallCount++;
                 return UniTask.FromResult(Next);
             }
         }
@@ -869,11 +918,23 @@ namespace Game.Tests
         {
             public ResourceUpdateNoticeResult Next { get; set; } = ResourceUpdateNoticeResult.NoNotice;
             public int CallCount { get; private set; }
+            public TaskCompletionSource<ResourceUpdateNoticeResult> Gate;
 
             public UniTask<ResourceUpdateNoticeResult> FetchAsync(ResourceUpdateNoticeRequest request)
             {
                 CallCount++;
-                return UniTask.FromResult(Next);
+                return Gate == null ? UniTask.FromResult(Next) : Gate.Task.AsUniTask();
+            }
+        }
+
+        private sealed class FakeApkChecker : IApplicationUpdateChecker
+        {
+            public int Calls;
+            public TaskCompletionSource<ApkUpdateManifest> Gate;
+            public UniTask<ApkUpdateManifest> CheckAsync(string server, CancellationToken cancellation)
+            {
+                Calls++;
+                return Gate == null ? UniTask.FromResult<ApkUpdateManifest>(null) : Gate.Task.AsUniTask();
             }
         }
 

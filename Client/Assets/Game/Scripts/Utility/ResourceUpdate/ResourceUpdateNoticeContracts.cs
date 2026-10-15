@@ -112,7 +112,7 @@ namespace Game
 
         public ResourceUpdateSnapshot Snapshot { get; }
         public ResourceUpdateNoticeResult Notice { get; }
-        /// <summary>仅主动检查返回的新 APK 候选；null 表示无可用候选，资源快照保持原语义。</summary>
+        /// <summary>版本查询返回的 APK 候选；展示由主动入口决定，资源快照保持原语义。</summary>
         public ApkUpdateManifest ApplicationUpdate { get; }
         public WindowsUpdateManifest WindowsUpdate { get; }
     }

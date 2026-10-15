@@ -102,6 +102,16 @@ namespace Game.Tests
         }
 
         [UnityTest]
+        public IEnumerator SilentQueriesOnlyVersionWhileManualQueriesDownloadInfo()
+        {
+            var system = Game.Interface.GetSystem<ResourceUpdateSystem>();
+            yield return Await(system.CheckAsync(false).AsTask());
+            Assert.That(checker.VersionOnly, Is.True);
+            yield return Await(system.CheckAsync(true).AsTask());
+            Assert.That(checker.VersionOnly, Is.False);
+        }
+
+        [UnityTest]
         public IEnumerator FailureBecomesDisplayableSnapshotAndDoesNotThrow()
         {
             checker.Next = ResourceUpdateCheckResult.Fail("1", "network down");
@@ -133,7 +143,7 @@ namespace Game.Tests
         }
 
         [UnityTest]
-        public IEnumerator BuiltinFallbackSilentCheckDoesNotProbeAndKeepsBuiltinState()
+        public IEnumerator BuiltinFallbackSilentCheckProbesAndKeepsBuiltinSource()
         {
             var system = Game.Interface.GetSystem<ResourceUpdateSystem>();
             system.InitializeStartupInfo(new BootResourceStartupInfo(
@@ -146,9 +156,9 @@ namespace Game.Tests
             yield return Await(task);
             var snapshot = task.Result;
 
-            Assert.That(probe.CallCount, Is.EqualTo(0));
+            Assert.That(probe.CallCount, Is.EqualTo(1));
             Assert.That(checker.CallCount, Is.EqualTo(0));
-            Assert.That(snapshot.Status, Is.EqualTo(ResourceUpdateStatus.NotChecked));
+            Assert.That(snapshot.Status, Is.EqualTo(ResourceUpdateStatus.NoUpdate));
             Assert.That(snapshot.ResourceSource, Is.EqualTo(BootResourceSource.BuiltinFallback));
             Assert.That(snapshot.CurrentVersion, Is.EqualTo("builtin-1"));
         }
@@ -385,11 +395,13 @@ namespace Game.Tests
 
             public TaskCompletionSource<ResourceUpdateCheckResult> Gate { get; set; }
             public int CallCount { get; private set; }
+            public bool VersionOnly;
             public bool CanCheck => true;
 
-            public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds)
+            public UniTask<ResourceUpdateCheckResult> CheckAsync(int timeoutSeconds, bool versionOnly = false)
             {
                 CallCount++;
+                VersionOnly = versionOnly;
                 return (Gate?.Task ?? Task.FromResult(Next)).AsUniTask();
             }
         }

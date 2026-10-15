@@ -24,19 +24,33 @@ namespace Boot
         public long sizeBytes;
         public string sha256;
 
-        public static WindowsUpdateManifest ParseAvailable(string json, int currentRelease)
+        /// <summary>区分有效但非新版和损坏描述；Boot 默认放行，游戏查询可要求错误传播。</summary>
+        public static WindowsUpdateManifest ParseAvailable(string json, int currentRelease, bool throwOnInvalid = false)
         {
-            if (string.IsNullOrWhiteSpace(json) || json.Length > 65536 || currentRelease < 0) return null;
+            if (string.IsNullOrWhiteSpace(json) || json.Length > 65536 || currentRelease < 0)
+            {
+                if (throwOnInvalid) throw new FormatException("Windows 更新描述为空、超长或本地版本无效");
+                return null;
+            }
             try
             {
                 var value = JsonUtility.FromJson<WindowsUpdateManifest>(json);
-                if (value == null || !value.ValidIdentity || value.releaseNumber <= currentRelease ||
+                if (value == null || !value.ValidIdentity ||
                     value.sizeBytes <= 0 || value.sizeBytes > 32L * 1024 * 1024 * 1024 ||
                     !Regex.IsMatch(value.installerFileName ?? "", @"\A[A-Za-z0-9][A-Za-z0-9._-]{0,150}\.exe\z") ||
-                    !Regex.IsMatch(value.sha256 ?? "", @"\A[0-9a-fA-F]{64}\z")) return null;
+                    !Regex.IsMatch(value.sha256 ?? "", @"\A[0-9a-fA-F]{64}\z"))
+                {
+                    if (throwOnInvalid) throw new FormatException("Windows 更新描述无效或不兼容");
+                    return null;
+                }
+                if (value.releaseNumber <= currentRelease) return null;
                 return value;
             }
-            catch (ArgumentException) { return null; }
+            catch (ArgumentException)
+            {
+                if (throwOnInvalid) throw;
+                return null;
+            }
         }
 
         public bool ValidIdentity => schemaVersion == 1 && productId == ProductId && platform == "Windows" &&

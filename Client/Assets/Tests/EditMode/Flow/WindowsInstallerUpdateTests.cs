@@ -57,7 +57,7 @@ namespace Game.Tests
             $"{{\"schemaVersion\":1,\"productId\":\"{product}\",\"platform\":\"{platform}\",\"architecture\":\"{arch}\",\"versionName\":\"0.1.10\",\"releaseNumber\":{release},\"installerFileName\":\"{name}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";
 
         private static object Parse(string json, int current = 1) =>
-            RequiredType("Boot.WindowsUpdateManifest").GetMethod("ParseAvailable").Invoke(null, new object[] { json, current });
+            RequiredType("Boot.WindowsUpdateManifest").GetMethod("ParseAvailable").Invoke(null, new object[] { json, current, false });
 
         [Test] public void FullInstallerCanSkipIntermediateReleases() => Assert.That(Parse(Manifest()), Is.Not.Null);
         [Test] public void EqualReleaseIsNotAnUpdate() => Assert.That(Parse(Manifest(), 10), Is.Null);

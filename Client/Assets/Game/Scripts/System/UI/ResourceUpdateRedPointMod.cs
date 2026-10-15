@@ -3,7 +3,7 @@ using QFramework;
 namespace Game
 {
     /// <summary>
-    /// 监听资源更新领域变更，并以当前资源更新快照推导开始界面的更新红点。
+    /// 监听版本查询领域变更，从资源与当前平台安装包的已知结果推导开始页红点。
     /// </summary>
     public sealed class ResourceUpdateRedPointMod : RedPointMod
     {
@@ -26,7 +26,7 @@ namespace Game
 
         protected override bool OnCheckActive()
         {
-            return model != null && model.Snapshot.Value.Status == ResourceUpdateStatus.UpdateAvailable;
+            return model != null && model.HasKnownUpdate;
         }
 
         protected override int OnGetCount()

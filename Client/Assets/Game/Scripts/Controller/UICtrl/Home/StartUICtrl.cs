@@ -16,7 +16,6 @@ namespace Game
     {
         /// <summary>复用正式 UI 点击资源名；播放与释放均交给 AudioSystem。</summary>
         private const string MenuClickSound = "FoundationClick";
-        private static bool silentCheckStarted;
         /// <summary>覆盖资源检查结束后的 APK 探测阶段，避免重复点击和按钮过早恢复。</summary>
         private bool manualChecking;
         /// <summary>界面隐藏或卸载时递增；旧请求不得向已离开的界面弹出更新提示。</summary>
@@ -79,13 +78,8 @@ namespace Game
 
             RefreshSaveButtons();
             RefreshUpdateText();
-            var snapshot = this.GetSystem<ResourceUpdateSystem>().Snapshot;
-            if (!silentCheckStarted &&
-                snapshot.ResourceSource != BootResourceSource.BuiltinFallback)
-            {
-                silentCheckStarted = true;
-                CheckUpdate(false).Forget();
-            }
+            // 每次返回开始页都重新查询版本；在途请求由更新系统复用，不触发提示或安装。
+            CheckUpdate(false).Forget();
         }
 
         protected override void OnHide()
@@ -242,7 +236,7 @@ namespace Game
             }
             finally
             {
-                if (requestView == UI && requestGeneration == updatePresentationGeneration)
+                if (userInitiated && requestView == UI && requestGeneration == updatePresentationGeneration)
                 {
                     manualChecking = false;
                     RefreshUpdateText();

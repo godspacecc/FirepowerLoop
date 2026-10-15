@@ -24,7 +24,7 @@ namespace Game.Tests
             string hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") =>
             $"{{\"schemaVersion\":1,\"platform\":\"Android\",\"packageName\":\"{package}\",\"versionName\":\"{version}\",\"versionCode\":{code},\"apkFileName\":\"{file}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";
         private object Parse(string json, string current = "0.1.9", int code = 1) =>
-            Policy.GetMethod("ParseAvailable").Invoke(null, new object[] { json, "com.anotherday.game", current, code });
+            Policy.GetMethod("ParseAvailable").Invoke(null, new object[] { json, "com.anotherday.game", current, code, false });
         [Test] public void NumericVersionComparisonAcceptsTenAfterNine() => Assert.That(Parse(Json()), Is.Not.Null);
         [Test] public void EqualVersionDoesNotOfferUpdate() => Assert.That(Parse(Json(), "0.1.10"), Is.Null);
         [Test] public void OlderVersionDoesNotOfferUpdate() => Assert.That(Parse(Json(), "0.2.0"), Is.Null);

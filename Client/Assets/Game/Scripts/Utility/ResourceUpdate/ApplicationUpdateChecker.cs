@@ -19,17 +19,8 @@ namespace Game
         public async UniTask<ApkUpdateManifest> CheckAsync(string resourceServer, CancellationToken cancellation)
         {
             if (!AndroidApkInstaller.Supported || string.IsNullOrWhiteSpace(resourceServer)) return null;
-            try
-            {
-                return await ApkUpdateFlow.CheckAsync(resourceServer, Application.identifier, Application.version,
-                    AndroidApkInstaller.CurrentVersionCode, cancellation);
-            }
-            catch (OperationCanceledException) { throw; }
-            catch (Exception exception)
-            {
-                Log.Warning($"[ApplicationUpdateChecker] 安装包检查已跳过：{exception.GetType().Name}");
-                return null;
-            }
+            return await ApkUpdateFlow.CheckAsync(resourceServer, Application.identifier, Application.version,
+                AndroidApkInstaller.CurrentVersionCode, cancellation, throwOnFailure: true);
         }
     }
     /// <summary>PC 安装包检查端口；版本来自 Player 内置身份，不使用 Android 版本号。</summary>
@@ -38,14 +29,15 @@ namespace Game
         UniTask<WindowsUpdateManifest> CheckAsync(string server, CancellationToken token);
     }
 
+    /// <summary>只查询当前 Windows 平台的发布描述；失败由更新系统保留已知结果。</summary>
     public sealed class WindowsApplicationUpdateChecker : IWindowsApplicationUpdateChecker
     {
         public async UniTask<WindowsUpdateManifest> CheckAsync(string server, CancellationToken token)
         {
             if (!WindowsInstaller.Supported || string.IsNullOrWhiteSpace(server)) return null;
             var local = WindowsUpdateManifest.ReadInstalled();
-            if (local == null) return null;
-            return await WindowsUpdateFlow.CheckAsync(server, local.releaseNumber, token);
+            if (local == null) throw new InvalidOperationException("Windows 本地安装包身份不可用");
+            return await WindowsUpdateFlow.CheckAsync(server, local.releaseNumber, token, throwOnFailure: true);
         }
     }
 }
