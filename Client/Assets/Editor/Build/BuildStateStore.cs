@@ -82,6 +82,8 @@ namespace Game.Editor
         public string Version;
         public string BuildKind;
         public long CompletedUtcTicks;
+        /// <summary>成功 APK 对应的 Boot 输入指纹；资源更新不得覆盖该宿主基线。</summary>
+        public string BootFingerprint;
     }
 
     /// <summary>

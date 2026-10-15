@@ -237,7 +237,7 @@ namespace Game.Editor
                 finalApkValidated = true;
                 timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
                 timing.Run("CleanupPreparatoryPlayer", context.CleanupPreparatoryDirectory);
-                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "HostBase", package.OutputPackageDirectory, context.FinalApkPath, true));
+                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "HostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint));
 
                 string appUpdatePath = timing.Run("PublishAndroidApk", () => PublishCompleteApk(context.FinalApkPath, appVersion));
 
@@ -316,7 +316,8 @@ namespace Game.Editor
                     "SmallHostBase",
                     package.OutputPackageDirectory,
                     context.FinalApkPath,
-                    true));
+                    true,
+                    context.BootFingerprint));
 
                 Debug.Log(
                     $"[AndroidBuildUtility] Android 首包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
@@ -350,17 +351,20 @@ namespace Game.Editor
         /// </summary>
         public static void BuildHostCodeAndResourcesBatch()
         {
-            if (!BeginWorkflow("Android Host 代码+资源更新"))
+            if (!BeginWorkflow("Android Host 代码+资源更新", () => AndroidBootBuildGuard.ValidateBeforeHotUpdate(
+                    LoadStateOrThrow(), Directory.GetParent(Application.dataPath).FullName)))
                 return;
 
             var timing = new BuildStageTiming("Android Host 代码+资源更新");
             string retainedPackageDirectory = null;
             try
             {
+                BuildState state = timing.Run("LoadAndroidHostState", LoadStateOrThrow);
+                timing.Run("ValidateAndroidBootBaseline", () => AndroidBootBuildGuard.ValidateBeforeHotUpdate(
+                    state, Directory.GetParent(Application.dataPath).FullName));
                 timing.Run("EnsureAndroidBuildTarget", EnsureAndroidBuildTarget);
                 timing.Run("ValidateAndroidEnvironment", ValidateAndroidEnvironment);
                 timing.Run("ValidateAndroidHostConfig", ValidateAndroidHostConfig);
-                BuildState state = timing.Run("LoadAndroidHostState", LoadStateOrThrow);
                 timing.Run("ValidateAndroidAotBaseline", () => ValidateAndroidAotBaseline(state));
 
                 timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(BuildTarget.Android));
@@ -375,6 +379,9 @@ namespace Game.Editor
                 var package = timing.Run("BuildAndroidHostPackage", () => BuildPackageOrThrow(version, false));
                 timing.Run("ValidateAndroidHostPackage", () => ValidateHostPackage(package.OutputPackageDirectory, version));
                 retainedPackageDirectory = package.OutputPackageDirectory;
+                // 长流程中 Boot 可能被编辑；发布前复核，不能推广与宿主不兼容的资源版本。
+                timing.Run("RevalidateAndroidBootBaselineBeforePublish", () => AndroidBootBuildGuard.ValidateBeforeHotUpdate(
+                    state, Directory.GetParent(Application.dataPath).FullName));
                 timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "Host", package.OutputPackageDirectory, null, false));
 
                 var publish = timing.Run("PublishAndroidResourceServer", ResourceServerPublishUtility.PublishOrUpdateLatestAndroidPackage);
@@ -607,8 +614,11 @@ namespace Game.Editor
             string buildKind,
             string packageDirectory,
             string playerPath,
-            bool updateAot)
+            bool updateAot,
+            string bootFingerprint = null)
         {
+            if (!string.IsNullOrEmpty(playerPath) && string.IsNullOrWhiteSpace(bootFingerprint))
+                throw new InvalidOperationException("Android 首包缺少本次构建的 Boot 指纹，不能保存宿主基线，请重新执行首包完整打包。");
             BuildState state = LoadStateOrThrow();
             long completedUtcTicks = DateTime.UtcNow.Ticks;
             string gameDllDirectory = HybridCLRBuildUtility.GetGameDllDirectory();
@@ -648,7 +658,8 @@ namespace Game.Editor
                     PlayerPath = Path.GetFullPath(playerPath),
                     Version = version,
                     BuildKind = buildKind,
-                    CompletedUtcTicks = completedUtcTicks
+                    CompletedUtcTicks = completedUtcTicks,
+                    BootFingerprint = bootFingerprint
                 };
             }
 
@@ -685,6 +696,8 @@ namespace Game.Editor
         /// </summary>
         private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources)
         {
+            string projectRoot = Directory.GetParent(Application.dataPath).FullName;
+            string bootFingerprint = AndroidBootBuildGuard.ComputeFingerprint(projectRoot);
             string previousVersion = PlayerSettings.bundleVersion;
             int previousCode = PlayerSettings.Android.bundleVersionCode;
             if (previousCode == int.MaxValue) throw new InvalidOperationException("Android 版本码已达到上限。");
@@ -697,6 +710,10 @@ namespace Game.Editor
             try
             {
                 BuildPlayer(context.FinalApkPath, forceBuiltinResources);
+                // 打包中途修改 Boot 时不能把新源码错误记录为已生成 APK 的基线。
+                if (!string.Equals(bootFingerprint, AndroidBootBuildGuard.ComputeFingerprint(projectRoot), StringComparison.Ordinal))
+                    throw new InvalidOperationException("打包期间 Boot 发生变化，请重新执行 Android 首包完整打包。");
+                context.BootFingerprint = bootFingerprint;
                 AssetDatabase.SaveAssets();
                 Debug.Log($"[AndroidBuildUtility] Android 应用版本已递增：{previousVersion} -> {nextVersion}");
                 return nextVersion;
@@ -763,10 +780,18 @@ namespace Game.Editor
             ShowDialog(result.Operation + "失败", result.Error ?? "未知错误");
         }
 
-        /// <summary>切平台时只登记请求并退出当前调用栈；同平台时才允许创建上下文及修改构建选项。</summary>
-        private static bool BeginWorkflow(string workflowName)
+        /// <summary>先完成只读前置检查；切平台时登记请求并退出当前调用栈，同平台才创建构建上下文。</summary>
+        private static bool BeginWorkflow(string workflowName, Action preflight = null)
         {
             if (!BeginBuild()) return false;
+            try { preflight?.Invoke(); }
+            catch (Exception exception)
+            {
+                // 前置检查失败不得切平台或留下构建锁；此时尚未登记恢复请求。
+                s_isBuilding = false;
+                ShowDialog(workflowName + "被阻止", exception.Message);
+                throw;
+            }
             if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android) return true;
 
             var timing = new BuildStageTiming(workflowName);
@@ -1009,6 +1034,8 @@ namespace Game.Editor
             public string PreparatoryDirectory { get; }
             /// <summary>仅在最终应用版本确定后设置；此前的预备 Player 不占用正式 APK 路径。</summary>
             public string FinalApkPath { get; private set; }
+            /// <summary>本次最终 APK 构建前后核对一致的 Boot 指纹，仅成功构建后赋值。</summary>
+            public string BootFingerprint { get; set; }
             public string PreparatoryApkPath { get; }
 
             public void SetFinalApkVersion(string appVersion)
