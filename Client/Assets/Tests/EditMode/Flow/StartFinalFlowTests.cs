@@ -146,7 +146,8 @@ namespace Game.Tests
             Assert.NotNull(background);
             Assert.NotNull(panel);
             Assert.That(panel.anchorMin, Is.EqualTo(Vector2.one));
-            Assert.That(panel.sizeDelta, Is.EqualTo(new Vector2(430f, 600f)));
+            // 正式 Prefab 为包含退出按钮的五按钮菜单，面板保留标题区域及底部留白。
+            Assert.That(panel.sizeDelta, Is.EqualTo(new Vector2(430f, 684f)));
             AssertStartButtonGroupContract(ui, panel);
             var titleText = prefab.transform.Find("Panel/TitleText").GetComponent<TMP_Text>();
             var checkUpdateText = ui.BtnCheckUpdate.GetComponentInChildren<TMP_Text>(true);
@@ -518,7 +519,8 @@ namespace Game.Tests
             Assert.That(ui.ButtonGroup.anchorMax, Is.EqualTo(new Vector2(0f, 1f)));
             Assert.That(ui.ButtonGroup.pivot, Is.EqualTo(new Vector2(0f, 1f)));
             Assert.That(ui.ButtonGroup.anchoredPosition, Is.EqualTo(new Vector2(0f, -270f)));
-            Assert.That(ui.ButtonGroup.sizeDelta, Is.EqualTo(new Vector2(430f, 316f)));
+            // 五个 64 高按钮，加四处 20 间距，总高 400；版本检查按钮独立于该主按钮组。
+            Assert.That(ui.ButtonGroup.sizeDelta, Is.EqualTo(new Vector2(430f, 400f)));
 
             var layout = ui.ButtonGroup.GetComponent<VerticalLayoutGroup>();
             Assert.NotNull(layout);
@@ -536,7 +538,7 @@ namespace Game.Tests
             var buttons = ui.ButtonGroup.GetComponentsInChildren<Button>(true)
                 .Where(button => button.transform.parent == ui.ButtonGroup)
                 .ToArray();
-            var names = new[] { "BtnNewGame", "BtnContinue", "BtnOnline", "BtnSetting" };
+            var names = new[] { "BtnNewGame", "BtnContinue", "BtnOnline", "BtnSetting", "BtnExit" };
             Assert.That(buttons.Length, Is.EqualTo(names.Length));
             for (var i = 0; i < buttons.Length; i++)
             {
