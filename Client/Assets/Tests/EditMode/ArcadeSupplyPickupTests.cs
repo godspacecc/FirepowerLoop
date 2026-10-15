@@ -52,6 +52,58 @@ namespace Game.Tests
         private void Add(int id, ArcadeDropDefinition definition) => runtime.Drops.Add(id,
             new ArcadeDropRuntime { Id = id, Definition = definition, Position = Vector2.zero });
 
+        /// <summary>从完整帧入口验证出口等待不会绕过拾取，并保留满额与一次结算规则。</summary>
+        [TestCase(true)] [TestCase(false)]
+        public void AwaitingExit_FullSupplyRemainsThenAvailableSupplyIsCollectedOnce(bool bomb)
+        {
+            BeginExitWait();
+            var supply = Supply(bomb);
+            SetHeld(bomb, supply.MaxOwned);
+            Add(1, supply);
+            Call("Tick", runtime, .02f);
+            Assert.That(runtime.Drops.ContainsKey(1), Is.True);
+            Assert.That(Held(bomb), Is.EqualTo(supply.MaxOwned));
+            Assert.That(view.Added, Is.Empty);
+
+            SetHeld(bomb, supply.MaxOwned - 1);
+            Call("Tick", runtime, .02f);
+            Call("Tick", runtime, .02f);
+            Assert.That(runtime.AwaitingExit, Is.True);
+            Assert.That(runtime.CompletionSubmitted, Is.False);
+            Assert.That(runtime.Drops, Is.Empty, "等待出口时仍须领取范围内补给");
+            Assert.That(Held(bomb), Is.EqualTo(supply.MaxOwned));
+            Assert.That(view.Removed, Is.EqualTo(new[] { 1 }));
+            Assert.That(view.Added, Is.EqualTo(new[] { 1 }));
+        }
+
+        [Test]
+        public void AwaitingExit_RejectedSupplyDoesNotBlockGoldOrWeapon()
+        {
+            BeginExitWait();
+            var bomb = Supply(true);
+            var gold = catalog.Drops.First(d => d.Kind == ArcadeDropKind.RunGold);
+            var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+            runtime.Bombs = bomb.MaxOwned;
+            Add(1, bomb); Add(2, gold); Add(3, weapon);
+            Call("Tick", runtime, .02f);
+            Call("Tick", runtime, .02f);
+            Assert.That(runtime.Drops.Keys, Is.EqualTo(new[] { 1 }));
+            Assert.That(runtime.ArenaGold, Is.EqualTo(gold.Amount));
+            Assert.That(runtime.TemporaryWeaponId, Is.EqualTo(weapon.ProductId));
+            Assert.That(view.Removed, Is.EquivalentTo(new[] { 2, 3 }));
+        }
+
+        /// <summary>搭建已清场但尚未踏入出口的现场，使用正式 Tick 而非直接调用拾取函数。</summary>
+        private void BeginExitWait()
+        {
+            architecture.RegisterModel(new AppStateModel());
+            architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Playing;
+            runtime.AwaitingExit = true;
+            runtime.WaveClearAwarded = true;
+            runtime.TreasureInitialized = true;
+            runtime.WaveTransitionRemaining = 300f;
+        }
+
         [TestCase(true)] [TestCase(false)]
         public void FullSupply_RemainsAcrossRepeatedRangeEntries_ThenConsumedOnceAfterUse(bool bomb)
         {

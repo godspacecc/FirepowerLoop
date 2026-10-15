@@ -27,6 +27,44 @@ void Add(OnlineArcadeRunActor actor, long id, ArcadeDropConfig definition) => ac
     new OnlineArcadeDropRuntime { RuntimeId = id, DropConfigId = definition.Id, PositionX = 0, PositionZ = 0 });
 foreach (var kind in new[] { ArcadeDropKind.Bomb, ArcadeDropKind.Dash })
 {
+    Check(kind + " exit wait retains full supply then collects once through TickBattle", () =>
+    {
+        var actor = Actor(); var battle = actor.Battle; var record = actor.Record.Players[0];
+        battle.AwaitingExit = true; battle.WaveClearAwarded = true;
+        battle.Players[1].PositionX = battle.Players[1].PositionZ = 0;
+        var supply = config.Tables.TbArcadeDrop.DataList.First(d => d.Kind == kind);
+        if (kind == ArcadeDropKind.Bomb) record.Bombs = supply.MaxOwned; else record.Dashes = supply.MaxOwned;
+        Add(actor, 1, supply);
+        long now = battle.LastTickAt;
+        actor.TickBattle(now + 20);
+        Require(battle.Drops.ContainsKey(1) && battle.SupplyPickups.Count == 0, "full supply not retained");
+        if (kind == ArcadeDropKind.Bomb) record.Bombs--; else record.Dashes--;
+        long revision = battle.BattleRevision;
+        Require(actor.TickBattle(now + 40), "exit wait pickup not published");
+        actor.TickBattle(now + 60);
+        Require(battle.AwaitingExit && !battle.ArenaCompletionReady, "pickup ended exit wait");
+        Require(battle.Drops.Count == 0, "exit wait skipped pickup");
+        Require((kind == ArcadeDropKind.Bomb ? record.Bombs : record.Dashes) == supply.MaxOwned, "wrong exit wait inventory");
+        Require(battle.BattleRevision > revision, "pickup did not advance snapshot revision");
+        Require(battle.SupplyPickups.Count == 1 && battle.SupplyPickups[0].CollectedByPlayerId == 1 &&
+            battle.SupplyPickups[0].AddedAmount == 1, "exit wait duplicated receipt");
+    });
+    Check(kind + " exit wait full nearer player allows eligible teammate through TickBattle", () =>
+    {
+        var actor = Actor(); var battle = actor.Battle;
+        battle.AwaitingExit = true; battle.WaveClearAwarded = true;
+        var supply = config.Tables.TbArcadeDrop.DataList.First(d => d.Kind == kind);
+        var full = actor.Record.Players[0]; var recipient = actor.Record.Players[1];
+        if (kind == ArcadeDropKind.Bomb) { full.Bombs = supply.MaxOwned; recipient.Bombs = 0; }
+        else { full.Dashes = supply.MaxOwned; recipient.Dashes = 0; }
+        battle.Players[1].PositionX = battle.Players[1].PositionZ = 0;
+        battle.Players[2].PositionX = .5f; battle.Players[2].PositionZ = 0;
+        Add(actor, 1, supply);
+        actor.TickBattle(battle.LastTickAt + 20);
+        Require((kind == ArcadeDropKind.Bomb ? recipient.Bombs : recipient.Dashes) == supply.Amount, "exit wait blocked teammate");
+        Require((kind == ArcadeDropKind.Bomb ? full.Bombs : full.Dashes) == supply.MaxOwned, "full player changed");
+        Require(battle.Drops.Count == 0 && battle.SupplyPickups.Single().CollectedByPlayerId == 2, "wrong exit wait recipient");
+    });
     Check(kind + " stays at cap then is collected once after real use", () =>
     {
         var actor = Actor(); var battle = actor.Battle; var player = battle.Players[1];
@@ -91,6 +129,20 @@ foreach (var kind in new[] { ArcadeDropKind.Bomb, ArcadeDropKind.Dash })
         finally { amountField.SetValue(supply, configuredAmount); }
     });
 }
+Check("exit wait collects gold and weapon beside rejected supply through TickBattle", () =>
+{
+    var actor = Actor(); var battle = actor.Battle; var record = actor.Record.Players[0];
+    battle.AwaitingExit = true; battle.WaveClearAwarded = true;
+    battle.Players[1].PositionX = battle.Players[1].PositionZ = 0;
+    var bomb = config.Tables.TbArcadeDrop.DataList.First(d => d.Kind == ArcadeDropKind.Bomb);
+    var gold = config.Tables.TbArcadeDrop.DataList.First(d => d.Kind == ArcadeDropKind.RunGold);
+    var weapon = config.Tables.TbArcadeDrop.DataList.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+    record.Bombs = bomb.MaxOwned; Add(actor, 1, bomb); Add(actor, 2, gold); Add(actor, 3, weapon);
+    long now = battle.LastTickAt;
+    actor.TickBattle(now + 20); actor.TickBattle(now + 40);
+    Require(battle.Drops.Keys.SequenceEqual(new long[] { 1 }), "exit wait retained wrong drops");
+    Require(record.RunGold == gold.Amount && battle.Players[1].TemporaryWeaponId == weapon.ProductId, "exit wait skipped gold or weapon");
+});
 Check("rejected supplies do not block gold or weapon", () =>
 {
     var actor = Actor(); var battle = actor.Battle; var record = actor.Record.Players[0];

@@ -480,6 +480,8 @@ namespace Game
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             if (runtime.AwaitingExit)
             {
+                // 清场后仍可领取地面物资；先结算拾取，再处理出口或超时离场，避免漏存同帧奖励。
+                TickDrops(runtime);
                 if (UsesEarlyRest(runtime) && !runtime.CompletionAwaitingRetry)
                 {
                     runtime.WaveTransitionRemaining = Mathf.Max(0, runtime.WaveTransitionRemaining - deltaTime);

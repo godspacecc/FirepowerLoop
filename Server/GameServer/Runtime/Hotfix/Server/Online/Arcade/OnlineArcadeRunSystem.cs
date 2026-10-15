@@ -1390,6 +1390,8 @@ namespace ET.Server
             changed |= self.TickOpeningFire(battle, deltaSeconds);
             if (battle.AwaitingExit)
             {
+                // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
+                changed |= self.TickDrops(battle);
                 var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
                 if (UsesEarlyRest(battle))
                 {
