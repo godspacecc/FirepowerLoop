@@ -1,4 +1,4 @@
-﻿param(
+param(
     [Parameter(Mandatory=$true)][string]$PlayerDirectory,
     [Parameter(Mandatory=$true)][string]$Compiler,
     [Parameter(Mandatory=$true)][string]$OutputDirectory,
@@ -10,14 +10,14 @@ $player = [IO.Path]::GetFullPath($PlayerDirectory).TrimEnd('\')
 $output = [IO.Path]::GetFullPath($OutputDirectory).TrimEnd('\')
 if ($output -eq $player -or $output.StartsWith($player + '\', [StringComparison]::OrdinalIgnoreCase)) { throw 'Output must be outside Player.' }
 if (Test-Path -LiteralPath $output) { throw 'Output directory already exists; choose a new directory.' }
-foreach ($file in @('AnotherDay.exe','UnityPlayer.dll','GameAssembly.dll','AnotherDay_Data/StreamingAssets/windows-release.json','AnotherDay_Data/ScriptingAssemblies.json')) {
+foreach ($file in @('FirepowerLoop.exe','UnityPlayer.dll','GameAssembly.dll','FirepowerLoop_Data/StreamingAssets/windows-release.json','FirepowerLoop_Data/ScriptingAssemblies.json')) {
     if (-not (Test-Path -LiteralPath (Join-Path $player $file) -PathType Leaf)) { throw "Missing Player file: $file" }
 }
-$identity = Get-Content -Raw -LiteralPath (Join-Path $player 'AnotherDay_Data/StreamingAssets/windows-release.json') | ConvertFrom-Json
+$identity = Get-Content -Raw -LiteralPath (Join-Path $player 'FirepowerLoop_Data/StreamingAssets/windows-release.json') | ConvertFrom-Json
 if ($identity.schemaVersion -ne 1 -or $identity.productId -cne 'com.anotherday.game' -or $identity.platform -cne 'Windows' -or
     $identity.architecture -cne 'x64' -or $identity.releaseNumber -lt 1 -or $identity.releaseNumber -gt 2147483647 -or
     $identity.versionName -cnotmatch '^[0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}$') { throw 'Invalid embedded PC release identity; rebuild a new Player.' }
-$assemblies = Get-Content -Raw -LiteralPath (Join-Path $player 'AnotherDay_Data/ScriptingAssemblies.json') | ConvertFrom-Json
+$assemblies = Get-Content -Raw -LiteralPath (Join-Path $player 'FirepowerLoop_Data/ScriptingAssemblies.json') | ConvertFrom-Json
 $gameIndices = @(0..($assemblies.names.Count - 1) | Where-Object { $assemblies.names[$_] -ceq 'Game.dll' })
 if ($gameIndices.Count -ne 1 -or $assemblies.types.Count -ne $assemblies.names.Count -or $assemblies.types[$gameIndices[0]] -ne 16) { throw 'Player is missing valid Game.dll registration.' }
 # 不跟随符号链接，不把运行缓存、调试资料或用户额外文件打入安装器。
@@ -26,8 +26,8 @@ if ((Get-Item -LiteralPath $player).Attributes -band [IO.FileAttributes]::Repars
     @($all | Where-Object { $_.Attributes -band [IO.FileAttributes]::ReparsePoint }).Count -gt 0) { throw 'Player contains reparse points.' }
 $files = @($all | Where-Object { -not $_.PSIsContainer } | Where-Object {
     $relative = $_.FullName.Substring($player.Length + 1)
-    ($relative -eq 'AnotherDay.exe' -or $relative -match '^[A-Za-z0-9._-]+\.dll$' -or $relative.StartsWith('AnotherDay_Data\')) -and
-    -not $relative.StartsWith('AnotherDay_Data\yoo\') -and
+    ($relative -eq 'FirepowerLoop.exe' -or $relative -match '^[A-Za-z0-9._-]+\.dll$' -or $relative.StartsWith('FirepowerLoop_Data\')) -and
+    -not $relative.StartsWith('FirepowerLoop_Data\yoo\') -and
     -not ($relative -match '(?i)(DoNotShip|DontShip|\.pdb$|\.mdb$)')
 })
 [IO.Directory]::CreateDirectory($output) | Out-Null
@@ -53,7 +53,7 @@ $checksums = @($managed | Where-Object { $_ -ne 'windows-payload-sha256.txt' } |
 })
 [IO.File]::WriteAllLines((Join-Path $payload 'windows-payload-sha256.txt'), $checksums, [Text.UTF8Encoding]::new($true))
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'AnotherDay.iss') -Destination (Join-Path $output 'AnotherDay.iss')
-$name = "AnotherDay-Setup-$($identity.releaseNumber)"
+$name = "FirepowerLoop-Setup-$($identity.releaseNumber)"
 if ($PrepareOnly) { Write-Output "Validated installer input: $output"; return }
 if (-not (Test-Path -LiteralPath $Compiler -PathType Leaf)) { throw 'Configure the full path of Inno Setup 6 ISCC.exe.' }
 $payloadBytes = (Get-ChildItem -LiteralPath $payload -File -Recurse | Measure-Object -Property Length -Sum).Sum

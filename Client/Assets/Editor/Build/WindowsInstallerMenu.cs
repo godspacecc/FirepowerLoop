@@ -18,9 +18,9 @@ namespace Game.Editor
         private static async void Generate()
         {
             if (running) return;
-            string exe = EditorUtility.OpenFilePanel("选择正式 Player 的 AnotherDay.exe", "", "exe");
+            string exe = EditorUtility.OpenFilePanel("选择正式 Player 的 FirepowerLoop.exe", "", "exe");
             if (string.IsNullOrEmpty(exe)) return;
-            if (Path.GetFileName(exe) != "AnotherDay.exe") { UnityEngine.Debug.LogError("请选择 AnotherDay.exe。"); return; }
+            if (Path.GetFileName(exe) != "FirepowerLoop.exe") { UnityEngine.Debug.LogError("请选择 FirepowerLoop.exe。"); return; }
             string compiler = EditorPrefs.GetString(CompilerKey, "");
             if (!File.Exists(compiler))
             {

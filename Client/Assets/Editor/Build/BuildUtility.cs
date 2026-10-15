@@ -526,7 +526,7 @@ namespace Game.Editor
         {
             ConfigureStandalonePlayerBuild();
             string tempPath = GetPreparatoryPlayerBuildPath();
-            string exePath = Path.Combine(tempPath, "AnotherDay.exe");
+            string exePath = Path.Combine(tempPath, "FirepowerLoop.exe");
             DeleteDirectory(tempPath);
             Directory.CreateDirectory(tempPath);
             BuildPlayer(exePath);
@@ -547,9 +547,9 @@ namespace Game.Editor
             if (Directory.Exists(batchDirectory) || File.Exists(batchDirectory))
                 throw new InvalidOperationException($"Windows Player 发布批次已存在，拒绝覆盖：{batchDirectory}");
 
-            string playerDirectory = Path.Combine(batchDirectory, "AnotherDay");
+            string playerDirectory = Path.Combine(batchDirectory, "FirepowerLoop");
             Directory.CreateDirectory(playerDirectory);
-            string exePath = Path.Combine(playerDirectory, "AnotherDay.exe");
+            string exePath = Path.Combine(playerDirectory, "FirepowerLoop.exe");
             using (var release = new WindowsReleaseIdentity())
             {
                 BuildPlayer(exePath);

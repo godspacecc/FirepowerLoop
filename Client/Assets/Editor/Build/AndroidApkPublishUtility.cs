@@ -37,7 +37,7 @@ namespace Game.Editor
             {
                 schemaVersion = 1, platform = "Android", packageName = "com.anotherday.game",
                 versionName = versionName, versionCode = versionCode,
-                apkFileName = $"AnotherDay-{versionName}-{versionCode}.apk", sizeBytes = size
+                apkFileName = $"FirepowerLoop-{versionName}-{versionCode}.apk", sizeBytes = size
             };
             using (var stream = File.OpenRead(apkPath))
             using (var hash = SHA256.Create())

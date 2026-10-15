@@ -40,7 +40,7 @@ namespace Game.Editor
                     "-PlayerDirectory " + Quote(Path.GetDirectoryName(player)) + " -Compiler " + Quote(compiler) +
                     " -OutputDirectory " + Quote(output));
                 var identity = JsonUtility.FromJson<WindowsUpdateManifest>(File.ReadAllText(Path.Combine(
-                    Path.GetDirectoryName(player), "AnotherDay_Data", "StreamingAssets", "windows-release.json")));
+                    Path.GetDirectoryName(player), "FirepowerLoop_Data", "StreamingAssets", "windows-release.json")));
                 string installer = ValidateInstaller(output, identity.releaseNumber);
                 var publish = ResourceServerPublishUtility.PublishOrUpdateLatestPackage();
                 if (!publish.Success || publish.Version != resourceVersion)

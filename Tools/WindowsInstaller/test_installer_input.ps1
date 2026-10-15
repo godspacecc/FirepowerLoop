@@ -4,10 +4,10 @@ $testRoot = Join-Path ([IO.Path]::GetTempPath()) ('AnotherDayInstallerTests_' + 
 function Check([bool]$value, [string]$message) { if (-not $value) { throw $message } }
 try {
     $player = Join-Path $testRoot 'Player'
-    $data = Join-Path $player 'AnotherDay_Data'
+    $data = Join-Path $player 'FirepowerLoop_Data'
     [IO.Directory]::CreateDirectory((Join-Path $data 'StreamingAssets')) | Out-Null
     [IO.Directory]::CreateDirectory((Join-Path $data 'yoo')) | Out-Null
-    foreach ($name in @('AnotherDay.exe','UnityPlayer.dll','GameAssembly.dll','secret.txt')) {
+    foreach ($name in @('FirepowerLoop.exe','UnityPlayer.dll','GameAssembly.dll','secret.txt')) {
         Set-Content -LiteralPath (Join-Path $player $name) -Value 'fixture'
     }
     Set-Content -LiteralPath (Join-Path $data 'yoo/cache.bundle') -Value 'old cache'
@@ -17,7 +17,7 @@ try {
     $output = Join-Path $testRoot 'Output'
     & (Join-Path $PSScriptRoot 'build_installer.ps1') -PlayerDirectory $player -Compiler 'unused' -OutputDirectory $output -PrepareOnly
     Check (Test-Path -LiteralPath (Join-Path $output 'payload/GameAssembly.dll')) 'Missing runtime DLL'
-    Check (-not (Test-Path -LiteralPath (Join-Path $output 'payload/AnotherDay_Data/yoo'))) 'Included stale host cache'
+    Check (-not (Test-Path -LiteralPath (Join-Path $output 'payload/FirepowerLoop_Data/yoo'))) 'Included stale host cache'
     Check (-not (Test-Path -LiteralPath (Join-Path $output 'payload/secret.txt'))) 'Included unmanaged user file'
     $list = Get-Content -LiteralPath (Join-Path $output 'payload/windows-managed-files.txt')
     Check ($list -contains 'windows-managed-files.txt' -and $list -contains 'windows-install.ini') 'Recovery list omitted identity files'

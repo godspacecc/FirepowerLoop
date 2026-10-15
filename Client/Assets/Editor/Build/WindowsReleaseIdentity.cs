@@ -61,14 +61,14 @@ namespace Game.Editor
         /// <summary>提交前核对实际 Player 输出；源 StreamingAssets 正确不代表构建产物已携带身份。</summary>
         public void ValidatePlayer(string playerDirectory)
         {
-            string path = Path.Combine(playerDirectory, "AnotherDay_Data", "StreamingAssets", "windows-release.json");
+            string path = Path.Combine(playerDirectory, "FirepowerLoop_Data", "StreamingAssets", "windows-release.json");
             if (!File.Exists(path) || new FileInfo(path).Length > 65536)
                 throw new InvalidOperationException("正式 Player 缺少 PC 发布身份。");
             var actual = JsonUtility.FromJson<WindowsUpdateManifest>(File.ReadAllText(path));
             if (actual == null || !actual.ValidIdentity || actual.releaseNumber != identity.releaseNumber ||
                 actual.versionName != identity.versionName)
                 throw new InvalidOperationException("Player 发布身份与本次构建不一致。");
-            foreach (string file in new[] { "AnotherDay.exe", "UnityPlayer.dll", "GameAssembly.dll" })
+            foreach (string file in new[] { "FirepowerLoop.exe", "UnityPlayer.dll", "GameAssembly.dll" })
                 if (!File.Exists(Path.Combine(playerDirectory, file)))
                     throw new InvalidOperationException("正式 Player 缺少必需文件：" + file);
         }

@@ -731,7 +731,7 @@ namespace Game.Editor
         {
             if (string.IsNullOrWhiteSpace(appVersion))
                 throw new ArgumentException("Android 应用版本不能为空。", nameof(appVersion));
-            return $"AnotherDay-{appVersion}.apk";
+            return $"FirepowerLoop-{appVersion}.apk";
         }
 
         /// <summary>
@@ -1001,7 +1001,7 @@ namespace Game.Editor
                                      throw new InvalidOperationException("无法确定 Unity 项目根目录。");
                 BatchDirectory = Path.GetFullPath(Path.Combine(projectPath, "Build", "Android", timestamp.ToString("yyyyMMdd_HHmmss")));
                 PreparatoryDirectory = Path.GetFullPath(Path.Combine(projectPath, "Temp", "AnotherDayBuild", "Android", runId));
-                PreparatoryApkPath = Path.Combine(PreparatoryDirectory, "AnotherDay-preparatory.apk");
+                PreparatoryApkPath = Path.Combine(PreparatoryDirectory, "FirepowerLoop-preparatory.apk");
             }
 
             public DateTime Timestamp { get; }

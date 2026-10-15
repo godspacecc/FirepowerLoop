@@ -1,12 +1,12 @@
-﻿; 固定 AppId 和当前用户目录；只管理清单内文件，LocalLow 存档不属于安装器。
+; 固定 AppId 和当前用户目录；只管理清单内文件，LocalLow 存档不属于安装器。
 #ifndef Release
   #error Release required
 #endif
 [Setup]
-AppId={{C6E8D239-672A-4A90-BE74-124873AB129E}
-AppName=Another Day
+AppId={{06D468C3-1AB7-4ACB-8590-E9A7DE9B22D7}
+AppName=FirepowerLoop
 AppVersion={#Version}
-DefaultDirName={localappdata}\Programs\AnotherDay
+DefaultDirName={localappdata}\Programs\FirepowerLoop
 UsePreviousAppDir=yes
 DisableDirPage=auto
 DisableProgramGroupPage=yes
@@ -19,8 +19,8 @@ Compression=lzma2/fast
 SolidCompression=yes
 CloseApplications=yes
 RestartApplications=no
-SetupMutex=AnotherDayCurrentUserInstaller
-UninstallDisplayIcon={app}\AnotherDay.exe
+SetupMutex=FirepowerLoopCurrentUserInstaller
+UninstallDisplayIcon={app}\FirepowerLoop.exe
 WizardStyle=modern
 [Tasks]
 Name: desktopicon; Description: "Create a desktop shortcut"; Flags: unchecked
@@ -29,10 +29,10 @@ Source: "payload\windows-managed-files.txt"; Flags: dontcopy
 Source: "payload\windows-payload-sha256.txt"; Flags: dontcopy
 Source: "payload\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 [Icons]
-Name: "{userprograms}\Another Day"; Filename: "{app}\AnotherDay.exe"
-Name: "{userdesktop}\Another Day"; Filename: "{app}\AnotherDay.exe"; Tasks: desktopicon
+Name: "{userprograms}\FirepowerLoop"; Filename: "{app}\FirepowerLoop.exe"
+Name: "{userdesktop}\FirepowerLoop"; Filename: "{app}\FirepowerLoop.exe"; Tasks: desktopicon
 [Run]
-Filename: "{app}\AnotherDay.exe"; Description: "Launch Another Day"; Flags: postinstall nowait skipifsilent
+Filename: "{app}\FirepowerLoop.exe"; Description: "Launch FirepowerLoop"; Flags: postinstall nowait skipifsilent
 [Code]
 type
   TProcessTime = record Low, High: Cardinal; end;
@@ -55,7 +55,7 @@ function InitializeSetup: Boolean;
 begin
   ExistingInstallDir := '';
   RegQueryStringValue(HKCU64,
-    'Software\Microsoft\Windows\CurrentVersion\Uninstall\{C6E8D239-672A-4A90-BE74-124873AB129E}_is1',
+    'Software\Microsoft\Windows\CurrentVersion\Uninstall\{06D468C3-1AB7-4ACB-8590-E9A7DE9B22D7}_is1',
     'InstallLocation', ExistingInstallDir);
   if ExistingInstallDir <> '' then
     ExistingInstallDir := RemoveBackslashUnlessRoot(ExpandFileName(ExistingInstallDir));
@@ -131,8 +131,8 @@ function SafeName(Name: String): Boolean;
 begin
   Result := (Name <> '') and (Pos('..', Name) = 0) and (Pos(':', Name) = 0) and
     (Pos('/', Name) = 0) and (Copy(Name, 1, 1) <> '\') and
-    ((Name = 'AnotherDay.exe') or (Name = 'windows-managed-files.txt') or (Name = 'windows-payload-sha256.txt') or (Name = 'windows-install.ini') or
-     (Copy(Name, 1, 16) = 'AnotherDay_Data\') or
+    ((Name = 'FirepowerLoop.exe') or (Name = 'windows-managed-files.txt') or (Name = 'windows-payload-sha256.txt') or (Name = 'windows-install.ini') or
+     (Copy(Name, 1, Length('FirepowerLoop_Data\')) = 'FirepowerLoop_Data\') or
      ((Pos('\', Name) = 0) and (ExtractFileExt(Name) = '.dll')));
 end;
 
@@ -208,7 +208,7 @@ begin
     SetArrayLength(OldFiles, 0);
     if FileExists(Root + '\windows-managed-files.txt') then
       ReadList(Root + '\windows-managed-files.txt', OldFiles)
-    else if FileExists(Root + '\AnotherDay.exe') then
+    else if FileExists(Root + '\FirepowerLoop.exe') then
       RaiseException('Unknown existing files. Move the portable game out of the install directory first.');
     Required := StrToInt64('{#PayloadBytes}') + 67108864;
     for I := 0 to GetArrayLength(OldFiles)-1 do
