@@ -20,7 +20,7 @@ namespace Game.Tests
     /// <summary>通过本机真实 HTTP 和 Boot 场景克隆验证可选检查与按钮交接，不安装 PC 包。</summary>
     public sealed class WindowsUpdateFlowTests
     {
-        private const string Valid = "{\"schemaVersion\":1,\"architecture\":\"x64\",\"platform\":\"Windows\",\"productId\":\"com.anotherday.game\",\"versionName\":\"0.1.10\",\"releaseNumber\":2,\"installerFileName\":\"release.exe\",\"sizeBytes\":3,\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}";
+        private const string Valid = "{\"schemaVersion\":1,\"architecture\":\"x64\",\"platform\":\"Windows\",\"productId\":\"com.firepowerloop.game\",\"versionName\":\"0.1.10\",\"releaseNumber\":2,\"installerFileName\":\"release.exe\",\"sizeBytes\":3,\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}";
 
         [UnityTest] public IEnumerator NewPackageIsDetectedOverHttp() => Check(200, Valid, true).ToCoroutine();
         [UnityTest] public IEnumerator OldServer404AllowsStartup() => Check(404, "missing", false).ToCoroutine();
@@ -162,10 +162,19 @@ namespace Game.Tests
 
         private static HotUpdateView CloneView()
         {
-            var source = Resources.FindObjectsOfTypeAll<HotUpdateView>().First(v => v.gameObject.scene.path == "Assets/Game/Scenes/Boot.unity");
-            var view = UnityEngine.Object.Instantiate(source.gameObject).GetComponent<HotUpdateView>();
-            view.InitializeForTests();
-            return view;
+            // 正式场景仅临时加载作为模板，克隆移入隔离场景后立即卸载，不要求 Boot 常驻。
+            var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
+            var template = UnityEditor.SceneManagement.EditorSceneManager.OpenScene(
+                "Assets/Game/Scenes/Boot.unity", UnityEditor.SceneManagement.OpenSceneMode.Additive);
+            try
+            {
+                var source = template.GetRootGameObjects().SelectMany(root => root.GetComponentsInChildren<HotUpdateView>(true)).Single();
+                var view = UnityEngine.Object.Instantiate(source.gameObject).GetComponent<HotUpdateView>();
+                UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(view.gameObject, active);
+                view.InitializeForTests();
+                return view;
+            }
+            finally { UnityEditor.SceneManagement.EditorSceneManager.CloseScene(template, true); }
         }
         private static Button Button(HotUpdateView view, string field) =>
             (Button)typeof(HotUpdateView).GetField(field, BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view);

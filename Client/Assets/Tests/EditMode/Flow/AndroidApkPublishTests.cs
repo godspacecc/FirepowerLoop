@@ -31,15 +31,17 @@ namespace Game.Tests
         [Test] public void PublishCreatesDownloadableApkAndVersionInformation()
         {
             Assert.That(Publish(), Is.EqualTo(Manifest));
-            var value = ApkUpdateManifest.ParseAvailable(File.ReadAllText(Manifest), "com.anotherday.game", "0.1.9", 1);
+            var value = ApkUpdateManifest.ParseAvailable(File.ReadAllText(Manifest), "com.firepowerloop.game", "0.1.9", 1);
             Assert.That(value, Is.Not.Null);
+            Assert.That(ApkUpdateManifest.ParseAvailable(File.ReadAllText(Manifest), "com.anotherday.game", "0.1.9", 1), Is.Null,
+                "街机 APK 发布描述不能被旧项目当作兼容更新");
             Assert.That(value.VerifyFile(Path.Combine(Path.GetDirectoryName(Manifest), value.apkFileName)), Is.True);
             Assert.That(File.Exists(apk), Is.True);
         }
         [Test] public void NewVersionKeepsOldApkDownloadable()
         {
             Publish(); Publish("0.1.11", 3);
-            Assert.That(File.Exists(Path.Combine(Path.GetDirectoryName(Manifest), "AnotherDay-0.1.10-2.apk")), Is.True);
+            Assert.That(File.Exists(Path.Combine(Path.GetDirectoryName(Manifest), "FirepowerLoop-0.1.10-2.apk")), Is.True);
             Assert.That(File.ReadAllText(Manifest), Does.Contain("0.1.11"));
         }
         [Test] public void ConflictingVersionPreservesPreviousPublication()
@@ -48,7 +50,7 @@ namespace Game.Tests
             File.WriteAllBytes(apk, new byte[] { 3, 2, 1 });
             Assert.Throws<InvalidOperationException>(() => Publish());
             Assert.That(File.ReadAllText(Manifest), Is.EqualTo(before));
-            Assert.That(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Manifest), "AnotherDay-0.1.10-2.apk")), Is.EqualTo(new byte[] { 1, 2, 3 }));
+            Assert.That(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(Manifest), "FirepowerLoop-0.1.10-2.apk")), Is.EqualTo(new byte[] { 1, 2, 3 }));
         }
         [Test] public void MissingApkCannotReplaceExistingUpdate()
         {
@@ -84,7 +86,7 @@ namespace Game.Tests
             Assert.That(Directory.Exists(Path.Combine(older, "AppUpdates")), Is.False);
             Assert.That(File.ReadAllText(Path.Combine(latest, "ResourceFiles", "DefaultPackage.version")), Is.EqualTo("existing-version"));
             Assert.That(File.ReadAllBytes(Path.Combine(latest, "ResourceFiles", "resource.bundle")), Is.EqualTo(new byte[] { 9, 8, 7 }));
-            var value = ApkUpdateManifest.ParseAvailable(File.ReadAllText(descriptor), "com.anotherday.game", "0.1.9", 1);
+            var value = ApkUpdateManifest.ParseAvailable(File.ReadAllText(descriptor), "com.firepowerloop.game", "0.1.9", 1);
             Assert.That(value, Is.Not.Null);
             Assert.That(value.VerifyFile(Path.Combine(Path.GetDirectoryName(descriptor), value.apkFileName)), Is.True);
         }

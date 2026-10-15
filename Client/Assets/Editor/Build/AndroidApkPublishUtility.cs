@@ -35,7 +35,7 @@ namespace Game.Editor
 
             var manifest = new ApkUpdateManifest
             {
-                schemaVersion = 1, platform = "Android", packageName = "com.anotherday.game",
+                schemaVersion = 1, platform = "Android", packageName = AndroidBuildUtility.ApplicationIdentifier,
                 versionName = versionName, versionCode = versionCode,
                 apkFileName = $"FirepowerLoop-{versionName}-{versionCode}.apk", sizeBytes = size
             };

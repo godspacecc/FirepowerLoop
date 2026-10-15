@@ -20,11 +20,11 @@ namespace Game.Tests
             }
         }
         private string Json(string version = "0.1.10", string file = "AnotherDay-0.1.10.apk",
-            string package = "com.anotherday.game", int code = 2, long size = 3,
+            string package = "com.firepowerloop.game", int code = 2, long size = 3,
             string hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") =>
             $"{{\"schemaVersion\":1,\"platform\":\"Android\",\"packageName\":\"{package}\",\"versionName\":\"{version}\",\"versionCode\":{code},\"apkFileName\":\"{file}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";
         private object Parse(string json, string current = "0.1.9", int code = 1) =>
-            Policy.GetMethod("ParseAvailable").Invoke(null, new object[] { json, "com.anotherday.game", current, code, false });
+            Policy.GetMethod("ParseAvailable").Invoke(null, new object[] { json, "com.firepowerloop.game", current, code, false });
         [Test] public void NumericVersionComparisonAcceptsTenAfterNine() => Assert.That(Parse(Json()), Is.Not.Null);
         [Test] public void EqualVersionDoesNotOfferUpdate() => Assert.That(Parse(Json(), "0.1.10"), Is.Null);
         [Test] public void OlderVersionDoesNotOfferUpdate() => Assert.That(Parse(Json(), "0.2.0"), Is.Null);

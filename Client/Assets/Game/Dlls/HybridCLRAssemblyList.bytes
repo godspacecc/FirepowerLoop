@@ -6,6 +6,7 @@ System.Core.dll
 System.Runtime.CompilerServices.Unsafe.dll
 UniTask.dll
 Unity.InputSystem.dll
+UnityEngine.AndroidJNIModule.dll
 UnityEngine.CoreModule.dll
 UnityEngine.JSONSerializeModule.dll
 UnityEngine.UI.dll

@@ -111,6 +111,8 @@ Client/UserSettings/
 /Client/*.log
 /Release/
 /Client/Assets/StreamingAssets/yoo/DefaultPackage/
+/Client/Assets/StreamingAssets/yoo/DefaultPackage.meta
+/Tools/ProtocolGenerator/bin/
 /Client/Assets/HybridCLRGenerate/
 /Client/Assets/Art
 /Client/Assets/Tests/Results~

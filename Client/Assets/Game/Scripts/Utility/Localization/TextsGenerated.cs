@@ -1229,12 +1229,10 @@ namespace Game
         public static string ArcadeFirstPersonPicked => Loc.T("ui.arcade.first_person.picked");
         /// <summary>
         /// 第一人称 {0} 秒
-        /// 仅水平转向
         /// </summary>
         public static string ArcadeFirstPersonRemaining(object arg0) => Loc.T("ui.arcade.first_person.remaining", arg0);
         /// <summary>
         /// 第一人称 {0} 秒
-        /// 右摇杆：左右转向，推动开火
         /// </summary>
         public static string ArcadeFirstPersonRemainingMobile(object arg0) => Loc.T("ui.arcade.first_person.remaining_mobile", arg0);
         /// <summary>

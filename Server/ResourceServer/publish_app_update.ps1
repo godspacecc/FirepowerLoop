@@ -20,7 +20,7 @@ if ($apkLength -le 0 -or $apkLength -gt 8GB) { throw 'APK size must be between 1
 $folder = Join-Path $bundleDirectory 'AppUpdates/Android'
 [IO.Directory]::CreateDirectory($folder) | Out-Null
 $hash = (Get-FileHash -LiteralPath $sourceApk -Algorithm SHA256).Hash.ToLowerInvariant()
-$name = "AnotherDay-$VersionName-$VersionCode.apk"
+$name = "FirepowerLoop-$VersionName-$VersionCode.apk"
 $destination = Join-Path $folder $name
 $manifestPath = Join-Path $folder 'app-update.json'
 $pendingApk = Join-Path $folder ('.apk-' + [Guid]::NewGuid().ToString('N') + '.pending')
@@ -38,7 +38,7 @@ try {
         [IO.File]::Move($pendingApk, $destination)
     }
     $manifest = [ordered]@{
-        schemaVersion = 1; platform = 'Android'; packageName = 'com.anotherday.game'
+        schemaVersion = 1; platform = 'Android'; packageName = 'com.firepowerloop.game'
         versionName = $VersionName; versionCode = $VersionCode; apkFileName = $name
         sizeBytes = $apkLength; sha256 = $hash
     }

@@ -1,10 +1,10 @@
 {
     "schemaVersion": 1,
-    "productId": "com.anotherday.game",
+    "productId": "com.firepowerloop.game",
     "platform": "Windows",
     "architecture": "x64",
-    "versionName": "0.1.0",
-    "releaseNumber": 4,
+    "versionName": "0.0.1",
+    "releaseNumber": 0,
     "installerFileName": "",
     "sizeBytes": 0,
     "sha256": ""

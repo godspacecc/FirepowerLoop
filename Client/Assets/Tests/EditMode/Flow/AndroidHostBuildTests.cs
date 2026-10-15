@@ -19,6 +19,20 @@ namespace Game.Tests
         private const string BootstrapConfigPath = "Assets/Boot/Runtime/BootstrapConfig.cs";
         private const string ResourceBootPath = "Assets/Boot/Res/ResourceBoot.cs";
 
+        /// <summary>只读取构建身份与 PlayerSettings，不切换平台、不执行 Player 构建。</summary>
+        [Test]
+        public void AndroidBuildIdentityMatchesFirepowerLoopProject()
+        {
+            var type = Type.GetType("Game.Editor.AndroidBuildUtility, Assembly-CSharp-Editor");
+            Assert.That(type, Is.Not.Null);
+            var field = type.GetField("ApplicationIdentifier", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            Assert.That(field, Is.Not.Null);
+            Assert.That(field.GetRawConstantValue(), Is.EqualTo("com.firepowerloop.game"));
+            Assert.That(Boot.WindowsUpdateManifest.ProductId, Is.EqualTo(field.GetRawConstantValue()));
+            Assert.That(UnityEditor.PlayerSettings.GetApplicationIdentifier(UnityEditor.BuildTargetGroup.Android),
+                Is.EqualTo(field.GetRawConstantValue()));
+        }
+
         [Test]
         public void HostBaseBuildUsesHostPlayerAndKeepsFullBuiltinFallback()
         {
@@ -114,7 +128,7 @@ namespace Game.Tests
             MethodInfo method = type.GetMethod("BuildAndroidApkFileName",
                 BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
             Assert.That(method, Is.Not.Null);
-            Assert.That(method.Invoke(null, new object[] { "0.1.3" }), Is.EqualTo("AnotherDay-0.1.3.apk"));
+            Assert.That(method.Invoke(null, new object[] { "0.1.3" }), Is.EqualTo("FirepowerLoop-0.1.3.apk"));
 
             string source = File.ReadAllText(AndroidBuildPath);
             Assert.That(source, Does.Not.Contain("AnotherDay-small-host-test.apk"));

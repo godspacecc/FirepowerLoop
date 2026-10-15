@@ -19,7 +19,8 @@ namespace Game.Editor
     public static class AndroidBuildUtility
     {
         private const string BootScene = "Assets/Game/Scenes/Boot.unity";
-        private const string ApplicationIdentifier = "com.anotherday.game";
+        /// <summary>本项目独立应用身份；Android 校验与 APK 发布描述共用，禁止复用旧项目包名。</summary>
+        internal const string ApplicationIdentifier = "com.firepowerloop.game";
         private const string HostConfigPath = "Assets/StreamingAssets/hostConfig.json";
         private const string NetworkConfigPath = "Assets/StreamingAssets/networkConfig.json";
         private const string PlayerGuidePath = "安卓联机玩家说明.md";

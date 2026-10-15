@@ -86,10 +86,10 @@ namespace Game.Tests
                 using (var transaction = (IDisposable)Activator.CreateInstance(type, ledger, embedded, new Action<string>(_ => { })))
                 {
                     string player = Path.Combine(Path.GetDirectoryName(ledger), "Player");
-                    string identityPath = Path.Combine(player, "AnotherDay_Data", "StreamingAssets", "windows-release.json");
+                    string identityPath = Path.Combine(player, "FirepowerLoop_Data", "StreamingAssets", "windows-release.json");
                     Directory.CreateDirectory(Path.GetDirectoryName(identityPath));
                     File.Copy(embedded, identityPath);
-                    foreach (string file in new[] { "AnotherDay.exe", "UnityPlayer.dll", "GameAssembly.dll" })
+                    foreach (string file in new[] { "FirepowerLoop.exe", "UnityPlayer.dll", "GameAssembly.dll" })
                         File.WriteAllText(Path.Combine(player, file), "fixture");
                     var validate = type.GetMethod("ValidatePlayer");
                     Assert.DoesNotThrow(() => validate.Invoke(transaction, new object[] { player }));
@@ -113,7 +113,7 @@ namespace Game.Tests
             try
             {
                 string ledger = Path.Combine(root, "ledger.json");
-                File.WriteAllText(ledger, "{\"schemaVersion\":1,\"productId\":\"com.anotherday.game\",\"platform\":\"Windows\",\"architecture\":\"x64\",\"versionName\":\"0.1.0\",\"releaseNumber\":7}");
+                File.WriteAllText(ledger, "{\"schemaVersion\":1,\"productId\":\"com.firepowerloop.game\",\"platform\":\"Windows\",\"architecture\":\"x64\",\"versionName\":\"0.1.0\",\"releaseNumber\":7}");
                 test(type, ledger, Path.Combine(root, "embedded.json"));
             }
             finally { Directory.Delete(root, true); }

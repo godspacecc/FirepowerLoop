@@ -10,7 +10,8 @@ namespace Boot
     [Serializable]
     public sealed class WindowsUpdateManifest
     {
-        public const string ProductId = "com.anotherday.game";
+        /// <summary>PC 发布与更新共用的独立街机身份，不接受旧项目更新包。</summary>
+        public const string ProductId = "com.firepowerloop.game";
         public int schemaVersion;
         public string productId;
         public string platform;

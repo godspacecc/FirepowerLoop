@@ -52,7 +52,7 @@ namespace Game.Tests
         }
 
         private static string Manifest(int release = 10, string name = "AnotherDay-Setup-10.exe",
-            string product = "com.anotherday.game", string platform = "Windows", string arch = "x64",
+            string product = "com.firepowerloop.game", string platform = "Windows", string arch = "x64",
             long size = 3, string hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") =>
             $"{{\"schemaVersion\":1,\"productId\":\"{product}\",\"platform\":\"{platform}\",\"architecture\":\"{arch}\",\"versionName\":\"0.1.10\",\"releaseNumber\":{release},\"installerFileName\":\"{name}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";
 
@@ -63,6 +63,7 @@ namespace Game.Tests
         [Test] public void EqualReleaseIsNotAnUpdate() => Assert.That(Parse(Manifest(), 10), Is.Null);
         [Test] public void DowngradeIsRejected() => Assert.That(Parse(Manifest(), 11), Is.Null);
         [Test] public void OtherProductIsRejected() => Assert.That(Parse(Manifest(product: "other")), Is.Null);
+        [Test] public void LegacyProjectInstallerIsRejected() => Assert.That(Parse(Manifest(product: "com.anotherday.game")), Is.Null);
         [Test] public void AndroidManifestIsRejected() => Assert.That(Parse(Manifest(platform: "Android")), Is.Null);
         [Test] public void OtherArchitectureIsRejected() => Assert.That(Parse(Manifest(arch: "arm64")), Is.Null);
         [TestCase("../setup.exe")]

@@ -10,7 +10,7 @@ namespace Game.Tests.Flow
     {
         private string root;
         private Type cache;
-        private const string Identity = "com.anotherday.game";
+        private const string Identity = "com.firepowerloop.game";
 
         [SetUp]
         public void SetUp()

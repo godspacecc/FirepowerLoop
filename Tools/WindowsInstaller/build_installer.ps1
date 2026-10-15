@@ -14,7 +14,7 @@ foreach ($file in @('FirepowerLoop.exe','UnityPlayer.dll','GameAssembly.dll','Fi
     if (-not (Test-Path -LiteralPath (Join-Path $player $file) -PathType Leaf)) { throw "Missing Player file: $file" }
 }
 $identity = Get-Content -Raw -LiteralPath (Join-Path $player 'FirepowerLoop_Data/StreamingAssets/windows-release.json') | ConvertFrom-Json
-if ($identity.schemaVersion -ne 1 -or $identity.productId -cne 'com.anotherday.game' -or $identity.platform -cne 'Windows' -or
+if ($identity.schemaVersion -ne 1 -or $identity.productId -cne 'com.firepowerloop.game' -or $identity.platform -cne 'Windows' -or
     $identity.architecture -cne 'x64' -or $identity.releaseNumber -lt 1 -or $identity.releaseNumber -gt 2147483647 -or
     $identity.versionName -cnotmatch '^[0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}$') { throw 'Invalid embedded PC release identity; rebuild a new Player.' }
 $assemblies = Get-Content -Raw -LiteralPath (Join-Path $player 'FirepowerLoop_Data/ScriptingAssemblies.json') | ConvertFrom-Json
@@ -61,7 +61,7 @@ $payloadBytes = (Get-ChildItem -LiteralPath $payload -File -Recurse | Measure-Ob
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed: $LASTEXITCODE" }
 $installer = Join-Path $output "$name.exe"
 if (-not (Test-Path -LiteralPath $installer -PathType Leaf)) { throw 'Compiler did not produce installer.' }
-$manifest = [ordered]@{ schemaVersion=1; productId='com.anotherday.game'; platform='Windows'; architecture='x64';
+$manifest = [ordered]@{ schemaVersion=1; productId='com.firepowerloop.game'; platform='Windows'; architecture='x64';
     versionName=$identity.versionName; releaseNumber=[int]$identity.releaseNumber; installerFileName="$name.exe";
     sizeBytes=(Get-Item -LiteralPath $installer).Length; sha256=(Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant() }
 [IO.File]::WriteAllText((Join-Path $output 'app-update-windows.json'), ($manifest | ConvertTo-Json), [Text.UTF8Encoding]::new($false))

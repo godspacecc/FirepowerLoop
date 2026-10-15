@@ -9,7 +9,8 @@
 - 资源发布：本项目 `Server/ResourceServer/ResourceFiles`；默认资源服务 `8001`。
 - 资源更新：Boot 启动时统一准备基础与街机资源；开始、继续和双人联机入口只检查本地资源，不再单独确认或下载街机资源。
 - Android 增量更新：首包保存 Boot 内容指纹；Boot 代码、资源或启动场景变化后，“Host代码+资源更新”会在切换平台与编译发布前停止，必须重新执行“首包完整打包”并安装新 APK。旧首包记录没有指纹时同样需要重新打首包。
-- 应用标识：`com.anotherday.firepowerloop`；产品名：`FirepowerLoop`，存档使用本应用的 persistentDataPath，不扫描旧项目。
+- 应用标识：`com.firepowerloop.game`；产品名：`FirepowerLoop`，存档使用本应用的 persistentDataPath，不扫描旧项目。
+- 正式发布从 `0.0.1` 开始。Android 打包前自动递增补丁号，因此未发布时的工程版本基线为 `0.0.0`；PC 台账版本为 `0.0.1`，发布序号基线为 `0`，首包分配为 `1`。YooAsset 资源版本仍使用独立时间戳。
 
 第一轮保留分数、本局结果、局内金币与强化；没有局外奖励或成长钱包。不迁移旧街机或基地数据。
 

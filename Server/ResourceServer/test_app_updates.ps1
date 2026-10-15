@@ -26,6 +26,8 @@ try {
         $folder = Join-Path $bundle 'AppUpdates/Android'
         $manifest = Get-Content -Raw -LiteralPath (Join-Path $folder 'app-update.json') | ConvertFrom-Json
         Check ($manifest.sizeBytes -eq 3) 'Published size wrong'
+        Check ($manifest.packageName -eq 'com.firepowerloop.game') 'Published package identity wrong'
+        Check ($manifest.apkFileName -eq 'FirepowerLoop-0.1.10-2.apk') 'Published APK name wrong'
         Check ($manifest.sha256 -eq (Get-FileHash -LiteralPath $apk -Algorithm SHA256).Hash.ToLowerInvariant()) 'Published hash wrong'
         Check (Test-Path -LiteralPath (Join-Path $folder $manifest.apkFileName)) 'Published APK missing'
         $old = $manifest.apkFileName

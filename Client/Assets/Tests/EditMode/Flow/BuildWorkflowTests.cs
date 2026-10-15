@@ -89,7 +89,7 @@ namespace Game.Tests
                 string hash;
                 using (var sha = System.Security.Cryptography.SHA256.Create())
                     hash = BitConverter.ToString(sha.ComputeHash(File.ReadAllBytes(installer))).Replace("-", "");
-                var manifest = new Boot.WindowsUpdateManifest { schemaVersion = 1, productId = "com.anotherday.game",
+                var manifest = new Boot.WindowsUpdateManifest { schemaVersion = 1, productId = "com.firepowerloop.game",
                     platform = "Windows", architecture = "x64", versionName = "0.1.0", releaseNumber = 3,
                     installerFileName = "Setup.exe", sizeBytes = 3, sha256 = hash };
                 File.WriteAllText(Path.Combine(root, "app-update-windows.json"), JsonUtility.ToJson(manifest));
@@ -281,10 +281,36 @@ namespace Game.Tests
             Assert.That(info.FileName.Replace('\\', '/'), Does.Not.Contain("Assets/Editor/AnotherDay"));
             Assert.That(info.UseShellExecute, Is.True);
             Assert.That(info.WindowStyle, Is.EqualTo(ProcessWindowStyle.Normal));
-            Assert.That(info.Arguments, Does.Contain("8000"));
+            Assert.That(info.Arguments, Does.Contain("8001"));
             Assert.That(info.Arguments, Does.Contain(normalizedRoot));
             Assert.That(info.Arguments, Does.Not.Contain(" lan"));
             Assert.That(lanInfo.Arguments, Does.Contain(" lan"));
+        }
+
+        /// <summary>使用启动器实际调用的 Windows PowerShell 解析文件，捕获中文脚本的编码兼容问题。</summary>
+        [Test]
+        public void WindowsPowerShellParsesResourceServerEntryScripts()
+        {
+            var root = Path.GetFullPath(Path.Combine(Application.dataPath, "../.."));
+            var paths = new[] { "Server/ResourceServer/resource_server.ps1",
+                "Server/ResourceServer/publish_app_update.ps1", "Server/ResourceServer/publish_windows_update.ps1",
+                "Server/ResourceServer/validate_resource_update_notices.ps1",
+                "Client/Assets/Editor/YooAsset/LocalServer/start_yooasset_local_server.ps1" };
+            var quoted = Array.ConvertAll(paths, path => "'" + Path.Combine(root, path).Replace("'", "''") + "'");
+            var command = "$ErrorActionPreference='Stop'; foreach($path in @(" + string.Join(",", quoted) +
+                ")) { $tokens=$null; $errors=$null; [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null; " +
+                "if(@($errors).Count -gt 0) { Write-Output $path; $errors | ForEach-Object { Write-Output $_.Message }; exit 1 } }; exit 0";
+            var info = new ProcessStartInfo {
+                FileName = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "WindowsPowerShell/v1.0/powershell.exe"),
+                Arguments = "-NoLogo -NoProfile -NonInteractive -EncodedCommand " +
+                    Convert.ToBase64String(System.Text.Encoding.Unicode.GetBytes(command)),
+                UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true
+            };
+            using (var process = Process.Start(info))
+            {
+                Assert.That(process.WaitForExit(10000), Is.True, "脚本语法检查超时");
+                Assert.That(process.ExitCode, Is.Zero, process.StandardOutput.ReadToEnd());
+            }
         }
 
         [Test]

@@ -24,7 +24,7 @@ try {
         Set-Content -LiteralPath (Join-Path $bundle 'ResourceFiles/DefaultPackage.version') -Value 'test'
         $pcManifestPath = Join-Path $pcTestRoot 'manifest.json'
         function Write-Manifest([int]$release) {
-            [ordered]@{ schemaVersion=1; productId='com.anotherday.game'; platform='Windows'; architecture='x64'; versionName='0.1.10'; releaseNumber=$release; installerFileName=(Split-Path $installer -Leaf); sizeBytes=(Get-Item -LiteralPath $installer).Length; sha256=(Get-FileHash -LiteralPath $installer).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content -LiteralPath $pcManifestPath -Encoding UTF8
+            [ordered]@{ schemaVersion=1; productId='com.firepowerloop.game'; platform='Windows'; architecture='x64'; versionName='0.1.10'; releaseNumber=$release; installerFileName=(Split-Path $installer -Leaf); sizeBytes=(Get-Item -LiteralPath $installer).Length; sha256=(Get-FileHash -LiteralPath $installer).Hash.ToLowerInvariant() } | ConvertTo-Json | Set-Content -LiteralPath $pcManifestPath -Encoding UTF8
         }
         Write-Manifest 2
         & (Join-Path $PSScriptRoot 'publish_windows_update.ps1') -Installer $installer -Manifest $pcManifestPath -Bundle $bundle
@@ -34,6 +34,15 @@ try {
         Check ($manifest.sha256 -eq (Get-FileHash -LiteralPath $installer -Algorithm SHA256).Hash.ToLowerInvariant()) 'Published hash wrong'
         Check (Test-Path -LiteralPath (Join-Path $folder $manifest.installerFileName)) 'Published Installer missing'
         $old = $manifest.installerFileName
+        # 旧项目的安装包不得覆盖本项目的更新入口。
+        $beforeLegacy = Get-Content -Raw -LiteralPath (Join-Path $folder 'app-update-windows.json')
+        $legacyManifest = (Get-Content -Raw -LiteralPath $pcManifestPath).Replace('com.firepowerloop.game', 'com.anotherday.game')
+        Set-Content -LiteralPath $pcManifestPath -Value $legacyManifest -Encoding UTF8
+        $legacyRejected = $false
+        try { & (Join-Path $PSScriptRoot 'publish_windows_update.ps1') -Installer $installer -Manifest $pcManifestPath -Bundle $bundle }
+        catch { $legacyRejected = $true }
+        Check $legacyRejected 'Legacy product publication accepted'
+        Check ((Get-Content -Raw -LiteralPath (Join-Path $folder 'app-update-windows.json')) -eq $beforeLegacy) 'Legacy product changed latest manifest'
         $installer = Join-Path $pcTestRoot 'AnotherDay-Setup-3.exe'
         [IO.File]::WriteAllBytes($installer, [byte[]](1,2,3))
         Write-Manifest 3

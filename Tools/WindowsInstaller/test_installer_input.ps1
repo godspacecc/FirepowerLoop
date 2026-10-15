@@ -13,7 +13,7 @@ try {
     Set-Content -LiteralPath (Join-Path $data 'yoo/cache.bundle') -Value 'old cache'
     Set-Content -LiteralPath (Join-Path $data 'ScriptingAssemblies.json') -Value '{"names":["Boot.dll","Game.dll"],"types":[16,16]}'
     $identityPath = Join-Path $data 'StreamingAssets/windows-release.json'
-    Set-Content -LiteralPath $identityPath -Value '{"schemaVersion":1,"productId":"com.anotherday.game","platform":"Windows","architecture":"x64","versionName":"0.1.0","releaseNumber":3}'
+    Set-Content -LiteralPath $identityPath -Value '{"schemaVersion":1,"productId":"com.firepowerloop.game","platform":"Windows","architecture":"x64","versionName":"0.1.0","releaseNumber":3}'
     $output = Join-Path $testRoot 'Output'
     & (Join-Path $PSScriptRoot 'build_installer.ps1') -PlayerDirectory $player -Compiler 'unused' -OutputDirectory $output -PrepareOnly
     Check (Test-Path -LiteralPath (Join-Path $output 'payload/GameAssembly.dll')) 'Missing runtime DLL'
@@ -32,6 +32,13 @@ try {
     $rejected = $false
     try { & (Join-Path $PSScriptRoot 'build_installer.ps1') -PlayerDirectory $player -Compiler 'unused' -OutputDirectory (Join-Path $player 'BadOutput') -PrepareOnly } catch { $rejected = $true }
     Check $rejected 'Output inside source was accepted'
+    # 旧项目产物必须在准备安装目录前被拒绝，避免生成跨项目更新描述。
+    $identityJson = Get-Content -Raw -LiteralPath $identityPath
+    Set-Content -LiteralPath $identityPath -Value $identityJson.Replace('com.firepowerloop.game', 'com.anotherday.game')
+    $rejected = $false
+    try { & (Join-Path $PSScriptRoot 'build_installer.ps1') -PlayerDirectory $player -Compiler 'unused' -OutputDirectory (Join-Path $testRoot 'OldProject') -PrepareOnly } catch { $rejected = $true }
+    Check $rejected 'Legacy project Player identity was accepted'
+    Check (-not (Test-Path -LiteralPath (Join-Path $testRoot 'OldProject'))) 'Legacy project rejection created output'
     Remove-Item -LiteralPath $identityPath
     $rejected = $false
     try { & (Join-Path $PSScriptRoot 'build_installer.ps1') -PlayerDirectory $player -Compiler 'unused' -OutputDirectory (Join-Path $testRoot 'NoIdentity') -PrepareOnly } catch { $rejected = $true }

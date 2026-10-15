@@ -11,7 +11,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $bundlePath 'ResourceFiles/DefaultPa
 if (-not (Test-Path -LiteralPath $source -PathType Leaf) -or [IO.Path]::GetExtension($source) -ine '.exe') { throw 'Installer file missing.' }
 if ((Get-Item -LiteralPath $Manifest).Length -gt 65536) { throw 'Manifest too large.' }
 $m = Get-Content -Raw -LiteralPath $Manifest | ConvertFrom-Json
-if ($m.schemaVersion -ne 1 -or $m.productId -cne 'com.anotherday.game' -or $m.platform -cne 'Windows' -or $m.architecture -cne 'x64' -or
+if ($m.schemaVersion -ne 1 -or $m.productId -cne 'com.firepowerloop.game' -or $m.platform -cne 'Windows' -or $m.architecture -cne 'x64' -or
     $m.releaseNumber -lt 1 -or $m.releaseNumber -gt 2147483647 -or $m.versionName -cnotmatch '^[0-9]{1,5}\.[0-9]{1,5}\.[0-9]{1,5}$' -or
     $m.installerFileName -cnotmatch '^[A-Za-z0-9][A-Za-z0-9._-]{0,150}\.exe$' -or $m.sha256 -cnotmatch '^[0-9a-fA-F]{64}$' -or
     $m.sizeBytes -le 0 -or $m.sizeBytes -gt 32GB) { throw 'Invalid Windows update manifest.' }
