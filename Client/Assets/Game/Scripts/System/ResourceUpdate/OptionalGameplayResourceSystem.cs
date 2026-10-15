@@ -140,7 +140,7 @@ namespace Game
 
                 var source = this.GetSystem<ResourceUpdateSystem>()?.Snapshot.ResourceSource ?? BootResourceSource.EditorSimulate;
                 if (source == BootResourceSource.BuiltinFallback || source == BootResourceSource.EditorSimulate)
-                    return Unavailable("当前资源来源不能下载缺失的远征资源");
+                    return Unavailable("当前资源来源不能下载缺失的街机资源");
 
                 return new OptionalGameplayResourceQuery(OptionalGameplayResourceState.NeedsDownload, version,
                     downloader.TotalDownloadCount, downloader.TotalDownloadBytes, string.Empty);

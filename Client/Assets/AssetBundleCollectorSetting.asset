@@ -648,6 +648,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropFirstPerson.prefab
+        CollectorGUID: 54fbfe5a4465f8c4dafe47067404f12d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropGloves.prefab
         CollectorGUID: 147d4d7dfbc193d4d8b1a47c8cfa0c55
         CollectorType: 0

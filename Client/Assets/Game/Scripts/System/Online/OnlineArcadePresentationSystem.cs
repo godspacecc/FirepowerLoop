@@ -113,7 +113,7 @@ namespace Game
             {
                 ArcadeSceneFlowResult result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
                 if (generation == transitionGeneration && !result.Success)
-                    Log.Error($"[OnlineArcadePresentationSystem] 联机街机返回基地失败：{result.Error}");
+                    Log.Error($"[OnlineArcadePresentationSystem] 联机街机返回主菜单失败：{result.Error}");
             }
             finally { transitionBusy = false; }
         }
