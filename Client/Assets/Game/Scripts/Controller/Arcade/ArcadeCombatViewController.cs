@@ -225,7 +225,8 @@ namespace Game
             projectileMuzzleDepartures.Clear();
             CreateArenaCollision(arenaNumber, arenaHalfWidth, arenaHalfHeight, obstacles);
             contentArena = arenaNumber;
-            if (arenaNumber <= 3) LoadContentAsync(arenaNumber).Forget();
+            // 所有场地都准备公共命中模板；前三场的环境覆盖仍由 Content 内部限定。
+            LoadContentAsync(arenaNumber).Forget();
             pendingRegionPosition = true;
         }
 
@@ -245,6 +246,7 @@ namespace Game
             exitVisualIdentity = null;
             hazardPresentation?.Dispose();
             hazardPresentation = null;
+            ClearBulletImpacts();
             ReleaseContent();
             remoteGeneration++;
             obstacleVisualGeneration++;
@@ -419,6 +421,7 @@ namespace Game
         public void PlayImpactSound(Vector2 position, bool melee)
         {
             if (mapRoot == null || root == null) return;
+            if (!melee) PlayBulletImpact(position);
             Game.Interface.SendEvent(new CombatSoundCueEvent(melee ? CombatSoundCueKind.MeleeBody : CombatSoundCueKind.BulletBody,
                 0, mapRoot.TransformPoint(new Vector3(position.x, 0f, position.y))));
         }

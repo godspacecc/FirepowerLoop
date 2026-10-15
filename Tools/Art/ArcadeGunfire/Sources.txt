@@ -1,0 +1,16 @@
+FirepowerLoop 普通枪弹表现素材来源（2026-10-15）
+
+BulletBeamOrange.png
+  本地备用包 ARPG Effects/Textures/beam_orange.png 的原样副本。
+GunMuzzleFront.png
+  本地 War FX.unitypackage 内 Assets/JMO Assets/WarFX/Desktop/Textures/MuzzleFlashes/WFX_T_MF FrontRear RIFLE1 A8.png 的原样副本。
+GunImpactSpark.png
+  本地 War FX.unitypackage 内 Assets/JMO Assets/WarFX/Desktop/Textures/Misc/WFX_T_Sparks Metal A8.png 的原样副本。
+
+未导入整个包、第三方脚本、服务器或玩家数据，原包不修改。
+副本由 FirepowerLoop 的 Unity 生成独立 GUID；材质使用 URP Particles/Unlit。
+短尾网格和命中粒子由 Tools/Unity/ArcadeGunfireAuthoring.cs 制作。
+普通弹仍由既有 ProjectileView/ProjectileCtrl 接收权威位置与回池；短尾无跨帧历史，不改 Collider 或战斗配置。
+命中粒子挂在既有 Content/BulletImpact 模板，运行实例由 ArcadeCombatViewController 持有，最多十二组，End 清理。
+枪口继续由 PlayerView 的既有开火反馈入口播放。
+资源预览由 Tools/Unity/ArcadeGunfirePreview.cs 生成，实际街机 72 度/16 米/45 度视野，720p，无 Bloom；不是完整战斗试玩。

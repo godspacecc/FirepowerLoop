@@ -41,6 +41,10 @@ namespace Game
                 string[] required={"Babylon","Forest","TreasureRoom","RouteGate","TreasureEntrance","GoldBar","Gem","ElectricTower"};
                 if(candidate==null || required.Any(n=>candidate.Find(n)==null) || candidate.GetComponentsInChildren<Collider>(true).Length>0)
                     throw new InvalidOperationException("前两场 Content 模板缺失或携带碰撞体");
+                // 命中反馈属于所有竞技场；后续场地不启用前三场的环境、出口或宝藏覆盖。
+                bulletImpactTemplate = candidate.Find("BulletImpact")?.GetComponent<ParticleSystem>();
+                if (bulletImpactTemplate == null) throw new InvalidOperationException("公共枪弹命中模板缺失");
+                if (arena > 3) return;
                 contentTemplates=candidate;
                 SyncContentEnvironment();
                 treasureVisualIdentity=null; exitVisualIdentity=null;
@@ -56,6 +60,7 @@ namespace Game
                 {
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;
+                    bulletImpactTemplate=null;
                     hazardPresentation?.Dispose();hazardPresentation=null;
                     contentEnvironmentIdentity=null; RestoreIslandBaseArena();
                 }
@@ -98,6 +103,7 @@ namespace Game
         private void ReleaseContent()
         {
             contentGeneration++;
+            bulletImpactTemplate=null;
             DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;contentEnvironmentIdentity=null;
             ReleaseObstacleVisualLoad(contentLoad);contentLoad=null;
             RestoreIslandBaseArena();
