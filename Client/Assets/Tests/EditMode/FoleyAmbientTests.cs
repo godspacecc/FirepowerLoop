@@ -44,36 +44,12 @@ namespace Game.Tests
         private AudioPlaybackHandle Loop() => (AudioPlaybackHandle)Method("PlayLoopAt").Invoke(audio,
             new object[] { "TestLoop", Vector3.zero, 35f, -20, new SoundPlaybackOptions(0.25f, 16f, 0f) });
         private AudioSource Source => root.GetComponentsInChildren<AudioSource>().Single(s => s.clip != null);
-        private void SearchPresenter()
-        {
-            var type = typeof(AudioSystem).Assembly.GetType("Game.PlayerSearchSoundPresenter");
-            Assert.That(type, Is.Not.Null, "搜索音效表现尚未实现");
-            presenter = (IDisposable)Activator.CreateInstance(type, actor.transform, Game.Interface);
-        }
-        private void Search(long id = 41) => Game.Interface.SendEvent(new PlayerActionChangedEvent(true,
-            new PlayerActionSnapshot(id, PlayerActionKind.Search, 0, 5, 0, "")));
-        private void Finish(long id, string error)
-        {
-            var ctor = typeof(CivilisationSearchFinishedEvent).GetConstructor(new[] { typeof(string), typeof(string), typeof(long) });
-            Assert.That(ctor, Is.Not.Null, "提交结果缺少动作身份");
-            Game.Interface.SendEvent((CivilisationSearchFinishedEvent)ctor.Invoke(new object[] { "test.point", error, id }));
-        }
         [Test] public void LoopUsesSpatialSourceAndGain()
         { Loop(); loader.Complete(0); Assert.That(Source.loop, Is.True); Assert.That(Source.spatialBlend, Is.EqualTo(1)); Assert.That(Source.volume, Is.EqualTo(0.25f)); }
         [Test] public void MovingPendingLoopUsesLatestPosition()
         { var h = Loop(); Method("SetSoundPosition").Invoke(audio, new object[] { h, Vector3.right * 7 }); loader.Complete(0); Assert.That(Source.transform.position, Is.EqualTo(Vector3.right * 7)); }
         [Test] public void ReleasedLoopRejectsLateCompletionExactlyOnce()
         { Loop(); audio.StopMapOwnedSounds(); audio.StopMapOwnedSounds(); loader.Complete(0); Assert.That(audio.ActiveSoundCount, Is.Zero); Assert.That(loader.Releases, Is.EqualTo(1)); }
-        [Test] public void DuplicateSearchProgressDoesNotLayerLoops()
-        { SearchPresenter(); Search(); Search(); Assert.That(audio.ActiveSoundCount, Is.EqualTo(1)); Assert.That(loader.Addresses.Count, Is.EqualTo(1)); }
-        [Test] public void CanceledSearchStopsPendingRummage()
-        { SearchPresenter(); Search(); Game.Interface.SendEvent(new PlayerActionChangedEvent(false, default)); Game.Interface.SendEvent(new PlayerActionEndedEvent(41, PlayerActionKind.Search, false, PlayerActionCancelReason.UserCanceled)); loader.Complete(0); Assert.That(audio.ActiveSoundCount, Is.Zero); Assert.That(loader.Releases, Is.EqualTo(1)); }
-        [Test] public void SuccessfulCommitPlaysCollectionOnce()
-        { SearchPresenter(); Search(); Game.Interface.SendEvent(new PlayerActionChangedEvent(false, default)); Finish(41, null); Finish(41, null); Assert.That(loader.Addresses.Count(x => x.EndsWith("FoleyCollectItem")), Is.EqualTo(1)); }
-        [Test] public void FailedAndStaleCommitDoNotPlayCollection()
-        { SearchPresenter(); Search(); Game.Interface.SendEvent(new PlayerActionChangedEvent(false, default)); Finish(40, null); Finish(41, "save.failed"); Assert.That(loader.Addresses.Count(x => x.EndsWith("FoleyCollectItem")), Is.Zero); }
-        [Test] public void DisposeUnsubscribesAndReleasesSearchOnce()
-        { SearchPresenter(); Search(); presenter.Dispose(); presenter.Dispose(); Search(42); loader.Complete(0); Assert.That(audio.ActiveSoundCount, Is.Zero); Assert.That(loader.Releases, Is.EqualTo(1)); }
 
         private void Ambient()
         {
@@ -105,20 +81,6 @@ namespace Game.Tests
             loader.Complete(0); loader.Complete(1);
             Assert.That(audio.ActiveSoundCount, Is.Zero);
             Assert.That(loader.Releases, Is.EqualTo(2));
-        }
-        [Test] public void LocalSuccessfulLootCollectionPlaysSound()
-        { SearchPresenter(); Game.Interface.SendEvent(new LootCollectedEvent(10, PlayerModel.LocalPlayerUnitId, "loot", 1, 1, 0)); Assert.That(audio.ActiveSoundCount, Is.EqualTo(1)); }
-        [Test] public void OtherCollectorsAndEmptyLootDoNotPlaySound()
-        { SearchPresenter(); Game.Interface.SendEvent(new LootCollectedEvent(10, 99, "loot", 1, 1, 0)); Game.Interface.SendEvent(new LootCollectedEvent(10, PlayerModel.LocalPlayerUnitId, "loot", 1, 0, 0)); Assert.That(audio.ActiveSoundCount, Is.Zero); }
-        [Test] public void SuccessfulSearchTransferPlaysCollection()
-        {
-            SearchPresenter();
-            var type = typeof(AudioSystem).Assembly.GetType("Game.SearchItemCollectedEvent");
-            Assert.That(type, Is.Not.Null, "容器收取缺少成功事件");
-            // 使用运行时泛型投递真实的领域事件，首轮允许接口尚未实现。
-            typeof(FoleyAmbientTests).GetMethod(nameof(Send), BindingFlags.Static | BindingFlags.NonPublic)
-                .MakeGenericMethod(type).Invoke(null, new[] { Activator.CreateInstance(type) });
-            Assert.That(audio.ActiveSoundCount, Is.EqualTo(1));
         }
         private static void Send<T>(T value) => Game.Interface.SendEvent(value);
         [Test] public void RiverClosestPointUsesTransformedSegments()

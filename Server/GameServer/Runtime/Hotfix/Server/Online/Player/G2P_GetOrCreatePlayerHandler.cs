@@ -17,8 +17,6 @@ namespace ET.Server
                     request.DisplayName);
                 actor.AddComponent<MailBoxComponent, MailBoxType>(MailBoxType.OrderedMessage);
                 actor.Revision = request.ProfileRevision;
-                actor.HasReceivedOnlineStarterSupplies = request.HasReceivedOnlineStarterSupplies;
-                actor.OnlineInventory = OnlineInventoryRecordHelper.Clone(OnlineInventoryRecordHelper.FromMessage(request.OnlineInventory));
                 manager.Add(actor);
             }
 

@@ -31,7 +31,6 @@ namespace ET
 		RoomDirectory = 1 << 24,
 		OnlineRoom = 1 << 25,
 		Chat = 1 << 26,
-		OnlineWorld = 1 << 27,
 
 		// 客户端
 		Demo = 1 << 30,

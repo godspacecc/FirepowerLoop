@@ -12,7 +12,7 @@ namespace ET.Server
     [FriendOf(typeof(OnlineAccountComponent))]
     public static partial class OnlineAccountComponentSystem
     {
-        private const int SchemaVersion = 3;
+        private const int SchemaVersion = 4;
         private const int PasswordAlgorithmVersion = 1;
         private const int PasswordIterations = 600000;
         private const int SaltBytes = 16;
@@ -21,11 +21,9 @@ namespace ET.Server
         [EntitySystem]
         private static void Awake(this OnlineAccountComponent self)
         {
-            self.RemainingFailSaveCount = Math.Max(0, Options.Instance.OnlineProfileFailSaveCount);
-            if (self.RemainingFailSaveCount > 0)
-                Log.Warning($"online profile save failure injection enabled count={self.RemainingFailSaveCount}");
         }
 
+        /// <summary>仅加载本工程当前身份格式；不导入或迁移其他项目的玩家状态。</summary>
         public static void LoadStore(this OnlineAccountComponent self, string storePath)
         {
             if (string.IsNullOrWhiteSpace(storePath))
@@ -52,34 +50,6 @@ namespace ET.Server
             string json = File.ReadAllText(self.StorePath);
             OnlineIdentityStoreSnapshot snapshot = JsonSerializer.Deserialize<OnlineIdentityStoreSnapshot>(json, JsonOptions()) ??
                     throw new InvalidOperationException("OnlineStore JSON is empty.");
-            if (snapshot.SchemaVersion == 1)
-            {
-                // Version 1 predates online inventory. Treating migrated accounts as already supplied prevents a legacy account from receiving a retroactive starter grant.
-                foreach (OnlinePlayerProfileRecord profile in snapshot.Players)
-                {
-                    profile.HasReceivedOnlineStarterSupplies = true;
-                    profile.OnlineInventory = OnlineInventoryRecordHelper.Empty(12);
-                }
-                snapshot.SchemaVersion = SchemaVersion;
-                ValidateSnapshot(snapshot);
-                self.Commit(snapshot);
-                return;
-            }
-            if (snapshot.SchemaVersion == 2)
-            {
-                // 在未发布的候选快照中迁移；校验和原子文件替换成功前不更新内存权威。
-                using JsonDocument document = JsonDocument.Parse(json);
-                foreach (JsonElement player in document.RootElement.GetProperty("Players").EnumerateArray())
-                {
-                    long id = player.GetProperty("PlayerId").GetInt64();
-                    var profile = snapshot.Players.Single(x => x.PlayerId == id);
-                    MigrateHeldInventory(profile.OnlineInventory, player.GetProperty("OnlineInventory").GetProperty("Equipment"));
-                }
-                snapshot.SchemaVersion = SchemaVersion;
-                ValidateSnapshot(snapshot);
-                self.Commit(snapshot);
-                return;
-            }
             ValidateSnapshot(snapshot);
             self.Snapshot = snapshot;
         }
@@ -173,8 +143,6 @@ namespace ET.Server
                     Revision = 1,
                     CreatedAtUtc = now,
                     UpdatedAtUtc = now,
-                    HasReceivedOnlineStarterSupplies = false,
-                    OnlineInventory = OnlineInventoryRecordHelper.Empty(ServerConfig.Instance.OnlineWorldRule.BagCapacity),
                 };
                 next.Players.Add(profile);
                 ValidateSnapshot(next);
@@ -215,8 +183,6 @@ namespace ET.Server
                     Revision = 1,
                     CreatedAtUtc = now,
                     UpdatedAtUtc = now,
-                    HasReceivedOnlineStarterSupplies = false,
-                    OnlineInventory = OnlineInventoryRecordHelper.Empty(ServerConfig.Instance.OnlineWorldRule.BagCapacity),
                 };
                 updated.Players.Add(profileRecord);
                 ValidateSnapshot(updated);
@@ -238,136 +204,6 @@ namespace ET.Server
             }
 
             return (ErrorCode.ERR_Success, string.Empty, accountRecord.AccountId, accountRecord.PlayerId, profileRecord.DisplayName, profileRecord.Revision, false);
-        }
-
-        public static OnlinePlayerProfileRecord GetProfile(this OnlineAccountComponent self, long accountId, long playerId)
-        {
-            return self.Snapshot.Players.FirstOrDefault(p => p.AccountId == accountId && p.PlayerId == playerId);
-        }
-
-        public static (int Error, string Message, long Revision) SaveProfile(
-                this OnlineAccountComponent self,
-                long accountId,
-                long playerId,
-                string displayName,
-                string operationId,
-                long expectedRevision,
-                OnlineInventoryRecord inventory,
-                bool hasReceivedOnlineStarterSupplies)
-        {
-            if (string.IsNullOrWhiteSpace(operationId))
-                return (ErrorCode.ERR_OnlineWorldOperationInvalid, "OperationId is required", expectedRevision);
-
-            string fingerprint = OnlineInventoryRecordHelper.Fingerprint(inventory, hasReceivedOnlineStarterSupplies, expectedRevision, displayName);
-            if (!self.SaveOperations.TryGetValue(playerId, out Dictionary<string, OnlineProfileSaveOperationRecord> playerOperations))
-            {
-                playerOperations = new Dictionary<string, OnlineProfileSaveOperationRecord>(StringComparer.Ordinal);
-                self.SaveOperations.Add(playerId, playerOperations);
-            }
-            if (playerOperations.TryGetValue(operationId, out OnlineProfileSaveOperationRecord completed))
-            {
-                if (!string.Equals(completed.Fingerprint, fingerprint, StringComparison.Ordinal))
-                    return (ErrorCode.ERR_OnlineWorldOperationConflict, "OperationId candidate conflict", completed.Revision);
-                return (completed.Error, completed.Message, completed.Revision);
-            }
-
-            OnlineIdentityStoreSnapshot next = Clone(self.Snapshot);
-            OnlinePlayerProfileRecord profile = next.Players.FirstOrDefault(p => p.PlayerId == playerId && p.AccountId == accountId);
-            if (profile == null)
-            {
-                return (ErrorCode.ERR_OnlineServiceUnavailable, "Player profile not found", expectedRevision);
-            }
-            if (profile.Revision != expectedRevision)
-                return (ErrorCode.ERR_OnlineWorldInventoryRevisionConflict, "Profile revision conflict", profile.Revision);
-            try { ValidateInventory(inventory, $"PlayerId={playerId}"); }
-            catch (InvalidOperationException e) { return (ErrorCode.ERR_OnlineWorldOperationInvalid, e.Message, profile.Revision); }
-            if (inventory.Revision < profile.OnlineInventory.Revision)
-                return (ErrorCode.ERR_OnlineWorldInventoryRevisionConflict, "Inventory revision is older than profile", profile.Revision);
-            if (self.RemainingFailSaveCount > 0)
-            {
-                self.RemainingFailSaveCount--;
-                Log.Warning($"online profile save injected failure playerId={playerId} remaining={self.RemainingFailSaveCount}");
-                return (ErrorCode.ERR_OnlineProfileSaveFailed, "资料保存失败，请重试", profile.Revision);
-            }
-            profile.DisplayName = displayName;
-            profile.Revision++;
-            profile.OnlineInventory = OnlineInventoryRecordHelper.Clone(inventory);
-            profile.HasReceivedOnlineStarterSupplies = hasReceivedOnlineStarterSupplies;
-            profile.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
-            ValidateSnapshot(next);
-            self.Commit(next);
-            OnlineProfileSaveOperationRecord operation = new()
-            {
-                Fingerprint = fingerprint,
-                Error = ErrorCode.ERR_Success,
-                Message = string.Empty,
-                Revision = profile.Revision,
-                CompletedAt = TimeInfo.Instance.ServerNow(),
-            };
-            playerOperations.Add(operationId, operation);
-            TrimOperations(playerOperations, operation.CompletedAt);
-            return (operation.Error, operation.Message, operation.Revision);
-        }
-
-        private static void TrimOperations(Dictionary<string, OnlineProfileSaveOperationRecord> operations, long now)
-        {
-            if (operations.Count <= 128) return;
-            foreach (string key in operations.Where(x => now - x.Value.CompletedAt >= 600000).OrderBy(x => x.Value.CompletedAt)
-                         .Take(operations.Count - 128).Select(x => x.Key).ToArray()) operations.Remove(key);
-        }
-
-        /// <summary>跨库存与手持引用校验，不接受隐藏装备或未声明的容量增长。</summary>
-        public static void ValidateInventory(OnlineInventoryRecord inventory, string context)
-        {
-            if (inventory == null || inventory.Slots == null || inventory.Equipment == null) throw new InvalidOperationException($"Invalid inventory ({context})");
-            int capacity = ServerConfig.Instance.OnlineWorldRule.BagCapacity + inventory.MigrationExtraCapacity;
-            if (inventory.MigrationExtraCapacity < 0 || inventory.Capacity != capacity || inventory.Revision <= 0) throw new InvalidOperationException($"Invalid capacity/revision ({context})");
-            HashSet<int> indices = new();
-            foreach (var slot in inventory.Slots)
-            {
-                Item item = ServerConfig.Instance.GetItem(slot.ItemId);
-                if (slot.SlotIndex < 0 || slot.SlotIndex >= capacity || !indices.Add(slot.SlotIndex) || slot.Amount <= 0 || slot.Amount > item.MaxStackAmount || slot.LoadedAmmo < 0) throw new InvalidOperationException($"Invalid slot ({context})");
-                if (slot.LoadedAmmo > 0 && (item.ItemType != ItemType.Weapon || slot.Amount != 1 || slot.LoadedAmmo > ServerConfig.Instance.GetWeapon(slot.ItemId).MagazineCapacity)) throw new InvalidOperationException($"Invalid loaded ammo ({context})");
-            }
-            foreach(var pair in OnlineInventoryRecordHelper.ClothingItems(inventory))
-            {
-                if(pair.Item1==0)continue;
-                var garment=ServerConfig.Instance.GetItem(pair.Item1);
-                if(garment.ItemType!=ItemType.Clothing||garment.WearSlot!=pair.Item2||garment.MaxStackAmount!=1||string.IsNullOrWhiteSpace(garment.AppearanceId))throw new InvalidOperationException($"Invalid clothing ({context})");
-            }
-            var held = inventory.Equipment;
-            if (held.SchemaVersion != 1 || held.ItemId == 0 && held.SourceSlotIndex != -1 || held.ItemId != 0 && (ServerConfig.Instance.GetItem(held.ItemId).ItemType != ItemType.Weapon || OnlineInventoryRecordHelper.HeldStack(inventory) == null)) throw new InvalidOperationException($"Invalid held reference ({context})");
-        }
-
-        /// <summary>旧账号仅迁移一次；先合堆/填空格，必要时只增加回填所需格数。</summary>
-        private static void MigrateHeldInventory(OnlineInventoryRecord inventory, JsonElement legacy)
-        {
-            int melee = legacy.GetProperty("MeleeWeaponItemId").GetInt32(), ranged = legacy.GetProperty("RangedWeaponItemId").GetInt32();
-            int active = legacy.GetProperty("ActiveSlot").GetInt32(), ammo = legacy.GetProperty("RangedLoadedAmmo").GetInt32();
-            if (inventory.Capacity != ServerConfig.Instance.OnlineWorldRule.BagCapacity || active < 0 || active > 2 || ammo < 0 || ranged == 0 && ammo != 0 || active == 2 && ranged == 0 || active == 0 && (melee != 0 || ranged != 0)) throw new InvalidOperationException("Invalid legacy equipment");
-            foreach (var pair in new[] { (melee, WeaponKind.Melee), (ranged, WeaponKind.Projectile) })
-                if (pair.Item1 != 0 && (ServerConfig.Instance.GetItem(pair.Item1).ItemType != ItemType.Weapon || ServerConfig.Instance.GetWeapon(pair.Item1).WeaponKind != pair.Item2)) throw new InvalidOperationException("Invalid legacy weapon");
-            if (ranged != 0 && ammo > ServerConfig.Instance.GetWeapon(ranged).MagazineCapacity) throw new InvalidOperationException("Invalid legacy ammo");
-            inventory.Equipment = new OnlineEquipmentRecord();
-            ValidateInventory(inventory, "legacy inventory");
-            int meleeSlot = AddLegacyItem(inventory, melee, melee == 0 ? 0 : 1), rangedSlot = AddLegacyItem(inventory, ranged, ranged == 0 ? 0 : 1);
-            if (ammo > 0) AddLegacyItem(inventory, ServerConfig.Instance.GetWeapon(ranged).AmmoItemId, ammo);
-            int id = active == 1 ? melee : active == 2 ? ranged : 0;
-            if (id > 0) { inventory.Equipment.ItemId = id; inventory.Equipment.SourceSlotIndex = active == 1 ? meleeSlot : rangedSlot; }
-        }
-        private static int AddLegacyItem(OnlineInventoryRecord inventory, int id, int amount)
-        {
-            if (amount == 0) return -1;
-            int max = ServerConfig.Instance.GetItem(id).MaxStackAmount, first = -1;
-            foreach (var slot in inventory.Slots.Where(x => x.ItemId == id && x.Amount < max).OrderBy(x => x.SlotIndex))
-            { int take = Math.Min(max - slot.Amount, amount); slot.Amount += take; amount -= take; first = slot.SlotIndex; if (amount == 0) return first; }
-            while (amount > 0)
-            {
-                int index = 0; while (inventory.Slots.Any(x => x.SlotIndex == index)) index++;
-                if (index >= inventory.Capacity) { inventory.Capacity++; inventory.MigrationExtraCapacity++; }
-                int take = Math.Min(max, amount); inventory.Slots.Add(new OnlineItemSlotRecord { SlotIndex=index, ItemId=id, Amount=take }); amount-=take; if(first<0)first=index;
-            }
-            return first;
         }
 
         private static int ValidateUserName(string userName, out string normalized, out string display)
@@ -468,7 +304,6 @@ namespace ET.Server
             return Path.Combine(parent, $"{Path.GetFileName(self.StorePath)}.{Guid.NewGuid():N}.tmp");
         }
 
-
         private static void CleanupTempFile(string tempPath)
         {
             if (string.IsNullOrWhiteSpace(tempPath))
@@ -547,7 +382,6 @@ namespace ET.Server
                 {
                     throw new InvalidOperationException($"Player account mapping mismatch: {profile.PlayerId}/{profile.AccountId}");
                 }
-                ValidateInventory(profile.OnlineInventory, $"PlayerId={profile.PlayerId}");
             }
 
             if (snapshot.NextAccountId <= maxAccountId)

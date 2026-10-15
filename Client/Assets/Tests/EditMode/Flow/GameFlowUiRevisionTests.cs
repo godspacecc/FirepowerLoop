@@ -20,25 +20,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void StartShowsLoadingBeforeStartingBaseSessionAndKeepsErrorVisibleOnFailure()
-        {
-            var start = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
-
-            Assert.That(start.IndexOf("UIHelper.ShowUI<LoadingUICtrl>()"), Is.LessThan(start.IndexOf("EnterBaseAsync(")));
-            Assert.That(start, Does.Contain("ShowError(Texts.SaveErrorLoadFailed)"));
-            Assert.That(start, Does.Contain("return;"));
-        }
-
-        [Test]
-        public void SuccessfulSessionHidesSourceAndLoadingUi()
-        {
-            var start = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
-
-            Assert.That(start, Does.Contain("UIHelper.HideUI<LoadingUICtrl>()"));
-            Assert.That(start, Does.Contain("Hide();"));
-        }
-
-        [Test]
         public void StartResumeUsesRecoverableWorldBeforeResuming()
         {
             var start = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
@@ -68,6 +49,15 @@ namespace Game.Tests
             Assert.That(loading, Does.Not.Contain("UnloadCurrentMapAsync"));
             Assert.That(loading, Does.Not.Contain("SaveSystem"));
             Assert.That(loading, Does.Not.Contain("AppStateSystem"));
+        }
+
+        [Test]
+        public void StartRoutesNewAndContinueToIndependentArcadeEntry()
+        {
+            var source = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
+            Assert.That(source, Does.Contain("ArcadeResumeUICtrl.TryOpenEntry"));
+            Assert.That(source, Does.Not.Contain("EnterBaseAsync"));
+            Assert.That(source, Does.Not.Contain("ResumePendingExpeditionAsync"));
         }
 
         private static string ReadGameFile(string path)

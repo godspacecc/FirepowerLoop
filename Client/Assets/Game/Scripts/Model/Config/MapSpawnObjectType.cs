@@ -15,8 +15,6 @@
         Player = 1,
         Enemy = 2,
         Loot = 3,
-        Extraction = 4,
-        Npc = 5,
     }
 
  

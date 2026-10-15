@@ -81,11 +81,7 @@ namespace Game
             switch (actionId)
             {
                 case HotKeyActionIds.TogglePause: return Texts.HotkeyTogglePause;
-                case HotKeyActionIds.ToggleInventory: return Loc.T("ui.hotkey.toggle_inventory");
                 case HotKeyActionIds.ToggleRuntimeLog: return Texts.HotkeyToggleRuntimeLog;
-                case HotKeyActionIds.ToggleMap: return Loc.T("ui.hotkey.toggle_map");
-                case HotKeyActionIds.ToggleFlashlight: return Loc.T("ui.hotkey.toggle_flashlight");
-                case HotKeyActionIds.ToggleGameplayGuide: return Loc.T("ui.hotkey.toggle_gameplay_guide");
                 default: return Texts.HotkeyUnknown;
             }
         }

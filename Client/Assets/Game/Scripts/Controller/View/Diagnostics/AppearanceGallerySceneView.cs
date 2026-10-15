@@ -60,7 +60,7 @@ namespace Game
         private readonly List<AnimationClip> animationClips = new List<AnimationClip>();
         private readonly List<CharacterAnimationDefinition> animationDefinitions = new List<CharacterAnimationDefinition>();
         private readonly List<GameObject> availableCharacterPrefabs = new List<GameObject>();
-        private AppearanceGallerySceneFlowSystem flow;
+        private bool initialized;
         private GameObject characterInstance;
         private Animator animator;
         private PlayerView playerView;
@@ -123,7 +123,7 @@ namespace Game
             playPauseButton.onClick.AddListener(TogglePlayback);
             cameraModeButton.onClick.AddListener(ToggleCamera);
             resetCameraButton.onClick.AddListener(ResetCamera);
-            exitButton.onClick.AddListener(() => { if (flow != null) flow.CloseAsync().Forget(); });
+            exitButton.onClick.AddListener(() => { gameObject.SetActive(false); });
             if (poseTuningPanel != null) poseTuningPanel.TuningModeChanged += SetTuningWeaponSelection;
         }
 
@@ -138,14 +138,14 @@ namespace Game
         }
 
         /// <summary>附加场景加载并验证后调用一次；选项来自场景引用和正式 Animator/武器外观。</summary>
-        public void Initialize(AppearanceGallerySceneFlowSystem owner, IRuntimeConfigProvider configProvider)
+        public void Initialize(IArchitecture owner, IRuntimeConfigProvider configProvider)
         {
-            flow = owner;
+            initialized = owner != null;
             if (poseTuningPanel != null && owner != null)
                 poseTuningPanel.Initialize(owner.GetSystem<WeaponPoseSettingsSystem>(), characterWeaponCatalog);
             // 正式与预览读取同一条装备外观定义，不复制弓的挂点和局部姿态数值。
             hasBowAppearance = bowAppearancePrefab != null && configProvider != null &&
-                               configProvider.TryGetPlayerWeaponAppearance(ItemIds.Bow, out bowAppearance, out _);
+                               configProvider.TryGetPlayerWeaponAppearance(6, out bowAppearance, out _);
             var names = new List<string>();
             availableCharacterPrefabs.Clear();
             foreach (var prefab in characterPrefabs)
@@ -312,7 +312,7 @@ namespace Game
                 }
                 string resourceName = index > 0 ? playerView.GetArcadeWeaponVisualName(index - 1) : null;
                 if (bowAppearanceInstance != null) bowAppearanceInstance.SetActive(false);
-                playerView.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+                playerView.SetWeaponPresentation(false, false, false);
                 selectedPlayerWeaponResourceName = resourceName;
                 // 与正式控制器共用姿态选择；造型库只手动采样动画，不改变装备状态。
                 PlayerViewCtrl.ConfigureArcadeWeaponPresentation(playerView, resourceName, false, Vector3.zero);
@@ -331,7 +331,7 @@ namespace Game
                 index > characterWeaponCatalog.Count) return;
             ReleaseAnimation();
             playerView?.SetSharedWeaponAnimationActive(true);
-            playerView?.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+            playerView?.SetWeaponPresentation(false, false, false);
             enemyView?.SetWeaponPresentation(0);
             var entry = index == 0 ? null : characterWeaponCatalog.Get(index - 1);
             selectedSharedWeaponId = entry?.Id ?? string.Empty;
@@ -450,7 +450,7 @@ namespace Game
                 foreach (var collider in bowAppearanceInstance.GetComponentsInChildren<Collider>(true))
                     collider.enabled = false;
             }
-            playerView.SetWeaponPresentation(WeaponSlot.Ranged, false, true);
+            playerView.SetWeaponPresentation(true, false, true);
             PlayerViewCtrl.ConfigureArcadeWeaponPresentation(playerView, null, false, Vector3.zero);
             bowAppearanceInstance.SetActive(true);
             return true;
@@ -799,10 +799,10 @@ namespace Game
         {
             RefreshPreviewViewport();
             poseTuningPanel?.Tick(Time.unscaledDeltaTime);
-            if (flow == null) return;
+            if (!initialized) return;
             if (Keyboard.current?.escapeKey.wasPressedThisFrame == true)
             {
-                flow.CloseAsync().Forget();
+                gameObject.SetActive(false);
                 return;
             }
             if (playing && selectedClip != null && selectedClip.length > 0f &&
@@ -922,7 +922,7 @@ namespace Game
         /// <summary>Animator 常规更新结束后采样预览动画；暂停时也维持当前帧，避免骨骼被原控制器覆盖。</summary>
         private void LateUpdate()
         {
-            if (flow == null) return;
+            if (!initialized) return;
             RefreshSharedWeaponPose();
             if (selectedClip == null || (!graph.IsValid() && !playerCompositePreview)) return;
             if (playerCompositePreview)

@@ -1,3 +1,0 @@
-##var,Id,NpcId,StartNodeId
-##type,string,string,string
-,dialogue.test.guide,npc.base.map-guide,dialogue.test.guide.start

@@ -7,7 +7,7 @@ namespace Game
 {
     public enum OnlineArcadeRunPhase { None = 0, SafeShop = 1, Arena = 2, Challenge = 3, Victory = 4 }
     public enum OnlineArcadeOperationState
-    { Idle, Starting, Restoring, Purchasing, TransferringGold, SettingReady, SettingChallengeReady, Settling, Abandoning, Claiming }
+    { Idle, Starting, Restoring, Purchasing, TransferringGold, SettingReady, SettingChallengeReady, Settling, Abandoning }
     public enum OnlineArcadeResultCode
     {
         None, Success, NotLoggedIn, InvalidState, SaveFailed, OperationConflict, VersionMismatch,
@@ -40,7 +40,7 @@ namespace Game
             IReadOnlyDictionary<string, int> upgradeStacks = null,
             IReadOnlyDictionary<string, int> consumables = null,
             IReadOnlyDictionary<string, string> equipment = null,
-            IReadOnlyDictionary<string, long> pendingRewards = null, bool settlementConfirmed = false,
+            bool settlementConfirmed = false,
             bool abandonConfirmed = false, int settlementState = 0, bool challengeReady = false,
             long score = 0, int scoreMultiplier = 1, int multiplierProgress = 0)
         {
@@ -50,7 +50,6 @@ namespace Game
             UpgradeStacks = ReadOnly(upgradeStacks);
             Consumables = ReadOnly(consumables);
             Equipment = ReadOnly(equipment);
-            PendingRewards = ReadOnly(pendingRewards);
             SettlementConfirmed = settlementConfirmed; AbandonConfirmed = abandonConfirmed;
             SettlementState = settlementState;
             ChallengeReady = challengeReady;
@@ -68,7 +67,6 @@ namespace Game
         public IReadOnlyDictionary<string, int> UpgradeStacks { get; }
         public IReadOnlyDictionary<string, int> Consumables { get; }
         public IReadOnlyDictionary<string, string> Equipment { get; }
-        public IReadOnlyDictionary<string, long> PendingRewards { get; }
         public bool SettlementConfirmed { get; }
         public bool AbandonConfirmed { get; }
         public int SettlementState { get; }

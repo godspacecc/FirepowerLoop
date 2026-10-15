@@ -90,8 +90,8 @@ namespace Game.Tests
 
             Assert.That(InvokePrivateStaticString("FormatAction", HotKeyActionIds.TogglePause), Is.EqualTo("暂停 / 继续"));
             Assert.That(InvokePrivateStaticString("FormatAction", HotKeyActionIds.ToggleRuntimeLog), Is.EqualTo("运行日志"));
-            Assert.That(InvokePrivateStaticString("FormatAction", HotKeyActionIds.ToggleMap), Is.EqualTo("打开/关闭地图"));
-            Assert.That(InvokePrivateStaticString("FormatAction", HotKeyActionIds.ToggleFlashlight), Is.EqualTo("打开/关闭手电筒"));
+            Assert.That(InvokePrivateStaticString("FormatAction", "map.toggle"), Is.EqualTo("未知动作"));
+            Assert.That(InvokePrivateStaticString("FormatAction", "flashlight.toggle"), Is.EqualTo("未知动作"));
             Assert.That(InvokePrivateStaticString("FormatAction", "test-command.toggle"), Is.EqualTo("未知动作"));
             Assert.That(HotKeyDisplayFormatter.FormatPath(HotKeyDefaults.Escape), Is.EqualTo("Esc"));
             Assert.That(HotKeyDisplayFormatter.FormatPath(HotKeyDefaults.F1), Is.EqualTo("F1"));

@@ -30,19 +30,19 @@ namespace Game.Tests
                 animator.Update(0f);
                 var layer = animator.GetLayerIndex("RifleReload");
                 Assert.That(layer, Is.GreaterThanOrEqualTo(0), "缺少上半身换弹层");
-                view.ShowActionProgress(new PlayerActionSnapshot(1, PlayerActionKind.Reload, 1f, 3.1f, 1f/3.1f, null));
+                view.ShowActionProgress(1f/3.1f, null);
                 animator.Update(0f);
                 Assert.That(animator.GetLayerWeight(layer), Is.EqualTo(1f));
                 Assert.That(animator.GetCurrentAnimatorStateInfo(layer).IsName("Reload"), Is.True);
-                view.ShowActionProgress(new PlayerActionSnapshot(1, PlayerActionKind.Reload, 2.8f, 3.1f, 2.8f/3.1f, null));
+                view.ShowActionProgress(2.8f/3.1f, null);
                 animator.Update(0f);
                 Assert.That(animator.GetCurrentAnimatorStateInfo(layer).IsName("PullBolt"), Is.True);
                 view.HideActionProgress();
                 Assert.That(animator.GetLayerWeight(layer), Is.Zero);
-                view.ShowActionProgress(new PlayerActionSnapshot(2, PlayerActionKind.Reload, 0f, 2f, 0f, null));
+                view.ShowActionProgress(0f, null);
                 presenter.SetWeapon(presenter.Catalog.Find("arcade.weapon.basic"));
                 Assert.That(animator.GetLayerWeight(layer), Is.Zero);
-                view.ShowActionProgress(new PlayerActionSnapshot(3, PlayerActionKind.Reload, 0f, 2f, 0f, null));
+                view.ShowActionProgress(0f, null);
                 Assert.That(animator.GetLayerWeight(layer), Is.Zero, "手枪不可播放步枪动作");
             }
             finally { Object.DestroyImmediate(holder); }

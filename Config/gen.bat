@@ -8,13 +8,13 @@ set "CLIENT_CODE_DIR=%WORKSPACE%\Client\Assets\Game\Scripts\Model\Config"
 set "CLIENT_DATA_DIR=%WORKSPACE%\Client\Assets\Game\Config"
 set "SERVER_CODE_DIR=%WORKSPACE%\Server\GameServer\Runtime\Model\Generated\Config"
 set "SERVER_DATA_DIR=%WORKSPACE%\Server\GameServer\Config\Luban"
-set "STAGE_ROOT=%TEMP%\AnotherDayLubanGen_%RANDOM%_%RANDOM%"
+set "STAGE_ROOT=%TEMP%\FirepowerLoopLubanGen_%RANDOM%_%RANDOM%"
 set "CLIENT_CODE_STAGE=%STAGE_ROOT%\client_code"
 set "CLIENT_DATA_STAGE=%STAGE_ROOT%\client_data"
 set "SERVER_CODE_STAGE=%STAGE_ROOT%\server_code"
 set "SERVER_DATA_STAGE=%STAGE_ROOT%\server_data"
 
-echo === Another Day Luban generation ===
+echo === FirepowerLoop Luban generation ===
 echo Config: "%CONF_ROOT%"
 echo Stage: "%STAGE_ROOT%"
 
@@ -45,8 +45,8 @@ dir /b "%CLIENT_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: client code generat
 dir /b "%CLIENT_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: client data generation is empty & exit /b 1)
 set /a CLIENT_TABLE_COUNT=0
 for %%F in ("%CLIENT_DATA_STAGE%\*.bytes") do set /a CLIENT_TABLE_COUNT+=1
-if not "!CLIENT_TABLE_COUNT!"=="47" (
-    echo Error: client table count expected 47 but got !CLIENT_TABLE_COUNT!
+if not "!CLIENT_TABLE_COUNT!"=="26" (
+    echo Error: client table count expected 26 but got !CLIENT_TABLE_COUNT!
     exit /b 1
 )
 dir /b "%CLIENT_CODE_STAGE%\*Start*.cs" >nul 2>nul && (echo Error: client stage contains server StartConfig code & exit /b 1)
@@ -70,12 +70,12 @@ dir /b "%SERVER_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: server code generat
 dir /b "%SERVER_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: server data generation is empty & exit /b 1)
 set /a SERVER_TABLE_COUNT=0
 for %%F in ("%SERVER_DATA_STAGE%\*.bytes") do set /a SERVER_TABLE_COUNT+=1
-if not "!SERVER_TABLE_COUNT!"=="28" (
-    echo Error: server table count expected 28 but got !SERVER_TABLE_COUNT!
+if not "!SERVER_TABLE_COUNT!"=="20" (
+    echo Error: server table count expected 20 but got !SERVER_TABLE_COUNT!
     exit /b 1
 )
-for %%F in (Item LootConfig OnlineWorldRuleConfig TempBuildingConfig TempBuildingManualAttackConfig ProjectileConfig TbItem TbLoot TbOnlineWorldRule TbWeapon TbMapSpawn TbPlayer TbEnemy TbTempBuilding TbTempBuildingManualAttack TbProjectile ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeShopItemConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeShopItem TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
-for %%F in (tbitem tbloot tbonlineworldrule tbweapon tbmapspawn tbplayer tbenemy tbtempbuilding tbtempbuildingmanualattack tbprojectile tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadeshopitem tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
+for %%F in (ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeShopItemConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeShopItem TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
+for %%F in (tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadeshopitem tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
 
 echo.
 echo === Publish generated files ===
@@ -86,24 +86,11 @@ if not exist "%CLIENT_DATA_DIR%" mkdir "%CLIENT_DATA_DIR%"
 if not exist "%SERVER_CODE_DIR%" mkdir "%SERVER_CODE_DIR%"
 if not exist "%SERVER_DATA_DIR%" mkdir "%SERVER_DATA_DIR%"
 
-for %%F in ("%CLIENT_CODE_DIR%\*.cs") do (
-    if not exist "%CLIENT_CODE_STAGE%\%%~nxF" (
-        del /q "%%~fF" >nul 2>nul
-        if exist "%%~fF.meta" del /q "%%~fF.meta" >nul 2>nul
-    )
-)
-for %%F in ("%SERVER_CODE_DIR%\*.cs") do (
-    if not exist "%SERVER_CODE_STAGE%\%%~nxF" (
-        del /q "%%~fF" >nul 2>nul
-        if exist "%%~fF.meta" del /q "%%~fF.meta" >nul 2>nul
-    )
-)
-del /q "%SERVER_DATA_DIR%\*.bytes" >nul 2>nul
-
+rem Publish data before code so the previous Tables records delimit retired files. Preserve Unity meta.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%CLIENT_DATA_STAGE%" -Destination "%CLIENT_DATA_DIR%" -Pattern "*.bytes" -PreviousTables "%CLIENT_CODE_DIR%\Tables.cs" || exit /b 1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%SERVER_DATA_STAGE%" -Destination "%SERVER_DATA_DIR%" -Pattern "*.bytes" -PreviousTables "%SERVER_CODE_DIR%\Tables.cs" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%CLIENT_CODE_STAGE%" -Destination "%CLIENT_CODE_DIR%" -Pattern "*.cs" || exit /b 1
-powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%CLIENT_DATA_STAGE%" -Destination "%CLIENT_DATA_DIR%" -Pattern "*.bytes" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%SERVER_CODE_STAGE%" -Destination "%SERVER_CODE_DIR%" -Pattern "*.cs" || exit /b 1
-powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%SERVER_DATA_STAGE%" -Destination "%SERVER_DATA_DIR%" -Pattern "*.bytes" || exit /b 1
 
 echo.
 echo === Generation complete ===

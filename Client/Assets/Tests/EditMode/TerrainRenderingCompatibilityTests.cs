@@ -21,12 +21,12 @@ namespace Game.Tests
             {
                 var context = root.AddComponent<MapContext>();
                 typeof(MapContext).GetField("mapContentRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, root);
-                var handle = new TerrainTestHandle(MapIds.HeJiaVillage, context);
+                var handle = new TerrainTestHandle(MapIds.Arcade, context);
                 var terrain = root.GetComponent<Terrain>();
                 terrain.drawInstanced = true;
                 setActive.Invoke(compatibility, new object[] { handle, true, RuntimePlatform.WindowsPlayer });
                 Assert.That(terrain.drawInstanced, Is.True);
-                setActive.Invoke(compatibility, new object[] { new TerrainTestHandle(MapIds.SurvivalSample, context), true, RuntimePlatform.Android });
+                setActive.Invoke(compatibility, new object[] { new TerrainTestHandle(MapIds.Arcade, context), true, RuntimePlatform.Android });
                 Assert.That(terrain.drawInstanced, Is.True);
                 setActive.Invoke(compatibility, new object[] { handle, true, RuntimePlatform.Android });
                 Assert.That(terrain.drawInstanced, Is.False);

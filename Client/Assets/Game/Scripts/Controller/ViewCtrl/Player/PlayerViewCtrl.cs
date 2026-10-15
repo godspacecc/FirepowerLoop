@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 namespace Game
 {
@@ -16,8 +16,6 @@ namespace Game
     public sealed class PlayerViewCtrl : BaseEntityViewCtrl<PlayerView>, ICharacterMotorPort, IPlayerFlashlightPort
     {
         private readonly FootstepPresenter footsteps;
-        /// <summary>仅本机玩家持有搜索声音；控制器释放时取消加载并退订领域事件。</summary>
-        private readonly PlayerSearchSoundPresenter searchSounds;
         private bool footstepAlive = true;
         /// <summary>接收领域快照映射后的外观身份，不修改装备。</summary>
         public void ApplyClothing(string torso,string legs) => View.ClothingAppearance?.Apply(torso,legs);
@@ -33,8 +31,6 @@ namespace Game
             : base(view, unitId, mapInstanceId, registry, instanceProvider)
         {
             footsteps = new FootstepPresenter(view, GetArchitecture());
-            if (unitId == PlayerModel.LocalPlayerUnitId)
-                searchSounds = new PlayerSearchSoundPresenter(view.transform, GetArchitecture());
         }
 
         public bool IsValid => !IsReleased && GameObject != null && ViewRef != null && ViewRef.CharacterController != null;
@@ -140,9 +136,9 @@ namespace Game
             ViewRef?.SetTiliRing(current, maximum, isSprinting, exhausted);
         }
 
-        public void ShowActionProgress(PlayerActionSnapshot snapshot)
+        public void ShowActionProgress(float progress01, string iconAddress)
         {
-            ViewRef?.ShowActionProgress(snapshot);
+            ViewRef?.ShowActionProgress(progress01, iconAddress);
         }
 
         public void HideActionProgress()
@@ -150,9 +146,9 @@ namespace Game
             ViewRef?.HideActionProgress();
         }
 
-        public void SetWeaponPresentation(WeaponSlot activeSlot, bool showShortSword, bool showBow)
+        public void SetWeaponPresentation(bool ranged, bool showShortSword, bool showBow)
         {
-            ViewRef?.SetWeaponPresentation(activeSlot, showShortSword, showBow);
+            ViewRef?.SetWeaponPresentation(ranged, showShortSword, showBow);
         }
 
         /// <summary>按已装备物品 ID 同步共享表现；未映射或类别不符时清空外观并报告失败。</summary>
@@ -163,7 +159,7 @@ namespace Game
             var presenter = view != null ? view.GetComponent<CharacterWeaponPresenter>() : null;
             if (view == null || presenter == null) return false;
             view.SetSharedWeaponAnimationActive(true);
-            view.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+            view.SetWeaponPresentation(false, false, false);
             if (itemId <= 0)
             {
                 var cleared = presenter.SetWeapon(null);
@@ -208,7 +204,7 @@ namespace Game
                 if (string.IsNullOrEmpty(weaponId))
                 {
                     ViewRef.SetSharedWeaponAnimationActive(true);
-                    ViewRef.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+                    ViewRef.SetWeaponPresentation(false, false, false);
                     ViewRef.GetComponent<CharacterWeaponPresenter>().SetWeapon(null);
                 }
                 // 街机完整 Definition 随后到达，只有它可核对玩法类别。
@@ -240,7 +236,7 @@ namespace Game
                 return;
             }
             view.SetSharedWeaponAnimationActive(true);
-            view.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+            view.SetWeaponPresentation(false, false, false);
             var entry = presenter.Catalog?.Find(weapon.Id);
             var validBehavior = TryIsProjectileBehavior(weapon.Behavior, out var isProjectile);
             var bound = entry != null && validBehavior && entry.IsProjectile == isProjectile &&
@@ -386,8 +382,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
-            var world = GetArchitecture().GetModel<OnlineWorldModel>().Snapshot.Value;
-            if (!IsEnabled || world != null && world.HasWorld && world.ConnectionLost) footsteps.Reset();
+            if (!IsEnabled) footsteps.Reset();
             ViewRef?.TickCombatFeedback(deltaTime);
         }
 
@@ -397,7 +392,7 @@ namespace Game
             base.SetVisible(visible);
         }
 
-        protected override void OnDispose() { footsteps.Dispose(); searchSounds?.Dispose(); base.OnDispose(); }
+        protected override void OnDispose() { footsteps.Dispose(); base.OnDispose(); }
 
         public bool IsPlayerCollider(Collider collider)
         {

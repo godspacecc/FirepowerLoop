@@ -210,9 +210,6 @@ namespace Game.Tests
         private void SetupControllerHarness()
         {
             SetupLocalizationHarness();
-            Game.Interface.RegisterModel(new SaveModel());
-            Game.Interface.RegisterSystem(new SaveSystem());
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(tempRoot);
             UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
             CreateUIRoot();
             UIRoot.EnsureInstance();

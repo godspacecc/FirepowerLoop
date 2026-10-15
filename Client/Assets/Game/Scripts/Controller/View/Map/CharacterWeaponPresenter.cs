@@ -33,9 +33,9 @@ namespace Game
         private CharacterAnimationDefinition reloadDefinition;
 
         /// <summary>按照权威换弹进度采样上半身，两段片段按原始时长比例分配现有计时。</summary>
-        public void ShowReload(PlayerActionSnapshot snapshot)
+        public void ShowReload(float progress01)
         {
-            if (snapshot.Kind != PlayerActionKind.Reload || current == null ||
+            if (current == null ||
                 current.Category != CharacterAnimationDefinition.Categories.Rifle ||
                 profile == null || !IsAnimationCompatible(profile.RifleReload, out _) ||
                 !IsAnimationCompatible(profile.RiflePullBolt, out _))
@@ -47,7 +47,7 @@ namespace Game
             if (layer < 0) return;
             var reload = profile.RifleReload;
             var bolt = profile.RiflePullBolt;
-            var time = Mathf.Clamp01(snapshot.Progress01) * (reload.Clip.length + bolt.Clip.length);
+            var time = Mathf.Clamp01(progress01) * (reload.Clip.length + bolt.Clip.length);
             var isBolt = time >= reload.Clip.length;
             reloadDefinition = isBolt ? bolt : reload;
             animator.SetLayerWeight(layer, 1f);

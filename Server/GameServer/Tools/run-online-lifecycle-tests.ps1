@@ -5,7 +5,6 @@ param(
     [int]$StartupTimeoutSeconds = 20,
     [switch]$StartStopSelfCheck,
     [switch]$ReplaceQuickOnly,
-    [switch]$RetrySaveQuickOnly,
     [switch]$LoginEntryOnly
 )
 
@@ -344,70 +343,6 @@ try {
         exit (Get-ScriptExitCode)
     }
 
-    if ($RetrySaveQuickOnly) {
-        $retryUser = "adr$($stamp.Substring(9, 6))"
-
-        $serverOut = Join-Path $workDir "server-retry-prepare.out.log"
-        $serverErr = Join-Path $workDir "server-retry-prepare.err.log"
-        Start-OnlineServer $StorePath $serverOut $serverErr
-        $prepare = Invoke-TestProcess "RetryPrepare" $retryUser 0 0 $StorePath
-        if ($prepare.ExitCode -ne 0) { $script:Failed++ }
-        Stop-OnlineServer
-        Flush-ServerLogSinks
-
-        $serverOut = Join-Path $workDir "server-retry-failure.out.log"
-        $serverErr = Join-Path $workDir "server-retry-failure.err.log"
-        Start-OnlineServer $StorePath $serverOut $serverErr
-        $lock = [System.IO.File]::Open($resolvedStore, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
-        try {
-            $failure = Invoke-TestProcess "RetryFailureQuick" $retryUser 0 0 $StorePath
-            if ($failure.ExitCode -ne 0) { $script:Failed++ }
-            Start-Sleep -Seconds 12
-        } finally {
-            $lock.Dispose()
-        }
-        Stop-OnlineServer
-        Flush-ServerLogSinks
-        $failureAttempts = @(Get-StoreTempFiles $resolvedStore).Count
-        Write-Host "RETRY_FAILURE_SAVE_ATTEMPTS=$failureAttempts"
-        if ($failureAttempts -lt 3) {
-            Write-Host "RETRY-FAILURE | Failed | 0ms | expected at least 3 save attempts"
-            $script:Failed++
-        } else {
-            Write-Host "RETRY-FAILURE | Passed | 0ms |"
-        }
-        Clear-StoreTempFiles $resolvedStore
-
-        $serverOut = Join-Path $workDir "server-retry-cancel.out.log"
-        $serverErr = Join-Path $workDir "server-retry-cancel.err.log"
-        Start-OnlineServer $StorePath $serverOut $serverErr
-        $lock = [System.IO.File]::Open($resolvedStore, [System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
-        try {
-            $cancel = Invoke-TestProcess "RetryCancelQuick" $retryUser 0 0 $StorePath
-            if ($cancel.ExitCode -ne 0) { $script:Failed++ }
-        } finally {
-            $lock.Dispose()
-        }
-        Stop-OnlineServer
-        Flush-ServerLogSinks
-        $cancelAttempts = @(Get-StoreTempFiles $resolvedStore).Count
-        Write-Host "RETRY_CANCEL_SAVE_ATTEMPTS=$cancelAttempts"
-        if ($cancelAttempts -ne 1) {
-            Write-Host "RETRY-CANCEL | Failed | 0ms | expected exactly 1 old-epoch save attempt"
-            $script:Failed++
-        } else {
-            Write-Host "RETRY-CANCEL | Passed | 0ms |"
-        }
-
-        Write-Step "Captured server output files"
-        foreach ($file in Get-ChildItem -LiteralPath $workDir -File) {
-            Write-Host "FILE: $($file.FullName)"
-            Get-Content -LiteralPath $file.FullName -Raw | Write-Host
-        }
-        Write-Host "ONLINE_LIFECYCLE_SCRIPT_RESULT=$(Get-ScriptResult)"
-        exit (Get-ScriptExitCode)
-    }
-
     if ($LoginEntryOnly) {
         # === 阶段 1: LOGIN-AUTO-01 至 04 使用独立临时 Store ===
         $loginWorkDir = Join-Path $workDir "login-entry-only"
@@ -574,7 +509,7 @@ try {
     $script:CreatedStorePaths.Add($resolvedBadEncodedStore) | Out-Null
     $validButBad = @"
 {
-  "SchemaVersion": 1,
+  "SchemaVersion": 4,
   "NextAccountId": 1000002,
   "NextPlayerId": 2000002,
   "Accounts": [

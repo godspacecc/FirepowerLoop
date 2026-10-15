@@ -1,11 +1,6 @@
 ##var,Id,Order,LabelText
 ##type,string,int,string
-,inventory-item,100,背包物品
-,player-condition,200,玩家状态
-,player-attribute,300,玩家属性
 ,diagnostics,350,诊断工具
 ,network-diagnostics,400,网络诊断
 ,camera-view,500,相机视角
-,environment-weather,550,基地天气
 ,arcade-game,600,街机小游戏
-,appearance-gallery,700,造型预览

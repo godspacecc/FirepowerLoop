@@ -103,9 +103,6 @@ namespace Game
         public Task<OnlineArcadeOperationResult> ConfirmAbandonAsync() =>
             OperateSafeShop(OnlineArcadeOperationState.Abandoning, 5, string.Empty, 0, false);
 
-        public Task<OnlineArcadeOperationResult> ClaimPendingRewardsAsync() =>
-            OperateSafeShop(OnlineArcadeOperationState.Claiming, 6, string.Empty, 0, false);
-
         /// <summary>
         /// 上报本地玩家的移动、瞄准、持续射击及一次性消耗品意图；位置、命中及伤害始终由服务器裁决。
         /// 同一时刻只保留一个输入 RPC，失败不会回滚已经发出的单调序号。
@@ -369,13 +366,10 @@ namespace Game
                 Dictionary<string, string> equipment = new(StringComparer.Ordinal);
                 foreach (OnlineArcadeEquipmentInfo item in sourcePlayer.Equipment)
                     equipment[item.SlotId ?? string.Empty] = item.ProductId ?? string.Empty;
-                Dictionary<string, long> pendingRewards = new(StringComparer.Ordinal);
-                foreach (OnlineArcadeRewardAmountInfo reward in sourcePlayer.PendingRewards)
-                    pendingRewards[reward.RewardId ?? string.Empty] = reward.Amount;
                 players.Add(new OnlineArcadePlayerSnapshot(sourcePlayer.PlayerId, sourcePlayer.DisplayName,
                     sourcePlayer.Lives, sourcePlayer.RunGold, sourcePlayer.Bombs, sourcePlayer.Dashes,
                     sourcePlayer.WeaponId, sourcePlayer.Ready, offers, upgrades, consumables, equipment,
-                    pendingRewards, sourcePlayer.SettlementConfirmed, sourcePlayer.AbandonConfirmed,
+                    sourcePlayer.SettlementConfirmed, sourcePlayer.AbandonConfirmed,
                     sourcePlayer.SettlementState, sourcePlayer.ChallengeReady, sourcePlayer.Score,
                     Math.Max(1, sourcePlayer.ScoreMultiplier), sourcePlayer.MultiplierProgress));
             }
@@ -513,7 +507,7 @@ namespace Game
             bool hadRun = lastSnapshot.HasRun;
             Publish(OnlineArcadeRunClientSnapshot.Empty());
             pendingResult = null; resultStore = null; resultReadFailed = false;
-            if (hadRun) this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync().Forget();
+            if (hadRun) this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync().Forget();
         }
 
         /// <summary>
@@ -535,7 +529,7 @@ namespace Game
             var ownerStore = resultStore;
             try
             {
-                var menu = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync();
+                var menu = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
                 if (!menu.Success) { Notify.ShowFloatTips(menu.Error); return; }
                 if (result != pendingResult || ownerStore != resultStore) return;
                 var scores = string.Join("\n", result.Scores.Select(pair => Loc.T("ui.arcade.hud.score", pair.Value)));

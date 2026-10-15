@@ -602,7 +602,7 @@ namespace Game.Tests
             architecture.RegisterModel(mapSceneModel);
             architecture.RegisterUtility(localization);
             architecture.RegisterSystem(new RuntimeLogSystem());
-            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null, null, null));
+            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null));
 
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic)
                 ?.SetValue(null, architecture);

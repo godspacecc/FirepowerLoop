@@ -14,12 +14,6 @@ namespace ET.Server
             response.DisplayName = result.DisplayName;
             response.Revision = result.Revision;
             response.IsNewAccount = result.IsNewAccount;
-            if (result.Error == ErrorCode.ERR_Success)
-            {
-                OnlinePlayerProfileRecord profile = accountComponent.GetProfile(result.AccountId, result.PlayerId);
-                response.OnlineInventory = OnlineInventoryRecordHelper.ToMessage(profile.OnlineInventory);
-                response.HasReceivedOnlineStarterSupplies = profile.HasReceivedOnlineStarterSupplies;
-            }
             await ETTask.CompletedTask;
         }
     }

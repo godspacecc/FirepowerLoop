@@ -42,9 +42,8 @@ namespace Game.Tests
             Assert.That(CountMissingScriptsInHierarchy(prefab), Is.Zero);
             Assert.That(CountMissingScriptsInHierarchy(boxPrefab), Is.Zero);
 
-            var ctrl = new MapSelectionUICtrl();
-            Assert.That(ctrl.Layer(), Is.EqualTo(UILayer.Dialog));
-            Assert.That(ctrl.BlocksGame, Is.True);
+
+
         }
 
         [Test]

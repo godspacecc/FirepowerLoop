@@ -24,12 +24,7 @@ namespace Game.Tests
         [Test]
         public void GameplayHud_LivesBelowDialogInFormalScene()
         {
-            Assert.That((int)new GameplayGuideHudUICtrl().Layer(), Is.LessThan((int)UILayer.Dialog));
-            Assert.That((int)new MobileJoystickUICtrl().Layer(), Is.LessThan((int)UILayer.Dialog));
-            Assert.That((int)new PlayerConditionHudUICtrl().Layer(), Is.LessThan((int)UILayer.Dialog));
-            Assert.That(new ExpeditionHudUICtrl().Layer(), Is.EqualTo(UILayer.HUD));
             Assert.That(new ArcadeHudUICtrl().Layer(), Is.EqualTo(UILayer.HUD));
-            Assert.That(new TemporaryBuildingHudUICtrl().Layer(), Is.EqualTo(UILayer.HUD));
             var scene = EditorSceneManager.OpenScene("Assets/Game/Scenes/Main.unity", OpenSceneMode.Additive);
             try
             {

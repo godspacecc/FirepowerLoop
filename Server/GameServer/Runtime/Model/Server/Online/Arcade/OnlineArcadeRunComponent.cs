@@ -27,7 +27,6 @@ namespace ET.Server
         SetReady = 3,
         ConfirmSettlement = 4,
         ConfirmAbandon = 5,
-        ClaimPendingRewards = 6,
         SetChallengeReady = 7,
     }
 
@@ -68,11 +67,9 @@ namespace ET.Server
         public Dictionary<string, int> UpgradeStacks { get; set; } = new();
         public Dictionary<string, int> Consumables { get; set; } = new();
         public Dictionary<string, string> EquipmentBySlot { get; set; } = new();
-        /// <summary>尚未写入基地档案的正式奖励；只在安全节点事务成功后增长。</summary>
-        public Dictionary<string, long> PendingRewards { get; set; } = new();
         public bool SettlementConfirmed { get; set; }
         public bool AbandonConfirmed { get; set; }
-        /// <summary>0=未结算，1=正式奖励已入账，2=已转为离线待领取。</summary>
+        /// <summary>0=尚未确认本局结果，1=本局结果已成功保存。</summary>
         public int SettlementState { get; set; }
     }
 
@@ -118,24 +115,6 @@ namespace ET.Server
     {
         public int SchemaVersion { get; set; } = 2;
         public List<OnlineArcadeRunRecord> Runs { get; set; } = new();
-        public List<OnlineArcadeRewardWalletRecord> RewardWallets { get; set; } = new();
-    }
-
-    [EnableClass]
-    public sealed class OnlineArcadePendingRewardRecord
-    {
-        public long RunId { get; set; }
-        public Dictionary<string, long> Rewards { get; set; } = new();
-    }
-
-    /// <summary>玩家正式奖励余额、恰好一次账本与离线待领取队列；与运行局安全节点同文件原子提交。</summary>
-    [EnableClass]
-    public sealed class OnlineArcadeRewardWalletRecord
-    {
-        public long PlayerId { get; set; }
-        public Dictionary<string, long> Balances { get; set; } = new();
-        public HashSet<long> SettledRunIds { get; set; } = new();
-        public List<OnlineArcadePendingRewardRecord> PendingClaims { get; set; } = new();
     }
 
     /// <summary>竞技场内单名玩家的服务器权威瞬时状态；退出现场后全部丢弃。</summary>
@@ -356,7 +335,6 @@ namespace ET.Server
         public readonly Dictionary<long, EntityRef<OnlineArcadeRunActor>> Runs = new();
         public readonly Dictionary<long, long> RunIdsByPlayer = new();
         public readonly Dictionary<long, long> RunIdsByRoom = new();
-        public readonly Dictionary<long, OnlineArcadeRewardWalletRecord> RewardWallets = new();
     }
 
     /// <summary>联机街机权威工作态与最近提交点；不自行写盘或发奖，Battle 现场仅存在于当前进程。</summary>

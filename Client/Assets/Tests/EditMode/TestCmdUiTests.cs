@@ -53,9 +53,6 @@ namespace Game.Tests
             tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayTestCmdUiTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             Game.Interface.GetSystem<SettingsSystem>().SetClockForTests(settingsClock);
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(tempRoot);
-            Game.Interface.GetModel<SaveModel>().SetBase(new BaseSaveData(), true);
-            EnterBase();
         }
 
         [UnityTest]
@@ -178,7 +175,6 @@ namespace Game.Tests
             Assert.That(ctrl.IsShow(), Is.False);
             Assert.That(UIHelper.GetUICtrl<RuntimeLogUICtrl>().IsShow(), Is.True);
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.EqualTo(new[] { "#log" }));
-            Assert.That(SnapshotText(Game.Interface.GetModel<PlayerBagModel>().Container), Is.Empty);
         }
 
         [Test]
@@ -191,7 +187,6 @@ namespace Game.Tests
             ui.InputCommand.text = "#clone 1 1";
             ui.BtnExecute.onClick.Invoke();
 
-            Assert.That(Game.Interface.GetModel<PlayerBagModel>().Container.Slots.Values.Sum(slot => slot.Amount), Is.EqualTo(1));
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands.Count, Is.EqualTo(1));
             Assert.That(ui.InputCommand.isFocused, Is.False);
             if (EventSystem.current != null)
@@ -220,7 +215,6 @@ namespace Game.Tests
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.Empty);
             yield return null;
 
-            Assert.That(Game.Interface.GetModel<PlayerBagModel>().Container.Slots.Values.Sum(slot => slot.Amount), Is.EqualTo(2));
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands.Count, Is.EqualTo(1));
             Assert.That(ui.InputCommand.isFocused, Is.False);
             if (EventSystem.current != null)
@@ -239,7 +233,6 @@ namespace Game.Tests
             UIHelper.HideUI<TestCmdUICtrl>();
             ctrl = UIHelper.ShowUI<TestCmdUICtrl>();
             yield return null;
-            Assert.That(SnapshotText(Game.Interface.GetModel<PlayerBagModel>().Container), Is.Empty);
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.Empty);
             Assert.That(ctrl.IsShow(), Is.True);
 
@@ -253,7 +246,6 @@ namespace Game.Tests
             ui.BtnExecute.onClick.Invoke();
             yield return null;
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.EqualTo(new[] { "#clone 1 2" }));
-            Assert.That(Game.Interface.GetModel<PlayerBagModel>().Container.Slots.Values.Sum(slot => slot.Amount), Is.EqualTo(2));
         }
 
         [TearDown]
@@ -457,55 +449,10 @@ namespace Game.Tests
             Assert.That(ui.ResultScrollRect.viewport, Is.SameAs(ui.ResultViewportRect));
             Assert.That(ui.ResultScrollRect.content, Is.SameAs(ui.ResultContentRect));
 
-            ui.InputCommand.text = "#clone 金属";
+            ui.InputCommand.text = "#unitbar on";
             ui.BtnExecute.onClick.Invoke();
 
-            Assert.That(ui.TextResult.text, Does.Contain("获得金属零件x1。"));
-        }
-
-        [UnityTest]
-        public IEnumerator CloneSubmitShowsOneLocalizedGainTipForActualAcceptedAmountOnly()
-        {
-            var ctrl = UIHelper.ShowUI<TestCmdUICtrl>();
-            var ui = GetBaseUI<TestCmdUI>(ctrl);
-
-            ui.InputCommand.text = "#clone 1 2";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(ActiveFloatTipTexts(), Is.EqualTo(new[] { Texts.TipItemGained("金属零件", 2) }));
-            Assert.That(ui.TextResult.text, Is.EqualTo("获得金属零件x2。"));
-            ClearFloatTips();
-
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            for (var i = 0; i < 11; i++)
-            {
-                Assert.That(bag.TryAdd(ItemIds.Cloth, 5, 5, out _, out var error), Is.True, error);
-            }
-
-            ui.InputCommand.text = "#clone 1 10";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(ActiveFloatTipTexts(), Is.EqualTo(new[] { Texts.TipItemGained("金属零件", 3) }));
-            Assert.That(ui.TextResult.text, Is.EqualTo("获得金属零件x3，未接收7。"));
-            ClearFloatTips();
-
-            ui.InputCommand.text = "#clone item";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(ActiveFloatTipTexts(), Is.Empty);
-
-            ui.InputCommand.text = "#clone 1 1";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(ActiveFloatTipTexts(), Is.Empty);
-
-            ui.InputCommand.text = "#clear bag";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(ActiveFloatTipTexts(), Is.Empty);
-
-            network.State = NetworkConnectionState.Connected;
-            PublishAuthenticated();
-            ui.InputCommand.text = "$ping";
-            ui.BtnExecute.onClick.Invoke();
-            Assert.That(network.SinglePending<C2G_ExecuteServerTestCmd>().Complete(PingResponse()), Is.True);
-            yield return null;
-            Assert.That(ActiveFloatTipTexts(), Is.Empty);
+            Assert.That(ui.TextResult.text, Does.Contain("敌人头顶生命条已开启"));
         }
 
         [Test]
@@ -633,20 +580,7 @@ namespace Game.Tests
             Assert.That(entries.Select(item => item.Id), Is.Unique);
 
             // 验证实际生成目录覆盖全部客户端指令，不锁定中文文案以免正常说明更新导致误报。
-            var requiredTemplates = new[]
-            {
-                "#clone ", "#clear bag", "#advance time ", "#unitbar on", "#unitbar off",
-                "#set hp ", "#set power ", "#set tili ", "#set maxhp ", "#set movespeed ",
-                "#set water ", "#set maxwater ", "#set temp ", "#log", "#terrain",
-                "#terrain instancing off", "#terrain instancing restore", "#netlog on", "#netlog off",
-                "#camera topdown", "#camera shoulder", "#camera firstperson",
-                "#mobileinput on", "#mobileinput off",
-                "#weather rain", "#weather clear", "#weather dry", "#weather demo", "#weather status",
-                "#arcade status", "#arcade heal", "#arcade damage ", "#arcade gold ",
-                "#arcade bombs ", "#arcade dashes ", "#arcade drop ", "#arcade clear wave", "#arcade clear arena",
-                "#arcade drop arcade.drop.first_person",
-                "#gallery", "#appearance list", "#appearance ", "#appearance reset"
-            };
+            var requiredTemplates = new[] { "#log", "#terrain", "#terrain instancing off", "#terrain instancing restore", "#mobileinput on", "#mobileinput off", "#netlog on", "#netlog off", "#camera topdown", "#camera shoulder", "#camera firstperson", "#arcade status", "#arcade heal", "#arcade damage ", "#arcade gold ", "#arcade bombs ", "#arcade dashes ", "#arcade drop ", "#arcade drop arcade.drop.first_person", "#arcade clear wave", "#arcade clear arena", "#unitbar on", "#unitbar off" };
             Assert.That(entries.Select(item => item.CommandTemplate), Is.SupersetOf(requiredTemplates));
             var categoryIds = new HashSet<string>(categories.Select(item => item.Id));
             foreach (var entry in entries)
@@ -940,7 +874,6 @@ namespace Game.Tests
             Assert.That(ui.TextUsage.text, Is.Empty);
             Assert.That(ui.TextExample.text, Is.Empty);
             Assert.That(ui.TextResult.text, Is.EqualTo("暂无结果。"));
-            Assert.That(SnapshotText(Game.Interface.GetModel<PlayerBagModel>().Container), Is.Empty);
 
             var inventoryCategory = CreateRefreshedCategory(ctrl, 1);
             inventoryCategory.BtnSelect.onClick.Invoke();
@@ -953,7 +886,6 @@ namespace Game.Tests
             Assert.That(ui.TextDetails.text, Is.EqualTo("向当前玩家背包加入物品。"));
             Assert.That(ui.TextUsage.text, Is.EqualTo("语法：#clone <ItemId> <Amount>"));
             Assert.That(ui.TextExample.text, Is.EqualTo("示例：#clone 3 5"));
-            Assert.That(SnapshotText(Game.Interface.GetModel<PlayerBagModel>().Container), Is.Empty);
 
             clearTemplate.BtnSelect.onClick.Invoke();
             Assert.That(ui.InputCommand.text, Is.EqualTo("#clear bag"));
@@ -1134,31 +1066,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OpenTestCmdBlocksGameplayInputWithoutPausingWorld()
-        {
-            var beforeScale = Time.timeScale;
-            var input = Game.Interface.GetSystem<PlayerInputSystem>();
-            var ctrl = UIHelper.ShowUI<TestCmdUICtrl>();
-
-            Assert.That(ctrl.IsShow(), Is.True);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Playing));
-            Assert.That(Time.timeScale, Is.EqualTo(beforeScale));
-            Assert.That(UIHelper.HasUIOpen, Is.True);
-            Assert.That(input.MoveInput, Is.EqualTo(Vector2.zero));
-
-            var attacks = 0;
-            var interactions = 0;
-            Game.Interface.RegisterEvent<PlayerAttackRequestedEvent>(_ => attacks++);
-            Game.Interface.RegisterEvent<PlayerInteractRequestedEvent>(_ => interactions++);
-            LifeCycle.Update();
-
-            Assert.That(attacks, Is.EqualTo(0));
-            Assert.That(interactions, Is.EqualTo(0));
-            UIHelper.HideUI<TestCmdUICtrl>();
-            Assert.That(UIHelper.HasUIOpen, Is.False);
-        }
-
-        [Test]
         public void TestCmdUsesReadableLabelsResultsAndIgnoresLanguageSwitch()
         {
             var zhJson = File.ReadAllText(Path.Combine(Application.dataPath, "Game/Config/Localization/zh-CN.json"));
@@ -1200,19 +1107,6 @@ namespace Game.Tests
             ui.InputCommand.text = "#clear bag";
             ui.BtnExecute.onClick.Invoke();
             Assert.That(ui.TextResult.text, Does.Contain("已清空玩家背包"));
-        }
-
-        private static void EnterBase()
-        {
-            var app = Game.Interface.GetSystem<AppStateSystem>();
-            app.TryTransition(AppState.Loading);
-            app.TryTransition(AppState.Playing);
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null);
-            Game.Interface.GetSystem<InventorySystem>().TrySetPlayerBagRiskState(PlayerBagRiskState.BaseSafe, "test", false, out _);
-            Game.Interface.GetModel<CombatModel>().ApplyPlayerConfig(
-                new PlayerConfigDefinition("player", string.Empty, 100, 10, 1f, 1f, 1f, 1f, 5f),
-                false);
-            Game.Interface.GetModel<CombatModel>().SetPlayerHP(100);
         }
 
         private static T GetBaseUI<T>(BaseUICtrl ctrl) where T : BaseUI
@@ -1543,13 +1437,6 @@ namespace Game.Tests
             return rect.anchoredPosition.y - rect.sizeDelta.y * rect.pivot.y;
         }
 
-        private static string SnapshotText(ItemContainer container)
-        {
-            return string.Join("|", container.Slots
-                .OrderBy(pair => pair.Key)
-                .Select(pair => $"{pair.Key}:{pair.Value.ItemId}:{pair.Value.Amount}"));
-        }
-
         private static global::Tables LoadGeneratedTables()
         {
             return new global::Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine("Assets/Game/Config", $"{name}.bytes"))));
@@ -1817,11 +1704,11 @@ namespace Game.Tests
             {
                 switch (id)
                 {
-                    case ItemIds.MetalParts:
+                    case 1:
                         value = new ItemDefinition(id, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
                         error = null;
                         return true;
-                    case ItemIds.Cloth:
+                    case 2:
                         value = new ItemDefinition(id, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
                         error = null;
                         return true;
@@ -1836,8 +1723,8 @@ namespace Game.Tests
             {
                 values = new[]
                 {
-                    new ItemDefinition(ItemIds.MetalParts, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(ItemIds.Cloth, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0)
+                    new ItemDefinition(1, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
+                    new ItemDefinition(2, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0)
                 };
                 error = null;
                 return true;
@@ -1875,13 +1762,6 @@ namespace Game.Tests
             {
                 value = default;
                 error = "missing loot";
-                return false;
-            }
-
-            public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing extraction";
                 return false;
             }
 

@@ -108,52 +108,6 @@ namespace Game
             return true;
         }
 
-        public void CollectMovementHits(Vector3 from, Vector3 to, List<ProjectileMovementHit> results)
-        {
-            results.Clear();
-            EnsureComponents();
-            if (BoxCollider == null)
-            {
-                return;
-            }
-
-            var delta = to - from;
-            var distance = delta.magnitude;
-            if (distance <= 0.0001f)
-            {
-                return;
-            }
-
-            var direction = delta / distance;
-            var scale = transform.lossyScale;
-            var halfExtents = new Vector3(
-                Mathf.Abs(BoxCollider.size.x * scale.x) * 0.5f,
-                Mathf.Abs(BoxCollider.size.y * scale.y) * 0.5f,
-                Mathf.Abs(BoxCollider.size.z * scale.z) * 0.5f);
-            var center = from + transform.rotation * Vector3.Scale(BoxCollider.center, scale);
-            var hits = Physics.BoxCastAll(
-                center,
-                halfExtents,
-                direction,
-                transform.rotation,
-                distance,
-                ~0,
-                QueryTriggerInteraction.Collide);
-
-            for (var i = 0; i < hits.Length; i++)
-            {
-                var hit = hits[i];
-                if (hit.collider == null || hit.collider == BoxCollider)
-                {
-                    continue;
-                }
-
-                results.Add(new ProjectileMovementHit(hit.collider, hit.distance));
-            }
-
-            results.Sort((a, b) => a.Distance.CompareTo(b.Distance));
-        }
-
         private void OnTriggerEnter(Collider other)
         {
             collisionHandler?.Invoke(projectileRuntimeId, other);

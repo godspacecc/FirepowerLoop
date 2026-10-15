@@ -66,12 +66,12 @@ namespace Tests.EditMode
         public void VisibleCelestialBody_AlignsWithLightingRegardlessOfEventOrder(float progress)
         {
             Initialize();
-            lighting.Apply(new DayNightVisualSnapshot(progress, true));
+            lighting.Apply(progress);
             Apply(progress);
             var property = progress == 0f ? "_MoonDirection" : "_SunDirection";
             var incomingRay = ((Vector3)RenderSettings.skybox.GetVector(property)).normalized;
             Assert.That(Vector3.Dot(incomingRay, lightObject.transform.forward), Is.GreaterThan(0.9999f));
-            lighting.Apply(new DayNightVisualSnapshot(progress, true));
+            lighting.Apply(progress);
             Assert.That(Vector3.Dot(incomingRay, lightObject.transform.forward), Is.GreaterThan(0.9999f));
         }
 
@@ -94,7 +94,7 @@ namespace Tests.EditMode
         {
             var templateColor = template.GetColor("_SkyColor");
             RenderSettings.reflectionIntensity = 0.83f;
-            lighting.Apply(new DayNightVisualSnapshot(0.35f, true));
+            lighting.Apply(0.35f);
             var originalRotation = lightObject.transform.rotation;
             Initialize();
             Apply(0.35f);
@@ -234,7 +234,7 @@ namespace Tests.EditMode
         }
 
         private void Initialize() => Assert.That(Invoke("Initialize", lighting), Is.EqualTo(true));
-        private void Apply(float progress) => Invoke("Apply", new DayNightVisualSnapshot(progress, true));
+        private void Apply(float progress) => Invoke("Apply", progress);
         private object Invoke(string name, params object[] args) => sky.GetType()
             .GetMethod(name, BindingFlags.NonPublic | BindingFlags.Instance).Invoke(sky, args);
     }

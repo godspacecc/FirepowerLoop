@@ -1200,8 +1200,7 @@ namespace Game.Tests
                         Is.EqualTo("房间类型不匹配，请从相同玩法入口加入"));
                     Assert.That(OnlineRoomText.Result(OnlineRoomResultCode.VersionMismatch),
                         Is.EqualTo("客户端版本或玩法配置不一致"));
-                    Assert.That(OnlineWorldText.Result(OnlineWorldResultCode.NotInWorld),
-                        Is.EqualTo("当前不在联机世界中"));
+
                     Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.SaveFailed),
                         Is.EqualTo("街机进度保存失败，请重试"));
                     Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.OperationConflict),
@@ -1216,8 +1215,7 @@ namespace Game.Tests
                         Is.EqualTo("Room type mismatch. Join from the same game mode entry"));
                     Assert.That(OnlineRoomText.Result(OnlineRoomResultCode.VersionMismatch),
                         Is.EqualTo("Client version or gameplay configuration does not match"));
-                    Assert.That(OnlineWorldText.Result(OnlineWorldResultCode.NotInWorld),
-                        Is.EqualTo("You are not currently in an online world"));
+
                     Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.SaveFailed),
                         Is.EqualTo("Failed to save arcade progress. Please retry"));
                     Assert.That(ArcadeUiFormatter.OnlineResult(OnlineArcadeResultCode.OperationConflict),

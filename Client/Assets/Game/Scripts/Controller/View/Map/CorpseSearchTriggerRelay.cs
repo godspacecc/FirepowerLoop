@@ -1,25 +1,7 @@
 using UnityEngine;
-
 namespace Game
 {
+    /// <summary>保留旧资源脚本身份，街机不注册尸体搜索触发。</summary>
     [DisallowMultipleComponent]
-    public sealed class CorpseSearchTriggerRelay : MonoBehaviour
-    {
-        private EnemyView owner;
-
-        internal void Configure(EnemyView configuredOwner)
-        {
-            owner = configuredOwner;
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            owner?.HandleCorpseSearchTriggerEnter(other);
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            owner?.HandleCorpseSearchTriggerExit(other);
-        }
-    }
+    public sealed class CorpseSearchTriggerRelay : MonoBehaviour { }
 }

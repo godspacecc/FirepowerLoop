@@ -2,24 +2,7 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>配置层交给远征运行时的不可变撤离任务定义。</summary>
-    public sealed class ExpeditionTaskDefinition
-    {
-        /// <summary>由正式 Provider 在整表校验成功后创建；此对象只承载冻结配置，不允许运行时进度回写。</summary>
-        public ExpeditionTaskDefinition(string id, string mapId, string name, string nameKey, global::TaskObjectiveType objectiveType, float targetAmount, int order)
-        {
-            Id = id; MapId = mapId; Name = name; NameKey = nameKey; ObjectiveType = objectiveType; TargetAmount = targetAmount; Order = order;
-        }
-
-        public string Id { get; }
-        public string MapId { get; }
-        public string Name { get; }
-        public string NameKey { get; }
-        public global::TaskObjectiveType ObjectiveType { get; }
-        public float TargetAmount { get; }
-        public int Order { get; }
-    }
-
+    /// <summary>街机共用物品及表现资源的只读配置快照。</summary>
     public readonly struct ItemDefinition
     {
         public ItemDefinition(
@@ -155,157 +138,6 @@ namespace Game
         public Vector3 LocalScale { get; }
     }
 
-    public readonly struct CraftMaterialDefinition
-    {
-        public CraftMaterialDefinition(int itemId, int amount)
-        {
-            ItemId = itemId;
-            Amount = amount;
-        }
-
-        public int ItemId { get; }
-        public int Amount { get; }
-    }
-
-    public sealed class CraftRecipeDefinition
-    {
-        private readonly CraftMaterialDefinition[] materials;
-
-        public CraftRecipeDefinition(
-            string id,
-            int outputItemId,
-            int outputAmount,
-            System.Collections.Generic.IEnumerable<CraftMaterialDefinition> materials,
-            int order)
-        {
-            Id = id;
-            OutputItemId = outputItemId;
-            OutputAmount = outputAmount;
-            this.materials = System.Linq.Enumerable.ToArray(
-                System.Linq.Enumerable.OrderBy(
-                    materials ?? System.Array.Empty<CraftMaterialDefinition>(),
-                    material => material.ItemId));
-            Materials = System.Array.AsReadOnly(this.materials);
-            Order = order;
-        }
-
-        public string Id { get; }
-        public int OutputItemId { get; }
-        public int OutputAmount { get; }
-        public System.Collections.Generic.IReadOnlyList<CraftMaterialDefinition> Materials { get; }
-        public int Order { get; }
-    }
-
-    public readonly struct ItemCostDefinition
-    {
-        public ItemCostDefinition(int itemId, int amount)
-        {
-            ItemId = itemId;
-            Amount = amount;
-        }
-
-        public int ItemId { get; }
-        public int Amount { get; }
-    }
-
-    public sealed class TempBuildingDefinition
-    {
-        /// <summary>默认只允许离线基地建造；显式远征例外由 ExpeditionMapId 提供，服务器仍拒绝联机请求。</summary>
-        public bool BaseOnly { get; }
-        /// <summary>基地摆件可额外建造的离线远征地图 ID；空字符串表示没有例外，不开放联机。</summary>
-        public string ExpeditionMapId { get; }
-        private readonly ItemCostDefinition[] materials;
-
-        public TempBuildingDefinition(
-            string id,
-            string name,
-            string nameKey,
-            string iconAddress,
-            string prefabAddress,
-            System.Collections.Generic.IEnumerable<ItemCostDefinition> materials,
-            float buildSeconds,
-            float footprintRadius,
-            float maxSlopeDegrees,
-            float narrowPassageRadius,
-            bool blocksNavigation,
-            int order,
-            bool baseOnly = false,
-            string expeditionMapId = "")
-        {
-            BaseOnly = baseOnly;
-            ExpeditionMapId = expeditionMapId ?? string.Empty;
-            Id = id;
-            Name = name;
-            NameKey = nameKey;
-            IconAddress = iconAddress;
-            PrefabAddress = prefabAddress;
-            this.materials = System.Linq.Enumerable.ToArray(
-                System.Linq.Enumerable.OrderBy(
-                    materials ?? System.Array.Empty<ItemCostDefinition>(),
-                    material => material.ItemId));
-            Materials = System.Array.AsReadOnly(this.materials);
-            BuildSeconds = buildSeconds;
-            FootprintRadius = footprintRadius;
-            MaxSlopeDegrees = maxSlopeDegrees;
-            NarrowPassageRadius = narrowPassageRadius;
-            BlocksNavigation = blocksNavigation;
-            Order = order;
-        }
-
-        public string Id { get; }
-        public string Name { get; }
-        public string NameKey { get; }
-        public string IconAddress { get; }
-        public string PrefabAddress { get; }
-        public System.Collections.Generic.IReadOnlyList<ItemCostDefinition> Materials { get; }
-        public float BuildSeconds { get; }
-        /// <summary>建筑占地圆半径，单位米；建造和拆除共用它补偿玩家到占地边缘的距离。</summary>
-        public float FootprintRadius { get; }
-        public float MaxSlopeDegrees { get; }
-        public float NarrowPassageRadius { get; }
-        public bool BlocksNavigation { get; }
-        public int Order { get; }
-    }
-
-    public sealed class TempBuildingManualAttackDefinition
-    {
-        public TempBuildingManualAttackDefinition(
-            string buildingId,
-            float interactDistance,
-            float shootCooldownSeconds,
-            int damage,
-            string projectileConfigId,
-            int ammoItemId,
-            int ammoAmount,
-            int magazineCapacity,
-            float reloadSeconds,
-            float operateRotateDegreesPerSecond)
-        {
-            BuildingId = buildingId;
-            InteractDistance = interactDistance;
-            ShootCooldownSeconds = shootCooldownSeconds;
-            Damage = damage;
-            ProjectileConfigId = projectileConfigId;
-            AmmoItemId = ammoItemId;
-            AmmoAmount = ammoAmount;
-            MagazineCapacity = magazineCapacity;
-            ReloadSeconds = reloadSeconds;
-            OperateRotateDegreesPerSecond = operateRotateDegreesPerSecond;
-        }
-
-        public string BuildingId { get; }
-        public float InteractDistance { get; }
-        public float ShootCooldownSeconds { get; }
-        public int Damage { get; }
-        public string ProjectileConfigId { get; }
-        public int AmmoItemId { get; }
-        public int AmmoAmount { get; }
-        public int MagazineCapacity { get; }
-        public float ReloadSeconds { get; }
-        public float OperateRotateDegreesPerSecond { get; }
-        public ItemCostDefinition AmmoCost => new ItemCostDefinition(AmmoItemId, AmmoAmount);
-    }
-
     public readonly struct ProjectileConfigDefinition
     {
         public ProjectileConfigDefinition(
@@ -424,30 +256,6 @@ namespace Game
         public Quaternion LocalRotation { get; }
     }
 
-    public readonly struct NpcConfigDefinition
-    {
-        public NpcConfigDefinition(
-            string id,
-            string nameKey,
-            string prefabAddress,
-            global::NpcInteractionKind interactionKind,
-            string interactionParam)
-        {
-            Id = id;
-            NameKey = nameKey;
-            PrefabAddress = prefabAddress;
-            InteractionKind = interactionKind;
-            InteractionParam = interactionParam ?? string.Empty;
-        }
-
-        public string Id { get; }
-        public string NameKey { get; }
-        public string PrefabAddress { get; }
-        public global::NpcInteractionKind InteractionKind { get; }
-        public string InteractionParam { get; }
-    }
-
-    /// <summary>玩家只读静态配置，包含建造和拆除共用的操作距离；不保存运行时位置或操作模式。</summary>
     public readonly struct PlayerConfigDefinition
     {
         public PlayerConfigDefinition(
@@ -645,52 +453,6 @@ namespace Game
         public int Amount { get; }
     }
 
-    public readonly struct ExtractionConfigDefinition
-    {
-        public ExtractionConfigDefinition(string id, string prefabAddress)
-        {
-            Id = id;
-            PrefabAddress = prefabAddress;
-        }
-
-        public string Id { get; }
-        public string PrefabAddress { get; }
-    }
-
-    public readonly struct ShopDefinition
-    {
-        public ShopDefinition(string id, string nameKey)
-        {
-            Id = id;
-            NameKey = nameKey;
-        }
-
-        public string Id { get; }
-        public string NameKey { get; }
-    }
-
-    public readonly struct ShopItemDefinition
-    {
-        public ShopItemDefinition(string id, string shopId, int itemId, int order, int buyPrice, int sellPrice, bool initiallyOpen=false)
-        {
-            Id = id;
-            ShopId = shopId;
-            ItemId = itemId;
-            Order = order;
-            BuyPrice = buyPrice;
-            SellPrice = sellPrice;
-            InitiallyOpen = initiallyOpen;
-        }
-
-        public string Id { get; }
-        public string ShopId { get; }
-        public int ItemId { get; }
-        public int Order { get; }
-        public int BuyPrice { get; }
-        public int SellPrice { get; }
-        public bool InitiallyOpen { get; }
-    }
-
     public readonly struct TestCmdCategoryDefinition
     {
         public TestCmdCategoryDefinition(string id, int order, string labelText)
@@ -787,7 +549,7 @@ namespace Game
         public float SupportFireIntervalSeconds { get; }
     }
 
-    /// <summary>街机武器的近战或投射规则及表现参数，不持有基地装备或弹药权威状态。</summary>
+    /// <summary>街机武器的近战或投射规则及表现参数。</summary>
     public readonly struct ArcadeWeaponDefinition
     {
         public ArcadeWeaponDefinition(string id, string heldVisualResourceName, string projectileVisualResourceName,

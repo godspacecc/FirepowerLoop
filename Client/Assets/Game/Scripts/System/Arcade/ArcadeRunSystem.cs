@@ -438,12 +438,6 @@ namespace Game
             nextDeleteFailureForTests = string.IsNullOrWhiteSpace(error) ? "测试注入的街机存档删除失败" : error;
         }
 
-        private bool HasActiveBase(out string error)
-        {
-            error = null;
-            return true;
-        }
-
         private bool EnsureNoPendingRun(out string error)
         {
             var pending = store.Inspect();

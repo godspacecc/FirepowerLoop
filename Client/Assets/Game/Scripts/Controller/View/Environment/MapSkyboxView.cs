@@ -17,7 +17,6 @@ namespace Game
         [Tooltip("地图天空盒接管期间使用的环境反射强度；禁用组件时恢复接管前数值。")]
         [SerializeField, Range(0f, 1f)] private float reflectionIntensity = 0.5f;
 
-        private IUnRegister visualChangedUnregister;
         private Material baselineSkybox;
         private float baselineReflectionIntensity;
         private Material appliedSkybox;
@@ -31,18 +30,11 @@ namespace Game
             }
 
             CaptureBaseline();
-            visualChangedUnregister = Game.Interface.RegisterEvent<DayNightVisualChangedEvent>(OnVisualChanged);
-            var system = Game.Interface.GetSystem<DayNightVisualSystem>();
-            if (system != null)
-            {
-                Apply(system.GetSnapshot());
-            }
+            Apply(.5f);
         }
 
         private void OnDisable()
         {
-            visualChangedUnregister?.UnRegister();
-            visualChangedUnregister = null;
 
             if (Application.isPlaying)
             {
@@ -50,18 +42,13 @@ namespace Game
             }
         }
 
-        private void OnVisualChanged(DayNightVisualChangedEvent evt)
-        {
-            Apply(evt.Snapshot);
-        }
-
         /// <summary>
         /// 昼夜事件到达时幂等切换天空并维持地图反射强度；缺少对应材质时保留当前天空，
         /// 但仍应用反射强度，避免地形被默认天空反射洗白。
         /// </summary>
-        internal void Apply(DayNightVisualSnapshot snapshot)
+        internal void Apply(float dayProgress)
         {
-            var solarHeight = Mathf.Sin((snapshot.DayProgress - 0.25f) * Mathf.PI * 2f);
+            var solarHeight = Mathf.Sin((dayProgress - 0.25f) * Mathf.PI * 2f);
             var target = solarHeight < nightSolarHeightThreshold ? nightSkybox : daySkybox;
             var changed = false;
             if (!Mathf.Approximately(RenderSettings.reflectionIntensity, reflectionIntensity))

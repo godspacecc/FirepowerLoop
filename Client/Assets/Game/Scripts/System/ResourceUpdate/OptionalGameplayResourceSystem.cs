@@ -72,9 +72,9 @@ namespace Game
     public class OptionalGameplayResourceSystem : AbstractSystem
     {
         private const string PackageName = "DefaultPackage";
-        /// <summary>基础地图使用 startup；其他地图按稳定 ID 生成标签，新地图不需要改 Boot。</summary>
-        public static string GetMapTag(string mapId) => mapId == MapIds.Base || mapId == MapIds.CivilisationValley
-            ? "startup" : mapId == MapIds.Arcade ? "arcade" : mapId?.Replace('.', '-');
+
+        /// <summary>街机资源归属沿用现有清单标签。</summary>
+        public static string GetMapTag(string mapId) => mapId == MapIds.Arcade ? "arcade" : null;
         /// <summary>交互前服务器探测超时，单位秒；失败不创建下载事务。</summary>
         private const int ServerCheckTimeoutSeconds = 5;
         private ResourceDownloaderOperation currentDownloader;
@@ -238,11 +238,6 @@ namespace Game
                 downloading = false;
             }
         }
-
-        public virtual OptionalGameplayResourceQuery QueryExpedition() => QueryMap(MapIds.CivilisationValley);
-        public virtual UniTask<OptionalGameplayResourceQuery> CheckExpeditionAsync() => CheckMapAsync(MapIds.CivilisationValley);
-        public virtual UniTask<OptionalGameplayDownloadResult> DownloadExpeditionAsync(string version, Action<OptionalGameplayDownloadProgress> progress)
-            => DownloadMapAsync(MapIds.CivilisationValley, version, progress);
 
         private static OptionalGameplayResourceQuery Unavailable(string error) =>
             new OptionalGameplayResourceQuery(OptionalGameplayResourceState.Unavailable, string.Empty, 0, 0, error);

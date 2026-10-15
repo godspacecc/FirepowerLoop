@@ -56,7 +56,9 @@ namespace Game
         public HotKeyRebindResult Result { get; }
     }
 
-    public readonly struct HotKeyBindingsChangedEvent { }
+    public readonly struct HotKeyBindingsChangedEvent
+    {
+    }
 
     /// <summary>
     /// 维护默认动作、上下文仲裁和交互式重绑，包含诊断阶段始终可用的 F1 RuntimeLog 动作。
@@ -66,7 +68,6 @@ namespace Game
         private readonly Dictionary<string, InputAction> actionsByPath = new Dictionary<string, InputAction>();
         private HotKeyBinding pendingBinding;
         private bool isCapturing;
-
         protected override void OnInit()
         {
             RegisterDefaultActions();
@@ -98,10 +99,7 @@ namespace Game
             actionsByPath.Clear();
             foreach (var path in this.GetModel<HotKeyModel>().Bindings.Select(item => item.BindingPath).Distinct())
             {
-                var inputAction = new InputAction(
-                    $"HotKey:{path}",
-                    InputActionType.Button,
-                    binding: path);
+                var inputAction = new InputAction($"HotKey:{path}", InputActionType.Button, binding: path);
                 inputAction.Enable();
                 actionsByPath[path] = inputAction;
             }
@@ -109,9 +107,7 @@ namespace Game
 
         public bool IsTextInputFocused()
         {
-            return EventSystem.current != null &&
-                   EventSystem.current.currentSelectedGameObject != null &&
-                   EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
+            return EventSystem.current != null && EventSystem.current.currentSelectedGameObject != null && EventSystem.current.currentSelectedGameObject.GetComponent<TMP_InputField>() != null;
         }
 
         public bool IsCapturingRebind => isCapturing;
@@ -174,8 +170,6 @@ namespace Game
 
         private void Update()
         {
-            // 造型库是附加预览场景，不能让基地快捷键在隐藏 HUD 后继续触发正式玩法。
-            if (this.GetSystem<AppearanceGallerySceneFlowSystem>().IsOpen) return;
             if (IsTextInputFocused())
             {
                 return;
@@ -241,110 +235,28 @@ namespace Game
 
         public bool ExecuteBinding(string bindingPath)
         {
-            var candidates = this.GetModel<HotKeyModel>().Bindings
-                .Where(item => item.BindingPath == bindingPath)
-                .Select(item => item.ActionId);
+            var candidates = this.GetModel<HotKeyModel>().Bindings.Where(item => item.BindingPath == bindingPath).Select(item => item.ActionId);
             return this.GetUtility<HotKeyActionRegistry>().TryExecute(candidates);
         }
 
         /// <summary>由触屏按钮等非物理按键入口执行同一动作仲裁，避免复制暂停、窗口关闭等路由规则。</summary>
         public bool TryExecuteAction(string actionId)
         {
-            return !string.IsNullOrWhiteSpace(actionId) &&
-                   this.GetUtility<HotKeyActionRegistry>().TryExecute(new[] { actionId });
+            return !string.IsNullOrWhiteSpace(actionId) && this.GetUtility<HotKeyActionRegistry>().TryExecute(new[] { actionId });
         }
 
         private void RegisterDefaultActions()
         {
             var registry = this.GetUtility<HotKeyActionRegistry>();
-            registry.Register(new HotKeyAction
+            registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.TogglePause, Context = HotKeyContext.Gameplay, Priority = 10, CanExecute = () => ResolveTogglePauseRoute().CanExecute, Execute = () => ExecuteTogglePauseRoute(ResolveTogglePauseRoute()) });
+            registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.ToggleRuntimeLog, Context = HotKeyContext.Global, Priority = 1, CanExecute = () => true, Execute = () =>
             {
-                ActionId = HotKeyActionIds.ToggleGameplayGuide,
-                Context = HotKeyContext.Gameplay,
-                Priority = 40,
-                CanExecute = () => UIHelper.GetUICtrl<GameplayGuideHudUICtrl>()?.CanToggleDesktopGuide() == true,
-                Execute = () => UIHelper.GetUICtrl<GameplayGuideHudUICtrl>().ToggleDesktopGuide()
-            });
-            registry.Register(new HotKeyAction
-            {
-                ActionId = HotKeyActionIds.TogglePause,
-                Context = HotKeyContext.Gameplay,
-                Priority = 10,
-                CanExecute = () => ResolveTogglePauseRoute().CanExecute,
-                Execute = () =>
-                {
-                    ExecuteTogglePauseRoute(ResolveTogglePauseRoute());
-                }
-            });
-            registry.Register(new HotKeyAction
-            {
-                ActionId = HotKeyActionIds.ToggleInventory,
-                Context = HotKeyContext.Gameplay,
-                Priority = 20,
-                CanExecute = () =>
-                {
-                    if (IsShown<BagUICtrl>())
-                    {
-                        return true;
-                    }
-
-                    return InventoryOpenRules.CanOpenPlayerBag(out _);
-                },
-                Execute = () =>
-                {
-                    if (IsShown<BagUICtrl>())
-                    {
-                        UIHelper.HideUI<BagUICtrl>();
-                        return;
-                    }
-
-                    CleanupInvalidInventoryContexts();
-                    var warehouseOpen = IsShown<WarehouseUICtrl>();
-                    var searchOpen = IsShown<SearchContainerUICtrl>();
-                    if (warehouseOpen && searchOpen)
-                    {
-                        return;
-                    }
-
-                    BagUICtrl.TryShow(out _);
-                }
-            });
-            registry.Register(new HotKeyAction
-            {
-                ActionId = HotKeyActionIds.ToggleMap,
-                Context = HotKeyContext.Gameplay,
-                Priority = 30,
-                CanExecute = BagUICtrl.CanToggleMap,
-                Execute = BagUICtrl.ToggleMap
-            });
-            registry.Register(new HotKeyAction
-            {
-                ActionId = HotKeyActionIds.ToggleRuntimeLog,
-                Context = HotKeyContext.Global,
-                Priority = 1,
-                CanExecute = () => true,
-                Execute = () =>
-                {
-                    var ctrl = UIHelper.GetUICtrl<RuntimeLogUICtrl>();
-                    if (ctrl != null && ctrl.IsShow())
-                    {
-                        UIHelper.HideUI<RuntimeLogUICtrl>();
-                    }
-                    else
-                    {
-                        UIHelper.ShowUI<RuntimeLogUICtrl>();
-                    }
-                }
-            });
-            registry.Register(new HotKeyAction
-            {
-                ActionId = HotKeyActionIds.ToggleFlashlight,
-                Context = HotKeyContext.Gameplay,
-                Priority = 35,
-                CanExecute = () => UIHelper.GetTopmostBlockingUI() == null &&
-                                   this.GetSystem<PlayerFlashlightSystem>().CanToggle(out _),
-                Execute = () => this.GetSystem<PlayerFlashlightSystem>().TryToggle(out _)
-            });
+                var ctrl = UIHelper.GetUICtrl<RuntimeLogUICtrl>();
+                if (ctrl != null && ctrl.IsShow())
+                    UIHelper.HideUI<RuntimeLogUICtrl>();
+                else
+                    UIHelper.ShowUI<RuntimeLogUICtrl>();
+            } });
         }
 
         private TogglePauseRoute ResolveTogglePauseRoute()
@@ -352,29 +264,17 @@ namespace Game
             var topmostBlockingUI = UIHelper.GetTopmostBlockingUI();
             if (topmostBlockingUI != null)
             {
-                // 对话中的 Esc 与手机暂停入口使用同一路由，保留会话而不执行关闭。
-                if (topmostBlockingUI is DialogueUICtrl)
-                    return this.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing
-                        ? TogglePauseRoute.Pause() : TogglePauseRoute.Blocked();
                 if (IsEscapeClosable(topmostBlockingUI))
                 {
                     return TogglePauseRoute.Close(topmostBlockingUI);
                 }
 
-                if ((topmostBlockingUI is PauseUICtrl || topmostBlockingUI is StartUICtrl) &&
-                    this.GetModel<AppStateModel>().CurrentState.Value == AppState.Paused)
+                if ((topmostBlockingUI is PauseUICtrl || topmostBlockingUI is StartUICtrl) && this.GetModel<AppStateModel>().CurrentState.Value == AppState.Paused)
                 {
                     return TogglePauseRoute.Resume();
                 }
 
                 return TogglePauseRoute.Blocked();
-            }
-
-            // 建筑目录允许移动，不再计入阻断窗口，但 Escape 仍应先关闭目录再处理暂停。
-            var buildingSelection = UIHelper.GetUICtrl<TemporaryBuildingSelectUICtrl>();
-            if (buildingSelection != null && buildingSelection.IsShow())
-            {
-                return TogglePauseRoute.Close(buildingSelection);
             }
 
             var state = this.GetModel<AppStateModel>().CurrentState.Value;
@@ -383,9 +283,7 @@ namespace Game
                 return TogglePauseRoute.Pause();
             }
 
-            return state == AppState.Paused
-                ? TogglePauseRoute.Resume()
-                : TogglePauseRoute.Blocked();
+            return state == AppState.Paused ? TogglePauseRoute.Resume() : TogglePauseRoute.Blocked();
         }
 
         private void ExecuteTogglePauseRoute(TogglePauseRoute route)
@@ -403,8 +301,7 @@ namespace Game
 
                     return;
                 case TogglePauseRouteAction.Resume:
-                    if (this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld() &&
-                        this.GetSystem<AppStateSystem>().TryResume())
+                    if (this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld() && this.GetSystem<AppStateSystem>().TryResume())
                     {
                         UIHelper.HideUI<PauseUICtrl>();
                     }
@@ -413,41 +310,7 @@ namespace Game
             }
         }
 
-        private static bool IsEscapeClosable(BaseUICtrl ctrl)
-        {
-            return ctrl is BagUICtrl ||
-                   ctrl is SettingUICtrl ||
-                   ctrl is WarehouseUICtrl ||
-                   ctrl is SearchContainerUICtrl ||
-                   ctrl is RuntimeLogUICtrl ||
-                   ctrl is CraftUICtrl ||
-                   ctrl is ShopUICtrl ||
-                   ctrl is TemporaryBuildingSelectUICtrl ||
-                   ctrl is TestCmdUICtrl;
-        }
-
-        private static bool IsShown<T>() where T : BaseUICtrl
-        {
-            var ctrl = UIHelper.GetUICtrl<T>();
-            return ctrl != null && ctrl.IsShow();
-        }
-
-        private static void CleanupInvalidInventoryContexts()
-        {
-            var warehouse = UIHelper.GetUICtrl<WarehouseUICtrl>();
-            if (warehouse != null && warehouse.IsShow() && !InventoryOpenRules.CanOpenWarehouse(out _))
-            {
-                warehouse.Hide();
-            }
-
-            var search = UIHelper.GetUICtrl<SearchContainerUICtrl>();
-            if (search != null && search.IsShow() &&
-                !InventoryOpenRules.CanOpenSearchContainer(search.CurrentContainerId, out _))
-            {
-                search.Hide();
-            }
-        }
-
+        private static bool IsEscapeClosable(BaseUICtrl ctrl) => ctrl is SettingUICtrl || ctrl is RuntimeLogUICtrl || ctrl is TestCmdUICtrl;
         private enum TogglePauseRouteAction
         {
             None,

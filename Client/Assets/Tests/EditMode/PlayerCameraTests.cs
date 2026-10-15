@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using QFramework;
 using Cinemachine;
 using UnityEditor;
@@ -438,14 +438,14 @@ namespace Game.Tests
             Architecture<Game>.OnRegisterPatch = architecture =>
             {
                 architecture.RegisterUtility<IPlayerRuntimePortProvider>(provider);
-                architecture.RegisterUtility<IRuntimeConfigProvider>(new TestRuntimeConfigProvider());
+                architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider());
             };
 
             try
             {
                 var cameraSystem = Game.Interface.GetSystem<PlayerCameraSystem>();
                 var unitSystem = Game.Interface.GetSystem<UnitSystem>();
-                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null);
+                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
 
                 Assert.IsFalse(cameraSystem.TryGetCameraPose(out _, out _));
                 Assert.IsTrue(unitSystem.TryRegister(new UnitSnapshot(1, 9, UnitType.Player, UnitSource.Player, "player.local", Vector3.zero, Quaternion.identity, UnitAuthorityMode.Local, 0, true), out _));

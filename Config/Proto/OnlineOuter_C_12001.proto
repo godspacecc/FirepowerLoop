@@ -1,6 +1,7 @@
 syntax = "proto3";
 package ET;
 
+// Opcode 12002
 // ResponseType G2C_Register
 message C2G_Register // ISessionRequest
 {
@@ -9,6 +10,7 @@ message C2G_Register // ISessionRequest
 	string Password = 3;
 }
 
+// Opcode 12003
 message G2C_Register // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -17,6 +19,7 @@ message G2C_Register // ISessionResponse
 	int64 AccountId = 4;
 }
 
+// Opcode 12004
 // ResponseType G2C_Login
 message C2G_Login // ISessionRequest
 {
@@ -25,6 +28,7 @@ message C2G_Login // ISessionRequest
 	string Password = 3;
 }
 
+// Opcode 12005
 message G2C_Login // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -37,12 +41,14 @@ message G2C_Login // ISessionResponse
 	bool IsNewAccount = 8;
 }
 
+// Opcode 12006
 // ResponseType G2C_Logout
 message C2G_Logout // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
+// Opcode 12007
 message G2C_Logout // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -50,12 +56,14 @@ message G2C_Logout // ISessionResponse
 	string Message = 3;
 }
 
+// Opcode 12008
 message G2C_SessionReplaced // ISessionMessage
 {
 	int32 Error = 1;
 	string Reason = 2;
 }
 
+// Opcode 12009
 message RoomMemberInfo
 {
 	int64 PlayerId = 1;
@@ -65,6 +73,7 @@ message RoomMemberInfo
 	int64 JoinSequence = 5;
 }
 
+// Opcode 12010
 message OnlineRoomSnapshot
 {
 	int64 RoomId = 1;
@@ -80,6 +89,7 @@ message OnlineRoomSnapshot
 	string ArcadeConfigFingerprint = 11;
 }
 
+// Opcode 12011
 // ResponseType G2C_CreateRoom
 message C2G_CreateRoom // ISessionRequest
 {
@@ -91,6 +101,7 @@ message C2G_CreateRoom // ISessionRequest
 	string ArcadeConfigFingerprint = 6;
 }
 
+// Opcode 12012
 message G2C_CreateRoom // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -100,6 +111,7 @@ message G2C_CreateRoom // ISessionResponse
 	OnlineRoomSnapshot Room = 5;
 }
 
+// Opcode 12013
 // ResponseType G2C_MatchArcadeRoom
 message C2G_MatchArcadeRoom // ISessionRequest
 {
@@ -109,6 +121,7 @@ message C2G_MatchArcadeRoom // ISessionRequest
 	string ArcadeConfigFingerprint = 4;
 }
 
+// Opcode 12014
 message G2C_MatchArcadeRoom // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -118,6 +131,7 @@ message G2C_MatchArcadeRoom // ISessionResponse
 	OnlineRoomSnapshot Room = 5;
 }
 
+// Opcode 12015
 // ResponseType G2C_JoinRoom
 message C2G_JoinRoom // ISessionRequest
 {
@@ -129,6 +143,7 @@ message C2G_JoinRoom // ISessionRequest
 	string ArcadeConfigFingerprint = 6;
 }
 
+// Opcode 12016
 message G2C_JoinRoom // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -138,6 +153,7 @@ message G2C_JoinRoom // ISessionResponse
 	OnlineRoomSnapshot Room = 5;
 }
 
+// Opcode 12017
 // ResponseType G2C_LeaveRoom
 message C2G_LeaveRoom // ISessionRequest
 {
@@ -145,6 +161,7 @@ message C2G_LeaveRoom // ISessionRequest
 	string OperationId = 2;
 }
 
+// Opcode 12018
 message G2C_LeaveRoom // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -152,12 +169,14 @@ message G2C_LeaveRoom // ISessionResponse
 	string Message = 3;
 }
 
+// Opcode 12019
 // ResponseType G2C_GetCurrentRoom
 message C2G_GetCurrentRoom // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
+// Opcode 12020
 message G2C_GetCurrentRoom // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -167,12 +186,14 @@ message G2C_GetCurrentRoom // ISessionResponse
 	OnlineRoomSnapshot Room = 5;
 }
 
+// Opcode 12021
 message G2C_RoomChanged // ISessionMessage
 {
 	bool HasRoom = 1;
 	OnlineRoomSnapshot Room = 2;
 }
 
+// Opcode 12022
 message RoomChatMessageInfo
 {
 	string ChatMessageId = 1;
@@ -183,6 +204,7 @@ message RoomChatMessageInfo
 	string Content = 6;
 }
 
+// Opcode 12023
 // ResponseType G2C_SendRoomChat
 message C2G_SendRoomChat // ISessionRequest
 {
@@ -191,6 +213,7 @@ message C2G_SendRoomChat // ISessionRequest
 	string Content = 3;
 }
 
+// Opcode 12024
 message G2C_SendRoomChat // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -201,12 +224,14 @@ message G2C_SendRoomChat // ISessionResponse
 	RoomChatMessageInfo ChatMessage = 6;
 }
 
+// Opcode 12025
 // ResponseType G2C_GetRoomChatHistory
 message C2G_GetRoomChatHistory // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
+// Opcode 12026
 message G2C_GetRoomChatHistory // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -217,473 +242,14 @@ message G2C_GetRoomChatHistory // ISessionResponse
 	repeated RoomChatMessageInfo Messages = 6;
 }
 
+// Opcode 12027
 message G2C_RoomChatMessage // ISessionMessage
 {
 	int64 RoomId = 1;
 	RoomChatMessageInfo ChatMessage = 2;
 }
 
-message WorldPlayerInfo
-{
-	int64 PlayerId = 1;
-	int64 UnitId = 2;
-	string DisplayName = 3;
-	int64 WorldId = 4;
-	string MapId = 5;
-	string PlayerConfigId = 6;
-	float PositionX = 7;
-	float PositionY = 8;
-	float PositionZ = 9;
-	float YawDegrees = 10;
-	int32 ConnectionState = 11;
-	int64 StateRevision = 12;
-	int32 CurrentHP = 13;
-	int32 MaxHP = 14;
-	bool IsDead = 15;
-	int64 RespawnAtServerTime = 16;
-	int64 LastAcceptedAttackSequence = 17;
-	int64 LifecycleRevision = 18;
-	int32 TorsoItemId = 19;
-	int32 LegsItemId = 20;
-	int32 HeadItemId = 21;
-	int32 HandsItemId = 22;
-	int32 FeetItemId = 23;
-	int32 BackItemId = 24;
-	int32 ArmorItemId = 25;
-}
-
-message WorldEnemyInfo
-{
-	int64 UnitId = 1;
-	int64 WorldId = 2;
-	string MapId = 3;
-	string EnemyConfigId = 4;
-	float SpawnPositionX = 5;
-	float SpawnPositionY = 6;
-	float SpawnPositionZ = 7;
-	float SpawnYawDegrees = 8;
-	float PositionX = 9;
-	float PositionY = 10;
-	float PositionZ = 11;
-	float YawDegrees = 12;
-	int64 TargetUnitId = 13;
-	int32 CurrentHP = 14;
-	int32 MaxHP = 15;
-	bool IsDead = 16;
-	int64 RespawnAtServerTime = 17;
-	int64 StateRevision = 18;
-	int64 LifecycleRevision = 19;
-}
-
-message WorldEnemyTransformInfo
-{
-	int64 UnitId = 1;
-	float PositionX = 2;
-	float PositionY = 3;
-	float PositionZ = 4;
-	float YawDegrees = 5;
-	int64 StateRevision = 6;
-	int64 LifecycleRevision = 7;
-}
-
-message WorldEnemyNavigationReport
-{
-	int64 UnitId = 1;
-	int64 LifecycleRevision = 2;
-	float PositionX = 3;
-	float PositionY = 4;
-	float PositionZ = 5;
-	float YawDegrees = 6;
-}
-
-message OnlineItemSlotInfo
-{
-	int32 SlotIndex = 1;
-	int32 ItemId = 2;
-	int32 Amount = 3;
-	int32 LoadedAmmo = 4;
-}
-
-message OnlineEquipmentInfo
-{
-	int32 MeleeWeaponItemId = 1;
-	int32 RangedWeaponItemId = 2;
-	int32 ActiveSlot = 3;
-	int32 RangedLoadedAmmo = 4;
-	int32 SchemaVersion = 5;
-	int32 SourceSlotIndex = 6;
-	int32 ItemId = 7;
-}
-
-message OnlineInventoryInfo
-{
-	int32 Capacity = 1;
-	repeated OnlineItemSlotInfo Slots = 2;
-	OnlineEquipmentInfo Equipment = 3;
-	int64 Revision = 4;
-	int32 MigrationExtraCapacity = 5;
-	int32 TorsoItemId = 6;
-	int32 LegsItemId = 7;
-	int32 HeadItemId = 8;
-	int32 HandsItemId = 9;
-	int32 FeetItemId = 10;
-	int32 BackItemId = 11;
-	int32 ArmorItemId = 12;
-}
-
-message WorldCorpseInfo
-{
-	int64 CorpseId = 1;
-	int32 SourceKind = 2;
-	int64 SourceUnitId = 3;
-	int64 SourcePlayerId = 4;
-	string SourceConfigId = 5;
-	int64 WorldId = 6;
-	string MapId = 7;
-	float PositionX = 8;
-	float PositionY = 9;
-	float PositionZ = 10;
-	float YawDegrees = 11;
-	int64 ExpiresAtServerTime = 12;
-	bool HasContents = 13;
-	int64 StateRevision = 14;
-}
-
-message WorldCorpseContentsInfo
-{
-	WorldCorpseInfo Corpse = 1;
-	int32 Capacity = 2;
-	repeated OnlineItemSlotInfo Slots = 3;
-}
-
-message WorldTemporaryBuildingInfo
-{
-	int32 RuntimeId = 1;
-	string ConfigId = 2;
-	int64 WorldId = 3;
-	string MapId = 4;
-	float PositionX = 5;
-	float PositionY = 6;
-	float PositionZ = 7;
-	float YawDegrees = 8;
-	int32 LoadedAmmo = 9;
-	int64 NextShootAtServerTime = 10;
-	int64 StateRevision = 11;
-}
-
-message OnlineWorldSnapshot
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	int64 SelfUnitId = 4;
-	repeated WorldPlayerInfo Players = 5;
-	repeated WorldEnemyInfo Enemies = 6;
-	int64 NavigationExecutorUnitId = 7;
-	int64 NavigationLeaseRevision = 8;
-	int64 ServerTime = 9;
-	OnlineInventoryInfo SelfInventory = 10;
-	repeated WorldCorpseInfo Corpses = 11;
-	repeated WorldTemporaryBuildingInfo TemporaryBuildings = 12;
-	repeated WorldProjectileInfo Projectiles = 13;
-	string CollisionContentHash = 14;
-}
-
-
-
-
-// ResponseType G2C_EnterWorld
-message C2G_EnterWorld // ISessionRequest
-{
-	int32 RpcId = 1;
-	string OperationId = 2;
-	string MapId = 3;
-	int32 InventorySchemaVersion = 4;
-}
-
-message G2C_EnterWorld // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool HasWorld = 4;
-	OnlineWorldSnapshot World = 5;
-}
-
-// ResponseType G2C_GetCurrentWorld
-message C2G_GetCurrentWorld // ISessionRequest
-{
-	int32 RpcId = 1;
-}
-
-message G2C_GetCurrentWorld // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool HasWorld = 4;
-	OnlineWorldSnapshot World = 5;
-}
-
-// ResponseType G2C_LeaveWorld
-message C2G_LeaveWorld // ISessionRequest
-{
-	int32 RpcId = 1;
-	string OperationId = 2;
-}
-
-message G2C_LeaveWorld // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-}
-
-// ResponseType G2C_OpenWorldCorpse
-message C2G_OpenWorldCorpse // ISessionRequest
-{
-	int32 RpcId = 1;
-	int64 CorpseId = 2;
-	int64 LifecycleRevision = 3;
-}
-
-message G2C_OpenWorldCorpse // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool HasCorpse = 4;
-	WorldCorpseContentsInfo CorpseContents = 5;
-	OnlineInventoryInfo SelfInventory = 6;
-}
-
-// ResponseType G2C_OperateWorldInventory
-message C2G_OperateWorldInventory // ISessionRequest
-{
-	int32 RpcId = 1;
-	string OperationId = 2;
-	int64 ExpectedInventoryRevision = 3;
-	int64 CorpseId = 4;
-	int64 ExpectedCorpseRevision = 5;
-	int32 ActionKind = 6;
-	int32 SourceContainerKind = 7;
-	int32 SourceSlotIndex = 8;
-	int32 TargetContainerKind = 9;
-	int32 TargetSlotIndex = 10;
-	int64 LifecycleRevision = 11;
-	int32 InventorySchemaVersion = 12;
-	int32 ExpectedItemId = 13;
-}
-
-message G2C_OperateWorldInventory // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool Accepted = 4;
-	OnlineInventoryInfo SelfInventory = 5;
-	bool HasCorpse = 6;
-	WorldCorpseContentsInfo CorpseContents = 7;
-}
-
-// ResponseType G2C_OperateWorldTemporaryBuilding
-message C2G_OperateWorldTemporaryBuilding // ISessionRequest
-{
-	int32 RpcId = 1;
-	string OperationId = 2;
-	int32 ActionKind = 3;
-	int32 RuntimeId = 4;
-	string ConfigId = 5;
-	float PositionX = 6;
-	float PositionY = 7;
-	float PositionZ = 8;
-	float YawDegrees = 9;
-	float AimX = 10;
-	float AimZ = 11;
-	int64 ExpectedInventoryRevision = 12;
-	int64 ExpectedBuildingRevision = 13;
-	int64 LifecycleRevision = 14;
-}
-
-message G2C_OperateWorldTemporaryBuilding // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool Accepted = 4;
-	int64 WorldRevision = 5;
-	bool HasBuilding = 6;
-	WorldTemporaryBuildingInfo Building = 7;
-	int32 RemovedRuntimeId = 8;
-	OnlineInventoryInfo SelfInventory = 9;
-	int64 ServerTime = 10;
-}
-
-// ResponseType G2C_ReportWorldTransform
-message C2G_ReportWorldTransform // ISessionRequest
-{
-	int32 RpcId = 1;
-	float PositionX = 2;
-	float PositionY = 3;
-	float PositionZ = 4;
-	float YawDegrees = 5;
-	int64 LifecycleRevision = 6;
-}
-
-message G2C_ReportWorldTransform // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	int64 WorldId = 4;
-	string MapId = 5;
-	int64 UnitId = 6;
-	int64 StateRevision = 7;
-	int64 LifecycleRevision = 8;
-}
-
-// ResponseType G2C_WorldMeleeAttack
-message C2G_WorldMeleeAttack // ISessionRequest
-{
-	int32 RpcId = 1;
-	int64 AttackSequence = 2;
-	int32 WeaponItemId = 3;
-	float AimX = 4;
-	float AimZ = 5;
-	int64 LifecycleRevision = 6;
-	float AimY = 7;
-	float OriginX = 8;
-	float OriginY = 9;
-	float OriginZ = 10;
-	bool HasProjectileOrigin = 11;
-	string CollisionContentHash = 12;
-}
-
-message G2C_WorldMeleeAttack // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	int64 WorldId = 4;
-	int64 UnitId = 5;
-	int64 AttackSequence = 6;
-	bool Accepted = 7;
-	int64 WorldRevision = 8;
-	int64 LifecycleRevision = 9;
-}
-
-// ResponseType G2C_ReportWorldEnemyNavigation
-message C2G_ReportWorldEnemyNavigation // ISessionRequest
-{
-	int32 RpcId = 1;
-	int64 NavigationLeaseRevision = 2;
-	int64 ReportSequence = 3;
-	repeated WorldEnemyNavigationReport Reports = 4;
-}
-
-message G2C_ReportWorldEnemyNavigation // ISessionResponse
-{
-	int32 RpcId = 1;
-	int32 Error = 2;
-	string Message = 3;
-	bool Accepted = 4;
-	int64 CurrentLeaseRevision = 5;
-	int64 LastAcceptedReportSequence = 6;
-	int64 WorldRevision = 7;
-}
-
-message G2C_WorldCombatChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	int64 ServerTime = 4;
-	int64 CombatSequence = 5;
-	int32 ActionKind = 6;
-	int64 ActorUnitId = 7;
-	int32 WeaponItemId = 8;
-	repeated int64 TargetUnitIds = 9;
-	repeated WorldPlayerInfo Players = 10;
-	repeated WorldEnemyInfo Enemies = 11;
-}
-
-message G2C_WorldEnemiesTransformChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	repeated WorldEnemyTransformInfo Enemies = 4;
-}
-
-message G2C_WorldNavigationLeaseChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	int64 NavigationExecutorUnitId = 4;
-	int64 NavigationLeaseRevision = 5;
-	int64 ServerTime = 6;
-}
-
-message G2C_WorldPlayerEntered // ISessionMessage
-{
-	int64 WorldRevision = 1;
-	WorldPlayerInfo Player = 2;
-}
-
-message G2C_WorldPlayerTransformChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	WorldPlayerInfo Player = 4;
-}
-
-message G2C_WorldPlayerLeft // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	int64 UnitId = 4;
-}
-
-message G2C_WorldCorpseChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	bool HasCorpse = 4;
-	WorldCorpseInfo Corpse = 5;
-	int64 RemovedCorpseId = 6;
-}
-
-message G2C_WorldSelfInventoryChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	OnlineInventoryInfo SelfInventory = 3;
-}
-
-message G2C_WorldSelfUnitChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 PreviousUnitId = 3;
-	int64 SelfUnitId = 4;
-	int64 WorldRevision = 5;
-}
-
-message G2C_WorldTemporaryBuildingChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	bool HasBuilding = 4;
-	WorldTemporaryBuildingInfo Building = 5;
-	int32 RemovedRuntimeId = 6;
-	int64 ServerTime = 7;
-}
-
+// Opcode 12067
 message ServerTestCmdCategoryInfo
 {
 	string Id = 1;
@@ -691,6 +257,7 @@ message ServerTestCmdCategoryInfo
 	string LabelText = 3;
 }
 
+// Opcode 12068
 message ServerTestCmdEntryInfo
 {
 	string Id = 1;
@@ -703,12 +270,14 @@ message ServerTestCmdEntryInfo
 	string ExampleText = 8;
 }
 
+// Opcode 12069
 // ResponseType G2C_GetServerTestCmdCatalog
 message C2G_GetServerTestCmdCatalog // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
+// Opcode 12070
 message G2C_GetServerTestCmdCatalog // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -718,6 +287,7 @@ message G2C_GetServerTestCmdCatalog // ISessionResponse
 	repeated ServerTestCmdEntryInfo Entries = 5;
 }
 
+// Opcode 12071
 // ResponseType G2C_ExecuteServerTestCmd
 message C2G_ExecuteServerTestCmd // ISessionRequest
 {
@@ -725,6 +295,7 @@ message C2G_ExecuteServerTestCmd // ISessionRequest
 	string CommandText = 2;
 }
 
+// Opcode 12072
 message G2C_ExecuteServerTestCmd // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -736,6 +307,7 @@ message G2C_ExecuteServerTestCmd // ISessionResponse
 	int64 ServerTime = 7;
 }
 
+// Opcode 12073
 message PublicRoomSummary
 {
 	string RoomCode = 1;
@@ -744,6 +316,7 @@ message PublicRoomSummary
 	int32 Capacity = 4;
 }
 
+// Opcode 12074
 // ResponseType G2C_GetPublicRoomList
 message C2G_GetPublicRoomList // ISessionRequest
 {
@@ -751,6 +324,7 @@ message C2G_GetPublicRoomList // ISessionRequest
 	int64 CursorRoomId = 2;
 }
 
+// Opcode 12075
 message G2C_GetPublicRoomList // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -761,6 +335,7 @@ message G2C_GetPublicRoomList // ISessionResponse
 	bool HasMore = 6;
 }
 
+// Opcode 12076
 message OnlineArcadeShopOfferInfo
 {
 	string OfferId = 1;
@@ -773,18 +348,21 @@ message OnlineArcadeShopOfferInfo
 	int32 MaxPurchases = 8;
 }
 
+// Opcode 12077
 message OnlineArcadeOwnedAmountInfo
 {
 	string Id = 1;
 	int32 Amount = 2;
 }
 
+// Opcode 12078
 message OnlineArcadeEquipmentInfo
 {
 	string SlotId = 1;
 	string ProductId = 2;
 }
 
+// Opcode 12079
 message OnlineArcadePowerupInfo
 {
 	string ProductId = 1;
@@ -797,6 +375,7 @@ message OnlineArcadePowerupInfo
 	float ShotDirectionZ = 7;
 }
 
+// Opcode 12080
 message OnlineArcadeBattlePlayerInfo
 {
 	int64 PlayerId = 1;
@@ -820,6 +399,7 @@ message OnlineArcadeBattlePlayerInfo
 	bool InTreasureRoom = 18;
 }
 
+// Opcode 12081
 message OnlineArcadeEnemyInfo
 {
 	int64 RuntimeId = 1;
@@ -837,6 +417,7 @@ message OnlineArcadeEnemyInfo
 	int32 ArmorHealth = 12;
 }
 
+// Opcode 12082
 message OnlineArcadeProjectileInfo
 {
 	int64 RuntimeId = 1;
@@ -847,6 +428,7 @@ message OnlineArcadeProjectileInfo
 	float VelocityZ = 6;
 }
 
+// Opcode 12083
 message OnlineArcadeDropInfo
 {
 	int64 RuntimeId = 1;
@@ -859,6 +441,7 @@ message OnlineArcadeDropInfo
 	int32 AddedAmount = 6;
 }
 
+// Opcode 12084
 message OnlineArcadeBattleInfo
 {
 	int32 ArenaNumber = 1;
@@ -895,6 +478,7 @@ message OnlineArcadeBattleInfo
 	repeated OnlineArcadeDropInfo SupplyPickups = 27;
 }
 
+// Opcode 12085
 message OnlineArcadePlayerInfo
 {
 	int64 PlayerId = 1;
@@ -909,7 +493,6 @@ message OnlineArcadePlayerInfo
 	repeated OnlineArcadeOwnedAmountInfo UpgradeStacks = 10;
 	repeated OnlineArcadeOwnedAmountInfo Consumables = 11;
 	repeated OnlineArcadeEquipmentInfo Equipment = 12;
-	repeated OnlineArcadeRewardAmountInfo PendingRewards = 13;
 	bool SettlementConfirmed = 14;
 	bool AbandonConfirmed = 15;
 	int32 SettlementState = 16;
@@ -919,12 +502,9 @@ message OnlineArcadePlayerInfo
 	int32 MultiplierProgress = 20;
 }
 
-message OnlineArcadeRewardAmountInfo
-{
-	string RewardId = 1;
-	int64 Amount = 2;
-}
 
+
+// Opcode 12087
 message OnlineArcadeConnectionInfo
 {
 	int64 PlayerId = 1;
@@ -934,6 +514,7 @@ message OnlineArcadeConnectionInfo
 	int64 SoloEndAvailableAtServerTime = 5;
 }
 
+// Opcode 12088
 message OnlineArcadeRunSnapshot
 {
 	int64 RunId = 1;
@@ -951,6 +532,7 @@ message OnlineArcadeRunSnapshot
 	bool ChallengeAttempted = 13;
 }
 
+// Opcode 12089
 // ResponseType G2C_StartOnlineArcadeRun
 message C2G_StartOnlineArcadeRun // ISessionRequest
 {
@@ -958,6 +540,7 @@ message C2G_StartOnlineArcadeRun // ISessionRequest
 	string OperationId = 2;
 }
 
+// Opcode 12090
 message G2C_StartOnlineArcadeRun // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -967,12 +550,14 @@ message G2C_StartOnlineArcadeRun // ISessionResponse
 	OnlineArcadeRunSnapshot Run = 5;
 }
 
+// Opcode 12091
 // ResponseType G2C_GetCurrentOnlineArcadeRun
 message C2G_GetCurrentOnlineArcadeRun // ISessionRequest
 {
 	int32 RpcId = 1;
 }
 
+// Opcode 12092
 message G2C_GetCurrentOnlineArcadeRun // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -982,6 +567,7 @@ message G2C_GetCurrentOnlineArcadeRun // ISessionResponse
 	OnlineArcadeRunSnapshot Run = 5;
 }
 
+// Opcode 12093
 // ResponseType G2C_OperateOnlineArcadeSafeShop
 message C2G_OperateOnlineArcadeSafeShop // ISessionRequest
 {
@@ -994,6 +580,7 @@ message C2G_OperateOnlineArcadeSafeShop // ISessionRequest
 	bool Ready = 7;
 }
 
+// Opcode 12094
 message G2C_OperateOnlineArcadeSafeShop // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -1003,12 +590,14 @@ message G2C_OperateOnlineArcadeSafeShop // ISessionResponse
 	OnlineArcadeRunSnapshot Run = 5;
 }
 
+// Opcode 12095
 message G2C_OnlineArcadeRunChanged // ISessionMessage
 {
 	OnlineArcadeRunSnapshot Run = 1;
 	bool HasRun = 2;
 }
 
+// Opcode 12096
 // ResponseType G2C_SubmitOnlineArcadeInput
 message C2G_SubmitOnlineArcadeInput // ISessionRequest
 {
@@ -1024,6 +613,7 @@ message C2G_SubmitOnlineArcadeInput // ISessionRequest
 	bool UseDash = 10;
 }
 
+// Opcode 12097
 message G2C_SubmitOnlineArcadeInput // ISessionResponse
 {
 	int32 RpcId = 1;
@@ -1032,44 +622,4 @@ message G2C_SubmitOnlineArcadeInput // ISessionResponse
 	bool Accepted = 4;
 	int64 LastAcceptedInputSequence = 5;
 	OnlineArcadeRunSnapshot Run = 6;
-}
-
-message WorldProjectileInfo
-{
-	int64 RuntimeId = 1;
-	int64 OwnerUnitId = 2;
-	int64 OwnerLifecycleRevision = 3;
-	int64 AttackSequence = 4;
-	string ProjectileConfigId = 5;
-	float PositionX = 6;
-	float PositionY = 7;
-	float PositionZ = 8;
-	float DirectionX = 9;
-	float DirectionY = 10;
-	float DirectionZ = 11;
-	float Speed = 12;
-	float RemainingDistance = 13;
-	int64 SpawnServerTime = 14;
-	int64 StateRevision = 15;
-	int64 SampleServerTime = 16;
-}
-
-message WorldProjectileTermination
-{
-	int64 RuntimeId = 1;
-	int64 StateRevision = 2;
-	float PositionX = 3;
-	float PositionY = 4;
-	float PositionZ = 5;
-	int32 Reason = 6;
-}
-
-message G2C_WorldProjectilesChanged // ISessionMessage
-{
-	int64 WorldId = 1;
-	string MapId = 2;
-	int64 WorldRevision = 3;
-	int64 ServerTime = 4;
-	repeated WorldProjectileInfo Projectiles = 5;
-	repeated WorldProjectileTermination Terminations = 6;
 }

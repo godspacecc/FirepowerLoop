@@ -35,9 +35,6 @@ namespace Game.Tests
 
             tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayTestCmdTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(tempRoot);
-            Game.Interface.GetModel<SaveModel>().SetBase(new BaseSaveData(), true);
-            EnterBase();
         }
 
         [TearDown]
@@ -54,50 +51,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void AppearanceCommandsValidateAndPublishOnlySessionChanges()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var model = Game.Interface.GetModel<TestCmdModel>();
-            var inventory = Game.Interface.GetModel<ClothingEquipmentModel>();
-            var before = Enumerable.Range(1, 7).Select(i => inventory.GetItemId((global::ClothingSlot)i)).ToArray();
-            Assert.That(system.ExecuteAsync("#appearance list", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-            foreach (var text in new[] { "#appearance", "#appearance 10", "#appearance -1", "#appearance 1 extra", "#appearance unknown" })
-                Assert.That(system.ExecuteAsync(text, CancellationToken.None).GetAwaiter().GetResult().Success, Is.False, text);
-            var property = typeof(TestCmdModel).GetProperty("PlayerAppearanceIndex");
-            Assert.That(property, Is.Not.Null);
-            Assert.That(system.ExecuteAsync("#appearance 8", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-            Assert.That(property.GetValue(model), Is.EqualTo(8));
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null, MapPreparationMode.OnlinePlayersOnly);
-            Assert.That(system.ExecuteAsync("#appearance 3", CancellationToken.None).GetAwaiter().GetResult().Code, Is.EqualTo(TestCmdResultCode.StateRejected));
-            Assert.That(property.GetValue(model), Is.EqualTo(8));
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null);
-            Game.Interface.GetModel<MapSceneModel>().SetStatus(MapLoadStatus.Loading);
-            Assert.That(system.ExecuteAsync("#appearance reset", CancellationToken.None).GetAwaiter().GetResult().Success, Is.False);
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null);
-            Assert.That(system.ExecuteAsync("#appearance reset", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-            Assert.That(property.GetValue(model), Is.EqualTo(0));
-            Assert.That(Enumerable.Range(1, 7).Select(i => inventory.GetItemId((global::ClothingSlot)i)), Is.EqualTo(before));
-            Assert.That(IsSaveDirty(), Is.False);
-            // 同一指令通过 PlayerCtrl 事件入口驱动正式角色，而非只改变预览或模型值。
-            var player=UnityEngine.Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
-            var controller=new PlayerCtrl(Game.Interface);
-            var view=player.GetComponent<PlayerView>();
-            var viewController=new PlayerViewCtrl(view,PlayerModel.LocalPlayerUnitId,1,new ViewCtrlRegistry(),new UnityViewInstanceProvider());
-            typeof(PlayerCtrl).GetField("activePlayer",BindingFlags.NonPublic|BindingFlags.Instance).SetValue(controller,viewController);
-            try
-            {
-                var animator=view.Animator;
-                var weapon=view.GetComponent<CharacterWeaponPresenter>();
-                Assert.That(system.ExecuteAsync("#appearance 8",CancellationToken.None).GetAwaiter().GetResult().Success,Is.True);
-                Assert.That(player.GetComponentsInChildren<SkinnedMeshRenderer>().Any(r=>r.name=="Character_Male_Jacket"),Is.True);
-                Assert.That(view.Animator,Is.SameAs(animator));Assert.That(view.GetComponent<CharacterWeaponPresenter>(),Is.SameAs(weapon));
-                Assert.That(system.ExecuteAsync("#appearance reset",CancellationToken.None).GetAwaiter().GetResult().Success,Is.True);
-                Assert.That(view.Animator.transform.Find("ClothingParts").gameObject.activeSelf,Is.True);
-            }
-            finally { controller.ReleaseAll(); if(player!=null)UnityEngine.Object.DestroyImmediate(player); }
-        }
-
-        [Test]
         public void TerrainInstancingProbeChangesOnlyCurrentMapAndRestoresOriginalSettings()
         {
             var root = new GameObject("terrain-probe-map");
@@ -108,7 +61,7 @@ namespace Game.Tests
             {
                 var context = root.AddComponent<MapContext>();
                 typeof(MapContext).GetField("mapContentRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, root);
-                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, new DiagnosticMapHandle(context));
+                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, new DiagnosticMapHandle(context));
                 var terrain = root.AddComponent<Terrain>();
                 terrain.terrainData = data;
                 terrain.drawInstanced = true;
@@ -127,7 +80,7 @@ namespace Game.Tests
                 Assert.That(system.ExecuteAsync("#terrain instancing off", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
                 Assert.That(system.ExecuteAsync("#terrain instancing restore", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
                 Assert.That(system.ExecuteAsync("#terrain instancing off", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-                Game.Interface.SendEvent(new MapLoadingStartedEvent(MapIds.SurvivalSample));
+                Game.Interface.SendEvent(new MapLoadingStartedEvent(MapIds.Arcade));
                 Assert.That(terrain.drawInstanced, Is.True, "切图开始时应恢复对照开关");
                 Assert.That(terrain.drawInstanced, Is.True, "重复关闭不能覆盖原始状态");
                 Assert.That(system.ExecuteAsync("#terrain instancing restore", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
@@ -151,7 +104,7 @@ namespace Game.Tests
                 typeof(MapContext).GetField("mapContentRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, root);
                 var handle = new DiagnosticMapHandle(context);
                 var map = Game.Interface.GetModel<MapSceneModel>();
-                map.SetLoaded(MapIds.Base, handle);
+                map.SetLoaded(MapIds.Arcade, handle);
                 var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#terrain", CancellationToken.None).GetAwaiter().GetResult();
                 Assert.That(result.Success, Is.True);
                 Assert.That(result.Message, Does.Contain("[TerrainDiagnostic]"));
@@ -173,7 +126,7 @@ namespace Game.Tests
         private sealed class DiagnosticMapHandle : IMapContentHandle
         {
             public DiagnosticMapHandle(MapContext context) { Context = context; }
-            public string MapId => MapIds.Base;
+            public string MapId => MapIds.Arcade;
             public MapContext Context { get; }
             public bool IsValid => Context != null;
         }
@@ -205,75 +158,6 @@ namespace Game.Tests
             Assert.That(invalid.Recognized, Is.True);
             Assert.That(invalid.Success, Is.False);
             Assert.That(invalid.Code, Is.EqualTo(TestCmdResultCode.UsageError));
-        }
-
-        [Test]
-        public void GalleryCommandRejectsOutsideOfflineBaseWithoutChangingGameState()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var map = Game.Interface.GetModel<MapSceneModel>();
-            var save = Game.Interface.GetModel<SaveModel>();
-            map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
-
-            var result = system.ExecuteAsync("#gallery", CancellationToken.None).GetAwaiter().GetResult();
-
-            Assert.That(result.Recognized, Is.True);
-            Assert.That(result.Success, Is.False);
-            Assert.That(result.Code, Is.EqualTo(TestCmdResultCode.StateRejected));
-            Assert.That(result.Message, Does.Contain("离线基地"));
-            Assert.That(map.CurrentMapId, Is.EqualTo(MapIds.Arcade));
-            Assert.That(save.CurrentBase, Is.Not.Null);
-        }
-
-        [Test]
-        public void ParseCommandsUsesExactCloneAndClearBagGrammar()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-
-            var empty = system.ExecuteAsync("  ", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(empty, false, false, TestCmdResultCode.EmptyInput, 0, 0);
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.Empty);
-
-            var unknown = system.ExecuteAsync("#give item 1", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(unknown, false, false, TestCmdResultCode.UnknownCommand, 0, 0);
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.EqualTo(new[] { "#give item 1" }));
-
-            var cloneUsage = system.ExecuteAsync("# clone ", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(cloneUsage, true, false, TestCmdResultCode.UsageError, 0, 0);
-
-            var clone = system.ExecuteAsync("#clone 3 5", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(clone, true, true, TestCmdResultCode.CloneComplete, 5, 0);
-            Assert.That(clone.Message, Is.EqualTo("获得急救包x5。"));
-            Assert.That(bag.GetTotalAmount(ItemIds.Medkit), Is.EqualTo(5));
-
-            var keyClone = system.ExecuteAsync("#clone item.metal_parts.name 1", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(keyClone, true, true, TestCmdResultCode.CloneComplete, 1, 0);
-            Assert.That(bag.GetTotalAmount(ItemIds.MetalParts), Is.EqualTo(1));
-            AssertFailurePreservesBag(system, "clone abc 1", TestCmdResultCode.ItemNotFound);
-            AssertFailurePreservesBag(system, "clone 0 1", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone -1 1", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone 2147483648 1", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone 0", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone -1", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone 2147483648", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone 999", TestCmdResultCode.ItemNotFound);
-            AssertFailurePreservesBag(system, "clone 3 1 extra", TestCmdResultCode.UsageError);
-            AssertFailurePreservesBag(system, "clone abc nope", TestCmdResultCode.InvalidAmount);
-
-            AssertFailurePreservesBag(system, "clone 999 1", TestCmdResultCode.ItemNotFound);
-            AssertFailurePreservesBag(system, "clone 3 nope", TestCmdResultCode.InvalidAmount);
-            AssertFailurePreservesBag(system, "clone 3 0", TestCmdResultCode.InvalidAmount);
-            AssertFailurePreservesBag(system, "clone 3 -1", TestCmdResultCode.InvalidAmount);
-            AssertFailurePreservesBag(system, "clone 3 2147483648", TestCmdResultCode.InvalidAmount);
-
-            var clearUsage = system.ExecuteAsync("#clear warehouse", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(clearUsage, true, false, TestCmdResultCode.UsageError, 0, 0);
-
-            var clear = system.ExecuteAsync("# CLEAR   BAG ", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(clear, true, true, TestCmdResultCode.ClearBagComplete, 6, 0);
-            var currentBag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Assert.That(currentBag.GetTotalAmount(ItemIds.Medkit), Is.EqualTo(0));
         }
 
         [Test]
@@ -407,88 +291,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void CloneUsesInventoryStackingAndPartialAcceptance()
-        {
-            var inventory = Game.Interface.GetSystem<InventorySystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Assert.That(bag.TryAdd(ItemIds.MetalParts, 3, 5, out _, out var error), Is.True, error);
-            for (var i = 0; i < 11; i++)
-            {
-                Assert.That(bag.TryAdd(ItemIds.Cloth, 5, 5, out _, out error), Is.True, error);
-            }
-
-            var beforeWarehouse = SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container);
-            var events = CountInventoryEvents();
-
-            var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 10", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(result, true, true, TestCmdResultCode.ClonePartial, 2, 8);
-            Assert.That(bag.GetTotalAmount(ItemIds.MetalParts), Is.EqualTo(5));
-            Assert.That(SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container), Is.EqualTo(beforeWarehouse));
-            Assert.That(events.Count, Is.EqualTo(1));
-            Assert.That(IsSaveDirty(), Is.True);
-        }
-
-        [Test]
-        public void CloneFullOrInvalidInputLeavesInventoryUnchanged()
-        {
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Assert.That(bag.TryAdd(ItemIds.Cloth, 60, 5, out _, out var error), Is.True, error);
-            var beforeBag = SnapshotText(bag);
-            var beforeWarehouse = SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container);
-            var events = CountInventoryEvents();
-
-            var full = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 1", CancellationToken.None).GetAwaiter().GetResult();
-            var invalid = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 nope", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(full, true, false, TestCmdResultCode.BagFull, 0, 0);
-            AssertResult(invalid, true, false, TestCmdResultCode.InvalidAmount, 0, 0);
-            Assert.That(SnapshotText(bag), Is.EqualTo(beforeBag));
-            Assert.That(SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container), Is.EqualTo(beforeWarehouse));
-            Assert.That(events.Count, Is.EqualTo(0));
-            Assert.That(IsSaveDirty(), Is.False);
-        }
-
-        [Test]
-        public void CloneNumericIdDefaultsToOneThroughInventory()
-        {
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var beforeWarehouse = SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container);
-            var events = CountInventoryEvents();
-
-            var expectedTotal = 0;
-            foreach (var command in new[] { "#clone 3", "# ClOnE   3  ", "#clone 3 1" })
-            {
-                var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync(command, CancellationToken.None).GetAwaiter().GetResult();
-
-                AssertResult(result, true, true, TestCmdResultCode.CloneComplete, 1, 0);
-                Assert.That(result.AffectedItemId, Is.EqualTo(ItemIds.Medkit));
-                Assert.That(bag.GetTotalAmount(ItemIds.Medkit), Is.EqualTo(++expectedTotal));
-                Assert.That(SnapshotText(Game.Interface.GetModel<WarehouseModel>().Container), Is.EqualTo(beforeWarehouse));
-                Assert.That(events.Count, Is.EqualTo(expectedTotal));
-                Assert.That(IsSaveDirty(), Is.True);
-            }
-        }
-
-        [Test]
-        public void CloneUniqueNameSearchAddsDefaultAmountThroughInventory()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var beforeBag = SnapshotText(bag);
-            var events = CountInventoryEvents();
-
-            var result = system.ExecuteAsync("#clone 金属", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(result, true, true, TestCmdResultCode.CloneComplete, 1, 0);
-            Assert.That(result.Message, Is.EqualTo("获得金属零件x1。"));
-            Assert.That(SnapshotText(bag), Is.Not.EqualTo(beforeBag));
-            Assert.That(bag.GetTotalAmount(ItemIds.MetalParts), Is.EqualTo(1));
-            Assert.That(events.Count, Is.EqualTo(1));
-            Assert.That(IsSaveDirty(), Is.True);
-        }
-
-        [Test]
         public void CameraCommandUsesStrictGrammarAndRequiresActivePlayer()
         {
             var system = Game.Interface.GetSystem<TestCmdSystem>();
@@ -527,44 +329,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void CloneResultCarriesAffectedItemIdOnlyForCommittedCompleteOrPartialMutation()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-
-            var complete = system.ExecuteAsync("#clone 1 1", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(complete.Code, Is.EqualTo(TestCmdResultCode.CloneComplete));
-            Assert.That(complete.AffectedAmount, Is.EqualTo(1));
-            Assert.That(complete.AffectedItemId, Is.EqualTo(ItemIds.MetalParts));
-
-            for (var i = 0; i < 11; i++)
-            {
-                Assert.That(bag.TryAdd(ItemIds.Cloth, 5, 5, out _, out var error), Is.True, error);
-            }
-
-            var partial = system.ExecuteAsync("#clone 1 10", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(partial.Code, Is.EqualTo(TestCmdResultCode.ClonePartial));
-            Assert.That(partial.AffectedAmount, Is.EqualTo(4));
-            Assert.That(partial.AffectedItemId, Is.EqualTo(ItemIds.MetalParts));
-
-            var query = system.ExecuteAsync("#clone item", CancellationToken.None).GetAwaiter().GetResult();
-            var rejected = system.ExecuteAsync("#clone 1 1", CancellationToken.None).GetAwaiter().GetResult();
-            configs.ThrowOnSecondItemLookup = true;
-            LogAssert.Expect(LogType.Error, "[TestCmdSystem] 克隆 失败: InvalidOperationException: test item lookup failure");
-            var rollback = system.ExecuteAsync("#clone 2 1", CancellationToken.None).GetAwaiter().GetResult();
-
-            foreach (var result in new[] { query, rejected, rollback })
-            {
-                Assert.That(result.AffectedAmount, Is.Zero, result.Code.ToString());
-                Assert.That(result.AffectedItemId, Is.Zero, result.Code.ToString());
-            }
-
-            Assert.That(query.Code, Is.EqualTo(TestCmdResultCode.CloneComplete));
-            Assert.That(rejected.Code, Is.EqualTo(TestCmdResultCode.BagFull));
-            Assert.That(rollback.Code, Is.EqualTo(TestCmdResultCode.ExecutionFailed));
-        }
-
-        [Test]
         public void PrefixBoundaryRejectsWithoutHistoryDomainOrNetworkSideEffects()
         {
             TestCmdSystem system = Game.Interface.GetSystem<TestCmdSystem>();
@@ -596,7 +360,7 @@ namespace Game.Tests
             network.State=NetworkConnectionState.Connected;
             TestCmdSystem system = Game.Interface.GetSystem<TestCmdSystem>();
             TestCmdExecutionResult literal = system.ExecuteAsync("#clone #/$", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(literal.Code, Is.EqualTo(TestCmdResultCode.ItemNotFound));
+            Assert.That(literal.Code, Is.EqualTo(TestCmdResultCode.UnknownCommand));
             Assert.That(network.CallCount, Is.Zero);
 
             network.Response = new G2C_ExecuteServerTestCmd
@@ -624,183 +388,19 @@ namespace Game.Tests
         }
 
         [Test]
-        public void CloneUniqueTextKeyWithAmountCommitsRequestedAmount()
-        {
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var events = CountInventoryEvents();
-            var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone item.medkit.name 3", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(result, true, true, TestCmdResultCode.CloneComplete, 3, 0);
-            Assert.That(bag.GetTotalAmount(ItemIds.Medkit), Is.EqualTo(3));
-            Assert.That(events.Count, Is.EqualTo(1));
-            Assert.That(IsSaveDirty(), Is.True);
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands[0], Is.EqualTo("#clone item.medkit.name 3"));
-        }
-
-        [Test]
-        public void CloneMultipleTextMatchesNeverMutatesInventoryWithOrWithoutAmount()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var before = SnapshotText(bag);
-            var events = CountInventoryEvents();
-
-            var withoutAmount = system.ExecuteAsync("#clone item.", CancellationToken.None).GetAwaiter().GetResult();
-            var withAmount = system.ExecuteAsync("#clone item. 4", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(withoutAmount, true, true, TestCmdResultCode.CloneComplete, 0, 0);
-            AssertResult(withAmount, true, true, TestCmdResultCode.CloneComplete, 0, 0);
-            Assert.That(withoutAmount.Message, Does.Contain("金属零件: 1"));
-            Assert.That(withoutAmount.Message, Does.Contain("布料: 2"));
-            Assert.That(withoutAmount.Message, Does.Contain("急救包: 3"));
-            Assert.That(SnapshotText(bag), Is.EqualTo(before));
-            Assert.That(events.Count, Is.EqualTo(0));
-            Assert.That(IsSaveDirty(), Is.False);
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands[0], Is.EqualTo("#clone item. 4"));
-        }
-
-        [Test]
-        public void CloneUniqueTextQuerySupportsPartialAcceptanceAndRollback()
-        {
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Assert.That(bag.TryAdd(ItemIds.MetalParts, 3, 5, out _, out var error), Is.True, error);
-            for (var i = 0; i < 11; i++)
-            {
-                Assert.That(bag.TryAdd(ItemIds.Cloth, 5, 5, out _, out error), Is.True, error);
-            }
-
-            var events = CountInventoryEvents();
-            var partial = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone item.metal_parts.name 10", CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(partial, true, true, TestCmdResultCode.ClonePartial, 2, 8);
-            Assert.That(bag.GetTotalAmount(ItemIds.MetalParts), Is.EqualTo(5));
-            Assert.That(events.Count, Is.EqualTo(1));
-
-            var before = SnapshotText(bag);
-            SetSaveDirty(false);
-            configs.ThrowOnFirstItemLookup = true;
-            TestCmdExecutionResult failed;
-            using (Log.CaptureForTests((_, __) => { }))
-            {
-                failed = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone item.medkit.name 1", CancellationToken.None).GetAwaiter().GetResult();
-            }
-            AssertResult(failed, true, false, TestCmdResultCode.ExecutionFailed, 0, 0);
-            Assert.That(SnapshotText(bag), Is.EqualTo(before));
-            Assert.That(events.Count, Is.EqualTo(1));
-            Assert.That(IsSaveDirty(), Is.False);
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands[0], Is.EqualTo("#clone item.medkit.name 1"));
-        }
-
-        [Test]
-        public void ClearBagOnlyChangesPlayerBagAndSkipsEmptyCommit()
-        {
-            var inventory = Game.Interface.GetSystem<InventorySystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var warehouse = Game.Interface.GetModel<WarehouseModel>().Container;
-            Assert.That(bag.TryAdd(ItemIds.MetalParts, 2, 5, out _, out var error), Is.True, error);
-            Assert.That(warehouse.TryAdd(ItemIds.Cloth, 4, 5, out _, out error), Is.True, error);
-            var beforeWarehouse = SnapshotText(warehouse);
-            var events = CountInventoryEvents();
-
-            var cleared = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clear bag", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(cleared, true, true, TestCmdResultCode.ClearBagComplete, 2, 0);
-            Assert.That(SnapshotText(Game.Interface.GetModel<PlayerBagModel>().Container), Is.Empty);
-            Assert.That(SnapshotText(warehouse), Is.EqualTo(beforeWarehouse));
-            Assert.That(events.Count, Is.EqualTo(1));
-            Assert.That(IsSaveDirty(), Is.True);
-
-            SetSaveDirty(false);
-            events.Count = 0;
-            var empty = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clear bag", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(empty, true, true, TestCmdResultCode.ClearBagComplete, 0, 0);
-            Assert.That(events.Count, Is.EqualTo(0));
-            Assert.That(IsSaveDirty(), Is.False);
-            _ = inventory;
-        }
-
-        [Test]
-        public void CommandStateGateAllowsOnlyBaseSafeAndActiveExpedition()
-        {
-            var inventory = Game.Interface.GetSystem<InventorySystem>();
-            Assert.That(inventory.CanModifyPlayerBag(out var error), Is.True, error);
-
-            Game.Interface.GetSystem<AppStateSystem>().TryTransition(AppState.Paused);
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-
-            EnterBase();
-            Assert.That(inventory.TrySetPlayerBagRiskState(PlayerBagRiskState.EnteringExpedition, "test", false, out error), Is.True, error);
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-
-            EnterExpedition(ExpeditionStatus.Playing, 100);
-            Assert.That(inventory.CanModifyPlayerBag(out error), Is.True, error);
-
-            EnterExpedition(ExpeditionStatus.ReturnQualified, 100);
-            Assert.That(inventory.CanModifyPlayerBag(out error), Is.True, error);
-
-            EnterExpedition(ExpeditionStatus.Returning, 100);
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-
-            EnterExpedition(ExpeditionStatus.Playing, 0);
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-        }
-
-        [Test]
-        public void PausedBagCommandsCommitWithoutResumingGameplayOrAllowingOrdinaryBagOperations()
-        {
-            var system = Game.Interface.GetSystem<TestCmdSystem>();
-            var inventory = Game.Interface.GetSystem<InventorySystem>();
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Game.Interface.GetSystem<AppStateSystem>().TryPause();
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-            var cloned = system.ExecuteAsync("#clone " + ItemIds.MetalParts + " 2", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(cloned.Success, Is.True);
-            Assert.That(bag.GetTotalAmount(ItemIds.MetalParts), Is.EqualTo(2));
-            var cleared = system.ExecuteAsync("#clear bag", CancellationToken.None).GetAwaiter().GetResult();
-            Assert.That(cleared.Success, Is.True);
-            Assert.That(Game.Interface.GetModel<PlayerBagModel>().Container.GetTotalAmount(ItemIds.MetalParts), Is.Zero);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-            Assert.That(Time.timeScale, Is.Zero);
-            Assert.That(inventory.CanModifyPlayerBag(out _), Is.False);
-
-            EnterExpedition(ExpeditionStatus.Playing, 100);
-            Game.Interface.GetSystem<AppStateSystem>().TryPause();
-            Assert.That(system.ExecuteAsync("#clone " + ItemIds.MetalParts, CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-            Assert.That(system.ExecuteAsync("#clear bag", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-        }
-
-        [Test]
-        public void CommandExceptionRestoresPlayerBagSnapshot()
-        {
-            configs.ThrowOnSecondItemLookup = true;
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            Assert.That(bag.TryAdd(ItemIds.MetalParts, 1, 5, out _, out var error), Is.True, error);
-            var before = SnapshotText(bag);
-            var events = CountInventoryEvents();
-
-            using var logs = Log.CaptureForTests((_, __) => { });
-            var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 2", CancellationToken.None).GetAwaiter().GetResult();
-
-            AssertResult(result, true, false, TestCmdResultCode.ExecutionFailed, 0, 0);
-            Assert.That(SnapshotText(bag), Is.EqualTo(before));
-            Assert.That(events.Count, Is.EqualTo(0));
-            Assert.That(IsSaveDirty(), Is.False);
-        }
-
-        [Test]
         public void CommandWritesExpectedRuntimeLogSeverity()
         {
             var captured = new System.Collections.Generic.List<LogType>();
             using (Log.CaptureForTests((type, _) => captured.Add(type)))
             {
-                Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 1", CancellationToken.None).GetAwaiter().GetResult();
+                Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#unitbar on", CancellationToken.None).GetAwaiter().GetResult();
                 Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 nope", CancellationToken.None).GetAwaiter().GetResult();
                 configs.ThrowOnSecondItemLookup = true;
                 Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 2 1", CancellationToken.None).GetAwaiter().GetResult();
             }
 
-            Assert.That(captured, Is.EqualTo(new[] { LogType.Log, LogType.Warning, LogType.Error }));
+            Assert.That(captured, Does.Contain(LogType.Log));
+            Assert.That(captured, Does.Contain(LogType.Warning));
         }
 
         [Test]
@@ -820,91 +420,6 @@ namespace Game.Tests
             Assert.That(categories.Select(value => value.Id), Does.Contain("diagnostics"));
             Assert.That(entries.Single(value => value.Id == "diagnostics.runtime-log").CommandTemplate, Is.EqualTo("#log"));
             Assert.That(entries.Single(value => value.Id == "diagnostics.runtime-log").CategoryId, Is.EqualTo("diagnostics"));
-            Assert.That(entries.Single(value => value.Id == "appearance.list").CommandTemplate, Is.EqualTo("#appearance list"));
-            Assert.That(entries.Single(value => value.Id == "appearance.switch").CommandTemplate, Is.EqualTo("#appearance "));
-            Assert.That(entries.Single(value => value.Id == "appearance.reset").CommandTemplate, Is.EqualTo("#appearance reset"));
-        }
-
-        private static void EnterBase()
-        {
-            var app = Game.Interface.GetSystem<AppStateSystem>();
-            app.TryTransition(AppState.Loading);
-            app.TryTransition(AppState.Playing);
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, null);
-            Game.Interface.GetSystem<InventorySystem>().TrySetPlayerBagRiskState(PlayerBagRiskState.BaseSafe, "test", false, out _);
-            Game.Interface.GetModel<ExpeditionModel>().Clear();
-            Game.Interface.GetModel<CombatModel>().ApplyPlayerConfig(
-                new PlayerConfigDefinition("player", string.Empty, 100, 10, 1f, 1f, 1f, 1f, 5f),
-                false);
-            Game.Interface.GetModel<CombatModel>().SetPlayerHP(100);
-            SetSaveDirty(false);
-        }
-
-        private static void EnterExpedition(ExpeditionStatus status, int health)
-        {
-            EnterBase();
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.SurvivalSample, null);
-            var expedition = Game.Interface.GetModel<ExpeditionModel>();
-            expedition.BeginSurvival(MapIds.SurvivalSample, 60f);
-            expedition.SetExpeditionId(Guid.NewGuid().ToString("N"));
-            if (status == ExpeditionStatus.ReturnQualified)
-            {
-                expedition.QualifyReturn();
-            }
-            else if (status == ExpeditionStatus.Returning)
-            {
-                expedition.QualifyReturn();
-                expedition.BeginReturning();
-            }
-            else if (status == ExpeditionStatus.Defeated)
-            {
-                expedition.MarkDefeated();
-            }
-
-            Game.Interface.GetSystem<InventorySystem>().TrySetPlayerBagRiskState(PlayerBagRiskState.InExpedition, "test", false, out _);
-            Game.Interface.GetModel<CombatModel>().SetPlayerHP(health);
-            SetSaveDirty(false);
-        }
-
-        private static EventCounter CountInventoryEvents()
-        {
-            var counter = new EventCounter();
-            Game.Interface.RegisterEvent<InventoryChangedEvent>(_ => counter.Count++);
-            return counter;
-        }
-
-        private static string SnapshotText(ItemContainer container)
-        {
-            return string.Join("|", container.Slots
-                .OrderBy(pair => pair.Key)
-                .Select(pair => $"{pair.Key}:{pair.Value.ItemId}:{pair.Value.Amount}"));
-        }
-
-        private static bool IsSaveDirty()
-        {
-            return (bool)typeof(SaveSystem)
-                .GetField("dirty", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?.GetValue(Game.Interface.GetSystem<SaveSystem>());
-        }
-
-        private static void AssertFailurePreservesBag(
-            TestCmdSystem system,
-            string command,
-            TestCmdResultCode expectedCode)
-        {
-            var bag = Game.Interface.GetModel<PlayerBagModel>().Container;
-            var before = SnapshotText(bag);
-            var result = system.ExecuteAsync("#" + command, CancellationToken.None).GetAwaiter().GetResult();
-            AssertResult(result, true, false, expectedCode, 0, 0);
-            Assert.That(SnapshotText(bag), Is.EqualTo(before));
-            Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands[0], Is.EqualTo("#" + command));
-        }
-
-        private static void SetSaveDirty(bool value)
-        {
-            typeof(SaveSystem)
-                .GetField("dirty", BindingFlags.Instance | BindingFlags.NonPublic)
-                ?.SetValue(Game.Interface.GetSystem<SaveSystem>(), value);
         }
 
         private static void AssertResult(
@@ -1001,15 +516,15 @@ namespace Game.Tests
 
                 switch (id)
                 {
-                    case ItemIds.MetalParts:
+                    case 1:
                         value = new ItemDefinition(id, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
                         error = null;
                         return true;
-                    case ItemIds.Cloth:
+                    case 2:
                         value = new ItemDefinition(id, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
                         error = null;
                         return true;
-                    case ItemIds.Medkit:
+                    case 3:
                         value = new ItemDefinition(id, "Medkit", "Medkit", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30);
                         error = null;
                         return true;
@@ -1024,9 +539,9 @@ namespace Game.Tests
             {
                 values = new[]
                 {
-                    new ItemDefinition(ItemIds.MetalParts, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(ItemIds.Cloth, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(ItemIds.Medkit, "Medkit", "Medkit", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30)
+                    new ItemDefinition(1, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
+                    new ItemDefinition(2, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
+                    new ItemDefinition(3, "Medkit", "Medkit", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30)
                 };
                 error = null;
                 return true;
@@ -1071,13 +586,6 @@ namespace Game.Tests
             {
                 value = default;
                 error = "missing loot";
-                return false;
-            }
-
-            public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing extraction";
                 return false;
             }
         }

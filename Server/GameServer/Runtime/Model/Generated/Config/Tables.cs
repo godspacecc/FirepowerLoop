@@ -13,16 +13,8 @@ namespace ET
 {
 public partial class Tables
 {
-    public TbItem TbItem {get; }
-    public TbWeapon TbWeapon {get; }
-    public TbTempBuilding TbTempBuilding {get; }
-    public TbTempBuildingManualAttack TbTempBuildingManualAttack {get; }
     public TbProjectile TbProjectile {get; }
-    public TbMapSpawn TbMapSpawn {get; }
-    public TbPlayer TbPlayer {get; }
     public TbEnemy TbEnemy {get; }
-    public TbLoot TbLoot {get; }
-    public TbOnlineWorldRule TbOnlineWorldRule {get; }
     public TbArcadeRule TbArcadeRule {get; }
     public TbArcadeWeapon TbArcadeWeapon {get; }
     public TbArcadeArena TbArcadeArena {get; }
@@ -44,16 +36,8 @@ public partial class Tables
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
-        TbItem = new TbItem(loader("tbitem"));
-        TbWeapon = new TbWeapon(loader("tbweapon"));
-        TbTempBuilding = new TbTempBuilding(loader("tbtempbuilding"));
-        TbTempBuildingManualAttack = new TbTempBuildingManualAttack(loader("tbtempbuildingmanualattack"));
         TbProjectile = new TbProjectile(loader("tbprojectile"));
-        TbMapSpawn = new TbMapSpawn(loader("tbmapspawn"));
-        TbPlayer = new TbPlayer(loader("tbplayer"));
         TbEnemy = new TbEnemy(loader("tbenemy"));
-        TbLoot = new TbLoot(loader("tbloot"));
-        TbOnlineWorldRule = new TbOnlineWorldRule(loader("tbonlineworldrule"));
         TbArcadeRule = new TbArcadeRule(loader("tbarcaderule"));
         TbArcadeWeapon = new TbArcadeWeapon(loader("tbarcadeweapon"));
         TbArcadeArena = new TbArcadeArena(loader("tbarcadearena"));
@@ -77,16 +61,8 @@ public partial class Tables
     
     private void ResolveRef()
     {
-        TbItem.ResolveRef(this);
-        TbWeapon.ResolveRef(this);
-        TbTempBuilding.ResolveRef(this);
-        TbTempBuildingManualAttack.ResolveRef(this);
         TbProjectile.ResolveRef(this);
-        TbMapSpawn.ResolveRef(this);
-        TbPlayer.ResolveRef(this);
         TbEnemy.ResolveRef(this);
-        TbLoot.ResolveRef(this);
-        TbOnlineWorldRule.ResolveRef(this);
         TbArcadeRule.ResolveRef(this);
         TbArcadeWeapon.ResolveRef(this);
         TbArcadeArena.ResolveRef(this);

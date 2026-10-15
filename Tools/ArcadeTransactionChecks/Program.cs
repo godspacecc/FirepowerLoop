@@ -49,7 +49,7 @@ OnlineArcadePlayerRecord Player(long id) => new()
 {
     PlayerId = id, Lives = 3, RunGold = 100, Bombs = 2, Dashes = 2, WeaponId = "arcade.weapon.basic",
     UpgradeStacks = new() { ["arcade.upgrade.damage"] = 1 }, Consumables = new() { ["old-item"] = 1 },
-    EquipmentBySlot = new() { ["support"] = "old-support" }, PendingRewards = new() { ["old-reward"] = 2 },
+    EquipmentBySlot = new() { ["support"] = "old-support" },
     ShopOffers = new() { new() { OfferId = "offer", ShopItemId = "arcade.shop.bomb", ProductId = "arcade.resource.bomb",
         ProductType = (int)ArcadeShopProductType.Consumable, Price = 10, Amount = 1, MaxPurchases = 5 } }
 };
@@ -74,7 +74,6 @@ void Dirty(OnlineArcadeRunActor actor)
     player.RunGold = 175; player.Bombs = 0; player.Dashes = 0; player.Lives = 2;
     player.WeaponId = "arcade.weapon.rapid"; player.UpgradeStacks["arcade.upgrade.damage"] = 3;
     player.Consumables["old-item"] = 4; player.EquipmentBySlot["support"] = "new-support";
-    player.PendingRewards["old-reward"] = 5; player.ShopOffers[0].PurchaseCount = 1;
     actor.Record.Operations.Add(new() { OperationId = "transient", PlayerId = player.PlayerId, Fingerprint = "transient" });
     actor.Record.Revision = 9;
 }
@@ -85,8 +84,8 @@ void RequireBaseline(OnlineArcadeRunRecord record)
         $"resources leaked: gold={player.RunGold} bombs={player.Bombs} dashes={player.Dashes} lives={player.Lives}");
     Require(player.WeaponId == "arcade.weapon.basic" && player.UpgradeStacks["arcade.upgrade.damage"] == 1 &&
         player.Consumables["old-item"] == 1 && player.EquipmentBySlot["support"] == "old-support", "loadout leaked");
-    Require(player.PendingRewards["old-reward"] == 2 && player.ShopOffers[0].PurchaseCount == 0 &&
-        record.Operations.Count == 1 && record.Operations[0].OperationId == "old-purchase", "rewards or operations leaked");
+    Require(player.ShopOffers[0].PurchaseCount == 0 &&
+        record.Operations.Count == 1 && record.Operations[0].OperationId == "old-purchase", "shop purchases or operations leaked");
     Require(record.NextArena == 3 && record.CompletedArena == 2, "arena progress changed");
 }
 Check("Disconnect restores all resources, loadout and operation ledger", (manager, actor) =>
@@ -108,18 +107,17 @@ Check("Failed rollback preserves battle, disk and committed snapshot; retry succ
     Require((bool)Call("TryRollbackDisconnectedBattle", manager, actor), "retry rejected");
     RequireBaseline(actor.Record);
 });
-foreach (string entry in new[] { "CommitWithCandidate", "CommitWithoutRun", "CommitRunAndWallet", "CommitWalletOnly" })
+foreach (string entry in new[] { "CommitWithCandidate", "CommitWithoutRun" })
 {
     Check(entry + " isolates another active run", (manager, actor) =>
     {
         Dirty(actor);
-        var other = Record(202); var wallet = new OnlineArcadeRewardWalletRecord { PlayerId = 9001 };
+        var other = Record(202);
         switch (entry)
         {
             case "CommitWithCandidate": Call(entry, manager, other, 0L); break;
             case "CommitWithoutRun": Call(entry, manager, 999L); break;
-            case "CommitRunAndWallet": Call(entry, manager, other, wallet); break;
-            default: Call(entry, manager, wallet); break;
+            default: throw new InvalidOperationException(entry);
         }
         var persisted = DiskRun(manager); RequireBaseline(persisted);
         Require(persisted.Revision == 4 && actor.Record.Revision == 9 && actor.Battle != null, "other save changed live state");
@@ -137,7 +135,7 @@ Check("Arena completion failure keeps old checkpoint; retry commits once", (mana
     Require(actor.Record.NextArena == 4 && actor.Battle == null, "arena completion failed");
     Require(Committed(actor).Players[0].RunGold == actor.Record.Players[0].RunGold, "checkpoint not advanced");
     long gold = actor.Record.Players[0].RunGold;
-    Call("CommitWalletOnly", manager, new OnlineArcadeRewardWalletRecord { PlayerId = 9001 });
+    Call("CommitWithoutRun", manager, 999L);
     Require(DiskRun(manager).Players[0].RunGold == gold, "later save repeated completion reward");
 });
 Check("Committed checkpoint and live record do not alias nested values", (manager, actor) =>
@@ -153,7 +151,7 @@ Check("Missing committed checkpoint fails closed instead of saving runtime", (ma
     Dirty(actor); typeof(OnlineArcadeRunActor).GetField("CommittedRecord")?.SetValue(actor, null);
     string before = File.ReadAllText(manager.StorePath);
     bool rejected = false;
-    try { Call("CommitWalletOnly", manager, new OnlineArcadeRewardWalletRecord { PlayerId = 9001 }); }
+    try { Call("CommitWithoutRun", manager, 999L); }
     catch (TargetInvocationException error) when (error.InnerException is InvalidOperationException) { rejected = true; }
     Require(rejected && File.ReadAllText(manager.StorePath) == before, "missing checkpoint saved runtime");
 });
@@ -173,8 +171,6 @@ foreach (bool success in new[] { false, true })
             "challenge reset attempt, revision or arena");
         Require(actor.Record.Operations.Count == 1 && actor.Battle == null, "challenge leaked transient ledger");
         Require(Committed(actor).Players[0].RunGold == 100, "challenge checkpoint not updated");
-        Require(player.PendingRewards["old-reward"] == 2, "existing rewards changed");
-        Require(player.PendingRewards.Count == 1, "challenge must not create out-of-run rewards");
     });
 }
 Check("Actual file replacement failure leaves both checkpoint and live battle intact", (manager, actor) =>
@@ -219,17 +215,17 @@ Check("Settlement preserves scores without creating wallets and is idempotent", 
     actor.Record.Players[0].Score = 12345;
     manager.RemainingFailSaveCount = 1;
     bool rejected = false;
-    try { Call("CommitPlayerSettlement", manager, actor, playerId, false); }
+    try { Call("CommitPlayerSettlement", manager, actor, playerId); }
     catch (TargetInvocationException error) when (error.InnerException is IOException) { rejected = true; }
-    Require(rejected && actor.Record.Players[0].SettlementState == 0 && manager.RewardWallets.Count == 0,
+    Require(rejected && actor.Record.Players[0].SettlementState == 0,
         "failed settlement changed memory or created wallet");
-    Call("CommitPlayerSettlement", manager, actor, playerId, false);
+    Call("CommitPlayerSettlement", manager, actor, playerId);
     Require(Committed(actor).Players[0].Score == 12345 && Committed(actor).Players[0].SettlementState == 1,
         "settlement lost score or checkpoint");
     string before = File.ReadAllText(manager.StorePath);
-    Call("CommitPlayerSettlement", manager, actor, playerId, false);
-    Require(File.ReadAllText(manager.StorePath) == before && manager.RewardWallets.Count == 0 && Read(manager).RewardWallets.Count == 0,
-        "settlement duplicated writes or created rewards");
+    Call("CommitPlayerSettlement", manager, actor, playerId);
+    Require(File.ReadAllText(manager.StorePath) == before && !before.Contains("RewardWallets") && !before.Contains("PendingRewards"),
+        "settlement duplicated writes or persisted removed wallet fields");
 });
 Check("Schema 1 and 2 records initialize isolated checkpoints without new persisted fields", (manager, actor) =>
 {

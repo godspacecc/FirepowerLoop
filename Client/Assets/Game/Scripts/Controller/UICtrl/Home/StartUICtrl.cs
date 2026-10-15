@@ -147,58 +147,6 @@ namespace Game
                    mapSceneSystem.HasRecoverableCurrentWorld() && appStateSystem.TryResume();
         }
 
-        /// <summary>供启动恢复流程复用的受控基地进入动作，不接触副本文件。</summary>
-        public async UniTask<bool> EnterBaseFromStartupAsync(BaseSaveData data)
-        {
-            return await EnterBase(data, false);
-        }
-
-        /// <summary>损坏副本的“进入基地”共用入口；只接受已验证的基地 DTO，绝不改写副本域。</summary>
-        internal static UniTask<GameSessionFlowResult> EnterBaseRuntimeAsync(BaseSaveData data)
-        {
-            return Game.Interface.GetSystem<GameSessionFlowSystem>().EnterBaseAsync(data);
-        }
-
-        private async UniTask<bool> EnterBase(BaseSaveData data, bool showPlayerHud = true)
-        {
-            UIHelper.ShowUI<LoadingUICtrl>();
-            var result = await EnterBaseRuntimeAsync(data);
-            if (!result.Success)
-            {
-                Log.Error($"[StartUICtrl] 进入基地失败：{result.Error}");
-                UIHelper.GetUICtrl<LoadingUICtrl>()?.ShowError(Texts.SaveErrorLoadFailed);
-                return false;
-            }
-
-            UIHelper.HideUI<LoadingUICtrl>();
-            Hide();
-            if (showPlayerHud)
-            {
-                UIHelper.ShowUI<PlayerConditionHudUICtrl>();
-                UIHelper.ShowUI<GameplayGuideHudUICtrl>();
-            }
-            return true;
-        }
-
-        public async UniTask ResumePendingExpeditionAsync()
-        {
-            UIHelper.ShowUI<LoadingUICtrl>();
-            var result = await this.GetSystem<ExpeditionFlowSystem>().ResumePendingExpeditionAsync();
-            if (!result.Success)
-            {
-                Log.Error($"[StartUICtrl] 恢复远征失败：{result.Error}");
-                UIHelper.GetUICtrl<LoadingUICtrl>()?.ShowError(Texts.SaveErrorLoadFailed);
-                RefreshSaveButtons();
-                return;
-            }
-
-            UIHelper.HideUI<LoadingUICtrl>();
-            Hide();
-            UIHelper.ShowUI<PlayerConditionHudUICtrl>();
-            UIHelper.ShowUI<ExpeditionHudUICtrl>();
-            UIHelper.ShowUI<GameplayGuideHudUICtrl>();
-        }
-
         private void OnCheckUpdateClick()
         {
             CheckUpdate(true).Forget();

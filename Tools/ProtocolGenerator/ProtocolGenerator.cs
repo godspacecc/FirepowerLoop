@@ -22,6 +22,7 @@ internal static partial class ProtocolGenerator
 
         Dictionary<string, string> clientFiles = new(StringComparer.Ordinal);
         Dictionary<string, string> serverFiles = new(StringComparer.Ordinal);
+        HashSet<int> assignedOpcodes = [];
 
         string[] protoFiles = Directory.GetFiles(options.SourceDirectory, "*.proto", SearchOption.TopDirectoryOnly)
             .OrderBy(Path.GetFileName, StringComparer.Ordinal)
@@ -35,7 +36,7 @@ internal static partial class ProtocolGenerator
         foreach (string protoPath in protoFiles)
         {
             ProtocolFileName fileName = ParseProtocolFileName(protoPath);
-            string result = ConvertProtocolFile(protoPath, fileName.ProtocolName, fileName.StartOpcode);
+            string result = ConvertProtocolFile(protoPath, fileName.ProtocolName, fileName.StartOpcode, assignedOpcodes);
             string outputName = $"{fileName.FileName}.cs";
 
             if (fileName.Direction.Contains('C', StringComparison.Ordinal))
@@ -104,7 +105,7 @@ internal static partial class ProtocolGenerator
         return new ProtocolFileName(fileName, parts[0], direction, startOpcode);
     }
 
-    private static string ConvertProtocolFile(string protoPath, string protoName, int startOpcode)
+    private static string ConvertProtocolFile(string protoPath, string protoName, int startOpcode, HashSet<int> assignedOpcodes)
     {
         List<OpcodeInfo> msgOpcode = [];
         string source = File.ReadAllText(protoPath);
@@ -120,11 +121,21 @@ internal static partial class ProtocolGenerator
         string responseType = "";
         StringBuilder sbDispose = new();
         Regex responseTypeRegex = ResponseTypeRegex();
+        // 显式编号保留已发布消息的身份；删掉中间消息不会重排其余协议。
+        int? explicitOpcode = null;
         foreach (string line in source.Split('\n'))
         {
             string newline = line.Trim();
             if (string.IsNullOrEmpty(newline))
             {
+                continue;
+            }
+
+            if (!isMsgStart && newline.StartsWith("// Opcode ", StringComparison.Ordinal))
+            {
+                if (explicitOpcode.HasValue || !int.TryParse(newline[10..].Trim(), out int parsed) || parsed <= 0 || parsed > ushort.MaxValue)
+                    throw new FormatException($"Invalid or repeated Opcode declaration in {Path.GetFileName(protoPath)}: {newline}");
+                explicitOpcode = parsed;
                 continue;
             }
 
@@ -163,11 +174,16 @@ internal static partial class ProtocolGenerator
                     parentClass = ss[1].Trim();
                 }
 
-                int opcode = ++startOpcode;
+                int opcode = explicitOpcode ?? (startOpcode + 1);
+                explicitOpcode = null;
+                startOpcode = opcode;
                 if (opcode > ushort.MaxValue)
                 {
                     throw new FormatException($"Opcode exceeds ushort range in {Path.GetFileName(protoPath)}.");
                 }
+
+                if (!assignedOpcodes.Add(opcode))
+                    throw new FormatException($"Duplicate Opcode {opcode} for {msgName} in {Path.GetFileName(protoPath)}.");
 
                 msgOpcode.Add(new OpcodeInfo() { Name = msgName, Opcode = opcode });
 
@@ -256,6 +272,9 @@ internal static partial class ProtocolGenerator
                 }
             }
         }
+
+        if (explicitOpcode.HasValue)
+            throw new FormatException($"Opcode declaration has no message in {Path.GetFileName(protoPath)}.");
 
         sb.Append("\tpublic static class " + protoName + "\n\t{\n");
         foreach (OpcodeInfo info in msgOpcode)

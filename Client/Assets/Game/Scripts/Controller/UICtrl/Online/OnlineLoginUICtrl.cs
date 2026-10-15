@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 
 namespace Game
 {
-    /// <summary>呈现联机账号快照并提交登录、房间和世界操作；账号权威及连接状态由现有系统持有，不负责静态布局。</summary>
+    /// <summary>呈现联机账号快照并提交登录和街机房间操作；账号权威及连接状态由现有系统持有，不负责静态布局。</summary>
     public sealed class OnlineLoginUICtrl : BaseUICtrl
     {
         private OnlineLoginUI UI => BaseUI as OnlineLoginUI;
@@ -20,7 +20,7 @@ namespace Game
         private static bool requestArcadeRoomMode;
         private bool arcadeRoomMode;
 
-        /// <summary>从基地街机入口打开登录；登录完成后的房间按钮继续进入双人街机大厅。</summary>
+        /// <summary>从街机主界面打开登录；登录完成后的房间按钮继续进入双人街机大厅。</summary>
         public static void ShowForArcadeLobby()
         {
             requestArcadeRoomMode = true;
@@ -52,13 +52,11 @@ namespace Game
             {
                 UI.RoomButton.onClick.AddListener(OpenRoom);
             }
-            UI.WorldButton.onClick.AddListener(() => SubmitWorld().Forget());
+            UI.WorldButton.gameObject.SetActive(false);
             UI.CloseButton.onClick.AddListener(Hide);
             this.RegisterEvent<OnlineAccountChangedEvent>(evt => Render(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ => Render(this.GetSystem<OnlineAccountSystem>().Snapshot))
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<OnlineWorldChangedEvent>(_ => Render(this.GetSystem<OnlineAccountSystem>().Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
@@ -256,41 +254,6 @@ namespace Game
             }
 
             ShowSnapshotNotice(snapshot);
-            RenderWorld(this.GetSystem<OnlineWorldSystem>()?.Snapshot ?? OnlineWorldSnapshot.Empty());
-        }
-
-        private async UniTask SubmitWorld()
-        {
-            OnlineWorldSystem world=this.GetSystem<OnlineWorldSystem>();
-            if (!world.Snapshot.HasWorld)
-            {
-                if (!MapSelectionUICtrl.TryShowOnline(out string error)) Notify.ShowFloatTips(error);
-                return;
-            }
-
-            int generation=++operationGeneration;
-            UIHelper.ShowUI<LoadingUICtrl>();
-            try
-            {
-                OnlineWorldOperationResult result=await world.LeaveWorldAsync();
-                if(generation!=operationGeneration||UI==null)return;
-                UIHelper.HideUI<LoadingUICtrl>();
-                if(result.Success&&result.Snapshot.HasWorld)
-                {
-                    UIHelper.HideUI<OnlineRoomUICtrl>();
-                    UIHelper.HideUI<OnlineLoginUICtrl>();
-                    UIHelper.HideUI<StartUICtrl>();
-                }
-                else if(!result.Success) Notify.ShowFloatTips(OnlineWorldText.Result(result.Code));
-            }
-            catch(Exception e){UIHelper.HideUI<LoadingUICtrl>();Log.Error($"[OnlineLoginUICtrl] World 操作异常：{e}");Notify.ShowFloatTips(OnlineWorldText.Result(OnlineWorldResultCode.UnknownFailure));}
-        }
-
-        private void RenderWorld(OnlineWorldSnapshot world)
-        {
-            if(UI?.WorldButton==null)return;
-            UI.WorldButton.interactable=this.GetSystem<OnlineAccountSystem>().Snapshot.IsAuthenticated&&world.OperationState==OnlineWorldOperationState.Idle;
-            UI.WorldButtonText.text=world.OperationState switch{OnlineWorldOperationState.Entering=>Loc.T("ui.online.world.entering"),OnlineWorldOperationState.Leaving=>Loc.T("ui.online.world.leaving"),OnlineWorldOperationState.Restoring=>Loc.T("ui.online.world.restoring"),_=>world.HasWorld?Loc.T("ui.online.world.leave"):Loc.T("ui.online.world.enter")};
         }
 
         private void ShowSnapshotNotice(OnlineAccountSnapshot snapshot)
@@ -329,7 +292,6 @@ namespace Game
             {
                 UI.RoomButton.interactable = enabled && this.GetSystem<OnlineAccountSystem>().Snapshot.IsAuthenticated;
             }
-            if(UI.WorldButton!=null)UI.WorldButton.interactable=enabled&&this.GetSystem<OnlineAccountSystem>().Snapshot.IsAuthenticated&&(this.GetSystem<OnlineWorldSystem>()?.Snapshot.OperationState??OnlineWorldOperationState.Idle)==OnlineWorldOperationState.Idle;
         }
 
         private void ClearPasswordAndFocus()
@@ -343,10 +305,6 @@ namespace Game
         }
     }
 
-    public static class OnlineWorldText
-    {
-        public static string Result(OnlineWorldResultCode code)=>code switch{OnlineWorldResultCode.NotInWorld=>Loc.T("ui.online.world.error.not_in_world"),OnlineWorldResultCode.OperationInvalid=>Loc.T("ui.online.world.error.operation"),OnlineWorldResultCode.StateConflict=>Loc.T("ui.online.world.error.conflict"),OnlineWorldResultCode.RoomLeaveFailed=>Loc.T("ui.online.world.error.room_leave"),OnlineWorldResultCode.ServiceUnavailable=>Loc.T("ui.online.world.error.service"),OnlineWorldResultCode.Disconnected=>Loc.T("ui.online.error.disconnected"),OnlineWorldResultCode.Timeout=>Loc.T("ui.online.error.request_timeout"),OnlineWorldResultCode.MapLoadFailed=>Loc.T("ui.online.world.error.map_load"),OnlineWorldResultCode.BaseSaveFailed=>Loc.T("ui.online.world.error.base_save"),OnlineWorldResultCode.NotLoggedIn=>Loc.T("ui.online.error.not_logged_in"),OnlineWorldResultCode.OperationInProgress=>Loc.T("ui.online.error.busy"),_=>Loc.T("ui.online.error.unknown")};
-    }
 
     public static class OnlineAccountText
     {

@@ -85,40 +85,6 @@ namespace Game
             YawRoot.rotation = Quaternion.LookRotation(direction.normalized, Vector3.up);
         }
 
-        public void SetHud(bool operating, string ammoName, int loadedAmmo, int capacity, PlayerActionSnapshot? reloadSnapshot)
-        {
-            var showMagazine = operating && MagazineRoot != null;
-            if (MagazineRoot != null && MagazineRoot.activeSelf != showMagazine)
-            {
-                MagazineRoot.SetActive(showMagazine);
-            }
-
-            if (showMagazine && MagazineText != null)
-            {
-                MagazineText.text = $"{ammoName} {Mathf.Max(0, loadedAmmo)}/{Mathf.Max(0, capacity)}";
-                MagazineText.color = loadedAmmo == 0 ? Color.red : Color.white;
-            }
-
-            if (!showMagazine)
-            {
-                StopEmptyAmmoFeedback();
-            }
-
-            var showReload = operating && reloadSnapshot.HasValue;
-            if (ReloadProgressRoot != null && ReloadProgressRoot.activeSelf != showReload)
-            {
-                ReloadProgressRoot.SetActive(showReload);
-            }
-
-            if (showReload)
-            {
-                ReloadProgressFill.fillAmount = Mathf.Clamp01(reloadSnapshot.Value.Progress01);
-                ReloadProgressIcon.sprite = string.IsNullOrWhiteSpace(reloadSnapshot.Value.IconAddress)
-                    ? null
-                    : ResourceLoader.LoadAsset<Sprite>(reloadSnapshot.Value.IconAddress);
-            }
-        }
-
         public void FaceWorldHuds(Vector3 cameraPosition, Vector3 cameraUp)
         {
             Face(ReloadProgressRoot != null ? ReloadProgressRoot.transform : null, cameraPosition, cameraUp);

@@ -1,4 +1,4 @@
-﻿using QFramework;
+using QFramework;
 using UnityEngine;
 
 namespace Game
@@ -38,7 +38,7 @@ namespace Game
         /// <summary>切换街机专用单位识别表现；不改变玩家碰撞、生命或移动状态。</summary>
         void SetArcadePresentationActive(bool active) { }
         void SetTiliRing(float current, float maximum, bool isSprinting, bool exhausted);
-        void ShowActionProgress(PlayerActionSnapshot snapshot)
+        void ShowActionProgress(float progress01, string iconAddress)
         {
         }
         void HideActionProgress()

@@ -14,7 +14,6 @@ namespace Game.Tests
     {
         private string runtimeRoot;
         private Game architecture;
-        private SaveSystem save;
         private ArcadeRunSystem arcade;
 
         [SetUp]
@@ -25,27 +24,11 @@ namespace Game.Tests
             architecture = new Game();
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, architecture);
             typeof(Architecture<Game>).GetField("mInited", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(architecture, true);
-            architecture.RegisterModel(new SaveModel());
-            architecture.RegisterModel(new ExpeditionModel());
             architecture.RegisterModel(new ArcadeRunModel());
-            architecture.RegisterModel(new ArcadeRewardWalletModel());
-            architecture.RegisterModel(new WeaponEquipmentModel());
-            architecture.RegisterModel(new PlayerBagModel());
-            architecture.RegisterModel(new ClothingEquipmentModel());
             architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(LoadTables));
-            architecture.RegisterSystem(new SaveSystem());
-            // 基地恢复现在校验唯一手持来源；街机夹具也须注册正式保存依赖。
-            architecture.RegisterSystem(new WeaponEquipmentSystem());
-            architecture.RegisterSystem(new ClothingEquipmentSystem());
             architecture.RegisterSystem(new ArcadeRunSystem());
-            save = architecture.GetSystem<SaveSystem>();
             arcade = architecture.GetSystem<ArcadeRunSystem>();
-            save.ConfigureForTests(runtimeRoot);
             arcade.ConfigureForTests(runtimeRoot);
-            Assert.That(save.RegisterSection(architecture.GetModel<PlayerBagModel>(), out var bagError), Is.True, bagError);
-            Assert.That(save.CreateBase(out var baseData, out var error), Is.True, error);
-            Assert.That(save.CaptureBaseSections(baseData, out error), Is.True, error);
-            Assert.That(save.CommitBaseRuntime(baseData, out error), Is.True, error);
         }
 
         [TearDown]
@@ -186,7 +169,7 @@ namespace Game.Tests
 
             ArcadeResumeUICtrl.RollbackNewRun(arcade, "模拟地图加载失败");
             Assert.That(arcade.InspectPending().Status, Is.EqualTo(SaveFileStatus.Missing));
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().HasRun, Is.False);
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Current.HasResult, Is.True);
         }
 
         [Test]
@@ -216,7 +199,7 @@ namespace Game.Tests
             Assert.That(safe.CompletedArenaCount, Is.EqualTo(1));
             Assert.That(safe.NextArenaNumber, Is.EqualTo(2));
             Assert.That(safe.RunGold, Is.EqualTo(25));
-            Assert.That(safe.PendingRewards[0].RewardId, Is.EqualTo("reward.scrap"));
+            Assert.That(safe.PendingRewards, Is.Empty, "街机不保存局外奖励");
             Assert.That(safe.Shop.ArenaNumber, Is.EqualTo(2));
         }
 
@@ -254,28 +237,10 @@ namespace Game.Tests
             Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
             Assert.That(arcade.TryHandleDeath(out var snapshot, out error), Is.EqualTo(ArcadeDeathResult.RunFailed), error);
 
-            Assert.That(snapshot, Is.Null);
-            Assert.That(arcade.InspectPending().Status, Is.EqualTo(SaveFileStatus.Missing));
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().HasRun, Is.False);
-        }
-
-        [Test]
-        public void SettlementDeleteFailureRetriesWithoutDuplicatingBaseReward()
-        {
-            Assert.That(arcade.TryStartNewRun(Shop(1), out _, out var error), Is.True, error);
-            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
-            Assert.That(arcade.TryCompleteArena(Completion(1, 0, 2, "reward.scrap", 5), out _, out error), Is.True, error);
-            arcade.FailNextDeleteForTests();
-
-            Assert.That(arcade.TrySettle(out var firstAlreadySettled, out error), Is.False);
-            Assert.That(firstAlreadySettled, Is.False);
-            Assert.That(Game.Interface.GetModel<ArcadeRewardWalletModel>().GetBalance("reward.scrap"), Is.EqualTo(5));
+            Assert.That(snapshot.HasResult, Is.True);
+            Assert.That(snapshot.Outcome, Is.EqualTo("failed"));
             Assert.That(arcade.InspectPending().IsValid, Is.True);
-
-            Assert.That(arcade.TrySettle(out var retryAlreadySettled, out error), Is.True, error);
-            Assert.That(retryAlreadySettled, Is.True);
-            Assert.That(Game.Interface.GetModel<ArcadeRewardWalletModel>().GetBalance("reward.scrap"), Is.EqualTo(5));
-            Assert.That(arcade.InspectPending().Status, Is.EqualTo(SaveFileStatus.Missing));
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Current.HasResult, Is.True);
         }
 
         [Test]
@@ -315,12 +280,12 @@ namespace Game.Tests
             Assert.That(entered.Shop.ChallengeAttempted, Is.True);
             Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Challenge));
 
-            var rewards = new[] { new ArcadeRewardSaveData { RewardId = "reward.arcade.token", Amount = 1 } };
+            var rewards = Array.Empty<ArcadeRewardSaveData>();
             Assert.That(arcade.TryCompleteChallenge(true, rewards, out var completed, out error), Is.True, error);
             Assert.That(completed.NextArenaNumber, Is.EqualTo(1));
             Assert.That(completed.CompletedArenaCount, Is.Zero);
             Assert.That(completed.Shop.ChallengeAttempted, Is.True);
-            Assert.That(completed.PendingRewards.Single().RewardId, Is.EqualTo("reward.arcade.token"));
+            Assert.That(completed.PendingRewards, Is.Empty);
             Assert.That(arcade.TryStartChallenge(out _, out _), Is.False);
         }
 

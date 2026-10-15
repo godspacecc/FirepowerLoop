@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+using NUnit.Framework;
 using QFramework;
 using System.Linq;
 using UnityEngine;

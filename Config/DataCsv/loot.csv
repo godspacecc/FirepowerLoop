@@ -13,10 +13,6 @@
 ,loot.bottled-water,TestResourcePickup,8,1
 ,loot.wood,TestResourcePickup,9,1
 ,loot.stone,TestResourcePickup,31,1
-,loot.map.base,TestResourcePickup,10,1
-,loot.map.survival-sample,TestResourcePickup,11,1
-,loot.map.mission-sample,TestResourcePickup,12,1
-,loot.map.hejia-village,TestResourcePickup,13,1
 ,loot.weapon.greatsword,TestResourcePickup,15,1
 ,loot.weapon.knife,TestResourcePickup,16,1
 ,loot.weapon.axe,TestResourcePickup,17,1
@@ -31,7 +27,6 @@
 ,loot.ammunition.bullet,AmmoBulletPickup,26,20
 ,loot.ammunition.grenade,AmmoGrenadePickup,27,4
 ,loot.ammunition.rocket,AmmoRocketPickup,28,2
-,loot.map.hejia-village-local,TestResourcePickup,14,1
 ,loot.han.axe,HanForgedAxePickup,32,1
 ,loot.han.pick,HanForgedPickPickup,33,1
 ,loot.han.blade,HanSteelBladePickup,34,1
@@ -47,4 +42,3 @@
 ,loot.clothing.brown-boots,TestResourcePickup,44,1
 ,loot.clothing.canvas-pack,TestResourcePickup,45,1
 ,loot.clothing.utility-vest,TestResourcePickup,46,1
-,loot.map.civilisation-valley,TestResourcePickup,47,1

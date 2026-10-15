@@ -7,7 +7,6 @@ namespace Game
     public sealed class HandheldTorchView : MonoBehaviour
     {
         [SerializeField] private GameObject burningRoot;
-        private bool registered;
         /// <summary>动画采样后抬起主手，保持火焰在身体前方；只修改这一帧的骨骼表现。</summary>
         public void ApplyGrip(Animator animator, Quaternion gripRotation)
         {
@@ -34,24 +33,10 @@ namespace Game
         {
             if (burningRoot != null) burningRoot.SetActive(false);
             if (!Application.isPlaying) return;
-            LifeCycle.RegisterUpdate(Refresh);
-            registered=true;
-            Refresh();
         }
         private void OnDisable()
         {
-            if (registered) { LifeCycle.UnregisterUpdate(Refresh); registered=false; }
             if (burningRoot != null) burningRoot.SetActive(false);
-        }
-        /// <summary>暂停与临时地图卸载关闭表现；恢复时消费既有状态，不重新点火或扣料。</summary>
-        private void Refresh()
-        {
-            var model=Game.Interface.GetModel<WeaponEquipmentModel>();
-            var map=Game.Interface.GetModel<MapSceneModel>();
-            var visible=model.IsHoldingTorch && model.TorchLit && map.Status.Value==MapLoadStatus.Loaded &&
-                        map.CurrentMode==MapPreparationMode.OfflineFull &&
-                        Game.Interface.GetModel<AppStateModel>().CurrentState.Value==AppState.Playing;
-            if (burningRoot != null && burningRoot.activeSelf != visible) burningRoot.SetActive(visible);
         }
     }
 }

@@ -27,20 +27,10 @@ namespace ET
         private readonly List<StartSceneConfig> realms = new();
         private readonly List<StartSceneConfig> routers = new();
         private readonly List<StartSceneConfig> maps = new();
-        private readonly Dictionary<int, WeaponConfig> weapons = new();
-        private readonly Dictionary<int, Item> items = new();
-        private readonly Dictionary<string, LootConfig> loots = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, PlayerConfig> players = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, EnemyConfig> enemies = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, TempBuildingConfig> temporaryBuildings = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, TempBuildingManualAttackConfig> temporaryBuildingAttacks = new(StringComparer.Ordinal);
-        private readonly Dictionary<string, ProjectileConfig> projectiles = new(StringComparer.Ordinal);
-        private readonly List<MapSpawnConfig> mainWorldEnemySpawns = new();
-        private readonly Dictionary<string, MapSpawnConfig> onlineWorldPlayerSpawns = new(StringComparer.Ordinal);
-        private readonly List<string> onlineWorldMapIds = new();
-        private OnlineWorldRuleConfig onlineWorldRule;
         private ArcadeRuleConfig arcadeRule;
-        private const string BaseMapId = "map.another-day.base";
+        // 街机敌人及其投射物仍消费共用表现配置，不加载开放世界库存或地图规则。
+        private readonly Dictionary<string, EnemyConfig> enemies = new(StringComparer.Ordinal);
+        private readonly Dictionary<string, ProjectileConfig> projectiles = new(StringComparer.Ordinal);
 
         public Tables Tables => this.tables;
         public string Profile { get; private set; }
@@ -57,16 +47,7 @@ namespace ET
         public StartSceneConfig LocationConfig { get; private set; }
         public StartSceneConfig Match { get; private set; }
         public StartSceneConfig Benchmark { get; private set; }
-        public MapSpawnConfig MainWorldPlayerSpawn { get; private set; }
-        public IReadOnlyList<MapSpawnConfig> MainWorldEnemySpawns => this.mainWorldEnemySpawns;
-        public IReadOnlyList<string> OnlineWorldMapIds => this.onlineWorldMapIds;
-        public OnlineWorldRuleConfig OnlineWorldRule => this.onlineWorldRule;
         public ArcadeRuleConfig ArcadeRule => this.arcadeRule;
-
-        public bool TryGetOnlineWorldPlayerSpawn(string mapId, out MapSpawnConfig playerSpawn)
-        {
-            return this.onlineWorldPlayerSpawns.TryGetValue(mapId ?? string.Empty, out playerSpawn);
-        }
 
         public void Awake(string profile)
         {
@@ -149,14 +130,11 @@ namespace ET
 
         public IReadOnlyList<StartProcessConfig> GetProcesses() => this.processList;
 
-        public WeaponConfig GetWeapon(int itemId) => this.weapons.TryGetValue(itemId, out WeaponConfig value) ? value : throw this.Missing("TbWeapon", itemId.ToString());
-        public Item GetItem(int itemId) => this.items.TryGetValue(itemId, out Item value) ? value : throw this.Missing("TbItem", itemId.ToString());
-        public LootConfig GetLoot(string id) => this.loots.TryGetValue(id ?? string.Empty, out LootConfig value) ? value : throw this.Missing("TbLoot", id);
-        public PlayerConfig GetPlayer(string id) => this.players.TryGetValue(id, out PlayerConfig value) ? value : throw this.Missing("TbPlayer", id);
-        public EnemyConfig GetEnemy(string id) => this.enemies.TryGetValue(id, out EnemyConfig value) ? value : throw this.Missing("TbEnemy", id);
-        public TempBuildingConfig GetTemporaryBuilding(string id) => this.temporaryBuildings.TryGetValue(id ?? string.Empty, out TempBuildingConfig value) ? value : throw this.Missing("TbTempBuilding", id);
-        public bool TryGetTemporaryBuildingAttack(string id, out TempBuildingManualAttackConfig value) => this.temporaryBuildingAttacks.TryGetValue(id ?? string.Empty, out value);
-        public ProjectileConfig GetProjectile(string id) => this.projectiles.TryGetValue(id ?? string.Empty, out ProjectileConfig value) ? value : throw this.Missing("TbProjectile", id);
+        public EnemyConfig GetEnemy(string id) => this.enemies.TryGetValue(id ?? string.Empty, out EnemyConfig value)
+            ? value : throw this.Missing("TbEnemy", id);
+
+        public ProjectileConfig GetProjectile(string id) => this.projectiles.TryGetValue(id ?? string.Empty, out ProjectileConfig value)
+            ? value : throw this.Missing("TbProjectile", id);
 
         public IReadOnlyList<StartSceneConfig> GetScenesByProcess(int process)
         {
@@ -243,109 +221,14 @@ namespace ET
 
         private void IndexSharedTables()
         {
-            foreach (Item value in this.tables.TbItem.DataList)
-            {
-                if (!this.items.TryAdd(value.Id, value)) throw ConfigError(this.Profile, "TbItem", value.Id.ToString(), "duplicate Id.");
-                if (value.MaxStackAmount <= 0) throw ConfigError(this.Profile, "TbItem", value.Id.ToString(), "MaxStackAmount must be positive.");
-            }
-            foreach (LootConfig value in this.tables.TbLoot.DataList)
-            {
-                if (!this.loots.TryAdd(value.Id, value)) throw ConfigError(this.Profile, "TbLoot", value.Id, "duplicate Id.");
-                if (!this.items.ContainsKey(value.ItemId)) throw ConfigError(this.Profile, "TbLoot", value.Id, $"ItemId references missing TbItem '{value.ItemId}'.");
-                if (value.Amount <= 0) throw ConfigError(this.Profile, "TbLoot", value.Id, "Amount must be positive.");
-            }
-            if (this.tables.TbOnlineWorldRule.DataList.Count != 1)
-                throw ConfigError(this.Profile, "TbOnlineWorldRule", "default", $"expected exactly one row but found {this.tables.TbOnlineWorldRule.DataList.Count}.");
-            this.onlineWorldRule = this.tables.TbOnlineWorldRule.DataList[0];
-            if (!string.Equals(this.onlineWorldRule.Id, "default", StringComparison.Ordinal) || this.onlineWorldRule.BagCapacity <= 0 ||
-                this.onlineWorldRule.CorpseLifetimeSeconds <= 0)
-                throw ConfigError(this.Profile, "TbOnlineWorldRule", this.onlineWorldRule.Id, "Id, BagCapacity and CorpseLifetimeSeconds are invalid.");
-            Item starter = this.GetItem(this.onlineWorldRule.StarterMeleeWeaponItemId);
-            WeaponConfig starterWeapon = this.GetWeaponAfterIndex(this.onlineWorldRule.StarterMeleeWeaponItemId);
-            if (starter.ItemType != ItemType.Weapon || starterWeapon.WeaponKind != WeaponKind.Melee)
-                throw ConfigError(this.Profile, "TbOnlineWorldRule", this.onlineWorldRule.Id, $"StarterMeleeWeaponItemId '{starter.Id}' must reference a melee weapon.");
-            Item starterRanged = this.GetItem(this.onlineWorldRule.StarterRangedWeaponItemId);
-            WeaponConfig starterRangedWeapon = this.GetWeaponAfterIndex(this.onlineWorldRule.StarterRangedWeaponItemId);
-            if (starterRanged.ItemType != ItemType.Weapon || starterRangedWeapon.WeaponKind != WeaponKind.Projectile ||
-                starterRangedWeapon.AmmoItemId <= 0 || this.onlineWorldRule.StarterRangedAmmoAmount <= 0)
-                throw ConfigError(this.Profile, "TbOnlineWorldRule", this.onlineWorldRule.Id,
-                    $"StarterRangedWeaponItemId '{starterRanged.Id}' and StarterRangedAmmoAmount must define a projectile starter weapon and positive ammo amount.");
-            Item starterAmmo = this.GetItem(starterRangedWeapon.AmmoItemId);
-            if (starterAmmo.ItemType != ItemType.Ammunition)
-                throw ConfigError(this.Profile, "TbOnlineWorldRule", this.onlineWorldRule.Id,
-                    $"Starter ranged weapon ammo '{starterAmmo.Id}' must reference an ammunition item.");
-
+            foreach (EnemyConfig enemy in this.tables.TbEnemy.DataList)
+                if (!this.enemies.TryAdd(enemy.Id, enemy))
+                    throw ConfigError(this.Profile, "TbEnemy", enemy.Id, "duplicate Id.");
+            foreach (ProjectileConfig projectile in this.tables.TbProjectile.DataList)
+                if (string.IsNullOrWhiteSpace(projectile.Id) || !Finite(projectile.MoveSpeed, projectile.MaxTravelDistance) ||
+                    projectile.MoveSpeed <= 0f || projectile.MaxTravelDistance <= 0f || !this.projectiles.TryAdd(projectile.Id, projectile))
+                    throw ConfigError(this.Profile, "TbProjectile", projectile.Id, "invalid or duplicate projectile.");
             this.ValidateArcadeConfig();
-
-            foreach (WeaponConfig value in this.tables.TbWeapon.DataList)
-            {
-                if (!this.weapons.TryAdd(value.ItemId, value)) throw ConfigError(this.Profile, "TbWeapon", value.ItemId.ToString(), "duplicate ItemId.");
-            }
-            foreach (PlayerConfig value in this.tables.TbPlayer.DataList)
-            {
-                if (!Finite(value.BuildingOperateDistance) || value.BuildingOperateDistance <= 0f)
-                    throw ConfigError(this.Profile, "TbPlayer", value.Id, "BuildingOperateDistance must be finite and positive.");
-                if (!this.players.TryAdd(value.Id, value)) throw ConfigError(this.Profile, "TbPlayer", value.Id, "duplicate Id.");
-            }
-            foreach (EnemyConfig value in this.tables.TbEnemy.DataList)
-            {
-                if (!this.enemies.TryAdd(value.Id, value)) throw ConfigError(this.Profile, "TbEnemy", value.Id, "duplicate Id.");
-            }
-            foreach (ProjectileConfig value in this.tables.TbProjectile.DataList)
-            {
-                if (string.IsNullOrWhiteSpace(value.Id) || !Finite(value.MoveSpeed, value.MaxTravelDistance) || value.MoveSpeed <= 0 || value.MaxTravelDistance <= 0 ||
-                    !this.projectiles.TryAdd(value.Id, value))
-                    throw ConfigError(this.Profile, "TbProjectile", value.Id, "invalid or duplicate projectile.");
-            }
-            foreach (TempBuildingConfig value in this.tables.TbTempBuilding.DataList)
-            {
-                if (string.IsNullOrWhiteSpace(value.Id) || !Finite(value.BuildSeconds, value.FootprintRadius, value.MaxSlopeDegrees, value.NarrowPassageRadius) ||
-                    value.BuildSeconds < 0 || value.FootprintRadius <= 0 ||
-                    value.Materials == null || value.Materials.Length == 0 || Array.Exists(value.Materials, x => x.ItemId <= 0 || x.Amount <= 0 || !this.items.ContainsKey(x.ItemId)) ||
-                    !this.temporaryBuildings.TryAdd(value.Id, value))
-                    throw ConfigError(this.Profile, "TbTempBuilding", value.Id, "invalid or duplicate temporary building.");
-            }
-            foreach (TempBuildingManualAttackConfig value in this.tables.TbTempBuildingManualAttack.DataList)
-            {
-                if (string.IsNullOrWhiteSpace(value.BuildingId) || !this.temporaryBuildings.ContainsKey(value.BuildingId) ||
-                    !Finite(value.InteractDistance, value.ShootCooldownSeconds, value.ReloadSeconds, value.OperateRotateDegreesPerSecond) ||
-                    value.InteractDistance <= 0 || value.ShootCooldownSeconds <= 0 || value.Damage <= 0 || value.AmmoItemId <= 0 || value.AmmoAmount <= 0 ||
-                    value.MagazineCapacity <= 0 || value.ReloadSeconds < 0 || !this.items.ContainsKey(value.AmmoItemId) || !this.projectiles.ContainsKey(value.ProjectileConfigId) ||
-                    !this.temporaryBuildingAttacks.TryAdd(value.BuildingId, value))
-                    throw ConfigError(this.Profile, "TbTempBuildingManualAttack", value.BuildingId, "invalid or duplicate manual attack.");
-            }
-
-            foreach (MapSpawnConfig spawn in this.tables.TbMapSpawn.DataList)
-            {
-                if (spawn.ObjectType == MapSpawnObjectType.Player)
-                {
-                    if (string.IsNullOrWhiteSpace(spawn.MapId) || string.Equals(spawn.MapId, BaseMapId, StringComparison.Ordinal)) continue;
-                    if (!this.players.ContainsKey(spawn.ConfigId))
-                        throw ConfigError(this.Profile, "TbMapSpawn", spawn.Id, $"MapId '{spawn.MapId}' player spawn references missing TbPlayer '{spawn.ConfigId}'.");
-                    if (!Finite(spawn.PositionX, spawn.PositionY, spawn.PositionZ, spawn.RotationY))
-                        throw ConfigError(this.Profile, "TbMapSpawn", spawn.Id, $"MapId '{spawn.MapId}' player spawn pose is not finite.");
-                    if (!this.onlineWorldPlayerSpawns.TryAdd(spawn.MapId, spawn))
-                        throw ConfigError(this.Profile, "TbMapSpawn", spawn.Id, $"MapId '{spawn.MapId}' has duplicate player spawn.");
-                }
-                else if (spawn.MapId == Server.OnlineWorldComponent.MainMapId && spawn.ObjectType == MapSpawnObjectType.Enemy)
-                {
-                    EnemyConfig enemy = this.GetEnemy(spawn.ConfigId);
-                    if (enemy.AttackKind == EnemyAttackKind.Melee) this.mainWorldEnemySpawns.Add(spawn);
-                }
-            }
-            this.onlineWorldMapIds.AddRange(this.onlineWorldPlayerSpawns.Keys);
-            this.onlineWorldMapIds.Sort(StringComparer.Ordinal);
-            this.onlineWorldPlayerSpawns.TryGetValue(Server.OnlineWorldComponent.MainMapId, out MapSpawnConfig mainSpawn);
-            this.MainWorldPlayerSpawn = mainSpawn;
-            foreach (MapSpawnConfig spawn in this.tables.TbMapSpawn.DataList)
-            {
-                if (spawn.ObjectType != MapSpawnObjectType.Enemy || string.Equals(spawn.MapId, BaseMapId, StringComparison.Ordinal)) continue;
-                EnemyConfig enemy = this.GetEnemy(spawn.ConfigId);
-                this.ValidateLootReference(enemy.LootConfigId, enemy.Id, nameof(enemy.LootConfigId));
-                this.ValidateLootReference(enemy.GuaranteedWeaponLootConfigId, enemy.Id, nameof(enemy.GuaranteedWeaponLootConfigId));
-                this.ValidateLootReference(enemy.GuaranteedAmmoLootConfigId, enemy.Id, nameof(enemy.GuaranteedAmmoLootConfigId));
-            }
-            this.ValidateMainWorldCombat();
 
             HashSet<int> unitIds = new();
             foreach (UnitConfig unitConfig in this.tables.TbUnitConfig.DataList)
@@ -580,53 +463,6 @@ namespace ET
                 row.ArmLength, row.ArmHalfWidth, row.IdleSeconds, row.WarningSeconds, row.ActiveSeconds,
                 row.AngularSpeedDegrees, row.HitIntervalSeconds, row.PlayerDamageRatio, row.BossDamageRatio);
 
-        private WeaponConfig GetWeaponAfterIndex(int itemId)
-        {
-            WeaponConfig value = this.tables.TbWeapon.DataList.Find(x => x.ItemId == itemId);
-            return value ?? throw ConfigError(this.Profile, "TbOnlineWorldRule", "default", $"StarterMeleeWeaponItemId references missing TbWeapon '{itemId}'.");
-        }
-
-        private void ValidateLootReference(string lootId, string enemyId, string fieldName)
-        {
-            if (string.IsNullOrWhiteSpace(lootId)) return;
-            if (!this.loots.TryGetValue(lootId, out LootConfig loot))
-                throw ConfigError(this.Profile, "TbEnemy", enemyId, $"{fieldName} references missing TbLoot '{lootId}'.");
-            if (loot.Amount <= 0 || !this.items.TryGetValue(loot.ItemId, out Item item) || item.MaxStackAmount <= 0)
-                throw ConfigError(this.Profile, "TbEnemy", enemyId, $"{fieldName} references invalid TbLoot '{lootId}'.");
-        }
-
-        private void ValidateMainWorldCombat()
-        {
-            MapSpawnConfig playerSpawn = this.MainWorldPlayerSpawn ?? throw ConfigError(this.Profile, "TbMapSpawn", Server.OnlineWorldComponent.MainMapId, "main World requires exactly one player spawn.");
-            if (!string.Equals(playerSpawn.ConfigId, Server.OnlineWorldComponent.MainPlayerConfigId, StringComparison.Ordinal))
-                throw ConfigError(this.Profile, "TbMapSpawn", playerSpawn.Id, $"main World player spawn must reference '{Server.OnlineWorldComponent.MainPlayerConfigId}', actual '{playerSpawn.ConfigId}'.");
-            PlayerConfig player = this.GetPlayer(playerSpawn.ConfigId);
-            if (!Finite(playerSpawn.PositionX, playerSpawn.PositionY, playerSpawn.PositionZ, playerSpawn.RotationY)) throw ConfigError(this.Profile, "TbMapSpawn", playerSpawn.Id, "player spawn pose is not finite.");
-            if (player.MaxHP <= 0 || player.AttackDamage <= 0 || player.UnarmedAttackDamage <= 0 ||
-                !Finite(player.AttackRange, player.AttackCooldownSeconds, player.MoveSpeed, player.TurnSpeed,
-                    player.BaseRecoveryPerSecond, player.UnarmedAttackRange, player.UnarmedAttackCooldownSeconds,
-                    player.UnarmedMeleeArcDegrees) ||
-                player.AttackRange <= 0 || player.AttackCooldownSeconds <= 0 || player.MoveSpeed <= 0 ||
-                player.TurnSpeed <= 0 || player.BaseRecoveryPerSecond < 0 || player.UnarmedAttackRange <= 0 ||
-                player.UnarmedAttackCooldownSeconds <= 0 || player.UnarmedMeleeArcDegrees <= 0 || player.UnarmedMeleeArcDegrees > 360)
-                throw ConfigError(this.Profile, "TbPlayer", player.Id, "invalid health or unarmed combat values.");
-            WeaponConfig sword = this.GetWeapon(5);
-            if (sword.WeaponKind != WeaponKind.Melee || sword.AttackDamage <= 0 ||
-                !Finite(sword.AttackRange, sword.AttackCooldownSeconds, sword.MeleeArcDegrees) ||
-                sword.AttackRange <= 0 || sword.AttackCooldownSeconds <= 0 || sword.MeleeArcDegrees <= 0 || sword.MeleeArcDegrees > 360)
-                throw ConfigError(this.Profile, "TbWeapon", "5", "short sword must contain positive melee values.");
-            if (this.mainWorldEnemySpawns.Count != 4) throw ConfigError(this.Profile, "TbMapSpawn", Server.OnlineWorldComponent.MainMapId, $"expected four melee enemy spawns but found {this.mainWorldEnemySpawns.Count}.");
-            foreach (MapSpawnConfig spawn in this.mainWorldEnemySpawns)
-            {
-                EnemyConfig enemy = this.GetEnemy(spawn.ConfigId);
-                if (!Finite(spawn.PositionX, spawn.PositionY, spawn.PositionZ, spawn.RotationY,
-                        enemy.AggroRange, enemy.AttackRange, enemy.AttackCooldownSeconds, enemy.MoveSpeed) ||
-                    enemy.MaxHP <= 0 || enemy.AttackDamage <= 0 || enemy.AggroRange <= 0 ||
-                    enemy.AttackRange <= 0 || enemy.AttackCooldownSeconds <= 0 || enemy.MoveSpeed <= 0)
-                    throw ConfigError(this.Profile, "TbEnemy", enemy.Id, $"invalid melee values referenced by spawn '{spawn.Id}'.");
-            }
-        }
-
         private static bool Finite(params float[] values)
         {
             foreach (float value in values) if (float.IsNaN(value) || float.IsInfinity(value)) return false;
@@ -802,7 +638,6 @@ namespace ET
             RequireExactlyOne(SceneType.RoomDirectory);
             RequireExactlyOne(SceneType.OnlineRoom);
             RequireExactlyOne(SceneType.Chat);
-            RequireExactlyOne(SceneType.OnlineWorld);
         }
 
         private void RequireExactlyOne(SceneType sceneType)

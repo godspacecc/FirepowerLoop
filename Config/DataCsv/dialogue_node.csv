@@ -1,7 +1,0 @@
-##var,Id,DialogueId,TextKey,NextNodeId
-##type,string,string,string,string
-,dialogue.test.guide.start,dialogue.test.guide,dialogue.test.intro,
-,dialogue.test.guide.line1,dialogue.test.guide,dialogue.test.line1,dialogue.test.guide.line2
-,dialogue.test.guide.line2,dialogue.test.guide,dialogue.test.line2,dialogue.test.guide.start
-,dialogue.test.guide.branch,dialogue.test.guide,dialogue.test.branch,
-,dialogue.test.guide.answer,dialogue.test.guide,dialogue.test.answer,dialogue.test.guide.start

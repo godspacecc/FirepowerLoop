@@ -19,67 +19,30 @@ namespace Game
         private long initializedMapInstanceId;
         private int previousMapUnitId;
         private long previousMapInstanceId;
-        private PlayerCameraMode? modeBeforeArcade;
-        /// <summary>交谈镜头所有者代次；0 表示普通镜头，关闭旧会话不会释放新会话。</summary>
-        private long dialogueCameraOwner;
-        private int dialogueNpcUnitId;
-        /// <summary>跨门禁变化保留按压周期，不保存到设置；旧按压必须释放后才能重新进入瞄准。</summary>
-        private bool shoulderAimHeld;
-        private bool shoulderAimRequiresRelease;
+        /// <summary>候选加载失败时恢复旧地图的第一人称租约。</summary>
+        private long previousArcadeFirstPersonMapInstanceId;
         private bool arcadeCamera;
         /// <summary>临时街机视角所属地图；0 为无租约，解绑或其他视角接管后立即失效。</summary>
         private long arcadeFirstPersonMapInstanceId;
-        /// <summary>开启瞄准时的联机手持身份；弹药和世界 Revision 变化不代表换武器。</summary>
-        private int aimedOnlineItemId;
-        private int aimedOnlineSourceSlotIndex = -1;
-        /// <summary>本地手持代次不随发射或装填改变，用于区分装备事件中的身份变化。</summary>
-        private long aimedLocalHeldRevision;
-
-        /// <summary>会话进入时隐藏本机表现，仅越肩模式接管临时构图；失败不建立所有权。</summary>
-        public bool TryBeginDialogueCamera(long sessionId, int npcUnitId, long expectedMapInstanceId)
-        {
-            if (dialogueCameraOwner != 0 || sessionId <= 0 || expectedMapInstanceId != mapInstanceId || !IsCurrentUnitActive()) return false;
-            if (!this.GetSystem<UnitSystem>().TryGet(npcUnitId, out var npc) || !npc.IsActive || npc.MapInstanceId != mapInstanceId) return false;
-            if (Mode == PlayerCameraMode.Shoulder && !cameraPort.TrySetDialogueFocus(npc.Position)) return false;
-            ClearShoulderAim(true);
-            dialogueCameraOwner = sessionId; dialogueNpcUnitId = npcUnitId;
-            cameraPort.SetDialoguePresentationHidden(true);
-            return true;
-        }
-
-        /// <summary>结束匹配会话时恢复原模式与原视角；不会写入已换图的玩家端口。</summary>
-        public void EndDialogueCamera(long sessionId)
-        {
-            if (dialogueCameraOwner != sessionId || sessionId == 0) return;
-            dialogueCameraOwner = 0; dialogueNpcUnitId = 0;
-            cameraPort?.SetDialoguePresentationHidden(false);
-            cameraPort?.TrySetDialogueFocus(null);
-            if (IsCurrentUnitActive())
-            {
-                var model = this.GetModel<PlayerCameraModeModel>();
-                cameraPort.ApplyMode(model.Mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
-            }
-        }
-
         public PlayerCameraMode Mode => this.GetModel<PlayerCameraModeModel>().Mode;
 
-        public bool IsArcadeFirstPerson(long expectedMapInstanceId) => expectedMapInstanceId > 0 &&
-            arcadeFirstPersonMapInstanceId == expectedMapInstanceId && mapInstanceId == expectedMapInstanceId &&
-            !mapLoading && arcadeCamera && Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive();
-
+        public bool IsArcadeFirstPerson(long expectedMapInstanceId) => expectedMapInstanceId > 0 && arcadeFirstPersonMapInstanceId == expectedMapInstanceId && mapInstanceId == expectedMapInstanceId && !mapLoading && arcadeCamera && Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive();
         /// <summary>单人街机请求临时第一人称；实际资源或构建失败时恢复俯视，不授予租约。</summary>
         public bool TryBeginArcadeFirstPerson(long expectedMapInstanceId, out string error)
         {
             error = null;
-            if (IsArcadeFirstPerson(expectedMapInstanceId)) return true;
-            if (expectedMapInstanceId != mapInstanceId || !arcadeCamera || mapLoading ||
-                this.GetModel<MapSceneModel>().CurrentMode != MapPreparationMode.ArcadePlayerOnly ||
-                Mode != PlayerCameraMode.TopDown || !HasCurrentMapAndPlayer(out _) ||
-                this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing || !PlayerAliveAndConnected())
-            { error = "当前地图或玩家不能进入街机第一人称"; return false; }
+            if (IsArcadeFirstPerson(expectedMapInstanceId))
+                return true;
+            if (expectedMapInstanceId != mapInstanceId || !arcadeCamera || mapLoading || this.GetModel<MapSceneModel>().CurrentMode != MapPreparationMode.ArcadePlayerOnly || Mode != PlayerCameraMode.TopDown || !HasCurrentMapAndPlayer(out _) || this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing || !PlayerAliveAndConnected())
+            {
+                error = "当前地图或玩家不能进入街机第一人称";
+                return false;
+            }
+
             try
             {
-                if (!TrySetMode(PlayerCameraMode.FirstPerson, out error)) return false;
+                if (!TrySetMode(PlayerCameraMode.FirstPerson, out error))
+                    return false;
                 this.GetModel<PlayerCameraModeModel>().ShoulderPitchDegrees = 0;
                 arcadeFirstPersonMapInstanceId = expectedMapInstanceId;
                 return true;
@@ -99,27 +62,30 @@ namespace Game
         /// <summary>仅释放同一地图的街机租约；旧场景恢复请求不能覆盖后续相机。</summary>
         public void EndArcadeFirstPerson(long expectedMapInstanceId)
         {
-            if (expectedMapInstanceId == 0 || arcadeFirstPersonMapInstanceId != expectedMapInstanceId) return;
+            if (expectedMapInstanceId == 0 || arcadeFirstPersonMapInstanceId != expectedMapInstanceId)
+                return;
             arcadeFirstPersonMapInstanceId = 0;
-            if (mapInstanceId == expectedMapInstanceId && !mapLoading && arcadeCamera &&
-                Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive())
+            if (mapInstanceId == expectedMapInstanceId && !mapLoading && arcadeCamera && Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive())
                 TrySetMode(PlayerCameraMode.TopDown, out _);
         }
 
         protected override void OnInit()
         {
-            this.RegisterEvent<PlayerReadyEvent>(OnPlayerReady);
             this.RegisterEvent<ArcadePlayerReadyEvent>(evt => BindPlayer(evt.UnitId, evt.MapInstanceId, true));
             this.RegisterEvent<UnitChangedEvent>(OnUnitChanged);
             this.RegisterEvent<UnitRemovedEvent>(OnUnitRemoved);
             this.RegisterEvent<MapLoadingStartedEvent>(OnMapLoadingStarted);
             this.RegisterEvent<MapLoadingCompletedEvent>(_ => ClearMapLoadingState());
             this.RegisterEvent<MapLoadingFailedEvent>(OnMapLoadingFailed);
-            this.RegisterEvent<MapCurrentReleasedEvent>(evt => { if (evt.MapInstanceId == mapInstanceId) ClearBinding(); });
-            this.RegisterEvent<AppStateChangedEvent>(evt => { if (evt.Current != AppState.Playing) ClearShoulderAim(true); });
-            this.RegisterEvent<WeaponEquipmentChangedEvent>(_ =>
+            this.RegisterEvent<MapCurrentReleasedEvent>(evt =>
             {
-                if (this.GetModel<PlayerCameraModeModel>().IsShoulderAiming && !CanAcceptShoulderAim()) ClearShoulderAim(true);
+                if (evt.MapInstanceId == mapInstanceId)
+                    ClearBinding();
+            });
+            this.RegisterEvent<AppStateChangedEvent>(evt =>
+            {
+                if (evt.Current != AppState.Playing)
+                    ClearShoulderAim(true);
             });
             this.RegisterEvent<MobileInputModeChangedEvent>(_ => ClearShoulderAim(true));
             UIHelper.BlockingUIChanged += OnBlockingUiChanged;
@@ -140,33 +106,33 @@ namespace Game
             model.Mode = PlayerCameraMode.Shoulder;
             model.ShoulderYawDegrees = 0f;
             model.ShoulderPitchDegrees = 15f;
-            modeBeforeArcade = null;
             initializedMapInstanceId = 0;
-            shoulderAimHeld = false;
-            shoulderAimRequiresRelease = false;
         }
 
         public bool TrySetMode(PlayerCameraMode mode, out string error)
         {
-            if (dialogueCameraOwner != 0) this.GetSystem<DialogueSystem>()?.Close(dialogueCameraOwner);
             var model = this.GetModel<PlayerCameraModeModel>();
             if (!HasCurrentMapAndPlayer(out error) || cameraPort == null || !cameraPort.IsValid)
             {
-                if (string.IsNullOrWhiteSpace(error)) error = "当前玩家相机不可用";
+                if (string.IsNullOrWhiteSpace(error))
+                    error = "当前玩家相机不可用";
                 UnlockCursor();
                 return false;
             }
+
             if (model.Mode == mode)
             {
                 error = null;
                 RefreshCursorLock();
                 return true;
             }
+
             if (!cameraPort.SupportsMode(mode, out error))
             {
                 UnlockCursor();
                 return false;
             }
+
             if (mode != PlayerCameraMode.TopDown && model.Mode == PlayerCameraMode.TopDown)
             {
                 model.ShoulderYawDegrees = NormalizeYaw(motorPort.Rotation.eulerAngles.y);
@@ -177,61 +143,28 @@ namespace Game
                 // 从第一人称返回越肩时保留水平朝向，并同步收回越肩允许的俯仰范围。
                 model.ShoulderPitchDegrees = Mathf.Clamp(model.ShoulderPitchDegrees, ShoulderMinPitch, ShoulderMaxPitch);
             }
-            this.GetSystem<MobileInputSystem>()?.ClearShoulderInput();
-            this.GetSystem<PlayerInputSystem>()?.ResetMobileLook();
+
             ClearShoulderAim(true);
             model.Mode = mode;
-            if (mode != PlayerCameraMode.FirstPerson) arcadeFirstPersonMapInstanceId = 0;
+            if (mode != PlayerCameraMode.FirstPerson)
+                arcadeFirstPersonMapInstanceId = 0;
             cameraPort.ApplyMode(mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
             RefreshCursorLock();
             error = null;
             return true;
         }
 
-        /// <summary>统一输入每帧提交右键持有；仅有效桌面越肩远程武器允许开启，释放始终幂等接受。</summary>
-        public bool TrySetShoulderAim(bool held)
-        {
-            shoulderAimHeld = held;
-            if (!held)
-            {
-                shoulderAimRequiresRelease = false;
-                ClearShoulderAim(false);
-                return true;
-            }
-            if (shoulderAimRequiresRelease || !CanAcceptShoulderAim())
-            {
-                ClearShoulderAim(true);
-                return false;
-            }
-            var model = this.GetModel<PlayerCameraModeModel>();
-            if (model.IsShoulderAiming) return true;
-            if (!cameraPort.TrySetShoulderAim(true))
-            {
-                ClearShoulderAim(true);
-                return false;
-            }
-            model.IsShoulderAiming = true;
-            if (this.GetModel<MapSceneModel>().CurrentMode == MapPreparationMode.OnlinePlayersOnly)
-            {
-                var equipment = this.GetModel<OnlineWorldModel>().Snapshot.Value.SelfInventory.Equipment;
-                aimedOnlineItemId = equipment.RangedWeaponItemId;
-                aimedOnlineSourceSlotIndex = equipment.SourceSlotIndex;
-            }
-            else aimedLocalHeldRevision = this.GetModel<WeaponEquipmentModel>().Revision;
-            return true;
-        }
-
         public bool TryApplyLookDelta(Vector2 delta)
         {
             var model = this.GetModel<PlayerCameraModeModel>();
-            if (model.Mode == PlayerCameraMode.TopDown || !CanAcceptLookInput() || !IsFinite(delta)) return false;
-            if (delta.sqrMagnitude <= 0f) return true;
+            if (model.Mode == PlayerCameraMode.TopDown || !CanAcceptLookInput() || !IsFinite(delta))
+                return false;
+            if (delta.sqrMagnitude <= 0f)
+                return true;
             model.ShoulderYawDegrees = NormalizeYaw(model.ShoulderYawDegrees + delta.x * ShoulderLookSensitivity);
             // 第一人称允许抬头和低头观察；越肩保持既有俯仰范围。
             var firstPerson = model.Mode == PlayerCameraMode.FirstPerson;
-            model.ShoulderPitchDegrees = IsArcadeFirstPerson(mapInstanceId) ? 0 :
-                Mathf.Clamp(model.ShoulderPitchDegrees - delta.y * ShoulderLookSensitivity,
-                    firstPerson ? -80f : ShoulderMinPitch, firstPerson ? 80f : ShoulderMaxPitch);
+            model.ShoulderPitchDegrees = IsArcadeFirstPerson(mapInstanceId) ? 0 : Mathf.Clamp(model.ShoulderPitchDegrees - delta.y * ShoulderLookSensitivity, firstPerson ? -80f : ShoulderMinPitch, firstPerson ? 80f : ShoulderMaxPitch);
             cameraPort?.LateUpdate(model.Mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
             return true;
         }
@@ -239,25 +172,24 @@ namespace Game
         public bool TryCreateAimRay(Vector2 pointerScreenPosition, out Ray ray)
         {
             ray = default;
-            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive()) return false;
-            return Mode != PlayerCameraMode.TopDown
-                ? cameraPort.TryGetViewportCenterRay(out ray)
-                : cameraPort.TryGetScreenPointRay(pointerScreenPosition, out ray);
+            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive())
+                return false;
+            return Mode != PlayerCameraMode.TopDown ? cameraPort.TryGetViewportCenterRay(out ray) : cameraPort.TryGetScreenPointRay(pointerScreenPosition, out ray);
         }
 
         public bool TryGetMovementYawDegrees(out float yawDegrees)
         {
             yawDegrees = 0f;
-            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive()) return false;
-            yawDegrees = Mode != PlayerCameraMode.TopDown
-                ? this.GetModel<PlayerCameraModeModel>().ShoulderYawDegrees
-                : cameraPort.TopDownYawDegrees;
+            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive())
+                return false;
+            yawDegrees = Mode != PlayerCameraMode.TopDown ? this.GetModel<PlayerCameraModeModel>().ShoulderYawDegrees : cameraPort.TopDownYawDegrees;
             return IsFinite(yawDegrees);
         }
 
         public bool TryGetCameraPose(out Vector3 position, out Vector3 up)
         {
-            if (cameraPort != null && cameraPort.IsValid && IsCurrentUnitActive()) return cameraPort.TryGetCameraPose(out position, out up);
+            if (cameraPort != null && cameraPort.IsValid && IsCurrentUnitActive())
+                return cameraPort.TryGetCameraPose(out position, out up);
             position = Vector3.zero;
             up = Vector3.up;
             return false;
@@ -268,79 +200,49 @@ namespace Game
         {
             forward = Vector3.forward;
             up = Vector3.up;
-            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive() ||
-                !cameraPort.TryGetCameraPose(out _, out up) ||
-                !cameraPort.TryGetViewportCenterRay(out var ray)) return false;
+            if (cameraPort == null || !cameraPort.IsValid || !IsCurrentUnitActive() || !cameraPort.TryGetCameraPose(out _, out up) || !cameraPort.TryGetViewportCenterRay(out var ray))
+                return false;
             forward = ray.direction;
             return forward.sqrMagnitude > 0.0001f && up.sqrMagnitude > 0.0001f;
         }
 
-        private void OnPlayerReady(PlayerReadyEvent evt)
-        {
-            BindPlayer(evt.UnitId, evt.MapInstanceId, false);
-        }
-
-        /// <summary>玩家提交或恢复时绑定端口；普通新实例默认第三人称，街机使用俯视，重复就绪与失败恢复保留原模式。</summary>
+        /// <summary>街机提交与失败恢复绑定正式玩家端口；同一地图实例保持用户选择的模式。</summary>
         private void BindPlayer(int readyUnitId, long readyMapInstanceId, bool arcadeMode)
         {
             if (mapLoading && readyUnitId == previousMapUnitId && readyMapInstanceId == previousMapInstanceId)
-            {
                 return;
-            }
-
-            if (!this.GetSystem<UnitSystem>().TryGet(readyUnitId, out var unit) ||
-                !unit.IsActive || unit.MapInstanceId != readyMapInstanceId)
-            {
+            if (!this.GetSystem<UnitSystem>().TryGet(readyUnitId, out var unit) || !unit.IsActive || unit.MapInstanceId != readyMapInstanceId)
                 return;
-            }
-            if (unitId != readyUnitId || mapInstanceId != readyMapInstanceId || arcadeMode) ClearShoulderAim(true);
             unitId = readyUnitId;
             mapInstanceId = readyMapInstanceId;
             var provider = this.GetUtility<IPlayerRuntimePortProvider>();
-            if (!provider.TryGetCameraPort(unitId, mapInstanceId, out cameraPort) ||
-                !provider.TryGetMotorPort(unitId, mapInstanceId, out motorPort) ||
-                cameraPort == null || motorPort == null || !cameraPort.IsValid)
+            if (!provider.TryGetCameraPort(unitId, mapInstanceId, out cameraPort) || !provider.TryGetMotorPort(unitId, mapInstanceId, out motorPort) || cameraPort == null || motorPort == null || !cameraPort.IsValid)
             {
                 Log.Error("[PlayerCameraSystem] 玩家相机端口未绑定");
                 ClearBinding();
                 return;
             }
-            cameraPort.SetArcadeMode(arcadeMode);
-            arcadeCamera = arcadeMode;
+
+            cameraPort.SetArcadeMode(true);
+            arcadeCamera = true;
             var model = this.GetModel<PlayerCameraModeModel>();
-            if (arcadeMode)
-            {
-                if (!modeBeforeArcade.HasValue) modeBeforeArcade = model.Mode;
+            if (initializedMapInstanceId != readyMapInstanceId)
                 model.Mode = PlayerCameraMode.TopDown;
-            }
-            else if (initializedMapInstanceId != readyMapInstanceId)
-            {
-                // 玩家提交先于地图模型提交；统一普通地图默认视角，不依赖仍可能指向旧地图的 CurrentMapId。
-                model.Mode = PlayerCameraMode.Shoulder;
-                model.ShoulderYawDegrees = NormalizeYaw(motorPort.Rotation.eulerAngles.y);
-                model.ShoulderPitchDegrees = 15f;
-                modeBeforeArcade = null;
-                this.GetSystem<MobileInputSystem>()?.ClearShoulderInput();
-                this.GetSystem<PlayerInputSystem>()?.ResetMobileLook();
-            }
-            else if (modeBeforeArcade.HasValue)
-            {
-                model.Mode = modeBeforeArcade.Value;
-                modeBeforeArcade = null;
-            }
             if (!cameraPort.SupportsMode(model.Mode, out var error))
             {
                 Log.Error($"[PlayerCameraSystem] 当前相机模式无法应用：{error}");
                 ClearBinding();
                 return;
             }
+
             cameraPort.ApplyMode(model.Mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
-            if (!arcadeMode) initializedMapInstanceId = readyMapInstanceId;
+            initializedMapInstanceId = readyMapInstanceId;
             RefreshCursorLock();
         }
 
         private void OnMapLoadingStarted(MapLoadingStartedEvent evt)
         {
+            previousArcadeFirstPersonMapInstanceId = arcadeFirstPersonMapInstanceId;
             previousMapUnitId = unitId;
             previousMapInstanceId = mapInstanceId;
             mapLoading = true;
@@ -351,16 +253,19 @@ namespace Game
         {
             var restoreUnitId = previousMapUnitId;
             var restoreMapInstanceId = previousMapInstanceId;
-            var shouldRestore = restoreUnitId > 0 && restoreMapInstanceId > 0;
+            var restoreFirstPerson = previousArcadeFirstPersonMapInstanceId;
             ClearMapLoadingState();
-            if (shouldRestore)
+            if (restoreUnitId > 0 && restoreMapInstanceId > 0)
             {
-                OnPlayerReady(new PlayerReadyEvent(restoreUnitId, restoreMapInstanceId));
+                BindPlayer(restoreUnitId, restoreMapInstanceId, true);
+                if (mapInstanceId == restoreFirstPerson && Mode == PlayerCameraMode.FirstPerson)
+                    arcadeFirstPersonMapInstanceId = restoreFirstPerson;
             }
         }
 
         private void ClearMapLoadingState()
         {
+            previousArcadeFirstPersonMapInstanceId = 0;
             mapLoading = false;
             previousMapUnitId = 0;
             previousMapInstanceId = 0;
@@ -373,113 +278,116 @@ namespace Game
                 ClearBinding();
                 return;
             }
+
             var model = this.GetModel<PlayerCameraModeModel>();
-            if (model.IsShoulderAiming && !CanAcceptShoulderAim()) ClearShoulderAim(true);
-            if (dialogueCameraOwner != 0 && Mode == PlayerCameraMode.Shoulder &&
-                this.GetSystem<UnitSystem>().TryGet(dialogueNpcUnitId, out var npc) && npc.IsActive && npc.MapInstanceId == mapInstanceId)
-                cameraPort.TrySetDialogueFocus(npc.Position);
             cameraPort?.LateUpdate(model.Mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
-            if (motorPort != null && TryGetCameraPose(out var position, out var up)) motorPort.FaceWorldHud(position, up);
+            if (motorPort != null && TryGetCameraPose(out var position, out var up))
+                motorPort.FaceWorldHud(position, up);
             RefreshCursorLock();
         }
 
         private void OnUnitChanged(UnitChangedEvent evt)
         {
-            if (evt.Current.UnitId == unitId && evt.Current.MapInstanceId == mapInstanceId &&
-                (evt.ChangeMask & UnitChangeMask.Active) != 0 && !evt.Current.IsActive) ClearBinding();
+            if (evt.Current.UnitId == unitId && evt.Current.MapInstanceId == mapInstanceId && (evt.ChangeMask & UnitChangeMask.Active) != 0 && !evt.Current.IsActive)
+                ClearBinding();
         }
 
         private void OnUnitRemoved(UnitRemovedEvent evt)
         {
-            if (evt.Snapshot.UnitId == unitId && evt.Snapshot.MapInstanceId == mapInstanceId) ClearBinding();
+            if (evt.Snapshot.UnitId == unitId && evt.Snapshot.MapInstanceId == mapInstanceId)
+                ClearBinding();
         }
 
         private bool HasCurrentMapAndPlayer(out string error)
         {
-            if (string.IsNullOrWhiteSpace(this.GetModel<MapSceneModel>().CurrentMapId)) { error = "没有活动地图"; return false; }
-            if (!IsCurrentUnitActive() || motorPort == null || !motorPort.IsValid) { error = "没有活动玩家"; return false; }
+            if (string.IsNullOrWhiteSpace(this.GetModel<MapSceneModel>().CurrentMapId))
+            {
+                error = "没有活动地图";
+                return false;
+            }
+
+            if (!IsCurrentUnitActive() || motorPort == null || !motorPort.IsValid)
+            {
+                error = "没有活动玩家";
+                return false;
+            }
+
             error = null;
             return true;
         }
 
         private bool CanAcceptLookInput()
         {
-            return HasCurrentMapAndPlayer(out _) &&
-                   this.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing &&
-                   !UIHelper.HasUIOpen &&
-                   PlayerAliveAndConnected();
+            return HasCurrentMapAndPlayer(out _) && this.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing && !UIHelper.HasUIOpen && PlayerAliveAndConnected();
         }
 
-        private bool CanAcceptShoulderAim()
-        {
-            var mobile = this.GetSystem<MobileInputSystem>();
-            if (mapLoading || arcadeCamera || dialogueCameraOwner != 0 || Mode != PlayerCameraMode.Shoulder ||
-                cameraPort == null || !cameraPort.IsValid || !CanAcceptLookInput() ||
-                mobile.IsMobileInputMode || !mobile.ShouldShowReticle()) return false;
-            // 联机只读服务器手持快照；不能借离线装备绕过联机空手或换武器。
-            if (this.GetModel<MapSceneModel>().CurrentMode == MapPreparationMode.OnlinePlayersOnly)
-            {
-                var equipment = this.GetModel<OnlineWorldModel>().Snapshot.Value.SelfInventory.Equipment;
-                return equipment.ActiveSlot == (int)WeaponSlot.Ranged && equipment.RangedWeaponItemId > 0 &&
-                    (!this.GetModel<PlayerCameraModeModel>().IsShoulderAiming ||
-                     equipment.RangedWeaponItemId == aimedOnlineItemId && equipment.SourceSlotIndex == aimedOnlineSourceSlotIndex);
-            }
-            var local = this.GetModel<WeaponEquipmentModel>();
-            return local.ActiveSlot == WeaponSlot.Ranged && local.RangedWeaponItemId > 0 &&
-                (!this.GetModel<PlayerCameraModeModel>().IsShoulderAiming || local.Revision == aimedLocalHeldRevision);
-        }
-
-        /// <summary>撤销临时镜头但不改变模式；被中断的按压不能在恢复游玩后自动重放。</summary>
+        /// <summary>取消旧临时构图，确保切图、失焦或阻断界面不留下相机偏移。</summary>
         private void ClearShoulderAim(bool requireRelease)
         {
-            var model = this.GetModel<PlayerCameraModeModel>();
-            if (requireRelease && (shoulderAimHeld || model.IsShoulderAiming)) shoulderAimRequiresRelease = true;
-            model.IsShoulderAiming = false;
-            aimedOnlineItemId = 0;
-            aimedOnlineSourceSlotIndex = -1;
-            aimedLocalHeldRevision = 0;
+            this.GetModel<PlayerCameraModeModel>().IsShoulderAiming = false;
             cameraPort?.TrySetShoulderAim(false);
         }
 
-        private void OnBlockingUiChanged(bool blocked) { if (blocked) ClearShoulderAim(true); }
-        private void OnApplicationFocus(bool focused) { if (!focused) ClearShoulderAim(true); }
-        private void OnApplicationPause(bool paused) { if (paused) ClearShoulderAim(true); }
+        private void OnBlockingUiChanged(bool blocked)
+        {
+            if (blocked)
+                ClearShoulderAim(true);
+        }
 
+        private void OnApplicationFocus(bool focused)
+        {
+            if (!focused)
+                ClearShoulderAim(true);
+        }
+
+        private void OnApplicationPause(bool paused)
+        {
+            if (paused)
+                ClearShoulderAim(true);
+        }
+
+        /// <summary>单人读取本局运行态，双人读取服务器本机快照与连接状态。</summary>
         private bool PlayerAliveAndConnected()
         {
-            if (this.GetModel<MapSceneModel>().CurrentMode == MapPreparationMode.ArcadePlayerOnly)
+            var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
+            if (runtime != null)
+                return runtime.PlayerHealth > 0 && runtime.RespawnRemaining <= 0;
+            var online = this.GetModel<OnlineArcadeRunModel>().Snapshot.Value;
+            if (online.HasRun)
             {
-                var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
-                return runtime != null && runtime.PlayerHealth > 0 && runtime.RespawnRemaining <= 0;
+                var account = this.GetModel<OnlineAccountModel>().Snapshot.Value;
+                if (!account.IsAuthenticated || online.BattlePaused || online.Battle == null)
+                    return false;
+                foreach (var connection in online.Connections)
+                    if (connection.PlayerId == account.PlayerId && !connection.Connected)
+                        return false;
+                foreach (var player in online.Battle.Players)
+                    if (player.PlayerId == account.PlayerId)
+                        return player.Alive && player.CurrentHealth > 0 && player.RespawnSeconds <= 0;
+                return false;
             }
-            if (this.GetModel<MapSceneModel>().CurrentMode != MapPreparationMode.OnlinePlayersOnly)
-                return this.GetModel<CombatModel>().PlayerHP.Value > 0;
-            var world = this.GetModel<OnlineWorldModel>().Snapshot.Value;
-            if (world.ConnectionLost) return false;
-            foreach (var player in world.Players)
-                if (player.UnitId == world.SelfUnitId) return !player.IsDead && player.CurrentHP > 0;
+
             return false;
         }
 
         private bool IsCurrentUnitActive()
         {
-            return unitId > 0 && mapInstanceId > 0 && cameraPort != null &&
-                   this.GetSystem<UnitSystem>().TryGet(unitId, out var snapshot) &&
-                   snapshot.MapInstanceId == mapInstanceId && snapshot.IsActive;
+            return unitId > 0 && mapInstanceId > 0 && cameraPort != null && this.GetSystem<UnitSystem>().TryGet(unitId, out var snapshot) && snapshot.MapInstanceId == mapInstanceId && snapshot.IsActive;
         }
 
         private void RefreshCursorLock()
         {
-            var shouldLock = Mode != PlayerCameraMode.TopDown && CanAcceptLookInput() &&
-                             !this.GetSystem<MobileInputSystem>().IsMobileInputMode;
-            if (shouldLock == cursorLocked) return;
+            var shouldLock = Mode != PlayerCameraMode.TopDown && CanAcceptLookInput() && !this.GetSystem<MobileInputSystem>().IsMobileInputMode;
+            if (shouldLock == cursorLocked)
+                return;
             cursorLocked = shouldLock;
             this.GetUtility<ICursorLockPort>()?.SetLocked(shouldLock);
         }
 
         private void UnlockCursor()
         {
-            if (!cursorLocked) return;
+            if (!cursorLocked)
+                return;
             cursorLocked = false;
             this.GetUtility<ICursorLockPort>()?.SetLocked(false);
         }
@@ -488,9 +396,6 @@ namespace Game
         {
             arcadeFirstPersonMapInstanceId = 0;
             ClearShoulderAim(true);
-            cameraPort?.SetDialoguePresentationHidden(false);
-            cameraPort?.TrySetDialogueFocus(null);
-            dialogueCameraOwner = 0; dialogueNpcUnitId = 0;
             UnlockCursor();
             cameraPort = null;
             motorPort = null;

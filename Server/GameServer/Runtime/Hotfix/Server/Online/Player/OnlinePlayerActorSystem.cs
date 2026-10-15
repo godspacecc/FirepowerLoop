@@ -17,7 +17,6 @@ namespace ET.Server
             self.Revision = 1;
             self.State = OnlinePlayerState.Online;
             self.SessionEpoch = 0;
-            self.CurrentWorldMapId = string.Empty;
         }
 
         [EntitySystem]
@@ -50,7 +49,6 @@ namespace ET.Server
             self.State = OnlinePlayerState.Online;
             await self.AddOrRefreshLocation();
             self.RequestRoomConnectionSync((int)OnlineRoomMemberConnectionState.Online);
-            self.RequestWorldConnectionSync((int)OnlineWorldConnectionState.Online);
             return (ErrorCode.ERR_Success, string.Empty, self.GetActorId(), self.SessionEpoch, reused);
         }
 
@@ -66,7 +64,6 @@ namespace ET.Server
             long timerGeneration = ++self.TimerGeneration;
             WaitGraceTimeout(self, epoch, timerGeneration).Coroutine();
             self.RequestRoomConnectionSync((int)OnlineRoomMemberConnectionState.DisconnectedGrace);
-            self.RequestWorldConnectionSync((int)OnlineWorldConnectionState.DisconnectedGrace);
             await ETTask.CompletedTask;
         }
 
@@ -78,7 +75,6 @@ namespace ET.Server
             }
 
             self.GateProxyActorId = default;
-            self.OfflineWorldAsCorpse = false;
             await self.OfflineRoomAndDispose(self.MakeLifecycleOperationId("logout"));
         }
 
@@ -89,35 +85,14 @@ namespace ET.Server
                 return;
             }
 
-            self.OfflineWorldAsCorpse = true;
             await self.OfflineRoomAndDispose(self.MakeLifecycleOperationId("timeout"));
         }
 
+        /// <summary>重试房间离线收口，不持久化已移除的开放世界状态。</summary>
         public static async ETTask RetrySave(this OnlinePlayerActor self, long epoch)
         {
-            if (epoch != self.SessionEpoch)
-            {
-                return;
-            }
-
+            if (epoch != self.SessionEpoch) return;
             self.SaveRetryPending = false;
-            if (self.PendingWorldLeavePhase != OnlineWorldLeavePhase.None)
-            {
-                bool continueOffline = self.PendingWorldLeaveContinueOffline;
-                var leaveResult = await self.ResumePendingWorldLeave();
-                if (self.PendingWorldLeavePhase != OnlineWorldLeavePhase.None) return;
-                if (continueOffline)
-                {
-                    await self.OfflineRoomAndDispose(self.PendingOfflineRoomLeaveOperationId ?? self.MakeLifecycleOperationId("retry"));
-                }
-                return;
-            }
-            if (self.State == OnlinePlayerState.Online && !string.IsNullOrEmpty(self.PendingProfileSaveOperationId))
-            {
-                try { await self.SaveProfileCandidate(self.PendingProfileSaveOperationId, self.OnlineInventory, self.HasReceivedOnlineStarterSupplies); }
-                catch (Exception e) { Log.Warning($"online checkpoint retry failed playerId={self.PlayerId} error={e.GetType().Name}"); self.QueueProfileRetry(); }
-                return;
-            }
             if (self.State != OnlinePlayerState.Offlining) return;
             await self.OfflineRoomAndDispose(self.PendingOfflineRoomLeaveOperationId ?? self.MakeLifecycleOperationId("retry"));
         }
@@ -423,9 +398,7 @@ namespace ET.Server
         {
             if (sessionEpoch != self.SessionEpoch || self.State != OnlinePlayerState.Online)
                 return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, null);
-            // 离线单独结算会先关闭团队运行局，待领取奖励因此必须允许在没有 CurrentArcadeRunId 时提交。
-            bool claimingPendingRewards = actionKind == (int)OnlineArcadeSafeShopActionKind.ClaimPendingRewards;
-            if (self.CurrentArcadeRunId == 0 && !claimingPendingRewards)
+            if (self.CurrentArcadeRunId == 0)
                 return (ErrorCode.ERR_OnlineArcadeStateInvalid, "没有可操作的联机街机局", false, null);
             try
             {
@@ -643,11 +616,6 @@ namespace ET.Server
             self.State = OnlinePlayerState.Offlining;
             try
             {
-                if (!self.ProfileAlreadySavedForOffline)
-                {
-                    self.PendingProfileSaveOperationId ??= self.MakeLifecycleOperationId("save");
-                    await self.SaveProfileCandidate(self.PendingProfileSaveOperationId, self.OnlineInventory, self.HasReceivedOnlineStarterSupplies);
-                }
                 await self.Root().GetComponent<LocationProxyComponent>().Remove(LocationType.OnlinePlayer, self.PlayerId);
                 OnlinePlayerManagerComponent manager = self.Parent as OnlinePlayerManagerComponent;
                 manager?.Remove(self.PlayerId);
@@ -655,7 +623,7 @@ namespace ET.Server
             }
             catch (Exception e)
             {
-                Log.Error($"online player offline save failed stage=SaveProfile playerId={self.PlayerId} roomId={self.CurrentRoomId} exception={e}");
+                Log.Error($"online player offline cleanup failed stage=RemoveLocation playerId={self.PlayerId} roomId={self.CurrentRoomId} exception={e}");
                 if (!self.SaveRetryPending)
                 {
                     self.SaveRetryPending = true;
@@ -697,7 +665,6 @@ namespace ET.Server
         {
             try
             {
-                await self.LeaveWorldForOffline();
                 await self.LeaveRoomForOffline(operationId);
                 await self.OfflineAndDispose();
             }
@@ -706,7 +673,6 @@ namespace ET.Server
                 Log.Error($"online player room leave before offline failed stage=LeaveRoomForOffline playerId={self.PlayerId} roomId={self.CurrentRoomId} exception={e}");
                 self.State = OnlinePlayerState.Offlining;
                 self.PendingOfflineRoomLeave = true;
-                self.PendingOfflineWorldLeave = !string.IsNullOrEmpty(self.CurrentWorldMapId);
                 self.PendingOfflineRoomLeaveOperationId = operationId;
                 if (!self.SaveRetryPending)
                 {
@@ -822,30 +788,6 @@ namespace ET.Server
             }
         }
 
-        private static async ETTask SaveProfileCandidate(this OnlinePlayerActor self, string operationId, OnlineInventoryRecord inventory, bool receivedStarter)
-        {
-            Log.Info($"online player save attempt playerId={self.PlayerId} epoch={self.SessionEpoch}");
-            ActorId accountActorId = ServerConfig.Instance.GetSceneByName(self.Zone(), "Account").ActorId;
-            P2A_SavePlayerProfile save = P2A_SavePlayerProfile.Create();
-            save.AccountId = self.AccountId;
-            save.PlayerId = self.PlayerId;
-            save.DisplayName = self.DisplayName;
-            save.Revision = self.Revision;
-            save.OperationId = operationId;
-            save.ExpectedRevision = self.Revision;
-            save.OnlineInventory = OnlineInventoryRecordHelper.ToMessage(inventory);
-            save.HasReceivedOnlineStarterSupplies = receivedStarter;
-            using A2P_SavePlayerProfile response = await self.Root().GetComponent<MessageSender>().Call(accountActorId, save) as A2P_SavePlayerProfile;
-            if (response.Error != ErrorCode.ERR_Success)
-            {
-                throw new RpcException(response.Error, response.Message);
-            }
-            self.Revision = response.Revision;
-            self.OnlineInventory = OnlineInventoryRecordHelper.Clone(inventory);
-            self.HasReceivedOnlineStarterSupplies = receivedStarter;
-            self.PendingProfileSaveOperationId = null;
-        }
-
         private static bool TryGetRoomOperation(this OnlinePlayerActor self, string operationType, string operationId, out OnlineRoomOperationRecord record)
         {
             long now = TimeInfo.Instance.ServerNow();
@@ -909,11 +851,6 @@ namespace ET.Server
             return $"{(ulong)actorInstanceId:x16}{((ulong)sessionEpoch ^ salt):x16}";
         }
 
-        private static string NextWorldLeaveOperationId(this OnlinePlayerActor self)
-        {
-            return $"{(ulong)self.PlayerId:x16}{(ulong)++self.WorldLeaveGeneration:x16}";
-        }
-
         private static string MakeRoomSyncOperationId(this OnlinePlayerActor self, long syncGeneration)
         {
             return $"{(ulong)self.PlayerId:x16}{(ulong)self.PendingRoomSyncEpoch:x16}{(ulong)syncGeneration:x16}".Substring(16, 32);
@@ -972,290 +909,5 @@ namespace ET.Server
             self.Root().GetComponent<MessageSender>().Send(self.GetActorId(), retry);
         }
 
-        public static async ETTask<(int Error, string Message, bool HasWorld, OnlineWorldSnapshot World)> EnterWorld(this OnlinePlayerActor self, long epoch, string operationId, string mapId)
-        {
-            if (epoch != self.SessionEpoch || self.State != OnlinePlayerState.Online) return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, null);
-            if (!OnlineRoomSnapshotHelper.IsValidOperationId(operationId)) return (ErrorCode.ERR_OnlineWorldOperationInvalid, "操作标识无效", false, null);
-            if (string.IsNullOrWhiteSpace(mapId) || !ServerConfig.Instance.OnlineWorldMapIds.Contains(mapId, StringComparer.Ordinal))
-                return (ErrorCode.ERR_OnlineWorldOperationInvalid, "地图标识无效", false, null);
-            if (!string.IsNullOrEmpty(self.CurrentWorldMapId) && !string.Equals(self.CurrentWorldMapId, mapId, StringComparison.Ordinal)) return (ErrorCode.ERR_OnlineWorldStateConflict, "当前已在其它地图中", false, null);
-            if (string.IsNullOrEmpty(self.CurrentWorldMapId) && self.CurrentRoomId != 0)
-            {
-                var left = await self.LeaveRoom(epoch, operationId);
-                if (left.Error != ErrorCode.ERR_Success && left.Error != ErrorCode.ERR_OnlineNotInRoom) return (left.Error, left.Message, false, null);
-            }
-            if (!self.HasReceivedOnlineStarterSupplies)
-            {
-                OnlineInventoryRecord starter = OnlineInventoryRecordHelper.Clone(self.OnlineInventory);
-                OnlineWorldRuleConfig starterRules = ServerConfig.Instance.OnlineWorldRule;
-                starter.Slots.Add(new OnlineItemSlotRecord { SlotIndex = 0, ItemId = starterRules.StarterMeleeWeaponItemId, Amount = 1 });
-                starter.Equipment.ItemId = starterRules.StarterMeleeWeaponItemId;
-                starter.Equipment.SourceSlotIndex = 0;
-                if (!TryAddStarterItem(starter, starterRules.StarterRangedWeaponItemId, 1))
-                    return (ErrorCode.ERR_OnlineProfileSaveFailed, "首次武器无法放入联机背包", false, null);
-                WeaponConfig rangedWeapon = ServerConfig.Instance.GetWeapon(starterRules.StarterRangedWeaponItemId);
-                if (!TryAddStarterItem(starter, rangedWeapon.AmmoItemId, starterRules.StarterRangedAmmoAmount))
-                    return (ErrorCode.ERR_OnlineProfileSaveFailed, "首次物资无法放入联机背包", false, null);
-                starter.Revision++;
-                try { await self.SaveProfileCandidate("starter:" + operationId, starter, true); }
-                catch (RpcException e) { return (e.Error, "首次物资保存失败，请重试", false, null); }
-            }
-            ActorId worldActor = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineWorld").ActorId;
-            P2W_EnterWorld request = P2W_EnterWorld.Create(); request.PlayerId = self.PlayerId; request.DisplayName = self.DisplayName; request.PlayerActorId = self.GetActorId(); request.MapId = mapId;request.OnlineInventory=OnlineInventoryRecordHelper.ToMessage(self.OnlineInventory);
-            using W2P_EnterWorld response = await self.Root().GetComponent<MessageSender>().Call(worldActor, request, false) as W2P_EnterWorld;
-            if (response.Error == ErrorCode.ERR_Success && response.World != null) { self.CurrentWorldId = response.World.WorldId; self.CurrentWorldMapId = response.World.MapId; self.CurrentWorldUnitId = response.World.SelfUnitId;self.ProfileAlreadySavedForOffline=false; }
-            return (response.Error, response.Message, response.World != null, OnlineWorldSnapshotHelper.Clone(response.World));
-        }
-
-        private static bool TryAddStarterItem(OnlineInventoryRecord inventory, int itemId, int amount)
-        {
-            Item item = ServerConfig.Instance.GetItem(itemId);
-            foreach (OnlineItemSlotRecord slot in inventory.Slots.Where(x => x.ItemId == itemId && x.Amount < item.MaxStackAmount).OrderBy(x => x.SlotIndex))
-            {
-                int accepted = Math.Min(item.MaxStackAmount - slot.Amount, amount);
-                slot.Amount += accepted;
-                amount -= accepted;
-                if (amount == 0) return true;
-            }
-            for (int slotIndex = 0; slotIndex < inventory.Capacity && amount > 0; slotIndex++)
-            {
-                if (inventory.Slots.Any(x => x.SlotIndex == slotIndex)) continue;
-                int accepted = Math.Min(item.MaxStackAmount, amount);
-                inventory.Slots.Add(new OnlineItemSlotRecord { SlotIndex = slotIndex, ItemId = itemId, Amount = accepted });
-                amount -= accepted;
-            }
-            return amount == 0;
-        }
-
-        public static async ETTask<(int Error, string Message, bool HasWorld, OnlineWorldSnapshot World)> GetCurrentWorld(this OnlinePlayerActor self, long epoch)
-        {
-            if (epoch != self.SessionEpoch || self.State == OnlinePlayerState.Offlining) return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, null);
-            if (string.IsNullOrEmpty(self.CurrentWorldMapId)) return (ErrorCode.ERR_Success, string.Empty, false, null);
-            ActorId actor = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineWorld").ActorId;
-            P2W_GetCurrentWorld request = P2W_GetCurrentWorld.Create(); request.PlayerId = self.PlayerId; request.WorldId = self.CurrentWorldId; request.MapId = self.CurrentWorldMapId; request.UnitId = self.CurrentWorldUnitId;
-            using W2P_GetCurrentWorld response = await self.Root().GetComponent<MessageSender>().Call(actor, request, false) as W2P_GetCurrentWorld;
-            if (response.Error == ErrorCode.ERR_Success && !response.HasWorld) self.ClearWorldIdentity();
-            else if (response.Error == ErrorCode.ERR_Success && response.World != null) { self.CurrentWorldId = response.World.WorldId; self.CurrentWorldMapId = response.World.MapId; self.CurrentWorldUnitId = response.World.SelfUnitId; }
-            return (response.Error, response.Message, response.HasWorld, OnlineWorldSnapshotHelper.Clone(response.World));
-        }
-
-        public static async ETTask<(int Error, string Message)> LeaveWorld(this OnlinePlayerActor self, long epoch, string operationId)
-        {
-            if (epoch != self.SessionEpoch || self.State == OnlinePlayerState.Offlining) return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录");
-            if (!OnlineRoomSnapshotHelper.IsValidOperationId(operationId)) return (ErrorCode.ERR_OnlineWorldOperationInvalid, "操作标识无效");
-            if (string.IsNullOrEmpty(self.CurrentWorldMapId)) return (ErrorCode.ERR_Success, string.Empty);
-            return await self.LeaveWorldCore(operationId, false);
-        }
-
-        public static async ETTask<(int Error, string Message, long WorldId, string MapId, long UnitId, long StateRevision, long LifecycleRevision)> ReportWorldTransform(this OnlinePlayerActor self, long epoch, float x, float y, float z, float yaw, long lifecycleRevision)
-        {
-            if (epoch != self.SessionEpoch || self.State != OnlinePlayerState.Online) return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", 0, null, 0, 0, 0);
-            if (self.CurrentWorldUnitId == 0) return (ErrorCode.ERR_OnlineNotInWorld, "当前不在世界中", 0, null, 0, 0, 0);
-            ActorId actor = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineWorld").ActorId;
-            P2W_ReportWorldTransform request = P2W_ReportWorldTransform.Create(); request.PlayerId = self.PlayerId; request.WorldId = self.CurrentWorldId; request.MapId = self.CurrentWorldMapId; request.UnitId = self.CurrentWorldUnitId; request.PositionX = x; request.PositionY = y; request.PositionZ = z; request.YawDegrees = yaw;request.LifecycleRevision=lifecycleRevision;
-            using W2P_ReportWorldTransform response = await self.Root().GetComponent<MessageSender>().Call(actor, request, false) as W2P_ReportWorldTransform;
-            return (response.Error, response.Message, response.WorldId, response.MapId, response.UnitId, response.StateRevision,response.LifecycleRevision);
-        }
-
-        public static async ETTask<(int Error,string Message,long WorldId,long UnitId,long AttackSequence,bool Accepted,long WorldRevision,long LifecycleRevision)> WorldMeleeAttack(this OnlinePlayerActor self,long epoch,long sequence,int weapon,float aimX,float aimZ,long lifecycle,float aimY=0,float originX=0,float originY=0,float originZ=0,bool hasProjectileOrigin=false,string collisionContentHash=null)
-        {if(epoch!=self.SessionEpoch||self.State!=OnlinePlayerState.Online)return(ErrorCode.ERR_OnlineSessionNotLoggedIn,"未登录",0,0,sequence,false,0,lifecycle);if(self.CurrentWorldUnitId==0)return(ErrorCode.ERR_OnlineNotInWorld,"当前不在世界中",0,0,sequence,false,0,lifecycle);ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_WorldMeleeAttack q=P2W_WorldMeleeAttack.Create();q.PlayerId=self.PlayerId;q.WorldId=self.CurrentWorldId;q.MapId=self.CurrentWorldMapId;q.UnitId=self.CurrentWorldUnitId;q.AttackSequence=sequence;q.WeaponItemId=weapon;q.AimX=aimX;q.AimZ=aimZ;q.LifecycleRevision=lifecycle;q.AimY=aimY;q.OriginX=originX;q.OriginY=originY;q.OriginZ=originZ;q.HasProjectileOrigin=hasProjectileOrigin;q.CollisionContentHash=collisionContentHash;using W2P_WorldMeleeAttack r=await self.Root().GetComponent<MessageSender>().Call(actor,q,false) as W2P_WorldMeleeAttack;return(r.Error,r.Message,r.WorldId,r.UnitId,r.AttackSequence,r.Accepted,r.WorldRevision,r.LifecycleRevision);}
-
-        public static async ETTask<(int Error,string Message,bool Accepted,long LeaseRevision,long LastSequence,long WorldRevision)> ReportWorldEnemyNavigation(this OnlinePlayerActor self,long epoch,long lease,long sequence,IReadOnlyList<WorldEnemyNavigationReport> reports)
-        {if(epoch!=self.SessionEpoch||self.State!=OnlinePlayerState.Online)return(ErrorCode.ERR_OnlineSessionNotLoggedIn,"未登录",false,0,0,0);if(self.CurrentWorldUnitId==0)return(ErrorCode.ERR_OnlineNotInWorld,"当前不在世界中",false,0,0,0);ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_ReportWorldEnemyNavigation q=P2W_ReportWorldEnemyNavigation.Create();q.PlayerId=self.PlayerId;q.WorldId=self.CurrentWorldId;q.MapId=self.CurrentWorldMapId;q.UnitId=self.CurrentWorldUnitId;q.NavigationLeaseRevision=lease;q.ReportSequence=sequence;foreach(WorldEnemyNavigationReport s in reports){WorldEnemyNavigationReport t=WorldEnemyNavigationReport.Create();t.UnitId=s.UnitId;t.LifecycleRevision=s.LifecycleRevision;t.PositionX=s.PositionX;t.PositionY=s.PositionY;t.PositionZ=s.PositionZ;t.YawDegrees=s.YawDegrees;q.Reports.Add(t);}using W2P_ReportWorldEnemyNavigation r=await self.Root().GetComponent<MessageSender>().Call(actor,q,false) as W2P_ReportWorldEnemyNavigation;return(r.Error,r.Message,r.Accepted,r.CurrentLeaseRevision,r.LastAcceptedReportSequence,r.WorldRevision);}
-
-        public static async ETTask<(int Error,string Message,OnlineInventoryInfo Inventory,WorldCorpseContentsInfo Corpse)> OpenWorldCorpse(this OnlinePlayerActor self,long epoch,long corpseId,long lifecycle)
-        {if(epoch!=self.SessionEpoch||self.State!=OnlinePlayerState.Online)return(ErrorCode.ERR_OnlineSessionNotLoggedIn,"未登录",null,null);if(self.CurrentWorldUnitId==0)return(ErrorCode.ERR_OnlineNotInWorld,"当前没有可操作角色",null,null);ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_OpenWorldCorpse q=P2W_OpenWorldCorpse.Create();q.PlayerId=self.PlayerId;q.WorldId=self.CurrentWorldId;q.MapId=self.CurrentWorldMapId;q.UnitId=self.CurrentWorldUnitId;q.CorpseId=corpseId;q.LifecycleRevision=lifecycle;using W2P_OpenWorldCorpse r=await self.Root().GetComponent<MessageSender>().Call(actor,q,false) as W2P_OpenWorldCorpse;return(r.Error,r.Message,OnlineWorldSnapshotHelper.Clone(r.SelfInventory),OnlineWorldSnapshotHelper.Clone(r.CorpseContents));}
-
-        public static async ETTask<(int Error,string Message,bool Accepted,OnlineInventoryInfo Inventory,bool HasCorpse,WorldCorpseContentsInfo Corpse)> OperateWorldInventory(this OnlinePlayerActor self,G2P_OperateWorldInventory input)
-        {if(input.SessionEpoch!=self.SessionEpoch||self.State!=OnlinePlayerState.Online)return(ErrorCode.ERR_OnlineSessionNotLoggedIn,"未登录",false,null,false,null);if(self.CurrentWorldUnitId==0)return(ErrorCode.ERR_OnlineNotInWorld,"当前没有可操作角色",false,null,false,null);ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_OperateWorldInventory q=P2W_OperateWorldInventory.Create();q.PlayerId=self.PlayerId;q.WorldId=self.CurrentWorldId;q.MapId=self.CurrentWorldMapId;q.UnitId=self.CurrentWorldUnitId;q.OperationId=input.OperationId;q.ExpectedInventoryRevision=input.ExpectedInventoryRevision;q.CorpseId=input.CorpseId;q.ExpectedCorpseRevision=input.ExpectedCorpseRevision;q.ActionKind=input.ActionKind;q.SourceContainerKind=input.SourceContainerKind;q.SourceSlotIndex=input.SourceSlotIndex;q.TargetContainerKind=input.TargetContainerKind;q.TargetSlotIndex=input.TargetSlotIndex;q.LifecycleRevision=input.LifecycleRevision;q.InventorySchemaVersion=input.InventorySchemaVersion;q.ExpectedItemId=input.ExpectedItemId;using W2P_OperateWorldInventory r=await self.Root().GetComponent<MessageSender>().Call(actor,q,false) as W2P_OperateWorldInventory;return(r.Error,r.Message,r.Accepted,OnlineWorldSnapshotHelper.Clone(r.SelfInventory),r.HasCorpse,OnlineWorldSnapshotHelper.Clone(r.CorpseContents));}
-
-        public static async ETTask<(int Error,string Message,bool Accepted,long WorldRevision,WorldTemporaryBuildingInfo Building,int RemovedRuntimeId,OnlineInventoryInfo Inventory,long ServerTime)> OperateWorldTemporaryBuilding(this OnlinePlayerActor self,G2P_OperateWorldTemporaryBuilding input)
-        {if(input.SessionEpoch!=self.SessionEpoch||self.State!=OnlinePlayerState.Online)return(ErrorCode.ERR_OnlineSessionNotLoggedIn,"未登录",false,0,null,0,null,0);if(self.CurrentWorldUnitId==0)return(ErrorCode.ERR_OnlineNotInWorld,"当前没有可操作角色",false,0,null,0,null,0);ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_OperateWorldTemporaryBuilding q=P2W_OperateWorldTemporaryBuilding.Create();q.PlayerId=self.PlayerId;q.WorldId=self.CurrentWorldId;q.MapId=self.CurrentWorldMapId;q.UnitId=self.CurrentWorldUnitId;q.OperationId=input.OperationId;q.ActionKind=input.ActionKind;q.RuntimeId=input.RuntimeId;q.ConfigId=input.ConfigId;q.PositionX=input.PositionX;q.PositionY=input.PositionY;q.PositionZ=input.PositionZ;q.YawDegrees=input.YawDegrees;q.AimX=input.AimX;q.AimZ=input.AimZ;q.ExpectedInventoryRevision=input.ExpectedInventoryRevision;q.ExpectedBuildingRevision=input.ExpectedBuildingRevision;q.LifecycleRevision=input.LifecycleRevision;using W2P_OperateWorldTemporaryBuilding r=await self.Root().GetComponent<MessageSender>().Call(actor,q,false) as W2P_OperateWorldTemporaryBuilding;return(r.Error,r.Message,r.Accepted,r.WorldRevision,OnlineWorldSnapshotHelper.Clone(r.Building),r.RemovedRuntimeId,OnlineWorldSnapshotHelper.Clone(r.SelfInventory),r.ServerTime);}
-
-        private static async ETTask<(int Error, string Message)> LeaveWorldCore(this OnlinePlayerActor self, string operationId, bool continueOffline)
-        {
-            if (self.PendingWorldLeavePhase != OnlineWorldLeavePhase.None)
-            {
-                if (!string.Equals(self.PendingWorldLeaveOperationId, operationId, StringComparison.Ordinal))
-                    return (ErrorCode.ERR_OnlineWorldOperationConflict, "已有离开事务正在收口");
-                return await self.ResumePendingWorldLeave();
-            }
-            if (!string.IsNullOrEmpty(self.PendingWorldLeaveOperationId) &&
-                !string.Equals(self.PendingWorldLeaveOperationId, operationId, StringComparison.Ordinal))
-                return (ErrorCode.ERR_OnlineWorldOperationConflict, "已有离开事务正在收口");
-
-            ActorId actor = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineWorld").ActorId;
-            P2W_PrepareWorldLeave prepare = P2W_PrepareWorldLeave.Create();prepare.PlayerId=self.PlayerId;prepare.WorldId=self.CurrentWorldId;prepare.MapId=self.CurrentWorldMapId;prepare.UnitId=self.CurrentWorldUnitId;prepare.OperationId=operationId;
-            using W2P_PrepareWorldLeave prepared=await self.Root().GetComponent<MessageSender>().Call(actor,prepare,false) as W2P_PrepareWorldLeave;
-            if(prepared.Error!=ErrorCode.ERR_Success||!prepared.Prepared)return(prepared.Error,prepared.Message);
-            self.PendingWorldLeaveOperationId=operationId;
-            self.PendingWorldLeaveResumeState=self.State;
-            self.PendingWorldLeaveContinueOffline=continueOffline;
-            OnlineInventoryRecord candidate=OnlineInventoryRecordHelper.FromMessage(prepared.OnlineInventory);
-            bool alreadySaved=self.ProfileAlreadySavedForOffline&&string.Equals(self.PendingWorldLeaveOperationId,operationId,StringComparison.Ordinal);
-            try{if(!alreadySaved)await self.SaveProfileCandidate("leave:"+operationId,candidate,self.HasReceivedOnlineStarterSupplies);self.ProfileAlreadySavedForOffline=true;}
-            catch(Exception e)
-            {
-                self.ProfileAlreadySavedForOffline=false;
-                self.PendingWorldLeaveFailureError=e is RpcException rpc ? rpc.Error : ErrorCode.ERR_OnlineProfileSaveFailed;
-                self.PendingWorldLeavePhase=OnlineWorldLeavePhase.Aborting;
-                return await self.ResumePendingWorldLeave();
-            }
-            self.PendingWorldLeavePhase=OnlineWorldLeavePhase.Committing;
-            return await self.ResumePendingWorldLeave();
-        }
-
-        private static async ETTask<(int Error, string Message)> ResumePendingWorldLeave(this OnlinePlayerActor self)
-        {
-            string operationId=self.PendingWorldLeaveOperationId;
-            ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;
-            if(self.PendingWorldLeavePhase==OnlineWorldLeavePhase.Aborting)
-            {
-                try
-                {
-                    P2W_AbortWorldLeave abort=P2W_AbortWorldLeave.Create();abort.PlayerId=self.PlayerId;abort.WorldId=self.CurrentWorldId;abort.MapId=self.CurrentWorldMapId;abort.OperationId=operationId;
-                    using W2P_AbortWorldLeave aborted=await self.Root().GetComponent<MessageSender>().Call(actor,abort,false) as W2P_AbortWorldLeave;
-                    if(aborted.Error==ErrorCode.ERR_Success&&aborted.Completed)
-                    {
-                        int failure=self.PendingWorldLeaveFailureError==0?ErrorCode.ERR_OnlineProfileSaveFailed:self.PendingWorldLeaveFailureError;
-                        bool continueOffline=self.PendingWorldLeaveContinueOffline;OnlinePlayerState resume=self.PendingWorldLeaveResumeState;
-                        self.ClearPendingWorldLeave();self.ProfileAlreadySavedForOffline=false;self.State=continueOffline?OnlinePlayerState.Offlining:resume;
-                        return(failure,"在线物资保存失败，离开已取消");
-                    }
-                    if(aborted.Error==ErrorCode.ERR_OnlineWorldOperationConflict)
-                    {
-                        bool continueOffline=self.PendingWorldLeaveContinueOffline;OnlinePlayerState resume=self.PendingWorldLeaveResumeState;
-                        self.ClearWorldIdentity();self.ClearPendingWorldLeave();self.ProfileAlreadySavedForOffline=true;self.State=continueOffline?OnlinePlayerState.Offlining:resume;
-                        return(ErrorCode.ERR_Success,string.Empty);
-                    }
-                }
-                catch(Exception e){Log.Warning($"online world leave abort retry playerId={self.PlayerId} operationId={operationId} error={e.GetType().Name}");}
-                self.QueuePendingWorldLeaveRetry();
-                return(ErrorCode.ERR_OnlineWorldServiceUnavailable,"离开取消结果尚未确认，请稍后重试");
-            }
-
-            if(self.PendingWorldLeavePhase==OnlineWorldLeavePhase.Committing)
-            {
-                for(int attempt=0;attempt<2;attempt++)
-                {
-                    try
-                    {
-                        P2W_CommitWorldLeave commit=P2W_CommitWorldLeave.Create();commit.PlayerId=self.PlayerId;commit.WorldId=self.CurrentWorldId;commit.MapId=self.CurrentWorldMapId;commit.OperationId=operationId;
-                        using W2P_CommitWorldLeave committed=await self.Root().GetComponent<MessageSender>().Call(actor,commit,false) as W2P_CommitWorldLeave;
-                        if(committed.Error==ErrorCode.ERR_Success&&committed.Completed)
-                        {
-                            bool continueOffline=self.PendingWorldLeaveContinueOffline;OnlinePlayerState resume=self.PendingWorldLeaveResumeState;
-                            self.ClearWorldIdentity();self.ClearPendingWorldLeave();self.PendingOfflineWorldLeave=false;self.ProfileAlreadySavedForOffline=true;self.State=continueOffline?OnlinePlayerState.Offlining:resume;
-                            return(ErrorCode.ERR_Success,string.Empty);
-                        }
-                    }
-                    catch(Exception e){Log.Warning($"online world leave commit retry playerId={self.PlayerId} operationId={operationId} error={e.GetType().Name}");}
-                }
-                self.QueuePendingWorldLeaveRetry();
-                return(ErrorCode.ERR_OnlineWorldServiceUnavailable,"离开提交结果尚未确认，请稍后重试");
-            }
-            return(ErrorCode.ERR_OnlineWorldOperationConflict,"没有待处理的离开事务");
-        }
-
-        private static async ETTask LeaveWorldForOffline(this OnlinePlayerActor self)
-        {
-            if (string.IsNullOrEmpty(self.CurrentWorldMapId)) return;
-            if(self.OfflineWorldAsCorpse)
-            {
-                ActorId actor=ServerConfig.Instance.GetSceneByName(self.Zone(),"OnlineWorld").ActorId;P2W_LeaveWorld request=P2W_LeaveWorld.Create();request.PlayerId=self.PlayerId;request.WorldId=self.CurrentWorldId;request.MapId=self.CurrentWorldMapId;request.UnitId=self.CurrentWorldUnitId;
-                using W2P_LeaveWorld response=await self.Root().GetComponent<MessageSender>().Call(actor,request,false) as W2P_LeaveWorld;if(response.Error!=ErrorCode.ERR_Success&&response.Error!=ErrorCode.ERR_OnlineNotInWorld)throw new RpcException(response.Error,response.Message);
-                OnlineInventoryRecord empty=OnlineInventoryRecordHelper.Empty(ServerConfig.Instance.OnlineWorldRule.BagCapacity);empty.Revision=Math.Max(1,(self.OnlineInventory?.Revision??0)+1);self.OnlineInventory=empty;self.ClearWorldIdentity();return;
-            }
-            string operationId=self.PendingWorldLeaveOperationId??self.NextWorldLeaveOperationId();
-            var result = await self.LeaveWorldCore(operationId, true);
-            if (result.Error != ErrorCode.ERR_Success) throw new RpcException(result.Error, result.Message);
-        }
-
-        private static void QueuePendingWorldLeaveRetry(this OnlinePlayerActor self)
-        {
-            self.State=OnlinePlayerState.Offlining;
-            if(self.SaveRetryPending)return;
-            self.SaveRetryPending=true;
-            RetrySaveLater(self,self.SessionEpoch).Coroutine();
-        }
-
-        private static void ClearPendingWorldLeave(this OnlinePlayerActor self)
-        {
-            self.PendingWorldLeaveOperationId=null;
-            self.PendingWorldLeavePhase=OnlineWorldLeavePhase.None;
-            self.PendingWorldLeaveResumeState=default;
-            self.PendingWorldLeaveContinueOffline=false;
-            self.PendingWorldLeaveFailureError=0;
-        }
-
-        private static void ClearWorldIdentity(this OnlinePlayerActor self)
-        {
-            self.CurrentWorldId = 0;
-            self.CurrentWorldMapId = string.Empty;
-            self.CurrentWorldUnitId = 0;
-        }
-
-        private static void RequestWorldConnectionSync(this OnlinePlayerActor self, int state)
-        {
-            if (!string.IsNullOrEmpty(self.CurrentWorldMapId)) self.SyncWorldConnection(state).Coroutine();
-        }
-
-        private static async ETTask SyncWorldConnection(this OnlinePlayerActor self, int state)
-        {
-            try
-            {
-                ActorId actor = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineWorld").ActorId;
-                P2W_SetWorldConnection request = P2W_SetWorldConnection.Create(); request.PlayerId = self.PlayerId; request.WorldId = self.CurrentWorldId; request.MapId = self.CurrentWorldMapId; request.UnitId = self.CurrentWorldUnitId; request.PlayerActorId = self.GetActorId(); request.ConnectionState = state;
-                using W2P_SetWorldConnection _ = await self.Root().GetComponent<MessageSender>().Call(actor, request, false) as W2P_SetWorldConnection;
-            }
-            catch (Exception e) { Log.Warning($"online world connection sync failed playerId={self.PlayerId} error={e.GetType().Name}"); }
-        }
-
-        public static async ETTask ReceiveWorldEntered(this OnlinePlayerActor self, W2P_WorldPlayerEntered message)
-        {
-            if (message.PlayerId != self.PlayerId || message.Player == null || !string.Equals(message.Player.MapId, self.CurrentWorldMapId, StringComparison.Ordinal) || self.GateProxyActorId == default || self.State != OnlinePlayerState.Online) return;
-            P2G_WorldPlayerEntered push = P2G_WorldPlayerEntered.Create(); push.PlayerId = self.PlayerId; push.SessionEpoch = self.SessionEpoch; push.WorldRevision = message.WorldRevision; push.Player = OnlineWorldSnapshotHelper.Clone(message.Player);
-            self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId, push); await ETTask.CompletedTask;
-        }
-
-        public static async ETTask ReceiveWorldTransform(this OnlinePlayerActor self, W2P_WorldPlayerTransformChanged message)
-        {
-            if (message.PlayerId != self.PlayerId || !string.Equals(message.MapId, self.CurrentWorldMapId, StringComparison.Ordinal) || self.GateProxyActorId == default || self.State != OnlinePlayerState.Online) return;
-            P2G_WorldPlayerTransformChanged push = P2G_WorldPlayerTransformChanged.Create(); push.PlayerId = self.PlayerId; push.SessionEpoch = self.SessionEpoch; push.WorldId = message.WorldId; push.MapId = message.MapId; push.WorldRevision = message.WorldRevision; push.Player = OnlineWorldSnapshotHelper.Clone(message.Player);
-            self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId, push); await ETTask.CompletedTask;
-        }
-
-        public static async ETTask ReceiveWorldLeft(this OnlinePlayerActor self, W2P_WorldPlayerLeft message)
-        {
-            if (message.PlayerId != self.PlayerId || !string.Equals(message.MapId, self.CurrentWorldMapId, StringComparison.Ordinal) || self.GateProxyActorId == default || self.State != OnlinePlayerState.Online) return;
-            P2G_WorldPlayerLeft push = P2G_WorldPlayerLeft.Create(); push.PlayerId = self.PlayerId; push.SessionEpoch = self.SessionEpoch; push.WorldId = message.WorldId; push.MapId = message.MapId; push.WorldRevision = message.WorldRevision; push.UnitId = message.UnitId;
-            self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId, push); await ETTask.CompletedTask;
-        }
-
-        public static async ETTask ReceiveWorldCombat(this OnlinePlayerActor self,W2P_WorldCombatChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal)||self.GateProxyActorId==default||self.State!=OnlinePlayerState.Online)return;P2G_WorldCombatChanged p=P2G_WorldCombatChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.WorldRevision=m.WorldRevision;p.ServerTime=m.ServerTime;p.CombatSequence=m.CombatSequence;p.ActionKind=m.ActionKind;p.ActorUnitId=m.ActorUnitId;p.WeaponItemId=m.WeaponItemId;foreach(long x in m.TargetUnitIds)p.TargetUnitIds.Add(x);foreach(WorldPlayerInfo x in m.Players)p.Players.Add(OnlineWorldSnapshotHelper.Clone(x));foreach(WorldEnemyInfo x in m.Enemies)p.Enemies.Add(OnlineWorldSnapshotHelper.Clone(x));self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveEnemyTransforms(this OnlinePlayerActor self,W2P_WorldEnemiesTransformChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal)||self.GateProxyActorId==default||self.State!=OnlinePlayerState.Online)return;P2G_WorldEnemiesTransformChanged p=P2G_WorldEnemiesTransformChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.WorldRevision=m.WorldRevision;foreach(WorldEnemyTransformInfo x in m.Enemies)p.Enemies.Add(OnlineWorldSnapshotHelper.Clone(x));self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveNavigationLease(this OnlinePlayerActor self,W2P_WorldNavigationLeaseChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal)||self.GateProxyActorId==default||self.State!=OnlinePlayerState.Online)return;P2G_WorldNavigationLeaseChanged p=P2G_WorldNavigationLeaseChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.WorldRevision=m.WorldRevision;p.NavigationExecutorUnitId=m.NavigationExecutorUnitId;p.NavigationLeaseRevision=m.NavigationLeaseRevision;p.ServerTime=m.ServerTime;self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveWorldCorpse(this OnlinePlayerActor self,W2P_WorldCorpseChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal)||self.GateProxyActorId==default||self.State!=OnlinePlayerState.Online)return;P2G_WorldCorpseChanged p=P2G_WorldCorpseChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.WorldRevision=m.WorldRevision;p.HasCorpse=m.HasCorpse;p.Corpse=OnlineWorldSnapshotHelper.Clone(m.Corpse);p.RemovedCorpseId=m.RemovedCorpseId;self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveSelfInventory(this OnlinePlayerActor self,W2P_WorldSelfInventoryChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal))return;self.OnlineInventory=OnlineInventoryRecordHelper.FromMessage(m.SelfInventory);if(self.GateProxyActorId!=default&&self.State==OnlinePlayerState.Online){P2G_WorldSelfInventoryChanged p=P2G_WorldSelfInventoryChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.SelfInventory=OnlineWorldSnapshotHelper.Clone(m.SelfInventory);self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);}await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveSelfUnit(this OnlinePlayerActor self,W2P_WorldSelfUnitChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal))return;self.CurrentWorldUnitId=m.SelfUnitId;if(self.GateProxyActorId!=default&&self.State==OnlinePlayerState.Online){P2G_WorldSelfUnitChanged p=P2G_WorldSelfUnitChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.PreviousUnitId=m.PreviousUnitId;p.SelfUnitId=m.SelfUnitId;p.WorldRevision=m.WorldRevision;self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);}await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveTemporaryBuilding(this OnlinePlayerActor self,W2P_WorldTemporaryBuildingChanged m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal)||self.GateProxyActorId==default||self.State!=OnlinePlayerState.Online)return;P2G_WorldTemporaryBuildingChanged p=P2G_WorldTemporaryBuildingChanged.Create();p.PlayerId=self.PlayerId;p.SessionEpoch=self.SessionEpoch;p.WorldId=m.WorldId;p.MapId=m.MapId;p.WorldRevision=m.WorldRevision;p.HasBuilding=m.HasBuilding;p.Building=OnlineWorldSnapshotHelper.Clone(m.Building);p.RemovedRuntimeId=m.RemovedRuntimeId;p.ServerTime=m.ServerTime;self.Root().GetComponent<MessageSender>().Send(self.GateProxyActorId,p);await ETTask.CompletedTask;}
-
-        public static async ETTask ReceiveInventoryCheckpoint(this OnlinePlayerActor self,W2P_WorldInventoryCheckpoint m)
-        {if(m.PlayerId!=self.PlayerId||!string.Equals(m.MapId,self.CurrentWorldMapId,StringComparison.Ordinal))return;OnlineInventoryRecord candidate=OnlineInventoryRecordHelper.FromMessage(m.OnlineInventory);if(self.OnlineInventory!=null&&candidate.Revision<self.OnlineInventory.Revision)return;self.OnlineInventory=candidate;self.PendingProfileSaveOperationId=m.OperationId;try{await self.SaveProfileCandidate(m.OperationId,candidate,self.HasReceivedOnlineStarterSupplies);}catch(Exception e){Log.Warning($"online death checkpoint save pending playerId={self.PlayerId} error={e.GetType().Name}");self.QueueProfileRetry();}}
-
-        private static void QueueProfileRetry(this OnlinePlayerActor self){if(self.SaveRetryPending)return;self.SaveRetryPending=true;RetrySaveLater(self,self.SessionEpoch).Coroutine();}
     }
 }

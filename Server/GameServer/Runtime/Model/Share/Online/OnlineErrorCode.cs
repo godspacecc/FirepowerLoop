@@ -24,16 +24,6 @@ namespace ET
         public const int ERR_OnlineChatTextInvalid = 200120;
         public const int ERR_OnlineChatRateLimited = 200121;
         public const int ERR_OnlineChatOperationConflict = 200122;
-        public const int ERR_OnlineWorldServiceUnavailable = 200123;
-        public const int ERR_OnlineNotInWorld = 200124;
-        public const int ERR_OnlineWorldOperationInvalid = 200125;
-        public const int ERR_OnlineWorldStateConflict = 200126;
-        public const int ERR_OnlineWorldInventoryRevisionConflict = 200127;
-        public const int ERR_OnlineWorldCorpseNotFound = 200128;
-        public const int ERR_OnlineWorldSearchInvalid = 200129;
-        public const int ERR_OnlineWorldInventoryCapacity = 200130;
-        public const int ERR_OnlineWorldOperationConflict = 200131;
-        public const int ERR_OnlineProfileSaveFailed = 200132;
         public const int ERR_OnlineRoomPurposeMismatch = 200133;
         public const int ERR_OnlineRoomVersionMismatch = 200134;
         public const int ERR_OnlineArcadeStateInvalid = 200135;

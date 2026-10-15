@@ -55,7 +55,7 @@ namespace Game
                 return;
             }
             // 已落盘的新局也属于玩家进度；失败只返回菜单，绝不自动放弃或覆盖。
-            await flow.ReturnToBaseAsync();
+            await flow.ReturnToMainMenuAsync();
             ReportNewRunFailure(mapResult.Success ? Game.Interface.GetSystem<ArcadeCombatSystem>().LastEntryError : mapResult.Error);
         }
 
@@ -175,7 +175,7 @@ namespace Game
                 }
                 if (!TryEnterArena(this.GetSystem<ArcadeRunSystem>(), out var error))
                 {
-                    await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync();
+                    await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
                     if (IsCurrent()) Set(UI.TextMessage, error);
                     return;
                 }

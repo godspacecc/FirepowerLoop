@@ -189,27 +189,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OrdinaryJoystick_InitialHideAndReleasePreserveLayoutCenter()
-        {
-            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab"));
-            try
-            {
-                var ui = root.GetComponent<MobileJoystickUI>();
-                var area = (RectTransform)ui.ContentRoot.transform;
-                area.sizeDelta = new Vector2(1920, 1080);
-                var before = MobileControlLayoutGeometry.Bounds(area, (RectTransform)ui.JoystickSurface.transform).center;
-                ui.SetContentVisible(false);
-                typeof(UnityEngine.InputSystem.OnScreen.OnScreenStick)
-                    .GetMethod("Start", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ui.JoystickSurface, null);
-                ui.SetContentVisible(true);
-                ui.JoystickSurface.OnPointerUp(null);
-                var after = MobileControlLayoutGeometry.Bounds(area, (RectTransform)ui.JoystickSurface.transform).center;
-                Assert.That(after, Is.EqualTo(before), "首次菜单隐藏不能把回弹中心改成屏幕左下角");
-            }
-            finally { Object.DestroyImmediate(root); }
-        }
-
-        [Test]
         public void OrdinaryJoystick_UsesIndependentGeneratedLayoutWrapper()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
@@ -394,52 +373,6 @@ namespace Game.Tests
                 ctrl.Show(); Assert.That(ui.SizeSlider.value, Is.EqualTo(1.4f)); ctrl.Hide();
             }
             finally { Object.DestroyImmediate(root); }
-        }
-
-        [TestCase(1920, 1080)]
-        [TestCase(2400, 1080)]
-        [TestCase(1800, 900)]
-        public void OrdinaryJoystick_SavedLayoutMatchesPreviewAndUpdatesAfterResize(int width, int height)
-        {
-            var architecture = CreateEditorArchitecture();
-            var canvas = new GameObject("SharedLayoutCanvas", typeof(RectTransform), typeof(Canvas));
-            canvas.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
-            var canvasRect = (RectTransform)canvas.transform;
-            canvasRect.sizeDelta = new Vector2(width, height);
-            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab"), canvas.transform, false);
-            try
-            {
-                var ui = root.GetComponent<MobileJoystickUI>();
-                var ctrl = new MobileJoystickUICtrl();
-                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(ctrl, ui);
-                typeof(MobileJoystickUICtrl).GetMethod("OnInit", flags).Invoke(ctrl, null);
-                var refresh = typeof(MobileJoystickUICtrl).GetMethod("RefreshLayout", flags);
-                refresh.Invoke(ctrl, null);
-                var draft = new MobileControlLayoutData();
-                draft.Move.X = 0.3f; draft.Move.Y = 0.32f; draft.Move.Scale = 1.4f; draft.Move.Opacity = 0.45f;
-                Assert.That(architecture.GetSystem<SettingsSystem>().SaveMobileControlLayout(draft), Is.True);
-                refresh.Invoke(ctrl, null);
-                Assert.That(((RectTransform)ui.MoveJoystickRoot.transform).anchoredPosition,
-                    Is.EqualTo(MobileControlLayoutGeometry.Fit(ui.JoystickLayoutArea.rect.size, draft.Move, true)));
-                Assert.That(ui.MoveJoystickRoot.transform.localScale.x, Is.EqualTo(1.4f));
-                Assert.That(ui.MoveOpacity.alpha, Is.EqualTo(0.45f));
-                ui.SetContentVisible(false);
-                typeof(UnityEngine.InputSystem.OnScreen.OnScreenStick).GetMethod("Start", flags).Invoke(ui.JoystickSurface, null);
-                ui.SetContentVisible(true);
-                ui.JoystickSurface.OnPointerUp(null);
-                canvasRect.sizeDelta = new Vector2(height * 2, height);
-                refresh.Invoke(ctrl, null);
-                Assert.That(((RectTransform)ui.MoveJoystickRoot.transform).anchoredPosition,
-                    Is.EqualTo(MobileControlLayoutGeometry.Fit(ui.JoystickLayoutArea.rect.size, draft.Move, true)));
-                var bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.JoystickSurface.transform);
-                Assert.That(bounds.xMin, Is.GreaterThanOrEqualTo(0));
-                Assert.That(bounds.yMin, Is.GreaterThanOrEqualTo(0));
-                Assert.That(bounds.xMax, Is.LessThanOrEqualTo(ui.JoystickLayoutArea.rect.width));
-                Assert.That(bounds.yMax, Is.LessThanOrEqualTo(ui.JoystickLayoutArea.rect.height));
-                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.X, Is.EqualTo(0.3f));
-            }
-            finally { Object.DestroyImmediate(canvas); }
         }
         private static Game CreateEditorArchitecture()
         {

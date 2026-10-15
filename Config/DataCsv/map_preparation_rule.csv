@@ -1,8 +1,0 @@
-##var,MapId,RestrictTechnology,AllowedCategories
-##type,string,bool,string
-,map.another-day.civilisation-valley,true,Traditional|MapData
-,map.another-day.base,false,
-,map.another-day.survival-sample,false,
-,map.another-day.mission-sample,false,
-,map.another-day.arcade,false,
-,map.hejia-village,false,

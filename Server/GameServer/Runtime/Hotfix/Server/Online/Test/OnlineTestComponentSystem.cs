@@ -21,11 +21,7 @@ namespace ET.Server
             try
             {
                 string mode = Options.Instance.OnlineTestMode;
-                if(string.Equals(mode,"ClothingContracts",StringComparison.OrdinalIgnoreCase))
-                {
-                    failed+=await self.RunClothingContracts();
-                }
-                else if (string.Equals(mode, "ServerTestCmd", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(mode, "ServerTestCmd", StringComparison.OrdinalIgnoreCase))
                 {
                     failed += await self.RunServerTestCmd();
                 }
@@ -36,18 +32,6 @@ namespace ET.Server
                 else if (string.Equals(mode, "ReplaceQuick", StringComparison.OrdinalIgnoreCase))
                 {
                     failed += await self.RunReplaceQuick();
-                }
-                else if (string.Equals(mode, "RetryPrepare", StringComparison.OrdinalIgnoreCase))
-                {
-                    failed += await self.RunRetryPrepare();
-                }
-                else if (string.Equals(mode, "RetryFailureQuick", StringComparison.OrdinalIgnoreCase))
-                {
-                    failed += await self.RunRetryFailureQuick();
-                }
-                else if (string.Equals(mode, "RetryCancelQuick", StringComparison.OrdinalIgnoreCase))
-                {
-                    failed += await self.RunRetryCancelQuick();
                 }
                 else if (string.Equals(mode, "LifecycleOperationId", StringComparison.OrdinalIgnoreCase))
                 {
@@ -102,26 +86,6 @@ namespace ET.Server
                 {
                     failed += await self.RunRoomFaultLeave();
                 }
-                else if (string.Equals(mode, "World", StringComparison.OrdinalIgnoreCase))
-                {
-                    failed += await self.RunWorld();
-                }
-                else if (string.Equals(mode, "WorldRetry", StringComparison.OrdinalIgnoreCase))
-                {
-                    failed += await self.RunWorldRetry();
-                }
-                else if(string.Equals(mode,"WorldProjectiles",StringComparison.OrdinalIgnoreCase))
-                {
-                    failed+=await self.RunWorldProjectiles();
-                }
-                else if(string.Equals(mode,"WorldCombat",StringComparison.OrdinalIgnoreCase))
-                {
-                    failed+=await self.RunWorldCombat();
-                }
-                else if(string.Equals(mode,"WorldMaps",StringComparison.OrdinalIgnoreCase))
-                {
-                    failed+=await self.RunWorldMaps();
-                }
                 else if (string.Equals(mode, "LoginEntry", StringComparison.OrdinalIgnoreCase) ||
                          string.Equals(mode, "LoginEntryOnly", StringComparison.OrdinalIgnoreCase))
                 {
@@ -135,9 +99,13 @@ namespace ET.Server
                 {
                     failed += await self.RunLoginEntryRetry();
                 }
-                else
+                else if (string.Equals(mode, "Primary", StringComparison.OrdinalIgnoreCase))
                 {
                     failed += await self.RunPrimary();
+                }
+                else
+                {
+                    throw new ArgumentException($"Unknown online test mode: {mode}");
                 }
             }
             catch (Exception e)
@@ -498,54 +466,6 @@ namespace ET.Server
             }
 
             return failed;
-        }
-
-        private static async ETTask<int> RunRetryPrepare(this OnlineTestComponent self)
-        {
-            return await self.Case("RETRY-PREPARE", async () =>
-            {
-                string user = Options.Instance.OnlineTestUser;
-                using Session session = self.CreateSession();
-                using G2C_Register register = await session.Call(Register(user)) as G2C_Register;
-                Ensure(register.Error == ErrorCode.ERR_Success || register.Error == ErrorCode.ERR_OnlineUserNameExists,
-                    $"prepare register error={register.Error}");
-                using G2C_Login login = await session.Call(Login(user)) as G2C_Login;
-                Ensure(login.Error == ErrorCode.ERR_Success, $"prepare login error={login.Error}");
-                using G2C_Logout logout = await session.Call(C2G_Logout.Create()) as G2C_Logout;
-                Ensure(logout.Error == ErrorCode.ERR_Success, $"prepare logout error={logout.Error}");
-            });
-        }
-
-        private static async ETTask<int> RunRetryFailureQuick(this OnlineTestComponent self)
-        {
-            return await self.Case("RETRY-FAILURE", async () =>
-            {
-                using Session session = self.CreateSession();
-                using G2C_Login login = await session.Call(Login(Options.Instance.OnlineTestUser)) as G2C_Login;
-                Ensure(login.Error == ErrorCode.ERR_Success, $"retry failure login error={login.Error}");
-                using G2C_Logout logout = await session.Call(C2G_Logout.Create()) as G2C_Logout;
-                Ensure(logout.Error == ErrorCode.ERR_Success, $"retry failure logout error={logout.Error}");
-            });
-        }
-
-        private static async ETTask<int> RunRetryCancelQuick(this OnlineTestComponent self)
-        {
-            return await self.Case("RETRY-CANCEL", async () =>
-            {
-                string user = Options.Instance.OnlineTestUser;
-                using Session first = self.CreateSession();
-                using G2C_Login firstLogin = await first.Call(Login(user)) as G2C_Login;
-                Ensure(firstLogin.Error == ErrorCode.ERR_Success, $"cancel first login error={firstLogin.Error}");
-                using G2C_Logout logout = await first.Call(C2G_Logout.Create()) as G2C_Logout;
-                Ensure(logout.Error == ErrorCode.ERR_Success, $"cancel logout error={logout.Error}");
-                await self.Root().GetComponent<TimerComponent>().WaitAsync(1000);
-                using Session second = self.CreateSession();
-                using G2C_Login secondLogin = await second.Call(Login(user)) as G2C_Login;
-                Ensure(secondLogin.Error == ErrorCode.ERR_Success, $"cancel second login error={secondLogin.Error}");
-                await self.Root().GetComponent<TimerComponent>().WaitAsync(5500);
-                using G2C_Ping ping = await second.Call(C2G_Ping.Create()) as G2C_Ping;
-                Ensure(ping.Error == ErrorCode.ERR_Success, $"cancel second ping error={ping.Error}");
-            });
         }
 
         private static async ETTask<int> RunLifecycleOperationId(this OnlineTestComponent self)

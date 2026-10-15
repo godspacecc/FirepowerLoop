@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +20,7 @@ namespace Game
         private const string TerrainUsage = "用法：#terrain | #terrain instancing off | #terrain instancing restore";
         private const string PrefixRequiredText = "客户端指令请使用 #，服务器指令请使用 $。";
         private const string UnknownCommandText = "未知指令。";
-        private const string UsageCloneText = "用法：clone <ItemId或名称> [Amount]（数量默认 1）";
-        private const string UsageClearBagText = "用法：clear bag";
-        private const string UsageAdvanceTimeText = "用法：advance time <游戏分钟>";
-        private const string UsageSetAttributeText = "用法：set <hp|power|tili|maxhp|movespeed|water|maxwater|temp> <值>";
-        private const string InvalidAmountText = "数量必须是大于零的十进制整数。";
-        private const string BagFullText = "玩家背包已满。";
         private const string ExecutionFailedText = "指令执行失败。";
-        private const string InvalidGameMinutesText = "游戏分钟必须是大于 0 的十进制整数。";
-        private const string InvalidAttributeValueText = "属性值格式无效。";
-        private const string AttributeOutOfRangeText = "属性值超出允许范围。";
         private const string ServerLoginRequiredText = "请先登录后使用服务器指令。";
         private const string UsageCameraText = "用法：camera topdown / camera shoulder / camera firstperson";
         private const string UsageMobileInputText = "用法：mobileinput on / mobileinput off";
@@ -95,9 +86,7 @@ namespace Game
             }
             else
             {
-                result = string.Equals(body, "gallery", StringComparison.OrdinalIgnoreCase)
-                    ? await ExecuteGalleryAsync(trimmed, cancellationToken)
-                    : ExecuteClientBody(body);
+                result = ExecuteClientBody(body);
             }
 
             this.GetModel<TestCmdModel>().SetLastResult(result);
@@ -111,34 +100,14 @@ namespace Game
         private TestCmdExecutionResult ExecuteClientBody(string trimmed)
         {
             var parts = trimmed.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
-            if (string.Equals(parts[0], "weather", StringComparison.OrdinalIgnoreCase))
-                return ExecuteWeather(trimmed, parts);
-            if (string.Equals(parts[0], "appearance", StringComparison.OrdinalIgnoreCase))
-                return ExecutePlayerAppearance(trimmed, parts);
-            if (string.Equals(parts[0], "clone", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExecuteClone(trimmed, parts);
-            }
 
-            if (string.Equals(parts[0], "clear", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExecuteClearBag(trimmed, parts);
-            }
 
-            if (string.Equals(parts[0], "advance", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExecuteAdvanceTime(trimmed, parts);
-            }
 
             if (string.Equals(parts[0], "unitbar", StringComparison.OrdinalIgnoreCase))
             {
                 return ExecuteUnitHealthBars(trimmed, parts);
             }
 
-            if (string.Equals(parts[0], "set", StringComparison.OrdinalIgnoreCase))
-            {
-                return ExecuteSetAttribute(trimmed, parts);
-            }
 
             if (string.Equals(parts[0], "camera", StringComparison.OrdinalIgnoreCase))
             {
@@ -169,44 +138,6 @@ namespace Game
             }
 
             return Finish(trimmed, Result(false, false, TestCmdResultCode.UnknownCommand, UnknownCommandText), false);
-        }
-
-        /// <summary>离线测试专用整套外观；不写装备、存档或联机数据，先校验再提交与广播。</summary>
-        private TestCmdExecutionResult ExecutePlayerAppearance(string original, string[] parts)
-        {
-            const string usage = "用法：#appearance list | #appearance <1-9> | #appearance reset";
-            if (!Application.isEditor && !Debug.isDebugBuild)
-                return Finish(original, Warning(TestCmdResultCode.StateRejected, "造型测试仅在编辑器或开发版开放。"), true);
-            if (parts.Length != 2)
-                return Finish(original, Warning(TestCmdResultCode.UsageError, usage), true);
-            if (string.Equals(parts[1], "list", StringComparison.OrdinalIgnoreCase))
-                return Finish(original, Result(true, true, TestCmdResultCode.PlayerAppearanceChanged,
-                    string.Join("\n", TestCmdModel.PlayerAppearanceNames.Select((name, i) => $"{i + 1}：{name}")) + "\nreset：恢复分部位换装"), true);
-            int index;
-            if (string.Equals(parts[1], "reset", StringComparison.OrdinalIgnoreCase)) index = 0;
-            else if (!TryParseStrictInt(parts[1], out index) || index < 1 || index > TestCmdModel.PlayerAppearanceNames.Count)
-                return Finish(original, Warning(TestCmdResultCode.UsageError, usage), true);
-            var map = this.GetModel<MapSceneModel>();
-            if (map.CurrentMode != MapPreparationMode.OfflineFull || map.Status.Value != MapLoadStatus.Loaded ||
-                string.IsNullOrEmpty(map.CurrentMapId) || this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing)
-                return Finish(original, Warning(TestCmdResultCode.StateRejected, "只能在就绪的离线基地或远征中切换造型。"), true);
-            if (this.GetModel<TestCmdModel>().SetPlayerAppearanceIndex(index))
-                this.SendEvent(new PlayerTestAppearanceChangedEvent());
-            return Finish(original, Result(true, true, TestCmdResultCode.PlayerAppearanceChanged,
-                index == 0 ? "已恢复分部位换装。" : $"已切换为 {index}：{TestCmdModel.PlayerAppearanceNames[index - 1]}（仅本次运行有效）。"), true);
-        }
-
-        /// <summary>天气测试只提交领域意图；不直接操作场景，非法语法不取消正在播放的样板。</summary>
-        private TestCmdExecutionResult ExecuteWeather(string original, string[] parts)
-        {
-            const string usage = "用法：#weather rain | clear | dry | demo | status";
-            var mode = parts.Length == 2 ? parts[1].ToLowerInvariant() : string.Empty;
-            if (mode != "rain" && mode != "clear" && mode != "dry" && mode != "demo" && mode != "status")
-                return Finish(original, Warning(TestCmdResultCode.UsageError, usage), true);
-            var weather = this.GetSystem<BaseWeatherSystem>();
-            if (mode == "status") return Finish(original, Result(true, true, TestCmdResultCode.WeatherChanged, weather.Describe()), true);
-            var success = weather.TrySetMode(mode, out var message);
-            return Finish(original, Result(true, success, success ? TestCmdResultCode.WeatherChanged : TestCmdResultCode.StateRejected, message), true);
         }
 
         private TestCmdExecutionResult FinishUnsubmitted(TestCmdExecutionResult result)
@@ -292,16 +223,6 @@ namespace Game
                 : Finish(original, Warning(TestCmdResultCode.UsageError, "用法：log"), true);
         }
 
-        /// <summary>测试指令只提交进入意图；基地校验与附加场景句柄由造型库场景系统独占。</summary>
-        private async Task<TestCmdExecutionResult> ExecuteGalleryAsync(string original, CancellationToken cancellationToken)
-        {
-            var (success, message) = await this.GetSystem<AppearanceGallerySceneFlowSystem>()
-                .OpenAsync(cancellationToken);
-            return Finish(original, Result(true, success,
-                success ? TestCmdResultCode.AppearanceGalleryOpened : TestCmdResultCode.StateRejected,
-                message), true);
-        }
-
         private TestCmdExecutionResult ExecuteUnitHealthBars(string original, string[] parts)
         {
             if (parts.Length != 2 || !TryParseUnitHealthBarSwitch(parts[1], out var visible))
@@ -356,44 +277,6 @@ namespace Game
                     TestCmdResultCode.NetworkDiagnosticsChanged,
                     enabled ? "网络日志已开启" : "网络日志已关闭"),
                 true);
-        }
-
-        /// <summary>解析物品 ID 或名称及可选数量（默认 1）；输入无效时拒绝执行，发放仍委托正式背包事务。</summary>
-        private TestCmdExecutionResult ExecuteClone(string original, string[] parts)
-        {
-            if (parts.Length < 2 || parts.Length > 3)
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageCloneText), true);
-            }
-
-            if (!IsDecimalIntegerShape(parts[1]))
-            {
-                var queryAmount = 1;
-                if (parts.Length == 3 && (!TryParseStrictInt(parts[2], out queryAmount) || queryAmount <= 0))
-                {
-                    return Finish(original, Warning(TestCmdResultCode.InvalidAmount, InvalidAmountText), true);
-                }
-
-                return ExecuteCloneItemSearch(original, parts[1], queryAmount);
-            }
-
-            if (!TryParseStrictInt(parts[1], out var itemId) || itemId <= 0)
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageCloneText), true);
-            }
-
-            var amount = 1;
-            if (parts.Length == 3 && (!TryParseStrictInt(parts[2], out amount) || amount <= 0))
-            {
-                return Finish(original, Warning(TestCmdResultCode.InvalidAmount, InvalidAmountText), true);
-            }
-
-            if (!this.GetUtility<IRuntimeConfigProvider>().TryGetItem(itemId, out var item, out _))
-            {
-                return Finish(original, Warning(TestCmdResultCode.ItemNotFound, ItemNotFoundText(parts[1])), true);
-            }
-
-            return ExecuteCloneTransaction(original, item, amount);
         }
 
         private TestCmdExecutionResult ExecuteCameraMode(string original, string[] parts)
@@ -488,102 +371,6 @@ namespace Game
                 true);
         }
 
-        private TestCmdExecutionResult ExecuteCloneTransaction(string original, ItemDefinition item, int amount)
-        {
-            var itemId = item.Id;
-            var itemName = ResolveItemName(item, itemId);
-            var inventory = this.GetSystem<InventorySystem>();
-            if (!inventory.CanModifyPlayerBag(out var stateError, allowPaused: true))
-            {
-                return Finish(original, Warning(TestCmdResultCode.StateRejected, StateRejectedText(stateError)), true);
-            }
-
-            var snapshot = inventory.CapturePlayerBagSnapshot();
-            try
-            {
-                if (!inventory.TryPreviewAddPlayerBagItem(itemId, amount, out var accepted, out _))
-                {
-                    inventory.RestorePlayerBagSnapshot(snapshot);
-                    return Finish(original, Warning(TestCmdResultCode.BagFull, BagFullText), true);
-                }
-
-                if (accepted <= 0)
-                {
-                    inventory.RestorePlayerBagSnapshot(snapshot);
-                    return Finish(original, Warning(TestCmdResultCode.BagFull, BagFullText), true);
-                }
-
-                inventory.CommitPlayerBagChanged("test command clone");
-                var rejected = Math.Max(0, amount - accepted);
-                return Finish(
-                    original,
-                    Result(
-                        true,
-                        true,
-                        rejected == 0 ? TestCmdResultCode.CloneComplete : TestCmdResultCode.ClonePartial,
-                        rejected == 0
-                            ? CloneCompleteText(itemName, accepted)
-                            : ClonePartialText(itemName, accepted, rejected),
-                        accepted,
-                        rejected,
-                        affectedItemId: itemId),
-                    true);
-            }
-            catch (Exception e)
-            {
-                inventory.RestorePlayerBagSnapshot(snapshot);
-                Log.Error($"[TestCmdSystem] 克隆 失败: {e.GetType().Name}: {e.Message}");
-                return Finish(
-                    original,
-                    Result(true, false, TestCmdResultCode.ExecutionFailed, ExecutionFailedText),
-                    true,
-                    logAlreadyWritten: true);
-            }
-        }
-
-        private TestCmdExecutionResult ExecuteCloneItemSearch(string original, string query, int amount)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageCloneText), true);
-            }
-
-            if (!this.GetUtility<IRuntimeConfigProvider>().TryGetItems(out var items, out var error))
-            {
-                return Finish(original, Warning(TestCmdResultCode.ExecutionFailed, error), true);
-            }
-
-            var matches = items
-                .Select(item => new
-                {
-                    Item = item,
-                    Name = ResolveItemName(item, item.Id)
-                })
-                .Where(entry => ItemMatchesQuery(entry.Item, entry.Name, query))
-                .OrderBy(entry => entry.Item.Id)
-                .Take(20)
-                .ToArray();
-
-            if (matches.Length == 0)
-            {
-                return Finish(original, Warning(TestCmdResultCode.ItemNotFound, ItemSearchNotFoundText(query)), true);
-            }
-
-            if (matches.Length == 1)
-            {
-                return ExecuteCloneTransaction(original, matches[0].Item, amount);
-            }
-
-            return Finish(
-                original,
-                Result(
-                    true,
-                    true,
-                    TestCmdResultCode.CloneComplete,
-                    CloneSearchResultText(query, matches.Select(entry => $"{entry.Name}: {entry.Item.Id}"))),
-                true);
-        }
-
         private static bool IsDecimalIntegerShape(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -608,239 +395,6 @@ namespace Game
             return true;
         }
 
-        private TestCmdExecutionResult ExecuteClearBag(string original, string[] parts)
-        {
-            if (parts.Length != 2 || !string.Equals(parts[1], "bag", StringComparison.OrdinalIgnoreCase))
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageClearBagText), true);
-            }
-
-            var inventory = this.GetSystem<InventorySystem>();
-            if (!inventory.CanModifyPlayerBag(out var stateError, allowPaused: true))
-            {
-                return Finish(original, Warning(TestCmdResultCode.StateRejected, StateRejectedText(stateError)), true);
-            }
-
-            var snapshot = inventory.CapturePlayerBagSnapshot();
-            var affected = snapshot.Slots.Values.Sum(stack => stack.Amount);
-            try
-            {
-                inventory.ClearPlayerBag();
-                if (affected > 0)
-                {
-                    inventory.CommitPlayerBagChanged("test command clear bag");
-                }
-
-                return Finish(
-                    original,
-                    Result(true, true, TestCmdResultCode.ClearBagComplete, ClearBagCompleteText(affected), affected),
-                    true);
-            }
-            catch (Exception e)
-            {
-                inventory.RestorePlayerBagSnapshot(snapshot);
-                Log.Error($"[TestCmdSystem] 清空背包 失败: {e.GetType().Name}: {e.Message}");
-                return Finish(
-                    original,
-                    Result(true, false, TestCmdResultCode.ExecutionFailed, ExecutionFailedText),
-                    true,
-                    logAlreadyWritten: true);
-            }
-        }
-
-        private TestCmdExecutionResult ExecuteAdvanceTime(string original, string[] parts)
-        {
-            if (parts.Length != 3 || !string.Equals(parts[1], "time", StringComparison.OrdinalIgnoreCase))
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageAdvanceTimeText), true);
-            }
-
-            if (!int.TryParse(parts[2], out var gameMinutes) || gameMinutes <= 0)
-            {
-                return Finish(original, Warning(TestCmdResultCode.InvalidGameMinutes, InvalidGameMinutesText), true);
-            }
-
-            if (!this.GetSystem<PlayerConditionSystem>().TryAdvanceGameMinutes(
-                    gameMinutes,
-                    out var result,
-                    out var error))
-            {
-                return Finish(original, Warning(TestCmdResultCode.StateRejected, StateRejectedText(error)), true);
-            }
-
-            return Finish(
-                original,
-                Result(
-                    true,
-                    true,
-                    TestCmdResultCode.AdvanceTimeComplete,
-                    AdvanceTimeCompleteText(
-                        FormatFloat(result.AdvancedGameMinutes),
-                        FormatFloat(result.PowerDelta),
-                        FormatFloat(result.WaterDelta),
-                        result.PowerDepletionDamage,
-                        result.WaterDepletionDamage),
-                    Mathf.RoundToInt(result.AdvancedGameMinutes),
-                    result.PowerDepletionDamage + result.WaterDepletionDamage),
-                true);
-        }
-
-        private TestCmdExecutionResult ExecuteSetAttribute(string original, string[] parts)
-        {
-            if (parts.Length != 3)
-            {
-                return Finish(original, Warning(TestCmdResultCode.UsageError, UsageSetAttributeText), true);
-            }
-
-            var field = parts[1].ToLowerInvariant();
-            var attribute = this.GetSystem<PlayerAttributeSystem>();
-            PlayerAttributeChange change;
-            string error;
-            switch (field)
-            {
-                case "hp":
-                    if (!TryParseStrictInt(parts[2], out var hp))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (hp < 0 || hp > attribute.EffectiveMaxHP)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetHP(hp, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "power":
-                    if (!TryParseFiniteFloat(parts[2], out var power))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (power < 0f || power > PlayerConditionRules.MaxPower)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetPower(power, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "tili":
-                    if (!TryParseFiniteFloat(parts[2], out var tili))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (tili < 0f || tili > PlayerConditionRules.MaxTili)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetTili(tili, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "maxhp":
-                    if (!TryParseStrictInt(parts[2], out var maxHP))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (maxHP <= 0)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetMaxHP(maxHP, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "movespeed":
-                    if (!TryParseFiniteFloat(parts[2], out var moveSpeed))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (moveSpeed <= 0f)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetMoveSpeed(moveSpeed, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "water":
-                    if (!TryParseFiniteFloat(parts[2], out var water))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    var maxWater = this.GetModel<PlayerConditionModel>().MaxWater;
-                    if (water < 0f || water > maxWater)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetWater(water, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "maxwater":
-                    if (!TryParseFiniteFloat(parts[2], out var maxWaterValue))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (maxWaterValue <= 0f)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetMaxWater(maxWaterValue, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                case "temp":
-                    if (!TryParseFiniteFloat(parts[2], out var temperature))
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.InvalidAttributeValue, InvalidAttributeValueText), true);
-                    }
-
-                    if (temperature < PlayerConditionRules.MinTemperature ||
-                        temperature > PlayerConditionRules.MaxTemperature)
-                    {
-                        return Finish(original, Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText), true);
-                    }
-
-                    if (!attribute.TrySetTemperature(temperature, out change, out error))
-                    {
-                        return Finish(original, AttributeFailure(attribute.LastFailureKind, error), true);
-                    }
-
-                    return FinishAttributeSet(original, change);
-                default:
-                    return Finish(original, Warning(TestCmdResultCode.UnknownAttribute, UnknownAttributeText(field)), true);
-            }
-        }
-
         private TestCmdExecutionResult Finish(
             string original,
             TestCmdExecutionResult result,
@@ -858,19 +412,6 @@ namespace Game
         private static TestCmdExecutionResult Warning(TestCmdResultCode code, string message)
         {
             return Result(true, false, code, message);
-        }
-
-        private static TestCmdExecutionResult AttributeFailure(PlayerAttributeFailureKind failureKind, string error)
-        {
-            switch (failureKind)
-            {
-                case PlayerAttributeFailureKind.OutOfRange:
-                    return Warning(TestCmdResultCode.AttributeOutOfRange, AttributeOutOfRangeText);
-                case PlayerAttributeFailureKind.ExecutionFailed:
-                    return Result(true, false, TestCmdResultCode.ExecutionFailed, ExecutionFailedText);
-                default:
-                    return Warning(TestCmdResultCode.StateRejected, StateRejectedText(error));
-            }
         }
 
         private static TestCmdExecutionResult Result(
@@ -896,24 +437,6 @@ namespace Game
                 beforeValue,
                 afterValue,
                 affectedItemId: affectedItemId);
-        }
-
-        private TestCmdExecutionResult FinishAttributeSet(string original, PlayerAttributeChange change)
-        {
-            return Finish(
-                original,
-                Result(
-                    true,
-                    true,
-                    TestCmdResultCode.AttributeSetComplete,
-                    AttributeSetCompleteText(
-                        change.AttributeId,
-                        FormatDouble(change.Before),
-                        FormatDouble(change.After)),
-                    attributeId: change.AttributeId,
-                    beforeValue: change.Before,
-                    afterValue: change.After),
-                true);
         }
 
         private static void WriteResultLog(TestCmdExecutionResult result)
@@ -946,98 +469,9 @@ namespace Game
             }
         }
 
-        private static string FormatFloat(float value)
-        {
-            return value.ToString("0.###", CultureInfo.InvariantCulture);
-        }
-
-        private static string FormatDouble(double value)
-        {
-            return value.ToString("0.###", CultureInfo.InvariantCulture);
-        }
-
-        private static string ItemNotFoundText(object itemId)
-        {
-            return $"未找到物品：{itemId}";
-        }
-
         private static string StateRejectedText(object reason)
         {
             return $"当前状态不允许执行指令：{reason}";
-        }
-
-        private static string CloneCompleteText(object itemId, object accepted)
-        {
-            return $"获得{itemId}x{accepted}。";
-        }
-
-        private static string ClonePartialText(object itemId, object accepted, object rejected)
-        {
-            return $"获得{itemId}x{accepted}，未接收{rejected}。";
-        }
-
-        private static string ItemSearchNotFoundText(object query)
-        {
-            return $"未找到匹配道具：{query}";
-        }
-
-        private static string CloneSearchResultText(object query, System.Collections.Generic.IEnumerable<string> lines)
-        {
-            return $"通过模糊搜索“{query}”找到：\n{string.Join("\n", lines)}";
-        }
-
-        private static bool ItemMatchesQuery(ItemDefinition item, string localizedName, string query)
-        {
-            return Contains(localizedName, query) ||
-                   Contains(item.Name, query) ||
-                   Contains(item.NameKey, query) ||
-                   Contains(item.Desc, query) ||
-                   Contains(item.DescKey, query);
-        }
-
-        private static bool Contains(string value, string query)
-        {
-            return !string.IsNullOrWhiteSpace(value) &&
-                   value.IndexOf(query, StringComparison.OrdinalIgnoreCase) >= 0;
-        }
-
-        private static string ResolveItemName(ItemDefinition item, int fallbackItemId)
-        {
-            if (!string.IsNullOrWhiteSpace(item.NameKey))
-            {
-                var localized = Loc.T(item.NameKey);
-                if (!string.IsNullOrWhiteSpace(localized) && localized != item.NameKey)
-                {
-                    return localized;
-                }
-            }
-
-            if (!string.IsNullOrWhiteSpace(item.Name))
-            {
-                return item.Name;
-            }
-
-            return fallbackItemId.ToString(CultureInfo.InvariantCulture);
-        }
-
-        private static string ClearBagCompleteText(object affected)
-        {
-            return $"已清空玩家背包，移除 {affected} 个物品。";
-        }
-
-        private static string AdvanceTimeCompleteText(object minutes, object powerDelta, object waterDelta, object powerDamage, object waterDamage)
-        {
-            return $"已推进 {minutes} 游戏分钟；能量变化 {powerDelta}；水分变化 {waterDelta}；能量耗尽伤害 {powerDamage}；缺水伤害 {waterDamage}。";
-        }
-
-        private static string UnknownAttributeText(object attributeId)
-        {
-            return $"未知玩家属性：{attributeId}";
-        }
-
-        private static string AttributeSetCompleteText(object attributeId, object before, object after)
-        {
-            return $"已设置 {attributeId}：{before} -> {after}。";
         }
 
         private static bool TryParseStrictInt(string value, out int result)
@@ -1049,14 +483,6 @@ namespace Game
             }
 
             return int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out result);
-        }
-
-        private static bool TryParseFiniteFloat(string value, out float result)
-        {
-            result = 0f;
-            return float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out result) &&
-                   !float.IsNaN(result) &&
-                   !float.IsInfinity(result);
         }
 
         private static bool IsNetworkDiagnosticsCommand(string[] parts)

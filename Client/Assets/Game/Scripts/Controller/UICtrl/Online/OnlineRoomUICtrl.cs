@@ -21,13 +21,11 @@ namespace Game
         private OnlineRoomSnapshot latest = OnlineRoomSnapshot.Empty();
         private OnlinePublicRoomListSnapshot latestPublicRooms = OnlinePublicRoomListSnapshot.Empty();
         private OnlineRoomChatSnapshot latestChat = OnlineRoomChatSnapshot.Empty();
-        private OnlineWorldSnapshot latestWorld = OnlineWorldSnapshot.Empty();
         private readonly List<OnlineRoomChatMessageSnapshot> chatMessages = new List<OnlineRoomChatMessageSnapshot>();
         private long displayedChatRoomId;
         private bool chatListFilled;
         private bool publicRoomListFilled;
         private bool isVisible;
-        private bool worldSubmitInFlight;
         private bool transitPreparing;
         private long transitAttemptedRunId;
         private int transitAttemptedArena;
@@ -66,7 +64,7 @@ namespace Game
             UI.RefreshRoomListButton.onClick.AddListener(() => SubmitRefreshOrMatch().Forget());
             UI.LoadMoreButton.onClick.AddListener(() => LoadMorePublicRooms().Forget());
             UI.LeaveButton.onClick.AddListener(() => SubmitLeave().Forget());
-            UI.WorldButton.onClick.AddListener(SubmitWorld);
+            UI.WorldButton.onClick.AddListener(SubmitArcadeIntent);
             UI.CloseButton.onClick.AddListener(Hide);
             UI.MemberList.AddItemRefreshListener(RenderMember);
             UI.PublicRoomList.AddItemRefreshListener(RenderPublicRoom);
@@ -90,12 +88,6 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineRoomChatChangedEvent>(evt => RenderChat(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<OnlineWorldChangedEvent>(evt =>
-                {
-                    latestWorld = evt.Snapshot;
-                    RefreshWorldButton();
-                })
-                .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnArcadeRunChanged(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             UI.ChatInput.lineType = TMPro.TMP_InputField.LineType.SingleLine;
@@ -109,7 +101,6 @@ namespace Game
             arcadeMode = true;
             requestArcadeMode = false;
             latestPublicRooms = this.GetSystem<OnlineRoomSystem>().PublicRooms;
-            latestWorld = this.GetSystem<OnlineWorldSystem>()?.Snapshot ?? OnlineWorldSnapshot.Empty();
             lastNoticeOperationState = snapshot.OperationState;
             lastNoticeResultCode = snapshot.LastResultCode;
             Render(snapshot);
@@ -138,7 +129,6 @@ namespace Game
             chatMessages.Clear();
             latest = OnlineRoomSnapshot.Empty();
             latestChat = OnlineRoomChatSnapshot.Empty();
-            latestWorld = OnlineWorldSnapshot.Empty();
             displayedChatRoomId = 0;
             chatListFilled = false;
             publicRoomListFilled = false;
@@ -154,7 +144,6 @@ namespace Game
             operationGeneration++;
             chatGeneration++;
             chatSubmitInFlight = false;
-            worldSubmitInFlight = false;
         }
 
         /// <summary>等待街机资源期间绑定视图与账号会话，过期操作不能替新账号创建或加入房间。</summary>
@@ -272,29 +261,12 @@ namespace Game
             }
         }
 
-        private void SubmitWorld()
-        {
-            if (arcadeMode)
-            {
-                SubmitArcade().Forget();
-                return;
-            }
-            OnlineRoomUI owner = UI;
-            if (owner == null || !CanEnterWorld())
-            {
-                RefreshWorldButton();
-                return;
-            }
-
-            if (!MapSelectionUICtrl.TryShowOnline(out string error))
-            {
-                Notify.ShowFloatTips(error);
-            }
-        }
+        /// <summary>房间按钮只提交双人街机开局或继续意图。</summary>
+        private void SubmitArcadeIntent() => SubmitArcade().Forget();
 
         private async UniTaskVoid SubmitArcade()
         {
-            if (!CanUseArcadeButton()) { RefreshWorldButton(); return; }
+            if (!CanUseArcadeButton()) { RefreshArcadeButton(); return; }
             OnlineArcadeRunSystem system = this.GetSystem<OnlineArcadeRunSystem>();
             if (!system.Snapshot.HasRun)
             {
@@ -318,7 +290,7 @@ namespace Game
         private void OnArcadeRunChanged(OnlineArcadeRunClientSnapshot snapshot)
         {
             if (!arcadeMode || !IsShow()) return;
-            RefreshWorldButton();
+            RefreshArcadeButton();
             if (snapshot.HasRun) OpenArcadeSnapshot(snapshot);
         }
 
@@ -347,7 +319,7 @@ namespace Game
                 this.GetSystem<OnlineArcadeRunSystem>().Snapshot.RunId == snapshot.RunId &&
                 this.GetSystem<OnlineArcadeRunSystem>().Snapshot.NextArena == snapshot.NextArena &&
                 this.GetSystem<OnlineArcadeRunSystem>().Snapshot.Phase == OnlineArcadeRunPhase.SafeShop;
-            RefreshWorldButton();
+            RefreshArcadeButton();
             try
             {
                 if (!await PrepareArcadeResources(generation) || !Current()) return;
@@ -359,7 +331,7 @@ namespace Game
                 if (!result.Success && Current()) Notify.ShowFloatTips(ArcadeUiFormatter.OnlineResult(result.Code));
             }
             catch (System.Exception e) { if (Current()) Notify.ShowFloatTips(e.Message); }
-            finally { if (generation == operationGeneration && ReferenceEquals(owner,BaseUI)) {transitPreparing=false;RefreshWorldButton();} }
+            finally { if (generation == operationGeneration && ReferenceEquals(owner,BaseUI)) {transitPreparing=false;RefreshArcadeButton();} }
         }
 
         private bool TryGetArcadeIdentity(out string version, out string fingerprint)
@@ -851,7 +823,7 @@ namespace Game
 
             UI.LeaveButton.interactable = latest.OperationState == OnlineRoomOperationState.Idle;
             RefreshInteractionState();
-            RefreshWorldButton();
+            RefreshArcadeButton();
             UI.CloseButton.interactable = true;
         }
 
@@ -887,19 +859,10 @@ namespace Game
                    room.MemberCount < room.Capacity;
         }
 
-        private bool CanEnterWorld()
+        /// <summary>从街机权威快照更新正式房间按钮。</summary>
+        private void RefreshArcadeButton()
         {
-            return !worldSubmitInFlight && latest.HasRoom && !latest.ConnectionLost &&
-                   latest.OperationState == OnlineRoomOperationState.Idle &&
-                   latestWorld.OperationState == OnlineWorldOperationState.Idle && !latestWorld.HasWorld;
-        }
-
-        private void RefreshWorldButton()
-        {
-            if (UI?.WorldButton != null)
-            {
-                UI.WorldButton.interactable = arcadeMode ? CanUseArcadeButton() : CanEnterWorld();
-            }
+            if (UI?.WorldButton != null) UI.WorldButton.interactable = CanUseArcadeButton();
         }
 
         private bool CanUseArcadeButton()

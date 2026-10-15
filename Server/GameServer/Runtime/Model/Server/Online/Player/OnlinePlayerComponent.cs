@@ -9,13 +9,6 @@ namespace ET.Server
         Offlining = 3,
     }
 
-    public enum OnlineWorldLeavePhase
-    {
-        None = 0,
-        Aborting = 1,
-        Committing = 2,
-    }
-
     [EnableClass]
     public sealed class OnlineRoomOperationRecord
     {
@@ -41,8 +34,6 @@ namespace ET.Server
         public long PlayerId;
         public string DisplayName;
         public long Revision;
-        public bool HasReceivedOnlineStarterSupplies;
-        public OnlineInventoryRecord OnlineInventory;
         public OnlinePlayerState State;
         public ActorId GateProxyActorId;
         public long SessionEpoch;
@@ -51,19 +42,6 @@ namespace ET.Server
         public long CurrentRoomId;
         /// <summary>当前联机街机运行局身份；0 表示尚未恢复或没有未结束对局。</summary>
         public long CurrentArcadeRunId;
-        public long CurrentWorldId;
-        public string CurrentWorldMapId;
-        public long CurrentWorldUnitId;
-        public bool PendingOfflineWorldLeave;
-        public string PendingWorldLeaveOperationId;
-        public OnlineWorldLeavePhase PendingWorldLeavePhase;
-        public OnlinePlayerState PendingWorldLeaveResumeState;
-        public bool PendingWorldLeaveContinueOffline;
-        public int PendingWorldLeaveFailureError;
-        public long WorldLeaveGeneration;
-        public bool OfflineWorldAsCorpse;
-        public bool ProfileAlreadySavedForOffline;
-        public string PendingProfileSaveOperationId;
         public bool PendingRoomSync;
         public int PendingRoomConnectionState;
         public long PendingRoomSyncEpoch;

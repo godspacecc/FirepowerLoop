@@ -64,7 +64,7 @@ namespace Game.Tests
             Game.Interface.SendEvent(new LanguageChangedEvent("zh-CN", "en-US"));
             Assert.That(text.text, Is.EqualTo("Leave Arcade"));
             ctrl.Hide();
-            map.SetLoaded(MapIds.Base, null);
+            map.SetLoaded(MapIds.Arcade, null);
             ctrl.Show();
             Assert.That(text.text, Is.EqualTo("Online Game"));
         }
@@ -121,7 +121,7 @@ namespace Game.Tests
         public void PauseLayout_ShrinksForArcadeAndRestoresForBaseWithoutButtonGaps()
         {
             var map = Game.Interface.GetModel<MapSceneModel>();
-            map.SetLoaded(MapIds.Base, null);
+            map.SetLoaded(MapIds.Arcade, null);
             var ctrl = UIHelper.ShowUI<PauseUICtrl>();
             var view = GetBaseUI<PauseUI>(ctrl);
             var panel = (RectTransform)view.transform.Find("ContentRoot/Panel");
@@ -151,47 +151,10 @@ namespace Game.Tests
             view.BtnSetting.gameObject.SetActive(true);
 
             ctrl.Hide();
-            map.SetLoaded(MapIds.Base, null);
+            map.SetLoaded(MapIds.Arcade, null);
             ctrl.Show();
             Assert.That(panel.rect.height, Is.EqualTo(baseHeight).Within(0.1f));
             Assert.That(group.rect.height, Is.EqualTo(baseGroupHeight).Within(0.1f));
-        }
-
-        [TestCase(MapIds.SurvivalSample)]
-        [TestCase(MapIds.MissionSample)]
-        [TestCase(MapIds.CivilisationValley)]
-        [TestCase(MapIds.HeJiaVillage)]
-        public void ExpeditionPause_OffersReturnCampAndConfirmsLossWithoutMutatingState(string mapId)
-        {
-            var map = Game.Interface.GetModel<MapSceneModel>();
-            map.SetLoaded(mapId, null);
-            var expedition = Game.Interface.GetModel<ExpeditionModel>();
-            expedition.BeginTask(mapId, 2);
-            expedition.SetExpeditionId("abcdef0123456789abcdef0123456789");
-            var ctrl = UIHelper.ShowUI<PauseUICtrl>();
-            var view = GetBaseUI<PauseUI>(ctrl);
-            var field = typeof(PauseUI).GetField("BtnReturnCamp");
-            Assert.That(field, Is.Not.Null);
-            var button = (Button)field.GetValue(view);
-            Assert.That(button, Is.Not.Null);
-            Assert.That(button.gameObject.activeSelf, Is.True);
-            button.onClick.Invoke();
-            var message = UIHelper.GetUICtrl<MessageUICtrl>();
-            Assert.That(message.IsShow(), Is.True);
-            var config = (MessageConfig)typeof(MessageUICtrl).GetField("currentConfig", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(message);
-            Assert.That(config.Content, Does.Contain("丢失"));
-            Assert.That(config.Buttons.Any(b => b.Role == MessageButtonRole.Cancel), Is.True);
-            Assert.That(expedition.Status, Is.EqualTo(ExpeditionStatus.Playing), "确认前不得结算或标记失败");
-            Assert.That(map.CurrentMapId, Is.EqualTo(mapId));
-            var messageView = GetBaseUI<MessageUI>(message);
-            messageView.GetComponentsInChildren<MessageButtonBoxUI>().Single(b => b.ButtonText.text == Texts.CommonCancel).BtnButton.onClick.Invoke();
-            Assert.That(message.IsShow(), Is.False);
-            Assert.That(ctrl.IsShow(), Is.True);
-            Assert.That(expedition.Status, Is.EqualTo(ExpeditionStatus.Playing));
-            expedition.Clear();
-            config.Buttons.Single(b => b.Role == MessageButtonRole.Confirm).OnClick();
-            Assert.That(expedition.Status, Is.EqualTo(ExpeditionStatus.None));
-            Assert.That(map.CurrentMapId, Is.EqualTo(mapId));
         }
 
         private static float ButtonBottomMargin(RectTransform panel, Button button)
@@ -250,7 +213,7 @@ namespace Game.Tests
             // 即使通过非交互调用触发禁用按钮，缺少完整世界也不能恢复。
             view.BtnContinue.onClick.Invoke();
             Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-            Game.Interface.SendEvent(new MapLoadingStartedEvent(MapIds.Base));
+            Game.Interface.SendEvent(new MapLoadingStartedEvent(MapIds.Arcade));
             Assert.That(ctrl.IsShow(), Is.False);
         }
 
@@ -300,11 +263,6 @@ namespace Game.Tests
             {
                 () => RegisterShown(new RuntimeLogUICtrl(), CreateBaseUI<RuntimeLogUI>("RuntimeLog")),
                 () => RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd")),
-                () => RegisterShown(new BagUICtrl(), CreateBagUI()),
-                () => RegisterShown(new WarehouseUICtrl(), CreateBaseUI<WarehouseUI>("Warehouse")),
-                () => RegisterShown(new SearchContainerUICtrl(), CreateBaseUI<SearchContainerUI>("SearchContainer")),
-                () => RegisterShown(new CraftUICtrl(), CreateCraftUI()),
-                () => RegisterShown(new ShopUICtrl(), CreateShopUI())
             };
 
             foreach (var create in cases)
@@ -318,24 +276,9 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EscapeClosesIndependentInventoryWindowsInDisplayOrder()
-        {
-            var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
-            var warehouse = RegisterShown(new WarehouseUICtrl(), CreateBaseUI<WarehouseUI>("Warehouse"));
-            var bag = RegisterShown(new BagUICtrl(), CreateBagUI());
-
-            Assert.IsTrue(hotKeys.ExecuteBinding(HotKeyDefaults.Escape));
-            Assert.IsFalse(bag.IsShow());
-            Assert.IsTrue(warehouse.IsShow());
-
-            Assert.IsTrue(hotKeys.ExecuteBinding(HotKeyDefaults.Escape));
-            Assert.IsFalse(warehouse.IsShow());
-        }
-
-        [Test]
         public void EscapeClosesOnlyTopmostWhitelistedController()
         {
-            var save = RegisterShown(new WarehouseUICtrl(), CreateBaseUI<WarehouseUI>("Warehouse"));
+            var save = RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd"));
             var log = RegisterShown(new RuntimeLogUICtrl(), CreateBaseUI<RuntimeLogUI>("RuntimeLog"));
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
@@ -351,7 +294,7 @@ namespace Game.Tests
         public void NonWhitelistedBlockingUiShieldsUnderlyingWindowAndPause()
         {
             EnterPlaying();
-            var save = RegisterShown(new WarehouseUICtrl(), CreateBaseUI<WarehouseUI>("Warehouse"));
+            var save = RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd"));
             var sameLayerShield = RegisterShown(new ShieldDialogUICtrl(), CreateBaseUI("ShieldDialog"));
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
@@ -371,7 +314,7 @@ namespace Game.Tests
         [Test]
         public void NonBlockingUiDoesNotShieldWhitelistedWindow()
         {
-            var save = RegisterShown(new WarehouseUICtrl(), CreateBaseUI<WarehouseUI>("Warehouse"));
+            var save = RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd"));
             var hud = RegisterShown(new NonBlockingTopUICtrl(), CreateBaseUI("Hud"));
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
@@ -386,7 +329,7 @@ namespace Game.Tests
             EnterPlaying();
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
-            Assert.IsTrue(hotKeys.BeginRebind(HotKeyActionIds.ToggleInventory).Success);
+            Assert.IsTrue(hotKeys.BeginRebind("inventory.toggle").Success);
             var result = hotKeys.ReceiveBindingPath(HotKeyDefaults.Escape);
 
             Assert.IsFalse(result.Success);
@@ -403,8 +346,8 @@ namespace Game.Tests
             Assert.That(bindings.Count(item => item.BindingPath == HotKeyDefaults.Escape), Is.EqualTo(1));
             Assert.That(bindings.Single(item => item.BindingPath == HotKeyDefaults.Escape).ActionId,
                 Is.EqualTo(HotKeyActionIds.TogglePause));
-            Assert.That(bindings.Single(item => item.BindingPath == HotKeyDefaults.Tab).ActionId,
-                Is.EqualTo(HotKeyActionIds.ToggleInventory));
+            Assert.That(bindings.Single(item => item.BindingPath == "<Keyboard>/tab").ActionId,
+                Is.EqualTo("inventory.toggle"));
             Assert.That(bindings.Single(item => item.BindingPath == HotKeyDefaults.F1).ActionId,
                 Is.EqualTo(HotKeyActionIds.ToggleRuntimeLog));
             Assert.That(bindings.Any(item => item.BindingPath == "<Keyboard>/c"), Is.False);
@@ -589,14 +532,8 @@ namespace Game.Tests
             architecture.RegisterModel(new HotKeyModel());
             architecture.RegisterModel(new AppStateModel());
             architecture.RegisterModel(new RuntimeLogModel());
-            architecture.RegisterModel(new ExpeditionModel());
-            architecture.RegisterModel(new PlayerBagModel());
-            architecture.RegisterModel(new WarehouseModel());
-            architecture.RegisterModel(new CombatModel());
-            architecture.RegisterModel(new SaveModel());
             architecture.RegisterModel(new MapSceneModel());
             architecture.RegisterModel(new ResourceUpdateModel());
-            architecture.RegisterSystem(new ExpeditionFlowSystem());
 
             architecture.RegisterUtility(new LocalizationUtility(loadConfiguredTables: false));
             architecture.RegisterUtility(new HotKeyActionRegistry());
@@ -605,10 +542,8 @@ namespace Game.Tests
             architecture.RegisterSystem(new AppStateSystem());
             architecture.RegisterSystem(new MobileInputSystem());
             architecture.RegisterSystem(new HotKeySystem());
-            architecture.RegisterSystem(new SaveSystem());
-            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null, null, null));
+            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null));
             architecture.RegisterSystem(new ResourceUpdateSystem());
-            architecture.RegisterSystem(new ExpeditionSystem());
         }
 
         private static T GetBaseUI<T>(BaseUICtrl ctrl) where T : BaseUI

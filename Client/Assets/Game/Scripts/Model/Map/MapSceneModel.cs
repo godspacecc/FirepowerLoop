@@ -1,4 +1,4 @@
-﻿using QFramework;
+using QFramework;
 
 namespace Game
 {
@@ -22,13 +22,13 @@ namespace Game
         public BindableProperty<MapLoadStatus> Status { get; } = new BindableProperty<MapLoadStatus>(MapLoadStatus.Idle);
         public string CurrentMapId { get; private set; }
         public IMapContentHandle CurrentHandle { get; private set; }
-        public MapPreparationMode CurrentMode { get; private set; } = MapPreparationMode.OfflineFull;
+        public MapPreparationMode CurrentMode { get; private set; } = MapPreparationMode.ArcadePlayerOnly;
 
         protected override void OnInit()
         {
         }
 
-        public void SetLoaded(string mapId, IMapContentHandle handle, MapPreparationMode mode = MapPreparationMode.OfflineFull)
+        public void SetLoaded(string mapId, IMapContentHandle handle, MapPreparationMode mode = MapPreparationMode.ArcadePlayerOnly)
         {
             CurrentMapId = mapId;
             CurrentHandle = handle;
@@ -40,7 +40,7 @@ namespace Game
         {
             CurrentMapId = null;
             CurrentHandle = null;
-            CurrentMode = MapPreparationMode.OfflineFull;
+            CurrentMode = MapPreparationMode.ArcadePlayerOnly;
             Status.Value = status;
         }
 

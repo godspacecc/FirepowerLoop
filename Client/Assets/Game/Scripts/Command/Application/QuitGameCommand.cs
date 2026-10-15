@@ -17,7 +17,7 @@ namespace Game
 
         protected override void OnExecute()
         {
-            this.GetSystem<ExpeditionSystem>().FailCurrentExpedition();
+
 
             if (quitHandlerForTests != null)
             {

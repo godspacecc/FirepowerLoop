@@ -57,14 +57,13 @@ namespace Game.Tests
             UIHelper.ResetForTests();
             ResourceLoader.SetLoaderForTests(new LocalizationTestLoader());
             poolRoot = new GameObject(SceneRoot.PoolRootName);
-            testCamera = new GameObject("OnlineLoginWorldTestCamera", typeof(Camera), typeof(AudioListener));
+            testCamera = new GameObject("OnlineLoginTestCamera", typeof(Camera), typeof(AudioListener));
             testCamera.tag = "MainCamera";
             CreateUiRoot();
             UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
             harness = CreateHarness();
-            saveRoot = Path.Combine(Path.GetTempPath(), "AnotherDayWorldUi", Guid.NewGuid().ToString("N"));
+            saveRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopLoginUi", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(saveRoot);
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(saveRoot);
         }
 
         [TearDown]
@@ -195,294 +194,6 @@ namespace Game.Tests
             Assert.That(EditModeSceneIsolation.FindObjectsInActiveTestScene<OnlineRoomUI>(), Is.Not.Empty);
         }
 
-        [UnityTest]
-        public IEnumerator OnlineWorldButtonFromLoadedBaseWithoutRoomEntersAndLeaveRestoresBase()
-        {
-            var ui = ShowLoginUi();
-            var login = harness.Account.LoginAsync("world_ui_user", "Pass_123");
-            yield return WaitUntil("login request", () => harness.Network.PendingCount<C2G_Login>() == 1);
-            harness.Network.CompleteNextLoginSuccess();
-            yield return WaitUntil("login completion", () => login.IsCompleted);
-            yield return WaitUntil("automatic world restore", () => harness.Network.PendingCount<C2G_GetCurrentWorld>() == 1);
-            harness.Network.CompleteNextCurrentWorldEmpty();
-            yield return WaitUntil("world button ready after restore", () => ui.WorldButton.interactable);
-            // 使用正式创建入口建立增量存档清单，保证随后 Flush 有可追加的磁盘基准。
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().CreateBase(out var baseData, out var createError), Is.True, createError);
-            Game.Interface.GetModel<SaveModel>().SetBase(baseData, true);
-            Game.Interface.GetSystem<SaveSystem>().MarkDirty("world UI base entry test");
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(
-                MapIds.Base,
-                TemporaryBuildingBehaviorTestSupport.CreateMapHandle(MapIds.Base, 700),
-                MapPreparationMode.OfflineFull);
-
-            Assert.That(ui.WorldButton.interactable, Is.True);
-            Assert.That(RuntimeListenerDescription(ui.WorldButton.onClick), Does.Contain(nameof(OnlineLoginUICtrl)));
-            ui.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero, "opening selector must not enter");
-            ClickOnlineMapRow();
-            yield return WaitUntil("enter world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-            Assert.That(harness.Network.PendingEnterMapId, Is.EqualTo(MapIds.SurvivalSample));
-
-            OnlineWorldSystem system = Game.Interface.GetSystem<OnlineWorldSystem>();
-            ET.OnlineWorldSnapshot world = CreateWorldSnapshot(77);
-            harness.Network.CompleteNextEnterWorld(world);
-            yield return WaitUntil("final world convergence", () => harness.Network.PendingCount<C2G_GetCurrentWorld>() == 1);
-            harness.Network.CompleteNextCurrentWorld(world);
-            yield return WaitUntil("world established", () => system.Snapshot.HasWorld && system.Snapshot.OperationState == OnlineWorldOperationState.Idle);
-            Assert.That(system.Snapshot.SelfUnitId, Is.EqualTo(77));
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentHandle, Is.Not.Null);
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>().IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-
-            OnlineLoginUI reopened = ShowLoginUi();
-            yield return WaitUntil("world leave button ready", () => reopened.WorldButton.interactable);
-            reopened.WorldButton.onClick.Invoke();
-            yield return WaitUntil("leave world request", () => harness.Network.PendingCount<C2G_LeaveWorld>() == 1);
-            harness.Network.CompleteNextLeaveWorld(0);
-            yield return WaitUntil("world leave completion", () => !system.Snapshot.HasWorld);
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentHandle, Is.Not.Null);
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Base));
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMode, Is.EqualTo(MapPreparationMode.OfflineFull));
-            Assert.That(reopened.WorldButton.interactable, Is.True);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomWorldButtonUsesRealEntryFlowAndClosesMenusOnSuccess()
-        {
-            OnlineLoginUI loginUi = ShowLoginUi();
-            Task<OnlineAccountOperationResult> login = harness.Account.LoginAsync("room_world_user", "Pass_123");
-            yield return WaitUntil("room world login request", () => harness.Network.PendingCount<C2G_Login>() == 1);
-            harness.Network.CompleteNextLoginSuccess();
-            yield return WaitUntil("room world login completion", () => login.IsCompleted);
-            yield return WaitUntil("room world automatic restore", () => harness.Network.PendingCount<C2G_GetCurrentWorld>() == 1);
-            harness.Network.CompleteNextCurrentWorldEmpty();
-            yield return WaitUntil("room world restore completion", () => Game.Interface.GetSystem<OnlineWorldSystem>().Snapshot.OperationState == OnlineWorldOperationState.Idle);
-
-            loginUi.RoomButton.onClick.Invoke();
-            OnlineRoomUI roomUi = ShowRoomUi();
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(JoinedRoomSnapshot());
-            Assert.That(roomUi.WorldButton.interactable, Is.True);
-            Assert.That(RuntimeListenerDescription(roomUi.WorldButton.onClick), Does.Contain(nameof(OnlineRoomUICtrl)));
-
-            roomUi.WorldButton.onClick.Invoke();
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero, "room entry only opens selector");
-            ClickOnlineMapRow();
-            ClickOnlineMapRow(expectIdle: false);
-            yield return WaitUntil("room enter request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.EqualTo(1));
-            ET.OnlineWorldSnapshot world = CreateWorldSnapshot(177);
-            harness.Network.CompleteNextEnterWorld(world);
-            yield return WaitUntil("room final convergence", () => harness.Network.PendingCount<C2G_GetCurrentWorld>() == 1);
-            harness.Network.CompleteNextCurrentWorld(world);
-            yield return WaitUntil("room world established", () => Game.Interface.GetSystem<OnlineWorldSystem>().Snapshot.HasWorld);
-
-            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>().IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>().IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow() ?? false, Is.False);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineWorldButtonBaseSaveFailureKeepsBaseAndShowsSpecificPrompt()
-        {
-            yield return LoginAndRestoreEmpty("base_save_fail");
-            OnlineLoginUI loginUi = ShowLoginUi();
-            IMapContentHandle baseHandle = TemporaryBuildingBehaviorTestSupport.CreateMapHandle(MapIds.Base, 702);
-            Game.Interface.GetModel<SaveModel>().SetBase(new BaseSaveData(), true);
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, baseHandle, MapPreparationMode.OfflineFull);
-            SaveSystem save = Game.Interface.GetSystem<SaveSystem>();
-            save.MarkDirty("world UI save failure");
-            save.FailNextOfflineStorageCleanupForTests();
-
-            loginUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            yield return WaitUntil("base save failure prompt", () =>
-                VisibleTipTexts().Contains(OnlineWorldText.Result(OnlineWorldResultCode.BaseSaveFailed)));
-
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero);
-            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentHandle, Is.SameAs(baseHandle));
-            Assert.That(baseHandle.IsValid, Is.True);
-            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>().IsShow(), Is.True);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomWorldButtonRejectsDuplicateAndKeepsRoomOnFailure()
-        {
-            yield return LoginAndRestoreEmpty("room_fail");
-            OnlineRoomUI roomUi = OpenJoinedRoom();
-
-            roomUi.WorldButton.onClick.Invoke();
-            roomUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            ClickOnlineMapRow(expectIdle: false);
-            yield return WaitUntil("single room world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-            Assert.That(harness.Network.TotalEnterRequests, Is.EqualTo(1));
-            harness.Network.CompleteNextEnterWorldError(200123);
-            yield return WaitUntil("room failure prompt", () =>
-                VisibleTipTexts().Contains(OnlineWorldText.Result(OnlineWorldResultCode.ServiceUnavailable)));
-
-            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>().IsShow(), Is.True);
-            Assert.That(roomUi.WorldButton.interactable, Is.True);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-            Assert.That(harness.Network.TotalEnterRequests, Is.EqualTo(1));
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomWorldButtonStateMatrixBlocksUnavailableRoomStates()
-        {
-            yield return LoginAndRestoreEmpty("room_matrix");
-            OnlineRoomUI roomUi = OpenJoinedRoom();
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(JoinedRoomSnapshot(connectionLost: true));
-            Assert.That(roomUi.WorldButton.interactable, Is.False);
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(JoinedRoomSnapshot(operation: OnlineRoomOperationState.Joining));
-            Assert.That(roomUi.WorldButton.interactable, Is.False);
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(JoinedRoomSnapshot());
-            Game.Interface.GetModel<OnlineWorldModel>().Publish(
-                OnlineWorldSnapshot.Empty().WithOperation(OnlineWorldOperationState.Entering, OnlineWorldResultCode.None));
-            Assert.That(roomUi.WorldButton.interactable, Is.False);
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero);
-
-            Game.Interface.GetModel<OnlineWorldModel>().Publish(new OnlineWorldSnapshot(
-                true, 1, "map.another-day.survival-sample", 77, 1,
-                Array.Empty<OnlineWorldPlayerSnapshot>(), false,
-                OnlineWorldOperationState.Idle, OnlineWorldResultCode.Success));
-            Assert.That(roomUi.WorldButton.interactable, Is.False);
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.PendingCount<C2G_EnterWorld>(), Is.Zero);
-
-            Game.Interface.GetModel<OnlineWorldModel>().Publish(OnlineWorldSnapshot.Empty());
-            Assert.That(roomUi.WorldButton.interactable, Is.True);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomWorldButtonLeavePushSwitchesToEmptyWithoutDuplicate()
-        {
-            yield return LoginAndRestoreEmpty("room_leave");
-            OnlineRoomUI roomUi = OpenJoinedRoom();
-            roomUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            yield return WaitUntil("room leave push pending world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(OnlineRoomSnapshot.Empty());
-            Assert.That(roomUi.EmptyRoot.activeSelf, Is.True);
-            Assert.That(roomUi.JoinedRoot.activeSelf, Is.False);
-            Assert.That(roomUi.WorldButton.interactable, Is.False);
-            roomUi.WorldButton.onClick.Invoke();
-            Assert.That(harness.Network.TotalEnterRequests, Is.EqualTo(1));
-
-            harness.Network.CompleteNextEnterWorldError(200123);
-            yield return WaitUntil("leave push request completed", () => harness.Network.PendingCount<C2G_EnterWorld>() == 0);
-            Assert.That(roomUi.EmptyRoot.activeSelf, Is.True);
-            Assert.That(harness.Network.TotalEnterRequests, Is.EqualTo(1));
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomHideKeepsVisibleSelectorAsFailureOwner()
-        {
-            yield return LoginAndRestoreEmpty("room_hide");
-            OnlineRoomUI roomUi = OpenJoinedRoom();
-            roomUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            yield return WaitUntil("hidden room pending world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-            UIHelper.HideUI<OnlineRoomUICtrl>();
-            string[] tipsBefore = VisibleTipTexts();
-
-            harness.Network.CompleteNextEnterWorldError(200123);
-            yield return WaitUntil("hidden room request completed", () => harness.Network.PendingCount<C2G_EnterWorld>() == 0);
-            yield return null;
-
-            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>().IsShow(), Is.False);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-            Assert.That(UIHelper.GetUICtrl<MapSelectionUICtrl>().IsShow(), Is.True);
-            Assert.That(VisibleTipTexts(), Does.Contain(OnlineWorldText.Result(OnlineWorldResultCode.ServiceUnavailable)));
-            Assert.That(VisibleTipTexts().Length, Is.EqualTo(tipsBefore.Length + 1));
-        }
-
-        [UnityTest]
-        public IEnumerator DestroyedRoomReplacementStaysUntouchedWhileSelectorOwnsException()
-        {
-            yield return LoginAndRestoreEmpty("room_reload");
-            OnlineRoomUI oldUi = OpenJoinedRoom();
-            oldUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            yield return WaitUntil("destroyed room pending world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-            Object.DestroyImmediate(oldUi.gameObject);
-
-            OnlineRoomUI replacement = ShowRoomUi();
-            Assert.That(replacement, Is.Not.SameAs(oldUi));
-            OnlineRoomSnapshot replacementSnapshot = JoinedRoomSnapshot(connectionLost: true);
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(replacementSnapshot);
-            Assert.That(replacement.gameObject.activeInHierarchy, Is.True);
-            Assert.That(replacement.DisconnectHintRoot.activeSelf, Is.True);
-            Assert.That(replacement.WorldButton.interactable, Is.False);
-            string[] tipsBefore = VisibleTipTexts();
-
-            harness.Network.FailNext<C2G_EnterWorld>(new InvalidOperationException("injected replacement exception"));
-            yield return WaitUntil("destroyed room request completed", () => harness.Network.PendingCount<C2G_EnterWorld>() == 0);
-            // RPC 出队不代表 await 后的界面刷新已完成，等待实际可见结果再检查替换界面。
-            yield return WaitUntil("destroyed room exception prompt", () =>
-                VisibleTipTexts().Contains(OnlineWorldText.Result(OnlineWorldResultCode.UnknownFailure)));
-
-            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>().IsShow(), Is.True);
-            Assert.That(replacement.gameObject.activeInHierarchy, Is.True);
-            Assert.That(replacement.DisconnectHintRoot.activeSelf, Is.True);
-            Assert.That(replacement.WorldButton.interactable, Is.False);
-            Assert.That(VisibleTipTexts(), Does.Contain(OnlineWorldText.Result(OnlineWorldResultCode.UnknownFailure)));
-            Assert.That(VisibleTipTexts().Length, Is.EqualTo(tipsBefore.Length + 1));
-            Assert.That(harness.Network.TotalEnterRequests, Is.EqualTo(1));
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-        }
-
-        [UnityTest]
-        public IEnumerator OnlineRoomWorldButtonVisibleNetworkExceptionKeepsRoomAndClosesLoading()
-        {
-            yield return LoginAndRestoreEmpty("room_except");
-            OnlineRoomUI roomUi = OpenJoinedRoom();
-            roomUi.WorldButton.onClick.Invoke();
-            ClickOnlineMapRow();
-            yield return WaitUntil("visible room pending world request", () => harness.Network.PendingCount<C2G_EnterWorld>() == 1);
-
-            harness.Network.FailNext<C2G_EnterWorld>(new InvalidOperationException("injected visible exception"));
-            yield return WaitUntil("visible exception prompt", () =>
-                VisibleTipTexts().Contains(OnlineWorldText.Result(OnlineWorldResultCode.UnknownFailure)));
-
-            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>().IsShow(), Is.True);
-            Assert.That(roomUi.WorldButton.interactable, Is.True);
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false, Is.False);
-        }
-
-        private static ET.OnlineWorldSnapshot CreateWorldSnapshot(long selfUnitId)
-        {
-            var player = WorldPlayerInfo.Create();
-            player.PlayerId = 23;
-            player.UnitId = selfUnitId;
-            player.DisplayName = "world_ui_user";
-            player.WorldId = 1;
-            player.MapId = "map.another-day.survival-sample";
-            player.PlayerConfigId = "player.graybox.default";
-            player.PositionY = 0.1f;
-            player.PositionZ = -14f;
-            player.ConnectionState = 1;
-            player.StateRevision = 1;
-            var snapshot = ET.OnlineWorldSnapshot.Create();
-            snapshot.WorldId = 1;
-            snapshot.MapId = player.MapId;
-            snapshot.SelfUnitId = selfUnitId;
-            snapshot.WorldRevision = 1;
-            snapshot.Players.Add(player);
-            return snapshot;
-        }
-
         [Test]
         public void CloseButton_UsesRootPanelTopRightAndDoesNotOverlapTitleOrAuthenticatedActions()
         {
@@ -546,45 +257,6 @@ namespace Game.Tests
                 ?.GetValue(ctrl) as OnlineRoomUI;
             Assert.That(ui, Is.Not.Null);
             return ui;
-        }
-
-        private static void ClickOnlineMapRow(int index = 0, bool expectIdle = true)
-        {
-            MapSelectionUICtrl ctrl = UIHelper.GetUICtrl<MapSelectionUICtrl>();
-            Assert.That(ctrl, Is.Not.Null, "online map selector was not created");
-            Assert.That(ctrl.IsShow(), Is.True, "online map selector was not shown");
-            MapSelectionUI ui = EditModeSceneIsolation.FindObjectsInActiveTestScene<MapSelectionUI>().Single();
-            var rows = ui.MapList.GetDraggableItems();
-            // 地图目录会随内容扩充，联机入口应展示完整目录，不固定旧版三张地图。
-            Assert.That(rows, Has.Count.EqualTo(MapCatalog.GetExpeditionMaps().Count));
-            MapSelectionOptionBoxUI row = rows[index].GetComponent<MapSelectionOptionBoxUI>();
-            Assert.That(row.TextState.text, Is.Empty, "online rows must not display offline unlock cost/state");
-            Assert.That(ui.ActionText.text, Is.EqualTo(Loc.T(expectIdle
-                ? "ui.map_selection.action.explore"
-                : "ui.map_selection.action.processing")));
-            row.BtnSelect.onClick.Invoke();
-            ui.BtnAction.onClick.Invoke();
-        }
-
-        private IEnumerator LoginAndRestoreEmpty(string userName)
-        {
-            Task<OnlineAccountOperationResult> login = harness.Account.LoginAsync(userName, "Pass_123");
-            yield return WaitUntil("login request", () => harness.Network.PendingCount<C2G_Login>() == 1);
-            harness.Network.CompleteNextLoginSuccess();
-            yield return WaitUntil("login completion", () => login.IsCompleted);
-            yield return WaitUntil("automatic empty world restore", () => harness.Network.PendingCount<C2G_GetCurrentWorld>() == 1);
-            harness.Network.CompleteNextCurrentWorldEmpty();
-            yield return WaitUntil("empty world restore completion", () =>
-                Game.Interface.GetSystem<OnlineWorldSystem>().Snapshot.OperationState == OnlineWorldOperationState.Idle);
-        }
-
-        private static OnlineRoomUI OpenJoinedRoom()
-        {
-            ShowLoginUi().RoomButton.onClick.Invoke();
-            OnlineRoomUI roomUi = ShowRoomUi();
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(JoinedRoomSnapshot());
-            Assert.That(roomUi.WorldButton.interactable, Is.True);
-            return roomUi;
         }
 
         private static string[] VisibleTipTexts()
@@ -686,9 +358,9 @@ namespace Game.Tests
             {
                 if (Time.realtimeSinceStartup >= timeout)
                 {
-                    var world = Game.Interface.GetSystem<OnlineWorldSystem>().Snapshot;
+
                     var map = Game.Interface.GetModel<MapSceneModel>();
-                    Assert.Fail($"{label}: world={world.OperationState}/{world.LastResultCode}; map={map.CurrentMapId}/{map.Status.Value}/{map.CurrentMode}; tips={string.Join(";", VisibleTipTexts())}");
+                    Assert.Fail($"{label}: map={map.CurrentMapId}/{map.Status.Value}/{map.CurrentMode}; tips={string.Join(";", VisibleTipTexts())}");
                 }
                 yield return null;
             }
@@ -697,7 +369,7 @@ namespace Game.Tests
         private static OnlineHarness CreateHarness()
         {
             var network = new FakeOnlineNetwork();
-            var mapLoader = new UiWorldMapLoader();
+
             var config = new FakeNetworkConfigProvider();
             var preferences = new FakeOnlineAccountPreferenceStore();
             Game.OnRegisterPatch = architecture =>
@@ -705,13 +377,13 @@ namespace Game.Tests
                 architecture.RegisterUtility<INetworkRuntime>(network);
                 architecture.RegisterUtility<INetworkConfigProvider>(config);
                 architecture.RegisterUtility<IOnlineAccountPreferenceStore>(preferences);
-                architecture.RegisterUtility<IMapContentLoader>(mapLoader);
+
                 architecture.RegisterSystem<OptionalGameplayResourceSystem>(new ReadyGameplayResources());
-                architecture.RegisterUtility<IRuntimeConfigProvider>(new TestRuntimeConfigProvider(includeMapPlayerSpawn: true));
+                architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() => new global::Tables(name => new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes"))))));
             };
 
             var account = Game.Interface.GetSystem<OnlineAccountSystem>();
-            return new OnlineHarness(account, network, mapLoader, config);
+            return new OnlineHarness(account, network, config);
         }
 
         private static void ResetGameArchitecture()
@@ -761,17 +433,17 @@ namespace Game.Tests
 
         private sealed class OnlineHarness
         {
-            public OnlineHarness(OnlineAccountSystem account, FakeOnlineNetwork network, UiWorldMapLoader mapLoader, FakeNetworkConfigProvider config)
+            public OnlineHarness(OnlineAccountSystem account, FakeOnlineNetwork network, FakeNetworkConfigProvider config)
             {
                 Account = account;
                 Network = network;
-                MapLoader = mapLoader;
+
                 Config = config;
             }
 
             public OnlineAccountSystem Account { get; }
             public FakeOnlineNetwork Network { get; }
-            public UiWorldMapLoader MapLoader { get; }
+
             public FakeNetworkConfigProvider Config { get; }
         }
 
@@ -780,21 +452,6 @@ namespace Game.Tests
         {
             public override OptionalGameplayResourceQuery QueryMap(string mapId)
                 => new OptionalGameplayResourceQuery(OptionalGameplayResourceState.Ready, "test", 0, 0, string.Empty);
-        }
-
-        private sealed class UiWorldMapLoader : IMapContentLoader
-        {
-            public UniTask<MapContentLoadResult> LoadAsync(string mapId, string address, Action<float> onProgress, CancellationToken cancellationToken = default)
-            {
-                onProgress?.Invoke(1f);
-                return UniTask.FromResult(MapContentLoadResult.Ok(TemporaryBuildingBehaviorTestSupport.CreateMapHandle(mapId, 701)));
-            }
-
-            public UniTask<MapContentUnloadResult> UnloadAsync(IMapContentHandle handle, CancellationToken cancellationToken = default)
-            {
-                if (handle is FakeMapHandle fake && fake.Root != null) Object.DestroyImmediate(fake.Root);
-                return UniTask.FromResult(MapContentUnloadResult.Ok());
-            }
         }
 
         private sealed class FakeNetworkConfigProvider : IEditableNetworkConfigProvider
@@ -869,7 +526,6 @@ namespace Game.Tests
         private sealed class FakeOnlineNetwork : INetworkRuntime, INetworkResponseObserver
         {
             private readonly List<PendingCall> pendingCalls = new List<PendingCall>();
-            private int totalEnterRequests;
 
             public bool IsInitialized { get; private set; } = true;
             public NetworkConnectionState ConnectionState { get; private set; } = NetworkConnectionState.Disconnected;
@@ -877,8 +533,6 @@ namespace Game.Tests
             public int PendingCallCount => pendingCalls.Count;
             public int PendingLogoutCount => pendingCalls.Count(call => call.Request is C2G_Logout);
             public int PendingCount<TRequest>() where TRequest : class, IRequest => pendingCalls.Count(call => call.Request is TRequest);
-            public int TotalEnterRequests => totalEnterRequests;
-            public string PendingEnterMapId => pendingCalls.Select(call => call.Request).OfType<C2G_EnterWorld>().Single().MapId;
             public string PendingRequestSummary => string.Join(
                 ",",
                 pendingCalls
@@ -908,7 +562,6 @@ namespace Game.Tests
             {
                 var call = new PendingCall(request);
                 pendingCalls.Add(call);
-                if (request is C2G_EnterWorld) totalEnterRequests++;
                 return call.Task.ContinueWith(task => (TResponse)task.GetAwaiter().GetResult(), CancellationToken.None);
             }
 
@@ -959,56 +612,10 @@ namespace Game.Tests
                 call.TrySetResult(response);
             }
 
-            public void CompleteNextCurrentWorldEmpty()
-            {
-                var call = TakeNext<C2G_GetCurrentWorld>();
-                var response = G2C_GetCurrentWorld.Create();
-                response.Error = 0;
-                response.HasWorld = false;
-                call.TrySetResult(response);
-            }
-
-            public void CompleteNextEnterWorld(ET.OnlineWorldSnapshot snapshot)
-            {
-                var call = TakeNext<C2G_EnterWorld>();
-                var response = G2C_EnterWorld.Create();
-                response.Error = 0;
-                response.HasWorld = true;
-                response.World = snapshot;
-                call.TrySetResult(response);
-            }
-
-            public void CompleteNextEnterWorldError(int error)
-            {
-                var call = TakeNext<C2G_EnterWorld>();
-                var response = G2C_EnterWorld.Create();
-                response.Error = error;
-                response.HasWorld = false;
-                call.TrySetResult(response);
-            }
-
             public void FailNext<TRequest>(Exception exception)
                 where TRequest : class, IRequest
             {
                 TakeNext<TRequest>().TrySetException(exception);
-            }
-
-            public void CompleteNextCurrentWorld(ET.OnlineWorldSnapshot snapshot)
-            {
-                var call = TakeNext<C2G_GetCurrentWorld>();
-                var response = G2C_GetCurrentWorld.Create();
-                response.Error = 0;
-                response.HasWorld = true;
-                response.World = snapshot;
-                call.TrySetResult(response);
-            }
-
-            public void CompleteNextLeaveWorld(int error)
-            {
-                var call = TakeNext<C2G_LeaveWorld>();
-                var response = G2C_LeaveWorld.Create();
-                response.Error = error;
-                call.TrySetResult(response);
             }
 
             private PendingCall TakeNext<TRequest>()

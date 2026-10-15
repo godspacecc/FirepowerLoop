@@ -35,7 +35,7 @@ namespace Game.Tests
 
             Assert.That(typeof(global::Item).GetField("NameKey"), Is.Not.Null);
             Assert.That(typeof(global::Item).GetField("DescKey"), Is.Not.Null);
-            Assert.That(item.Id, Is.EqualTo(ItemIds.MetalParts));
+            Assert.That(item.Id, Is.EqualTo(1));
             Assert.That(item.NameKey, Is.EqualTo("item.metal_parts.name"));
             Assert.That(item.DescKey, Is.EqualTo("item.metal_parts.desc"));
         }
@@ -109,26 +109,7 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(clientTableNames, Is.EquivalentTo(new[]
-            {
-                "TbEnemy",
-                "TbExtraction",
-                "TbCraftRecipe",
-                "TbItem",
-                "TbLoot",
-                "TbMap",
-                "TbMapScenePart",
-                "TbMapSpawn",
-                "TbNpc",
-                "TbPlayer",
-                "TbProjectile",
-                "TbTempBuilding",
-                "TbTempBuildingManualAttack",
-                "TbTestCmdCategory",
-                "TbTestCmdEntry",
-                "TbWeapon",
-                "TbWeaponAppearance"
-            }));
+            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapDisplay", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadeSoloDrop", "TbArcadePowerup", "TbArcadeShopItem", "TbArcadeUpgrade", "TbArcadeReward" }));
 
             var configAssembly = typeof(Tables).Assembly;
             Assert.That(configAssembly.GetType("StartMachineConfig"), Is.Null);
@@ -145,19 +126,7 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(serverBytes, Is.EquivalentTo(new[]
-            {
-                "tbaiconfig.bytes",
-                "tbenemy.bytes",
-                "tbmapspawn.bytes",
-                "tbplayer.bytes",
-                "tbstartmachine.bytes",
-                "tbstartprocess.bytes",
-                "tbstartscene.bytes",
-                "tbstartzone.bytes",
-                "tbunitconfig.bytes",
-                "tbweapon.bytes"
-            }));
+            Assert.That(serverBytes, Is.EquivalentTo(new[] { "tbprojectile.bytes", "tbenemy.bytes", "tbarcaderule.bytes", "tbarcadeweapon.bytes", "tbarcadearena.bytes", "tbarcadeenemygroup.bytes", "tbarcadeboss.bytes", "tbarcadechallenge.bytes", "tbarcadetreasureroom.bytes", "tbarcadedrop.bytes", "tbarcadepowerup.bytes", "tbarcadeshopitem.bytes", "tbarcadeupgrade.bytes", "tbarcadereward.bytes", "tbaiconfig.bytes", "tbunitconfig.bytes", "tbstartmachine.bytes", "tbstartprocess.bytes", "tbstartzone.bytes", "tbstartscene.bytes" }));
 
             var serverConfigRoot = Path.Combine(
                 repoRoot,
@@ -168,33 +137,8 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(serverGeneratedCs, Is.EquivalentTo(new[]
-            {
-                "AIConfig.cs",
-                "EnemyAttackKind.cs",
-                "EnemyConfig.cs",
-                "MapSpawnConfig.cs",
-                "MapSpawnObjectType.cs",
-                "PlayerConfig.cs",
-                "StartMachineConfig.cs",
-                "StartProcessConfig.cs",
-                "StartSceneConfig.cs",
-                "StartZoneConfig.cs",
-                "Tables.cs",
-                "TbAIConfig.cs",
-                "TbEnemy.cs",
-                "TbMapSpawn.cs",
-                "TbPlayer.cs",
-                "TbStartMachine.cs",
-                "TbStartProcess.cs",
-                "TbStartScene.cs",
-                "TbStartZone.cs",
-                "TbUnitConfig.cs",
-                "TbWeapon.cs",
-                "UnitConfig.cs",
-                "WeaponConfig.cs",
-                "WeaponKind.cs"
-            }));
+            Assert.That(serverGeneratedCs, Does.Contain("TbArcadeRule.cs"));
+            Assert.That(serverGeneratedCs, Does.Not.Contain("OnlineWorldRuleConfig.cs"));
 
             var serverRuntimeConfigRoot = Path.Combine(
                 repoRoot,
@@ -234,7 +178,7 @@ namespace Game.Tests
                 ProjectRoot,
                 "Assets/Game/Config",
                 $"{name}.bytes"))));
-            return tables.TbItem.Get(ItemIds.MetalParts);
+            return tables.TbItem.Get(1);
         }
 
         private static global::Item CreateItem(

@@ -1,5 +1,0 @@
-##var,Id,OutputItemId,OutputAmount,Materials,Order
-##type,string,int,int,"(array#sep=;),(CraftMaterialConfig#sep=|)",int
-,craft.medkit.basic,3,1,2|2,100
-,craft.arrow.basic,7,5,1|1;2|1,200
-,craft.torch.basic,48,1,9|1;2|1,300

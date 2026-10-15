@@ -74,7 +74,7 @@ namespace Game
             EndPresentation();
             bool transit = latest.Phase == OnlineArcadeRunPhase.SafeShop && latest.Players.All(p => p.ShopOffers.Count == 0);
             if (!transit && this.GetModel<MapSceneModel>().CurrentMapId == MapIds.Arcade && !transitionBusy)
-                ReturnToBaseAsync(transitionGeneration).Forget();
+                ReturnToMainMenuAsync(transitionGeneration).Forget();
         }
 
         /// <summary>地图加载完成后重新校验运行局、竞技场与代次，过期加载不会启动表现。</summary>
@@ -106,12 +106,12 @@ namespace Game
             finally { transitionBusy = false; }
         }
 
-        private async UniTaskVoid ReturnToBaseAsync(int generation)
+        private async UniTaskVoid ReturnToMainMenuAsync(int generation)
         {
             transitionBusy = true;
             try
             {
-                ArcadeSceneFlowResult result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync();
+                ArcadeSceneFlowResult result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
                 if (generation == transitionGeneration && !result.Success)
                     Log.Error($"[OnlineArcadePresentationSystem] 联机街机返回基地失败：{result.Error}");
             }

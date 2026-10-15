@@ -1,8 +1,0 @@
-##var,Id,NameKey,UnlockKey
-##type,string,string,string
-,technology.dry-ration,technology.dry_ration.name,technology.dry_ration.unlock
-,technology.iron-tools,technology.iron_tools.name,technology.iron_tools.unlock
-,technology.steel-blade,technology.steel_blade.name,technology.steel_blade.unlock
-,technology.bow-making,technology.bow_making.name,technology.bow_making.unlock
-,technology.grain-processing,technology.grain_processing.name,technology.grain_processing.unlock
-,technology.pottery,technology.pottery.name,technology.pottery.unlock

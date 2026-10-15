@@ -17,24 +17,11 @@ namespace Game.Editor
         public const string StartupTag = "startup";
         public const string ArcadeTag = "arcade";
         public const string ArcadeOnlineTag = "arcade-online";
-        public const string ExpeditionTag = "expedition";
-        public const string OnlineWorldTag = "online-world";
         public const string DevelopmentTag = "development";
 
         private const string PackageName = "DefaultPackage";
         private const string SharedFontCollectorPath = "Assets/Game/Fonts/Chinese";
 
-        /// <summary>基地同步加载的目录必须随启动下载；校验缺失时阻断资源构建，不代替运行时存档校验。</summary>
-        private static readonly string[] RequiredBaseStartupCollectorPaths =
-        {
-            "Assets/Game/Prefabs/Building",
-            "Assets/Game/Prefabs/UI/TemporaryBuilding",
-            "Assets/Game/Art/UI/TemporaryBuilding",
-            // 文明工坊与返程结算在基地同步打开，必须随启动更新下载。
-            "Assets/Game/Prefabs/UI/Civilisation",
-            // NPC 对话窗口同步加载，必须在进入基地前随启动资源准备完成。
-            "Assets/Game/Prefabs/UI/Dialogue"
-        };
 
         /// <summary>允许写入收集器的稳定模块标签；未列出的标签会在构建前被拒绝。</summary>
         private static readonly HashSet<string> AllowedTags = new HashSet<string>(StringComparer.Ordinal)
@@ -42,8 +29,6 @@ namespace Game.Editor
             StartupTag,
             ArcadeTag,
             ArcadeOnlineTag,
-            ExpeditionTag,
-            OnlineWorldTag,
             DevelopmentTag
         };
 
@@ -228,12 +213,6 @@ namespace Game.Editor
                 return false;
             }
 
-            foreach (var path in RequiredBaseStartupCollectorPaths)
-            {
-                if (startupPaths.Contains(path)) continue;
-                error = $"基地资源缺少 startup 收集器：{path}；旧客户端启动更新后无法同步加载";
-                return false;
-            }
 
             return true;
         }

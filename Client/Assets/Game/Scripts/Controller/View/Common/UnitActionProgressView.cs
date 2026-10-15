@@ -20,17 +20,17 @@ namespace Game
             Hide();
         }
 
-        public void Show(PlayerActionSnapshot snapshot)
+        public void Show(float progress01, string iconAddress)
         {
             if (root == null) return;
-            if (centerIcon != null && !string.Equals(loadedAddress, snapshot.IconAddress, StringComparison.Ordinal))
+            if (centerIcon != null && !string.Equals(loadedAddress, iconAddress, StringComparison.Ordinal))
             {
-                loadedAddress = snapshot.IconAddress;
-                centerIcon.sprite = string.IsNullOrWhiteSpace(snapshot.IconAddress)
+                loadedAddress = iconAddress;
+                centerIcon.sprite = string.IsNullOrWhiteSpace(iconAddress)
                     ? defaultSprite
-                    : ResourceLoader.LoadAsset<Sprite>(snapshot.IconAddress) ?? defaultSprite;
+                    : ResourceLoader.LoadAsset<Sprite>(iconAddress) ?? defaultSprite;
             }
-            if (radialFill != null) radialFill.fillAmount = Mathf.Clamp01(snapshot.Progress01);
+            if (radialFill != null) radialFill.fillAmount = Mathf.Clamp01(progress01);
             if (!root.activeSelf) root.SetActive(true);
         }
 

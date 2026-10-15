@@ -26,48 +26,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void HiddenJoystickKeepsVirtualDeviceAndClearsMovementBeforeShowingAgain()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
-            var root = Object.Instantiate(prefab);
-            root.SetActive(true);
-            try
-            {
-                var ui = root.GetComponent<MobileJoystickUI>();
-                MobileJoystickPresentation.SetContentVisible(ui, true);
-                // EditMode 不自动执行 OnScreenControl 的运行时 OnEnable，显式初始化正式设备接口。
-                if (ui.JoystickSurface.control == null)
-                    typeof(OnScreenControl).GetMethod("OnEnable", BindingFlags.Instance | BindingFlags.NonPublic)
-                        .Invoke(ui.JoystickSurface, null);
-                var device = ui.JoystickSurface.control.device;
-                using var move = new InputAction(binding: "<Gamepad>/leftStick");
-                move.Enable();
-                UnityEngine.InputSystem.LowLevel.InputState.Change(((Gamepad)device).leftStick, new Vector2(0.5f, 0.25f));
-                InputSystem.Update();
-                MobileJoystickPresentation.SetContentVisible(ui, false);
-                InputSystem.Update();
-                Assert.That(ui.ContentRoot.activeSelf, Is.True);
-                Assert.That(ui.JoystickSurface.control.device, Is.SameAs(device));
-                Assert.That(((Gamepad)device).leftStick.ReadValue(), Is.EqualTo(Vector2.zero));
-                var group = ui.ContentRoot.GetComponent<CanvasGroup>();
-                Assert.That(group.alpha, Is.Zero);
-                Assert.That(group.blocksRaycasts, Is.False);
-                Assert.That(group.interactable, Is.False);
-                MobileJoystickPresentation.SetContentVisible(ui, true);
-                Assert.That(ui.JoystickSurface.control.device, Is.SameAs(device));
-                Assert.That(group.alpha, Is.EqualTo(1));
-                Assert.That(group.blocksRaycasts, Is.True);
-            }
-            finally
-            {
-                var stick = root.GetComponent<MobileJoystickUI>().JoystickSurface;
-                if (stick.control != null)
-                    typeof(OnScreenControl).GetMethod("OnDisable", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(stick, null);
-                Object.DestroyImmediate(root);
-            }
-        }
-
-        [Test]
         public void PlayerSettings_AllowOnlyBothLandscapeOrientations()
         {
             Assert.That(PlayerSettings.defaultInterfaceOrientation, Is.EqualTo(UIOrientation.AutoRotation));

@@ -14,7 +14,7 @@ namespace Game
     /// </summary>
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class EnemyView : MonoBehaviour, IPlayerInteractable, IPlayerSearchable
+    public sealed class EnemyView : MonoBehaviour
     {
         [Serializable]
         private struct TrialPlayerWeaponPose
@@ -102,9 +102,6 @@ namespace Game
         private long mapInstanceId;
         private bool isCorpse;
         private bool isFocused;
-        private SearchContainerSystem searchSystem;
-        private PlayerInteractionSystem interactionSystem;
-        private IPlayerRuntimePortProvider playerRuntimePorts;
         private bool animationDead;
         // 实例选择独立于启停；空串是显式空手，未指定才采用 Prefab 默认武器。
         private bool hasWeaponSelection;
@@ -131,7 +128,6 @@ namespace Game
         public int WeaponVisualOptionCount => 2 + ValidMeleeVisualCount + ValidPlayerWeaponCount;
         public string DisplayName => "[E]";
         public bool CanInteract => false;
-        public bool CanSearch => isCorpse && unitId > 0 && searchSystem != null && searchSystem.CanSearch(unitId);
 
         public static float CalculateHealthFill(int current, int maximum)
         {
@@ -428,18 +424,12 @@ namespace Game
             GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);
             ResetMovementSampling();
             SetFocused(false);
-            interactionSystem?.Blur(this);
         }
 
         public void ConfigureRuntime(int configuredUnitId, long configuredMapInstanceId)
         {
             unitId = configuredUnitId;
             mapInstanceId = configuredMapInstanceId;
-            var architecture = Game.Interface;
-            searchSystem = architecture.GetSystem<SearchContainerSystem>();
-            interactionSystem = architecture.GetSystem<PlayerInteractionSystem>();
-            playerRuntimePorts = architecture.GetUtility<IPlayerRuntimePortProvider>();
-            ConfigureCorpseSearchTriggerRelay();
         }
 
         public void ConfigureNavigation(float moveSpeed, float stoppingDistance)
@@ -599,7 +589,7 @@ namespace Game
                 return;
             }
 
-            actionProgressView?.Show(new PlayerActionSnapshot(0, PlayerActionKind.Reload, progress01, 1f, progress01, iconAddress ?? string.Empty));
+            actionProgressView?.Show(progress01, iconAddress ?? string.Empty);
         }
 
         public void FaceWorldHuds(Vector3 cameraPosition, Vector3 cameraUp)
@@ -689,35 +679,9 @@ namespace Game
 
         public void Interact() { }
 
-        public void Search()
-        {
-            if (CanSearch)
-            {
-                searchSystem.TryBeginSearch(unitId, out _);
-            }
-        }
-
         public void SetFocused(bool focused)
         {
             isFocused = focused;
-            RefreshCorpsePrompt();
-        }
-
-        public void TickCorpseSearch()
-        {
-            if (!isCorpse || unitId <= 0)
-            {
-                return;
-            }
-
-            var progress = 0f;
-            var pending = searchSystem != null && searchSystem.TryGetPendingProgress(unitId, out progress);
-            if (corpseProgressFill != null)
-            {
-                corpseProgressFill.fillAmount = pending ? progress : 0f;
-                corpseProgressFill.gameObject.SetActive(pending);
-            }
-
             RefreshCorpsePrompt();
         }
 
@@ -972,14 +936,13 @@ namespace Game
 
             if (corpseLootBoxObject != null)
             {
-                corpseLootBoxObject.SetActive(enabled);
+                corpseLootBoxObject.SetActive(false);
             }
 
             if (corpseSearchTrigger != null)
             {
-                corpseSearchTrigger.enabled = enabled;
+                corpseSearchTrigger.enabled = false;
                 corpseSearchTrigger.isTrigger = true;
-                corpseSearchTrigger.radius = SearchContainerSystem.SearchDistance;
             }
 
             RefreshCorpsePrompt();
@@ -995,60 +958,12 @@ namespace Game
         {
             if (corpsePromptRoot != null)
             {
-                var visible = isCorpse && isFocused && CanSearch && interactionSystem?.UsesCrosshairTargeting != true;
+                var visible = false;
                 if (corpsePromptRoot.activeSelf != visible)
                 {
                     corpsePromptRoot.SetActive(visible);
                 }
             }
-        }
-
-        private void OnTriggerEnter(Collider other)
-        {
-            HandleCorpseSearchTriggerEnter(other);
-        }
-
-        private void OnTriggerExit(Collider other)
-        {
-            HandleCorpseSearchTriggerExit(other);
-        }
-
-        internal void HandleCorpseSearchTriggerEnter(Collider other)
-        {
-            if (isCorpse && IsLocalPlayerCollider(other))
-            {
-                interactionSystem?.Focus(this);
-            }
-        }
-
-        internal void HandleCorpseSearchTriggerExit(Collider other)
-        {
-            if (isCorpse && IsLocalPlayerCollider(other))
-            {
-                interactionSystem?.Blur(this);
-            }
-        }
-
-        private void ConfigureCorpseSearchTriggerRelay()
-        {
-            if (corpseSearchTrigger == null || corpseSearchTrigger.gameObject == gameObject)
-            {
-                return;
-            }
-
-            var relay = corpseSearchTrigger.GetComponent<CorpseSearchTriggerRelay>();
-            if (relay == null)
-            {
-                relay = corpseSearchTrigger.gameObject.AddComponent<CorpseSearchTriggerRelay>();
-            }
-
-            relay.Configure(this);
-        }
-
-        private bool IsLocalPlayerCollider(Collider other)
-        {
-            return mapInstanceId > 0 && other != null && playerRuntimePorts != null &&
-                   playerRuntimePorts.IsPlayerCollider(PlayerModel.LocalPlayerUnitId, mapInstanceId, other);
         }
     }
 }

@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <enums>
-    <enum name="DialogueOptionAction" group="c">
-        <var name="GoToNode" value="1"/>
-        <var name="End" value="2"/>
-        <var name="OpenNpcFunction" value="3"/>
-    </enum>
-    <enum name="ItemType" group="e">
+    <enum name="ItemType" group="c">
         <var name="Material" value="1"/>
         <var name="Consumable" value="2"/>
         <var name="Weapon" value="3"/>
@@ -13,7 +8,7 @@
         <var name="Tool" value="5"/>
         <var name="Clothing" value="6"/>
     </enum>
-    <enum name="ClothingSlot" group="e">
+    <enum name="ClothingSlot" group="c">
         <var name="None" value="0"/>
         <var name="Torso" value="1"/>
         <var name="Legs" value="2"/>
@@ -23,12 +18,12 @@
         <var name="Back" value="6"/>
         <var name="Armor" value="7"/>
     </enum>
-    <enum name="ItemActionKind" group="e">
+    <enum name="ItemActionKind" group="c">
         <var name="None" value="0"/>
         <var name="OpenMap" value="1"/>
         <var name="ToggleTorch" value="2"/>
     </enum>
-    <enum name="WeaponKind" group="e">
+    <enum name="WeaponKind" group="c">
         <var name="Melee" value="1"/>
         <var name="Projectile" value="2"/>
     </enum>
@@ -41,29 +36,16 @@
         <var name="Melee" value="1"/>
         <var name="Projectile" value="2"/>
     </enum>
-    <enum name="ItemUseEffect" group="e">
+    <enum name="ItemUseEffect" group="c">
         <var name="None" value="0"/>
         <var name="RestoreHealth" value="1"/>
         <var name="RestorePower" value="2"/>
         <var name="RestoreWater" value="3"/>
     </enum>
-    <enum name="MapSpawnObjectType" group="e">
+    <enum name="MapSpawnObjectType" group="c">
         <var name="Player" value="1"/>
         <var name="Enemy" value="2"/>
         <var name="Loot" value="3"/>
-        <var name="Extraction" value="4"/>
-        <var name="Npc" value="5"/>
-    </enum>
-    <enum name="NpcInteractionKind" group="c">
-        <var name="MapSelection" value="1"/>
-        <var name="Warehouse" value="2"/>
-        <var name="Craft" value="3"/>
-        <var name="Shop" value="4"/>
-        <var name="Arcade" value="5"/>
-    </enum>
-    <enum name="TaskObjectiveType" group="c">
-        <var name="Survive" value="1"/>
-        <var name="Kill" value="2"/>
     </enum>
     <enum name="ArcadeDropKind" group="e">
         <var name="RunGold" value="1"/>

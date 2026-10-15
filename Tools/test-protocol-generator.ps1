@@ -128,6 +128,51 @@ try {
     Assert-GeneratorFails @("--source", (Join-Path $TempRoot "MissingSource"), "--client-output", (Join-Path $TempRoot "BadClient"), "--server-output", (Join-Path $TempRoot "BadServer")) "missing source"
     Assert-GeneratorFails @("--source", $Source, "--client-output", $badOutput, "--server-output", $badOutput) "duplicate output directories"
 
+    # Preserve explicit gaps, continue implicit numbering, and reject invalid IDs before writing.
+    $fixtureSource = Join-Path $TempRoot "FixtureSource"
+    New-Item -ItemType Directory -Force -Path $fixtureSource | Out-Null
+    $fixtureProto = Join-Path $fixtureSource "Fixture_C_100.proto"
+    $fixtureClient = Join-Path $TempRoot "FixtureClient"
+    $fixtureServer = Join-Path $TempRoot "FixtureServer"
+    $fixtureArguments = @("--source", $fixtureSource, "--client-output", $fixtureClient, "--server-output", $fixtureServer)
+    @"
+// Opcode 110
+message First
+{
+    int32 Value = 1;
+}
+// Opcode 120
+message Second
+{
+    int32 Value = 1;
+}
+message Third
+{
+    int32 Value = 1;
+}
+"@ | Set-Content -LiteralPath $fixtureProto -Encoding UTF8
+    & dotnet run --project $Project -- @fixtureArguments
+    if ($LASTEXITCODE -ne 0) { throw "Explicit opcode fixture generation failed." }
+    $fixtureGenerated = Get-Content -LiteralPath (Join-Path $fixtureClient "Fixture_C_100.cs") -Raw
+    foreach ($expected in @("First = 110;", "Second = 120;", "Third = 121;")) {
+        if (!$fixtureGenerated.Contains($expected)) { throw "Missing stable opcode: $expected" }
+    }
+    $fixtureHashes = Get-TopLevelCsHashes $fixtureClient
+    foreach ($declaration in @("// Opcode 110", "// Opcode 65536", "// Opcode 130`n// Opcode 131")) {
+        @"
+// Opcode 110
+message First
+{
+}
+$declaration
+message Second
+{
+}
+"@ | Set-Content -LiteralPath $fixtureProto -Encoding UTF8
+        Assert-GeneratorFails $fixtureArguments "invalid explicit opcode: $declaration"
+        Assert-HashSetEqual $fixtureHashes (Get-TopLevelCsHashes $fixtureClient) "invalid opcode preserves outputs"
+    }
+
     foreach ($key in $WorkspaceOutputs.Keys) {
         Assert-HashSetEqual $baseline[$key] (Get-TopLevelCsHashes $WorkspaceOutputs[$key]) "$key workspace unchanged"
     }
@@ -137,6 +182,12 @@ try {
 }
 finally {
     if (Test-Path -LiteralPath $TempRoot) {
+        $resolvedTemp = [System.IO.Path]::GetFullPath($TempRoot)
+        $expectedTempParent = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\') + '\'
+        if (!$resolvedTemp.StartsWith($expectedTempParent, [System.StringComparison]::OrdinalIgnoreCase) -or
+            !(Split-Path -Leaf $resolvedTemp).StartsWith("AnotherDay.ProtocolGenerator.Test.")) {
+            throw "Refusing to remove unexpected test directory: $resolvedTemp"
+        }
         Remove-Item -LiteralPath $TempRoot -Recurse -Force
     }
 }

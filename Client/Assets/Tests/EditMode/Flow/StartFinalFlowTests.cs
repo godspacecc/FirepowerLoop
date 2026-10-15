@@ -58,7 +58,6 @@ namespace Game.Tests
             LocalizationLanguages.ResetForTests();
             UIHelper.SetPrefabLoaderForTests(CreatePrefab);
             CreateTestUIRoot();
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(tempRoot, clock);
             ResetSilentCheckStarted();
         }
 
@@ -170,22 +169,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ValidBaseButtonsCollapseWithoutGap()
-        {
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().CreateBase(out _, out var error), Is.True, error);
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            var ui = GetBaseUI<StartUI>(start);
-
-            AssertVisibleButtonLayout(ui, new[]
-            {
-                "BtnContinue",
-                "BtnCheckUpdate",
-                "BtnSetting",
-                "BtnExit"
-            });
-        }
-
-        [Test]
         public void MenuPrefabsUseChineseDefaultVisibleText()
         {
             var combined =
@@ -196,197 +179,6 @@ namespace Game.Tests
             Assert.That(combined, Does.Not.Contain("m_text: Check Update"));
             Assert.That(combined, Does.Not.Contain("m_text: Settings"));
             Assert.That(combined, Does.Not.Contain("m_text: Exit"));
-        }
-
-        [Test]
-        public void ContinueLoadsFixedBaseThenCommitsBaseDomain()
-        {
-            var saves = Game.Interface.GetSystem<SaveSystem>();
-            Assert.That(saves.CreateBase(out var created, out var error), Is.True, error);
-
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            var ui = GetBaseUI<StartUI>(start);
-            Assert.IsTrue(ui.BtnContinue.interactable);
-            Assert.IsNull(UIHelper.GetUICtrl<PlayerConditionHudUICtrl>());
-
-            ui.BtnContinue.onClick.Invoke();
-
-            Assert.That(loader.LoadedMapId, Is.EqualTo(MapIds.Base));
-            Assert.That(Game.Interface.GetModel<SaveModel>().CurrentDomain, Is.EqualTo(OfflineSaveDomain.Base));
-            Assert.That(Game.Interface.GetModel<SaveModel>().CurrentBase, Is.Not.Null);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Playing));
-            Assert.IsFalse(start.IsShow());
-            Assert.IsFalse(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false);
-            Assert.That(UIHelper.GetUICtrl<PlayerConditionHudUICtrl>()?.IsShow(), Is.True);
-        }
-
-        [Test]
-        public void ResumePendingExpeditionSuccessShowsBothRuntimeHuds()
-        {
-            ((Game)Game.Interface).RegisterSystem(new ExpeditionFlowSystem());
-            var save = Game.Interface.GetSystem<SaveSystem>();
-            Assert.That(save.CreateBase(out var baseData, out var error), Is.True, error);
-            Assert.That(save.CommitBaseRuntime(baseData, out error), Is.True, error);
-            var expedition = CreatePendingPlaying(save, out error);
-            Assert.That(save.SaveExpedition(expedition, out error), Is.True, error);
-
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            start.ResumePendingExpeditionAsync().GetAwaiter().GetResult();
-
-            Assert.That(loader.LoadedMapId, Is.EqualTo(MapIds.SurvivalSample));
-            Assert.IsFalse(start.IsShow());
-            Assert.IsFalse(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false);
-            Assert.That(UIHelper.GetUICtrl<PlayerConditionHudUICtrl>()?.IsShow(), Is.True);
-            Assert.That(UIHelper.GetUICtrl<ExpeditionHudUICtrl>()?.IsShow(), Is.True);
-        }
-
-        [Test]
-        public void ResumePendingExpeditionFailureKeepsStartAndDoesNotShowExpeditionHud()
-        {
-            ((Game)Game.Interface).RegisterSystem(new ExpeditionFlowSystem());
-            var save = Game.Interface.GetSystem<SaveSystem>();
-            Assert.That(save.CreateBase(out var baseData, out var error), Is.True, error);
-            Assert.That(save.CommitBaseRuntime(baseData, out error), Is.True, error);
-            var expedition = CreatePendingPlaying(save, out error);
-            Assert.That(save.SaveExpedition(expedition, out error), Is.True, error);
-            loader.NextLoadError = "test map load failure";
-
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            LogAssert.Expect(LogType.Error, new Regex(@"\[LoadingUICtrl\] 地图加载失败：test map load failure"));
-            LogAssert.Expect(LogType.Error, new Regex(@"\[StartUICtrl\] 恢复远征失败：test map load failure"));
-            start.ResumePendingExpeditionAsync().GetAwaiter().GetResult();
-
-            Assert.IsTrue(start.IsShow());
-            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow(), Is.True);
-            Assert.That(UIHelper.GetUICtrl<ExpeditionHudUICtrl>(), Is.Null);
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
-            Assert.That(save.InspectExpedition().IsValid, Is.True);
-        }
-
-        [Test]
-        public void ResumeLegacyExpeditionBindsEquivalentTaskBeforeShowingHud()
-        {
-            ((Game)Game.Interface).RegisterSystem(new ExpeditionFlowSystem());
-            var save = Game.Interface.GetSystem<SaveSystem>();
-            Assert.That(save.CreateBase(out var baseData, out var error), Is.True, error);
-            Assert.That(save.CommitBaseRuntime(baseData, out error), Is.True, error);
-            var expedition = CreatePendingPlaying(save, out error);
-            Assert.That(expedition, Is.Not.Null, error);
-            expedition.ElapsedGameMinutes = 321.5f;
-            expedition.TargetGameMinutes = 1440f;
-            var raw = JObject.FromObject(expedition);
-            raw["Version"] = 2;
-            raw.Remove("TaskSchemaVersion");
-            raw.Remove("LegacySourceVersion");
-            ((JObject)raw["Sections"]).Remove(ExpeditionTaskModel.SaveSectionId);
-            var store = new SaveFileStore(tempRoot);
-            Directory.CreateDirectory(store.SavesDirectory);
-            var sourceText = raw.ToString();
-            File.WriteAllText(store.ExpeditionPath, sourceText);
-            Game.Interface.GetSystem<ExpeditionTaskSystem>().Clear();
-            Game.Interface.GetModel<ExpeditionModel>().Clear();
-
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            start.ResumePendingExpeditionAsync().GetAwaiter().GetResult();
-
-            Assert.That(loader.LoadedMapId, Is.EqualTo(MapIds.SurvivalSample));
-            var task = Game.Interface.GetModel<ExpeditionTaskModel>().Tasks.Single();
-            Assert.That(task.TaskId, Is.EqualTo("expedition.survival-sample.survive"));
-            Assert.That(task.InstanceId, Is.EqualTo($"{expedition.ExpeditionId}:expedition.survival-sample.survive"));
-            Assert.That(task.TargetAmount, Is.EqualTo(1440f));
-            Assert.That(task.CurrentAmount, Is.EqualTo(321.5f));
-            Assert.That(task.Status, Is.EqualTo(ExpeditionTaskStatus.InProgress));
-            Assert.That(Game.Interface.GetModel<ExpeditionModel>().CanReturn, Is.False);
-            Assert.That(UIHelper.GetUICtrl<ExpeditionHudUICtrl>()?.IsShow(), Is.True);
-            Assert.That(File.ReadAllText(store.ExpeditionPath), Is.EqualTo(sourceText));
-        }
-
-        [Test]
-        public void ResumeVersionThreeRejectsTaskAndStatusMismatchBeforeShowingHud()
-        {
-            ((Game)Game.Interface).RegisterSystem(new ExpeditionFlowSystem());
-            var save = Game.Interface.GetSystem<SaveSystem>();
-            Assert.That(save.CreateBase(out var baseData, out var error), Is.True, error);
-            Assert.That(save.CommitBaseRuntime(baseData, out error), Is.True, error);
-            var valid = CreatePendingPlaying(save, out error);
-            Assert.That(valid, Is.Not.Null, error);
-            var validRaw = JObject.FromObject(valid);
-            Game.Interface.GetSystem<ExpeditionTaskSystem>().Clear();
-            Game.Interface.GetModel<ExpeditionModel>().Clear();
-            var store = new SaveFileStore(tempRoot);
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            LogAssert.ignoreFailingMessages = true;
-
-            var cases = new[]
-            {
-                CreateStatusMismatch(validRaw, ExpeditionStatus.ReturnQualified, completeTask: false, emptyTasks: false),
-                CreateStatusMismatch(validRaw, ExpeditionStatus.Playing, completeTask: true, emptyTasks: false),
-                CreateStatusMismatch(validRaw, ExpeditionStatus.Playing, completeTask: false, emptyTasks: true)
-            };
-
-            foreach (var raw in cases)
-            {
-                if (File.Exists(store.ExpeditionBackupPath)) File.Delete(store.ExpeditionBackupPath);
-                var sourceText = raw.ToString();
-                File.WriteAllText(store.ExpeditionPath, sourceText);
-
-                start.ResumePendingExpeditionAsync().GetAwaiter().GetResult();
-
-                Assert.That(loader.LoadedMapId, Is.Null);
-                Assert.That(Game.Interface.GetModel<ExpeditionModel>().CanReturn, Is.False);
-                Assert.That(Game.Interface.GetModel<ExpeditionModel>().Status, Is.EqualTo(ExpeditionStatus.None));
-                Assert.That(Game.Interface.GetModel<ExpeditionTaskModel>().Capture(), Is.Null);
-                Assert.That(UIHelper.GetUICtrl<ExpeditionHudUICtrl>(), Is.Null);
-                Assert.That(start.IsShow(), Is.True);
-                Assert.That(File.ReadAllText(store.ExpeditionPath), Is.EqualTo(sourceText));
-            }
-        }
-
-        [Test]
-        public void StartShowsOnlyNewGameWithoutSaveAndOnlyContinueWithSave()
-        {
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            var ui = GetBaseUI<StartUI>(start);
-
-            Assert.IsTrue(ui.BtnNewGame.gameObject.activeSelf);
-            Assert.IsFalse(ui.BtnContinue.gameObject.activeSelf);
-
-            UIHelper.HideUI<StartUICtrl>();
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().CreateBase(out _, out var error), Is.True, error);
-
-            start = UIHelper.ShowUI<StartUICtrl>();
-            ui = GetBaseUI<StartUI>(start);
-
-            Assert.IsFalse(ui.BtnNewGame.gameObject.activeSelf);
-            Assert.IsTrue(ui.BtnContinue.gameObject.activeSelf);
-            Assert.IsTrue(ui.BtnContinue.interactable);
-        }
-
-        [Test]
-        public void NewGameCreatesBaseAndEntersBaseMap()
-        {
-            Assert.IsNull(UIHelper.GetUICtrl<PlayerConditionHudUICtrl>());
-            var start = UIHelper.ShowUI<StartUICtrl>();
-            var startUi = GetBaseUI<StartUI>(start);
-            startUi.BtnNewGame.onClick.Invoke();
-            Assert.That(loader.LoadedMapId, Is.EqualTo(MapIds.Base));
-            Assert.That(Game.Interface.GetModel<SaveModel>().CurrentDomain, Is.EqualTo(OfflineSaveDomain.Base));
-            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Playing));
-            Assert.IsFalse(start.IsShow());
-            Assert.IsFalse(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() ?? false);
-            Assert.That(UIHelper.GetUICtrl<PlayerConditionHudUICtrl>()?.IsShow(), Is.True);
-        }
-
-        [Test]
-        public void UnsupportedOldSaveAllowsNewGameAndPreservesOriginalFile()
-        {
-            var oldPath=Path.Combine(tempRoot,"Saves","base.json");Directory.CreateDirectory(Path.GetDirectoryName(oldPath));
-            File.WriteAllText(oldPath,"{\"Version\":4}");
-            var start=UIHelper.ShowUI<StartUICtrl>();var ui=GetBaseUI<StartUI>(start);
-            Assert.That(ui.BtnNewGame.gameObject.activeSelf,Is.True);Assert.That(ui.BtnContinue.gameObject.activeSelf,Is.False);
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().CreateBase(out _,out var createError),Is.True,createError);
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().InspectBase().IsValid,Is.True);
-            Assert.That(File.ReadAllText(oldPath),Is.EqualTo("{\"Version\":4}"));
         }
 
         [UnityTest]
@@ -534,7 +326,6 @@ namespace Game.Tests
         [UnityTest]
         public IEnumerator NoUpdateAndFailedChecksDoNotBlockContinue()
         {
-            Assert.That(Game.Interface.GetSystem<SaveSystem>().CreateBase(out _, out var error), Is.True, error);
             var start = UIHelper.ShowUI<StartUICtrl>();
             var ui = GetBaseUI<StartUI>(start);
 
@@ -772,13 +563,6 @@ namespace Game.Tests
                     return CreateMessagePrefab();
                 case "Prefabs/UI/Notify/Float":
                     return CreateFloatPrefab();
-                case "Prefabs/UI/Player/PlayerConditionHud":
-                    hudPrefabLoadCount++;
-                    return CreatePlayerConditionHudPrefab();
-                case "Prefabs/UI/Player/GameplayGuideHud":
-                    return CreateGameplayGuideHudPrefab();
-                case "Prefabs/UI/Expedition/ExpeditionHud":
-                    return CreateExpeditionHudPrefab();
                 default:
                     return null;
             }
@@ -873,25 +657,6 @@ namespace Game.Tests
             return root;
         }
 
-        private static GameObject CreatePlayerConditionHudPrefab()
-        {
-            // 使用正式 Prefab，避免流程测试的简化桩漏掉手机状态区引用。
-            return Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab"));
-        }
-
-        private static GameObject CreateGameplayGuideHudPrefab()
-        {
-            return Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab"));
-        }
-
-        private static GameObject CreateExpeditionHudPrefab()
-        {
-            return Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab"));
-        }
-
         private static void CreateHudRing(
             Transform parent,
             string prefix,
@@ -906,38 +671,6 @@ namespace Game.Tests
             fill.transform.SetParent(root.transform, false);
             icon = (TextMeshProUGUI)CreateText(root.transform, prefix + "IconText");
             value = (TextMeshProUGUI)CreateText(root.transform, prefix + "ValueText");
-        }
-
-        private static ExpeditionSaveData CreatePendingPlaying(SaveSystem save, out string error)
-        {
-            var id = Guid.NewGuid().ToString("N");
-            var definition = new ExpeditionTaskDefinition("expedition.survival-sample.survive", MapIds.SurvivalSample, "Survive", "task.expedition.survival_sample.survive.name", TaskObjectiveType.Survive, 1440f, 100);
-            if (!Game.Interface.GetSystem<ExpeditionSystem>().TryBeginConfiguredExpedition(MapIds.SurvivalSample, id, new[] { definition }, out error)) return null;
-            var data = Game.Interface.GetModel<ExpeditionModel>().CaptureSave(id, DateTime.UtcNow);
-            return save.CaptureExpeditionSections(data, out error) ? data : null;
-        }
-
-        private static JObject CreateStatusMismatch(
-            JObject source,
-            ExpeditionStatus topLevelStatus,
-            bool completeTask,
-            bool emptyTasks)
-        {
-            var raw = (JObject)source.DeepClone();
-            raw["Status"] = (int)topLevelStatus;
-            var taskSection = (JObject)raw["Sections"]?[ExpeditionTaskModel.SaveSectionId];
-            var tasks = (JArray)taskSection?["tasks"];
-            if (emptyTasks)
-            {
-                tasks?.Clear();
-            }
-            else if (completeTask && tasks?[0] is JObject task)
-            {
-                task["currentAmount"] = task["targetAmount"]?.Value<float>() ?? 1440f;
-                task["status"] = ExpeditionTaskStatus.Completed.ToString();
-            }
-
-            return raw;
         }
 
         private static GameObject CreateRoot(string name, out BaseUI ui)
@@ -1282,21 +1015,6 @@ namespace Game.Tests
                 return true;
             }
 
-            public bool TryGetExpeditionTasks(string mapId, out IReadOnlyList<ExpeditionTaskDefinition> values, out string error)
-            {
-                values = mapId == MapIds.SurvivalSample
-                    ? new[] { new ExpeditionTaskDefinition("expedition.survival-sample.survive", mapId, "Survive", "task.expedition.survival_sample.survive.name", TaskObjectiveType.Survive, 1440f, 100) }
-                    : Array.Empty<ExpeditionTaskDefinition>();
-                error = string.Empty; return true;
-            }
-
-            public bool TryGetCraftRecipes(out IReadOnlyList<CraftRecipeDefinition> values, out string error)
-            {
-                values = System.Array.Empty<CraftRecipeDefinition>();
-                error = null;
-                return true;
-            }
-
             public bool TryGetEnemy(string id, out EnemyConfigDefinition value, out string error)
             {
                 value = default;
@@ -1305,13 +1023,6 @@ namespace Game.Tests
             }
 
             public bool TryGetLoot(string id, out LootConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "not used";
-                return false;
-            }
-
-            public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
             {
                 value = default;
                 error = "not used";

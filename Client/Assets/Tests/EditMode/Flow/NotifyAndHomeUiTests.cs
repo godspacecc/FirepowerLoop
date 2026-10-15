@@ -37,7 +37,6 @@ namespace Game.Tests
             UIHelper.SetPrefabLoaderForTests(CreatePrefab);
             CreateTestUIRoot();
             UIRoot.EnsureInstance();
-            Game.Interface.GetSystem<SaveSystem>().ConfigureForTests(tempRoot);
             typeof(SettingUICtrl).GetField("lastPage", BindingFlags.Static | BindingFlags.NonPublic)
                 ?.SetValue(null, System.Activator.CreateInstance(
                     typeof(SettingUICtrl).GetNestedType("Page", BindingFlags.NonPublic)));
@@ -1158,7 +1157,6 @@ namespace Game.Tests
             architecture.RegisterModel(new HotKeyModel());
             architecture.RegisterModel(new AppStateModel());
             architecture.RegisterModel(new RuntimeLogModel());
-            architecture.RegisterModel(new SaveModel());
             architecture.RegisterModel(new MapSceneModel());
             architecture.RegisterModel(new ResourceUpdateModel());
             architecture.RegisterModel(new TestToolSettingsModel());
@@ -1168,8 +1166,7 @@ namespace Game.Tests
             architecture.RegisterUtility(new HotKeyActionRegistry());
             architecture.RegisterUtility<IApplicationRestartUtility>(new FakeRestart());
             architecture.RegisterSystem(new SettingsSystem());
-            architecture.RegisterSystem(new SaveSystem());
-            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null, null, null));
+            architecture.RegisterSystem(new MapSceneSystem(null, null, null, null));
             architecture.RegisterSystem(new AppStateSystem());
             architecture.RegisterSystem(new RuntimeLogSystem());
             architecture.RegisterSystem(new AudioSystem());

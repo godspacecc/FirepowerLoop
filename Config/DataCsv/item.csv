@@ -9,11 +9,6 @@
 ,7,箭矢,弓使用的弹药,item.ammunition.arrow.name,item.ammunition.arrow.desc,icon_equip_arrows,Ammunition,20,None,0,0,None,,0,None,
 ,8,瓶装水,普通容器保存的洁净饮水，使用后恢复40点水分,item.bottled_water.name,item.bottled_water.desc,IconBottledWater,Consumable,5,RestoreWater,40,1,None,,0,None,
 ,9,木材,常见的木质建造材料,item.wood.name,item.wood.desc,icon_wood,Material,20,None,0,0,None,,0,None,
-,10,基地地图,基地地图资料,item.map.base.name,item.map.base.desc,IconMapBase,Tool,1,None,0,0,OpenMap,map.another-day.base,0,None,
-,11,生存样例地图,生存样例地图资料,item.map.survival_sample.name,item.map.survival_sample.desc,IconMapSurvivalSample,Tool,1,None,0,0,OpenMap,map.another-day.survival-sample,0,None,
-,12,任务样例地图,任务样例地图资料,item.map.mission_sample.name,item.map.mission_sample.desc,IconMapMissionSample,Tool,1,None,0,0,OpenMap,map.another-day.mission-sample,0,None,
-,13,何家村地图,何家村地图资料,item.map.hejia_village.name,item.map.hejia_village.desc,IconMapHeJiaVillageLocal,Tool,1,None,0,0,OpenMap,map.hejia-village,0,None,
-,14,和家村局部地图,和家村局部地图资料,item.map.hejia_village_local.name,item.map.hejia_village_local.desc,IconMapHeJiaVillageLocal,Tool,1,None,0,0,OpenMap,map.hejia-village,0,None,
 ,15,双手剑,沉重的近战武器,item.weapon.greatsword.name,item.weapon.greatsword.desc,icon_equip_greatsword,Weapon,1,None,0,0,None,,0,None,
 ,16,短刀,轻便的近战武器,item.weapon.knife.name,item.weapon.knife.desc,icon_equip_knife,Weapon,1,None,0,0,None,,0,None,
 ,17,战斧,可靠的近战武器,item.weapon.axe.name,item.weapon.axe.desc,icon_equip_axe,Weapon,1,None,0,0,None,,0,None,
@@ -46,5 +41,4 @@
 ,44,棕色短靴,可穿戴的棕色短靴，改变对应部位外观,item.clothing.brown_boots.name,item.clothing.brown_boots.desc,IconClothing_Feet_BrownBoots,Clothing,1,None,0,0,None,,0,Feet,Feet_BrownBoots
 ,45,帆布背包,可穿戴的帆布背包，改变对应部位外观,item.clothing.canvas_pack.name,item.clothing.canvas_pack.desc,IconClothing_Back_CanvasPack,Clothing,1,None,0,0,None,,0,Back,Back_CanvasPack
 ,46,工具背心,可穿戴的工具背心，改变对应部位外观,item.clothing.utility_vest.name,item.clothing.utility_vest.desc,IconClothing_Armor_UtilityVest,Clothing,1,None,0,0,None,,0,Armor,Armor_UtilityVest
-,47,河谷地图,记录本次河谷远征探索区域的地图资料,item.map.civilisation_valley.name,item.map.civilisation_valley.desc,IconMapCivilisationValley,Tool,1,None,0,0,OpenMap,map.another-day.civilisation-valley,0,None,
 ,48,火把,木柄包布的手持照明工具，R 点燃或熄灭，收起时熄灭,item.torch.name,item.torch.desc,IconHandheldTorch,Tool,1,None,0,0,ToggleTorch,HandheldTorch,600,None,

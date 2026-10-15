@@ -191,7 +191,7 @@ namespace Game
             }
             if (operationPending) return;
             operationPending = true;
-            var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync();
+            var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
             if (!mapResult.Success)
             {
                 operationPending = false;
@@ -226,7 +226,7 @@ namespace Game
             }
             if (operationPending) return;
             operationPending = true;
-            var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync();
+            var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
             if (!mapResult.Success)
             {
                 operationPending = false;

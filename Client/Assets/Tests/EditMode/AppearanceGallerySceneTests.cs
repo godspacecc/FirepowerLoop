@@ -189,7 +189,7 @@ namespace Game.Tests
                 var player = instance.GetComponent<PlayerView>();
                 var animator = player.Animator;
                 var baseController = animator.runtimeAnimatorController;
-                player.SetWeaponPresentation(WeaponSlot.Ranged, false, true);
+                player.SetWeaponPresentation(true, false, true);
                 var bowController = animator.runtimeAnimatorController as AnimatorOverrideController;
                 Assert.That(bowController, Is.Not.Null);
                 Assert.That(bowController.runtimeAnimatorController, Is.SameAs(baseController));
@@ -229,7 +229,7 @@ namespace Game.Tests
                 Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"), Is.True,
                     "正式射箭反馈应进入使用 ShootingArrow 的攻击状态");
 
-                player.SetWeaponPresentation(WeaponSlot.Melee, false, false);
+                player.SetWeaponPresentation(false, false, false);
                 Assert.That(animator.runtimeAnimatorController, Is.SameAs(baseController));
             }
             finally
@@ -250,7 +250,7 @@ namespace Game.Tests
                 var view = instance.GetComponent<PlayerView>();
                 controller = new PlayerViewCtrl(view, 1, 1, new ViewCtrlRegistry(),
                     new UnityViewInstanceProvider());
-                controller.SetWeaponPresentation(WeaponSlot.Ranged, false, true);
+                controller.SetWeaponPresentation(true, false, true);
                 view.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 view.Animator.Update(0.1f);
                 controller.PlayBowFireFeedback();
@@ -979,7 +979,6 @@ namespace Game.Tests
             {
                 SetPrivate(view, "characterWeaponCatalog", catalog);
                 view.Initialize(null, CreateConfigProvider());
-                SetPrivate(view, "flow", new AppearanceGallerySceneFlowSystem());
                 var sword = Enumerable.Range(0, catalog.Count)
                     .First(index => catalog.Get(index).Id == "weapon.short-sword");
                 InvokePrivate(view, "SelectEquipment", sword + 1);

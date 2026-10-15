@@ -39,8 +39,6 @@ namespace ET.Server
             OnlineArcadeRunStoreSnapshot snapshot = JsonSerializer.Deserialize<OnlineArcadeRunStoreSnapshot>(json, JsonOptions()) ??
                                                     throw new InvalidOperationException("OnlineArcadeStore JSON is invalid.");
             ValidateStore(snapshot);
-            foreach (OnlineArcadeRewardWalletRecord wallet in snapshot.RewardWallets ?? new())
-                self.RewardWallets.Add(wallet.PlayerId, CloneWallet(wallet));
             foreach (OnlineArcadeRunRecord record in snapshot.Runs.OrderBy(x => x.RunId)) self.AddLoaded(record);
         }
 
@@ -240,12 +238,6 @@ namespace ET.Server
             this OnlineArcadeRunManagerComponent self, long playerId, string operationId, long expectedRevision,
             int actionKind, string offerId, int goldAmount, bool ready)
         {
-            if ((OnlineArcadeSafeShopActionKind)actionKind == OnlineArcadeSafeShopActionKind.ClaimPendingRewards)
-            {
-                self.ClaimPendingRewards(playerId);
-                OnlineArcadeRunActor current = self.GetActorForPlayer(playerId);
-                return (true, current?.BuildSnapshot());
-            }
             if (!self.RunIdsByPlayer.TryGetValue(playerId, out long runId))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "没有可操作的联机街机局");
             OnlineArcadeRunActor actor = self.Get(runId);
@@ -372,7 +364,7 @@ namespace ET.Server
             return (true, actor.BuildSnapshot());
         }
 
-        /// <summary>按玩家顺序独立提交奖励；任一步失败保留已成功玩家状态，后续相同或新操作可继续重试。</summary>
+        /// <summary>按玩家顺序独立保存本局结果；任一步失败保留已成功玩家状态，后续操作可继续重试。</summary>
         private static async ETTask<bool> TryCompleteSettlement(this OnlineArcadeRunManagerComponent self,
             OnlineArcadeRunActor actor, long requestingPlayerId)
         {
@@ -389,8 +381,7 @@ namespace ET.Server
             {
                 OnlineArcadePlayerRecord current = actor.Record.Players.First(x => x.PlayerId == source.PlayerId);
                 if (current.SettlementState != 0) continue;
-                bool pendingOffline = soloEligible && current.PlayerId != requestingPlayerId;
-                try { self.CommitPlayerSettlement(actor, current.PlayerId, pendingOffline); }
+                try { self.CommitPlayerSettlement(actor, current.PlayerId); }
                 catch (Exception exception)
                 {
                     Log.Error($"online arcade save failed stage=PlayerSettlement runId={actor.Record.RunId} playerId={current.PlayerId} exception={exception}");
@@ -401,29 +392,17 @@ namespace ET.Server
         }
 
         private static void CommitPlayerSettlement(this OnlineArcadeRunManagerComponent self,
-            OnlineArcadeRunActor actor, long playerId, bool pendingOffline)
+            OnlineArcadeRunActor actor, long playerId)
         {
             if (actor.Record.Players.First(x => x.PlayerId == playerId).SettlementState != 0) return;
             var candidate = Clone(actor.Record);
             var player = candidate.Players.First(x => x.PlayerId == playerId);
             player.SettlementState = 1;
-            player.PendingRewards.Clear();
             candidate.Revision = checked(candidate.Revision + 1);
             candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
             // 保留双人确认及断线等待规则，只提交本局结果，不发放或登记局外奖励。
             self.CommitWithCandidate(candidate, candidate.RunId);
             CommitActorRecord(actor, candidate);
-        }
-
-        private static void ClaimPendingRewards(this OnlineArcadeRunManagerComponent self, long playerId)
-        {
-            // 独立街机不提供局外奖励领取；保留协议操作码，避免批量重命名稳定标识。
-        }
-
-        private static void AddRewards(Dictionary<string, long> target, IReadOnlyDictionary<string, long> source)
-        {
-            foreach (KeyValuePair<string, long> reward in source)
-            { target.TryGetValue(reward.Key, out long previous); target[reward.Key] = checked(previous + reward.Value); }
         }
 
         /// <summary>管理器拥有战斗 Tick 与安全节点提交顺序，确保现场完成不会绕过持久化事务。</summary>
@@ -798,7 +777,6 @@ namespace ET.Server
                 throw new IOException("injected online arcade save failure");
             }
             OnlineArcadeRunStoreSnapshot snapshot = new();
-            CopyWallets(self, snapshot);
             foreach (EntityRef<OnlineArcadeRunActor> actorRef in self.Runs.Values)
             {
                 OnlineArcadeRunActor actor = actorRef;
@@ -817,50 +795,11 @@ namespace ET.Server
                 throw new IOException("injected online arcade save failure");
             }
             OnlineArcadeRunStoreSnapshot snapshot = new();
-            CopyWallets(self, snapshot);
             foreach (EntityRef<OnlineArcadeRunActor> actorRef in self.Runs.Values)
             {
                 OnlineArcadeRunActor actor = actorRef;
                 if (actor != null && !actor.IsDisposed && actor.Record.RunId != removedRunId)
                     snapshot.Runs.Add(CloneCommittedRecord(actor));
-            }
-            WriteAtomic(self.StorePath, snapshot);
-        }
-
-        private static void CommitRunAndWallet(this OnlineArcadeRunManagerComponent self,
-            OnlineArcadeRunRecord candidateRun, OnlineArcadeRewardWalletRecord candidateWallet)
-        {
-            if (self.RemainingFailSaveCount > 0)
-            { self.RemainingFailSaveCount--; throw new IOException("injected online arcade save failure"); }
-            OnlineArcadeRunStoreSnapshot snapshot = new();
-            foreach (OnlineArcadeRewardWalletRecord wallet in self.RewardWallets.Values
-                         .Where(x => x.PlayerId != candidateWallet.PlayerId).OrderBy(x => x.PlayerId))
-                snapshot.RewardWallets.Add(CloneWallet(wallet));
-            snapshot.RewardWallets.Add(CloneWallet(candidateWallet));
-            foreach (EntityRef<OnlineArcadeRunActor> actorRef in self.Runs.Values)
-            {
-                OnlineArcadeRunActor actor = actorRef;
-                if (actor != null && !actor.IsDisposed && actor.Record.RunId != candidateRun.RunId)
-                    snapshot.Runs.Add(CloneCommittedRecord(actor));
-            }
-            snapshot.Runs.Add(Clone(candidateRun));
-            WriteAtomic(self.StorePath, snapshot);
-        }
-
-        private static void CommitWalletOnly(this OnlineArcadeRunManagerComponent self,
-            OnlineArcadeRewardWalletRecord candidateWallet)
-        {
-            if (self.RemainingFailSaveCount > 0)
-            { self.RemainingFailSaveCount--; throw new IOException("injected online arcade save failure"); }
-            OnlineArcadeRunStoreSnapshot snapshot = new();
-            foreach (OnlineArcadeRewardWalletRecord wallet in self.RewardWallets.Values
-                         .Where(x => x.PlayerId != candidateWallet.PlayerId).OrderBy(x => x.PlayerId))
-                snapshot.RewardWallets.Add(CloneWallet(wallet));
-            snapshot.RewardWallets.Add(CloneWallet(candidateWallet));
-            foreach (EntityRef<OnlineArcadeRunActor> actorRef in self.Runs.Values)
-            {
-                OnlineArcadeRunActor actor = actorRef;
-                if (actor != null && !actor.IsDisposed) snapshot.Runs.Add(CloneCommittedRecord(actor));
             }
             WriteAtomic(self.StorePath, snapshot);
         }
@@ -890,10 +829,6 @@ namespace ET.Server
         private static void ValidateStore(OnlineArcadeRunStoreSnapshot snapshot)
         {
             if (snapshot.SchemaVersion is not (1 or 2)) throw new InvalidOperationException($"Unsupported OnlineArcadeStore schema version: {snapshot.SchemaVersion}");
-            snapshot.RewardWallets ??= new List<OnlineArcadeRewardWalletRecord>();
-            if (snapshot.RewardWallets.GroupBy(x => x?.PlayerId ?? 0).Any(x => x.Key <= 0 || x.Count() > 1) ||
-                snapshot.RewardWallets.Any(x => x.Balances == null || x.SettledRunIds == null || x.PendingClaims == null))
-                throw new InvalidOperationException("OnlineArcadeStore contains an invalid reward wallet.");
             HashSet<long> runIds = new();
             HashSet<long> roomIds = new();
             HashSet<long> playerIds = new();
@@ -912,33 +847,11 @@ namespace ET.Server
                     if (player == null || player.PlayerId <= 0 || !playerIds.Add(player.PlayerId) || player.Lives < 0 ||
                         player.Score < 0 || player.ScoreMultiplier < 1 || player.MultiplierProgress < 0 ||
                         player.RunGold < 0 || player.Bombs < 0 || player.Dashes < 0 || player.ShopOffers == null ||
-                        player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null ||
-                        player.PendingRewards == null || player.PendingRewards.Any(x =>
-                            string.IsNullOrWhiteSpace(x.Key) || x.Value <= 0))
+                        player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null)
                         throw new InvalidOperationException("OnlineArcadeStore contains an invalid player.");
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
             }
-        }
-
-        private static void CopyWallets(OnlineArcadeRunManagerComponent self, OnlineArcadeRunStoreSnapshot snapshot)
-        {
-            foreach (OnlineArcadeRewardWalletRecord wallet in self.RewardWallets.Values.OrderBy(x => x.PlayerId))
-                snapshot.RewardWallets.Add(CloneWallet(wallet));
-        }
-
-        private static OnlineArcadeRewardWalletRecord CloneWallet(OnlineArcadeRewardWalletRecord source)
-        {
-            OnlineArcadeRewardWalletRecord copy = new()
-            {
-                PlayerId = source.PlayerId,
-                Balances = new Dictionary<string, long>(source.Balances ?? new(), StringComparer.Ordinal),
-                SettledRunIds = new HashSet<long>(source.SettledRunIds ?? new()),
-            };
-            foreach (OnlineArcadePendingRewardRecord pending in source.PendingClaims ?? new())
-                copy.PendingClaims.Add(new OnlineArcadePendingRewardRecord
-                { RunId = pending.RunId, Rewards = new Dictionary<string, long>(pending.Rewards ?? new(), StringComparer.Ordinal) });
-            return copy;
         }
 
         private static void ApplyPurchase(OnlineArcadePlayerRecord player, string offerId)
@@ -1033,7 +946,6 @@ namespace ET.Server
                 player.UpgradeStacks ??= new Dictionary<string, int>(StringComparer.Ordinal);
                 player.Consumables ??= new Dictionary<string, int>(StringComparer.Ordinal);
                 player.EquipmentBySlot ??= new Dictionary<string, string>(StringComparer.Ordinal);
-                player.PendingRewards ??= new Dictionary<string, long>(StringComparer.Ordinal);
                 EnsureRequiredLifeOffer(run, player);
             }
         }
@@ -2958,13 +2870,7 @@ namespace ET.Server
                     equipment.ProductId = entry.Value;
                     player.Equipment.Add(equipment);
                 }
-                foreach (KeyValuePair<string, long> entry in source.PendingRewards.OrderBy(x => x.Key, StringComparer.Ordinal))
-                {
-                    OnlineArcadeRewardAmountInfo reward = OnlineArcadeRewardAmountInfo.Create();
-                    reward.RewardId = entry.Key;
-                    reward.Amount = entry.Value;
-                    player.PendingRewards.Add(reward);
-                }
+
                 snapshot.Players.Add(player);
             }
             return snapshot;
@@ -3147,13 +3053,7 @@ namespace ET.Server
                     equipment.ProductId = sourceEquipment.ProductId ?? string.Empty;
                     player.Equipment.Add(equipment);
                 }
-                foreach (OnlineArcadeRewardAmountInfo sourceReward in sourcePlayer.PendingRewards)
-                {
-                    OnlineArcadeRewardAmountInfo reward = OnlineArcadeRewardAmountInfo.Create();
-                    reward.RewardId = sourceReward.RewardId ?? string.Empty;
-                    reward.Amount = sourceReward.Amount;
-                    player.PendingRewards.Add(reward);
-                }
+
                 clone.Players.Add(player);
             }
             return clone;

@@ -6,6 +6,9 @@ using UnityEngine.UI;
 
 namespace Game
 {
+    /// <summary>保留旧资源装备格的显示槽位契约，不拥有本局或局外装备状态。</summary>
+    public enum WeaponSlot { None = 0, Melee = 1, Ranged = 2 }
+
     public sealed class EquipmentSlotBoxUI : BaseBoxUI, IPointerClickHandler
     {
         public Button ClickButton;

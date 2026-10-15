@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System;
 
@@ -363,7 +363,7 @@ namespace Game
             }
         }
 
-        public void SetWeaponPresentation(WeaponSlot activeSlot, bool showShortSword, bool showBow)
+        public void SetWeaponPresentation(bool ranged, bool showShortSword, bool showBow)
         {
             if (GetComponent<CharacterWeaponPresenter>() != null)
             {
@@ -385,7 +385,7 @@ namespace Game
             animator?.ResetTrigger(PistolFireAnimatorParameter);
             animator?.ResetTrigger(ShotgunFireAnimatorParameter);
             ApplyRequestedWeaponAim();
-            SetBowAnimatorActive(activeSlot == WeaponSlot.Ranged && showBow);
+            SetBowAnimatorActive(ranged && showBow);
             ConfigureProjectileFirePoint(DefaultProjectileFirePoint);
         }
 
@@ -532,10 +532,10 @@ namespace Game
             actionProgressView?.FaceWorld(cameraPosition, cameraUp);
         }
 
-        public void ShowActionProgress(PlayerActionSnapshot snapshot)
+        public void ShowActionProgress(float progress01, string iconAddress)
         {
-            GetComponent<CharacterWeaponPresenter>()?.ShowReload(snapshot);
-            actionProgressView?.Show(snapshot);
+            GetComponent<CharacterWeaponPresenter>()?.ShowReload(progress01);
+            actionProgressView?.Show(progress01, iconAddress);
         }
 
         public void HideActionProgress()

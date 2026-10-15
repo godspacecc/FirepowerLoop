@@ -45,8 +45,6 @@ namespace Game
             if (currentParent != parent || matrix != parentMatrix) { Reset(); CaptureParent(); return; }
             bool allowed = eligible && alive && view.gameObject.activeInHierarchy &&
                 architecture.GetModel<AppStateModel>().CurrentState.Value == AppState.Playing;
-            var online = architecture.GetModel<OnlineWorldModel>().Snapshot.Value;
-            if (online != null && online.HasWorld && online.ConnectionLost) allowed = false;
             actualMotion.y = 0f;
             if (!allowed || actualMotion.sqrMagnitude <= 0.00000001f) { Reset(); return; }
             bool supported = ground.TryGet(view.transform, view.CharacterController, out var surface);

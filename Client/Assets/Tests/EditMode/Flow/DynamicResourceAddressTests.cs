@@ -172,21 +172,12 @@ namespace Game.Tests
                 [new RuntimeLogUICtrl()] = "Diagnostics/RuntimeLog",
                 [new TestCmdButtonUICtrl()] = "Diagnostics/TestCmdButton",
                 [new TestCmdUICtrl()] = "Diagnostics/TestCmd",
-                [new CraftUICtrl()] = "Craft/Craft",
-                [new ExpeditionHudUICtrl()] = "Expedition/ExpeditionHud",
                 [new SettingUICtrl()] = "Home/Setting",
                 [new StartUICtrl()] = "Home/Start",
-                [new BagUICtrl()] = "Inventory/Bag",
-                [new SearchContainerUICtrl()] = "Inventory/SearchContainer",
-                [new WarehouseUICtrl()] = "Inventory/Warehouse",
                 [new FloatUICtrl()] = "Notify/Float",
                 [new MessageUICtrl()] = "Notify/Message",
                 [new OnlineLoginUICtrl()] = "Online/OnlineLogin",
                 [new OnlineRoomUICtrl()] = "Online/OnlineRoom",
-                [new PlayerConditionHudUICtrl()] = "Player/PlayerConditionHud",
-                [new GameplayGuideHudUICtrl()] = "Player/GameplayGuideHud",
-                [new TemporaryBuildingHudUICtrl()] = "TemporaryBuilding/TemporaryBuildingHud",
-                [new TemporaryBuildingSelectUICtrl()] = "TemporaryBuilding/TemporaryBuildingSelect"
             };
 
             Assert.That(expectedPaths, Has.Count.EqualTo(19));

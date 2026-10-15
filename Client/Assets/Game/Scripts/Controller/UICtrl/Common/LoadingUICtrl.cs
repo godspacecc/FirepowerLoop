@@ -98,7 +98,7 @@ namespace Game
             mapLoadingStartedAt=DateTime.Now;
             failureLogsCopied=false;
             mapLoadingActive = true;
-            baseMapLoading = evt.MapId == MapIds.Base;
+            baseMapLoading = false;
             mapProgress = 0f;
             mapError = null;
             if (downloadActive) downloadDismissed = true;

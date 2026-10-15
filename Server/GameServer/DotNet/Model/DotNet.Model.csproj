@@ -26,9 +26,6 @@
         <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
     </PropertyGroup>
     <ItemGroup>
-        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionData.cs" Link="Share\WorldProjectileCollisionData.cs" />
-        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionQuery.cs" Link="Share\WorldProjectileCollisionQuery.cs" />
-        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionValidation.cs" Link="Share\WorldProjectileCollisionValidation.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHazardRules.cs" Link="Share\ArcadeHazardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeTreasureRoomRules.cs" Link="Share\ArcadeTreasureRoomRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeOpeningRules.cs" Link="Share\ArcadeOpeningRules.cs" />

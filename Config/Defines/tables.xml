@@ -1,34 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <tables>
-    <table name="TbDialogueEntry" value="DialogueEntryConfig" input="dialogue_entry.csv" group="c"/>
-    <table name="TbDialogueNode" value="DialogueNodeConfig" input="dialogue_node.csv" group="c"/>
-    <table name="TbDialogueOption" value="DialogueOptionConfig" input="dialogue_option.csv" group="c"/>
-    <table name="TbCivilisationValleyGeneration" value="CivilisationValleyGenerationConfig" input="civilisation_valley_generation.csv" group="c" index="MapId"/>
-    <table name="TbCivilisationTechnology" value="CivilisationTechnologyConfig" input="civilisation_technology.csv" group="c"/>
-    <table name="TbCivilisationProduction" value="CivilisationProductionConfig" input="civilisation_production.csv" group="c"/>
-    <table name="TbCivilisationReturnValue" value="CivilisationReturnValueConfig" input="civilisation_return_value.csv" group="c"/>
-    <table name="TbCivilisationSearchPoint" value="CivilisationSearchPointConfig" input="civilisation_search_point.csv" group="c"/>
-    <table name="TbItem" value="Item" input="item.csv" group="e"/>
-    <table name="TbWeapon" value="WeaponConfig" input="weapon.csv" group="e"/>
+    <table name="TbItem" value="Item" input="item.csv" group="c"/>
+    <table name="TbWeapon" value="WeaponConfig" input="weapon.csv" group="c"/>
     <table name="TbWeaponAppearance" value="WeaponAppearanceConfig" input="weapon_appearance.csv" group="c"/>
-    <table name="TbCraftRecipe" value="CraftRecipeConfig" input="craft_recipe.csv" group="c"/>
-    <table name="TbBaseCampLayout" value="BaseCampLayoutConfig" input="base_camp_layout.csv" group="c"/>
-    <table name="TbTempBuilding" value="TempBuildingConfig" input="temp_building.csv" group="e"/>
-    <table name="TbTempBuildingManualAttack" value="TempBuildingManualAttackConfig" input="temp_building_manual_attack.csv" group="e"/>
     <table name="TbProjectile" value="ProjectileConfig" input="projectile.csv" group="e"/>
     <table name="TbMap" value="MapConfig" input="map.csv" group="c"/>
     <table name="TbMapDisplay" value="MapDisplayConfig" input="map_display.csv" group="c"/>
-    <table name="TbExpeditionTask" value="ExpeditionTaskConfig" input="expedition_task.csv" group="c"/>
     <table name="TbMapScenePart" value="MapScenePartConfig" input="map_scene_part.csv" group="c"/>
-    <table name="TbMapSpawn" value="MapSpawnConfig" input="map_spawn.csv" group="e"/>
-    <table name="TbNpc" value="NpcConfig" input="npc.csv" group="c"/>
-    <table name="TbShop" value="ShopConfig" input="shop.csv" group="c"/>
-    <table name="TbShopItem" value="ShopItemConfig" input="shop_item.csv" group="c"/>
-    <table name="TbPlayer" value="PlayerConfig" input="player.csv" group="e"/>
+    <table name="TbMapSpawn" value="MapSpawnConfig" input="map_spawn.csv" group="c"/>
+    <table name="TbPlayer" value="PlayerConfig" input="player.csv" group="c"/>
     <table name="TbEnemy" value="EnemyConfig" input="enemy.csv" group="e"/>
-    <table name="TbLoot" value="LootConfig" input="loot.csv" group="e"/>
-    <table name="TbOnlineWorldRule" value="OnlineWorldRuleConfig" input="online_world_rule.csv" group="e"/>
-    <table name="TbExtraction" value="ExtractionConfig" input="extraction.csv" group="c"/>
+    <table name="TbLoot" value="LootConfig" input="loot.csv" group="c"/>
     <table name="TbTestCmdCategory" value="TestCmdCategoryConfig" input="test_cmd_category.csv" group="c"/>
     <table name="TbTestCmdEntry" value="TestCmdEntryConfig" input="test_cmd_entry.csv" group="c"/>
     <table name="TbArcadeRule" value="ArcadeRuleConfig" input="arcade_rule.csv" group="e"/>
@@ -51,7 +33,4 @@
     <table name="TbStartProcess" value="StartProcessConfig" input="server_start_process.csv" group="s"/>
     <table name="TbStartZone" value="StartZoneConfig" input="server_start_zone.csv" group="s"/>
     <table name="TbStartScene" value="StartSceneConfig" input="server_start_scene.csv" group="s"/>
-    <table name="TbItemPreparation" value="ItemPreparationConfig" input="item_preparation.csv" group="c"/>
-    <table name="TbBasePreparationRule" value="BasePreparationRuleConfig" input="base_preparation_rule.csv" group="c"/>
-    <table name="TbMapPreparationRule" value="MapPreparationRuleConfig" input="map_preparation_rule.csv" group="c"/>
 </tables>

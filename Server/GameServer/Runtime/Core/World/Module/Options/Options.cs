@@ -88,31 +88,8 @@ namespace ET
         [Option("OnlineChatFailCloseCount", Required = false, Default = 0)]
         public int OnlineChatFailCloseCount { get; set; }
 
-        [Option("OnlineWorldFailLeaveCount", Required = false, Default = 0)]
-        public int OnlineWorldFailLeaveCount { get; set; }
-
-        [Option("OnlineWorldTickMilliseconds", Required = false, Default = 100)]
-        public int OnlineWorldTickMilliseconds { get; set; }
-
-        [Option("OnlineWorldPlayerRespawnMilliseconds", Required = false, Default = 3000)]
-        public int OnlineWorldPlayerRespawnMilliseconds { get; set; }
-
-        [Option("OnlineWorldNavigationHeartbeatMilliseconds", Required = false, Default = 500)]
-        public int OnlineWorldNavigationHeartbeatMilliseconds { get; set; }
-
-        [Option("OnlineWorldNavigationLeaseTimeoutMilliseconds", Required = false, Default = 2000)]
-        public int OnlineWorldNavigationLeaseTimeoutMilliseconds { get; set; }
-
-        [Option("OnlineWorldCorpseLifetimeMillisecondsOverride", Required = false, Default = 0)]
-        public int OnlineWorldCorpseLifetimeMillisecondsOverride { get; set; }
-
-        [Option("OnlineProfileFailSaveCount", Required = false, Default = 0)]
-        public int OnlineProfileFailSaveCount { get; set; }
-
         [Option("OnlineArcadeFailSaveCount", Required = false, Default = 0)]
         public int OnlineArcadeFailSaveCount { get; set; }
 
-        [Option("OnlineWorldDropLeaveCommitResponseCount", Required = false, Default = 0)]
-        public int OnlineWorldDropLeaveCommitResponseCount { get; set; }
     }
 }

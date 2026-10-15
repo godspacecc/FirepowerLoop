@@ -88,12 +88,6 @@ namespace Game
 
         private static async UniTask<MapContentUnloadResult> UnloadInternal(IMapContentHandle handle, CancellationToken cancellationToken)
         {
-            if(handle is GeneratedValleyContentHandle generated)
-            {
-                var release=await generated.ReleaseGeneratedAsync();
-                if(!release.Success)return release;
-                return await UnloadInternal(generated.Original,cancellationToken);
-            }
             if (handle is not YooMapContentHandle yooHandle || yooHandle.SceneHandle == null)
             {
                 return MapContentUnloadResult.Ok();

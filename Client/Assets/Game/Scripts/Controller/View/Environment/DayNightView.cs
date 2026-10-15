@@ -6,7 +6,7 @@ namespace Game
 {
     /// <summary>
     /// 将昼夜快照应用到全局方向光和环境光；地图可临时提供天体轨道，但不接管光强与环境状态。
-    /// 不推进时间或修改玩法规则，时刻权威仍由 DayNightVisualSystem 提供。
+    /// 保留正午晴天光照，不推进玩法时间。
     /// </summary>
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Light))]
@@ -28,9 +28,6 @@ namespace Game
         [SerializeField] private Color daylightFog = new Color(0.62f, 0.70f, 0.78f, 1f);
         [SerializeField] private Color nightFog = new Color(0.035f, 0.055f, 0.10f, 1f);
 
-        private IUnRegister visualChangedUnregister;
-        private IUnRegister weatherChangedUnregister;
-        private BaseWeatherSnapshot weather;
         private bool baselineCaptured;
         private Light baselineSun;
         private Quaternion baselineRotation;
@@ -41,7 +38,7 @@ namespace Game
         private Color baselineFogColor;
         // 地图启用程序化天空时临时提供轨道；光强、颜色和环境光仍由本 View 统一应用。
         private MapProceduralSkyView orbitSource;
-        private DayNightVisualSnapshot lastSnapshot = new DayNightVisualSnapshot(0.5f, false);
+        private float lastDayProgress = .5f;
 
         private void Awake()
         {
@@ -55,38 +52,23 @@ namespace Game
 
         private void Start()
         {
-            visualChangedUnregister = Game.Interface.RegisterEvent<DayNightVisualChangedEvent>(OnVisualChanged);
-            weatherChangedUnregister = Game.Interface.RegisterEvent<BaseWeatherChangedEvent>(evt => ApplyWeather(evt.Snapshot));
-            weather = Game.Interface.GetSystem<BaseWeatherSystem>()?.GetSnapshot() ?? default;
-            var system = Game.Interface.GetSystem<DayNightVisualSystem>();
-            if (system != null)
-            {
-                Apply(system.GetSnapshot());
-            }
+            Apply(.5f);
         }
 
         private void OnDestroy()
         {
-            visualChangedUnregister?.UnRegister();
-            weatherChangedUnregister?.UnRegister();
-            visualChangedUnregister = null;
             RestoreBaseline();
         }
 
-        private void OnVisualChanged(DayNightVisualChangedEvent evt)
+        internal void Apply(float dayProgress)
         {
-            Apply(evt.Snapshot);
-        }
-
-        internal void Apply(DayNightVisualSnapshot snapshot)
-        {
-            lastSnapshot = snapshot;
+            lastDayProgress = dayProgress;
             if (directionalLight == null)
             {
                 return;
             }
 
-            var progress = snapshot.DayProgress;
+            var progress = dayProgress;
             var solarHeight = Mathf.Sin((progress - 0.25f) * Mathf.PI * 2f);
             var daylight = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.12f, 0.18f, solarHeight));
             var twilight = CalculateTwilightAmount(solarHeight);
@@ -118,14 +100,11 @@ namespace Game
             RenderSettings.ambientLight = Color.Lerp(lowLightAmbient, daylightAmbient, daylight);
             var fogTransition = Mathf.Max(daylight, twilight * 0.35f);
             RenderSettings.fogColor = Color.Lerp(nightFog, daylightFog, fogTransition);
-            var overcast = weather.CloudAmount;
+            var overcast = 0f;
             directionalLight.intensity *= Mathf.Lerp(1f, .32f, overcast);
             RenderSettings.ambientLight *= Mathf.Lerp(1f, .78f, overcast);
             RenderSettings.fogColor = Color.Lerp(RenderSettings.fogColor, new Color(.35f,.40f,.46f) * Mathf.Lerp(.22f,1f,daylight), overcast * .65f);
         }
-
-        /// <summary>天气仅调制现有昼夜结果；不改变太阳轨道，晴天参数能完整恢复原亮度。</summary>
-        internal void ApplyWeather(BaseWeatherSnapshot snapshot) { weather = snapshot; Apply(lastSnapshot); }
 
         internal static float CalculateTwilightAmount(float solarHeight)
         {
@@ -139,7 +118,7 @@ namespace Game
         {
             if (source == null || (orbitSource != null && orbitSource != source)) return false;
             orbitSource = source;
-            Apply(lastSnapshot);
+            Apply(lastDayProgress);
             return true;
         }
 
@@ -148,7 +127,7 @@ namespace Game
         {
             if (orbitSource != source) return;
             orbitSource = null;
-            Apply(lastSnapshot);
+            Apply(lastDayProgress);
         }
 
         private void CaptureBaseline()

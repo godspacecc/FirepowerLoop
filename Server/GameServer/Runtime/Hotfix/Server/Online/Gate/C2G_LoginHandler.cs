@@ -38,8 +38,6 @@ namespace ET.Server
             getOrCreate.PlayerId = account.PlayerId;
             getOrCreate.DisplayName = account.DisplayName;
             getOrCreate.GateProxyActorId = proxy.GetActorId();
-            getOrCreate.OnlineInventory = OnlineWorldSnapshotHelper.Clone(account.OnlineInventory);
-            getOrCreate.HasReceivedOnlineStarterSupplies = account.HasReceivedOnlineStarterSupplies;
             getOrCreate.ProfileRevision = account.Revision;
 
             using P2G_GetOrCreatePlayer player = await root.GetComponent<MessageSender>().Call(playerSceneActorId, getOrCreate, false) as P2G_GetOrCreatePlayer;

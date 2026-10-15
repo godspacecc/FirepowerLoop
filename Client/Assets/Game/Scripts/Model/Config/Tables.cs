@@ -12,35 +12,17 @@ using Luban;
 
 public partial class Tables
 {
-    public TbDialogueEntry TbDialogueEntry {get; }
-    public TbDialogueNode TbDialogueNode {get; }
-    public TbDialogueOption TbDialogueOption {get; }
-    public TbCivilisationValleyGeneration TbCivilisationValleyGeneration {get; }
-    public TbCivilisationTechnology TbCivilisationTechnology {get; }
-    public TbCivilisationProduction TbCivilisationProduction {get; }
-    public TbCivilisationReturnValue TbCivilisationReturnValue {get; }
-    public TbCivilisationSearchPoint TbCivilisationSearchPoint {get; }
     public TbItem TbItem {get; }
     public TbWeapon TbWeapon {get; }
     public TbWeaponAppearance TbWeaponAppearance {get; }
-    public TbCraftRecipe TbCraftRecipe {get; }
-    public TbBaseCampLayout TbBaseCampLayout {get; }
-    public TbTempBuilding TbTempBuilding {get; }
-    public TbTempBuildingManualAttack TbTempBuildingManualAttack {get; }
     public TbProjectile TbProjectile {get; }
     public TbMap TbMap {get; }
     public TbMapDisplay TbMapDisplay {get; }
-    public TbExpeditionTask TbExpeditionTask {get; }
     public TbMapScenePart TbMapScenePart {get; }
     public TbMapSpawn TbMapSpawn {get; }
-    public TbNpc TbNpc {get; }
-    public TbShop TbShop {get; }
-    public TbShopItem TbShopItem {get; }
     public TbPlayer TbPlayer {get; }
     public TbEnemy TbEnemy {get; }
     public TbLoot TbLoot {get; }
-    public TbOnlineWorldRule TbOnlineWorldRule {get; }
-    public TbExtraction TbExtraction {get; }
     public TbTestCmdCategory TbTestCmdCategory {get; }
     public TbTestCmdEntry TbTestCmdEntry {get; }
     public TbArcadeRule TbArcadeRule {get; }
@@ -56,41 +38,20 @@ public partial class Tables
     public TbArcadeShopItem TbArcadeShopItem {get; }
     public TbArcadeUpgrade TbArcadeUpgrade {get; }
     public TbArcadeReward TbArcadeReward {get; }
-    public TbItemPreparation TbItemPreparation {get; }
-    public TbBasePreparationRule TbBasePreparationRule {get; }
-    public TbMapPreparationRule TbMapPreparationRule {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
-        TbDialogueEntry = new TbDialogueEntry(loader("tbdialogueentry"));
-        TbDialogueNode = new TbDialogueNode(loader("tbdialoguenode"));
-        TbDialogueOption = new TbDialogueOption(loader("tbdialogueoption"));
-        TbCivilisationValleyGeneration = new TbCivilisationValleyGeneration(loader("tbcivilisationvalleygeneration"));
-        TbCivilisationTechnology = new TbCivilisationTechnology(loader("tbcivilisationtechnology"));
-        TbCivilisationProduction = new TbCivilisationProduction(loader("tbcivilisationproduction"));
-        TbCivilisationReturnValue = new TbCivilisationReturnValue(loader("tbcivilisationreturnvalue"));
-        TbCivilisationSearchPoint = new TbCivilisationSearchPoint(loader("tbcivilisationsearchpoint"));
         TbItem = new TbItem(loader("tbitem"));
         TbWeapon = new TbWeapon(loader("tbweapon"));
         TbWeaponAppearance = new TbWeaponAppearance(loader("tbweaponappearance"));
-        TbCraftRecipe = new TbCraftRecipe(loader("tbcraftrecipe"));
-        TbBaseCampLayout = new TbBaseCampLayout(loader("tbbasecamplayout"));
-        TbTempBuilding = new TbTempBuilding(loader("tbtempbuilding"));
-        TbTempBuildingManualAttack = new TbTempBuildingManualAttack(loader("tbtempbuildingmanualattack"));
         TbProjectile = new TbProjectile(loader("tbprojectile"));
         TbMap = new TbMap(loader("tbmap"));
         TbMapDisplay = new TbMapDisplay(loader("tbmapdisplay"));
-        TbExpeditionTask = new TbExpeditionTask(loader("tbexpeditiontask"));
         TbMapScenePart = new TbMapScenePart(loader("tbmapscenepart"));
         TbMapSpawn = new TbMapSpawn(loader("tbmapspawn"));
-        TbNpc = new TbNpc(loader("tbnpc"));
-        TbShop = new TbShop(loader("tbshop"));
-        TbShopItem = new TbShopItem(loader("tbshopitem"));
         TbPlayer = new TbPlayer(loader("tbplayer"));
         TbEnemy = new TbEnemy(loader("tbenemy"));
         TbLoot = new TbLoot(loader("tbloot"));
-        TbOnlineWorldRule = new TbOnlineWorldRule(loader("tbonlineworldrule"));
-        TbExtraction = new TbExtraction(loader("tbextraction"));
         TbTestCmdCategory = new TbTestCmdCategory(loader("tbtestcmdcategory"));
         TbTestCmdEntry = new TbTestCmdEntry(loader("tbtestcmdentry"));
         TbArcadeRule = new TbArcadeRule(loader("tbarcaderule"));
@@ -106,43 +67,22 @@ public partial class Tables
         TbArcadeShopItem = new TbArcadeShopItem(loader("tbarcadeshopitem"));
         TbArcadeUpgrade = new TbArcadeUpgrade(loader("tbarcadeupgrade"));
         TbArcadeReward = new TbArcadeReward(loader("tbarcadereward"));
-        TbItemPreparation = new TbItemPreparation(loader("tbitempreparation"));
-        TbBasePreparationRule = new TbBasePreparationRule(loader("tbbasepreparationrule"));
-        TbMapPreparationRule = new TbMapPreparationRule(loader("tbmappreparationrule"));
         ResolveRef();
     }
     
     private void ResolveRef()
     {
-        TbDialogueEntry.ResolveRef(this);
-        TbDialogueNode.ResolveRef(this);
-        TbDialogueOption.ResolveRef(this);
-        TbCivilisationValleyGeneration.ResolveRef(this);
-        TbCivilisationTechnology.ResolveRef(this);
-        TbCivilisationProduction.ResolveRef(this);
-        TbCivilisationReturnValue.ResolveRef(this);
-        TbCivilisationSearchPoint.ResolveRef(this);
         TbItem.ResolveRef(this);
         TbWeapon.ResolveRef(this);
         TbWeaponAppearance.ResolveRef(this);
-        TbCraftRecipe.ResolveRef(this);
-        TbBaseCampLayout.ResolveRef(this);
-        TbTempBuilding.ResolveRef(this);
-        TbTempBuildingManualAttack.ResolveRef(this);
         TbProjectile.ResolveRef(this);
         TbMap.ResolveRef(this);
         TbMapDisplay.ResolveRef(this);
-        TbExpeditionTask.ResolveRef(this);
         TbMapScenePart.ResolveRef(this);
         TbMapSpawn.ResolveRef(this);
-        TbNpc.ResolveRef(this);
-        TbShop.ResolveRef(this);
-        TbShopItem.ResolveRef(this);
         TbPlayer.ResolveRef(this);
         TbEnemy.ResolveRef(this);
         TbLoot.ResolveRef(this);
-        TbOnlineWorldRule.ResolveRef(this);
-        TbExtraction.ResolveRef(this);
         TbTestCmdCategory.ResolveRef(this);
         TbTestCmdEntry.ResolveRef(this);
         TbArcadeRule.ResolveRef(this);
@@ -158,9 +98,6 @@ public partial class Tables
         TbArcadeShopItem.ResolveRef(this);
         TbArcadeUpgrade.ResolveRef(this);
         TbArcadeReward.ResolveRef(this);
-        TbItemPreparation.ResolveRef(this);
-        TbBasePreparationRule.ResolveRef(this);
-        TbMapPreparationRule.ResolveRef(this);
     }
 }
 

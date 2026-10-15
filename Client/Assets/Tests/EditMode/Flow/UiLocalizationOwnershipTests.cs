@@ -503,58 +503,6 @@ namespace Game.Tests
             Assert.That(row.ConnectionText.text, Is.EqualTo(Loc.T("ui.online.room.member_online")));
         }
 
-        [Test]
-        public void OnlineRoomConnectionLost_TogglesDisconnectHintRootThroughRealLifecycle()
-        {
-            SetupHarness();
-            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
-
-            var roomCtrl = UIHelper.ShowUI<OnlineRoomUICtrl>();
-            var roomUi = GetBaseUi<OnlineRoomUI>(roomCtrl);
-            var connected = RoomSnapshot(false);
-            var disconnected = RoomSnapshot(true);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(connected);
-            Assert.That(roomUi.DisconnectHintRoot.activeSelf, Is.False);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(disconnected);
-            Assert.That(roomUi.DisconnectHintRoot.activeSelf, Is.True);
-
-            Game.Interface.GetModel<OnlineRoomModel>().Publish(connected);
-            Assert.That(roomUi.DisconnectHintRoot.activeSelf, Is.False);
-        }
-
-        [Test]
-        public void InventoryLanguageChanged_RefreshesDynamicTextsAndPreservesModeSelection()
-        {
-            SetupInventoryHarness();
-            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
-            Assert.That(Game.Interface.GetModel<PlayerBagModel>().Container.TryAdd(ItemIds.Medkit, 2, 5, out _, out var error), Is.True, error);
-
-            Assert.That(BagUICtrl.TryShow(out error), Is.True, error);
-            var ctrl = UIHelper.GetUICtrl<BagUICtrl>();
-            var ui = GetBaseUi<BagUI>(ctrl);
-            ExecuteEvents.Execute(
-                ctrl.PlayerBagSlots[0].ClickButton.gameObject,
-                new PointerEventData(EventSystem.current),
-                ExecuteEvents.pointerClickHandler);
-            var transfer = Game.Interface.GetUtility<IItemTransferPort>();
-
-            Assert.That(transfer.State.SelectedItemId, Is.EqualTo(ItemIds.Medkit));
-            Assert.That(ui.DetailNameText.text, Is.EqualTo("急救包"));
-            Assert.That(ui.DetailDescText.text, Is.EqualTo("使用后恢复30点生命"));
-            Assert.That(ui.CapacityText.text, Is.EqualTo("1 / 12"));
-            Assert.That(PrefabPathText(ui.transform, "BagOnlyRoot/BagOnlyTitleText").text, Is.EqualTo("背包"));
-
-            Game.Interface.SendCommand(new SetLanguageCommand { LanguageCode = "en-US" });
-
-            Assert.That(transfer.State.SelectedItemId, Is.EqualTo(ItemIds.Medkit));
-            Assert.That(ui.DetailNameText.text, Is.EqualTo("Medkit"));
-            Assert.That(ui.DetailDescText.text, Is.EqualTo("Restores 30 health when used."));
-            Assert.That(ui.CapacityText.text, Is.EqualTo("1 / 12"));
-            Assert.That(PrefabPathText(ui.transform, "BagOnlyRoot/BagOnlyTitleText").text, Is.EqualTo("Inventory"));
-        }
-
         private static void AssertOnlinePrefabContract<T>(
             string prefabPath,
             IReadOnlyDictionary<string, FixedTextExpectation> fixedKeys,
@@ -954,42 +902,6 @@ namespace Game.Tests
             new GameObject(SceneRoot.PoolRootName);
         }
 
-        private static void SetupInventoryHarness()
-        {
-            CleanupHarness();
-            UIHelper.ResetForTests();
-            ResourceLoader.SetLoaderForTests(new LocalizationTestLoader());
-            LocalizationLanguages.ResetForTests();
-            Architecture<Game>.OnRegisterPatch = architecture =>
-            {
-                architecture.RegisterUtility<IRuntimeConfigProvider>(new InventoryTestConfigProvider());
-                architecture.RegisterUtility<IPlayerRuntimePortProvider>(new ActiveInventoryPlayerPort());
-            };
-            CreateUiRoot();
-            new GameObject(SceneRoot.PoolRootName);
-            Game.Interface.GetSystem<AppStateSystem>().TryTransition(AppState.Loading);
-            Game.Interface.GetSystem<AppStateSystem>().TryTransition(AppState.Playing);
-            var mapRoot = new GameObject("InventoryTestMapRoot");
-            mapRoot.transform.SetParent(GameObject.Find(SceneRoot.PoolRootName).transform, false);
-            var dynamicRoot = new GameObject("DynamicObjectRoot");
-            dynamicRoot.transform.SetParent(mapRoot.transform, false);
-            var context = mapRoot.AddComponent<MapContext>();
-            typeof(MapContext).GetField("mapContentRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(context, mapRoot);
-            typeof(MapContext).GetField("dynamicObjectRoot", BindingFlags.Instance | BindingFlags.NonPublic)?.SetValue(context, dynamicRoot.transform);
-            const long mapInstanceId = 101;
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Base, new ActiveInventoryMapHandle(context));
-            Assert.That(Game.Interface.GetSystem<UnitSystem>().TryRegister(new UnitSnapshot(PlayerModel.LocalPlayerUnitId, mapInstanceId,
-                UnitType.Player, UnitSource.Player, "player", Vector3.zero, Quaternion.identity, UnitAuthorityMode.Local,
-                PlayerModel.LocalPlayerUnitId, true), out var unitError), Is.True, unitError);
-            Game.Interface.GetModel<SaveModel>().SetBase(new BaseSaveData(), true);
-            Game.Interface.GetModel<PlayerBagModel>().SetRiskState(PlayerBagRiskState.BaseSafe);
-            Game.Interface.GetModel<CombatModel>().ApplyPlayerConfig(
-                new PlayerConfigDefinition("player", string.Empty, 100, 10, 1f, 1f, 1f, 1f, 5f),
-                false);
-            Game.Interface.GetModel<CombatModel>().SetPlayerHP(100);
-            _ = Game.Interface.GetSystem<InventorySystem>();
-        }
-
         private static void SetupLocalizationOnlyHarness(string zhCnJson, string enUsJson)
         {
             CleanupHarness();
@@ -1042,7 +954,7 @@ namespace Game.Tests
         private sealed class ActiveInventoryMapHandle : IMapContentHandle
         {
             public ActiveInventoryMapHandle(MapContext context) { Context = context; }
-            public string MapId => MapIds.Base;
+            public string MapId => MapIds.Arcade;
             public MapContext Context { get; }
             public bool IsValid => true;
         }
@@ -1109,7 +1021,7 @@ namespace Game.Tests
         {
             public bool TryGetItem(int id, out ItemDefinition value, out string error)
             {
-                if (id == ItemIds.Medkit)
+                if (id == 3)
                 {
                     value = new ItemDefinition(id, "Medkit", "Restores health", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30);
                     error = null;
@@ -1160,13 +1072,6 @@ namespace Game.Tests
             {
                 value = default;
                 error = "missing loot";
-                return false;
-            }
-
-            public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing extraction";
                 return false;
             }
         }

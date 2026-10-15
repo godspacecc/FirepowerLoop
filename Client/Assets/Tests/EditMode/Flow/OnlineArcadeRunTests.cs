@@ -316,7 +316,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ResolutionApisSubmitOnlySettlementAbandonAndClaimIntent()
+        public void ResolutionApisSubmitOnlySettlementAndAbandonIntent()
         {
             Harness harness = CreateHarness();
             harness.System.StartAsync().GetAwaiter().GetResult();
@@ -325,8 +325,6 @@ namespace Game.Tests
             Assert.That(((C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest).ActionKind, Is.EqualTo(4));
             harness.System.ConfirmAbandonAsync().GetAwaiter().GetResult();
             Assert.That(((C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest).ActionKind, Is.EqualTo(5));
-            harness.System.ClaimPendingRewardsAsync().GetAwaiter().GetResult();
-            Assert.That(((C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest).ActionKind, Is.EqualTo(6));
         }
 
         [Test]
@@ -342,7 +340,6 @@ namespace Game.Tests
             Assert.That(result.Snapshot.Players.Count, Is.EqualTo(2));
             Assert.That(result.Snapshot.Players[0].ShopOffers[0].OfferId,
                 Is.Not.EqualTo(result.Snapshot.Players[1].ShopOffers[0].OfferId));
-            Assert.That(result.Snapshot.Players[0].PendingRewards["reward.arcade.scrap"], Is.EqualTo(2));
             Assert.That(result.Snapshot.Players[0].SettlementConfirmed, Is.True);
             Assert.That(result.Snapshot.Players[0].SettlementState, Is.EqualTo(1));
         }
@@ -570,9 +567,6 @@ namespace Game.Tests
                 offer.OfferId = offerId; offer.ShopItemId = "arcade.shop.bomb"; offer.ProductId = "arcade.resource.bomb";
                 offer.ProductType = 3; offer.Price = 35; offer.Amount = 1; offer.MaxPurchases = 5;
                 player.ShopOffers.Add(offer);
-                OnlineArcadeRewardAmountInfo reward = OnlineArcadeRewardAmountInfo.Create();
-                reward.RewardId = "reward.arcade.scrap"; reward.Amount = 2;
-                player.PendingRewards.Add(reward);
                 return player;
             }
         }

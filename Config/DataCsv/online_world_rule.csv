@@ -1,3 +1,0 @@
-##var,Id,BagCapacity,CorpseLifetimeSeconds,StarterMeleeWeaponItemId,StarterRangedWeaponItemId,StarterRangedAmmoAmount
-##type,string,int,int,int,int,int
-,default,12,600,5,6,20

@@ -1,8 +1,0 @@
-##var,Id,NodeId,Order,TextKey,Action,TargetNodeId
-##type,string,string,int,string,DialogueOptionAction,string
-,dialogue.test.sequential,dialogue.test.guide.start,1,dialogue.test.sequential,GoToNode,dialogue.test.guide.line1
-,dialogue.test.choose,dialogue.test.guide.start,2,dialogue.test.choose,GoToNode,dialogue.test.guide.branch
-,dialogue.test.function,dialogue.test.guide.start,3,dialogue.test.function,OpenNpcFunction,
-,dialogue.test.leave,dialogue.test.guide.start,4,dialogue.leave,End,
-,dialogue.test.ask,dialogue.test.guide.branch,1,dialogue.test.ask,GoToNode,dialogue.test.guide.answer
-,dialogue.test.back,dialogue.test.guide.branch,2,dialogue.test.back,GoToNode,dialogue.test.guide.start

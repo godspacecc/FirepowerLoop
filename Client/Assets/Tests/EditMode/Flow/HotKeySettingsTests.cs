@@ -30,10 +30,8 @@ namespace Game.Tests
             Assert.IsTrue(model.TryGet(HotKeyActionIds.TogglePause, out var pause));
             Assert.That(pause.BindingPath, Is.EqualTo(HotKeyDefaults.Escape));
             Assert.That(model.Bindings.Count(item => item.BindingPath == HotKeyDefaults.Escape), Is.EqualTo(1));
-            Assert.IsTrue(model.TryGet(HotKeyActionIds.ToggleMap, out var map));
-            Assert.That(map.BindingPath, Is.EqualTo(HotKeyDefaults.Map));
-            Assert.IsTrue(model.TryGet(HotKeyActionIds.ToggleFlashlight, out var flashlight));
-            Assert.That(flashlight.BindingPath, Is.EqualTo(HotKeyDefaults.Flashlight));
+            Assert.IsFalse(model.TryGet("map.toggle", out _));
+            Assert.IsFalse(model.TryGet("flashlight.toggle", out _));
         }
 
         [Test]
@@ -47,23 +45,9 @@ namespace Game.Tests
             Assert.IsFalse(sanitized.Any(item => item.ActionId == LegacyCloseTopActionId));
             Assert.IsTrue(sanitized.Any(item => item.ActionId == HotKeyActionIds.TogglePause));
             Assert.IsTrue(sanitized.Any(item => item.ActionId == HotKeyActionIds.ToggleRuntimeLog));
-            Assert.IsTrue(sanitized.Any(item => item.ActionId == HotKeyActionIds.ToggleMap));
-            Assert.IsTrue(sanitized.Any(item => item.ActionId == HotKeyActionIds.ToggleFlashlight));
+            Assert.IsFalse(sanitized.Any(item => item.ActionId == "map.toggle"));
+            Assert.IsFalse(sanitized.Any(item => item.ActionId == "flashlight.toggle"));
             Assert.IsFalse(sanitized.Any(item => item.ActionId == "test-command.toggle"));
-        }
-
-        [Test]
-        public void OldSettings_AddGuideShortcutWithoutTakingExistingF5Binding()
-        {
-            var defaults = SettingsData.SanitizeHotKeys(null);
-            Assert.That(defaults.SingleOrDefault(item => item.ActionId == "gameplay-guide.toggle")?.BindingPath,
-                Is.EqualTo("<Keyboard>/f5"));
-            var upgraded = SettingsData.SanitizeHotKeys(new[]
-            {
-                new HotKeyBinding { ActionId = HotKeyActionIds.ToggleMap, Context = HotKeyContext.Gameplay, BindingPath = "<Keyboard>/f5" }
-            });
-            Assert.That(upgraded.Single(item => item.ActionId == HotKeyActionIds.ToggleMap).BindingPath, Is.EqualTo("<Keyboard>/f5"));
-            Assert.That(upgraded.Single(item => item.ActionId == "gameplay-guide.toggle").BindingPath, Is.EqualTo("<Keyboard>/f6"));
         }
 
         [Test]

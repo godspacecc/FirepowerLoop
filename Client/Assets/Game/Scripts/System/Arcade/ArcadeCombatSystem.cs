@@ -1295,7 +1295,7 @@ namespace Game
             else if (result == ArcadeDeathResult.RunFailed)
             {
                 EndCombat();
-                this.GetSystem<ArcadeSceneFlowSystem>().ReturnToBaseAsync().Forget();
+                this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync().Forget();
             }
             else
             {

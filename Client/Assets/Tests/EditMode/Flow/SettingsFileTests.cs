@@ -83,15 +83,8 @@ namespace Game.Tests
             Assert.That(data.HotKeys.Select(item => item.ActionId), Is.EquivalentTo(new[]
             {
                 HotKeyActionIds.TogglePause,
-                HotKeyActionIds.ToggleInventory,
                 HotKeyActionIds.ToggleRuntimeLog,
-                HotKeyActionIds.ToggleMap,
-                HotKeyActionIds.ToggleFlashlight,
             }));
-            Assert.That(data.HotKeys.Single(item => item.ActionId == HotKeyActionIds.ToggleMap).BindingPath,
-                Is.EqualTo(HotKeyDefaults.Map));
-            Assert.That(data.HotKeys.Single(item => item.ActionId == HotKeyActionIds.ToggleFlashlight).BindingPath,
-                Is.EqualTo(HotKeyDefaults.Flashlight));
             Assert.That(data.TestTools.TestCmdButtonPositionX, Is.EqualTo(0.09f));
             Assert.That(data.TestTools.TestCmdButtonPositionY, Is.EqualTo(0.11f));
             Assert.That(sanitized.Audio.MasterVolume, Is.EqualTo(1f));
@@ -102,45 +95,10 @@ namespace Game.Tests
         }
 
         [Test]
-        public void LegacySettingsFillMapBindingWithoutOverwritingGameplayKeys()
-        {
-            var free = SettingsData.SanitizeHotKeys(new[]
-            {
-                new HotKeyBinding { ActionId = HotKeyActionIds.TogglePause, Context = HotKeyContext.Gameplay, BindingPath = HotKeyDefaults.Escape }
-            });
-            Assert.That(free.Single(item => item.ActionId == HotKeyActionIds.ToggleMap).BindingPath, Is.EqualTo(HotKeyDefaults.Map));
-
-            var occupied = SettingsData.SanitizeHotKeys(new[]
-            {
-                new HotKeyBinding { ActionId = "custom.m", Context = HotKeyContext.Gameplay, BindingPath = HotKeyDefaults.Map },
-                new HotKeyBinding { ActionId = "custom.n", Context = HotKeyContext.Gameplay, BindingPath = HotKeyDefaults.MapFallbackN }
-            });
-            Assert.That(occupied.Single(item => item.ActionId == HotKeyActionIds.ToggleMap).BindingPath, Is.EqualTo(HotKeyDefaults.MapFallbackF2));
-            Assert.That(occupied.Single(item => item.ActionId == "custom.m").BindingPath, Is.EqualTo(HotKeyDefaults.Map));
-            var gameplay = occupied.Where(item => item.Context == HotKeyContext.Gameplay).ToArray();
-            Assert.That(gameplay.Select(item => item.BindingPath).Distinct(System.StringComparer.OrdinalIgnoreCase).Count(), Is.EqualTo(gameplay.Length));
-        }
-
-        [Test]
-        public void LegacySettingsFillFlashlightBindingWithoutOverwritingGameplayKeys()
-        {
-            var free = SettingsData.SanitizeHotKeys(System.Array.Empty<HotKeyBinding>());
-            Assert.That(free.Single(item => item.ActionId == HotKeyActionIds.ToggleFlashlight).BindingPath,
-                Is.EqualTo(HotKeyDefaults.Flashlight));
-
-            var occupied = SettingsData.SanitizeHotKeys(new[]
-            {
-                new HotKeyBinding { ActionId = "custom.f", Context = HotKeyContext.Gameplay, BindingPath = HotKeyDefaults.Flashlight }
-            });
-            Assert.That(occupied.Single(item => item.ActionId == HotKeyActionIds.ToggleFlashlight).BindingPath,
-                Is.EqualTo(HotKeyDefaults.FlashlightFallbackL));
-        }
-
-        [Test]
         public void RetiredQuickSlotBindingsAreRemovedWithoutChangingOtherKeys()
         {
             var oldBindings = HotKeyDefaults.Create();
-            oldBindings.Single(binding => binding.ActionId == HotKeyActionIds.ToggleInventory).BindingPath = "<Keyboard>/b";
+            oldBindings.Add(new HotKeyBinding { ActionId = "inventory.toggle", Context = HotKeyContext.Gameplay, BindingPath = "<Keyboard>/b" });
             for (var index = 1; index <= 6; index++)
                 oldBindings.Add(new HotKeyBinding
                 {
@@ -150,8 +108,7 @@ namespace Game.Tests
                 });
             var cleaned = SettingsData.SanitizeHotKeys(oldBindings);
             Assert.That(cleaned.Any(binding => binding.ActionId.StartsWith("quick-slot.")), Is.False);
-            Assert.That(cleaned.Single(binding => binding.ActionId == HotKeyActionIds.ToggleInventory).BindingPath,
-                Is.EqualTo("<Keyboard>/b"));
+            Assert.That(cleaned.Any(binding => binding.ActionId == "inventory.toggle"), Is.False);
         }
 
         [Test]

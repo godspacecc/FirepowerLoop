@@ -79,7 +79,7 @@ namespace Game
         /// <summary>将固定槽位的物品 ID 解析为外观；未知物品不作为空槽处理。</summary>
         public bool ApplyItems(IRuntimeConfigProvider config,params int[] items)
         {
-            if(items==null||items.Length!=ClothingEquipmentModel.SlotCount)return false;
+            if(items==null||items.Length!=7)return false;
             var ids=new string[items.Length];
             for(int i=0;i<items.Length;i++)
             {

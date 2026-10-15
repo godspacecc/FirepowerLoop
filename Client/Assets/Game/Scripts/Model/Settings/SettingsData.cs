@@ -17,13 +17,20 @@ namespace Game
         private const string LegacyToggleTestCommandActionId = "test-command.toggle";
         private static readonly HashSet<string> RemovedHotKeyActionIds = new HashSet<string>
         {
+            "inventory.toggle",
+            "map.toggle",
+            "player.flashlight.toggle",
+            "gameplay-guide.toggle",
             LegacyCloseTopHotKeyActionId,
             LegacyToggleTestCommandActionId,
             // 清洗旧设置中的废弃动作，避免设置界面留下无效绑定或占用按键。
-            "quick-slot.1", "quick-slot.2", "quick-slot.3",
-            "quick-slot.4", "quick-slot.5", "quick-slot.6"
+            "quick-slot.1",
+            "quick-slot.2",
+            "quick-slot.3",
+            "quick-slot.4",
+            "quick-slot.5",
+            "quick-slot.6"
         };
-
         [JsonProperty("version")]
         public int Version { get; set; } = CurrentVersion;
 
@@ -80,26 +87,16 @@ namespace Game
         {
             var result = new List<HotKeyBinding>();
             var seen = new HashSet<string>();
-
             if (bindings != null)
             {
                 foreach (var binding in bindings)
                 {
-                    if (binding == null ||
-                        string.IsNullOrWhiteSpace(binding.ActionId) ||
-                        string.IsNullOrWhiteSpace(binding.BindingPath) ||
-                        RemovedHotKeyActionIds.Contains(binding.ActionId.Trim()) ||
-                        !seen.Add(binding.ActionId))
+                    if (binding == null || string.IsNullOrWhiteSpace(binding.ActionId) || string.IsNullOrWhiteSpace(binding.BindingPath) || RemovedHotKeyActionIds.Contains(binding.ActionId.Trim()) || !seen.Add(binding.ActionId))
                     {
                         continue;
                     }
 
-                    result.Add(new HotKeyBinding
-                    {
-                        ActionId = binding.ActionId.Trim(),
-                        Context = binding.Context,
-                        BindingPath = binding.BindingPath.Trim()
-                    });
+                    result.Add(new HotKeyBinding { ActionId = binding.ActionId.Trim(), Context = binding.Context, BindingPath = binding.BindingPath.Trim() });
                 }
             }
 
@@ -107,30 +104,6 @@ namespace Game
             {
                 if (seen.Add(fallback.ActionId))
                 {
-                    if (fallback.ActionId == HotKeyActionIds.ToggleMap)
-                    {
-                        var candidates = new[] { HotKeyDefaults.Map, HotKeyDefaults.MapFallbackN,
-                            HotKeyDefaults.MapFallbackF2, HotKeyDefaults.MapFallbackF3 };
-                        fallback.BindingPath = candidates.FirstOrDefault(path => !result.Any(item =>
-                            item.Context == HotKeyContext.Gameplay &&
-                            string.Equals(item.BindingPath, path, StringComparison.OrdinalIgnoreCase))) ?? HotKeyDefaults.Map;
-                    }
-                    else if (fallback.ActionId == HotKeyActionIds.ToggleFlashlight)
-                    {
-                        var candidates = new[] { HotKeyDefaults.Flashlight, HotKeyDefaults.FlashlightFallbackL,
-                            HotKeyDefaults.FlashlightFallbackF4 };
-                        fallback.BindingPath = candidates.FirstOrDefault(path => !result.Any(item =>
-                            item.Context == HotKeyContext.Gameplay &&
-                            string.Equals(item.BindingPath, path, StringComparison.OrdinalIgnoreCase))) ?? HotKeyDefaults.Flashlight;
-                    }
-                    else if (fallback.ActionId == HotKeyActionIds.ToggleGameplayGuide)
-                    {
-                        // 旧设置可能已占用 F5；补入提示动作时选择空闲功能键，不抢走用户的原绑定。
-                        fallback.BindingPath = Enumerable.Range(5, 8).Select(key => $"<Keyboard>/f{key}")
-                            .FirstOrDefault(path => !result.Any(item =>
-                                (item.Context == HotKeyContext.Gameplay || item.Context == HotKeyContext.Global) &&
-                                string.Equals(item.BindingPath, path, StringComparison.OrdinalIgnoreCase))) ?? HotKeyDefaults.GameplayGuide;
-                    }
                     result.Add(fallback);
                 }
             }
@@ -144,7 +117,6 @@ namespace Game
     {
         public const float DefaultTestCmdButtonPositionX = 0.09f;
         public const float DefaultTestCmdButtonPositionY = 0.11f;
-
         [JsonProperty("testCmdButtonPositionX")]
         public float TestCmdButtonPositionX { get; set; } = DefaultTestCmdButtonPositionX;
 
@@ -216,9 +188,7 @@ namespace Game
 
         private static float SanitizeAxis(float value, float defaultValue)
         {
-            return float.IsNaN(value) || float.IsInfinity(value)
-                ? defaultValue
-                : Mathf.Clamp01(value);
+            return float.IsNaN(value) || float.IsInfinity(value) ? defaultValue : Mathf.Clamp01(value);
         }
     }
 

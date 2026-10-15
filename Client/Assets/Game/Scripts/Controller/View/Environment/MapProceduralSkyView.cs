@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>
-    /// 将基地或远征昼夜快照投影到地图自有的程序化天空材质，并向全局光照提供同一条日月轨道。
+    /// 将固定晴天光照应用到地图自有的程序化天空材质，并向全局光照提供同一条日月轨道。
     /// 不推进时间、不保存状态、不直接控制方向光；禁用时释放材质和表现接管权。
     /// </summary>
     [DisallowMultipleComponent]
@@ -47,10 +47,7 @@ namespace Game
         private Material baselineSky;
         private float baselineReflection;
         private DayNightView lighting;
-        private IUnRegister visualChangedUnregister;
-        private IUnRegister weatherChangedUnregister;
-        private BaseWeatherSnapshot weather;
-        private DayNightVisualSnapshot lastSnapshot = new DayNightVisualSnapshot(.5f, false);
+        private float lastDayProgress = .5f;
 
         /// <summary>最近一次初始化的失败原因；成功重试后清空，仅用于现场诊断。</summary>
         internal string InitializationError { get; private set; }
@@ -64,20 +61,14 @@ namespace Game
                 Debug.LogError($"[MapProceduralSkyView] 场景 {gameObject.scene.name}：{InitializationError}，保留原天空。", this);
                 return;
             }
-            visualChangedUnregister = Game.Interface.RegisterEvent<DayNightVisualChangedEvent>(OnVisualChanged);
-            weatherChangedUnregister = Game.Interface.RegisterEvent<BaseWeatherChangedEvent>(evt => ApplyWeather(evt.Snapshot));
-            weather = Game.Interface.GetSystem<BaseWeatherSystem>()?.GetSnapshot() ?? default;
-            var system = Game.Interface.GetSystem<DayNightVisualSystem>();
-            var snapshot = system != null ? system.GetSnapshot() : new DayNightVisualSnapshot(0.5f, false);
-            Apply(snapshot);
+            Apply(.5f);
             // 首次启用不依赖事件订阅顺序，立即对齐刚恢复或加载的时刻。
-            lighting.Apply(snapshot);
+            lighting.Apply(.5f);
             DynamicGI.UpdateEnvironment();
         }
 
         private void OnDisable() => Release();
         private void OnDestroy() => Release();
-        private void OnVisualChanged(DayNightVisualChangedEvent evt) => Apply(evt.Snapshot);
 
         /// <summary>进入地图时先验证依赖再接管；重复调用幂等，失败不改变环境或光照。</summary>
         internal bool Initialize(DayNightView targetLighting)
@@ -113,19 +104,19 @@ namespace Game
         }
 
         /// <summary>消费既有时刻，更新天空参数；无实例时不接管任何全局状态。</summary>
-        internal void Apply(DayNightVisualSnapshot snapshot)
+        internal void Apply(float dayProgress)
         {
-            lastSnapshot = snapshot;
+            lastDayProgress = dayProgress;
             if (runtimeSky == null) return;
-            var sun = GetSunDirection(snapshot.DayProgress);
-            var solarHeight = Mathf.Sin((snapshot.DayProgress - 0.25f) * Mathf.PI * 2f);
+            var sun = GetSunDirection(dayProgress);
+            var solarHeight = Mathf.Sin((dayProgress - 0.25f) * Mathf.PI * 2f);
             var daylight = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.12f, 0.18f, solarHeight));
             var twilight = DayNightView.CalculateTwilightAmount(solarHeight);
             var skyColor = Color.Lerp(Color.Lerp(nightSky, twilightSky, twilight), daySky, daylight);
             var horizonColor = Color.Lerp(Color.Lerp(nightHorizon, twilightHorizon, twilight), dayHorizon, daylight);
             var grey = new Color(.32f,.38f,.45f) * Mathf.Lerp(.12f,1f,daylight);
-            skyColor = Color.Lerp(skyColor, grey, weather.CloudAmount * .85f);
-            horizonColor = Color.Lerp(horizonColor, grey, weather.CloudAmount * .8f);
+            skyColor = Color.Lerp(skyColor, grey, 0f * .85f);
+            horizonColor = Color.Lerp(horizonColor, grey, 0f * .8f);
             runtimeSky.SetColor("_SkyColor", skyColor);
             runtimeSky.SetColor("_HorizonColor", horizonColor);
             runtimeSky.SetColor("_GroundColor", Color.Lerp(nightHorizon, dayHorizon * 0.5f, daylight));
@@ -134,7 +125,7 @@ namespace Game
             runtimeSky.SetVector("_MoonDirection", sun);
             var sunColor = Color.Lerp(new Color(1f, 0.40f, 0.12f), new Color(1f, 0.95f, 0.8f), daylight);
             sunColor.a = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.03f, 0.04f, sun.y));
-            sunColor.a *= Mathf.Lerp(1f,.15f,weather.CloudAmount);
+            sunColor.a *= Mathf.Lerp(1f,.15f,0f);
             var moonColor = new Color(0.8f, 0.87f, 1f, 1f - daylight);
             runtimeSky.SetColor("_SunColor", sunColor);
             runtimeSky.SetColor("_MoonColor", moonColor);
@@ -147,17 +138,14 @@ namespace Game
             runtimeSky.SetFloat("_StarsOpacity", stars * starOpacity);
             var cloudColor = Color.Lerp(Color.Lerp(new Color(0.06f, 0.08f, 0.14f),
                 new Color(0.65f, 0.30f, 0.22f), twilight), new Color(0.92f, 0.94f, 0.96f), daylight);
-            cloudColor = Color.Lerp(cloudColor, grey * .8f, weather.CloudAmount * .8f);
-            cloudColor.a = Mathf.Lerp(cloudOpacity, 1f, weather.CloudAmount);
+            cloudColor = Color.Lerp(cloudColor, grey * .8f, 0f * .8f);
+            cloudColor.a = Mathf.Lerp(cloudOpacity, 1f, 0f);
             runtimeSky.SetColor("_OverheadCloudColor", cloudColor);
             runtimeSky.SetFloat("_OverheadCloudAnimationSpeed", cloudSpeed);
             runtimeSky.SetFloat("_OverheadCloudFlowDirectionX", cloudFlow.x);
             runtimeSky.SetFloat("_OverheadCloudFlowDirectionZ", cloudFlow.y);
             runtimeSky.SetFloat("_OverheadCloudSize", cloudScale);
         }
-
-        /// <summary>天气事件只更新本地图的材质实例，不接管方向光或业务时间。</summary>
-        internal void ApplyWeather(BaseWeatherSnapshot snapshot) { weather = snapshot; Apply(lastSnapshot); }
 
         /// <summary>由一天内进度计算世界天空方向；日出 +X、日落 -X，正午最高点受倾角限制。</summary>
         internal Vector3 GetSunDirection(float progress)
@@ -172,10 +160,6 @@ namespace Game
         /// <summary>地图禁用或销毁时幂等释放；仅恢复仍由自己持有的天空，避免覆盖后继地图。</summary>
         internal void Release()
         {
-            visualChangedUnregister?.UnRegister();
-            weatherChangedUnregister?.UnRegister();
-            weatherChangedUnregister = null;
-            visualChangedUnregister = null;
             if (runtimeSky == null) return;
             if (RenderSettings.skybox == runtimeSky)
             {

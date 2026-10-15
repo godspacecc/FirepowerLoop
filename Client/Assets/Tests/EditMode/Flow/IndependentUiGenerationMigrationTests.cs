@@ -59,13 +59,7 @@ namespace Game.Tests
         [Test]
         public void IndependentUiControllers_KeepPrefabPaths()
         {
-            Assert.That(InvokePath(new ExpeditionHudUICtrl()), Is.EqualTo("Expedition/ExpeditionHud"));
-            Assert.That(InvokePath(new BagUICtrl()), Is.EqualTo("Inventory/Bag"));
-            Assert.That(InvokePath(new WarehouseUICtrl()), Is.EqualTo("Inventory/Warehouse"));
-            Assert.That(InvokePath(new SearchContainerUICtrl()), Is.EqualTo("Inventory/SearchContainer"));
             Assert.That(InvokePath(new LoadingUICtrl()), Is.EqualTo("Common/Loading"));
-            Assert.That(InvokePath(new PlayerConditionHudUICtrl()), Is.EqualTo("Player/PlayerConditionHud"));
-            Assert.That(InvokePath(new GameplayGuideHudUICtrl()), Is.EqualTo("Player/GameplayGuideHud"));
             Assert.That(InvokePath(new SettingUICtrl()), Is.EqualTo("Home/Setting"));
         }
 

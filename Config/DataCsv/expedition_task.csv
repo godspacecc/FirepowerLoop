@@ -1,4 +1,0 @@
-##var,Id,MapId,Name,NameKey,ObjectiveType,TargetAmount,Order
-##type,string,string,string,string,TaskObjectiveType,float,int
-,expedition.survival-sample.survive,map.another-day.survival-sample,存活一天,task.expedition.survival_sample.survive.name,Survive,1440,100
-,expedition.mission-sample.kill,map.another-day.mission-sample,清除威胁,task.expedition.mission_sample.kill.name,Kill,2,100

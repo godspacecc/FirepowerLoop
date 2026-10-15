@@ -29,7 +29,6 @@
 ,OnlineLocal:104,OnlineLocal,104,OnlineLocal:1,OnlineLocal:1,RoomDirectory,RoomDirectory,0
 ,OnlineLocal:105,OnlineLocal,105,OnlineLocal:1,OnlineLocal:1,OnlineRoom,OnlineRoom,0
 ,OnlineLocal:106,OnlineLocal,106,OnlineLocal:1,OnlineLocal:1,Chat,Chat,0
-,OnlineLocal:107,OnlineLocal,107,OnlineLocal:1,OnlineLocal:1,OnlineWorld,OnlineWorld,0
 
 ,OnlineLocal:108,OnlineLocal,108,OnlineLocal:1,OnlineLocal:1,RouterManager,RouterManager,31012
 ,Release:300,Release,300,Release:8,Release:3,RouterManager,RouterManager,30300

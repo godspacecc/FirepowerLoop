@@ -26,21 +26,15 @@ namespace Game.Editor
             "Prefabs/Characters/GrayboxEnemy",
             "Prefabs/Characters/GrayboxPlayer",
             "Prefabs/Combat/GrayboxArrow",
-            "Prefabs/SceneObjects/TaskExit",
             "Prefabs/SceneObjects/TestResourcePickup",
-            "Prefabs/UI/Expedition/ExpeditionHud",
-            "Prefabs/UI/Inventory/Bag",
-            "Prefabs/UI/Inventory/Warehouse",
-            "Prefabs/UI/Inventory/SearchContainer",
             "Prefabs/UI/Common/Loading",
-            "Prefabs/UI/Player/PlayerConditionHud",
-            "Prefabs/UI/Player/GameplayGuideHud",
             "Prefabs/UI/Diagnostics/RuntimeLog",
-            "Prefabs/UI/TemporaryBuilding/TemporaryBuildingSelect",
-            // 文明界面必须进入清单地址审计，避免热更新代码先于 Prefab 接入。
-            "Prefabs/UI/Civilisation/CivilisationSettlement",
-            "Prefabs/UI/Civilisation/CivilisationWorkshop",
             "Prefabs/UI/Diagnostics/TestCmd",
+            "Prefabs/UI/Arcade/ArcadeHud",
+            "Prefabs/UI/Arcade/ArcadeShop",
+            "Prefabs/UI/Arcade/ArcadeResume",
+            "Prefabs/UI/Online/OnlineLogin",
+            "Prefabs/UI/Online/OnlineRoom",
             "Prefabs/UI/Home/Setting",
             "Prefabs/UI/Home/Start",
             "Prefabs/UI/Notify/Float",
@@ -461,33 +455,7 @@ namespace Game.Editor
             error = null;
             try
             {
-                var tables = new global::Tables(name =>
-                {
-                    var asset = AssetDatabase.LoadAssetAtPath<TextAsset>($"Assets/Game/Config/{name}.bytes");
-                    if (asset == null)
-                    {
-                        throw new FileNotFoundException($"generated Luban table asset is missing: {name}.bytes");
-                    }
-
-                    return new ByteBuf(asset.bytes);
-                });
-
-                var buildingLocations = tables.TbTempBuilding.DataList.Select(row =>
-                {
-                    if (row == null)
-                    {
-                        throw new InvalidDataException("TbTempBuilding[<null>] 行为空");
-                    }
-
-                    if (!ResourceAddress.TryFromFileName(ResourceAddressKind.TemporaryBuildingPrefab, row.PrefabName, false, out var address, out var addressError))
-                    {
-                        throw new InvalidDataException($"TbTempBuilding[{row.Id}].PrefabName is invalid: {addressError}");
-                    }
-
-                    return address;
-                });
                 locations = FixedRuntimePrefabLocations
-                    .Concat(buildingLocations)
                     .Distinct(StringComparer.Ordinal)
                     .OrderBy(value => value, StringComparer.Ordinal)
                     .ToArray();
@@ -495,7 +463,7 @@ namespace Game.Editor
             }
             catch (Exception exception)
             {
-                error = $"failed to load configured temporary building prefabs: {exception.Message}";
+                error = $"failed to enumerate arcade runtime prefabs: {exception.Message}";
                 return false;
             }
         }

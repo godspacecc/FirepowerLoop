@@ -62,33 +62,23 @@ namespace Game.Tests
         }
 
         [Test]
-        public void GameStartExitCapturesAndFlushesBeforeDeinitAndAlwaysQuitsLifecycle()
-        {
-            var gameStart = ReadAsset("Assets/Game/Scripts/GameStart.cs");
-            var capture = gameStart.IndexOf("TryCaptureCurrentBasePoseForExit", System.StringComparison.Ordinal);
-            var flush = gameStart.IndexOf("GetSystem<SaveSystem>().Flush", System.StringComparison.Ordinal);
-            var deinit = gameStart.IndexOf("architecture.Deinit()", System.StringComparison.Ordinal);
-            var lifecycleQuit = gameStart.IndexOf("finally", deinit, System.StringComparison.Ordinal);
-
-            Assert.That(capture, Is.GreaterThanOrEqualTo(0));
-            Assert.That(flush, Is.GreaterThan(capture));
-            Assert.That(deinit, Is.GreaterThan(flush));
-            Assert.That(lifecycleQuit, Is.GreaterThan(deinit));
-            Assert.That(gameStart.IndexOf("LifeCycle.Quit()", lifecycleQuit, System.StringComparison.Ordinal), Is.GreaterThan(lifecycleQuit));
-
-            var settings = ReadAsset("Assets/Game/Scripts/System/Settings/SettingsSystem.cs");
-            var saves = ReadAsset("Assets/Game/Scripts/System/Save/SaveSystem.cs");
-            Assert.That(settings, Does.Match(@"(?s)OnDeinit\s*\(\s*\)\s*\{(?:(?!\}).)*Flush\s*\(\s*\)"));
-            Assert.That(saves, Does.Match(@"(?s)OnDeinit\s*\(\s*\)\s*\{(?:(?!\}).)*Flush\s*\(\s*out\s+_\s*\)"));
-        }
-
-        [Test]
         public void GameStartInitializesRegisteredLocalizationUtilityWithoutReplacingIt()
         {
             var source = ReadAsset("Assets/Game/Scripts/GameStart.cs");
             Assert.That(source, Does.Not.Contain("RegisterUtility(new LocalizationUtility"));
             Assert.That(source, Does.Contain("GetUtility<LocalizationUtility>()"));
             Assert.That(source, Does.Contain("InitializeConfiguredTables()"));
+        }
+
+        [Test]
+        public void GameStartExitDeinitializesBeforeQuittingSharedLifecycle()
+        {
+            var source = ReadAsset("Assets/Game/Scripts/GameStart.cs");
+            Assert.That(source, Does.Not.Contain("GetSystem<SaveSystem>"));
+            Assert.That(source.IndexOf("architecture.Deinit()", System.StringComparison.Ordinal), Is.GreaterThanOrEqualTo(0));
+            Assert.That(source.IndexOf("LifeCycle.Quit()", System.StringComparison.Ordinal), Is.GreaterThan(source.IndexOf("architecture.Deinit()", System.StringComparison.Ordinal)));
+            var settings = ReadAsset("Assets/Game/Scripts/System/Settings/SettingsSystem.cs");
+            Assert.That(settings, Does.Contain("Flush()"));
         }
 
         private static string ReadAsset(string assetPath)

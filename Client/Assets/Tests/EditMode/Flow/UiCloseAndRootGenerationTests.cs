@@ -508,13 +508,6 @@ namespace Game.Tests
                 return false;
             }
 
-            public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing extraction";
-                return false;
-            }
-
             public bool TryGetTestCmdCatalog(
                 out IReadOnlyList<TestCmdCategoryDefinition> categories,
                 out IReadOnlyList<TestCmdEntryDefinition> entries,
