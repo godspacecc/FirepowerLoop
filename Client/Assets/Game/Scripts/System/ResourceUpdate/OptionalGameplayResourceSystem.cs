@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using Boot;
 using Cysharp.Threading.Tasks;
 using QFramework;
 using YooAsset;
@@ -11,9 +9,7 @@ namespace Game
     public enum OptionalGameplayResourceState
     {
         Unavailable,
-        Ready,
-        NeedsDownload,
-        ConnectionFailed
+        Ready
     }
 
     /// <summary>一次当前清单查询的不可变结果；大小单位为字节，不代表持久化安装状态。</summary>
@@ -53,21 +49,9 @@ namespace Game
         public int TotalFiles { get; }
     }
 
-    public readonly struct OptionalGameplayDownloadResult
-    {
-        public OptionalGameplayDownloadResult(bool success, string error)
-        {
-            Success = success;
-            Error = error ?? string.Empty;
-        }
-
-        public bool Success { get; }
-        public string Error { get; }
-    }
-
     /// <summary>
-    /// 准备当前 DefaultPackage 清单中指定地图或街机资源；不更新清单、不管理解锁或持久化安装状态。
-    /// 下载操作的占用从开始直到 YooAsset 给出终态，失败和释放都会清除占用。
+    /// 只检查启动阶段统一准备的地图资源；不更新清单、不发起下载、不管理解锁或持久化安装状态。
+    /// 入口与底层地图加载共用只读检查，启动资源不完整时拒绝进入。
     /// </summary>
     public class OptionalGameplayResourceSystem : AbstractSystem
     {
@@ -75,12 +59,8 @@ namespace Game
 
         /// <summary>街机资源归属沿用现有清单标签。</summary>
         public static string GetMapTag(string mapId) => mapId == MapIds.Arcade ? "arcade" : null;
-        /// <summary>交互前服务器探测超时，单位秒；失败不创建下载事务。</summary>
-        private const int ServerCheckTimeoutSeconds = 5;
-        private ResourceDownloaderOperation currentDownloader;
-        private bool downloading;
         private bool released;
-        /// <summary>架构释放后拒绝确认和后续下载；不是持久化安装状态。</summary>
+        /// <summary>架构释放后拒绝资源检查；不是持久化安装状态。</summary>
         public bool IsReleased => released;
 
         protected override void OnInit()
@@ -91,9 +71,6 @@ namespace Game
         protected override void OnDeinit()
         {
             released = true;
-            currentDownloader?.CancelDownload();
-            currentDownloader = null;
-            downloading = false;
         }
 
         /// <summary>每次交互从活动清单重新判断；只有完成标签和必需地址核对后，零文件才表示就绪。</summary>
@@ -138,12 +115,7 @@ namespace Game
                 if (downloader.TotalDownloadCount == 0)
                     return new OptionalGameplayResourceQuery(OptionalGameplayResourceState.Ready, version, 0, 0, string.Empty);
 
-                var source = this.GetSystem<ResourceUpdateSystem>()?.Snapshot.ResourceSource ?? BootResourceSource.EditorSimulate;
-                if (source == BootResourceSource.BuiltinFallback || source == BootResourceSource.EditorSimulate)
-                    return Unavailable("当前资源来源不能下载缺失的街机资源");
-
-                return new OptionalGameplayResourceQuery(OptionalGameplayResourceState.NeedsDownload, version,
-                    downloader.TotalDownloadCount, downloader.TotalDownloadBytes, string.Empty);
+                return Unavailable("启动资源不完整，请重新启动游戏完成资源更新");
             }
             catch (Exception exception)
             {
@@ -151,98 +123,10 @@ namespace Game
             }
         }
 
-        /// <summary>缺失资源时才探测服务器；本地已就绪无需联网，等待后重新查询以拒绝过期准备结果。</summary>
-        public virtual async UniTask<OptionalGameplayResourceQuery> CheckMapAsync(string mapId)
-        {
-            if (released) return Unavailable("资源系统已释放");
-            var query = QueryMap(mapId);
-            if (query.State != OptionalGameplayResourceState.NeedsDownload) return query;
-            var probe = this.GetUtility<IRemoteResourceVersionProbe>();
-            string server = this.GetSystem<ResourceUpdateSystem>()?.Snapshot.ResourceServer;
-            try
-            {
-                if (probe == null || string.IsNullOrWhiteSpace(server))
-                    return ConnectionFailed("资源服务器探测器或地址不可用");
-                var result = await probe.ProbeAsync(server, ServerCheckTimeoutSeconds);
-                if (released) return Unavailable("资源系统已释放");
-                if (!result.Success) return ConnectionFailed(result.Error);
-                return QueryMap(mapId);
-            }
-            catch (Exception exception)
-            {
-                return ConnectionFailed("资源服务器检查失败：" + exception.Message);
-            }
-        }
-
-        /// <summary>确认后仅启动一次下载；版本变化、失败或释放均返回失败并允许后续重新查询缓存。</summary>
-        public virtual async UniTask<OptionalGameplayDownloadResult> DownloadMapAsync(
-            string mapId, string expectedVersion, Action<OptionalGameplayDownloadProgress> onProgress,
-            CancellationToken cancellationToken = default)
-        {
-            if (released || downloading)
-                return new OptionalGameplayDownloadResult(false, "玩法下载已占用或资源系统已释放");
-
-            downloading = true;
-            try
-            {
-                var query = QueryMap(mapId);
-                if (!string.Equals(query.Version, expectedVersion, StringComparison.Ordinal))
-                    return new OptionalGameplayDownloadResult(false, "资源清单版本已变化");
-                if (query.State == OptionalGameplayResourceState.Ready)
-                    return new OptionalGameplayDownloadResult(true, string.Empty);
-                if (query.State != OptionalGameplayResourceState.NeedsDownload)
-                    return new OptionalGameplayDownloadResult(false, query.Error);
-
-                var package = YooAssets.TryGetPackage(PackageName);
-                var downloader = package.CreateResourceDownloader(GetMapTag(mapId), 10, 3);
-                if (downloader == null)
-                    return new OptionalGameplayDownloadResult(false, "玩法下载器创建失败");
-                if (downloader.TotalDownloadCount <= 0 || downloader.TotalDownloadBytes <= 0)
-                    return new OptionalGameplayDownloadResult(false, "玩法下载大小无效，请重新检查资源");
-                currentDownloader = downloader;
-                // 创建下载器后先发布真实总大小，避免等待首次网络回调时 UI 显示未知大小。
-                onProgress?.Invoke(new OptionalGameplayDownloadProgress(0, downloader.TotalDownloadBytes,
-                    0, downloader.TotalDownloadCount));
-                downloader.DownloadUpdateCallback = data =>
-                {
-                    if (!released)
-                        onProgress?.Invoke(new OptionalGameplayDownloadProgress(data.CurrentDownloadBytes,
-                            data.TotalDownloadBytes, data.CurrentDownloadCount, data.TotalDownloadCount));
-                };
-                downloader.BeginDownload();
-                try { await downloader.WaitAsync().AttachExternalCancellation(cancellationToken); }
-                catch (OperationCanceledException)
-                {
-                    // 取消后等待下载器终态，不能提前释放占用而启动第二份事务。
-                    downloader.CancelDownload();
-                    await downloader.WaitAsync();
-                    return new OptionalGameplayDownloadResult(false, "资源下载已取消");
-                }
-
-                // System 释放可能在 await 期间清空字段；本次结果仍须由原下载器判定。
-                if (released || downloader.Status != EOperationStatus.Succeed)
-                    return new OptionalGameplayDownloadResult(false, released ? "资源系统已释放" : downloader.Error);
-                if (!string.Equals(package.GetPackageVersion(), expectedVersion, StringComparison.Ordinal))
-                    return new OptionalGameplayDownloadResult(false, "下载结束时资源清单版本已变化");
-                return new OptionalGameplayDownloadResult(true, string.Empty);
-            }
-            catch (Exception exception)
-            {
-                return new OptionalGameplayDownloadResult(false, "玩法下载异常：" + exception.Message);
-            }
-            finally
-            {
-                if (currentDownloader != null)
-                    currentDownloader.DownloadUpdateCallback = null;
-                currentDownloader = null;
-                downloading = false;
-            }
-        }
+        /// <summary>兼容现有资源端口；仅返回本地清单检查，不探测服务器或启动下载。</summary>
+        public virtual UniTask<OptionalGameplayResourceQuery> CheckMapAsync(string mapId) => UniTask.FromResult(QueryMap(mapId));
 
         private static OptionalGameplayResourceQuery Unavailable(string error) =>
             new OptionalGameplayResourceQuery(OptionalGameplayResourceState.Unavailable, string.Empty, 0, 0, error);
-
-        private static OptionalGameplayResourceQuery ConnectionFailed(string error) =>
-            new OptionalGameplayResourceQuery(OptionalGameplayResourceState.ConnectionFailed, string.Empty, 0, 0, error);
     }
 }

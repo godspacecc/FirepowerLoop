@@ -146,7 +146,7 @@ namespace Game
             chatSubmitInFlight = false;
         }
 
-        /// <summary>等待街机资源期间绑定视图与账号会话，过期操作不能替新账号创建或加入房间。</summary>
+        /// <summary>检查启动资源时绑定视图与账号会话，过期操作不能替新账号创建或加入房间。</summary>
         private async UniTask<bool> PrepareArcadeResources(int generation)
         {
             if (!arcadeMode) return true;

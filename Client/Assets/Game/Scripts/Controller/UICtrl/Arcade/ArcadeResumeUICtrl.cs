@@ -139,7 +139,7 @@ namespace Game
             Set(UI.TextMessage, string.Empty);
         }
 
-        /// <summary>点击开始/继续时准备资源并提交既有街机流程；旧请求不得启动新局或恢复新窗口的按钮。</summary>
+        /// <summary>点击开始/继续时检查已由 Boot 准备的资源并提交街机流程；旧请求不得影响新窗口。</summary>
         private async UniTask ContinueRunAsync()
         {
             if (operationPending) return;

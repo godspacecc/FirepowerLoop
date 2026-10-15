@@ -274,13 +274,14 @@ namespace Game.Tests
         }
 
         [Test]
-        public void BootDownloadsOnlyMandatoryArcadeTagsAndUsesSameScopeForCacheValidation()
+        public void BootDownloadsGameResourcesAndUsesSameScopeForCacheValidation()
         {
             string boot = File.ReadAllText(ResourceBootPath);
 
-            Assert.That(boot, Does.Contain("\"startup\""));
-            Assert.That(boot, Does.Contain("\"arcade\""));
-            Assert.That(boot, Does.Contain("\"arcade-online\""));
+            var tags = typeof(Boot.ResourceBoot).GetField("StartupResourceTags", BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.That(tags, Is.Not.Null);
+            Assert.That((string[])tags.GetValue(null), Is.EqualTo(new[] { "startup", "arcade" }),
+                "独立街机的资源必须在启动时统一准备，缓存校验也必须覆盖同一范围");
             Assert.That(boot, Does.Contain("CreateResourceDownloader(StartupResourceTags, MAX_DOWNLOAD_COUNT, 3)"));
             Assert.That(CountOccurrences(boot, "CreateStartupResourceDownloader()"), Is.EqualTo(3));
             Assert.That(boot, Does.Not.Contain("_package.CreateResourceDownloader(MAX_DOWNLOAD_COUNT, 3)"));

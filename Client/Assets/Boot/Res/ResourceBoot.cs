@@ -20,10 +20,11 @@ namespace Boot
         /// <summary>资源清单允许比版本文件更长的传输时间，超时后仍自动降级。</summary>
         private const int REMOTE_MANIFEST_TIMEOUT_SECONDS = 15;
         private const string LAST_SUCCESSFUL_HOST_VERSION_KEY = "AnotherDay.LastSuccessfulHostVersion";
-        /// <summary>首次启动必须完整下载的资源模块；可选玩法由进入功能时的下载流程负责。</summary>
+        /// <summary>独立游戏在启动时统一准备基础与街机资源；在线下载和本地完整性校验共用此范围。</summary>
         private static readonly string[] StartupResourceTags =
         {
-            "startup"
+            "startup",
+            "arcade"
         };
         private const double DOWNLOAD_SPEED_SMOOTHING = 0.25d;
 

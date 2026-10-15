@@ -228,10 +228,10 @@ namespace Game
                 return MapSceneResult.Fail($"MapCatalog 不支持地图：{mapId}", model.Status.Value);
             }
 
-            // 基础资源由 Boot 保证；可选地图必须先由入口准备，底层加载不隐式联网下载。
+            // 基础与街机资源均由 Boot 统一准备；底层只检查就绪状态，不隐式联网下载。
             var resources = this.GetSystem<OptionalGameplayResourceSystem>();
             if (resources != null && resources.QueryMap(mapId).State != OptionalGameplayResourceState.Ready)
-                return MapSceneResult.Fail("地图资源尚未就绪，请先完成资源下载", model.Status.Value);
+                return MapSceneResult.Fail("地图资源尚未就绪，请重新启动游戏完成资源更新", model.Status.Value);
             var config = this.GetUtility<IRuntimeConfigProvider>();
             if (config == null)
             {

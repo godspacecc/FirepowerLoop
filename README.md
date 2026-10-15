@@ -7,6 +7,7 @@
 - 协议源：`Config/Proto`；生成入口：`Tools/gen-protocol.ps1`。
 - 游戏服务：`Server/GameServer`，本地 GameGate 默认 `31011`，诊断服务 `31012`。
 - 资源发布：本项目 `Server/ResourceServer/ResourceFiles`；默认资源服务 `8001`。
+- 资源更新：Boot 启动时统一准备基础与街机资源；开始、继续和双人联机入口只检查本地资源，不再单独确认或下载街机资源。
 - 应用标识：`com.anotherday.firepowerloop`；产品名：`FirepowerLoop`，存档使用本应用的 persistentDataPath，不扫描旧项目。
 
 第一轮保留分数、本局结果、局内金币与强化；没有局外奖励或成长钱包。不迁移旧街机或基地数据。

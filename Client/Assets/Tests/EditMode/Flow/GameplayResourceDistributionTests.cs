@@ -10,10 +10,10 @@ namespace Game.Tests
     public sealed class GameplayResourceDistributionTests
     {
         [Test]
-        public void BootDownloadsOnlyStartup()
+        public void BootDownloadsCoreAndArcadeTogether()
         {
             var field = typeof(Boot.ResourceBoot).GetField("StartupResourceTags", BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup" }));
+            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup", "arcade" }));
         }
 
         [Test]

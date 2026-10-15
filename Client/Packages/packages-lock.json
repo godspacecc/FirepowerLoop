@@ -22,15 +22,14 @@
       "url": "https://package.openupm.com"
     },
     "com.ivanmurzak.unity.mcp": {
-      "version": "0.93.2",
+      "version": "file:com.ivanmurzak.unity.mcp",
       "depth": 0,
-      "source": "registry",
+      "source": "embedded",
       "dependencies": {
         "com.unity.test-framework": "1.1.33",
         "com.unity.modules.uielements": "1.0.0",
         "extensions.unity.playerprefsex": "2.1.5"
-      },
-      "url": "https://package.openupm.com"
+      }
     },
     "com.tuyoogame.yooasset": {
       "version": "2.3.17",
