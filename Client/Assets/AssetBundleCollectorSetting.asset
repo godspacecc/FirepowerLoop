@@ -1,0 +1,1545 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 185f6993d5150494d98da50e26cb1c25, type: 3}
+  m_Name: AssetBundleCollectorSetting
+  m_EditorClassIdentifier: 
+  ShowPackageView: 1
+  ShowEditorAlias: 0
+  UniqueBundleName: 0
+  Packages:
+  - PackageName: DefaultPackage
+    PackageDesc: "Another Day\u9ED8\u8BA4\u8D44\u6E90\u5305"
+    EnableAddressable: 1
+    SupportExtensionless: 1
+    LocationToLower: 0
+    IncludeAssetGUID: 0
+    AutoCollectShaders: 1
+    IgnoreRuleName: NormalIgnoreRule
+    Groups:
+    - GroupName: Scenes
+      GroupDesc: "\u573A\u666F\u8D44\u6E90"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Scenes/Boot.unity
+        CollectorGUID: 9afe173236bbf284cbb331a70a87d642
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Scenes/Main.unity
+        CollectorGUID: 78829969fdd70484b9b7c6a77c0158ce
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Scenes/TaskSampleMap.unity
+        CollectorGUID: 47b7fb22445815245a5cd89faf2d6a4f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Scenes/TaskSampleMap
+        CollectorGUID: da97b6d126bc0d547b36fcb8566f8670
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+    - GroupName: UIIcons
+      GroupDesc: UI icons
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Art/UI/Icon_Close.png
+        CollectorGUID: 3733455a7a9d41c478fce441ba9c0bfa
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Art/UI/TiliRing.png
+        CollectorGUID: fd78b4fe37afdab4bb9beee35cb4a8ec
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup;arcade;arcade-online
+        UserData: 
+      - CollectPath: Assets/Game/Art/UI/Loading
+        CollectorGUID: 38518e4660df86d42bbcbd65c5f56bcd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Art/UI/Items
+        CollectorGUID: 5dc48d83a6848a7409752ed869b7d4a6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: SharedFonts
+      GroupDesc: "\u5171\u4EAB\u5B57\u4F53\u8D44\u6E90"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Fonts/Chinese
+        CollectorGUID: 3f49feb8835de3b4f8278dfd5150428b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: Configs
+      GroupDesc: "\u914D\u7F6E\u6570\u636E"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Config
+        CollectorGUID: 7df2d72c65bee0b449a2c7a5d4a97630
+        CollectorType: 0
+        AddressRuleName: AddressByFileNameWithExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: Dlls
+      GroupDesc: "\u70ED\u66F4\u65B0DLL"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Dlls
+        CollectorGUID: 3c5d05e1f401beb4d81966b2336e039f
+        CollectorType: 0
+        AddressRuleName: AddressByFileNameWithExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: PrefabsUI
+      GroupDesc: "UI\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab
+        CollectorGUID: ac2643d9b8897ff478844019ebe4c227
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeResume.prefab
+        CollectorGUID: 42e9f6328672a3b428d90631bcfccd51
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeShop.prefab
+        CollectorGUID: 43e180362c86df749bddcd61ccad2813
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/Box/ArcadePlayerStatusBox.prefab
+        CollectorGUID: 9b41bdce5f4757a4a801b979ea7a56f9
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/Box/ArcadeShopOfferBox.prefab
+        CollectorGUID: 3cb2c0a56a29d55468fd843429a6d47a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Common
+        CollectorGUID: 663d4b4bea1ffa148b863fde12083f31
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Diagnostics
+        CollectorGUID: 9b829c1f66a3cab4ba34c66a88718fac
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: development
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Home
+        CollectorGUID: 04cf7ba4721f0804598a144ad7ab85d4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Notify
+        CollectorGUID: 7ff334a45636f4a4e8cc33c2bcd96413
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Online
+        CollectorGUID: d9f777341ffdd284f9fa345eeb4d43ca
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup;arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Player
+        CollectorGUID: bcb3ae9c6114442499c5a53d8519602b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup;arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/World
+        CollectorGUID: 326bca04b1c82b04f9193708b64236f3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup;arcade
+        UserData: 
+    - GroupName: PrefabsCharacters
+      GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyArcher.prefab
+        CollectorGUID: 9ea1f4c8ff759fa42acb434c71c3b195
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab
+        CollectorGUID: d9222defc7046c147a7de9ac30b621a4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBossArcher.prefab
+        CollectorGUID: b33f2c821b78b3546a9ce861d032a342
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab
+        CollectorGUID: f7840b33585af214ab1980d44a7f5f2c
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/GrayboxArcher.prefab
+        CollectorGUID: 287ee895903b5c546a40ad4461b3a54b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/GrayboxEnemy.prefab
+        CollectorGUID: d933df056ecf412499e882c8e99af67b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/GrayboxNpc.prefab
+        CollectorGUID: 944590062aa08ec4b9bb7779767c4202
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab
+        CollectorGUID: 2e96af74810a335438a1d61070bb3a0f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeBasicWeaponShared.prefab
+        CollectorGUID: 2231aa87f77d13d408729f75c1f1de23
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeGrenadeWeaponShared.prefab
+        CollectorGUID: ec28aed751271714fadb284d6fcaddfa
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadePiercingWeaponShared.prefab
+        CollectorGUID: f863bb1c96d7e654fb5586f485bf0c59
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeRapidWeaponShared.prefab
+        CollectorGUID: 085ebed63c416fd4faedf03868932dda
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeRaygunWeaponShared.prefab
+        CollectorGUID: 1430f05217da3584bb709179088e4102
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeRocketWeaponShared.prefab
+        CollectorGUID: 143c2dbb0cbf9144d9fb4ed5b969c6e4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeSpreadWeaponShared.prefab
+        CollectorGUID: 1a13e5f3d718a4f4a96b2d91468bdbe3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab
+        CollectorGUID: 82f0618378994d947bdff41978fca593
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/GrayboxBow.prefab
+        CollectorGUID: 3d4660e60636497458cc7c38cd5d5f9e
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/GrayboxShortSword.prefab
+        CollectorGUID: 0511a04291284994cabf996ab36e3c8b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/GreatswordShared.prefab
+        CollectorGUID: 8f382e9e75f57de48b87f4a6e4943fd6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab
+        CollectorGUID: 94d3a2b7d0f607d4e8a3ec55112d9e48
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab
+        CollectorGUID: 4a6cb9de191f1444bb981d9f69634730
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab
+        CollectorGUID: 39431b696f5683c42acf2c5a3ae699d7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab
+        CollectorGUID: 7af94515698eb134e98a0a39de44f1ff
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab
+        CollectorGUID: e5a3bd07cb6b27c41a31477d0b08550a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab
+        CollectorGUID: 7cf049d461c7a0e41bda60268e1adbae
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: PrefabsCombat
+      GroupDesc: "Combat\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/Combat/GrayboxArrow.prefab
+        CollectorGUID: d88246ac40a44d05a36b7362d66b1f4c
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Combat/GrayboxBullet.prefab
+        CollectorGUID: 15e7a80e25db3224bb652ac94f7088e1
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Combat/GrayboxGrenade.prefab
+        CollectorGUID: 389266813ee633e489faac722f4fbf27
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Combat/GrayboxPlasma.prefab
+        CollectorGUID: 4f95c7cdea105c94980f1ac6ae6c54dd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Combat/GrayboxRocket.prefab
+        CollectorGUID: ba88962d0295b6d4daf2ac0a466d2533
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+    - GroupName: PrefabsBuilding
+      GroupDesc: "\u5EFA\u7B51\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/Building
+        CollectorGUID: b8a99ec049e7cf84dbe8c54ff8810796
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: PrefabsEnvironment
+      GroupDesc: "\u6CB3\u8C37\u751F\u6210\u73AF\u5883\u6A21\u677F"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/Environment
+        CollectorGUID: 1c6a17df884b8f0489caac1509672ff7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: PrefabsSceneObjects
+      GroupDesc: "\u573A\u666F\u7269\u4F53\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/AmmoBulletPickup.prefab
+        CollectorGUID: 8555d5f54b2484a4282a68f10c011748
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/AmmoGrenadePickup.prefab
+        CollectorGUID: cd1f372768e7dfa46affef53321091fa
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/AmmoRocketPickup.prefab
+        CollectorGUID: b08ca307534ba3d4b98dbf3f729b37f5
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab
+        CollectorGUID: eabe57b37084e214f9602f53724ad16d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeBootsSpeedEffect.prefab
+        CollectorGUID: aa2d5ef7ff8bdf24daeaeebc1735f6f5
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeChickenCompanion.prefab
+        CollectorGUID: df79d95c43e78b441870c0724b582824
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropAxe.prefab
+        CollectorGUID: 4a34aa12e17d040409d2c071986b6dc9
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropBarrel.prefab
+        CollectorGUID: 5202158f029c08547b00b39fcbc33906
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropBomb.prefab
+        CollectorGUID: 6ae6738a29c229146907a26e07538e3d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropBoots.prefab
+        CollectorGUID: 29acac6e973055a4ba6fe6390568baed
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropChicken.prefab
+        CollectorGUID: f263bb9c640086e418486b7fc968a0d0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropClock.prefab
+        CollectorGUID: 4cdbc52a5f8e6204fa72f57e184874ec
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropCoin.prefab
+        CollectorGUID: 626861d3da04edf418f8baec76753d8e
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropDash.prefab
+        CollectorGUID: 024b7be8209652c489bcef953e7c9384
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropDecoy.prefab
+        CollectorGUID: 059732a3c2b585442bbcb12aab27616f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropElectricOrb.prefab
+        CollectorGUID: 8e5425640a81b5c41b4cc83d53618df4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropGloves.prefab
+        CollectorGUID: 147d4d7dfbc193d4d8b1a47c8cfa0c55
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropGreatsword.prefab
+        CollectorGUID: ce1ba36d37ffe8744adf73e2582fa194
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropKnife.prefab
+        CollectorGUID: cdabe2ad4ba121c4fbd5bf6bcb8f60ab
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropLightning.prefab
+        CollectorGUID: de4e7b0d4e421454bad8086818de07aa
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropMagnet.prefab
+        CollectorGUID: 1ccb6fde5683a7242b2d9fa2c423c9f5
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropPickaxe.prefab
+        CollectorGUID: 5b949dae97f23ee4a9501b06b663c30d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropShield.prefab
+        CollectorGUID: 8a330a8b263492349b546b2a2c315098
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropShortSword.prefab
+        CollectorGUID: 0504bc70cb3bcc3439eb3c59744df3d8
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGrenade.prefab
+        CollectorGUID: dd8d9dd788d40014abbc43f402cd8eff
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeLootBeam.prefab
+        CollectorGUID: cbf4615154751ff4998d94b07c9d4f30
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeLootGoldBeam.prefab
+        CollectorGUID: 0e8e708030788094e96340cb751d70d6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeLootWeaponBeam.prefab
+        CollectorGUID: b2efd8792f9e576418db52ba57404fce
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeMagnetEffect.prefab
+        CollectorGUID: 50fab9be902d4c04681a3351b11c5246
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadePanzerschreck.prefab
+        CollectorGUID: decc4fc9a9ed494489b9ddde33760f91
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadePiercingGun.prefab
+        CollectorGUID: bb7d8015d509ac04abbbbb705befe63d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeRifle.prefab
+        CollectorGUID: 246547f6eb88fa64a8faaa4b045e10b2
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeSawBlade.prefab
+        CollectorGUID: 6964f10f3385d50419b0f78e83ffe6ef
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeScifiPlasmaRifle.prefab
+        CollectorGUID: 0255fa85e4dc9664cbdde21690c86346
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeScifiShotgun.prefab
+        CollectorGUID: a0bc55a8491185843be8e484007f21db
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeSentryTurret.prefab
+        CollectorGUID: 1e8ed2391d092cf4a9f5a47dffc1899d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeShieldEffect.prefab
+        CollectorGUID: 4bc1097fab1d05945afcb2f0fd58cb80
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeSupportDroneVisual.prefab
+        CollectorGUID: 849107d38a6d0b64fa25c0e3b397608f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab
+        CollectorGUID: c02be9431e684604b94cfff8a6bde919
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab
+        CollectorGUID: 3b12d4b689c7f4e42883195658f54886
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab
+        CollectorGUID: aaf02f4340303a74a83d7425d832cdaf
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab
+        CollectorGUID: 422a0230c5a720e469d724d6c56da477
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab
+        CollectorGUID: af2d3fc34d79cb04f884c88f50526838
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab
+        CollectorGUID: 7d19912592fc48f4ebaf9a35e8553797
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab
+        CollectorGUID: b815f425c5f75584a8cee4be3cb67421
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab
+        CollectorGUID: 6056f82e73a8983428270cd994be6e31
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: PrefabsEffects
+      GroupDesc: "\u7279\u6548\u9884\u5236\u4F53"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Prefabs/Effects
+        CollectorGUID: 13781f69acfcb5144919666fc1ee2ab7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: arcade;arcade-online
+        UserData: 
+    - GroupName: Music
+      GroupDesc: "\u97F3\u4E50\u8D44\u6E90"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Audio/Music/FoundationMusic.wav
+        CollectorGUID: 60da0f23d45f63d4ca82901a8a949241
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+    - GroupName: Sound
+      GroupDesc: "\u97F3\u6548\u8D44\u6E90"
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Game/Audio/Sound/AmbienceFire.wav
+        CollectorGUID: a87401ca83f7c8f43ab0a5dfdeb33b9b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/AmbienceRiver.wav
+        CollectorGUID: 5e7b404bb7e0b2e48a6eeec1c2e075d3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeBombExplosion.wav
+        CollectorGUID: ea8133c41f376c7459c3bd3f1621522b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeExplosion.wav
+        CollectorGUID: 4eeeee3db5aca4f4eb28204c0b44a635
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeExplosionSciFi.wav
+        CollectorGUID: 69368180475a5f74b9b26763b21279d3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireBasic.wav
+        CollectorGUID: 3b508bb9f89333a4fab7826866335a27
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireLauncher.wav
+        CollectorGUID: aa9692ad52e10f0468933f196d33d48b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFirePiercing.wav
+        CollectorGUID: 8878e9bb4dcdb03428ca6a64736f49fd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireRapid.wav
+        CollectorGUID: a33adc74b86dfbc49adc9b3c067e22fe
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireRaygun.wav
+        CollectorGUID: 3383a6f9f2e500946980c41d0e7ea049
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireSpread.wav
+        CollectorGUID: 4d001909c011afd45993f4ddc0ed5448
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeUiClick.wav
+        CollectorGUID: f26ee3784e0923f488f4492371d764ee
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeUiConfirm.wav
+        CollectorGUID: def3c5b157e28a94b99214d4fd8e29be
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeUiPurchase.wav
+        CollectorGUID: fc37edd2c3549224ab3ab52e70c4c713
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CampfireIgnite.wav
+        CollectorGUID: d5c7ed1d0bcd0834ea38f1d7b7004c5d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatBulletBody01.wav
+        CollectorGUID: 7a19186dce3154e4faf8aad601559e59
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatBulletBody02.wav
+        CollectorGUID: c1a98b33acd6a564fb0ab3992f4bb47b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatBulletIce.wav
+        CollectorGUID: 3c35add994ec38747acac783d8c95706
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatBulletMetal01.wav
+        CollectorGUID: 1045c03bee69c374e9c745e45f6f6514
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatBulletMetal02.wav
+        CollectorGUID: 03099a16812e13342b901d4f34e807d6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatPunchHit01.wav
+        CollectorGUID: 3c58b7cbcb103354697e13797faa4dc0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatPunchHit02.wav
+        CollectorGUID: 4ac719012767c1a44a20c29cdd2bbf8e
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatSwing01.wav
+        CollectorGUID: 9a92c161a06654245a65f8490254e006
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/CombatSwing02.wav
+        CollectorGUID: 47a4d3966dab9f4478f551adbdc225aa
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FoleyCollectItem.wav
+        CollectorGUID: e0d64334e86566a4687174932977d241
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FoleySearchBag.wav
+        CollectorGUID: 8d3b4efcc490dcf4d9c6f127c02e400a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteRun01.wav
+        CollectorGUID: 0d912d6fbeed177438fca3b5894b9cf9
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteRun02.wav
+        CollectorGUID: 92ebde411c51bb243b45536a80e4eb53
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteRun03.wav
+        CollectorGUID: b518addbc32125943aefd14e04c3437b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteRun04.wav
+        CollectorGUID: e819a3e8c18f346408edb70a88938072
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteWalk01.wav
+        CollectorGUID: d4aac8e67052eba4a91ed2f7a0f58c39
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteWalk02.wav
+        CollectorGUID: 45bf6d56069e9e44797692deabff17a5
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteWalk03.wav
+        CollectorGUID: 896e72f9a652a8c49a71dad9d049aa07
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepConcreteWalk04.wav
+        CollectorGUID: b619403b3d8b81a41b27a21767d6afee
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepDirt01.wav
+        CollectorGUID: fbc568bcee56f2b489a7b92c01fe7a60
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepDirt02.wav
+        CollectorGUID: 86e9b851d5ee01e42b74f144a4b41289
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepDirt03.wav
+        CollectorGUID: 2df26140e02c2ec44832e590ef0457f7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepDirt04.wav
+        CollectorGUID: 27363b5d20f4636438a5b974a79dff72
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassRun01.wav
+        CollectorGUID: 0862ba83ccd076349bdefc9f2f775b67
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassRun02.wav
+        CollectorGUID: 11e0865672f4f21479096faa2dd13f10
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassRun03.wav
+        CollectorGUID: 12de020bb15763347b009d1269b8ddd0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassRun04.wav
+        CollectorGUID: d6de10e056a86e04389dbe2c100c5a0f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassWalk01.wav
+        CollectorGUID: f9b63730f4f84a641b9048f3796c1f23
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassWalk02.wav
+        CollectorGUID: f145efef98327a442a1a5b294720509a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassWalk03.wav
+        CollectorGUID: 3f75dee5bf671b9429d82d531867bfd1
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGrassWalk04.wav
+        CollectorGUID: f1c52629d02468946b0495a52b64143a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelRun01.wav
+        CollectorGUID: 9fbd1fd6ea5bc004aa275149a88fec1f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelRun02.wav
+        CollectorGUID: a7502ddcb0d3494409152d43c415d360
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelRun03.wav
+        CollectorGUID: fe2aacf4ce5c87f4b8cfb3e1b2d69000
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelRun04.wav
+        CollectorGUID: e6d8a8a35ac55a343ad443a40327cab3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelWalk01.wav
+        CollectorGUID: df922f2c59ef3b840a1324792a5678f4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelWalk02.wav
+        CollectorGUID: f304cd655091e234695cd425df33e562
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelWalk03.wav
+        CollectorGUID: 13a3e9395c788024e857ce641aea3582
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepGravelWalk04.wav
+        CollectorGUID: 3c55f6595d8d0be4aba73ad98a19e8cd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudRun01.wav
+        CollectorGUID: 96ce09db70e7f7a49ba45032029913da
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudRun02.wav
+        CollectorGUID: 879d5361bfae0e94f9a67af1a0f6e7d4
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudRun03.wav
+        CollectorGUID: f03dc1edab1dc3748bb79e36b7f9a8e7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudRun04.wav
+        CollectorGUID: 9b8f5dc08127892489d911243f7d1cb9
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudWalk01.wav
+        CollectorGUID: b366a64d7a1a0ac41b42fae4282382f0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudWalk02.wav
+        CollectorGUID: df26e1dec90dd1b4ca83a63c315fa672
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudWalk03.wav
+        CollectorGUID: 84d8e92e39eb21d438d0f4d001c48e25
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepMudWalk04.wav
+        CollectorGUID: dcc45953378eff04fa5f4baa7c373fe1
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterRun01.wav
+        CollectorGUID: 5999fcd0858ab534592fbfab3f004131
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterRun02.wav
+        CollectorGUID: 73c9fb91199ff1f4c888ee6ae76805ed
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterRun03.wav
+        CollectorGUID: 80f008ffb39a15848a5c5d01bb5ffc88
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterRun04.wav
+        CollectorGUID: 99e0306822f310c45ba38c54fb7d51ac
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterWalk01.wav
+        CollectorGUID: 1bdddf69b275f834a91d9294087e9c8d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterWalk02.wav
+        CollectorGUID: 36e12666931ec6d419d499971b563521
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterWalk03.wav
+        CollectorGUID: 6acbf3f745cb38547aca5735f210d816
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FootstepWaterWalk04.wav
+        CollectorGUID: 6db9ba9eec9bee0429781b01f2e33d30
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FoundationClick.wav
+        CollectorGUID: 3f92e1a7820e0e24087289d85146d89a
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/FoundationSpatial.wav
+        CollectorGUID: a5373558b1e26654c8735a7b2f5e30c2
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponDryFire.wav
+        CollectorGUID: 87868583d0ab9ed438caea7ef3dad562
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponHandling.wav
+        CollectorGUID: 26f1e29bc4433674dad037ad2eb80013
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponMagazineIn.wav
+        CollectorGUID: 1051f84d58ca14342946368aa38e84bf
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponMagazineOut.wav
+        CollectorGUID: 235db2031b6d6624d92b2282617f8745
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponShotgunCock.wav
+        CollectorGUID: 7a5491eb1c3feef4caa9b8ec549b79ee
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/WeaponShotgunLoad.wav
+        CollectorGUID: 2c1b07d29465f614dacf317efd636b67
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 

@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans>
+    <bean name="DialogueEntryConfig" group="c">
+        <var name="Id" type="string"/><var name="NpcId" type="string"/><var name="StartNodeId" type="string"/>
+    </bean>
+    <bean name="DialogueNodeConfig" group="c">
+        <var name="Id" type="string"/><var name="DialogueId" type="string"/><var name="TextKey" type="string"/><var name="NextNodeId" type="string"/>
+    </bean>
+    <bean name="DialogueOptionConfig" group="c">
+        <var name="Id" type="string"/><var name="NodeId" type="string"/><var name="Order" type="int"/><var name="TextKey" type="string"/><var name="Action" type="DialogueOptionAction"/><var name="TargetNodeId" type="string"/>
+    </bean>
+    <bean name="CivilisationValleyGenerationConfig" group="c">
+        <var name="MapId" type="string"/><var name="GenerationVersion" type="int"/>
+        <var name="WorldSizeMeters" type="int"/><var name="ChunkSizeMeters" type="int"/><var name="HeightSampleSpacingMeters" type="int"/>
+        <var name="MinRouteMeters" type="float"/><var name="MaxRouteMeters" type="float"/><var name="MaxAttempts" type="int"/>
+        <var name="KitAddress" type="string"/>
+        <var name="MinEnemies" type="int"/><var name="MaxEnemies" type="int"/>
+    </bean>
+    <bean name="CivilisationTechnologyConfig" group="c">
+        <var name="Id" type="string"/><var name="NameKey" type="string"/><var name="UnlockKey" type="string"/>
+    </bean>
+    <bean name="CivilisationProductionConfig" group="c">
+        <var name="Id" type="string"/><var name="TechnologyId" type="string"/><var name="OutputItemId" type="int"/><var name="CostGold" type="int"/>
+    </bean>
+    <bean name="CivilisationReturnValueConfig" group="c">
+        <var name="ItemId" type="int"/><var name="ValueGold" type="int"/>
+    </bean>
+    <bean name="CivilisationSearchPointConfig" group="c">
+        <var name="Id" type="string"/><var name="MapId" type="string"/><var name="TechnologyId" type="string"/>
+        <var name="ItemId" type="int"/><var name="Amount" type="int"/><var name="SearchSeconds" type="float"/>
+        <var name="PositionX" type="float"/><var name="PositionZ" type="float"/><var name="NameKey" type="string"/>
+        <var name="RequiredWeaponItemId" type="int"/><var name="FellTree" type="bool"/>
+        <var name="Repeatable" type="bool"/>
+          <var name="ChapterId" type="string"/>
+    </bean>
+    <bean name="Item" group="e">
+        <var name="Id" type="int"/>
+        <var name="Name" type="string"/>
+        <var name="Desc" type="string"/>
+        <var name="NameKey" type="string"/>
+        <var name="DescKey" type="string"/>
+        <var name="IconName" type="string"/>
+        <var name="ItemType" type="ItemType"/>
+        <var name="MaxStackAmount" type="int"/>
+        <var name="UseEffect" type="ItemUseEffect"/>
+        <var name="UseValue" type="int"/>
+        <var name="UseDurationSeconds" type="float"/>
+        <var name="ActionKind" type="ItemActionKind"/>
+        <var name="ActionTarget" type="string"/>
+        <var name="BurnSeconds" type="float"/>
+        <var name="WearSlot" type="ClothingSlot"/>
+        <var name="AppearanceId" type="string"/>
+    </bean>
+    <bean name="WeaponConfig" group="e">
+        <var name="ItemId" type="int"/>
+        <var name="WeaponKind" type="WeaponKind"/>
+        <var name="AttackDamage" type="int"/>
+        <var name="AttackCooldownSeconds" type="float"/>
+        <var name="AttackRange" type="float"/>
+        <var name="MeleeArcDegrees" type="float"/>
+        <var name="ProjectileConfigId" type="string"/>
+        <var name="AmmoItemId" type="int"/>
+        <var name="MagazineCapacity" type="int"/>
+        <var name="ReloadSeconds" type="float"/>
+        <var name="ReloadWholeMagazine" type="bool"/>
+        <var name="TreeHarvestEfficiency" type="float" comment="近战砍树进度倍率；1为标准效率，0为不可采集"/>
+        <var name="StoneHarvestEfficiency" type="float" comment="近战挖矿进度倍率；1为标准效率，0为不可采集"/>
+    </bean>
+    <bean name="WeaponAppearanceConfig" group="c">
+        <var name="ItemId" type="int"/>
+        <var name="PrefabName" type="string"/>
+        <var name="AttachPoint" type="PlayerWeaponAttachPoint"/>
+        <var name="LocalPositionX" type="float"/>
+        <var name="LocalPositionY" type="float"/>
+        <var name="LocalPositionZ" type="float"/>
+        <var name="LocalRotationX" type="float"/>
+        <var name="LocalRotationY" type="float"/>
+        <var name="LocalRotationZ" type="float"/>
+        <var name="LocalScaleX" type="float"/>
+        <var name="LocalScaleY" type="float"/>
+        <var name="LocalScaleZ" type="float"/>
+    </bean>
+    <bean name="CraftMaterialConfig" group="c" sep="|">
+        <var name="ItemId" type="int"/>
+        <var name="Amount" type="int"/>
+    </bean>
+    <bean name="CraftRecipeConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="OutputItemId" type="int"/>
+        <var name="OutputAmount" type="int"/>
+        <var name="Materials" type="(array#sep=;),(CraftMaterialConfig#sep=|)"/>
+        <var name="Order" type="int"/>
+    </bean>
+    <bean name="TempBuildingMaterialConfig" group="e" sep="|">
+        <var name="ItemId" type="int"/>
+        <var name="Amount" type="int"/>
+    </bean>
+    <bean name="TempBuildingConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Name" type="string"/>
+        <var name="NameKey" type="string"/>
+        <var name="IconName" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="Materials" type="(array#sep=;),(TempBuildingMaterialConfig#sep=|)"/>
+        <var name="BuildSeconds" type="float"/>
+        <var name="FootprintRadius" type="float"/>
+        <var name="MaxSlopeDegrees" type="float"/>
+        <var name="NarrowPassageRadius" type="float"/>
+        <var name="BlocksNavigation" type="bool"/>
+        <var name="Order" type="int"/>
+        <var name="BaseOnly" type="bool"/>
+        <var name="ExpeditionMapId" type="string"/>
+    </bean>
+    <bean name="BaseCampLayoutConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="BuildingId" type="string"/>
+        <var name="PositionX" type="float"/>
+        <var name="PositionY" type="float"/>
+        <var name="PositionZ" type="float"/>
+        <var name="RotationY" type="float"/>
+        <var name="UniformScale" type="float"/>
+    </bean>
+    <bean name="TempBuildingManualAttackConfig" group="e">
+        <var name="BuildingId" type="string"/>
+        <var name="InteractDistance" type="float"/>
+        <var name="ShootCooldownSeconds" type="float"/>
+        <var name="Damage" type="int"/>
+        <var name="ProjectileConfigId" type="string"/>
+        <var name="AmmoItemId" type="int"/>
+        <var name="AmmoAmount" type="int"/>
+        <var name="MagazineCapacity" type="int"/>
+        <var name="ReloadSeconds" type="float"/>
+        <var name="OperateRotateDegreesPerSecond" type="float"/>
+    </bean>
+    <bean name="ProjectileConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="MoveSpeed" type="float"/>
+        <var name="MaxTravelDistance" type="float"/>
+        <var name="RecoveryLootConfigId" type="string"/>
+    </bean>
+    <bean name="MapConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="ScenePath" type="string"/>
+    </bean>
+    <bean name="MapDisplayConfig" group="c">
+        <var name="MapId" type="string"/>
+        <var name="ImageName" type="string"/>
+        <var name="CenterX" type="float"/>
+        <var name="CenterZ" type="float"/>
+        <var name="Width" type="float"/>
+        <var name="Height" type="float"/>
+        <var name="ViewportColumns" type="int"/>
+        <var name="ViewportRows" type="int"/>
+    </bean>
+    <bean name="ExpeditionTaskConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="MapId" type="string#ref=TbMap"/>
+        <var name="Name" type="string"/>
+        <var name="NameKey" type="string"/>
+        <var name="ObjectiveType" type="TaskObjectiveType"/>
+        <var name="TargetAmount" type="float"/>
+        <var name="Order" type="int"/>
+    </bean>
+    <bean name="MapScenePartConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="MapId" type="string"/>
+        <var name="ScenePath" type="string"/>
+        <var name="Order" type="int"/>
+    </bean>
+    <bean name="MapSpawnConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="MapId" type="string"/>
+        <var name="ObjectType" type="MapSpawnObjectType"/>
+        <var name="ConfigId" type="string"/>
+        <var name="PositionX" type="float"/>
+        <var name="PositionY" type="float"/>
+        <var name="PositionZ" type="float"/>
+        <var name="RotationY" type="float"/>
+    </bean>
+    <bean name="NpcConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="NameKey" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="InteractionKind" type="NpcInteractionKind"/>
+        <var name="InteractionParam" type="string"/>
+    </bean>
+    <bean name="ShopConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="NameKey" type="string"/>
+    </bean>
+    <bean name="ShopItemConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="ShopId" type="string"/>
+        <var name="ItemId" type="int"/>
+        <var name="Order" type="int"/>
+        <var name="BuyPrice" type="int"/>
+        <var name="SellPrice" type="int"/>
+        <var name="InitiallyOpen" type="bool"/>
+    </bean>
+    <bean name="PlayerConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="MaxHP" type="int"/>
+        <var name="AttackDamage" type="int"/>
+        <var name="AttackRange" type="float"/>
+        <var name="AttackCooldownSeconds" type="float"/>
+        <var name="MoveSpeed" type="float"/>
+        <var name="TurnSpeed" type="float"/>
+        <var name="BaseRecoveryPerSecond" type="float"/>
+        <var name="UnarmedAttackDamage" type="int"/>
+        <var name="UnarmedAttackRange" type="float"/>
+        <var name="UnarmedAttackCooldownSeconds" type="float"/>
+        <var name="UnarmedMeleeArcDegrees" type="float"/>
+        <var name="BuildingOperateDistance" type="float"/>
+    </bean>
+    <bean name="EnemyConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="WeaponId" type="string"/>
+        <var name="MaxHP" type="int"/>
+        <var name="AttackDamage" type="int"/>
+        <var name="AggroRange" type="float"/>
+        <var name="AttackRange" type="float"/>
+        <var name="AttackCooldownSeconds" type="float"/>
+        <var name="MoveSpeed" type="float"/>
+        <var name="LootConfigId" type="string"/>
+        <var name="AttackKind" type="EnemyAttackKind"/>
+        <var name="RetreatDistance" type="float"/>
+        <var name="TelegraphSeconds" type="float"/>
+        <var name="ProjectileConfigId" type="string"/>
+        <var name="GuaranteedWeaponLootConfigId" type="string"/>
+        <var name="GuaranteedAmmoLootConfigId" type="string"/>
+        <var name="AmmoCapacity" type="int"/>
+        <var name="FallbackMeleeAttackRange" type="float"/>
+        <var name="MagazineCapacity" type="int"/>
+        <var name="ReloadSeconds" type="float"/>
+    </bean>
+    <bean name="LootConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="PrefabName" type="string"/>
+        <var name="ItemId" type="int"/>
+        <var name="Amount" type="int"/>
+    </bean>
+    <bean name="ExtractionConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="PrefabName" type="string"/>
+    </bean>
+    <bean name="OnlineWorldRuleConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="BagCapacity" type="int"/>
+        <var name="CorpseLifetimeSeconds" type="int"/>
+        <var name="StarterMeleeWeaponItemId" type="int#ref=TbItem"/>
+        <var name="StarterRangedWeaponItemId" type="int#ref=TbItem"/>
+        <var name="StarterRangedAmmoAmount" type="int"/>
+    </bean>
+    <bean name="TestCmdCategoryConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="Order" type="int"/>
+        <var name="LabelText" type="string"/>
+    </bean>
+    <bean name="TestCmdEntryConfig" group="c">
+        <var name="Id" type="string"/>
+        <var name="CategoryId" type="string"/>
+        <var name="Order" type="int"/>
+        <var name="LabelText" type="string"/>
+        <var name="CommandTemplate" type="string"/>
+        <var name="DescriptionText" type="string"/>
+        <var name="UsageText" type="string"/>
+        <var name="ExampleText" type="string"/>
+    </bean>
+    <bean name="ArcadeEnemyMemberConfig" group="e" sep="|">
+        <var name="EnemyId" type="string#ref=TbEnemy"/>
+        <var name="Count" type="int"/>
+    </bean>
+    <bean name="ArcadeObstacleConfig" group="e" sep="|">
+        <var name="CenterX" type="float"/>
+        <var name="CenterY" type="float"/>
+        <var name="HalfWidth" type="float"/>
+        <var name="HalfHeight" type="float"/>
+    </bean>
+    <bean name="ArcadeRuleConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="ConfigFingerprint" type="string"/>
+        <var name="InitialLives" type="int"/>
+        <var name="InitialBombs" type="int"/>
+        <var name="InitialDashes" type="int"/>
+        <var name="BaseWeaponId" type="string#ref=TbArcadeWeapon"/>
+        <var name="ShopOfferCount" type="int"/>
+        <var name="MaxAliveEnemies" type="int"/>
+        <var name="MaxProjectiles" type="int"/>
+        <var name="MaxDrops" type="int"/>
+        <var name="HealthGrowthPerArena" type="float"/>
+        <var name="DamageGrowthPerArena" type="float"/>
+        <var name="SpeedGrowthPerArena" type="float"/>
+        <var name="GoldGrowthPerArena" type="float"/>
+        <var name="BossEveryArenas" type="int"/>
+        <var name="PlayerMaxHealth" type="int"/>
+        <var name="PlayerMoveSpeed" type="float"/>
+        <var name="PlayerRadius" type="float"/>
+        <var name="EnemyContactRadius" type="float"/>
+        <var name="ContactInvulnerabilitySeconds" type="float"/>
+        <var name="RespawnDelaySeconds" type="float"/>
+        <var name="ArenaHalfWidth" type="float"/>
+        <var name="ArenaHalfHeight" type="float"/>
+        <var name="DropChance" type="float"/>
+        <var name="SupportFireIntervalSeconds" type="float"/>
+    </bean>
+    <bean name="ArcadeWeaponConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="HeldVisualResourceName" type="string"/>
+        <var name="ProjectileVisualResourceName" type="string"/>
+        <var name="MuzzleFlash" type="bool"/>
+        <var name="ProjectileFirePointX" type="float"/>
+        <var name="ProjectileFirePointY" type="float"/>
+        <var name="ProjectileFirePointZ" type="float"/>
+        <var name="Damage" type="int"/>
+        <var name="FireIntervalSeconds" type="float"/>
+        <var name="ProjectileSpeed" type="float"/>
+        <var name="ProjectileLifetimeSeconds" type="float"/>
+        <var name="ProjectileCount" type="int"/>
+        <var name="SpreadDegrees" type="float"/>
+        <var name="Behavior" type="ArcadeWeaponBehavior"/>
+        <var name="MaxHits" type="int"/>
+        <var name="ExplosionRadius" type="float"/>
+        <var name="MeleeRange" type="float"/>
+        <var name="MeleeArcDegrees" type="float"/>
+    </bean>
+    <bean name="ArcadeHazardConfig" group="e" sep="|">
+        <var name="Id" type="int"/>
+        <var name="Kind" type="ArcadeHazardKind"/>
+        <var name="CenterX" type="float"/>
+        <var name="CenterY" type="float"/>
+        <var name="DirectionDegrees" type="float"/>
+        <var name="Radius" type="float"/>
+        <var name="ArmLength" type="float"/>
+        <var name="ArmHalfWidth" type="float"/>
+        <var name="IdleSeconds" type="float"/>
+        <var name="WarningSeconds" type="float"/>
+        <var name="ActiveSeconds" type="float"/>
+        <var name="AngularSpeedDegrees" type="float"/>
+        <var name="HitIntervalSeconds" type="float"/>
+        <var name="PlayerDamageRatio" type="float"/>
+        <var name="BossDamageRatio" type="float"/>
+    </bean>
+    <bean name="ArcadeCrateConfig" group="e" sep="|">
+        <var name="Id" type="int"/>
+        <var name="X" type="float"/>
+        <var name="Y" type="float"/>
+        <var name="Radius" type="float"/>
+        <var name="Health" type="int"/>
+    </bean>
+    <bean name="ArcadeArenaConfig" group="e">
+        <var name="ArenaNumber" type="int"/>
+        <var name="WaveGroupIds" type="(array#sep=;),string"/>
+        <var name="Obstacles" type="(array#sep=;),(ArcadeObstacleConfig#sep=|)"/>
+        <var name="IsBoss" type="bool"/>
+        <var name="BossId" type="string"/>
+        <var name="ClearGold" type="int"/>
+        <var name="ShopSeedSalt" type="int"/>
+        <var name="Hazards" type="(array#sep=;),(ArcadeHazardConfig#sep=|)"/>
+        <var name="NextArenaNumbers" type="(array#sep=;),int"/>
+        <var name="FinalBossId" type="string"/>
+        <var name="WaterMinY" type="float"/>
+        <var name="WaterSpeedRatio" type="float"/>
+        <var name="CampfireX" type="float"/>
+        <var name="CampfireY" type="float"/>
+        <var name="CampfireRadius" type="float"/>
+        <var name="CampfireDamage" type="int"/>
+        <var name="CampfireIntervalSeconds" type="float"/>
+        <var name="RoundRestSeconds" type="float"/>
+        <var name="ExitRestSeconds" type="float"/>
+        <var name="Crates" type="(array#sep=;),(ArcadeCrateConfig#sep=|)"/>
+        <var name="ArmorWaveNumber" type="int"/>
+        <var name="ArmorHealth" type="int"/>
+        <var name="CrateTreasureWeightMultiplier" type="int"/>
+
+    </bean>
+    <bean name="ArcadeBossConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="EnemyGroupId" type="string"/>
+        <var name="SkillCooldownSeconds" type="float"/>
+        <var name="TelegraphSeconds" type="float"/>
+        <var name="ChargeDurationSeconds" type="float"/>
+        <var name="ChargeSpeedMultiplier" type="float"/>
+        <var name="ImpactRadius" type="float"/>
+        <var name="ImpactDamageMultiplier" type="float"/>
+        <var name="RayIntervalSeconds" type="float"/>
+        <var name="RayTelegraphSeconds" type="float"/>
+        <var name="RaySpeed" type="float"/>
+        <var name="RayDamageMultiplier" type="float"/>
+        <var name="ReinforcementGroupId" type="string"/>
+        <var name="ReinforcementIntervalSeconds" type="float"/>
+    </bean>
+    <bean name="ArcadeChallengeConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="EnemyGroupId" type="string"/>
+        <var name="StartArena" type="int"/>
+        <var name="Interval" type="int"/>
+        <var name="TimeLimitSeconds" type="float"/>
+    </bean>
+    <bean name="ArcadeEnemyGroupConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Members" type="(array#sep=;),(ArcadeEnemyMemberConfig#sep=|)"/>
+        <var name="SpawnIntervalSeconds" type="float"/>
+        <var name="MaxAlive" type="int"/>
+        <var name="HealthMultiplier" type="float"/>
+        <var name="DamageMultiplier" type="float"/>
+        <var name="SpeedMultiplier" type="float"/>
+        <var name="ClearGold" type="int"/>
+    </bean>
+    <bean name="ArcadeTreasureRewardConfig" group="e" sep="|">
+        <var name="Id" type="int"/>
+        <var name="Kind" type="ArcadeTreasureRewardKind"/>
+        <var name="X" type="float"/>
+        <var name="Y" type="float"/>
+        <var name="Points" type="int"/>
+        <var name="Progress" type="int"/>
+        <var name="Amount" type="int"/>
+    </bean>
+    <bean name="ArcadeTreasureRoomConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="ArenaConfigNumber" type="int"/>
+        <var name="WaveNumber" type="int"/>
+        <var name="Duration" type="float"/>
+        <var name="EntryX" type="float"/>
+        <var name="EntryY" type="float"/>
+        <var name="EntryRadius" type="float"/>
+        <var name="ReturnX" type="float"/>
+        <var name="ReturnY" type="float"/>
+        <var name="HalfWidth" type="float"/>
+        <var name="HalfHeight" type="float"/>
+        <var name="SpawnX" type="float"/>
+        <var name="SpawnY" type="float"/>
+        <var name="ExitX" type="float"/>
+        <var name="ExitY" type="float"/>
+        <var name="ExitRadius" type="float"/>
+        <var name="PickupRadius" type="float"/>
+        <var name="ProgressPerLevel" type="int"/>
+        <var name="MaxMultiplier" type="int"/>
+        <var name="LifeThreshold" type="long"/>
+        <var name="MaxLives" type="int"/>
+        <var name="Rewards" type="(list#sep=;),ArcadeTreasureRewardConfig"/>
+    </bean>
+    <bean name="ArcadeDropConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="MinArena" type="int"/>
+        <var name="MaxArena" type="int"/>
+        <var name="Weight" type="int"/>
+        <var name="Kind" type="ArcadeDropKind"/>
+        <var name="ProductId" type="string"/>
+        <var name="VisualPrefabName" type="string"/>
+        <var name="Amount" type="int"/>
+        <var name="DurationSeconds" type="float"/>
+        <var name="MaxOwned" type="int"/>
+    </bean>
+    <bean name="ArcadePowerupConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Behavior" type="ArcadePowerupBehavior"/>
+        <var name="ActiveVisualPrefabName" type="string"/>
+        <var name="VisualFollowPlayer" type="bool"/>
+        <var name="VisualOffsetX" type="float"/>
+        <var name="VisualOffsetY" type="float"/>
+        <var name="VisualOffsetZ" type="float"/>
+        <var name="Magnitude" type="float"/>
+        <var name="Damage" type="int"/>
+        <var name="IntervalSeconds" type="float"/>
+        <var name="Radius" type="float"/>
+        <var name="ProjectileSpeed" type="float"/>
+        <var name="Charges" type="int"/>
+    </bean>
+    <bean name="ArcadeShopItemConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="ProductId" type="string"/>
+        <var name="ProductType" type="ArcadeShopProductType"/>
+        <var name="UnlockArena" type="int"/>
+        <var name="Weight" type="int"/>
+        <var name="BasePrice" type="int"/>
+        <var name="PricePerArena" type="int"/>
+        <var name="Amount" type="int"/>
+        <var name="EquipmentSlotId" type="string"/>
+        <var name="ActiveVisualPrefabName" type="string"/>
+        <var name="VisualOffsetX" type="float"/>
+        <var name="VisualOffsetY" type="float"/>
+        <var name="VisualOffsetZ" type="float"/>
+        <var name="MaxPurchases" type="int"/>
+    </bean>
+    <bean name="ArcadeUpgradeConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Kind" type="ArcadeUpgradeKind"/>
+        <var name="ValuePerStack" type="float"/>
+        <var name="MaxStacks" type="int"/>
+    </bean>
+    <bean name="ArcadeRewardConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Trigger" type="ArcadeRewardTrigger"/>
+        <var name="StartArena" type="int"/>
+        <var name="Interval" type="int"/>
+        <var name="RewardId" type="string"/>
+        <var name="Amount" type="int"/>
+        <var name="AmountPerTrigger" type="int"/>
+    </bean>
+    <bean name="AIConfig" group="s">
+        <var name="Id" type="int"/>
+        <var name="AIConfigId" type="int"/>
+        <var name="Order" type="int"/>
+        <var name="Name" type="string"/>
+        <var name="NodeParams" type="array,int"/>
+    </bean>
+    <bean name="UnitConfig" group="s">
+        <var name="Id" type="int"/>
+        <var name="Type" type="int"/>
+        <var name="Name" type="string"/>
+        <var name="Position" type="int"/>
+        <var name="Weight" type="int"/>
+    </bean>
+    <bean name="StartMachineConfig" group="s">
+        <var name="Key" type="string"/>
+        <var name="Profile" type="string"/>
+        <var name="Id" type="int"/>
+        <var name="InnerIP" type="string"/>
+        <var name="OuterIP" type="string"/>
+        <var name="WatcherPort" type="int"/>
+    </bean>
+    <bean name="StartProcessConfig" group="s">
+        <var name="Key" type="string"/>
+        <var name="Profile" type="string"/>
+        <var name="Id" type="int"/>
+        <var name="MachineKey" type="string#ref=TbStartMachine"/>
+        <var name="Port" type="int"/>
+    </bean>
+    <bean name="StartZoneConfig" group="s">
+        <var name="Key" type="string"/>
+        <var name="Profile" type="string"/>
+        <var name="Id" type="int"/>
+        <var name="DBConnection" type="string"/>
+        <var name="DBName" type="string"/>
+        <var name="Desc" type="string"/>
+    </bean>
+    <bean name="StartSceneConfig" group="s">
+        <var name="Key" type="string"/>
+        <var name="Profile" type="string"/>
+        <var name="Id" type="int"/>
+        <var name="ProcessKey" type="string#ref=TbStartProcess"/>
+        <var name="ZoneKey" type="string#ref=TbStartZone"/>
+        <var name="SceneType" type="string"/>
+        <var name="Name" type="string"/>
+        <var name="Port" type="int"/>
+    </bean>
+    <bean name="ItemPreparationConfig" group="c">
+        <var name="ItemId" type="int#ref=TbItem"/><var name="WeightGrams" type="int"/><var name="TechnologyCategory" type="string"/>
+    </bean>
+    <bean name="BasePreparationRuleConfig" group="c">
+        <var name="Id" type="string"/><var name="GameMinutesPerRealSecond" type="float"/><var name="StartMinuteOfDay" type="int"/>
+        <var name="DailyGold" type="int"/><var name="RestMinuteOfDay" type="int"/><var name="DepartureWeightGrams" type="int"/><var name="NormalWeightGrams" type="int"/>
+        <var name="SpeedPenaltyPerKg" type="float"/><var name="SprintCostIncreasePerKg" type="float"/><var name="MinimumSpeedMultiplier" type="float"/><var name="MaximumSprintCostMultiplier" type="float"/>
+    </bean>
+    <bean name="MapPreparationRuleConfig" group="c">
+        <var name="MapId" type="string#ref=TbMap"/><var name="RestrictTechnology" type="bool"/><var name="AllowedCategories" type="string"/>
+    </bean>
+</beans>

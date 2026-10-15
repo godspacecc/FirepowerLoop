@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "ai-game-developer": {
+      "url": "http://localhost:<port>"
+    }
+  }
+}

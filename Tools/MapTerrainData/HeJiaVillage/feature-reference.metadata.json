@@ -1,0 +1,804 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "generatedAtUtc": "2026-09-12T07:09:05Z",
+  "scopeSource": "Tools/MapTerrainData/HeJiaVillage/metadata.json",
+  "extent": {
+    "crs": "EPSG:32649",
+    "west": 615961.992,
+    "east": 618009.992,
+    "south": 3056322.487,
+    "north": 3058370.487,
+    "widthMeters": 2048,
+    "heightMeters": 2048
+  },
+  "approvedDeviations": [
+    {
+      "status": "user-approved implementation deviation",
+      "approvedAtConversationDate": "2026-09-12",
+      "reason": "The official RGBNIR COG stores bands as B04/B03/B02/B08, while the plan text listed B02/B03/B04/B08. The implementation follows and validates the official COG tags; true color remains B04/B03/B02."
+    }
+  ],
+  "sources": {
+    "worldCover": {
+      "product": "ESA WorldCover 2021 v200 Map",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N27E111_Map.tif",
+      "requestedUrl": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/v200/2021/map/ESA_WorldCover_10m_2021_v200_N27E111_Map.tif",
+      "downloadedAtUtc": "2026-09-12T06:46:40Z",
+      "byteSize": 136650271,
+      "sha256": "d3880dbd10c409046e966f04664801b69b0de33a1366c65a6ccc5ef026a73bd5",
+      "etag": "\"7e15b312a8bf4e16a57ca36666673a58-17\"",
+      "lastModified": "Wed, 26 Oct 2022 12:51:27 GMT",
+      "temporaryFileName": "ESA_WorldCover_10m_2021_v200_N27E111_Map.tif",
+      "raster": {
+        "count": 1,
+        "dtypes": [
+          "uint8"
+        ],
+        "nodata": [
+          0.0
+        ],
+        "scales": [
+          1.0
+        ],
+        "offsets": [
+          0.0
+        ],
+        "crs": "EPSG:4326",
+        "bounds": [
+          111.0,
+          27.0,
+          114.0,
+          30.0
+        ],
+        "width": 36000,
+        "height": 36000,
+        "transform": [
+          8.333333333333333e-05,
+          0.0,
+          111.0,
+          0.0,
+          -8.333333333333333e-05,
+          30.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tags": {
+          "algorithm_version": "V2.0.0",
+          "copyright": "ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+          "creation_time": "2022-10-21 07:35:40.236136",
+          "legend": "10  Tree cover\n20  Shrubland\n30  Grassland\n40  Cropland\n50  Built-up\n60  Bare/sparse vegetation\n70  Snow and ice\n80  Permanent water bodies\n90  Herbaceous wetland\n95  Mangroves\n100 Moss and lichen\n",
+          "license": "CC-BY 4.0 - https://creativecommons.org/licenses/by/4.0/",
+          "product_crs": "EPSG:4326",
+          "product_grid": "3x3 degree tiling grid",
+          "product_tile": "N27E111",
+          "product_type": "LandCover Map",
+          "product_version": "V2.0.0",
+          "reference": "https://esa-worldcover.org",
+          "time_end": "2021-12-31T23:59:59Z",
+          "time_start": "2021-01-01T00:00:00Z",
+          "title": "ESA WorldCover product at 10m resolution for year 2021",
+          "AREA_OR_POINT": "Area"
+        }
+      }
+    },
+    "sentinelRgbnir": {
+      "product": "ESA WorldCover Sentinel-2 L2A RGBNIR annual median composite 2021 v2",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "url": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/rgbnir/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_S2RGBNIR.tif",
+      "requestedUrl": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/rgbnir/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_S2RGBNIR.tif",
+      "downloadedAtUtc": "2026-09-12T06:59:38Z",
+      "byteSize": 690812370,
+      "sha256": "506bc1dc062b95a1aa0fa34e4d52555040f86580988c8cfac36b302f506e611e",
+      "etag": "\"59f5ac591431b8a63ff40a7a5b4847a9-83\"",
+      "lastModified": "Sat, 10 Dec 2022 16:16:34 GMT",
+      "temporaryFileName": "ESA_WorldCover_10m_2021_v200_N27E112_S2RGBNIR.tif",
+      "raster": {
+        "count": 4,
+        "dtypes": [
+          "uint16",
+          "uint16",
+          "uint16",
+          "uint16"
+        ],
+        "nodata": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "scales": [
+          0.0001,
+          0.0001,
+          0.0001,
+          0.0001
+        ],
+        "offsets": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "crs": "EPSG:4326",
+        "bounds": [
+          112.0,
+          27.0,
+          113.0,
+          28.0
+        ],
+        "width": 12000,
+        "height": 12000,
+        "transform": [
+          8.333333333333333e-05,
+          0.0,
+          112.0,
+          0.0,
+          -8.333333333333333e-05,
+          28.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tags": {
+          "algorithm_version": "V2.0.0",
+          "bands": "Band 1: B04 (Red), Band 2: B03 (Green), Band 3: B02 (Blue), Band 4: B08 (Infrared)",
+          "copyright": "ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+          "creation_time": "2022-12-09 17:08:25.881589",
+          "description": "The ESA WorldCover Sentinel-2 median L2A (RGBNIR) composite is a color image made from images in Blue (B02), Green (B03), Red (B04) and Infrared (B08). ",
+          "license": "CC-BY 4.0 - https://creativecommons.org/licenses/by/4.0/",
+          "product_crs": "EPSG:4326",
+          "product_grid": "1x1 degree tiling grid",
+          "product_tile": "N27E112",
+          "product_type": "Sentinel-2 median L2A (RGBNIR) composite",
+          "product_version": "V2.0.0",
+          "reference": "https://esa-worldcover.org",
+          "time_end": "2021-12-31T23:59:59Z",
+          "time_start": "2021-01-01T00:00:00Z",
+          "title": "ESA WorldCover Sentinel-2 median L2A (RGBNIR) composite at 10m resolution for year 2021",
+          "AREA_OR_POINT": "Area"
+        }
+      }
+    },
+    "sentinelNdvi": {
+      "product": "ESA WorldCover Sentinel-2 NDVI percentiles composite 2021 v2",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "url": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/ndvi/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_NDVI.tif",
+      "requestedUrl": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/ndvi/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_NDVI.tif",
+      "downloadedAtUtc": "2026-09-12T07:06:48Z",
+      "byteSize": 310194891,
+      "sha256": "0873007d9b80dc6bc82d3a643e43776522f14a2f8bfbe0b52ca1ca4cc10eebb2",
+      "etag": "\"5646f00fe0843bef90f1352269e81bbc-37\"",
+      "lastModified": "Thu, 02 Feb 2023 23:58:02 GMT",
+      "temporaryFileName": "ESA_WorldCover_10m_2021_v200_N27E112_NDVI.tif",
+      "raster": {
+        "count": 3,
+        "dtypes": [
+          "uint8",
+          "uint8",
+          "uint8"
+        ],
+        "nodata": [
+          255.0,
+          255.0,
+          255.0
+        ],
+        "scales": [
+          0.008,
+          0.008,
+          0.008
+        ],
+        "offsets": [
+          -1.0,
+          -1.0,
+          -1.0
+        ],
+        "crs": "EPSG:4326",
+        "bounds": [
+          112.0,
+          27.0,
+          113.0,
+          28.0
+        ],
+        "width": 12000,
+        "height": 12000,
+        "transform": [
+          8.333333333333333e-05,
+          0.0,
+          112.0,
+          0.0,
+          -8.333333333333333e-05,
+          28.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tags": {
+          "algorithm_version": "V2.0.0",
+          "bands": "Band 1: NDVI-p90, Band2: NDVI-p50, Band 3: NDVI-p10",
+          "copyright": "ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+          "creation_time": "2023-02-01 21:52:49.953512",
+          "description": "The ESA WorldCover NDVI p90, p50, p10 composite is a color image made from NDVI temporal percentiles from the year 2021. The NDVI p90 band describes the upper NDVI range during the year, the NDVI p50 band is the median NDVI value and the NDVI p10 band represents the lower NDVI range.",
+          "license": "CC-BY 4.0 - https://creativecommons.org/licenses/by/4.0/",
+          "product_crs": "EPSG:4326",
+          "product_grid": "1x1 degree tiling grid",
+          "product_tile": "N27E112",
+          "product_type": "Sentinel-2 NDVI (NDVI-p90, NDVI-p50, NDVI-p10) composite",
+          "product_version": "V2.0.0",
+          "reference": "https://esa-worldcover.org",
+          "time_end": "2021-12-31T23:59:59Z",
+          "time_start": "2021-01-01T00:00:00Z",
+          "title": "ESA WorldCover NDVI p90, p50, p10 composite at 10m resolution for year 2021",
+          "AREA_OR_POINT": "Area"
+        }
+      }
+    },
+    "sentinelSwir": {
+      "product": "ESA WorldCover Sentinel-2 SWIR annual median composite 2021 v2",
+      "license": "CC BY 4.0",
+      "licenseUrl": "https://creativecommons.org/licenses/by/4.0/",
+      "url": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/swir/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_SWIR.tif",
+      "requestedUrl": "https://esa-worldcover-s2.s3.eu-central-1.amazonaws.com/swir/2021/N27/ESA_WorldCover_10m_2021_v200_N27E112_SWIR.tif",
+      "downloadedAtUtc": "2026-09-12T07:08:41Z",
+      "byteSize": 47052839,
+      "sha256": "661eecde8728a9aded0e897123997e1c55f40811aaccbd4742f2847726d71f84",
+      "etag": "\"f725f0cb787aae13d705ccd34d0be11e-6\"",
+      "lastModified": "Thu, 02 Feb 2023 23:41:29 GMT",
+      "temporaryFileName": "ESA_WorldCover_10m_2021_v200_N27E112_SWIR.tif",
+      "raster": {
+        "count": 2,
+        "dtypes": [
+          "uint8",
+          "uint8"
+        ],
+        "nodata": [
+          255.0,
+          255.0
+        ],
+        "scales": [
+          0.004,
+          0.004
+        ],
+        "offsets": [
+          -0.0,
+          -0.0
+        ],
+        "crs": "EPSG:4326",
+        "bounds": [
+          112.0,
+          27.0,
+          113.0,
+          28.0
+        ],
+        "width": 6000,
+        "height": 6000,
+        "transform": [
+          0.00016666666666666666,
+          0.0,
+          112.0,
+          0.0,
+          -0.00016666666666666666,
+          28.0,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "tags": {
+          "algorithm_version": "V2.0.0",
+          "bands": "Band 1: B11-p50, Band 2: B12-p50",
+          "copyright": "ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium",
+          "creation_time": "2023-02-01 21:59:09.874954",
+          "description": "The ESA WorldCover SWIR composite is a 2 bands (B11 and B12) median composite  from the year 2021 at a resolution of approximately 20 meters.",
+          "license": "CC-BY 4.0 - https://creativecommons.org/licenses/by/4.0/",
+          "product_crs": "EPSG:4326",
+          "product_grid": "1x1 degree tiling grid",
+          "product_tile": "N27E112",
+          "product_type": "Sentinel-2 SWIR (B11 p50, B12 p50) composite",
+          "product_version": "V2.0.0",
+          "reference": "https://esa-worldcover.org",
+          "time_end": "2021-12-31T23:59:59Z",
+          "time_start": "2021-01-01T00:00:00Z",
+          "title": "ESA WorldCover SWIR median composite at 20m resolution for year 2021",
+          "AREA_OR_POINT": "Area"
+        }
+      }
+    },
+    "compositeGrid": {
+      "url": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/esa_worldcover_grid_composites.fgb",
+      "requestedUrl": "https://esa-worldcover.s3.eu-central-1.amazonaws.com/esa_worldcover_grid_composites.fgb",
+      "downloadedAtUtc": "2026-09-12T06:09:05Z",
+      "byteSize": 7884389,
+      "sha256": "beb61729634a14355060d27d7516ab6fed856dee55f16e4748eaee259fa7dd9b",
+      "etag": null,
+      "lastModified": null,
+      "cacheReuse": true
+    },
+    "openStreetMap": {
+      "product": "OpenStreetMap current data subset",
+      "attribution": "© OpenStreetMap contributors",
+      "license": "ODbL",
+      "licenseUrl": "https://www.openstreetmap.org/copyright",
+      "url": "https://overpass-api.de/api/interpreter",
+      "requestedUrl": "https://overpass-api.de/api/interpreter",
+      "downloadedAtUtc": "2026-09-12T07:08:51Z",
+      "byteSize": 15769,
+      "sha256": "99adbf8a5c598f6018544200cad1dfb133570d215806c568c80b2571daa216da",
+      "etag": null,
+      "lastModified": null,
+      "endpoint": "https://overpass-api.de/api/interpreter",
+      "osmBaseTimestamp": "2026-09-12T07:07:04Z",
+      "featureCount": 6,
+      "countsByOsmType": {
+        "way": 6
+      }
+    }
+  },
+  "officialDocumentation": {
+    "dataAccess": "https://esa-worldcover.org/en/data-access",
+    "compositeBands": "https://remotesensing.vito.be/news/simplify-your-processing-worldcover-annual-composites"
+  },
+  "processing": {
+    "versions": {
+      "python": "3.12.14",
+      "numpy": "2.5.3",
+      "rasterio": "1.5.1",
+      "gdal": "3.12.4",
+      "Pillow": "12.3.0",
+      "shapely": "2.1.2",
+      "fiona": "1.10.1"
+    },
+    "clipRasters": {
+      "worldCover": {
+        "width": 205,
+        "height": 205,
+        "transform": [
+          9.990243902439024,
+          0.0,
+          615961.992,
+          0.0,
+          -9.990243902439024,
+          3058370.487,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pixelSizeMeters": [
+          9.990243902439024,
+          9.990243902439024
+        ],
+        "validPixelFraction": 1.0,
+        "invalidPixelCount": 0
+      },
+      "rgbnir": {
+        "width": 205,
+        "height": 205,
+        "transform": [
+          9.990243902439024,
+          0.0,
+          615961.992,
+          0.0,
+          -9.990243902439024,
+          3058370.487,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pixelSizeMeters": [
+          9.990243902439024,
+          9.990243902439024
+        ],
+        "validPixelFraction": 1.0,
+        "invalidPixelCount": 0
+      },
+      "ndvi": {
+        "width": 205,
+        "height": 205,
+        "transform": [
+          9.990243902439024,
+          0.0,
+          615961.992,
+          0.0,
+          -9.990243902439024,
+          3058370.487,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pixelSizeMeters": [
+          9.990243902439024,
+          9.990243902439024
+        ],
+        "validPixelFraction": 1.0,
+        "invalidPixelCount": 0
+      },
+      "swir": {
+        "width": 103,
+        "height": 103,
+        "transform": [
+          19.883495145631066,
+          0.0,
+          615961.992,
+          0.0,
+          -19.883495145631066,
+          3058370.487,
+          0.0,
+          0.0,
+          1.0
+        ],
+        "pixelSizeMeters": [
+          19.883495145631066,
+          19.883495145631066
+        ],
+        "validPixelFraction": 1.0,
+        "invalidPixelCount": 0
+      }
+    },
+    "classificationResampling": "nearest",
+    "continuousResampling": "bilinear",
+    "worldCoverClasses": {
+      "0": "NoData",
+      "10": "Tree cover",
+      "20": "Shrubland",
+      "30": "Grassland",
+      "40": "Cropland",
+      "50": "Built-up",
+      "60": "Bare/sparse vegetation",
+      "70": "Snow and ice",
+      "80": "Permanent water bodies",
+      "90": "Herbaceous wetland",
+      "95": "Mangroves",
+      "100": "Moss and lichen"
+    },
+    "render": {
+      "featureCounts": {
+        "roads": 6,
+        "water": 0,
+        "forest": 0,
+        "buildings": 0
+      },
+      "indices": {
+        "ndviP50": {
+          "validCount": 4194304,
+          "min": -0.14181864261627197,
+          "p10": 0.3466341495513916,
+          "p50": 0.6016367673873901,
+          "p90": 0.7542691230773926,
+          "max": 0.8308008909225464
+        },
+        "ndviP90": {
+          "validCount": 4194304,
+          "min": -0.026760220527648926,
+          "p10": 0.5042259693145752,
+          "p50": 0.770947277545929,
+          "p90": 0.8474453091621399,
+          "max": 0.9036661386489868
+        },
+        "ndviP10": {
+          "validCount": 4194304,
+          "min": -0.3026854991912842,
+          "p10": 0.22267857193946838,
+          "p50": 0.3960492014884949,
+          "p90": 0.5894786715507507,
+          "max": 0.718805193901062
+        },
+        "ndwi": {
+          "validCount": 4194304,
+          "min": -0.7312614917755127,
+          "p10": -0.655781090259552,
+          "p50": -0.5524431467056274,
+          "p90": -0.3905385434627533,
+          "max": 0.3610885441303253
+        },
+        "mndwi": {
+          "validCount": 4194304,
+          "min": -0.6034125685691833,
+          "p10": -0.5034497976303101,
+          "p50": -0.43430060148239136,
+          "p90": -0.3290977478027344,
+          "max": 0.2509777247905731
+        }
+      },
+      "trueColorStretchReflectance": {
+        "p02": [
+          0.0279463404789567,
+          0.044893265888094905,
+          0.032670117914676666
+        ],
+        "p98": [
+          0.13100770592689512,
+          0.11827708274126052,
+          0.09179128870368003
+        ]
+      }
+    }
+  },
+  "indices": {
+    "ndvi": "offset + raw*scale; p50 is the vegetation review layer",
+    "ndwi": "(B03-B08)/(B03+B08)",
+    "mndwi": "(B03-B11)/(B03+B11)",
+    "zeroOrNoDataRule": "NoData if denominator is zero or any input is NoData",
+    "statistics": {
+      "ndviP50": {
+        "validCount": 4194304,
+        "min": -0.14181864261627197,
+        "p10": 0.3466341495513916,
+        "p50": 0.6016367673873901,
+        "p90": 0.7542691230773926,
+        "max": 0.8308008909225464
+      },
+      "ndviP90": {
+        "validCount": 4194304,
+        "min": -0.026760220527648926,
+        "p10": 0.5042259693145752,
+        "p50": 0.770947277545929,
+        "p90": 0.8474453091621399,
+        "max": 0.9036661386489868
+      },
+      "ndviP10": {
+        "validCount": 4194304,
+        "min": -0.3026854991912842,
+        "p10": 0.22267857193946838,
+        "p50": 0.3960492014884949,
+        "p90": 0.5894786715507507,
+        "max": 0.718805193901062
+      },
+      "ndwi": {
+        "validCount": 4194304,
+        "min": -0.7312614917755127,
+        "p10": -0.655781090259552,
+        "p50": -0.5524431467056274,
+        "p90": -0.3905385434627533,
+        "max": 0.3610885441303253
+      },
+      "mndwi": {
+        "validCount": 4194304,
+        "min": -0.6034125685691833,
+        "p10": -0.5034497976303101,
+        "p50": -0.43430060148239136,
+        "p90": -0.3290977478027344,
+        "max": 0.2509777247905731
+      }
+    }
+  },
+  "unity": {
+    "imageSize": [
+      2048,
+      2048
+    ],
+    "metersPerPixel": 1,
+    "orientation": "top row north; columns increase east; rows increase south",
+    "pixelCenterToUtm": "E=west+column+0.5; N=north-row-0.5",
+    "pixelCenterToUnity": "x=column+0.5; z=2047.5-row",
+    "origin": "southwest corner of tile 1_1",
+    "tiles": [
+      "2_1:NW",
+      "2_2:NE",
+      "1_1:SW",
+      "1_2:SE"
+    ],
+    "seamPixelLines": [
+      1024,
+      1024
+    ],
+    "roadWidthsAreVisibilitySymbolsMeters": {
+      "motorway/trunk": 8,
+      "primary/secondary": 6,
+      "tertiary/residential": 4,
+      "track/path/other": 2
+    }
+  },
+  "legend": {
+    "forest": {
+      "worldCoverTreeFill": [
+        40,
+        140,
+        60,
+        110
+      ],
+      "osmForestOutline": [
+        0,
+        255,
+        80,
+        220
+      ]
+    },
+    "builtUp": {
+      "worldCoverFill": [
+        220,
+        130,
+        40,
+        110
+      ],
+      "osmBuildingOutline": [
+        255,
+        40,
+        40,
+        220
+      ]
+    },
+    "water": {
+      "worldCoverFill": [
+        30,
+        90,
+        220,
+        120
+      ],
+      "osmWater": [
+        0,
+        220,
+        255,
+        220
+      ]
+    },
+    "sourceDisagreement": "Single-source areas and differing boundaries remain visible and require manual judgement."
+  },
+  "controlPoints": {
+    "points": [
+      {
+        "pixelCenter": [
+          0.5,
+          0.5
+        ],
+        "utm": [
+          615962.492,
+          3058369.987
+        ],
+        "unity": [
+          0.5,
+          2047.5
+        ],
+        "roundTripErrorMeters": 0.0
+      },
+      {
+        "pixelCenter": [
+          2047.5,
+          0.5
+        ],
+        "utm": [
+          618009.492,
+          3058369.987
+        ],
+        "unity": [
+          2047.5,
+          2047.5
+        ],
+        "roundTripErrorMeters": 0.0
+      },
+      {
+        "pixelCenter": [
+          0.5,
+          2047.5
+        ],
+        "utm": [
+          615962.492,
+          3056322.987
+        ],
+        "unity": [
+          0.5,
+          0.5
+        ],
+        "roundTripErrorMeters": 0.0
+      },
+      {
+        "pixelCenter": [
+          2047.5,
+          2047.5
+        ],
+        "utm": [
+          618009.492,
+          3056322.987
+        ],
+        "unity": [
+          2047.5,
+          0.5
+        ],
+        "roundTripErrorMeters": 0.0
+      },
+      {
+        "pixelCenter": [
+          1024.5,
+          1024.5
+        ],
+        "utm": [
+          616986.492,
+          3057345.987
+        ],
+        "unity": [
+          1024.5,
+          1023.5
+        ],
+        "roundTripErrorMeters": 0.0
+      }
+    ],
+    "maximumRoundTripErrorMeters": 0.0,
+    "quadrants": [
+      "2_1:NW",
+      "2_2:NE",
+      "1_1:SW",
+      "1_2:SE"
+    ],
+    "seamPixels": [
+      1024,
+      1024
+    ]
+  },
+  "artifacts": [
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/FEATURE_REFERENCE_ATTRIBUTION.md",
+      "byteSize": 453,
+      "sha256": "09f807c9c372655199779d9febe46d429fdb79474cb31d44fba56d9bef258150"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/FEATURE_REFERENCE_README.md",
+      "byteSize": 612,
+      "sha256": "44979086754eae018775c4d8cff632b282e808e462147660321e848ac3cf08b4"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_OSM_Features.overpassql",
+      "byteSize": 655,
+      "sha256": "1b1ee899ca45695043cabc5b85c27d2e8d94e55f8d6b62c66e6738f6e2ec4e9d"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_OSM_Features_UTM49N.geojson",
+      "byteSize": 12497,
+      "sha256": "60102cc02b5f4e9785ff8a685feffc26cb9a36881d4087a4ec84d76d37724ad3"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_Sentinel2_2021_NDVI_UTM49N.tif",
+      "byteSize": 100694,
+      "sha256": "adff7f83d58c8724411accef296dfd48cfa01262ea82e3afb5dfa8b7ff39bb1f"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_Sentinel2_2021_RGBNIR_UTM49N.tif",
+      "byteSize": 262238,
+      "sha256": "0f61f7d821ba6a08c43e943015f3227eb7eec403d9a688475091095d0a24a05a"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_Sentinel2_2021_SWIR_UTM49N.tif",
+      "byteSize": 15792,
+      "sha256": "a76c3155ce13ec52f27267e757e665605f0487c6bef6959ca942c86972761e90"
+    },
+    {
+      "path": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_WorldCover_2021_v200_UTM49N.tif",
+      "byteSize": 6054,
+      "sha256": "819a8bbb18f9c760a22b3181683b7cc8f45e2a99758490725159642aa148bdcb"
+    },
+    {
+      "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_BuiltUpReference.png",
+      "byteSize": 22422,
+      "sha256": "92e768c0eab684114f5012902122595d5abd7f81df1e216f1235c401579f3364"
+    },
+    {
+      "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_ForestReference.png",
+      "byteSize": 26715,
+      "sha256": "28d133bbfa79823df057336e1f0dd36b4b9b4fc57b1e87d1c0e5d7792c4c14e8"
+    },
+    {
+      "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_RoadReference.png",
+      "byteSize": 23145,
+      "sha256": "1f2cc6285ffe614c682e4c96cedb812dd52d8af7b72e4b995ddfe3a271f82b9d"
+    },
+    {
+      "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_WaterReference.png",
+      "byteSize": 16869,
+      "sha256": "ab6fb61c798259efba3a81ce18303e4ab62605aa75dc9d18678c1dc290d99410"
+    },
+    {
+      "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/README.md",
+      "byteSize": 852,
+      "sha256": "7c0146062ea36213353ffb89bd25ac18296bfc72dd9845878a27e3b4c53d5cb3"
+    }
+  ],
+  "selfCheck": {
+    "status": "passed",
+    "sourceStructureValidated": true,
+    "minimumRasterValidFraction": 1.0,
+    "coordinateRoundTripWithin0.51m": true,
+    "quadrantsNoOverlapOrGap": true,
+    "northUpEastRight": true
+  }
+}

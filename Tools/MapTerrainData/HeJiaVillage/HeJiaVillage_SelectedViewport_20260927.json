@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "tile": "1_1",
+  "observedAt": "2026-09-27",
+  "source": "Gaode satellite layer visual reference; provider imagery is not stored",
+  "confidence": "coarse visual estimate",
+  "referenceMarkerGcj02": [112.188788, 27.625369],
+  "referenceMarkerUnity": [769.0, 296.0],
+  "scaleBarMeters": 50,
+  "estimatedUnityBounds": {
+    "west": 700.0,
+    "east": 986.0,
+    "south": 274.0,
+    "north": 550.0
+  },
+  "notes": [
+    "The user selected the currently visible satellite viewport as the coarse-layout scope.",
+    "Road widths are placeholders, not surveyed dimensions.",
+    "Do not create buildings or building placeholders for HeJiaVillage.",
+    "No Gaode raster tile or screenshot is committed to the repository."
+  ],
+  "roads": [
+    {
+      "id": "viewport_main",
+      "widthMeters": 4.0,
+      "unityPoints": [[769.0,296.0],[793.0,297.6],[808.6,311.6],[810.1,333.0],[822.6,355.9],[840.9,365.8],[859.1,378.8],[875.8,392.9],[887.2,412.1],[899.2,430.9],[911.2,440.8],[933.6,435.1],[957.0,421.5],[985.7,412.1]]
+    },
+    {
+      "id": "viewport_west",
+      "widthMeters": 3.5,
+      "unityPoints": [[769.0,296.0],[757.5,316.8],[750.3,338.7],[742.4,364.2],[736.7,389.8],[736.2,409.5],[725.3,432.5],[710.7,446.0],[700.3,455.9]]
+    },
+    {
+      "id": "viewport_west_spur",
+      "widthMeters": 3.0,
+      "unityPoints": [[736.2,409.5],[753.4,420.0],[773.2,429.3],[799.7,434.5]]
+    },
+    {
+      "id": "viewport_north",
+      "widthMeters": 3.0,
+      "unityPoints": [[911.2,440.8],[895.6,452.8],[884.6,466.8],[881.5,484.5],[882.5,498.1],[894.0,505.9]]
+    },
+    {
+      "id": "viewport_south",
+      "widthMeters": 3.0,
+      "unityPoints": [[822.6,355.9],[812.8,339.2],[809.6,315.8],[791.9,297.6],[788.8,273.6]]
+    }
+  ]
+}

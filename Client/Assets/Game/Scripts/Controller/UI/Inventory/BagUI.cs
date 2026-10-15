@@ -1,0 +1,86 @@
+using UnityEngine;
+using TMPro;
+using UnityEngine.UI;
+
+namespace Game
+{
+    public class BagUI : BaseUI
+    {
+        public GameObject ActionRoot;
+        public Image BackgroundImage;
+        public ScrollRect BagScrollRect;
+        public Button BtnClose;
+        public Button BtnDrop;
+        public Button BtnManagementClose;
+        public Button BtnMove;
+        public Button BtnPageBackpack;
+        public Button BtnPageEquipment;
+        public Button BtnPageJournal;
+        public Button BtnPageMap;
+        public Button BtnPageStatus;
+        public Button BtnPageTasks;
+        public Button BtnSplit;
+        public Button BtnUse;
+        public TextMeshProUGUI CapacityText;
+        public GameObject CompanionRoot;
+        public TextMeshProUGUI DetailAmountText;
+        public TextMeshProUGUI DetailDescText;
+        public Image DetailIcon;
+        public TextMeshProUGUI DetailNameText;
+        public GameObject DetailRoot;
+        public GameObject EmptyDetailHint;
+        public EquipmentManagementPageUI EquipmentPage;
+        public GameObject FullActionRoot;
+        public Button FullBtnDrop;
+        public Button FullBtnSplit;
+        public Button FullBtnUse;
+        public TextMeshProUGUI FullCapacityText;
+        public TextMeshProUGUI FullDetailAmountText;
+        public TextMeshProUGUI FullDetailDescText;
+        public TextMeshProUGUI FullDetailNameText;
+        public GameObject FullDetailRoot;
+        public CustomListView FullPlayerBagList;
+        public GameObject InventoryPageRoot;
+        public GameObject ManagementRoot;
+        public TextMeshProUGUI PageTitleText;
+        public GameObject PlaceholderRoot;
+        public CustomListView PlayerBagList;
+        public TextMeshProUGUI PocketCapacityText;
+        public CustomListView PocketList;
+        public TextMeshProUGUI PocketNoticeText;
+        public GameObject SelectedBackpack;
+        public GameObject SelectedEquipment;
+        public GameObject SelectedJournal;
+        public GameObject SelectedMap;
+        public GameObject SelectedStatus;
+        public GameObject SelectedTasks;
+        public TextMeshProUGUI TransferAmountText;
+        public StatusManagementPageUI StatusPage;
+        public MapManagementPageUI MapPage;
+        public Image CompanionDetailIcon;
+        public Button BtnStore;
+        public GameObject WarehouseCompanionRoot;
+        public CustomListView WarehousePlayerBagList;
+        public TextMeshProUGUI WarehouseCapacityText;
+        public GameObject WarehouseDetailRoot;
+        public TextMeshProUGUI WarehouseDetailNameText;
+        public TextMeshProUGUI WarehouseDetailDescText;
+        public TextMeshProUGUI WarehouseDetailAmountText;
+        public Image WarehouseDetailIcon;
+        public GameObject WarehouseActionRoot;
+        public Button WarehouseBtnUse;
+        public Button WarehouseBtnSplit;
+        public Button WarehouseBtnDrop;
+        public Button WarehouseBtnStore;
+        public TasksManagementPageUI TasksPage;
+        public JournalManagementPageUI JournalPage;
+        public GameObject TransferQuantityRoot;
+        public TextMeshProUGUI TransferQuantityTitleText;
+        public TextMeshProUGUI TransferItemNameText;
+        public Button BtnTransferDecrease;
+        public Button BtnTransferIncrease;
+        public Button BtnTransferCancel;
+        public Button BtnTransferConfirm;
+        public RawImage BackpackCharacterPreview;
+    }
+}

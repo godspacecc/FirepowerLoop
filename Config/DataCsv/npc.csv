@@ -1,0 +1,7 @@
+##var,Id,NameKey,PrefabName,InteractionKind,InteractionParam
+##type,string,string,string,NpcInteractionKind,string
+,npc.base.map-guide,npc.role.map_guide,BaseNpcMapGuide,MapSelection,
+,npc.base.warehouse-keeper,npc.role.warehouse_keeper,BaseNpcWarehouseKeeper,Warehouse,
+,npc.base.crafter,npc.role.crafter,BaseNpcCrafter,Craft,
+,npc.base.merchant,npc.base.merchant.name,BaseNpcMerchant,Shop,shop.base.supplies
+,npc.base.arcade,npc.base.arcade.name,BaseNpcArcade,Arcade,

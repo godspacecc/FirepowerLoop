@@ -1,0 +1,82 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 3223,
+    "PassedTests": 14,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.8657925"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(True,1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.4670000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(False,1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(True,2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.ClearAllowsEntryWithOneFixedSet",
+      "Status": "Passed",
+      "Duration": "00:00:00.0190000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.DeathResetsMultiplierAndCloneKeepsScore",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.DiscoveryDoesNotEnterUnclearedWave",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.EarlyReturnContinuesFourthWave",
+      "Status": "Passed",
+      "Duration": "00:00:00.0180000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.FailedFileCommitKeepsScoreAndRetryCommitsOnce",
+      "Status": "Passed",
+      "Duration": "00:00:00.1640000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.FullBombDoesNotConsumeSharedPickup",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.GoldIsPersonalScore_NotShoppingCash",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.OldJsonMissingScoreFieldsDefaultsSafely",
+      "Status": "Passed",
+      "Duration": "00:00:00.0240000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.RealCompletionCommitsScoreAndRejectsRepeat",
+      "Status": "Passed",
+      "Duration": "00:00:00.0220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.TimeoutReturnsPlayerWithoutReopening",
+      "Status": "Passed",
+      "Duration": "00:00:00.0170000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeTreasureRoomFlowTests.TransientScoreDoesNotLeakToSavedNode",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    }
+  ]
+}

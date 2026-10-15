@@ -1,0 +1,7 @@
+##var,Id,Type,Name,Position,Weight
+##type,int,int,string,int,int
+##,Id,Type,Name,Position,Weight
+,1001,1,米克尔,1,68
+,1002,1,米克尔2,2,78
+,1003,1,米克尔3,1,68
+,1004,1,米克尔4,2,78

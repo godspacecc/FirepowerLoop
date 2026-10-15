@@ -1,0 +1,4 @@
+interface:
+  display_name: "Unity UI"
+  short_description: "Maintain UI Prefabs, controllers, and lifecycle boundaries"
+  default_prompt: "Use $unity-ui to change or review this project's Unity UI safely."

@@ -1,0 +1,5 @@
+interface:
+  display_name: "UI Prefab Authoring"
+  short_description: "Keep repeated UI items traceable to Box Prefabs"
+  default_prompt: "Use $ui-prefab-authoring to author or review lists and repeated UI elements with traceable Box Prefabs."
+

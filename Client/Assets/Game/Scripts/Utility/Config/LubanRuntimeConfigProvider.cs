@@ -1,0 +1,2082 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace Game
+{
+    /// <summary>校验并转换 Luban 配置为运行时只读定义；不负责地图场景或背包状态。</summary>
+    public sealed partial class LubanRuntimeConfigProvider : IRuntimeConfigProvider
+    {
+        private readonly Func<global::Tables> tablesFactory;
+        private global::Tables cachedTables;
+        private bool validated;
+        private string validationError;
+        private IReadOnlyList<TestCmdCategoryDefinition> testCmdCategories;
+        private IReadOnlyList<TestCmdEntryDefinition> testCmdEntries;
+        private IReadOnlyList<CraftRecipeDefinition> craftRecipes;
+        private IReadOnlyDictionary<string, CraftRecipeDefinition> craftRecipeById;
+        private IReadOnlyDictionary<int, LootConfigDefinition> lootByItemId;
+        private IReadOnlyList<ProjectileConfigDefinition> projectiles;
+        private IReadOnlyDictionary<int, PlayerWeaponAppearanceDefinition> playerWeaponAppearanceByItemId;
+        private IReadOnlyList<TempBuildingDefinition> tempBuildings;
+        private IReadOnlyDictionary<string, TempBuildingDefinition> tempBuildingsById;
+        private IReadOnlyDictionary<string, TempBuildingManualAttackDefinition> tempBuildingManualAttackByBuildingId;
+        private IReadOnlyDictionary<string, IReadOnlyList<ExpeditionTaskDefinition>> expeditionTasksByMap;
+        private IReadOnlyDictionary<string, ShopDefinition> shopsById;
+        private IReadOnlyDictionary<string, IReadOnlyList<ShopItemDefinition>> shopItemsByShopId;
+        private IReadOnlyDictionary<string, ShopItemDefinition> shopItemsByCompositeKey;
+        private ArcadeConfigCatalogDefinition arcadeCatalog;
+
+        public LubanRuntimeConfigProvider()
+            : this(() => DataLoader.Tables)
+        {
+        }
+
+        public LubanRuntimeConfigProvider(Func<global::Tables> tablesFactory)
+        {
+            this.tablesFactory = tablesFactory ?? throw new ArgumentNullException(nameof(tablesFactory));
+        }
+
+        public bool TryGetMap(string id, out MapAssetDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbMap.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbMap[{id}].Id 不存在";
+                return false;
+            }
+
+            var addresses = new List<string>
+            {
+                ResolveRelativePath(ResourceAddressKind.MapScene, row.ScenePath)
+            };
+            addresses.AddRange(Tables.TbMapScenePart.DataList
+                .Where(part => string.Equals(part.MapId, id, StringComparison.Ordinal))
+                .OrderBy(part => part.Order)
+                .Select(part => ResolveRelativePath(ResourceAddressKind.MapScene, part.ScenePath)));
+            value = new MapAssetDefinition(row.Id, addresses);
+            return true;
+        }
+
+        public bool TryGetItem(int id, out ItemDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbItem.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbItem[{id}].Id 不存在";
+                return false;
+            }
+
+            value = new ItemDefinition(
+                row.Id,
+                row.Name,
+                row.Desc,
+                row.NameKey,
+                row.DescKey,
+                ResolveFileName(ResourceAddressKind.ItemIcon, row.IconName, true),
+                row.ItemType,
+                row.MaxStackAmount,
+                row.UseEffect,
+                row.UseValue,
+                row.UseDurationSeconds,
+                row.ActionKind,
+                row.ActionTarget, row.WearSlot, row.AppearanceId, row.BurnSeconds);
+            return true;
+        }
+
+        public bool TryGetItems(out IReadOnlyList<ItemDefinition> values, out string error)
+        {
+            values = Array.Empty<ItemDefinition>();
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            values = Tables.TbItem.DataList
+                .Select(row => new ItemDefinition(
+                    row.Id,
+                    row.Name,
+                    row.Desc,
+                    row.NameKey,
+                    row.DescKey,
+                    ResolveFileName(ResourceAddressKind.ItemIcon, row.IconName, true),
+                    row.ItemType,
+                    row.MaxStackAmount,
+                    row.UseEffect,
+                    row.UseValue,
+                    row.UseDurationSeconds,
+                    row.ActionKind,
+                    row.ActionTarget, row.WearSlot, row.AppearanceId, row.BurnSeconds))
+                .ToArray();
+            return true;
+        }
+
+        public bool TryGetWeapon(int itemId, out WeaponConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbWeapon.GetOrDefault(itemId);
+            if (row == null)
+            {
+                error = $"TbWeapon[{itemId}].ItemId 不存在";
+                return false;
+            }
+
+            value = ToDefinition(row);
+            return true;
+        }
+
+        public bool TryGetProjectile(string id, out ProjectileConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbProjectile.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbProjectile[{id}].Id 不存在";
+                return false;
+            }
+
+            value = ToDefinition(row);
+            return true;
+        }
+
+        /// <summary>返回首次整表校验后按顺序冻结的任务快照；已知无行地图是成功空集合。</summary>
+        public bool TryGetExpeditionTasks(string mapId, out IReadOnlyList<ExpeditionTaskDefinition> values, out string error)
+        {
+            values = Array.Empty<ExpeditionTaskDefinition>();
+            if (!EnsureValid(out error)) return false;
+            if (string.IsNullOrWhiteSpace(mapId) || Tables.TbMap.GetOrDefault(mapId) == null)
+            {
+                error = $"TbMap[{mapId}].Id 不存在";
+                return false;
+            }
+            if (expeditionTasksByMap.TryGetValue(mapId, out var found)) values = found;
+            error = string.Empty;
+            return true;
+        }
+
+        public bool TryGetProjectiles(out IReadOnlyList<ProjectileConfigDefinition> values, out string error)
+        {
+            values = Array.Empty<ProjectileConfigDefinition>();
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            values = projectiles;
+            error = null;
+            return true;
+        }
+
+        public bool TryGetPlayerWeaponAppearance(int itemId, out PlayerWeaponAppearanceDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            if (!playerWeaponAppearanceByItemId.TryGetValue(itemId, out value))
+            {
+                error = $"TbWeaponAppearance[{itemId}].ItemId 不存在";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetCraftRecipe(string id, out CraftRecipeDefinition value, out string error)
+        {
+            value = null;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(id) || !craftRecipeById.TryGetValue(id, out value))
+            {
+                error = $"TbCraftRecipe[{id}].Id 不存在";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetCraftRecipes(out IReadOnlyList<CraftRecipeDefinition> values, out string error)
+        {
+            values = Array.Empty<CraftRecipeDefinition>();
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            values = craftRecipes;
+            error = null;
+            return true;
+        }
+
+        /// <summary>读取并校验基地初始布局，生成数据缺失或引用错误不得默默生成空基地。</summary>
+        public bool TryGetBaseCampLayout(out IReadOnlyList<BaseCampLayoutDefinition> values, out string error)
+        {
+            values = Array.Empty<BaseCampLayoutDefinition>();
+            if (!EnsureValid(out error)) return false;
+            var rows = Tables.TbBaseCampLayout.DataList;
+            if (rows.Count == 0) { error = "基地默认布局为空"; return false; }
+            foreach (var row in rows)
+            {
+                if (!tempBuildingsById.TryGetValue(row.BuildingId, out var building) || !building.BaseOnly ||
+                    row.UniformScale <= 0 || float.IsNaN(row.UniformScale) || float.IsInfinity(row.UniformScale) ||
+                    float.IsNaN(row.PositionX) || float.IsInfinity(row.PositionX) || float.IsNaN(row.PositionY) ||
+                    float.IsInfinity(row.PositionY) || float.IsNaN(row.PositionZ) || float.IsInfinity(row.PositionZ) ||
+                    float.IsNaN(row.RotationY) || float.IsInfinity(row.RotationY))
+                { error = "基地默认布局配置无效：" + row.Id; return false; }
+            }
+            values = Array.AsReadOnly(rows.Select(row => new BaseCampLayoutDefinition(row.Id, row.BuildingId,
+                new Vector3(row.PositionX, row.PositionY, row.PositionZ), row.RotationY, row.UniformScale)).ToArray());
+            error = null;
+            return true;
+        }
+
+        public bool TryGetTempBuilding(string id, out TempBuildingDefinition value, out string error)
+        {
+            value = null;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            if (!tempBuildingsById.TryGetValue(id, out value))
+            {
+                error = $"TbTempBuilding[{id}].Id 不存在";
+                return false;
+            }
+            error = null;
+            return true;
+        }
+
+        public bool TryGetTempBuildings(out IReadOnlyList<TempBuildingDefinition> values, out string error)
+        {
+            values = Array.Empty<TempBuildingDefinition>();
+            if (!EnsureValid(out error)) return false;
+            values = tempBuildings;
+            error = null;
+            return true;
+        }
+
+        public bool TryGetTempBuildingManualAttack(string buildingId, out TempBuildingManualAttackDefinition value)
+        {
+            value = null;
+            return EnsureValid(out _) && !string.IsNullOrWhiteSpace(buildingId) &&
+                   tempBuildingManualAttackByBuildingId.TryGetValue(buildingId, out value);
+        }
+
+        public bool TryGetMapSpawns(string mapId, out IReadOnlyList<MapSpawnDefinition> values, out string error)
+        {
+            values = null;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(mapId))
+            {
+                error = "TbMapSpawn.MapId 为空";
+                return false;
+            }
+
+            var result = Tables.TbMapSpawn.DataList
+                .Where(item => item.MapId == mapId)
+                .Select(ToDefinition)
+                .ToList();
+            values = result;
+            return true;
+        }
+
+        public bool TryGetNpc(string id, out NpcConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbNpc.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbNpc[{id}].Id 不存在";
+                return false;
+            }
+
+            value = ToDefinition(row);
+            error = null;
+            return true;
+        }
+
+        public bool TryGetPlayer(string id, out PlayerConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbPlayer.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbPlayer[{id}].Id 不存在";
+                return false;
+            }
+
+            value = new PlayerConfigDefinition(row.Id, ResolveFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName), row.MaxHP, row.AttackDamage, row.AttackRange, row.AttackCooldownSeconds, row.MoveSpeed, row.TurnSpeed, row.BaseRecoveryPerSecond,row.UnarmedAttackDamage,row.UnarmedAttackRange,row.UnarmedAttackCooldownSeconds,row.UnarmedMeleeArcDegrees,row.BuildingOperateDistance);
+            return true;
+        }
+
+        public bool TryGetEnemy(string id, out EnemyConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbEnemy.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbEnemy[{id}].Id 不存在";
+                return false;
+            }
+
+            value = new EnemyConfigDefinition(
+                row.Id,
+                ResolveFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName),
+                row.MaxHP,
+                row.AttackDamage,
+                row.AggroRange,
+                row.AttackRange,
+                row.AttackCooldownSeconds,
+                row.MoveSpeed,
+                row.LootConfigId,
+                row.AttackKind,
+                row.RetreatDistance,
+                row.TelegraphSeconds,
+                row.ProjectileConfigId,
+                row.GuaranteedWeaponLootConfigId,
+                row.GuaranteedAmmoLootConfigId,
+                row.AmmoCapacity,
+                row.FallbackMeleeAttackRange,
+                row.MagazineCapacity,
+                row.ReloadSeconds,
+                row.WeaponId);
+            return true;
+        }
+
+        public bool TryGetLoot(string id, out LootConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbLoot.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbLoot[{id}].Id 不存在";
+                return false;
+            }
+
+            value = new LootConfigDefinition(row.Id, ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.PrefabName), row.ItemId, row.Amount);
+            return true;
+        }
+
+        public bool TryGetShop(string shopId, out ShopDefinition definition, out string error)
+        {
+            definition = default;
+            if (!EnsureValid(out error)) return false;
+            if (string.IsNullOrWhiteSpace(shopId) || !shopsById.TryGetValue(shopId, out definition))
+            {
+                error = $"TbShop[{shopId}].Id 不存在";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetShopItems(string shopId, out IReadOnlyList<ShopItemDefinition> definitions, out string error)
+        {
+            definitions = Array.Empty<ShopItemDefinition>();
+            if (!EnsureValid(out error)) return false;
+            if (string.IsNullOrWhiteSpace(shopId) || !shopsById.ContainsKey(shopId))
+            {
+                error = $"TbShop[{shopId}].Id 不存在";
+                return false;
+            }
+
+            if (shopItemsByShopId.TryGetValue(shopId, out var found)) definitions = found;
+            error = null;
+            return true;
+        }
+
+        public bool TryGetShopItem(string shopId, int itemId, out ShopItemDefinition definition, out string error)
+        {
+            definition = default;
+            if (!EnsureValid(out error)) return false;
+            if (!shopItemsByCompositeKey.TryGetValue(ShopItemKey(shopId, itemId), out definition))
+            {
+                error = $"TbShopItem[{shopId},{itemId}] 不存在";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetArcadeCatalog(out ArcadeConfigCatalogDefinition value, out string error)
+        {
+            value = null;
+            if (!EnsureValid(out error)) return false;
+            value = arcadeCatalog;
+            error = null;
+            return true;
+        }
+
+        /// <summary>读取地图显示范围；允许多个历史道具指向同一地图，但要求至少一个地图道具入口。</summary>
+        public bool TryGetMapDisplay(string mapId, out MapDisplayDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error)) return false;
+            if (string.IsNullOrWhiteSpace(mapId))
+            {
+                error = "TbMapDisplay.MapId 为空";
+                return false;
+            }
+
+            var row = Tables.TbMapDisplay.GetOrDefault(mapId);
+            if (row == null)
+            {
+                error = $"TbMapDisplay[{mapId}].MapId 不存在";
+                return false;
+            }
+            if (Tables.TbMap.GetOrDefault(mapId) == null)
+            {
+                error = $"TbMapDisplay[{mapId}].MapId 引用不存在";
+                return false;
+            }
+            if (!IsPositiveFinite(row.Width) || !IsPositiveFinite(row.Height) ||
+                row.ViewportColumns <= 0 || row.ViewportRows <= 0 ||
+                !IsFinite(row.CenterX) || !IsFinite(row.CenterZ))
+            {
+                error = $"TbMapDisplay[{mapId}] 边界无效";
+                return false;
+            }
+            if (!ResourceAddress.TryFromFileName(ResourceAddressKind.MapUiImage, row.ImageName, false, out var address, out var addressError))
+            {
+                error = $"TbMapDisplay[{mapId}].ImageName 值“{row.ImageName}”无效：{addressError}";
+                return false;
+            }
+
+            var matches = Tables.TbItem.DataList.Where(item => item.ActionKind == global::ItemActionKind.OpenMap &&
+                string.Equals(item.ActionTarget, mapId, StringComparison.Ordinal)).ToArray();
+            // 历史地图道具可以共用稳定地图 ID，但每张可显示地图至少需要一个入口。
+            if (matches.Length == 0)
+            {
+                error = $"TbItem.ActionTarget 未绑定地图 {mapId}";
+                return false;
+            }
+
+            value = new MapDisplayDefinition(row.MapId, address, row.CenterX, row.CenterZ, row.Width, row.Height,
+                row.ViewportColumns, row.ViewportRows);
+            error = null;
+            return true;
+        }
+
+        public bool TryGetLootByItemId(int itemId, out LootConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            if (!lootByItemId.TryGetValue(itemId, out value))
+            {
+                error = $"TbLoot.ItemId={itemId} 不存在";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        public bool TryGetExtraction(string id, out ExtractionConfigDefinition value, out string error)
+        {
+            value = default;
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            var row = Tables.TbExtraction.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbExtraction[{id}].Id 不存在";
+                return false;
+            }
+
+            value = new ExtractionConfigDefinition(row.Id, ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.PrefabName));
+            return true;
+        }
+
+        public bool TryGetTestCmdCatalog(
+            out IReadOnlyList<TestCmdCategoryDefinition> categories,
+            out IReadOnlyList<TestCmdEntryDefinition> entries,
+            out string error)
+        {
+            categories = Array.Empty<TestCmdCategoryDefinition>();
+            entries = Array.Empty<TestCmdEntryDefinition>();
+            if (!EnsureValid(out error))
+            {
+                return false;
+            }
+
+            categories = testCmdCategories;
+            entries = testCmdEntries;
+            return true;
+        }
+
+        private global::Tables Tables => cachedTables;
+
+        /// <summary>首次查询时一次性校验整套真实 Tables 并建立不可变索引；失败会缓存错误并清空全部派生快照，后续查询不返回部分数据。</summary>
+        private bool EnsureValid(out string error)
+        {
+            if (validated)
+            {
+                error = validationError;
+                return string.IsNullOrEmpty(error);
+            }
+
+            try
+            {
+                cachedTables = tablesFactory();
+                validationError = Validate(cachedTables);
+                if (string.IsNullOrEmpty(validationError))
+                {
+                    BuildTestCmdCatalogSnapshot(cachedTables, out testCmdCategories, out testCmdEntries);
+                    BuildCraftRecipeSnapshot(cachedTables, out craftRecipes, out craftRecipeById);
+                    BuildLootByItemIdSnapshot(cachedTables, out lootByItemId);
+                    BuildProjectileSnapshot(cachedTables, out projectiles);
+                    BuildPlayerWeaponAppearanceSnapshot(cachedTables, out playerWeaponAppearanceByItemId);
+                    BuildTempBuildingSnapshot(cachedTables, out tempBuildings, out tempBuildingsById, out tempBuildingManualAttackByBuildingId);
+                    BuildExpeditionTaskSnapshot(cachedTables, out expeditionTasksByMap);
+                    BuildShopSnapshot(cachedTables, out shopsById, out shopItemsByShopId, out shopItemsByCompositeKey);
+                    BuildArcadeSnapshot(cachedTables, out arcadeCatalog);
+                }
+                else
+                {
+                    testCmdCategories = Array.Empty<TestCmdCategoryDefinition>();
+                    testCmdEntries = Array.Empty<TestCmdEntryDefinition>();
+                    craftRecipes = Array.Empty<CraftRecipeDefinition>();
+                    craftRecipeById = new Dictionary<string, CraftRecipeDefinition>();
+                    lootByItemId = new Dictionary<int, LootConfigDefinition>();
+                    projectiles = Array.Empty<ProjectileConfigDefinition>();
+                    playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
+                    tempBuildings = Array.Empty<TempBuildingDefinition>();
+                    tempBuildingsById = new Dictionary<string, TempBuildingDefinition>();
+                    tempBuildingManualAttackByBuildingId = new Dictionary<string, TempBuildingManualAttackDefinition>();
+                    expeditionTasksByMap = new Dictionary<string, IReadOnlyList<ExpeditionTaskDefinition>>();
+                    shopsById = new Dictionary<string, ShopDefinition>();
+                    shopItemsByShopId = new Dictionary<string, IReadOnlyList<ShopItemDefinition>>();
+                    shopItemsByCompositeKey = new Dictionary<string, ShopItemDefinition>();
+                    arcadeCatalog = null;
+                }
+            }
+            catch (Exception e)
+            {
+                cachedTables = null;
+                testCmdCategories = Array.Empty<TestCmdCategoryDefinition>();
+                testCmdEntries = Array.Empty<TestCmdEntryDefinition>();
+                craftRecipes = Array.Empty<CraftRecipeDefinition>();
+                craftRecipeById = new Dictionary<string, CraftRecipeDefinition>();
+                lootByItemId = new Dictionary<int, LootConfigDefinition>();
+                projectiles = Array.Empty<ProjectileConfigDefinition>();
+                playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
+                tempBuildings = Array.Empty<TempBuildingDefinition>();
+                tempBuildingsById = new Dictionary<string, TempBuildingDefinition>();
+                tempBuildingManualAttackByBuildingId = new Dictionary<string, TempBuildingManualAttackDefinition>();
+                expeditionTasksByMap = new Dictionary<string, IReadOnlyList<ExpeditionTaskDefinition>>();
+                shopsById = new Dictionary<string, ShopDefinition>();
+                shopItemsByShopId = new Dictionary<string, IReadOnlyList<ShopItemDefinition>>();
+                shopItemsByCompositeKey = new Dictionary<string, ShopItemDefinition>();
+                arcadeCatalog = null;
+                validationError = $"Tables.Constructor 配置读取异常：{e.Message}";
+            }
+
+            validated = true;
+            error = validationError;
+            return string.IsNullOrEmpty(error);
+        }
+
+        private static string Validate(global::Tables tables)
+        {
+            if (tables == null)
+            {
+                return "Tables 为空";
+            }
+
+            if (!TryBuildDialogueCatalog(tables, out _, out var dialogueError)) return dialogueError;
+            var resourceAddressError = ValidateResourceAddresses(tables);
+            if (resourceAddressError != null) return resourceAddressError;
+
+            foreach (var row in tables.TbItem.DataList)
+            {
+                var error = ValidateItem(row);
+                if (error != null) return error;
+            }
+
+            if (!ValidateFixedItem(tables, ItemIds.MetalParts, global::ItemType.Material, 20, global::ItemUseEffect.None, 0, out var fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Cloth, global::ItemType.Material, 20, global::ItemUseEffect.None, 0, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Medkit, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Ration, global::ItemType.Consumable, 5, global::ItemUseEffect.RestorePower, 40, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.BottledWater, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreWater, 40, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.ShortSword, global::ItemType.Weapon, 1, global::ItemUseEffect.None, 0, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Bow, global::ItemType.Weapon, 1, global::ItemUseEffect.None, 0, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Arrow, global::ItemType.Ammunition, 20, global::ItemUseEffect.None, 0, out fixedError) ||
+                !ValidateFixedItem(tables, ItemIds.Wood, global::ItemType.Material, 20, global::ItemUseEffect.None, 0, out fixedError))
+            {
+                return fixedError;
+            }
+
+            foreach (var row in tables.TbWeapon.DataList)
+            {
+                var error = ValidateWeapon(row, tables);
+                if (error != null) return error;
+            }
+
+            var weaponAppearanceError = ValidateWeaponAppearances(tables);
+            if (weaponAppearanceError != null) return weaponAppearanceError;
+
+            foreach (var row in tables.TbCraftRecipe.DataList)
+            {
+                var error = ValidateCraftRecipe(row, tables);
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbTempBuilding.DataList)
+            {
+                var error = ValidateTempBuilding(row, tables);
+                if (error != null) return error;
+            }
+
+            var manualBuildingIds = new HashSet<string>();
+            foreach (var row in tables.TbTempBuildingManualAttack.DataList)
+            {
+                var error = ValidateTempBuildingManualAttack(row, tables, manualBuildingIds);
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbProjectile.DataList)
+            {
+                var error = ValidateProjectile(row, tables);
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbMap.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbMap.Id 为空";
+                if (string.IsNullOrWhiteSpace(row.ScenePath)) return $"TbMap[{row.Id}].ScenePath 为空";
+            }
+
+            var taskError = ValidateExpeditionTasks(tables);
+            if (taskError != null) return taskError;
+
+            var mapScenePartError = ValidateMapSceneParts(tables);
+            if (mapScenePartError != null) return mapScenePartError;
+
+            foreach (var row in tables.TbPlayer.DataList)
+            {
+                var error = ValidatePlayer(row);
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbLoot.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbLoot.Id 为空";
+                if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbLoot[{row.Id}].PrefabName 为空";
+                if (row.ItemId <= 0) return $"TbLoot[{row.Id}].ItemId 必须为正";
+                if (tables.TbItem.GetOrDefault(row.ItemId) == null) return $"TbLoot[{row.Id}].ItemId 引用不存在";
+                if (row.Amount <= 0) return $"TbLoot[{row.Id}].Amount 必须为正";
+            }
+
+            var itemLootError = ValidateItemLoots(tables);
+            if (itemLootError != null) return itemLootError;
+
+            foreach (var row in tables.TbEnemy.DataList)
+            {
+                var error = ValidateEnemy(row, tables);
+                if (error != null) return error;
+                error = ValidateEnemyAttack(row, tables);
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbExtraction.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbExtraction.Id 为空";
+                if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbExtraction[{row.Id}].PrefabName 为空";
+            }
+
+            foreach (var row in tables.TbNpc.DataList)
+            {
+                var error = ValidateNpc(row, tables);
+                if (error != null) return error;
+            }
+
+            var shopError = ValidateShops(tables);
+            if (shopError != null) return shopError;
+
+            var arcadeError = ValidateArcade(tables);
+            if (arcadeError != null) return arcadeError;
+
+            var testCmdError = ValidateTestCmdCatalog(tables);
+            if (testCmdError != null) return testCmdError;
+
+            var spawnIds = new HashSet<string>(StringComparer.Ordinal);
+            var playerCounts = new Dictionary<string, int>(StringComparer.Ordinal);
+            foreach (var row in tables.TbMapSpawn.DataList)
+            {
+                var error = ValidateSpawn(row, tables, spawnIds, playerCounts);
+                if (error != null) return error;
+            }
+
+            foreach (var map in tables.TbMap.DataList)
+            {
+                if (!playerCounts.TryGetValue(map.Id, out var count) || count != 1)
+                {
+                    return $"TbMapSpawn[{map.Id}].ObjectType 每张地图必须恰好一个 Player";
+                }
+            }
+
+            return null;
+        }
+
+        private static void BuildCraftRecipeSnapshot(
+            global::Tables tables,
+            out IReadOnlyList<CraftRecipeDefinition> recipes,
+            out IReadOnlyDictionary<string, CraftRecipeDefinition> recipeById)
+        {
+            recipes = tables.TbCraftRecipe.DataList
+                .OrderBy(row => row.Order)
+                .ThenBy(row => row.Id, StringComparer.Ordinal)
+                .Select(ToDefinition)
+                .ToArray();
+            recipeById = recipes.ToDictionary(recipe => recipe.Id, StringComparer.Ordinal);
+        }
+
+        private static void BuildLootByItemIdSnapshot(
+            global::Tables tables,
+            out IReadOnlyDictionary<int, LootConfigDefinition> values)
+        {
+            values = tables.TbLoot.DataList
+                .GroupBy(row => row.ItemId)
+                .Where(group => group.Count() == 1)
+                .ToDictionary(
+                    group => group.Key,
+                    group => new LootConfigDefinition(
+                        group.First().Id,
+                        ResolveFileName(ResourceAddressKind.SceneObjectPrefab, group.First().PrefabName),
+                        group.First().ItemId,
+                        group.First().Amount));
+        }
+
+        private static void BuildProjectileSnapshot(
+            global::Tables tables,
+            out IReadOnlyList<ProjectileConfigDefinition> values)
+        {
+            values = tables.TbProjectile.DataList
+                .OrderBy(row => row.Id, StringComparer.Ordinal)
+                .Select(ToDefinition)
+                .ToArray();
+        }
+
+        private static void BuildPlayerWeaponAppearanceSnapshot(
+            global::Tables tables,
+            out IReadOnlyDictionary<int, PlayerWeaponAppearanceDefinition> values)
+        {
+            values = tables.TbWeaponAppearance.DataList
+                .Select(ToDefinition)
+                .ToDictionary(row => row.ItemId);
+        }
+
+        private static void BuildTestCmdCatalogSnapshot(
+            global::Tables tables,
+            out IReadOnlyList<TestCmdCategoryDefinition> categories,
+            out IReadOnlyList<TestCmdEntryDefinition> entries)
+        {
+            categories = tables.TbTestCmdCategory.DataList
+                .OrderBy(row => row.Order)
+                .ThenBy(row => row.Id, StringComparer.Ordinal)
+                .Select(row => new TestCmdCategoryDefinition(row.Id, row.Order, row.LabelText))
+                .ToArray();
+
+            var categoryOrderById = tables.TbTestCmdCategory.DataList.ToDictionary(row => row.Id, row => row.Order, StringComparer.Ordinal);
+            entries = tables.TbTestCmdEntry.DataList
+                .OrderBy(row => categoryOrderById[row.CategoryId])
+                .ThenBy(row => row.Order)
+                .ThenBy(row => row.Id, StringComparer.Ordinal)
+                .Select(row => new TestCmdEntryDefinition(
+                    row.Id,
+                    row.CategoryId,
+                    row.Order,
+                    row.LabelText,
+                    row.CommandTemplate,
+                    row.DescriptionText,
+                    row.UsageText,
+                    row.ExampleText))
+                .ToArray();
+        }
+
+        private static string ValidateTestCmdCatalog(global::Tables tables)
+        {
+            var categoryIds = new HashSet<string>(StringComparer.Ordinal);
+            var categoryOrders = new HashSet<int>();
+            foreach (var row in tables.TbTestCmdCategory.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbTestCmdCategory.Id 为空";
+                if (string.Equals(row.Id, TestCmdModel.RecentCategoryId, StringComparison.Ordinal)) return $"TbTestCmdCategory[{row.Id}].Id 使用保留 ID";
+                if (!categoryIds.Add(row.Id)) return $"TbTestCmdCategory[{row.Id}].Id 重复";
+                if (!categoryOrders.Add(row.Order)) return $"TbTestCmdCategory[{row.Id}].Order 重复";
+                if (string.IsNullOrWhiteSpace(row.LabelText)) return $"TbTestCmdCategory[{row.Id}].LabelText 为空";
+            }
+
+            var entryIds = new HashSet<string>(StringComparer.Ordinal);
+            var entryOrdersByCategory = new Dictionary<string, HashSet<int>>(StringComparer.Ordinal);
+            foreach (var row in tables.TbTestCmdEntry.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbTestCmdEntry.Id 为空";
+                if (string.Equals(row.Id, TestCmdModel.RecentCategoryId, StringComparison.Ordinal)) return $"TbTestCmdEntry[{row.Id}].Id 使用保留 ID";
+                if (!entryIds.Add(row.Id)) return $"TbTestCmdEntry[{row.Id}].Id 重复";
+                if (string.IsNullOrWhiteSpace(row.CategoryId)) return $"TbTestCmdEntry[{row.Id}].CategoryId 为空";
+                if (!categoryIds.Contains(row.CategoryId)) return $"TbTestCmdEntry[{row.Id}].CategoryId 引用不存在";
+                if (!entryOrdersByCategory.TryGetValue(row.CategoryId, out var orders))
+                {
+                    orders = new HashSet<int>();
+                    entryOrdersByCategory.Add(row.CategoryId, orders);
+                }
+
+                if (!orders.Add(row.Order)) return $"TbTestCmdEntry[{row.Id}].Order 重复";
+                if (string.IsNullOrWhiteSpace(row.LabelText)) return $"TbTestCmdEntry[{row.Id}].LabelText 为空";
+                if (string.IsNullOrEmpty(row.CommandTemplate)) return $"TbTestCmdEntry[{row.Id}].CommandTemplate 为空";
+                if (string.IsNullOrWhiteSpace(row.DescriptionText)) return $"TbTestCmdEntry[{row.Id}].DescriptionText 为空";
+                if (string.IsNullOrWhiteSpace(row.UsageText)) return $"TbTestCmdEntry[{row.Id}].UsageText 为空";
+                if (string.IsNullOrWhiteSpace(row.ExampleText)) return $"TbTestCmdEntry[{row.Id}].ExampleText 为空";
+            }
+
+            return null;
+        }
+
+        private static string ValidateItem(global::Item row)
+        {
+            if (row.Id <= 0) return "TbItem.Id 必须为正";
+            if (string.IsNullOrWhiteSpace(row.NameKey)) return $"TbItem[{row.Id}].NameKey 为空";
+            if (string.IsNullOrWhiteSpace(row.DescKey)) return $"TbItem[{row.Id}].DescKey 为空";
+            if (row.ItemType != global::ItemType.Material &&
+                row.ItemType != global::ItemType.Consumable &&
+                row.ItemType != global::ItemType.Weapon &&
+                row.ItemType != global::ItemType.Ammunition &&
+                row.ItemType != global::ItemType.Tool &&
+                row.ItemType != global::ItemType.Clothing) return $"TbItem[{row.Id}].ItemType 无效";
+            if (row.ItemType == global::ItemType.Clothing)
+            {
+                if (((int)row.WearSlot < 1 || (int)row.WearSlot > 7) ||
+                    string.IsNullOrWhiteSpace(row.AppearanceId) || row.MaxStackAmount != 1 ||
+                    row.UseEffect != global::ItemUseEffect.None || row.UseValue != 0 || row.UseDurationSeconds != 0f)
+                    return $"TbItem[{row.Id}] 衣物配置无效";
+            }
+            else if (row.WearSlot != global::ClothingSlot.None || !string.IsNullOrEmpty(row.AppearanceId))
+                return $"TbItem[{row.Id}] 非衣物不可声明穿戴数据";
+            if (row.MaxStackAmount <= 0) return $"TbItem[{row.Id}].MaxStackAmount 必须为正";
+            if ((row.ItemType == global::ItemType.Material ||
+                 row.ItemType == global::ItemType.Weapon ||
+                 row.ItemType == global::ItemType.Ammunition ||
+                 row.ItemType == global::ItemType.Tool) &&
+                (row.UseEffect != global::ItemUseEffect.None || row.UseValue != 0 || row.UseDurationSeconds != 0f)) return $"TbItem[{row.Id}].Material 使用效果无效";
+            if (row.UseEffect == global::ItemUseEffect.RestoreHealth ||
+                row.UseEffect == global::ItemUseEffect.RestorePower ||
+                row.UseEffect == global::ItemUseEffect.RestoreWater)
+            {
+                if (row.ItemType != global::ItemType.Consumable) return $"TbItem[{row.Id}].恢复效果只能用于 Consumable";
+                if (row.UseValue <= 0) return $"TbItem[{row.Id}].{row.UseEffect} UseValue 必须为正";
+                if (!IsPositiveFinite(row.UseDurationSeconds)) return $"TbItem[{row.Id}].UseDurationSeconds 必须为正";
+            }
+
+            if (row.ItemType == global::ItemType.Consumable &&
+                row.UseEffect != global::ItemUseEffect.RestoreHealth &&
+                row.UseEffect != global::ItemUseEffect.RestorePower &&
+                row.UseEffect != global::ItemUseEffect.RestoreWater)
+            {
+                return $"TbItem[{row.Id}].Consumable 使用效果无效";
+            }
+
+            if (row.ItemType != global::ItemType.Consumable &&
+                (!IsFinite(row.UseDurationSeconds) || row.UseDurationSeconds != 0f))
+            {
+                return $"TbItem[{row.Id}].UseDurationSeconds 必须为 0";
+            }
+
+            if (row.ItemType == global::ItemType.Tool)
+            {
+                if (row.ActionKind != global::ItemActionKind.OpenMap && row.ActionKind != global::ItemActionKind.ToggleTorch)
+                    return $"TbItem[{row.Id}].ActionKind 无效";
+                if (string.IsNullOrWhiteSpace(row.ActionTarget))
+                    return $"TbItem[{row.Id}].ActionTarget 为空";
+                if (row.MaxStackAmount != 1)
+                    return $"TbItem[{row.Id}].MaxStackAmount 必须为 1";
+            }
+            else if (row.ActionKind != global::ItemActionKind.None || !string.IsNullOrEmpty(row.ActionTarget))
+            {
+                return $"TbItem[{row.Id}].ActionKind 或 ActionTarget 无效";
+            }
+
+            if (row.ActionKind == global::ItemActionKind.ToggleTorch)
+            {
+                if (!IsPositiveFinite(row.BurnSeconds) || row.MaxStackAmount != 1 || row.ActionTarget != System.IO.Path.GetFileName(row.ActionTarget))
+                    return $"TbItem[{row.Id}] 火把燃烧配置无效";
+            }
+            else if (row.BurnSeconds != 0f) return $"TbItem[{row.Id}] 非火把不可声明燃烧秒数";
+            return null;
+        }
+
+        private static string ValidateWeapon(global::WeaponConfig row, global::Tables tables)
+        {
+            if (row == null) return "TbWeapon 行为空";
+            if (row.ItemId <= 0) return "TbWeapon.ItemId 必须为正";
+            var item = tables.TbItem.GetOrDefault(row.ItemId);
+            if (item == null) return $"TbWeapon[{row.ItemId}].ItemId 引用不存在";
+            if (item.ItemType != global::ItemType.Weapon) return $"TbWeapon[{row.ItemId}].ItemId 必须引用武器物品";
+            if (row.AttackDamage <= 0) return $"TbWeapon[{row.ItemId}].AttackDamage 必须为正";
+            if (row.AttackCooldownSeconds <= 0f) return $"TbWeapon[{row.ItemId}].AttackCooldownSeconds 必须为正";
+            if (row.AttackRange <= 0f) return $"TbWeapon[{row.ItemId}].AttackRange 必须为正";
+            if (float.IsNaN(row.TreeHarvestEfficiency) || float.IsInfinity(row.TreeHarvestEfficiency) || row.TreeHarvestEfficiency < 0f ||
+                float.IsNaN(row.StoneHarvestEfficiency) || float.IsInfinity(row.StoneHarvestEfficiency) || row.StoneHarvestEfficiency < 0f)
+                return $"TbWeapon[{row.ItemId}] 采集效率必须为有限非负数";
+
+            switch (row.WeaponKind)
+            {
+                case global::WeaponKind.Melee:
+                    if (row.MeleeArcDegrees <= 0f || row.MeleeArcDegrees > 360f) return $"TbWeapon[{row.ItemId}].MeleeArcDegrees 无效";
+                    if (!string.IsNullOrWhiteSpace(row.ProjectileConfigId)) return $"TbWeapon[{row.ItemId}].ProjectileConfigId 必须为空";
+                    if (row.AmmoItemId != 0) return $"TbWeapon[{row.ItemId}].AmmoItemId 必须为 0";
+                    if (row.MagazineCapacity != 0 || row.ReloadSeconds != 0f) return $"TbWeapon[{row.ItemId}] 近战武器弹匣参数必须为 0";
+                    return null;
+                case global::WeaponKind.Projectile:
+                    if (row.MeleeArcDegrees != 0f) return $"TbWeapon[{row.ItemId}].MeleeArcDegrees 必须为 0";
+                    if (string.IsNullOrWhiteSpace(row.ProjectileConfigId)) return $"TbWeapon[{row.ItemId}].ProjectileConfigId 为空";
+                    if (row.AmmoItemId <= 0) return $"TbWeapon[{row.ItemId}].AmmoItemId 必须为正";
+                    if (row.MagazineCapacity <= 0 || row.ReloadSeconds <= 0f) return $"TbWeapon[{row.ItemId}] 投射物武器弹匣参数必须为正";
+                    if (tables.TbProjectile.GetOrDefault(row.ProjectileConfigId) == null) return $"TbWeapon[{row.ItemId}].ProjectileConfigId 引用不存在";
+                    var ammo = tables.TbItem.GetOrDefault(row.AmmoItemId);
+                    if (ammo == null) return $"TbWeapon[{row.ItemId}].AmmoItemId 引用不存在";
+                    if (ammo.ItemType != global::ItemType.Ammunition) return $"TbWeapon[{row.ItemId}].AmmoItemId 必须引用弹药物品";
+                    return null;
+                default:
+                    return $"TbWeapon[{row.ItemId}].WeaponKind 无效";
+            }
+        }
+
+        private static string ValidateWeaponAppearances(global::Tables tables)
+        {
+            var itemIds = new HashSet<int>();
+            foreach (var row in tables.TbWeaponAppearance.DataList)
+            {
+                var error = ValidateWeaponAppearance(row, tables);
+                if (error != null) return error;
+                if (!itemIds.Add(row.ItemId)) return $"TbWeaponAppearance[{row.ItemId}].ItemId 重复";
+            }
+
+            foreach (var weapon in tables.TbWeapon.DataList)
+            {
+                if (!itemIds.Contains(weapon.ItemId))
+                {
+                    return $"TbWeaponAppearance[{weapon.ItemId}].ItemId 缺少武器外观配置";
+                }
+            }
+
+            return null;
+        }
+
+        private static string ValidateExpeditionTasks(global::Tables tables)
+        {
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var maps = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbExpeditionTask.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id) || !ids.Add(row.Id)) return $"TbExpeditionTask[{row.Id}].Id 为空或重复";
+                if (string.IsNullOrWhiteSpace(row.MapId) || tables.TbMap.GetOrDefault(row.MapId) == null) return $"TbExpeditionTask[{row.Id}].MapId 引用不存在";
+                if (!maps.Add(row.MapId)) return $"TbExpeditionTask[{row.MapId}] 每张地图最多一项";
+                if (string.IsNullOrWhiteSpace(row.Name) || string.IsNullOrWhiteSpace(row.NameKey)) return $"TbExpeditionTask[{row.Id}] 名称为空";
+                if (!IsPositiveFinite(row.TargetAmount)) return $"TbExpeditionTask[{row.Id}].TargetAmount 必须为有限正数";
+                if (row.Order <= 0) return $"TbExpeditionTask[{row.Id}].Order 必须为正";
+                if (row.ObjectiveType != global::TaskObjectiveType.Survive && row.ObjectiveType != global::TaskObjectiveType.Kill) return $"TbExpeditionTask[{row.Id}].ObjectiveType 无效";
+                if (row.ObjectiveType == global::TaskObjectiveType.Kill && row.TargetAmount != UnityEngine.Mathf.Floor(row.TargetAmount)) return $"TbExpeditionTask[{row.Id}].TargetAmount 击杀目标必须为整数";
+            }
+            return null;
+        }
+
+        private static void BuildExpeditionTaskSnapshot(global::Tables tables, out IReadOnlyDictionary<string, IReadOnlyList<ExpeditionTaskDefinition>> values)
+        {
+            values = tables.TbExpeditionTask.DataList
+                .GroupBy(row => row.MapId, StringComparer.Ordinal)
+                .ToDictionary(
+                    group => group.Key,
+                    group => (IReadOnlyList<ExpeditionTaskDefinition>)Array.AsReadOnly(group.OrderBy(row => row.Order).ThenBy(row => row.Id, StringComparer.Ordinal)
+                        .Select(row => new ExpeditionTaskDefinition(row.Id, row.MapId, row.Name, row.NameKey, row.ObjectiveType, row.TargetAmount, row.Order)).ToArray()),
+                    StringComparer.Ordinal);
+        }
+
+        private static string ValidateWeaponAppearance(global::WeaponAppearanceConfig row, global::Tables tables)
+        {
+            if (row == null) return "TbWeaponAppearance 行为空";
+            if (row.ItemId <= 0) return "TbWeaponAppearance.ItemId 必须为正";
+            var item = tables.TbItem.GetOrDefault(row.ItemId);
+            if (item == null) return $"TbWeaponAppearance[{row.ItemId}].ItemId 引用不存在";
+            if (item.ItemType != global::ItemType.Weapon) return $"TbWeaponAppearance[{row.ItemId}].ItemId 必须引用武器物品";
+            var weapon = tables.TbWeapon.GetOrDefault(row.ItemId);
+            if (weapon == null) return $"TbWeaponAppearance[{row.ItemId}].ItemId 武器配置不存在";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbWeaponAppearance[{row.ItemId}].PrefabName 为空";
+            if (!IsFinite(row.LocalPositionX) || !IsFinite(row.LocalPositionY) || !IsFinite(row.LocalPositionZ)) return $"TbWeaponAppearance[{row.ItemId}].LocalPosition 不是有限数值";
+            if (!IsFinite(row.LocalRotationX) || !IsFinite(row.LocalRotationY) || !IsFinite(row.LocalRotationZ)) return $"TbWeaponAppearance[{row.ItemId}].LocalRotation 不是有限数值";
+            if (!IsPositiveFinite(row.LocalScaleX) || !IsPositiveFinite(row.LocalScaleY) || !IsPositiveFinite(row.LocalScaleZ)) return $"TbWeaponAppearance[{row.ItemId}].LocalScale 必须为正有限数值";
+
+            switch (row.AttachPoint)
+            {
+                case global::PlayerWeaponAttachPoint.MeleeWeapon:
+                    return weapon.WeaponKind == global::WeaponKind.Melee
+                        ? null
+                        : $"TbWeaponAppearance[{row.ItemId}].AttachPoint 必须匹配投射武器挂点";
+                case global::PlayerWeaponAttachPoint.RangedWeapon:
+                case global::PlayerWeaponAttachPoint.LeftHandWeapon:
+                    return weapon.WeaponKind == global::WeaponKind.Projectile
+                        ? null
+                        : $"TbWeaponAppearance[{row.ItemId}].AttachPoint 必须匹配近战武器挂点";
+                default:
+                    return $"TbWeaponAppearance[{row.ItemId}].AttachPoint 无效";
+            }
+        }
+
+        private static string ValidateCraftRecipe(global::CraftRecipeConfig row, global::Tables tables)
+        {
+            if (row == null) return "TbCraftRecipe 行为空";
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbCraftRecipe.Id 为空";
+            if (row.OutputItemId <= 0) return $"TbCraftRecipe[{row.Id}].OutputItemId 必须为正";
+            if (tables.TbItem.GetOrDefault(row.OutputItemId) == null) return $"TbCraftRecipe[{row.Id}].OutputItemId 引用不存在";
+            if (row.OutputAmount <= 0) return $"TbCraftRecipe[{row.Id}].OutputAmount 必须为正";
+            if (row.Materials == null || row.Materials.Length == 0) return $"TbCraftRecipe[{row.Id}].Materials 为空";
+
+            var materialIds = new HashSet<int>();
+            foreach (var material in row.Materials)
+            {
+                if (material == null) return $"TbCraftRecipe[{row.Id}].Materials 行为空";
+                if (material.ItemId <= 0) return $"TbCraftRecipe[{row.Id}].Materials.ItemId 必须为正";
+                if (!materialIds.Add(material.ItemId)) return $"TbCraftRecipe[{row.Id}].Materials.ItemId 重复";
+                if (tables.TbItem.GetOrDefault(material.ItemId) == null) return $"TbCraftRecipe[{row.Id}].Materials.ItemId 引用不存在";
+                if (material.Amount <= 0) return $"TbCraftRecipe[{row.Id}].Materials.Amount 必须为正";
+            }
+
+            return null;
+        }
+
+        private static string ValidateItemLoots(global::Tables tables)
+        {
+            foreach (var item in tables.TbItem.DataList)
+            {
+                var matches = tables.TbLoot.DataList
+                    .Where(loot => loot.ItemId == item.Id)
+                    .Select(loot => loot.Id)
+                    .ToArray();
+                if (matches.Length != 1)
+                {
+                    return $"TbLoot.ItemId={item.Id} 必须恰好匹配 1 条掉落配置，当前 {matches.Length} 条：{string.Join(",", matches)}";
+                }
+            }
+
+            return null;
+        }
+
+        private static string ValidateTempBuilding(global::TempBuildingConfig row, global::Tables tables)
+        {
+            if (row == null) return "TbTempBuilding 行为空";
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbTempBuilding.Id 为空";
+            if (string.IsNullOrWhiteSpace(row.Name)) return $"TbTempBuilding[{row.Id}].Name 为空";
+            if (string.IsNullOrWhiteSpace(row.NameKey)) return $"TbTempBuilding[{row.Id}].NameKey 为空";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbTempBuilding[{row.Id}].PrefabName 为空";
+            if (row.Materials == null || row.Materials.Length == 0) return $"TbTempBuilding[{row.Id}].Materials 为空";
+            if (row.BuildSeconds <= 0f) return $"TbTempBuilding[{row.Id}].BuildSeconds 必须为正";
+            if (row.FootprintRadius <= 0f) return $"TbTempBuilding[{row.Id}].FootprintRadius 必须为正";
+            if (row.MaxSlopeDegrees <= 0f) return $"TbTempBuilding[{row.Id}].MaxSlopeDegrees 必须为正";
+            if (row.Order < 0) return $"TbTempBuilding[{row.Id}].Order 不能为负";
+            if (!string.IsNullOrEmpty(row.ExpeditionMapId) && (!row.BaseOnly || tables.TbMap.GetOrDefault(row.ExpeditionMapId) == null))
+                return $"TbTempBuilding[{row.Id}].ExpeditionMapId 必须是基地摆件的有效离线地图例外";
+            if (row.BlocksNavigation ? row.NarrowPassageRadius <= 0f : row.NarrowPassageRadius != 0f)
+                return $"TbTempBuilding[{row.Id}].NarrowPassageRadius 与 BlocksNavigation 不匹配";
+
+            var materialIds = new HashSet<int>();
+            foreach (var material in row.Materials)
+            {
+                if (material == null) return $"TbTempBuilding[{row.Id}].Materials 行为空";
+                if (material.ItemId <= 0) return $"TbTempBuilding[{row.Id}].Materials.ItemId 必须为正";
+                if (!materialIds.Add(material.ItemId)) return $"TbTempBuilding[{row.Id}].Materials.ItemId 重复";
+                if (tables.TbItem.GetOrDefault(material.ItemId) == null) return $"TbTempBuilding[{row.Id}].Materials.ItemId 引用不存在";
+                if (material.Amount <= 0) return $"TbTempBuilding[{row.Id}].Materials.Amount 必须为正";
+            }
+
+            return null;
+        }
+
+        private static string ValidateTempBuildingManualAttack(global::TempBuildingManualAttackConfig row, global::Tables tables, HashSet<string> buildingIds)
+        {
+            if (row == null) return "TbTempBuildingManualAttack 行为空";
+            if (string.IsNullOrWhiteSpace(row.BuildingId)) return "TbTempBuildingManualAttack.BuildingId 为空";
+            if (!buildingIds.Add(row.BuildingId)) return $"TbTempBuildingManualAttack[{row.BuildingId}] 重复";
+            if (tables.TbTempBuilding.GetOrDefault(row.BuildingId) == null) return $"TbTempBuildingManualAttack[{row.BuildingId}].BuildingId 引用不存在";
+            if (!IsFinite(row.InteractDistance) || !IsFinite(row.ShootCooldownSeconds) || !IsFinite(row.ReloadSeconds) || !IsFinite(row.OperateRotateDegreesPerSecond) || row.InteractDistance <= 0f || row.ShootCooldownSeconds <= 0f || row.Damage <= 0 || row.AmmoAmount <= 0 || row.MagazineCapacity <= 0 || row.ReloadSeconds <= 0f || row.OperateRotateDegreesPerSecond <= 0f) return $"TbTempBuildingManualAttack[{row.BuildingId}] 数值必须为正";
+            if (row.AmmoAmount > row.MagazineCapacity) return $"TbTempBuildingManualAttack[{row.BuildingId}].AmmoAmount 不能大于 MagazineCapacity";
+            if (string.IsNullOrWhiteSpace(row.ProjectileConfigId) || tables.TbProjectile.GetOrDefault(row.ProjectileConfigId) == null) return $"TbTempBuildingManualAttack[{row.BuildingId}].ProjectileConfigId 引用不存在";
+            if (row.AmmoItemId <= 0 || tables.TbItem.GetOrDefault(row.AmmoItemId) == null) return $"TbTempBuildingManualAttack[{row.BuildingId}].AmmoItemId 引用不存在";
+            return null;
+        }
+
+        private static bool ValidateFixedItem(
+            global::Tables tables,
+            int id,
+            global::ItemType itemType,
+            int maxStackAmount,
+            global::ItemUseEffect useEffect,
+            int useValue,
+            out string error)
+        {
+            var row = tables.TbItem.GetOrDefault(id);
+            if (row == null)
+            {
+                error = $"TbItem[{id}].Id 不存在";
+                return false;
+            }
+
+            if (row.ItemType != itemType ||
+                row.MaxStackAmount != maxStackAmount ||
+                row.UseEffect != useEffect ||
+                row.UseValue != useValue)
+            {
+                error = $"TbItem[{id}] 固定物品配置不匹配";
+                return false;
+            }
+
+            error = null;
+            return true;
+        }
+
+        private static string ValidateProjectile(global::ProjectileConfig row, Tables tables)
+        {
+            if (row == null) return "TbProjectile 行为空";
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbProjectile.Id 为空";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbProjectile[{row.Id}].PrefabName 为空";
+            if (row.MoveSpeed <= 0f) return $"TbProjectile[{row.Id}].MoveSpeed 必须为正";
+            if (row.MaxTravelDistance <= 0f) return $"TbProjectile[{row.Id}].MaxTravelDistance 必须为正";
+            // 空值表示一次性投射物；配置了回收时仍必须引用有效掉落。
+            if (!string.IsNullOrWhiteSpace(row.RecoveryLootConfigId) &&
+                tables.TbLoot.GetOrDefault(row.RecoveryLootConfigId) == null) return $"TbProjectile[{row.Id}].RecoveryLootConfigId 引用不存在";
+            return null;
+        }
+
+        private static string ValidatePlayer(global::PlayerConfig row)
+        {
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbPlayer.Id 为空";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbPlayer[{row.Id}].PrefabName 为空";
+            if (row.MaxHP <= 0) return $"TbPlayer[{row.Id}].MaxHP 必须为正";
+            if (row.AttackDamage < 0) return $"TbPlayer[{row.Id}].AttackDamage 不能小于 0";
+            if (row.AttackRange <= 0) return $"TbPlayer[{row.Id}].AttackRange 必须为正";
+            if (row.AttackCooldownSeconds <= 0) return $"TbPlayer[{row.Id}].AttackCooldownSeconds 必须为正";
+            if (row.MoveSpeed <= 0) return $"TbPlayer[{row.Id}].MoveSpeed 必须为正";
+            if (row.TurnSpeed <= 0) return $"TbPlayer[{row.Id}].TurnSpeed 必须为正";
+            if (row.BaseRecoveryPerSecond <= 0) return $"TbPlayer[{row.Id}].BaseRecoveryPerSecond 必须为正";
+            if (float.IsNaN(row.BuildingOperateDistance) || float.IsInfinity(row.BuildingOperateDistance) || row.BuildingOperateDistance <= 0f)
+                return $"TbPlayer[{row.Id}].BuildingOperateDistance 必须为有限正数";
+            return null;
+        }
+
+        private static string ValidateEnemy(global::EnemyConfig row, global::Tables tables)
+        {
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbEnemy.Id 为空";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbEnemy[{row.Id}].PrefabName 为空";
+            if (row.MaxHP <= 0) return $"TbEnemy[{row.Id}].MaxHP 必须为正";
+            if (row.AttackDamage < 0) return $"TbEnemy[{row.Id}].AttackDamage 不能小于 0";
+            if (row.AggroRange <= 0) return $"TbEnemy[{row.Id}].AggroRange 必须为正";
+            if (row.AttackRange <= 0) return $"TbEnemy[{row.Id}].AttackRange 必须为正";
+            if (row.AttackRange > row.AggroRange) return $"TbEnemy[{row.Id}].AttackRange 不能大于 AggroRange";
+            if (row.AttackCooldownSeconds <= 0) return $"TbEnemy[{row.Id}].AttackCooldownSeconds 必须为正";
+            if (row.MoveSpeed <= 0) return $"TbEnemy[{row.Id}].MoveSpeed 必须为正";
+            if (!string.IsNullOrWhiteSpace(row.LootConfigId) && tables.TbLoot.GetOrDefault(row.LootConfigId) == null) return $"TbEnemy[{row.Id}].LootConfigId 引用不存在";
+            var guaranteedWeaponError = ValidateEnemyGuaranteedWeapon(row, tables);
+            if (guaranteedWeaponError != null) return guaranteedWeaponError;
+            return null;
+        }
+
+        private static string ValidateEnemyAttack(global::EnemyConfig row, global::Tables tables)
+        {
+            // Arcade 表只提供稳定身份及近远程类别；伤害和攻击时序仍由 Enemy 行决定。
+            if (string.IsNullOrWhiteSpace(row.WeaponId))
+                return $"TbEnemy[{row.Id}].WeaponId 为空";
+            var configuredWeapon = tables.TbArcadeWeapon.GetOrDefault(row.WeaponId);
+            if (configuredWeapon == null)
+                return $"TbEnemy[{row.Id}].WeaponId={row.WeaponId} 在 TbArcadeWeapon 中不存在";
+            bool usesProjectile;
+            switch (configuredWeapon.Behavior)
+            {
+                case global::ArcadeWeaponBehavior.Melee:
+                    usesProjectile = false;
+                    break;
+                case global::ArcadeWeaponBehavior.Direct:
+                case global::ArcadeWeaponBehavior.Piercing:
+                case global::ArcadeWeaponBehavior.Explosive:
+                case global::ArcadeWeaponBehavior.TimedExplosive:
+                    usesProjectile = true;
+                    break;
+                default:
+                    return $"TbEnemy[{row.Id}].WeaponId={row.WeaponId} 的 TbArcadeWeapon.Behavior 无效：{configuredWeapon.Behavior}";
+            }
+            if (usesProjectile != (row.AttackKind == global::EnemyAttackKind.Projectile))
+                return $"TbEnemy[{row.Id}].WeaponId={row.WeaponId} 与 AttackKind 不匹配";
+            switch (row.AttackKind)
+            {
+                case global::EnemyAttackKind.Melee:
+                    if (row.RetreatDistance != 0f) return $"TbEnemy[{row.Id}].RetreatDistance must be 0";
+                    if (row.TelegraphSeconds != 0f) return $"TbEnemy[{row.Id}].TelegraphSeconds must be 0";
+                    if (!string.IsNullOrWhiteSpace(row.ProjectileConfigId)) return $"TbEnemy[{row.Id}].ProjectileConfigId must be empty";
+                    if (!string.IsNullOrWhiteSpace(row.GuaranteedAmmoLootConfigId)) return $"TbEnemy[{row.Id}].GuaranteedAmmoLootConfigId must be empty";
+                    if (row.AmmoCapacity != 0) return $"TbEnemy[{row.Id}].AmmoCapacity must be 0";
+                    if (row.FallbackMeleeAttackRange != 0f) return $"TbEnemy[{row.Id}].FallbackMeleeAttackRange must be 0";
+                    if (row.MagazineCapacity != 0 || row.ReloadSeconds != 0f) return $"TbEnemy[{row.Id}] melee reload parameters must be 0";
+                    return null;
+                case global::EnemyAttackKind.Projectile:
+                    if (row.RetreatDistance <= 0f || row.RetreatDistance >= row.AttackRange) return $"TbEnemy[{row.Id}].RetreatDistance is invalid";
+                    if (row.TelegraphSeconds <= 0f) return $"TbEnemy[{row.Id}].TelegraphSeconds must be positive";
+                    if (string.IsNullOrWhiteSpace(row.ProjectileConfigId)) return $"TbEnemy[{row.Id}].ProjectileConfigId is empty";
+                    if (tables.TbProjectile.GetOrDefault(row.ProjectileConfigId) == null) return $"TbEnemy[{row.Id}].ProjectileConfigId reference is missing";
+                    if (row.AmmoCapacity <= 0) return $"TbEnemy[{row.Id}].AmmoCapacity must be positive";
+                    if (row.MagazineCapacity <= 0 || row.MagazineCapacity > row.AmmoCapacity || row.ReloadSeconds <= 0f) return $"TbEnemy[{row.Id}] projectile reload parameters are invalid";
+                    if (string.IsNullOrWhiteSpace(row.GuaranteedAmmoLootConfigId)) return $"TbEnemy[{row.Id}].GuaranteedAmmoLootConfigId is empty";
+                    var ammoError = ValidateEnemyAmmoLoot(row, tables);
+                    if (ammoError != null) return ammoError;
+                    if (row.FallbackMeleeAttackRange <= 0f || row.FallbackMeleeAttackRange > row.AggroRange) return $"TbEnemy[{row.Id}].FallbackMeleeAttackRange is invalid";
+                    return null;
+                default:
+                    return $"TbEnemy[{row.Id}].AttackKind is invalid";
+            }
+        }
+
+        private static string ValidateEnemyGuaranteedWeapon(global::EnemyConfig row, global::Tables tables)
+        {
+            if (string.IsNullOrWhiteSpace(row.GuaranteedWeaponLootConfigId))
+            {
+                return $"TbEnemy[{row.Id}].GuaranteedWeaponLootConfigId 为空";
+            }
+
+            var loot = tables.TbLoot.GetOrDefault(row.GuaranteedWeaponLootConfigId);
+            if (loot == null)
+            {
+                return $"TbEnemy[{row.Id}].GuaranteedWeaponLootConfigId 引用不存在";
+            }
+
+            if (loot.Amount != 1)
+            {
+                return $"TbLoot[{loot.Id}].Amount 必须为 1";
+            }
+
+            var item = tables.TbItem.GetOrDefault(loot.ItemId);
+            if (item == null)
+            {
+                return $"TbLoot[{loot.Id}].ItemId 引用不存在";
+            }
+
+            return item.ItemType == global::ItemType.Weapon
+                ? null
+                : $"TbLoot[{loot.Id}].ItemId 必须引用武器物品";
+        }
+
+        private static string ValidateEnemyAmmoLoot(global::EnemyConfig row, global::Tables tables)
+        {
+            var loot = tables.TbLoot.GetOrDefault(row.GuaranteedAmmoLootConfigId);
+            if (loot == null)
+            {
+                return $"TbEnemy[{row.Id}].GuaranteedAmmoLootConfigId 引用不存在";
+            }
+
+            var item = tables.TbItem.GetOrDefault(loot.ItemId);
+            if (item == null)
+            {
+                return $"TbLoot[{loot.Id}].ItemId 引用不存在";
+            }
+
+            return item.ItemType == global::ItemType.Ammunition
+                ? null
+                : $"TbLoot[{loot.Id}].ItemId 必须引用弹药物品";
+        }
+
+        private static string ValidateSpawn(global::MapSpawnConfig row, global::Tables tables, HashSet<string> spawnIds, Dictionary<string, int> playerCounts)
+        {
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbMapSpawn.Id 为空";
+            if (!spawnIds.Add(row.Id)) return $"TbMapSpawn[{row.Id}].Id 重复";
+            if (string.IsNullOrWhiteSpace(row.MapId)) return $"TbMapSpawn[{row.Id}].MapId 为空";
+            if (tables.TbMap.GetOrDefault(row.MapId) == null) return $"TbMapSpawn[{row.Id}].MapId 引用不存在";
+            if (string.IsNullOrWhiteSpace(row.ConfigId)) return $"TbMapSpawn[{row.Id}].ConfigId 为空";
+            if (!IsFinite(row.PositionX) || !IsFinite(row.PositionY) || !IsFinite(row.PositionZ)) return $"TbMapSpawn[{row.Id}].Position 不是有限数值";
+            if (!IsFinite(row.RotationY)) return $"TbMapSpawn[{row.Id}].RotationY 不是有限数值";
+
+            switch (row.ObjectType)
+            {
+                case MapSpawnObjectType.Player:
+                    if (tables.TbPlayer.GetOrDefault(row.ConfigId) == null) return $"TbMapSpawn[{row.Id}].ConfigId 玩家引用不存在";
+                    playerCounts[row.MapId] = playerCounts.TryGetValue(row.MapId, out var count) ? count + 1 : 1;
+                    break;
+                case MapSpawnObjectType.Enemy:
+                    if (tables.TbEnemy.GetOrDefault(row.ConfigId) == null) return $"TbMapSpawn[{row.Id}].ConfigId 敌人引用不存在";
+                    break;
+                case MapSpawnObjectType.Loot:
+                    if (tables.TbLoot.GetOrDefault(row.ConfigId) == null) return $"TbMapSpawn[{row.Id}].ConfigId 物资引用不存在";
+                    break;
+                case MapSpawnObjectType.Extraction:
+                    if (tables.TbExtraction.GetOrDefault(row.ConfigId) == null) return $"TbMapSpawn[{row.Id}].ConfigId 撤离点引用不存在";
+                    break;
+                case MapSpawnObjectType.Npc:
+                    if (tables.TbNpc.GetOrDefault(row.ConfigId) == null) return $"TbMapSpawn[{row.Id}].ConfigId NPC 引用不存在";
+                    break;
+                default:
+                    return $"TbMapSpawn[{row.Id}].ObjectType 无效";
+            }
+
+            return null;
+        }
+
+        private static MapSpawnDefinition ToDefinition(global::MapSpawnConfig row)
+        {
+            return new MapSpawnDefinition(row.Id, row.MapId, row.ObjectType, row.ConfigId, row.PositionX, row.PositionY, row.PositionZ, row.RotationY);
+        }
+
+        private static NpcConfigDefinition ToDefinition(global::NpcConfig row)
+        {
+            return new NpcConfigDefinition(row.Id, row.NameKey, ResolveFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName), row.InteractionKind, row.InteractionParam);
+        }
+
+        private static string ValidateShops(global::Tables tables)
+        {
+            var shops = new List<ShopDefinition>();
+            var items = new List<ShopItemDefinition>();
+            var npcs = new List<NpcConfigDefinition>();
+            foreach (var row in tables.TbShop.DataList)
+            {
+                if (row == null) return "TbShop[<null>] 行为空";
+                shops.Add(new ShopDefinition(row.Id, row.NameKey));
+            }
+            foreach (var row in tables.TbShopItem.DataList)
+            {
+                if (row == null) return "TbShopItem[<null>] 行为空";
+                items.Add(new ShopItemDefinition(row.Id, row.ShopId, row.ItemId, row.Order, row.BuyPrice, row.SellPrice, row.InitiallyOpen));
+            }
+            foreach (var row in tables.TbNpc.DataList)
+            {
+                if (row == null) return "TbNpc[<null>] 行为空";
+                npcs.Add(new NpcConfigDefinition(row.Id, row.NameKey, row.PrefabName, row.InteractionKind, row.InteractionParam));
+            }
+
+            return ValidateShopCatalog(shops, items, npcs, itemId => tables.TbItem.GetOrDefault(itemId) != null);
+        }
+
+        /// <summary>供生产整表加载与 EditMode 非法目录矩阵共同使用的商店纯校验边界。</summary>
+        internal static string ValidateShopCatalog(
+            IReadOnlyList<ShopDefinition> shops,
+            IReadOnlyList<ShopItemDefinition> items,
+            IReadOnlyList<NpcConfigDefinition> npcs,
+            Func<int, bool> itemExists)
+        {
+            var shopIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in shops ?? Array.Empty<ShopDefinition>())
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbShop[<empty>].Id 为空";
+                if (!shopIds.Add(row.Id)) return $"TbShop[{row.Id}].Id 重复";
+                if (string.IsNullOrWhiteSpace(row.NameKey)) return $"TbShop[{row.Id}].NameKey 为空";
+            }
+
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var itemKeys = new HashSet<string>(StringComparer.Ordinal);
+            var orders = new Dictionary<string, HashSet<int>>(StringComparer.Ordinal);
+            foreach (var row in items ?? Array.Empty<ShopItemDefinition>())
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbShopItem[<empty>].Id 为空";
+                if (!ids.Add(row.Id)) return $"TbShopItem[{row.Id}].Id 重复";
+                if (string.IsNullOrWhiteSpace(row.ShopId)) return $"TbShopItem[{row.Id}].ShopId 为空";
+                if (!shopIds.Contains(row.ShopId)) return $"TbShopItem[{row.Id}].ShopId 引用不存在：{row.ShopId}";
+                if (itemExists == null || !itemExists(row.ItemId)) return $"TbShopItem[{row.Id}].ItemId 引用不存在：{row.ItemId}";
+                if (!itemKeys.Add(ShopItemKey(row.ShopId, row.ItemId))) return $"TbShopItem[{row.Id}].ShopId+ItemId 重复";
+                if (row.Order <= 0) return $"TbShopItem[{row.Id}].Order 必须为正";
+                if (!orders.TryGetValue(row.ShopId, out var shopOrders)) orders[row.ShopId] = shopOrders = new HashSet<int>();
+                if (!shopOrders.Add(row.Order)) return $"TbShopItem[{row.Id}].Order 在商店 {row.ShopId} 中重复：{row.Order}";
+                if (row.BuyPrice < 0) return $"TbShopItem[{row.Id}].BuyPrice 不能为负";
+                if (row.SellPrice < 0) return $"TbShopItem[{row.Id}].SellPrice 不能为负";
+                if (row.BuyPrice == 0 && row.SellPrice == 0) return $"TbShopItem[{row.Id}].BuyPrice/SellPrice 不能同时为 0";
+            }
+
+            foreach (var npc in npcs ?? Array.Empty<NpcConfigDefinition>())
+            {
+                if (npc.InteractionKind != global::NpcInteractionKind.Shop) continue;
+                if (string.IsNullOrWhiteSpace(npc.InteractionParam)) return $"TbNpc[{npc.Id}].InteractionParam 为空";
+                if (!shopIds.Contains(npc.InteractionParam)) return $"TbNpc[{npc.Id}].InteractionParam 引用不存在：{npc.InteractionParam}";
+            }
+
+            return null;
+        }
+
+        private static void BuildShopSnapshot(
+            global::Tables tables,
+            out IReadOnlyDictionary<string, ShopDefinition> shops,
+            out IReadOnlyDictionary<string, IReadOnlyList<ShopItemDefinition>> byShop,
+            out IReadOnlyDictionary<string, ShopItemDefinition> byItem)
+        {
+            shops = tables.TbShop.DataList.ToDictionary(row => row.Id, row => new ShopDefinition(row.Id, row.NameKey), StringComparer.Ordinal);
+            var all = tables.TbShopItem.DataList
+                .Select(row => new ShopItemDefinition(row.Id, row.ShopId, row.ItemId, row.Order, row.BuyPrice, row.SellPrice, row.InitiallyOpen))
+                .ToArray();
+            byShop = all.GroupBy(value => value.ShopId, StringComparer.Ordinal).ToDictionary(
+                group => group.Key,
+                group => (IReadOnlyList<ShopItemDefinition>)Array.AsReadOnly(group.OrderBy(value => value.Order).ToArray()),
+                StringComparer.Ordinal);
+            byItem = all.ToDictionary(value => ShopItemKey(value.ShopId, value.ItemId), StringComparer.Ordinal);
+        }
+
+        private static string ShopItemKey(string shopId, int itemId) => (shopId ?? string.Empty) + "\n" + itemId;
+
+        private static string ValidateNpc(global::NpcConfig row, global::Tables tables)
+        {
+            if (row == null) return "TbNpc 行为空";
+            if (string.IsNullOrWhiteSpace(row.Id)) return "TbNpc.Id 为空";
+            if (string.IsNullOrWhiteSpace(row.NameKey)) return $"TbNpc[{row.Id}].NameKey 为空";
+            if (string.IsNullOrWhiteSpace(row.PrefabName)) return $"TbNpc[{row.Id}].PrefabName 为空";
+
+            switch (row.InteractionKind)
+            {
+                case global::NpcInteractionKind.MapSelection:
+                case global::NpcInteractionKind.Warehouse:
+                case global::NpcInteractionKind.Craft:
+                case global::NpcInteractionKind.Arcade:
+                    return string.IsNullOrWhiteSpace(row.InteractionParam)
+                        ? null
+                        : $"TbNpc[{row.Id}].InteractionParam 必须为空";
+                case global::NpcInteractionKind.Shop:
+                    // ShopId 引用由 ValidateShopCatalog 统一校验，避免生产加载与测试矩阵出现两套规则。
+                    return null;
+                default:
+                    return $"TbNpc[{row.Id}].InteractionKind 无效";
+            }
+        }
+
+        private static WeaponConfigDefinition ToDefinition(global::WeaponConfig row)
+        {
+            return new WeaponConfigDefinition(
+                row.ItemId,
+                row.WeaponKind,
+                row.AttackDamage,
+                row.AttackCooldownSeconds,
+                row.AttackRange,
+                row.MeleeArcDegrees,
+                row.ProjectileConfigId,
+                row.AmmoItemId,
+                row.MagazineCapacity,
+                row.ReloadSeconds,
+                row.ReloadWholeMagazine,
+                row.TreeHarvestEfficiency,
+                row.StoneHarvestEfficiency);
+        }
+
+        private static ProjectileConfigDefinition ToDefinition(global::ProjectileConfig row)
+        {
+            return new ProjectileConfigDefinition(
+                row.Id,
+                ResolveFileName(ResourceAddressKind.ProjectilePrefab, row.PrefabName),
+                row.MoveSpeed,
+                row.MaxTravelDistance,
+                row.RecoveryLootConfigId);
+        }
+
+        private static PlayerWeaponAppearanceDefinition ToDefinition(global::WeaponAppearanceConfig row)
+        {
+            return new PlayerWeaponAppearanceDefinition(
+                row.ItemId,
+                ResolveFileName(ResourceAddressKind.WeaponAppearancePrefab, row.PrefabName),
+                row.AttachPoint,
+                new UnityEngine.Vector3(row.LocalPositionX, row.LocalPositionY, row.LocalPositionZ),
+                new UnityEngine.Vector3(row.LocalRotationX, row.LocalRotationY, row.LocalRotationZ),
+                new UnityEngine.Vector3(row.LocalScaleX, row.LocalScaleY, row.LocalScaleZ));
+        }
+
+        private static CraftRecipeDefinition ToDefinition(global::CraftRecipeConfig row)
+        {
+            return new CraftRecipeDefinition(
+                row.Id,
+                row.OutputItemId,
+                row.OutputAmount,
+                row.Materials.Select(material => new CraftMaterialDefinition(material.ItemId, material.Amount)),
+                row.Order);
+        }
+
+        private static TempBuildingDefinition ToDefinition(global::TempBuildingConfig row)
+        {
+            return new TempBuildingDefinition(
+                row.Id,
+                row.Name,
+                row.NameKey,
+                ResolveFileName(ResourceAddressKind.TemporaryBuildingIcon, row.IconName, true),
+                ResolveFileName(ResourceAddressKind.TemporaryBuildingPrefab, row.PrefabName),
+                row.Materials.Select(material => new ItemCostDefinition(material.ItemId, material.Amount)),
+                row.BuildSeconds,
+                row.FootprintRadius,
+                row.MaxSlopeDegrees,
+                row.NarrowPassageRadius,
+                row.BlocksNavigation,
+                row.Order, row.BaseOnly, row.ExpeditionMapId);
+        }
+
+        private static TempBuildingManualAttackDefinition ToDefinition(global::TempBuildingManualAttackConfig row)
+        {
+            return new TempBuildingManualAttackDefinition(row.BuildingId, row.InteractDistance, row.ShootCooldownSeconds, row.Damage, row.ProjectileConfigId, row.AmmoItemId, row.AmmoAmount, row.MagazineCapacity, row.ReloadSeconds, row.OperateRotateDegreesPerSecond);
+        }
+
+        private static void BuildTempBuildingSnapshot(
+            global::Tables tables,
+            out IReadOnlyList<TempBuildingDefinition> values,
+            out IReadOnlyDictionary<string, TempBuildingDefinition> byId,
+            out IReadOnlyDictionary<string, TempBuildingManualAttackDefinition> manualAttackByBuildingId)
+        {
+            var sorted = tables.TbTempBuilding.DataList.Select(ToDefinition).OrderBy(value => value.Order).ThenBy(value => value.Id, StringComparer.Ordinal).ToArray();
+            values = Array.AsReadOnly(sorted);
+            byId = sorted.ToDictionary(value => value.Id, StringComparer.Ordinal);
+            manualAttackByBuildingId = tables.TbTempBuildingManualAttack.DataList.Select(ToDefinition).ToDictionary(value => value.BuildingId, StringComparer.Ordinal);
+        }
+
+        private static string ValidateMapSceneParts(global::Tables tables)
+        {
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            var ordersByMap = new Dictionary<string, HashSet<int>>(StringComparer.Ordinal);
+            var pathsByMap = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
+
+            foreach (var map in tables.TbMap.DataList)
+            {
+                pathsByMap[map.Id] = new HashSet<string>(StringComparer.Ordinal) { map.ScenePath };
+            }
+
+            foreach (var row in tables.TbMapScenePart.DataList)
+            {
+                if (string.IsNullOrWhiteSpace(row.Id)) return "TbMapScenePart.Id 为空";
+                if (!ids.Add(row.Id)) return $"TbMapScenePart[{row.Id}].Id 重复";
+                if (string.IsNullOrWhiteSpace(row.MapId)) return $"TbMapScenePart[{row.Id}].MapId 为空";
+                if (tables.TbMap.GetOrDefault(row.MapId) == null)
+                    return $"TbMapScenePart[{row.Id}].MapId 引用不存在：{row.MapId}";
+                if (string.IsNullOrWhiteSpace(row.ScenePath)) return $"TbMapScenePart[{row.Id}].ScenePath 为空";
+                if (row.Order <= 0) return $"TbMapScenePart[{row.Id}].Order 必须为正：{row.Order}";
+
+                if (!ordersByMap.TryGetValue(row.MapId, out var orders))
+                    ordersByMap[row.MapId] = orders = new HashSet<int>();
+                if (!orders.Add(row.Order))
+                    return $"TbMapScenePart[{row.Id}].Order 在地图 {row.MapId} 中重复：{row.Order}";
+
+                var paths = pathsByMap[row.MapId];
+                if (!paths.Add(row.ScenePath))
+                    return $"TbMapScenePart[{row.Id}].ScenePath 在地图 {row.MapId} 中重复：{row.ScenePath}";
+            }
+
+            return null;
+        }
+
+        private static string ValidateResourceAddresses(global::Tables tables)
+        {
+            foreach (var row in tables.TbItem.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.ItemIcon, row.IconName, true, "TbItem", row.Id, "IconName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbMap.DataList)
+            {
+                var error = ValidateRelativePath(ResourceAddressKind.MapScene, row.ScenePath, "TbMap", row.Id, "ScenePath");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbMapScenePart.DataList)
+            {
+                var error = ValidateRelativePath(ResourceAddressKind.MapScene, row.ScenePath, "TbMapScenePart", row.Id, "ScenePath");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbPlayer.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName, false, "TbPlayer", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbEnemy.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName, false, "TbEnemy", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbNpc.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.CharacterPrefab, row.PrefabName, false, "TbNpc", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbWeaponAppearance.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.WeaponAppearancePrefab, row.PrefabName, false, "TbWeaponAppearance", row.ItemId, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbLoot.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.PrefabName, false, "TbLoot", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList))
+            {
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.VisualPrefabName, true,
+                    "TbArcadeDrop", row.Id, "VisualPrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbArcadePowerup.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, false,
+                    "TbArcadePowerup", row.Id, "ActiveVisualPrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbArcadeShopItem.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, true,
+                    "TbArcadeShopItem", row.Id, "ActiveVisualPrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbExtraction.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.PrefabName, false, "TbExtraction", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbProjectile.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.ProjectilePrefab, row.PrefabName, false, "TbProjectile", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            foreach (var row in tables.TbTempBuilding.DataList)
+            {
+                var error = ValidateFileName(ResourceAddressKind.TemporaryBuildingIcon, row.IconName, true, "TbTempBuilding", row.Id, "IconName") ??
+                            ValidateFileName(ResourceAddressKind.TemporaryBuildingPrefab, row.PrefabName, false, "TbTempBuilding", row.Id, "PrefabName");
+                if (error != null) return error;
+            }
+
+            return null;
+        }
+
+        private static string ValidateFileName(ResourceAddressKind kind, string value, bool optional, string tableName, object key, string fieldName)
+        {
+            return ResourceAddress.TryFromFileName(kind, value, optional, out _, out var error)
+                ? null
+                : $"{tableName}[{key}].{fieldName} 值“{value ?? "<null>"}”无效：{error}";
+        }
+
+        private static string ValidateRelativePath(ResourceAddressKind kind, string value, string tableName, object key, string fieldName)
+        {
+            return ResourceAddress.TryFromRelativePath(kind, value, out _, out var error)
+                ? null
+                : $"{tableName}[{key}].{fieldName} 值“{value ?? "<null>"}”无效：{error}";
+        }
+
+        private static string ResolveFileName(ResourceAddressKind kind, string value, bool optional = false)
+        {
+            if (ResourceAddress.TryFromFileName(kind, value, optional, out var address, out _))
+            {
+                return address;
+            }
+
+            throw new InvalidOperationException($"已验证的资源文件名解析失败：{kind} / {value}");
+        }
+
+        private static string ResolveRelativePath(ResourceAddressKind kind, string value)
+        {
+            if (ResourceAddress.TryFromRelativePath(kind, value, out var address, out _))
+            {
+                return address;
+            }
+
+            throw new InvalidOperationException($"已验证的资源相对路径解析失败：{kind} / {value}");
+        }
+
+        /// <summary>街机目录在首次加载时整体校验，防止波次、商品和升级之间出现半可用引用。</summary>
+        private static string ValidateArcade(global::Tables tables)
+        {
+            try
+            {
+                foreach (var row in tables.TbArcadeTreasureRoom.DataList)
+                {
+                    var room = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
+                    var target = tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
+                    var arenaRule = tables.TbArcadeRule.DataList.FirstOrDefault();
+                    if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||
+                        !room.FitsArena(arenaRule.ArenaHalfWidth, arenaRule.ArenaHalfHeight, arenaRule.PlayerRadius)) return "宝藏房地图、轮次或边界无效";
+                }
+            }
+            catch (System.ArgumentException error) { return error.Message; }
+            if (tables.TbArcadeRule.DataList.Count != 1) return "TbArcadeRule 必须恰好包含一行";
+            var rule = tables.TbArcadeRule.DataList[0];
+            if (rule == null || !string.Equals(rule.Id, "arcade.default", StringComparison.Ordinal)) return "TbArcadeRule[arcade.default] 缺失";
+            if (string.IsNullOrWhiteSpace(rule.ConfigFingerprint) || rule.ConfigFingerprint.Length > 128 ||
+                rule.InitialLives <= 0 || rule.InitialBombs < 0 || rule.InitialDashes < 0 || string.IsNullOrWhiteSpace(rule.BaseWeaponId) ||
+                rule.ShopOfferCount <= 0 || rule.MaxAliveEnemies <= 0 || rule.MaxProjectiles <= 0 || rule.MaxDrops <= 0 || rule.BossEveryArenas <= 0 ||
+                !IsNonNegativeFinite(rule.HealthGrowthPerArena) || !IsNonNegativeFinite(rule.DamageGrowthPerArena) ||
+                !IsNonNegativeFinite(rule.SpeedGrowthPerArena) || !IsNonNegativeFinite(rule.GoldGrowthPerArena) ||
+                rule.PlayerMaxHealth <= 0 || !IsPositiveFinite(rule.PlayerMoveSpeed) || !IsPositiveFinite(rule.PlayerRadius) ||
+                !IsPositiveFinite(rule.EnemyContactRadius) || !IsPositiveFinite(rule.ContactInvulnerabilitySeconds) ||
+                !IsPositiveFinite(rule.RespawnDelaySeconds) || !IsPositiveFinite(rule.ArenaHalfWidth) ||
+                !IsPositiveFinite(rule.ArenaHalfHeight) || !IsFinite(rule.DropChance) || rule.DropChance < 0f || rule.DropChance > 1f ||
+                !IsPositiveFinite(rule.SupportFireIntervalSeconds))
+                return "TbArcadeRule[arcade.default] 数值无效";
+
+            var weaponIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeWeapon.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !weaponIds.Add(row.Id) || row.Damage <= 0 ||
+                    !IsPositiveFinite(row.FireIntervalSeconds) ||
+                    (row.Behavior == global::ArcadeWeaponBehavior.Melee
+                        ? row.ProjectileSpeed != 0f || row.ProjectileLifetimeSeconds != 0f
+                        : !IsPositiveFinite(row.ProjectileSpeed) || !IsPositiveFinite(row.ProjectileLifetimeSeconds)) ||
+                    row.ProjectileCount <= 0 || row.ProjectileCount > 12 ||
+                    !IsNonNegativeFinite(row.SpreadDegrees) || row.SpreadDegrees > 180f ||
+                    !Enum.IsDefined(typeof(global::ArcadeWeaponBehavior), row.Behavior) || row.MaxHits <= 0 ||
+                    !IsNonNegativeFinite(row.ExplosionRadius) ||
+                    (row.Behavior == global::ArcadeWeaponBehavior.Melee
+                        ? !IsPositiveFinite(row.MeleeRange) || !IsPositiveFinite(row.MeleeArcDegrees) || row.MeleeArcDegrees > 360f
+                        : row.MeleeRange != 0f || row.MeleeArcDegrees != 0f) ||
+                    (row.Behavior == global::ArcadeWeaponBehavior.Melee &&
+                     (row.ProjectileCount != 1 || row.SpreadDegrees != 0f || row.MaxHits != 1 ||
+                      row.ExplosionRadius != 0f || !string.IsNullOrWhiteSpace(row.ProjectileVisualResourceName))) ||
+                    (row.Behavior == global::ArcadeWeaponBehavior.Direct && (row.MaxHits != 1 || row.ExplosionRadius != 0f)) ||
+                    (row.Behavior == global::ArcadeWeaponBehavior.Piercing && (row.MaxHits <= 1 || row.ExplosionRadius != 0f)) ||
+                    ((row.Behavior == global::ArcadeWeaponBehavior.Explosive ||
+                      row.Behavior == global::ArcadeWeaponBehavior.TimedExplosive) &&
+                     (row.MaxHits != 1 || row.ExplosionRadius <= 0f)))
+                    return $"TbArcadeWeapon[{row?.Id ?? "<null>"}] 数值无效";
+            }
+            if (!weaponIds.Contains(rule.BaseWeaponId)) return "TbArcadeRule.BaseWeaponId 引用不存在";
+
+            var groupIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeEnemyGroup.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !groupIds.Add(row.Id)) return $"TbArcadeEnemyGroup[{row?.Id ?? "<null>"}].Id 为空或重复";
+                if (row.Members == null || row.Members.Length == 0 || !IsPositiveFinite(row.SpawnIntervalSeconds) || row.MaxAlive <= 0 || row.MaxAlive > rule.MaxAliveEnemies ||
+                    !IsPositiveFinite(row.HealthMultiplier) || !IsPositiveFinite(row.DamageMultiplier) || !IsPositiveFinite(row.SpeedMultiplier) || row.ClearGold < 0)
+                    return $"TbArcadeEnemyGroup[{row.Id}] 数值无效";
+                var enemyIds = new HashSet<string>(StringComparer.Ordinal);
+                var total = 0;
+                foreach (var member in row.Members)
+                {
+                    if (member == null || string.IsNullOrWhiteSpace(member.EnemyId) || !enemyIds.Add(member.EnemyId) ||
+                        tables.TbEnemy.GetOrDefault(member.EnemyId) == null || member.Count <= 0)
+                        return $"TbArcadeEnemyGroup[{row.Id}].Members 引用或数量无效";
+                    total = checked(total + member.Count);
+                }
+                if (row.MaxAlive > total) return $"TbArcadeEnemyGroup[{row.Id}].MaxAlive 不能大于敌人总数";
+            }
+
+            var arenas = tables.TbArcadeArena.DataList.OrderBy(row => row.ArenaNumber).ToArray();
+            if (arenas.Length == 0) return "TbArcadeArena 不能为空";
+            var bossIds = new HashSet<string>(StringComparer.Ordinal);
+            var bossesById = new Dictionary<string, global::ArcadeBossConfig>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeBoss.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !bossIds.Add(row.Id) ||
+                    string.IsNullOrWhiteSpace(row.EnemyGroupId) || !groupIds.Contains(row.EnemyGroupId) ||
+                    !IsPositiveFinite(row.SkillCooldownSeconds) || !IsPositiveFinite(row.TelegraphSeconds) ||
+                    !IsPositiveFinite(row.ChargeDurationSeconds) || !IsPositiveFinite(row.ChargeSpeedMultiplier) ||
+                    row.ChargeSpeedMultiplier <= 1f || !IsPositiveFinite(row.ImpactRadius) ||
+                    !IsPositiveFinite(row.ImpactDamageMultiplier))
+                    return $"TbArcadeBoss[{row?.Id ?? "<null>"}] 数值或敌群引用无效";
+                var bossGroup = tables.TbArcadeEnemyGroup.GetOrDefault(row.EnemyGroupId);
+                if (bossGroup?.Members == null || bossGroup.Members.Length != 1 || bossGroup.Members[0].Count != 1)
+                    return $"TbArcadeBoss[{row.Id}].EnemyGroupId 必须引用只含一个敌人的敌群";
+                bossesById.Add(row.Id, row);
+                if (row.RayIntervalSeconds == 0f ? row.RayTelegraphSeconds != 0f || row.RaySpeed != 0f || row.RayDamageMultiplier != 0f : (!IsPositiveFinite(row.RayIntervalSeconds) ||
+                    !IsPositiveFinite(row.RayTelegraphSeconds) || !IsPositiveFinite(row.RaySpeed) ||
+                    !IsPositiveFinite(row.RayDamageMultiplier)))
+                    return $"TbArcadeBoss[{row.Id}] 射线数值无效";
+                if (!string.IsNullOrEmpty(row.ReinforcementGroupId) &&
+                    (!groupIds.Contains(row.ReinforcementGroupId) || !IsPositiveFinite(row.ReinforcementIntervalSeconds)))
+                    return $"TbArcadeBoss[{row.Id}] 增援数值或敌群引用无效";
+                if (string.IsNullOrEmpty(row.ReinforcementGroupId) && row.ReinforcementIntervalSeconds != 0f)
+                    return $"TbArcadeBoss[{row.Id}] 未启用增援时必须为零间隔";
+            }
+            var challengeIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeChallenge.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !challengeIds.Add(row.Id) ||
+                    string.IsNullOrWhiteSpace(row.EnemyGroupId) || !groupIds.Contains(row.EnemyGroupId) ||
+                    row.StartArena <= 0 || row.Interval <= 0 || !IsPositiveFinite(row.TimeLimitSeconds))
+                    return $"TbArcadeChallenge[{row?.Id ?? "<null>"}] 数值或敌群引用无效";
+            }
+            if (challengeIds.Count == 0) return "TbArcadeChallenge 不能为空";
+            var salts = new HashSet<int>();
+            for (var index = 0; index < arenas.Length; index++)
+            {
+                var row = arenas[index];
+                var expected = index + 1;
+                if (row == null || row.ArenaNumber != expected) return $"TbArcadeArena 必须从 1 连续编号，缺少 {expected}";
+                try
+                {
+                    var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(row);
+                    var content = AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(row);
+                    if (content.Crates.Any(c => Math.Abs(c.X) + c.Radius > rule.ArenaHalfWidth || Math.Abs(c.Y) + c.Radius > rule.ArenaHalfHeight))
+                        return "箱子位置越界";
+                    if (opening.Enabled && (opening.WaterMinY <= -rule.ArenaHalfHeight || opening.WaterMinY >= rule.ArenaHalfHeight ||
+                        Math.Abs(opening.CampfireX) + opening.CampfireRadius > rule.ArenaHalfWidth ||
+                        Math.Abs(opening.CampfireY) + opening.CampfireRadius > rule.ArenaHalfHeight ||
+                        row.WaveGroupIds.Any(id => tables.TbArcadeEnemyGroup.GetOrDefault(id)?.Members.Length != 1)))
+                        return $"TbArcadeArena[{row.ArenaNumber}] 岛岸区域越界或开场敌群不是单一敌种";
+                }
+                catch (ArgumentException exception) { return $"TbArcadeArena[{row.ArenaNumber}] {exception.Message}"; }
+                if (row.NextArenaNumbers == null || row.NextArenaNumbers.Length > 4 ||
+                    row.NextArenaNumbers.Distinct().Count() != row.NextArenaNumbers.Length ||
+                    row.NextArenaNumbers.Any(id => id <= 0 || id == row.ArenaNumber || id > arenas.Length))
+                    return $"TbArcadeArena[{row.ArenaNumber}] 路线出口引用无效";
+                if (!string.IsNullOrEmpty(row.FinalBossId) && (!bossesById.ContainsKey(row.FinalBossId) || row.NextArenaNumbers.Length != 0))
+                    return $"TbArcadeArena[{row.ArenaNumber}] 最终 Boss 引用无效";
+                if (row.WaveGroupIds == null || row.WaveGroupIds.Length != 4 || row.WaveGroupIds.Any(id => !groupIds.Contains(id)))
+                    return $"TbArcadeArena[{row.ArenaNumber}].WaveGroupIds 必须包含四个有效敌群";
+                if (row.Obstacles == null || row.Obstacles.Length > 8)
+                    return $"TbArcadeArena[{row.ArenaNumber}].Obstacles 数量无效";
+                if (row.Hazards == null || row.Hazards.Length > 8)
+                    return $"TbArcadeArena[{row.ArenaNumber}].Hazards 数量无效";
+                var hazardIds = new HashSet<int>();
+                foreach (var hazard in row.Hazards)
+                {
+                    if (hazard == null || !hazardIds.Add(hazard.Id)) return $"TbArcadeArena[{row.ArenaNumber}].Hazards 身份无效";
+                    var parameters = ToHazardParameters(hazard);
+                    var hazardError = AnotherDay.Arcade.ArcadeHazardRules.Validate(parameters,
+                        rule.ArenaHalfWidth, rule.ArenaHalfHeight, rule.PlayerRadius);
+                    if (hazardError != null) return $"TbArcadeArena[{row.ArenaNumber}].Hazards[{hazard.Id}] {hazardError}";
+                    foreach (var obstacle in row.Obstacles)
+                    {
+                        if (obstacle == null) continue;
+                        var dx = Math.Max(0f, Math.Abs(parameters.X - obstacle.CenterX) - obstacle.HalfWidth);
+                        var dy = Math.Max(0f, Math.Abs(parameters.Y - obstacle.CenterY) - obstacle.HalfHeight);
+                        if (dx * dx + dy * dy <= Math.Pow(parameters.Extent + rule.PlayerRadius * 2f, 2))
+                            return $"TbArcadeArena[{row.ArenaNumber}].Hazards[{hazard.Id}] 与静态障碍间缺少安全通路";
+                    }
+                }
+                foreach (var obstacle in row.Obstacles)
+                {
+                    if (obstacle == null || !IsFinite(obstacle.CenterX) || !IsFinite(obstacle.CenterY) ||
+                        !IsPositiveFinite(obstacle.HalfWidth) || !IsPositiveFinite(obstacle.HalfHeight) ||
+                        Math.Abs(obstacle.CenterX) + obstacle.HalfWidth + rule.PlayerRadius >= rule.ArenaHalfWidth ||
+                        Math.Abs(obstacle.CenterY) + obstacle.HalfHeight + rule.PlayerRadius >= rule.ArenaHalfHeight ||
+                        Math.Abs(obstacle.CenterX) <= obstacle.HalfWidth + rule.PlayerRadius + 0.5f &&
+                        Math.Abs(obstacle.CenterY) <= obstacle.HalfHeight + rule.PlayerRadius + 0.5f)
+                        return $"TbArcadeArena[{row.ArenaNumber}].Obstacles 尺寸、边界或中心复活区无效";
+                }
+                if (row.IsBoss != (row.ArenaNumber % rule.BossEveryArenas == 0)) return $"TbArcadeArena[{row.ArenaNumber}].IsBoss 与 BossEveryArenas 不匹配";
+                if (!string.IsNullOrWhiteSpace(row.BossId))
+                {
+                    if (!row.IsBoss || !bossesById.TryGetValue(row.BossId, out var boss) ||
+                        !string.Equals(row.WaveGroupIds[row.WaveGroupIds.Length - 1], boss.EnemyGroupId, StringComparison.Ordinal))
+                        return $"TbArcadeArena[{row.ArenaNumber}].BossId 必须引用与最后一轮敌群匹配的 Boss";
+                }
+                if (row.ClearGold < 0 || !salts.Add(row.ShopSeedSalt)) return $"TbArcadeArena[{row.ArenaNumber}] 金币或商店种子盐无效";
+            }
+
+            // 深度受十场限制，即使配置有环也不会无界递归或进入无法通关的路线。
+            bool ValidateRoute(int id, int depth)
+            {
+                if (depth > 10) return false;
+                var row = arenas[id - 1];
+                if (row.NextArenaNumbers.Length == 0) return depth == 10 && !string.IsNullOrEmpty(row.FinalBossId);
+                return depth < 10 && string.IsNullOrEmpty(row.FinalBossId) && row.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
+            }
+            if (!ValidateRoute(1, 1)) return "TbArcadeArena 休闲路线必须恰好十场并终止于独立最终 Boss";
+
+            var upgradeIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeUpgrade.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !upgradeIds.Add(row.Id) || !Enum.IsDefined(typeof(global::ArcadeUpgradeKind), row.Kind) ||
+                    !IsPositiveFinite(row.ValuePerStack) || row.MaxStacks <= 0)
+                    return $"TbArcadeUpgrade[{row?.Id ?? "<null>"}] 无效";
+            }
+
+            var shopIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeShopItem.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !shopIds.Add(row.Id) || string.IsNullOrWhiteSpace(row.ProductId) ||
+                    !Enum.IsDefined(typeof(global::ArcadeShopProductType), row.ProductType) || row.UnlockArena <= 0 || row.Weight <= 0 ||
+                    row.BasePrice <= 0 || row.PricePerArena < 0 || row.Amount <= 0 || row.MaxPurchases <= 0 ||
+                    !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
+                    return $"TbArcadeShopItem[{row?.Id ?? "<null>"}] 数值无效";
+                if (row.ProductType == global::ArcadeShopProductType.Upgrade && !upgradeIds.Contains(row.ProductId))
+                    return $"TbArcadeShopItem[{row.Id}].ProductId 强化引用不存在";
+                if ((row.ProductType == global::ArcadeShopProductType.Equipment) != !string.IsNullOrWhiteSpace(row.EquipmentSlotId))
+                    return $"TbArcadeShopItem[{row.Id}].EquipmentSlotId 与商品类型不匹配";
+            }
+            if (rule.ShopOfferCount > shopIds.Count) return "TbArcadeRule.ShopOfferCount 超过商品总数";
+
+            var dropIds = new HashSet<string>(StringComparer.Ordinal);
+            var powerupIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadePowerup.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !powerupIds.Add(row.Id) ||
+                    !Enum.IsDefined(typeof(global::ArcadePowerupBehavior), row.Behavior) ||
+                    !IsNonNegativeFinite(row.Magnitude) || row.Damage < 0 ||
+                    !IsNonNegativeFinite(row.IntervalSeconds) || !IsNonNegativeFinite(row.Radius) ||
+                    !IsNonNegativeFinite(row.ProjectileSpeed) || row.Charges < 0 ||
+                    !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
+                    return $"TbArcadePowerup[{row?.Id ?? "<null>"}] 无效";
+            }
+            // 单人相机道具仅来自客户端专表，不向联机共享表扩散。
+            if (tables.TbArcadeDrop.DataList.Any(row => row.Kind == global::ArcadeDropKind.FirstPerson) ||
+                tables.TbArcadeSoloDrop.DataList.Any(row => row.Kind != global::ArcadeDropKind.FirstPerson ||
+                    row.MinArena != 1 || row.MaxArena != 1 || row.MaxOwned != 1 ||
+                    row.ProductId != "arcade.camera.first_person"))
+                return "街机第一人称掉落必须限定为第一场单人专表";
+            foreach (var row in tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList))
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !dropIds.Add(row.Id) || row.MinArena <= 0 || row.MaxArena < 0 ||
+                    row.MaxArena != 0 && row.MaxArena < row.MinArena || row.Weight <= 0 || !Enum.IsDefined(typeof(global::ArcadeDropKind), row.Kind) ||
+                    string.IsNullOrWhiteSpace(row.ProductId) || row.Amount <= 0 || !IsNonNegativeFinite(row.DurationSeconds) || row.MaxOwned < 0)
+                    return $"TbArcadeDrop[{row?.Id ?? "<null>"}] 无效";
+                var timed = row.Kind == global::ArcadeDropKind.TemporaryWeapon ||
+                            row.Kind == global::ArcadeDropKind.Support || row.Kind == global::ArcadeDropKind.Powerup ||
+                            row.Kind == global::ArcadeDropKind.FirstPerson;
+                if (timed != (row.DurationSeconds > 0f)) return $"TbArcadeDrop[{row.Id}].DurationSeconds 与掉落类型不匹配";
+                if (row.Kind == global::ArcadeDropKind.TemporaryWeapon && !weaponIds.Contains(row.ProductId))
+                    return $"TbArcadeDrop[{row.Id}].ProductId 武器引用不存在";
+                if (row.Kind == global::ArcadeDropKind.Powerup && !powerupIds.Contains(row.ProductId))
+                    return $"TbArcadeDrop[{row.Id}].ProductId 强化道具引用不存在";
+            }
+
+            var rewardIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeReward.DataList)
+            {
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !rewardIds.Add(row.Id) || !Enum.IsDefined(typeof(global::ArcadeRewardTrigger), row.Trigger) ||
+                    row.StartArena <= 0 || row.Interval <= 0 || string.IsNullOrWhiteSpace(row.RewardId) || row.Amount <= 0 || row.AmountPerTrigger < 0)
+                    return $"TbArcadeReward[{row?.Id ?? "<null>"}] 无效";
+            }
+            return null;
+        }
+
+        /// <summary>把生成行转换为双端纯规则参数，不把可变生成配置暴露给战斗表现。</summary>
+        internal static AnotherDay.Arcade.ArcadeHazardParameters ToHazardParameters(global::ArcadeHazardConfig row) =>
+            new AnotherDay.Arcade.ArcadeHazardParameters(row.Id, (int)row.Kind, row.CenterX, row.CenterY,
+                row.DirectionDegrees, row.Radius, row.ArmLength, row.ArmHalfWidth, row.IdleSeconds,
+                row.WarningSeconds, row.ActiveSeconds, row.AngularSpeedDegrees, row.HitIntervalSeconds,
+                row.PlayerDamageRatio, row.BossDamageRatio);
+
+        private static void BuildArcadeSnapshot(global::Tables tables, out ArcadeConfigCatalogDefinition value)
+        {
+            var rule = tables.TbArcadeRule.DataList[0];
+            value = new ArcadeConfigCatalogDefinition(
+                new ArcadeRuleDefinition(rule.Id, rule.InitialLives, rule.InitialBombs, rule.InitialDashes, rule.BaseWeaponId,
+                    rule.ShopOfferCount, rule.MaxAliveEnemies, rule.MaxProjectiles, rule.MaxDrops, rule.HealthGrowthPerArena,
+                    rule.DamageGrowthPerArena, rule.SpeedGrowthPerArena, rule.GoldGrowthPerArena, rule.BossEveryArenas,
+                    rule.PlayerMaxHealth, rule.PlayerMoveSpeed, rule.PlayerRadius, rule.EnemyContactRadius,
+                    rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
+                    rule.DropChance, rule.SupportFireIntervalSeconds, rule.ConfigFingerprint),
+                tables.TbArcadeWeapon.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeWeaponDefinition(row.Id, row.HeldVisualResourceName,
+                        row.ProjectileVisualResourceName, row.MuzzleFlash,
+                        new Vector3(row.ProjectileFirePointX, row.ProjectileFirePointY, row.ProjectileFirePointZ),
+                        row.Damage, row.FireIntervalSeconds,
+                        row.ProjectileSpeed, row.ProjectileLifetimeSeconds, row.ProjectileCount, row.SpreadDegrees,
+                        row.Behavior, row.MaxHits, row.ExplosionRadius, row.MeleeRange, row.MeleeArcDegrees)),
+                tables.TbArcadeArena.DataList.OrderBy(row => row.ArenaNumber)
+                    .Select(row => new ArcadeArenaDefinition(row.ArenaNumber, row.WaveGroupIds,
+                        row.Obstacles.Select(obstacle => new ArcadeObstacleDefinition(obstacle.CenterX, obstacle.CenterY,
+                            obstacle.HalfWidth, obstacle.HalfHeight)),
+                        row.IsBoss, row.BossId, row.ClearGold, row.ShopSeedSalt, row.Hazards.Select(ToHazardParameters),
+                        row.NextArenaNumbers, row.FinalBossId, AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(row), AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(row))),
+                tables.TbArcadeEnemyGroup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeEnemyGroupDefinition(row.Id,
+                        row.Members.Select(member => new ArcadeEnemyMemberDefinition(member.EnemyId, member.Count)),
+                        row.SpawnIntervalSeconds, row.MaxAlive, row.HealthMultiplier, row.DamageMultiplier, row.SpeedMultiplier, row.ClearGold)),
+                tables.TbArcadeBoss.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeBossDefinition(row.Id, row.EnemyGroupId, row.SkillCooldownSeconds,
+                        row.TelegraphSeconds, row.ChargeDurationSeconds, row.ChargeSpeedMultiplier,
+                        row.ImpactRadius, row.ImpactDamageMultiplier, row.RayIntervalSeconds,
+                        row.RayTelegraphSeconds, row.RaySpeed, row.RayDamageMultiplier,
+                        row.ReinforcementGroupId, row.ReinforcementIntervalSeconds)),
+                tables.TbArcadeChallenge.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeChallengeDefinition(row.Id, row.EnemyGroupId, row.StartArena,
+                        row.Interval, row.TimeLimitSeconds)),
+                tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList)
+                    .OrderBy(row => row.MinArena).ThenBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeDropDefinition(row.Id, row.MinArena, row.MaxArena, row.Weight, row.Kind,
+                        row.ProductId, ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.VisualPrefabName, true),
+                        row.Amount, row.DurationSeconds, row.MaxOwned)),
+                tables.TbArcadePowerup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadePowerupDefinition(row.Id, row.Behavior,
+                        ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName),
+                        row.VisualFollowPlayer, new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ),
+                        row.Magnitude, row.Damage, row.IntervalSeconds, row.Radius, row.ProjectileSpeed, row.Charges)),
+                tables.TbArcadeShopItem.DataList.OrderBy(row => row.UnlockArena).ThenBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeShopItemDefinition(row.Id, row.ProductId, row.ProductType, row.UnlockArena,
+                        row.Weight, row.BasePrice, row.PricePerArena, row.Amount, row.EquipmentSlotId,
+                        ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, true),
+                        new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ), row.MaxPurchases)),
+                tables.TbArcadeUpgrade.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeUpgradeDefinition(row.Id, row.Kind, row.ValuePerStack, row.MaxStacks)),
+                tables.TbArcadeReward.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeRewardDefinition(row.Id, row.Trigger, row.StartArena, row.Interval, row.RewardId, row.Amount, row.AmountPerTrigger)),
+                tables.TbArcadeTreasureRoom.DataList.Select(AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig));
+        }
+
+        private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;
+
+        private static bool IsFinite(float value)
+        {
+            return !float.IsNaN(value) && !float.IsInfinity(value);
+        }
+
+        private static bool IsPositiveFinite(float value)
+        {
+            return IsFinite(value) && value > 0f;
+        }
+    }
+}

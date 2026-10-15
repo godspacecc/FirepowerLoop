@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8569aa941e741e18e386b0bc92703f7, type: 3}
+  m_Name: HeJiaVillage_TerrainProfile
+  m_EditorClassIdentifier: 
+  mapName: HeJiaVillage
+  heightmap: {fileID: 2800000, guid: d8b5250ed82522b40bc03bec732d0863, type: 3}
+  rows: 2
+  columns: 2
+  tileWorldSize: 1024
+  maxTerrainHeight: 330
+  heightmapResolution: 513
+  detailSeed: 0
+  detailFrequency: 4
+  detailAmplitude: 0
+  detailOctaves: 3
+  alphamapResolution: 256
+  surfaceControlMap: {fileID: 2800000, guid: fdbf77eb09e1cf699c7586ce060d7fc6, type: 3}
+  surfaceSlopeSampleMeters: 30
+  rockSlopeStartDegrees: 20
+  rockSlopeFullDegrees: 37
+  surfaceLayers:
+  - layer: {fileID: 8574412962073106934, guid: 83814c27682542a44b70e8a22f32d378, type: 2}
+    role: 1
+    centerHeight: 0.04
+    blendWidth: 0.16
+  - layer: {fileID: 8574412962073106934, guid: 8f95cddcbf6c3544ba5c9b3f8df28b18, type: 2}
+    role: 2
+    centerHeight: 0.18
+    blendWidth: 0.25
+  - layer: {fileID: 8574412962073106934, guid: 71866217576344a4bb2c2e81f3aea85b, type: 2}
+    role: 3
+    centerHeight: 0.42
+    blendWidth: 0.28
+  - layer: {fileID: 8574412962073106934, guid: 2934d7e15c566e54e9c690a45ad0ddbd, type: 2}
+    role: 4
+    centerHeight: 0.75
+    blendWidth: 0.35

@@ -1,0 +1,10 @@
+##var,Id,PrefabName,WeaponId,MaxHP,AttackDamage,AggroRange,AttackRange,AttackCooldownSeconds,MoveSpeed,LootConfigId,AttackKind,RetreatDistance,TelegraphSeconds,ProjectileConfigId,GuaranteedWeaponLootConfigId,GuaranteedAmmoLootConfigId,AmmoCapacity,FallbackMeleeAttackRange,MagazineCapacity,ReloadSeconds
+##type,string,string,string,int,int,float,float,float,float,string,EnemyAttackKind,float,float,string,string,string,int,float,int,float
+,enemy.graybox.basic,GrayboxEnemy,weapon.short-sword,20,10,8,1.35,1,2.2,loot.metal-parts,Melee,0,0,,loot.weapon.short-sword,,0,0,0,0
+,enemy.graybox.archer,GrayboxArcher,weapon.bow,15,8,12,8,2,1.8,loot.metal-parts,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1
+,enemy.arcade.basic,ArcadeEnemyBasic,weapon.short-sword,20,10,8,1.35,1,2.2,loot.metal-parts,Melee,0,0,,loot.weapon.short-sword,,0,0,0,0
+,enemy.arcade.archer,ArcadeEnemyArcher,weapon.bow,15,8,12,8,2,1.8,loot.metal-parts,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1
+,enemy.arcade.brute,ArcadeEnemyBrute,weapon.greatsword,20,10,8,1.35,1,2.2,loot.metal-parts,Melee,0,0,,loot.weapon.short-sword,,0,0,0,0
+,enemy.arcade.boss.archer,ArcadeEnemyBossArcher,weapon.bow,15,8,12,8,2,1.8,loot.metal-parts,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1
+,enemy.han.melee,GrayboxEnemy,weapon.short-sword,40,10,8,1.35,1,2.2,loot.cloth,Melee,0,0,,loot.weapon.short-sword,,0,0,0,0
+,enemy.han.archer,GrayboxArcher,weapon.bow,30,8,12,8,2,1.8,loot.gathered-food,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1

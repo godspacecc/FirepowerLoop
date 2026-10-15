@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea411e143f4d9f646a78b75b997e266d, type: 3}
+  m_Name: UnarmedIdle
+  m_EditorClassIdentifier: 
+  clip: {fileID: -2576967968662016515, guid: d8360b67fa175a74eae6eeef44ad418c, type: 3}
+  displayName: "\u901a\u7528\u5f85\u673a\uff08UnarmedIdle\uff09"
+  compatibleCategories: 131
+  requiredBones: 
+  allowOffhandGrip: 0

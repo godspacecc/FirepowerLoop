@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "defaultLanguage": "zh-CN",
+  "notices": [
+    {
+      "version": "202609211452",
+      "enabled": true,
+      "texts": {
+        "en-US": {
+          "title": "",
+          "summary": "",
+          "items": []
+        },
+        "zh-CN": {
+          "title": "街机游戏更新",
+          "summary": "更新了大量资源模型",
+          "items": []
+        }
+      }
+    }
+  ]
+}

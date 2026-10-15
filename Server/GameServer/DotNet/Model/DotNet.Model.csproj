@@ -1,0 +1,61 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>ET</RootNamespace>
+        <LangVersion>12</LangVersion>
+        <AssemblyName>Model</AssemblyName>
+    </PropertyGroup>
+    <PropertyGroup>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <DefineConstants>DOTNET</DefineConstants>
+        <OutputPath>..\..\Bin\</OutputPath> 
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <Optimize>false</Optimize>
+        <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'"> 
+        <DefineConstants>DOTNET</DefineConstants>
+        <OutputPath>..\..\Bin\</OutputPath>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <Optimize>true</Optimize>
+        <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionData.cs" Link="Share\WorldProjectileCollisionData.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionQuery.cs" Link="Share\WorldProjectileCollisionQuery.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Combat\WorldProjectileCollisionValidation.cs" Link="Share\WorldProjectileCollisionValidation.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHazardRules.cs" Link="Share\ArcadeHazardRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeTreasureRoomRules.cs" Link="Share\ArcadeTreasureRoomRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeOpeningRules.cs" Link="Share\ArcadeOpeningRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeIslandRegion.cs" Link="Share\ArcadeIslandRegion.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeBabylonRules.cs" Link="Share\ArcadeBabylonRules.cs" />
+
+        <Compile Include="..\..\Runtime\Model\Server\**\*.cs"> 
+            <Link>Server\%(RecursiveDir)%(FileName)%(Extension)</Link> 
+        </Compile>
+        
+        <Compile Include="..\..\Runtime\Model\Share\**\*.cs">
+            <Link>Share\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+
+        <Compile Include="..\..\Runtime\Model\Generated\**\*.cs"> 
+            <Link>Generated\%(RecursiveDir)%(FileName)%(Extension)</Link>
+        </Compile>
+
+        <Compile Include="..\..\Runtime\ThirdParty\Luban\*.cs">
+            <Link>ThirdParty\Luban\%(FileName)%(Extension)</Link>
+        </Compile>
+        
+    </ItemGroup> 
+    <ItemGroup> 
+        <ProjectReference Include="..\..\Share\Analyzer\Share.Analyzer.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\..\Share\Share.SourceGenerator\Share.SourceGenerator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+        <ProjectReference Include="..\Core\DotNet.Core.csproj" />
+        <ProjectReference Include="..\ThirdParty\DotNet.ThirdParty.csproj" />
+    </ItemGroup> 
+</Project>

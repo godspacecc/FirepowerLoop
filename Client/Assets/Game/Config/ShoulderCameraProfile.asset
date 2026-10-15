@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e3f797a1db7944ada044589213c20331, type: 3}
+  m_Name: ShoulderCameraProfile
+  m_EditorClassIdentifier: 
+  TargetHeight: 1.6
+  DialogueTargetHeight: 1.45
+  DialogueDistance: 2.6
+  DialogueShoulderOffset: 0.65
+  DialogueFieldOfView: 45
+  FirstPersonEyeHeight: 1.6
+  FirstPersonFieldOfView: 70
+  FirstPersonNearClipPlane: 0.05
+  ShoulderOffset: 0.25
+  FollowDistance: 3.5
+  FieldOfView: 60
+  AimShoulderOffset: 0.55
+  AimFollowDistance: 2.2
+  AimFieldOfView: 45
+  AimTransitionSeconds: 0.18
+  DefaultPitchDegrees: 15
+  MinPitchDegrees: -20
+  MaxPitchDegrees: 60
+  LookSensitivity: 0.12
+  NearClipPlane: 0.1
+  FarClipPlane: 500
+  ObstructionRadius: 0.2
+  MinimumDistance: 0.5
+  FollowDamping: {x: 0.1, y: 0.12, z: 0.12}
+  ObstructionLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  ObstructionRecoveryTime: 0.2

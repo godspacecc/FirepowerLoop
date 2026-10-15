@@ -1,0 +1,4 @@
+##var,Id,AIConfigId,Order,Name,NodeParams
+##type,int,int,int,string,"array,int"
+##,Id,AIConfigId,Order,Name,NodeParams
+,201,2,1,AI_XunLuo,

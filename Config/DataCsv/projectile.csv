@@ -1,0 +1,7 @@
+##var,Id,PrefabName,MoveSpeed,MaxTravelDistance,RecoveryLootConfigId
+##type,string,string,float,float,string
+,projectile.arrow.basic,GrayboxArrow,14,14,loot.ammunition.arrow
+,projectile.bullet.basic,GrayboxBullet,16,14,
+,projectile.plasma.basic,GrayboxPlasma,20,14,
+,projectile.grenade.basic,GrayboxGrenade,9,10,loot.ammunition.grenade
+,projectile.rocket.basic,GrayboxRocket,11,14,loot.ammunition.rocket

@@ -1,0 +1,46 @@
+##var,Id,CategoryId,Order,LabelText,CommandTemplate,DescriptionText,UsageText,ExampleText
+##type,string,string,int,string,string,string,string,string
+,inventory.clone,inventory-item,100,添加物品,"#clone ",向当前玩家背包加入物品；省略数量时默认为 1。,语法：#clone <ItemId或名称> [Amount],示例：#clone 3 或 #clone 3 5
+,inventory.clear-bag,inventory-item,200,清空背包,#clear bag,清空当前玩家背包。,语法：#clear bag,示例：#clear bag
+,condition.advance-time,player-condition,100,推进时间,"#advance time ",推进游戏分钟，用于结算能量、远征时间与能量耗尽伤害。,语法：#advance time <游戏分钟>,示例：#advance time 60
+,condition.unitbar,player-condition,200,开启敌人血条,#unitbar on,开启存活敌人的头顶生命条。,语法：#unitbar on,示例：#unitbar on
+,condition.unitbar-off,player-condition,300,关闭敌人血条,#unitbar off,关闭存活敌人的头顶生命条。,语法：#unitbar off,示例：#unitbar off
+,attribute.set-hp,player-attribute,100,设置当前生命,"#set hp ",设置当前生命：set hp <整数>。,语法：#set hp <整数>,示例：#set hp 80
+,attribute.set-power,player-attribute,200,设置当前能量,"#set power ",设置当前能量：set power <数值>。,语法：#set power <数值>,示例：#set power 80
+,attribute.set-tili,player-attribute,300,设置当前体力,"#set tili ",设置当前体力：set tili <数值>。,语法：#set tili <数值>,示例：#set tili 80
+,attribute.set-maxhp,player-attribute,400,设置最大生命,"#set maxhp ",设置最大生命：set maxhp <正整数>。,语法：#set maxhp <正整数>,示例：#set maxhp 120
+,attribute.set-movespeed,player-attribute,500,设置移动速度,"#set movespeed ",设置移动速度：set movespeed <正数>。,语法：#set movespeed <正数>,示例：#set movespeed 6
+,attribute.set-water,player-attribute,600,设置当前水分,"#set water ",设置当前水分：set water <数值>。,语法：#set water <数值>,示例：#set water 80
+,attribute.set-maxwater,player-attribute,700,设置最大水分,"#set maxwater ",设置最大水分：set maxwater <正数>。,语法：#set maxwater <正数>,示例：#set maxwater 120
+,attribute.set-temp,player-attribute,800,设置体温,"#set temp ",设置体温：set temp <30-45>。,语法：#set temp <30-45>,示例：#set temp 37
+,diagnostics.runtime-log,diagnostics,100,打开运行日志,#log,打开运行日志界面以查看和导出错误。,语法：#log,示例：#log
+,diagnostics.terrain,diagnostics,200,诊断地图地形,#terrain,只读输出当前地图的地形材质图层与玩家脚下权重。结果可通过运行日志复制。,语法：#terrain,示例：#terrain
+,diagnostics.terrain-instancing-off,diagnostics,300,关闭地形实例化,#terrain instancing off,临时关闭当前地图地形实例化以对比渲染问题，结束测试后使用恢复指令。,语法：#terrain instancing off,示例：#terrain instancing off
+,diagnostics.terrain-instancing-restore,diagnostics,400,恢复地形实例化,#terrain instancing restore,恢复当前地图地形实例化测试前的设置。,语法：#terrain instancing restore,示例：#terrain instancing restore
+,diagnostics.mobileinput-on,diagnostics,500,开启移动输入模拟,#mobileinput on,仅在 Unity Editor Play 会话中开启移动端输入模拟。,语法：#mobileinput on,示例：#mobileinput on
+,diagnostics.mobileinput-off,diagnostics,600,关闭移动输入模拟,#mobileinput off,仅在 Unity Editor Play 会话中关闭移动端输入模拟。,语法：#mobileinput off,示例：#mobileinput off
+,network.netlog-on,network-diagnostics,100,开启网络日志,#netlog on,开启客户端网络诊断日志，Unity Console 和运行日志界面会出现 [Network] 连接、发送、接收、RPC 完成、超时和断开信息。,用法：#netlog on,示例：#netlog on
+,network.netlog-off,network-diagnostics,200,关闭网络日志,#netlog off,关闭客户端网络诊断日志。,用法：#netlog off,示例：#netlog off
+,camera.topdown,camera-view,100,固定俯视,#camera topdown,切换到固定俯视操作。,语法：#camera topdown,示例：#camera topdown
+,camera.shoulder,camera-view,200,越肩视角,#camera shoulder,切换到固定右肩越肩操作。,语法：#camera shoulder,示例：#camera shoulder
+,camera.firstperson,camera-view,300,第一人称试用,#camera firstperson,切换到眼睛高度视角以观察场景和操作效果。,语法：#camera firstperson,示例：#camera firstperson
+,weather.rain,environment-weather,100,开始下雨,#weather rain,在就绪离线基地切换为降雨并立即湿润地面；仅编辑器或开发版可用。,语法：#weather rain,示例：#weather rain
+,weather.clear,environment-weather,200,雨停放晴并逐渐干燥,#weather clear,在就绪离线基地停止降雨并放晴，地面从当前湿润度在 90 个有效运行秒内逐渐变干。,语法：#weather clear,示例：#weather clear
+,weather.dry,environment-weather,300,立即恢复晴天干地,#weather dry,在就绪离线基地立即停止降雨并将地面恢复为完全干燥。,语法：#weather dry,示例：#weather dry
+,weather.demo,environment-weather,400,播放晴雨完整样板,#weather demo,在就绪离线基地播放晴天到下雨再放晴和地面逐渐变干的完整样板；暂停时停止推进。,语法：#weather demo,示例：#weather demo
+,weather.status,environment-weather,500,查看天气状态,#weather status,查看当前基地天气阶段、雨量、云量和地面湿润度；不切换天气。,语法：#weather status,示例：#weather status
+,arcade.status,arcade-game,100,查看街机状态,#arcade status,显示当前单人街机战斗的竞技场、波次、生命、金币、资源和敌人数。,语法：#arcade status,示例：#arcade status
+,arcade.heal,arcade-game,200,恢复满血,#arcade heal,将当前单人街机角色恢复到最大生命。,语法：#arcade heal,示例：#arcade heal
+,arcade.damage,arcade-game,300,承受伤害,"#arcade damage ",让当前单人街机角色承受一次正式伤害，可测试护盾、受伤、复活与失败流程。,语法：#arcade damage <正整数>,示例：#arcade damage 30
+,arcade.gold,arcade-game,400,增加局内金币,"#arcade gold ",为当前竞技场增加局内金币，完成竞技场后按正式流程进入安全节点。,语法：#arcade gold <正整数>,示例：#arcade gold 100
+,arcade.bombs,arcade-game,500,设置炸弹数量,"#arcade bombs ",设置当前竞技场持有的炸弹数量。,语法：#arcade bombs <非负整数>,示例：#arcade bombs 3
+,arcade.dashes,arcade-game,600,设置冲刺数量,"#arcade dashes ",设置当前竞技场持有的冲刺数量。,语法：#arcade dashes <非负整数>,示例：#arcade dashes 5
+,arcade.drop,arcade-game,700,模拟拾取掉落,"#arcade drop ",立即应用一条正式街机掉落配置，可测试金币、资源、临时武器和强化道具。,语法：#arcade drop <DropId>,示例：#arcade drop arcade.drop.powerup.shield
+,arcade.first-person,arcade-game,710,第一场临时第一人称,#arcade drop arcade.drop.first_person,第一场单人临时第一人称；仅水平转向，X 或 HUD 返回俯视，不影响当前枪械计时。,语法：#arcade drop arcade.drop.first_person,示例：#arcade drop arcade.drop.first_person
+,arcade.clear-wave,arcade-game,800,清除当前波次,#arcade clear wave,清除当前波次已生成和待生成的敌人，并沿用正式波次结算。,语法：#arcade clear wave,示例：#arcade clear wave
+,arcade.clear-arena,arcade-game,900,完成当前竞技场,#arcade clear arena,清除当前单人竞技场或挑战并沿用正式完成与安全节点事务。,语法：#arcade clear arena,示例：#arcade clear arena
+,appearance.gallery,appearance-gallery,100,打开造型库,#gallery,仅在离线基地打开正式角色与动画的独立预览场景，不修改角色数据。,语法：#gallery,示例：#gallery
+
+,appearance.list,appearance-gallery,200,列出主角造型,#appearance list,列出 City 资源的九套主角造型编号。,语法：#appearance list,示例：#appearance list
+,appearance.switch,appearance-gallery,300,切换主角造型,"#appearance ",仅在就绪的离线基地或远征中切换整套造型；只在本次运行有效且暂时隐藏分部位衣物。,语法：#appearance <1-9>,示例：#appearance 8
+,appearance.reset,appearance-gallery,400,恢复主角换装,#appearance reset,恢复当前装备的分部位衣物；不会修改装备或背包。,语法：#appearance reset,示例：#appearance reset

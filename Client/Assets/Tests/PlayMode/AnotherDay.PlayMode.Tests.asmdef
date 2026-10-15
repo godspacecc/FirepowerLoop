@@ -1,0 +1,22 @@
+{
+    "name": "AnotherDay.PlayMode.Tests",
+    "rootNamespace": "Game.Tests",
+    "references": [
+        "Boot",
+        "Game",
+        "Unity.TextMeshPro",
+        "YooAsset"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "noEngineReferences": false
+}

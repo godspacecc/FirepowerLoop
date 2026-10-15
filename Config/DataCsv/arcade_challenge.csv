@@ -1,0 +1,3 @@
+##var,Id,EnemyGroupId,StartArena,Interval,TimeLimitSeconds
+##type,string,string,int,int,float
+,arcade.challenge.timed-clear,arcade.group.rush.1,1,1,45

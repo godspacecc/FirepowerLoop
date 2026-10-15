@@ -1,0 +1,270 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "centerWgs84": {
+    "latitude": 27.63513,
+    "longitude": 112.1858
+  },
+  "utm": {
+    "crs": "EPSG:32649",
+    "centerEasting": 616985.992,
+    "centerNorthing": 3057346.487,
+    "computedCenterEasting": 616985.991599183,
+    "computedCenterNorthing": 3057346.487067381,
+    "west": 615961.992,
+    "east": 618009.992,
+    "south": 3056322.487,
+    "north": 3058370.487
+  },
+  "grid": {
+    "width": 1025,
+    "height": 1025,
+    "spacingMeters": 2.0,
+    "orientation": "first row north, last row south, first column west, last column east",
+    "pixelCentersAreTerrainVertices": true
+  },
+  "source": {
+    "dataset": "Copernicus DEM 2021 GLO-30",
+    "version": "2021",
+    "fileName": "Copernicus_DSM_COG_10_N27_00_E112_00_DEM.tif",
+    "url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N27_00_E112_00_DEM/Copernicus_DSM_COG_10_N27_00_E112_00_DEM.tif",
+    "officialProductAndLicenseUrl": "https://dataspace.copernicus.eu/explore-data/data-collections/copernicus-contributing-missions/collections-description/COP-DEM",
+    "awsRegistryUrl": "https://registry.opendata.aws/copernicus-dem/",
+    "downloadDateUtc": "2026-09-11",
+    "byteSize": 49775641,
+    "sha256": "55a89772421860563a08f948fca7fd631e8a90415a924228db68cc6c07b35d45",
+    "horizontalDatum": "WGS84",
+    "sourceCrs": "EPSG:4326",
+    "verticalDatum": "EGM2008",
+    "surfaceModel": "DSM",
+    "nominalSourceSamplingMeters": 30,
+    "raster": {
+      "transform": [
+        2.0,
+        0.0,
+        615960.992,
+        0.0,
+        -2.0,
+        3058371.487,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "crs": "EPSG:4326",
+      "bounds": [
+        111.99986111111112,
+        27.000138888888888,
+        112.99986111111112,
+        28.000138888888888
+      ],
+      "width": 3600,
+      "height": 3600,
+      "dtype": "float32",
+      "nodata": null
+    }
+  },
+  "processing": {
+    "resampling": "bilinear",
+    "artificialDetail": false,
+    "invalidValueCount": 0,
+    "pythonVersion": "3.12.14",
+    "rasterioVersion": "1.5.1",
+    "gdalVersion": "3.12.4",
+    "numpyVersion": "2.5.3",
+    "pypngVersion": "0.20220715.0",
+    "pillowVersion": "12.3.0"
+  },
+  "elevationEncoding": {
+    "minElevation": 130.80690002441406,
+    "maxElevation": 442.7418212890625,
+    "baseElevation": 120.0,
+    "terrainHeightRange": 330.0,
+    "formula": "gray16=round(clamp((elevation-baseElevation)/terrainHeightRange,0,1)*65535)",
+    "decodedFormula": "baseElevation + gray16/65535*terrainHeightRange",
+    "maxReconstructionErrorMeters": 0.0025177211504114894,
+    "reconstructionToleranceMeters": 0.0060354772259098195
+  },
+  "png": {
+    "fileName": "HeJiaVillage_Heightmap_RGB48.png",
+    "width": 1025,
+    "height": 1025,
+    "channels": 3,
+    "bitsPerChannel": 16,
+    "format": "RGB48",
+    "channelValuesIdentical": true,
+    "firstRowAtImageTop": true
+  },
+  "unity": {
+    "rows": 2,
+    "columns": 2,
+    "tileWorldSize": 1024.0,
+    "heightmapResolution": 513,
+    "maxTerrainHeight": 330.0,
+    "detailSeed": 0,
+    "detailFrequency": 4.0,
+    "detailAmplitude": 0.0,
+    "detailOctaves": 3
+  },
+  "controlPoints": [
+    {
+      "row": 0,
+      "column": 0,
+      "gray16": 4490,
+      "elevation": 142.6107177734375
+    },
+    {
+      "row": 0,
+      "column": 256,
+      "gray16": 6717,
+      "elevation": 153.8227996826172
+    },
+    {
+      "row": 0,
+      "column": 512,
+      "gray16": 26040,
+      "elevation": 251.12246704101562
+    },
+    {
+      "row": 0,
+      "column": 768,
+      "gray16": 34589,
+      "elevation": 294.17315673828125
+    },
+    {
+      "row": 0,
+      "column": 1024,
+      "gray16": 36031,
+      "elevation": 301.4328308105469
+    },
+    {
+      "row": 256,
+      "column": 0,
+      "gray16": 19763,
+      "elevation": 219.51602172851562
+    },
+    {
+      "row": 256,
+      "column": 256,
+      "gray16": 9448,
+      "elevation": 167.57333374023438
+    },
+    {
+      "row": 256,
+      "column": 512,
+      "gray16": 10694,
+      "elevation": 173.84942626953125
+    },
+    {
+      "row": 256,
+      "column": 768,
+      "gray16": 36727,
+      "elevation": 304.9385986328125
+    },
+    {
+      "row": 256,
+      "column": 1024,
+      "gray16": 59330,
+      "elevation": 418.754150390625
+    },
+    {
+      "row": 512,
+      "column": 0,
+      "gray16": 18588,
+      "elevation": 213.5988311767578
+    },
+    {
+      "row": 512,
+      "column": 256,
+      "gray16": 4480,
+      "elevation": 142.55728149414062
+    },
+    {
+      "row": 512,
+      "column": 512,
+      "gray16": 8847,
+      "elevation": 164.54879760742188
+    },
+    {
+      "row": 512,
+      "column": 768,
+      "gray16": 13959,
+      "elevation": 190.28811645507812
+    },
+    {
+      "row": 512,
+      "column": 1024,
+      "gray16": 20984,
+      "elevation": 225.6658935546875
+    },
+    {
+      "row": 768,
+      "column": 0,
+      "gray16": 21372,
+      "elevation": 227.6183624267578
+    },
+    {
+      "row": 768,
+      "column": 256,
+      "gray16": 7079,
+      "elevation": 155.64796447753906
+    },
+    {
+      "row": 768,
+      "column": 512,
+      "gray16": 5697,
+      "elevation": 148.68751525878906
+    },
+    {
+      "row": 768,
+      "column": 768,
+      "gray16": 11920,
+      "elevation": 180.02200317382812
+    },
+    {
+      "row": 768,
+      "column": 1024,
+      "gray16": 14523,
+      "elevation": 193.12998962402344
+    },
+    {
+      "row": 1024,
+      "column": 0,
+      "gray16": 4773,
+      "elevation": 144.03648376464844
+    },
+    {
+      "row": 1024,
+      "column": 256,
+      "gray16": 8070,
+      "elevation": 160.63818359375
+    },
+    {
+      "row": 1024,
+      "column": 512,
+      "gray16": 3726,
+      "elevation": 138.76303100585938
+    },
+    {
+      "row": 1024,
+      "column": 768,
+      "gray16": 3730,
+      "elevation": 138.78399658203125
+    },
+    {
+      "row": 1024,
+      "column": 1024,
+      "gray16": 9503,
+      "elevation": 167.85430908203125
+    }
+  ],
+  "selfCheck": {
+    "status": "passed",
+    "sourceReadable": true,
+    "sourceCoverageContainsCenter": true,
+    "finiteGrid": true,
+    "rgbChannelsIdentical": true,
+    "rgbBitDepth": 16,
+    "reconstructionWithinTolerance": true,
+    "controlPointCount": 25
+  }
+}

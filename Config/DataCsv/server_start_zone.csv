@@ -1,0 +1,14 @@
+##var,Key,Profile,Id,DBConnection,DBName,Desc
+##type,string,string,int,string,string,string
+##,Key,Profile,Id,DBConnection,DBName,Desc
+,Benchmark:1,Benchmark,1,mongodb://127.0.0.1,ET1,游戏区
+,Localhost:1,Localhost,1,mongodb://127.0.0.1,ET1,游戏区
+,Localhost:2,Localhost,2,,,机器人区
+,Localhost:3,Localhost,3,,,路由区
+,OnlineLocal:1,OnlineLocal,1,mongodb://127.0.0.1,ETOnlineLocal,online local zone
+,Release:1,Release,1,mongodb://127.0.0.1,ET1,游戏区
+,Release:2,Release,2,,,机器人区
+,Release:3,Release,3,,,路由区
+,RouterTest:1,RouterTest,1,mongodb://127.0.0.1,ET1,游戏区
+,RouterTest:2,RouterTest,2,,,机器人区
+,RouterTest:3,RouterTest,3,,,路由区

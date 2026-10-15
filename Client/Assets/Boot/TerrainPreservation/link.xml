@@ -1,0 +1,23 @@
+<linker>
+  <!-- Cinemachine 由 Game 热更程序集引用，首包必须保留宿主镜头管线。 -->
+  <assembly fullname="Cinemachine" preserve="all" />
+  <!-- 导航数据来自地图 Bundle，导航 API 由 Game 热更程序集调用；宿主必须完整保留两者。 -->
+  <assembly fullname="UnityEngine.AIModule" preserve="all" />
+  <!-- 基地天气由热更代码创建粒子并设置 EmitParams 与模块结构体属性；宿主完整保留，热更无法恢复已裁剪方法。 -->
+  <assembly fullname="UnityEngine.ParticleSystemModule" preserve="all" />
+  <!-- 河谷草灌由热更代码合并网格；宿主必须保留结构体属性和网格 API，资源更新无法补回已裁剪的方法。 -->
+  <assembly fullname="UnityEngine.CoreModule">
+    <type fullname="UnityEngine.CombineInstance" preserve="all" />
+    <type fullname="UnityEngine.Mesh" preserve="all" />
+  </assembly>
+  <!-- 地图通过 AssetBundle 加载；独立保留配置不能由 HybridCLR 生成器覆盖。 -->
+  <assembly fullname="UnityEngine.TerrainModule">
+    <type fullname="UnityEngine.Terrain" preserve="all" />
+    <type fullname="UnityEngine.TerrainData" preserve="all" />
+    <type fullname="UnityEngine.TerrainLayer" preserve="all" />
+  </assembly>
+  <!-- Terrain 的渲染与碰撞属于不同模块，必须同时保留。 -->
+  <assembly fullname="UnityEngine.TerrainPhysicsModule">
+    <type fullname="UnityEngine.TerrainCollider" preserve="all" />
+  </assembly>
+</linker>

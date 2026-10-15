@@ -1,0 +1,12 @@
+Cinemachine.dll
+MemoryPack.dll
+mscorlib.dll
+Newtonsoft.Json.dll
+System.Core.dll
+System.Runtime.CompilerServices.Unsafe.dll
+UniTask.dll
+Unity.InputSystem.dll
+UnityEngine.CoreModule.dll
+UnityEngine.JSONSerializeModule.dll
+UnityEngine.UI.dll
+YooAsset.dll

@@ -1,0 +1,9 @@
+##var,Id,TechnologyId,OutputItemId,CostGold
+##type,string,string,int,int
+,production.dry-ration,technology.dry-ration,30,8
+,production.iron-axe,technology.iron-tools,32,24
+,production.iron-pick,technology.iron-tools,33,24
+,production.steel-blade,technology.steel-blade,34,36
+,production.bow,technology.bow-making,35,40
+,production.grain,technology.grain-processing,36,12
+,production.water-pot,technology.pottery,37,10

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AnotherDay Code Role"
+  short_description: "Apply AnotherDay framework and runtime boundaries"
+  default_prompt: "Apply $code-role before changing or reviewing AnotherDay runtime C# code."

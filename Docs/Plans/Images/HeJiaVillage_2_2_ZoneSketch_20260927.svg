@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="800" viewBox="0 0 1120 800" role="img" aria-labelledby="title desc">
+  <title id="title">和家村右上角 2_2 瓦片区域划分草图</title>
+  <desc id="desc">1024 米见方的右上角瓦片。绝大部分为连续林地山坡，西南边缘为开阔地过渡，南侧有待复核的乡道廊道。边界与路线仅为示意，不包含建筑或已确认水域。</desc>
+  <rect width="1120" height="800" fill="#f8f7f2"/>
+  <text x="60" y="49" font-family="Microsoft YaHei, sans-serif" font-size="28" font-weight="700" fill="#26352a">和家村 2_2｜右上角区域划分草图</text>
+  <text x="60" y="77" font-family="Microsoft YaHei, sans-serif" font-size="15" fill="#56665a">仅供先讨论区域结构；不是精确地物边界，也不是 Unity 场景实现图</text>
+
+  <defs>
+    <clipPath id="tile"><rect x="70" y="105" width="600" height="600"/></clipPath>
+    <pattern id="uncertain" width="12" height="12" patternUnits="userSpaceOnUse"><path d="M0 12L12 0" stroke="#ffffff" stroke-opacity=".27" stroke-width="3"/></pattern>
+  </defs>
+
+  <rect x="70" y="105" width="600" height="600" fill="#769b72" stroke="#253c2f" stroke-width="3"/>
+  <g clip-path="url(#tile)">
+    <!-- 林地仅表达占优的区域类型；脊线为地形阅读辅助，不是勘测等高线。 -->
+    <path d="M110 170 C245 145 340 195 438 150 C520 116 615 140 697 114 M128 255 C230 230 330 286 460 232 C552 197 610 236 700 218 M125 343 C265 294 335 370 458 315 C557 270 631 304 708 291 M195 440 C295 412 388 443 496 393 C573 360 626 389 708 355" fill="none" stroke="#476e54" stroke-width="3" stroke-opacity=".5"/>
+
+    <!-- 西南开阔地轮廓按卫星图目视概括，特意使用虚线提醒未校准。 -->
+    <path d="M70 404 C112 396 147 427 176 448 C213 472 247 462 271 502 C302 516 327 543 349 567 C385 584 412 613 436 655 L458 705 L70 705 Z" fill="#d6c48f"/>
+    <path d="M70 404 C112 396 147 427 176 448 C213 472 247 462 271 502 C302 516 327 543 349 567 C385 584 412 613 436 655 L458 705" fill="none" stroke="#855e32" stroke-width="4" stroke-dasharray="11 9"/>
+    <path d="M70 404 C112 396 147 427 176 448 C213 472 247 462 271 502 C302 516 327 543 349 567 C385 584 412 613 436 655 L458 705 L70 705 Z" fill="url(#uncertain)"/>
+
+    <!-- 乡道只表示通行廊道，既非中心线定稿也不代表道路宽度。 -->
+    <path d="M73 670 C133 663 146 627 184 627 C232 631 251 656 288 631 C317 607 332 576 363 578 C401 581 411 649 461 707" fill="none" stroke="#fff9e7" stroke-width="14" stroke-linecap="round" stroke-dasharray="18 11"/>
+    <path d="M73 670 C133 663 146 627 184 627 C232 631 251 656 288 631 C317 607 332 576 363 578 C401 581 411 649 461 707" fill="none" stroke="#765d45" stroke-width="4" stroke-linecap="round" stroke-dasharray="17 12"/>
+  </g>
+
+  <text x="431" y="337" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="29" font-weight="700" fill="#f8fbf6">A 连续林地 / 山坡</text>
+  <text x="431" y="368" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#eef6ea">覆盖瓦片的大部分</text>
+  <text x="171" y="541" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="20" font-weight="700" fill="#4d412a">B 西南开阔地</text>
+  <text x="170" y="565" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="15" fill="#564831">田地 / 疏林过渡</text>
+  <text x="238" y="679" text-anchor="middle" font-family="Microsoft YaHei, sans-serif" font-size="15" font-weight="700" fill="#3f3227">C 乡道廊道（待复核）</text>
+
+  <rect x="70" y="105" width="600" height="600" fill="none" stroke="#253c2f" stroke-width="3"/>
+  <path d="M70 305 H670 M70 505 H670 M270 105 V705 M470 105 V705" stroke="#ffffff" stroke-opacity=".43" stroke-width="1.5" stroke-dasharray="5 7"/>
+  <text x="58" y="117" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#354237">z 2048</text>
+  <text x="58" y="708" text-anchor="end" font-family="Arial, sans-serif" font-size="13" fill="#354237">z 1024</text>
+  <text x="70" y="732" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#354237">x 1024</text>
+  <text x="670" y="732" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#354237">x 2048</text>
+  <path d="M655 83 L655 58 M655 58 L648 70 M655 58 L662 70" fill="none" stroke="#26352a" stroke-width="3"/>
+  <text x="655" y="49" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#26352a">N</text>
+
+  <text x="723" y="139" font-family="Microsoft YaHei, sans-serif" font-size="23" font-weight="700" fill="#26352a">读图约定</text>
+  <rect x="724" y="170" width="35" height="25" fill="#769b72"/>
+  <text x="776" y="190" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#26352a">A 林地山坡：较明确</text>
+  <rect x="724" y="213" width="35" height="25" fill="#d6c48f" stroke="#855e32" stroke-dasharray="5 3"/>
+  <text x="776" y="233" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#26352a">B 开阔地：边界待核</text>
+  <path d="M724 268 H761" stroke="#765d45" stroke-width="4" stroke-dasharray="11 7"/>
+  <text x="776" y="274" font-family="Microsoft YaHei, sans-serif" font-size="18" fill="#26352a">C 乡道：走向待核</text>
+
+  <text x="723" y="334" font-family="Microsoft YaHei, sans-serif" font-size="22" font-weight="700" fill="#26352a">依据与边界</text>
+  <text x="723" y="370" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#354237">高德卫星图：林地与西南开阔区</text>
+  <text x="723" y="397" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#354237">高德标准图：南侧乡道的概略走向</text>
+  <text x="723" y="424" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#354237">本地 WorldCover / DEM：交叉检查</text>
+  <text x="723" y="472" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#855e32">虚线 = 还不能当作施工边界</text>
+  <text x="723" y="502" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#855e32">未在本瓦片确认池塘；不绘建筑</text>
+  <text x="723" y="549" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#354237">下一步：先由你确认分区是否合理，</text>
+  <text x="723" y="576" font-family="Microsoft YaHei, sans-serif" font-size="16" fill="#354237">再细化道路 / 地形，不直接落场景。</text>
+  <text x="70" y="775" font-family="Microsoft YaHei, sans-serif" font-size="13" fill="#68776b">2026-09-27｜示意图，非卫星底图复刻；每格约 341 米，仅用于阅读方位。</text>
+</svg>

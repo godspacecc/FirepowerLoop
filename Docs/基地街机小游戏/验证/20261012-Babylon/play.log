@@ -1,0 +1,18 @@
+Temporary root=C:\Users\ADMINI~1\AppData\Local\Temp\AnotherDayBabylonPlay-907c1f12b5ac45138536ed1be1d8b651
+Map and domain API entered fifth round; formal start button bypassed.
+竞技场 2，波次 1，生命 89/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 148，掉落 0
+Crates=8
+System.InvalidOperationException: Sequence contains no matching element
+  at System.Linq.Enumerable.Single[TSource] (System.Collections.Generic.IEnumerable`1[T] source, System.Func`2[T,TResult] predicate) [0x00070] in <69cf3f5d501444b69536f0c0ef5f8238>:0 
+  at ArcadeBabylonPlayProbe.Run () [0x000a0] in <567197e6beaa4717bc817567528411a7>:0 Temporary root=C:\Users\ADMINI~1\AppData\Local\Temp\AnotherDayBabylonPlay-b8d4a4f049cb4ccebb89defc2ab15e9b
+Map and domain API entered fifth round; formal start button bypassed.
+竞技场 2，波次 1，生命 89/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 149，掉落 1
+Crates=7
+Temporary root=C:\Users\ADMINI~1\AppData\Local\Temp\AnotherDayBabylonPlay-065fdf6cb9bd40bb87dfd2b7b67b3d10
+Map and domain API entered fifth round; formal start button bypassed.
+竞技场 2，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 150，掉落 0
+Crates=8
+Temporary root=C:\Users\ADMINI~1\AppData\Local\Temp\AnotherDayBabylonPlay-429e5cc7ba8d439b8b398c0a46d6f578
+Map and domain API entered fifth round; formal start button bypassed.
+竞技场 2，波次 1，生命 67/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 150，掉落 0
+Crates=8

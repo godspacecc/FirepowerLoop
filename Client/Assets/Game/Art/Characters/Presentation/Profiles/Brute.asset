@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0262936798292134aabbbd7bfcef40ce, type: 3}
+  m_Name: Brute
+  m_EditorClassIdentifier: 
+  baseController: {fileID: 9100000, guid: 7d36ecbe51afed44ab283fea062202d5, type: 2}
+  idleSlot: {fileID: 7400000, guid: 4a0749dd553afef4fb519c3035e4d601, type: 3}
+  moveSlot: {fileID: 7400000, guid: a8f530a9317eef74e8c96303ee8c0348, type: 3}
+  attackSlot: {fileID: 7400000, guid: 8a0270a8f7a640947a6470ca61789b02, type: 3}
+  unarmedAnimations:
+    idle: {fileID: 11400000, guid: c2dcf2c13e9255745aa67721f99c1c45, type: 2}
+    moveForward: {fileID: 11400000, guid: e35b6ebb45af83345a33e43cfe4941ca, type: 2}
+    moveBackward: {fileID: 11400000, guid: ba8514bd0ba527549a032619aa5d8bae, type: 2}
+    moveLeft: {fileID: 11400000, guid: a6479bc0cac3cb54c9d3fe70038c9b2f, type: 2}
+    moveRight: {fileID: 11400000, guid: ceda41dce3c51f041b2989f34371d189, type: 2}
+    attack: {fileID: 0}
+    extras:
+    - {fileID: 11400000, guid: 6c05878b661c4824895f2bdc5e426d0d, type: 2}
+    - {fileID: 11400000, guid: 18b8a4addfe07ca4ea42cbf9ec7bbb1c, type: 2}

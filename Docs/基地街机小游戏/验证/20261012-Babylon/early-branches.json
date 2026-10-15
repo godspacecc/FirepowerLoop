@@ -1,0 +1,72 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 3223,
+    "PassedTests": 12,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:02.1345145"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.BothBranches_UseCumulativeRoundsAndKeepMixedEnemyWeights(2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0310000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.BothBranches_UseCumulativeRoundsAndKeepMixedEnemyWeights(3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.BranchOrdinaryClear_DoesNotIssueShoppingCash",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.BranchRest_UsesReleaseThenFireAndFullTimeout(2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0160000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.BranchRest_UsesReleaseThenFireAndFullTimeout(3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.Challenge_HasNeitherEarlyTotalNorRest",
+      "Status": "Passed",
+      "Duration": "00:00:00.0530000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.FinalBranchClear_OpensExitsImmediatelyWithoutCash(2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.FinalBranchClear_OpensExitsImmediatelyWithoutCash(3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.FullArenaCompletion_KeepsExistingWalletAndAddsNoClearCash(1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8390000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.FullArenaCompletion_KeepsExistingWalletAndAddsNoClearCash(2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.FullArenaCompletion_KeepsExistingWalletAndAddsNoClearCash(3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0150000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeEarlyBranchFlowTests.LegacyBranch_KeepsConfiguredQueueAndShortTransition",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    }
+  ]
+}

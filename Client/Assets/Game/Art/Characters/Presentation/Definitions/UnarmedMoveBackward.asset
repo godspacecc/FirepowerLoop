@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea411e143f4d9f646a78b75b997e266d, type: 3}
+  m_Name: UnarmedMoveBackward
+  m_EditorClassIdentifier: 
+  clip: {fileID: -203655887218126122, guid: 1ed023d5ad3474743a44939b7e3e36e3, type: 3}
+  displayName: "\u7A7A\u624B\u540E\u9000\uFF08UnarmedMoveBackward\uFF09"
+  compatibleCategories: 1
+  requiredBones: 
+  allowOffhandGrip: 0

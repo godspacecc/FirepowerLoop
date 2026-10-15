@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tables>
+    <table name="TbDialogueEntry" value="DialogueEntryConfig" input="dialogue_entry.csv" group="c"/>
+    <table name="TbDialogueNode" value="DialogueNodeConfig" input="dialogue_node.csv" group="c"/>
+    <table name="TbDialogueOption" value="DialogueOptionConfig" input="dialogue_option.csv" group="c"/>
+    <table name="TbCivilisationValleyGeneration" value="CivilisationValleyGenerationConfig" input="civilisation_valley_generation.csv" group="c" index="MapId"/>
+    <table name="TbCivilisationTechnology" value="CivilisationTechnologyConfig" input="civilisation_technology.csv" group="c"/>
+    <table name="TbCivilisationProduction" value="CivilisationProductionConfig" input="civilisation_production.csv" group="c"/>
+    <table name="TbCivilisationReturnValue" value="CivilisationReturnValueConfig" input="civilisation_return_value.csv" group="c"/>
+    <table name="TbCivilisationSearchPoint" value="CivilisationSearchPointConfig" input="civilisation_search_point.csv" group="c"/>
+    <table name="TbItem" value="Item" input="item.csv" group="e"/>
+    <table name="TbWeapon" value="WeaponConfig" input="weapon.csv" group="e"/>
+    <table name="TbWeaponAppearance" value="WeaponAppearanceConfig" input="weapon_appearance.csv" group="c"/>
+    <table name="TbCraftRecipe" value="CraftRecipeConfig" input="craft_recipe.csv" group="c"/>
+    <table name="TbBaseCampLayout" value="BaseCampLayoutConfig" input="base_camp_layout.csv" group="c"/>
+    <table name="TbTempBuilding" value="TempBuildingConfig" input="temp_building.csv" group="e"/>
+    <table name="TbTempBuildingManualAttack" value="TempBuildingManualAttackConfig" input="temp_building_manual_attack.csv" group="e"/>
+    <table name="TbProjectile" value="ProjectileConfig" input="projectile.csv" group="e"/>
+    <table name="TbMap" value="MapConfig" input="map.csv" group="c"/>
+    <table name="TbMapDisplay" value="MapDisplayConfig" input="map_display.csv" group="c"/>
+    <table name="TbExpeditionTask" value="ExpeditionTaskConfig" input="expedition_task.csv" group="c"/>
+    <table name="TbMapScenePart" value="MapScenePartConfig" input="map_scene_part.csv" group="c"/>
+    <table name="TbMapSpawn" value="MapSpawnConfig" input="map_spawn.csv" group="e"/>
+    <table name="TbNpc" value="NpcConfig" input="npc.csv" group="c"/>
+    <table name="TbShop" value="ShopConfig" input="shop.csv" group="c"/>
+    <table name="TbShopItem" value="ShopItemConfig" input="shop_item.csv" group="c"/>
+    <table name="TbPlayer" value="PlayerConfig" input="player.csv" group="e"/>
+    <table name="TbEnemy" value="EnemyConfig" input="enemy.csv" group="e"/>
+    <table name="TbLoot" value="LootConfig" input="loot.csv" group="e"/>
+    <table name="TbOnlineWorldRule" value="OnlineWorldRuleConfig" input="online_world_rule.csv" group="e"/>
+    <table name="TbExtraction" value="ExtractionConfig" input="extraction.csv" group="c"/>
+    <table name="TbTestCmdCategory" value="TestCmdCategoryConfig" input="test_cmd_category.csv" group="c"/>
+    <table name="TbTestCmdEntry" value="TestCmdEntryConfig" input="test_cmd_entry.csv" group="c"/>
+    <table name="TbArcadeRule" value="ArcadeRuleConfig" input="arcade_rule.csv" group="e"/>
+    <table name="TbArcadeWeapon" value="ArcadeWeaponConfig" input="arcade_weapon.csv" group="e"/>
+    <table name="TbArcadeArena" value="ArcadeArenaConfig" input="arcade_arena.csv" group="e"/>
+    <table name="TbArcadeEnemyGroup" value="ArcadeEnemyGroupConfig" input="arcade_enemy_group.csv" group="e"/>
+    <table name="TbArcadeBoss" value="ArcadeBossConfig" input="arcade_boss.csv" group="e"/>
+    <table name="TbArcadeChallenge" value="ArcadeChallengeConfig" input="arcade_challenge.csv" group="e"/>
+    <table name="TbArcadeTreasureRoom" value="ArcadeTreasureRoomConfig" input="arcade_treasure_room.csv" group="e"/>
+    <table name="TbArcadeDrop" value="ArcadeDropConfig" input="arcade_drop.csv" group="e"/>
+    <!-- 单人客户端专用掉落；服务器不生成此表，保持现有联机池。 -->
+    <table name="TbArcadeSoloDrop" value="ArcadeDropConfig" input="arcade_solo_drop.csv" group="c"/>
+    <table name="TbArcadePowerup" value="ArcadePowerupConfig" input="arcade_powerup.csv" group="e"/>
+    <table name="TbArcadeShopItem" value="ArcadeShopItemConfig" input="arcade_shop_item.csv" group="e"/>
+    <table name="TbArcadeUpgrade" value="ArcadeUpgradeConfig" input="arcade_upgrade.csv" group="e"/>
+    <table name="TbArcadeReward" value="ArcadeRewardConfig" input="arcade_reward.csv" group="e"/>
+    <table name="TbAIConfig" value="AIConfig" input="server_ai.csv" group="s"/>
+    <table name="TbUnitConfig" value="UnitConfig" input="server_unit.csv" group="s"/>
+    <table name="TbStartMachine" value="StartMachineConfig" input="server_start_machine.csv" group="s"/>
+    <table name="TbStartProcess" value="StartProcessConfig" input="server_start_process.csv" group="s"/>
+    <table name="TbStartZone" value="StartZoneConfig" input="server_start_zone.csv" group="s"/>
+    <table name="TbStartScene" value="StartSceneConfig" input="server_start_scene.csv" group="s"/>
+    <table name="TbItemPreparation" value="ItemPreparationConfig" input="item_preparation.csv" group="c"/>
+    <table name="TbBasePreparationRule" value="BasePreparationRuleConfig" input="base_preparation_rule.csv" group="c"/>
+    <table name="TbMapPreparationRule" value="MapPreparationRuleConfig" input="map_preparation_rule.csv" group="c"/>
+</tables>

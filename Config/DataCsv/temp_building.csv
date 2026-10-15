@@ -1,0 +1,16 @@
+##var,Id,Name,NameKey,IconName,PrefabName,Materials,BuildSeconds,FootprintRadius,MaxSlopeDegrees,NarrowPassageRadius,BlocksNavigation,Order,BaseOnly,ExpeditionMapId
+##type,string,string,string,string,string,"(array#sep=;),(TempBuildingMaterialConfig#sep=|)",float,float,float,float,bool,int,string
+,temp_arrow_tower,固定箭塔,temp_building.arrow_tower.name,GrayboxArrowTower,GrayboxArrowTower,1|2;9|3,1.0,0.75,20,1.2,true,100,false,
+,temp_roadblock_wood,木质路障,temp_building.roadblock_wood.name,GrayboxRoadblock,GrayboxRoadblock,9|3,1.0,0.9,20,1.2,true,200,false,
+,temp_campfire,火堆,temp_building.campfire.name,GrayboxCampfire,GrayboxCampfire,9|2,0.5,0.6,20,0,false,300,false,
+,camp_shed_wood_01,木棚,temp_building.camp_shed_wood_01.name,Camp_shed_wood_01,Camp_shed_wood_01,9|12;2|2,2,1.583768,20,0,false,1000,true,map.another-day.civilisation-valley
+,camp_awning_standing_01a,布棚,temp_building.camp_awning_standing_01a.name,Camp_awning_standing_01a,Camp_awning_standing_01a,9|8;2|4,2,1.483782,20,0,false,1010,true,
+,camp_crate_01,小木箱,temp_building.camp_crate_01.name,Camp_crate_01,Camp_crate_01,9|2,1,0.618316,20,0.8,true,1020,true,
+,camp_crate_02,大木箱,temp_building.camp_crate_02.name,Camp_crate_02,Camp_crate_02,9|3,1,0.378923,20,0.8,true,1030,true,
+,camp_barrel_01,水桶,temp_building.camp_barrel_01.name,Camp_barrel_01,Camp_barrel_01,9|3;1|1,1,0.430264,20,0.8,true,1040,true,
+,camp_sack_02_set,麻袋,temp_building.camp_sack_02_set.name,Camp_sack_02_set,Camp_sack_02_set,2|2,1,0.628901,20,0.8,true,1050,true,
+,camp_table_01,木桌,temp_building.camp_table_01.name,Camp_table_01,Camp_table_01,9|5,1,1.01551,20,0.8,true,1060,true,
+,camp_bench_wood_01,长凳,temp_building.camp_bench_wood_01.name,Camp_bench_wood_01,Camp_bench_wood_01,9|3,1,0.877681,20,0.8,true,1070,true,
+,camp_fence_wood_01a,木栅栏,temp_building.camp_fence_wood_01a.name,Camp_fence_wood_01a,Camp_fence_wood_01a,9|2,1,1.586833,20,0.8,true,1080,true,
+,camp_log_wood_01,柴堆,temp_building.camp_log_wood_01.name,Camp_log_wood_01,Camp_log_wood_01,9|2,1,0.974632,20,0.8,true,1090,true,
+,camp_rpgfxcampfire,营火,temp_building.camp_rpgfxcampfire.name,Camp_RPGFXCampfire,Camp_RPGFXCampfire,9|2;1|2,1,0.122538,20,0.8,true,1100,true,

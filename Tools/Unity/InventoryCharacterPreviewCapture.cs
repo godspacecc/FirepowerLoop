@@ -1,0 +1,118 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Game;
+using QFramework;
+using TMPro;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
+using Object=UnityEngine.Object;
+
+/// <summary>用真实背包夹具与 Prefab 渲染两页；只使用临时场景和临时库存，恢复原编辑场景。</summary>
+public static class InventoryCharacterPreviewCapture
+{
+    public static string Run()
+    {
+        if(EditorApplication.isPlaying)throw new InvalidOperationException("仅用于编辑模式预览");
+        var previous=SceneManager.GetActiveScene();
+        var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+        SceneManager.SetActiveScene(scene);
+        var types=AppDomain.CurrentDomain.GetAssemblies();
+        var isolation=types.Select(a=>a.GetType("EditModeSceneIsolation")).First(t=>t!=null);
+        var type=types.Select(a=>a.GetType("Game.Tests.EquipmentManagementUiTests")).First(t=>t!=null);
+        var fixture=Activator.CreateInstance(type);
+        isolation.GetMethod("Enter").Invoke(null,null);
+        try
+        {
+            type.GetMethod("SetUp").Invoke(fixture,null);
+            ResourceLoader.Use(new PreviewAssetLoader(ResourceLoader.Current));
+            var ui=(BagUI)type.GetField("bagUI",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(fixture);
+            var host=UIHelper.GetUICtrl<BagUICtrl>();
+            var canvas=ui.GetComponentInParent<Canvas>();
+            var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
+            var camera=new GameObject("InventoryCaptureCamera",typeof(Camera)).GetComponent<Camera>();
+            camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.08f,.10f,.11f);camera.transform.position=new Vector3(0,0,-10);
+            camera.cullingMask=~(1<<31);camera.orthographic=true;camera.orthographicSize=5;
+            canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;
+            ui.GetComponent<SafeAreaFitter>().enabled=false;
+            Game.Game.Interface.GetModel<CombatModel>().SetPlayerHP(100);
+            var bag=Game.Game.Interface.GetModel<PlayerBagModel>().Container;
+            foreach(var id in new[]{39,41,42,43,44,45,46})
+            {
+                bag.TryAdd(id,1,1,out _,out _);var pair=bag.Slots.Single(p=>p.Value.ItemId==id);
+                Game.Game.Interface.GetUtility<IItemTransferPort>().ClickSlot(new InventorySlotRef(InventoryContainerKind.PlayerBag,pair.Key));
+                ui.FullBtnUse.onClick.Invoke();
+            }
+            foreach(var id in new[]{38,40,ItemIds.Wood,ItemIds.Cloth})bag.TryAdd(id,1,20,out _,out _);
+            Game.Game.Interface.SendEvent(new InventoryChangedEvent());
+            Game.Game.Interface.GetUtility<IItemTransferPort>().ClickSlot(new InventorySlotRef(InventoryContainerKind.PlayerBag,0));
+            var folder=Path.GetFullPath("../Tools/Unity/InventoryCharacterPreview");Directory.CreateDirectory(folder);
+            foreach(var spec in new[]{new Spec("backpack",1920,1080,false),new Spec("equipment",1920,1080,true),new Spec("backpack-4x3",1440,1080,false),new Spec("equipment-4x3",1440,1080,true)})
+            {
+                host.SelectPage(spec.Equipment?BagManagementPage.Equipment:BagManagementPage.Backpack);
+                if(spec.Equipment)ui.EquipmentPage.BtnBack.onClick.Invoke();
+                Capture(camera,ui,folder+"/"+spec.Name+".png",spec.Width,spec.Height);
+            }
+            // 通过实际 UI 手势入口展示背面、俯视和缩放，避免只摆模型绕过输入链路。
+            host.SelectPage(BagManagementPage.Backpack);
+            var raw=ui.BackpackCharacterPreview;
+            var data=new PointerEventData(EventSystem.current){pointerId=-1,button=PointerEventData.InputButton.Left};
+            data.delta=new Vector2(-raw.rectTransform.rect.width*canvas.scaleFactor,0);
+            ExecuteEvents.Execute(raw.gameObject,data,ExecuteEvents.beginDragHandler);
+            ExecuteEvents.Execute(raw.gameObject,data,ExecuteEvents.dragHandler);
+            Capture(camera,ui,folder+"/back-view.png",1920,1080);
+            data.delta=new Vector2(raw.rectTransform.rect.width*canvas.scaleFactor*.9f,-raw.rectTransform.rect.height*canvas.scaleFactor/3f);
+            ExecuteEvents.Execute(raw.gameObject,data,ExecuteEvents.dragHandler);
+            ExecuteEvents.Execute(raw.gameObject,data,ExecuteEvents.endDragHandler);
+            data.scrollDelta=new Vector2(0,240);
+            ExecuteEvents.Execute(raw.gameObject,data,ExecuteEvents.scrollHandler);
+            Capture(camera,ui,folder+"/tilted-close.png",1920,1080);
+            host.SelectPage(BagManagementPage.Equipment);
+            Capture(camera,ui,folder+"/equipment-tilted-close.png",1920,1080);
+            return folder;
+        }
+        finally
+        {
+            try{type.GetMethod("TearDown").Invoke(fixture,null);}
+            finally{isolation.GetMethod("Exit").Invoke(null,null);SceneManager.SetActiveScene(previous);if(scene.IsValid()&&scene.isLoaded)EditorSceneManager.CloseScene(scene,true);}
+        }
+    }
+    static void Capture(Camera camera,BagUI ui,string path,int width,int height)
+    {
+        var target=new RenderTexture(width,height,24);var image=new Texture2D(width,height,TextureFormat.RGBA32,false);var active=RenderTexture.active;
+        try
+        {
+            camera.targetTexture=target;Canvas.ForceUpdateCanvases();
+            LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)ui.transform);Canvas.ForceUpdateCanvases();
+            camera.Render();RenderTexture.active=target;image.ReadPixels(new Rect(0,0,width,height),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());
+            File.WriteAllLines(path+".txt",ui.GetComponentsInChildren<TextMeshProUGUI>().Select(t=>t.name+" overflow="+t.isTextOverflowing+" text="+t.text));
+        }
+        finally{camera.targetTexture=null;RenderTexture.active=active;Object.DestroyImmediate(target);Object.DestroyImmediate(image);}
+    }
+    sealed class Spec
+    {public string Name;public int Width,Height;public bool Equipment;public Spec(string name,int width,int height,bool equipment){Name=name;Width=width;Height=height;Equipment=equipment;}}
+    sealed class PreviewAssetLoader : IResourceLoader
+    {
+        readonly IResourceLoader fallback;
+        public PreviewAssetLoader(IResourceLoader fallback){this.fallback=fallback;}
+        public T LoadAsset<T>(string address) where T:Object
+        {
+            if(typeof(T)==typeof(Sprite))
+            {
+                var name=Path.GetFileName(address);
+                var path=AssetDatabase.FindAssets(name+" t:Sprite",new[]{"Assets/Game/Art"}).Select(AssetDatabase.GUIDToAssetPath).FirstOrDefault(p=>Path.GetFileNameWithoutExtension(p)==name);
+                if(path!=null)return AssetDatabase.LoadAssetAtPath<T>(path);
+            }
+            return fallback.LoadAsset<T>(address);
+        }
+        public ResourceLoadHandle LoadAssetAsync<T>(string path,Action<T> loaded) where T:Object
+        {loaded?.Invoke(LoadAsset<T>(path));return ResourceLoadHandle.Empty;}
+        public void Release(ResourceLoadHandle handle){fallback.Release(handle);}
+    }
+}

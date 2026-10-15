@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0262936798292134aabbbd7bfcef40ce, type: 3}
+  m_Name: PolygonCitySampleProfile
+  m_EditorClassIdentifier: 
+  baseController: {fileID: 9100000, guid: 04c57efe9d71c1a4bbb56210e5b6fd87, type: 2}
+  idleSlot: {fileID: -2576967968662016515, guid: d8360b67fa175a74eae6eeef44ad418c,
+    type: 3}
+  moveSlot: {fileID: 7400000, guid: 1dee96dcab885304880a065b1af81aa4, type: 3}
+  attackSlot: {fileID: 1252655228507342282, guid: d90cc444d45a3024d8d2a3f040c9a5ce,
+    type: 3}
+  unarmedAnimations:
+    idle: {fileID: 11400000, guid: c2dcf2c13e9255745aa67721f99c1c45, type: 2}
+    moveForward: {fileID: 11400000, guid: e35b6ebb45af83345a33e43cfe4941ca, type: 2}
+    moveBackward: {fileID: 11400000, guid: ba8514bd0ba527549a032619aa5d8bae, type: 2}
+    moveLeft: {fileID: 11400000, guid: a6479bc0cac3cb54c9d3fe70038c9b2f, type: 2}
+    moveRight: {fileID: 11400000, guid: ceda41dce3c51f041b2989f34371d189, type: 2}
+    attack: {fileID: 0}
+    extras: []

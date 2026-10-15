@@ -1,0 +1,1032 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "tile": "1_1",
+  "generatedAt": "2026-09-27T10:22:19.2655778+08:00",
+  "authority": {
+    "terrainData": "Assets/Game/Scenes/GeneratedMaps/HeJiaVillage/TerrainData/HeJiaVillage_1_1.asset",
+    "roads": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_VerifiedRoads.json",
+    "ponds": "Tools/MapTerrainData/HeJiaVillage/HeJiaVillage_VerifiedSurface.json"
+  },
+  "sampling": {
+    "longitudinalSpacingMeters": 2.0,
+    "crossHalfWidthMeters": 2.0,
+    "pondBufferMeters": 5.0,
+    "reviewGradePercent": 15.0,
+    "blockedGradePercent": 20.0
+  },
+  "summary": {
+    "segments": 50,
+    "safe": 9,
+    "review": 1,
+    "blocked": 24,
+    "disputed": 16,
+    "totalLengthMeters": 2572.28,
+    "safeLengthMeters": 379.57,
+    "reviewLengthMeters": 18.03,
+    "blockedLengthMeters": 704.53,
+    "disputedLengthMeters": 1470.14
+  },
+  "segments": [
+    {
+      "roadId": "center_206_township_road",
+      "roadKind": "main",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 28,
+      "startUnity": [
+        1019.0,
+        1024.0
+      ],
+      "endUnity": [
+        1020.0,
+        994.0
+      ],
+      "lengthMeters": 30.02,
+      "maxLongitudinalGradePercent": 5.62,
+      "maxCrossGradePercent": 14.17,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "center_206_township_road",
+      "roadKind": "main",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 29,
+      "startUnity": [
+        1020.0,
+        994.0
+      ],
+      "endUnity": [
+        1021.0,
+        968.0
+      ],
+      "lengthMeters": 26.02,
+      "maxLongitudinalGradePercent": 5.59,
+      "maxCrossGradePercent": 12.56,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "center_206_township_road",
+      "roadKind": "main",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 30,
+      "startUnity": [
+        1021.0,
+        968.0
+      ],
+      "endUnity": [
+        1024.0,
+        953.5
+      ],
+      "lengthMeters": 14.81,
+      "maxLongitudinalGradePercent": 4.66,
+      "maxCrossGradePercent": 9.45,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 10,
+      "startUnity": [
+        800.58,
+        1024.0
+      ],
+      "endUnity": [
+        785.0,
+        1013.0
+      ],
+      "lengthMeters": 19.07,
+      "maxLongitudinalGradePercent": 18.65,
+      "maxCrossGradePercent": 20.85,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 11,
+      "startUnity": [
+        785.0,
+        1013.0
+      ],
+      "endUnity": [
+        758.0,
+        990.0
+      ],
+      "lengthMeters": 35.47,
+      "maxLongitudinalGradePercent": 22.28,
+      "maxCrossGradePercent": 19.18,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 12,
+      "startUnity": [
+        758.0,
+        990.0
+      ],
+      "endUnity": [
+        756.0,
+        1004.0
+      ],
+      "lengthMeters": 14.14,
+      "maxLongitudinalGradePercent": 5.41,
+      "maxCrossGradePercent": 20.12,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 13,
+      "startUnity": [
+        756.0,
+        1004.0
+      ],
+      "endUnity": [
+        738.0,
+        1005.0
+      ],
+      "lengthMeters": 18.03,
+      "maxLongitudinalGradePercent": 13.38,
+      "maxCrossGradePercent": 17.91,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "review"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 14,
+      "startUnity": [
+        738.0,
+        1005.0
+      ],
+      "endUnity": [
+        720.0,
+        993.0
+      ],
+      "lengthMeters": 21.63,
+      "maxLongitudinalGradePercent": 7.5,
+      "maxCrossGradePercent": 34.25,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 15,
+      "startUnity": [
+        720.0,
+        993.0
+      ],
+      "endUnity": [
+        697.0,
+        984.0
+      ],
+      "lengthMeters": 24.7,
+      "maxLongitudinalGradePercent": 8.89,
+      "maxCrossGradePercent": 39.71,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 16,
+      "startUnity": [
+        697.0,
+        984.0
+      ],
+      "endUnity": [
+        676.0,
+        974.0
+      ],
+      "lengthMeters": 23.26,
+      "maxLongitudinalGradePercent": 5.98,
+      "maxCrossGradePercent": 39.12,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 17,
+      "startUnity": [
+        676.0,
+        974.0
+      ],
+      "endUnity": [
+        647.0,
+        969.0
+      ],
+      "lengthMeters": 29.43,
+      "maxLongitudinalGradePercent": 8.9,
+      "maxCrossGradePercent": 35.51,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 18,
+      "startUnity": [
+        647.0,
+        969.0
+      ],
+      "endUnity": [
+        621.0,
+        962.0
+      ],
+      "lengthMeters": 26.93,
+      "maxLongitudinalGradePercent": 18.29,
+      "maxCrossGradePercent": 34.93,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 19,
+      "startUnity": [
+        621.0,
+        962.0
+      ],
+      "endUnity": [
+        554.0,
+        954.0
+      ],
+      "lengthMeters": 67.48,
+      "maxLongitudinalGradePercent": 22.51,
+      "maxCrossGradePercent": 33.89,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 20,
+      "startUnity": [
+        554.0,
+        954.0
+      ],
+      "endUnity": [
+        474.0,
+        966.0
+      ],
+      "lengthMeters": 80.89,
+      "maxLongitudinalGradePercent": 8.47,
+      "maxCrossGradePercent": 7.08,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 21,
+      "startUnity": [
+        474.0,
+        966.0
+      ],
+      "endUnity": [
+        384.0,
+        989.0
+      ],
+      "lengthMeters": 92.89,
+      "maxLongitudinalGradePercent": 10.48,
+      "maxCrossGradePercent": 6.31,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "west_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 22,
+      "startUnity": [
+        384.0,
+        989.0
+      ],
+      "endUnity": [
+        303.23,
+        1024.0
+      ],
+      "lengthMeters": 88.03,
+      "maxLongitudinalGradePercent": 6.68,
+      "maxCrossGradePercent": 4.96,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 0,
+      "startUnity": [
+        758.0,
+        990.0
+      ],
+      "endUnity": [
+        733.0,
+        965.0
+      ],
+      "lengthMeters": 35.36,
+      "maxLongitudinalGradePercent": 15.24,
+      "maxCrossGradePercent": 36.06,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 1,
+      "startUnity": [
+        733.0,
+        965.0
+      ],
+      "endUnity": [
+        686.0,
+        933.0
+      ],
+      "lengthMeters": 56.86,
+      "maxLongitudinalGradePercent": 14.84,
+      "maxCrossGradePercent": 36.23,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 2,
+      "startUnity": [
+        686.0,
+        933.0
+      ],
+      "endUnity": [
+        686.0,
+        916.0
+      ],
+      "lengthMeters": 17.0,
+      "maxLongitudinalGradePercent": 17.63,
+      "maxCrossGradePercent": 23.92,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 3,
+      "startUnity": [
+        686.0,
+        916.0
+      ],
+      "endUnity": [
+        706.0,
+        892.0
+      ],
+      "lengthMeters": 31.24,
+      "maxLongitudinalGradePercent": 28.63,
+      "maxCrossGradePercent": 25.27,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 4,
+      "startUnity": [
+        706.0,
+        892.0
+      ],
+      "endUnity": [
+        730.0,
+        870.0
+      ],
+      "lengthMeters": 32.56,
+      "maxLongitudinalGradePercent": 21.31,
+      "maxCrossGradePercent": 30.39,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 5,
+      "startUnity": [
+        730.0,
+        870.0
+      ],
+      "endUnity": [
+        759.0,
+        865.0
+      ],
+      "lengthMeters": 29.43,
+      "maxLongitudinalGradePercent": 14.13,
+      "maxCrossGradePercent": 25.95,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 6,
+      "startUnity": [
+        759.0,
+        865.0
+      ],
+      "endUnity": [
+        786.0,
+        869.0
+      ],
+      "lengthMeters": 27.29,
+      "maxLongitudinalGradePercent": 7.34,
+      "maxCrossGradePercent": 30.78,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 7,
+      "startUnity": [
+        786.0,
+        869.0
+      ],
+      "endUnity": [
+        815.0,
+        865.0
+      ],
+      "lengthMeters": 29.27,
+      "maxLongitudinalGradePercent": 12.42,
+      "maxCrossGradePercent": 28.05,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 8,
+      "startUnity": [
+        815.0,
+        865.0
+      ],
+      "endUnity": [
+        840.0,
+        856.0
+      ],
+      "lengthMeters": 26.57,
+      "maxLongitudinalGradePercent": 15.48,
+      "maxCrossGradePercent": 21.62,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 9,
+      "startUnity": [
+        840.0,
+        856.0
+      ],
+      "endUnity": [
+        870.0,
+        852.0
+      ],
+      "lengthMeters": 30.27,
+      "maxLongitudinalGradePercent": 14.58,
+      "maxCrossGradePercent": 25.64,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 10,
+      "startUnity": [
+        870.0,
+        852.0
+      ],
+      "endUnity": [
+        896.0,
+        857.0
+      ],
+      "lengthMeters": 26.48,
+      "maxLongitudinalGradePercent": 5.65,
+      "maxCrossGradePercent": 33.12,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 11,
+      "startUnity": [
+        896.0,
+        857.0
+      ],
+      "endUnity": [
+        921.0,
+        874.0
+      ],
+      "lengthMeters": 30.23,
+      "maxLongitudinalGradePercent": 11.48,
+      "maxCrossGradePercent": 40.39,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 12,
+      "startUnity": [
+        921.0,
+        874.0
+      ],
+      "endUnity": [
+        936.0,
+        888.0
+      ],
+      "lengthMeters": 20.52,
+      "maxLongitudinalGradePercent": 16.37,
+      "maxCrossGradePercent": 40.5,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 13,
+      "startUnity": [
+        936.0,
+        888.0
+      ],
+      "endUnity": [
+        959.0,
+        896.0
+      ],
+      "lengthMeters": 24.35,
+      "maxLongitudinalGradePercent": 29.53,
+      "maxCrossGradePercent": 20.11,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 14,
+      "startUnity": [
+        959.0,
+        896.0
+      ],
+      "endUnity": [
+        984.0,
+        896.0
+      ],
+      "lengthMeters": 25.0,
+      "maxLongitudinalGradePercent": 20.65,
+      "maxCrossGradePercent": 5.29,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "blocked"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 15,
+      "startUnity": [
+        984.0,
+        896.0
+      ],
+      "endUnity": [
+        1007.0,
+        905.0
+      ],
+      "lengthMeters": 24.7,
+      "maxLongitudinalGradePercent": 8.24,
+      "maxCrossGradePercent": 9.35,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "west_south_loop",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 16,
+      "startUnity": [
+        1007.0,
+        905.0
+      ],
+      "endUnity": [
+        1024.0,
+        907.74
+      ],
+      "lengthMeters": 17.22,
+      "maxLongitudinalGradePercent": 6.59,
+      "maxCrossGradePercent": 6.49,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "east_north_branch",
+      "roadKind": "branch",
+      "roadVerificationStatus": "active",
+      "segmentIndex": 0,
+      "startUnity": [
+        1019.0,
+        1024.0
+      ],
+      "endUnity": [
+        1024.0,
+        1024.0
+      ],
+      "lengthMeters": 5.0,
+      "maxLongitudinalGradePercent": 12.09,
+      "maxCrossGradePercent": 0.0,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "safe"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 1,
+      "startUnity": [
+        1024.0,
+        493.88
+      ],
+      "endUnity": [
+        950.0,
+        491.0
+      ],
+      "lengthMeters": 74.06,
+      "maxLongitudinalGradePercent": 14.08,
+      "maxCrossGradePercent": 13.18,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 2,
+      "startUnity": [
+        950.0,
+        491.0
+      ],
+      "endUnity": [
+        885.0,
+        461.0
+      ],
+      "lengthMeters": 71.59,
+      "maxLongitudinalGradePercent": 41.85,
+      "maxCrossGradePercent": 24.83,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 3,
+      "startUnity": [
+        885.0,
+        461.0
+      ],
+      "endUnity": [
+        833.0,
+        412.0
+      ],
+      "lengthMeters": 71.45,
+      "maxLongitudinalGradePercent": 31.65,
+      "maxCrossGradePercent": 20.62,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 4,
+      "startUnity": [
+        833.0,
+        412.0
+      ],
+      "endUnity": [
+        752.0,
+        381.0
+      ],
+      "lengthMeters": 86.73,
+      "maxLongitudinalGradePercent": 38.24,
+      "maxCrossGradePercent": 10.86,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 5,
+      "startUnity": [
+        752.0,
+        381.0
+      ],
+      "endUnity": [
+        666.0,
+        339.0
+      ],
+      "lengthMeters": 95.71,
+      "maxLongitudinalGradePercent": 5.85,
+      "maxCrossGradePercent": 8.2,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 6,
+      "startUnity": [
+        666.0,
+        339.0
+      ],
+      "endUnity": [
+        585.0,
+        317.0
+      ],
+      "lengthMeters": 83.93,
+      "maxLongitudinalGradePercent": 9.05,
+      "maxCrossGradePercent": 13.98,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 7,
+      "startUnity": [
+        585.0,
+        317.0
+      ],
+      "endUnity": [
+        529.0,
+        271.0
+      ],
+      "lengthMeters": 72.47,
+      "maxLongitudinalGradePercent": 8.69,
+      "maxCrossGradePercent": 16.51,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 8,
+      "startUnity": [
+        529.0,
+        271.0
+      ],
+      "endUnity": [
+        444.0,
+        224.0
+      ],
+      "lengthMeters": 97.13,
+      "maxLongitudinalGradePercent": 35.35,
+      "maxCrossGradePercent": 17.24,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 9,
+      "startUnity": [
+        444.0,
+        224.0
+      ],
+      "endUnity": [
+        344.0,
+        159.0
+      ],
+      "lengthMeters": 119.27,
+      "maxLongitudinalGradePercent": 34.71,
+      "maxCrossGradePercent": 20.09,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 10,
+      "startUnity": [
+        344.0,
+        159.0
+      ],
+      "endUnity": [
+        234.0,
+        94.0
+      ],
+      "lengthMeters": 127.77,
+      "maxLongitudinalGradePercent": 30.61,
+      "maxCrossGradePercent": 39.45,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 11,
+      "startUnity": [
+        234.0,
+        94.0
+      ],
+      "endUnity": [
+        124.0,
+        54.0
+      ],
+      "lengthMeters": 117.05,
+      "maxLongitudinalGradePercent": 31.08,
+      "maxCrossGradePercent": 16.99,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_connector",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 12,
+      "startUnity": [
+        124.0,
+        54.0
+      ],
+      "endUnity": [
+        0.0,
+        39.0
+      ],
+      "lengthMeters": 124.9,
+      "maxLongitudinalGradePercent": 28.4,
+      "maxCrossGradePercent": 20.92,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_vertical_spur",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 0,
+      "startUnity": [
+        585.0,
+        317.0
+      ],
+      "endUnity": [
+        594.0,
+        234.0
+      ],
+      "lengthMeters": 83.49,
+      "maxLongitudinalGradePercent": 16.63,
+      "maxCrossGradePercent": 11.83,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_vertical_spur",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 1,
+      "startUnity": [
+        594.0,
+        234.0
+      ],
+      "endUnity": [
+        569.0,
+        154.0
+      ],
+      "lengthMeters": 83.82,
+      "maxLongitudinalGradePercent": 12.79,
+      "maxCrossGradePercent": 5.12,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_vertical_spur",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 2,
+      "startUnity": [
+        569.0,
+        154.0
+      ],
+      "endUnity": [
+        584.0,
+        84.0
+      ],
+      "lengthMeters": 71.59,
+      "maxLongitudinalGradePercent": 7.42,
+      "maxCrossGradePercent": 7.83,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    },
+    {
+      "roadId": "southwest_vertical_spur",
+      "roadKind": "minor",
+      "roadVerificationStatus": "disputed",
+      "segmentIndex": 3,
+      "startUnity": [
+        584.0,
+        84.0
+      ],
+      "endUnity": [
+        614.0,
+        0.0
+      ],
+      "lengthMeters": 89.2,
+      "maxLongitudinalGradePercent": 33.06,
+      "maxCrossGradePercent": 15.84,
+      "pondInteriors": [],
+      "pondBuffers": [],
+      "status": "disputed"
+    }
+  ]
+}

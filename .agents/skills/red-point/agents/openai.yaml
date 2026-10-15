@@ -1,0 +1,4 @@
+interface:
+  display_name: "Red Point"
+  short_description: "Preserve RedPointMod ownership and red-point dependency flow"
+  default_prompt: "Use $red-point to change or review this project's red-point behavior safely."

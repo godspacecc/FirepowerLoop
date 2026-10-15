@@ -1,0 +1,12 @@
+街机入口视觉来源（2026-10-11）
+
+Approved.png：用户本轮上传并确认的入口效果图，作为唯一视觉基准。
+正式底板：Client/Assets/Game/Art/UI/ArcadeEntry/EntryPlate.png。
+使用内置 image_gen 编辑原图，仅为原图制作无菜单文字底板；未采用此前重新生成的三张素材。
+正式文字、关闭按钮和两个入口由 Unity UGUI/TMP 构成；标题使用项目字体材质加粗，因此不等同原图的破损印刷字形。
+原图按钮位置按同一底板 Sprite 切片，保持纹理和点击区域对齐。非 16:9 使用等比画板及深色留边。
+制作入口：Tools/Unity/ArcadeEntryAuthoring.cs。通过项目 UICodeSpawner 生成并绑定 View。
+预览入口：Tools/Unity/ArcadeEntryPreview.cs。输出到 Client/Assets/Tests/Results~/ArcadeEntry/。
+
+内置工具编辑提示词：
+Edit this EXACT approved game entry UI image into a text-free production UI background plate. Preserve the original image dimensions/aspect ratio and EXACT layout, all artwork, every character, character poses, stone arena, the two cards and their borders, arcade cabinet, room, palette, lighting, textures. Do not redraw/reimagine ANY artwork. Only erase the foreground menu typography: remove ANOTHER DAY and the short horizontal rule at top left, remove the large Chinese title 街机挑战 and its subtitle 选择游玩方式; remove 单人挑战 and 独自迎战，突破重围 on left card; remove 双人联机 and 并肩作战，协力闯关 on right card; remove all labels AND the triangle/two-person icon INSIDE the orange and cyan buttons, leaving their exact colored textured button plates and borders intact; remove the bottom centered Chinese explanatory sentence and flanking rules. Remove the X glyph inside top right close button but preserve button frame. Fill removed typography areas seamlessly with underlying surface. KEEP background environmental text painted on the arcade machine/posters unchanged since it belongs to illustration. Result same approved screen but the menu labels and icons are blank for native Unity text/control overlay. No other alterations. Pixel-faithful preservation outside specified text/icon regions is critical.

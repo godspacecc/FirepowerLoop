@@ -1,0 +1,3 @@
+##var,MapId,GenerationVersion,WorldSizeMeters,ChunkSizeMeters,HeightSampleSpacingMeters,MinRouteMeters,MaxRouteMeters,MaxAttempts,KitAddress,MinEnemies,MaxEnemies
+##type,string,int,int,int,int,float,float,int,string,int,int
+,map.another-day.civilisation-valley,3,1024,64,4,600,2400,8,Prefabs/Environment/CivilisationValleyGenerationKit,2,4

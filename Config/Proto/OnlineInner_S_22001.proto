@@ -1,0 +1,1567 @@
+syntax = "proto3";
+package ET;
+
+// ResponseType A2G_Register
+message G2A_Register // IRequest
+{
+	int32 RpcId = 1;
+	string UserName = 2;
+	string Password = 3;
+}
+
+message A2G_Register // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 AccountId = 4;
+}
+
+// ResponseType A2G_Login
+message G2A_Login // IRequest
+{
+	int32 RpcId = 1;
+	string UserName = 2;
+	string Password = 3;
+}
+
+message A2G_Login // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 AccountId = 4;
+	int64 PlayerId = 5;
+	string DisplayName = 6;
+	int64 Revision = 7;
+	bool IsNewAccount = 8;
+	OnlineInventoryInfo OnlineInventory = 9;
+	bool HasReceivedOnlineStarterSupplies = 10;
+}
+
+// ResponseType A2P_SavePlayerProfile
+message P2A_SavePlayerProfile // IRequest
+{
+	int32 RpcId = 1;
+	int64 AccountId = 2;
+	int64 PlayerId = 3;
+	string DisplayName = 4;
+	int64 Revision = 5;
+	string OperationId = 6;
+	int64 ExpectedRevision = 7;
+	OnlineInventoryInfo OnlineInventory = 8;
+	bool HasReceivedOnlineStarterSupplies = 9;
+}
+
+message A2P_SavePlayerProfile // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 Revision = 4;
+}
+
+// ResponseType P2G_GetOrCreatePlayer
+message G2P_GetOrCreatePlayer // IRequest
+{
+	int32 RpcId = 1;
+	int64 AccountId = 2;
+	int64 PlayerId = 3;
+	string DisplayName = 4;
+	ActorId GateProxyActorId = 5;
+	OnlineInventoryInfo OnlineInventory = 6;
+	bool HasReceivedOnlineStarterSupplies = 7;
+	int64 ProfileRevision = 8;
+}
+
+message P2G_GetOrCreatePlayer // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	ActorId PlayerActorId = 4;
+	int64 SessionEpoch = 5;
+	bool IsPlayerActorReused = 6;
+}
+
+// ResponseType P2G_PlayerDisconnected
+message G2P_PlayerDisconnected // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_PlayerDisconnected // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType P2G_PlayerLogout
+message G2P_PlayerLogout // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_PlayerLogout // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message P2G_SessionReplaced // IMessage
+{
+	int32 Error = 1;
+	string Reason = 2;
+}
+
+message G2P_PlayerGraceTimeout // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 TimerGeneration = 3;
+}
+
+message G2P_PlayerRetrySave // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+}
+
+// ResponseType P2G_CreateRoom
+message G2P_CreateRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	int32 Purpose = 5;
+	int32 Visibility = 6;
+	string ClientVersion = 7;
+	string ArcadeConfigFingerprint = 8;
+}
+
+message P2G_CreateRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRoom = 4;
+	OnlineRoomSnapshot Room = 5;
+}
+
+// ResponseType P2G_MatchArcadeRoom
+message G2P_MatchArcadeRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	string ClientVersion = 5;
+	string ArcadeConfigFingerprint = 6;
+}
+
+message P2G_MatchArcadeRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRoom = 4;
+	OnlineRoomSnapshot Room = 5;
+}
+
+// ResponseType P2G_JoinRoom
+message G2P_JoinRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	string RoomCode = 5;
+	string SourceAddress = 6;
+	int32 ExpectedPurpose = 7;
+	string ClientVersion = 8;
+	string ArcadeConfigFingerprint = 9;
+}
+
+message P2G_JoinRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRoom = 4;
+	OnlineRoomSnapshot Room = 5;
+}
+
+// ResponseType P2G_LeaveRoom
+message G2P_LeaveRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+}
+
+message P2G_LeaveRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType P2G_GetCurrentRoom
+message G2P_GetCurrentRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_GetCurrentRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRoom = 4;
+	OnlineRoomSnapshot Room = 5;
+}
+
+// ResponseType D2P_CreateRoom
+message P2D_CreateRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string DisplayName = 3;
+	int64 SessionEpoch = 4;
+	int32 Purpose = 5;
+	int32 Visibility = 6;
+	string ClientVersion = 7;
+	string ArcadeConfigFingerprint = 8;
+}
+
+message D2P_CreateRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	OnlineRoomSnapshot Room = 5;
+}
+
+// ResponseType D2P_MatchArcadeRoom
+message P2D_MatchArcadeRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string DisplayName = 3;
+	int64 SessionEpoch = 4;
+	string ClientVersion = 5;
+	string ArcadeConfigFingerprint = 6;
+}
+
+message D2P_MatchArcadeRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	bool Created = 5;
+	OnlineRoomSnapshot Room = 6;
+}
+
+// ResponseType D2P_ResolveRoom
+message P2D_ResolveRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string RoomCode = 3;
+	string SourceAddress = 4;
+}
+
+message D2P_ResolveRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+}
+
+// ResponseType R2D_CreateRoom
+message D2R_CreateRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	string RoomCode = 3;
+	int64 PlayerId = 4;
+	string DisplayName = 5;
+	int64 SessionEpoch = 6;
+	int32 Purpose = 7;
+	int32 Visibility = 8;
+	string ClientVersion = 9;
+	string ArcadeConfigFingerprint = 10;
+}
+
+message R2D_CreateRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	OnlineRoomSnapshot Room = 4;
+}
+
+// ResponseType D2R_CloseRoom
+message R2D_CloseRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	string RoomCode = 3;
+}
+
+message D2R_CloseRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType R2P_JoinRoom
+message P2R_JoinRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string DisplayName = 3;
+	int64 SessionEpoch = 4;
+	int32 ExpectedPurpose = 5;
+	string ClientVersion = 6;
+	string ArcadeConfigFingerprint = 7;
+}
+
+message R2P_JoinRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	OnlineRoomSnapshot Room = 4;
+}
+
+// ResponseType R2P_LeaveRoom
+message P2R_LeaveRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string OperationId = 3;
+}
+
+message R2P_LeaveRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType R2P_GetRoom
+message P2R_GetRoom // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+}
+
+message R2P_GetRoom // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	OnlineRoomSnapshot Room = 4;
+}
+
+// ResponseType R2P_SetMemberConnection
+message P2R_SetMemberConnection // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	int32 ConnectionState = 4;
+	string OperationId = 5;
+}
+
+message R2P_SetMemberConnection // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message R2P_RoomChanged // IMessage
+{
+	int64 PlayerId = 1;
+	bool HasRoom = 2;
+	OnlineRoomSnapshot Room = 3;
+	int64 RoomId = 4;
+}
+
+message P2G_RoomChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	bool HasRoom = 3;
+	OnlineRoomSnapshot Room = 4;
+}
+
+message R2R_RetryClose // IMessage
+{
+	int64 RoomId = 1;
+}
+
+message P2P_RetryRoomSync // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 SyncGeneration = 3;
+}
+
+message RoomChatMemberInfo
+{
+	int64 PlayerId = 1;
+	string DisplayName = 2;
+	int32 ConnectionState = 3;
+}
+
+// ResponseType C2R_SyncRoomChatMembers
+message R2C_SyncRoomChatMembers // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	int64 MembershipRevision = 3;
+	repeated RoomChatMemberInfo Members = 4;
+}
+
+message C2R_SyncRoomChatMembers // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 ConfirmedRevision = 4;
+}
+
+// ResponseType C2R_CloseRoomChat
+message R2C_CloseRoomChat // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	int64 MembershipRevision = 3;
+}
+
+message C2R_CloseRoomChat // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType C2P_SendRoomChat
+message P2C_SendRoomChat // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	int64 PlayerId = 3;
+	string ClientMessageId = 4;
+	string Content = 5;
+}
+
+message C2P_SendRoomChat // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	bool Accepted = 5;
+	RoomChatMessageInfo ChatMessage = 6;
+}
+
+// ResponseType C2P_GetRoomChatHistory
+message P2C_GetRoomChatHistory // IRequest
+{
+	int32 RpcId = 1;
+	int64 RoomId = 2;
+	int64 PlayerId = 3;
+}
+
+message C2P_GetRoomChatHistory // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	int64 MaxChatSequence = 5;
+	repeated RoomChatMessageInfo Messages = 6;
+}
+
+message C2P_RoomChatMessage // IMessage
+{
+	int64 RoomId = 1;
+	RoomChatMessageInfo ChatMessage = 2;
+}
+
+// ResponseType P2G_SendRoomChat
+message G2P_SendRoomChat // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string ClientMessageId = 4;
+	string Content = 5;
+}
+
+message P2G_SendRoomChat // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	bool Accepted = 5;
+	RoomChatMessageInfo ChatMessage = 6;
+}
+
+// ResponseType P2G_GetRoomChatHistory
+message G2P_GetRoomChatHistory // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_GetRoomChatHistory // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 RoomId = 4;
+	int64 MaxChatSequence = 5;
+	repeated RoomChatMessageInfo Messages = 6;
+}
+
+message P2G_RoomChatMessage // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 RoomId = 3;
+	RoomChatMessageInfo ChatMessage = 4;
+}
+
+// ResponseType R2P_EnsureRoomChatReady
+message P2R_EnsureRoomChatReady // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+}
+
+message R2P_EnsureRoomChatReady // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	OnlineRoomSnapshot Room = 4;
+}
+
+message R2R_RetryChatSync // IMessage
+{
+	int64 RoomId = 1;
+	int64 SyncGeneration = 2;
+}
+
+// ResponseType P2G_EnterWorld
+message G2P_EnterWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	string MapId = 5;
+}
+
+message P2G_EnterWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasWorld = 4;
+	OnlineWorldSnapshot World = 5;
+}
+
+// ResponseType P2G_GetCurrentWorld
+message G2P_GetCurrentWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_GetCurrentWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasWorld = 4;
+	OnlineWorldSnapshot World = 5;
+}
+
+// ResponseType P2G_LeaveWorld
+message G2P_LeaveWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+}
+
+message P2G_LeaveWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType P2G_ReportWorldTransform
+message G2P_ReportWorldTransform // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	float PositionX = 4;
+	float PositionY = 5;
+	float PositionZ = 6;
+	float YawDegrees = 7;
+	int64 LifecycleRevision = 8;
+}
+
+message P2G_ReportWorldTransform // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 WorldId = 4;
+	string MapId = 5;
+	int64 UnitId = 6;
+	int64 StateRevision = 7;
+	int64 LifecycleRevision = 8;
+}
+
+// ResponseType W2P_EnterWorld
+message P2W_EnterWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string DisplayName = 3;
+	ActorId PlayerActorId = 4;
+	string MapId = 5;
+	OnlineInventoryInfo OnlineInventory = 6;
+}
+
+message W2P_EnterWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	OnlineWorldSnapshot World = 4;
+}
+
+// ResponseType W2P_GetCurrentWorld
+message P2W_GetCurrentWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	string MapId = 5;
+}
+
+message W2P_GetCurrentWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasWorld = 4;
+	OnlineWorldSnapshot World = 5;
+}
+
+// ResponseType W2P_LeaveWorld
+message P2W_LeaveWorld // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	string MapId = 5;
+}
+
+message W2P_LeaveWorld // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+// ResponseType W2P_PrepareWorldLeave
+message P2W_PrepareWorldLeave // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 UnitId = 5;
+	string OperationId = 6;
+}
+
+message W2P_PrepareWorldLeave // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Prepared = 4;
+	OnlineInventoryInfo OnlineInventory = 5;
+}
+
+// ResponseType W2P_CommitWorldLeave
+message P2W_CommitWorldLeave // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	string OperationId = 5;
+}
+
+message W2P_CommitWorldLeave // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Completed = 4;
+}
+
+// ResponseType W2P_AbortWorldLeave
+message P2W_AbortWorldLeave // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	string OperationId = 5;
+}
+
+message W2P_AbortWorldLeave // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Completed = 4;
+}
+
+// ResponseType P2G_OpenWorldCorpse
+message G2P_OpenWorldCorpse // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	int64 CorpseId = 4;
+	int64 LifecycleRevision = 5;
+}
+
+message P2G_OpenWorldCorpse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasCorpse = 4;
+	WorldCorpseContentsInfo CorpseContents = 5;
+	OnlineInventoryInfo SelfInventory = 6;
+}
+
+// ResponseType W2P_OpenWorldCorpse
+message P2W_OpenWorldCorpse // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 UnitId = 5;
+	int64 CorpseId = 6;
+	int64 LifecycleRevision = 7;
+}
+
+message W2P_OpenWorldCorpse // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasCorpse = 4;
+	WorldCorpseContentsInfo CorpseContents = 5;
+	OnlineInventoryInfo SelfInventory = 6;
+}
+
+// ResponseType P2G_OperateWorldInventory
+message G2P_OperateWorldInventory // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	int64 ExpectedInventoryRevision = 5;
+	int64 CorpseId = 6;
+	int64 ExpectedCorpseRevision = 7;
+	int32 ActionKind = 8;
+	int32 SourceContainerKind = 9;
+	int32 SourceSlotIndex = 10;
+	int32 TargetContainerKind = 11;
+	int32 TargetSlotIndex = 12;
+	int64 LifecycleRevision = 13;
+	int32 InventorySchemaVersion = 14;
+	int32 ExpectedItemId = 15;
+}
+
+message P2G_OperateWorldInventory // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	OnlineInventoryInfo SelfInventory = 5;
+	bool HasCorpse = 6;
+	WorldCorpseContentsInfo CorpseContents = 7;
+}
+
+// ResponseType P2G_OperateWorldTemporaryBuilding
+message G2P_OperateWorldTemporaryBuilding // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	int32 ActionKind = 5;
+	int32 RuntimeId = 6;
+	string ConfigId = 7;
+	float PositionX = 8;
+	float PositionY = 9;
+	float PositionZ = 10;
+	float YawDegrees = 11;
+	float AimX = 12;
+	float AimZ = 13;
+	int64 ExpectedInventoryRevision = 14;
+	int64 ExpectedBuildingRevision = 15;
+	int64 LifecycleRevision = 16;
+}
+
+message P2G_OperateWorldTemporaryBuilding // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 WorldRevision = 5;
+	bool HasBuilding = 6;
+	WorldTemporaryBuildingInfo Building = 7;
+	int32 RemovedRuntimeId = 8;
+	OnlineInventoryInfo SelfInventory = 9;
+	int64 ServerTime = 10;
+}
+
+// ResponseType W2P_OperateWorldInventory
+message P2W_OperateWorldInventory // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 UnitId = 5;
+	string OperationId = 6;
+	int64 ExpectedInventoryRevision = 7;
+	int64 CorpseId = 8;
+	int64 ExpectedCorpseRevision = 9;
+	int32 ActionKind = 10;
+	int32 SourceContainerKind = 11;
+	int32 SourceSlotIndex = 12;
+	int32 TargetContainerKind = 13;
+	int32 TargetSlotIndex = 14;
+	int64 LifecycleRevision = 15;
+	int32 InventorySchemaVersion = 16;
+	int32 ExpectedItemId = 17;
+}
+
+message W2P_OperateWorldInventory // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	OnlineInventoryInfo SelfInventory = 5;
+	bool HasCorpse = 6;
+	WorldCorpseContentsInfo CorpseContents = 7;
+}
+
+// ResponseType W2P_OperateWorldTemporaryBuilding
+message P2W_OperateWorldTemporaryBuilding // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 UnitId = 5;
+	string OperationId = 6;
+	int32 ActionKind = 7;
+	int32 RuntimeId = 8;
+	string ConfigId = 9;
+	float PositionX = 10;
+	float PositionY = 11;
+	float PositionZ = 12;
+	float YawDegrees = 13;
+	float AimX = 14;
+	float AimZ = 15;
+	int64 ExpectedInventoryRevision = 16;
+	int64 ExpectedBuildingRevision = 17;
+	int64 LifecycleRevision = 18;
+}
+
+message W2P_OperateWorldTemporaryBuilding // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 WorldRevision = 5;
+	bool HasBuilding = 6;
+	WorldTemporaryBuildingInfo Building = 7;
+	int32 RemovedRuntimeId = 8;
+	OnlineInventoryInfo SelfInventory = 9;
+	int64 ServerTime = 10;
+}
+
+// ResponseType W2P_ReportWorldTransform
+message P2W_ReportWorldTransform // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	float PositionX = 5;
+	float PositionY = 6;
+	float PositionZ = 7;
+	float YawDegrees = 8;
+	int64 LifecycleRevision = 9;
+	string MapId = 10;
+}
+
+message W2P_ReportWorldTransform // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 WorldId = 4;
+	string MapId = 5;
+	int64 UnitId = 6;
+	int64 StateRevision = 7;
+	int64 LifecycleRevision = 8;
+}
+
+// ResponseType P2G_WorldMeleeAttack
+message G2P_WorldMeleeAttack // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	int64 AttackSequence = 4;
+	int32 WeaponItemId = 5;
+	float AimX = 6;
+	float AimZ = 7;
+	int64 LifecycleRevision = 8;
+	float AimY = 9;
+	float OriginX = 10;
+	float OriginY = 11;
+	float OriginZ = 12;
+	bool HasProjectileOrigin = 13;
+	string CollisionContentHash = 14;
+}
+
+message P2G_WorldMeleeAttack // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 WorldId = 4;
+	int64 UnitId = 5;
+	int64 AttackSequence = 6;
+	bool Accepted = 7;
+	int64 WorldRevision = 8;
+	int64 LifecycleRevision = 9;
+}
+
+// ResponseType W2P_WorldMeleeAttack
+message P2W_WorldMeleeAttack // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	int64 AttackSequence = 5;
+	int32 WeaponItemId = 6;
+	float AimX = 7;
+	float AimZ = 8;
+	int64 LifecycleRevision = 9;
+	string MapId = 10;
+	float AimY = 11;
+	float OriginX = 12;
+	float OriginY = 13;
+	float OriginZ = 14;
+	bool HasProjectileOrigin = 15;
+	string CollisionContentHash = 16;
+}
+
+message W2P_WorldMeleeAttack // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	int64 WorldId = 4;
+	int64 UnitId = 5;
+	int64 AttackSequence = 6;
+	bool Accepted = 7;
+	int64 WorldRevision = 8;
+	int64 LifecycleRevision = 9;
+}
+
+// ResponseType P2G_ReportWorldEnemyNavigation
+message G2P_ReportWorldEnemyNavigation // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	int64 NavigationLeaseRevision = 4;
+	int64 ReportSequence = 5;
+	repeated WorldEnemyNavigationReport Reports = 6;
+}
+
+message P2G_ReportWorldEnemyNavigation // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 CurrentLeaseRevision = 5;
+	int64 LastAcceptedReportSequence = 6;
+	int64 WorldRevision = 7;
+}
+
+// ResponseType W2P_ReportWorldEnemyNavigation
+message P2W_ReportWorldEnemyNavigation // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	int64 NavigationLeaseRevision = 5;
+	int64 ReportSequence = 6;
+	repeated WorldEnemyNavigationReport Reports = 7;
+	string MapId = 8;
+}
+
+message W2P_ReportWorldEnemyNavigation // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 CurrentLeaseRevision = 5;
+	int64 LastAcceptedReportSequence = 6;
+	int64 WorldRevision = 7;
+}
+
+// ResponseType W2P_SetWorldConnection
+message P2W_SetWorldConnection // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 WorldId = 3;
+	int64 UnitId = 4;
+	ActorId PlayerActorId = 5;
+	int32 ConnectionState = 6;
+	string MapId = 7;
+}
+
+message W2P_SetWorldConnection // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+}
+
+message W2P_WorldPlayerEntered // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldRevision = 2;
+	WorldPlayerInfo Player = 3;
+}
+
+message W2P_WorldPlayerTransformChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	WorldPlayerInfo Player = 5;
+}
+
+message W2P_WorldPlayerLeft // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	int64 UnitId = 5;
+}
+
+message P2G_WorldPlayerEntered // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldRevision = 3;
+	WorldPlayerInfo Player = 4;
+}
+
+message P2G_WorldPlayerTransformChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	WorldPlayerInfo Player = 6;
+}
+
+message P2G_WorldPlayerLeft // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	int64 UnitId = 6;
+}
+
+message W2P_WorldCombatChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	int64 ServerTime = 5;
+	int64 CombatSequence = 6;
+	int32 ActionKind = 7;
+	int64 ActorUnitId = 8;
+	int32 WeaponItemId = 9;
+	repeated int64 TargetUnitIds = 10;
+	repeated WorldPlayerInfo Players = 11;
+	repeated WorldEnemyInfo Enemies = 12;
+}
+
+message W2P_WorldEnemiesTransformChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	repeated WorldEnemyTransformInfo Enemies = 5;
+}
+
+message W2P_WorldNavigationLeaseChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	int64 NavigationExecutorUnitId = 5;
+	int64 NavigationLeaseRevision = 6;
+	int64 ServerTime = 7;
+}
+
+message P2G_WorldCombatChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	int64 ServerTime = 6;
+	int64 CombatSequence = 7;
+	int32 ActionKind = 8;
+	int64 ActorUnitId = 9;
+	int32 WeaponItemId = 10;
+	repeated int64 TargetUnitIds = 11;
+	repeated WorldPlayerInfo Players = 12;
+	repeated WorldEnemyInfo Enemies = 13;
+}
+
+message P2G_WorldEnemiesTransformChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	repeated WorldEnemyTransformInfo Enemies = 6;
+}
+
+message P2G_WorldNavigationLeaseChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	int64 NavigationExecutorUnitId = 6;
+	int64 NavigationLeaseRevision = 7;
+	int64 ServerTime = 8;
+}
+
+message W2P_WorldCorpseChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	bool HasCorpse = 5;
+	WorldCorpseInfo Corpse = 6;
+	int64 RemovedCorpseId = 7;
+}
+
+message P2G_WorldCorpseChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	bool HasCorpse = 6;
+	WorldCorpseInfo Corpse = 7;
+	int64 RemovedCorpseId = 8;
+}
+
+message W2P_WorldInventoryCheckpoint // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	string OperationId = 4;
+	OnlineInventoryInfo OnlineInventory = 5;
+}
+
+message W2P_WorldSelfInventoryChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	OnlineInventoryInfo SelfInventory = 4;
+}
+
+message P2G_WorldSelfInventoryChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	OnlineInventoryInfo SelfInventory = 5;
+}
+
+message W2P_WorldSelfUnitChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 PreviousUnitId = 4;
+	int64 SelfUnitId = 5;
+	int64 WorldRevision = 6;
+}
+
+message P2G_WorldSelfUnitChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 PreviousUnitId = 5;
+	int64 SelfUnitId = 6;
+	int64 WorldRevision = 7;
+}
+
+message W2P_WorldTemporaryBuildingChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 WorldId = 2;
+	string MapId = 3;
+	int64 WorldRevision = 4;
+	bool HasBuilding = 5;
+	WorldTemporaryBuildingInfo Building = 6;
+	int32 RemovedRuntimeId = 7;
+	int64 ServerTime = 8;
+}
+
+message P2G_WorldTemporaryBuildingChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	int64 WorldId = 3;
+	string MapId = 4;
+	int64 WorldRevision = 5;
+	bool HasBuilding = 6;
+	WorldTemporaryBuildingInfo Building = 7;
+	int32 RemovedRuntimeId = 8;
+	int64 ServerTime = 9;
+}
+
+// ResponseType R2G_GetPublicRoomList
+message G2R_GetPublicRoomList // IRequest
+{
+	int32 RpcId = 1;
+	int64 CursorRoomId = 2;
+}
+
+message R2G_GetPublicRoomList // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	repeated PublicRoomSummary Rooms = 4;
+	int64 NextCursorRoomId = 5;
+	bool HasMore = 6;
+}
+
+// ResponseType P2G_StartOnlineArcadeRun
+message G2P_StartOnlineArcadeRun // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+}
+
+message P2G_StartOnlineArcadeRun // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRun = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+// ResponseType R2P_StartOnlineArcadeRun
+message P2R_StartOnlineArcadeRun // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string OperationId = 3;
+}
+
+message R2P_StartOnlineArcadeRun // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRun = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+// ResponseType P2G_GetCurrentOnlineArcadeRun
+message G2P_GetCurrentOnlineArcadeRun // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+}
+
+message P2G_GetCurrentOnlineArcadeRun // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRun = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+// ResponseType R2P_GetCurrentOnlineArcadeRun
+message P2R_GetCurrentOnlineArcadeRun // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+}
+
+message R2P_GetCurrentOnlineArcadeRun // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool HasRun = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+// ResponseType P2G_OperateOnlineArcadeSafeShop
+message G2P_OperateOnlineArcadeSafeShop // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	string OperationId = 4;
+	int64 ExpectedRevision = 5;
+	int32 ActionKind = 6;
+	string OfferId = 7;
+	int32 GoldAmount = 8;
+	bool Ready = 9;
+}
+
+message P2G_OperateOnlineArcadeSafeShop // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+// ResponseType R2P_OperateOnlineArcadeSafeShop
+message P2R_OperateOnlineArcadeSafeShop // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string OperationId = 3;
+	int64 ExpectedRevision = 4;
+	int32 ActionKind = 5;
+	string OfferId = 6;
+	int32 GoldAmount = 7;
+	bool Ready = 8;
+}
+
+message R2P_OperateOnlineArcadeSafeShop // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	OnlineArcadeRunSnapshot Run = 5;
+}
+
+message R2P_OnlineArcadeRunChanged // IMessage
+{
+	int64 PlayerId = 1;
+	OnlineArcadeRunSnapshot Run = 2;
+	bool HasRun = 3;
+}
+
+message R2R_OnlineArcadeConnectionChanged // IMessage
+{
+	int64 RoomId = 1;
+	int64 PlayerId = 2;
+	bool Connected = 3;
+}
+
+message P2G_OnlineArcadeRunChanged // IMessage
+{
+	int64 PlayerId = 1;
+	int64 SessionEpoch = 2;
+	OnlineArcadeRunSnapshot Run = 3;
+	bool HasRun = 4;
+}
+
+// ResponseType P2G_SubmitOnlineArcadeInput
+message G2P_SubmitOnlineArcadeInput // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int64 SessionEpoch = 3;
+	int32 ArenaNumber = 4;
+	int64 InputSequence = 5;
+	float MoveX = 6;
+	float MoveZ = 7;
+	float AimX = 8;
+	float AimZ = 9;
+	bool Firing = 10;
+	bool UseBomb = 11;
+	bool UseDash = 12;
+}
+
+message P2G_SubmitOnlineArcadeInput // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 LastAcceptedInputSequence = 5;
+	OnlineArcadeRunSnapshot Run = 6;
+}
+
+// ResponseType R2P_SubmitOnlineArcadeInput
+message P2R_SubmitOnlineArcadeInput // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	int32 ArenaNumber = 3;
+	int64 InputSequence = 4;
+	float MoveX = 5;
+	float MoveZ = 6;
+	float AimX = 7;
+	float AimZ = 8;
+	bool Firing = 9;
+	bool UseBomb = 10;
+	bool UseDash = 11;
+}
+
+message R2P_SubmitOnlineArcadeInput // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Accepted = 4;
+	int64 LastAcceptedInputSequence = 5;
+	OnlineArcadeRunSnapshot Run = 6;
+}
+
+// ResponseType R2G_ExecuteOnlineArcadeTestCmd
+message G2R_ExecuteOnlineArcadeTestCmd // IRequest
+{
+	int32 RpcId = 1;
+	int64 PlayerId = 2;
+	string ArgumentText = 3;
+}
+
+message R2G_ExecuteOnlineArcadeTestCmd // IResponse
+{
+	int32 RpcId = 1;
+	int32 Error = 2;
+	string Message = 3;
+	bool Success = 4;
+	int32 ResultCode = 5;
+	int64 ServerTime = 6;
+}
+
+message W2P_WorldProjectilesChanged // IMessage
+{
+    int64 PlayerId = 1;
+    int64 WorldId = 2;
+    string MapId = 3;
+    int64 WorldRevision = 4;
+    int64 ServerTime = 5;
+    repeated WorldProjectileInfo Projectiles = 6;
+    repeated WorldProjectileTermination Terminations = 7;
+}
+message P2G_WorldProjectilesChanged // IMessage
+{
+    int64 PlayerId = 1;
+    int64 SessionEpoch = 2;
+    int64 WorldId = 3;
+    string MapId = 4;
+    int64 WorldRevision = 5;
+    int64 ServerTime = 6;
+    repeated WorldProjectileInfo Projectiles = 7;
+    repeated WorldProjectileTermination Terminations = 8;
+}

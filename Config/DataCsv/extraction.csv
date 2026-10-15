@@ -1,0 +1,4 @@
+##var,Id,PrefabName
+##type,string,string
+,extraction.task.main,TaskExit
+,extraction.valley.main,TaskExit

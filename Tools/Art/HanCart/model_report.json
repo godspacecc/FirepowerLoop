@@ -1,0 +1,17 @@
+{
+  "triangles": 18858,
+  "vertices": 9989,
+  "materials": [
+    "CartDarkWood",
+    "CartWeatheredWood",
+    "CartSplitWood",
+    "CartRope",
+    "CartForgedIron"
+  ],
+  "editable_parts": 248,
+  "size_meters": [
+    1.9502880573272705,
+    3.383646011352539,
+    1.596503734588623
+  ]
+}

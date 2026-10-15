@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea411e143f4d9f646a78b75b997e266d, type: 3}
+  m_Name: UnarmedMoveLeft
+  m_EditorClassIdentifier: 
+  clip: {fileID: 7400000, guid: 42df53de43102e74bb612f1f9612d7c6, type: 3}
+  displayName: "\u7a7a\u624b\u5de6\u79fb\uff08UnarmedMoveLeft\uff09"
+  compatibleCategories: 1
+  requiredBones: 
+  allowOffhandGrip: 0

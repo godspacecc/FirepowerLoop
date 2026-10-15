@@ -1,0 +1,3 @@
+##var,BuildingId,InteractDistance,ShootCooldownSeconds,Damage,ProjectileConfigId,AmmoItemId,AmmoAmount,MagazineCapacity,ReloadSeconds,OperateRotateDegreesPerSecond
+##type,string,float,float,int,string,int,int,int,float,float
+,temp_arrow_tower,2.2,0.8,24,projectile.arrow.basic,7,1,5,2.0,180

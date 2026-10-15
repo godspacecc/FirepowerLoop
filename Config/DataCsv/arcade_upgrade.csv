@@ -1,0 +1,7 @@
+##var,Id,Kind,ValuePerStack,MaxStacks
+##type,string,ArcadeUpgradeKind,float,int
+,arcade.upgrade.damage,DamagePercent,0.12,5
+,arcade.upgrade.fire-rate,FireRatePercent,0.10,5
+,arcade.upgrade.move-speed,MoveSpeedPercent,0.08,4
+,arcade.upgrade.max-health,MaxHealthPercent,0.15,4
+,arcade.upgrade.pickup-radius,PickupRadiusPercent,0.20,3

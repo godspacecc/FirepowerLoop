@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<enums>
+    <enum name="DialogueOptionAction" group="c">
+        <var name="GoToNode" value="1"/>
+        <var name="End" value="2"/>
+        <var name="OpenNpcFunction" value="3"/>
+    </enum>
+    <enum name="ItemType" group="e">
+        <var name="Material" value="1"/>
+        <var name="Consumable" value="2"/>
+        <var name="Weapon" value="3"/>
+        <var name="Ammunition" value="4"/>
+        <var name="Tool" value="5"/>
+        <var name="Clothing" value="6"/>
+    </enum>
+    <enum name="ClothingSlot" group="e">
+        <var name="None" value="0"/>
+        <var name="Torso" value="1"/>
+        <var name="Legs" value="2"/>
+        <var name="Head" value="3"/>
+        <var name="Hands" value="4"/>
+        <var name="Feet" value="5"/>
+        <var name="Back" value="6"/>
+        <var name="Armor" value="7"/>
+    </enum>
+    <enum name="ItemActionKind" group="e">
+        <var name="None" value="0"/>
+        <var name="OpenMap" value="1"/>
+        <var name="ToggleTorch" value="2"/>
+    </enum>
+    <enum name="WeaponKind" group="e">
+        <var name="Melee" value="1"/>
+        <var name="Projectile" value="2"/>
+    </enum>
+    <enum name="PlayerWeaponAttachPoint" group="c">
+        <var name="MeleeWeapon" value="1"/>
+        <var name="RangedWeapon" value="2"/>
+        <var name="LeftHandWeapon" value="3"/>
+    </enum>
+    <enum name="EnemyAttackKind" group="e">
+        <var name="Melee" value="1"/>
+        <var name="Projectile" value="2"/>
+    </enum>
+    <enum name="ItemUseEffect" group="e">
+        <var name="None" value="0"/>
+        <var name="RestoreHealth" value="1"/>
+        <var name="RestorePower" value="2"/>
+        <var name="RestoreWater" value="3"/>
+    </enum>
+    <enum name="MapSpawnObjectType" group="e">
+        <var name="Player" value="1"/>
+        <var name="Enemy" value="2"/>
+        <var name="Loot" value="3"/>
+        <var name="Extraction" value="4"/>
+        <var name="Npc" value="5"/>
+    </enum>
+    <enum name="NpcInteractionKind" group="c">
+        <var name="MapSelection" value="1"/>
+        <var name="Warehouse" value="2"/>
+        <var name="Craft" value="3"/>
+        <var name="Shop" value="4"/>
+        <var name="Arcade" value="5"/>
+    </enum>
+    <enum name="TaskObjectiveType" group="c">
+        <var name="Survive" value="1"/>
+        <var name="Kill" value="2"/>
+    </enum>
+    <enum name="ArcadeDropKind" group="e">
+        <var name="RunGold" value="1"/>
+        <var name="Bomb" value="2"/>
+        <var name="Dash" value="3"/>
+        <var name="TemporaryWeapon" value="4"/>
+        <var name="Support" value="5"/>
+        <var name="Powerup" value="6"/>
+        <var name="FirstPerson" value="7"/>
+    </enum>
+    <enum name="ArcadeTreasureRewardKind" group="e">
+        <var name="GoldBar" value="1"/>
+        <var name="Gem" value="2"/>
+        <var name="Bomb" value="3"/>
+        <var name="Dash" value="4"/>
+    </enum>
+    <enum name="ArcadeHazardKind" group="e">
+        <var name="ElectricTower" value="1"/>
+        <var name="RotatingArm" value="2"/>
+    </enum>
+    <enum name="ArcadePowerupBehavior" group="e">
+        <var name="Shield" value="1"/>
+        <var name="Boots" value="2"/>
+        <var name="Magnet" value="3"/>
+        <var name="Chicken" value="4"/>
+        <var name="Sentry" value="5"/>
+        <var name="ElectricOrb" value="6"/>
+        <var name="Decoy" value="7"/>
+        <var name="Barrel" value="8"/>
+        <var name="Saw" value="9"/>
+        <var name="Gloves" value="10"/>
+        <var name="Clock" value="11"/>
+    </enum>
+    <enum name="ArcadeWeaponBehavior" group="e">
+        <var name="Direct" value="1"/>
+        <var name="Piercing" value="2"/>
+        <var name="Explosive" value="3"/>
+        <var name="TimedExplosive" value="4"/>
+          <var name="Melee" value="5"/>
+    </enum>
+    <enum name="ArcadeShopProductType" group="e">
+        <var name="Upgrade" value="1"/>
+        <var name="ExtraLife" value="2"/>
+        <var name="Consumable" value="3"/>
+        <var name="Equipment" value="4"/>
+    </enum>
+    <enum name="ArcadeUpgradeKind" group="e">
+        <var name="DamagePercent" value="1"/>
+        <var name="FireRatePercent" value="2"/>
+        <var name="MoveSpeedPercent" value="3"/>
+        <var name="MaxHealthPercent" value="4"/>
+        <var name="PickupRadiusPercent" value="5"/>
+    </enum>
+    <enum name="ArcadeRewardTrigger" group="e">
+        <var name="ArenaClear" value="1"/>
+        <var name="BossClear" value="2"/>
+        <var name="ChallengeClear" value="3"/>
+    </enum>
+</enums>

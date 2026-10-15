@@ -1,0 +1,4 @@
+interface:
+  display_name: "Luban Config"
+  short_description: "Maintain Luban sources, outputs, and runtime boundaries"
+  default_prompt: "Use $luban-config to change or review this project's Luban configuration safely."

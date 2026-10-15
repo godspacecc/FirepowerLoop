@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "observedAt": "2026-09-22",
+  "source": "Gaode standard map visual reference",
+  "referenceCenter": {
+    "wgs84": [112.1858, 27.63513],
+    "gcj02": [112.191372, 27.631909]
+  },
+  "coordinateConvention": "local metres relative to the map center; x/easting positive east, y/northing positive north",
+  "scope": "Road centerlines visibly confirmed across the full 2048m by 2048m map extent are recorded. No raster tile or provider vector data is stored.",
+  "correctionBoundsLocalMeters": {
+    "west": -1024,
+    "east": 1024,
+    "south": -1024,
+    "north": 1024
+  },
+  "roads": [
+    {
+      "id": "center_206_township_road",
+      "kind": "main",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-504, 1024], [-490, 937], [-461, 872], [-433, 812], [-394, 753], [-368, 688], [-325, 635], [-289, 583], [-256, 547], [-234, 509], [-246, 457], [-224, 414], [-222, 356], [-177, 351], [-130, 295], [-117, 257], [-115, 235], [-109, 215], [-95, 194], [-77, 176], [-67, 160], [-56, 139], [-43, 117], [-36, 93], [-32, 74], [-24, 54], [-21, 31], [-15, 9], [-5, 0], [-4, -30], [-3, -56], [3, -85], [14, -114], [27, -142], [46, -171], [49, -198], [49, -232], [50, -269], [51, -307], [83, -533], [86, -583], [126, -654], [163, -736], [187, -814], [206, -851], [292, -863], [375, -934], [425, -994], [440, -1024]]
+    },
+    {
+      "id": "west_north_branch",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-21, 74], [-37, 79], [-56, 70], [-78, 54], [-98, 40], [-118, 28], [-137, 19], [-162, 10], [-182, 9], [-203, 12], [-222, 1], [-239, -11], [-266, -34], [-268, -20], [-286, -19], [-304, -31], [-327, -40], [-348, -50], [-377, -55], [-403, -62], [-470, -70], [-550, -58], [-640, -35], [-730, 4], [-820, 32], [-910, 45], [-980, 24], [-1024, 10]]
+    },
+    {
+      "id": "west_south_loop",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-266, -34], [-291, -59], [-338, -91], [-338, -108], [-318, -132], [-294, -154], [-265, -159], [-238, -155], [-209, -159], [-184, -168], [-154, -172], [-128, -167], [-103, -150], [-88, -136], [-65, -128], [-40, -128], [-17, -119], [14, -114]]
+    },
+    {
+      "id": "east_north_branch",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-5, 0], [23, 0], [38, 10], [44, 32], [50, 47], [62, 58], [83, 70], [100, 86], [118, 103], [135, 127], [154, 151], [175, 152], [197, 140], [219, 121], [244, 106], [268, 102], [290, 109], [305, 124], [317, 144], [329, 164], [339, 177], [356, 181], [430, 180], [500, 150], [570, 120], [650, 118], [730, 145], [810, 170], [900, 200], [980, 210], [1024, 210]]
+    },
+    {
+      "id": "east_south_branch",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[46, -171], [78, -171], [104, -171], [130, -158], [152, -134], [160, -112], [168, -103], [180, -114], [198, -130], [221, -145], [245, -156], [268, -161], [287, -158], [304, -150], [319, -157], [339, -149], [356, -148], [450, -155], [550, -170], [650, -190], [750, -210], [850, -205], [950, -190], [1024, -180]]
+    },
+    {
+      "id": "east_south_spur",
+      "kind": "minor",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[268, -161], [262, -182], [263, -199], [268, -216], [266, -234], [252, -251], [246, -272], [246, -291], [242, -307]]
+    },
+    {
+      "id": "northwest_cross_branch",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-234, 509], [-284, 538], [-354, 535], [-435, 526], [-502, 492], [-538, 485], [-600, 497], [-655, 535], [-710, 543], [-765, 580], [-829, 602], [-899, 604], [-963, 638], [-1024, 633]]
+    },
+    {
+      "id": "northwest_boundary_spur",
+      "kind": "minor",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[-710, 543], [-748, 610], [-800, 690], [-850, 760], [-915, 798], [-957, 802], [-974, 879], [-1024, 951]]
+    },
+    {
+      "id": "southeast_long_branch",
+      "kind": "branch",
+      "visibilityWidthMeters": 6,
+      "localMeters": [[126, -418], [220, -475], [315, -463], [402, -425], [487, -373], [581, -365], [664, -413], [714, -516], [717, -604], [750, -667], [777, -755], [777, -860], [812, -977], [830, -1024]]
+    },
+    {
+      "id": "southwest_connector",
+      "kind": "minor",
+      "visibilityWidthMeters": 6,
+      "verificationStatus": "disputed",
+      "verificationNote": "2026-09-27 Gaode standard-map and satellite recheck with the correct GCJ-02 frame places the existing Unity road-sample midpoint in terraces/woodland, roughly 100m north of the visible road. Retain this polyline only as historical trace until redrawn.",
+      "localMeters": [[83, -533], [3, -530], [-74, -533], [-139, -563], [-191, -612], [-272, -643], [-358, -685], [-439, -707], [-495, -753], [-580, -800], [-680, -865], [-790, -930], [-900, -970], [-1024, -985]]
+    },
+    {
+      "id": "southwest_vertical_spur",
+      "kind": "minor",
+      "visibilityWidthMeters": 6,
+      "verificationStatus": "disputed",
+      "verificationNote": "Shares the disputed southwest_connector anchor and must be redrawn from the corrected Gaode coordinate frame before use.",
+      "localMeters": [[-439, -707], [-430, -790], [-455, -870], [-440, -940], [-410, -1024]]
+    }
+  ]
+}

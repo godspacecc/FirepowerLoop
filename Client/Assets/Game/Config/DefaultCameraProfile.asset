@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d999d0bd23c3cdd4bb4ba8739b102ea6, type: 3}
+  m_Name: DefaultCameraProfile
+  m_EditorClassIdentifier: 
+  PitchDegrees: 75
+  YawDegrees: 0
+  FieldOfView: 38
+  FollowDistance: 14
+  FollowSmoothTime: 0.12
+  NearClipPlane: 0.3
+  FarClipPlane: 80

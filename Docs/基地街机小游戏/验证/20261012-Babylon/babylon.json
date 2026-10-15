@@ -1,0 +1,72 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 3223,
+    "PassedTests": 12,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.5569579"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.ArmorPresentation_RemovesMarkerAfterBreakAndOnRepeatedRelease",
+      "Status": "Passed",
+      "Duration": "00:00:00.2680000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.Challenge_InitializesNeitherCratesNorArmor",
+      "Status": "Passed",
+      "Duration": "00:00:00.0300000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.CrateBreak_IsIdempotentAndCreatesPickupInsteadOfCash",
+      "Status": "Passed",
+      "Duration": "00:00:00.0210000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.Crates_BuildOnceAndDoNotRespawnOnNextWave",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.FirstWaveArmor_AbsorbsDamageAndLaterWavesStayNormal",
+      "Status": "Passed",
+      "Duration": "00:00:00.0350000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.FormalTemplates_HaveNoSpareLibraryDependencyOrCollider",
+      "Status": "Passed",
+      "Duration": "00:00:00.0190000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.FullDropBudget_KeepsCrateClaimableUntilSpaceReturns",
+      "Status": "Passed",
+      "Duration": "00:00:00.0130000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.LegacyAndOtherBranch_DoNotCreateCratesOrArmor(False,2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0120000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.LegacyAndOtherBranch_DoNotCreateCratesOrArmor(True,3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.LegacyAndOtherBranch_DoNotCreateCratesOrArmor(False,3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.PooledEnemy_DoesNotRetainOldArmor",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeBabylonContentTests.RealPlayerProjectile_CrossesSmallCrateAndBreaksOnce",
+      "Status": "Passed",
+      "Duration": "00:00:00.0340000"
+    }
+  ]
+}

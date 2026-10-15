@@ -1,0 +1,5 @@
+##var,Id,Trigger,StartArena,Interval,RewardId,Amount,AmountPerTrigger
+##type,string,ArcadeRewardTrigger,int,int,string,int,int
+,arcade.reward.arena-clear,ArenaClear,1,1,reward.arcade.scrap,1,0
+,arcade.reward.boss-clear,BossClear,4,4,reward.arcade.core,1,1
+,arcade.reward.challenge-clear,ChallengeClear,1,1,reward.arcade.token,1,0

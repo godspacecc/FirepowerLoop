@@ -1,0 +1,13 @@
+##var,Id,Behavior,ActiveVisualPrefabName,VisualFollowPlayer,VisualOffsetX,VisualOffsetY,VisualOffsetZ,Magnitude,Damage,IntervalSeconds,Radius,ProjectileSpeed,Charges
+##type,string,ArcadePowerupBehavior,string,bool,float,float,float,float,int,float,float,float,int
+,arcade.powerup.shield,Shield,ArcadeShieldEffect,true,0,0,0,0,0,0,0,0,1
+,arcade.powerup.boots,Boots,ArcadeBootsSpeedEffect,true,0,0.06,0,0.35,0,0,0,0,0
+,arcade.powerup.magnet,Magnet,ArcadeMagnetEffect,true,-0.55,1.0,0,0,0,0,5,0,0
+,arcade.powerup.chicken,Chicken,ArcadeChickenCompanion,true,0.8,0.5,-0.6,0,12,0.45,0,19,0
+,arcade.powerup.sentry,Sentry,ArcadeSentryTurret,false,0,0.35,0,0,18,0.55,12,20,0
+,arcade.powerup.orb,ElectricOrb,ArcadeDropLightning,true,-0.8,1.1,0,0,14,0.35,2.4,0,0
+,arcade.powerup.decoy,Decoy,ArcadeDropDecoy,false,0,0.35,0,0,45,0,3.5,0,0
+,arcade.powerup.barrel,Barrel,ArcadeDropBarrel,true,-0.8,0.45,-0.5,1.7,40,0,2,0,3
+,arcade.powerup.saw,Saw,ArcadeSawBlade,true,0,0.25,0.9,0,16,0.25,1.8,0,0
+,arcade.powerup.gloves,Gloves,ArcadeDropGloves,true,0.6,0.9,0.35,3,18,0.30,2.2,0,0
+,arcade.powerup.clock,Clock,ArcadeDropClock,true,0,1.8,0,0.45,0,0,0,0,0

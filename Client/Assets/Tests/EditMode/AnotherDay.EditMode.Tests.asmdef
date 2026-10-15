@@ -1,0 +1,31 @@
+{
+    "name": "AnotherDay.EditMode.Tests",
+    "rootNamespace": "Game.Tests",
+    "references": [
+        "Boot",
+        "YooAsset",
+        "Game",
+        "UniTask",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "MemoryPack",
+        "Unity.Mathematics",
+        "Cinemachine"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Newtonsoft.Json.dll"
+    ],
+    "autoReferenced": false,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "noEngineReferences": false
+}

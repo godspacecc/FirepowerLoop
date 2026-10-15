@@ -1,0 +1,3 @@
+##var,Id,PrefabName,MaxHP,AttackDamage,AttackRange,AttackCooldownSeconds,MoveSpeed,TurnSpeed,BaseRecoveryPerSecond,UnarmedAttackDamage,UnarmedAttackRange,UnarmedAttackCooldownSeconds,UnarmedMeleeArcDegrees,BuildingOperateDistance
+##type,string,string,int,int,float,float,float,float,float,int,float,float,float,float
+,player.graybox.default,GrayboxPlayer,100,10,2.2,0.45,5,720,5,3,1.4,0.6,75,3

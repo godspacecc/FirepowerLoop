@@ -1,0 +1,12 @@
+{
+  "mesh_count": 5,
+  "rotors": [
+    "Rotor_FL",
+    "Rotor_FR",
+    "Rotor_RL",
+    "Rotor_RR"
+  ],
+  "triangles": 3384,
+  "vertices": 1824,
+  "fbx": "E:\\GitHub\\AnotherDay\\Client\\Assets\\Game\\Art\\Arcade\\SupportDrone\\Models\\ArcadeSupportDrone.fbx"
+}

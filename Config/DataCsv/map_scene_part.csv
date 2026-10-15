@@ -1,0 +1,2 @@
+##var,Id,MapId,ScenePath,Order
+##type,string,string,string,int

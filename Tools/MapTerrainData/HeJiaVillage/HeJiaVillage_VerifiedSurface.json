@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "mapName": "HeJiaVillage",
+  "observedAt": "2026-09-22",
+  "source": "Gaode satellite map visual reference",
+  "referenceCenter": {
+    "wgs84": [112.1858, 27.63513],
+    "gcj02": [112.191372, 27.631909]
+  },
+  "coordinateConvention": "local metres relative to the map center; x/easting positive east, y/northing positive north",
+  "scope": "Only conservative interiors of clearly visible ponds are recorded. Ambiguous ditches, streams, buildings and land-cover boundaries are intentionally omitted. No raster tile or provider vector data is stored.",
+  "waterBodies": [
+    { "id": "pond_northwest_01", "centerLocalMeters": [-625, 82], "radiusMeters": [27, 20] },
+    { "id": "pond_northwest_02", "centerLocalMeters": [-487, 177], "radiusMeters": [23, 25] },
+    { "id": "pond_north_01", "centerLocalMeters": [-71, 353], "radiusMeters": [18, 31] },
+    { "id": "pond_north_02", "centerLocalMeters": [82, 623], "radiusMeters": [26, 35] },
+    { "id": "pond_east_01", "centerLocalMeters": [447, -122], "radiusMeters": [12, 12] },
+    { "id": "pond_east_02", "centerLocalMeters": [615, -170], "radiusMeters": [22, 38] },
+    { "id": "pond_east_03", "centerLocalMeters": [244, -288], "radiusMeters": [12, 14] },
+    { "id": "pond_southwest_01", "centerLocalMeters": [-450, -374], "radiusMeters": [14, 21] },
+    { "id": "pond_southwest_02", "centerLocalMeters": [-306, -412], "radiusMeters": [17, 30] },
+    { "id": "pond_south_01", "centerLocalMeters": [-53, -384], "radiusMeters": [10, 11] },
+    { "id": "pond_southeast_01", "centerLocalMeters": [466, -334], "radiusMeters": [10, 12] },
+    {
+      "id": "pond_southwest_03",
+      "centerLocalMeters": [-420, -681],
+      "radiusMeters": [20, 45],
+      "verificationStatus": "disputed",
+      "verificationNote": "2026-09-27 Gaode satellite recheck at GCJ-02 112.187108,27.625791 shows terraces/woodland rather than a pond at the recorded center; retain as historical trace only and do not use for route blocking until redrawn."
+    },
+    { "id": "pond_southeast_02", "centerLocalMeters": [678, -469], "radiusMeters": [13, 16] }
+  ]
+}

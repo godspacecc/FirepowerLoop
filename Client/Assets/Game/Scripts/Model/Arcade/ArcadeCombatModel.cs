@@ -1,0 +1,232 @@
+using System.Collections.Generic;
+using QFramework;
+using UnityEngine;
+
+namespace Game
+{
+    /// <summary>Boss 技能瞬时阶段；只存在于当前竞技场，联机协议使用相同数值。</summary>
+    public enum ArcadeBossPhase
+    {
+        None = 0,
+        Telegraph = 1,
+        Charging = 2,
+        RayTelegraph = 3,
+    }
+
+    internal sealed class ArcadeEnemyRuntime
+    {
+        public int Id;
+        public string ConfigId;
+        public global::EnemyAttackKind AttackKind;
+        public Vector2 Position;
+        /// <summary>海岛当前实体尚在入口通道；仅本次出生有效，不保存也不改变敌人计数。</summary>
+        public bool EnteringIsland;
+        /// <summary>入口在场内的终点（竞技场米）；到达后恢复已有追击和攻击。</summary>
+        public Vector2 IslandEntryTarget;
+        public int Health;
+        public int MaxHealth;
+        /// <summary>当前轮独立护甲耐久，归还对象池时清零，不计入生命或存档。</summary>
+        public int ArmorHealth;
+        public int Damage;
+        public float Speed;
+        public float AttackRange;
+        public float AttackInterval;
+        public float AttackCooldown;
+        /// <summary>标记当前波次中的 Boss，只供常驻血条等表现读取，不参与伤害或行为判断。</summary>
+        public bool IsBossPresentation;
+        /// <summary>每次规则层接受攻击时递增；仅用于让表现层去重播放攻击动画。</summary>
+        public int AttackSequence;
+        public string BossId;
+        public ArcadeBossDefinition BossDefinition;
+        public ArcadeBossPhase BossPhase;
+        public float BossPhaseRemaining;
+        public float BossSkillCooldown;
+        public Vector2 BossChargeDirection;
+        public bool BossImpactConsumed;
+        /// <summary>射线独立冷却（秒）；预警方向在进入 RayTelegraph 时锁定。</summary>
+        public float BossRayCooldown;
+
+        /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
+        public void Reset()
+        {
+            Id = 0;
+            ConfigId = null;
+            AttackKind = default;
+            Position = default;
+            EnteringIsland = false;
+            IslandEntryTarget = default;
+            Health = 0;
+            MaxHealth = 0;
+            ArmorHealth = 0;
+            Damage = 0;
+            Speed = 0f;
+            AttackRange = 0f;
+            AttackInterval = 0f;
+            AttackCooldown = 0f;
+            IsBossPresentation = false;
+            AttackSequence = 0;
+            BossId = null;
+            BossDefinition = default;
+            BossPhase = ArcadeBossPhase.None;
+            BossPhaseRemaining = 0f;
+            BossSkillCooldown = 0f;
+            BossChargeDirection = default;
+            BossImpactConsumed = false;
+            BossRayCooldown = 0f;
+        }
+    }
+
+    internal sealed class ArcadeProjectileRuntime
+    {
+        public int Id;
+        public bool Hostile;
+        public Vector2 Position;
+        public Vector2 Velocity;
+        public int Damage;
+        public float RemainingSeconds;
+        public global::ArcadeWeaponBehavior Behavior;
+        /// <summary>仅供表现层选择模型的配置资源名；不参与伤害、命中或寿命规则。</summary>
+        public string ProjectileVisualResourceName;
+        /// <summary>仅标记玩家武器弹丸，用于客户端枪口衔接；支援和敌方弹丸不使用该表现。</summary>
+        public bool FromPlayerWeapon;
+        /// <summary>生成时固定的武器配置身份，仅用于命中音色；换武器后在途弹丸仍保留原身份。</summary>
+        public string SourceWeaponId;
+        /// <summary>本弹丸尚可命中的不同敌人数；只存在于当前竞技场。</summary>
+        public int RemainingHits;
+        /// <summary>命中敌人或障碍时的爆炸半径，单位为竞技场米。</summary>
+        public float ExplosionRadius;
+        public readonly HashSet<int> HitEnemyIds = new HashSet<int>();
+
+        public void Reset()
+        {
+            Id = 0;
+            Hostile = false;
+            Position = default;
+            Velocity = default;
+            Damage = 0;
+            RemainingSeconds = 0f;
+            Behavior = global::ArcadeWeaponBehavior.Direct;
+            ProjectileVisualResourceName = null;
+            FromPlayerWeapon = false;
+            SourceWeaponId = null;
+            RemainingHits = 0;
+            ExplosionRadius = 0f;
+            HitEnemyIds.Clear();
+        }
+    }
+
+    internal sealed class ArcadeDropRuntime
+    {
+        public int Id;
+        public ArcadeDropDefinition Definition;
+        public Vector2 Position;
+
+        public void Reset()
+        {
+            Id = 0;
+            Definition = default;
+            Position = default;
+        }
+    }
+
+    /// <summary>单个强化道具的竞技场瞬时状态；同类再次拾取会刷新该实例，不负责跨安全节点持久化。</summary>
+    internal sealed class ArcadePowerupRuntime
+    {
+        public string ProductId;
+        public ArcadePowerupDefinition Definition;
+        /// <summary>剩余有效时间，单位秒；归零后由战斗系统统一移除。</summary>
+        public float RemainingSeconds;
+        /// <summary>护盾或木桶的剩余触发次数；不使用次数的强化保持为零。</summary>
+        public int Charges;
+        /// <summary>周期效果距离下一次结算的秒数。</summary>
+        public float CooldownSeconds;
+        /// <summary>哨戒炮、诱饵等固定效果的竞技场坐标。</summary>
+        public Vector2 Position;
+        /// <summary>强化最后一次实际发射的竞技场方向；零表示尚未开火，只用于视觉朝向。</summary>
+        public Vector2 ShotDirection;
+    }
+
+    /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
+    internal sealed class ArcadeCombatRuntime
+    {
+        public bool CratesInitialized;
+        /// <summary>本场剩余箱子，跨普通轮保留，整场释放或回滚时丢弃。</summary>
+        public readonly Dictionary<int, AnotherDay.Arcade.ArcadeCrateState> Crates = new();
+        /// <summary>本竞技场临时共享实例；整场结束或回滚时丢弃，不单独落盘。</summary>
+        public AnotherDay.Arcade.ArcadeTreasureRoomState TreasureRoom;
+        public bool TreasureInitialized;
+        public bool TreasureDiscovered;
+        public bool TreasureCleared;
+        /// <summary>本次保底奖励房已结束；返回后不再自动重复进入，不进入安全存档。</summary>
+        public bool TreasureCompleted;
+        public bool InTreasureRoom;
+        public int PresentedRegion;
+        /// <summary>四轮完成后独立 Boss 战；不改变 WaveIndex 或场序。</summary>
+        public bool IsFinalBoss;
+        public int FinalBossEnemyId;
+        public bool FinalBossDefeated;
+        public float ReinforcementCooldown;
+        /// <summary>所有危险已停止，等待实体出口；选择只在完成事务保存成功后持久化。</summary>
+        public bool AwaitingExit;
+        public int SelectedExitConfigNumber;
+        public int ArenaNumber;
+        public bool IsChallenge;
+        public string ChallengeId;
+        public float ChallengeSeconds;
+        public int WaveIndex;
+        public Vector2 PlayerPosition;
+        public Vector2 AimDirection = Vector2.up;
+        public Vector2 MoveDirection;
+        /// <summary>当前帧的持续开火意图，由鼠标按键或右摇杆越过死区产生。</summary>
+        public bool Firing;
+        public int PlayerHealth;
+        public int PlayerMaxHealth;
+        public float PlayerInvulnerability;
+        public float RespawnRemaining;
+        public float FireCooldown;
+        /// <summary>每次规则层实际生成至少一枚玩家投射物后递增；仅供表现端去重播放开火反馈。</summary>
+        public int PlayerFireSequence;
+        public float DashRemaining;
+        public float TemporaryWeaponRemaining;
+        /// <summary>单人视角道具剩余秒数；暂停冻结，退出/死亡/离场清零，独立于临时枪且不保存。</summary>
+        public float FirstPersonRemaining;
+        public string TemporaryWeaponId;
+        /// <summary>允许不同强化并存；键为行为类型，保证同类重复拾取只刷新而不叠出多个实例。</summary>
+        public readonly Dictionary<global::ArcadePowerupBehavior, ArcadePowerupRuntime> Powerups =
+            new Dictionary<global::ArcadePowerupBehavior, ArcadePowerupRuntime>();
+        public int Bombs;
+        public int Dashes;
+        public long ArenaGold;
+        public float SpawnCooldown;
+        /// <summary>本轮实际入场序号；独立于弹丸/掉落实体 ID，确保岸边与水侧交替且不改变清场计数。</summary>
+        public int IslandSpawnSequence;
+        public float WaveTransitionRemaining;
+        public bool WaveClearAwarded;
+        /// <summary>清场后须先松开射击再按下才提前推进，避免持续射击跳过休整。</summary>
+        public bool RestAttackReleased;
+        /// <summary>营火单次伤害节流秒数；权威活动帧推进，宝藏房与休整期间停止伤害。</summary>
+        public float CampfireCooldown;
+        public bool CompletionSubmitted;
+        public bool CompletionAwaitingRetry;
+        public bool ArenaClearAwarded;
+        public int NextEntityId = 1;
+        /// <summary>本场活动战斗累计秒数，暂停与复活等待不增长；不写安全节点。</summary>
+        public double HazardElapsedSeconds;
+        public readonly List<AnotherDay.Arcade.ArcadeHazardState> Hazards = new List<AnotherDay.Arcade.ArcadeHazardState>();
+        public readonly Dictionary<int, Vector2> HazardPreviousEnemyPositions = new Dictionary<int, Vector2>();
+        public readonly Queue<string> SpawnQueue = new Queue<string>();
+        public readonly Dictionary<int, ArcadeEnemyRuntime> Enemies = new Dictionary<int, ArcadeEnemyRuntime>();
+        public readonly Dictionary<int, ArcadeProjectileRuntime> Projectiles = new Dictionary<int, ArcadeProjectileRuntime>();
+        public readonly Dictionary<int, ArcadeDropRuntime> Drops = new Dictionary<int, ArcadeDropRuntime>();
+    }
+
+    /// <summary>街机战斗现场的唯一瞬时状态所有者；规则推进由 ArcadeCombatSystem 完成。</summary>
+    public sealed class ArcadeCombatModel : AbstractModel
+    {
+        internal ArcadeCombatRuntime Runtime { get; private set; }
+        public bool IsActive => Runtime != null;
+        protected override void OnInit() { }
+        internal void Begin(ArcadeCombatRuntime runtime) => Runtime = runtime;
+        internal void Clear() => Runtime = null;
+    }
+}
