@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using Cysharp.Threading.Tasks;
 using QFramework;
 using TMPro;
@@ -14,10 +13,6 @@ namespace Game
     /// <summary>渲染非阻断街机战斗 HUD 并转发紧急资源意图；双摇杆直接写入 Input System，不裁决战斗。</summary>
     public sealed partial class ArcadeHudUICtrl : BaseUICtrl
     {
-        private const float TimedStatusPadding = 8f;
-        private const float TimedStatusTemporaryHeight = 64f;
-        private const float TimedStatusSupportLineHeight = 42f;
-        private const float TimedStatusSectionGap = 6f;
         private ArcadeCombatHudSnapshot combat = new ArcadeCombatHudSnapshot();
         private bool hasCombatSnapshot;
         private bool onlineMode;
@@ -25,8 +20,8 @@ namespace Game
         /// <summary>只在本 HUD 可见期间订阅输入阻断及尺寸检查，隐藏或销毁时成对释放。</summary>
         private bool joystickUpdateRegistered;
         private Vector2 joystickAreaSize;
-        /// <summary>当前 View 的 Prefab 最大提示宽度，单位为 Canvas 像素；重建 View 时重新读取，避免缩窄后丢失上限。</summary>
-        private float timedStatusMaxWidth;
+        /// <summary>正式掉落目录，只用来投影效果类型与规则持续时间。</summary>
+        private ArcadeConfigCatalogDefinition hudCatalog;
         /// <summary>当前 HUD 玩家行的只读展示快照；每次权威快照刷新时整体重建，本机始终排在首行。</summary>
         private readonly List<PlayerStatusDisplay> playerStatuses = new(4);
         /// <summary>计分已使用的正式财宝规则；只读取提升要求与上限，不累计或修改倍率。</summary>
@@ -43,7 +38,9 @@ namespace Game
                 throw new System.InvalidOperationException("街机 HUD 倍率规则不可用：" + error);
             // 普通财宝计分也读取目录首份规则，HUD 与其共用同一配置来源。
             multiplierRules = catalog.TreasureRooms.FirstOrDefault();
-            timedStatusMaxWidth = ((RectTransform)UI.TemporaryStatusRoot.transform).rect.width;
+            hudCatalog = catalog;
+            UI.EffectList.AddItemRefreshListener(RefreshEffect);
+            UI.WeaponEffectList.AddItemRefreshListener(RefreshWeaponEffect);
             UI.PlayerStatusList.AddItemRefreshListener(RefreshPlayerStatus);
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
@@ -94,7 +91,7 @@ namespace Game
             ReleaseJoystickUpdate();
             awaitingOnlineExit = false;
             ClearPlayerStatuses();
-            UI.TemporaryStatusRoot.SetActive(false);
+            ClearTimedEffects();
             UI.FirstPersonRoot.SetActive(false);
         }
 
@@ -155,7 +152,6 @@ namespace Game
             Set(UI.TextArena, combat.IsChallenge
                 ? Loc.T("ui.arcade.hud.challenge", Mathf.CeilToInt(combat.ChallengeSeconds))
                 : Loc.T("ui.arcade.hud.arena", combat.ArenaNumber > 0 ? combat.ArenaNumber : snapshot.NextArenaNumber));
-            Set(UI.TextArena, UI.TextArena.text + "\n" + Loc.T("ui.arcade.hud.score", snapshot.Score));
             Set(UI.TextWave, combat.AwaitingExit ? Loc.T("ui.arcade.hud.exit") : combat.IsFinalBoss
                 ? Loc.T("ui.arcade.hud.final_boss")
                 : Loc.T("ui.arcade.hud.wave", combat.WaveNumber, combat.TotalWaves, combat.RemainingEnemies));
@@ -170,8 +166,7 @@ namespace Game
                 bombs = combat.Bombs;
                 dashes = combat.Dashes;
             }
-            SetButton(UI.BtnBomb, Loc.T("ui.arcade.bomb_count", bombs));
-            SetButton(UI.BtnDash, Loc.T("ui.arcade.dash_count", dashes));
+            RenderAbilityCounts(bombs, dashes);
             UI.BtnBomb.interactable = bombs > 0;
             UI.BtnDash.interactable = dashes > 0;
             UI.BtnRetry.gameObject.SetActive(hasCombatSnapshot && combat.CanRetryCompletion);
@@ -237,9 +232,12 @@ namespace Game
         private void RefreshJoystickVisibility()
         {
             if (UI == null) return;
-            var visible = this.GetSystem<MobileInputSystem>().IsMobileInputMode && !UIHelper.HasUIOpen;
+            var mobile = this.GetSystem<MobileInputSystem>().IsMobileInputMode;
+            ApplyInputLayout(mobile, onlineMode);
+            var visible = mobile && !UIHelper.HasUIOpen;
             if (UI.MoveJoystickRoot.activeSelf != visible) UI.MoveJoystickRoot.SetActive(visible);
             if (UI.AimJoystickRoot.activeSelf != visible) UI.AimJoystickRoot.SetActive(visible);
+            if (visible) ApplyJoystickLayout();
         }
 
         /// <summary>安全区或设置变化后适配布局；不写回持久值，不改变输入轴和战斗规则。</summary>
@@ -287,7 +285,6 @@ namespace Game
             Set(UI.TextArena, snapshot.Battle.IsChallenge
                 ? Loc.T("ui.arcade.hud.challenge", Mathf.CeilToInt(snapshot.Battle.ChallengeSeconds))
                 : Loc.T("ui.arcade.hud.arena", snapshot.Battle.ArenaNumber));
-            Set(UI.TextArena, UI.TextArena.text + "\n" + Loc.T("ui.arcade.hud.score", runPlayer.Score));
             Set(UI.TextWave, snapshot.Battle.AwaitingExit ? Loc.T("ui.arcade.hud.exit") : snapshot.Battle.IsFinalBoss
                 ? Loc.T("ui.arcade.hud.final_boss") : Loc.T("ui.arcade.hud.wave", snapshot.Battle.WaveNumber, snapshot.Battle.WaveCount, remainingEnemies));
             if (battlePlayer.InTreasureRoom) Set(UI.TextWave, Loc.T("ui.arcade.hud.treasure", Mathf.CeilToInt(snapshot.Battle.TreasureSeconds)));
@@ -295,9 +292,8 @@ namespace Game
                 Set(UI.TextWave, Loc.T("ui.arcade.hud.rest_online"));
             var powerups = battlePlayer.Powerups.Select(value => new ArcadePowerupHudEntry(
                 ProductNameKey(value.ProductId), value.RemainingSeconds, value.Charges)).ToArray();
-            RenderTimedStatus(battlePlayer.TemporaryWeaponId, battlePlayer.TemporaryWeaponSeconds, powerups);
-            SetButton(UI.BtnBomb, Loc.T("ui.arcade.bomb_count", runPlayer.Bombs));
-            SetButton(UI.BtnDash, Loc.T("ui.arcade.dash_count", runPlayer.Dashes));
+            RenderTimedStatus(ProductNameKey(battlePlayer.TemporaryWeaponId), battlePlayer.TemporaryWeaponSeconds, powerups);
+            RenderAbilityCounts(runPlayer.Bombs, runPlayer.Dashes);
             UI.BtnBomb.interactable = !snapshot.BattlePaused && runPlayer.Bombs > 0;
             UI.BtnDash.interactable = !snapshot.BattlePaused && runPlayer.Dashes > 0;
             UI.MoveJoystick.enabled = !snapshot.BattlePaused;
@@ -316,7 +312,7 @@ namespace Game
             playerStatuses.Clear();
             playerStatuses.Add(new PlayerStatusDisplay(Loc.T("ui.arcade.hud.self"), health, maxHealth,
                 snapshot.RemainingLives, snapshot.RunGold + (hasCombatSnapshot ? combat.ArenaGold : 0L), state, true,
-                snapshot.ScoreMultiplier, snapshot.MultiplierProgress));
+                snapshot.ScoreMultiplier, snapshot.MultiplierProgress, snapshot.Score));
             RefreshPlayerStatusList();
         }
 
@@ -359,7 +355,7 @@ namespace Game
                     : player.DisplayName;
             playerStatuses.Add(new PlayerStatusDisplay(displayName, health, maxHealth,
                 player.Lives, player.RunGold, battle.InTreasureRoom && connected ? Loc.T("ui.arcade.hud.treasure_member") : state, isSelf,
-                player.ScoreMultiplier, player.MultiplierProgress));
+                player.ScoreMultiplier, player.MultiplierProgress, player.Score));
         }
 
         /// <summary>列表数量先于刷新更新，确保复用行不会泄漏上一名玩家的文本、颜色或显隐状态。</summary>
@@ -379,6 +375,7 @@ namespace Game
             Set(box.TextName, status.Name);
             Set(box.TextLives, Loc.T("ui.arcade.hud.life_count", status.Lives));
             Set(box.TextGold, Loc.T("ui.arcade.hud.gold_compact", status.Gold));
+            Set(box.TextScore, Loc.T("ui.arcade.hud.score", status.Score));
             Set(box.TextState, status.State);
             box.TextState.gameObject.SetActive(!string.IsNullOrEmpty(status.State));
             ApplyHealthFill(box.HealthFill, ratio);
@@ -408,96 +405,6 @@ namespace Game
             if (UI?.PlayerStatusList != null) UI.PlayerStatusList.ClearCells();
         }
 
-        private void RenderTimedStatus(string temporaryId, float temporarySeconds,
-            IReadOnlyList<ArcadePowerupHudEntry> powerups)
-        {
-            string temporary = FormatTimed("ui.arcade.hud.temporary", temporaryId, temporarySeconds);
-            string support = FormatPowerups(powerups);
-            bool hasTemporary = !string.IsNullOrEmpty(temporary);
-            bool hasSupport = !string.IsNullOrEmpty(support);
-            Set(UI.TextTemporary, temporary);
-            Set(UI.TextSupport, support);
-            ApplyTimedStatusLayout(hasTemporary, CountVisiblePowerups(powerups));
-            UI.TextTemporary.gameObject.SetActive(hasTemporary);
-            UI.TextSupport.gameObject.SetActive(hasSupport);
-            UI.TextTemporary.color = temporarySeconds <= 3f ? new Color(1f, 0.35f, 0.3f) : Color.white;
-            UI.TextSupport.color = HasExpiringPowerup(powerups) ? new Color(1f, 0.35f, 0.3f) : Color.white;
-            UI.TemporaryStatusRoot.SetActive(hasTemporary || hasSupport);
-        }
-
-        /// <summary>按可见文本收紧背景并保持 Prefab 的右侧锚点；长文本最多使用原宽度，换行时增加高度。</summary>
-        private void ApplyTimedStatusLayout(bool hasTemporary, int supportLineCount)
-        {
-            RectTransform root = UI.TemporaryStatusRoot.transform as RectTransform;
-            RectTransform temporary = UI.TextTemporary.rectTransform;
-            RectTransform support = UI.TextSupport.rectTransform;
-            if (root == null) return;
-
-            if (timedStatusMaxWidth <= 0f) timedStatusMaxWidth = root.rect.width;
-            supportLineCount = Mathf.Max(0, supportLineCount);
-            // 水平留白沿用 Prefab 文本的左偏移，不在代码中再维护一套静态布局。
-            float horizontalPadding = temporary.anchoredPosition.x;
-            float preferredWidth = Mathf.Max(hasTemporary ? MeasureTimedStatusWidth(UI.TextTemporary) : 0f,
-                supportLineCount > 0 ? MeasureTimedStatusWidth(UI.TextSupport) : 0f);
-            float width = Mathf.Min(timedStatusMaxWidth, Mathf.Ceil(preferredWidth + horizontalPadding * 2f));
-            float contentWidth = Mathf.Max(1f, width - horizontalPadding * 2f);
-            root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
-            temporary.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, contentWidth);
-            support.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, contentWidth);
-
-            float temporaryHeight = hasTemporary
-                ? Mathf.Max(TimedStatusTemporaryHeight, UI.TextTemporary.GetPreferredValues(
-                    UI.TextTemporary.text, contentWidth, Mathf.Infinity).y) : 0f;
-            float supportHeight = supportLineCount > 0
-                ? Mathf.Max(supportLineCount * TimedStatusSupportLineHeight, UI.TextSupport.GetPreferredValues(
-                    UI.TextSupport.text, contentWidth, Mathf.Infinity).y) : 0f;
-            float gap = hasTemporary && supportLineCount > 0 ? TimedStatusSectionGap : 0f;
-            root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,
-                TimedStatusPadding * 2f + temporaryHeight + gap + supportHeight);
-
-            temporary.anchoredPosition = new Vector2(temporary.anchoredPosition.x, -TimedStatusPadding);
-            temporary.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, temporaryHeight);
-            support.anchoredPosition = new Vector2(support.anchoredPosition.x,
-                -TimedStatusPadding - temporaryHeight - gap);
-            support.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, supportHeight);
-        }
-
-        /// <summary>按字体最宽数字预留至少两位计数宽度；显示内容不变，跨 10 秒与数字变化不使背景跳动。</summary>
-        private static float MeasureTimedStatusWidth(TextMeshProUGUI text)
-        {
-            char widestDigit = '0';
-            float digitWidth = 0f;
-            for (char digit = '0'; digit <= '9'; digit++)
-            {
-                float width = text.GetPreferredValues(digit.ToString(), Mathf.Infinity, Mathf.Infinity).x;
-                if (width <= digitWidth) continue;
-                widestDigit = digit;
-                digitWidth = width;
-            }
-            string measurement = Regex.Replace(text.text, @"\d+",
-                match => new string(widestDigit, Mathf.Max(2, match.Length)));
-            return text.GetPreferredValues(measurement, Mathf.Infinity, Mathf.Infinity).x;
-        }
-
-        /// <summary>返回临时状态背景高度，单位为 Canvas 像素；无内容时仍返回上下内边距。</summary>
-        internal static float CalculateTimedStatusHeight(bool hasTemporary, int supportLineCount)
-        {
-            supportLineCount = Mathf.Max(0, supportLineCount);
-            float content = hasTemporary ? TimedStatusTemporaryHeight : 0f;
-            if (hasTemporary && supportLineCount > 0) content += TimedStatusSectionGap;
-            content += supportLineCount * TimedStatusSupportLineHeight;
-            return TimedStatusPadding * 2f + content;
-        }
-
-        private static int CountVisiblePowerups(IReadOnlyList<ArcadePowerupHudEntry> powerups)
-        {
-            if (powerups == null) return 0;
-            int count = 0;
-            foreach (var powerup in powerups)
-                if (!string.IsNullOrWhiteSpace(powerup.NameKey) && powerup.Seconds > 0f) count++;
-            return count;
-        }
-
         private static Color HealthColor(float ratio)
         {
             if (ratio <= 0.25f) return new Color(0.95f, 0.2f, 0.18f, 1f);
@@ -513,41 +420,13 @@ namespace Game
             fill.color = HealthColor(ratio);
         }
 
-        private static string FormatTimed(string formatKey, string nameKey, float seconds)
-        {
-            if (string.IsNullOrWhiteSpace(nameKey) || seconds <= 0f) return string.Empty;
-            return Loc.T(formatKey, Loc.T(nameKey), Mathf.CeilToInt(seconds));
-        }
-
-        private static string FormatPowerups(IReadOnlyList<ArcadePowerupHudEntry> powerups)
-        {
-            if (powerups == null || powerups.Count == 0) return string.Empty;
-            var lines = new List<string>(powerups.Count);
-            foreach (var powerup in powerups)
-            {
-                if (string.IsNullOrWhiteSpace(powerup.NameKey) || powerup.Seconds <= 0f) continue;
-                var text = FormatTimed("ui.arcade.hud.support", powerup.NameKey, powerup.Seconds);
-                if (powerup.Charges > 0) text += $" ×{powerup.Charges}";
-                lines.Add(text);
-            }
-            return string.Join("\n", lines);
-        }
-
-        private static bool HasExpiringPowerup(IReadOnlyList<ArcadePowerupHudEntry> powerups)
-        {
-            if (powerups == null) return false;
-            foreach (var powerup in powerups)
-                if (powerup.Seconds > 0f && powerup.Seconds <= 3f) return true;
-            return false;
-        }
-
         private static string ProductNameKey(string productId) =>
             string.IsNullOrWhiteSpace(productId) ? string.Empty : $"ui.arcade.product.{productId}.name";
 
         private readonly struct PlayerStatusDisplay
         {
             public PlayerStatusDisplay(string name, int health, int maxHealth, int lives, long gold,
-                string state, bool isSelf, int multiplier, int multiplierProgress)
+                string state, bool isSelf, int multiplier, int multiplierProgress, long score)
             {
                 Name = name ?? string.Empty;
                 Health = health;
@@ -558,6 +437,7 @@ namespace Game
                 IsSelf = isSelf;
                 Multiplier = multiplier;
                 MultiplierProgress = multiplierProgress;
+                Score = score;
             }
 
             public string Name { get; }
@@ -565,6 +445,7 @@ namespace Game
             public int MaxHealth { get; }
             public int Lives { get; }
             public long Gold { get; }
+            public long Score { get; }
             public string State { get; }
             public bool IsSelf { get; }
             public int Multiplier { get; }

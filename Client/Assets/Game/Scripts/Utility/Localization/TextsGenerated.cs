@@ -1258,7 +1258,7 @@ namespace Game
         /// </summary>
         public static string ArcadeHudGold(object arg0) => Loc.T("ui.arcade.hud.gold", arg0);
         /// <summary>
-        /// ◆{0}
+        /// 金币 {0}
         /// </summary>
         public static string ArcadeHudGoldCompact(object arg0) => Loc.T("ui.arcade.hud.gold_compact", arg0);
         /// <summary>
@@ -1266,7 +1266,47 @@ namespace Game
         /// </summary>
         public static string ArcadeHudHealth(object arg0, object arg1) => Loc.T("ui.arcade.hud.health", arg0, arg1);
         /// <summary>
-        /// ×{0}
+        /// 桶
+        /// </summary>
+        public static string ArcadeHudIconBarrel => Loc.T("ui.arcade.hud.icon.barrel");
+        /// <summary>
+        /// 鸡
+        /// </summary>
+        public static string ArcadeHudIconChicken => Loc.T("ui.arcade.hud.icon.chicken");
+        /// <summary>
+        /// 钟
+        /// </summary>
+        public static string ArcadeHudIconClock => Loc.T("ui.arcade.hud.icon.clock");
+        /// <summary>
+        /// 冲
+        /// </summary>
+        public static string ArcadeHudIconDash => Loc.T("ui.arcade.hud.icon.dash");
+        /// <summary>
+        /// 饵
+        /// </summary>
+        public static string ArcadeHudIconDecoy => Loc.T("ui.arcade.hud.icon.decoy");
+        /// <summary>
+        /// 磁
+        /// </summary>
+        public static string ArcadeHudIconMagnet => Loc.T("ui.arcade.hud.icon.magnet");
+        /// <summary>
+        /// 电
+        /// </summary>
+        public static string ArcadeHudIconOrb => Loc.T("ui.arcade.hud.icon.orb");
+        /// <summary>
+        /// 锯
+        /// </summary>
+        public static string ArcadeHudIconSaw => Loc.T("ui.arcade.hud.icon.saw");
+        /// <summary>
+        /// 炮
+        /// </summary>
+        public static string ArcadeHudIconSentry => Loc.T("ui.arcade.hud.icon.sentry");
+        /// <summary>
+        /// 盾
+        /// </summary>
+        public static string ArcadeHudIconShield => Loc.T("ui.arcade.hud.icon.shield");
+        /// <summary>
+        /// 生命次数 {0}
         /// </summary>
         public static string ArcadeHudLifeCount(object arg0) => Loc.T("ui.arcade.hud.life_count", arg0);
         /// <summary>
@@ -1286,6 +1326,10 @@ namespace Game
         /// </summary>
         public static string ArcadeHudMultiplierMax => Loc.T("ui.arcade.hud.multiplier_max");
         /// <summary>
+        /// 退出
+        /// </summary>
+        public static string ArcadeHudOnlineExit => Loc.T("ui.arcade.hud.online_exit");
+        /// <summary>
         /// 重连中
         /// </summary>
         public static string ArcadeHudReconnecting => Loc.T("ui.arcade.hud.reconnecting");
@@ -1302,11 +1346,11 @@ namespace Game
         /// </summary>
         public static string ArcadeHudRespawning => Loc.T("ui.arcade.hud.respawning");
         /// <summary>
-        /// 休整 {0} 秒 · 松开再射击继续
+        /// 休整 {0} 秒
         /// </summary>
         public static string ArcadeHudRest(object arg0) => Loc.T("ui.arcade.hud.rest", arg0);
         /// <summary>
-        /// 休整 · 松开再射击继续（最多两分钟）
+        /// 休整
         /// </summary>
         public static string ArcadeHudRestOnline => Loc.T("ui.arcade.hud.rest_online");
         /// <summary>
@@ -1321,6 +1365,10 @@ namespace Game
         /// 强化：{0}  {1}秒
         /// </summary>
         public static string ArcadeHudSupport(object arg0, object arg1) => Loc.T("ui.arcade.hud.support", arg0, arg1);
+        /// <summary>
+        /// 辅助
+        /// </summary>
+        public static string ArcadeHudSupportGroup => Loc.T("ui.arcade.hud.support_group");
         /// <summary>
         /// 队友
         /// </summary>
@@ -1338,13 +1386,17 @@ namespace Game
         /// </summary>
         public static string ArcadeHudTreasureMember => Loc.T("ui.arcade.hud.treasure_member");
         /// <summary>
-        /// 第 {0} / {1} 波 · 剩余 {2}
+        /// 第 {0} 波 · 剩余 {2}
         /// </summary>
         public static string ArcadeHudWave(object arg0, object arg1, object arg2) => Loc.T("ui.arcade.hud.wave", arg0, arg1, arg2);
         /// <summary>
         /// {0} · 无限弹药
         /// </summary>
         public static string ArcadeHudWeapon(object arg0) => Loc.T("ui.arcade.hud.weapon", arg0);
+        /// <summary>
+        /// 武器
+        /// </summary>
+        public static string ArcadeHudWeaponGroup => Loc.T("ui.arcade.hud.weapon_group");
         /// <summary>
         /// 无法返回街机主界面，请重试；本局数据已保留。
         /// </summary>

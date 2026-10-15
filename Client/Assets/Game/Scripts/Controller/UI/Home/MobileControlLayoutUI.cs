@@ -35,5 +35,6 @@ namespace Game
         public MobileLayoutStickHandle StatusPreview;
         public MobileLayoutStickHandle HealthPreview;
         public MobileLayoutStickHandle WeaponPreview;
+        public RectTransform ArcadePauseArea;
     }
 }

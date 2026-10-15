@@ -15,5 +15,6 @@ namespace Game
         public TextMeshProUGUI TextMultiplierState;
         public TextMeshProUGUI TextName;
         public TextMeshProUGUI TextState;
+        public TextMeshProUGUI TextScore;
     }
 }

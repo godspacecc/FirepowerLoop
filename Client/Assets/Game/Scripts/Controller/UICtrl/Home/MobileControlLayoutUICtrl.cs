@@ -131,7 +131,8 @@ namespace Game
         private Rect[] Obstacles()
         {
             if (arcadePreview) return new[]
-            { MobileControlLayoutGeometry.Bounds(UI.LayoutArea, UI.DashArea), MobileControlLayoutGeometry.Bounds(UI.LayoutArea, UI.BombArea) };
+            { MobileControlLayoutGeometry.Bounds(UI.LayoutArea, UI.ArcadePauseArea),
+                MobileControlLayoutGeometry.Bounds(UI.LayoutArea, UI.DashArea), MobileControlLayoutGeometry.Bounds(UI.LayoutArea, UI.BombArea) };
             var handles = new System.Collections.Generic.List<MobileLayoutStickHandle>(ButtonPreviews());
             handles.AddRange(HudPreviews());
             return handles.ConvertAll(handle => MobileControlLayoutGeometry.Bounds(UI.LayoutArea, (RectTransform)handle.transform)).ToArray();
@@ -182,6 +183,7 @@ namespace Game
             if (lastAreaSize.x <= 0 || lastAreaSize.y <= 0) return;
             UI.DashArea.gameObject.SetActive(arcadePreview);
             UI.BombArea.gameObject.SetActive(arcadePreview);
+            UI.ArcadePauseArea.gameObject.SetActive(arcadePreview);
             var huds = HudPreviews();
             for (var i = 0; i < huds.Length; i++)
             {
