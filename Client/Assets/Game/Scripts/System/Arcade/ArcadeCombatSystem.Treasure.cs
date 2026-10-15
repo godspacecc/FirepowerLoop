@@ -37,7 +37,17 @@ namespace Game
                 {
                     if ((runtime.PlayerPosition - new Vector2(reward.X, reward.Y)).sqrMagnitude >
                         rules.PickupRadius * rules.PickupRadius) continue;
-                    room.TryCollect(room.InstanceId, 1, reward.Id, r => ApplyTreasureReward(runtime, r), out _);
+                    long scoreBefore = this.GetModel<ArcadeRunModel>().Current?.Score ?? 0;
+                    int bombsBefore = runtime.Bombs, dashesBefore = runtime.Dashes;
+                    if (!room.TryCollect(room.InstanceId, 1, reward.Id, r => ApplyTreasureReward(runtime, r), out _)) continue;
+                    // 领取账本已移除物品后才通知表现，反馈失败不能让同一宝藏重复发奖。
+                    if (runtime.Bombs > bombsBefore || runtime.Dashes > dashesBefore)
+                    {
+                        bool bomb = runtime.Bombs > bombsBefore;
+                        var drop = catalog.Drops.First(d => d.Kind == (bomb ? ArcadeDropKind.Bomb : ArcadeDropKind.Dash));
+                        view.PlaySupplyPickup(drop, bomb ? runtime.Bombs - bombsBefore : runtime.Dashes - dashesBefore);
+                    }
+                    view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore, 0);
                 }
                 return;
             }
@@ -83,6 +93,7 @@ namespace Game
                 int held = bomb ? runtime.Bombs : runtime.Dashes;
                 if (drop.MaxOwned <= 0 || held >= drop.MaxOwned) return false;
                 int added = Math.Min(reward.Amount, drop.MaxOwned - held);
+                if (added <= 0) return false;
                 if (bomb) runtime.Bombs += added; else runtime.Dashes += added;
                 return true;
             }

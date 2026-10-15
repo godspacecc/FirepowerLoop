@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><EnableDefaultCompileItems>false</EnableDefaultCompileItems></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="ServerChecks.cs" />
+    <ProjectReference Include="../../../Server/GameServer/DotNet/Hotfix/DotNet.Hotfix.csproj" />
+  </ItemGroup>
+</Project>

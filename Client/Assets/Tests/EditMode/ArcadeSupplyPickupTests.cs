@@ -196,10 +196,74 @@ namespace Game.Tests
             return property.GetValue(snapshot);
         }
 
+        /// <summary>倍率后的真实积分应单独反馈，不能把面值或积分当作金币。</summary>
+        [Test]
+        public void CasualTreasure_ReportsActualMultipliedScoreWithoutGold()
+        {
+            var run = architecture.GetModel<ArcadeRunModel>();
+            var data = run.Current; data.IsCasualRoute = true; data.ScoreMultiplier = 3;
+            run.CommitSafeNode(data); run.EnterArena();
+            Add(1, catalog.Drops.First(d => d.Kind == ArcadeDropKind.RunGold));
+            Call("TickDrops", runtime);
+            Assert.That(run.Current.Score, Is.EqualTo(300));
+            Assert.That(runtime.ArenaGold, Is.Zero);
+            Assert.That(view.Treasure, Is.EqualTo(new[] { (300L, 0L) }));
+        }
+
+        [Test]
+        public void GoldAndProducts_OnlyReportSuccessfulApplications()
+        {
+            Add(1, catalog.Drops.First(d => d.Kind == ArcadeDropKind.RunGold));
+            var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+            var powerup = catalog.Drops.First(d => d.Kind == ArcadeDropKind.Powerup);
+            Add(2, weapon); Add(3, powerup);
+            Call("TickDrops", runtime); Call("TickDrops", runtime);
+            Assert.That(view.Treasure, Is.EqualTo(new[] { (0L, 100L) }));
+            Assert.That(view.Products, Is.EqualTo(new[] { weapon.ProductId, powerup.ProductId }));
+        }
+
+        [Test]
+        public void InvalidProductAndOverflowReward_RemainWithoutSuccessFeedback()
+        {
+            var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+            Add(1, new ArcadeDropDefinition(weapon.Id, 1, 0, 1, weapon.Kind, "missing-product", weapon.VisualPrefabAddress,
+                1, 10, 1));
+            runtime.ArenaGold = long.MaxValue;
+            Add(2, catalog.Drops.First(d => d.Kind == ArcadeDropKind.RunGold));
+            Call("TickDrops", runtime);
+            Assert.That(runtime.Drops.Count, Is.EqualTo(2));
+            Assert.That(view.Removed, Is.Empty);
+            Assert.That(view.Products, Is.Empty);
+            Assert.That(view.Treasure, Is.Empty);
+        }
+
+        [Test]
+        public void OnlineReceipt_ReportsScoreAndGoldSeparatelyAndProductsOnce()
+        {
+            var presentation = new OnlineArcadePresentationSystem();
+            ((ICanSetArchitecture)presentation).SetArchitecture(architecture);
+            typeof(OnlineArcadePresentationSystem).GetField("view", Private).SetValue(presentation, view);
+            typeof(OnlineArcadePresentationSystem).GetField("catalog", Private).SetValue(presentation, catalog);
+            var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+            var receipts = new[] {
+                new OnlineArcadeDropSnapshot(10, "", 0, 0, 1, 0, 600, 2),
+                new OnlineArcadeDropSnapshot(11, weapon.Id, 0, 0, 1),
+                new OnlineArcadeDropSnapshot(12, weapon.Id, 0, 0, 2) };
+            var method = typeof(OnlineArcadePresentationSystem).GetMethod("SyncSupplyPickups", Private);
+            method.Invoke(presentation, new object[] { receipts, 1L, false });
+            method.Invoke(presentation, new object[] { receipts, 1L, false });
+            Assert.That(view.Treasure.Where(x => x != (0L, 0L)), Is.EqualTo(new[] { (600L, 2L) }));
+            Assert.That(view.Products, Is.EqualTo(new[] { weapon.ProductId }));
+        }
+
         private sealed class TestView : IArcadeCombatViewPort
         {
             public readonly List<int> Removed = new();
             public readonly List<int> Added = new();
+            public readonly List<(long, long)> Treasure = new();
+            public readonly List<string> Products = new();
+            public void PlayTreasurePickup(long score, long gold) { if (score > 0 || gold > 0) Treasure.Add((score, gold)); }
+            public void PlayProductPickup(string productId) => Products.Add(productId);
             public Action OnPickup;
             public bool IsActive => true;
             public void PlaySupplyPickup(ArcadeDropDefinition definition, int added)

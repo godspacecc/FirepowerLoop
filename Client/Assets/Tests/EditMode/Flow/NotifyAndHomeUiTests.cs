@@ -296,6 +296,40 @@ namespace Game.Tests
             Assert.That(ctrl, Is.Null);
         }
 
+        /// <summary>连续领取应更新真实累计值，并从最新领取时刻计算消失时间。</summary>
+        [Test]
+        public void NotifyFloat_PickupReplacementUpdatesVisibleAndQueuedValues()
+        {
+            Notify.ShowFloatTips("积分 +100", .5f, "arcade.pickup.1", true);
+            Notify.ShowFloatTips("金币 +2", .5f, "arcade.pickup.2", true);
+            Notify.ShowFloatTips("金币 +5", .5f, "arcade.pickup.2", true);
+            TimerMgr.Instance.TickForTests(.2f);
+            Notify.ShowFloatTips("积分 +300", .5f, "arcade.pickup.1", true);
+            TimerMgr.Instance.TickForTests(.11f);
+            var ui = GetBaseUI<FloatUI>(UIHelper.GetUICtrl<FloatUICtrl>());
+            Assert.That(ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false).Select(x => x.TextTips.text),
+                Is.EquivalentTo(new[] { "积分 +300", "金币 +5" }));
+            TimerMgr.Instance.TickForTests(.2f);
+            Assert.That(ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false).Length, Is.EqualTo(2));
+            TimerMgr.Instance.TickForTests(.4f);
+            Assert.That(ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false), Is.Empty);
+        }
+
+        [Test]
+        public void NotifyFloat_MapCleanupRemovesOnlyPickupFeedbackAndItsQueue()
+        {
+            Notify.ShowFloatTips("积分 +100", 2, "arcade.pickup.1", true);
+            Notify.ShowFloatTips("获得散射", 2, "arcade.pickup.2", true);
+            Notify.ShowFloatTips("其他通知", 2, "other");
+            var ctrl = UIHelper.GetUICtrl<FloatUICtrl>();
+            ctrl.RemoveTipsByPrefix("arcade.pickup.");
+            ctrl.RemoveTipsByPrefix("arcade.pickup.");
+            TimerMgr.Instance.TickForTests(.4f);
+            var ui = GetBaseUI<FloatUI>(ctrl);
+            Assert.That(ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false).Select(x => x.TextTips.text),
+                Is.EqualTo(new[] { "其他通知" }));
+        }
+
         [Test]
         public void NotifyFloat_HideCancelsTimersAndClearsVisibleTips()
         {
@@ -363,6 +397,54 @@ namespace Game.Tests
         private static void TickPausedClock(float unscaledDeltaTime)
         {
             TimerMgr.Instance.TickForTests(0f, unscaledDeltaTime);
+        }
+
+        [Test]
+        public void NotifyFloat_FormalPickupStaysBelowArenaHudAndAboveBattleCenter()
+        {
+            // 用单个完整 testMethod 覆盖两个比例，兼容 MCP 对参数化方法名的精确过滤。
+            foreach (var size in new[] { new Vector2(1920, 1080), new Vector2(2028, 1080) })
+                VerifyFormalPickupLayout(size.x, size.y);
+        }
+
+        private void VerifyFormalPickupLayout(float width, float height)
+        {
+            UIHelper.GetUICtrl<FloatUICtrl>()?.RemoveTipsByPrefix("arcade.pickup.");
+            UIHelper.SetPrefabLoaderForTests(path => path == "Prefabs/UI/Notify/Float"
+                ? UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Notify/Float.prefab")
+                : CreatePrefab(path));
+            Notify.ShowFloatTips("积分 +300", 5f, "arcade.pickup.layout", true);
+            var ui = GetBaseUI<FloatUI>(UIHelper.GetUICtrl<FloatUICtrl>());
+            // 只设置测试画布的参考尺寸，覆盖标准横屏与已发现重叠的小尺寸横屏比例。
+            var layer = (RectTransform)ui.transform.parent;
+            layer.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
+            layer.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
+            var hud = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), ui.transform.parent).GetComponent<ArcadeHudUI>();
+            try
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    Notify.ShowFloatTips("其他奖励 " + i, 5f, "arcade.pickup.layout." + i, true);
+                    TimerMgr.Instance.TickForTests(.31f);
+                }
+                Canvas.ForceUpdateCanvases();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(ui.TipsRoot);
+                var boxes = ui.TipsRoot.GetComponentsInChildren<FloatTextBoxUI>(false);
+                Assert.That(boxes.Length, Is.EqualTo(5));
+                var hudCorners = new Vector3[4];
+                hud.TextWave.rectTransform.GetWorldCorners(hudCorners);
+                var center = ((RectTransform)ui.transform).TransformPoint(((RectTransform)ui.transform).rect.center);
+                foreach (var box in boxes)
+                {
+                    var corners = new Vector3[4];
+                    ((RectTransform)box.transform).GetWorldCorners(corners);
+                    Assert.That(corners[2].y, Is.LessThan(hudCorners[0].y), "拾取提示不能覆盖顶部波次 HUD");
+                    Assert.That(corners[0].y, Is.GreaterThan(center.y), "密集提示不能延伸至玩家所在的战斗中心");
+                    Assert.That(box.TextTips.raycastTarget, Is.False);
+                }
+            }
+            finally { Object.DestroyImmediate(hud.gameObject); }
         }
 
         [Test]

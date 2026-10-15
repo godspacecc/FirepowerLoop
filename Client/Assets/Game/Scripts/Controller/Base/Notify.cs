@@ -6,14 +6,15 @@ namespace Game
     public static class Notify
     {
         /// <summary>提交已本地化提示；指定稳定身份时，同类等待或显示中的提示最多一条，普通提示保持原行为。</summary>
-        public static void ShowFloatTips(string tips, float lifetimeSeconds = FloatUICtrl.DefaultTipLifetimeSeconds, string uniqueKey = null)
+        public static void ShowFloatTips(string tips, float lifetimeSeconds = FloatUICtrl.DefaultTipLifetimeSeconds, string uniqueKey = null,
+            bool replaceExisting = false)
         {
             if (string.IsNullOrWhiteSpace(tips))
             {
                 return;
             }
 
-            UIHelper.ShowUI<FloatUICtrl>().SetTips(tips, lifetimeSeconds, uniqueKey);
+            UIHelper.ShowUI<FloatUICtrl>().SetTips(tips, lifetimeSeconds, uniqueKey, replaceExisting);
         }
 
         public static void ShowMessage(

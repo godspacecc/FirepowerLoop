@@ -933,16 +933,28 @@ namespace Game
                 int added = supply ? SupplyAddedAmount(definition.Kind == global::ArcadeDropKind.Bomb
                     ? runtime.Bombs : runtime.Dashes, definition) : 0;
                 if (supply && added <= 0) continue;
+                if (!CanApplyDrop(definition)) continue;
                 // 视角准备失败保留地面物品；相机提交成功后才注销并提示。
                 bool firstPerson = definition.Kind == global::ArcadeDropKind.FirstPerson;
                 if (firstPerson && !TryBeginFirstPerson(runtime, definition, out _)) continue;
+                long scoreBefore = this.GetModel<ArcadeRunModel>().Current?.Score ?? 0;
+                long goldBefore = runtime.ArenaGold;
                 // 先移出权威集合，防止同步反馈或重复范围检查再次结算同一掉落。
                 if (!runtime.Drops.Remove(drop.Id)) continue;
-                ApplyDrop(runtime, definition);
+                if (!ApplyDrop(runtime, definition))
+                {
+                    runtime.Drops.Add(drop.Id, drop);
+                    continue;
+                }
                 view.RemoveDrop(drop.Id);
                 runtimePool.Return(drop);
+                if (definition.Kind == global::ArcadeDropKind.RunGold)
+                    view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore,
+                        runtime.ArenaGold - goldBefore);
                 if (supply) view.PlaySupplyPickup(definition, added);
                 if (firstPerson) view.PlayFirstPersonPickup();
+                if (definition.Kind == global::ArcadeDropKind.TemporaryWeapon || definition.Kind == global::ArcadeDropKind.Powerup)
+                    view.PlayProductPickup(definition.ProductId);
             }
         }
 
@@ -1357,14 +1369,33 @@ namespace Game
         private static int SupplyAddedAmount(int held, ArcadeDropDefinition drop) =>
             (int)Math.Max(0L, Math.Min((long)drop.Amount, (long)drop.MaxOwned - held));
 
-        private void ApplyDrop(ArcadeCombatRuntime runtime, ArcadeDropDefinition drop)
+        /// <summary>拒绝无效奖励及不存在的产品；检查先于相机、库存和掉落集合变化。</summary>
+        private bool CanApplyDrop(ArcadeDropDefinition drop)
+        {
+            switch (drop.Kind)
+            {
+                case global::ArcadeDropKind.RunGold:
+                case global::ArcadeDropKind.Bomb:
+                case global::ArcadeDropKind.Dash: return drop.Amount > 0;
+                case global::ArcadeDropKind.TemporaryWeapon:
+                    return drop.DurationSeconds > 0 && catalog.Weapons.Any(w => w.Id == drop.ProductId);
+                case global::ArcadeDropKind.Powerup:
+                    return drop.DurationSeconds > 0 && catalog.Powerups.Any(p => p.Id == drop.ProductId);
+                case global::ArcadeDropKind.FirstPerson: return drop.DurationSeconds > 0;
+                default: return false;
+            }
+        }
+
+        /// <summary>只在奖励实际写入后返回成功，反馈消费本次实际变化。</summary>
+        private bool ApplyDrop(ArcadeCombatRuntime runtime, ArcadeDropDefinition drop)
         {
             switch (drop.Kind)
             {
                 case global::ArcadeDropKind.RunGold:
                     if (this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute == true)
-                        AwardOrdinaryTreasure(drop.Amount);
-                    else runtime.ArenaGold += drop.Amount;
+                        return AwardOrdinaryTreasure(drop.Amount);
+                    if (drop.Amount <= 0 || runtime.ArenaGold > long.MaxValue - drop.Amount) return false;
+                    runtime.ArenaGold += drop.Amount;
                     break;
                 case global::ArcadeDropKind.Bomb:
                     runtime.Bombs += SupplyAddedAmount(runtime.Bombs, drop);
@@ -1380,6 +1411,7 @@ namespace Game
                     ApplyPowerup(runtime, drop);
                     break;
             }
+            return true;
         }
 
         /// <summary>同类强化只刷新时长、次数和锚点；不同类型可并存，避免掉落顺序互相覆盖。</summary>

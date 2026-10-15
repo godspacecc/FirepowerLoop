@@ -439,6 +439,9 @@ message OnlineArcadeDropInfo
 	int64 CollectedByPlayerId = 5;
 	// 上限截断后的实际补充次数，不是配置奖励量。
 	int32 AddedAmount = 6;
+	// 已成功应用的积分与金币变化，彼此独立；零值不产生提示。
+	int64 ScoreAdded = 7;
+	int32 GoldAdded = 8;
 }
 
 // Opcode 12084

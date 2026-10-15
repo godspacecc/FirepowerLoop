@@ -2281,14 +2281,19 @@ namespace ET.Server
                 var winnerRecord = self.Record.Players.First(x => x.PlayerId == winner.PlayerId);
                 int added = supply ? SupplyAddedAmount(definition.Kind == ArcadeDropKind.Bomb
                     ? winnerRecord.Bombs : winnerRecord.Dashes, definition) : 0;
+                long beforeScore = winnerRecord.Score;
+                int beforeGold = winnerRecord.RunGold;
                 if (!battle.Drops.Remove(dropId)) continue;
-                self.ApplyDrop(winner, definition);
-                if (supply)
+                if (!self.ApplyDrop(winner, definition))
                 {
-                    drop.CollectedByPlayerId = winner.PlayerId;
-                    drop.AddedAmount = added;
-                    battle.SupplyPickups.Add(drop);
+                    battle.Drops.Add(dropId, drop);
+                    continue;
                 }
+                drop.CollectedByPlayerId = winner.PlayerId;
+                drop.AddedAmount = added;
+                drop.ScoreAdded = winnerRecord.Score - beforeScore;
+                drop.GoldAdded = winnerRecord.RunGold - beforeGold;
+                battle.SupplyPickups.Add(drop);
                 changed = true;
             }
             return changed;
@@ -2298,34 +2303,41 @@ namespace ET.Server
         private static int SupplyAddedAmount(int held, ArcadeDropConfig drop) =>
             (int)Math.Max(0L, Math.Min((long)drop.Amount, (long)drop.MaxOwned - held));
 
-        private static void ApplyDrop(this OnlineArcadeRunActor self, OnlineArcadeBattlePlayerRuntime player,
+        /// <summary>验证产品及可接收数量后应用奖励；失败不产生领取记录。</summary>
+        private static bool ApplyDrop(this OnlineArcadeRunActor self, OnlineArcadeBattlePlayerRuntime player,
             ArcadeDropConfig drop)
         {
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             switch (drop.Kind)
             {
                 case ArcadeDropKind.RunGold:
+                    if (drop.Amount <= 0) return false;
                     if (self.Record.IsCasualRoute)
                     {
                         var rules = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(
                             ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.First());
-                        ApplyTreasureReward(self, player.PlayerId, new AnotherDay.Arcade.ArcadeTreasureRewardParameters(
-                            0, AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, drop.Amount, drop.Amount, 1), rules);
+                        return ApplyTreasureReward(self, player.PlayerId, new AnotherDay.Arcade.ArcadeTreasureRewardParameters(
+                            0, AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, drop.Amount, drop.Amount, 1), rules, false);
                     }
-                    else record.RunGold = checked(record.RunGold + drop.Amount);
+                    if (record.RunGold > int.MaxValue - drop.Amount) return false;
+                    record.RunGold += drop.Amount;
                     break;
                 case ArcadeDropKind.Bomb:
+                    if (SupplyAddedAmount(record.Bombs, drop) <= 0) return false;
                     record.Bombs += SupplyAddedAmount(record.Bombs, drop);
                     break;
                 case ArcadeDropKind.Dash:
+                    if (SupplyAddedAmount(record.Dashes, drop) <= 0) return false;
                     record.Dashes += SupplyAddedAmount(record.Dashes, drop);
                     break;
                 case ArcadeDropKind.TemporaryWeapon:
+                    if (drop.DurationSeconds <= 0 || ServerConfig.Instance.Tables.TbArcadeWeapon.GetOrDefault(drop.ProductId) == null) return false;
                     player.TemporaryWeaponId = drop.ProductId;
                     player.TemporaryWeaponSeconds = drop.DurationSeconds;
                     break;
                 case ArcadeDropKind.Powerup:
-                    ArcadePowerupConfig definition = ServerConfig.Instance.Tables.TbArcadePowerup.Get(drop.ProductId);
+                    ArcadePowerupConfig definition = ServerConfig.Instance.Tables.TbArcadePowerup.GetOrDefault(drop.ProductId);
+                    if (definition == null || drop.DurationSeconds <= 0) return false;
                     player.Powerups[definition.Behavior] = new OnlineArcadePowerupRuntime
                     {
                         ProductId = definition.Id,
@@ -2341,7 +2353,9 @@ namespace ET.Server
                         PositionZ = player.PositionZ,
                     };
                     break;
+                default: return false;
             }
+            return true;
         }
 
         /// <summary>推进并结算每名玩家的全部并存强化；状态只属于当前竞技场，永不进入安全节点。</summary>
@@ -2898,6 +2912,7 @@ namespace ET.Server
                 var copy = OnlineArcadeDropInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DropConfigId = receipt.DropConfigId;
                 copy.CollectedByPlayerId = receipt.CollectedByPlayerId; copy.AddedAmount = receipt.AddedAmount;
+                copy.ScoreAdded = receipt.ScoreAdded; copy.GoldAdded = receipt.GoldAdded;
                 battle.SupplyPickups.Add(copy);
             }
             battle.IsChallenge = source.IsChallenge;
@@ -3085,6 +3100,7 @@ namespace ET.Server
                 var copy = OnlineArcadeDropInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DropConfigId = receipt.DropConfigId;
                 copy.CollectedByPlayerId = receipt.CollectedByPlayerId; copy.AddedAmount = receipt.AddedAmount;
+                copy.ScoreAdded = receipt.ScoreAdded; copy.GoldAdded = receipt.GoldAdded;
                 battle.SupplyPickups.Add(copy);
             }
             battle.HazardElapsedSeconds = source.HazardElapsedSeconds;

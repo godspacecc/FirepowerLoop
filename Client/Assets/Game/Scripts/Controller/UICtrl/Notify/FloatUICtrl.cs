@@ -82,7 +82,8 @@ namespace Game
         }
 
         /// <summary>请求时检查队列和可见项；重复身份直接忽略，不刷新寿命，回收后自然允许再次请求。</summary>
-        public void SetTips(string tips, float lifetimeSeconds = DefaultTipLifetimeSeconds, string uniqueKey = null)
+        public void SetTips(string tips, float lifetimeSeconds = DefaultTipLifetimeSeconds, string uniqueKey = null,
+            bool replaceExisting = false)
         {
             if (string.IsNullOrWhiteSpace(tips))
             {
@@ -91,12 +92,66 @@ namespace Game
 
             if (!string.IsNullOrWhiteSpace(uniqueKey))
             {
+                if (replaceExisting && ReplaceTip(tips, NormalizeLifetime(lifetimeSeconds), uniqueKey)) return;
                 foreach (var pending in pendingTips) if (pending.UniqueKey == uniqueKey) return;
                 foreach (var visible in visibleTips) if (visible.Box != null && visible.UniqueKey == uniqueKey) return;
             }
             pendingTips.Enqueue(new PendingTip(tips, NormalizeLifetime(lifetimeSeconds), uniqueKey));
             ProcessQueue(visibleTips.Count == 0);
         }
+
+        /// <summary>更新同组实际累计值及短寿命；排队项也原位更新，不重复追加或覆盖其他奖励。</summary>
+        private bool ReplaceTip(string text, float lifetime, string key)
+        {
+            foreach (var visible in visibleTips)
+            {
+                if (visible.UniqueKey != key || visible.Box == null) continue;
+                visible.Box.TextTips.text = text;
+                TimerMgr.Instance.Delete(visible.TimerId);
+                visible.TimerId = ScheduleRemoval(visible.Box, lifetime);
+                RepositionVisibleTips();
+                return true;
+            }
+            bool replaced = false;
+            int count = pendingTips.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var item = pendingTips.Dequeue();
+                if (item.UniqueKey == key) { item = new PendingTip(text, lifetime, key); replaced = true; }
+                pendingTips.Enqueue(item);
+            }
+            return replaced;
+        }
+
+        /// <summary>只清除指定表现归属的提示，地图结束不能留下等待队列或计时回调。</summary>
+        public void RemoveTipsByPrefix(string prefix)
+        {
+            if (string.IsNullOrEmpty(prefix)) return;
+            int count = pendingTips.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var item = pendingTips.Dequeue();
+                if (item.UniqueKey?.StartsWith(prefix, System.StringComparison.Ordinal) != true) pendingTips.Enqueue(item);
+            }
+            for (int i = visibleTips.Count - 1; i >= 0; i--)
+            {
+                var item = visibleTips[i];
+                if (item.UniqueKey?.StartsWith(prefix, System.StringComparison.Ordinal) != true) continue;
+                TimerMgr.Instance.Delete(item.TimerId);
+                visibleTips.RemoveAt(i);
+                ReturnTip(item.Box);
+            }
+            RepositionVisibleTips();
+            ProcessQueue(true);
+        }
+
+        /// <summary>寿命从显示或更新时开始计算，回收后继续处理其余提示。</summary>
+        private int ScheduleRemoval(FloatTextBoxUI box, float lifetime) => TimerMgr.Instance.Add(() =>
+        {
+            RemoveTip(box);
+            ProcessQueue(true);
+            return false;
+        }, delay: lifetime, useUnscaledTime: true);
 
         private void ProcessQueue(bool displayImmediately)
         {
@@ -178,12 +233,7 @@ namespace Game
                 Box = box,
                 UniqueKey = pending.UniqueKey
             };
-            visible.TimerId = TimerMgr.Instance.Add(() =>
-            {
-                RemoveTip(box);
-                ProcessQueue(true);
-                return false;
-            }, delay: pending.LifetimeSeconds, useUnscaledTime: true);
+            visible.TimerId = ScheduleRemoval(box, pending.LifetimeSeconds);
             visibleTips.Add(visible);
             RepositionVisibleTips();
         }

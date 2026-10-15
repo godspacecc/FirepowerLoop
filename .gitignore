@@ -23,6 +23,8 @@ ExportedObj/
 .consulo/
 *.csproj
 !Tools/ArcadeCasualChecks/ArcadeCasualChecks.csproj
+!Tools/PickupFeedbackChecks/PickupFeedbackChecks.csproj
+!Tools/PickupFeedbackChecks/Server/PickupFeedbackServerChecks.csproj
 *.unityproj
 *.sln
 !Server/GameServer/**/*.csproj

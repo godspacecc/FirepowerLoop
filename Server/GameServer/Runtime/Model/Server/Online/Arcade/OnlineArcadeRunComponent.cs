@@ -250,10 +250,13 @@ namespace ET.Server
         public string DropConfigId;
         public float PositionX;
         public float PositionZ;
-        /// <summary>成功补给记录的领取者；可见掉落为零，不写安全存档。</summary>
+        /// <summary>成功拾取记录的领取者；可见掉落为零，不写安全存档。</summary>
         public long CollectedByPlayerId;
         /// <summary>本次实际增加次数；仅成功补给记录为正。</summary>
         public int AddedAmount;
+        /// <summary>成功领取的真实积分及金币变化；不把积分当作购物金币。</summary>
+        public long ScoreAdded;
+        public int GoldAdded;
     }
 
     /// <summary>不落盘的服务器权威战斗现场；保存与正式奖励仍由安全节点事务负责。</summary>

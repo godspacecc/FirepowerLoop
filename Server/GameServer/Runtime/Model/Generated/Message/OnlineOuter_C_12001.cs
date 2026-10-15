@@ -1744,6 +1744,15 @@ namespace ET
         [MemoryPackOrder(5)]
         public int AddedAmount { get; set; }
 
+        /// <summary>
+        /// 已成功应用的积分与金币变化，彼此独立；零值不产生提示。
+        /// </summary>
+        [MemoryPackOrder(6)]
+        public long ScoreAdded { get; set; }
+
+        [MemoryPackOrder(7)]
+        public int GoldAdded { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1757,6 +1766,8 @@ namespace ET
             this.PositionZ = default;
             this.CollectedByPlayerId = default;
             this.AddedAmount = default;
+            this.ScoreAdded = default;
+            this.GoldAdded = default;
 
             ObjectPool.Instance.Recycle(this);
         }

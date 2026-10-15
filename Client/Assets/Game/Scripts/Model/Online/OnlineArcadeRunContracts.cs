@@ -208,20 +208,24 @@ namespace Game
     public readonly struct OnlineArcadeDropSnapshot
     {
         public OnlineArcadeDropSnapshot(long runtimeId, string dropConfigId, float positionX, float positionZ,
-            long collectedByPlayerId = 0, int addedAmount = 0)
+            long collectedByPlayerId = 0, int addedAmount = 0, long scoreAdded = 0, int goldAdded = 0)
         {
             RuntimeId = runtimeId; DropConfigId = dropConfigId ?? string.Empty;
             PositionX = positionX; PositionZ = positionZ;
             CollectedByPlayerId = collectedByPlayerId; AddedAmount = addedAmount;
+            ScoreAdded = scoreAdded; GoldAdded = goldAdded;
         }
         public long RuntimeId { get; }
         public string DropConfigId { get; }
         public float PositionX { get; }
         public float PositionZ { get; }
-        /// <summary>成功补给记录的权威领取者；普通可见掉落为零。</summary>
+        /// <summary>成功拾取记录的权威领取者；普通可见掉落为零。</summary>
         public long CollectedByPlayerId { get; }
         /// <summary>本次实际补充次数；客户端仅反馈，不据此增加库存。</summary>
         public int AddedAmount { get; }
+        /// <summary>权威领取事务的实际积分与金币增量，不由总库存差值推断。</summary>
+        public long ScoreAdded { get; }
+        public int GoldAdded { get; }
     }
 
     /// <summary>服务器确认的原始成员连接状态与截止时间；客户端只用于提示和按钮可用性。</summary>

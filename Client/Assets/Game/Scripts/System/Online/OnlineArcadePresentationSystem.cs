@@ -228,16 +228,19 @@ namespace Game
             SyncSupplyPickups(battle.SupplyPickups, selfId, supplyBaseline);
         }
 
-        /// <summary>只播放本机新增权威记录；先标记身份再回调，重复或过期通知不重复反馈。</summary>
+        /// <summary>只播放本机新增成功拾取记录；先标记身份再回调，重复或历史通知不重复反馈。</summary>
         private void SyncSupplyPickups(IReadOnlyList<OnlineArcadeDropSnapshot> receipts, long selfId, bool baseline)
         {
             foreach (var receipt in receipts)
             {
                 if (!observedSupplyPickupIds.Add(receipt.RuntimeId) || baseline ||
-                    receipt.CollectedByPlayerId != selfId || receipt.AddedAmount <= 0) continue;
+                    receipt.CollectedByPlayerId != selfId) continue;
+                view.PlayTreasurePickup(receipt.ScoreAdded, receipt.GoldAdded);
                 var definition = catalog.Drops.FirstOrDefault(d => d.Id == receipt.DropConfigId);
-                if (definition.Kind != global::ArcadeDropKind.Bomb && definition.Kind != global::ArcadeDropKind.Dash) continue;
-                view.PlaySupplyPickup(definition, receipt.AddedAmount);
+                if ((definition.Kind == global::ArcadeDropKind.Bomb || definition.Kind == global::ArcadeDropKind.Dash) && receipt.AddedAmount > 0)
+                    view.PlaySupplyPickup(definition, receipt.AddedAmount);
+                if (definition.Kind == global::ArcadeDropKind.TemporaryWeapon || definition.Kind == global::ArcadeDropKind.Powerup)
+                    view.PlayProductPickup(definition.ProductId);
             }
         }
 

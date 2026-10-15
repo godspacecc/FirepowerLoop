@@ -63,6 +63,10 @@ namespace Game
         void RemoveDrop(int id);
         /// <summary>仅在权威补给拾取成功后调用，added 是上限截断后的实际增加次数。</summary>
         void PlaySupplyPickup(ArcadeDropDefinition definition, int added) { }
+        /// <summary>权威提交后的实际积分与金币分别传入；不能从掉落面值推断。</summary>
+        void PlayTreasurePickup(long score, long gold) { }
+        /// <summary>仅接受产品定义中的稳定 ID，显示名称沿用现有本地化定义。</summary>
+        void PlayProductPickup(string productId) { }
         void BeginEffectSync() { }
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
@@ -227,6 +231,7 @@ namespace Game
 
         public void End()
         {
+            ClearPickupFeedback();
             EndFirstPerson();
             firstPersonProjectileHeights.Clear();
             if (root != null) root.SetActive(false);
@@ -572,14 +577,15 @@ namespace Game
             return aim.sqrMagnitude > 0.99f && Mathf.Abs(local.y) < 0.001f;
         }
 
-        public void PlayFirstPersonPickup() => Notify.ShowFloatTips(Loc.T("ui.arcade.first_person.picked"));
+        public void PlayFirstPersonPickup() => ShowPickup("first-person", 1,
+            _ => Loc.T("ui.arcade.first_person.picked"));
 
         /// <summary>沿用浮动提示显示实际补充次数；不根据掉落消失或库存差值推断成功。</summary>
         public void PlaySupplyPickup(ArcadeDropDefinition definition, int added)
         {
             if (added <= 0) return;
             var key = definition.Kind == global::ArcadeDropKind.Bomb ? "ui.arcade.bomb" : "ui.arcade.dash";
-            Notify.ShowFloatTips($"{Loc.T(key)} +{added}");
+            ShowPickup(key, added, total => $"{Loc.T(key)} +{total}");
         }
 
         /// <summary>开始一次完整强化表现同步；结束时会回收本帧未出现的过期视觉。</summary>

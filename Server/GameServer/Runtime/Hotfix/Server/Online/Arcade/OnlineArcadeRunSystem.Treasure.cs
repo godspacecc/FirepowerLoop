@@ -86,7 +86,8 @@ namespace ET.Server
         }
 
         /// <summary>完整候选成功才写入个人工作态；溢出或满额返回失败，规则账本保留物品。</summary>
-        private static bool ApplyTreasureReward(OnlineArcadeRunActor actor, long playerId, ArcadeTreasureRewardParameters reward, ArcadeTreasureRoomParameters rules)
+        private static bool ApplyTreasureReward(OnlineArcadeRunActor actor, long playerId, ArcadeTreasureRewardParameters reward,
+            ArcadeTreasureRoomParameters rules, bool recordFeedback = true)
         {
             var record = actor.Record.Players.First(r => r.PlayerId == playerId);
             if (reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb || reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Dash)
@@ -96,12 +97,28 @@ namespace ET.Server
                 int held = bomb ? record.Bombs : record.Dashes;
                 if (drop.MaxOwned <= 0 || held >= drop.MaxOwned) return false;
                 int added = Math.Min(reward.Amount, drop.MaxOwned - held);
+                if (added <= 0) return false;
                 if (bomb) record.Bombs += added; else record.Dashes += added;
+                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, added, 0);
                 return true;
             }
             if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(record.Score, record.ScoreMultiplier, record.MultiplierProgress, record.Lives), reward, rules, out var next)) return false;
+            long scoreAdded = next.Score - record.Score;
             record.Score = next.Score; record.ScoreMultiplier = next.Multiplier; record.MultiplierProgress = next.Progress; record.Lives = next.Lives;
+            if (recordFeedback && scoreAdded > 0) RecordTreasurePickup(actor, playerId, string.Empty, 0, scoreAdded);
             return true;
+        }
+
+        /// <summary>宝藏房与普通掉落使用同一地图内递增身份，重连基线不会重放旧奖励。</summary>
+        private static void RecordTreasurePickup(OnlineArcadeRunActor actor, long playerId, string dropId, int added, long score)
+        {
+            var battle = actor.Battle;
+            if (battle == null) return;
+            battle.SupplyPickups.Add(new OnlineArcadeDropRuntime
+            {
+                RuntimeId = battle.NextDropRuntimeId++, DropConfigId = dropId,
+                CollectedByPlayerId = playerId, AddedAmount = added, ScoreAdded = score,
+            });
         }
     }
 }

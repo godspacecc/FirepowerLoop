@@ -1,0 +1,7 @@
+<Project>
+  <PropertyGroup>
+    <!-- 两个定向检查使用独立中间文件和输出，防止 apphost 与程序集缓存互相覆盖。 -->
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)obj/$(MSBuildProjectName)/</BaseIntermediateOutputPath>
+    <BaseOutputPath>$(MSBuildThisFileDirectory)bin/$(MSBuildProjectName)/</BaseOutputPath>
+  </PropertyGroup>
+</Project>

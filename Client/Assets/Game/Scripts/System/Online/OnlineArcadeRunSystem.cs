@@ -425,7 +425,8 @@ namespace Game
             List<OnlineArcadeDropSnapshot> supplyPickups = new(source.SupplyPickups.Count);
             foreach (var receipt in source.SupplyPickups)
                 supplyPickups.Add(new OnlineArcadeDropSnapshot(receipt.RuntimeId, receipt.DropConfigId,
-                    receipt.PositionX, receipt.PositionZ, receipt.CollectedByPlayerId, receipt.AddedAmount));
+                    receipt.PositionX, receipt.PositionZ, receipt.CollectedByPlayerId, receipt.AddedAmount,
+                    receipt.ScoreAdded, receipt.GoldAdded));
             return new OnlineArcadeBattleSnapshot(source.ArenaNumber, source.WaveNumber, source.WaveCount,
                 source.SpawnedInWave, source.TotalInWave, source.DifficultyPlayerCount, source.BattleRevision,
                 source.ServerTime, players, enemies, projectiles, drops, source.IsChallenge,
