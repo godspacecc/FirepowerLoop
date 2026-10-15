@@ -12,7 +12,7 @@ using AnotherDay.Arcade;
 namespace Game
 {
     /// <summary>渲染非阻断街机战斗 HUD 并转发紧急资源意图；双摇杆直接写入 Input System，不裁决战斗。</summary>
-    public sealed class ArcadeHudUICtrl : BaseUICtrl
+    public sealed partial class ArcadeHudUICtrl : BaseUICtrl
     {
         private const float TimedStatusPadding = 8f;
         private const float TimedStatusTemporaryHeight = 64f;
@@ -52,6 +52,7 @@ namespace Game
             UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeCombatHudChangedEvent>(OnCombatChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<ArcadeStageNoticeChangedEvent>(_ => TryPresentStageNotice()).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeArenaCompletedEvent>(_ => OpenSafeShop()).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeCombatOperationFailedEvent>(evt => Notify.ShowFloatTips(evt.Error)).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnOnlineRunChanged(evt.Snapshot))
@@ -60,7 +61,7 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_ => { if (IsShow()) ApplyJoystickLayout(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<LanguageChangedEvent>(_ => Render()).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<LanguageChangedEvent>(_ => { Render(); RenderStageBannerText(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
         protected override void OnShow()
@@ -74,6 +75,8 @@ namespace Game
             Canvas.ForceUpdateCanvases();
             ApplyJoystickLayout();
             RefreshJoystickVisibility();
+            ClearStageBanner();
+            TryPresentStageNotice();
             if (onlineMode) { RenderOnline(online); return; }
             var run = this.GetModel<ArcadeRunModel>();
             if (run.Phase != ArcadeRunPhase.Arena && run.Phase != ArcadeRunPhase.Challenge)
@@ -87,6 +90,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            ClearStageBanner();
             ReleaseJoystickUpdate();
             awaitingOnlineExit = false;
             ClearPlayerStatuses();
@@ -94,7 +98,7 @@ namespace Game
             UI.FirstPersonRoot.SetActive(false);
         }
 
-        protected override void OnUnload() { ReleaseJoystickUpdate(); ClearPlayerStatuses(); }
+        protected override void OnUnload() { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); }
 
         private void OnRunChanged(ArcadeRunChangedEvent evt)
         {
@@ -254,7 +258,11 @@ namespace Game
             MobileControlLayoutGeometry.Render(UI.JoystickLayoutArea, (RectTransform)UI.MoveJoystickRoot.transform, UI.MoveOpacity, data.Move, true, obstacles);
             MobileControlLayoutGeometry.Render(UI.JoystickLayoutArea, (RectTransform)UI.AimJoystickRoot.transform, UI.AimOpacity, data.Aim, false, obstacles);
         }
-        private void RefreshJoystickArea() { if (UI.JoystickLayoutArea.rect.size != joystickAreaSize) ApplyJoystickLayout(); }
+        private void RefreshJoystickArea()
+        {
+            UpdateStageBanner(Time.unscaledTimeAsDouble);
+            if (UI.JoystickLayoutArea.rect.size != joystickAreaSize) ApplyJoystickLayout();
+        }
         private void OnBlockingUiChanged(bool _) { if (IsShow()) RefreshJoystickVisibility(); }
         private void ReleaseJoystickUpdate()
         {

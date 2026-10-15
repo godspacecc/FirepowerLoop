@@ -147,6 +147,33 @@ namespace Game.Tests
             Assert.That(runtime.AwaitingExit,Is.True);Assert.That(runtime.WaveTransitionRemaining,Is.EqualTo(300));
             Assert.That(catalog.Arenas[0].NextArenaNumbers,Is.EquivalentTo(new[]{2,3}));
         }
+        [Test] public void StageNoticesFollowAuthorityWithoutChangingRestOrExit()
+        {
+            var notices = architecture.GetModel<ArcadeCombatModel>().StageNotices;
+            Call("BeginWave", runtime, 0);
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out var notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveStarted));
+            runtime.SpawnQueue.Clear();
+            Call("TickWaveTransition", runtime, 0f);
+            float rest = runtime.WaveTransitionRemaining;
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
+            Assert.That(runtime.WaveTransitionRemaining, Is.EqualTo(rest));
+            Assert.That(rest, Is.EqualTo(catalog.Arenas[0].Opening.RoundRestSeconds));
+            Assert.That(runtime.AwaitingExit, Is.False);
+            Call("BeginWave", runtime, 3);
+            runtime.SpawnQueue.Clear();
+            Call("TickWaveTransition", runtime, 0f);
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.ArenaCompleted));
+            Assert.That(runtime.AwaitingExit, Is.True);
+            Assert.That(runtime.WaveTransitionRemaining, Is.EqualTo(catalog.Arenas[0].Opening.ExitRestSeconds));
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out _), Is.False);
+        }
         [Test] public void WaterMovement_UsesSameConfiguredZoneAsPresentation()
         {
             var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);
@@ -199,11 +226,21 @@ namespace Game.Tests
         [Test] public void ThirdClearGuaranteesTreasureAndCannotRaceRestTimer()
         {
             Call("BeginWave",runtime,2);runtime.SpawnQueue.Clear();runtime.PlayerPosition=Vector2.zero;
+            Call("PublishHud",runtime);
+            var notices = architecture.GetModel<ArcadeCombatModel>().StageNotices;
+            notices.TryConsume(Time.unscaledTimeAsDouble, out _);
             Call("TickTreasureRoom",runtime,0f);
             Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureDiscovered,Is.True);
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out var thirdClear), Is.True);
+            Assert.That(thirdClear.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
             Call("TickWaveTransition",runtime,500f);Assert.That(runtime.WaveIndex,Is.EqualTo(2));
             Call("TickTreasureRoom",runtime,60f);
             Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.WaveIndex,Is.EqualTo(3));
+            Call("PublishHud", runtime);
+            Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out var fourthWave), Is.True);
+            Assert.That(fourthWave.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveStarted));
+            Assert.That(fourthWave.WaveNumber, Is.EqualTo(4));
             Assert.That(runtime.SpawnQueue.Count,Is.EqualTo(140));
             Call("TickTreasureRoom",runtime,0f);Assert.That(runtime.InTreasureRoom,Is.False);
         }

@@ -295,7 +295,7 @@ GameObject:
   m_Component:
   - component: {fileID: 452915787722178097}
   - component: {fileID: 3723799247734147978}
-  - component: {fileID: 7262035155200571260}
+  - component: {fileID: -8543176740885438240}
   m_Layer: 0
   m_Name: ArcadeHud
   m_TagString: Untagged
@@ -325,6 +325,7 @@ RectTransform:
   - {fileID: 5927572931730808946}
   - {fileID: 7264150838725966043}
   - {fileID: 6535661327875530049}
+  - {fileID: 5790037964481624591}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -351,11 +352,17 @@ MonoBehaviour:
   - key: AimJoystickRoot
     gameObject: {fileID: 8668856123938900812}
     TypeName: UnityEngine.GameObject
+  - key: AimOpacity
+    gameObject: {fileID: 8878898944372332748}
+    TypeName: UnityEngine.CanvasGroup
   - key: BtnBomb
     gameObject: {fileID: 8435402191571753915}
     TypeName: UnityEngine.UI.Button
   - key: BtnDash
     gameObject: {fileID: 168948128049479186}
+    TypeName: UnityEngine.UI.Button
+  - key: BtnExitFirstPerson
+    gameObject: {fileID: 2844319406420100566}
     TypeName: UnityEngine.UI.Button
   - key: BtnPause
     gameObject: {fileID: 4843952881721998553}
@@ -363,23 +370,44 @@ MonoBehaviour:
   - key: BtnRetry
     gameObject: {fileID: 3191429787344399074}
     TypeName: UnityEngine.UI.Button
+  - key: FirstPersonRoot
+    gameObject: {fileID: 5657681259071956631}
+    TypeName: UnityEngine.GameObject
+  - key: JoystickLayoutArea
+    gameObject: {fileID: 935284388676854783}
+    TypeName: UnityEngine.RectTransform
   - key: MoveJoystick
     gameObject: {fileID: 4299068115937448616}
     TypeName: UnityEngine.InputSystem.OnScreen.OnScreenStick
   - key: MoveJoystickRoot
     gameObject: {fileID: 8119226971250237242}
     TypeName: UnityEngine.GameObject
+  - key: MoveOpacity
+    gameObject: {fileID: 3194089341351536682}
+    TypeName: UnityEngine.CanvasGroup
   - key: PlayerStatusList
     gameObject: {fileID: 6575530634817784812}
     TypeName: Game.CustomListView
+  - key: StageBannerOpacity
+    gameObject: {fileID: 1624893817596412244}
+    TypeName: UnityEngine.CanvasGroup
+  - key: StageBannerRoot
+    gameObject: {fileID: 3590888523910499054}
+    TypeName: UnityEngine.GameObject
   - key: TemporaryStatusRoot
     gameObject: {fileID: 7979817101864257049}
     TypeName: UnityEngine.GameObject
   - key: TextArena
     gameObject: {fileID: 7438891679967887657}
     TypeName: TMPro.TextMeshProUGUI
+  - key: TextFirstPerson
+    gameObject: {fileID: 8709761727955984487}
+    TypeName: TMPro.TextMeshProUGUI
   - key: TextRespawn
     gameObject: {fileID: 3883729001657674676}
+    TypeName: TMPro.TextMeshProUGUI
+  - key: TextStageBanner
+    gameObject: {fileID: 8511403787641903461}
     TypeName: TMPro.TextMeshProUGUI
   - key: TextSupport
     gameObject: {fileID: 2687403940300642562}
@@ -390,25 +418,7 @@ MonoBehaviour:
   - key: TextWave
     gameObject: {fileID: 3108377142721010085}
     TypeName: TMPro.TextMeshProUGUI
-  - key: JoystickLayoutArea
-    gameObject: {fileID: 935284388676854783}
-    TypeName: UnityEngine.RectTransform
-  - key: MoveOpacity
-    gameObject: {fileID: 3194089341351536682}
-    TypeName: UnityEngine.CanvasGroup
-  - key: AimOpacity
-    gameObject: {fileID: 8878898944372332748}
-    TypeName: UnityEngine.CanvasGroup
-  - key: TextFirstPerson
-    gameObject: {fileID: 8709761727955984487}
-    TypeName: TMPro.TextMeshProUGUI
-  - key: BtnExitFirstPerson
-    gameObject: {fileID: 2844319406420100566}
-    TypeName: UnityEngine.UI.Button
-  - key: FirstPersonRoot
-    gameObject: {fileID: 5657681259071956631}
-    TypeName: UnityEngine.GameObject
---- !u!114 &7262035155200571260
+--- !u!114 &-8543176740885438240
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -422,25 +432,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   AimJoystick: {fileID: 3144230618712962308}
   AimJoystickRoot: {fileID: 8668856123938900812}
+  AimOpacity: {fileID: 8878898944372332748}
   BtnBomb: {fileID: 8435402191571753915}
   BtnDash: {fileID: 168948128049479186}
+  BtnExitFirstPerson: {fileID: 2844319406420100566}
   BtnPause: {fileID: 4843952881721998553}
   BtnRetry: {fileID: 3191429787344399074}
+  FirstPersonRoot: {fileID: 5657681259071956631}
+  JoystickLayoutArea: {fileID: 935284388676854783}
   MoveJoystick: {fileID: 4299068115937448616}
   MoveJoystickRoot: {fileID: 8119226971250237242}
+  MoveOpacity: {fileID: 3194089341351536682}
   PlayerStatusList: {fileID: 6575530634817784812}
+  StageBannerOpacity: {fileID: 1624893817596412244}
+  StageBannerRoot: {fileID: 3590888523910499054}
   TemporaryStatusRoot: {fileID: 7979817101864257049}
   TextArena: {fileID: 7438891679967887657}
+  TextFirstPerson: {fileID: 8709761727955984487}
   TextRespawn: {fileID: 3883729001657674676}
+  TextStageBanner: {fileID: 8511403787641903461}
   TextSupport: {fileID: 2687403940300642562}
   TextTemporary: {fileID: 7789976855594829695}
   TextWave: {fileID: 3108377142721010085}
-  JoystickLayoutArea: {fileID: 935284388676854783}
-  MoveOpacity: {fileID: 3194089341351536682}
-  AimOpacity: {fileID: 8878898944372332748}
-  TextFirstPerson: {fileID: 8709761727955984487}
-  BtnExitFirstPerson: {fileID: 2844319406420100566}
-  FirstPersonRoot: {fileID: 5657681259071956631}
 --- !u!1 &906080795710465682
 GameObject:
   m_ObjectHideFlags: 0
@@ -1531,6 +1544,95 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0, g: 0, b: 0, a: 0.85}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!1 &3590888523910499054
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5790037964481624591}
+  - component: {fileID: 1624893817596412244}
+  - component: {fileID: 7570014914358457560}
+  - component: {fileID: 756646101723979579}
+  m_Layer: 0
+  m_Name: StageBannerRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &5790037964481624591
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3590888523910499054}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 8977190063061643938}
+  m_Father: {fileID: 452915787722178097}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.8}
+  m_AnchorMax: {x: 0.5, y: 0.8}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 760, y: 112}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &1624893817596412244
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3590888523910499054}
+  m_Enabled: 1
+  m_Alpha: 0
+  m_Interactable: 0
+  m_BlocksRaycasts: 0
+  m_IgnoreParentGroups: 0
+--- !u!222 &7570014914358457560
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3590888523910499054}
+  m_CullTransparentMesh: 1
+--- !u!114 &756646101723979579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3590888523910499054}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.035, g: 0.055, b: 0.075, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3786,6 +3888,141 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &8657456468497401185
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8977190063061643938}
+  - component: {fileID: 5094712381998240081}
+  - component: {fileID: 8511403787641903461}
+  m_Layer: 0
+  m_Name: TextStageBanner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &8977190063061643938
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8657456468497401185}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5790037964481624591}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: -48, y: -24}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &5094712381998240081
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8657456468497401185}
+  m_CullTransparentMesh: 1
+--- !u!114 &8511403787641903461
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8657456468497401185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text:
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8af0e400391932142956d1ed77b5c703, type: 2}
+  m_sharedMaterial: {fileID: 5620418019715026380, guid: 8af0e400391932142956d1ed77b5c703,
+    type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 0.91, b: 0.64, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: 0
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 54
+  m_fontSizeBase: 54
+  m_fontWeight: 400
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 32
+  m_fontSizeMax: 54
+  m_fontStyle: 1
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_enableWordWrapping: 0
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 1
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &8668856123938900812
 GameObject:
   m_ObjectHideFlags: 0

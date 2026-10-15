@@ -224,9 +224,11 @@ namespace Game
     public sealed class ArcadeCombatModel : AbstractModel
     {
         internal ArcadeCombatRuntime Runtime { get; private set; }
+        /// <summary>单人当前战斗的阶段提示消费记录，独立于 HUD 实例生命周期。</summary>
+        internal ArcadeStageNoticeState StageNotices { get; } = new();
         public bool IsActive => Runtime != null;
         protected override void OnInit() { }
-        internal void Begin(ArcadeCombatRuntime runtime) => Runtime = runtime;
-        internal void Clear() => Runtime = null;
+        internal void Begin(ArcadeCombatRuntime runtime) { StageNotices.Clear(); Runtime = runtime; }
+        internal void Clear() { StageNotices.Clear(); Runtime = null; }
     }
 }

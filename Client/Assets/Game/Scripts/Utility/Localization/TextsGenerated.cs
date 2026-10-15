@@ -1168,7 +1168,7 @@ namespace Game
         /// </summary>
         public static string ArcadeEffectPickupradiuspercent(object arg0) => Loc.T("ui.arcade.effect.pickupradiuspercent", arg0);
         /// <summary>
-        /// ANOTHER DAY
+        /// FIREPOWER LOOP
         /// </summary>
         public static string ArcadeEntryBrand => Loc.T("ui.arcade.entry.brand");
         /// <summary>
@@ -1345,6 +1345,10 @@ namespace Game
         /// {0} · 无限弹药
         /// </summary>
         public static string ArcadeHudWeapon(object arg0) => Loc.T("ui.arcade.hud.weapon", arg0);
+        /// <summary>
+        /// 无法返回街机主界面，请重试；本局数据已保留。
+        /// </summary>
+        public static string ArcadeMenuFailed => Loc.T("ui.arcade.menu.failed");
         /// <summary>
         /// 无
         /// </summary>
@@ -1619,6 +1623,18 @@ namespace Game
         /// </summary>
         public static string ArcadePurchased => Loc.T("ui.arcade.purchased");
         /// <summary>
+        /// 已放弃本局
+        /// </summary>
+        public static string ArcadeResultAbandoned => Loc.T("ui.arcade.result.abandoned");
+        /// <summary>
+        /// 本局结束
+        /// </summary>
+        public static string ArcadeResultFailed => Loc.T("ui.arcade.result.failed");
+        /// <summary>
+        /// 本局胜利
+        /// </summary>
+        public static string ArcadeResultVictory => Loc.T("ui.arcade.result.victory");
+        /// <summary>
         /// 继续游戏
         /// </summary>
         public static string ArcadeResume => Loc.T("ui.arcade.resume");
@@ -1633,6 +1649,10 @@ namespace Game
         /// </summary>
         public static string ArcadeResumeTitle => Loc.T("ui.arcade.resume.title");
         /// <summary>
+        /// 重试
+        /// </summary>
+        public static string ArcadeRetry => Loc.T("ui.arcade.retry");
+        /// <summary>
         /// 重试保存
         /// </summary>
         public static string ArcadeRetrySave => Loc.T("ui.arcade.retry_save");
@@ -1641,7 +1661,7 @@ namespace Game
         /// </summary>
         public static string ArcadeSaveCorrupted => Loc.T("ui.arcade.save_corrupted");
         /// <summary>
-        /// 结算并返回
+        /// 确认结果
         /// </summary>
         public static string ArcadeSettle => Loc.T("ui.arcade.settle");
         /// <summary>
@@ -1672,6 +1692,18 @@ namespace Game
         /// 安全商店
         /// </summary>
         public static string ArcadeShopTitle => Loc.T("ui.arcade.shop.title");
+        /// <summary>
+        /// 海岛完成
+        /// </summary>
+        public static string ArcadeStageIslandCompleted => Loc.T("ui.arcade.stage.island_completed");
+        /// <summary>
+        /// 本波完成
+        /// </summary>
+        public static string ArcadeStageWaveCompleted => Loc.T("ui.arcade.stage.wave_completed");
+        /// <summary>
+        /// 第 {0} 波
+        /// </summary>
+        public static string ArcadeStageWaveStarted(object arg0) => Loc.T("ui.arcade.stage.wave_started", arg0);
         /// <summary>
         /// 开始单人街机
         /// </summary>
@@ -3949,7 +3981,7 @@ namespace Game
         /// </summary>
         public static string StartCheckUpdate => Loc.T("ui.start.check_update");
         /// <summary>
-        /// 继续游戏
+        /// 本局进度 / 结果
         /// </summary>
         public static string StartContinue => Loc.T("ui.start.continue");
         /// <summary>
@@ -3961,7 +3993,7 @@ namespace Game
         /// </summary>
         public static string StartExit => Loc.T("ui.start.exit");
         /// <summary>
-        /// 新游戏
+        /// 开始街机
         /// </summary>
         public static string StartNewGame => Loc.T("ui.start.new_game");
         /// <summary>
@@ -3981,7 +4013,7 @@ namespace Game
         /// </summary>
         public static string StartSettings => Loc.T("ui.start.settings");
         /// <summary>
-        /// 日复一日
+        /// FirepowerLoop
         /// </summary>
         public static string StartTitle => Loc.T("ui.start.title");
         /// <summary>

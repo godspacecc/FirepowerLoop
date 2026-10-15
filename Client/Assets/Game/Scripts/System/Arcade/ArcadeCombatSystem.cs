@@ -1707,6 +1707,18 @@ namespace Game
 
         private void PublishHud(ArcadeCombatRuntime runtime)
         {
+            // 阶段提示只读取已提交的波次/出口状态；不修改清波等待、射击继续或离场条件。
+            var notices = this.GetModel<ArcadeCombatModel>().StageNotices;
+            if (!runtime.IsChallenge && !runtime.IsFinalBoss)
+            {
+                // 宝藏轮清场直接进入房间、返回后开下一波，不经过普通 WaveClearAwarded 路径。
+                bool treasureWaveCleared = runtime.TreasureCleared &&
+                    runtime.WaveIndex + 1 == runtime.TreasureRoom?.Parameters.WaveNumber;
+                if (notices.Observe(runtime, runtime.ArenaNumber, runtime.WaveIndex + 1,
+                        runtime.WaveClearAwarded || treasureWaveCleared, runtime.AwaitingExit, Time.unscaledTimeAsDouble))
+                    this.SendEvent(new ArcadeStageNoticeChangedEvent());
+            }
+            else notices.Clear();
             var temporary = FindDrop(global::ArcadeDropKind.TemporaryWeapon, runtime.TemporaryWeaponId);
             var powerups = new List<ArcadePowerupHudEntry>(runtime.Powerups.Count);
             foreach (var pair in runtime.Powerups)

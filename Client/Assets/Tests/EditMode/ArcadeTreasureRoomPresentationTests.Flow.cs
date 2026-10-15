@@ -56,6 +56,41 @@ namespace Game.Tests
         { var ids = new List<int> { 1, 2 }; var b = new OnlineArcadeBattleSnapshot(1, 3, 4, 0, 0, 2, 1, 0, null, null, treasureRewardIds: ids); ids.Clear(); Assert.That(b.TreasureRewardIds.Count, Is.EqualTo(2)); }
         [Test] public void EndResetsRevisionAndRegion()
         { Apply(Battle(5, true)); typeof(OnlineArcadePresentationSystem).GetMethod("EndPresentation", Flags).Invoke(system, null); Assert.That(Get<long>("lastAppliedBattleRevision"), Is.EqualTo(-1)); Assert.That(Get<bool>("presentedInTreasureRoom"), Is.False); }
+        [Test] public void StageNoticesUseAuthorityAndIgnoreRepeatedOrStaleSnapshots()
+        {
+            var players = Battle(1, false).Players;
+            Apply(new OnlineArcadeBattleSnapshot(1, 1, 4, 0, 1, 2, 1, 0, players, null, arenaConfigNumber: 1));
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out var notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveStarted));
+            var cleared = new OnlineArcadeBattleSnapshot(1, 1, 4, 1, 1, 2, 2, 0, players, null, arenaConfigNumber: 1);
+            Apply(cleared);
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
+            Apply(cleared);
+            Apply(new OnlineArcadeBattleSnapshot(1, 1, 4, 0, 1, 2, 1, 0, players, null, arenaConfigNumber: 1));
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out _), Is.False);
+            Apply(new OnlineArcadeBattleSnapshot(1, 4, 4, 1, 1, 2, 3, 0, players, null, arenaConfigNumber: 1, awaitingExit: true));
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.ArenaCompleted));
+        }
+        [Test] public void ThirdWaveClearIsAnnouncedWhilePlayerEntersTreasureRoom()
+        {
+            Apply(new OnlineArcadeBattleSnapshot(1, 3, 4, 0, 2, 2, 1, 0, Battle(1, false).Players, null, arenaConfigNumber: 1));
+            system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out _);
+            Apply(new OnlineArcadeBattleSnapshot(1, 3, 4, 2, 2, 2, 2, 0, Battle(1, true).Players, null,
+                arenaConfigNumber: 1, treasureRoomId: "101:1:1", treasureDiscovered: true, treasureOpen: true, treasureSeconds: 60));
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out var notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
+            Assert.That(notice.WaveNumber, Is.EqualTo(3));
+        }
+        [Test] public void ThirdWaveWithoutTreasureInstanceUsesNormalClearSnapshot()
+        {
+            Apply(new OnlineArcadeBattleSnapshot(1, 3, 4, 0, 1, 2, 1, 0, Battle(1, false).Players, null, arenaConfigNumber: 1));
+            system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out _);
+            Apply(new OnlineArcadeBattleSnapshot(1, 3, 4, 1, 1, 2, 2, 0, Battle(1, false).Players, null, arenaConfigNumber: 1));
+            Assert.That(system.StageNotices.TryConsume(Time.unscaledTimeAsDouble, out var notice), Is.True);
+            Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
+        }
         [Test] public void HudKeysInBothLanguages()
         { foreach (var lang in new[] { "zh-CN", "en-US" }) { var text = File.ReadAllText(Path.Combine(Application.dataPath, "Game/Config/Localization", lang + ".json")); Assert.That(text, Does.Contain("ui.arcade.hud.score")); Assert.That(text, Does.Contain("ui.arcade.hud.treasure")); } }
         private sealed class TestView : IArcadeCombatViewPort

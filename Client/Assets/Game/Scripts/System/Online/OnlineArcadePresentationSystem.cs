@@ -41,6 +41,8 @@ namespace Game
         private int lastLocalFireSequence;
         private int transitionGeneration;
         private int nextPresentationId = 1;
+        /// <summary>本机联机战斗会话的阶段提示记录；区域重建不重置，退出联机战场时清理。</summary>
+        internal ArcadeStageNoticeState StageNotices { get; } = new();
 
         protected override void OnInit()
         {
@@ -164,6 +166,18 @@ namespace Game
             }
             bool supplyBaseline = lastAppliedBattleRevision < 0;
             lastAppliedBattleRevision = battle.BattleRevision;
+            // 沿用服务器已生成/待生成敌人及出口快照，不由 HUD 或动画推断清波。
+            bool treasureWave = !string.IsNullOrEmpty(battle.TreasureRoomId) && battle.WaveNumber == roomRules?.WaveNumber;
+            // TreasureOpen 是服务器 TreasureCleared 的投影；自动进入宝藏房同帧也必须显示本波完成。
+            bool cleared = treasureWave ? battle.TreasureOpen || battle.TreasureExpired :
+                battle.TotalInWave > 0 && battle.SpawnedInWave >= battle.TotalInWave && battle.Enemies.Count == 0;
+            if (!battle.IsChallenge && !battle.IsFinalBoss && (!inRoom || treasureWave && cleared))
+            {
+                if (StageNotices.Observe(latest.RunId, battle.ArenaNumber, battle.WaveNumber,
+                        cleared, battle.AwaitingExit, Time.unscaledTimeAsDouble))
+                    this.SendEvent(new ArcadeStageNoticeChangedEvent());
+            }
+            else if (battle.IsChallenge || battle.IsFinalBoss) StageNotices.Clear();
             view.SetTreasureRoom(roomRules, inRoom, battle.TreasureDiscovered, battle.TreasureOpen, battle.TreasureRewardIds);
             view.SetOpening(inRoom || battle.IsChallenge ? default : activeArena.Opening,
                 AnotherDay.Arcade.ArcadeOpeningRules.CampfireActive(activeArena.Opening, battle.WaveNumber - 1,
@@ -426,6 +440,7 @@ namespace Game
 
         private void EndPresentation()
         {
+            StageNotices.Clear();
             if (active) view?.End();
             active = false; activeBattleArenaNumber = 0; hasPrediction = false; predictionIsland = null; presentedInTreasureRoom = false; presentedRoomId = null; lastAppliedBattleRevision = -1; catalog = null; activeArena = null;
             enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); seenIds.Clear(); nextPresentationId = 1;
