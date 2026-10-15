@@ -5,11 +5,11 @@ using TMPro;
 
 namespace Game
 {
-    /// <summary>作为主界面的街机本局入口：统一承载单人新局、单人恢复和双人联机分流；不直接持有联机房间状态。</summary>
+    /// <summary>按需呈现单人进度和结果；开局及双人入口统一由主菜单提供。</summary>
     public sealed class ArcadeResumeUICtrl : BaseUICtrl
     {
         private ArcadeRunSaveData current;
-        // 无本地进行中存档时只显示模式选择；恢复资料和破坏性操作由同一状态控制。
+        // 无进行中存档时隐藏所有本局操作；不再提供新局或联机分流。
         private bool selectionMode;
         private bool awaitingAbandonConfirmation;
         private bool operationPending;
@@ -21,7 +21,7 @@ namespace Game
         public override UILayer Layer() => UILayer.Dialog;
         public override bool BlocksGame => true;
 
-        /// <summary>主界面调用点：校验本地存档后打开正式选择界面，不在入口回调里隐式启动新局。</summary>
+        /// <summary>主菜单按需打开已有进度或结果；无存档时不再显示模式选择。</summary>
         public static bool TryOpenEntry(out string error)
         {
             var system = Game.Interface.GetSystem<ArcadeRunSystem>();
@@ -37,13 +37,12 @@ namespace Game
                 error = string.IsNullOrWhiteSpace(pending.Error) ? Loc.T("ui.arcade.save_corrupted") : pending.Error;
                 return false;
             }
-            UIHelper.ShowUI<ArcadeResumeUICtrl>();
-            error = null;
-            return true;
+            error = Loc.T("ui.arcade.no_pending_run");
+            return false;
         }
 
         /// <summary>初始安全节点落盘后切换正式街机地图；任一步失败保留节点并返回主界面供重试。</summary>
-        private static async UniTaskVoid EnterNewRunAsync(ArcadeRunSystem system)
+        internal static async UniTask EnterNewRunAsync(ArcadeRunSystem system)
         {
             var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
             var mapResult = await flow.EnterArenaMapAsync();
@@ -75,7 +74,6 @@ namespace Game
         {
             UI.BtnClose.onClick.AddListener(Hide);
             UI.BtnContinue.onClick.AddListener(() => ContinueRunAsync().Forget());
-            UI.BtnOnline.onClick.AddListener(OpenOnline);
             UI.BtnSettle.onClick.AddListener(Settle);
             UI.BtnAbandon.onClick.AddListener(Abandon);
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -118,23 +116,24 @@ namespace Game
         {
             if (UI == null) return;
             UI.ResumeDetails.SetActive(!selectionMode);
-            UI.BtnOnline.gameObject.SetActive(true);
-            UI.BtnContinue.gameObject.SetActive(selectionMode || snapshot?.HasResult != true);
+            UI.BtnOnline.gameObject.SetActive(false);
+            UI.BtnContinue.gameObject.SetActive(!selectionMode && snapshot != null && !snapshot.HasResult);
             UI.BtnSettle.gameObject.SetActive(snapshot?.HasResult == true);
             UI.BtnAbandon.gameObject.SetActive(!selectionMode && snapshot?.HasResult != true);
+            UI.DialogTitle.text = Loc.T(snapshot?.HasResult == true ? "ui.arcade.dialog.result" : "ui.arcade.dialog.progress");
             if (selectionMode)
             {
                 current = null;
                 Set(UI.TextSummary, string.Empty);
                 Set(UI.TextRewards, string.Empty);
                 Set(UI.TextMessage, string.Empty);
-                SetButton(UI.BtnContinue, Loc.T("ui.arcade.entry.start"));
+                SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
                 return;
             }
             if (snapshot == null) return;
             current = snapshot.Clone();
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
-            Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + current.Outcome) : Loc.T("ui.arcade.resume.summary", current.CompletedArenaCount, current.RemainingLives, current.RunGold));
+            Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome)) : Loc.T("ui.arcade.resume.summary", current.CompletedArenaCount, current.RemainingLives, current.RunGold));
             Set(UI.TextRewards, Loc.T("ui.arcade.hud.score", current.Score));
             Set(UI.TextMessage, string.Empty);
         }
@@ -157,14 +156,7 @@ namespace Game
                 if (!IsCurrent()) return;
                 if (selectionMode)
                 {
-                    ArcadeRunSystem system = this.GetSystem<ArcadeRunSystem>();
-                    if (!system.TryStartConfiguredRun(out _, out string startError))
-                    {
-                        Set(UI.TextMessage, startError);
-                        return;
-                    }
-                    Hide();
-                    EnterNewRunAsync(system).Forget();
+                    Set(UI.TextMessage, Loc.T("ui.arcade.no_pending_run"));
                     return;
                 }
                 var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().EnterArenaMapAsync();
@@ -199,19 +191,6 @@ namespace Game
                     UI.BtnContinue.interactable = true;
                 }
             }
-        }
-
-        /// <summary>切换到联机身份或双人房间入口；本地未结束局保持落盘，不在此处清理。</summary>
-        private void OpenOnline()
-        {
-            Hide();
-            if (!this.GetModel<OnlineAccountModel>().Snapshot.Value.IsAuthenticated)
-            {
-                Notify.ShowFloatTips(Loc.T("ui.online.error.not_logged_in"));
-                OnlineLoginUICtrl.ShowForArcadeLobby();
-                return;
-            }
-            OnlineRoomUICtrl.ShowArcadeLobby();
         }
 
         /// <summary>进入竞技场并确认同步战斗初始化没有把运行态回退到安全节点。</summary>

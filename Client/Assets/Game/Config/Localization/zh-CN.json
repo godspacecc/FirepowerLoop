@@ -348,10 +348,10 @@
     "tip.item_gained": "获得 {0} x{1}",
     "tip.framework_ready": "框架已就绪",
     "ui.start.title": "FirepowerLoop",
-    "ui.start.new_game": "开始街机",
+    "ui.start.new_game": "单人开始",
     "ui.start.continue": "本局进度 / 结果",
     "ui.start.save": "存档",
-    "ui.start.online": "联机游戏",
+    "ui.start.online": "双人联机",
     "ui.start.check_update": "检查更新",
     "ui.start.settings": "设置",
     "ui.start.exit": "退出游戏",
@@ -1082,5 +1082,11 @@
     "ui.arcade.hud.icon.saw": "锯",
     "ui.arcade.hud.icon.clock": "钟",
     "ui.arcade.hud.weapon_group": "武器",
-    "ui.arcade.hud.support_group": "辅助"
+    "ui.arcade.hud.support_group": "辅助",
+    "ui.arcade.dialog.progress": "本局进度",
+    "ui.arcade.dialog.result": "本局结果",
+    "ui.arcade.no_pending_run": "当前没有待处理的本局进度或结果。",
+    "ui.start.run_continue": "继续本局",
+    "ui.start.run_result": "查看本局结果",
+    "ui.start.run_summary": "第 {0} 场 · 剩余生命 {1} · 分数 {2}"
 }

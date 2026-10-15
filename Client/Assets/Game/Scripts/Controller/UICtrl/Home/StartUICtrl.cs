@@ -20,6 +20,10 @@ namespace Game
         private bool manualChecking;
         /// <summary>界面隐藏或卸载时递增；旧请求不得向已离开的界面弹出更新提示。</summary>
         private int updatePresentationGeneration;
+        /// <summary>单人开局资源准备的当前请求；隐藏和重开菜单后旧请求不能创建存档。</summary>
+        private int startGeneration;
+        /// <summary>开局准备到地图事务结束期间拒绝重复提交。</summary>
+        private bool startingRun;
         private StartUI UI => BaseUI as StartUI;
 
         public override UILayer Layer()
@@ -68,6 +72,8 @@ namespace Game
 
         protected override void OnShow()
         {
+            startGeneration++;
+            startingRun = false;
             var appState = this.GetModel<AppStateModel>().CurrentState.Value;
             if (appState != AppState.Paused)
             {
@@ -84,22 +90,37 @@ namespace Game
 
         protected override void OnHide()
         {
+            startGeneration++;
+            startingRun = false;
             manualChecking = false;
             updatePresentationGeneration++;
         }
 
         protected override void OnUnload()
         {
+            startGeneration++;
+            startingRun = false;
             manualChecking = false;
             updatePresentationGeneration++;
         }
 
+        /// <summary>从正式存档快照决定单人入口及摘要；已有进度和结果都不能由新局按钮直接覆盖。</summary>
         private void RefreshSaveButtons()
         {
             var pending = this.GetSystem<ArcadeRunSystem>().InspectPending();
             UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
             UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
-            UI.BtnContinue.interactable = true;
+            UI.BtnNewGame.interactable = !startingRun;
+            UI.BtnContinue.interactable = !startingRun;
+            UI.BtnOnline.interactable = !startingRun;
+            UI.BtnSetting.interactable = !startingRun;
+            UI.BtnContinue.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text =
+                Loc.T(pending.IsValid && pending.Data.HasResult ? "ui.start.run_result" : "ui.start.run_continue");
+            UI.RunSummaryText.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
+            UI.RunSummaryText.text = pending.IsValid
+                ? pending.Data.HasResult ? Loc.T("ui.arcade.hud.score", pending.Data.Score)
+                    : Loc.T("ui.start.run_summary", pending.Data.NextArenaNumber, pending.Data.RemainingLives, pending.Data.Score)
+                : pending.Status == SaveFileStatus.Missing ? string.Empty : Loc.T("ui.arcade.save_corrupted");
         }
 
         private void RefreshUpdateText()
@@ -126,11 +147,54 @@ namespace Game
 
         private void OnNewGameClick()
         {
-            if (!ArcadeResumeUICtrl.TryOpenEntry(out var error)) Notify.ShowFloatTips(error);
+            StartSinglePlayerAsync().Forget();
+        }
+
+        /// <summary>无待处理存档时直接开局；先准备资源再落盘，失败保留菜单与已写入的安全节点。</summary>
+        private async UniTask StartSinglePlayerAsync()
+        {
+            if (startingRun) return;
+            var system = this.GetSystem<ArcadeRunSystem>();
+            if (system.InspectPending().Status != SaveFileStatus.Missing)
+            {
+                OnContinueClick();
+                return;
+            }
+            startingRun = true;
+            RefreshSaveButtons();
+            var owner = BaseUI;
+            int generation = ++startGeneration;
+            bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
+            try
+            {
+                var preparation = this.GetUtility<IGameplayResourcePreparation>();
+                if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
+                if (!IsCurrent()) return;
+                if (!system.TryStartConfiguredRun(out _, out var error))
+                {
+                    Notify.ShowFloatTips(error);
+                    return;
+                }
+                await ArcadeResumeUICtrl.EnterNewRunAsync(system);
+            }
+            catch (Exception exception)
+            {
+                Log.Error($"[StartUICtrl] 单人开局失败：{exception}");
+                if (IsCurrent()) Notify.ShowFloatTips(Loc.T("ui.arcade.error.open"));
+            }
+            finally
+            {
+                if (IsCurrent())
+                {
+                    startingRun = false;
+                    RefreshSaveButtons();
+                }
+            }
         }
 
         private void OnContinueClick()
         {
+            if (startingRun) return;
             if (!ArcadeResumeUICtrl.TryOpenEntry(out var error)) Notify.ShowFloatTips(error);
         }
 
@@ -148,6 +212,7 @@ namespace Game
 
         private void OnOnlineClick()
         {
+            if (startingRun) return;
             OnlineLoginUICtrl.ShowForArcadeLobby();
         }
 
@@ -163,6 +228,7 @@ namespace Game
 
         private void OnLanguageChanged(LanguageChangedEvent evt)
         {
+            RefreshSaveButtons();
             RefreshUpdateText();
         }
 

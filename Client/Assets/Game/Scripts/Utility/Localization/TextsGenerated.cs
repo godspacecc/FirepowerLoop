@@ -1136,6 +1136,14 @@ namespace Game
         /// </summary>
         public static string ArcadeDestinationVictory => Loc.T("ui.arcade.destination.victory");
         /// <summary>
+        /// 本局进度
+        /// </summary>
+        public static string ArcadeDialogProgress => Loc.T("ui.arcade.dialog.progress");
+        /// <summary>
+        /// 本局结果
+        /// </summary>
+        public static string ArcadeDialogResult => Loc.T("ui.arcade.dialog.result");
+        /// <summary>
         /// 本局数量 +{0}
         /// </summary>
         public static string ArcadeEffectConsumable(object arg0) => Loc.T("ui.arcade.effect.consumable", arg0);
@@ -1401,6 +1409,10 @@ namespace Game
         /// 无法返回街机主界面，请重试；本局数据已保留。
         /// </summary>
         public static string ArcadeMenuFailed => Loc.T("ui.arcade.menu.failed");
+        /// <summary>
+        /// 当前没有待处理的本局进度或结果。
+        /// </summary>
+        public static string ArcadeNoPendingRun => Loc.T("ui.arcade.no_pending_run");
         /// <summary>
         /// 无
         /// </summary>
@@ -4045,7 +4057,7 @@ namespace Game
         /// </summary>
         public static string StartExit => Loc.T("ui.start.exit");
         /// <summary>
-        /// 开始街机
+        /// 单人开始
         /// </summary>
         public static string StartNewGame => Loc.T("ui.start.new_game");
         /// <summary>
@@ -4053,9 +4065,21 @@ namespace Game
         /// </summary>
         public static string StartNoValidSave => Loc.T("ui.start.no_valid_save");
         /// <summary>
-        /// 联机游戏
+        /// 双人联机
         /// </summary>
         public static string StartOnline => Loc.T("ui.start.online");
+        /// <summary>
+        /// 继续本局
+        /// </summary>
+        public static string StartRunContinue => Loc.T("ui.start.run_continue");
+        /// <summary>
+        /// 查看本局结果
+        /// </summary>
+        public static string StartRunResult => Loc.T("ui.start.run_result");
+        /// <summary>
+        /// 第 {0} 场 · 剩余生命 {1} · 分数 {2}
+        /// </summary>
+        public static string StartRunSummary(object arg0, object arg1, object arg2) => Loc.T("ui.start.run_summary", arg0, arg1, arg2);
         /// <summary>
         /// 存档
         /// </summary>

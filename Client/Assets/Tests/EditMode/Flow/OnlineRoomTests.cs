@@ -603,6 +603,33 @@ namespace Game.Tests
         }
 
         [Test]
+        public void AuthenticatedArcadeEntry_OpensLobbyWithoutLoginScreen()
+        {
+            EnsureUiRootForTest();
+            InstallMinimalGameArchitectureForUiTest();
+            Game.Interface.GetModel<OnlineAccountModel>().Publish(AuthenticatedSnapshot("tester", 1, 2, 3, OnlineAccountResultCode.Success));
+            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
+            using (Log.CaptureForTests((_, _) => { })) OnlineLoginUICtrl.ShowForArcadeLobby();
+            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>()?.IsShow(), Is.True);
+            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow() == true, Is.False);
+        }
+
+        [Test]
+        public void ArcadeLoginSuccess_OpensLobbyAndClosesLoginScreen()
+        {
+            EnsureUiRootForTest();
+            InstallMinimalGameArchitectureForUiTest();
+            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
+            using (Log.CaptureForTests((_, _) => { }))
+            {
+                OnlineLoginUICtrl.ShowForArcadeLobby();
+                Game.Interface.GetModel<OnlineAccountModel>().Publish(AuthenticatedSnapshot("tester", 1, 2, 3, OnlineAccountResultCode.Success));
+            }
+            Assert.That(UIHelper.GetUICtrl<OnlineRoomUICtrl>()?.IsShow(), Is.True);
+            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>().IsShow(), Is.False);
+        }
+
+        [Test]
         public void ArcadeLoginEntryPreservesRequestedRoomModeUntilRoomNavigation()
         {
             EnsureUiRootForTest();

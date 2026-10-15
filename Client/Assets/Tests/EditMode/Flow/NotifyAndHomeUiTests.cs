@@ -1031,6 +1031,7 @@ namespace Game.Tests
             title.gameObject.AddComponent<LocalizedText>().Key = "ui.start.title";
             startUi.VersionText = (TextMeshProUGUI)CreateText(root.transform, "Version");
             startUi.UpdateStatusText = (TextMeshProUGUI)CreateText(root.transform, "UpdateStatus");
+            startUi.RunSummaryText = (TextMeshProUGUI)CreateText(panel.transform, "RunSummary");
             startUi.BtnNewGame = CreateButton(root.transform, "BtnNewGame", out _);
             startUi.BtnContinue = CreateButton(root.transform, "BtnContinue", out _);
             startUi.BtnOnline = CreateButton(root.transform, "BtnOnline", out _);
@@ -1090,6 +1091,12 @@ namespace Game.Tests
             controlsUi.HotKeyList = CreateList(controlsRoot.transform, "HotKeyList", hotKeyTemplateGo);
             controlsUi.ResetButton = CreateButton(controlsRoot.transform, "ResetButton", out _);
             settingUi.SettingControlsRoot = controlsRoot;
+
+            // 本夹具只测试桌面设置；补齐当前宿主的手机页绑定，不初始化手机页业务。
+            var mobileRoot = new GameObject("SettingMobile", typeof(RectTransform), typeof(SettingMobilePageUI));
+            mobileRoot.transform.SetParent(root.transform, false);
+            mobileRoot.SetActive(false);
+            settingUi.SettingMobileRoot = mobileRoot;
 
             var networkRoot = new GameObject("SettingNetwork", typeof(RectTransform));
             networkRoot.transform.SetParent(root.transform, false);
@@ -1241,6 +1248,7 @@ namespace Game.Tests
             architecture.RegisterModel(new RuntimeLogModel());
             architecture.RegisterModel(new MapSceneModel());
             architecture.RegisterModel(new ResourceUpdateModel());
+            architecture.RegisterModel(new ArcadeRunModel());
             architecture.RegisterModel(new TestToolSettingsModel());
             architecture.RegisterUtility<IDisplayResolutionApplier>(displayApplier);
             architecture.RegisterUtility<ISettingsFileStore>(settingsStore);
@@ -1255,6 +1263,8 @@ namespace Game.Tests
             architecture.RegisterSystem(new HotKeySystem());
             architecture.RegisterSystem(new RedPointSystem());
             architecture.RegisterSystem(new ResourceUpdateSystem());
+            architecture.RegisterSystem(new ArcadeRunSystem());
+            architecture.GetSystem<ArcadeRunSystem>().ConfigureForTests(tempRoot);
             architecture.GetSystem<ResourceUpdateSystem>().InitializeStartupInfo(
                 new BootResourceStartupInfo(BootResourceSource.BuiltinFallback, string.Empty, string.Empty, string.Empty));
         }

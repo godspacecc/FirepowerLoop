@@ -11,6 +11,7 @@ namespace Game
         public Button BtnContinue;
         public Button BtnOnline;
         public Button BtnSettle;
+        public TextMeshProUGUI DialogTitle;
         public GameObject ResumeDetails;
         public TextMeshProUGUI TextMessage;
         public TextMeshProUGUI TextRewards;

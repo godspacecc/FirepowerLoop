@@ -19,16 +19,25 @@ namespace Game
         private OnlineAccountResultCode lastNoticeResultCode;
         private static bool requestArcadeRoomMode;
         private bool arcadeRoomMode;
+        /// <summary>从主菜单双人入口发起的登录，认证成功后自动交还大厅导航。</summary>
+        private bool enterLobbyAfterLogin;
 
-        /// <summary>从街机主界面打开登录；登录完成后的房间按钮继续进入双人街机大厅。</summary>
+        /// <summary>双人入口：已认证直接进入大厅；未认证只补登录步骤，成功后自动进入大厅。</summary>
         public static void ShowForArcadeLobby()
         {
+            if (Game.Interface.GetModel<OnlineAccountModel>().Snapshot.Value.IsAuthenticated)
+            {
+                UIHelper.HideUI<OnlineLoginUICtrl>();
+                OnlineRoomUICtrl.ShowArcadeLobby();
+                return;
+            }
             requestArcadeRoomMode = true;
             OnlineLoginUICtrl controller = UIHelper.ShowUI<OnlineLoginUICtrl>();
             // Show 已可见时不会重进 OnShow，因此同步写入当前实例，保证入口意图不丢失。
             if (controller != null)
             {
                 controller.arcadeRoomMode = true;
+                controller.enterLobbyAfterLogin = true;
             }
         }
 
@@ -80,6 +89,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            enterLobbyAfterLogin = false;
             isVisible = false;
             arcadeRoomMode = false;
             endpointReady = false;
@@ -239,6 +249,14 @@ namespace Game
         {
             if (UI == null)
             {
+                return;
+            }
+
+            if (isVisible && enterLobbyAfterLogin && snapshot.IsAuthenticated)
+            {
+                enterLobbyAfterLogin = false;
+                Hide();
+                OnlineRoomUICtrl.ShowArcadeLobby();
                 return;
             }
 

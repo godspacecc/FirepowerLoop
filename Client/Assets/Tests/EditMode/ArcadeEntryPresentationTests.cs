@@ -260,9 +260,10 @@ namespace Game.Tests
             Assert.That(typeof(ArcadeResumeUI).GetField("ResumeDetails"), Is.Not.Null);
         }
 
-        [TestCase(false)]
-        [TestCase(true)]
-        public void EntryRender_OnlyShowsSavedProgressAndDestructiveActionsForExistingRun(bool hasRun)
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void EntryRender_OnlyShowsSavedProgressAndDestructiveActionsForExistingRun(bool hasRun, bool hasResult)
         {
             var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Path));
             try
@@ -271,17 +272,18 @@ namespace Game.Tests
                 var ctrl = new ArcadeResumeUICtrl();
                 typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, view);
                 typeof(ArcadeResumeUICtrl).GetField("selectionMode", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, !hasRun);
-                var snapshot = hasRun ? new ArcadeRunSaveData { CompletedArenaCount = 4, RemainingLives = 2, RunGold = 280 } : null;
+                var snapshot = hasRun ? new ArcadeRunSaveData { CompletedArenaCount = 4, RemainingLives = 2, RunGold = 280, Outcome = hasResult ? "failed" : null } : null;
                 typeof(ArcadeResumeUICtrl).GetMethod("Render", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, new object[] { snapshot });
                 var field = typeof(ArcadeResumeUI).GetField("ResumeDetails");
                 Assert.That(field, Is.Not.Null, "恢复信息必须拥有明确的生成容器引用");
                 Assert.That(((GameObject)field.GetValue(view)).activeSelf, Is.EqualTo(hasRun));
-                Assert.That(view.BtnSettle.gameObject.activeInHierarchy, Is.EqualTo(hasRun));
-                Assert.That(view.BtnAbandon.gameObject.activeInHierarchy, Is.EqualTo(hasRun));
-                Assert.That(view.BtnContinue.gameObject.activeInHierarchy, Is.True);
-                Assert.That(view.BtnOnline.gameObject.activeInHierarchy, Is.True);
+                Assert.That(view.BtnSettle.gameObject.activeInHierarchy, Is.EqualTo(hasResult));
+                Assert.That(view.BtnAbandon.gameObject.activeInHierarchy, Is.EqualTo(hasRun && !hasResult));
+                Assert.That(view.BtnContinue.gameObject.activeInHierarchy, Is.EqualTo(hasRun && !hasResult));
+                Assert.That(view.BtnOnline.gameObject.activeInHierarchy, Is.False,
+                    "进度和结果弹窗不能再次提供模式选择");
                 Assert.That(view.BtnContinue.GetComponentInChildren<TextMeshProUGUI>().text,
-                    Is.EqualTo(Loc.T(hasRun ? "ui.arcade.resume" : "ui.arcade.entry.start")));
+                    Is.EqualTo(Loc.T("ui.arcade.resume")));
                 Assert.That(view.BtnContinue.GetComponentInChildren<TextMeshProUGUI>().text, Does.Not.StartWith("ui."));
                 Assert.That(view.BtnContinue.GetComponentInChildren<LocalizedText>(true), Is.Null,
                     "开始/继续由 Controller 切换，固定本地化组件不能覆盖动态标签");

@@ -348,10 +348,10 @@
     "tip.item_gained": "Got {0} x{1}",
     "tip.framework_ready": "Framework ready",
     "ui.start.title": "FirepowerLoop",
-    "ui.start.new_game": "Start arcade",
+    "ui.start.new_game": "Single Player",
     "ui.start.continue": "Current run / result",
     "ui.start.save": "Saves",
-    "ui.start.online": "Online Play",
+    "ui.start.online": "Two Players",
     "ui.start.check_update": "Check Update",
     "ui.start.settings": "Settings",
     "ui.start.exit": "Quit Game",
@@ -1082,5 +1082,11 @@
     "ui.arcade.hud.icon.saw": "SW",
     "ui.arcade.hud.icon.clock": "TM",
     "ui.arcade.hud.weapon_group": "Weapon",
-    "ui.arcade.hud.support_group": "Effects"
+    "ui.arcade.hud.support_group": "Effects",
+    "ui.arcade.dialog.progress": "CURRENT RUN",
+    "ui.arcade.dialog.result": "RUN RESULT",
+    "ui.arcade.no_pending_run": "There is no pending run or result.",
+    "ui.start.run_continue": "Continue Run",
+    "ui.start.run_result": "View Run Result",
+    "ui.start.run_summary": "Arena {0} · Lives {1} · Score {2}"
 }
