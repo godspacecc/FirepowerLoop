@@ -820,7 +820,7 @@ namespace Boot
         }
 
         /// <summary>
-        /// 枚举启动前必须存在且已就绪的地址；库存、制作和商店在基地同步加载，不能依赖远征下载。
+        /// 枚举街机启动前必须存在且已就绪的核心地址；已移除的业务界面不再作为启动依赖。
         /// 缺地址或缺 Bundle 时由启动校验返回结构化失败，不延迟到游戏界面加载时报错。
         /// </summary>
         private IEnumerable<string> GetRequiredAddresses()
@@ -829,11 +829,6 @@ namespace Boot
             yield return "tbitem.bytes";
             yield return "Game.dll.bytes";
             yield return "HybridCLRAssemblyList.bytes";
-            yield return "Prefabs/UI/Inventory/Bag";
-            yield return "Prefabs/UI/Inventory/Warehouse";
-            yield return "Prefabs/UI/Inventory/SearchContainer";
-            yield return "Prefabs/UI/Craft/Craft";
-            yield return "Prefabs/UI/Shop/Shop";
         }
 
         private static string ToDllBytesAddress(string dllName)

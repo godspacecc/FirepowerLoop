@@ -66,24 +66,35 @@ namespace Game.Tests.Flow
         [TestCase(9, "SearchContainer")]
         [TestCase(10, "Craft")]
         [TestCase(11, "Shop")]
-        public void MissingInventoryBundleRejectsStartupEvenWithExpeditionTag(int bundleId, string resourceName)
+        public void MissingRetiredGameplayBundleDoesNotBlockStartup(int bundleId, string resourceName)
         {
             Set(_boot, "_package", CreatePackage(bundleId));
-            LogAssert.Expect(LogType.Error, $"Can not found belong file system : fixture_{bundleId}.bundle");
             var result = Validate();
-            Assert.That(result.Succeeded, Is.False, "基地立即使用的库存 UI 不能推迟到远征下载");
-            Assert.That(result.Failure.Code, Is.EqualTo(BootFailureCode.BuiltinResourceInvalid));
-            Assert.That(result.Failure.DiagnosticDetails, Does.Contain("resourceAddress: " + resourceName));
+            Assert.That(result.Succeeded, Is.True, $"已移除的 {resourceName} 业务不能阻断街机启动");
         }
 
-        [Test]
-        public void MissingInventoryAddressRejectsStartupBeforeUiLoad()
+        [TestCase("Prefabs/UI/Inventory/Bag")]
+        [TestCase("Prefabs/UI/Inventory/Warehouse")]
+        [TestCase("Prefabs/UI/Inventory/SearchContainer")]
+        [TestCase("Prefabs/UI/Craft/Craft")]
+        [TestCase("Prefabs/UI/Shop/Shop")]
+        public void MissingRetiredGameplayAddressDoesNotBlockStartup(string address)
         {
-            Set(_boot, "_package", CreatePackage(99, omittedAddress: "Prefabs/UI/Inventory/Bag"));
+            Set(_boot, "_package", CreatePackage(99, omittedAddress: address));
+            Assert.That(Validate().Succeeded, Is.True, $"旧业务地址 {address} 不是街机启动依赖");
+        }
+
+        [TestCase("Scenes/Main", BootFailureCode.RequiredResourceMissing)]
+        [TestCase("tbitem.bytes", BootFailureCode.RequiredResourceMissing)]
+        [TestCase("Game.dll.bytes", BootFailureCode.GameDllMissing)]
+        [TestCase("HybridCLRAssemblyList.bytes", BootFailureCode.RequiredResourceMissing)]
+        public void MissingRequiredStartupAddressStillRejectsStartup(string address, BootFailureCode code)
+        {
+            Set(_boot, "_package", CreatePackage(99, omittedAddress: address));
             var result = Validate();
             Assert.That(result.Succeeded, Is.False);
-            Assert.That(result.Failure.Code, Is.EqualTo(BootFailureCode.RequiredResourceMissing));
-            Assert.That(result.Failure.DiagnosticDetails, Does.Contain("resourceAddress: Bag"));
+            Assert.That(result.Failure.Code, Is.EqualTo(code));
+            Assert.That(result.Failure.Stage, Is.EqualTo(BootFailureStage.ResourceValidation));
         }
 
         [Test]
