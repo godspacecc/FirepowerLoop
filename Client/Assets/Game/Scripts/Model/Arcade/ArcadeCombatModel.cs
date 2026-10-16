@@ -199,6 +199,14 @@ namespace Game
         /// <summary>独立主题Boss位于第四轮之后，不增加普通轮次。</summary>
         public bool ThemeBossStarted, ThemeBossDefeated;
         public int ContentBossEnemyId;
+        /// <summary>地面桶属于当前稳定地图，不计敌数，也不参与角色阻挡。</summary>
+        public string GroundBarrelMapId;
+        public int GroundBarrelLayoutVersion;
+        public readonly Dictionary<int, Vector2> GroundBarrels = new();
+        /// <summary>仅当前地图内已毁索引，重复准备/宝藏返回不重新补发。</summary>
+        public readonly HashSet<int> DestroyedGroundBarrelIds = new();
+        /// <summary>危险与静态桶的只读表现缓存，避免逐帧分配集合。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentPresentationSnapshots = new();
         public bool CratesInitialized;
         /// <summary>本场剩余箱子，跨普通轮保留，整场释放或回滚时丢弃。</summary>
         public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();

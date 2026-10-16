@@ -12,7 +12,7 @@ require(len(rows)==80,f'expected 80 playable layouts, got {len(rows)}')
 require({(int(r['ArenaConfigNumber']),int(r['RoundNumber'])) for r in rows}=={(n,r) for n in range(1,21) for r in range(1,5)},'missing or duplicate theme rounds')
 print('PASS Complete eighty theme rounds')
 for r in rows:
- n=int(r['ArenaConfigNumber']);rn=int(r['RoundNumber']);require(r['Id']==f'arena.{n}.round.{rn}' and r['Version']=='1','unstable identity')
+ n=int(r['ArenaConfigNumber']);rn=int(r['RoundNumber']);require(r['Id']==f'arena.{n}.round.{rn}' and int(r['Version'])==(2 if n==3 else 1),'unstable identity')
  obs=[tuple(map(float,o.split('|'))) for o in r['Obstacles'].split(';') if o]
  require(all(abs(x)+w<19.5 and abs(y)+h<19.5 and min(w,h)>0 for x,y,w,h in obs),'invalid obstacle bounds')
  def walk(x,y):return abs(x)<=18 and abs(y)<=18 and not any(abs(x-ox)<w+1.1 and abs(y-oy)<h+1.1 for ox,oy,w,h in obs)

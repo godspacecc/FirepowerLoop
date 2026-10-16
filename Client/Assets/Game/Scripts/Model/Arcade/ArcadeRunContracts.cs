@@ -144,6 +144,8 @@ namespace Game
         public List<int> RemainingCrateIds { get; set; } = new List<int>();
         /// <summary>仍存在箱体的轮前剩余耐久；旧节点为空时由正式配置初始化。</summary>
         public Dictionary<int, int> CrateHealth { get; set; } = new Dictionary<int, int>();
+        /// <summary>当前MapId和布局版本内已毁地面桶的零基索引；新地图不继承。</summary>
+        public List<int> DestroyedBarrelIds { get; set; } = new List<int>();
         /// <summary>箱体已经初始化，空列表不会重复补发。</summary>
         public bool CratesInitialized { get; set; }
         /// <summary>本主题一次性宝藏已完成。</summary>
@@ -157,6 +159,7 @@ namespace Game
             copy.PlayerState = PlayerState?.Clone();
             copy.RemainingCrateIds = RemainingCrateIds?.ToList();
             copy.CrateHealth = CrateHealth == null ? null : new Dictionary<int, int>(CrateHealth);
+            copy.DestroyedBarrelIds = DestroyedBarrelIds?.ToList();
             return copy;
         }
     }

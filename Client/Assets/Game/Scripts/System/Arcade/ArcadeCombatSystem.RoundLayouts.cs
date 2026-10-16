@@ -54,6 +54,7 @@ namespace Game
                     restore.CrateHealth.Any(pair => !knownCrates.TryGetValue(pair.Key, out var maximum) || pair.Value > maximum))
                     throw new InvalidOperationException("轮级节点箱体身份或耐久与当前配置不兼容，原存档已保留");
             }
+            if (restore != null) ValidateGroundBarrelCheckpoint(layout, restore);
             var oldPosition = runtime.PlayerPosition;
             runtime.IslandTransitionPending = true;
             runtime.IslandTransitionViewPrepared = false;
@@ -85,6 +86,7 @@ namespace Game
             {
                 RestoreIslandCheckpoint(runtime, restore.PlayerState);
                 runtime.TreasureCompleted = restore.TreasureCompleted;
+                RestoreGroundBarrels(runtime, restore);
                 if (restore.CratesInitialized)
                 {
                     foreach (int id in runtime.Crates.Keys.Where(id => !restore.RemainingCrateIds.Contains(id)).ToArray())
@@ -143,6 +145,7 @@ namespace Game
                 RoundNumber = runtime.WaveIndex + 1, LayoutVersion = layout.Version, MapId = layout.Id, PlayerState = state,
                 CratesInitialized = runtime.CratesInitialized, RemainingCrateIds = runtime.Crates.Keys.OrderBy(x => x).ToList(),
                 CrateHealth = runtime.Crates.ToDictionary(pair => pair.Key, pair => pair.Value.Health),
+                DestroyedBarrelIds = runtime.DestroyedGroundBarrelIds.OrderBy(id => id).ToList(),
                 TreasureCompleted = runtime.TreasureCompleted,
                 EncounterSeed = BuildCombatSeed(this.GetModel<ArcadeRunModel>().Current.RunId, runtime.ArenaNumber) ^ (runtime.WaveIndex + 1) * 7919 };
         }

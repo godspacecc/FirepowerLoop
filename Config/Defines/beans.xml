@@ -448,5 +448,7 @@
         <var name="EventRadius" type="float"/>
         <var name="EventDamage" type="float"/>
         <var name="EventMoveSpeed" type="float"/>
+        <!-- 地图预置可射桶；数组索引在本地图及版本内作为稳定身份。 -->
+        <var name="Barrels" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
     </bean>
 </beans>

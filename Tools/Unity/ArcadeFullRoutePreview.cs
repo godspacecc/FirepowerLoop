@@ -58,7 +58,11 @@ public static class ArcadeFullRoutePreview
                 view.SetRoundLayout(p);
                 if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"轮级表现尚未完成");
                 if(p.SpecialKind!=0||p.BossKind!=0){view.RecordRoundEnemyPosition(1,new Vector2(0,-5));view.SetEnemyContent(1,p.SpecialKind,p.BossKind,true);view.SetRoundEnemyHealth(1,70,100);}
-                if(p.EventKind!=0)view.SetRoundContent(1,new[]{new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(1,p.EventKind,8,-9,p.EventRadius,true,12,-3,p.EventKind==4)});
+                // 隔离预览显式提供与运行层同身份的机关/桶快照，不让 View 自行推断存活对象。
+                var areas=new List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>();
+                if(p.EventKind!=0)areas.Add(new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(-100,p.EventKind,8,-9,p.EventRadius,true,12,-3,p.EventKind==4));
+                for(int barrel=0;barrel<p.Barrels.Count;barrel++)areas.Add(new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(-10000-barrel,11,p.Barrels[barrel].X,p.Barrels[barrel].Y,.5f,false));
+                view.SetRoundContent(1,areas);
                 foreach(var transform in root.GetComponentsInChildren<Transform>(true))transform.gameObject.layer=31;
                 foreach(var text in root.GetComponentsInChildren<TMPro.TextMeshPro>(true))text.ForceMeshUpdate(true,true);
                 camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1400,1000),0,0);tex.Apply();

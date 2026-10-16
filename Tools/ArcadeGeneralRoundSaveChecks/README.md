@@ -3,7 +3,7 @@
 使用正式 ArcadeRunContracts、ArcadeRunModel、ArcadeRunSystem 与 ArcadeRunFileStore 源码。文件测试直接编译 Unity 的 RoundCheckpointTests；独立事务检查仅替代 Unity、QFramework 接入与配置查询端口，不能替代 Unity 场景或真实配置验收。
 
 ```powershell
-dotnet run --project Tools/ArcadeGeneralRoundSaveChecks/ArcadeGeneralRoundSaveChecks.csproj -- testClass=RoundCheckpointTests maxTests=17 includePassingTests=true
+dotnet run --project Tools/ArcadeGeneralRoundSaveChecks/ArcadeGeneralRoundSaveChecks.csproj -- testClass=RoundCheckpointTests maxTests=19 includePassingTests=true
 dotnet run --project Tools/ArcadeGeneralRoundSaveChecks/ArcadeGeneralRoundSaveChecks.csproj -- testClass=RoundCheckpointTransaction maxTests=9 includePassingTests=true
 ```
 

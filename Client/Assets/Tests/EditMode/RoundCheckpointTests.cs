@@ -70,6 +70,19 @@ namespace Game.Tests
         {
             Reject(c=>c["CrateHealth"]=new JObject{{"7",0}});Reject(c=>c["CrateHealth"]=new JObject{{"7",-1}});Reject(c=>c["CrateHealth"]=null);
         }
+        [Test] public void RetainsDestroyedBarrelIdsAndCloneOwnsList() => WithStore(store =>
+        {
+            var data=Make(c=>c["DestroyedBarrelIds"]=new JArray(0,1));
+            Require(JObject.FromObject(data)["RoundCheckpoint"]["DestroyedBarrelIds"] is JArray,"已毁桶合同缺失");
+            Require(store.Save(data,out var error),error);var read=store.Inspect();Require(read.IsValid,read.Error);
+            Require((int)JObject.FromObject(read.Data)["RoundCheckpoint"]["DestroyedBarrelIds"][1]==1,"已毁桶轮前状态丢失");
+            dynamic clone=typeof(ArcadeRunSaveData).GetProperty("RoundCheckpoint").GetValue(data.Clone());clone.DestroyedBarrelIds.Clear();
+            Require(((JArray)JObject.FromObject(data)["RoundCheckpoint"]["DestroyedBarrelIds"]).Count==2,"已毁桶列表浅拷贝");
+        });
+        [Test] public void RejectsInvalidDestroyedBarrelIds()
+        {
+            Reject(c=>c["DestroyedBarrelIds"]=null);Reject(c=>c["DestroyedBarrelIds"]=new JArray(-1));Reject(c=>c["DestroyedBarrelIds"]=new JArray(0,0));
+        }
         private static ArcadeRunSaveData Make(Action<JObject> edit = null)
         {
             var data = new ArcadeRunSaveData { RunId = new string('a',32), UpdatedAtUtc = DateTime.UtcNow.ToString("O"), IsCasualRoute = true, ArenaConfigNumber = 2, CompletedArenaCount = 1, NextArenaNumber = 2, Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 } };

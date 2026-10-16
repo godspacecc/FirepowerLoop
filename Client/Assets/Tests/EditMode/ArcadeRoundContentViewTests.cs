@@ -88,5 +88,56 @@ namespace Game.Tests
             Assert.That(ground.lossyScale.x,Is.EqualTo(50).Within(.001f));
             Assert.That(ground.lossyScale.z,Is.EqualTo(44).Within(.001f));
         }
+        [Test] public void BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact()
+        {
+            var layout=Layouts().First(p=>p.ArenaConfigNumber==3&&p.RoundNumber==1);
+            Assert.That(layout.EventKind,Is.EqualTo(3),"正式Barrage落桶事件编号");
+            view.SetRoundLayout(layout);
+            var warning=new[]{new ArcadeContentAreaSnapshot(-100,3,3,-2,layout.EventRadius,true)};
+            view.SetRoundContent(0,warning);
+            var roof=root.GetComponentsInChildren<Transform>().Single(t=>t.name=="BuildingRoof");
+            var barrel=root.GetComponentsInChildren<Transform>().SingleOrDefault(t=>t.name=="RoofFallingBarrel_-100");
+            Assert.That(barrel,Is.Not.Null,"Barrage预警缺少从屋顶落向目标的可见桶体");
+            var start=barrel.position;
+            Assert.That(start.y,Is.GreaterThan(roof.GetComponent<Renderer>().bounds.max.y));
+            Assert.That(start.z,Is.EqualTo(roof.position.z).Within(.001f),"落桶必须来自主题屋顶");
+            Assert.That(barrel.GetComponentsInChildren<Renderer>().Length,Is.GreaterThanOrEqualTo(3),"桶身及上下金属箍构成专用轮廓");
+            Assert.That(barrel.GetComponentsInChildren<Collider>(true).Length,Is.Zero,"表现不增加伤害碰撞体");
+            view.SetRoundContent(layout.EventWarning*.5,warning);
+            var middle=barrel.position;
+            Assert.That(middle.y,Is.LessThan(start.y));
+            Assert.That(Mathf.Abs(middle.x-3),Is.LessThan(Mathf.Abs(start.x-3)));
+            Assert.That(Mathf.Abs(middle.z+2),Is.LessThan(Mathf.Abs(start.z+2)));
+            view.SetRoundContent(layout.EventWarning*.5,warning);
+            Assert.That(barrel.position,Is.EqualTo(middle),"权威时钟不变时暂停落桶");
+            view.SetRoundContent(layout.EventWarning,new[]{new ArcadeContentAreaSnapshot(-100,3,3,-2,layout.EventRadius,false)});
+            Assert.That(barrel==null,Is.True,"活动边界移除空中桶体");
+            Assert.That(root.GetComponentsInChildren<Transform>().Any(t=>t.name=="DangerCore"),Is.True,"落点沿用现有爆炸危险范围");
+            view.SetRoundContent(0,new[]{new ArcadeContentAreaSnapshot(7,3,3,-2,layout.EventRadius,true)});
+            Assert.That(root.GetComponentsInChildren<Transform>().Any(t=>t.name.StartsWith("RoofFallingBarrel_")),Is.False,"敌人爆桶区域不能误触发屋顶落桶");
+            view.SetRoundContent(0,warning);
+            var replacement=root.GetComponentsInChildren<Transform>().Single(t=>t.name=="RoofFallingBarrel_-100");
+            view.SetRoundLayout(Layouts().First(p=>p.ArenaConfigNumber==14));
+            Assert.That(replacement==null,Is.True,"切图释放桶体及所属根");
+        }
+        [Test] public void GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings()
+        {
+            var layout=Layouts().First(p=>p.ArenaConfigNumber==3&&p.RoundNumber==1);
+            Assert.That(layout.Barrels.Count,Is.EqualTo(2));view.SetRoundLayout(layout);
+            var areas=layout.Barrels.Select((p,index)=>new ArcadeContentAreaSnapshot(-10000-index,11,p.X,p.Y,.45f,false)).ToArray();
+            view.SetRoundContent(0,areas);
+            var barrels=root.GetComponentsInChildren<Transform>().Where(t=>t.name.StartsWith("GroundBarrel_")).ToArray();
+            Assert.That(barrels.Length,Is.EqualTo(2),"只按服务器剩余桶快照显示专用桶体");
+            var removed=barrels.Single(t=>t.name=="GroundBarrel_-10000");
+            Assert.That(root.GetComponentsInChildren<Collider>(true).Length,Is.Zero,"可射桶不增加阻挡或客户端伤害碰撞体");
+            Assert.That(root.GetComponentsInChildren<Transform>().Any(t=>t.name=="ExactDamageBoundary"||t.name=="DangerCore"),Is.False,"未引爆地面桶不能冒充危险范围");
+            view.SetRoundContent(99,areas.Skip(1).ToArray());
+            Assert.That(removed==null,Is.True,"权威移除立即释放桶体");
+            Assert.That(root.GetComponentsInChildren<Transform>().Count(t=>t.name.StartsWith("GroundBarrel_")),Is.EqualTo(1));
+            view.SetRoundContent(99,areas.Skip(1).ToArray());
+            Assert.That(root.GetComponentsInChildren<Transform>().Count(t=>t.name.StartsWith("GroundBarrel_")),Is.EqualTo(1),"重复快照不能补发已移除的桶");
+            view.SetRoundLayout(Layouts().First(p=>p.ArenaConfigNumber==14));
+            Assert.That(root.GetComponentsInChildren<Transform>().Any(t=>t.name.StartsWith("GroundBarrel_")),Is.False,"切图释放旧桶表现");
+        }
     }
 }

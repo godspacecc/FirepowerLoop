@@ -1,0 +1,110 @@
+using System;
+using System.Linq;
+using FirepowerLoop.Arcade;
+using QFramework;
+using UnityEngine;
+
+namespace Game
+{
+    public sealed partial class ArcadeCombatSystem
+    {
+        /// <summary>同一地图重复准备不补发，新地图与布局版本才建立自己的稳定索引。</summary>
+        private void InitializeGroundBarrels(ArcadeCombatRuntime r)
+        {
+            var layout=RoundLayout(r);
+            if(layout!=null && r.GroundBarrelMapId==layout.Id && r.GroundBarrelLayoutVersion==layout.Version)return;
+            r.GroundBarrels.Clear();r.DestroyedGroundBarrelIds.Clear();
+            r.GroundBarrelMapId=layout?.Id;r.GroundBarrelLayoutVersion=layout?.Version ?? 0;
+            if(layout==null)return;
+            for(int index=0;index<layout.Barrels.Count;index++)
+                r.GroundBarrels.Add(index,new Vector2(layout.Barrels[index].X,layout.Barrels[index].Y));
+        }
+
+        /// <summary>恢复前先拒绝未知身份，不能在验证失败前清理正在显示的现场。</summary>
+        private static void ValidateGroundBarrelCheckpoint(ArcadeRoundLayoutParameters layout,ArcadeRoundCheckpoint checkpoint)
+        {
+            if(checkpoint.MapId!=layout.Id || checkpoint.LayoutVersion!=layout.Version || checkpoint.DestroyedBarrelIds==null ||
+                checkpoint.DestroyedBarrelIds.Any(id=>id<0 || id>=layout.Barrels.Count) ||
+                checkpoint.DestroyedBarrelIds.Distinct().Count()!=checkpoint.DestroyedBarrelIds.Count)
+                throw new InvalidOperationException("轮前地面桶身份与当前布局不兼容，原存档已保留");
+        }
+
+        /// <summary>轮前回滚使用该轮快照，不把活动中桶收益单独提交成新的角色节点。</summary>
+        private void RestoreGroundBarrels(ArcadeCombatRuntime r,ArcadeRoundCheckpoint checkpoint)
+        {
+            var layout=RoundLayout(r);ValidateGroundBarrelCheckpoint(layout,checkpoint);
+            // 显式恢复可以回到轮初，区别于同一持续活动轮的重复初始化。
+            r.GroundBarrelMapId=null;InitializeGroundBarrels(r);
+            foreach(int id in checkpoint.DestroyedBarrelIds){r.GroundBarrels.Remove(id);r.DestroyedGroundBarrelIds.Add(id);}
+        }
+
+        /// <summary>桶不参与角色碰撞与清场计数，静态表现身份在本地图内固定。</summary>
+        private void AppendGroundBarrelSnapshots(ArcadeCombatRuntime r)
+        {
+            if(r.InTreasureRoom || r.IslandTransitionPending || r.IslandRoomTransitionPending || RoundLayout(r)?.Id!=r.GroundBarrelMapId)return;
+            foreach(var pair in r.GroundBarrels.OrderBy(pair=>pair.Key))
+                r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(-10000-pair.Key,11,pair.Value.x,pair.Value.y,ProjectileHitRadius,false));
+        }
+
+        /// <summary>玩家子弹按真实线段查找最近目标；墙、敌人与箱体先于远桶阻挡。</summary>
+        private bool TryHitGroundBarrel(ArcadeCombatRuntime r,ArcadeProjectileRuntime projectile,Vector2 from,Vector2 to)
+        {
+            if(projectile.Hostile || !projectile.FromPlayerWeapon || !RoundContentActive(r) || r.GroundBarrels.Count==0)return false;
+            float first=1;int barrelId=-1;
+            foreach(var pair in r.GroundBarrels.OrderBy(pair=>pair.Key))
+                if(TryGroundBarrelEntry(from,to,pair.Value,ProjectileHitRadius,out float entry) && (barrelId<0 || entry<first))
+                { first=entry;barrelId=pair.Key; }
+            if(barrelId<0)return false;
+            bool blocked=false;
+            foreach(var obstacle in ObstaclesFor(r))
+                if(TryGetSegmentObstacleEntry(from,to,0,obstacle,out var entry) && entry<=first)
+                {first=entry;blocked=true;}
+            foreach(var enemy in r.Enemies.Values)
+                if(enemy.Health>0 && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
+                    catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out var entry) && entry<=first)
+                {first=entry;blocked=true;}
+            foreach(var crate in r.Crates.Values)
+            {
+                var c=crate.Definition;
+                if(TryGroundBarrelEntry(from,to,new Vector2(c.X,c.Y),c.Radius+ProjectileHitRadius,out var entry) && entry<=first)
+                {first=entry;blocked=true;}
+            }
+            // 更近的正式目标继续交给原命中入口；微小内移避免浮点端点落在接触边界之外。
+            projectile.Position=Vector2.Lerp(from,to,Mathf.Min(1,first+.00001f));
+            if(blocked)return false;
+            DetonateGroundBarrel(r,barrelId);
+            // 与既有箱体命中保持一致：消费弹丸，但爆炸武器自身的半径和伤害不能丢失。
+            if(catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
+            {
+                view?.PlayProjectileExplosion(projectile.Position,projectile.ExplosionRadius);
+                DamageEnemiesInRadius(r,projectile.Position,projectile.ExplosionRadius,projectile.Damage);
+            }
+            return true;
+        }
+
+        /// <summary>一发移除一个稳定桶，保留载体原死亡爆炸，并复用现有爆炸强度与危险区。</summary>
+        private void DetonateGroundBarrel(ArcadeCombatRuntime r,int id)
+        {
+            if(!RoundContentActive(r) || !r.GroundBarrels.TryGetValue(id,out var position))return;
+            r.GroundBarrels.Remove(id);r.DestroyedGroundBarrelIds.Add(id);
+            var p=ContentTuning(r);
+            AddContentArea(r,3,position,position,p.EventRadius,0,p.SkillWarning,0,false,false);
+            view?.PlayProjectileExplosion(position,p.EventRadius);
+            DamageContentEnemies(r,position,p.EventRadius,p.EventDamage);
+            if(RoundContentActive(r) && Vector2.Distance(r.PlayerPosition,position)<=p.EventRadius+catalog.Rule.PlayerRadius)
+                DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage));
+        }
+
+        /// <summary>线段圆的首次进入比例；端点跳过桶也能命中，起点在圆内视为立即接触。</summary>
+        private static bool TryGroundBarrelEntry(Vector2 from,Vector2 to,Vector2 center,float radius,out float entry)
+        {
+            entry=0;var offset=from-center;double c=(double)offset.x*offset.x+(double)offset.y*offset.y-radius*radius;
+            if(c<=0)return true;
+            var delta=to-from;double a=(double)delta.x*delta.x+(double)delta.y*delta.y;if(a<=0)return false;
+            double b=2*((double)offset.x*delta.x+(double)offset.y*delta.y),discriminant=b*b-4*a*c;
+            if(discriminant<0)return false;
+            double hit=(-b-Math.Sqrt(discriminant))/(2*a);if(hit<0 || hit>1)return false;
+            entry=(float)hit;return true;
+        }
+    }
+}

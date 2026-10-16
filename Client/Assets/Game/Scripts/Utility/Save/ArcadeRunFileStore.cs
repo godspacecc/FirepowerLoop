@@ -165,7 +165,9 @@ namespace Game
                     round.PlayerState == null || round.PlayerState.MapId != round.MapId || round.PlayerState.RoundNumber != round.RoundNumber ||
                     !TryValidatePlayerState(round.PlayerState) || round.RemainingCrateIds == null ||
                     round.RemainingCrateIds.Any(id => id <= 0) || round.RemainingCrateIds.Distinct().Count() != round.RemainingCrateIds.Count || round.CrateHealth == null ||
-                    round.CrateHealth.Any(pair => pair.Value <= 0 || !round.RemainingCrateIds.Contains(pair.Key)))
+                    round.CrateHealth.Any(pair => pair.Value <= 0 || !round.RemainingCrateIds.Contains(pair.Key)) ||
+                    round.DestroyedBarrelIds == null || round.DestroyedBarrelIds.Any(id => id < 0) ||
+                    round.DestroyedBarrelIds.Distinct().Count() != round.DestroyedBarrelIds.Count)
                 {
                     error = "通用轮级安全节点无效";
                     return false;

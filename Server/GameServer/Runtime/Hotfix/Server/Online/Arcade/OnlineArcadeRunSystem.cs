@@ -533,7 +533,7 @@ namespace ET.Server
                 }
                 candidate.RoundLayoutId = string.Empty; candidate.RoundNumber = 1;
                 candidate.RoundLayoutVersion = 0; candidate.RoundBossEncounter = false;
-                candidate.DestroyedCrateIds.Clear();candidate.CrateHealth.Clear();
+                candidate.DestroyedCrateIds.Clear();candidate.CrateHealth.Clear();candidate.DestroyedBarrelIds.Clear();
                 foreach (var member in candidate.Players) { member.RoundHealth=0;member.RoundTemporaryWeaponId=string.Empty;member.RoundTemporaryWeaponSeconds=0;member.RoundPowerups.Clear(); }
                 candidate.CompletedArena = completedArena;
                 candidate.NextArena = nextArena;
@@ -826,9 +826,9 @@ namespace ET.Server
                         player.Score < 0 || player.ScoreMultiplier < 1 || player.MultiplierProgress < 0 ||
                         player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null)
                         throw new InvalidOperationException("OnlineArcadeStore contains an invalid player.");
-                if(run.RoundNumber<1||run.RoundNumber>4||run.RoundGeneration<0||run.DestroyedCrateIds==null||run.CrateHealth==null||
+                if(run.RoundNumber<1||run.RoundNumber>4||run.RoundGeneration<0||run.DestroyedCrateIds==null||run.CrateHealth==null||run.DestroyedBarrelIds==null||run.DestroyedBarrelIds.Any(id=>id<0)||run.DestroyedBarrelIds.Distinct().Count()!=run.DestroyedBarrelIds.Count||
                     run.CrateHealth.Any(p=>p.Key<=0||p.Value<=0||run.DestroyedCrateIds.Contains(p.Key))||
-                    !string.IsNullOrEmpty(run.RoundLayoutId)&&(run.RoundLayoutVersion!=1||run.RoundLayoutId!="arena."+run.ArenaConfigNumber+".round."+run.RoundNumber))
+                    !string.IsNullOrEmpty(run.RoundLayoutId)&&(ServerConfig.Instance.Tables.TbArcadeRoundLayout.GetOrDefault(run.RoundLayoutId)?.Version!=run.RoundLayoutVersion||run.RoundLayoutId!="arena."+run.ArenaConfigNumber+".round."+run.RoundNumber))
                     throw new InvalidOperationException("OnlineArcadeStore contains an invalid round checkpoint.");
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
@@ -1195,6 +1195,11 @@ namespace ET.Server
                     throw new RpcException(ErrorCode.ERR_OnlineRoomVersionMismatch,"轮布局版本已过期，保留原存档");
                 battle.RoundGeneration = checked(Math.Max(0,record.RoundGeneration)+1);
                 foreach (int id in record.DestroyedCrateIds) { battle.DestroyedCrateIds.Add(id); battle.Crates.Remove(id); }
+                foreach(int index in record.DestroyedBarrelIds)
+                {
+                    if(index<0||index>=battle.RoundLayout.Barrels.Count||!battle.DestroyedBarrelIds.Add(index))
+                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"轮前预置桶身份无效");
+                }
                 foreach (var pair in record.CrateHealth)
                 {
                     if(!battle.Crates.TryGetValue(pair.Key,out var crate)||pair.Value<=0||pair.Value>crate.Definition.Health)
@@ -1248,7 +1253,9 @@ namespace ET.Server
             battle.WaveIndex = waveIndex;
             if (!battle.IsChallenge && battle.IsCasualRoute)
             {
-                battle.RoundLayout = ResolveRoundLayout(arena.ArenaNumber,waveIndex+1);
+                var nextLayout=ResolveRoundLayout(arena.ArenaNumber,waveIndex+1);
+                if(battle.RoundLayout?.Id!=nextLayout.Id||battle.RoundLayout.Version!=nextLayout.Version)battle.DestroyedBarrelIds.Clear();
+                battle.RoundLayout = nextLayout;
                 battle.IslandRegionResolved=false; battle.IslandRegion=null;
             }
             battle.SpawnQueue.Clear();
@@ -1904,6 +1911,7 @@ namespace ET.Server
                 {
                     RuntimeId = runtimeId,
                     OwnerPlayerId = player.PlayerId,
+                    FromPlayerWeapon = true,
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     VelocityX = directionX * weapon.ProjectileSpeed,
@@ -1957,8 +1965,16 @@ namespace ET.Server
                 projectile.PositionX += projectile.VelocityX * deltaSeconds;
                 projectile.PositionZ += projectile.VelocityZ * deltaSeconds;
                 projectile.RemainingSeconds -= deltaSeconds;
+                if(self.TryHitGroundBarrel(battle,projectile,priorX,priorZ,projectile.PositionX,projectile.PositionZ))
+                {
+                    // 与射中箱体一致，桶爆炸不能吞掉火箭/榴弹原有武器伤害与半径。
+                    if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInRadius(battle,projectile.PositionX,projectile.PositionZ,
+                        projectile.ExplosionRadius,projectile.Damage,projectile.OwnerPlayerId);
+                    battle.Projectiles.Remove(projectileId);changed=true;continue;
+                }
+                bool wallCrossed=ClipPlayerShotToWall(battle,projectile,priorX,priorZ);
                 bool expired = projectile.RemainingSeconds <= 0f;
-                bool hitObstacle = InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
+                bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
                 bool remove = expired || MathF.Abs(projectile.PositionX) > rule.ArenaHalfWidth ||
                               MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
@@ -2852,6 +2868,7 @@ namespace ET.Server
             battle.RoundLayoutVersion=source.RoundLayout?.Version ?? 0;
             battle.RoundLoading=!RoundPlayersReady(source);battle.RoundLoadError=source.RoundLoadError;
             battle.ContentElapsed=(float)source.ContentClock.Elapsed;
+            AppendGroundBarrelSnapshots(source,battle);
             foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
 
             battle.ArenaConfigNumber = source.ArenaConfigNumber;

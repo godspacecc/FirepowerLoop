@@ -14,6 +14,7 @@ namespace ET.Server
             record.RoundNumber=battle.WaveIndex+1;record.RoundBossEncounter=battle.RoundBossEncounter;record.RoundGeneration=battle.RoundGeneration;
             record.DestroyedCrateIds=battle.DestroyedCrateIds.OrderBy(id=>id).ToList();
             record.CrateHealth=battle.Crates.ToDictionary(pair=>pair.Key,pair=>pair.Value.Health);
+            record.DestroyedBarrelIds=battle.DestroyedBarrelIds.OrderBy(id=>id).ToList();
             foreach(var source in battle.Players.Values)
             {
                 var target=record.Players.First(p=>p.PlayerId==source.PlayerId);
@@ -37,6 +38,7 @@ namespace ET.Server
                 candidate.RoundNumber=previous.PendingBossEncounter?4:previous.WaveIndex+2;
                 candidate.RoundBossEncounter=previous.PendingBossEncounter;
                 var layout=OnlineArcadeRunActorSystem.ResolveRoundLayout(previous.ArenaConfigNumber,candidate.RoundNumber);
+                if(layout.Id!=previous.RoundLayout.Id||layout.Version!=previous.RoundLayout.Version)candidate.DestroyedBarrelIds.Clear();
                 candidate.RoundLayoutId=layout.Id;candidate.RoundLayoutVersion=layout.Version;
                 candidate.Revision=checked(candidate.Revision+1);candidate.UpdatedAtUtc=DateTime.UtcNow.ToString("O");
                 // 新轮只补空库存一次，候选写盘失败不会触碰工作态。
@@ -352,7 +354,7 @@ namespace ET.Server
                 bool segment=p.EventKind==4;float ex=x,ey=y,radius=p.EventRadius;
                 if(segment){x=cycle%2==0?-ServerConfig.Instance.ArcadeRule.ArenaHalfWidth:0;y=cycle%2==0?0:-ServerConfig.Instance.ArcadeRule.ArenaHalfHeight;ex=-x;ey=-y;radius*=.12f;}
                 if(p.EventKind!=3||warning||now%p.EventPeriod<p.EventWarning*2)
-                    b.ContentAreas.Add(new ArcadeContentAreaSnapshot(0,p.EventKind,x,y,radius,warning,ex,ey,segment));
+                    b.ContentAreas.Add(new ArcadeContentAreaSnapshot(-100,p.EventKind,x,y,radius,warning,ex,ey,segment));
                 if(p.EventKind==6&&!warning)
                     foreach(var drop in b.Drops.Values.ToArray())
                         if(ArcadeRoundContentRules.TouchesCircle(drop.PositionX,drop.PositionZ,0,x,y,p.EventRadius))b.Drops.Remove(drop.RuntimeId);

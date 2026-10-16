@@ -879,8 +879,14 @@ namespace Game
                 projectile.Position += projectile.Velocity * deltaTime;
                 projectile.RemainingSeconds -= deltaTime;
                 var expired = projectile.RemainingSeconds <= 0f;
+                if (!expired && TryHitGroundBarrel(runtime, projectile, priorPosition, projectile.Position))
+                {
+                    RemoveProjectile(runtime, projectile.Id);
+                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    continue;
+                }
                 var hitObstacle = IsInsideObstacle(projectile.Position, 0f, ObstaclesFor(runtime));
-                if (UsesIslandRounds(runtime))
+                if (UsesRoundLayouts(runtime))
                 {
                     float firstHit = 1f;
                     foreach (var obstacle in ObstaclesFor(runtime))

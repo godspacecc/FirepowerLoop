@@ -44,6 +44,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         EventRadius = _buf.ReadFloat();
         EventDamage = _buf.ReadFloat();
         EventMoveSpeed = _buf.ReadFloat();
+        {int __n0 = _buf.ReadSize(); Barrels = new ArcadeLayoutEntryConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeLayoutEntryConfig __e0;__e0 = global::ET.ArcadeLayoutEntryConfig.DeserializeArcadeLayoutEntryConfig(_buf); Barrels[__index0] = __e0;}}
     }
 
     public static ArcadeRoundLayoutConfig DeserializeArcadeRoundLayoutConfig(ByteBuf _buf)
@@ -79,6 +80,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
     public readonly float EventRadius;
     public readonly float EventDamage;
     public readonly float EventMoveSpeed;
+    public readonly ArcadeLayoutEntryConfig[] Barrels;
    
     public const int __ID__ = -1832003478;
     public override int GetTypeId() => __ID__;
@@ -88,6 +90,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         ArenaConfigNumber_Ref = tables.TbArcadeArena.GetOrDefault(ArenaConfigNumber);
         foreach (var _e in Obstacles) { _e?.ResolveRef(tables); }
         foreach (var _e in Entries) { _e?.ResolveRef(tables); }
+        foreach (var _e in Barrels) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -120,6 +123,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         + "EventRadius:" + EventRadius + ","
         + "EventDamage:" + EventDamage + ","
         + "EventMoveSpeed:" + EventMoveSpeed + ","
+        + "Barrels:" + Luban.StringUtil.CollectionToString(Barrels) + ","
         + "}";
     }
 }

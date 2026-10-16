@@ -26,6 +26,7 @@ namespace Game
         private void InitializeRoundContent(ArcadeCombatRuntime r)
         {
             r.ContentClock=new ArcadeContentClock();r.ContentAreas.Clear();r.ContentAreaSnapshots.Clear();
+            InitializeGroundBarrels(r);
             r.ContentVelocity=Vector2.zero;r.ContentSlowRemaining=r.ContentBumperCooldown=0;
             r.ContentSpawnSequence=0;r.ContentNextAreaId=1;r.ContentEventCycle=r.ContentEventTargetCycle=-1;
             r.ContentEventAnchor=ContentPosition(r,Vector2.zero);r.ContentEventTarget=r.ContentEventAnchor;
@@ -357,7 +358,10 @@ namespace Game
         /// <summary>表现只接收活动时钟与只读领域，不持有伤害或阶段推进职责。</summary>
         private void SyncRoundContent(ArcadeCombatRuntime r)
         {
-            bool active=RoundContentActive(r);view?.SetRoundContent(r.ContentClock.Elapsed,active ? r.ContentAreaSnapshots : Array.Empty<ArcadeContentAreaSnapshot>());
+            bool active=RoundContentActive(r);r.ContentPresentationSnapshots.Clear();
+            if(active)r.ContentPresentationSnapshots.AddRange(r.ContentAreaSnapshots);
+            AppendGroundBarrelSnapshots(r);
+            view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
             foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);
         }
     }

@@ -26,13 +26,14 @@ namespace FirepowerLoop.Arcade
 #endif
     public sealed class ArcadeRoundLayoutParameters
     {
-        private ArcadeRoundLayoutParameters(LayoutConfig row)
+        private ArcadeRoundLayoutParameters(LayoutConfig row,IEnumerable<ArcadeRegionPoint> barrels=null)
         {
             Id=row.Id;ThemeKey=row.ThemeKey;NameKey=row.NameKey;ArenaConfigNumber=row.ArenaConfigNumber;
             RoundNumber=row.RoundNumber;Version=row.Version;SpawnX=row.SpawnX;SpawnY=row.SpawnY;
             ExitX=row.ExitX;ExitY=row.ExitY;ExitSpacing=row.ExitSpacing;
             Obstacles=Array.AsReadOnly(row.Obstacles.Select(o=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight)).ToArray());
             Entries=Array.AsReadOnly(row.Entries.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
+            Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new ArcadeRegionPoint(e.X,e.Y))).ToArray());
             SpecialKind=row.SpecialKind;EventKind=row.EventKind;BossKind=row.BossKind;SpecialRatio=row.SpecialRatio;
             EnemyHealthScale=row.EnemyHealthScale;EnemySpeedScale=row.EnemySpeedScale;SkillPeriod=row.SkillPeriod;
             SkillWarning=row.SkillWarning;SkillMagnitude=row.SkillMagnitude;EventPeriod=row.EventPeriod;
@@ -51,6 +52,8 @@ namespace FirepowerLoop.Arcade
         public float ExitSpacing { get; }
         public IReadOnlyList<ArcadeLayoutObstacle> Obstacles { get; }
         public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
+        /// <summary>预置可射桶坐标；数组索引是当前地图版本内的稳定身份。</summary>
+        public IReadOnlyList<ArcadeRegionPoint> Barrels { get; }
         public int SpecialKind { get; }
         public int EventKind { get; }
         public int BossKind { get; }
@@ -72,7 +75,7 @@ namespace FirepowerLoop.Arcade
             var p=new ArcadeRoundLayoutParameters(row);
             var values=new[]{p.SpawnX,p.SpawnY,p.ExitX,p.ExitY,p.ExitSpacing,p.SpecialRatio,p.EnemyHealthScale,p.EnemySpeedScale,
                 p.SkillPeriod,p.SkillWarning,p.SkillMagnitude,p.EventPeriod,p.EventWarning,p.EventRadius,p.EventDamage,p.EventMoveSpeed};
-            if(values.Any(v=>!Finite(v)) || p.ArenaConfigNumber<1 || p.RoundNumber<1 || p.RoundNumber>4 || p.Version!=1 ||
+            if(values.Any(v=>!Finite(v)) || p.ArenaConfigNumber<1 || p.RoundNumber<1 || p.RoundNumber>4 || p.Version!=(p.ArenaConfigNumber==3?2:1) ||
                 p.Id!="arena."+p.ArenaConfigNumber+".round."+p.RoundNumber || string.IsNullOrWhiteSpace(p.ThemeKey) ||
                 string.IsNullOrWhiteSpace(p.NameKey) || p.ExitSpacing<=0 || p.Entries.Count==0 ||
                 p.SpecialKind<0 || p.SpecialKind>17 || p.EventKind<0 || p.EventKind>10 || p.BossKind<0 || p.BossKind>4 ||
@@ -80,8 +83,19 @@ namespace FirepowerLoop.Arcade
                 p.SkillPeriod<=0 || p.SkillWarning<=0 || p.SkillWarning>=p.SkillPeriod || p.SkillMagnitude<=0 ||
                 p.EventPeriod<=0 || p.EventWarning<=0 || p.EventWarning>=p.EventPeriod || p.EventRadius<=0 || p.EventDamage<0 || p.EventDamage>1 || p.EventMoveSpeed<0 ||
                 p.Obstacles.Any(o=>!Finite(o.X)||!Finite(o.Y)||!Finite(o.HalfWidth)||!Finite(o.HalfHeight)||o.HalfWidth<=0||o.HalfHeight<=0) ||
-                p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)))throw new ArgumentException("轮级布局参数无效："+p.Id);
+                p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)) ||
+                p.Barrels.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsBarrelLandmark(e)))throw new ArgumentException("轮级布局参数无效："+p.Id);
             return p;
+        }
+        /// <summary>桶保留半米占地，不能占用出生点、全部出口或地图阻挡。</summary>
+        private bool OverlapsBarrelLandmark(ArcadeRegionPoint barrel)
+        {
+            const float radius=.5f;
+            if(Obstacles.Any(o=>Math.Abs(barrel.X-o.X)<o.HalfWidth+radius&&Math.Abs(barrel.Y-o.Y)<o.HalfHeight+radius))return true;
+            var points=new[]{new ArcadeRegionPoint(SpawnX,SpawnY),new ArcadeRegionPoint(ExitX,ExitY),
+                new ArcadeRegionPoint(ExitX-ExitSpacing*1.5f,ExitY),new ArcadeRegionPoint(ExitX+ExitSpacing*1.5f,ExitY)};
+            return points.Any(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2) ||
+                Barrels.Count(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2)>1;
         }
         /// <summary>矩形场地或保留的海岛岸线内，使用膨胀阻挡判断真实行走位置。</summary>
         public bool IsWalkable(float x,float y,float radius,float halfWidth=19.5f,float halfHeight=19.5f)
@@ -104,6 +118,7 @@ namespace FirepowerLoop.Arcade
             var region=ArenaConfigNumber==1 ? new ArcadeIslandRegion(halfWidth,halfHeight,RoundNumber) : null;
             var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY),new ArcadeRegionPoint(ExitX,ExitY),
                 new ArcadeRegionPoint(ExitX-ExitSpacing*1.5f,ExitY),new ArcadeRegionPoint(ExitX+ExitSpacing*1.5f,ExitY)};
+            targets.AddRange(Barrels);
             if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight,region)) ||
                 Obstacles.Any(o=>Math.Abs(o.X)+o.HalfWidth>=halfWidth||Math.Abs(o.Y)+o.HalfHeight>=halfHeight))return false;
             // 半米网格比最窄的并行通路更细；只用于装载校验，不参与每帧移动。

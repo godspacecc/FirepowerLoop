@@ -24,6 +24,8 @@ namespace Game
         /// <summary>正式 Begin 传入的边界与配置半径；零值表示尚未准备，不设置业务默认值。</summary>
         private float roundHalfWidth,roundHalfHeight,roundPlayerRadius;
         private bool roundBoundsConfigured;
+        /// <summary>当前Barrage地标屋顶，仅作为落桶表现起点，由轮级根共同释放。</summary>
+        private Transform roundBarrelRoof;
         private sealed class RoundEnemyVisual
         {
             public int SpecialKind, BossKind;
@@ -309,7 +311,14 @@ namespace Game
                 {
                     go=RoundGroup(roundAreaRoot.transform,"Area_"+area.Id+"_Kind_"+area.Kind);roundAreas[area.Id]=go;roundAreaIdentities[area.Id]=identity;
                     uint color=area.Warning?0xEBCB5AFFu:area.Kind==7||area.Kind==8?0x97B43BFFu:area.Kind==5||area.Kind==6?0xA9DDEAFFu:0xDE6255FFu;
-                    if(area.Segment)
+                    if(area.Kind==11)
+                    {
+                        var barrel=RoundGroup(go.transform,"GroundBarrel_"+area.Id).transform;
+                        RoundCylinder(barrel,"BarrelBody",0,.55f,0,.9f,1.1f,0x8E5135FFu);
+                        RoundCylinder(barrel,"UpperMetalHoop",0,.95f,0,.96f,.12f,0x3E4850FFu);
+                        RoundCylinder(barrel,"LowerMetalHoop",0,.15f,0,.96f,.12f,0x3E4850FFu);
+                    }
+                    else if(area.Segment)
                     {
                         RoundCapsuleBoundary(go.transform,area.Radius,length,.15f,color);
                         if(!area.Warning&&length>0)RoundBox(go.transform,"AuthoritativeBeam",0,.1f,0,area.Radius*.2f,.08f,length,color);
@@ -322,8 +331,35 @@ namespace Game
                 }
                 go.transform.localPosition=new Vector3(area.X+delta.x*.5f,.03f,area.Y+delta.y*.5f);
                 go.transform.localRotation=area.Segment&&length>.00001f ? Quaternion.LookRotation(new Vector3(delta.x,0,delta.y)) : Quaternion.identity;
+                ProjectRoofBarrel(go,area,elapsed);
             }
             foreach(int id in roundAreas.Keys.Where(id=>!active.Contains(id)).ToArray()){DestroyRoundVisual(roundAreas[id]);roundAreas.Remove(id);roundAreaIdentities.Remove(id);}
+        }
+        /// <summary>只有正式Barrage落桶事件从屋顶下落；位置完全取权威时钟，暂停不额外推进。</summary>
+        private void ProjectRoofBarrel(GameObject areaRoot,ArcadeContentAreaSnapshot area,double elapsed)
+        {
+            if(roundLayout.ThemeKey!="barrage"||roundLayout.EventKind!=3||area.Id!=-100||area.Kind!=3||!area.Warning||area.Segment)return;
+            if(double.IsNaN(elapsed)||double.IsInfinity(elapsed)||elapsed<0||roundLayout.EventPeriod<=0||roundLayout.EventWarning<=0)return;
+            if(roundBarrelRoof==null)
+                roundBarrelRoof=roundEnvironmentRoot.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="BuildingRoof");
+            if(roundBarrelRoof==null)return;
+            string name="RoofFallingBarrel_"+area.Id;
+            var barrel=areaRoot.transform.Find(name);
+            if(barrel==null)
+            {
+                barrel=RoundGroup(areaRoot.transform,name).transform;
+                RoundCylinder(barrel,"BarrelBody",0,0,0,.78f,1.1f,0x8E5135FFu);
+                RoundCylinder(barrel,"UpperMetalHoop",0,.4f,0,.84f,.12f,0x3E4850FFu);
+                RoundCylinder(barrel,"LowerMetalHoop",0,-.4f,0,.84f,.12f,0x3E4850FFu);
+            }
+            var roofRenderer=roundBarrelRoof.GetComponent<Renderer>();
+            var start=roundBarrelRoof.position;
+            start.y=(roofRenderer!=null?roofRenderer.bounds.max.y:start.y)+.6f;
+            var landing=root.transform.TransformPoint(new Vector3(area.X,.6f,area.Y));
+            float progress=Mathf.Clamp01((float)(elapsed%roundLayout.EventPeriod/roundLayout.EventWarning));
+            var position=Vector3.Lerp(start,landing,progress);
+            position.y=Mathf.Lerp(start.y,landing.y,progress*progress);
+            barrel.position=position;
         }
         /// <summary>平面空心边界保留地面和掉落可见性；每个生成网格由轮级拥有者释放。</summary>
         private GameObject RoundRing(Transform parent,string name,float radius,float width,uint color)
@@ -432,6 +468,7 @@ namespace Game
             foreach(var mesh in roundOwnedMeshes)DestroyObject(mesh);roundOwnedMeshes.Clear();
             foreach(var material in roundOwnedMaterials)DestroyObject(material);roundOwnedMaterials.Clear();roundPalette.Clear();
             roundEnemies.Clear();roundEnemyPositions.Clear();roundAreas.Clear();roundAreaIdentities.Clear();roundLayout=null;
+            roundBarrelRoof=null;
         }
     }
 }

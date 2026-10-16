@@ -103,6 +103,8 @@ namespace ET.Server
         public List<int> DestroyedCrateIds { get; set; } = new();
         /// <summary>仍存活箱子的轮前耐久；旧节点缺省空字典保持兼容。</summary>
         public Dictionary<int,int> CrateHealth { get; set; } = new();
+        /// <summary>同一轮地图版本内已销毁的预置桶零基索引，只随全员轮前事务保存。</summary>
+        public List<int> DestroyedBarrelIds { get; set; } = new();
         public string ChallengeId { get; set; }
         /// <summary>进入挑战前即持久化，确保失败、断线或重启后不能重复刷取。</summary>
         public bool ChallengeAttempted { get; set; }
@@ -257,6 +259,8 @@ namespace ET.Server
         public long RuntimeId;
         /// <summary>主题追踪弹的限幅转向速度，零为原有直线弹。</summary>
         public float TrackingTurnRate, ContentSlowSeconds;
+        /// <summary>由玩家武器Fire实际创建，支援或敌弹不能借玩家归属引爆地图桶。</summary>
+        public bool FromPlayerWeapon;
         public long OwnerPlayerId;
         public float PositionX;
         public float PositionZ;
@@ -318,6 +322,7 @@ namespace ET.Server
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas = new();
         public readonly List<OnlineArcadeContentZoneRuntime> DeathZones = new();
         public readonly HashSet<int> DestroyedCrateIds = new();
+        public readonly HashSet<int> DestroyedBarrelIds = new();
         public bool CratesInitialized;
         public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();
         /// <summary>只随活动战斗增长的机关秒数；不进入安全存档，快照供客户端显示。</summary>
