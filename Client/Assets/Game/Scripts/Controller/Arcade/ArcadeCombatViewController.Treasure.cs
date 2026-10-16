@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using UnityEngine;
 using QFramework;
 
@@ -55,11 +55,11 @@ namespace Game
             {
                 if (!remainingIds.Contains(reward.Id)) continue;
                 var kind = reward.Kind;
-                var gold = kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar;
-                var gem = kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Gem;
+                var gold = kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar;
+                var gem = kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem;
                 if (!gold && !gem && catalog != null)
                 {
-                    var definition = catalog.Drops.First(r => r.Kind == (kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb ? global::ArcadeDropKind.Bomb : global::ArcadeDropKind.Dash));
+                    var definition = catalog.Drops.First(r => r.Kind == (kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb ? global::ArcadeDropKind.Bomb : global::ArcadeDropKind.Dash));
                     int id = int.MaxValue - reward.Id;
                     if (!lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(new Vector2(reward.X, reward.Y), .3f)),
                         ResolveDropDisplayName(definition), reward.Amount, definition.VisualPrefabAddress, out var error))

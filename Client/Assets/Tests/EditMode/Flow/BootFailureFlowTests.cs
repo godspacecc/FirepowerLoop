@@ -248,7 +248,7 @@ namespace Game.Tests.Flow
         [Test]
         public void BootErrorLogOverwritesPreviousFailureWithLatestCopyDetails()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayBootErrorTests", Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopBootErrorTests", Guid.NewGuid().ToString("N"));
             try
             {
                 var first = BootFailure.Unexpected(

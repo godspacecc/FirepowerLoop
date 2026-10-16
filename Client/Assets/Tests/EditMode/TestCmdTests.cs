@@ -33,7 +33,7 @@ namespace Game.Tests
                 architecture.RegisterUtility<INetworkRuntime>(network);
             };
 
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayTestCmdTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopTestCmdTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
         }
 

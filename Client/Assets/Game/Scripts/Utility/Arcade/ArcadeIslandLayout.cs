@@ -36,7 +36,7 @@ namespace Game
             Validate(roundNumber);
             if (count < 1 || index < 0 || index >= count || playerRadius <= 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            var region = new AnotherDay.Arcade.ArcadeIslandRegion(halfWidth, halfHeight, roundNumber);
+            var region = new FirepowerLoop.Arcade.ArcadeIslandRegion(halfWidth, halfHeight, roundNumber);
             var point = region.LandPoint((index - (count - 1) * .5f) * 5f, halfHeight - 3f, playerRadius + 1.5f);
             point = region.Constrain(point.X, point.Y, playerRadius + 1.5f);
             return new Vector2(point.X, point.Y);
@@ -50,7 +50,7 @@ namespace Game
         }
 
         /// <summary>旧地图地标投影至新轮干陆地；规则发现范围与可见入口使用同一落点。</summary>
-        public static Vector2 GetLandmarkPosition(AnotherDay.Arcade.ArcadeIslandRegion region, Vector2 desired, float inset)
+        public static Vector2 GetLandmarkPosition(FirepowerLoop.Arcade.ArcadeIslandRegion region, Vector2 desired, float inset)
         {
             var land = region.LandPoint(desired.x, desired.y, inset);
             var position = region.Constrain(land.X, land.Y, inset);

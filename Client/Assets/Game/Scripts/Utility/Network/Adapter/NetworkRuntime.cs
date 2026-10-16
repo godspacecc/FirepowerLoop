@@ -6,7 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using ET;
 
-[assembly: InternalsVisibleTo("AnotherDay.EditMode.Tests")]
+[assembly: InternalsVisibleTo("FirepowerLoop.EditMode.Tests")]
 
 namespace Game.Network
 {

@@ -54,7 +54,7 @@ internal static partial class ProtocolGenerator
         string? tempRoot = null;
         try
         {
-            tempRoot = Path.Combine(Path.GetTempPath(), $"AnotherDay.ProtocolGenerator.{Guid.NewGuid():N}");
+            tempRoot = Path.Combine(Path.GetTempPath(), $"FirepowerLoop.ProtocolGenerator.{Guid.NewGuid():N}");
             string tempClient = Path.Combine(tempRoot, "Client");
             string tempServer = Path.Combine(tempRoot, "Server");
 

@@ -108,7 +108,7 @@ namespace Game.Tests
 
         private static GameObject CreateAudioRootBindings()
         {
-            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/AnotherDayAudioMixer.mixer");
+            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
             Assert.NotNull(mixer);
             var root = new GameObject("AudioRoot");
             var pool = new GameObject("SoundPoolRoot").transform;

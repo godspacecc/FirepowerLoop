@@ -6,7 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using Game.Network;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 
 namespace Game
 {

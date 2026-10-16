@@ -14,7 +14,7 @@ namespace Game.Tests
         private const string PlayerPrefabPath = "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab";
         private const string EnemyPrefabPath = "Assets/Game/Prefabs/Characters/GrayboxEnemy.prefab";
         private const string ArcherPrefabPath = "Assets/Game/Prefabs/Characters/GrayboxArcher.prefab";
-        private const string ShaderName = "UI/AnotherDay World HUD Overlay";
+        private const string ShaderName = "UI/FirepowerLoop World HUD Overlay";
 
         [Test]
         public void OverlayShaderAndMaterialKeepFixedRenderContract()

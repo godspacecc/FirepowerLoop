@@ -641,16 +641,16 @@ namespace Game
         public ArcadeArenaDefinition(int arenaNumber, System.Collections.Generic.IEnumerable<string> waveGroupIds,
             System.Collections.Generic.IEnumerable<ArcadeObstacleDefinition> obstacles,
             bool isBoss, string bossId, int clearGold, int encounterSeedSalt,
-            System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeHazardParameters> hazards = null,
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards = null,
             System.Collections.Generic.IEnumerable<int> nextArenaNumbers = null, string finalBossId = null,
-            AnotherDay.Arcade.ArcadeOpeningParameters opening = default,
-            AnotherDay.Arcade.ArcadeBabylonParameters babylon = null)
+            FirepowerLoop.Arcade.ArcadeOpeningParameters opening = default,
+            FirepowerLoop.Arcade.ArcadeBabylonParameters babylon = null)
         {
             ArenaNumber = arenaNumber;
             WaveGroupIds = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(waveGroupIds ?? System.Array.Empty<string>()));
             Obstacles = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(obstacles ?? System.Array.Empty<ArcadeObstacleDefinition>()));
             IsBoss = isBoss; BossId = bossId ?? string.Empty; ClearGold = clearGold; EncounterSeedSalt = encounterSeedSalt;
-            Hazards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(hazards ?? System.Array.Empty<AnotherDay.Arcade.ArcadeHazardParameters>()));
+            Hazards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(hazards ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>()));
             NextArenaNumbers = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(nextArenaNumbers ?? System.Array.Empty<int>()));
             FinalBossId = finalBossId ?? string.Empty;
             Opening = opening;
@@ -659,12 +659,12 @@ namespace Game
 
         public int ArenaNumber { get; }
         /// <summary>首场水火与休整合同；禁用值表示沿用其他场地既有流程。</summary>
-        public AnotherDay.Arcade.ArcadeOpeningParameters Opening { get; }
-        public AnotherDay.Arcade.ArcadeBabylonParameters Babylon { get; }
+        public FirepowerLoop.Arcade.ArcadeOpeningParameters Opening { get; }
+        public FirepowerLoop.Arcade.ArcadeBabylonParameters Babylon { get; }
         public System.Collections.Generic.IReadOnlyList<string> WaveGroupIds { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeObstacleDefinition> Obstacles { get; }
         /// <summary>独立场地机关目录；只描述数值，碰撞伤害由单人或服务端权威运行态裁决。</summary>
-        public System.Collections.Generic.IReadOnlyList<AnotherDay.Arcade.ArcadeHazardParameters> Hazards { get; }
+        public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> Hazards { get; }
         public bool IsBoss { get; }
         /// <summary>非空时，最后一轮唯一敌人使用该专用 Boss 行为；空值仍保留旧倍率占位规则。</summary>
         public string BossId { get; }
@@ -836,7 +836,7 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
-            System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
             : this(rule, weapons, arenas, enemyGroups, bosses, challenges, drops,
                 System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms)
         {
@@ -853,7 +853,7 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
-            System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
         {
             Rule = rule;
             Weapons = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(weapons));
@@ -866,7 +866,7 @@ namespace Game
             SupportVisuals = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(supportVisuals));
             Upgrades = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(upgrades));
             Rewards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(rewards));
-            TreasureRooms = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(treasureRooms ?? System.Array.Empty<AnotherDay.Arcade.ArcadeTreasureRoomParameters>()));
+            TreasureRooms = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(treasureRooms ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters>()));
         }
 
         public ArcadeRuleDefinition Rule { get; }
@@ -880,6 +880,6 @@ namespace Game
         public System.Collections.Generic.IReadOnlyList<ArcadeSupportVisualDefinition> SupportVisuals { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeUpgradeDefinition> Upgrades { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeRewardDefinition> Rewards { get; }
-        public System.Collections.Generic.IReadOnlyList<AnotherDay.Arcade.ArcadeTreasureRoomParameters> TreasureRooms { get; }
+        public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> TreasureRooms { get; }
     }
 }

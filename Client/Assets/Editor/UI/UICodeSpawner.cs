@@ -18,8 +18,8 @@ namespace Game
         private const string ResourceUiRoot = "Assets/Game/Prefabs/UI/";
         private const string UiScriptRoot = "Assets/Game/Scripts/Controller/UI/";
         private const string UiCtrlScriptRoot = "Assets/Game/Scripts/Controller/UICtrl/";
-        private const string PendingPrefabPathKey = "AnotherDay.PendingUiPrefabPath";
-        private const string PendingAssemblyTypeKey = "AnotherDay.PendingUiAssemblyType";
+        private const string PendingPrefabPathKey = "FirepowerLoop.PendingUiPrefabPath";
+        private const string PendingAssemblyTypeKey = "FirepowerLoop.PendingUiAssemblyType";
 
         private static bool _pendingBindingCheckScheduled;
 

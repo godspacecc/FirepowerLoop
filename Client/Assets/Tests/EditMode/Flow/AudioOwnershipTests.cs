@@ -160,7 +160,7 @@ namespace Game.Tests
 
         private static GameObject CreateAudioRootBindings()
         {
-            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/AnotherDayAudioMixer.mixer");
+            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
             Assert.NotNull(mixer, "Audio ownership tests require the project AudioMixer asset.");
             var musicGroup = mixer.FindMatchingGroups("Music").FirstOrDefault();
             var soundGroup = mixer.FindMatchingGroups("Sound").FirstOrDefault();

@@ -117,7 +117,7 @@ namespace Game.Tests
             public bool TryScreenToArena(Vector2 screen, out Vector2 position) { position = default; return false; }
             public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable) { PlayerPosition = position; }
             public void SetPlayerHealth(int current, int maximum) { }
-            public void SetTreasureRoom(AnotherDay.Arcade.ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> ids) { InRoom = inRoom; RoomRewards = ids.ToArray(); }
+            public void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> ids) { InRoom = inRoom; RoomRewards = ids.ToArray(); }
             public void SetEnemy(int id, string config, Vector2 position, int current, int maximum, bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false) { Enemies.Add(id); }
             public void RemoveEnemy(int id, bool playDeath = false) { Enemies.Remove(id); }
             public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction) { Projectiles.Add(id); }

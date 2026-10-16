@@ -58,7 +58,7 @@ namespace Game.Tests
         public void AudioAssetsAndMainSceneWiringExist()
         {
             var root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
-            Assert.IsTrue(File.Exists(Path.Combine(root, "Assets/Game/Audio/AnotherDayAudioMixer.mixer")));
+            Assert.IsTrue(File.Exists(Path.Combine(root, "Assets/Game/Audio/FirepowerLoopAudioMixer.mixer")));
             Assert.IsTrue(File.Exists(Path.Combine(root, "Assets/Game/Audio/Music/FoundationMusic.wav")));
             Assert.IsTrue(File.Exists(Path.Combine(root, "Assets/Game/Audio/Sound/FoundationClick.wav")));
             Assert.IsTrue(File.Exists(Path.Combine(root, "Assets/Game/Audio/Sound/FoundationSpatial.wav")));

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    public sealed class AnotherDayProductIdentityTests
+    public sealed class FirepowerLoopProductIdentityTests
     {
         [Test]
         public void ProductSettingsUseFirepowerLoopIdentity()
@@ -21,7 +21,7 @@ namespace Game.Tests
         [Test]
         public void ArcadeMapKeepsStableProjectIdentity()
         {
-            Assert.That(MapIds.Arcade, Is.EqualTo("map.another-day.arcade"));
+            Assert.That(MapIds.Arcade, Is.EqualTo("map.firepowerloop.arcade"));
         }
     }
 }

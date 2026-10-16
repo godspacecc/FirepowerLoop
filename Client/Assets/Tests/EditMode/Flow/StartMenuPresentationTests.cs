@@ -180,7 +180,7 @@ namespace Game.Tests
 
         private static GameObject CreateAudioBindings()
         {
-            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/AnotherDayAudioMixer.mixer");
+            var mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
             var root = new GameObject("StartMenuAudioTest");
             var bindings = root.AddComponent<AudioRootBindings>();
             bindings.Mixer = mixer;

@@ -254,7 +254,7 @@ try {
     if ($TestPort -ne 31011) { throw "OnlineLocal 当前配置端口固定为 31011；TestPort 必须为 31011。" }
     if (-not (Test-PortFree $TestPort)) { throw "test port is occupied" }
 
-    $script:tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("AnotherDay-NetLog-" + [Guid]::NewGuid().ToString("N"))
+    $script:tempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("FirepowerLoop-NetLog-" + [Guid]::NewGuid().ToString("N"))
     New-Item -ItemType Directory -Path $script:tempRoot | Out-Null
     Copy-Item -LiteralPath (Join-Path $resolvedRoot "Bin") -Destination (Join-Path $script:tempRoot "Bin") -Recurse
     Copy-Item -LiteralPath (Join-Path $resolvedRoot "Config") -Destination (Join-Path $script:tempRoot "Config") -Recurse

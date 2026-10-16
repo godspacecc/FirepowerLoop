@@ -9,7 +9,7 @@ $WorkspaceOutputs = @{
     Server = Join-Path $Root "Server/GameServer/Runtime/Model/Generated/Message"
 }
 
-$TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("AnotherDay.ProtocolGenerator.Test." + [System.Guid]::NewGuid().ToString("N"))
+$TempRoot = Join-Path ([System.IO.Path]::GetTempPath()) ("FirepowerLoop.ProtocolGenerator.Test." + [System.Guid]::NewGuid().ToString("N"))
 
 function Get-TopLevelCsHashes {
     param([string]$Directory)
@@ -185,7 +185,7 @@ finally {
         $resolvedTemp = [System.IO.Path]::GetFullPath($TempRoot)
         $expectedTempParent = [System.IO.Path]::GetFullPath([System.IO.Path]::GetTempPath()).TrimEnd('\') + '\'
         if (!$resolvedTemp.StartsWith($expectedTempParent, [System.StringComparison]::OrdinalIgnoreCase) -or
-            !(Split-Path -Leaf $resolvedTemp).StartsWith("AnotherDay.ProtocolGenerator.Test.")) {
+            !(Split-Path -Leaf $resolvedTemp).StartsWith("FirepowerLoop.ProtocolGenerator.Test.")) {
             throw "Refusing to remove unexpected test directory: $resolvedTemp"
         }
         Remove-Item -LiteralPath $TempRoot -Recurse -Force

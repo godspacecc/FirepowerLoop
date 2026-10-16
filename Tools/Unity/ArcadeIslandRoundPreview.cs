@@ -51,7 +51,7 @@ public static class ArcadeIslandRoundPreview
                 Call(view,"LoadContentAsync",1);view.SetIslandRound(round);view.SetOpening(opening,round==4);
                 if(!view.IsIslandRoundReady)throw new InvalidOperationException(view.IslandRoundLoadError??"海岛正式资源未准备完成");
                 if(round!=3)view.SetExits(round<3?new[]{-(round+1)}:new[]{2,3},catalog.Rule.ArenaHalfHeight,false);
-                var region=new AnotherDay.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,round);
+                var region=new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,round);
                 var edge=region.Outer[round==2?48:72];view.SetIslandEntryWarning(new Vector2(edge.X*.95f,edge.Y*.95f),true);
                 foreach(var transform in root.GetComponentsInChildren<Transform>(true))transform.gameObject.layer=31;
                 foreach(var text in root.GetComponentsInChildren<TMPro.TextMeshPro>(true))text.ForceMeshUpdate(true,true);

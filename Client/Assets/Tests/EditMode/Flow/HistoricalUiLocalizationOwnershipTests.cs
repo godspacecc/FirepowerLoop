@@ -47,7 +47,7 @@ namespace Game.Tests
             typeof(Architecture<Game>)
                 .GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic)
                 ?.SetValue(null, null);
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayHistoricalUiTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopHistoricalUiTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
         }
 

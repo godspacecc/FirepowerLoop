@@ -61,14 +61,14 @@ Check("SnapshotAndClonePreserveActualDeltas", () => {
 });
 Check("TreasureRoomRecordsActualRewardsAndRejectsFullSupply", () => {
     var a = Actor();
-    var rules = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(config.Tables.TbArcadeTreasureRoom.DataList.First());
+    var rules = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(config.Tables.TbArcadeTreasureRoom.DataList.First());
     int maximum = config.Tables.TbArcadeDrop.Get("arcade.drop.bomb").MaxOwned;
     a.Record.Players[0].Bombs = maximum - 1;
-    var bomb = new AnotherDay.Arcade.ArcadeTreasureRewardParameters(1, AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb, 0, 0, 0, 0, 3);
+    var bomb = new FirepowerLoop.Arcade.ArcadeTreasureRewardParameters(1, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb, 0, 0, 0, 0, 3);
     Require((bool)Call("ApplyTreasureReward", a, 1L, bomb, rules, true));
     Require(!(bool)Call("ApplyTreasureReward", a, 1L, bomb, rules, true));
     Require(a.Battle.SupplyPickups.Count == 1 && a.Battle.SupplyPickups[0].AddedAmount == 1);
-    var gem = new AnotherDay.Arcade.ArcadeTreasureRewardParameters(2, AnotherDay.Arcade.ArcadeTreasureRewardKind.Gem, 0, 0, 200, 0, 1);
+    var gem = new FirepowerLoop.Arcade.ArcadeTreasureRewardParameters(2, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem, 0, 0, 200, 0, 1);
     Require((bool)Call("ApplyTreasureReward", a, 1L, gem, rules, true));
     Require(a.Battle.SupplyPickups.Count == 2 && a.Battle.SupplyPickups[1].ScoreAdded == 600 && a.Battle.SupplyPickups[1].GoldAdded == 0);
 });

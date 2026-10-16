@@ -31,7 +31,7 @@ public static class ArcadeBabylonPlayProbe
         try
         {
             Directory.CreateDirectory(Output);
-            string temp = Path.Combine(Path.GetTempPath(), "AnotherDayBabylonPlay-" + Guid.NewGuid().ToString("N"));
+            string temp = Path.Combine(Path.GetTempPath(), "FirepowerLoopBabylonPlay-" + Guid.NewGuid().ToString("N"));
             var a = Game.Game.Interface;
             a.GetSystem<Game.SaveSystem>().ConfigureForTests(temp);
             a.GetSystem<Game.ArcadeRunSystem>().ConfigureForTests(temp);

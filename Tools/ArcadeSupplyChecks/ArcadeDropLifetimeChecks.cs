@@ -87,9 +87,9 @@ internal static class ArcadeDropLifetimeChecks
     private static void SnapshotPreservesRemainingSeconds(ServerConfig config)
     {
         var actor = Actor(config); Advance(actor, 280);
-        var parameters = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(
+        var parameters = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(
             config.Tables.TbArcadeTreasureRoom.DataList.First());
-        var room = new AnotherDay.Arcade.ArcadeTreasureRoomState("lifetime-test", parameters);
+        var room = new FirepowerLoop.Arcade.ArcadeTreasureRoomState("lifetime-test", parameters);
         Require(room.TryEnter(room.InstanceId, 1, true, true, out _), "treasure fixture must start");
         room.Advance(12f); actor.Battle.TreasureRoom = room;
         using var snapshot = (OnlineArcadeBattleInfo)Call("BuildBattleSnapshot", actor.Battle);

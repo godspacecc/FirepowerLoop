@@ -22,14 +22,14 @@ namespace Game
             IReadOnlyList<ArcadeObstacleDefinition> obstacles);
         void End();
         /// <summary>只显示本机区域入口和剩余物品；不能从此端口领取、计时或发放积分。</summary>
-        void SetTreasureRoom(AnotherDay.Arcade.ArcadeTreasureRoomParameters parameters,
+        void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters parameters,
             bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds) { }
         /// <summary>只呈现清场或胜利出口；触发与目的地选择由战斗权威裁决。</summary>
         void SetExits(IReadOnlyList<int> destinations, float halfHeight, bool victory) { }
         /// <summary>仅显示权威周期；不自行推进机关时间、不裁决伤害。</summary>
-        void SetHazards(IReadOnlyList<AnotherDay.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds) { }
+        void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds) { }
         /// <summary>只按权威配置显示岛岸与第四轮营火，不从视觉碰撞计算伤害。</summary>
-        void SetOpening(AnotherDay.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
+        void SetOpening(FirepowerLoop.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
         void SetIslandRound(int roundNumber) { }
         bool IsIslandRoundReady => true;
@@ -39,7 +39,7 @@ namespace Game
         void SetIslandCampfireWarning(bool warning) { }
         void SetIslandEntryWarning(Vector2 position, bool visible) { }
         /// <summary>只显示权威剩余箱子和护甲，命中与发奖由领域裁决。</summary>
-        void SetBabylon(AnotherDay.Arcade.ArcadeBabylonParameters parameters, IReadOnlyList<int> remainingIds) { }
+        void SetBabylon(FirepowerLoop.Arcade.ArcadeBabylonParameters parameters, IReadOnlyList<int> remainingIds) { }
         void SetEnemyArmor(int id, Vector2 position, int health) { }
         bool TryScreenToArena(Vector2 screenPosition, out Vector2 position);
         bool TryGetPlayerPosition(out Vector2 position) { position = default; return false; }
@@ -298,7 +298,7 @@ namespace Game
             islandParameters = default;
         }
 
-        public void SetHazards(IReadOnlyList<AnotherDay.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds)
+        public void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds)
         {
             contentHazards = hazards; contentHazardElapsed = elapsedSeconds;
             if (root == null) return;

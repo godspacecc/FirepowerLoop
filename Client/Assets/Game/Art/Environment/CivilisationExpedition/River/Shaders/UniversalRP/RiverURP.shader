@@ -1,4 +1,4 @@
-Shader "AnotherDay/River/PoseidonURP"
+Shader "FirepowerLoop/River/PoseidonURP"
 {
     Properties
     {

@@ -58,7 +58,7 @@ public static class ArcadeEntryAuthoring
             var fit = board.AddComponent<AspectRatioFitter>(); fit.aspectMode = AspectRatioFitter.AspectMode.FitInParent; fit.aspectRatio = W / H;
             var plate = board.AddComponent<Image>(); plate.sprite = sprites.Single(s => s.name == "Plate"); plate.raycastTarget = true;
 
-            Fixed(board.transform, "Brand", "ANOTHER DAY", "ui.arcade.entry.brand", 90, 39, 290, 28, 19, false, TextAlignmentOptions.Left);
+            Fixed(board.transform, "Brand", "FirepowerLoop", "ui.arcade.entry.brand", 90, 39, 290, 28, 19, false, TextAlignmentOptions.Left);
             Fixed(board.transform, "Title", "街机挑战", "ui.arcade.entry.title", 85, 60, 480, 117, 106, true, TextAlignmentOptions.Left);
             Fixed(board.transform, "Subtitle", "选择游玩方式", "ui.arcade.entry.choose", 92, 180, 360, 33, 25, true, TextAlignmentOptions.Left);
             Fixed(board.transform, "SoloTitle", "单人挑战", "ui.arcade.entry.solo", 378, 567, 460, 71, 59, true);

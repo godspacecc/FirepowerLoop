@@ -158,7 +158,7 @@ namespace Game.Tests
         [Test]
         public void AutomaticErrorLogPersistsAndRotatesWithoutRuntimeUi()
         {
-            var directory = Path.Combine(Path.GetTempPath(), "AnotherDay-RuntimeErrorLogTests-" + Guid.NewGuid());
+            var directory = Path.Combine(Path.GetTempPath(), "FirepowerLoop-RuntimeErrorLogTests-" + Guid.NewGuid());
             try
             {
                 var store = new RuntimeErrorLogStore(directory, 120);
@@ -184,7 +184,7 @@ namespace Game.Tests
         [Test]
         public void RuntimeLogSystemAutomaticallyPersistsErrorsButNotNormalLogs()
         {
-            var directory = Path.Combine(Path.GetTempPath(), "AnotherDay-RuntimeErrorLogTests-" + Guid.NewGuid());
+            var directory = Path.Combine(Path.GetTempPath(), "FirepowerLoop-RuntimeErrorLogTests-" + Guid.NewGuid());
             try
             {
                 var system = Game.Interface.GetSystem<RuntimeLogSystem>();

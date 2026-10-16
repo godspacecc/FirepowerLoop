@@ -26,7 +26,7 @@ namespace Game.Tests
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDayResourceServerTests", Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoopResourceServerTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
         }
 
@@ -56,7 +56,7 @@ namespace Game.Tests
                 return;
             }
 
-            var allowed = Path.Combine(Path.GetTempPath(), "AnotherDayResourceServerTests");
+            var allowed = Path.Combine(Path.GetTempPath(), "FirepowerLoopResourceServerTests");
             var resolvedRoot = Path.GetFullPath(root);
             var resolvedAllowed = Path.GetFullPath(allowed);
             if (resolvedRoot.StartsWith(resolvedAllowed + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) &&

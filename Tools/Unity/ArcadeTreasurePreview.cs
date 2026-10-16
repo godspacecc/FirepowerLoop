@@ -28,7 +28,7 @@ public static class ArcadeTreasurePreview
         try
         {
             var tables = new Tables(name => new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + name + ".bytes")));
-            var p = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(tables.TbArcadeTreasureRoom.Get("arcade.treasure.first"));
+            var p = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(tables.TbArcadeTreasureRoom.Get("arcade.treasure.first"));
             var root = new GameObject("TreasurePreview");
             typeof(ArcadeCombatViewController).GetField("root", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(view, root);
             view.SetTreasureRoom(p, true, true, true, p.Rewards.Select(r => r.Id).ToArray());

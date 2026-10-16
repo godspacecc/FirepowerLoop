@@ -108,7 +108,7 @@ namespace Game.Tests
         {
             var type = Type.GetType("Game.Editor.WindowsReleaseIdentity, Assembly-CSharp-Editor");
             Assert.That(type, Is.Not.Null);
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayIdentityTests_" + Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopIdentityTests_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             try
             {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     /// <summary>双端共用的不可变机关参数；坐标为场地米，时间为秒，伤害为最大生命比例，不持有 Unity 对象。</summary>
     public readonly struct ArcadeHazardParameters

@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using System;
 using System.IO;
 using System.Linq;

@@ -13,8 +13,8 @@ namespace Game
         private const string ResourceUiRoot = "Assets/Game/Prefabs/UI/";
         private const string BoxFolderSegment = "/Box/";
         private const string UiScriptRoot = "Assets/Game/Scripts/Controller/UI/";
-        private const string PendingPrefabPathKey = "AnotherDay.EditorTools.PendingBoxUiPrefabPath";
-        private const string PendingAssemblyTypeKey = "AnotherDay.EditorTools.PendingBoxUiAssemblyType";
+        private const string PendingPrefabPathKey = "FirepowerLoop.EditorTools.PendingBoxUiPrefabPath";
+        private const string PendingAssemblyTypeKey = "FirepowerLoop.EditorTools.PendingBoxUiAssemblyType";
 
         private static bool _pendingBindingCheckScheduled;
 

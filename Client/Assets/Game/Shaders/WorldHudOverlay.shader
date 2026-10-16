@@ -1,4 +1,4 @@
-Shader "UI/AnotherDay World HUD Overlay"
+Shader "UI/FirepowerLoop World HUD Overlay"
 {
     Properties
     {

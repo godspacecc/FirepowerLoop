@@ -28,7 +28,7 @@ namespace Game.Tests
     }
 }
 
-namespace AnotherDay.Tests
+namespace FirepowerLoop.Tests
 {
     [SetUpFixture]
     public sealed class EditModeSceneIsolationFixture

@@ -7,7 +7,7 @@ using RoomConfig = ET.ArcadeTreasureRoomConfig;
 using RoomConfig = global::ArcadeTreasureRoomConfig;
 #endif
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     public enum ArcadeTreasureRewardKind { GoldBar = 1, Gem = 2, Bomb = 3, Dash = 4 }
 

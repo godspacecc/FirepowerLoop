@@ -23,7 +23,7 @@ namespace Game.Tests.Flow
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDay-Upload-" + Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoop-Upload-" + Guid.NewGuid().ToString("N"));
             store = new DiagnosticReportStore(Path.Combine(root, "queue.json"));
             DiagnosticReportSender.UseStoreForTests(store);
             bodies.Clear();
@@ -307,7 +307,7 @@ namespace Game.Tests.Flow
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDay-Diagnostic-" + Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoop-Diagnostic-" + Guid.NewGuid().ToString("N"));
             store = new DiagnosticReportStore(Path.Combine(root, "queue.json"));
             DiagnosticReportSender.UseStoreForTests(store);
         }

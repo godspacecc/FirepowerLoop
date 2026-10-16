@@ -110,7 +110,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void SceneSwitcher_EnumeratesScenesAndUsesAnotherDayPrefsKeys()
+        public void SceneSwitcher_EnumeratesScenesAndUsesFirepowerLoopPrefsKeys()
         {
             Type sceneSwitcherType = ResolveEditorType("Game.SceneSwitcherWindow");
 
@@ -123,8 +123,8 @@ namespace Game.Tests
 
             FieldInfo searchKey = sceneSwitcherType.GetField("SearchPrefsKey", BindingFlags.Public | BindingFlags.Static);
             FieldInfo favoritesKey = sceneSwitcherType.GetField("FavoritesPrefsKey", BindingFlags.Public | BindingFlags.Static);
-            Assert.That(searchKey?.GetValue(null), Does.StartWith("AnotherDay.SceneSwitcher."));
-            Assert.That(favoritesKey?.GetValue(null), Does.StartWith("AnotherDay.SceneSwitcher."));
+            Assert.That(searchKey?.GetValue(null), Does.StartWith("FirepowerLoop.SceneSwitcher."));
+            Assert.That(favoritesKey?.GetValue(null), Does.StartWith("FirepowerLoop.SceneSwitcher."));
 
             InvokeStatic(sceneSwitcherType, "SetFavoriteScenePathsForTests", new object[] { new[] { "Assets/Game/Scenes/Main.unity" } });
             var favorites = ((IEnumerable)InvokeStatic(sceneSwitcherType, "GetFavoriteScenePathsForTests", Array.Empty<object>()))

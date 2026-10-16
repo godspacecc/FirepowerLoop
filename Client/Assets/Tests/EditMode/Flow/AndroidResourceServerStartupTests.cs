@@ -16,7 +16,7 @@ namespace Game.Tests
         [Test]
         public void PublishedServerProvidesResourcesNoticeAndApkOnOnePort()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayServerStartup", Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopServerStartup", Guid.NewGuid().ToString("N"));
             Process process = null;
             try
             {

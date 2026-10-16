@@ -22,7 +22,7 @@ public static class ArcadeOpeningPlayProbe
     static double exitAt;
     public static string Start()
     {
-        var root=Path.Combine(Path.GetTempPath(),"AnotherDayOpeningPlay-"+Guid.NewGuid().ToString("N"));
+        var root=Path.Combine(Path.GetTempPath(),"FirepowerLoopOpeningPlay-"+Guid.NewGuid().ToString("N"));
         Game.Game.Interface.GetSystem<Game.SaveSystem>().ConfigureForTests(root);
         Game.Game.Interface.GetSystem<Game.ArcadeRunSystem>().ConfigureForTests(root);
         UnityEngine.Object.FindObjectsByType<Button>(FindObjectsInactive.Exclude,FindObjectsSortMode.None)

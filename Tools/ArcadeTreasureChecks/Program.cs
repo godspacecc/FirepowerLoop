@@ -98,7 +98,7 @@ Check("Projection and record clones", () => { var a = Actor(); Enter(a, 1); Coll
 Check("Old JSON defaults preserve old lives", () => { var r = JsonSerializer.Deserialize<OnlineArcadePlayerRecord>("{\"PlayerId\":1,\"Lives\":12}")!; Require(r.Score == 0 && r.ScoreMultiplier == 1 && r.MultiplierProgress == 0 && r.Lives == 12, "old default"); });
 Check("Failed completion and disconnect rollback", () =>
 {
-    string root = Path.Combine(Path.GetTempPath(), "AnotherDayTreasureChecks", Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+    string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopTreasureChecks", Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
     try {
         var a = Actor(); var m = new OnlineArcadeRunManagerComponent { StorePath = Path.Combine(root, "runs.json") };
         Store("CommitWithCandidate", m, a.CommittedRecord, 0L); m.Runs.Add(101, a); Enter(a, 1); Collect(a, 1, 1); a.Battle.SelectedExitConfigNumber = 2; m.RemainingFailSaveCount = 1;
@@ -114,7 +114,7 @@ Check("Entering removes own arena projectiles", () =>
 });
 Check("Score completion failure retries and commits exactly once", () =>
 {
-    string root = Path.Combine(Path.GetTempPath(), "AnotherDayTreasureChecks", Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
+    string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopTreasureChecks", Guid.NewGuid().ToString("N")); Directory.CreateDirectory(root);
     try
     {
         var a = Actor(); var m = new OnlineArcadeRunManagerComponent { StorePath = Path.Combine(root, "runs.json") };

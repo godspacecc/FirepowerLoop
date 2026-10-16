@@ -211,7 +211,7 @@ namespace Game.Tests
             WithExitView(1, true, (view, root) =>
             {
                 var room = Catalog().TreasureRooms.First();
-                var reward = room.Rewards.First(r => r.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar);
+                var reward = room.Rewards.First(r => r.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar);
                 view.SetTreasureRoom(room, true, true, true, new[] { reward.Id });
                 var model = root.transform.Find("TreasureReward_" + reward.Id).GetComponentInChildren<Renderer>();
                 var exit = root.transform.Find("TreasureReturn").GetComponentInChildren<Renderer>();
@@ -365,7 +365,7 @@ namespace Game.Tests
 
         private static void WithRun(int ordinal, int configId, Action<ArcadeRunSystem, ArcadeRunModel> action)
         {
-            var root = Path.Combine(Path.GetTempPath(), "AnotherDayFinalBoss", Guid.NewGuid().ToString("N"));
+            var root = Path.Combine(Path.GetTempPath(), "FirepowerLoopFinalBoss", Guid.NewGuid().ToString("N"));
             var architecture = new Game();
             var model = new ArcadeRunModel();
             architecture.RegisterModel(model);

@@ -12,7 +12,7 @@ namespace Game.Tests
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDayResourceServer", Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoopResourceServer", Guid.NewGuid().ToString("N"));
         }
 
         [TearDown]

@@ -250,10 +250,10 @@ namespace ET.Server
     public sealed class OnlineArcadeBattleRuntime
     {
         public bool CratesInitialized;
-        public readonly Dictionary<int, AnotherDay.Arcade.ArcadeCrateState> Crates = new();
+        public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();
         /// <summary>只随活动战斗增长的机关秒数；不进入安全存档，快照供客户端显示。</summary>
         public double HazardElapsedSeconds;
-        public List<AnotherDay.Arcade.ArcadeHazardState> Hazards { get; } = new();
+        public List<FirepowerLoop.Arcade.ArcadeHazardState> Hazards { get; } = new();
         public int ArenaNumber;
         public int ArenaConfigNumber;
         /// <summary>随本场运行局确定；旧安全档不强制切换到新休闲路线。</summary>
@@ -292,15 +292,15 @@ namespace ET.Server
         public long NextCompletionAttemptAt;
         public bool InputsDirty;
         /// <summary>本场共享房间账本；不序列化，不作为安全节点。</summary>
-        public AnotherDay.Arcade.ArcadeTreasureRoomState TreasureRoom;
+        public FirepowerLoop.Arcade.ArcadeTreasureRoomState TreasureRoom;
         public bool TreasureInitialized;
         public bool TreasureDiscovered;
         public bool TreasureCleared;
         public bool TreasureCompleted;
         /// <summary>海岛局部轮廓与当帧实际移动路径，不进入协议或持久记录。</summary>
-        public AnotherDay.Arcade.ArcadeIslandRegion IslandRegion;
+        public FirepowerLoop.Arcade.ArcadeIslandRegion IslandRegion;
         public bool IslandRegionResolved;
-        public readonly List<AnotherDay.Arcade.ArcadeRegionPoint> IslandMovementPath = new();
+        public readonly List<FirepowerLoop.Arcade.ArcadeRegionPoint> IslandMovementPath = new();
         /// <summary>双方生命均耗尽后停止瞬时模拟；最终清局事务由后续失败结算切片处理。</summary>
         public bool AllPlayersDefeated;
         public List<string> SpawnQueue { get; } = new();

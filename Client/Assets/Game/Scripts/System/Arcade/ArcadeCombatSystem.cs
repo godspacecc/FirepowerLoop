@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using Cysharp.Threading.Tasks;
 using QFramework;
 using UnityEngine;
@@ -325,7 +325,7 @@ namespace Game
             runtime.PlayerHealth = runtime.PlayerMaxHealth;
             if (!isChallenge)
                 foreach (var definition in arena.Hazards)
-                    runtime.Hazards.Add(new AnotherDay.Arcade.ArcadeHazardState(definition));
+                    runtime.Hazards.Add(new FirepowerLoop.Arcade.ArcadeHazardState(definition));
             random = new System.Random(BuildCombatSeed(run.RunId, run.NextArenaNumber));
 
             var map = this.GetModel<MapSceneModel>();
@@ -1202,8 +1202,8 @@ namespace Game
             runtime.RestAttackReleased = false;
             if (!runtime.IsChallenge)
             {
-                runtime.Bombs = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Bombs);
-                runtime.Dashes = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Dashes);
+                runtime.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Bombs);
+                runtime.Dashes = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Dashes);
             }
             var groupId = runtime.IsChallenge ? challenge.EnemyGroupId : arena.WaveGroupIds[waveIndex];
             group = null;
@@ -1216,12 +1216,12 @@ namespace Game
             if (group == null) throw new InvalidOperationException($"街机敌人组不存在：{groupId}");
             var totalWeight = group.Members.Sum(member => member.Count);
             var total = UsesEarlyRounds(runtime)
-                ? AnotherDay.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((runtime.ArenaNumber - 1) * 4 + waveIndex + 1, 1)
+                ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((runtime.ArenaNumber - 1) * 4 + waveIndex + 1, 1)
                 : totalWeight;
             var previousWeight = 0;
             foreach (var member in group.Members)
             {
-                var count = AnotherDay.Arcade.ArcadeOpeningRules.AllocateMember(total, previousWeight, member.Count, totalWeight);
+                var count = FirepowerLoop.Arcade.ArcadeOpeningRules.AllocateMember(total, previousWeight, member.Count, totalWeight);
                 for (var index = 0; index < count; index++) runtime.SpawnQueue.Enqueue(member.EnemyId);
                 previousWeight += member.Count;
             }
@@ -1337,7 +1337,7 @@ namespace Game
                     hazard.TryHit(-1, previousPlayer.x, previousPlayer.y, runtime.PlayerPosition.x,
                         runtime.PlayerPosition.y, catalog.Rule.PlayerRadius))
                 {
-                    DamagePlayer(runtime, AnotherDay.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
+                    DamagePlayer(runtime, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
                         hazard.Parameters.PlayerDamageRatio));
                     if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.RespawnRemaining > 0f) return;
                 }
@@ -1349,7 +1349,7 @@ namespace Game
                     var previous = runtime.HazardPreviousEnemyPositions.TryGetValue(id, out var value) ? value : enemy.Position;
                     if (!hazard.TryHit(id, previous.x, previous.y, enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius)) continue;
                     if (enemy.IsBossPresentation)
-                        enemy.Health -= AnotherDay.Arcade.ArcadeHazardRules.Damage(enemy.MaxHealth, hazard.Parameters.BossDamageRatio);
+                        enemy.Health -= FirepowerLoop.Arcade.ArcadeHazardRules.Damage(enemy.MaxHealth, hazard.Parameters.BossDamageRatio);
                     else enemy.Health = 0;
                     if (enemy.Health <= 0) KillEnemy(runtime, enemy, true);
                 }
@@ -1750,7 +1750,7 @@ namespace Game
             view.SetExits(runtime.IslandRoundAwaitingExit ? new[] { -(runtime.WaveIndex + 2) } :
                 runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
-            view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit ? Array.Empty<AnotherDay.Arcade.ArcadeHazardParameters>() : arena.Hazards,
+            view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);
             view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f,
                 runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);

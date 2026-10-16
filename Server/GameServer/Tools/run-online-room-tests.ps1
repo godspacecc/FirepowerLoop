@@ -227,7 +227,7 @@ try {
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
     $BinDir = (Resolve-Path (Join-Path $PSScriptRoot "..\Bin")).Path
     $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) "AnotherDayOnlineRoom-$stamp"
+    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) "FirepowerLoopOnlineRoom-$stamp"
     New-Item -ItemType Directory -Force -Path $workDir | Out-Null
 
     if ([string]::IsNullOrWhiteSpace($StorePath)) {

@@ -122,7 +122,7 @@ Check("Boss death stops reinforcements and opens only the victory exit", () =>
 });
 Check("Branch and victory transactions persist distinct states", () =>
 {
-    string root = Path.Combine(Path.GetTempPath(), "AnotherDayArcadeServerChecks", Guid.NewGuid().ToString("N"));
+    string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopArcadeServerChecks", Guid.NewGuid().ToString("N"));
     Directory.CreateDirectory(root);
     try
     {
@@ -181,7 +181,7 @@ Check("Early branch clear pauses, accepts a living member fire, then opens final
 });
 Check("Early arena commit preserves old wallet without issuing clear cash", () =>
 {
-    string root = Path.Combine(Path.GetTempPath(), "AnotherDayArcadeServerChecks", Guid.NewGuid().ToString("N"));
+    string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopArcadeServerChecks", Guid.NewGuid().ToString("N"));
     Directory.CreateDirectory(root);
     try
     {

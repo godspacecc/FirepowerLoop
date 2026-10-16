@@ -18,7 +18,7 @@ namespace Game.Tests
         [SetUp]
         public void SetUp()
         {
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDaySettingsTests", System.Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopSettingsTests", System.Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             ResourceLoader.SetLoaderForTests(new MinimalLocalizationLoader());
             LocalizationLanguages.ResetForTests();

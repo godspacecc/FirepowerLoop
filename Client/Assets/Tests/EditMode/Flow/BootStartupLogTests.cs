@@ -19,7 +19,7 @@ namespace Game.Tests.Flow
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDayBootLog-" + Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoopBootLog-" + Guid.NewGuid().ToString("N"));
             storeType = Type.GetType("Boot.BootStartupLogStore, Boot");
             Assert.That(storeType, Is.Not.Null, "缺少 Boot 阶段日志采集器。");
         }

@@ -16,7 +16,7 @@
 
 共 32 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 12 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
 
-`map.another-day.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 与 `map_display` 保留空表以维持共用地图适配契约。历史地图图片及图标资源保留，不由 Luban 生成。旧地图资料生成工具已移除。
+`map.firepowerloop.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 与 `map_display` 保留空表以维持共用地图适配契约。历史地图图片及图标资源保留，不由 Luban 生成。旧地图资料生成工具已移除。
 
 `arcade_solo_drop` 仅面向客户端，保留第一场临时第一人称的权重 5、持续 20 秒配置；服务端不生成此表。街机宝藏、装备、强化道具、金币、挑战及单人/双人规则保留。商店及交易已移除：`arcade_shop_item` 由仅含支援视觉身份、地址与偏移的 `arcade_support_visual` 替代；`arcade_upgrade` 只用于本项目旧局已持有效果的恢复，不提供新获取入口。`arcade_reward` 为现有街机目录契约保留空表，已去除 scrap/core/token 局外奖励行，不提供成长钱包。
 

@@ -5,7 +5,7 @@ $failed = 0
 $repo = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
 $bin = (Resolve-Path (Join-Path $PSScriptRoot "..\Bin")).Path
 $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-$work = Join-Path ([IO.Path]::GetTempPath()) "AnotherDayServerTestCmd-$stamp"
+$work = Join-Path ([IO.Path]::GetTempPath()) "FirepowerLoopServerTestCmd-$stamp"
 $store = "../Store/Online/identity-store-server-test-cmd-$stamp.json"
 $storeFull = [IO.Path]::GetFullPath((Join-Path $bin $store))
 New-Item -ItemType Directory -Force -Path $work | Out-Null

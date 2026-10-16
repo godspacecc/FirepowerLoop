@@ -15,7 +15,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.TestTools;
 
-namespace AnotherDay.Tests.EditMode.Flow
+namespace FirepowerLoop.Tests.EditMode.Flow
 {
     public sealed class OnlineRoomChatTests
     {

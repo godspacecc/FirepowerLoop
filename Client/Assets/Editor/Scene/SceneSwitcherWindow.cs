@@ -10,8 +10,8 @@ namespace Game
 {
     public sealed class SceneSwitcherWindow : EditorWindow
     {
-        public const string SearchPrefsKey = "AnotherDay.SceneSwitcher.Search";
-        public const string FavoritesPrefsKey = "AnotherDay.SceneSwitcher.Favorites";
+        public const string SearchPrefsKey = "FirepowerLoop.SceneSwitcher.Search";
+        public const string FavoritesPrefsKey = "FirepowerLoop.SceneSwitcher.Favorites";
 
         private readonly List<string> _scenePaths = new List<string>();
         private readonly HashSet<string> _favoriteScenePaths = new HashSet<string>(StringComparer.Ordinal);

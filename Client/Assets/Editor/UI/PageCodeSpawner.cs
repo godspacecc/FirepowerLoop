@@ -17,8 +17,8 @@ namespace Game
         private const string PageFolderSegment = "/Page/";
         private const string UiScriptRoot = "Assets/Game/Scripts/Controller/UI/";
         private const string UiCtrlScriptRoot = "Assets/Game/Scripts/Controller/UICtrl/";
-        private const string PendingPrefabPathKey = "AnotherDay.EditorTools.PendingPageUiPrefabPath";
-        private const string PendingAssemblyTypeKey = "AnotherDay.EditorTools.PendingPageUiAssemblyType";
+        private const string PendingPrefabPathKey = "FirepowerLoop.EditorTools.PendingPageUiPrefabPath";
+        private const string PendingAssemblyTypeKey = "FirepowerLoop.EditorTools.PendingPageUiAssemblyType";
 
         private static bool _pendingBindingCheckScheduled;
 

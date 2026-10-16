@@ -19,7 +19,7 @@ namespace Game.Tests
         [Test]
         public void BatchPathUsesInjectedTimestampAndPreservesOutputRoot()
         {
-            string outputRoot = Path.Combine(Path.GetTempPath(), "AnotherDayWindowsOutputTests", Guid.NewGuid().ToString("N"));
+            string outputRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopWindowsOutputTests", Guid.NewGuid().ToString("N"));
             try
             {
                 string path = (string)InvokePrivate("GetWindowsPlayerBatchDirectory", outputRoot, new DateTime(2026, 8, 28, 9, 7, 6));
@@ -39,22 +39,22 @@ namespace Game.Tests
             string batchRoot = CreateBatchRoot();
             try
             {
-                string playerDirectory = Path.Combine(batchRoot, "AnotherDay");
+                string playerDirectory = Path.Combine(batchRoot, "FirepowerLoop");
                 Directory.CreateDirectory(playerDirectory);
-                File.WriteAllText(Path.Combine(playerDirectory, "AnotherDay.exe"), "player");
-                Directory.CreateDirectory(Path.Combine(playerDirectory, "AnotherDay_Data"));
-                File.WriteAllText(Path.Combine(playerDirectory, "AnotherDay_Data", "keep.txt"), "keep");
+                File.WriteAllText(Path.Combine(playerDirectory, "FirepowerLoop.exe"), "player");
+                Directory.CreateDirectory(Path.Combine(playerDirectory, "FirepowerLoop_Data"));
+                File.WriteAllText(Path.Combine(playerDirectory, "FirepowerLoop_Data", "keep.txt"), "keep");
                 CreateDebugDirectory(playerDirectory, "Space Name" + BurstSuffix, "burst-marker");
-                CreateDebugDirectory(playerDirectory, "AnotherDay" + Il2CppSuffix, "il2cpp-marker");
+                CreateDebugDirectory(playerDirectory, "FirepowerLoop" + Il2CppSuffix, "il2cpp-marker");
 
                 string symbolsDirectory = (string)InvokePrivate("SeparateWindowsPlayerDebugSymbols", playerDirectory);
 
-                Assert.That(File.Exists(Path.Combine(playerDirectory, "AnotherDay.exe")), Is.True);
-                Assert.That(File.Exists(Path.Combine(playerDirectory, "AnotherDay_Data", "keep.txt")), Is.True);
+                Assert.That(File.Exists(Path.Combine(playerDirectory, "FirepowerLoop.exe")), Is.True);
+                Assert.That(File.Exists(Path.Combine(playerDirectory, "FirepowerLoop_Data", "keep.txt")), Is.True);
                 Assert.That(Directory.GetDirectories(playerDirectory, "*" + BurstSuffix, SearchOption.TopDirectoryOnly), Is.Empty);
                 Assert.That(Directory.GetDirectories(playerDirectory, "*" + Il2CppSuffix, SearchOption.TopDirectoryOnly), Is.Empty);
                 Assert.That(File.ReadAllText(Path.Combine(symbolsDirectory, "Space Name" + BurstSuffix, "marker.txt")), Is.EqualTo("burst-marker"));
-                Assert.That(File.ReadAllText(Path.Combine(symbolsDirectory, "AnotherDay" + Il2CppSuffix, "marker.txt")), Is.EqualTo("il2cpp-marker"));
+                Assert.That(File.ReadAllText(Path.Combine(symbolsDirectory, "FirepowerLoop" + Il2CppSuffix, "marker.txt")), Is.EqualTo("il2cpp-marker"));
             }
             finally
             {
@@ -71,12 +71,12 @@ namespace Game.Tests
             string batchRoot = CreateBatchRoot();
             try
             {
-                string playerDirectory = Path.Combine(batchRoot, "AnotherDay");
+                string playerDirectory = Path.Combine(batchRoot, "FirepowerLoop");
                 Directory.CreateDirectory(playerDirectory);
                 if (failure != "MissingBurst")
-                    CreateDebugDirectory(playerDirectory, "AnotherDay" + BurstSuffix, "primary-burst");
+                    CreateDebugDirectory(playerDirectory, "FirepowerLoop" + BurstSuffix, "primary-burst");
                 if (failure != "MissingIl2Cpp")
-                    CreateDebugDirectory(playerDirectory, "AnotherDay" + Il2CppSuffix, "primary-il2cpp");
+                    CreateDebugDirectory(playerDirectory, "FirepowerLoop" + Il2CppSuffix, "primary-il2cpp");
                 if (failure == "DuplicateBurst")
                     CreateDebugDirectory(playerDirectory, "Alternate" + BurstSuffix, "duplicate-burst");
                 if (failure == "DuplicateIl2Cpp")
@@ -106,19 +106,19 @@ namespace Game.Tests
             string batchRoot = CreateBatchRoot();
             try
             {
-                string playerDirectory = Path.Combine(batchRoot, "AnotherDay");
+                string playerDirectory = Path.Combine(batchRoot, "FirepowerLoop");
                 Directory.CreateDirectory(playerDirectory);
-                File.WriteAllText(Path.Combine(playerDirectory, "AnotherDay.exe"), "player");
-                CreateDebugDirectory(playerDirectory, "AnotherDay" + Il2CppSuffix, "il2cpp-marker");
+                File.WriteAllText(Path.Combine(playerDirectory, "FirepowerLoop.exe"), "player");
+                CreateDebugDirectory(playerDirectory, "FirepowerLoop" + Il2CppSuffix, "il2cpp-marker");
 
                 LogAssert.Expect(LogType.Warning,
                     $"[BuildUtility] 本次 Player 未生成 Burst 调试资料目录，按 script-only build 产物继续：{batchRoot}");
                 string symbolsDirectory = (string)InvokePrivate("SeparateWindowsPlayerDebugSymbols", playerDirectory);
 
-                Assert.That(File.Exists(Path.Combine(playerDirectory, "AnotherDay.exe")), Is.True);
+                Assert.That(File.Exists(Path.Combine(playerDirectory, "FirepowerLoop.exe")), Is.True);
                 Assert.That(Directory.GetDirectories(playerDirectory, "*" + BurstSuffix, SearchOption.TopDirectoryOnly), Is.Empty);
                 Assert.That(Directory.GetDirectories(playerDirectory, "*" + Il2CppSuffix, SearchOption.TopDirectoryOnly), Is.Empty);
-                Assert.That(File.ReadAllText(Path.Combine(symbolsDirectory, "AnotherDay" + Il2CppSuffix, "marker.txt")), Is.EqualTo("il2cpp-marker"));
+                Assert.That(File.ReadAllText(Path.Combine(symbolsDirectory, "FirepowerLoop" + Il2CppSuffix, "marker.txt")), Is.EqualTo("il2cpp-marker"));
             }
             finally
             {
@@ -154,7 +154,7 @@ namespace Game.Tests
 
         private static string CreateBatchRoot()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayWindowsOutputTests", Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopWindowsOutputTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             return root;
         }

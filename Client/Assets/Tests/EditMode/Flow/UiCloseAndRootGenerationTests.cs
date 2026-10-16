@@ -190,7 +190,7 @@ namespace Game.Tests
             {
                 architecture.RegisterUtility<IRuntimeConfigProvider>(new MinimalRuntimeConfigProvider());
             };
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayUiCloseTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopUiCloseTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             new GameObject(SceneRoot.PoolRootName);
             CreateUiRoot();

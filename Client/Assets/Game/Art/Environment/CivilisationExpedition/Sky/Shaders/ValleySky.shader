@@ -1,4 +1,4 @@
-Shader "AnotherDay/ValleySky"
+Shader "FirepowerLoop/ValleySky"
 {
 	Properties
 	{

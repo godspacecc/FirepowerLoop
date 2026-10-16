@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     /// <summary>竞技场平面米；双端规则及网格共享，不含 Unity 对象。</summary>
     public readonly struct ArcadeRegionPoint

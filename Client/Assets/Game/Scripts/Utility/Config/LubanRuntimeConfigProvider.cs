@@ -1178,7 +1178,7 @@ namespace Game
             {
                 foreach (var row in tables.TbArcadeTreasureRoom.DataList)
                 {
-                    var room = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
+                    var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
                     var target = tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
                     var arenaRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                     if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||
@@ -1291,8 +1291,8 @@ namespace Game
                 if (row == null || row.ArenaNumber != expected) return $"TbArcadeArena 必须从 1 连续编号，缺少 {expected}";
                 try
                 {
-                    var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(row);
-                    var content = AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(row);
+                    var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(row);
+                    var content = FirepowerLoop.Arcade.ArcadeBabylonParameters.FromConfig(row);
                     if (content.Crates.Any(c => Math.Abs(c.X) + c.Radius > rule.ArenaHalfWidth || Math.Abs(c.Y) + c.Radius > rule.ArenaHalfHeight))
                         return "箱子位置越界";
                     if (opening.Enabled && (opening.WaterMinY <= -rule.ArenaHalfHeight || opening.WaterMinY >= rule.ArenaHalfHeight ||
@@ -1319,7 +1319,7 @@ namespace Game
                 {
                     if (hazard == null || !hazardIds.Add(hazard.Id)) return $"TbArcadeArena[{row.ArenaNumber}].Hazards 身份无效";
                     var parameters = ToHazardParameters(hazard);
-                    var hazardError = AnotherDay.Arcade.ArcadeHazardRules.Validate(parameters,
+                    var hazardError = FirepowerLoop.Arcade.ArcadeHazardRules.Validate(parameters,
                         rule.ArenaHalfWidth, rule.ArenaHalfHeight, rule.PlayerRadius);
                     if (hazardError != null) return $"TbArcadeArena[{row.ArenaNumber}].Hazards[{hazard.Id}] {hazardError}";
                     foreach (var obstacle in row.Obstacles)
@@ -1421,8 +1421,8 @@ namespace Game
         }
 
         /// <summary>把生成行转换为双端纯规则参数，不把可变生成配置暴露给战斗表现。</summary>
-        internal static AnotherDay.Arcade.ArcadeHazardParameters ToHazardParameters(global::ArcadeHazardConfig row) =>
-            new AnotherDay.Arcade.ArcadeHazardParameters(row.Id, (int)row.Kind, row.CenterX, row.CenterY,
+        internal static FirepowerLoop.Arcade.ArcadeHazardParameters ToHazardParameters(global::ArcadeHazardConfig row) =>
+            new FirepowerLoop.Arcade.ArcadeHazardParameters(row.Id, (int)row.Kind, row.CenterX, row.CenterY,
                 row.DirectionDegrees, row.Radius, row.ArmLength, row.ArmHalfWidth, row.IdleSeconds,
                 row.WarningSeconds, row.ActiveSeconds, row.AngularSpeedDegrees, row.HitIntervalSeconds,
                 row.PlayerDamageRatio, row.BossDamageRatio);
@@ -1448,7 +1448,7 @@ namespace Game
                         row.Obstacles.Select(obstacle => new ArcadeObstacleDefinition(obstacle.CenterX, obstacle.CenterY,
                             obstacle.HalfWidth, obstacle.HalfHeight)),
                         row.IsBoss, row.BossId, row.ClearGold, row.EncounterSeedSalt, row.Hazards.Select(ToHazardParameters),
-                        row.NextArenaNumbers, row.FinalBossId, AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(row), AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(row))),
+                        row.NextArenaNumbers, row.FinalBossId, FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(row), FirepowerLoop.Arcade.ArcadeBabylonParameters.FromConfig(row))),
                 tables.TbArcadeEnemyGroup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeEnemyGroupDefinition(row.Id,
                         row.Members.Select(member => new ArcadeEnemyMemberDefinition(member.EnemyId, member.Count)),
@@ -1480,7 +1480,7 @@ namespace Game
                     .Select(row => new ArcadeUpgradeDefinition(row.Id, row.Kind, row.ValuePerStack, row.MaxStacks)),
                 tables.TbArcadeReward.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeRewardDefinition(row.Id, row.Trigger, row.StartArena, row.Interval, row.RewardId, row.Amount, row.AmountPerTrigger)),
-                tables.TbArcadeTreasureRoom.DataList.Select(AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig));
+                tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig));
         }
 
         private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;

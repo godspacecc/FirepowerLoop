@@ -4,7 +4,7 @@ namespace Game
 {
     [CreateAssetMenu(
         fileName = "TopDownCameraProfile",
-        menuName = "Another Day/Top Down Camera Profile")]
+        menuName = "FirepowerLoop/Top Down Camera Profile")]
     public sealed class TopDownCameraProfile : ScriptableObject
     {
         [Range(65f, 75f)]

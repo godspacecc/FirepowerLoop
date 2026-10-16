@@ -154,9 +154,9 @@ namespace Game
     {
         public bool CratesInitialized;
         /// <summary>本场剩余箱子，跨普通轮保留，整场释放或回滚时丢弃。</summary>
-        public readonly Dictionary<int, AnotherDay.Arcade.ArcadeCrateState> Crates = new();
+        public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();
         /// <summary>本竞技场临时共享实例；整场结束或回滚时丢弃，不单独落盘。</summary>
-        public AnotherDay.Arcade.ArcadeTreasureRoomState TreasureRoom;
+        public FirepowerLoop.Arcade.ArcadeTreasureRoomState TreasureRoom;
         public bool TreasureInitialized;
         public bool TreasureDiscovered;
         public bool TreasureCleared;
@@ -237,7 +237,7 @@ namespace Game
         public int NextEntityId = 1;
         /// <summary>本场活动战斗累计秒数，暂停与复活等待不增长；不写安全节点。</summary>
         public double HazardElapsedSeconds;
-        public readonly List<AnotherDay.Arcade.ArcadeHazardState> Hazards = new List<AnotherDay.Arcade.ArcadeHazardState>();
+        public readonly List<FirepowerLoop.Arcade.ArcadeHazardState> Hazards = new List<FirepowerLoop.Arcade.ArcadeHazardState>();
         public readonly Dictionary<int, Vector2> HazardPreviousEnemyPositions = new Dictionary<int, Vector2>();
         public readonly Queue<string> SpawnQueue = new Queue<string>();
         public readonly Dictionary<int, ArcadeEnemyRuntime> Enemies = new Dictionary<int, ArcadeEnemyRuntime>();

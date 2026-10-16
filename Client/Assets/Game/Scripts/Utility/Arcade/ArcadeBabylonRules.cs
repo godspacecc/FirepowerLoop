@@ -7,7 +7,7 @@ using ArenaConfig = ET.ArcadeArenaConfig;
 using ArenaConfig = global::ArcadeArenaConfig;
 #endif
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     /// <summary>前期箱子与护甲配置合同；不裁决命中、发奖、保存或 Unity 表现。</summary>
 #if DOTNET

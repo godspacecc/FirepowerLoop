@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace AnotherDay.Tests.EditMode.Flow
+namespace FirepowerLoop.Tests.EditMode.Flow
 {
     public sealed class OnlineRoomMobileUiTests
     {

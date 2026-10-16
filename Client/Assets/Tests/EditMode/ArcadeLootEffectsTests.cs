@@ -5,7 +5,7 @@ using NUnit.Framework;
 using UnityEditor;
 using UnityEngine;
 
-namespace AnotherDay.Tests
+namespace FirepowerLoop.Tests
 {
     public sealed class ArcadeLootEffectsTests
     {

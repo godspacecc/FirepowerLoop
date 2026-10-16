@@ -511,7 +511,7 @@ namespace ET.Server
             try
             {
                 // 新休闲前两场只有个人积分，清场不凭旧配置额外复制购物现金。
-                int arenaGold = AnotherDay.Arcade.ArcadeOpeningRules.UsesEarlyRounds(candidate.IsCasualRoute, arena.ArenaNumber)
+                int arenaGold = FirepowerLoop.Arcade.ArcadeOpeningRules.UsesEarlyRounds(candidate.IsCasualRoute, arena.ArenaNumber)
                     ? 0 : ScaleGold(arena.ClearGold, candidate.NextArena, ServerConfig.Instance.ArcadeRule.GoldGrowthPerArena);
                 int completedArena = candidate.NextArena;
                 int nextArena = checked(completedArena + 1);
@@ -1163,12 +1163,12 @@ namespace ET.Server
             if (!challenge)
                 foreach (var player in record.Players.Where(p => p.Lives > 0))
                 {
-                    player.Bombs = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
-                    player.Dashes = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Dashes);
+                    player.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
+                    player.Dashes = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Dashes);
                 }
             if (!challenge)
                 foreach (ArcadeHazardConfig definition in arena.Hazards)
-                    battle.Hazards.Add(new AnotherDay.Arcade.ArcadeHazardState(ServerConfig.GetHazardParameters(definition)));
+                    battle.Hazards.Add(new FirepowerLoop.Arcade.ArcadeHazardState(ServerConfig.GetHazardParameters(definition)));
             battle.LastTickAt = TimeInfo.Instance.ServerNow();
             return battle;
         }
@@ -1193,14 +1193,14 @@ namespace ET.Server
             battle.SpawnedInWave = 0;
             int totalWeight = group.Members.Sum(member => member.Count);
             int total = UsesEarlyRounds(battle)
-                ? AnotherDay.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((battle.ArenaNumber - 1) * 4 + waveIndex + 1, battle.DifficultyPlayerCount)
+                ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((battle.ArenaNumber - 1) * 4 + waveIndex + 1, battle.DifficultyPlayerCount)
                 : arena.WaterSpeedRatio > 0 && !battle.IsChallenge
-                    ? AnotherDay.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal(waveIndex + 1, battle.DifficultyPlayerCount)
+                    ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal(waveIndex + 1, battle.DifficultyPlayerCount)
                     : boss == null ? checked(totalWeight * battle.DifficultyPlayerCount) : totalWeight;
             int previousWeight = 0;
             foreach (ArcadeEnemyMemberConfig member in group.Members)
             {
-                int count = AnotherDay.Arcade.ArcadeOpeningRules.AllocateMember(total, previousWeight, member.Count, totalWeight);
+                int count = FirepowerLoop.Arcade.ArcadeOpeningRules.AllocateMember(total, previousWeight, member.Count, totalWeight);
                 for (int index = 0; index < count; index++) battle.SpawnQueue.Add(member.EnemyId);
                 previousWeight += member.Count;
             }
@@ -1257,7 +1257,7 @@ namespace ET.Server
             {
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
                 changed |= self.TickDrops(battle);
-                var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
+                var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
                 if (UsesEarlyRest(battle))
                 {
                     battle.WaveTransitionSeconds += deltaSeconds;
@@ -1304,7 +1304,7 @@ namespace ET.Server
             float speedGrowth = 1f + ServerConfig.Instance.ArcadeRule.SpeedGrowthPerArena * Math.Max(0, battle.ArenaNumber - 1);
             int maxHealth = Math.Max(1, (int)MathF.Round(enemyConfig.MaxHP * group.HealthMultiplier * arenaGrowth));
             (float x, float z) = SpawnPosition(runtimeId, ServerConfig.Instance.ArcadeRule);
-            var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(arena);
+            var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena);
             bool enteringIsland = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
             float entryTargetZ = 0f;
             float entryTargetX = x;
@@ -1403,7 +1403,7 @@ namespace ET.Server
                 if (player.DashSeconds > 0f) moveSpeed *= DashSpeedMultiplier;
                 if (!player.InTreasureRoom && !battle.IsChallenge)
                     moveSpeed *= IslandFor(battle) is { } island && island.IsShallow(player.PositionX, player.PositionZ)
-                        ? AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(arena).WaterSpeedRatio : 1f;
+                        ? FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena).WaterSpeedRatio : 1f;
                 if (MathF.Abs(player.MoveX) > 0.0001f || MathF.Abs(player.MoveZ) > 0.0001f)
                 {
                     float nextX = player.PositionX + player.MoveX * moveSpeed * deltaSeconds;
@@ -1481,7 +1481,7 @@ namespace ET.Server
                 bool entering = enemy.EnteringIsland;
                 if (entering)
                 {
-                    enemy.EnteringIsland = !AnotherDay.Arcade.ArcadeOpeningRules.AdvanceEntry(
+                    enemy.EnteringIsland = !FirepowerLoop.Arcade.ArcadeOpeningRules.AdvanceEntry(
                         ref enemy.PositionX, ref enemy.PositionZ, enemy.IslandEntryTargetX, enemy.IslandEntryTargetZ,
                         enemy.MoveSpeed * movementDelta);
                     changed = true;
@@ -1623,7 +1623,7 @@ namespace ET.Server
         /// <summary>普通敌人使用服务器权威的确定性矩形绕障；Boss 锁向冲锋保持直线技能语义。</summary>
         private static void MoveEnemy(OnlineArcadeEnemyRuntime enemy, float targetX, float targetZ,
             float deltaSeconds, ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles,
-            AnotherDay.Arcade.ArcadeIslandRegion island = null)
+            FirepowerLoop.Arcade.ArcadeIslandRegion island = null)
         {
             float previousX = enemy.PositionX;
             float previousZ = enemy.PositionZ;
@@ -2194,10 +2194,10 @@ namespace ET.Server
                     if (drop.Amount <= 0) return false;
                     if (self.Record.IsCasualRoute)
                     {
-                        var rules = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(
+                        var rules = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(
                             ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.First());
-                        return ApplyTreasureReward(self, player.PlayerId, new AnotherDay.Arcade.ArcadeTreasureRewardParameters(
-                            0, AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, drop.Amount, drop.Amount, 1), rules, false);
+                        return ApplyTreasureReward(self, player.PlayerId, new FirepowerLoop.Arcade.ArcadeTreasureRewardParameters(
+                            0, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, drop.Amount, drop.Amount, 1), rules, false);
                     }
                     if (record.RunGold > int.MaxValue - drop.Amount) return false;
                     record.RunGold += drop.Amount;
@@ -2402,7 +2402,7 @@ namespace ET.Server
                     if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f || player.DashSeconds > 0f) continue;
                     if (!hazard.TryHit(-player.PlayerId, player.HazardPreviousX, player.HazardPreviousZ,
                         player.PositionX, player.PositionZ, rule.PlayerRadius)) continue;
-                    self.DamagePlayer(battle, player, AnotherDay.Arcade.ArcadeHazardRules.Damage(player.MaxHealth,
+                    self.DamagePlayer(battle, player, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(player.MaxHealth,
                         hazard.Parameters.PlayerDamageRatio));
                     if (battle.AllPlayersDefeated || player.RespawnSeconds > 0f) return true;
                 }
@@ -2414,7 +2414,7 @@ namespace ET.Server
                     if (!hazard.TryHit(id, enemy.HazardPreviousX, enemy.HazardPreviousZ,
                         enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius)) continue;
                     bool boss = ResolveBattleArena(battle).IsBoss && battle.WaveIndex + 1 == battle.WaveCount;
-                    enemy.CurrentHealth = boss ? enemy.CurrentHealth - AnotherDay.Arcade.ArcadeHazardRules.Damage(
+                    enemy.CurrentHealth = boss ? enemy.CurrentHealth - FirepowerLoop.Arcade.ArcadeHazardRules.Damage(
                         enemy.MaxHealth, hazard.Parameters.BossDamageRatio) : 0;
                     if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy, true);
                 }
@@ -2447,7 +2447,7 @@ namespace ET.Server
                 return true;
             }
             battle.WaveTransitionSeconds += deltaSeconds;
-            var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
+            var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
             foreach (var player in battle.Players.Values)
                 if (!player.Firing) player.RestAttackReleased = true;
             bool advance = UsesEarlyRest(battle) && battle.Players.Values.Any(p => p.Alive && p.RestAttackReleased && p.Firing && !p.InTreasureRoom);
@@ -2474,8 +2474,8 @@ namespace ET.Server
             if (!battle.IsChallenge)
                 foreach (var player in self.Record.Players.Where(p => p.Lives > 0))
                 {
-                    player.Bombs = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
-                    player.Dashes = AnotherDay.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Dashes);
+                    player.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
+                    player.Dashes = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Dashes);
                 }
             return true;
         }
@@ -2557,7 +2557,7 @@ namespace ET.Server
         }
 
         private static void ResolvePosition(ref float x, ref float z, float previousX, float previousZ, float radius,
-            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, AnotherDay.Arcade.ArcadeIslandRegion island = null)
+            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island = null)
         {
             if (island != null)
             {

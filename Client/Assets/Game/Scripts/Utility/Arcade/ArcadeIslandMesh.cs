@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     /// <summary>将同一规则轮廓转成无碰撞表面；调用者拥有生成 Mesh 并在离场时释放。</summary>
     public static class ArcadeIslandMesh

@@ -2,7 +2,7 @@ param([switch]$StoreOnly)
 
 $ErrorActionPreference = 'Stop'
 $serverRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
-$tempRoot = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), 'AnotherDay-DiagnosticTests-' + [guid]::NewGuid().ToString('N'))
+$tempRoot = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), 'FirepowerLoop-DiagnosticTests-' + [guid]::NewGuid().ToString('N'))
 $ownedProcess = $null
 
 function Assert-PortFree([int]$port) {

@@ -276,7 +276,7 @@ namespace ET
         {
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
             {
-                var room = AnotherDay.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
+                var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
                 var target = this.tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
                 var arenaRule = this.tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||
@@ -402,8 +402,8 @@ namespace ET
 
             foreach (ArcadeArenaConfig arena in this.tables.TbArcadeArena.DataList)
             {
-                var opening = AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(arena);
-                var content = AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(arena);
+                var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena);
+                var content = FirepowerLoop.Arcade.ArcadeBabylonParameters.FromConfig(arena);
                 if (content.Crates.Any(c => Math.Abs(c.X) + c.Radius > this.arcadeRule.ArenaHalfWidth || Math.Abs(c.Y) + c.Radius > this.arcadeRule.ArenaHalfHeight))
                     throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "invalid crate position");
                 if (opening.Enabled && (opening.WaterMinY <= -this.arcadeRule.ArenaHalfHeight || opening.WaterMinY >= this.arcadeRule.ArenaHalfHeight ||
@@ -424,7 +424,7 @@ namespace ET
                     if (hazard == null || !hazardIds.Add(hazard.Id))
                         throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), "duplicate hazard identity.");
                     var parameters = GetHazardParameters(hazard);
-                    string hazardError = AnotherDay.Arcade.ArcadeHazardRules.Validate(parameters,
+                    string hazardError = FirepowerLoop.Arcade.ArcadeHazardRules.Validate(parameters,
                         this.arcadeRule.ArenaHalfWidth, this.arcadeRule.ArenaHalfHeight, this.arcadeRule.PlayerRadius);
                     if (hazardError != null) throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(), hazardError);
                     foreach (ArcadeObstacleConfig obstacle in arena.Obstacles)
@@ -455,7 +455,7 @@ namespace ET
         }
 
         /// <summary>将 Luban 行转换为与客户端完全相同的纯机关参数；不保存运行态。</summary>
-        public static AnotherDay.Arcade.ArcadeHazardParameters GetHazardParameters(ArcadeHazardConfig row) =>
+        public static FirepowerLoop.Arcade.ArcadeHazardParameters GetHazardParameters(ArcadeHazardConfig row) =>
             new(row.Id, (int)row.Kind, row.CenterX, row.CenterY, row.DirectionDegrees, row.Radius,
                 row.ArmLength, row.ArmHalfWidth, row.IdleSeconds, row.WarningSeconds, row.ActiveSeconds,
                 row.AngularSpeedDegrees, row.HitIntervalSeconds, row.PlayerDamageRatio, row.BossDamageRatio);

@@ -67,7 +67,7 @@ namespace Game.Tests
         [Test]
         public void ReportAuditCountsFirstDownloadBundleOnlyOnce()
         {
-            string directory = Path.Combine(Path.GetTempPath(), "AnotherDayResourceModuleAudit", Guid.NewGuid().ToString("N"));
+            string directory = Path.Combine(Path.GetTempPath(), "FirepowerLoopResourceModuleAudit", Guid.NewGuid().ToString("N"));
             string reportPath = Path.Combine(directory, "DefaultPackage_test.report");
             Directory.CreateDirectory(directory);
             try

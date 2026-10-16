@@ -28,7 +28,7 @@ namespace Game.Tests
             GameObjectPoolHelper.ClearForTests();
             ResourceLoader.SetLoaderForTests(new LocalizationTestsLoader());
             LocalizationLanguages.ResetForTests();
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayNotifyHomeUiTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopNotifyHomeUiTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             displayApplier = new FakeDisplayResolutionApplier();
             settingsStore = new FakeSettingsFileStore();

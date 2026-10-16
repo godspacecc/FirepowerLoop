@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 
 namespace ET.Server
 {
@@ -93,9 +93,9 @@ namespace ET.Server
             ArcadeTreasureRoomParameters rules, bool recordFeedback = true)
         {
             var record = actor.Record.Players.First(r => r.PlayerId == playerId);
-            if (reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb || reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Dash)
+            if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb || reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Dash)
             {
-                bool bomb = reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb;
+                bool bomb = reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb;
                 var drop = ServerConfig.Instance.Tables.TbArcadeDrop.DataList.First(r => r.Kind == (bomb ? ArcadeDropKind.Bomb : ArcadeDropKind.Dash));
                 int held = bomb ? record.Bombs : record.Dashes;
                 if (drop.MaxOwned <= 0 || held >= drop.MaxOwned) return false;

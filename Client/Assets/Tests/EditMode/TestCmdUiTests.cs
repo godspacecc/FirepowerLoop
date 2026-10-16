@@ -50,7 +50,7 @@ namespace Game.Tests
                 path == "Prefabs/UI/Notify/Float"
                     ? floatPrefab
                     : AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Game/{path}.prefab"));
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayTestCmdUiTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopTestCmdUiTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             Game.Interface.GetSystem<SettingsSystem>().SetClockForTests(settingsClock);
         }

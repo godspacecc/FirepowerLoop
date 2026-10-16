@@ -38,7 +38,7 @@ namespace Game.Tests
         {
             ResetArchitecture();
             UIHelper.ResetForTests();
-            tempRoot = Path.Combine(Path.GetTempPath(), "AnotherDayStartFinalTests", Guid.NewGuid().ToString("N"));
+            tempRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopStartFinalTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(tempRoot);
             checker = new FakeChecker();
             probe = new FakeRemoteVersionProbe();

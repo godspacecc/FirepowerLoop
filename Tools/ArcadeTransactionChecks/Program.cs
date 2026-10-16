@@ -17,7 +17,7 @@ object Call(string method, params object[] values) => typeof(OnlineArcadeRunMana
     .GetMethod(method, BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, values)!;
 void Check(string name, Action<OnlineArcadeRunManagerComponent, OnlineArcadeRunActor> body)
 {
-    string root = Path.Combine(Path.GetTempPath(), "AnotherDayArcadeTransactionChecks", Guid.NewGuid().ToString("N"));
+    string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopArcadeTransactionChecks", Guid.NewGuid().ToString("N"));
     Directory.CreateDirectory(root);
     try
     {

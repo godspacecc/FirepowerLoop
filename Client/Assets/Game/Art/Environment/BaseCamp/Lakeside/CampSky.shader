@@ -1,4 +1,4 @@
-Shader "AnotherDay/BaseCampSky"
+Shader "FirepowerLoop/BaseCampSky"
 {
     Properties
     {

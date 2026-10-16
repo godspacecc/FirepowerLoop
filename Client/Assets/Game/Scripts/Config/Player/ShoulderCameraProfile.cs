@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>越肩构图及第一人称试用镜头参数；不管理输入、战斗或地图默认模式。</summary>
-    [CreateAssetMenu(fileName = "ShoulderCameraProfile", menuName = "Another Day/Shoulder Camera Profile")]
+    [CreateAssetMenu(fileName = "ShoulderCameraProfile", menuName = "FirepowerLoop/Shoulder Camera Profile")]
     public sealed class ShoulderCameraProfile : ScriptableObject
     {
         public float TargetHeight = 1.6f;

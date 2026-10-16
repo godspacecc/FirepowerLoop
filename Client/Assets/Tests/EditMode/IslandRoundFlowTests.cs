@@ -6,7 +6,7 @@ using Luban;
 using NUnit.Framework;
 using QFramework;
 using UnityEngine;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 
 namespace Game.Tests
 {

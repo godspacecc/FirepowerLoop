@@ -49,7 +49,7 @@ namespace Game
         }
 
         /// <summary>领取成功后的本场个人值只更新现场，不写安全节点；失败候选不得调用。</summary>
-        internal void SetTransientTreasureScore(AnotherDay.Arcade.ArcadeTreasureScoreState value)
+        internal void SetTransientTreasureScore(FirepowerLoop.Arcade.ArcadeTreasureScoreState value)
         {
             if (current == null) return;
             current.Score = value.Score; current.ScoreMultiplier = value.Multiplier;

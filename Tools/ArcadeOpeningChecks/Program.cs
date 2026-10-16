@@ -1,7 +1,7 @@
 using System.Reflection;
 using ET;
 using ET.Server;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 
 // 独立进程只检查正式服务端权威路径；不监听网络，不读写玩家存档。
 var repository = Path.GetFullPath(args.Length > 0 ? args[0] : ".");

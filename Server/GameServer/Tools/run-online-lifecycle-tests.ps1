@@ -278,7 +278,7 @@ try {
     $RepoRoot = (Resolve-Path (Join-Path $PSScriptRoot "..\..\..")).Path
     $BinDir = (Resolve-Path (Join-Path $PSScriptRoot "..\Bin")).Path
     $stamp = Get-Date -Format "yyyyMMdd-HHmmss"
-    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) "AnotherDayOnlineLifecycle-$stamp"
+    $workDir = Join-Path ([System.IO.Path]::GetTempPath()) "FirepowerLoopOnlineLifecycle-$stamp"
     New-Item -ItemType Directory -Force -Path $workDir | Out-Null
     $script:CreatedDirectories.Add($workDir) | Out-Null
 

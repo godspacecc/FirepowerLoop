@@ -269,12 +269,12 @@ namespace Game.Tests
     }
 }
 
-namespace AnotherDay.Tests.EditMode.Flow
+namespace FirepowerLoop.Tests.EditMode.Flow
 {
     public sealed class EditModeSceneIsolationNamespaceCoverageTests
     {
         [Test]
-        public void AnotherDayNamespaceUsesActiveUnsavedIsolationScene()
+        public void FirepowerLoopNamespaceUsesActiveUnsavedIsolationScene()
         {
             var active = EditModeSceneIsolation.RequireActiveTestScene();
 

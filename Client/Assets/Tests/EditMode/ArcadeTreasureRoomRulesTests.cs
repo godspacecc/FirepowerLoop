@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using Luban;
 using NUnit.Framework;
 using UnityEngine;
@@ -35,8 +35,8 @@ namespace Game.Tests
             var p = Rules();
             Assert.That(p.ArenaConfigNumber, Is.EqualTo(1)); Assert.That(p.WaveNumber, Is.EqualTo(3));
             Assert.That(p.Duration, Is.EqualTo(60)); Assert.That(p.Rewards.Count, Is.EqualTo(18));
-            Assert.That(p.Rewards.Count(r=>r.Kind==AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar), Is.EqualTo(12));
-            Assert.That(p.Rewards.Count(r=>r.Kind==AnotherDay.Arcade.ArcadeTreasureRewardKind.Gem), Is.EqualTo(4));
+            Assert.That(p.Rewards.Count(r=>r.Kind==FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar), Is.EqualTo(12));
+            Assert.That(p.Rewards.Count(r=>r.Kind==FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem), Is.EqualTo(4));
             Assert.That(p.Rewards.Select(r=>r.Id).Distinct().Count(), Is.EqualTo(18));
         }
         [Test] public void RoomCoordinatesMustFitArenaAndPlayerRadius()
@@ -146,7 +146,7 @@ namespace Game.Tests
         [Test]
         public void SharedRoomAuthority_Exists()
         {
-            Assert.That(typeof(ArcadeCombatSystem).Assembly.GetType("AnotherDay.Arcade.ArcadeTreasureRoomState"),
+            Assert.That(typeof(ArcadeCombatSystem).Assembly.GetType("FirepowerLoop.Arcade.ArcadeTreasureRoomState"),
                 Is.Not.Null, "尚未实现共享区域权威状态");
         }
 

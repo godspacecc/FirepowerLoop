@@ -28,7 +28,7 @@ namespace Game
         private OnlineArcadeRunClientSnapshot latest = OnlineArcadeRunClientSnapshot.Empty();
         private Vector2 predictedLocalPosition;
         private bool hasPrediction;
-        private AnotherDay.Arcade.ArcadeIslandRegion predictionIsland;
+        private FirepowerLoop.Arcade.ArcadeIslandRegion predictionIsland;
         private int activeBattleArenaNumber;
         /// <summary>区域代次与最近已应用的权威帧；切换会清空预测，旧帧不再投影。</summary>
         private bool presentedInTreasureRoom;
@@ -134,7 +134,7 @@ namespace Game
             var moveSpeed = CalculatePredictedMoveSpeed(catalog.Rule.PlayerMoveSpeed, self.DashSeconds > 0f,
                 catalog.Upgrades, FindLocalRunPlayer(selfId).UpgradeStacks);
             var island = !self.InTreasureRoom && !latest.Battle.IsChallenge && activeArena?.Opening.Enabled == true
-                ? predictionIsland ??= new AnotherDay.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight) : null;
+                ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight) : null;
             if (island != null && island.IsShallow(predictedLocalPosition.x, predictedLocalPosition.y))
                 moveSpeed *= activeArena.Opening.WaterSpeedRatio;
             predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, input.Move, moveSpeed,
@@ -181,10 +181,10 @@ namespace Game
             view.SetTreasureRoom(roomRules, inRoom, battle.TreasureDiscovered, battle.TreasureOpen, battle.TreasureRewardIds);
             view.SetTreasureRewardOpacity(ArcadeCombatSystem.GroundDropOpacity(battle.TreasureRewardSeconds));
             view.SetOpening(inRoom || battle.IsChallenge ? default : activeArena.Opening,
-                AnotherDay.Arcade.ArcadeOpeningRules.CampfireActive(activeArena.Opening, battle.WaveNumber - 1,
+                FirepowerLoop.Arcade.ArcadeOpeningRules.CampfireActive(activeArena.Opening, battle.WaveNumber - 1,
                     battle.IsChallenge || battle.IsFinalBoss, battle.TotalInWave <= battle.SpawnedInWave && battle.Enemies.Count == 0,
                     battle.AwaitingExit, inRoom, !localPlayer.Alive || localPlayer.RespawnSeconds > 0));
-            view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<AnotherDay.Arcade.ArcadeHazardParameters>() :
+            view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() :
                 activeArena.Hazards, battle.HazardElapsedSeconds);
             view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? activeArena.NextArenaNumbers : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss);
@@ -399,7 +399,7 @@ namespace Game
         /// </summary>
         internal static Vector2 PredictLocalPosition(Vector2 current, Vector2 move, float speed, float deltaTime,
             float radius, float arenaHalfWidth, float arenaHalfHeight,
-            IReadOnlyList<ArcadeObstacleDefinition> obstacles, AnotherDay.Arcade.ArcadeIslandRegion island = null)
+            IReadOnlyList<ArcadeObstacleDefinition> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island = null)
         {
             if (!IsFinite(current) || !IsFinite(move) || !IsPositiveFinite(speed) ||
                 !IsPositiveFinite(deltaTime)) return current;
@@ -437,7 +437,7 @@ namespace Game
         private static bool IsPositiveFinite(float value) =>
             value > 0f && !float.IsNaN(value) && !float.IsInfinity(value);
 
-        private AnotherDay.Arcade.ArcadeTreasureRoomParameters TreasureParameters() =>
+        private FirepowerLoop.Arcade.ArcadeTreasureRoomParameters TreasureParameters() =>
             catalog?.TreasureRooms.FirstOrDefault(r => r.ArenaConfigNumber == activeArena?.ArenaNumber);
 
         private void EndPresentation()

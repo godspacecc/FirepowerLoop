@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>脚步纯表现参数和逻辑音效名；不保存速度、冲刺、装备或存档权威。</summary>
-    [CreateAssetMenu(menuName = "AnotherDay/Footstep Profile")]
+    [CreateAssetMenu(menuName = "FirepowerLoop/Footstep Profile")]
     public sealed class FootstepProfile : ScriptableObject
     {
         // 步距与纠正阈值单位米；快步阈值单位米/秒；间隔和开始延迟单位秒。

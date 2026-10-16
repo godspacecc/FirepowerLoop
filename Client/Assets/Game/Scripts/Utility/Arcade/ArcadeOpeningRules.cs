@@ -5,7 +5,7 @@ using ArenaConfig = ET.ArcadeArenaConfig;
 using ArenaConfig = global::ArcadeArenaConfig;
 #endif
 
-namespace AnotherDay.Arcade
+namespace FirepowerLoop.Arcade
 {
     /// <summary>岛岸参数的双端不可变合同；源于 Luban，不拥有玩家、伤害计时或 Unity 表现。</summary>
     public readonly struct ArcadeOpeningParameters

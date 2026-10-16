@@ -1,5 +1,5 @@
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using QFramework;
 using UnityEngine;
 
@@ -40,7 +40,7 @@ namespace Game
             var run = model.Current;
             var rules = catalog.TreasureRooms.FirstOrDefault();
             if (run == null || rules == null) return false;
-            var reward = new ArcadeTreasureRewardParameters(0, AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, points, points, 1);
+            var reward = new ArcadeTreasureRewardParameters(0, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, points, points, 1);
             if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier,
                 run.MultiplierProgress, run.RemainingLives), reward, rules, out var next)) return false;
             model.SetTransientTreasureScore(next);

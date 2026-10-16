@@ -1,4 +1,4 @@
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 // 范围：ArcadeIslandGeometryChecks，仅 4 项几何检查，逐项输出通过结果。
 void Require(bool ok,string message){if(!ok)throw new InvalidOperationException(message);}
 var constructor=typeof(ArcadeIslandRegion).GetConstructor(new[]{typeof(float),typeof(float),typeof(int)});

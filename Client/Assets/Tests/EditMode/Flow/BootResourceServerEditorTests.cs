@@ -24,7 +24,7 @@ namespace Game.Tests.Flow
         [SetUp]
         public void SetUp()
         {
-            _root = Path.Combine(Path.GetTempPath(), "AnotherDayBootServerTests", Guid.NewGuid().ToString("N"));
+            _root = Path.Combine(Path.GetTempPath(), "FirepowerLoopBootServerTests", Guid.NewGuid().ToString("N"));
             _type = typeof(Launcher).Assembly.GetType("Boot.UI.BootResourceServerView");
             Assert.That(_type, Is.Not.Null, "Boot 需要无需热更即可打开的地址编辑界面");
             _type.GetProperty("TestPersistenceRoot").SetValue(null, _root);

@@ -579,7 +579,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void LocalizationEditorTypesMenusAndPaths_UseAnotherDayContracts()
+        public void LocalizationEditorTypesMenusAndPaths_UseFirepowerLoopContracts()
         {
             Assert.That(System.Type.GetType("Game.LocalizationJsonEditorUtility, Assembly-CSharp-Editor"), Is.Not.Null);
             Assert.That(System.Type.GetType("Game.LocalizationJsonEditorWindow, Assembly-CSharp-Editor"), Is.Not.Null);

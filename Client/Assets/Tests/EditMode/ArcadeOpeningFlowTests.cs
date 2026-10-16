@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using Luban;
 using NUnit.Framework;
 using QFramework;

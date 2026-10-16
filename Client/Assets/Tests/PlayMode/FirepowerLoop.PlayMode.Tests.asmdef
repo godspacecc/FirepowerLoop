@@ -1,26 +1,17 @@
 {
-    "name": "AnotherDay.EditMode.Tests",
+    "name": "FirepowerLoop.PlayMode.Tests",
     "rootNamespace": "Game.Tests",
     "references": [
         "Boot",
-        "YooAsset",
         "Game",
-        "UniTask",
-        "Unity.InputSystem",
         "Unity.TextMeshPro",
-        "MemoryPack",
-        "Unity.Mathematics",
-        "Cinemachine"
+        "YooAsset"
     ],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": true,
-    "precompiledReferences": [
-        "Newtonsoft.Json.dll"
-    ],
+    "overrideReferences": false,
+    "precompiledReferences": [],
     "autoReferenced": false,
     "defineConstraints": [],
     "versionDefines": [],

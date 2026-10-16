@@ -52,7 +52,7 @@ namespace Game.Tests
         [Test]
         public void PlayerSavedNetworkEndpointOverridesEmbeddedConfigAndRejectsInvalidReplacement()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayNetworkEndpoint", Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopNetworkEndpoint", Guid.NewGuid().ToString("N"));
             try
             {
                 var provider = new StreamingAssetsNetworkConfigProvider(

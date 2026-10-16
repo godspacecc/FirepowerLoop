@@ -19,7 +19,7 @@ namespace Game.Tests
         [SetUp]
         public void SetUp()
         {
-            runtimeRoot = Path.Combine(Path.GetTempPath(), "AnotherDayArcade", Guid.NewGuid().ToString("N"));
+            runtimeRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopArcade", Guid.NewGuid().ToString("N"));
             TestReset.ResetArchitecture();
             architecture = new Game();
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, architecture);
@@ -44,7 +44,7 @@ namespace Game.Tests
             Assert.That(arcade.TryStartConfiguredRun(out var initial,out var error),Is.True,error);
             Assert.That(arcade.TryContinue(out _,out error),Is.True,error);
             var model=architecture.GetModel<ArcadeRunModel>();
-            model.SetTransientLives(2);model.SetTransientTreasureScore(new AnotherDay.Arcade.ArcadeTreasureScoreState(201000,2,4,2));
+            model.SetTransientLives(2);model.SetTransientTreasureScore(new FirepowerLoop.Arcade.ArcadeTreasureScoreState(201000,2,4,2));
             var completion=new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,Score=201000,ScoreMultiplier=2,MultiplierProgress=4,
                 NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=2},EquipmentBySlot=initial.EquipmentBySlot,
                 EmergencyResources=new Dictionary<string,int>{{ArcadeRunDefaults.BombResourceId,3},{ArcadeRunDefaults.DashResourceId,4}}};

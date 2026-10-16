@@ -13,8 +13,8 @@ namespace Game.Tests
     {
         private const string TempBoxDirectory = "Assets/Game/Prefabs/UI/Home/Box/__BoxUiSpawnerTests";
         private const string TempScriptDirectory = "Assets/Game/Scripts/Controller/UI/Home/Box/__BoxUiSpawnerTests";
-        private const string PendingPrefabPathKey = "AnotherDay.EditorTools.PendingBoxUiPrefabPath";
-        private const string PendingAssemblyTypeKey = "AnotherDay.EditorTools.PendingBoxUiAssemblyType";
+        private const string PendingPrefabPathKey = "FirepowerLoop.EditorTools.PendingBoxUiPrefabPath";
+        private const string PendingAssemblyTypeKey = "FirepowerLoop.EditorTools.PendingBoxUiAssemblyType";
 
         [TearDown]
         public void TearDown()

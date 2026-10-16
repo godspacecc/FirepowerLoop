@@ -8,7 +8,7 @@ using NUnit.Framework;
 using QFramework;
 using UnityEngine;
 
-namespace AnotherDay.Tests
+namespace FirepowerLoop.Tests
 {
     /// <summary>验证真实玩家保护表现的状态同步和回收，不创建第二套保护计时。</summary>
     public sealed class ArcadeProtectionTests

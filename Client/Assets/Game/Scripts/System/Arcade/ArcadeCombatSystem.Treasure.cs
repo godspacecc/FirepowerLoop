@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using AnotherDay.Arcade;
+using FirepowerLoop.Arcade;
 using QFramework;
 using UnityEngine;
 
@@ -91,10 +91,10 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var run = model.Current;
             if (run == null || model.Phase != ArcadeRunPhase.Arena) return false;
-            if (reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb ||
-                reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Dash)
+            if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb ||
+                reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Dash)
             {
-                bool bomb = reward.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.Bomb;
+                bool bomb = reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb;
                 var drop = catalog.Drops.FirstOrDefault(r => r.Kind == (bomb ? ArcadeDropKind.Bomb : ArcadeDropKind.Dash));
                 int held = bomb ? runtime.Bombs : runtime.Dashes;
                 if (drop.MaxOwned <= 0 || held >= drop.MaxOwned) return false;
