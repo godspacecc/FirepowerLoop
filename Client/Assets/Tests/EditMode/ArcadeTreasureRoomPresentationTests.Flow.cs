@@ -33,8 +33,9 @@ namespace Game.Tests
             var players = new[] { new OnlineArcadeBattlePlayerSnapshot(1, inside ? 0 : -12, inside ? -4 : -15, 0, 1, 100, 100, true, false, 0, inTreasureRoom: inside), new OnlineArcadeBattlePlayerSnapshot(2, 2, 2, 0, 1, 100, 100, true, false, 0, inTreasureRoom: teammateInside) };
             return new OnlineArcadeBattleSnapshot(1, 4, 4, 1, 1, 2, revision, 1000, players,
                 new[] { new OnlineArcadeEnemySnapshot(10, "enemy.arcade.basic", 2, 3, 10, 10, 2, 4) }, new[] { new OnlineArcadeProjectileSnapshot(11, 0, 1, 1, 1, 1) },
-                new[] { new OnlineArcadeDropSnapshot(12, catalog.Drops[0].Id, 1, 1) }, arenaConfigNumber: 1,
-                treasureRoomId: "101:1:1", treasureDiscovered: true, treasureOpen: true, treasureSeconds: 40, treasureRewardIds: rewards);
+                new[] { new OnlineArcadeDropSnapshot(12, catalog.Drops[0].Id, 1, 1, remainingSeconds: 1.5f) }, arenaConfigNumber: 1,
+                treasureRoomId: "101:1:1", treasureDiscovered: true, treasureOpen: true, treasureSeconds: 40, treasureRewardIds: rewards,
+                treasureRewardSeconds: 2f);
         }
         private void Apply(OnlineArcadeBattleSnapshot battle)
         {
@@ -44,6 +45,15 @@ namespace Game.Tests
         }
         [Test] public void InsideHidesArenaEntitiesAndOutsideTeammate()
         { Apply(Battle(1, true, false, 1, 2)); Assert.That(view.Enemies, Is.Empty); Assert.That(view.Projectiles, Is.Empty); Assert.That(view.Drops, Is.Empty); Assert.That(view.RemotePlayers, Is.Empty); Assert.That(view.RoomRewards, Is.EqualTo(new[] { 1, 2 })); }
+        [Test] public void GroundOpacityUsesAuthorityAndRepeatedSnapshotDoesNotResetIt()
+        {
+            Apply(Battle(1, false));
+            Assert.That(view.DropOpacities.Values.Single(), Is.EqualTo(.5f).Within(.001f));
+            Apply(Battle(1, false));
+            Assert.That(view.DropOpacities.Values.Single(), Is.EqualTo(.5f).Within(.001f));
+            Apply(Battle(2, true, false, 1));
+            Assert.That(view.RewardOpacity, Is.EqualTo(2f / 3f).Within(.001f));
+        }
         [Test] public void ArenaHidesRoomTeammate()
         { Apply(Battle(1, false, true, 1, 2)); Assert.That(view.Enemies.Count, Is.EqualTo(1)); Assert.That(view.RemotePlayers, Is.Empty); Assert.That(view.InRoom, Is.False); }
         [Test] public void TeammateVisibleThenReturnRebuildsArena()
@@ -95,6 +105,10 @@ namespace Game.Tests
         { foreach (var lang in new[] { "zh-CN", "en-US" }) { var text = File.ReadAllText(Path.Combine(Application.dataPath, "Game/Config/Localization", lang + ".json")); Assert.That(text, Does.Contain("ui.arcade.hud.score")); Assert.That(text, Does.Contain("ui.arcade.hud.treasure")); } }
         private sealed class TestView : IArcadeCombatViewPort
         {
+            public readonly Dictionary<int, float> DropOpacities = new();
+            public float RewardOpacity;
+            public void SetDropOpacity(int id, float opacity) => DropOpacities[id] = opacity;
+            public void SetTreasureRewardOpacity(float opacity) => RewardOpacity = opacity;
             public readonly HashSet<int> Enemies = new(), Projectiles = new(), Drops = new(); public readonly HashSet<long> RemotePlayers = new();
             public int[] RoomRewards; public bool InRoom; public float Width; public int Begins; public Vector2 PlayerPosition;
             public bool IsActive => true;

@@ -208,12 +208,14 @@ namespace Game
     public readonly struct OnlineArcadeDropSnapshot
     {
         public OnlineArcadeDropSnapshot(long runtimeId, string dropConfigId, float positionX, float positionZ,
-            long collectedByPlayerId = 0, int addedAmount = 0, long scoreAdded = 0, int goldAdded = 0)
+            long collectedByPlayerId = 0, int addedAmount = 0, long scoreAdded = 0, int goldAdded = 0,
+            float remainingSeconds = 30f)
         {
             RuntimeId = runtimeId; DropConfigId = dropConfigId ?? string.Empty;
             PositionX = positionX; PositionZ = positionZ;
             CollectedByPlayerId = collectedByPlayerId; AddedAmount = addedAmount;
             ScoreAdded = scoreAdded; GoldAdded = goldAdded;
+            RemainingSeconds = remainingSeconds;
         }
         public long RuntimeId { get; }
         public string DropConfigId { get; }
@@ -226,6 +228,8 @@ namespace Game
         /// <summary>权威领取事务的实际积分与金币增量，不由总库存差值推断。</summary>
         public long ScoreAdded { get; }
         public int GoldAdded { get; }
+        /// <summary>服务器权威剩余地面寿命；重复快照或重连不能刷新为完整30秒。</summary>
+        public float RemainingSeconds { get; }
     }
 
     /// <summary>服务器确认的原始成员连接状态与截止时间；客户端只用于提示和按钮可用性。</summary>
@@ -257,7 +261,8 @@ namespace Game
             int arenaConfigNumber = 0, bool isFinalBoss = false, bool awaitingExit = false,
             string treasureRoomId = null, bool treasureDiscovered = false, bool treasureOpen = false,
             bool treasureExpired = false, float treasureSeconds = 0, IReadOnlyList<int> treasureRewardIds = null,
-            IReadOnlyList<int> crateIds = null, IReadOnlyList<OnlineArcadeDropSnapshot> supplyPickups = null)
+            IReadOnlyList<int> crateIds = null, IReadOnlyList<OnlineArcadeDropSnapshot> supplyPickups = null,
+            float treasureRewardSeconds = 30f)
         {
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
             HazardElapsedSeconds = hazardElapsedSeconds;
@@ -266,6 +271,7 @@ namespace Game
             AwaitingExit = awaitingExit;
             TreasureRoomId = treasureRoomId ?? string.Empty; TreasureDiscovered = treasureDiscovered;
             TreasureOpen = treasureOpen; TreasureExpired = treasureExpired; TreasureSeconds = treasureSeconds;
+            TreasureRewardSeconds = treasureRewardSeconds;
             TreasureRewardIds = Array.AsReadOnly(Copy(treasureRewardIds));
             CrateIds = Array.AsReadOnly(Copy(crateIds));
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
@@ -289,6 +295,8 @@ namespace Game
         public bool TreasureOpen { get; }
         public bool TreasureExpired { get; }
         public float TreasureSeconds { get; }
+        /// <summary>宝藏房地面奖励的权威剩余寿命，独立于房间返回时限。</summary>
+        public float TreasureRewardSeconds { get; }
         public IReadOnlyList<int> TreasureRewardIds { get; }
         public IReadOnlyList<int> CrateIds { get; }
         public int WaveCount { get; }

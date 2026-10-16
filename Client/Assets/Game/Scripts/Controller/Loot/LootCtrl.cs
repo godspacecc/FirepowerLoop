@@ -187,6 +187,13 @@ namespace Game
             return true;
         }
 
+        /// <summary>只更新实例视觉透明度，不修改拾取范围或掉落权威状态。</summary>
+        public void SetDropOpacity(int runtimeId, float opacity)
+        {
+            if (arcadeDrops.TryGetValue(runtimeId, out var view) && view != null)
+                view.SetArcadeOpacity(opacity);
+        }
+
         public void RemoveDrop(int runtimeId)
         {
             if (!arcadeDrops.TryGetValue(runtimeId, out var view))
@@ -274,6 +281,8 @@ namespace Game
             if (view == null)
                 return;
             view.SetNameVisible(false);
+            // 回池由Controller显式释放实例材质，不依赖禁用回调是否执行；View重复清理保持幂等。
+            view.ClearArcadePresentation();
             view.gameObject.SetActive(false);
             arcadeDropPool.Push(view);
         }

@@ -123,6 +123,8 @@ namespace AnotherDay.Arcade
         public bool Expired { get; private set; }
         /// <summary>秒；首次进入前保留完整时限，所有成员离开后仍继续减少。</summary>
         public double RemainingSeconds { get; private set; }
+        /// <summary>地面奖励从首次进入可见时开始存留30秒；到期只清理物资，不关闭出口。</summary>
+        public double RewardRemainingSeconds { get; private set; } = 30;
         public long[] Members => members.OrderBy(id => id).ToArray();
         public ArcadeTreasureRewardParameters[] RemainingRewards => remaining.Values.OrderBy(r => r.Id).ToArray();
         public bool Contains(long playerId) => members.Contains(playerId);
@@ -148,6 +150,8 @@ namespace AnotherDay.Arcade
             if (applying || seconds < 0 || float.IsNaN(seconds) || float.IsInfinity(seconds))
                 throw new ArgumentOutOfRangeException(nameof(seconds));
             if (!Started || Expired) return Array.Empty<long>();
+            RewardRemainingSeconds = Math.Max(0, RewardRemainingSeconds - seconds);
+            if (RewardRemainingSeconds <= 0) remaining.Clear();
             RemainingSeconds = Math.Max(0, RemainingSeconds - seconds);
             if (RemainingSeconds > 0) return Array.Empty<long>();
             Expired = true;

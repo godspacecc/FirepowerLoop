@@ -1360,6 +1360,7 @@ namespace ET.Server
             battle.LastTickAt = now;
             bool changed = battle.InputsDirty;
             battle.InputsDirty = false;
+            changed |= TickDropLifetimes(battle, deltaSeconds);
             bool hazardRespawnWaiting = battle.Players.Values.Any(player => player.RespawnSeconds > 0f);
             foreach (var player in battle.Players.Values)
             {
@@ -2246,6 +2247,21 @@ namespace ET.Server
         }
 
         /// <summary>只在可接收者中按距离、玩家 ID 决胜；满额保留，成功实例先注销再发奖。</summary>
+        /// <summary>拾取前推进已有掉落寿命，等待出口期间也生效；到期不结算任何奖励。</summary>
+        private static bool TickDropLifetimes(OnlineArcadeBattleRuntime battle, float deltaSeconds)
+        {
+            if (battle.Drops.Count == 0 || deltaSeconds <= 0f) return false;
+            battle.DropIterationIds.Clear();
+            battle.DropIterationIds.AddRange(battle.Drops.Keys);
+            foreach (long dropId in battle.DropIterationIds)
+            {
+                OnlineArcadeDropRuntime drop = battle.Drops[dropId];
+                drop.RemainingSeconds = Math.Max(0f, drop.RemainingSeconds - deltaSeconds);
+                if (drop.RemainingSeconds <= 0f) battle.Drops.Remove(dropId);
+            }
+            return true;
+        }
+
         private static bool TickDrops(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle)
         {
             if (battle.Drops.Count == 0) return false;
@@ -2923,6 +2939,7 @@ namespace ET.Server
             battle.TreasureRoomId = room?.InstanceId ?? string.Empty;
             battle.TreasureDiscovered = source.TreasureDiscovered; battle.TreasureOpen = source.TreasureCleared && room?.Expired == false;
             battle.TreasureExpired = room?.Expired ?? false; battle.TreasureSeconds = (float)(room?.RemainingSeconds ?? 0);
+            battle.TreasureRewardSeconds = (float)(room?.RewardRemainingSeconds ?? 0);
             if (room != null) battle.TreasureRewardIds.AddRange(room.RemainingRewards.Select(r => r.Id));
             foreach (OnlineArcadeBattlePlayerRuntime sourcePlayer in source.Players.Values.OrderBy(x => x.PlayerId))
             {
@@ -2993,6 +3010,7 @@ namespace ET.Server
                 drop.DropConfigId = sourceDrop.DropConfigId ?? string.Empty;
                 drop.PositionX = sourceDrop.PositionX;
                 drop.PositionZ = sourceDrop.PositionZ;
+                drop.RemainingSeconds = sourceDrop.RemainingSeconds;
                 battle.Drops.Add(drop);
             }
             return battle;
@@ -3107,6 +3125,7 @@ namespace ET.Server
             battle.TreasureRoomId = source.TreasureRoomId; battle.TreasureDiscovered = source.TreasureDiscovered;
             battle.TreasureOpen = source.TreasureOpen; battle.TreasureExpired = source.TreasureExpired;
             battle.TreasureSeconds = source.TreasureSeconds; battle.TreasureRewardIds.AddRange(source.TreasureRewardIds);
+            battle.TreasureRewardSeconds = source.TreasureRewardSeconds;
             foreach (OnlineArcadeBattlePlayerInfo sourcePlayer in source.Players)
             {
                 OnlineArcadeBattlePlayerInfo player = OnlineArcadeBattlePlayerInfo.Create();
@@ -3176,6 +3195,7 @@ namespace ET.Server
                 drop.DropConfigId = sourceDrop.DropConfigId ?? string.Empty;
                 drop.PositionX = sourceDrop.PositionX;
                 drop.PositionZ = sourceDrop.PositionZ;
+                drop.RemainingSeconds = sourceDrop.RemainingSeconds;
                 battle.Drops.Add(drop);
             }
             return battle;

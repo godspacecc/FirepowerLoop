@@ -11,6 +11,16 @@ namespace Game.Tests
     /// <summary>正式宝藏配置与共用规则验收，不启动整局或网络服务。</summary>
     public sealed class ArcadeTreasureRoomRulesTests
     {
+        [Test] public void GroundRewards_ExpireThirtySecondsAfterFirstEntryWithoutClosingRoom()
+        {
+            var room = Entered();
+            room.Advance(29.5f);
+            Assert.That(room.RemainingRewards, Is.Not.Empty);
+            room.Advance(.5f);
+            Assert.That(room.RemainingRewards, Is.Empty);
+            Assert.That(room.Expired, Is.False, "物资过期不能提前关闭房间或出口");
+            Assert.That(room.TryCollect(room.InstanceId, 1, 1, _ => true, out _), Is.False);
+        }
         private static ArcadeTreasureRoomParameters Rules() => ArcadeTreasureRoomParameters.FromConfig(
             new Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes"))))
                 .TbArcadeTreasureRoom.Get("arcade.treasure.first"));
@@ -46,7 +56,8 @@ namespace Game.Tests
             r.Advance(10); Assert.That(r.TryEnter(r.InstanceId,2,true,true,out _),Is.True);
             Assert.That(r.TryEnter(r.InstanceId,1,true,true,out _),Is.True);
             Assert.That(r.RemainingSeconds,Is.EqualTo(30));
-            Assert.That(r.RemainingRewards.Length,Is.EqualTo(18));
+            Assert.That(r.RemainingRewards,Is.Empty, "晚进入或重新进入不能重新生成已到期的地面奖励");
+            Assert.That(r.RewardRemainingSeconds,Is.Zero);
         }
         [Test] public void Timeout_ReturnsOnlyRemainingMembersOnce()
         {

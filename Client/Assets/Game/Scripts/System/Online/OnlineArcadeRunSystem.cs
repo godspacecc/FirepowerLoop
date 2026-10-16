@@ -421,7 +421,7 @@ namespace Game
             List<OnlineArcadeDropSnapshot> drops = new(source.Drops.Count);
             foreach (OnlineArcadeDropInfo drop in source.Drops)
                 drops.Add(new OnlineArcadeDropSnapshot(drop.RuntimeId, drop.DropConfigId,
-                    drop.PositionX, drop.PositionZ));
+                    drop.PositionX, drop.PositionZ, remainingSeconds: drop.RemainingSeconds));
             List<OnlineArcadeDropSnapshot> supplyPickups = new(source.SupplyPickups.Count);
             foreach (var receipt in source.SupplyPickups)
                 supplyPickups.Add(new OnlineArcadeDropSnapshot(receipt.RuntimeId, receipt.DropConfigId,
@@ -433,7 +433,7 @@ namespace Game
                 source.ChallengeId, source.ChallengeSeconds, source.HazardElapsedSeconds,
                 source.ArenaConfigNumber, source.IsFinalBoss, source.AwaitingExit, source.TreasureRoomId,
                 source.TreasureDiscovered, source.TreasureOpen, source.TreasureExpired, source.TreasureSeconds,
-                source.TreasureRewardIds, source.CrateIds, supplyPickups);
+                source.TreasureRewardIds, source.CrateIds, supplyPickups, source.TreasureRewardSeconds);
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

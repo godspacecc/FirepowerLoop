@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -66,6 +67,14 @@ namespace Game
         private GameObject activeArcadeVisual;
         private GameObject activeArcadeLootBeam;
 
+        /// <summary>模型与光柱各自持有渐隐材质管理器，统一随展示生命周期释放。</summary>
+        private ArcadeDropOpacity visualOpacity;
+        private ArcadeDropOpacity beamOpacity;
+        /// <summary>保存初始名称透明度，反复同步按基准缩放而不是累乘。</summary>
+        private float nameBaseAlpha = 1f;
+        private bool nameAlphaCaptured;
+        private float arcadeOpacity = 1f;
+
         public event Action<ResourcePickupView, Collider> Triggered;
         public event Action<ResourcePickupView, Collider> RangeExited;
         public event Action InteractionRequested;
@@ -124,6 +133,7 @@ namespace Game
         /// <summary>释放当前实例化视觉并恢复通用方块；可安全重复调用。</summary>
         public void ClearArcadePresentation()
         {
+            ReleaseOpacityMaterials();
             ActiveArcadeVisualPrefabAddress = null;
             if (activeArcadeLootBeam != null)
             {
@@ -139,6 +149,41 @@ namespace Game
             }
 
             if (defaultRenderer != null) defaultRenderer.enabled = true;
+        }
+
+        /// <summary>对模型、名称和光柱统一渐隐，不改变 Collider 或交互状态；首次渐隐时才建立实例材质缓存。</summary>
+        public void SetArcadeOpacity(float opacity)
+        {
+            opacity = float.IsNaN(opacity) ? 1f : Mathf.Clamp01(opacity);
+            if (Mathf.Approximately(arcadeOpacity, opacity)) return;
+            if (!nameAlphaCaptured && nameLabel != null)
+            {
+                nameBaseAlpha = nameLabel.alpha;
+                nameAlphaCaptured = true;
+            }
+
+            if (visualOpacity == null && opacity < 1f)
+            {
+                var modelRoot = activeArcadeVisual != null ? activeArcadeVisual : defaultRenderer != null ? defaultRenderer.gameObject : null;
+                if (modelRoot != null) visualOpacity = new ArcadeDropOpacity(modelRoot);
+                if (activeArcadeLootBeam != null) beamOpacity = new ArcadeDropOpacity(activeArcadeLootBeam);
+            }
+
+            arcadeOpacity = opacity;
+            if (nameLabel != null) nameLabel.alpha = nameBaseAlpha * opacity;
+            visualOpacity?.SetOpacity(opacity);
+            beamOpacity?.SetOpacity(opacity);
+        }
+
+        /// <summary>归还材质并恢复名称，支持重复清理和对象池复用。</summary>
+        private void ReleaseOpacityMaterials()
+        {
+            visualOpacity?.Dispose();
+            beamOpacity?.Dispose();
+            visualOpacity = null;
+            beamOpacity = null;
+            arcadeOpacity = 1f;
+            if (nameAlphaCaptured && nameLabel != null) nameLabel.alpha = nameBaseAlpha;
         }
 
         public void SetNameVisible(bool visible)
@@ -185,6 +230,8 @@ namespace Game
             SetNameVisible(false);
             ClearArcadePresentation();
         }
+
+        private void OnDestroy() => ClearArcadePresentation();
 
         private void Reset()
         {
@@ -242,6 +289,133 @@ namespace Game
             if (prefab == null) return;
             activeArcadeLootBeam = Instantiate(prefab, transform, false);
             activeArcadeLootBeam.name = "ArcadeLootBeam";
+        }
+    }
+
+    /// <summary>街机物资独占的渐隐材质生命周期；适用于普通掉落和宝藏物资，不持有规则或逐帧回调。</summary>
+    internal sealed class ArcadeDropOpacity : IDisposable
+    {
+        /// <summary>每个渲染器的原始引用与渐隐副本；由表现所有者独占并随展示回收。</summary>
+        private sealed class OpacityRenderer
+        {
+            public Renderer Renderer;
+            public Material[] Originals;
+            public Material[] Instances;
+            public Color[] BaseColors;
+            public Color[] Colors;
+        }
+
+        private static readonly int BaseColorId = Shader.PropertyToID("_BaseColor");
+        private static readonly int ColorId = Shader.PropertyToID("_Color");
+        private readonly List<OpacityRenderer> opacityRenderers = new List<OpacityRenderer>();
+        /// <summary>只扫描此物资的子层级，避免宝藏出口等邻居一起渐隐。</summary>
+        private readonly GameObject root;
+        /// <summary>即使没有渲染器也只初始化一次；释放后拒绝重新创建副本。</summary>
+        private bool initialized;
+        private bool disposed;
+        /// <summary>跳过相同透明度的重复同步，避免不必要的材质写入。</summary>
+        private float currentOpacity = 1f;
+
+        /// <summary>绑定单个物资根节点，首次渐隐前保持原始共享材质。</summary>
+        public ArcadeDropOpacity(GameObject root) => this.root = root;
+
+        /// <summary>按初始颜色缩放透明度，首次扫描后不再分配或遍历层级。</summary>
+        public void SetOpacity(float opacity)
+        {
+            opacity = float.IsNaN(opacity) ? 1f : Mathf.Clamp01(opacity);
+            if (disposed || root == null || Mathf.Approximately(currentOpacity, opacity)) return;
+            if (!initialized && opacity < 1f)
+            {
+                initialized = true;
+                foreach (var renderer in root.GetComponentsInChildren<Renderer>(true))
+                {
+                    // 名称由 View 的 TMP alpha 管理，不复制字体材质。
+                    if (renderer.GetComponent<TMP_Text>() == null) CacheOpacityRenderer(renderer);
+                }
+            }
+            currentOpacity = opacity;
+            foreach (var entry in opacityRenderers)
+            {
+                for (var i = 0; i < entry.Instances.Length; i++)
+                {
+                    var material = entry.Instances[i];
+                    if (material == null) continue;
+                    if (material.HasProperty(BaseColorId))
+                    {
+                        var color = entry.BaseColors[i];
+                        color.a *= opacity;
+                        material.SetColor(BaseColorId, color);
+                    }
+                    if (material.HasProperty(ColorId))
+                    {
+                        var color = entry.Colors[i];
+                        color.a *= opacity;
+                        material.SetColor(ColorId, color);
+                    }
+                }
+            }
+        }
+
+        /// <summary>复制完整材质以保留贴图、色彩与粒子混合方式，绝不修改共享资源。</summary>
+        private void CacheOpacityRenderer(Renderer renderer)
+        {
+            var originals = renderer.sharedMaterials;
+            var entry = new OpacityRenderer
+            {
+                Renderer = renderer,
+                Originals = originals,
+                Instances = new Material[originals.Length],
+                BaseColors = new Color[originals.Length],
+                Colors = new Color[originals.Length]
+            };
+            for (var i = 0; i < originals.Length; i++)
+            {
+                var source = originals[i];
+                if (source == null) continue;
+                var material = new Material(source) { name = source.name + " (ArcadeDropOpacity)", hideFlags = HideFlags.DontSave };
+                entry.Instances[i] = material;
+                if (material.HasProperty(BaseColorId)) entry.BaseColors[i] = material.GetColor(BaseColorId);
+                if (material.HasProperty(ColorId)) entry.Colors[i] = material.GetColor(ColorId);
+                // 正式模型为 URP Lit 不透明材质；光柱已使用 SrcAlpha/One 加法，必须保留其现有混合。
+                if (material.HasProperty("_Surface") && material.GetFloat("_Surface") < 0.5f)
+                {
+                    material.SetFloat("_Surface", 1f);
+                    material.SetFloat("_Blend", 0f);
+                    material.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                    material.SetFloat("_DstBlend", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    if (material.HasProperty("_SrcBlendAlpha")) material.SetFloat("_SrcBlendAlpha", (float)UnityEngine.Rendering.BlendMode.One);
+                    if (material.HasProperty("_DstBlendAlpha")) material.SetFloat("_DstBlendAlpha", (float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    material.SetFloat("_ZWrite", 0f);
+                    if (material.HasProperty("_AlphaClip")) material.SetFloat("_AlphaClip", 0f);
+                    material.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                    material.DisableKeyword("_ALPHATEST_ON");
+                    material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+                    material.DisableKeyword("_ALPHAMODULATE_ON");
+                    material.SetOverrideTag("RenderType", "Transparent");
+                    material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+                    material.SetShaderPassEnabled("ShadowCaster", false);
+                    material.SetShaderPassEnabled("DepthOnly", false);
+                    material.SetShaderPassEnabled("DepthNormals", false);
+                }
+            }
+            renderer.sharedMaterials = entry.Instances;
+            opacityRenderers.Add(entry);
+        }
+
+        /// <summary>先归还原始引用再销毁独占副本，支持 Clear、禁用、销毁及对象池复用。</summary>
+        public void Dispose()
+        {
+            foreach (var entry in opacityRenderers)
+            {
+                if (entry.Renderer != null) entry.Renderer.sharedMaterials = entry.Originals;
+                foreach (var material in entry.Instances)
+                {
+                    if (material == null) continue;
+                    if (Application.isPlaying) UnityEngine.Object.Destroy(material); else UnityEngine.Object.DestroyImmediate(material);
+                }
+            }
+            opacityRenderers.Clear();
+            disposed = true;
         }
     }
 }

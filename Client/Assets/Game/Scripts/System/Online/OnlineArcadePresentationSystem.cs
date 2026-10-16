@@ -179,6 +179,7 @@ namespace Game
             }
             else if (battle.IsChallenge || battle.IsFinalBoss) StageNotices.Clear();
             view.SetTreasureRoom(roomRules, inRoom, battle.TreasureDiscovered, battle.TreasureOpen, battle.TreasureRewardIds);
+            view.SetTreasureRewardOpacity(ArcadeCombatSystem.GroundDropOpacity(battle.TreasureRewardSeconds));
             view.SetOpening(inRoom || battle.IsChallenge ? default : activeArena.Opening,
                 AnotherDay.Arcade.ArcadeOpeningRules.CampfireActive(activeArena.Opening, battle.WaveNumber - 1,
                     battle.IsChallenge || battle.IsFinalBoss, battle.TotalInWave <= battle.SpawnedInWave && battle.Enemies.Count == 0,
@@ -344,6 +345,7 @@ namespace Game
                 if (string.IsNullOrEmpty(definition.Id)) continue;
                 seenIds.Add(value.RuntimeId);
                 view.SetDrop(MapId(dropIds, value.RuntimeId), definition, new Vector2(value.PositionX, value.PositionZ));
+                view.SetDropOpacity(MapId(dropIds, value.RuntimeId), ArcadeCombatSystem.GroundDropOpacity(value.RemainingSeconds));
             }
             RemoveMissing(dropIds, seenIds, view.RemoveDrop);
         }

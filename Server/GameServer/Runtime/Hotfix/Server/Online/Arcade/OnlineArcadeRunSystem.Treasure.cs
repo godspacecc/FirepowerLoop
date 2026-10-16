@@ -26,9 +26,12 @@ namespace ET.Server
             if (room == null) return changed;
             var p = room.Parameters;
             double before = room.RemainingSeconds;
+            double rewardBefore = room.RewardRemainingSeconds;
+            int rewardCountBefore = room.RemainingRewards.Length;
             foreach (long id in room.Advance(seconds))
                 if (battle.Players.TryGetValue(id, out var member)) ReturnFromTreasure(member, p);
             changed |= before != room.RemainingSeconds;
+            changed |= rewardBefore != room.RewardRemainingSeconds || rewardCountBefore != room.RemainingRewards.Length;
             if (battle.TreasureCompleted) return changed;
             if (room.Expired)
             {

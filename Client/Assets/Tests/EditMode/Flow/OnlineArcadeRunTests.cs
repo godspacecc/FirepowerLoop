@@ -179,6 +179,8 @@ namespace Game.Tests
             Assert.That(harness.System.Snapshot.Battle.Projectiles[0].OwnerPlayerId, Is.EqualTo(10));
             Assert.That(harness.System.Snapshot.Battle.Drops.Count, Is.EqualTo(1));
             Assert.That(harness.System.Snapshot.Battle.Drops[0].DropConfigId, Is.EqualTo("arcade.drop.gold.small"));
+            Assert.That(harness.System.Snapshot.Battle.Drops[0].RemainingSeconds, Is.EqualTo(1.5f));
+            Assert.That(harness.System.Snapshot.Battle.TreasureRewardSeconds, Is.EqualTo(2f));
             Assert.That(harness.System.Snapshot.Battle.Players[0].Invulnerable, Is.True);
             Assert.That(harness.System.Snapshot.Battle.Players[0].RespawnSeconds, Is.EqualTo(.75f));
             Assert.That(harness.System.Snapshot.Battle.Players[0].TemporaryWeaponId, Is.EqualTo("arcade.weapon.rapid"));
@@ -524,6 +526,8 @@ namespace Game.Tests
                 projectile.VelocityX = 12f; projectile.VelocityZ = 0f;
                 battle.Projectiles.Add(projectile);
                 OnlineArcadeDropInfo drop = OnlineArcadeDropInfo.Create();
+                drop.RemainingSeconds = 1.5f;
+                battle.TreasureRewardSeconds = 2f;
                 drop.RuntimeId = 200; drop.DropConfigId = "arcade.drop.gold.small";
                 drop.PositionX = -1f; drop.PositionZ = 3f;
                 battle.Drops.Add(drop);

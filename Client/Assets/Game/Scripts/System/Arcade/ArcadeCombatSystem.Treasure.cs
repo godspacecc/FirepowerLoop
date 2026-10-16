@@ -147,6 +147,7 @@ namespace Game
             view.SetTreasureRoom(room?.Parameters, runtime.InTreasureRoom, runtime.TreasureDiscovered && !completedIslandTreasure,
                 runtime.TreasureCleared && !completedIslandTreasure && room?.Expired == false,
                 room?.RemainingRewards.Select(r => r.Id).ToArray() ?? Array.Empty<int>());
+            view.SetTreasureRewardOpacity(GroundDropOpacity((float)(room?.RewardRemainingSeconds ?? 30)));
         }
     }
 }

@@ -205,6 +205,31 @@ namespace Game.Tests
         }
 
         /// <summary>提供真实模板与本地语言表，隔离展示测试对全局架构及资源加载器的影响。</summary>
+        [Test]
+        public void TreasureGroundRewards_FadeWithoutFadingReturnExitAndReleaseMaterials()
+        {
+            WithExitView(1, true, (view, root) =>
+            {
+                var room = Catalog().TreasureRooms.First();
+                var reward = room.Rewards.First(r => r.Kind == AnotherDay.Arcade.ArcadeTreasureRewardKind.GoldBar);
+                view.SetTreasureRoom(room, true, true, true, new[] { reward.Id });
+                var model = root.transform.Find("TreasureReward_" + reward.Id).GetComponentInChildren<Renderer>();
+                var exit = root.transform.Find("TreasureReturn").GetComponentInChildren<Renderer>();
+                var original = model.sharedMaterial;
+                var exitMaterial = exit.sharedMaterial;
+                var alpha = original.GetColor("_BaseColor").a;
+                view.SetTreasureRewardOpacity(.5f);
+                var faded = model.sharedMaterial;
+                Assert.That(faded, Is.Not.SameAs(original));
+                Assert.That(faded.GetColor("_BaseColor").a, Is.EqualTo(alpha * .5f).Within(.001f));
+                Assert.That(exit.sharedMaterial, Is.SameAs(exitMaterial));
+                Assert.That(original.GetColor("_BaseColor").a, Is.EqualTo(alpha));
+                view.End();
+                Assert.That(faded == null, Is.True);
+            });
+        }
+
+        /// <summary>提供真实模板与本地语言表，隔离展示测试对全局架构及资源加载器的影响。</summary>
         private static void WithExitView(int arenaNumber, bool templatesReady,
             Action<ArcadeCombatViewController, GameObject> action)
         {

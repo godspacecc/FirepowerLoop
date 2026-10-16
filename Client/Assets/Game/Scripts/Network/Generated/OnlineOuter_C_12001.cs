@@ -1753,6 +1753,12 @@ namespace ET
         [MemoryPackOrder(7)]
         public int GoldAdded { get; set; }
 
+        /// <summary>
+        /// 普通可见掉落的剩余寿命；成功领取收据不使用此值。
+        /// </summary>
+        [MemoryPackOrder(8)]
+        public float RemainingSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1768,6 +1774,7 @@ namespace ET
             this.AddedAmount = default;
             this.ScoreAdded = default;
             this.GoldAdded = default;
+            this.RemainingSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1878,6 +1885,12 @@ namespace ET
         [MemoryPackOrder(26)]
         public List<OnlineArcadeDropInfo> SupplyPickups { get; set; } = new();
 
+        /// <summary>
+        /// 宝藏房预置奖励剩余寿命，与房间出口时钟独立。
+        /// </summary>
+        [MemoryPackOrder(27)]
+        public float TreasureRewardSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1912,6 +1925,7 @@ namespace ET
             this.TreasureRewardIds.Clear();
             this.CrateIds.Clear();
             this.SupplyPickups.Clear();
+            this.TreasureRewardSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }

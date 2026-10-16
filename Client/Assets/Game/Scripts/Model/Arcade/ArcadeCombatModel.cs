@@ -120,12 +120,15 @@ namespace Game
         public int Id;
         public ArcadeDropDefinition Definition;
         public Vector2 Position;
+        /// <summary>地面存留秒数；所有来源统一30秒，暂停冻结，归零即回收。</summary>
+        public float RemainingSeconds = 30f;
 
         public void Reset()
         {
             Id = 0;
             Definition = default;
             Position = default;
+            RemainingSeconds = 30f;
         }
     }
 

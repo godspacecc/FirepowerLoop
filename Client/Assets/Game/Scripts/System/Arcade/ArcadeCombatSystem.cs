@@ -561,6 +561,7 @@ namespace Game
 
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            TickDropLifetimes(runtime, deltaTime);
             if (runtime.FirstPersonRemaining > 0)
             {
                 if (runtime.FirstPersonRemaining <= deltaTime ||
@@ -962,6 +963,24 @@ namespace Game
             TryGetPowerup(runtime, global::ArcadePowerupBehavior.Clock, out var clock)
                 ? Mathf.Max(0f, clock.Definition.Magnitude)
                 : 1f;
+
+        /// <summary>地面物资独立于拾取资格计时；过期先注销，避免同帧拾取补发或满额物资永久占预算。</summary>
+        private void TickDropLifetimes(ArcadeCombatRuntime runtime, float seconds)
+        {
+            CopyKeys(runtime.Drops, dropIterationIds);
+            foreach (var id in dropIterationIds)
+            {
+                var drop = runtime.Drops[id];
+                drop.RemainingSeconds = Mathf.Max(0f, drop.RemainingSeconds - seconds);
+                if (drop.RemainingSeconds > 0f) continue;
+                runtime.Drops.Remove(id);
+                view?.RemoveDrop(id);
+                runtimePool.Return(drop);
+            }
+        }
+
+        /// <summary>最后3秒按权威剩余寿命线性渐隐，表现本身不决定拾取或过期。</summary>
+        internal static float GroundDropOpacity(float remainingSeconds) => Mathf.Clamp01(remainingSeconds / 3f);
 
         /// <summary>逐件裁决范围内掉落；满额只拒绝对应补给，成功实例先注销再发奖和反馈。</summary>
         private void TickDrops(ArcadeCombatRuntime runtime)
@@ -1750,7 +1769,10 @@ namespace Game
                 view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
                     projectile.ProjectileVisualResourceName, projectile.FromPlayerWeapon);
             foreach (var drop in runtime.Drops.Values)
+            {
                 view.SetDrop(drop.Id, drop.Definition, drop.Position);
+                view.SetDropOpacity(drop.Id, GroundDropOpacity(drop.RemainingSeconds));
+            }
             view.BeginEffectSync();
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
                 view.SetPowerup(powerup.Definition,

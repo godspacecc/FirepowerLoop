@@ -442,6 +442,8 @@ message OnlineArcadeDropInfo
 	// 已成功应用的积分与金币变化，彼此独立；零值不产生提示。
 	int64 ScoreAdded = 7;
 	int32 GoldAdded = 8;
+	// 普通可见掉落的剩余寿命；成功领取收据不使用此值。
+	float RemainingSeconds = 9;
 }
 
 // Opcode 12084
@@ -479,6 +481,8 @@ message OnlineArcadeBattleInfo
 	repeated int32 CrateIds = 26;
 	// 本场成功补给记录；客户端按 RuntimeId 去重，仅反馈、不发奖。
 	repeated OnlineArcadeDropInfo SupplyPickups = 27;
+	// 宝藏房预置奖励剩余寿命，与房间出口时钟独立。
+	float TreasureRewardSeconds = 28;
 }
 
 // Opcode 12085

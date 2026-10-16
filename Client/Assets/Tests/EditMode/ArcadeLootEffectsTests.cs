@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Reflection;
 using Game;
 using NUnit.Framework;
 using UnityEditor;
@@ -9,6 +10,101 @@ namespace AnotherDay.Tests
     public sealed class ArcadeLootEffectsTests
     {
         private const string Folder = "Assets/Game/Prefabs/SceneObjects/";
+
+        [Test]
+        public void DropOpacityFadesOwnedTransparentModelNameAndBeamWithoutChangingAssets()
+        {
+            var view = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ResourcePickupView>(Folder + "TestResourcePickup.prefab"));
+            try
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "ArcadeDropCoin.prefab");
+                var source = prefab.GetComponentInChildren<Renderer>().sharedMaterial;
+                var originalColor = source.GetColor("_BaseColor");
+                var originalSurface = source.GetFloat("_Surface");
+                view.SetArcadePresentation(prefab, "Prefabs/SceneObjects/ArcadeDropCoin");
+                var visual = view.transform.Find("ArcadeDropVisual");
+                var beam = view.transform.Find("ArcadeLootBeam");
+                var beamSources = beam.GetComponentsInChildren<Renderer>().SelectMany(r => r.sharedMaterials).ToArray();
+                var beamColors = beamSources.Select(m => m.GetColor("_BaseColor")).ToArray();
+                var labelAlpha = view.NameLabel.alpha;
+                SetOpacity(view, 0.25f);
+                var material = visual.GetComponentInChildren<Renderer>().sharedMaterial;
+                Assert.That(material, Is.Not.SameAs(source));
+                Assert.That(material.GetFloat("_Surface"), Is.EqualTo(1f));
+                Assert.That(material.GetFloat("_ZWrite"), Is.Zero);
+                Assert.That(material.GetFloat("_SrcBlend"), Is.EqualTo((float)UnityEngine.Rendering.BlendMode.SrcAlpha));
+                Assert.That(material.GetFloat("_DstBlend"), Is.EqualTo((float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha));
+                Assert.That(material.IsKeywordEnabled("_SURFACE_TYPE_TRANSPARENT"), Is.True);
+                Assert.That(material.renderQueue, Is.EqualTo(3000));
+                Assert.That(material.GetColor("_BaseColor").a, Is.EqualTo(originalColor.a * 0.25f).Within(0.001f));
+                Assert.That(material.GetTexture("_BaseMap"), Is.SameAs(source.GetTexture("_BaseMap")));
+                Assert.That(view.NameLabel.alpha, Is.EqualTo(labelAlpha * 0.25f).Within(0.001f));
+                var fadedBeam = beam.GetComponentsInChildren<Renderer>().SelectMany(r => r.sharedMaterials).ToArray();
+                for (var i = 0; i < fadedBeam.Length; i++)
+                {
+                    Assert.That(fadedBeam[i], Is.Not.SameAs(beamSources[i]));
+                    Assert.That(fadedBeam[i].GetColor("_BaseColor").a, Is.EqualTo(beamColors[i].a * 0.25f).Within(0.001f));
+                    Assert.That(beamSources[i].GetColor("_BaseColor"), Is.EqualTo(beamColors[i]));
+                }
+                view.SetArcadePresentation(prefab, "Prefabs/SceneObjects/ArcadeDropCoin");
+                SetOpacity(view, 0.5f);
+                Assert.That(visual.GetComponentInChildren<Renderer>().sharedMaterial, Is.SameAs(material));
+                Assert.That(material.GetColor("_BaseColor").a, Is.EqualTo(originalColor.a * 0.5f).Within(0.001f));
+                Assert.That(source.GetColor("_BaseColor"), Is.EqualTo(originalColor));
+                Assert.That(source.GetFloat("_Surface"), Is.EqualTo(originalSurface));
+                view.ClearArcadePresentation();
+                Assert.That(material == null, Is.True, "实例材质必须随视觉释放");
+                Assert.That(fadedBeam.All(m => m == null), Is.True);
+                Assert.That(view.NameLabel.alpha, Is.EqualTo(labelAlpha));
+            }
+            finally { Object.DestroyImmediate(view.gameObject); }
+        }
+
+        [Test]
+        public void RecycledDropRestoresOpacityAndFadingKeepsInteractionAvailable()
+        {
+            var view = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ResourcePickupView>(Folder + "TestResourcePickup.prefab"));
+            try
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "ArcadeRifle.prefab");
+                view.SetArcadePresentation(prefab, "Prefabs/SceneObjects/ArcadeRifle");
+                var alpha = view.NameLabel.alpha;
+                var invoked = false;
+                view.InteractionRequested += () => invoked = true;
+                view.SetInteractionAvailable(true);
+                SetOpacity(view, 0f);
+                view.Interact();
+                Assert.That(invoked, Is.True);
+                var oldMaterial = view.transform.Find("ArcadeDropVisual").GetComponentInChildren<Renderer>().sharedMaterial;
+                var controller = new LootCtrl(null);
+                try
+                {
+                    typeof(LootCtrl).GetMethod("RecycleArcadeDrop", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .Invoke(controller, new object[] { view });
+                }
+                finally
+                {
+                    // 测试随后自行复用此物资，取回所有权后释放Controller的生命周期订阅。
+                    typeof(LootCtrl).GetMethod("TakeArcadeDrop", BindingFlags.Instance | BindingFlags.NonPublic)
+                        .Invoke(controller, null);
+                    controller.ReleaseAll();
+                }
+                Assert.That(oldMaterial == null, Is.True);
+                view.gameObject.SetActive(true);
+                view.SetArcadePresentation(prefab, "Prefabs/SceneObjects/ArcadeRifle");
+                Assert.That(view.NameLabel.alpha, Is.EqualTo(alpha));
+                var source = prefab.GetComponentInChildren<Renderer>().sharedMaterial;
+                Assert.That(view.transform.Find("ArcadeDropVisual").GetComponentInChildren<Renderer>().sharedMaterial.GetColor("_BaseColor"), Is.EqualTo(source.GetColor("_BaseColor")));
+            }
+            finally { Object.DestroyImmediate(view.gameObject); }
+        }
+
+        private static void SetOpacity(ResourcePickupView view, float opacity)
+        {
+            var method = typeof(ResourcePickupView).GetMethod("SetArcadeOpacity");
+            Assert.That(method, Is.Not.Null, "缺少地面物资实例渐隐入口");
+            method.Invoke(view, new object[] { opacity });
+        }
 
         [Test]
         public void LootBeamIsIdempotentAndReleasedWithDropVisual()

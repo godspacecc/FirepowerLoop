@@ -52,6 +52,60 @@ namespace Game.Tests
         private void Add(int id, ArcadeDropDefinition definition) => runtime.Drops.Add(id,
             new ArcadeDropRuntime { Id = id, Definition = definition, Position = Vector2.zero });
 
+        /// <summary>满额拒收不延长地面寿命；等待出口仍在30秒移除且不补发任何奖励。</summary>
+        [Test]
+        public void GroundSupply_FadesDuringLastThreeSecondsThenExpiresWithoutReward()
+        {
+            BeginExitWait();
+            var supply = Supply(true);
+            SetHeld(true, supply.MaxOwned);
+            Add(1, supply);
+            for (int i = 0; i < 108; i++) Call("Tick", runtime, .25f);
+            Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+            Assert.That(view.Opacity.ContainsKey(1), Is.True, "地面表现须同步权威透明度");
+            Assert.That(view.Opacity[1], Is.EqualTo(1f).Within(.001f));
+            for (int i = 0; i < 6; i++) Call("Tick", runtime, .25f);
+            Assert.That(view.Opacity[1], Is.EqualTo(.5f).Within(.001f));
+            for (int i = 0; i < 6; i++) Call("Tick", runtime, .25f);
+            Assert.That(runtime.Drops, Is.Empty);
+            Assert.That(view.Removed, Is.EqualTo(new[] { 1 }));
+            Assert.That(Held(true), Is.EqualTo(supply.MaxOwned));
+            Assert.That(view.Added, Is.Empty);
+        }
+
+        [Test]
+        public void GroundSupply_FadingPickupStillAppliesExactlyOnce()
+        {
+            BeginExitWait();
+            Add(1, Supply(true));
+            runtime.PlayerPosition = new Vector2(10, 10);
+            Call("TickTimers", runtime, 28.5f);
+            runtime.PlayerPosition = Vector2.zero;
+            Call("TickDrops", runtime);
+            Call("TickDrops", runtime);
+            Assert.That(runtime.Bombs, Is.EqualTo(Supply(true).Amount));
+            Assert.That(runtime.Drops, Is.Empty);
+            Assert.That(view.Added.Count, Is.EqualTo(1));
+        }
+
+        [Test]
+        public void GroundSupply_PauseFreezesLifetimeAndExpiryReleasesBudget()
+        {
+            BeginExitWait();
+            var supply = Supply(true);
+            SetHeld(true, supply.MaxOwned);
+            Add(1, supply);
+            architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Paused;
+            for (int i = 0; i < 160; i++) Call("Tick", runtime, .25f);
+            Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+            architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Playing;
+            Call("Tick", runtime, 30f);
+            Assert.That(runtime.Drops, Is.Empty);
+            Add(2, supply);
+            Call("Tick", runtime, 27f);
+            Assert.That(runtime.Drops.ContainsKey(2), Is.True, "新实体不可继承已过期实体的计时");
+        }
+
         /// <summary>从完整帧入口验证出口等待不会绕过拾取，并保留满额与一次结算规则。</summary>
         [TestCase(true)] [TestCase(false)]
         public void AwaitingExit_FullSupplyRemainsThenAvailableSupplyIsCollectedOnce(bool bomb)
@@ -258,6 +312,8 @@ namespace Game.Tests
 
         private sealed class TestView : IArcadeCombatViewPort
         {
+            public readonly Dictionary<int, float> Opacity = new();
+            public void SetDropOpacity(int id, float opacity) => Opacity[id] = opacity;
             public readonly List<int> Removed = new();
             public readonly List<int> Added = new();
             public readonly List<(long, long)> Treasure = new();

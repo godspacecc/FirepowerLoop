@@ -250,6 +250,8 @@ namespace ET.Server
         public string DropConfigId;
         public float PositionX;
         public float PositionZ;
+        /// <summary>现场掉落剩余寿命，只随活动战斗推进；到期直接移除，不发放奖励。</summary>
+        public float RemainingSeconds = 30f;
         /// <summary>成功拾取记录的领取者；可见掉落为零，不写安全存档。</summary>
         public long CollectedByPlayerId;
         /// <summary>本次实际增加次数；仅成功补给记录为正。</summary>

@@ -8,6 +8,16 @@ var config = ServerConfig.CreateForValidation("OnlineLocal", name => File.ReadAl
     Path.Combine(repository, "Server/GameServer/Config/Luban", name + ".bytes")));
 World.Instance.AddSingleton(config); World.Instance.AddSingleton<TimeInfo>();
 World.Instance.AddSingleton<ObjectPool>();
+// 定向检查必须显式声明真实类、最大数量和通过项输出，错误过滤绝不回退到历史全集。
+if (args.Length > 1)
+{
+    if (args.Length != 7 || args[1] != "--testClass" || args[2] != nameof(ArcadeDropLifetimeChecks) ||
+        args[3] != "--maxTests" || !int.TryParse(args[4], out int maximum) || maximum < 4 ||
+        args[5] != "--includePassingTests" || args[6] != "true")
+        throw new ArgumentException("Expected repository --testClass ArcadeDropLifetimeChecks --maxTests 4 --includePassingTests true");
+    Environment.ExitCode = ArcadeDropLifetimeChecks.Run(config, maximum);
+    return;
+}
 void Require(bool value, string message) { if (!value) throw new InvalidOperationException(message); }
 object Call(string method, params object[] values) => typeof(OnlineArcadeRunActorSystem)
     .GetMethod(method, BindingFlags.Static | BindingFlags.NonPublic)!.Invoke(null, values)!;

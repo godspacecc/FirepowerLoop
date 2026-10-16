@@ -69,6 +69,10 @@ namespace Game
         void RemoveProjectile(int id);
         void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position);
         void RemoveDrop(int id);
+        /// <summary>显示权威剩余寿命的透明度，不参与领取裁决。</summary>
+        void SetDropOpacity(int id, float opacity) { }
+        /// <summary>只淡出宝藏房地面物资，入口与返回出口保持可见。</summary>
+        void SetTreasureRewardOpacity(float opacity) { }
         /// <summary>仅在权威补给拾取成功后调用，added 是上限截断后的实际增加次数。</summary>
         void PlaySupplyPickup(ArcadeDropDefinition definition, int added) { }
         /// <summary>权威提交后的实际积分与金币分别传入；不能从掉落面值推断。</summary>
@@ -560,6 +564,7 @@ namespace Game
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);
+        public void SetDropOpacity(int id, float opacity) => lootPresentation?.SetDropOpacity(id, opacity);
 
         public bool IsFirstPersonActive => firstPersonMapInstanceId != 0 &&
             Game.Interface.GetSystem<PlayerCameraSystem>().IsArcadeFirstPerson(firstPersonMapInstanceId);

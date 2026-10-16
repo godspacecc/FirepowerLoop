@@ -18,6 +18,9 @@ namespace Game
             return TrySetDrop(runtimeId, position, displayName, amount, out error);
         }
 
+        /// <summary>同步掉落实例的剩余寿命透明度；旧表现端口可忽略视觉渐隐。</summary>
+        void SetDropOpacity(int runtimeId, float opacity) { }
+
         void RemoveDrop(int runtimeId);
         void ClearArcadeDrops();
     }

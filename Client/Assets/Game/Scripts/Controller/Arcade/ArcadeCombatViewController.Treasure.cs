@@ -14,6 +14,9 @@ namespace Game
         private readonly List<GameObject> treasureVisuals = new();
         /// <summary>物品表现专用的高位正 ID；与本场递增实体 ID 分离，不进入规则账本。</summary>
         private readonly List<int> treasureDropVisualIds = new();
+        /// <summary>仅地面金币和宝石拥有渐隐材质；门与环境不参与物资寿命。</summary>
+        private readonly List<ArcadeDropOpacity> treasureRewardMaterials = new();
+        private float treasureRewardOpacity = 1f;
 
         /// <summary>只显示权威房间入口、出口及尚未领取物品；碰撞与奖励全部由领域处理。</summary>
         public void SetTreasureRoom(ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds)
@@ -67,12 +70,24 @@ namespace Game
                 if(!gold&&!gem)throw new InvalidOperationException("宝藏道具正式掉落端口不可用");
                 var item=CreateContent(gold?"GoldBar":"Gem",new Vector3(reward.X,.14f,reward.Y));
                 item.name="TreasureReward_"+reward.Id;treasureVisuals.Add(item);
+                treasureRewardMaterials.Add(new ArcadeDropOpacity(item));
             }
+            SetTreasureRewardOpacity(treasureRewardOpacity);
+        }
+
+        /// <summary>模型与正式拾取端口同用权威透明度；异步模板就绪后的重绘保留已推进的淡出进度。</summary>
+        public void SetTreasureRewardOpacity(float opacity)
+        {
+            treasureRewardOpacity = Mathf.Clamp01(opacity);
+            foreach (var material in treasureRewardMaterials) material.SetOpacity(treasureRewardOpacity);
+            foreach (int id in treasureDropVisualIds) lootPresentation?.SetDropOpacity(id, treasureRewardOpacity);
         }
 
         /// <summary>区域重建及地图退出配对释放本 Controller 创建的对象和材质。</summary>
         private void ClearTreasureVisuals()
         {
+            foreach (var material in treasureRewardMaterials) material.Dispose();
+            treasureRewardMaterials.Clear();
             foreach (int id in treasureDropVisualIds) lootPresentation?.RemoveDrop(id);
             treasureDropVisualIds.Clear();
             foreach (var marker in treasureVisuals) { if (marker != null) marker.SetActive(false); DestroyObject(marker); }
