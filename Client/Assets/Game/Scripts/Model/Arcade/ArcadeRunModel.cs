@@ -12,6 +12,8 @@ namespace Game
         public ArcadeRunPhase Phase { get; private set; } = ArcadeRunPhase.None;
         public bool HasRun => current != null;
         public ArcadeRunSaveData Current => current?.Clone();
+        /// <summary>仅供战斗热路径读取首场身份，避免为每个敌人的空间查询深拷贝整份存档。</summary>
+        internal bool IsCasualOpeningArena => current is { IsCasualRoute: true, NextArenaNumber: 1 };
 
         protected override void OnInit()
         {
@@ -26,6 +28,13 @@ namespace Game
         internal void EnterArena()
         {
             if (current != null) Phase = ArcadeRunPhase.Arena;
+        }
+
+        /// <summary>轮级落盘成功后提交完整快照，保持战斗阶段，不触发整场离场事件。</summary>
+        internal void CommitIslandRound(ArcadeRunSaveData value)
+        {
+            current = value.Clone();
+            Phase = ArcadeRunPhase.Arena;
         }
 
         internal void EnterChallenge()

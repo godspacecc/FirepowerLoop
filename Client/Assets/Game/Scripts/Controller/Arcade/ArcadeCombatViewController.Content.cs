@@ -15,6 +15,7 @@ namespace Game
         private Transform contentTemplates;
         private GameObject contentEnvironment;
         private int contentGeneration, contentArena;
+        private bool contentLoadFailed;
         private string contentEnvironmentIdentity;
         /// <summary>最近权威快照仅供异步加载后重绘；不计时、不领取、不保存。</summary>
         private ArcadeTreasureRoomParameters contentTreasure;
@@ -27,6 +28,7 @@ namespace Game
 
         private async UniTaskVoid LoadContentAsync(int arena)
         {
+            contentLoadFailed = false;
             contentArena = arena;
             int generation = ++contentGeneration;
             var expectedRoot = root;
@@ -58,6 +60,7 @@ namespace Game
                 if(!state.Released) Log.Error("[ArcadeCombatViewController] 前两场内容加载失败："+e.Message);
                 if(generation==contentGeneration)
                 {
+                    contentLoadFailed = true;
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;
                     bulletImpactTemplate=null;

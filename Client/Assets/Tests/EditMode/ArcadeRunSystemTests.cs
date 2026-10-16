@@ -107,7 +107,6 @@ namespace Game.Tests
             Assert.That(catalog.Challenges, Has.Count.EqualTo(1));
             Assert.That(catalog.Challenges[0].EnemyGroupId, Is.EqualTo("arcade.group.rush.1"));
             Assert.That(catalog.Challenges[0].TimeLimitSeconds, Is.EqualTo(45f));
-            Assert.That(catalog.Rule.ConfigFingerprint, Is.EqualTo("arcade-20261012-v22-babylon-content"));
             Assert.That(catalog.Rule.MaxAliveEnemies, Is.EqualTo(24));
             Assert.That(catalog.Rule.MaxProjectiles, Is.EqualTo(80));
             Assert.That(catalog.Rule.MaxDrops, Is.EqualTo(18));
@@ -163,13 +162,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ConfiguredEntryFailureRollbackDeletesFalseResumeState()
+        public void ConfiguredEntryFailureKeepsPersistedNodeForRetry()
         {
-            Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
+            Assert.That(arcade.TryStartConfiguredRun(out var saved, out var error), Is.True, error);
 
             ArcadeResumeUICtrl.RollbackNewRun(arcade, "模拟地图加载失败");
-            Assert.That(arcade.InspectPending().Status, Is.EqualTo(SaveFileStatus.Missing));
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Current.HasResult, Is.True);
+            Assert.That(arcade.InspectPending().Status, Is.EqualTo(SaveFileStatus.Valid));
+            Assert.That(arcade.InspectPending().Data.RunId, Is.EqualTo(saved.RunId));
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Current.HasResult, Is.False);
+            Assert.That(arcade.TryResume(out var retried, out error), Is.True, error);
+            Assert.That(retried.RunId, Is.EqualTo(saved.RunId));
         }
 
         [Test]

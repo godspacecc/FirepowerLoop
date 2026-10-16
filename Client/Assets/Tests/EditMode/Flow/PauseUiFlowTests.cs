@@ -85,6 +85,34 @@ namespace Game.Tests
         }
 
         [Test]
+        public void IslandRoundLeaveWarnsAboutWholeRoundRollbackAndCancelKeepsRun()
+        {
+            var localization = Game.Interface.GetUtility<LocalizationUtility>();
+            localization.InitializeConfiguredTables();
+            localization.LoadFromJson("zh-CN",
+                System.IO.File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));
+            var run = new ArcadeRunModel(); Game.Interface.RegisterModel(run);
+            run.CommitSafeNode(new ArcadeRunSaveData { RunId = Guid.NewGuid().ToString("N"), IsCasualRoute = true,
+                ArenaConfigNumber = 1, IslandRoundCheckpoint = new ArcadeIslandRoundCheckpoint {
+                    RoundNumber = 3, MapId = "island.round.3", PlayerHealth = 73, PlayerMaxHealth = 100 } });
+            run.EnterArena();
+            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
+            var pause = UIHelper.ShowUI<PauseUICtrl>();
+            GetBaseUI<PauseUI>(pause).BtnOnline.onClick.Invoke();
+            var message = UIHelper.GetUICtrl<MessageUICtrl>();
+            Assert.That(message.IsShow(), Is.True);
+            string content = GetBaseUI<MessageUI>(message).ContentText.text;
+            Assert.That(content, Does.Contain("第3轮").And.Contain("沉船浅滩").And.Contain("整体回滚"));
+            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
+            var config = (MessageConfig)typeof(MessageUICtrl).GetField("currentConfig", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(message);
+            typeof(MessageUICtrl).GetMethod("OnMessageButtonClick", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(message, new object[] { new object[] { config.Buttons.Single(button => button.Role == MessageButtonRole.Cancel) } });
+            Assert.That(message.IsShow(), Is.False); Assert.That(pause.IsShow(), Is.True);
+            Assert.That(run.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+            Assert.That(run.Current.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(3));
+        }
+
+        [Test]
         public void EscapeFallsBackToPausedStateWhenNoRecoverableWorldExists()
         {
             EnterPlaying();

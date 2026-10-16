@@ -151,12 +151,15 @@ namespace Game
                 : string.Empty);
             Set(UI.TextArena, combat.IsChallenge
                 ? Loc.T("ui.arcade.hud.challenge", Mathf.CeilToInt(combat.ChallengeSeconds))
-                : Loc.T("ui.arcade.hud.arena", combat.ArenaNumber > 0 ? combat.ArenaNumber : snapshot.NextArenaNumber));
+                : !string.IsNullOrEmpty(combat.IslandMapNameKey) ? Loc.T(combat.IslandMapNameKey)
+                    : Loc.T("ui.arcade.hud.arena", combat.ArenaNumber > 0 ? combat.ArenaNumber : snapshot.NextArenaNumber));
             Set(UI.TextWave, combat.AwaitingExit ? Loc.T("ui.arcade.hud.exit") : combat.IsFinalBoss
                 ? Loc.T("ui.arcade.hud.final_boss")
                 : Loc.T("ui.arcade.hud.wave", combat.WaveNumber, combat.TotalWaves, combat.RemainingEnemies));
             if (combat.InTreasureRoom) Set(UI.TextWave, Loc.T("ui.arcade.hud.treasure", Mathf.CeilToInt(combat.TreasureSeconds)));
             else if (combat.Resting) Set(UI.TextWave, Loc.T("ui.arcade.hud.rest", Mathf.CeilToInt(combat.RestSeconds)));
+            if (combat.IslandAwaitingRoundExit) Set(UI.TextWave, Loc.T("ui.arcade.island.pickup"));
+            if (combat.IslandTransitioning) Set(UI.TextWave, Loc.T("ui.arcade.island.loading"));
             RenderTimedStatus(combat.TemporaryWeaponNameKey, combat.TemporaryWeaponSeconds, combat.Powerups);
             RenderFirstPersonStatus();
             snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.BombResourceId, out var bombs);

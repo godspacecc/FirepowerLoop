@@ -200,6 +200,28 @@ namespace Game
         public float SpawnCooldown;
         /// <summary>本轮实际入场序号；独立于弹丸/掉落实体 ID，确保岸边与水侧交替且不改变清场计数。</summary>
         public int IslandSpawnSequence;
+        /// <summary>单人海岛转场期间冻结所有局内时钟；资源和轮级节点均成功后才解除。</summary>
+        public bool IslandTransitionPending;
+        /// <summary>宝藏区域资源准备冻结，仅冻结加载，不冻结房间实际活动时间。</summary>
+        public bool IslandRoomTransitionPending;
+        /// <summary>转场失败保留同一候选；重试不能重新补给、发奖或重建敌群预算。</summary>
+        public bool IslandTransitionViewPrepared;
+        /// <summary>普通清场的单出口状态；不与整场完成出口混用。</summary>
+        public bool IslandRoundAwaitingExit;
+        /// <summary>离开触发区前不重复弹出取消的确认；旧回调还需校验现场身份。</summary>
+        public bool IslandExitContact;
+        /// <summary>当前出口确认正在显示；同轮取消后保留接触锁直到离开出口。</summary>
+        public bool IslandExitPrompt;
+        /// <summary>固定入口批次及预告剩余秒数；换向停止旧入口生成，保留在场敌人。</summary>
+        public int IslandEntryBatch;
+        /// <summary>当前轮完整有限预算，按已出队数量划分固定入口批次。</summary>
+        public int IslandWaveBudget;
+        /// <summary>当前入口批次生成前的剩余预告秒数。</summary>
+        public float IslandEntryWarningRemaining;
+        /// <summary>第四图初始预警期间只显示边界，不结算营火伤害。</summary>
+        public float IslandCampfireWarningRemaining;
+        /// <summary>宝藏内或转场时仅释放相机实例，保留视角效果逻辑时长。</summary>
+        public bool IslandFirstPersonSuspended;
         public float WaveTransitionRemaining;
         public bool WaveClearAwarded;
         /// <summary>清场后须先松开射击再按下才提前推进，避免持续射击跳过休整。</summary>

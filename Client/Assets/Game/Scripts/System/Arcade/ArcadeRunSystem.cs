@@ -129,6 +129,46 @@ namespace Game
             return true;
         }
 
+        /// <summary>轮开始前写入完整候选；失败保持原节点与运行态，成功也不发布整场阶段事件。</summary>
+        public bool TrySaveIslandRound(ArcadeIslandRoundCheckpoint checkpoint, out string error)
+        {
+            var model = this.GetModel<ArcadeRunModel>();
+            var current = model.Current;
+            if (model.Phase != ArcadeRunPhase.Arena || current == null || current.HasResult ||
+                !current.IsCasualRoute || current.NextArenaNumber != 1 || current.ArenaConfigNumber != 1 || checkpoint == null)
+            {
+                error = "当前不是可保存轮级节点的单人海岛战斗";
+                return false;
+            }
+            var previousRound = current.IslandRoundCheckpoint?.RoundNumber ?? 0;
+            if (checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
+            {
+                error = "海岛轮级节点必须连续推进";
+                return false;
+            }
+            // 同轮重试仅接受已提交的相同内容，不能把本轮中途收益覆盖成新的安全节点。
+            if (checkpoint.RoundNumber == previousRound)
+            {
+                if (Newtonsoft.Json.JsonConvert.SerializeObject(checkpoint) !=
+                    Newtonsoft.Json.JsonConvert.SerializeObject(current.IslandRoundCheckpoint))
+                {
+                    error = "海岛同轮节点不能覆盖已提交状态";
+                    return false;
+                }
+                error = null;
+                return true;
+            }
+            var candidate = current.Clone();
+            candidate.IslandRoundCheckpoint = checkpoint.Clone();
+            candidate.ArenaEntryState = null;
+            candidate.EmergencyResources[ArcadeRunDefaults.BombResourceId] = checkpoint.Bombs;
+            candidate.EmergencyResources[ArcadeRunDefaults.DashResourceId] = checkpoint.Dashes;
+            candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
+            if (!store.Save(candidate, out error)) return false;
+            model.CommitIslandRound(candidate);
+            return true;
+        }
+
         /// <summary>先持久化本安全节点的挑战尝试，再公开挑战阶段；保存失败时仍停留在商店。</summary>
         public bool TryStartChallenge(out ArcadeRunSaveData snapshot, out string error)
         {
@@ -235,6 +275,8 @@ namespace Game
             var candidate = current.Clone();
             candidate.RemainingLives = 0;
             candidate.Outcome = "failed";
+            candidate.IslandRoundCheckpoint = null;
+            candidate.ArenaEntryState = null;
             candidate.PendingRewards.Clear();
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error))
@@ -281,10 +323,18 @@ namespace Game
             else if (completion.Victory)
             { error = "旧顺序局不能直接提交休闲胜利"; return false; }
 
+            if (completion.PlayerState != null &&
+                (!current.IsCasualRoute || !(current.NextArenaNumber == 1 && current.ArenaConfigNumber == 1 || current.ArenaEntryState != null)))
+            {
+                error = "当前竞技场不允许建立角色继承状态";
+                return false;
+            }
+
             var candidate = current.Clone();
             try
             {
                 candidate.RunGold = checked(candidate.RunGold + completion.EarnedGold);
+                candidate.IslandRoundCheckpoint = null;
                 candidate.Score = completion.Score;
                 candidate.ScoreMultiplier = completion.ScoreMultiplier;
                 candidate.MultiplierProgress = completion.MultiplierProgress;
@@ -309,6 +359,7 @@ namespace Game
             }
 
             candidate.Victory = completion.Victory;
+            candidate.ArenaEntryState = completion.Victory ? null : completion.PlayerState?.Clone();
             candidate.Outcome = completion.Victory ? "victory" : null;
             candidate.PendingRewards.Clear();
             if (current.IsCasualRoute && !completion.Victory) candidate.ArenaConfigNumber = completion.NextArenaConfigNumber;
@@ -425,6 +476,8 @@ namespace Game
             if (current.HasResult) { error = null; return true; }
             var candidate = current.Clone();
             candidate.Outcome = "abandoned";
+            candidate.IslandRoundCheckpoint = null;
+            candidate.ArenaEntryState = null;
             candidate.PendingRewards.Clear();
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;

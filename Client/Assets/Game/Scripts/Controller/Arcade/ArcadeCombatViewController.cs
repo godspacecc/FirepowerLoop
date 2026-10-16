@@ -30,6 +30,14 @@ namespace Game
         void SetHazards(IReadOnlyList<AnotherDay.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds) { }
         /// <summary>只按权威配置显示岛岸与第四轮营火，不从视觉碰撞计算伤害。</summary>
         void SetOpening(AnotherDay.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
+        /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
+        void SetIslandRound(int roundNumber) { }
+        bool IsIslandRoundReady => true;
+        bool IsIslandTreasureReady => true;
+        string IslandRoundLoadError => null;
+        void RetryIslandRoundLoad() { }
+        void SetIslandCampfireWarning(bool warning) { }
+        void SetIslandEntryWarning(Vector2 position, bool visible) { }
         /// <summary>只显示权威剩余箱子和护甲，命中与发奖由领域裁决。</summary>
         void SetBabylon(AnotherDay.Arcade.ArcadeBabylonParameters parameters, IReadOnlyList<int> remainingIds) { }
         void SetEnemyArmor(int id, Vector2 position, int health) { }
@@ -232,6 +240,7 @@ namespace Game
 
         public void End()
         {
+            ReleaseIslandEntryWarning();
             ClearPickupFeedback();
             EndFirstPerson();
             firstPersonProjectileHeights.Clear();
@@ -278,6 +287,11 @@ namespace Game
             islandBaseArenaRoot = null;
             DestroyObject(root);
             root = null;
+            // Begin 复用同一端口；退出本地轮图后，下一次联机或普通地图必须回到默认身份。
+            islandRound = 0;
+            islandCampfireWarning = false;
+            islandFireActive = false;
+            islandParameters = default;
         }
 
         public void SetHazards(IReadOnlyList<AnotherDay.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds)
@@ -309,12 +323,16 @@ namespace Game
             }
             for (var index = 0; index < count; index++)
             {
-                var position = ArcadeCombatSystem.ArcadeExitPosition(index, count, halfHeight);
+                var position = islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
+                    ? ArcadeIslandLayout.GetExitPosition(islandRound, index, count, exitCatalog.Rule.ArenaHalfWidth,
+                        exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
+                    : ArcadeCombatSystem.ArcadeExitPosition(index, count, halfHeight);
                 GameObject marker;
                 if (formalExit)
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
-                    SetContentLabel(marker, DestinationKey(destinations[index]));
+                    SetContentLabel(marker, destinations[index] < 0
+                        ? ArcadeIslandLayout.GetNameKey(-destinations[index]) : DestinationKey(destinations[index]));
                 }
                 else
                 {
@@ -978,6 +996,8 @@ namespace Game
         private void CreateArenaCollision(int arenaNumber, float halfWidth, float halfHeight,
             IReadOnlyList<ArcadeObstacleDefinition> obstacles)
         {
+            obstacleVisualReady = false;
+            obstacleVisualError = null;
             const float wallThickness = 0.5f;
             const float wallHeight = 2f;
             CreateBoundary("NorthBoundary", new Vector3(0f, wallHeight * 0.5f, halfHeight + wallThickness * 0.5f),
@@ -989,7 +1009,7 @@ namespace Game
             CreateBoundary("WestBoundary", new Vector3(-halfWidth - wallThickness * 0.5f, wallHeight * 0.5f, 0f),
                 new Vector3(wallThickness, wallHeight, halfHeight * 2f));
 
-            if (obstacles == null) return;
+            if (obstacles == null) { obstacleVisualReady = true; return; }
             var placements = new List<ObstacleVisualPlacement>(obstacles.Count);
             for (var index = 0; index < obstacles.Count; index++)
             {
@@ -1007,6 +1027,7 @@ namespace Game
 
             if (placements.Count > 0)
                 LoadObstacleVisualsAsync(arenaNumber, placements, obstacleVisualGeneration).Forget();
+            else obstacleVisualReady = true;
         }
 
         /// <summary>加载一份视觉集合并按场次稳定选择组合；代次过期时只释放资源，不提交实例。</summary>
@@ -1016,16 +1037,16 @@ namespace Game
             var state = new ObstacleVisualLoadState();
             obstacleVisualLoad = state;
             var completion = new UniTaskCompletionSource<GameObject>();
-            state.Handle = ResourceLoader.LoadAssetAsync<GameObject>(ObstacleVisualAddress,
-                prefab => completion.TrySetResult(prefab));
-
             GameObject prefab;
             try
             {
+                state.Handle = ResourceLoader.LoadAssetAsync<GameObject>(ObstacleVisualAddress,
+                    prefab => completion.TrySetResult(prefab));
                 prefab = await completion.Task;
             }
             catch (Exception exception)
             {
+                if (!state.Released && generation == obstacleVisualGeneration) obstacleVisualError = exception.Message;
                 if (!state.Released)
                     Log.Error($"[ArcadeCombatViewController] 障碍视觉加载异常：{exception.Message}");
                 ReleaseObstacleVisualLoad(state);
@@ -1038,6 +1059,7 @@ namespace Game
                 return;
             if (!ValidateObstacleVisualPrefab(prefab, out string error))
             {
+                obstacleVisualError = error;
                 Log.Error($"[ArcadeCombatViewController] {error}");
                 ReleaseObstacleVisualLoad(state);
                 obstacleVisualLoad = null;
@@ -1054,6 +1076,14 @@ namespace Game
                 for (var childIndex = 0; childIndex < instance.transform.childCount; childIndex++)
                     instance.transform.GetChild(childIndex).gameObject.SetActive(childIndex == variantIndex);
                 FitObstacleVisual(instance.transform, placement.Width, placement.Length);
+            }
+            obstacleVisualReady = true;
+            // 岛岸可能先完成加载；晚到的通用障碍仍须立即切换为本轮同源礁石或船壳。
+            try { if (island != null) ConfigureIsland(); }
+            catch (Exception exception)
+            {
+                obstacleVisualError = exception.Message;
+                Log.Error("[ArcadeCombatViewController] 海岛地标准备失败：" + exception.Message);
             }
         }
 

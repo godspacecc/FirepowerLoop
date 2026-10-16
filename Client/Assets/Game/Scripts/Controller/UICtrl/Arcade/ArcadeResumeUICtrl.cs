@@ -135,7 +135,9 @@ namespace Game
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
             Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome)) : Loc.T("ui.arcade.resume.summary", current.CompletedArenaCount, current.RemainingLives, current.RunGold));
             Set(UI.TextRewards, Loc.T("ui.arcade.hud.score", current.Score));
-            Set(UI.TextMessage, string.Empty);
+            Set(UI.TextMessage, current.IslandRoundCheckpoint is { } checkpoint
+                ? Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber)))
+                : string.Empty);
         }
 
         /// <summary>点击开始/继续时检查已由 Boot 准备的资源并提交街机流程；旧请求不得影响新窗口。</summary>

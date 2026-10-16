@@ -40,7 +40,7 @@ namespace Game.Tests
         }
         private object Call(string method,params object[] args) => typeof(ArcadeCombatSystem).GetMethod(method,Flags).Invoke(system,args);
         [Test]
-        public void IslandEntry_FourWavesUseBothSidesAndMoveContinuouslyWithoutBorderSnap()
+        public void IslandEntry_FourMapsUseFixedBatchesAndMoveContinuouslyWithoutBorderSnap()
         {
             typeof(ArcadeCombatSystem).GetField("random",Flags).SetValue(system,new System.Random(37));
             runtime.PlayerInvulnerability=1000f;
@@ -49,13 +49,13 @@ namespace Game.Tests
                 runtime.Enemies.Clear();Call("BeginWave",runtime,wave);
                 int total=runtime.SpawnQueue.Count;
                 Assert.That(total,Is.EqualTo(110+10*wave));
-                Call("TickSpawning",runtime,1f);runtime.SpawnCooldown=0;Call("TickSpawning",runtime,1f);
-                var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);
-                var water=runtime.Enemies.Values.Single(e=>e.Position.y < 0);
-                var shore=runtime.Enemies.Values.Single(e=>e.Position.y > 0);
+                runtime.IslandWaveBudget=total;runtime.IslandEntryWarningRemaining=0;
+                Call("TickSpawning",runtime,5f);runtime.SpawnCooldown=0;Call("TickSpawning",runtime,5f);
+                var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,wave+1);
+                var water=runtime.Enemies.Values.First();
+                var shore=runtime.Enemies.Values.Last();
                 Assert.That(region.Contains(water.Position.x,water.Position.y),Is.True);
-                Assert.That(region.IsShallow(water.Position.x,water.Position.y),Is.True);
-                Assert.That(region.IsShallow(shore.Position.x,shore.Position.y),Is.False);
+                Assert.That(region.Contains(shore.Position.x,shore.Position.y),Is.True);
                 Assert.That(runtime.Enemies.Count+runtime.SpawnQueue.Count,Is.EqualTo(total));
                 Vector2 before=water.Position;Call("TickEnemies",runtime,.05f);
                 Assert.That(Vector2.Distance(before,water.Position),Is.LessThanOrEqualTo(water.Speed*.05f+.001f));
@@ -72,12 +72,12 @@ namespace Game.Tests
                 int spawned=runtime.Enemies.Count;
                 while(runtime.SpawnQueue.Count>0)
                 {
-                    runtime.Enemies.Clear();runtime.SpawnCooldown=0;Call("TickSpawning",runtime,1f);
+                    runtime.Enemies.Clear();runtime.SpawnCooldown=0;Call("TickSpawning",runtime,5f);
                     Assert.That(runtime.Enemies.Count,Is.EqualTo(1));spawned++;
-                    // 弹丸等共享实体序号的奇偶变化不能让入口长期只用一侧。
+                    // 弹丸等共享实体序号不能改变固定批次方向或既定总预算。
                     runtime.NextEntityId++;
                     var e=runtime.Enemies.Values.Single();
-                    Assert.That(e.Position.y<0,Is.EqualTo((spawned&1)==1));
+                    Assert.That(region.Contains(e.Position.x,e.Position.y),Is.True);
                 }
                 Assert.That(spawned,Is.EqualTo(total));
                 runtime.Enemies.Clear();
@@ -130,21 +130,21 @@ namespace Game.Tests
             Call("BeginWave",runtime,0);Call("TickWaveTransition",runtime,200f);
             Assert.That(runtime.WaveClearAwarded,Is.False);Assert.That(runtime.WaveIndex,Is.Zero);
         }
-        [Test] public void Rest_RequiresReleaseThenFireAndOtherwiseUsesConfiguredTimeout()
+        [Test] public void ClearedIslandRound_RequiresExitConfirmationRegardlessOfFireOrTimeout()
         {
             Call("BeginWave",runtime,0);runtime.SpawnQueue.Clear();runtime.Firing=true;
             Call("TickWaveTransition",runtime,0f);Call("TickWaveTransition",runtime,2f);
             Assert.That(runtime.WaveIndex,Is.Zero);
             runtime.Firing=false;Call("TickWaveTransition",runtime,.1f);
             runtime.Firing=true;Call("TickWaveTransition",runtime,.1f);
-            Assert.That(runtime.WaveIndex,Is.EqualTo(1));Assert.That(runtime.SpawnQueue.Count,Is.EqualTo(120));
-            runtime.SpawnQueue.Clear();runtime.Firing=false;Call("TickWaveTransition",runtime,0f);
-            Call("TickWaveTransition",runtime,120f);Assert.That(runtime.WaveIndex,Is.EqualTo(2));
+            Assert.That(runtime.WaveIndex,Is.Zero);Assert.That(runtime.SpawnQueue,Is.Empty);
+            Call("TickWaveTransition",runtime,600f);Assert.That(runtime.WaveIndex,Is.Zero);
+            Assert.That(runtime.IslandRoundAwaitingExit,Is.True);
         }
         [Test] public void FinalClear_ShowsTwoExitsWithoutStartingAnotherWave()
         {
             Call("BeginWave",runtime,3);runtime.SpawnQueue.Clear();Call("TickWaveTransition",runtime,0f);
-            Assert.That(runtime.AwaitingExit,Is.True);Assert.That(runtime.WaveTransitionRemaining,Is.EqualTo(300));
+            Assert.That(runtime.AwaitingExit,Is.True);Assert.That(runtime.WaveTransitionRemaining,Is.Zero);
             Assert.That(catalog.Arenas[0].NextArenaNumbers,Is.EquivalentTo(new[]{2,3}));
         }
         [Test] public void StageNoticesFollowAuthorityWithoutChangingRestOrExit()
@@ -161,7 +161,8 @@ namespace Game.Tests
             Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
             Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.WaveCompleted));
             Assert.That(runtime.WaveTransitionRemaining, Is.EqualTo(rest));
-            Assert.That(rest, Is.EqualTo(catalog.Arenas[0].Opening.RoundRestSeconds));
+            Assert.That(rest, Is.Zero);
+            Assert.That(runtime.IslandRoundAwaitingExit, Is.True);
             Assert.That(runtime.AwaitingExit, Is.False);
             Call("BeginWave", runtime, 3);
             runtime.SpawnQueue.Clear();
@@ -170,19 +171,20 @@ namespace Game.Tests
             Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out notice), Is.True);
             Assert.That(notice.Kind, Is.EqualTo(ArcadeStageNoticeKind.ArenaCompleted));
             Assert.That(runtime.AwaitingExit, Is.True);
-            Assert.That(runtime.WaveTransitionRemaining, Is.EqualTo(catalog.Arenas[0].Opening.ExitRestSeconds));
+            Assert.That(runtime.WaveTransitionRemaining, Is.Zero);
             Call("PublishHud", runtime);
             Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out _), Is.False);
         }
         [Test] public void WaterMovement_UsesSameConfiguredZoneAsPresentation()
         {
-            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);
-            region.Entry(0,.5f,catalog.Rule.EnemyContactRadius,out var water,out _);
-            runtime.PlayerPosition=new Vector2(water.X,water.Y);runtime.MoveDirection=Vector2.right;
-            Call("TickPlayer",runtime,1f);
-            Assert.That(runtime.PlayerPosition.x,Is.EqualTo(catalog.Rule.PlayerMoveSpeed*.55f).Within(.001f));
-            runtime.PlayerPosition=Vector2.zero;Call("TickPlayer",runtime,1f);
-            Assert.That(runtime.PlayerPosition.x,Is.EqualTo(catalog.Rule.PlayerMoveSpeed).Within(.001f));
+            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,1);
+            int south=ArcadeIslandRegion.Samples*3/4;
+            runtime.PlayerPosition=new Vector2(0,(region.Outer[south].Y+region.Sand[south].Y)*.5f);
+            runtime.MoveDirection=Vector2.right;
+            Call("TickPlayer",runtime,.1f);
+            Assert.That(runtime.PlayerPosition.x,Is.EqualTo(catalog.Rule.PlayerMoveSpeed*.55f*.1f).Within(.001f));
+            runtime.PlayerPosition=Vector2.zero;Call("TickPlayer",runtime,.1f);
+            Assert.That(runtime.PlayerPosition.x,Is.EqualTo(catalog.Rule.PlayerMoveSpeed*.1f).Within(.001f));
         }
         [Test] public void IslandKillCountsOnceUsesMultiplierAndDoesNotAdvanceTreasureProgress()
         {

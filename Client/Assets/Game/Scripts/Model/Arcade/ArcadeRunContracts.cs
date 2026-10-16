@@ -84,9 +84,72 @@ namespace Game
         };
     }
 
-    /// <summary>
-    /// 只表示最近一次安全商店提交点；不保存位置、敌人、投射物、掉落或未完成竞技场进度。
-    /// </summary>
+    /// <summary>海岛效果的稳定逻辑状态；位置只用于重建锚点，不保留旧地图实例。</summary>
+    [Serializable]
+    public sealed class ArcadeIslandPowerupCheckpoint
+    {
+        /// <summary>正式强化配置身份，恢复时重新解析定义。</summary>
+        public string ProductId { get; set; }
+        /// <summary>尚未消耗的有效秒数。</summary>
+        public float RemainingSeconds { get; set; }
+        /// <summary>护盾、木桶等剩余触发次数，不重新补满。</summary>
+        public int Charges { get; set; }
+        /// <summary>下一次周期结算前的剩余秒数。</summary>
+        public float CooldownSeconds { get; set; }
+        /// <summary>固定效果在目标地图内的合法横向锚点。</summary>
+        public float PositionX { get; set; }
+        /// <summary>固定效果在目标地图内的合法纵向锚点。</summary>
+        public float PositionY { get; set; }
+        /// <summary>复制稳定值，快照不共享可变效果实例。</summary>
+        public ArcadeIslandPowerupCheckpoint Clone() => (ArcadeIslandPowerupCheckpoint)MemberwiseClone();
+    }
+
+    /// <summary>海岛每轮开始前的角色与效果节点；敌人、弹丸、掉落和事件均从本轮固定起点重建。</summary>
+    [Serializable]
+    public sealed class ArcadeIslandRoundCheckpoint
+    {
+        /// <summary>一至四轮；第四轮意味着第三轮后的宝藏流程已完成并提交。</summary>
+        public int RoundNumber { get; set; }
+        /// <summary>稳定地图编号 island.round.N，不使用场景实例标识。</summary>
+        public string MapId { get; set; }
+        /// <summary>本轮开始前生命，不因换图补满。</summary>
+        public int PlayerHealth { get; set; }
+        /// <summary>当前角色的生命上限。</summary>
+        public int PlayerMaxHealth { get; set; }
+        /// <summary>已执行本轮补给后的炸弹库存。</summary>
+        public int Bombs { get; set; }
+        /// <summary>已执行本轮补给后的冲刺库存。</summary>
+        public int Dashes { get; set; }
+        /// <summary>本竞技场尚未整场结算的金币，不能重复加入 RunGold。</summary>
+        public long ArenaGold { get; set; }
+        /// <summary>尚有效的临时枪配置身份；到期后为空。</summary>
+        public string TemporaryWeaponId { get; set; }
+        /// <summary>临时枪剩余秒数，加载等待期间冻结。</summary>
+        public float TemporaryWeaponRemaining { get; set; }
+        /// <summary>临时视角剩余秒数，镜头实例在目标地图重建。</summary>
+        public float FirstPersonRemaining { get; set; }
+        /// <summary>当前武器下一次可发射前的冷却秒数。</summary>
+        public float FireCooldown { get; set; }
+        /// <summary>角色现有保护剩余秒数。</summary>
+        public float InvulnerabilityRemaining { get; set; }
+        /// <summary>尚在执行的冲刺剩余秒数。</summary>
+        public float DashRemaining { get; set; }
+        /// <summary>角色朝向；输入意图不作为持久状态。</summary>
+        public float AimDirectionX { get; set; }
+        /// <summary>角色朝向纵向分量，不恢复旧移动或持续按压输入。</summary>
+        public float AimDirectionY { get; set; }
+        /// <summary>每个效果一份稳定逻辑状态，实例跨图重新挂接。</summary>
+        public List<ArcadeIslandPowerupCheckpoint> Powerups { get; set; } = new List<ArcadeIslandPowerupCheckpoint>();
+        /// <summary>深拷贝效果列表，使候选保存失败不改变原安全节点。</summary>
+        public ArcadeIslandRoundCheckpoint Clone()
+        {
+            var copy = (ArcadeIslandRoundCheckpoint)MemberwiseClone();
+            copy.Powerups = Powerups?.Select(value => value?.Clone()).ToList();
+            return copy;
+        }
+    }
+
+    /// <summary>最近安全节点；可选海岛轮级节点兼容版本一旧档，不保存敌人、弹丸或掉落。</summary>
     [Serializable]
     public sealed class ArcadeRunSaveData
     {
@@ -99,6 +162,10 @@ namespace Game
         public bool IsCasualRoute { get; set; }
         /// <summary>稳定场地配置编号，独立于本局场序；旧顺序局为零。</summary>
         public int ArenaConfigNumber { get; set; }
+        /// <summary>缺失表示旧整场节点，从原第一轮继续；不迁移或删除旧档。</summary>
+        public ArcadeIslandRoundCheckpoint IslandRoundCheckpoint { get; set; }
+        /// <summary>海岛离场后延续到后续场地的角色与效果；固定 arena.entry，一场金币已经结清。</summary>
+        public ArcadeIslandRoundCheckpoint ArenaEntryState { get; set; }
         /// <summary>最终 Boss 胜利出口提交后的可重试结算节点；该节点不可继续战斗。</summary>
         public bool Victory { get; set; }
         /// <summary>空值代表可继续本局；victory/failed/abandoned 是待确认结果，不能进入战斗。</summary>
@@ -129,6 +196,8 @@ namespace Game
             NextArenaNumber = NextArenaNumber,
             IsCasualRoute = IsCasualRoute,
             ArenaConfigNumber = ArenaConfigNumber,
+            IslandRoundCheckpoint = IslandRoundCheckpoint?.Clone(),
+            ArenaEntryState = ArenaEntryState?.Clone(),
             Victory = Victory, Outcome = Outcome,
             RemainingLives = RemainingLives,
             RunGold = RunGold, Score = Score, ScoreMultiplier = ScoreMultiplier, MultiplierProgress = MultiplierProgress,
@@ -145,6 +214,8 @@ namespace Game
     /// <summary>战斗模块完成整座竞技场后提交的稳定结果；瞬时战斗对象不跨越此边界。</summary>
     public sealed class ArcadeArenaCompletion
     {
+        /// <summary>下场角色与效果入场状态；金币必须清零，胜利结果不保留。</summary>
+        public ArcadeIslandRoundCheckpoint PlayerState { get; set; }
         public int ArenaNumber { get; set; }
         public long EarnedGold { get; set; }
         public long Score { get; set; }
@@ -211,6 +282,12 @@ namespace Game
         public bool IsChallenge { get; set; }
         public bool IsFinalBoss { get; set; }
         public bool AwaitingExit { get; set; }
+        /// <summary>单人海岛地图与转场状态；联机及其他主题保持空值。</summary>
+        public string IslandMapNameKey { get; set; }
+        /// <summary>资源或轮级节点尚未准备完成，界面显示等待或重试。</summary>
+        public bool IslandTransitioning { get; set; }
+        /// <summary>普通海岛轮已清场，允许拾取并等待单出口确认。</summary>
+        public bool IslandAwaitingRoundExit { get; set; }
         public bool Resting { get; set; }
         public float RestSeconds { get; set; }
         public float ChallengeSeconds { get; set; }

@@ -25,7 +25,12 @@ namespace AnotherDay.Arcade
 
         /// <summary>保留原场地尺度，浅凹岸线及宽主战斗区；制作工具与双方权威使用同一采样结果。</summary>
         public ArcadeIslandRegion(float halfWidth, float halfHeight)
+            : this(halfWidth, halfHeight, 0) { }
+
+        /// <summary>单机首场的固定四图；零保留既有联机轮廓，不改变服务端规则。</summary>
+        public ArcadeIslandRegion(float halfWidth, float halfHeight, int roundNumber)
         {
+            if (roundNumber < 0 || roundNumber > 4) throw new ArgumentOutOfRangeException(nameof(roundNumber));
             if (halfWidth <= 5 || halfHeight <= 5 || float.IsNaN(halfWidth) || float.IsNaN(halfHeight) ||
                 float.IsInfinity(halfWidth) || float.IsInfinity(halfHeight)) throw new ArgumentException("海岛尺度无效");
             for (int i = 0; i < Samples; i++)
@@ -33,12 +38,21 @@ namespace AnotherDay.Arcade
                 double a = i * Math.PI * 2 / Samples, c = Math.Cos(a), s = Math.Sin(a);
                 double outline = Math.Pow(Math.Pow(Math.Abs(c), 4) + Math.Pow(Math.Abs(s), 4), -.25);
                 double variation = (.975 + .018 * Math.Sin(3 * a + .6) + .012 * Math.Cos(5 * a)) / 1.005;
+                // 四图分别形成宽滩、双湾、东侧深水湾及紧凑高地，均保持星形连续可达地面。
+                if (roundNumber == 1) variation *= .94 + .045 * Math.Sin(a);
+                if (roundNumber == 2) variation *= .86 + .10 * Math.Cos(2 * a);
+                if (roundNumber == 3) variation *= .91 + .065 * Math.Sin(3 * a);
+                if (roundNumber == 4) variation *= .86 + .055 * Math.Cos(4 * a);
                 float x = (float)(c * outline * variation * halfWidth);
                 float y = (float)(s * outline * variation * halfHeight);
                 outer[i] = new ArcadeRegionPoint(x, y);
                 float radius = (float)Math.Sqrt(x * x + y * y);
                 // 北岸窄水带，南侧及两侧宽浅水；宽度随岸段连续变化，便于区分两类来敌。
                 float width = .5f + (float)(2.5 * Math.Pow(1 - Math.Max(0, s), 2)) + (float)(.25 * Math.Sin(2 * a));
+                if (roundNumber == 1) width = .65f + (float)(4 * Math.Pow(Math.Max(0, -s), 3));
+                if (roundNumber == 2) width = .8f + (float)(2.7 * Math.Pow(Math.Abs(c), 4));
+                if (roundNumber == 3) width = .7f + (float)(9 * Math.Pow(Math.Max(0, c), 8));
+                if (roundNumber == 4) width = 1.1f + (float)(.45 * (1 + Math.Sin(3 * a)));
                 float scale = (radius - width) / radius;
                 sand[i] = new ArcadeRegionPoint(x * scale, y * scale);
             }

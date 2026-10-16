@@ -10,10 +10,20 @@ namespace Game
     {
         /// <summary>当前场地不可变轮廓；离场清空，独立房间与挑战不使用。</summary>
         private ArcadeIslandRegion islandRegion;
+        private int islandRegionRound = -1;
         private readonly List<ArcadeRegionPoint> islandMovementPath = new();
-        private ArcadeIslandRegion IslandFor(ArcadeCombatRuntime runtime) =>
-            !runtime.IsChallenge && !runtime.InTreasureRoom && arena.Opening.Enabled
-                ? islandRegion ??= new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight) : null;
+        private ArcadeIslandRegion IslandFor(ArcadeCombatRuntime runtime)
+        {
+            if (runtime.IsChallenge || runtime.InTreasureRoom || !arena.Opening.Enabled) return null;
+            int round = UsesIslandRounds(runtime) ? runtime.WaveIndex + 1 : 0;
+            if (islandRegion == null || islandRegionRound != round)
+            {
+                islandRegionRound = round;
+                islandRegion = round > 0 ? new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, round)
+                    : new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
+            }
+            return islandRegion;
+        }
 
         private Vector2 IslandPosition(ArcadeCombatRuntime runtime, Vector2 position, float radius)
         {

@@ -78,8 +78,22 @@ namespace Game
         private void OpenOnlineOrLeaveArcade()
         {
             if (leavingMap) return;
-            if (IsArcadeMap) LeaveArcadeAsync().Forget();
-            else UIHelper.ShowUI<OnlineLoginUICtrl>();
+            if (!IsArcadeMap) { UIHelper.ShowUI<OnlineLoginUICtrl>(); return; }
+            var run = this.GetModel<ArcadeRunModel>()?.Current;
+            if (run?.IslandRoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
+            long generation = ++confirmationGeneration;
+            var checkpoint = run.IslandRoundCheckpoint;
+            Notify.ShowMessage(Loc.T("ui.arcade.island.leave.title"),
+                Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber))),
+                new List<MessageButtonConfig>
+                {
+                    new() { ButtonText = Loc.T("ui.common.confirm"), Role = MessageButtonRole.Confirm,
+                        OnClick = () => {
+                            if (generation == confirmationGeneration && IsShow() && IsArcadeMap &&
+                                this.GetModel<ArcadeRunModel>().Current?.RunId == run.RunId) LeaveArcadeAsync().Forget();
+                        } },
+                    new() { ButtonText = Loc.T("ui.common.cancel"), Role = MessageButtonRole.Cancel }
+                });
         }
 
         /// <summary>离开只返回主菜单并恢复已有安全节点，不结算或删除存档；失败可在原暂停菜单重试。</summary>

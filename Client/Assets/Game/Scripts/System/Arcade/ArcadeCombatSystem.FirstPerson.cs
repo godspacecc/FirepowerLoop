@@ -39,6 +39,7 @@ namespace Game
         {
             if (runtime == null || runtime.FirstPersonRemaining <= 0) return;
             runtime.FirstPersonRemaining = 0;
+            runtime.IslandFirstPersonSuspended = false;
             view?.EndFirstPerson();
             ClearArcadeInput(runtime);
         }
@@ -55,6 +56,7 @@ namespace Game
         private bool ReadFirstPersonInput(ArcadeCombatRuntime runtime, Vector2 move, Vector2 stickAim, bool stickFiring)
         {
             if (runtime.FirstPersonRemaining <= 0) return false;
+            if (runtime.IslandFirstPersonSuspended) return false;
             if (!view.IsFirstPersonActive || !view.TryReadFirstPersonAim(out _))
             { EndFirstPerson(runtime); return false; }
             if (input?.CancelPressedThisFrame == true)

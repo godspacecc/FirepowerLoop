@@ -31,11 +31,15 @@ namespace Game
             {
                 if (discovered)
                 {
-                    var entrance=CreateContent("TreasureEntrance",new Vector3(p.EntryX,0,p.EntryY));
+                    var entryPosition = new Vector2(p.EntryX, p.EntryY);
+                    if (islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var islandCatalog, out _))
+                        entryPosition = ArcadeIslandLayout.GetLandmarkPosition(new ArcadeIslandRegion(islandCatalog.Rule.ArenaHalfWidth,
+                            islandCatalog.Rule.ArenaHalfHeight, islandRound), entryPosition, p.EntryRadius + islandCatalog.Rule.PlayerRadius);
+                    var entrance=CreateContent("TreasureEntrance",new Vector3(entryPosition.x,0,entryPosition.y));
                     SetContentLabel(entrance,open?"ui.arcade.treasure.open":"ui.arcade.treasure.locked");
                     entrance.transform.Find("Chest").localRotation=Quaternion.Euler(0,open?35:0,0);
                     treasureVisuals.Add(entrance);
-                    if(open){var gate=CreateContent("RouteGate",new Vector3(p.EntryX,0,p.EntryY));SetContentLabel(gate,"ui.arcade.treasure.open");treasureVisuals.Add(gate);}
+                    if(open){var gate=CreateContent("RouteGate",new Vector3(entryPosition.x,0,entryPosition.y));SetContentLabel(gate,"ui.arcade.treasure.open");treasureVisuals.Add(gate);}
                 }
                 return;
             }

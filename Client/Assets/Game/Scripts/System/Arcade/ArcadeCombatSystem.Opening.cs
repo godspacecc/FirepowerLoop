@@ -19,6 +19,11 @@ namespace Game
         private void TickOpeningFire(ArcadeCombatRuntime runtime, float seconds)
         {
             var p = arena.Opening;
+            if (UsesIslandRounds(runtime) && runtime.IslandCampfireWarningRemaining > 0)
+            {
+                runtime.IslandCampfireWarningRemaining = Mathf.Max(0, runtime.IslandCampfireWarningRemaining - seconds);
+                return;
+            }
             if (!ArcadeOpeningRules.CampfireActive(p, runtime.WaveIndex, runtime.IsChallenge || runtime.IsFinalBoss,
                 runtime.WaveClearAwarded, runtime.AwaitingExit, runtime.InTreasureRoom, runtime.RespawnRemaining > 0)) return;
             runtime.CampfireCooldown = Mathf.Max(0, runtime.CampfireCooldown - seconds);

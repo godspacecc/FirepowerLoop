@@ -51,7 +51,10 @@ namespace Game
                 }
                 return;
             }
-            bool near = (runtime.PlayerPosition - new Vector2(rules.EntryX, rules.EntryY)).sqrMagnitude <=
+            var entry = new Vector2(rules.EntryX, rules.EntryY);
+            if (UsesIslandRounds(runtime)) entry = ArcadeIslandLayout.GetLandmarkPosition(IslandFor(runtime),
+                entry, rules.EntryRadius + catalog.Rule.PlayerRadius);
+            bool near = (runtime.PlayerPosition - entry).sqrMagnitude <=
                 rules.EntryRadius * rules.EntryRadius;
             if (runtime.WaveIndex + 1 == rules.WaveNumber)
             {
@@ -64,8 +67,9 @@ namespace Game
                 // 场外弹丸不能随领取者进入新区域继续命中，逐个归还现有运行对象池。
                 foreach (var projectile in runtime.Projectiles.Values.Where(p => !p.Hostile).ToArray())
                     RemoveProjectile(runtime, projectile.Id);
-                EndFirstPerson(runtime);
+                if (UsesIslandRounds(runtime)) SuspendIslandFirstPerson(runtime); else EndFirstPerson(runtime);
                 runtime.InTreasureRoom = true;
+                runtime.IslandRoomTransitionPending = UsesIslandRounds(runtime);
                 runtime.PlayerPosition = new Vector2(rules.SpawnX, rules.SpawnY);
             }
         }
@@ -74,6 +78,8 @@ namespace Game
         {
             runtime.InTreasureRoom = false;
             runtime.TreasureCompleted = true;
+            if (UsesIslandRounds(runtime) && runtime.WaveIndex == 2)
+            { StartIslandRound(runtime, 3); return; }
             runtime.PlayerPosition = IslandPosition(runtime,
                 new Vector2(runtime.TreasureRoom.Parameters.ReturnX, runtime.TreasureRoom.Parameters.ReturnY), catalog.Rule.PlayerRadius);
             if (runtime.WaveIndex == 2) BeginWave(runtime, 3);
@@ -114,18 +120,33 @@ namespace Game
         /// <summary>区域变化重建本机空间表现，规则现场保持原样；进入不卸载整队地图。</summary>
         private void SyncTreasureView(ArcadeCombatRuntime runtime)
         {
+            try { SyncTreasureViewCore(runtime); }
+            catch (Exception exception)
+            {
+                if (!UsesIslandRounds(runtime)) throw;
+                runtime.IslandRoomTransitionPending = true;
+                runtime.PresentedRegion = 0;
+                FailIslandTransition(runtime, exception.Message);
+            }
+        }
+
+        private void SyncTreasureViewCore(ArcadeCombatRuntime runtime)
+        {
             int region = runtime.InTreasureRoom ? 1 : 0;
             if (runtime.PresentedRegion != region)
             {
                 var p = runtime.TreasureRoom.Parameters;
                 view.Begin(arena.ArenaNumber, region == 1 ? p.HalfWidth : catalog.Rule.ArenaHalfWidth,
                     region == 1 ? p.HalfHeight : catalog.Rule.ArenaHalfHeight,
-                    region == 1 ? Array.Empty<ArcadeObstacleDefinition>() : arena.Obstacles);
+                    region == 1 ? Array.Empty<ArcadeObstacleDefinition>() : ObstaclesFor(runtime));
+                view.SetIslandRound(UsesIslandRounds(runtime) && region == 0 ? runtime.WaveIndex + 1 : 0);
                 runtime.PresentedRegion = region;
             }
             var room = runtime.TreasureRoom;
-            view.SetTreasureRoom(room?.Parameters, runtime.InTreasureRoom, runtime.TreasureDiscovered,
-                runtime.TreasureCleared && room?.Expired == false, room?.RemainingRewards.Select(r => r.Id).ToArray() ?? Array.Empty<int>());
+            bool completedIslandTreasure = UsesIslandRounds(runtime) && runtime.TreasureCompleted;
+            view.SetTreasureRoom(room?.Parameters, runtime.InTreasureRoom, runtime.TreasureDiscovered && !completedIslandTreasure,
+                runtime.TreasureCleared && !completedIslandTreasure && room?.Expired == false,
+                room?.RemainingRewards.Select(r => r.Id).ToArray() ?? Array.Empty<int>());
         }
     }
 }

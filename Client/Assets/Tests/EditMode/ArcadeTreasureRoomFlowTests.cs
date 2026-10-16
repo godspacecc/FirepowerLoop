@@ -47,7 +47,13 @@ namespace Game.Tests
         private void Reward(int index)
         {runtime.PlayerPosition=new Vector2(runtime.TreasureRoom.Parameters.Rewards[index].X,runtime.TreasureRoom.Parameters.Rewards[index].Y);Tick();}
         [Test] public void DiscoveryDoesNotEnterUnclearedWave()
-        {runtime.SpawnQueue.Enqueue("pending");Tick();Assert.That(runtime.TreasureDiscovered,Is.True);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.TreasureRoom.Started,Is.False);}
+        {
+            var rules=catalog.TreasureRooms.First();
+            runtime.PlayerPosition=ArcadeIslandLayout.GetLandmarkPosition(new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,
+                catalog.Rule.ArenaHalfHeight,3),new Vector2(rules.EntryX,rules.EntryY),rules.EntryRadius+catalog.Rule.PlayerRadius);
+            runtime.SpawnQueue.Enqueue("pending");Tick();Assert.That(runtime.TreasureDiscovered,Is.True);
+            Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.TreasureRoom.Started,Is.False);
+        }
         [Test] public void ClearAllowsEntryWithOneFixedSet()
         {Tick();Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureRoom.RemainingRewards.Length,Is.EqualTo(18));Assert.That(runtime.PlayerPosition,Is.EqualTo(new Vector2(0,-4)));}
         [Test] public void GoldIsPersonalScore_NotShoppingCash()
@@ -55,7 +61,7 @@ namespace Game.Tests
         [Test] public void FullBombDoesNotConsumeSharedPickup()
         {Tick();runtime.Bombs=9;Reward(16);Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.True);runtime.Bombs=8;Reward(16);Assert.That(runtime.Bombs,Is.EqualTo(9));Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.False);}
         [Test] public void TimeoutReturnsPlayerWithoutReopening()
-        {Tick();Tick(60);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.PlayerPosition,Is.EqualTo(new Vector2(-12,-15)));runtime.PlayerPosition=new Vector2(-15,-15);Tick();Assert.That(runtime.InTreasureRoom,Is.False);}
+        {Tick();Tick(60);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.PlayerPosition,Is.EqualTo(ArcadeIslandLayout.GetSpawn(4,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)));Assert.That(runtime.WaveIndex,Is.EqualTo(3));runtime.PlayerPosition=new Vector2(-15,-15);Tick();Assert.That(runtime.InTreasureRoom,Is.False);}
         [Test] public void EarlyReturnContinuesFourthWave()
         {
             Tick();typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition",Flags).Invoke(system,new object[]{runtime,2f});Assert.That(runtime.WaveIndex,Is.EqualTo(2));

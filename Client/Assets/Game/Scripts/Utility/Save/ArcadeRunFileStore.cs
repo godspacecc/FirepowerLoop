@@ -107,7 +107,7 @@ namespace Game
             }
         }
 
-        /// <summary>严格校验可恢复的安全节点；任何战斗现场字段都不属于此合同。</summary>
+        /// <summary>严格校验可恢复安全节点及海岛轮前稳定状态，不接受现场世界对象。</summary>
         public static bool TryValidate(ArcadeRunSaveData data, out string error)
         {
             if (data == null || data.Version != ArcadeRunSaveData.CurrentVersion || !ArcadeRunIdentity.IsValid(data.RunId) ||
@@ -147,6 +147,23 @@ namespace Game
                 return false;
             }
 
+            if (data.IslandRoundCheckpoint != null &&
+                (!data.IsCasualRoute || data.NextArenaNumber != 1 || data.ArenaConfigNumber != 1 ||
+                 data.HasResult || !TryValidateIslandRound(data.IslandRoundCheckpoint)))
+            {
+                error = "海岛轮级安全节点无效";
+                return false;
+            }
+
+            if (data.ArenaEntryState != null &&
+                (!data.IsCasualRoute || data.NextArenaNumber <= 1 || data.HasResult || data.IslandRoundCheckpoint != null ||
+                 data.ArenaEntryState.RoundNumber != 1 || data.ArenaEntryState.MapId != "arena.entry" ||
+                 data.ArenaEntryState.ArenaGold != 0 || !TryValidatePlayerState(data.ArenaEntryState)))
+            {
+                error = "竞技场角色入场状态无效";
+                return false;
+            }
+
             var offerIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var offer in data.Shop.Offers)
             {
@@ -175,6 +192,35 @@ namespace Game
 
         private static bool TryValidateAmounts(IEnumerable<KeyValuePair<string, int>> values) =>
             values.All(pair => !string.IsNullOrWhiteSpace(pair.Key) && pair.Value >= 0);
+
+        /// <summary>文件层验证稳定身份、有限数和非负余额；效果配置兼容性由战斗模块验证。</summary>
+        private static bool TryValidateIslandRound(ArcadeIslandRoundCheckpoint value)
+        {
+            return value.RoundNumber >= 1 && value.RoundNumber <= 4 &&
+                value.MapId == $"island.round.{value.RoundNumber}" && TryValidatePlayerState(value);
+        }
+
+        /// <summary>轮前节点与后续场地入场状态共享角色数值校验，分别验证地图身份。</summary>
+        private static bool TryValidatePlayerState(ArcadeIslandRoundCheckpoint value)
+        {
+            if (value.PlayerMaxHealth <= 0 || value.PlayerHealth <= 0 || value.PlayerHealth > value.PlayerMaxHealth ||
+                value.Bombs < 0 || value.Dashes < 0 || value.ArenaGold < 0 || value.Powerups == null ||
+                !ValidTimer(value.TemporaryWeaponRemaining) || !ValidTimer(value.FirstPersonRemaining) ||
+                !ValidTimer(value.FireCooldown) || !ValidTimer(value.InvulnerabilityRemaining) || !ValidTimer(value.DashRemaining) ||
+                !Finite(value.AimDirectionX) || !Finite(value.AimDirectionY) ||
+                (!string.IsNullOrEmpty(value.TemporaryWeaponId) && !ValidStableId(value.TemporaryWeaponId)) ||
+                value.TemporaryWeaponRemaining > 0 && string.IsNullOrEmpty(value.TemporaryWeaponId)) return false;
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            return value.Powerups.All(effect => effect != null && ValidStableId(effect.ProductId) && ids.Add(effect.ProductId) &&
+                ValidTimer(effect.RemainingSeconds) && effect.Charges >= 0 && ValidTimer(effect.CooldownSeconds) &&
+                Finite(effect.PositionX) && Finite(effect.PositionY));
+        }
+
+        private static bool Finite(float value) => !float.IsNaN(value) && !float.IsInfinity(value);
+        private static bool ValidTimer(float value) => Finite(value) && value >= 0;
+        private static bool ValidStableId(string value) => !string.IsNullOrWhiteSpace(value) && value.Length <= 128 &&
+            value.All(character => character >= 'a' && character <= 'z' || character >= 'A' && character <= 'Z' ||
+                character >= '0' && character <= '9' || character == '.' || character == '_' || character == '-');
 
         private static void TryDelete(string path)
         {
