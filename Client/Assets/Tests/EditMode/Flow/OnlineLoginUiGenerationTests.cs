@@ -32,8 +32,6 @@ namespace Game.Tests
             new FieldExpectation("AuthenticatedRoot", typeof(GameObject), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-2544842655209300070-0"),
             new FieldExpectation("UserNameInput", typeof(TMP_InputField), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-5737539804132797578-0"),
             new FieldExpectation("PasswordInput", typeof(TMP_InputField), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-1234704575787636661-0"),
-            new FieldExpectation("ServerAddressInput", typeof(TMP_InputField), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-1857192322086178747-0"),
-            new FieldExpectation("SaveServerButton", typeof(Button), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-2208656212690976453-0"),
             new FieldExpectation("LoginButton", typeof(Button), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-8072789183465558659-0"),
             new FieldExpectation("LogoutButton", typeof(Button), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-3006928175437741375-0"),
             new FieldExpectation("RoomButton", typeof(Button), "GlobalObjectId_V1-1-1ecdc9909fa36f4469dc531af5890e85-6344381357683178872-0"),
@@ -130,12 +128,12 @@ namespace Game.Tests
         }
 
         [UnityTest]
-        public IEnumerator ServerAddressEditingAvailableInLoginAndSettingsNetworkPage()
+        public IEnumerator ServerAddressEditingOnlyAvailableInSettingsNetworkPage()
         {
             OnlineLoginUI ui = ShowLoginUi();
             yield return null;
-            Assert.That(ui.ServerAddressInput.gameObject.activeSelf, Is.True);
-            Assert.That(ui.SaveServerButton.gameObject.activeSelf, Is.True);
+            Assert.That(typeof(OnlineLoginUI).GetField("ServerAddressInput"), Is.Null);
+            Assert.That(typeof(OnlineLoginUI).GetField("SaveServerButton"), Is.Null);
 
             var setting = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Game/Prefabs/UI/Home/Page/SettingNetwork.prefab");
@@ -144,6 +142,23 @@ namespace Game.Tests
             Assert.That(network.GameServerApplyButton, Is.Not.Null);
             Assert.That(network.ResourceServerInput, Is.Not.Null);
             Assert.That(network.ResourceServerApplyButton, Is.Not.Null);
+        }
+
+        [UnityTest]
+        public IEnumerator LoginButton_UsesConfiguredEndpointWithoutSavingItAgain()
+        {
+            var ui = ShowLoginUi();
+            ui.UserNameInput.text = "review_user";
+            ui.PasswordInput.text = "Pass_123";
+            ui.LoginButton.onClick.Invoke();
+            yield return WaitUntil("login submitted from dialog", () => harness.Network.PendingCallCount == 1);
+            Assert.That(harness.Config.SaveCount, Is.Zero, "登录弹窗不能再次覆盖设置页保存的地址");
+            Assert.That(harness.Config.LoadCount, Is.EqualTo(1), "服务器地址只由账号系统在登录事务中读取");
+            Assert.That(ui.LoginButton.interactable, Is.False);
+            harness.Network.CompleteNextLoginSuccess();
+            yield return WaitUntil("dialog login completed", () => harness.Account.Snapshot.IsAuthenticated);
+            Assert.That(ui.AuthenticatedRoot.activeSelf, Is.True);
+            Assert.That(ui.PasswordInput.text, Is.Empty);
         }
 
         [UnityTest]
@@ -206,7 +221,7 @@ namespace Game.Tests
             Assert.That(close.anchorMax, Is.EqualTo(Vector2.one));
             Assert.That(close.pivot, Is.EqualTo(Vector2.one));
             Assert.That(close.anchoredPosition, Is.EqualTo(Vector2.zero));
-            Assert.That(close.sizeDelta, Is.EqualTo(new Vector2(220f, 128f)));
+            Assert.That(close.sizeDelta, Is.EqualTo(new Vector2(150f, 64f)));
             Assert.That(WorldRect(close).Overlaps(WorldRect(title)), Is.False);
             Assert.That(WorldRect(close).Overlaps(WorldRect(ui.RoomButton.GetComponent<RectTransform>())), Is.False);
             Assert.That(WorldRect(close).Overlaps(WorldRect(ui.LogoutButton.GetComponent<RectTransform>())), Is.False);
@@ -457,15 +472,19 @@ namespace Game.Tests
         private sealed class FakeNetworkConfigProvider : IEditableNetworkConfigProvider
         {
             public string SavedEndpoint { get; private set; } = "127.0.0.1:31001";
+            public int SaveCount { get; private set; }
+            public int LoadCount { get; private set; }
 
             public Task<NetworkConfigResult> LoadAsync(CancellationToken cancellationToken)
             {
+                LoadCount++;
                 NetworkEndpoint.TryParse(SavedEndpoint, out NetworkEndpoint endpoint);
                 return Task.FromResult(NetworkConfigResult.Ok(endpoint));
             }
 
             public bool TrySaveEndpoint(string value, out NetworkEndpoint endpoint, out string diagnostic)
             {
+                SaveCount++;
                 if (!NetworkEndpoint.TryParse(value, out endpoint))
                 {
                     diagnostic = "endpoint";

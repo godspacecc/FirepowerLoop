@@ -13,18 +13,23 @@ namespace Game.Tests
         private const string Path = "Assets/Game/Prefabs/UI/Online/OnlineLogin.prefab";
 
         [Test]
-        public void LoginUsesFullScreenBackgroundAndStartScreenControlSizes()
+        public void LoginUsesCenteredDialogAndSettingsOwnServerAddress()
         {
             var root = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
             var rect = (RectTransform)root.transform;
             Assert.AreEqual(Vector2.zero, rect.anchorMin);
             Assert.AreEqual(Vector2.one, rect.anchorMax);
-            var background = root.GetComponentInChildren<RawImage>(true);
-            Assert.IsNotNull(background);
-            Assert.AreEqual("Assets/Game/Art/UI/Start/StartBackground.png", AssetDatabase.GetAssetPath(background.texture));
-            Assert.IsFalse(background.raycastTarget);
+            var panel = (RectTransform)root.transform.Find("LoginContent");
+            Assert.AreEqual(new Vector2(.5f, .5f), panel.anchorMin);
+            Assert.AreEqual(panel.anchorMin, panel.anchorMax);
+            Assert.AreEqual(Vector2.zero, panel.anchoredPosition);
+            Assert.LessOrEqual(panel.sizeDelta.x, 720);
+            Assert.LessOrEqual(panel.sizeDelta.y, 760);
+            Assert.IsNull(root.GetComponentInChildren<RawImage>(true));
+            Assert.IsFalse(System.Array.Exists(root.GetComponentsInChildren<Transform>(true),
+                t => t.name == "ServerAddressInput" || t.name == "ServerAddressLabel" || t.name == "SaveServerButton"));
             var view = root.GetComponent<OnlineLoginUI>();
-            foreach (var input in new[] { view.UserNameInput, view.PasswordInput, view.ServerAddressInput })
+            foreach (var input in new[] { view.UserNameInput, view.PasswordInput })
             {
                 Assert.AreEqual(64, ((RectTransform)input.transform).sizeDelta.y);
                 Assert.IsNotNull(input.textViewport.GetComponent<RectMask2D>());
@@ -60,8 +65,6 @@ namespace Game.Tests
                 UITheme.Apply(instance);
                 Assert.AreEqual(before, view.RoomButton.targetGraphic.color);
                 Assert.Greater(before.g, .7f);
-                Assert.IsTrue(view.ServerAddressInput.gameObject.activeSelf);
-                Assert.IsTrue(view.SaveServerButton.gameObject.activeSelf);
             }
             finally { Object.DestroyImmediate(host); }
         }

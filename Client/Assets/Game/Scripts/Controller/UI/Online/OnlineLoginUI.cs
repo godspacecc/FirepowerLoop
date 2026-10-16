@@ -20,7 +20,5 @@ namespace Game
         public TMP_InputField UserNameInput;
         public Button WorldButton;
         public TextMeshProUGUI WorldButtonText;
-        public TMP_InputField ServerAddressInput;
-        public Button SaveServerButton;
     }
 }

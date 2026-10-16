@@ -1,8 +1,6 @@
 using System;
 using Cysharp.Threading.Tasks;
-using Game.Network;
 using QFramework;
-using System.Threading;
 using UnityEngine.EventSystems;
 
 namespace Game
@@ -11,10 +9,9 @@ namespace Game
     public sealed class OnlineLoginUICtrl : BaseUICtrl
     {
         private OnlineLoginUI UI => BaseUI as OnlineLoginUI;
+        /// <summary>每次操作或隐藏时递增，使旧异步回调失效。</summary>
         private int operationGeneration;
         private bool isVisible;
-        private bool endpointReady;
-        private string activeEndpointText = string.Empty;
         private OnlineOperationState lastNoticeOperationState;
         private OnlineAccountResultCode lastNoticeResultCode;
         private static bool requestArcadeRoomMode;
@@ -55,7 +52,6 @@ namespace Game
         {
             UI.ResultText.gameObject.SetActive(false);
             UI.LoginButton.onClick.AddListener(() => SubmitLogin().Forget());
-            UI.SaveServerButton.onClick.AddListener(SaveServerEndpoint);
             UI.LogoutButton.onClick.AddListener(() => SubmitLogout().Forget());
             if (UI.RoomButton != null)
             {
@@ -74,7 +70,6 @@ namespace Game
             isVisible = true;
             arcadeRoomMode = true;
             requestArcadeRoomMode = false;
-            endpointReady = false;
             var snapshot = this.GetSystem<OnlineAccountSystem>().Snapshot;
             lastNoticeOperationState = snapshot.OperationState;
             lastNoticeResultCode = snapshot.LastResultCode;
@@ -84,7 +79,6 @@ namespace Game
                 UI.PasswordInput.text = string.Empty;
             }
             Render(snapshot);
-            RefreshServerEndpoint().Forget();
         }
 
         protected override void OnHide()
@@ -92,7 +86,6 @@ namespace Game
             enterLobbyAfterLogin = false;
             isVisible = false;
             arcadeRoomMode = false;
-            endpointReady = false;
             operationGeneration++;
             ClearPasswordAndFocus();
             this.GetSystem<OnlineAccountSystem>().CloseAnonymousSession();
@@ -110,71 +103,10 @@ namespace Game
             UIHelper.ShowUI<OnlineRoomUICtrl>();
         }
 
+        /// <summary>提交账号登录；账号系统读取网络设置，本弹窗不保存或覆盖服务器地址。</summary>
         private UniTask SubmitLogin()
         {
-            if (!TryApplyServerEndpoint(false))
-            {
-                return UniTask.CompletedTask;
-            }
             return RunOperation((system, user, password) => system.LoginAsync(user, password));
-        }
-
-        /// <summary>读取持久化覆盖或 APK 内置地址；晚返回不会覆盖已隐藏或已发起操作的新界面状态。</summary>
-        private async UniTask RefreshServerEndpoint()
-        {
-            int generation = operationGeneration;
-            INetworkConfigProvider provider = this.GetUtility<INetworkConfigProvider>();
-            NetworkConfigResult result = provider == null
-                ? NetworkConfigResult.Ok(StreamingAssetsNetworkConfigProvider.DefaultEndpoint)
-                : await provider.LoadAsync(CancellationToken.None);
-            if (!isVisible || generation != operationGeneration || UI == null)
-            {
-                return;
-            }
-
-            endpointReady = true;
-            activeEndpointText = result.Success ? result.Endpoint.ToString() : string.Empty;
-            UI.ServerAddressInput.text = activeEndpointText;
-            Render(this.GetSystem<OnlineAccountSystem>().Snapshot);
-            if (!result.Success)
-            {
-                Notify.ShowFloatTips(Loc.T("ui.online.error.config"));
-            }
-        }
-
-        private void SaveServerEndpoint()
-        {
-            TryApplyServerEndpoint(true);
-        }
-
-        /// <summary>保存地址后关闭旧匿名连接；已认证会话不在此入口迁移。</summary>
-        private bool TryApplyServerEndpoint(bool showSuccess)
-        {
-            if (!endpointReady || UI == null || this.GetSystem<OnlineAccountSystem>().Snapshot.IsAuthenticated)
-            {
-                return false;
-            }
-
-            var provider = this.GetUtility<INetworkConfigProvider>() as IEditableNetworkConfigProvider;
-            if (provider == null || !provider.TrySaveEndpoint(UI.ServerAddressInput.text, out NetworkEndpoint endpoint, out _))
-            {
-                Notify.ShowFloatTips(Loc.T("ui.online.error.config"));
-                return false;
-            }
-
-            string normalized = endpoint.ToString();
-            bool changed = !string.Equals(activeEndpointText, normalized, StringComparison.OrdinalIgnoreCase);
-            activeEndpointText = normalized;
-            UI.ServerAddressInput.text = normalized;
-            if (changed)
-            {
-                this.GetSystem<OnlineAccountSystem>().CloseAnonymousSession();
-            }
-            if (showSuccess)
-            {
-                Notify.ShowFloatTips(Loc.T("ui.online.server_saved"));
-            }
-            return true;
         }
 
         private async UniTask SubmitLogout()
@@ -299,9 +231,7 @@ namespace Game
                 return;
             }
 
-            bool anonymousInputsEnabled = enabled && endpointReady;
-            UI.ServerAddressInput.interactable = anonymousInputsEnabled;
-            UI.SaveServerButton.interactable = anonymousInputsEnabled;
+            bool anonymousInputsEnabled = enabled;
             UI.UserNameInput.interactable = anonymousInputsEnabled;
             UI.PasswordInput.interactable = anonymousInputsEnabled;
             UI.LoginButton.interactable = anonymousInputsEnabled;
