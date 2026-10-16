@@ -277,6 +277,12 @@ namespace ET
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
             {
                 var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
+                foreach (var reward in room.Rewards.Where(r => r.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon))
+                {
+                    var drop = this.tables.TbArcadeDrop.GetOrDefault(reward.DropId);
+                    if (drop == null || drop.Kind != ArcadeDropKind.TemporaryWeapon)
+                        throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid weapon drop: " + reward.DropId);
+                }
                 var target = this.tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
                 var arenaRule = this.tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||

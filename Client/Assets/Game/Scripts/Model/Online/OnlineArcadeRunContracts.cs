@@ -142,19 +142,22 @@ namespace Game
     {
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
             TargetPlayerId = targetPlayerId; WaveNumber = waveNumber;
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
-            ArmorHealth = armorHealth;
+            ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }
         public float PositionX { get; }
         public float PositionZ { get; }
         public int CurrentHealth { get; }
+        public int SpecialKind { get; }
+        public int ContentBossKind { get; }
+        public bool ContentWarning { get; }
         public int ArmorHealth { get; }
         public int MaxHealth { get; }
         public long TargetPlayerId { get; }
@@ -237,7 +240,9 @@ namespace Game
             string treasureRoomId = null, bool treasureDiscovered = false, bool treasureOpen = false,
             bool treasureExpired = false, float treasureSeconds = 0, IReadOnlyList<int> treasureRewardIds = null,
             IReadOnlyList<int> crateIds = null, IReadOnlyList<OnlineArcadeDropSnapshot> supplyPickups = null,
-            float treasureRewardSeconds = 30f)
+            float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
+            int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
+            float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false)
         {
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
             HazardElapsedSeconds = hazardElapsedSeconds;
@@ -247,6 +252,9 @@ namespace Game
             TreasureRoomId = treasureRoomId ?? string.Empty; TreasureDiscovered = treasureDiscovered;
             TreasureOpen = treasureOpen; TreasureExpired = treasureExpired; TreasureSeconds = treasureSeconds;
             TreasureRewardSeconds = treasureRewardSeconds;
+            RoundLayoutId=roundLayoutId??string.Empty;RoundLayoutVersion=roundLayoutVersion;RoundGeneration=roundGeneration;
+            RoundLoading=roundLoading;RoundLoadError=roundLoadError??string.Empty;ContentElapsed=contentElapsed;
+            ContentAreas=Array.AsReadOnly(Copy(contentAreas));RoundBossEncounter=roundBossEncounter;RoundBossDefeated=roundBossDefeated;
             TreasureRewardIds = Array.AsReadOnly(Copy(treasureRewardIds));
             CrateIds = Array.AsReadOnly(Copy(crateIds));
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
@@ -258,6 +266,16 @@ namespace Game
             IsChallenge = isChallenge; ChallengeId = challengeId ?? string.Empty;
             ChallengeSeconds = challengeSeconds;
         }
+        /// <summary>服务器提交的地图身份与加载代次；旧快照不能确认新代次。</summary>
+        public bool RoundBossEncounter { get; }
+        public bool RoundBossDefeated { get; }
+        public string RoundLayoutId { get; }
+        public int RoundLayoutVersion { get; }
+        public int RoundGeneration { get; }
+        public bool RoundLoading { get; }
+        public string RoundLoadError { get; }
+        public float ContentElapsed { get; }
+        public IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas { get; }
         public int ArenaNumber { get; }
         public int WaveNumber { get; }
         /// <summary>服务器选定的实际地图；旧协议为零时回退到序号。</summary>

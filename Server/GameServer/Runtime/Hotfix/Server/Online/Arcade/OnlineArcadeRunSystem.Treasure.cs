@@ -13,8 +13,9 @@ namespace ET.Server
             if (!battle.TreasureInitialized)
             {
                 battle.TreasureInitialized = true;
-                var config = !battle.IsChallenge && battle.IsCasualRoute && battle.ArenaNumber == 1
-                    ? ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.FirstOrDefault(r => r.ArenaConfigNumber == battle.ArenaConfigNumber) : null;
+                var config = !battle.IsChallenge && !battle.IsFinalBoss && battle.IsCasualRoute && battle.ArenaNumber <= 2
+                    ? ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.FirstOrDefault(r => r.ArenaConfigNumber == battle.ArenaNumber &&
+                        (battle.ArenaNumber == 2 || r.ArenaConfigNumber == battle.ArenaConfigNumber) && r.WaveNumber >= battle.WaveIndex + 1) : null;
                 if (config != null)
                 {
                     var rules = ArcadeTreasureRoomParameters.FromConfig(config);
@@ -36,7 +37,11 @@ namespace ET.Server
             if (room.Expired)
             {
                 battle.TreasureCompleted = true;
-                if (battle.WaveIndex == 2) PrepareWave(battle, ResolveBattleArena(battle), 3);
+                if (battle.WaveIndex == 2)
+                {
+                    if (p.IsArmory && battle.RoundLayout != null) battle.RoundTransitionPending = true;
+                    else PrepareWave(battle, ResolveBattleArena(battle), 3);
+                }
                 return true;
             }
             if (battle.WaveIndex + 1 == p.WaveNumber && battle.SpawnQueueIndex >= battle.SpawnQueue.Count && battle.Enemies.Count == 0 && !battle.TreasureCleared)
@@ -74,7 +79,11 @@ namespace ET.Server
             if (room.Started && room.Members.Length == 0 && battle.Players.Values.Where(p => p.Alive).All(p => p.TreasureVisited))
             {
                 battle.TreasureCompleted = true;
-                if (battle.WaveIndex == 2) PrepareWave(battle, ResolveBattleArena(battle), 3);
+                if (battle.WaveIndex == 2)
+                {
+                    if (p.IsArmory && battle.RoundLayout != null) battle.RoundTransitionPending = true;
+                    else PrepareWave(battle, ResolveBattleArena(battle), 3);
+                }
                 changed = true;
             }
             return changed;
@@ -93,6 +102,16 @@ namespace ET.Server
             ArcadeTreasureRoomParameters rules, bool recordFeedback = true)
         {
             var record = actor.Record.Players.First(r => r.PlayerId == playerId);
+            if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon)
+            {
+                var drop = ServerConfig.Instance.Tables.TbArcadeDrop.GetOrDefault(reward.DropId);
+                if (drop == null || drop.Kind != ArcadeDropKind.TemporaryWeapon ||
+                    !actor.Battle.Players.TryGetValue(playerId, out var player)) return false;
+                player.TemporaryWeaponId = drop.ProductId;
+                player.TemporaryWeaponSeconds = drop.DurationSeconds;
+                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, 1, 0);
+                return true;
+            }
             if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb || reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Dash)
             {
                 bool bomb = reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb;

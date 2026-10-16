@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -170,9 +170,9 @@ namespace Game.Tests
                 if (arenaNumber <= 3)
                 {
                     Assert.That(first.GetComponentInChildren<TextMeshPro>(true).text,
-                        Is.EqualTo(Loc.T("ui.arcade.destination.babylon")));
+                        Is.EqualTo(Loc.T("ui.arcade.theme.2")));
                     Assert.That(root.transform.GetChild(1).GetComponentInChildren<TextMeshPro>(true).text,
-                        Is.EqualTo(Loc.T("ui.arcade.destination.forest")));
+                        Is.EqualTo(Loc.T("ui.arcade.theme.3")));
                 }
                 view.SetExits(new[] { 2, 3 }, 20f, false);
                 Assert.That(root.transform.GetChild(0).gameObject, Is.SameAs(first));
@@ -230,6 +230,46 @@ namespace Game.Tests
         }
 
         /// <summary>提供真实模板与本地语言表，隔离展示测试对全局架构及资源加载器的影响。</summary>
+        /// <summary>军械库使用正式六种武器表现地址，渐隐只作用于物资，离场清理所有实例。</summary>
+        [Test] public void ArmoryVisualsUseSixWeaponPrefabsAndFadeWithoutRemovingExit()
+        {
+            WithExitView(2, true, (view, root) =>
+            {
+                var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+                    new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
+                Game.Interface.RegisterUtility<IRuntimeConfigProvider>(provider);
+                var loot = new ArmoryLootSpy();
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(ArcadeCombatViewController).GetField("lootPresentation", flags).SetValue(view, loot);
+                typeof(ArcadeCombatViewController).GetField("mapRoot", flags).SetValue(view, root.transform);
+                var room = Catalog().TreasureRooms.Single(r => r.IsArmory);
+                view.SetTreasureRoom(room, false, true, true, Array.Empty<int>());
+                Assert.That(root.GetComponentsInChildren<TextMeshPro>().Any(t => t.text.Contains("军械库") || t.text.Contains("Armory")), Is.True);
+                view.SetTreasureRoom(room, true, true, true, room.Rewards.Select(r => r.Id).ToArray());
+                Assert.That(loot.Addresses.Count, Is.EqualTo(6));
+                Assert.That(loot.Addresses.Values.Distinct().Count(), Is.EqualTo(6));
+                foreach (var address in loot.Addresses.Values)
+                    Assert.That(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/" + address + ".prefab"), Is.Not.Null, address);
+                view.SetTreasureRewardOpacity(.5f);
+                Assert.That(loot.Opacities.Values.All(a => a == .5f), Is.True);
+                view.SetTreasureRoom(room, true, true, true, Array.Empty<int>());
+                Assert.That(loot.Addresses, Is.Empty);
+                Assert.That(root.transform.Find("TreasureReturn"), Is.Not.Null);
+                view.End(); Assert.That(loot.Addresses, Is.Empty);
+            });
+        }
+        private sealed class ArmoryLootSpy : IArcadeLootPresentationPort
+        {
+            public readonly Dictionary<int, string> Addresses = new();
+            public readonly Dictionary<int, float> Opacities = new();
+            public bool TrySetDrop(int id, Vector3 position, string name, int amount, out string error)
+            { error = "必须使用正式武器地址"; return false; }
+            public bool TrySetDrop(int id, Vector3 position, string name, int amount, string address, out string error)
+            { Addresses[id] = address; error = null; return true; }
+            public void SetDropOpacity(int id, float opacity) { Opacities[id] = opacity; }
+            public void RemoveDrop(int id) { Addresses.Remove(id); Opacities.Remove(id); }
+            public void ClearArcadeDrops() { Addresses.Clear(); Opacities.Clear(); }
+        }
         private static void WithExitView(int arenaNumber, bool templatesReady,
             Action<ArcadeCombatViewController, GameObject> action)
         {

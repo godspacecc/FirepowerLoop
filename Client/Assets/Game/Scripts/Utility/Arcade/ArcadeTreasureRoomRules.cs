@@ -9,14 +9,14 @@ using RoomConfig = global::ArcadeTreasureRoomConfig;
 
 namespace FirepowerLoop.Arcade
 {
-    public enum ArcadeTreasureRewardKind { GoldBar = 1, Gem = 2, Bomb = 3, Dash = 4 }
+    public enum ArcadeTreasureRewardKind { GoldBar = 1, Gem = 2, Bomb = 3, Dash = 4, Weapon = 5 }
 
     /// <summary>实例内稳定的不可变物品参数；坐标为房间米，不含 Unity 资源或领取者状态。</summary>
     public readonly struct ArcadeTreasureRewardParameters
     {
         public ArcadeTreasureRewardParameters(int id, ArcadeTreasureRewardKind kind, float x, float y,
-            int points, int progress, int amount)
-        { Id = id; Kind = kind; X = x; Y = y; Points = points; Progress = progress; Amount = amount; }
+            int points, int progress, int amount, string dropId = null)
+        { Id = id; Kind = kind; X = x; Y = y; Points = points; Progress = progress; Amount = amount; DropId = dropId; }
         public int Id { get; }
         public ArcadeTreasureRewardKind Kind { get; }
         public float X { get; }
@@ -24,6 +24,8 @@ namespace FirepowerLoop.Arcade
         public int Points { get; }
         public int Progress { get; }
         public int Amount { get; }
+        /// <summary>武器奖励引用正式临时武器掉落；不复制伤害或持续时长。</summary>
+        public string DropId { get; }
     }
 
     /// <summary>双端配置转换后共享的不可变房间合同；值由 Luban 源决定，不替代局或玩家权威。</summary>
@@ -42,8 +44,10 @@ namespace FirepowerLoop.Arcade
             ProgressPerLevel = row.ProgressPerLevel; MaxMultiplier = row.MaxMultiplier;
             LifeThreshold = row.LifeThreshold; MaxLives = row.MaxLives;
             Rewards = Array.AsReadOnly(row.Rewards.Select(r => new ArcadeTreasureRewardParameters(r.Id,
-                (ArcadeTreasureRewardKind)(int)r.Kind, r.X, r.Y, r.Points, r.Progress, r.Amount)).ToArray());
+                (ArcadeTreasureRewardKind)(int)r.Kind, r.X, r.Y, r.Points, r.Progress, r.Amount, r.DropId == "-" ? null : r.DropId)).ToArray());
         }
+        /// <summary>房间身份由奖励种类决定，军械库不参与火力分级。</summary>
+        public bool IsArmory => Rewards.Any(r => r.Kind == ArcadeTreasureRewardKind.Weapon);
         public string Id { get; }
         public int ArenaConfigNumber { get; }
         public int WaveNumber { get; }
@@ -95,7 +99,9 @@ namespace FirepowerLoop.Arcade
                 p.Rewards.Any(r => r.Id <= 0 || !Enum.IsDefined(typeof(ArcadeTreasureRewardKind), r.Kind) ||
                     float.IsNaN(r.X) || float.IsInfinity(r.X) || float.IsNaN(r.Y) || float.IsInfinity(r.Y) ||
                     Math.Abs(r.X) + p.PickupRadius > p.HalfWidth || Math.Abs(r.Y) + p.PickupRadius > p.HalfHeight ||
-                    r.Points < 0 || r.Progress < 0 || r.Amount <= 0))
+                    r.Points < 0 || r.Progress < 0 || r.Amount <= 0 ||
+                    (r.Kind == ArcadeTreasureRewardKind.Weapon && (string.IsNullOrWhiteSpace(r.DropId) || r.Points != 0 || r.Progress != 0 || r.Amount != 1)) ||
+                    (r.Kind != ArcadeTreasureRewardKind.Weapon && !string.IsNullOrEmpty(r.DropId))))
                 throw new ArgumentException("宝藏房参数、位置或共享奖励无效：" + p.Id);
             return p;
         }

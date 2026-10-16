@@ -46,7 +46,6 @@ namespace Game
                 // 命中反馈属于所有竞技场；后续场地不启用前三场的环境、出口或宝藏覆盖。
                 bulletImpactTemplate = candidate.Find("BulletImpact")?.GetComponent<ParticleSystem>();
                 if (bulletImpactTemplate == null) throw new InvalidOperationException("公共枪弹命中模板缺失");
-                if (arena > 3) return;
                 contentTemplates=candidate;
                 SyncContentEnvironment();
                 treasureVisualIdentity=null; exitVisualIdentity=null;
@@ -75,6 +74,15 @@ namespace Game
         private void SyncContentEnvironment()
         {
             if(contentTemplates==null || root==null)return;
+            if (roundLayout != null && contentArena > 1)
+            {
+                if (contentEnvironment != null) contentEnvironment.SetActive(contentInRoom);
+                if (contentInRoom && contentEnvironment == null)
+                    contentEnvironment = CreateContent("TreasureRoom", Vector3.zero);
+                HideIslandBaseArena();
+                SyncRoundContentEnvironment();
+                return;
+            }
             string name=contentInRoom?"TreasureRoom":contentArena==2?"Babylon":contentArena==3?"Forest":null;
             if(contentEnvironmentIdentity==name)return;
             if(contentEnvironment!=null)contentEnvironment.SetActive(false);
@@ -82,6 +90,7 @@ namespace Game
             if(name!=null){contentEnvironment=CreateContent(name,Vector3.zero);HideIslandBaseArena();}
             else if(island==null)RestoreIslandBaseArena();
             if(island!=null)island.SetActive(!contentInRoom);
+            SyncRoundContentEnvironment();
         }
         private GameObject CreateContent(string name,Vector3 position)
         {
@@ -97,12 +106,10 @@ namespace Game
             text.text=Loc.T(key);
         }
         /// <summary>名称由实际场地配置身份绑定；4/15 仅描述现有蛮兽 Boss 与混合敌群，不实现后续场地。</summary>
-        private static string DestinationKey(int number) => number switch
-        {
-            2=>"ui.arcade.destination.babylon",3=>"ui.arcade.destination.forest",
-            4=>"ui.arcade.destination.brute",15=>"ui.arcade.destination.mixed",
-            _=>"ui.arcade.destination.next"
-        };
+        private static string DestinationKey(int number) => number >= 1 && number <= 20
+            ? "ui.arcade.theme." + number : "ui.arcade.destination.next";
+        private string RoundDestinationKey(int number) => roundLayout == null || contentArena == 1
+            ? ArcadeIslandLayout.GetNameKey(number) : "ui.arcade." + roundLayout.ThemeKey + ".round." + number;
         private void ReleaseContent()
         {
             contentGeneration++;

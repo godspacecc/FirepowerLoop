@@ -55,4 +55,8 @@
         <ProjectReference Include="..\Core\DotNet.Core.csproj" />
         <ProjectReference Include="..\ThirdParty\DotNet.ThirdParty.csproj" />
     </ItemGroup> 
+    <ItemGroup>
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeRoundLayoutRules.cs" Link="Share\ArcadeRoundLayoutRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeRoundContentRules.cs" Link="Share\ArcadeRoundContentRules.cs" />
+    </ItemGroup>
 </Project>

@@ -8,15 +8,16 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
-        /// <summary>活动权威帧处理房间时钟及空间接触；只为休闲起始场构建一次实例，不新增存档点。</summary>
+        /// <summary>活动权威帧处理房间时钟及空间接触；休闲前两场各构建一次配置实例，不新增房间存档点。</summary>
         private void TickTreasureRoom(ArcadeCombatRuntime runtime, float seconds)
         {
             if (!runtime.TreasureInitialized)
             {
                 runtime.TreasureInitialized = true;
                 var run = this.GetModel<ArcadeRunModel>().Current;
-                var p = !runtime.IsChallenge && run?.IsCasualRoute == true && run.NextArenaNumber == 1
-                    ? catalog.TreasureRooms.FirstOrDefault(r => r.ArenaConfigNumber == arena.ArenaNumber) : null;
+                var p = !runtime.IsChallenge && !runtime.IsFinalBoss && run?.IsCasualRoute == true && run.NextArenaNumber <= 2
+                    ? catalog.TreasureRooms.FirstOrDefault(r => r.ArenaConfigNumber == run.NextArenaNumber &&
+                        (r.IsArmory || r.ArenaConfigNumber == arena.ArenaNumber) && r.WaveNumber >= runtime.WaveIndex + 1) : null;
                 if (p != null) runtime.TreasureRoom = new ArcadeTreasureRoomState(
                     run.RunId + ":" + runtime.ArenaNumber + ":" + p.WaveNumber + ":" + p.Id, p);
             }
@@ -40,6 +41,8 @@ namespace Game
                     long scoreBefore = this.GetModel<ArcadeRunModel>().Current?.Score ?? 0;
                     int bombsBefore = runtime.Bombs, dashesBefore = runtime.Dashes;
                     if (!room.TryCollect(room.InstanceId, 1, reward.Id, r => ApplyTreasureReward(runtime, r), out _)) continue;
+                    if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon)
+                        view.PlayProductPickup(catalog.Drops.First(d => d.Id == reward.DropId).ProductId);
                     // 领取账本已移除物品后才通知表现，反馈失败不能让同一宝藏重复发奖。
                     if (runtime.Bombs > bombsBefore || runtime.Dashes > dashesBefore)
                     {
@@ -67,17 +70,20 @@ namespace Game
                 // 场外弹丸不能随领取者进入新区域继续命中，逐个归还现有运行对象池。
                 foreach (var projectile in runtime.Projectiles.Values.Where(p => !p.Hostile).ToArray())
                     RemoveProjectile(runtime, projectile.Id);
-                if (UsesIslandRounds(runtime)) SuspendIslandFirstPerson(runtime); else EndFirstPerson(runtime);
+                if (UsesRoundLayouts(runtime)) SuspendIslandFirstPerson(runtime); else EndFirstPerson(runtime);
                 runtime.InTreasureRoom = true;
-                runtime.IslandRoomTransitionPending = UsesIslandRounds(runtime);
+                runtime.IslandRoomTransitionPending = UsesRoundLayouts(runtime);
                 runtime.PlayerPosition = new Vector2(rules.SpawnX, rules.SpawnY);
             }
         }
 
+        /// <summary>离开奖励房后继续当前场下一轮，不新增存档或重发房内奖励。</summary>
         private void ReturnFromTreasure(ArcadeCombatRuntime runtime)
         {
             runtime.InTreasureRoom = false;
             runtime.TreasureCompleted = true;
+            if (runtime.TreasureRoom.Parameters.IsArmory && UsesContentRounds(runtime) && runtime.WaveIndex == 2)
+            { StartContentRound(runtime, 3); return; }
             if (UsesIslandRounds(runtime) && runtime.WaveIndex == 2)
             { StartIslandRound(runtime, 3); return; }
             runtime.PlayerPosition = IslandPosition(runtime,
@@ -91,6 +97,12 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var run = model.Current;
             if (run == null || model.Phase != ArcadeRunPhase.Arena) return false;
+            if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon)
+            {
+                var weaponDrop = catalog.Drops.FirstOrDefault(d => d.Id == reward.DropId && d.Kind == ArcadeDropKind.TemporaryWeapon);
+                if (string.IsNullOrEmpty(weaponDrop.Id) || !CanApplyDrop(weaponDrop)) return false;
+                return ApplyDrop(runtime, weaponDrop);
+            }
             if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb ||
                 reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Dash)
             {
@@ -123,7 +135,7 @@ namespace Game
             try { SyncTreasureViewCore(runtime); }
             catch (Exception exception)
             {
-                if (!UsesIslandRounds(runtime)) throw;
+                if (!UsesRoundLayouts(runtime)) throw;
                 runtime.IslandRoomTransitionPending = true;
                 runtime.PresentedRegion = 0;
                 FailIslandTransition(runtime, exception.Message);
@@ -140,10 +152,11 @@ namespace Game
                     region == 1 ? p.HalfHeight : catalog.Rule.ArenaHalfHeight,
                     region == 1 ? Array.Empty<ArcadeObstacleDefinition>() : ObstaclesFor(runtime));
                 view.SetIslandRound(UsesIslandRounds(runtime) && region == 0 ? runtime.WaveIndex + 1 : 0);
+                if (UsesContentRounds(runtime) && region == 0) view.SetRoundLayout(RoundLayout(runtime));
                 runtime.PresentedRegion = region;
             }
             var room = runtime.TreasureRoom;
-            bool completedIslandTreasure = UsesIslandRounds(runtime) && runtime.TreasureCompleted;
+            bool completedIslandTreasure = (UsesIslandRounds(runtime) || room?.Parameters.IsArmory == true) && runtime.TreasureCompleted;
             view.SetTreasureRoom(room?.Parameters, runtime.InTreasureRoom, runtime.TreasureDiscovered && !completedIslandTreasure,
                 runtime.TreasureCleared && !completedIslandTreasure && room?.Expired == false,
                 room?.RemainingRewards.Select(r => r.Id).ToArray() ?? Array.Empty<int>());

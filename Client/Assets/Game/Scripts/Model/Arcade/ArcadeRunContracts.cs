@@ -124,6 +124,43 @@ namespace Game
         }
     }
 
+    /// <summary>通用轮前节点，只持有稳定逻辑身份与角色剩余状态。</summary>
+    [Serializable]
+    public sealed class ArcadeRoundCheckpoint
+    {
+        /// <summary>本局场序。</summary>
+        public int ArenaNumber { get; set; }
+        /// <summary>正式场地配置编号。</summary>
+        public int ArenaConfigNumber { get; set; }
+        /// <summary>当前场地的一至四轮。</summary>
+        public int RoundNumber { get; set; }
+        /// <summary>布局合同版本，由配置拥有者确认支持。</summary>
+        public int LayoutVersion { get; set; }
+        /// <summary>稳定布局身份 arena.配置编号.round.轮次。</summary>
+        public string MapId { get; set; }
+        /// <summary>角色完整逻辑剩余状态。</summary>
+        public ArcadeIslandRoundCheckpoint PlayerState { get; set; }
+        /// <summary>本主题尚未领取的箱体稳定编号。</summary>
+        public List<int> RemainingCrateIds { get; set; } = new List<int>();
+        /// <summary>仍存在箱体的轮前剩余耐久；旧节点为空时由正式配置初始化。</summary>
+        public Dictionary<int, int> CrateHealth { get; set; } = new Dictionary<int, int>();
+        /// <summary>箱体已经初始化，空列表不会重复补发。</summary>
+        public bool CratesInitialized { get; set; }
+        /// <summary>本主题一次性宝藏已完成。</summary>
+        public bool TreasureCompleted { get; set; }
+        /// <summary>本轮遭遇的确定性种子，允许有符号随机数。</summary>
+        public long EncounterSeed { get; set; }
+        /// <summary>深拷贝角色、效果和箱体列表。</summary>
+        public ArcadeRoundCheckpoint Clone()
+        {
+            var copy = (ArcadeRoundCheckpoint)MemberwiseClone();
+            copy.PlayerState = PlayerState?.Clone();
+            copy.RemainingCrateIds = RemainingCrateIds?.ToList();
+            copy.CrateHealth = CrateHealth == null ? null : new Dictionary<int, int>(CrateHealth);
+            return copy;
+        }
+    }
+
     /// <summary>最近安全节点；可选海岛轮级节点兼容版本一旧档，不保存敌人、弹丸或掉落。</summary>
     [Serializable]
     public sealed class ArcadeRunSaveData
@@ -139,6 +176,8 @@ namespace Game
         public int ArenaConfigNumber { get; set; }
         /// <summary>缺失表示旧整场节点，从原第一轮继续；不迁移或删除旧档。</summary>
         public ArcadeIslandRoundCheckpoint IslandRoundCheckpoint { get; set; }
+        /// <summary>通用轮前节点；旧档缺失时保留原恢复行为。</summary>
+        public ArcadeRoundCheckpoint RoundCheckpoint { get; set; }
         /// <summary>海岛离场后延续到后续场地的角色与效果；固定 arena.entry，一场金币已经结清。</summary>
         public ArcadeIslandRoundCheckpoint ArenaEntryState { get; set; }
         /// <summary>最终 Boss 胜利出口提交后的可重试结算节点；该节点不可继续战斗。</summary>
@@ -177,6 +216,7 @@ namespace Game
             IsCasualRoute = IsCasualRoute,
             ArenaConfigNumber = ArenaConfigNumber,
             IslandRoundCheckpoint = IslandRoundCheckpoint?.Clone(),
+            RoundCheckpoint = RoundCheckpoint?.Clone(),
             ArenaEntryState = ArenaEntryState?.Clone(),
             Victory = Victory, Outcome = Outcome,
             RemainingLives = RemainingLives,

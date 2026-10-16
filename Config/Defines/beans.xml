@@ -290,6 +290,8 @@
         <var name="Points" type="int"/>
         <var name="Progress" type="int"/>
         <var name="Amount" type="int"/>
+        <!-- 军械库引用已有掉落定义；财宝和补给以 - 表示无武器引用。 -->
+        <var name="DropId" type="string"/>
     </bean>
     <bean name="ArcadeTreasureRoomConfig" group="e">
         <var name="Id" type="string"/>
@@ -412,5 +414,39 @@
         <var name="SceneType" type="string"/>
         <var name="Name" type="string"/>
         <var name="Port" type="int"/>
+    </bean>
+    <!-- 全路线轮级布局：唯一坐标及特殊内容试调数值来源，双端共同生成。 -->
+    <bean name="ArcadeLayoutEntryConfig" group="e" sep="|">
+        <var name="X" type="float"/>
+        <var name="Y" type="float"/>
+    </bean>
+    <bean name="ArcadeRoundLayoutConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="ThemeKey" type="string"/>
+        <var name="NameKey" type="string"/>
+        <var name="ArenaConfigNumber" type="int#ref=TbArcadeArena"/>
+        <var name="RoundNumber" type="int"/>
+        <var name="Version" type="int"/>
+        <var name="SpawnX" type="float"/>
+        <var name="SpawnY" type="float"/>
+        <var name="ExitX" type="float"/>
+        <var name="ExitY" type="float"/>
+        <var name="ExitSpacing" type="float"/>
+        <var name="Obstacles" type="(array#sep=;),(ArcadeObstacleConfig#sep=|)"/>
+        <var name="Entries" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
+        <var name="SpecialKind" type="int"/>
+        <var name="EventKind" type="int"/>
+        <var name="BossKind" type="int"/>
+        <var name="SpecialRatio" type="float"/>
+        <var name="EnemyHealthScale" type="float"/>
+        <var name="EnemySpeedScale" type="float"/>
+        <var name="SkillPeriod" type="float"/>
+        <var name="SkillWarning" type="float"/>
+        <var name="SkillMagnitude" type="float"/>
+        <var name="EventPeriod" type="float"/>
+        <var name="EventWarning" type="float"/>
+        <var name="EventRadius" type="float"/>
+        <var name="EventDamage" type="float"/>
+        <var name="EventMoveSpeed" type="float"/>
     </bean>
 </beans>

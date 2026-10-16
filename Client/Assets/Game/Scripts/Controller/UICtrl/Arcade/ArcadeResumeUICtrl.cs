@@ -149,7 +149,9 @@ namespace Game
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
             Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome)) : Loc.T("ui.arcade.resume.summary", current.CompletedArenaCount, current.RemainingLives, current.RunGold));
             Set(UI.TextRewards, Loc.T("ui.arcade.hud.score", current.Score));
-            Set(UI.TextMessage, current.IslandRoundCheckpoint is { } checkpoint
+            Set(UI.TextMessage, current.RoundCheckpoint is { } round
+                ? Loc.T("ui.arcade.island.resume", round.RoundNumber, Loc.T("ui.arcade.theme." + round.ArenaConfigNumber))
+                : current.IslandRoundCheckpoint is { } checkpoint
                 ? Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber)))
                 : string.Empty);
         }

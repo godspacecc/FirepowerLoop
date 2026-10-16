@@ -36,6 +36,17 @@ namespace Game
         public bool IsBossPresentation;
         /// <summary>每次规则层接受攻击时递增；仅用于让表现层去重播放攻击动画。</summary>
         public int AttackSequence;
+        /// <summary>本轮特殊敌人与独立Boss身份，不进入本局文件。</summary>
+        public int ContentSpecialKind, ContentBossKind;
+        /// <summary>固定出生序已赋值，重复绑定Boss不重复缩放生命。</summary>
+        public bool ContentAssigned, ContentWarning, ContentEvolved;
+        /// <summary>出生、最后受击与眩晕的活动时刻。</summary>
+        public double ContentBornAt, ContentLastHitAt = -1, ContentStunUntil;
+        /// <summary>技能预警锁定的方向及人偶已破坏阶段。</summary>
+        public Vector2 ContentLockedDirection, ContentLockedTarget;
+        public int ContentMannequinHits, ContentSkillCycle = -1, ContentTelegraphCycle = -1;
+        /// <summary>本活动帧附近祭司提供的移动和攻击增益。</summary>
+        public float ContentAllyBuff = 1;
         public string BossId;
         public ArcadeBossDefinition BossDefinition;
         public ArcadeBossPhase BossPhase;
@@ -65,6 +76,13 @@ namespace Game
             AttackCooldown = 0f;
             IsBossPresentation = false;
             AttackSequence = 0;
+            ContentSpecialKind = ContentBossKind = ContentMannequinHits = 0;
+            ContentAssigned = ContentWarning = ContentEvolved = false;
+            ContentBornAt = ContentStunUntil = 0;
+            ContentLastHitAt = -1;
+            ContentSkillCycle = ContentTelegraphCycle = -1;
+            ContentLockedDirection = ContentLockedTarget = default;
+            ContentAllyBuff = 1;
             BossId = null;
             BossDefinition = default;
             BossPhase = ArcadeBossPhase.None;
@@ -79,6 +97,8 @@ namespace Game
     internal sealed class ArcadeProjectileRuntime
     {
         public int Id;
+        /// <summary>追踪弹转速和寄生弹剩余减速秒数，由本弹的生成方固定。</summary>
+        public float ContentTurnRate, ContentSlowSeconds;
         public bool Hostile;
         public Vector2 Position;
         public Vector2 Velocity;
@@ -100,6 +120,7 @@ namespace Game
         public void Reset()
         {
             Id = 0;
+            ContentTurnRate = ContentSlowSeconds = 0;
             Hostile = false;
             Position = default;
             Velocity = default;
@@ -149,9 +170,35 @@ namespace Game
         public Vector2 ShotDirection;
     }
 
+    /// <summary>战斗系统拥有的临时圆形或线段领域，包含预警、寿命与伤害窗口。</summary>
+    internal sealed class ArcadeContentAreaRuntime
+    {
+        /// <summary>地图内稳定领域编号与事件种类。</summary>
+        public int Id, Kind;
+        /// <summary>圆心或胶囊起终点，均为竞技场米。</summary>
+        public Vector2 Position, End;
+        /// <summary>圆半径或线半宽及最大生命比例伤害。</summary>
+        public float Radius, DamageRatio;
+        /// <summary>活动时钟上的预警结束和领域释放时刻。</summary>
+        public double WarningUntil, ExpiresAt;
+        /// <summary>是否采用胶囊接触，以及是否同时结算敌人伤害。</summary>
+        public bool Segment, EnemyDamage;
+    }
     /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
     internal sealed class ArcadeCombatRuntime
     {
+        /// <summary>本轮内容活动时钟；加载、清场和暂停由系统门禁停止推进。</summary>
+        public FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
+        /// <summary>本地图独占领域，离场整体释放，不写入存档。</summary>
+        public readonly List<ArcadeContentAreaRuntime> ContentAreas = new();
+        public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreaSnapshots = new();
+        /// <summary>冰面速度、寄生/孢子减速及事件锚点均只属于本次地图。</summary>
+        public Vector2 ContentVelocity, ContentEventAnchor, ContentEventTarget;
+        public float ContentSlowRemaining, ContentBumperCooldown;
+        public int ContentSpawnSequence, ContentNextAreaId = 1, ContentEventCycle = -1, ContentEventTargetCycle = -1;
+        /// <summary>独立主题Boss位于第四轮之后，不增加普通轮次。</summary>
+        public bool ThemeBossStarted, ThemeBossDefeated;
+        public int ContentBossEnemyId;
         public bool CratesInitialized;
         /// <summary>本场剩余箱子，跨普通轮保留，整场释放或回滚时丢弃。</summary>
         public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();

@@ -155,6 +155,22 @@ namespace Game
                 return false;
             }
 
+            if (data.RoundCheckpoint != null)
+            {
+                var round = data.RoundCheckpoint;
+                if (!data.IsCasualRoute || data.HasResult || data.IslandRoundCheckpoint != null || data.ArenaEntryState != null ||
+                    round.ArenaNumber != data.NextArenaNumber || round.ArenaConfigNumber != data.ArenaConfigNumber ||
+                    round.ArenaConfigNumber < 1 || round.ArenaConfigNumber > 20 || round.RoundNumber < 1 || round.RoundNumber > 4 ||
+                    round.LayoutVersion <= 0 || round.MapId != $"arena.{round.ArenaConfigNumber}.round.{round.RoundNumber}" ||
+                    round.PlayerState == null || round.PlayerState.MapId != round.MapId || round.PlayerState.RoundNumber != round.RoundNumber ||
+                    !TryValidatePlayerState(round.PlayerState) || round.RemainingCrateIds == null ||
+                    round.RemainingCrateIds.Any(id => id <= 0) || round.RemainingCrateIds.Distinct().Count() != round.RemainingCrateIds.Count || round.CrateHealth == null ||
+                    round.CrateHealth.Any(pair => pair.Value <= 0 || !round.RemainingCrateIds.Contains(pair.Key)))
+                {
+                    error = "通用轮级安全节点无效";
+                    return false;
+                }
+            }
             if (data.ArenaEntryState != null &&
                 (!data.IsCasualRoute || data.NextArenaNumber <= 1 || data.HasResult || data.IslandRoundCheckpoint != null ||
                  data.ArenaEntryState.RoundNumber != 1 || data.ArenaEntryState.MapId != "arena.entry" ||

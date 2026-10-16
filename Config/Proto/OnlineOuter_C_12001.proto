@@ -404,6 +404,9 @@ message OnlineArcadeEnemyInfo
 	float BossPhaseSeconds = 11;
 	// 本轮独立护甲的剩余耐久，不计入生命。
 	int32 ArmorHealth = 12;
+	int32 SpecialKind = 13;
+	int32 ContentBossKind = 14;
+	bool ContentWarning = 15;
 }
 
 // Opcode 12082
@@ -472,6 +475,15 @@ message OnlineArcadeBattleInfo
 	repeated OnlineArcadeDropInfo SupplyPickups = 27;
 	// 宝藏房预置奖励剩余寿命，与房间出口时钟独立。
 	float TreasureRewardSeconds = 28;
+	string RoundLayoutId = 29;
+	int32 RoundLayoutVersion = 30;
+	int32 RoundGeneration = 31;
+	bool RoundLoading = 32;
+	string RoundLoadError = 33;
+	float ContentElapsed = 34;
+	repeated OnlineArcadeContentAreaInfo ContentAreas = 35;
+ bool RoundBossEncounter = 36;
+ bool RoundBossDefeated = 37;
 }
 
 // Opcode 12085
@@ -604,6 +616,10 @@ message C2G_SubmitOnlineArcadeInput // ISessionRequest
 	bool Firing = 8;
 	bool UseBomb = 9;
 	bool UseDash = 10;
+	int32 RoundGeneration = 11;
+	bool RoundReady = 12;
+	int32 ExitTarget = 13;
+	bool ConfirmExit = 14;
 }
 
 // Opcode 12097
@@ -615,4 +631,18 @@ message G2C_SubmitOnlineArcadeInput // ISessionResponse
 	bool Accepted = 4;
 	int64 LastAcceptedInputSequence = 5;
 	OnlineArcadeRunSnapshot Run = 6;
+}
+
+// Opcode 12098
+message OnlineArcadeContentAreaInfo
+{
+ int32 Id = 1;
+ int32 Kind = 2;
+ float X = 3;
+ float Y = 4;
+ float Radius = 5;
+ bool Warning = 6;
+ float EndX = 7;
+ float EndY = 8;
+ bool Segment = 9;
 }

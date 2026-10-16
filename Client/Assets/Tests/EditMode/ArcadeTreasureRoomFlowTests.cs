@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -95,9 +95,110 @@ namespace Game.Tests
         }
         [Test] public void DeathResetsMultiplierAndCloneKeepsScore()
         {run.SetTransientTreasureScore(new ArcadeTreasureScoreState(1000,3,500,3));typeof(ArcadeCombatSystem).GetMethod("ResetTreasureMultiplierAfterDeath",Flags).Invoke(system,null);Assert.That(run.Current.Score,Is.EqualTo(1000));Assert.That(run.Current.ScoreMultiplier,Is.EqualTo(1));Assert.That(run.Current.Clone().MultiplierProgress,Is.Zero);}
+        /// <summary>第二场使用真实目录及既有奖励房入口，不替换第一场财宝。</summary>
+        private void ConfigureArmory()
+        {
+            var data = run.Current; data.NextArenaNumber = 2; data.ArenaConfigNumber = 2; data.CompletedArenaCount = 1;
+            data.Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 };
+            run.CommitSafeNode(data); run.EnterArena();
+            runtime.ArenaNumber = 2;
+            typeof(ArcadeCombatSystem).GetField("arena", Flags).SetValue(system, catalog.Arenas.Single(a => a.ArenaNumber == 2));
+            // 通过正式连续轮前事务准备第三轮，避免用缺少前序节点的假现场测试恢复。
+            for (int round = 0; round < 3; round++)
+                typeof(ArcadeCombatSystem).GetMethod("StartContentRound", Flags).Invoke(system, new object[] { runtime, round, null });
+            Assert.That(runtime.CompletionAwaitingRetry, Is.False, "真实第三轮节点准备失败");
+            runtime.SpawnQueue.Clear();
+        }
+        [Test] public void ArmorySecondArenaThirdWaveContainsSixSharedWeapons()
+        {
+            ConfigureArmory(); Tick();
+            Assert.That(runtime.TreasureRoom, Is.Not.Null, "第二场军械库尚未创建");
+            Assert.That(runtime.InTreasureRoom, Is.True);
+            Assert.That(runtime.TreasureRoom.Parameters.Id, Is.EqualTo("arcade.armory.second"));
+            Assert.That(runtime.TreasureRoom.RemainingRewards.Length, Is.EqualTo(6));
+            Assert.That(runtime.TreasureRoom.RemainingRewards.All(r => (int)r.Kind == 5), Is.True);
+        }
+        [Test] public void ArmoryWeaponClockWaitsInsideRoomAndBeforeBattle()
+        {
+            ConfigureArmory(); Tick();
+            runtime.TemporaryWeaponId = "arcade.weapon.rapid"; runtime.TemporaryWeaponRemaining = 25;
+            typeof(ArcadeCombatSystem).GetMethod("TickTimers", Flags).Invoke(system, new object[] { runtime, 5f });
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25), "房内不得消耗武器时间");
+        }
+        [Test] public void ArmoryPickupReplacesWeaponWithoutChangingScoreOrEquipment()
+        {
+            ConfigureArmory(); Tick(); Reward(0);
+            Assert.That(runtime.TemporaryWeaponId, Is.EqualTo("arcade.weapon.rapid"));
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25));
+            Assert.That(runtime.TreasureRoom.RemainingRewards.Length, Is.EqualTo(5));
+            Reward(1);
+            Assert.That(runtime.TemporaryWeaponId, Is.EqualTo("arcade.weapon.spread"));
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(20));
+            typeof(ArcadeCombatSystem).GetMethod("SyncView", Flags).Invoke(system, new object[] { runtime });
+            var testView = (TestView)typeof(ArcadeCombatSystem).GetField("view", Flags).GetValue(system);
+            Assert.That(testView.WeaponId, Is.EqualTo("arcade.weapon.spread"));
+            Assert.That(testView.ProductId, Is.EqualTo("arcade.weapon.spread"));
+            Assert.That(run.Current.Score, Is.Zero);
+            Assert.That(run.Current.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId], Is.EqualTo(ArcadeRunDefaults.BasicWeaponId));
+        }
+        [Test] public void ArmoryGroundWeaponsExpireAtThirtySecondsButExitRemainsUntilSixty()
+        {
+            ConfigureArmory(); Tick(); Tick(29);
+            Assert.That(runtime.TreasureRoom.RemainingRewards.Length, Is.EqualTo(6));
+            Tick(1); Assert.That(runtime.TreasureRoom.RemainingRewards, Is.Empty);
+            Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.TreasureRoom.Expired, Is.False);
+            Tick(30); Assert.That(runtime.InTreasureRoom, Is.False); Assert.That(runtime.WaveIndex, Is.EqualTo(3));
+        }
+        [Test] public void ArmoryReturnStartsFourthWaveAndWeaponCountdownResumes()
+        {
+            ConfigureArmory(); Tick(); Reward(0);
+            runtime.PlayerPosition = new Vector2(0, -5.5f); Tick();
+            Assert.That(runtime.InTreasureRoom, Is.False); Assert.That(runtime.WaveIndex, Is.EqualTo(3));
+            Assert.That(runtime.SpawnQueue, Is.Not.Empty);
+            typeof(ArcadeCombatSystem).GetMethod("TickTimers", Flags).Invoke(system, new object[] { runtime, 1f });
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25), "首敌预警期间不扣时");
+            typeof(ArcadeCombatSystem).GetMethod("TickSpawning", Flags).Invoke(system, new object[] { runtime, 2f });
+            Assert.That(runtime.Enemies, Is.Not.Empty, "使用正式生成入口进入战斗");
+            typeof(ArcadeCombatSystem).GetMethod("TickTimers", Flags).Invoke(system, new object[] { runtime, 1f });
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(24));
+            typeof(ArcadeCombatSystem).GetMethod("SyncTreasureView", Flags).Invoke(system, new object[] { runtime });
+            var testView = (TestView)typeof(ArcadeCombatSystem).GetField("view", Flags).GetValue(system);
+            Assert.That(testView.TreasureEntranceShown, Is.False, "离场后不能残留假入口");
+            runtime.PlayerPosition = new Vector2(-15, -15); Tick(); Assert.That(runtime.InTreasureRoom, Is.False);
+        }
+        [Test] public void ArmoryFourthRoundRestoreKeepsFullWeaponUntilFirstEnemy()
+        {
+            ConfigureArmory(); Tick(); Reward(0);
+            runtime.PlayerPosition = new Vector2(0, -5.5f); Tick();
+            var checkpoint = run.Current.RoundCheckpoint;
+            Assert.That(checkpoint, Is.Not.Null);
+            runtime = new ArcadeCombatRuntime { ArenaNumber = 2, PlayerHealth = 100, PlayerMaxHealth = 100 };
+            architecture.GetModel<ArcadeCombatModel>().Begin(runtime);
+            typeof(ArcadeCombatSystem).GetMethod("StartContentRound", Flags).Invoke(system, new object[] { runtime, 3, checkpoint });
+            Tick(); Assert.That(runtime.TreasureRoom, Is.Null, "第四轮恢复不能重开军械库");
+            typeof(ArcadeCombatSystem).GetMethod("TickTimers", Flags).Invoke(system, new object[] { runtime, 1f });
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25), "恢复后预警也不能消耗武器");
+        }
+        [Test] public void ArmoryDoesNotOpenBeforeThirdWaveClear()
+        {
+            ConfigureArmory(); runtime.SpawnQueue.Enqueue("pending"); Tick();
+            Assert.That(runtime.InTreasureRoom, Is.False); Assert.That(runtime.TreasureRoom.Started, Is.False);
+        }
+        [Test] public void ArmorySupportsForestAsSecondRouteDestination()
+        {
+            ConfigureArmory();
+            typeof(ArcadeCombatSystem).GetField("arena", Flags).SetValue(system, catalog.Arenas.Single(a => a.ArenaNumber == 3));
+            Tick(); Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.TreasureRoom.Parameters.IsArmory, Is.True);
+        }
         private ArcadeArenaCompletion Completion()=>new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=2},Score=run.Current.Score,ScoreMultiplier=run.Current.ScoreMultiplier,MultiplierProgress=run.Current.MultiplierProgress,EmergencyResources=run.Current.EmergencyResources,EquipmentBySlot=run.Current.EquipmentBySlot};
         private sealed class TestView : IArcadeCombatViewPort
         {
+            public string WeaponId, ProductId;
+            public void SetPlayerWeapon(ArcadeWeaponDefinition weapon) { WeaponId = weapon.Id; }
+            public void PlayProductPickup(string productId) { ProductId = productId; }
+            public bool TreasureEntranceShown;
+            public void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters p, bool inside, bool discovered, bool open, IReadOnlyList<int> ids)
+            { TreasureEntranceShown = !inside && discovered; }
             public bool IsActive => true;
             public void Begin(int number, float width, float height, IReadOnlyList<ArcadeObstacleDefinition> obstacles) { }
             public void End() { }

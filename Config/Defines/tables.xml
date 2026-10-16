@@ -33,4 +33,5 @@
     <table name="TbStartProcess" value="StartProcessConfig" input="server_start_process.csv" group="s"/>
     <table name="TbStartZone" value="StartZoneConfig" input="server_start_zone.csv" group="s"/>
     <table name="TbStartScene" value="StartSceneConfig" input="server_start_scene.csv" group="s"/>
+    <table name="TbArcadeRoundLayout" value="ArcadeRoundLayoutConfig" input="arcade_round_layout.csv" group="e"/>
 </tables>

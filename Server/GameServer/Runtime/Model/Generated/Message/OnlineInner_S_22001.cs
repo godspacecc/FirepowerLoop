@@ -3146,6 +3146,18 @@ namespace ET
         [MemoryPackOrder(11)]
         public bool UseDash { get; set; }
 
+        [MemoryPackOrder(12)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(13)]
+        public bool RoundReady { get; set; }
+
+        [MemoryPackOrder(14)]
+        public int ExitTarget { get; set; }
+
+        [MemoryPackOrder(15)]
+        public bool ConfirmExit { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3165,6 +3177,10 @@ namespace ET
             this.Firing = default;
             this.UseBomb = default;
             this.UseDash = default;
+            this.RoundGeneration = default;
+            this.RoundReady = default;
+            this.ExitTarget = default;
+            this.ConfirmExit = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3258,6 +3274,18 @@ namespace ET
         [MemoryPackOrder(10)]
         public bool UseDash { get; set; }
 
+        [MemoryPackOrder(11)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(12)]
+        public bool RoundReady { get; set; }
+
+        [MemoryPackOrder(13)]
+        public int ExitTarget { get; set; }
+
+        [MemoryPackOrder(14)]
+        public bool ConfirmExit { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3276,6 +3304,10 @@ namespace ET
             this.Firing = default;
             this.UseBomb = default;
             this.UseDash = default;
+            this.RoundGeneration = default;
+            this.RoundReady = default;
+            this.ExitTarget = default;
+            this.ConfirmExit = default;
 
             ObjectPool.Instance.Recycle(this);
         }

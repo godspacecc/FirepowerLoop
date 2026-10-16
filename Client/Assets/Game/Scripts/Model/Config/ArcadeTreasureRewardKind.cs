@@ -12,6 +12,7 @@
  
     public enum ArcadeTreasureRewardKind
     {
+        Weapon = 5,
         GoldBar = 1,
         Gem = 2,
         Bomb = 3,

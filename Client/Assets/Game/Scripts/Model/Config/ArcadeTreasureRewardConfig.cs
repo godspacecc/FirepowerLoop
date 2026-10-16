@@ -22,6 +22,7 @@ public sealed partial class ArcadeTreasureRewardConfig : Luban.BeanBase
         Points = _buf.ReadInt();
         Progress = _buf.ReadInt();
         Amount = _buf.ReadInt();
+        DropId = _buf.ReadString();
     }
 
     public static ArcadeTreasureRewardConfig DeserializeArcadeTreasureRewardConfig(ByteBuf _buf)
@@ -36,6 +37,7 @@ public sealed partial class ArcadeTreasureRewardConfig : Luban.BeanBase
     public readonly int Points;
     public readonly int Progress;
     public readonly int Amount;
+    public readonly string DropId;
    
     public const int __ID__ = -1964968720;
     public override int GetTypeId() => __ID__;
@@ -54,6 +56,7 @@ public sealed partial class ArcadeTreasureRewardConfig : Luban.BeanBase
         + "Points:" + Points + ","
         + "Progress:" + Progress + ","
         + "Amount:" + Amount + ","
+        + "DropId:" + DropId + ","
         + "}";
     }
 }

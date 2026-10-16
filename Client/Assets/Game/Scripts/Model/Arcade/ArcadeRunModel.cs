@@ -37,6 +37,12 @@ namespace Game
             Phase = ArcadeRunPhase.Arena;
         }
 
+        /// <summary>通用轮前节点落盘成功后提交，保持当前战斗阶段。</summary>
+        internal void CommitRound(ArcadeRunSaveData value)
+        {
+            current = value.Clone();
+            Phase = ArcadeRunPhase.Arena;
+        }
         internal void EnterChallenge()
         {
             if (current != null) Phase = ArcadeRunPhase.Challenge;

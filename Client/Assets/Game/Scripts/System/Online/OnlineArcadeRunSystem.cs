@@ -22,6 +22,10 @@ namespace Game
         private IDisposable runChangedSubscription;
         private int operationGeneration;
         private long lastIssuedInputSequence;
+        /// <summary>本机已确认出口意图随当前轮代次发送，服务器才有权推进。</summary>
+        private int confirmedExitGeneration, confirmedExitTarget;
+        public void ConfirmRoundExit(int generation,int target)
+        {if(lastSnapshot.Battle?.RoundGeneration!=generation)return;confirmedExitGeneration=generation;confirmedExitTarget=target;}
         private OnlineArcadeInputController input;
         private IArcadeCombatViewPort combatView;
         private float nextInputSendTime;
@@ -136,9 +140,18 @@ namespace Game
                 request.Firing = firing;
                 request.UseBomb = useBomb;
                 request.UseDash = useDash;
+                request.RoundGeneration=lastSnapshot.Battle.RoundGeneration;
+                request.RoundReady=combatView?.IsRoundLayoutReady==true && combatView.IsIslandRoundReady &&
+                    string.IsNullOrEmpty(combatView.RoundLayoutLoadError) && string.IsNullOrEmpty(combatView.IslandRoundLoadError);
+                long localId=account.PlayerId;
+                var localPlayer=lastSnapshot.Battle.Players.FirstOrDefault(p=>p.PlayerId==localId);
+                if(localPlayer.InTreasureRoom) request.RoundReady &= combatView.IsIslandTreasureReady;
+                request.ConfirmExit=confirmedExitGeneration>0&&confirmedExitGeneration==request.RoundGeneration;
+                request.ExitTarget=confirmedExitTarget;
                 G2C_SubmitOnlineArcadeInput response = await network.CallAsync<G2C_SubmitOnlineArcadeInput>(
                     request, RpcTimeoutMilliseconds, currentInputCancellation.Token);
                 lastIssuedInputSequence = Math.Max(lastIssuedInputSequence, response.LastAcceptedInputSequence);
+                if(response.Accepted&&request.ConfirmExit)confirmedExitGeneration=0;
                 OnlineArcadeResultCode code = MapServerError(response.Error);
                 if (code == OnlineArcadeResultCode.Success && response.Run != null)
                     TryPublishNewerSnapshot(response.Run);
@@ -401,7 +414,7 @@ namespace Game
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)
                 enemies.Add(new OnlineArcadeEnemySnapshot(enemy.RuntimeId, enemy.EnemyConfigId, enemy.PositionX,
                     enemy.PositionZ, enemy.CurrentHealth, enemy.MaxHealth, enemy.TargetPlayerId, enemy.WaveNumber,
-                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth));
+                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning));
             List<OnlineArcadeProjectileSnapshot> projectiles = new(source.Projectiles.Count);
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,
@@ -421,7 +434,9 @@ namespace Game
                 source.ChallengeId, source.ChallengeSeconds, source.HazardElapsedSeconds,
                 source.ArenaConfigNumber, source.IsFinalBoss, source.AwaitingExit, source.TreasureRoomId,
                 source.TreasureDiscovered, source.TreasureOpen, source.TreasureExpired, source.TreasureSeconds,
-                source.TreasureRewardIds, source.CrateIds, supplyPickups, source.TreasureRewardSeconds);
+                source.TreasureRewardIds, source.CrateIds, supplyPickups, source.TreasureRewardSeconds,
+                source.RoundLayoutId,source.RoundLayoutVersion,source.RoundGeneration,source.RoundLoading,source.RoundLoadError,
+                source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated);
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

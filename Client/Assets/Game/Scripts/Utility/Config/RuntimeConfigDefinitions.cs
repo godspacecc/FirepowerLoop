@@ -836,9 +836,10 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
-            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null,
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null)
             : this(rule, weapons, arenas, enemyGroups, bosses, challenges, drops,
-                System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms)
+                System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms, roundLayouts)
         {
         }
 
@@ -853,7 +854,8 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
-            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null,
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null)
         {
             Rule = rule;
             Weapons = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(weapons));
@@ -867,6 +869,7 @@ namespace Game
             Upgrades = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(upgrades));
             Rewards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(rewards));
             TreasureRooms = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(treasureRooms ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters>()));
+            RoundLayouts = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(roundLayouts ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters>()));
         }
 
         public ArcadeRuleDefinition Rule { get; }
@@ -881,5 +884,7 @@ namespace Game
         public System.Collections.Generic.IReadOnlyList<ArcadeUpgradeDefinition> Upgrades { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeRewardDefinition> Rewards { get; }
         public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> TreasureRooms { get; }
+        /// <summary>全部主题的不可变轮级地图目录；旧调用可省略新目录参数。</summary>
+        public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> RoundLayouts { get; }
     }
 }

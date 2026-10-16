@@ -33,6 +33,7 @@ public partial class Tables
     public TbStartProcess TbStartProcess {get; }
     public TbStartZone TbStartZone {get; }
     public TbStartScene TbStartScene {get; }
+    public TbArcadeRoundLayout TbArcadeRoundLayout {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -56,6 +57,7 @@ public partial class Tables
         TbStartProcess = new TbStartProcess(loader("tbstartprocess"));
         TbStartZone = new TbStartZone(loader("tbstartzone"));
         TbStartScene = new TbStartScene(loader("tbstartscene"));
+        TbArcadeRoundLayout = new TbArcadeRoundLayout(loader("tbarcaderoundlayout"));
         ResolveRef();
     }
     
@@ -81,6 +83,7 @@ public partial class Tables
         TbStartProcess.ResolveRef(this);
         TbStartZone.ResolveRef(this);
         TbStartScene.ResolveRef(this);
+        TbArcadeRoundLayout.ResolveRef(this);
     }
 }
 

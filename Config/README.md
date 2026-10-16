@@ -11,10 +11,10 @@
 
 | 目标 | 生成 C# | 生成 bytes | 表数 |
 | --- | --- | --- | --- |
-| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 26 |
-| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 20 |
+| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 27 |
+| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 21 |
 
-共 32 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 12 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
+共 33 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 13 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
 
 `map.firepowerloop.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 与 `map_display` 保留空表以维持共用地图适配契约。历史地图图片及图标资源保留，不由 Luban 生成。旧地图资料生成工具已移除。
 

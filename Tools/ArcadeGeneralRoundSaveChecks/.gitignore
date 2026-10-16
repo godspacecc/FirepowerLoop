@@ -1,0 +1,4 @@
+!ArcadeGeneralRoundSaveChecks.csproj
+/bin/
+/obj/
+*.log

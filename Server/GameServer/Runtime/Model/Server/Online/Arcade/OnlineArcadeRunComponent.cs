@@ -45,6 +45,17 @@ namespace ET.Server
         public int Bombs { get; set; }
         public int Dashes { get; set; }
         public string WeaponId { get; set; }
+        /// <summary>轮前快照完整角色状态，仅保存逻辑剩余量，不保存战场实体。</summary>
+        public int RoundHealth { get; set; }
+        public bool RoundAlive { get; set; } = true;
+        /// <summary>保护、复活、冲刺与攻击冷却只保存剩余秒数，切轮不刷新或丢失。</summary>
+        public float RoundInvulnerabilitySeconds { get; set; }
+        public float RoundRespawnSeconds { get; set; }
+        public float RoundDashSeconds { get; set; }
+        public float RoundFireCooldownSeconds { get; set; }
+        public string RoundTemporaryWeaponId { get; set; } = string.Empty;
+        public float RoundTemporaryWeaponSeconds { get; set; }
+        public List<OnlineArcadePowerupRuntime> RoundPowerups { get; set; } = new();
         public bool Ready { get; set; }
         /// <summary>是否已确认进入本安全节点的特殊挑战；与普通开战准备互斥。</summary>
         public bool ChallengeReady { get; set; }
@@ -83,6 +94,15 @@ namespace ET.Server
         /// <summary>已选场地配置身份；与 NextArena 主线序号分离。</summary>
         public int ArenaConfigNumber { get; set; }
         /// <summary>本安全节点可用的挑战 ID；空字符串表示没有挑战入口。</summary>
+        /// <summary>已提交轮前节点；空 ID 表示旧整场节点，版本不匹配拒绝恢复。</summary>
+        public string RoundLayoutId { get; set; } = string.Empty;
+        public int RoundLayoutVersion { get; set; }
+        public int RoundNumber { get; set; } = 1;
+        public int RoundGeneration { get; set; }
+        public bool RoundBossEncounter { get; set; }
+        public List<int> DestroyedCrateIds { get; set; } = new();
+        /// <summary>仍存活箱子的轮前耐久；旧节点缺省空字典保持兼容。</summary>
+        public Dictionary<int,int> CrateHealth { get; set; } = new();
         public string ChallengeId { get; set; }
         /// <summary>进入挑战前即持久化，确保失败、断线或重启后不能重复刷取。</summary>
         public bool ChallengeAttempted { get; set; }
@@ -105,15 +125,25 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadePowerupRuntime
     {
+        [System.Text.Json.Serialization.JsonInclude]
         public string ProductId = string.Empty;
+        [System.Text.Json.Serialization.JsonInclude]
         public ArcadePowerupBehavior Behavior;
+        [System.Text.Json.Serialization.JsonInclude]
         public float Magnitude;
+        [System.Text.Json.Serialization.JsonInclude]
         public int Damage;
+        [System.Text.Json.Serialization.JsonInclude]
         public float IntervalSeconds;
+        [System.Text.Json.Serialization.JsonInclude]
         public float Radius;
+        [System.Text.Json.Serialization.JsonInclude]
         public float ProjectileSpeed;
+        [System.Text.Json.Serialization.JsonInclude]
         public float RemainingSeconds;
+        [System.Text.Json.Serialization.JsonInclude]
         public int Charges;
+        [System.Text.Json.Serialization.JsonInclude]
         public float CooldownSeconds;
         public float PositionX;
         public float PositionZ;
@@ -126,6 +156,10 @@ namespace ET.Server
     public sealed class OnlineArcadeBattlePlayerRuntime
     {
         /// <summary>本次保底房已进入过，防止提前离开的成员被自动送回。</summary>
+        /// <summary>轮代次加载确认、待仲裁出口及冰面速度，均为现场状态。</summary>
+        public int ReadyRoundGeneration;
+        public int ConfirmedExitTarget = int.MinValue;
+        public float IceVelocityX, IceVelocityZ, ContentSlowRemaining, ContentBumperCooldown;
         public bool TreasureVisited;
         /// <summary>本帧移动前的场地坐标，只用于机关连续接触判定。</summary>
         public float HazardPreviousX;
@@ -171,6 +205,15 @@ namespace ET.Server
     public sealed class OnlineArcadeEnemyRuntime
     {
         /// <summary>最近一次实际玩家伤害归属，零为清理/无玩家；死亡后随瞬时敌人丢弃。</summary>
+        /// <summary>主题身份及受击冻结时刻，只属于当前地图。</summary>
+        public int SpecialKind, ContentBossKind;
+        public double ContentElapsed, LastContentHitAt = -1, ContentStunUntil;
+        public int ContentMannequinHits;
+        public bool ContentEvolved;
+        public long ContentTelegraphCycle = -1;
+        public float ContentLockedX, ContentLockedZ, ContentLockedTargetX, ContentLockedTargetY;
+        public bool ContentWarning;
+        public long LastContentAttackCycle = -1;
         public long LastDamagePlayerId;
         /// <summary>海岛入口通道的瞬时阶段；不进入协议或安全存档，由权威移动连续推进。</summary>
         public bool EnteringIsland;
@@ -212,6 +255,8 @@ namespace ET.Server
     public sealed class OnlineArcadeProjectileRuntime
     {
         public long RuntimeId;
+        /// <summary>主题追踪弹的限幅转向速度，零为原有直线弹。</summary>
+        public float TrackingTurnRate, ContentSlowSeconds;
         public long OwnerPlayerId;
         public float PositionX;
         public float PositionZ;
@@ -245,10 +290,34 @@ namespace ET.Server
         public int GoldAdded;
     }
 
+    /// <summary>死亡毒云等地图局部领域，只有权威现场拥有寿命与接触账本。</summary>
+    [EnableClass]
+    public sealed class OnlineArcadeContentZoneRuntime
+    {
+        public int Id, Kind;
+        public float X, Y, EndX, EndY, Radius, Remaining, WarningRemaining, DamageRatio;
+        public bool Segment, EnemyDamage;
+        public readonly FirepowerLoop.Arcade.ArcadeContentClock Clock = new();
+    }
+
     /// <summary>不落盘的服务器权威战斗现场；保存与正式奖励仍由安全节点事务负责。</summary>
     [EnableClass]
     public sealed class OnlineArcadeBattleRuntime
     {
+        /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>
+        public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters RoundLayout;
+        public int RoundGeneration;
+        public bool RoundTransitionPending;
+        public bool PendingBossEncounter;
+        public string RoundLoadError = string.Empty;
+        public bool RoundBossEncounter;
+        public bool RoundBossDefeated;
+        public long ContentEventCycle = -1, ContentEventTargetCycle = -1;
+        public float ContentEventTargetX, ContentEventTargetY;
+        public readonly FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
+        public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas = new();
+        public readonly List<OnlineArcadeContentZoneRuntime> DeathZones = new();
+        public readonly HashSet<int> DestroyedCrateIds = new();
         public bool CratesInitialized;
         public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();
         /// <summary>只随活动战斗增长的机关秒数；不进入安全存档，快照供客户端显示。</summary>

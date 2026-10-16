@@ -15,8 +15,25 @@ namespace ET.Server
             foreach (var c in ArcadeBabylonParameters.FromConfig(ResolveBattleArena(b)).Crates)
                 b.Crates.Add(c.Id, new ArcadeCrateState(c));
         }
-        private static void DamageEnemy(OnlineArcadeEnemyRuntime enemy, int damage) =>
-            enemy.CurrentHealth -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, damage);
+        private static void DamageEnemy(OnlineArcadeBattleRuntime battle, OnlineArcadeEnemyRuntime enemy, int damage)
+        {
+            if(damage<=0)return;
+            if(battle.RoundLayout!=null)
+            {
+                var p=ContentTuning(battle);
+                if(enemy.SpecialKind==3)
+                {
+                    if(enemy.ContentMannequinHits>0&&enemy.ContentElapsed-enemy.LastContentHitAt<p.SkillWarning)return;
+                    enemy.LastContentHitAt=enemy.ContentElapsed;enemy.ContentMannequinHits++;
+                    enemy.CurrentHealth=enemy.ContentMannequinHits>=3?0:Math.Max(1,(int)Math.Ceiling(enemy.MaxHealth*(3-enemy.ContentMannequinHits)/3d));return;
+                }
+                if(enemy.SpecialKind==13&&enemy.ContentElapsed<p.SkillWarning)return;
+            }
+            float scale = battle.RoundLayout==null ? 1 : FirepowerLoop.Arcade.ArcadeRoundContentRules.IncomingDamageScale(enemy.SpecialKind,enemy.ContentElapsed,ContentTuning(battle));
+            if(scale<=0)return;
+            enemy.LastContentHitAt=enemy.ContentElapsed;
+            enemy.CurrentHealth -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, Math.Max(1,(int)MathF.Round(damage*scale)));
+        }
         /// <summary>服务器创建唯一共享掉落，命中者不直接获积分；预算不足保持箱子待领取。</summary>
         private static bool DamageCrate(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime b, int id, int damage)
         {
@@ -26,7 +43,7 @@ namespace ET.Server
                 d.Kind == ArcadeDropKind.Dash || d.Kind == ArcadeDropKind.TemporaryWeapon || d.ProductId == "arcade.powerup.shield" ||
                 d.ProductId == "arcade.powerup.boots")).OrderBy(d => d.Id, StringComparer.Ordinal).ToArray();
             if (!c.Damage(damage, b.Drops.Count < ServerConfig.Instance.ArcadeRule.MaxDrops && pool.Length > 0)) return true;
-            b.Crates.Remove(id);
+            b.Crates.Remove(id);b.DestroyedCrateIds.Add(id);
             int weight = pool.Sum(d => d.Weight * (d.Kind == ArcadeDropKind.RunGold ? ResolveBattleArena(b).CrateTreasureWeightMultiplier : 1));
             int roll = (int)(MixDropSeed(unchecked((ulong)self.Record.RunId), b.ArenaNumber, id + 100000) % (uint)weight);
             foreach (var d in pool)

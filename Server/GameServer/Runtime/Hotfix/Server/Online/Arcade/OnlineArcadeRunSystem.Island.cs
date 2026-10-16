@@ -12,7 +12,7 @@ namespace ET.Server
             battle.IslandRegionResolved = true;
             if (!battle.IsChallenge && ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle)).Enabled)
                 battle.IslandRegion = new ArcadeIslandRegion(ServerConfig.Instance.ArcadeRule.ArenaHalfWidth,
-                    ServerConfig.Instance.ArcadeRule.ArenaHalfHeight);
+                    ServerConfig.Instance.ArcadeRule.ArenaHalfHeight, battle.WaveIndex+1);
             return battle.IslandRegion;
         }
 
@@ -24,7 +24,7 @@ namespace ET.Server
             float radius = ServerConfig.Instance.ArcadeRule.PlayerRadius + ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
             foreach (var enemy in battle.Enemies.Values.ToArray())
             {
-                if (!string.IsNullOrEmpty(enemy.BossId) || !IslandFor(battle).Contains(enemy.PositionX, enemy.PositionZ)) continue;
+                if (enemy.ContentBossKind>0 || !string.IsNullOrEmpty(enemy.BossId) || !IslandFor(battle).Contains(enemy.PositionX, enemy.PositionZ)) continue;
                 for (int i = 1; i < battle.IslandMovementPath.Count; i++)
                 {
                     var a = battle.IslandMovementPath[i - 1]; var b = battle.IslandMovementPath[i];

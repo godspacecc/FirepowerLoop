@@ -156,7 +156,7 @@ namespace Game
             Set(UI.TextWave, combat.AwaitingExit ? Loc.T("ui.arcade.hud.exit") : combat.IsFinalBoss
                 ? Loc.T("ui.arcade.hud.final_boss")
                 : Loc.T("ui.arcade.hud.wave", combat.WaveNumber, combat.TotalWaves, combat.RemainingEnemies));
-            if (combat.InTreasureRoom) Set(UI.TextWave, Loc.T("ui.arcade.hud.treasure", Mathf.CeilToInt(combat.TreasureSeconds)));
+            if (combat.InTreasureRoom) Set(UI.TextWave, Loc.T(combat.ArenaNumber == 2 ? "ui.arcade.hud.armory" : "ui.arcade.hud.treasure", Mathf.CeilToInt(combat.TreasureSeconds)));
             else if (combat.Resting) Set(UI.TextWave, Loc.T("ui.arcade.hud.rest", Mathf.CeilToInt(combat.RestSeconds)));
             if (combat.IslandAwaitingRoundExit) Set(UI.TextWave, Loc.T("ui.arcade.island.pickup"));
             if (combat.IslandTransitioning) Set(UI.TextWave, Loc.T("ui.arcade.island.loading"));
@@ -290,7 +290,7 @@ namespace Game
                 : Loc.T("ui.arcade.hud.arena", snapshot.Battle.ArenaNumber));
             Set(UI.TextWave, snapshot.Battle.AwaitingExit ? Loc.T("ui.arcade.hud.exit") : snapshot.Battle.IsFinalBoss
                 ? Loc.T("ui.arcade.hud.final_boss") : Loc.T("ui.arcade.hud.wave", snapshot.Battle.WaveNumber, snapshot.Battle.WaveCount, remainingEnemies));
-            if (battlePlayer.InTreasureRoom) Set(UI.TextWave, Loc.T("ui.arcade.hud.treasure", Mathf.CeilToInt(snapshot.Battle.TreasureSeconds)));
+            if (battlePlayer.InTreasureRoom) Set(UI.TextWave, Loc.T(snapshot.Battle.ArenaNumber == 2 ? "ui.arcade.hud.armory" : "ui.arcade.hud.treasure", Mathf.CeilToInt(snapshot.Battle.TreasureSeconds)));
             else if (snapshot.Battle.ArenaNumber == 1 && remainingEnemies == 0 && !snapshot.Battle.IsChallenge && !snapshot.Battle.AwaitingExit)
                 Set(UI.TextWave, Loc.T("ui.arcade.hud.rest_online"));
             var powerups = battlePlayer.Powerups.Select(value => new ArcadePowerupHudEntry(
@@ -357,7 +357,7 @@ namespace Game
                     ? Loc.T("ui.arcade.hud.teammate")
                     : player.DisplayName;
             playerStatuses.Add(new PlayerStatusDisplay(displayName, health, maxHealth,
-                player.Lives, player.RunGold, battle.InTreasureRoom && connected ? Loc.T("ui.arcade.hud.treasure_member") : state, isSelf,
+                player.Lives, player.RunGold, battle.InTreasureRoom && connected ? Loc.T(snapshot.Battle.ArenaNumber == 2 ? "ui.arcade.hud.armory_member" : "ui.arcade.hud.treasure_member") : state, isSelf,
                 player.ScoreMultiplier, player.MultiplierProgress, player.Score));
         }
 

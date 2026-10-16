@@ -25,6 +25,12 @@ namespace Game
         private IArcadeCombatViewPort view;
         private ArcadeConfigCatalogDefinition catalog;
         private ArcadeArenaDefinition activeArena;
+        private FirepowerLoop.Arcade.ArcadeRoundLayoutParameters activeRoundLayout;
+        private int activeRoundGeneration;
+        private bool roundExitContact, roundExitPrompt, roundLoadPrompt;
+        private Vector2 predictedIceVelocity;
+        private IReadOnlyList<ArcadeObstacleDefinition> RoundObstacles => activeRoundLayout==null?activeArena.Obstacles:
+            activeRoundLayout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight)).ToArray();
         private OnlineArcadeRunClientSnapshot latest = OnlineArcadeRunClientSnapshot.Empty();
         private Vector2 predictedLocalPosition;
         private bool hasPrediction;
@@ -60,8 +66,8 @@ namespace Game
 
         private void OnRunChanged(OnlineArcadeRunChangedEvent evt)
         {
-            if (active && latest.RunId == evt.Snapshot.RunId && latest.Battle?.ArenaNumber == evt.Snapshot.Battle?.ArenaNumber &&
-                evt.Snapshot.Battle != null && evt.Snapshot.Battle.BattleRevision < lastAppliedBattleRevision) return;
+            if (active && latest.RunId == evt.Snapshot.RunId && latest.Battle?.ArenaNumber == evt.Snapshot.Battle?.ArenaNumber && evt.Snapshot.Battle != null &&
+                (evt.Snapshot.Battle.RoundGeneration < activeRoundGeneration || evt.Snapshot.Battle.RoundGeneration == activeRoundGeneration && evt.Snapshot.Battle.BattleRevision < lastAppliedBattleRevision)) return;
             latest = evt.Snapshot;
             if (latest.Phase is OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge &&
                 latest.Battle != null)
@@ -123,6 +129,9 @@ namespace Game
         private void OnUpdate()
         {
             if (!active || latest.Battle == null || catalog == null || latest.BattlePaused) return;
+            if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)||!string.IsNullOrEmpty(view.IslandRoundLoadError))
+            {ShowRoundLoadRetry();return;}
+            if(!view.IsRoundLayoutReady||!view.IsIslandRoundReady||presentedInTreasureRoom&&!view.IsIslandTreasureReady||latest.Battle.RoundLoading)return;
             view.TickPlayerFeedback(Time.deltaTime);
             long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
             OnlineArcadeBattlePlayerSnapshot self = default;
@@ -130,17 +139,18 @@ namespace Game
             foreach (OnlineArcadeBattlePlayerSnapshot player in latest.Battle.Players)
                 if (player.PlayerId == selfId) { self = player; found = true; break; }
             if (!found || !self.Alive) return;
+            TickRoundExitPrompt(self);
             OnlineArcadeInputFrame input = this.GetSystem<OnlineArcadeRunSystem>().LastSampledInput;
             var moveSpeed = CalculatePredictedMoveSpeed(catalog.Rule.PlayerMoveSpeed, self.DashSeconds > 0f,
                 catalog.Upgrades, FindLocalRunPlayer(selfId).UpgradeStacks);
             var island = !self.InTreasureRoom && !latest.Battle.IsChallenge && activeArena?.Opening.Enabled == true
-                ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight) : null;
+                ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,latest.Battle.WaveNumber) : null;
             if (island != null && island.IsShallow(predictedLocalPosition.x, predictedLocalPosition.y))
                 moveSpeed *= activeArena.Opening.WaterSpeedRatio;
-            predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, input.Move, moveSpeed,
+            predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, PredictContentMove(input.Move,moveSpeed,self), moveSpeed,
                 Mathf.Min(Time.deltaTime, .05f), catalog.Rule.PlayerRadius, self.InTreasureRoom ? TreasureParameters()?.HalfWidth ?? catalog.Rule.ArenaHalfWidth : catalog.Rule.ArenaHalfWidth,
                 self.InTreasureRoom ? TreasureParameters()?.HalfHeight ?? catalog.Rule.ArenaHalfHeight : catalog.Rule.ArenaHalfHeight,
-                self.InTreasureRoom ? Array.Empty<ArcadeObstacleDefinition>() : activeArena?.Obstacles, island);
+                self.InTreasureRoom ? Array.Empty<ArcadeObstacleDefinition>() : RoundObstacles, island);
             Vector2 authoritative = new(self.PositionX, self.PositionZ);
             if (Vector2.Distance(predictedLocalPosition, authoritative) > SnapDistance) predictedLocalPosition = authoritative;
             Vector2 facing = input.Aim.sqrMagnitude > .01f ? input.Aim : new Vector2(self.AimX, self.AimZ);
@@ -148,9 +158,41 @@ namespace Game
             SyncPlayerEffects(self, predictedLocalPosition);
         }
 
+        /// <summary>读取同一权威领域预测冰面与孢子；预测仅改变表现，后续仍按服务器位置校正。</summary>
+        private Vector2 PredictContentMove(Vector2 move,float speed,OnlineArcadeBattlePlayerSnapshot self)
+        {
+            if(activeRoundLayout==null||self.InTreasureRoom||speed<=0)return move;
+            bool ice=activeRoundLayout.EventKind==5,slow=false;
+            foreach(var area in latest.Battle.ContentAreas)
+                if(!area.Warning&&FirepowerLoop.Arcade.ArcadeRoundContentRules.TouchesCircle(predictedLocalPosition.x,predictedLocalPosition.y,catalog.Rule.PlayerRadius,area.X,area.Y,area.Radius))
+                {ice|=area.Kind==5;slow|=area.Kind==8;}
+            foreach(var enemy in latest.Battle.Enemies)
+                if(enemy.SpecialKind==9&&FirepowerLoop.Arcade.ArcadeRoundContentRules.TouchesCircle(predictedLocalPosition.x,predictedLocalPosition.y,catalog.Rule.PlayerRadius,enemy.PositionX,enemy.PositionZ,activeRoundLayout.EventRadius))slow=true;
+            if(slow)move/=Mathf.Max(1,activeRoundLayout.SkillMagnitude);
+            if(ice)
+            {
+                FirepowerLoop.Arcade.ArcadeRoundContentRules.UpdateIceVelocity(predictedIceVelocity.x,predictedIceVelocity.y,move.x,move.y,speed,
+                    1/Mathf.Max(1,activeRoundLayout.SkillMagnitude),Mathf.Min(Time.deltaTime,.05f),false,out float vx,out float vy);
+                predictedIceVelocity=new Vector2(vx,vy);return predictedIceVelocity/speed;
+            }
+            predictedIceVelocity=move*speed;return move;
+        }
+
         private void ApplyAuthoritativeSnapshot(OnlineArcadeBattleSnapshot battle)
         {
-            if (!active || battle == null || battle.BattleRevision < lastAppliedBattleRevision) return;
+            if (!active || battle == null || battle.RoundGeneration<activeRoundGeneration ||
+                battle.RoundGeneration==activeRoundGeneration && battle.BattleRevision < lastAppliedBattleRevision) return;
+            if(battle.RoundGeneration!=activeRoundGeneration)
+            {
+                activeRoundLayout=catalog.RoundLayouts.FirstOrDefault(p=>p.Id==battle.RoundLayoutId&&p.Version==battle.RoundLayoutVersion);
+                if(activeRoundLayout==null&&!battle.IsChallenge) {Log.Error("联机轮布局不可用："+battle.RoundLayoutId);return;}
+                activeRoundGeneration=battle.RoundGeneration;lastAppliedBattleRevision=-1;hasPrediction=false;predictionIsland=null;predictedIceVelocity=Vector2.zero;
+                roundExitContact=roundExitPrompt=roundLoadPrompt=false;
+                enemyIds.Clear();projectileIds.Clear();dropIds.Clear();nextPresentationId=1;
+                view.Begin(activeArena.ArenaNumber,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,RoundObstacles);
+                view.SetIslandRound(activeArena.ArenaNumber==1?battle.WaveNumber:0);
+                view.SetRoundLayout(activeRoundLayout);
+            }
             long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
             var localPlayer = battle.Players.FirstOrDefault(p => p.PlayerId == selfId);
             bool inRoom = localPlayer.InTreasureRoom;
@@ -159,7 +201,9 @@ namespace Game
             {
                 view.Begin(activeArena.ArenaNumber, inRoom ? roomRules.HalfWidth : catalog.Rule.ArenaHalfWidth,
                     inRoom ? roomRules.HalfHeight : catalog.Rule.ArenaHalfHeight,
-                    inRoom ? Array.Empty<ArcadeObstacleDefinition>() : activeArena.Obstacles);
+                    inRoom ? Array.Empty<ArcadeObstacleDefinition>() : RoundObstacles);
+                view.SetIslandRound(!inRoom&&activeArena.ArenaNumber==1?battle.WaveNumber:0);
+                if(!inRoom)view.SetRoundLayout(activeRoundLayout);
                 hasPrediction = false; hasLocalFireBaseline = false; shieldChargesByPlayer.Clear();
                 enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); nextPresentationId = 1;
                 presentedInTreasureRoom = inRoom; presentedRoomId = battle.TreasureRoomId;
@@ -186,7 +230,10 @@ namespace Game
                     battle.AwaitingExit, inRoom, !localPlayer.Alive || localPlayer.RespawnSeconds > 0));
             view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() :
                 activeArena.Hazards, battle.HazardElapsedSeconds);
-            view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? activeArena.NextArenaNumbers : Array.Empty<int>(),
+            view.SetRoundContent(battle.ContentElapsed,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>():battle.ContentAreas);
+            var roundTargets=battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.ToArray();
+            if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
+            view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? roundTargets : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss);
             seenIds.Clear();
             view.BeginEffectSync();
@@ -235,7 +282,7 @@ namespace Game
             foreach (long playerId in shieldChargesByPlayer.Keys.ToArray())
                 if (playerId != selfId && !seenIds.Contains(playerId)) shieldChargesByPlayer.Remove(playerId);
 
-            var bossWave = !battle.IsFinalBoss && activeArena?.IsBoss == true && battle.WaveNumber == activeArena.WaveGroupIds.Count;
+            var bossWave = activeRoundLayout != null ? battle.RoundBossEncounter : !battle.IsFinalBoss && activeArena?.IsBoss == true && battle.WaveNumber == activeArena.WaveGroupIds.Count;
             SyncEnemies(inRoom ? Array.Empty<OnlineArcadeEnemySnapshot>() : battle.Enemies, bossWave);
             view.SetBabylon(inRoom || battle.IsChallenge ? null : activeArena?.Babylon, battle.CrateIds);
             SyncProjectiles(inRoom ? Array.Empty<OnlineArcadeProjectileSnapshot>() : battle.Projectiles);
@@ -318,6 +365,7 @@ namespace Game
                 view.SetEnemy(id, value.EnemyConfigId, new Vector2(value.PositionX, value.PositionZ),
                     value.CurrentHealth, value.MaxHealth, value.BossPhase is ArcadeBossPhase.Telegraph or ArcadeBossPhase.RayTelegraph,
                     persistentHealthBar: bossWave || !string.IsNullOrEmpty(value.BossId));
+                view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
             }
             RemoveMissing(enemyIds, seenIds, id => view.RemoveEnemy(id));
@@ -405,12 +453,12 @@ namespace Game
                 !IsPositiveFinite(deltaTime)) return current;
 
             move = Vector2.ClampMagnitude(move, 1f);
+            var next = current + move * speed * deltaTime;
             if (island != null)
             {
                 var p = island.Move(current.x, current.y, move.x * speed * deltaTime, move.y * speed * deltaTime, radius);
-                return new Vector2(p.X, p.Y);
+                next = new Vector2(p.X, p.Y);
             }
-            var next = current + move * speed * deltaTime;
             next.x = Mathf.Clamp(next.x, -arenaHalfWidth + radius, arenaHalfWidth - radius);
             next.y = Mathf.Clamp(next.y, -arenaHalfHeight + radius, arenaHalfHeight - radius);
             if (IsInsidePredictionObstacle(new Vector2(next.x, current.y), radius, obstacles)) next.x = current.x;
@@ -438,11 +486,44 @@ namespace Game
             value > 0f && !float.IsNaN(value) && !float.IsInfinity(value);
 
         private FirepowerLoop.Arcade.ArcadeTreasureRoomParameters TreasureParameters() =>
-            catalog?.TreasureRooms.FirstOrDefault(r => r.ArenaConfigNumber == activeArena?.ArenaNumber);
+            catalog == null ? null : catalog.TreasureRooms.FirstOrDefault(r => latest.Battle != null && latest.Battle.ArenaNumber == 2
+                ? r.IsArmory : !r.IsArmory && activeArena != null && r.ArenaConfigNumber == activeArena.ArenaNumber);
+
+        /// <summary>当前代次资源失败提供可重试入口，错误期间不向服务器发送就绪。</summary>
+        private void ShowRoundLoadRetry()
+        {
+            if(roundLoadPrompt)return;roundLoadPrompt=true;int generation=activeRoundGeneration;
+            string error=!string.IsNullOrEmpty(view.RoundLayoutLoadError)?view.RoundLayoutLoadError:view.IslandRoundLoadError;
+            Notify.ShowMessage(Loc.T("ui.arcade.menu.failed"),error,new List<MessageButtonConfig>{
+                new(){ButtonText=Loc.T("ui.common.confirm"),Role=MessageButtonRole.Confirm,OnClick=()=>{
+                    roundLoadPrompt=false;if(active&&activeRoundGeneration==generation){view.RetryIslandRoundLoad();view.SetRoundLayout(activeRoundLayout);}}},
+                new(){ButtonText=Loc.T("ui.common.cancel"),Role=MessageButtonRole.Cancel,OnClick=()=>roundLoadPrompt=false}});
+        }
+
+        /// <summary>接触仅打开确认框，确认捕获代次；取消后必须离开出口再接触。</summary>
+        private void TickRoundExitPrompt(OnlineArcadeBattlePlayerSnapshot self)
+        {
+            var battle=latest.Battle;if(activeRoundLayout==null||battle==null||!battle.AwaitingExit||self.InTreasureRoom)return;
+            int[] targets=battle.IsFinalBoss?new[]{0}:battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:
+                activeRoundLayout.BossKind>0&&!battle.RoundBossEncounter?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.ToArray();
+            int contact=-1;for(int i=0;i<targets.Length;i++)
+            {var p=new Vector2(activeRoundLayout.ExitX+(i-(targets.Length-1)*.5f)*activeRoundLayout.ExitSpacing,activeRoundLayout.ExitY);
+                if(Vector2.SqrMagnitude(new Vector2(self.PositionX,self.PositionZ)-p)<=2.25f){contact=i;break;}}
+            if(contact<0){roundExitContact=false;return;}if(roundExitContact||roundExitPrompt)return;
+            roundExitContact=roundExitPrompt=true;int generation=battle.RoundGeneration,target=targets[contact];
+            string destinationKey = battle.WaveNumber<4
+                ? catalog.RoundLayouts.FirstOrDefault(p=>p.ArenaConfigNumber==activeArena.ArenaNumber&&p.RoundNumber==battle.WaveNumber+1)?.NameKey
+                : "ui.arcade.theme."+target;
+            Notify.ShowMessage(Loc.T("ui.arcade.island.exit.title"),Loc.T("ui.arcade.island.exit.confirm",target==0?Loc.T("ui.arcade.result.victory"):Loc.T(destinationKey??activeRoundLayout.NameKey)),
+                new List<MessageButtonConfig>{new(){ButtonText=Loc.T("ui.common.confirm"),Role=MessageButtonRole.Confirm,OnClick=()=>{
+                    roundExitPrompt=false;if(latest.Battle?.RoundGeneration==generation)this.GetSystem<OnlineArcadeRunSystem>().ConfirmRoundExit(generation,target);}},
+                    new(){ButtonText=Loc.T("ui.common.cancel"),Role=MessageButtonRole.Cancel,OnClick=()=>roundExitPrompt=false}});
+        }
 
         private void EndPresentation()
         {
             StageNotices.Clear();
+            activeRoundLayout=null;activeRoundGeneration=0;roundExitContact=roundExitPrompt=false;predictedIceVelocity=Vector2.zero;
             if (active) view?.End();
             active = false; activeBattleArenaNumber = 0; hasPrediction = false; predictionIsland = null; presentedInTreasureRoom = false; presentedRoomId = null; lastAppliedBattleRevision = -1; catalog = null; activeArena = null;
             enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); seenIds.Clear(); nextPresentationId = 1;

@@ -115,7 +115,7 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var current = model.Current;
             if (model.Phase != ArcadeRunPhase.Arena || current == null || current.HasResult ||
-                !current.IsCasualRoute || current.NextArenaNumber != 1 || current.ArenaConfigNumber != 1 || checkpoint == null)
+                !current.IsCasualRoute || current.NextArenaNumber != 1 || current.ArenaConfigNumber != 1 || current.RoundCheckpoint != null || checkpoint == null)
             {
                 error = "当前不是可保存轮级节点的单人海岛战斗";
                 return false;
@@ -149,6 +149,50 @@ namespace Game
             return true;
         }
 
+        /// <summary>连续轮前事务：先校验完整候选，再原子落盘，最后公开权威节点。</summary>
+        public bool TrySaveRound(ArcadeRoundCheckpoint checkpoint, out string error)
+        {
+            var model = this.GetModel<ArcadeRunModel>();
+            var current = model.Current;
+            if (model.Phase != ArcadeRunPhase.Arena || current == null || current.HasResult || !current.IsCasualRoute || checkpoint == null ||
+                checkpoint.ArenaNumber != current.NextArenaNumber || checkpoint.ArenaConfigNumber != current.ArenaConfigNumber)
+            {
+                error = "当前不是可保存该轮节点的单人战斗";
+                return false;
+            }
+            var previousRound = current.RoundCheckpoint?.RoundNumber ?? current.IslandRoundCheckpoint?.RoundNumber ?? 0;
+            if (checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
+            {
+                error = "通用轮级节点必须连续推进";
+                return false;
+            }
+            var candidate = current.Clone();
+            candidate.RoundCheckpoint = checkpoint.Clone();
+            candidate.IslandRoundCheckpoint = null;
+            candidate.ArenaEntryState = null;
+            if (checkpoint.PlayerState != null)
+            {
+                candidate.EmergencyResources[ArcadeRunDefaults.BombResourceId] = checkpoint.PlayerState.Bombs;
+                candidate.EmergencyResources[ArcadeRunDefaults.DashResourceId] = checkpoint.PlayerState.Dashes;
+            }
+            candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
+            if (!ArcadeRunFileStore.TryValidate(candidate, out error)) return false;
+            // 同轮只接受完全相同的已提交包装，不能用中途收益改写安全节点。
+            if (checkpoint.RoundNumber == previousRound)
+            {
+                if (current.RoundCheckpoint == null || !Newtonsoft.Json.Linq.JToken.DeepEquals(
+                    Newtonsoft.Json.Linq.JObject.FromObject(checkpoint), Newtonsoft.Json.Linq.JObject.FromObject(current.RoundCheckpoint)))
+                {
+                    error = "同轮节点不能覆盖已提交状态";
+                    return false;
+                }
+                error = null;
+                return true;
+            }
+            if (!store.Save(candidate, out error)) return false;
+            model.CommitRound(candidate);
+            return true;
+        }
         /// <summary>先持久化本安全节点的挑战尝试，再公开挑战阶段；保存失败时仍保留安全节点。</summary>
         public bool TryStartChallenge(out ArcadeRunSaveData snapshot, out string error)
         {
@@ -255,6 +299,7 @@ namespace Game
             var candidate = current.Clone();
             candidate.RemainingLives = 0;
             candidate.Outcome = "failed";
+            candidate.RoundCheckpoint = null;
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;
             candidate.PendingRewards.Clear();
@@ -304,7 +349,7 @@ namespace Game
             { error = "旧顺序局不能直接提交休闲胜利"; return false; }
 
             if (completion.PlayerState != null &&
-                (!current.IsCasualRoute || !(current.NextArenaNumber == 1 && current.ArenaConfigNumber == 1 || current.ArenaEntryState != null)))
+                (!current.IsCasualRoute || !(current.NextArenaNumber == 1 && current.ArenaConfigNumber == 1 || current.ArenaEntryState != null || current.RoundCheckpoint != null)))
             {
                 error = "当前竞技场不允许建立角色继承状态";
                 return false;
@@ -315,6 +360,7 @@ namespace Game
             {
                 candidate.RunGold = checked(candidate.RunGold + completion.EarnedGold);
                 candidate.IslandRoundCheckpoint = null;
+                candidate.RoundCheckpoint = null;
                 candidate.Score = completion.Score;
                 candidate.ScoreMultiplier = completion.ScoreMultiplier;
                 candidate.MultiplierProgress = completion.MultiplierProgress;
@@ -379,6 +425,7 @@ namespace Game
             if (current.HasResult) { error = null; return true; }
             var candidate = current.Clone();
             candidate.Outcome = "abandoned";
+            candidate.RoundCheckpoint = null;
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;
             candidate.PendingRewards.Clear();

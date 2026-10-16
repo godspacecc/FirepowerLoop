@@ -138,13 +138,13 @@ namespace ET.Server
         /// <summary>提交高频战斗输入；不写安全节点，旧序号只返回当前权威快照。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence, OnlineArcadeRunSnapshot Snapshot) SubmitBattleInput(
             this OnlineArcadeRunManagerComponent self, long playerId, int arenaNumber, long inputSequence,
-            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash)
+            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false)
         {
             OnlineArcadeRunActor actor = self.GetActorForPlayer(playerId);
             if (actor == null || actor.IsDisposed || actor.Battle == null)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前没有可操作的竞技场现场");
             var result = actor.SubmitInput(playerId, arenaNumber, inputSequence, moveX, moveZ, aimX, aimZ, firing,
-                useBomb, useDash);
+                useBomb, useDash, roundGeneration, roundReady, exitTarget, confirmExit);
             return (result.Accepted, result.LastAcceptedInputSequence, actor.BuildSnapshot());
         }
 
@@ -297,6 +297,7 @@ namespace ET.Server
                 ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, false)
                 : (OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.SetChallengeReady && startChallenge
                     ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, true) : null;
+            if (preparedBattle?.RoundLayout != null) CaptureRoundCheckpoint(candidate, preparedBattle);
             if (startChallenge) candidate.ChallengeAttempted = true;
             try
             {
@@ -437,7 +438,14 @@ namespace ET.Server
                     }
                     continue;
                 }
-                bool changed = actor.TickBattle(now);
+                bool changed;
+                if (actor.Battle?.RoundTransitionPending == true)
+                {
+                    changed = self.TryCommitRoundTransition(actor);
+                    if (changed) await self.BroadcastRunChanged(actor);
+                    continue;
+                }
+                changed = actor.TickBattle(now);
                 if (changed) await self.BroadcastRunChanged(actor);
 
                 OnlineArcadeBattleRuntime battle = actor.Battle;
@@ -523,6 +531,10 @@ namespace ET.Server
                         throw new InvalidOperationException("Invalid casual route completion.");
                     if (!victory) candidate.ArenaConfigNumber = actor.Battle.SelectedExitConfigNumber;
                 }
+                candidate.RoundLayoutId = string.Empty; candidate.RoundNumber = 1;
+                candidate.RoundLayoutVersion = 0; candidate.RoundBossEncounter = false;
+                candidate.DestroyedCrateIds.Clear();candidate.CrateHealth.Clear();
+                foreach (var member in candidate.Players) { member.RoundHealth=0;member.RoundTemporaryWeaponId=string.Empty;member.RoundTemporaryWeaponSeconds=0;member.RoundPowerups.Clear(); }
                 candidate.CompletedArena = completedArena;
                 candidate.NextArena = nextArena;
                 foreach (OnlineArcadePlayerRecord player in candidate.Players)
@@ -657,6 +669,8 @@ namespace ET.Server
                 var working = Clone(actor.Record);
                 foreach (var player in working.Players) player.Ready = true;
                 var battle = OnlineArcadeRunActorSystem.PrepareBattle(working, false);
+                if (battle.RoundLayout != null && string.IsNullOrEmpty(working.RoundLayoutId))
+                { CaptureRoundCheckpoint(working,battle);self.CommitWithCandidate(working,working.RunId);CommitActorRecord(actor,working); }
                 actor.Record = working;
                 actor.StartBattle(battle);
                 self.StartBattleTick(actor, actor.BattleGeneration);
@@ -812,6 +826,10 @@ namespace ET.Server
                         player.Score < 0 || player.ScoreMultiplier < 1 || player.MultiplierProgress < 0 ||
                         player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null)
                         throw new InvalidOperationException("OnlineArcadeStore contains an invalid player.");
+                if(run.RoundNumber<1||run.RoundNumber>4||run.RoundGeneration<0||run.DestroyedCrateIds==null||run.CrateHealth==null||
+                    run.CrateHealth.Any(p=>p.Key<=0||p.Value<=0||run.DestroyedCrateIds.Contains(p.Key))||
+                    !string.IsNullOrEmpty(run.RoundLayoutId)&&(run.RoundLayoutVersion!=1||run.RoundLayoutId!="arena."+run.ArenaConfigNumber+".round."+run.RoundNumber))
+                    throw new InvalidOperationException("OnlineArcadeStore contains an invalid round checkpoint.");
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
             }
@@ -978,7 +996,7 @@ namespace ET.Server
         /// <summary>只接受递增输入序号并把向量限制在单位圆内；客户端位置不会直接成为权威位置。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence) SubmitInput(this OnlineArcadeRunActor self,
             long playerId, int arenaNumber, long inputSequence, float moveX, float moveZ, float aimX, float aimZ,
-            bool firing, bool useBomb, bool useDash)
+            bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false)
         {
             OnlineArcadeBattleRuntime battle = self.Battle;
             if (battle == null || battle.ArenaNumber != arenaNumber || !battle.Players.TryGetValue(playerId, out OnlineArcadeBattlePlayerRuntime player))
@@ -990,6 +1008,16 @@ namespace ET.Server
             if (!Finite(moveX, moveZ, aimX, aimZ) || inputSequence <= 0)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "战斗输入无效");
             if (inputSequence <= player.LastInputSequence) return (false, player.LastInputSequence);
+            if (battle.RoundLayout != null)
+            {
+                if (roundGeneration != battle.RoundGeneration)
+                    throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "轮代次已过期");
+                if (roundReady) player.ReadyRoundGeneration = roundGeneration;
+                if (confirmExit && player.Alive && !player.InTreasureRoom && battle.AwaitingExit)
+                    player.ConfirmedExitTarget = exitTarget;
+                if (!RoundPlayersReady(battle) || battle.RoundTransitionPending)
+                { player.LastInputSequence=inputSequence; battle.InputsDirty=true; return (true,inputSequence); }
+            }
             Normalize(ref moveX, ref moveZ);
             Normalize(ref aimX, ref aimZ);
             player.MoveX = moveX;
@@ -1159,8 +1187,38 @@ namespace ET.Server
                     SupportId = supportId ?? string.Empty,
                 });
             }
-            PrepareWave(battle, arena, 0);
-            if (!challenge)
+            PrepareWave(battle, arena, challenge ? 0 : Math.Max(0, record.RoundNumber - 1));
+            if (!challenge && battle.RoundLayout != null)
+            {
+                if (!string.IsNullOrEmpty(record.RoundLayoutId) &&
+                    (record.RoundLayoutId != battle.RoundLayout.Id || record.RoundLayoutVersion != battle.RoundLayout.Version))
+                    throw new RpcException(ErrorCode.ERR_OnlineRoomVersionMismatch,"轮布局版本已过期，保留原存档");
+                battle.RoundGeneration = checked(Math.Max(0,record.RoundGeneration)+1);
+                foreach (int id in record.DestroyedCrateIds) { battle.DestroyedCrateIds.Add(id); battle.Crates.Remove(id); }
+                foreach (var pair in record.CrateHealth)
+                {
+                    if(!battle.Crates.TryGetValue(pair.Key,out var crate)||pair.Value<=0||pair.Value>crate.Definition.Health)
+                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"轮前箱体耐久无效");
+                    crate.Damage(crate.Definition.Health-pair.Value,true);
+                }
+                foreach (var source in record.Players)
+                {
+                    var player=battle.Players[source.PlayerId];
+                    player.PositionX=battle.RoundLayout.SpawnX+(player.PlayerId==record.Players[0].PlayerId?-1f:1f);
+                    player.PositionZ=battle.RoundLayout.SpawnY;
+                    if (!string.IsNullOrEmpty(record.RoundLayoutId))
+                    {
+                        player.CurrentHealth=Math.Min(player.MaxHealth,Math.Max(0,source.RoundHealth));player.Alive=source.Lives>0&&source.RoundAlive;
+                        player.InvulnerabilitySeconds=source.RoundInvulnerabilitySeconds;player.RespawnSeconds=source.RoundRespawnSeconds;
+                        player.DashSeconds=source.RoundDashSeconds;player.FireCooldownSeconds=source.RoundFireCooldownSeconds;
+                        player.TemporaryWeaponId=source.RoundTemporaryWeaponId;
+                        player.TemporaryWeaponSeconds=source.RoundTemporaryWeaponSeconds;
+                        foreach(var power in source.RoundPowerups) player.Powerups[power.Behavior]=ClonePowerup(power);
+                    }
+                }
+                if(record.RoundBossEncounter) PrepareRoundBoss(battle);
+            }
+            if (!challenge && string.IsNullOrEmpty(record.RoundLayoutId))
                 foreach (var player in record.Players.Where(p => p.Lives > 0))
                 {
                     player.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
@@ -1188,6 +1246,11 @@ namespace ET.Server
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, waveIndex);
             ArcadeBossConfig boss = battle.IsChallenge ? null : ResolveBoss(arena, group);
             battle.WaveIndex = waveIndex;
+            if (!battle.IsChallenge && battle.IsCasualRoute)
+            {
+                battle.RoundLayout = ResolveRoundLayout(arena.ArenaNumber,waveIndex+1);
+                battle.IslandRegionResolved=false; battle.IslandRegion=null;
+            }
             battle.SpawnQueue.Clear();
             battle.SpawnQueueIndex = 0;
             battle.SpawnedInWave = 0;
@@ -1220,6 +1283,8 @@ namespace ET.Server
             OnlineArcadeBattleRuntime battle = self.Battle;
             if (battle == null || battle.AllPlayersDefeated || battle.ArenaCompletionReady ||
                 battle.ChallengeCompletionReady) return false;
+            if (!RoundPlayersReady(battle) || battle.RoundTransitionPending || self.DisconnectedAtByPlayer.Count>0)
+            { battle.LastTickAt=now; return battle.InputsDirty; }
             float deltaSeconds = Math.Clamp((now - battle.LastTickAt) / 1000f, 0f, 0.2f);
             battle.LastTickAt = now;
             bool changed = battle.InputsDirty;
@@ -1250,6 +1315,7 @@ namespace ET.Server
                 }
             }
             changed |= self.TickTreasureRoom(battle, deltaSeconds);
+            changed |= self.TickRoundContent(battle, deltaSeconds);
             changed |= self.TickPlayers(battle, deltaSeconds, now);
             changed |= self.TickTreasureRoom(battle, 0f);
             changed |= self.TickOpeningFire(battle, deltaSeconds);
@@ -1257,17 +1323,6 @@ namespace ET.Server
             {
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
                 changed |= self.TickDrops(battle);
-                var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle));
-                if (UsesEarlyRest(battle))
-                {
-                    battle.WaveTransitionSeconds += deltaSeconds;
-                    if (battle.WaveTransitionSeconds >= opening.ExitRestSeconds)
-                    {
-                        battle.SelectedExitConfigNumber = ResolveBattleArena(battle).NextArenaNumbers[0];
-                        battle.ArenaCompletionReady = true;
-                        changed = true;
-                    }
-                }
                 changed |= TickExit(battle);
                 if (changed) battle.BattleRevision++;
                 return changed;
@@ -1294,7 +1349,7 @@ namespace ET.Server
                 return false;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, battle.WaveIndex);
-            ArcadeBossConfig boss = battle.IsChallenge ? null : battle.IsFinalBoss && battle.FinalBossEnemyId == 0
+            ArcadeBossConfig boss = battle.IsChallenge || battle.RoundLayout != null ? null : battle.IsFinalBoss && battle.FinalBossEnemyId == 0
                 ? ServerConfig.Instance.Tables.TbArcadeBoss.Get(arena.FinalBossId) : ResolveBoss(arena, group);
             string enemyConfigId = battle.SpawnQueue[battle.SpawnQueueIndex++];
             EnemyConfig enemyConfig = ServerConfig.Instance.GetEnemy(enemyConfigId);
@@ -1308,6 +1363,10 @@ namespace ET.Server
             bool enteringIsland = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
             float entryTargetZ = 0f;
             float entryTargetX = x;
+            if (battle.RoundLayout != null && !enteringIsland)
+            {
+                var entry=battle.RoundLayout.Entries[battle.SpawnedInWave % battle.RoundLayout.Entries.Count];x=entry.X;z=entry.Y;
+            }
             if (enteringIsland)
             {
                 IslandFor(battle).Entry(battle.SpawnedInWave, ((runtimeId * 37) % 101) / 100f,
@@ -1344,6 +1403,7 @@ namespace ET.Server
                 BossSkillCooldownSeconds = boss?.SkillCooldownSeconds ?? 0f,
                 BossRayCooldownSeconds = boss?.RayIntervalSeconds ?? 0f,
             };
+            InitializeEnemyContent(battle,enemy);
             battle.Enemies.Add(runtimeId, enemy);
             if (battle.IsFinalBoss && battle.FinalBossEnemyId == 0) battle.FinalBossEnemyId = runtimeId;
             battle.SpawnedInWave++;
@@ -1363,7 +1423,14 @@ namespace ET.Server
                 player.InvulnerabilitySeconds = Math.Max(0f, player.InvulnerabilitySeconds - deltaSeconds);
                 changed |= MathF.Abs(previousInvulnerability - player.InvulnerabilitySeconds) > 0.0001f;
                 float previousTemporaryWeapon = player.TemporaryWeaponSeconds;
-                player.TemporaryWeaponSeconds = Math.Max(0f, player.TemporaryWeaponSeconds - deltaSeconds);
+                // 军械库内、队友未返回和开战前等待均不消耗所选武器。
+                // 轮级事务会销毁房间现场，首批敌人生成前仍须保留完整武器时间。
+                bool awaitingArmoryCombat = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss &&
+                    battle.ArenaNumber == 2 && battle.WaveIndex == 3 && battle.SpawnedInWave == 0;
+                bool holdArmoryWeapon = awaitingArmoryCombat || battle.TreasureRoom?.Parameters.IsArmory == true &&
+                    (player.InTreasureRoom || battle.RoundTransitionPending || battle.TreasureRoom.Members.Length > 0 || battle.WaveClearAwarded ||
+                     battle.Enemies.Count == 0 && battle.SpawnQueueIndex >= battle.SpawnQueue.Count);
+                if (!holdArmoryWeapon) player.TemporaryWeaponSeconds = Math.Max(0f, player.TemporaryWeaponSeconds - deltaSeconds);
                 if (player.TemporaryWeaponSeconds <= 0f) player.TemporaryWeaponId = string.Empty;
                 float previousDash = player.DashSeconds;
                 player.DashSeconds = Math.Max(0f, player.DashSeconds - deltaSeconds);
@@ -1404,10 +1471,11 @@ namespace ET.Server
                 if (!player.InTreasureRoom && !battle.IsChallenge)
                     moveSpeed *= IslandFor(battle) is { } island && island.IsShallow(player.PositionX, player.PositionZ)
                         ? FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena).WaterSpeedRatio : 1f;
-                if (MathF.Abs(player.MoveX) > 0.0001f || MathF.Abs(player.MoveZ) > 0.0001f)
+                ContentPlayerVelocity(battle,player,moveSpeed,deltaSeconds,out float velocityX,out float velocityZ);
+                if (MathF.Abs(velocityX) > 0.0001f || MathF.Abs(velocityZ) > 0.0001f)
                 {
-                    float nextX = player.PositionX + player.MoveX * moveSpeed * deltaSeconds;
-                    float nextZ = player.PositionZ + player.MoveZ * moveSpeed * deltaSeconds;
+                    float nextX = player.PositionX + velocityX * deltaSeconds;
+                    float nextZ = player.PositionZ + velocityZ * deltaSeconds;
                     var region = player.InTreasureRoom ? null : IslandFor(battle);
                     if (region != null)
                     {
@@ -1416,7 +1484,7 @@ namespace ET.Server
                         nextX = position.X; nextZ = position.Y;
                     }
                     ResolvePosition(ref nextX, ref nextZ, player.PositionX, player.PositionZ,
-                        rule.PlayerRadius, rule, player.InTreasureRoom ? Array.Empty<ArcadeObstacleConfig>() : arena.Obstacles, region);
+                        rule.PlayerRadius, rule, player.InTreasureRoom ? Array.Empty<ArcadeObstacleConfig>() : EffectiveObstacles(battle), region);
                     if (player.InTreasureRoom)
                     {
                         nextX = Math.Clamp(nextX, -battle.TreasureRoom.Parameters.HalfWidth + rule.PlayerRadius, battle.TreasureRoom.Parameters.HalfWidth - rule.PlayerRadius);
@@ -1456,6 +1524,7 @@ namespace ET.Server
                     return changed || battle.AllPlayersDefeated;
                 }
 
+                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed)continue;
                 enemy.TargetPlayerId = target.PlayerId;
                 enemy.AttackCooldownSeconds = Math.Max(0f, enemy.AttackCooldownSeconds - deltaSeconds);
                 float targetX = target.PositionX;
@@ -1477,6 +1546,9 @@ namespace ET.Server
                 float directionX = distance > 0.001f ? offsetX / distance : 0f;
                 float directionZ = distance > 0.001f ? offsetZ / distance : 1f;
                 float movementDelta = deltaSeconds * EnemySpeedMultiplier(battle);
+                movementDelta *= EnemyContentMotion(battle,enemy,deltaSeconds);
+                if (self.TickContentBoss(battle,enemy,target,deltaSeconds)) { changed=true;continue; }
+                if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
 
                 bool entering = enemy.EnteringIsland;
                 if (entering)
@@ -1488,7 +1560,7 @@ namespace ET.Server
                 }
 
                 if (!entering && self.TickBoss(battle, enemy, target, directionX, directionZ, deltaSeconds, movementDelta,
-                        rule, arena.Obstacles))
+                        rule, EffectiveObstacles(battle)))
                 {
                     changed = true;
                     if (battle.AllPlayersDefeated) return true;
@@ -1498,7 +1570,7 @@ namespace ET.Server
                 if (enemy.AttackKind == EnemyAttackKind.Projectile)
                 {
                     if (!entering && distance > enemy.AttackRange * 0.8f)
-                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, arena.Obstacles, IslandFor(battle));
+                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
                     if (distance <= enemy.AttackRange && enemy.AttackCooldownSeconds <= 0f &&
                         battle.Projectiles.Count < rule.MaxProjectiles)
                     {
@@ -1508,7 +1580,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    if (!entering) MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, arena.Obstacles, IslandFor(battle));
+                    if (!entering) MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
                     if (distance <= rule.PlayerRadius + rule.EnemyContactRadius && enemy.AttackCooldownSeconds <= 0f)
                     {
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
@@ -1518,7 +1590,7 @@ namespace ET.Server
                 }
                 changed = true;
             }
-            ResolveEnemyCrowding(battle, rule, arena.Obstacles);
+            ResolveEnemyCrowding(battle, rule, EffectiveObstacles(battle));
             return changed;
         }
 
@@ -1810,9 +1882,9 @@ namespace ET.Server
                         !IsWithinMeleeStrike(player.PositionX, player.PositionZ, aimX, aimZ,
                             enemy.PositionX, enemy.PositionZ, weapon.MeleeRange, weapon.MeleeArcDegrees) ||
                         SegmentCrossesObstacle(player.PositionX, player.PositionZ, enemy.PositionX,
-                            enemy.PositionZ, 0f, arena.Obstacles)) continue;
+                            enemy.PositionZ, 0f, EffectiveObstacles(battle))) continue;
                     enemy.LastDamagePlayerId = player.PlayerId;
-                    DamageEnemy(enemy, damage);
+                    DamageEnemy(battle, enemy, damage);
                     if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
                 }
                 player.FireSequence++;
@@ -1880,12 +1952,13 @@ namespace ET.Server
             foreach (long projectileId in battle.ProjectileIterationIds)
             {
                 if (!battle.Projectiles.TryGetValue(projectileId, out OnlineArcadeProjectileRuntime projectile)) continue;
+                TickTrackingProjectile(battle,projectile,deltaSeconds);
                 float priorX = projectile.PositionX, priorZ = projectile.PositionZ;
                 projectile.PositionX += projectile.VelocityX * deltaSeconds;
                 projectile.PositionZ += projectile.VelocityZ * deltaSeconds;
                 projectile.RemainingSeconds -= deltaSeconds;
                 bool expired = projectile.RemainingSeconds <= 0f;
-                bool hitObstacle = InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, arena.Obstacles);
+                bool hitObstacle = InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
                 bool remove = expired || MathF.Abs(projectile.PositionX) > rule.ArenaHalfWidth ||
                               MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
@@ -1909,6 +1982,7 @@ namespace ET.Server
                                 player.PositionX, player.PositionZ) > hitRadius * hitRadius)
                             continue;
                         self.DamagePlayer(battle, player, projectile.Damage);
+                        if(player.Alive&&projectile.ContentSlowSeconds>0)player.ContentSlowRemaining=Math.Max(player.ContentSlowRemaining,projectile.ContentSlowSeconds);
                         remove = true;
                         break;
                     }
@@ -1930,7 +2004,7 @@ namespace ET.Server
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.RuntimeId)) continue;
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
-                        DamageEnemy(enemy, projectile.Damage);
+                        DamageEnemy(battle, enemy, projectile.Damage);
                         if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
                         remove = projectile.Behavior != ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
                         if (remove) break;
@@ -1954,7 +2028,7 @@ namespace ET.Server
                 if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) ||
                     DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
                 enemy.LastDamagePlayerId = ownerPlayerId;
-                DamageEnemy(enemy, damage);
+                DamageEnemy(battle, enemy, damage);
                 if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
             }
         }
@@ -1979,11 +2053,11 @@ namespace ET.Server
                 // 入场阶段不夹取到玩家边界，避免击退把水侧目标瞬间搬上岸。
                 if (!enemy.EnteringIsland || IslandFor(battle) != null)
                     ResolvePosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
-                        rule.EnemyContactRadius, rule, arena.Obstacles, IslandFor(battle));
+                        rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle));
                 enemy.PositionX = nextX;
                 enemy.PositionZ = nextZ;
                 enemy.LastDamagePlayerId = ownerPlayerId;
-                DamageEnemy(enemy, damage);
+                DamageEnemy(battle, enemy, damage);
                 if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
             }
         }
@@ -2041,6 +2115,13 @@ namespace ET.Server
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
             if (!hazardKill) AwardIslandKill(self, battle, enemy);
+            if (!hazardKill) self.SpawnContentDeathZone(battle,enemy);
+            if (enemy.ContentBossKind>0)
+            {
+                battle.RoundBossDefeated=true; battle.AwaitingExit=true;
+                if(battle.ArenaConfigNumber==20)battle.FinalBossDefeated=true;
+                battle.SpawnQueue.Clear();battle.SpawnQueueIndex=0; battle.Projectiles.Clear();
+            }
             if (battle.IsFinalBoss && enemy.RuntimeId == battle.FinalBossEnemyId)
             {
                 battle.FinalBossDefeated = true;
@@ -2093,7 +2174,7 @@ namespace ET.Server
             battle.EnemyIterationIds.AddRange(battle.Enemies.Keys);
             battle.EnemyIterationIds.Sort();
             foreach (long enemyId in battle.EnemyIterationIds)
-                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemyId != battle.FinalBossEnemyId)
+                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
                 {
                     enemy.LastDamagePlayerId = player.PlayerId;
                     self.KillEnemy(battle, enemy);
@@ -2426,7 +2507,7 @@ namespace ET.Server
             float deltaSeconds)
         {
             if (battle.Players.Values.Any(p => p.Alive) && battle.Players.Values.Where(p => p.Alive).All(p => p.InTreasureRoom)) return false;
-            if (battle.IsFinalBoss || battle.AwaitingExit || battle.SpawnQueueIndex < battle.SpawnQueue.Count || battle.Enemies.Count > 0) return false;
+            if (battle.IsFinalBoss || battle.RoundBossEncounter || battle.AwaitingExit || battle.SpawnQueueIndex < battle.SpawnQueue.Count || battle.Enemies.Count > 0) return false;
             if (battle.WaveIndex == 2 && battle.IsCasualRoute && battle.ArenaConfigNumber == 1 && !battle.TreasureCompleted) return false;
             if (!battle.WaveClearAwarded)
             {
@@ -2442,8 +2523,8 @@ namespace ET.Server
                 battle.WaveClearAwarded = true;
                 battle.WaveTransitionSeconds = 0f;
                 foreach (var player in battle.Players.Values) player.RestAttackReleased = false;
-                if (UsesEarlyRest(battle) && battle.WaveIndex + 1 == battle.WaveCount)
-                    battle.AwaitingExit = true;
+                if (!battle.IsChallenge && battle.RoundLayout != null) battle.AwaitingExit = true;
+                else if (UsesEarlyRest(battle) && battle.WaveIndex + 1 == battle.WaveCount) battle.AwaitingExit = true;
                 return true;
             }
             battle.WaveTransitionSeconds += deltaSeconds;
@@ -2520,6 +2601,7 @@ namespace ET.Server
         /// <summary>任意存活成员接触出口即可选路；同一 Tick 按稳定玩家 ID 仲裁，只提交一次。</summary>
         private static bool TickExit(OnlineArcadeBattleRuntime battle)
         {
+            if (battle.RoundLayout != null) return TickRoundExit(battle);
             if (battle.TreasureRoom?.Members.Length > 0) return false;
             var arena = ResolveBattleArena(battle);
             int count = battle.FinalBossDefeated ? 1 : arena.NextArenaNumbers.Length;
@@ -2561,7 +2643,7 @@ namespace ET.Server
         {
             if (island != null)
             {
-                var p = island.Constrain(x, z, radius); x = p.X; z = p.Y; return;
+                var p = island.Constrain(x, z, radius); x = p.X; z = p.Y;
             }
             x = Math.Clamp(x, -rule.ArenaHalfWidth + radius, rule.ArenaHalfWidth - radius);
             z = Math.Clamp(z, -rule.ArenaHalfHeight + radius, rule.ArenaHalfHeight - radius);
@@ -2764,6 +2846,14 @@ namespace ET.Server
         {
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
             battle.ArenaNumber = source.ArenaNumber;
+            battle.RoundGeneration=source.RoundGeneration;
+            battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;
+            battle.RoundLayoutId=source.RoundLayout?.Id ?? string.Empty;
+            battle.RoundLayoutVersion=source.RoundLayout?.Version ?? 0;
+            battle.RoundLoading=!RoundPlayersReady(source);battle.RoundLoadError=source.RoundLoadError;
+            battle.ContentElapsed=(float)source.ContentClock.Elapsed;
+            foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
+
             battle.ArenaConfigNumber = source.ArenaConfigNumber;
             battle.IsFinalBoss = source.IsFinalBoss;
             battle.AwaitingExit = source.AwaitingExit;
@@ -2842,6 +2932,7 @@ namespace ET.Server
                 enemy.BossPhase = (int)sourceEnemy.BossPhase;
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
+                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileRuntime sourceProjectile in source.Projectiles.Values.OrderBy(x => x.RuntimeId))
@@ -2939,6 +3030,11 @@ namespace ET.Server
             if (source == null) return null;
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
             battle.ArenaNumber = source.ArenaNumber;
+            battle.RoundGeneration=source.RoundGeneration;
+            battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;battle.RoundLayoutId=source.RoundLayoutId;battle.RoundLayoutVersion=source.RoundLayoutVersion;
+            battle.RoundLoading=source.RoundLoading;battle.RoundLoadError=source.RoundLoadError;battle.ContentElapsed=source.ContentElapsed;
+            foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
+
             battle.WaveNumber = source.WaveNumber;
             battle.ArenaConfigNumber = source.ArenaConfigNumber;
             battle.IsFinalBoss = source.IsFinalBoss;
@@ -3015,6 +3111,7 @@ namespace ET.Server
                 enemy.BossPhase = sourceEnemy.BossPhase;
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
+                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileInfo sourceProjectile in source.Projectiles)

@@ -25,6 +25,7 @@ namespace Game
         private IReadOnlyList<ArcadeObstacleDefinition> ObstaclesFor(ArcadeCombatRuntime runtime)
         {
             if (runtime.InTreasureRoom) return Array.Empty<ArcadeObstacleDefinition>();
+            if (UsesContentRounds(runtime)) return ContentObstacles(runtime);
             if (!UsesIslandRounds(runtime)) return arena.Obstacles;
             int round = runtime.WaveIndex + 1;
             if (islandObstacleRound != round || islandRoundObstacles == null)
@@ -100,6 +101,7 @@ namespace Game
         /// <summary>地图就绪与安全节点均成功后才开始活动帧；等待和失败期间不消耗临时效果。</summary>
         private bool TryFinishIslandTransition(ArcadeCombatRuntime runtime)
         {
+            if (UsesContentRounds(runtime)) return TryFinishContentTransition(runtime);
             if (!runtime.IslandTransitionPending || runtime.CompletionAwaitingRetry) return false;
             if (!string.IsNullOrEmpty(view.IslandRoundLoadError))
             { FailIslandTransition(runtime, view.IslandRoundLoadError); return false; }
@@ -140,7 +142,8 @@ namespace Game
                 return;
             }
             SuspendIslandFirstPerson(runtime);
-            PrepareIslandRoundView(runtime);
+            if (UsesContentRounds(runtime)) PrepareContentRoundView(runtime);
+            else PrepareIslandRoundView(runtime);
             PublishHud(runtime);
         }
 

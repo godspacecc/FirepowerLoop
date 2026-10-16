@@ -341,6 +341,12 @@ namespace Game
                 input.Enable();
                 if (UsesIslandRounds(runtime))
                     StartIslandRound(runtime, (run.IslandRoundCheckpoint?.RoundNumber ?? 1) - 1, run.IslandRoundCheckpoint);
+                else if (UsesContentRounds(runtime))
+                {
+                    if (run.RoundCheckpoint == null && run.ArenaEntryState != null)
+                        RestoreIslandCheckpoint(runtime, run.ArenaEntryState);
+                    StartContentRound(runtime, (run.RoundCheckpoint?.RoundNumber ?? 1) - 1, run.RoundCheckpoint);
+                }
                 else
                 {
                     view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, arena.Obstacles);
@@ -448,7 +454,7 @@ namespace Game
             { ClearArcadeInput(runtime); TickIslandRoomTransition(runtime); return; }
             // 死亡/区域变化可以来自本帧之外；零步长及暂停也不能保留失效视角。
             if (runtime.FirstPersonRemaining > 0 && (runtime.PlayerHealth <= 0 ||
-                runtime.RespawnRemaining > 0 || runtime.InTreasureRoom && !UsesIslandRounds(runtime) ||
+                runtime.RespawnRemaining > 0 || runtime.InTreasureRoom && !UsesRoundLayouts(runtime) ||
                 !runtime.IslandFirstPersonSuspended && !view.IsFirstPersonActive))
                 EndFirstPerson(runtime);
             // 暂停及阻断界面冻结两个独立时钟，清除战斗意图而不终止临时视角。
@@ -500,7 +506,7 @@ namespace Game
             {
                 // 清场后仍可领取地面物资；先结算拾取，再处理出口或超时离场，避免漏存同帧奖励。
                 TickDrops(runtime);
-                if (!UsesIslandRounds(runtime) && UsesEarlyRest(runtime) && !runtime.CompletionAwaitingRetry)
+                if (!UsesRoundLayouts(runtime) && UsesEarlyRest(runtime) && !runtime.CompletionAwaitingRetry)
                 {
                     runtime.WaveTransitionRemaining = Mathf.Max(0, runtime.WaveTransitionRemaining - deltaTime);
                     if (runtime.WaveTransitionRemaining <= 0 && arena.NextArenaNumbers.Count > 0)
@@ -510,7 +516,8 @@ namespace Game
                         return;
                     }
                 }
-                if (UsesIslandRounds(runtime)) TickIslandExit(runtime); else TickExit(runtime);
+                if (UsesContentRounds(runtime)) TickContentExit(runtime);
+                else if (UsesIslandRounds(runtime)) TickIslandExit(runtime); else TickExit(runtime);
                 if (this.GetModel<ArcadeCombatModel>().Runtime == runtime) { SyncView(runtime); PublishHud(runtime); }
                 return;
             }
@@ -519,11 +526,13 @@ namespace Game
                 // 清场后的玩家射击只继续弹丸表现与寿命，敌群和机关保持结束，不冻结空中弹丸。
                 TickProjectiles(runtime, deltaTime);
                 TickDrops(runtime);
-                TickIslandExit(runtime);
+                if (UsesContentRounds(runtime)) TickContentExit(runtime); else TickIslandExit(runtime);
                 SyncView(runtime); PublishHud(runtime);
                 return;
             }
             TickFinalBossReinforcements(runtime, deltaTime);
+            TickRoundContent(runtime, deltaTime);
+            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             TickSpawning(runtime, deltaTime);
             TickEnemies(runtime, deltaTime);
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
@@ -572,7 +581,14 @@ namespace Game
             runtime.PlayerInvulnerability = Mathf.Max(0f, runtime.PlayerInvulnerability - deltaTime);
             runtime.FireCooldown = Mathf.Max(0f, runtime.FireCooldown - deltaTime);
             runtime.DashRemaining = Mathf.Max(0f, runtime.DashRemaining - deltaTime);
-            runtime.TemporaryWeaponRemaining = Mathf.Max(0f, runtime.TemporaryWeaponRemaining - deltaTime);
+            // 军械库及返回后的开战等待保留完整火力；第一场财宝规则不变。
+            bool awaitingArmoryCombat = UsesContentRounds(runtime) && runtime.ArenaNumber == 2 &&
+                runtime.WaveIndex == 3 && runtime.IslandWaveBudget > 0 &&
+                runtime.SpawnQueue.Count == runtime.IslandWaveBudget && runtime.Enemies.Count == 0;
+            bool holdArmoryWeapon = awaitingArmoryCombat || runtime.TreasureRoom?.Parameters.IsArmory == true &&
+                (runtime.InTreasureRoom || runtime.TreasureRoom.Members.Length > 0 || runtime.WaveClearAwarded ||
+                 runtime.Enemies.Count == 0 && runtime.SpawnQueue.Count == 0);
+            if (!holdArmoryWeapon) runtime.TemporaryWeaponRemaining = Mathf.Max(0f, runtime.TemporaryWeaponRemaining - deltaTime);
             expiredPowerups.Clear();
             foreach (var pair in runtime.Powerups)
             {
@@ -613,11 +629,11 @@ namespace Game
             var island = IslandFor(runtime);
             if (island != null)
             {
-                runtime.PlayerPosition = MoveOnIsland(runtime, runtime.MoveDirection * speed * deltaTime, catalog.Rule.PlayerRadius);
+                runtime.PlayerPosition = MoveOnIsland(runtime, RoundMovementDelta(runtime, runtime.MoveDirection, speed, deltaTime), catalog.Rule.PlayerRadius);
                 KillAlongIslandDash(runtime);
             }
             else
-            runtime.PlayerPosition = ResolvePosition(runtime.PlayerPosition + runtime.MoveDirection * speed * deltaTime,
+            runtime.PlayerPosition = ResolvePosition(runtime.PlayerPosition + RoundMovementDelta(runtime, runtime.MoveDirection, speed, deltaTime),
                 catalog.Rule.PlayerRadius,
                 runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : catalog.Rule.ArenaHalfWidth,
                 runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : catalog.Rule.ArenaHalfHeight,
@@ -629,6 +645,7 @@ namespace Game
         {
             if (group == null || runtime.SpawnQueue.Count == 0) return;
             if (UsesIslandRounds(runtime) && !IslandEntryIsReady(runtime, deltaTime)) return;
+            if (UsesContentRounds(runtime) && !runtime.IsFinalBoss && !ContentEntryReady(runtime, deltaTime)) return;
             runtime.SpawnCooldown = Mathf.Max(0f, runtime.SpawnCooldown - deltaTime);
             var aliveCap = Mathf.Min(group.MaxAlive, catalog.Rule.MaxAliveEnemies);
             if (runtime.SpawnCooldown > 0f || runtime.Enemies.Count >= aliveCap) return;
@@ -647,6 +664,13 @@ namespace Game
             enemy.ConfigId = definition.Id;
             enemy.AttackKind = definition.AttackKind;
             enemy.Position = RandomBorderPosition();
+            if (UsesContentRounds(runtime) && !runtime.IsFinalBoss)
+            {
+                var layout = RoundLayout(runtime);
+                var entry = layout.Entries[runtime.IslandEntryBatch % layout.Entries.Count];
+                enemy.Position = ResolvePosition(new Vector2(entry.X, entry.Y), catalog.Rule.EnemyContactRadius,
+                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+            }
             if (arena.Opening.Enabled && !runtime.IsChallenge && !runtime.IsFinalBoss)
             {
                 if (UsesIslandRounds(runtime))
@@ -680,10 +704,13 @@ namespace Game
                 enemy.BossSkillCooldown = boss.SkillCooldownSeconds;
                 enemy.BossRayCooldown = boss.RayIntervalSeconds;
             }
+            AssignRoundEnemyContent(runtime, enemy);
+            if (isFinalBossEnemy && UsesContentRounds(runtime)) enemy.ContentBossKind = 4;
             runtime.Enemies.Add(enemy.Id, enemy);
             if (isFinalBossEnemy)
             {
                 runtime.FinalBossEnemyId = enemy.Id;
+                AssignRoundEnemyContent(runtime, enemy);
                 enemy.IsBossPresentation = true;
                 group = FindGroup(boss.ReinforcementGroupId);
             }
@@ -723,6 +750,11 @@ namespace Game
                             enemy.IslandEntryTarget.x, enemy.IslandEntryTarget.y, enemy.Speed * movementDelta);
                         enemy.Position = new Vector2(x, y);
                     }
+                }
+                if (TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
+                {
+                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    continue;
                 }
                 if (!entering && TickBoss(runtime, enemy, direction, targetIsDecoy, deltaTime, movementDelta)) continue;
                 if (enemy.AttackKind == global::EnemyAttackKind.Projectile)
@@ -842,6 +874,7 @@ namespace Game
             for (var projectileIndex = 0; projectileIndex < projectileIterationIds.Count; projectileIndex++)
             {
                 if (!runtime.Projectiles.TryGetValue(projectileIterationIds[projectileIndex], out var projectile)) continue;
+                SteerRoundProjectile(runtime, projectile, deltaTime);
                 var priorPosition = projectile.Position;
                 projectile.Position += projectile.Velocity * deltaTime;
                 projectile.RemainingSeconds -= deltaTime;
@@ -877,8 +910,10 @@ namespace Game
                 {
                     if (Vector2.Distance(projectile.Position, runtime.PlayerPosition) <= catalog.Rule.PlayerRadius + ProjectileHitRadius)
                     {
+                        var healthBefore = runtime.PlayerHealth;
                         DamagePlayer(runtime, projectile.Damage);
                         if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                        if (runtime.PlayerHealth < healthBefore) OnRoundProjectileHit(runtime, projectile);
                         remove = true;
                     }
                 }
@@ -1091,7 +1126,8 @@ namespace Game
 
         private void TickWaveTransition(ArcadeCombatRuntime runtime, float deltaTime)
         {
-            if (runtime.IsFinalBoss || runtime.AwaitingExit || runtime.InTreasureRoom) return;
+            if (runtime.IsFinalBoss || runtime.AwaitingExit || runtime.InTreasureRoom ||
+                runtime.ThemeBossStarted && !runtime.ThemeBossDefeated) return;
             if (runtime.SpawnQueue.Count > 0 || runtime.Enemies.Count > 0) return;
             if (runtime.WaveIndex == 2 && arena.Opening.Enabled &&
                 this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute == true && !runtime.TreasureCompleted) return;
@@ -1100,6 +1136,19 @@ namespace Game
                 if (!runtime.IsChallenge && !UsesEarlyRounds(runtime))
                     runtime.ArenaGold += ScaleGold(group?.ClearGold ?? 0, runtime.ArenaNumber, catalog.Rule.GoldGrowthPerArena);
                 runtime.WaveClearAwarded = true;
+                if (UsesContentRounds(runtime))
+                {
+                    runtime.WaveTransitionRemaining = 0;
+                    foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
+                    var layout = RoundLayout(runtime);
+                    if (runtime.WaveIndex == 3 && layout.BossKind > 0)
+                    {
+                        if (layout.BossKind == 4) BeginFinalBoss(runtime); else BeginThemeBoss(runtime);
+                    }
+                    else
+                    { runtime.IslandRoundAwaitingExit = runtime.WaveIndex < 3; runtime.AwaitingExit = runtime.WaveIndex == 3; }
+                    return;
+                }
                 if (UsesIslandRounds(runtime))
                 {
                     runtime.WaveTransitionRemaining = 0;
@@ -1119,7 +1168,7 @@ namespace Game
                 }
                 return;
             }
-            if (UsesIslandRounds(runtime)) return;
+            if (UsesRoundLayouts(runtime)) return;
             runtime.WaveTransitionRemaining -= deltaTime;
             if (!runtime.Firing) runtime.RestAttackReleased = true;
             if (UsesEarlyRest(runtime) && runtime.RestAttackReleased && runtime.Firing)
@@ -1148,6 +1197,7 @@ namespace Game
         {
             if (runtime.IsFinalBoss) return;
             runtime.IsFinalBoss = true;
+            if (UsesContentRounds(runtime)) InitializeRoundContent(runtime);
             runtime.Hazards.Clear();
             runtime.SpawnQueue.Clear();
             var boss = ResolveFinalBoss();
@@ -1174,6 +1224,7 @@ namespace Game
         /// <summary>出口进入由规则位置判定，不依赖表现 Collider；失败时仍保留同一选择供重试。</summary>
         private void TickExit(ArcadeCombatRuntime runtime)
         {
+            if (UsesContentRounds(runtime)) { TickContentExit(runtime); return; }
             if (runtime.TreasureRoom?.Members.Length > 0) return;
             var count = runtime.FinalBossDefeated ? 1 : arena.NextArenaNumbers.Count;
             for (var index = 0; index < count; index++)
@@ -1311,7 +1362,7 @@ namespace Game
             CopyKeys(runtime.Enemies, enemyIterationIds);
             for (var index = 0; index < enemyIterationIds.Count; index++)
                 if (runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) &&
-                    enemy.Id != runtime.FinalBossEnemyId) KillEnemy(runtime, enemy);
+                    enemy.Id != runtime.FinalBossEnemyId && enemy.Id != runtime.ContentBossEnemyId) KillEnemy(runtime, enemy);
             PublishHud(runtime);
         }
 
@@ -1400,6 +1451,15 @@ namespace Game
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
+            if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
+            {
+                runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;
+                runtime.ContentAreas.Clear(); runtime.ContentAreaSnapshots.Clear();
+                runtime.SpawnQueue.Clear();
+                foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
+                foreach (int id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
+            }
+            OnRoundEnemyKilled(runtime, enemy, hazardKill);
             if (!hazardKill) AwardIslandKill(runtime, enemy);
             if (runtime.IsFinalBoss && enemy.Id == runtime.FinalBossEnemyId)
             {
@@ -1526,7 +1586,7 @@ namespace Game
         {
             var run = this.GetModel<ArcadeRunModel>().Current;
             ArcadeIslandRoundCheckpoint carriedPlayer = null;
-            if (!runtime.FinalBossDefeated && (UsesIslandRounds(runtime) || run.ArenaEntryState != null))
+            if (!runtime.FinalBossDefeated && (UsesRoundLayouts(runtime) || run.ArenaEntryState != null))
             {
                 carriedPlayer = CaptureIslandCheckpoint(runtime);
                 carriedPlayer.RoundNumber = 1; carriedPlayer.MapId = "arena.entry"; carriedPlayer.ArenaGold = 0;
@@ -1746,11 +1806,18 @@ namespace Game
             view.SetIslandCampfireWarning(UsesIslandRounds(runtime) && runtime.WaveIndex == 3 &&
                 !runtime.WaveClearAwarded && !runtime.InTreasureRoom && runtime.IslandCampfireWarningRemaining > 0);
             SyncIslandEntryWarning(runtime);
-            if (runtime.InTreasureRoom) { view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f); view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth); return; }
+            if (runtime.InTreasureRoom)
+            {
+                view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
+                view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth);
+                if (runtime.TreasureRoom.Parameters.IsArmory && TryGetWeapon(runtime, out var selectedWeapon))
+                    view.SetPlayerWeapon(selectedWeapon);
+                return;
+            }
             view.SetExits(runtime.IslandRoundAwaitingExit ? new[] { -(runtime.WaveIndex + 2) } :
                 runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
-            view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
+            view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);
             view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f,
                 runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
@@ -1765,6 +1832,7 @@ namespace Game
                     enemy.IsBossPresentation);
                 view.SetEnemyArmor(enemy.Id, enemy.Position, enemy.ArmorHealth);
             }
+            SyncRoundContent(runtime);
             foreach (var projectile in runtime.Projectiles.Values)
                 view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
                     projectile.ProjectileVisualResourceName, projectile.FromPlayerWeapon);
@@ -1844,10 +1912,10 @@ namespace Game
                 IsChallenge = runtime.IsChallenge,
                 IsFinalBoss = runtime.IsFinalBoss,
                 AwaitingExit = runtime.AwaitingExit,
-                IslandMapNameKey = UsesIslandRounds(runtime) ? ArcadeIslandLayout.GetNameKey(runtime.WaveIndex + 1) : null,
+                IslandMapNameKey = UsesIslandRounds(runtime) ? ArcadeIslandLayout.GetNameKey(runtime.WaveIndex + 1) : RoundLayout(runtime)?.NameKey,
                 IslandTransitioning = runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending,
                 IslandAwaitingRoundExit = runtime.IslandRoundAwaitingExit,
-                Resting = !UsesIslandRounds(runtime) && UsesEarlyRest(runtime) && runtime.WaveClearAwarded && !runtime.AwaitingExit,
+                Resting = !UsesRoundLayouts(runtime) && UsesEarlyRest(runtime) && runtime.WaveClearAwarded && !runtime.AwaitingExit,
                 RestSeconds = runtime.WaveTransitionRemaining,
                 ChallengeSeconds = runtime.ChallengeSeconds
             }));

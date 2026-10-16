@@ -1176,9 +1176,27 @@ namespace Game
         {
             try
             {
+                var layouts = tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
+                var layoutRule = tables.TbArcadeRule.DataList.FirstOrDefault();
+                if (layoutRule == null || layouts.Length != tables.TbArcadeArena.DataList.Count * 4 ||
+                    layouts.Select(p => p.Id).Distinct(StringComparer.Ordinal).Count() != layouts.Length)
+                    return "轮级布局目录不完整或重复";
+                foreach (var arena in tables.TbArcadeArena.DataList)
+                {
+                    var rounds = layouts.Where(p => p.ArenaConfigNumber == arena.ArenaNumber).ToArray();
+                    if (rounds.Length != 4 || rounds.Select(p => p.RoundNumber).Distinct().Count() != 4 ||
+                        rounds.Select(p => p.ThemeKey).Distinct(StringComparer.Ordinal).Count() != 1 ||
+                        rounds.Any(p => !p.FitsArena(layoutRule.ArenaHalfWidth, layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius)))
+                        return "轮级地图引用、通路或轮次无效：" + arena.ArenaNumber;
+                }
                 foreach (var row in tables.TbArcadeTreasureRoom.DataList)
                 {
                     var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);
+                    foreach (var reward in room.Rewards.Where(r => r.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon))
+                    {
+                        var drop = tables.TbArcadeDrop.GetOrDefault(reward.DropId);
+                        if (drop == null || drop.Kind != ArcadeDropKind.TemporaryWeapon) return "军械库武器掉落引用无效：" + reward.DropId;
+                    }
                     var target = tables.TbArcadeArena.GetOrDefault(room.ArenaConfigNumber);
                     var arenaRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                     if (target == null || room.WaveNumber > target.WaveGroupIds.Length || arenaRule == null ||
@@ -1480,7 +1498,9 @@ namespace Game
                     .Select(row => new ArcadeUpgradeDefinition(row.Id, row.Kind, row.ValuePerStack, row.MaxStacks)),
                 tables.TbArcadeReward.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeRewardDefinition(row.Id, row.Trigger, row.StartArena, row.Interval, row.RewardId, row.Amount, row.AmountPerTrigger)),
-                tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig));
+                tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig),
+                tables.TbArcadeRoundLayout.DataList.OrderBy(row => row.ArenaConfigNumber).ThenBy(row => row.RoundNumber)
+                    .Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig));
         }
 
         private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;

@@ -440,7 +440,7 @@ namespace ET.Server
         public static async ETTask<(int Error, string Message, bool Accepted, long LastAcceptedInputSequence,
             OnlineArcadeRunSnapshot Run)> SubmitOnlineArcadeInput(this OnlinePlayerActor self, long sessionEpoch,
             int arenaNumber, long inputSequence, float moveX, float moveZ, float aimX, float aimZ, bool firing,
-            bool useBomb, bool useDash)
+            bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false)
         {
             if (sessionEpoch != self.SessionEpoch || self.State != OnlinePlayerState.Online)
                 return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, 0, null);
@@ -460,6 +460,7 @@ namespace ET.Server
                 request.Firing = firing;
                 request.UseBomb = useBomb;
                 request.UseDash = useDash;
+                request.RoundGeneration=roundGeneration;request.RoundReady=roundReady;request.ExitTarget=exitTarget;request.ConfirmExit=confirmExit;
                 using R2P_SubmitOnlineArcadeInput response = await self.Root().GetComponent<MessageSender>()
                     .Call(roomScene, request, false) as R2P_SubmitOnlineArcadeInput;
                 return (response.Error, response.Message, response.Accepted, response.LastAcceptedInputSequence,

@@ -39,10 +39,10 @@ namespace Game
                         entryPosition = ArcadeIslandLayout.GetLandmarkPosition(new ArcadeIslandRegion(islandCatalog.Rule.ArenaHalfWidth,
                             islandCatalog.Rule.ArenaHalfHeight, islandRound), entryPosition, p.EntryRadius + islandCatalog.Rule.PlayerRadius);
                     var entrance=CreateContent("TreasureEntrance",new Vector3(entryPosition.x,0,entryPosition.y));
-                    SetContentLabel(entrance,open?"ui.arcade.treasure.open":"ui.arcade.treasure.locked");
+                    SetContentLabel(entrance, p.IsArmory ? (open ? "ui.arcade.armory.open" : "ui.arcade.armory.locked") : (open ? "ui.arcade.treasure.open" : "ui.arcade.treasure.locked"));
                     entrance.transform.Find("Chest").localRotation=Quaternion.Euler(0,open?35:0,0);
                     treasureVisuals.Add(entrance);
-                    if(open){var gate=CreateContent("RouteGate",new Vector3(entryPosition.x,0,entryPosition.y));SetContentLabel(gate,"ui.arcade.treasure.open");treasureVisuals.Add(gate);}
+                    if(open){var gate=CreateContent("RouteGate",new Vector3(entryPosition.x,0,entryPosition.y));SetContentLabel(gate,p.IsArmory ? "ui.arcade.armory.open" : "ui.arcade.treasure.open");treasureVisuals.Add(gate);}
                 }
                 return;
             }
@@ -59,7 +59,9 @@ namespace Game
                 var gem = kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem;
                 if (!gold && !gem && catalog != null)
                 {
-                    var definition = catalog.Drops.First(r => r.Kind == (kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb ? global::ArcadeDropKind.Bomb : global::ArcadeDropKind.Dash));
+                    var definition = kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Weapon
+                        ? catalog.Drops.First(r => r.Id == reward.DropId && r.Kind == global::ArcadeDropKind.TemporaryWeapon)
+                        : catalog.Drops.First(r => r.Kind == (kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb ? global::ArcadeDropKind.Bomb : global::ArcadeDropKind.Dash));
                     int id = int.MaxValue - reward.Id;
                     if (!lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(new Vector2(reward.X, reward.Y), .3f)),
                         ResolveDropDisplayName(definition), reward.Amount, definition.VisualPrefabAddress, out var error))

@@ -30,6 +30,13 @@ namespace Game
         void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds) { }
         /// <summary>只按权威配置显示岛岸与第四轮营火，不从视觉碰撞计算伤害。</summary>
         void SetOpening(FirepowerLoop.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
+        /// <summary>按权威布局准备当前轮，资源就绪后才允许规则开始活动。</summary>
+        void SetRoundLayout(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters layout) { }
+        bool IsRoundLayoutReady => true;
+        string RoundLayoutLoadError => null;
+        /// <summary>投影环境活动时钟及区域，伤害仍由单人或服务器裁决。</summary>
+        void SetRoundContent(double elapsed, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> areas) { }
+        void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
         void SetIslandRound(int roundNumber) { }
         bool IsIslandRoundReady => true;
@@ -224,6 +231,9 @@ namespace Game
             islandBaseArenaRoot = mapModel.CurrentHandle.Context.transform;
             root = new GameObject("ArcadeCombatRuntime");
             root.transform.SetParent(mapRoot, false);
+            if (!architecture.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var boundsCatalog, out var boundsError))
+                throw new InvalidOperationException(boundsError);
+            ConfigureRoundBounds(arenaHalfWidth, arenaHalfHeight, boundsCatalog.Rule.PlayerRadius);
             playerMotor.SetArcadePresentationActive(true);
             hasPlayerHealthBaseline = false;
             hasPlayerFireSequence = false;
@@ -244,6 +254,7 @@ namespace Game
 
         public void End()
         {
+            ReleaseRoundContent();
             ReleaseIslandEntryWarning();
             ClearPickupFeedback();
             EndFirstPerson();
@@ -318,7 +329,7 @@ namespace Game
             exitVisuals.Clear();
             var count = victory ? 1 : destinations.Count;
             if (count == 0) return;
-            bool formalExit = contentArena <= 3 && !victory;
+            bool formalExit = roundLayout != null || contentArena <= 3 && !victory;
             if (formalExit && contentTemplates == null) { exitVisualIdentity = null; return; }
             if (exitMaterial == null)
             {
@@ -327,7 +338,9 @@ namespace Game
             }
             for (var index = 0; index < count; index++)
             {
-                var position = islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
+                var position = roundLayout != null
+                    ? new Vector2(roundLayout.ExitX + (index - (count - 1) * .5f) * roundLayout.ExitSpacing, roundLayout.ExitY)
+                    : islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
                     ? ArcadeIslandLayout.GetExitPosition(islandRound, index, count, exitCatalog.Rule.ArenaHalfWidth,
                         exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
                     : ArcadeCombatSystem.ArcadeExitPosition(index, count, halfHeight);
@@ -335,8 +348,8 @@ namespace Game
                 if (formalExit)
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
-                    SetContentLabel(marker, destinations[index] < 0
-                        ? ArcadeIslandLayout.GetNameKey(-destinations[index]) : DestinationKey(destinations[index]));
+                    SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : destinations[index] < 0
+                        ? RoundDestinationKey(-destinations[index]) : DestinationKey(destinations[index]));
                 }
                 else
                 {
@@ -496,6 +509,9 @@ namespace Game
         public void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false)
         {
+            RecordRoundEnemyPosition(id, position);
+            SetRoundEnemyHealth(id, currentHealth, maximumHealth);
+            if (HasRoundEnemyContent(id)) return;
             if (enemyPresentation == null || mapRoot == null) return;
             var localPlayer = mapRoot.InverseTransformPoint(playerMotor.Position);
             var facing = new Vector3(localPlayer.x - position.x, 0f, localPlayer.z - position.y);
@@ -506,6 +522,7 @@ namespace Game
 
         public void RemoveEnemy(int id, bool playDeath = false)
         {
+            RemoveRoundEnemyContent(id);
             RemoveArmor(id);
             enemyPresentation?.RemoveEnemy(id, playDeath);
         }
@@ -1083,6 +1100,7 @@ namespace Game
                 FitObstacleVisual(instance.transform, placement.Width, placement.Length);
             }
             obstacleVisualReady = true;
+            SyncRoundContentEnvironment();
             // 岛岸可能先完成加载；晚到的通用障碍仍须立即切换为本轮同源礁石或船壳。
             try { if (island != null) ConfigureIsland(); }
             catch (Exception exception)

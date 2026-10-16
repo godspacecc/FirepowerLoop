@@ -80,11 +80,13 @@ namespace Game
             if (leavingMap) return;
             if (!IsArcadeMap) { UIHelper.ShowUI<OnlineLoginUICtrl>(); return; }
             var run = this.GetModel<ArcadeRunModel>()?.Current;
-            if (run?.IslandRoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
+            if (run?.IslandRoundCheckpoint == null && run?.RoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
             long generation = ++confirmationGeneration;
-            var checkpoint = run.IslandRoundCheckpoint;
+            var checkpoint = run.RoundCheckpoint?.PlayerState ?? run.IslandRoundCheckpoint;
+            var nameKey = run.RoundCheckpoint != null ? "ui.arcade.theme." + run.RoundCheckpoint.ArenaConfigNumber
+                : ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber);
             Notify.ShowMessage(Loc.T("ui.arcade.island.leave.title"),
-                Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber))),
+                Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(nameKey)),
                 new List<MessageButtonConfig>
                 {
                     new() { ButtonText = Loc.T("ui.common.confirm"), Role = MessageButtonRole.Confirm,

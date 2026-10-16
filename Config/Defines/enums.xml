@@ -57,6 +57,7 @@
         <var name="FirstPerson" value="7"/>
     </enum>
     <enum name="ArcadeTreasureRewardKind" group="e">
+        <var name="Weapon" value="5"/>
         <var name="GoldBar" value="1"/>
         <var name="Gem" value="2"/>
         <var name="Bomb" value="3"/>

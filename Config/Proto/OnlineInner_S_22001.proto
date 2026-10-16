@@ -796,6 +796,10 @@ message G2P_SubmitOnlineArcadeInput // IRequest
 	bool Firing = 10;
 	bool UseBomb = 11;
 	bool UseDash = 12;
+	int32 RoundGeneration = 13;
+	bool RoundReady = 14;
+	int32 ExitTarget = 15;
+	bool ConfirmExit = 16;
 }
 
 // Opcode 22150
@@ -824,6 +828,10 @@ message P2R_SubmitOnlineArcadeInput // IRequest
 	bool Firing = 9;
 	bool UseBomb = 10;
 	bool UseDash = 11;
+	int32 RoundGeneration = 12;
+	bool RoundReady = 13;
+	int32 ExitTarget = 14;
+	bool ConfirmExit = 15;
 }
 
 // Opcode 22152

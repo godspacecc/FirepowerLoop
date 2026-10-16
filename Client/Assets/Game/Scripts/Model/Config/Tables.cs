@@ -38,6 +38,7 @@ public partial class Tables
     public TbArcadeSupportVisual TbArcadeSupportVisual {get; }
     public TbArcadeUpgrade TbArcadeUpgrade {get; }
     public TbArcadeReward TbArcadeReward {get; }
+    public TbArcadeRoundLayout TbArcadeRoundLayout {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -67,6 +68,7 @@ public partial class Tables
         TbArcadeSupportVisual = new TbArcadeSupportVisual(loader("tbarcadesupportvisual"));
         TbArcadeUpgrade = new TbArcadeUpgrade(loader("tbarcadeupgrade"));
         TbArcadeReward = new TbArcadeReward(loader("tbarcadereward"));
+        TbArcadeRoundLayout = new TbArcadeRoundLayout(loader("tbarcaderoundlayout"));
         ResolveRef();
     }
     
@@ -98,6 +100,7 @@ public partial class Tables
         TbArcadeSupportVisual.ResolveRef(this);
         TbArcadeUpgrade.ResolveRef(this);
         TbArcadeReward.ResolveRef(this);
+        TbArcadeRoundLayout.ResolveRef(this);
     }
 }
 

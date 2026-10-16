@@ -24,8 +24,12 @@ namespace Game
             if (UsesBabylon(r) && arena.Babylon?.ArmorWaveNumber == r.WaveIndex + 1)
                 enemy.ArmorHealth = arena.Babylon.ArmorHealth;
         }
-        private void DamageEnemy(ArcadeEnemyRuntime enemy, int damage) =>
-            enemy.Health -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, damage);
+        /// <summary>先执行特殊受击状态，再读取生命扣除护甲后的伤害，避免复合赋值覆盖人偶阶段。</summary>
+        private void DamageEnemy(ArcadeEnemyRuntime enemy, int damage)
+        {
+            int resolved = RoundIncomingDamage(enemy, damage);
+            enemy.Health -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, resolved);
+        }
 
         private ArcadeDropDefinition[] CrateDropPool() => catalog.Drops.Where(d => d.Weight > 0 &&
             IsDropEligible(d, 2) && (d.Kind == global::ArcadeDropKind.RunGold || d.Kind == global::ArcadeDropKind.Bomb ||

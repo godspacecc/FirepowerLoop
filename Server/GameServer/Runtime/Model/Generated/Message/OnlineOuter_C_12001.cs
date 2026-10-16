@@ -1589,6 +1589,15 @@ namespace ET
         [MemoryPackOrder(11)]
         public int ArmorHealth { get; set; }
 
+        [MemoryPackOrder(12)]
+        public int SpecialKind { get; set; }
+
+        [MemoryPackOrder(13)]
+        public int ContentBossKind { get; set; }
+
+        [MemoryPackOrder(14)]
+        public bool ContentWarning { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1608,6 +1617,9 @@ namespace ET
             this.BossPhase = default;
             this.BossPhaseSeconds = default;
             this.ArmorHealth = default;
+            this.SpecialKind = default;
+            this.ContentBossKind = default;
+            this.ContentWarning = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1838,6 +1850,33 @@ namespace ET
         [MemoryPackOrder(27)]
         public float TreasureRewardSeconds { get; set; }
 
+        [MemoryPackOrder(28)]
+        public string RoundLayoutId { get; set; }
+
+        [MemoryPackOrder(29)]
+        public int RoundLayoutVersion { get; set; }
+
+        [MemoryPackOrder(30)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(31)]
+        public bool RoundLoading { get; set; }
+
+        [MemoryPackOrder(32)]
+        public string RoundLoadError { get; set; }
+
+        [MemoryPackOrder(33)]
+        public float ContentElapsed { get; set; }
+
+        [MemoryPackOrder(34)]
+        public List<OnlineArcadeContentAreaInfo> ContentAreas { get; set; } = new();
+
+        [MemoryPackOrder(35)]
+        public bool RoundBossEncounter { get; set; }
+
+        [MemoryPackOrder(36)]
+        public bool RoundBossDefeated { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1873,6 +1912,15 @@ namespace ET
             this.CrateIds.Clear();
             this.SupplyPickups.Clear();
             this.TreasureRewardSeconds = default;
+            this.RoundLayoutId = default;
+            this.RoundLayoutVersion = default;
+            this.RoundGeneration = default;
+            this.RoundLoading = default;
+            this.RoundLoadError = default;
+            this.ContentElapsed = default;
+            this.ContentAreas.Clear();
+            this.RoundBossEncounter = default;
+            this.RoundBossDefeated = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2375,6 +2423,18 @@ namespace ET
         [MemoryPackOrder(9)]
         public bool UseDash { get; set; }
 
+        [MemoryPackOrder(10)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(11)]
+        public bool RoundReady { get; set; }
+
+        [MemoryPackOrder(12)]
+        public int ExitTarget { get; set; }
+
+        [MemoryPackOrder(13)]
+        public bool ConfirmExit { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2392,6 +2452,10 @@ namespace ET
             this.Firing = default;
             this.UseBomb = default;
             this.UseDash = default;
+            this.RoundGeneration = default;
+            this.RoundReady = default;
+            this.ExitTarget = default;
+            this.ConfirmExit = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2437,6 +2501,63 @@ namespace ET
             this.Accepted = default;
             this.LastAcceptedInputSequence = default;
             this.Run = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeContentAreaInfo)]
+    public partial class OnlineArcadeContentAreaInfo : MessageObject
+    {
+        public static OnlineArcadeContentAreaInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeContentAreaInfo), isFromPool) as OnlineArcadeContentAreaInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public int Id { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Kind { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float X { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float Y { get; set; }
+
+        [MemoryPackOrder(4)]
+        public float Radius { get; set; }
+
+        [MemoryPackOrder(5)]
+        public bool Warning { get; set; }
+
+        [MemoryPackOrder(6)]
+        public float EndX { get; set; }
+
+        [MemoryPackOrder(7)]
+        public float EndY { get; set; }
+
+        [MemoryPackOrder(8)]
+        public bool Segment { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Id = default;
+            this.Kind = default;
+            this.X = default;
+            this.Y = default;
+            this.Radius = default;
+            this.Warning = default;
+            this.EndX = default;
+            this.EndY = default;
+            this.Segment = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2499,5 +2620,6 @@ namespace ET
         public const ushort G2C_OnlineArcadeRunChanged = 12095;
         public const ushort C2G_SubmitOnlineArcadeInput = 12096;
         public const ushort G2C_SubmitOnlineArcadeInput = 12097;
+        public const ushort OnlineArcadeContentAreaInfo = 12098;
     }
 }

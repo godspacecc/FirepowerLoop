@@ -1,0 +1,4 @@
+!ArcadeRoundLayoutChecks.csproj
+/bin/
+/obj/
+*.log

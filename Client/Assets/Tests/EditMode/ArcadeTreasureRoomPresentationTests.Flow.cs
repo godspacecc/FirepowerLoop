@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -42,6 +42,16 @@ namespace Game.Tests
             Set("latest", new OnlineArcadeRunClientSnapshot(true, 101, 202, 1, OnlineArcadeRunPhase.Arena, 0, 1, "test",
                 new[] { new OnlineArcadePlayerSnapshot(1, "one", 3, 0, 2, 2, "arcade.weapon.basic", false, null), new OnlineArcadePlayerSnapshot(2, "two", 3, 0, 2, 2, "arcade.weapon.basic", false, null) }, OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success, battle));
             typeof(OnlineArcadePresentationSystem).GetMethod("ApplyAuthoritativeSnapshot", Flags).Invoke(system, new object[] { battle });
+        }
+        [Test] public void SecondArenaForestSnapshotUsesArmoryParametersAndAuthorityFade()
+        {
+            Set("activeArena", catalog.Arenas.Single(a => a.ArenaNumber == 3));
+            Apply(new OnlineArcadeBattleSnapshot(2, 3, 4, 0, 0, 2, 1, 0, Battle(1, true).Players, null,
+                arenaConfigNumber: 3, treasureRoomId: "101:1:arcade.armory.second", treasureDiscovered: true,
+                treasureOpen: true, treasureSeconds: 40, treasureRewardIds: new[] {1,2,3,4,5,6}, treasureRewardSeconds: 1.5f));
+            Assert.That(view.RoomId, Is.EqualTo("arcade.armory.second"));
+            Assert.That(view.RoomRewards.Length, Is.EqualTo(6));
+            Assert.That(view.RewardOpacity, Is.EqualTo(.5f));
         }
         [Test] public void InsideHidesArenaEntitiesAndOutsideTeammate()
         { Apply(Battle(1, true, false, 1, 2)); Assert.That(view.Enemies, Is.Empty); Assert.That(view.Projectiles, Is.Empty); Assert.That(view.Drops, Is.Empty); Assert.That(view.RemotePlayers, Is.Empty); Assert.That(view.RoomRewards, Is.EqualTo(new[] { 1, 2 })); }
@@ -117,7 +127,8 @@ namespace Game.Tests
             public bool TryScreenToArena(Vector2 screen, out Vector2 position) { position = default; return false; }
             public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable) { PlayerPosition = position; }
             public void SetPlayerHealth(int current, int maximum) { }
-            public void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> ids) { InRoom = inRoom; RoomRewards = ids.ToArray(); }
+            public string RoomId;
+            public void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> ids) { InRoom = inRoom; RoomId = p?.Id; RoomRewards = ids.ToArray(); }
             public void SetEnemy(int id, string config, Vector2 position, int current, int maximum, bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false) { Enemies.Add(id); }
             public void RemoveEnemy(int id, bool playDeath = false) { Enemies.Remove(id); }
             public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction) { Projectiles.Add(id); }
