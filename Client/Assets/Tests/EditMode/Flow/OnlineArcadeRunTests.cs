@@ -148,6 +148,17 @@ namespace Game.Tests
 
             Assert.That(harness.System.Snapshot.HasRun, Is.False);
             Assert.That(harness.System.Snapshot.LastResultCode, Is.EqualTo(OnlineArcadeResultCode.Success));
+            // 无场景展示端口时仍保留结果，重复结束推送或新局请求都不能覆盖未确认回执。
+            var field = typeof(OnlineArcadeRunSystem).GetField("pendingResult", BindingFlags.Instance | BindingFlags.NonPublic);
+            var receipt = (OnlineArcadeResultData)field.GetValue(harness.System);
+            Assert.That(receipt.RunId, Is.EqualTo(100));
+            Assert.That(receipt.Scores.Keys, Is.EquivalentTo(new[] { "10", "20" }));
+            var request = harness.Network.LastRequest;
+            harness.Network.PushRunEnded();
+            var blocked = harness.System.StartAsync().GetAwaiter().GetResult();
+            Assert.That(blocked.Code, Is.EqualTo(OnlineArcadeResultCode.InvalidState));
+            Assert.That(field.GetValue(harness.System), Is.SameAs(receipt));
+            Assert.That(harness.Network.LastRequest, Is.SameAs(request));
         }
 
         [Test]
@@ -366,9 +377,6 @@ namespace Game.Tests
                 .TryGetArcadeCatalog(out ArcadeConfigCatalogDefinition catalog, out string configError),
                 Is.True, configError);
             TestArchitecture.Network.ConfigFingerprint = catalog.Rule.ConfigFingerprint;
-            OnlineAccountModel account = architecture.GetModel<OnlineAccountModel>();
-            account.Publish(new OnlineAccountSnapshot(OnlineConnectionState.Authenticated, OnlineOperationState.Idle,
-                OnlineAccountResultCode.Success, "one", 1, 10, 1, false, "one"));
             return new Harness(architecture.GetSystem<OnlineArcadeRunSystem>(), TestArchitecture.Network);
         }
 
@@ -388,6 +396,9 @@ namespace Game.Tests
             {
                 RegisterModel(new OnlineAccountModel());
                 RegisterModel(new OnlineArcadeRunModel());
+                // 本夹具验证已登录后的 RPC 与快照；先设置身份，避免触发登录自动恢复及读取真实结果文件。
+                GetModel<OnlineAccountModel>().Publish(new OnlineAccountSnapshot(OnlineConnectionState.Authenticated,
+                    OnlineOperationState.Idle, OnlineAccountResultCode.Success, "one", 1, 10, 1, false, "one"));
                 RegisterUtility<INetworkRuntime>(Network);
                 RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() =>
                     new Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine(

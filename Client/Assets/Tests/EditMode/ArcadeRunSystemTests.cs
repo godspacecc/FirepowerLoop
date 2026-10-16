@@ -83,7 +83,7 @@ namespace Game.Tests
             Assert.That(run.RemainingLives, Is.EqualTo(3));
             Assert.That(run.EmergencyResources[ArcadeRunDefaults.BombResourceId], Is.EqualTo(1));
             Assert.That(run.EmergencyResources[ArcadeRunDefaults.DashResourceId], Is.EqualTo(2));
-            Assert.That(run.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId], Is.EqualTo("arcade.weapon.rapid"));
+            Assert.That(run.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId], Is.EqualTo("arcade.weapon.basic"));
             Assert.That(run.Shop.Offers, Is.Empty);
             Assert.That(run.Shop.Offers.All(value => !value.Purchased), Is.True);
         }

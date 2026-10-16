@@ -525,12 +525,15 @@ namespace Game
         private async UniTaskVoid PresentResultAsync()
         {
             if (presentingResult || pendingResult == null) return;
+            // 场景展示依赖未就绪时保留结果回执；后续展示请求可重试，不影响权威快照发布。
+            var sceneFlow = this.GetSystem<ArcadeSceneFlowSystem>();
+            if (sceneFlow == null) return;
             presentingResult = true;
             var result = pendingResult;
             var ownerStore = resultStore;
             try
             {
-                var menu = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
+                var menu = await sceneFlow.ReturnToMainMenuAsync();
                 if (!menu.Success) { Notify.ShowFloatTips(menu.Error); return; }
                 if (result != pendingResult || ownerStore != resultStore) return;
                 var scores = string.Join("\n", result.Scores.Select(pair => Loc.T("ui.arcade.hud.score", pair.Value)));
