@@ -16,18 +16,11 @@ namespace Game.Tests
             Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup", "arcade" }));
         }
 
+        /// <summary>街机场景必须随街机资源下载，不再沿用已退役地图的分包标签。</summary>
         [Test]
-        public void ValleyAndMapSelectionAreStartup()
+        public void ArcadeSceneIsCollectedWithArcadeTag()
         {
-            AssertTags("Scenes/CivilisationValleyMap", "startup");
-            AssertTags("Prefabs/UI/Expedition/MapSelection", "startup");
-        }
-
-        [Test]
-        public void OptionalMapsHaveIndividualTags()
-        {
-            AssertTags("Scenes/SurvivalSampleMap", "map-another-day-survival-sample");
-            AssertTags("Scenes/TaskSampleMap", "map-another-day-mission-sample");
+            AssertTags("Scenes/TaskSampleMap", "arcade");
         }
 
         [Test]

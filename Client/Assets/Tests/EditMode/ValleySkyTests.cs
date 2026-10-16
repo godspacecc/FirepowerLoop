@@ -3,9 +3,7 @@ using System.Reflection;
 using Game;
 using NUnit.Framework;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace Tests.EditMode
@@ -27,7 +25,7 @@ namespace Tests.EditMode
             originalSky = RenderSettings.skybox;
             originalReflection = RenderSettings.reflectionIntensity;
             var type = typeof(DayNightView).Assembly.GetType("Game.MapProceduralSkyView");
-            Assert.That(type, Is.Not.Null, "河谷需要独立的程序化天空表现组件");
+            Assert.That(type, Is.Not.Null, "程序化天空表现组件必须可用");
             skyObject = new GameObject("ValleySkyTest");
             sky = skyObject.AddComponent(type);
             lightObject = new GameObject("ValleyLightTest");
@@ -120,70 +118,6 @@ namespace Tests.EditMode
             Assert.That(Invoke("Initialize", lighting), Is.EqualTo(false));
             Assert.That(RenderSettings.skybox, Is.SameAs(originalSky));
             Assert.That(RenderSettings.reflectionIntensity, Is.EqualTo(originalReflection));
-        }
-
-        [Test]
-        public void ValleySceneSky_FollowsMapContentActivationAndSurvivesGeneratedContentReplacement()
-        {
-            var previous = SceneManager.GetActiveScene();
-            const string path = "Assets/Game/Scenes/CivilisationValleyMap.unity";
-            var scene = SceneManager.GetSceneByPath(path);
-            var openedScene = !scene.IsValid() || !scene.isLoaded;
-            if (openedScene) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
-            GameObject contentCopy = null;
-            try
-            {
-                MapContext context = null;
-                Component sceneSky = null;
-                foreach (var root in scene.GetRootGameObjects())
-                {
-                    if (context == null) context = root.GetComponentInChildren<MapContext>(true);
-                    if (sceneSky == null) sceneSky = root.GetComponentInChildren(sky.GetType(), true);
-                }
-                Assert.That(context, Is.Not.Null);
-                Assert.That(sceneSky, Is.Not.Null);
-                Assert.That(sceneSky.gameObject, Is.SameAs(context.MapContentRoot),
-                    "天空必须跟随内容根启停，并避免被生成器隐藏旧布局子节点时一起隐藏");
-                contentCopy = Object.Instantiate(context.MapContentRoot);
-                contentCopy.SetActive(false);
-                Assert.That(contentCopy.GetComponent(sky.GetType()).gameObject.activeInHierarchy, Is.False);
-                contentCopy.SetActive(true);
-                Assert.That(contentCopy.GetComponent(sky.GetType()).gameObject.activeInHierarchy, Is.True);
-            }
-            finally
-            {
-                if (contentCopy != null) Object.DestroyImmediate(contentCopy);
-                if (openedScene) EditorSceneManager.CloseScene(scene, true);
-                SceneManager.SetActiveScene(previous);
-            }
-        }
-
-        [TestCase("Assets/Game/Scenes/BaseMap.unity")]
-        [TestCase("Assets/Game/Scenes/CivilisationValleyMap.unity")]
-        public void CandidateScene_RemainsHiddenUntilMapTransactionActivatesIt(string path)
-        {
-            var previous = SceneManager.GetActiveScene();
-            var scene = SceneManager.GetSceneByPath(path);
-            var opened = !scene.IsValid() || !scene.isLoaded;
-            if (opened) scene = EditorSceneManager.OpenScene(path, OpenSceneMode.Additive);
-            try
-            {
-                MapContext context = null;
-                foreach (var root in scene.GetRootGameObjects())
-                    if (context == null) context = root.GetComponentInChildren<MapContext>(true);
-                Assert.That(context, Is.Not.Null);
-                Assert.That(context.MapContentRoot.activeSelf, Is.False,
-                    "候选加载时不能提前触发天空 OnEnable，与旧地图争抢方向光");
-                context.SetMapContentActive(true);
-                Assert.That(context.MapContentRoot.GetComponent<MapProceduralSkyView>().isActiveAndEnabled, Is.True);
-                context.SetMapContentActive(false);
-                Assert.That(context.MapContentRoot.GetComponent<MapProceduralSkyView>().isActiveAndEnabled, Is.False);
-            }
-            finally
-            {
-                if (opened) EditorSceneManager.CloseScene(scene, true);
-                if (previous.IsValid() && previous.isLoaded) SceneManager.SetActiveScene(previous);
-            }
         }
 
         [TestCase(true, "模板")]

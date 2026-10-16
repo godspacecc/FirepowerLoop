@@ -9,7 +9,6 @@ namespace Game.Tests
         {
             Assert.That(MapCatalog.TryGet(MapIds.Arcade, out var definition), Is.True);
             Assert.That(definition.Kind, Is.EqualTo(MapKind.Arcade));
-            Assert.That(MapCatalog.TryGet("map.another-day.base", out _), Is.False);
         }
         [Test]
         public void LoadedMapKeepsArcadePreparationMode()

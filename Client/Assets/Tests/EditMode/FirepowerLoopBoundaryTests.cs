@@ -61,9 +61,7 @@ namespace Game.Tests
         public void MapCatalogOnlyAllowsTheArcadeDestination()
         {
             Assert.That(MapCatalog.TryGet("map.firepowerloop.arcade", out _), Is.True);
-            foreach (var id in new[] { "map.another-day.base", "map.another-day.civilisation-valley",
-                         "map.another-day.survival-sample", "map.another-day.mission-sample", "map.hejia-village" })
-                Assert.That(MapCatalog.TryGet(id, out _), Is.False, id);
+            Assert.That(MapCatalog.TryGet("map.unsupported", out _), Is.False);
         }
 
         [Test]
