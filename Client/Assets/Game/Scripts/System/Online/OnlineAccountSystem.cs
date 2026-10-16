@@ -83,6 +83,7 @@ namespace Game
             });
         }
 
+        /// <summary>结束当前账号连接；登出失败时保留错误结果并允许重登，不推定旧服务端会话仍有效。</summary>
         public async Task<OnlineAccountOperationResult> LogoutAsync()
         {
             if (Snapshot.OperationState != OnlineOperationState.Idle)
@@ -135,16 +136,10 @@ namespace Game
                 return new OnlineAccountOperationResult(OnlineAccountResultCode.Disconnected, Snapshot);
             }
 
-            if (result == OnlineAccountResultCode.Success)
-            {
-                NetworkDiagnostics.Log("联机登出断开连接");
-                network.Disconnect(NetworkDisconnectReason.LocalRequest);
-                Publish(Cleared(Snapshot.LastUserName, OnlineAccountResultCode.Success));
-            }
-            else
-            {
-                Publish(WithResult(Snapshot, result));
-            }
+            // 错误回包或超时都不能确认旧会话有效，断开后由重新登录建立新会话与心跳。
+            NetworkDiagnostics.Log("联机登出断开连接");
+            network.Disconnect(NetworkDisconnectReason.LocalRequest);
+            Publish(Cleared(Snapshot.LastUserName, result));
 
             return new OnlineAccountOperationResult(result, Snapshot);
         }

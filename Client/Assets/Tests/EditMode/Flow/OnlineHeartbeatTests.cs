@@ -126,6 +126,61 @@ namespace Game.Tests
         }
 
         [UnityTest]
+        public IEnumerator LogoutRejectedDisconnectsAndAllowsFreshLogin()
+        {
+            return VerifyFailedLogoutRecovery(false, OnlineAccountResultCode.ServiceUnavailable);
+        }
+
+        [UnityTest]
+        public IEnumerator LogoutTimeoutDisconnectsAndAllowsFreshLogin()
+        {
+            return VerifyFailedLogoutRecovery(true, OnlineAccountResultCode.RequestTimeout);
+        }
+
+        /// <summary>登出失败不能证明旧会话有效，必须断开并允许重新登录，且只为新会话建立心跳。</summary>
+        private static IEnumerator VerifyFailedLogoutRecovery(bool timeout, OnlineAccountResultCode expected)
+        {
+            var harness = CreateHarness();
+            yield return harness.Login();
+            Task<OnlineAccountOperationResult> logout = harness.System.LogoutAsync();
+            Assert.AreEqual(1, harness.Network.PendingLogoutCount);
+            Assert.AreEqual(OnlineAccountResultCode.OperationInProgress, harness.System.LogoutAsync().Result.Code);
+            Assert.AreEqual(1, harness.Network.PendingLogoutCount);
+
+            if (timeout)
+            {
+                harness.Network.FailNextLogout(new TimeoutException());
+            }
+            else
+            {
+                harness.Network.CompleteNextLogoutError(200107);
+            }
+            yield return WaitUntilCompleted(logout);
+
+            Assert.AreEqual(expected, logout.Result.Code);
+            Assert.AreEqual(expected, harness.System.Snapshot.LastResultCode);
+            Assert.AreEqual(OnlineConnectionState.Disconnected, harness.System.Snapshot.ConnectionState);
+            Assert.AreEqual(OnlineOperationState.Idle, harness.System.Snapshot.OperationState);
+            Assert.AreEqual(0, harness.System.Snapshot.SessionEpoch);
+            Assert.AreEqual(NetworkConnectionState.Disconnected, harness.Network.ConnectionState);
+            Assert.AreEqual(1, harness.Network.DisconnectCount);
+            Assert.AreEqual(0, harness.Network.ResponseHandlerCount<G2C_Ping>());
+            harness.Clock.Advance(30000);
+            harness.System.NotifyApplicationResumed();
+            harness.System.UpdateHeartbeat();
+            Assert.AreEqual(0, harness.Network.TotalPingCalls);
+
+            yield return harness.Login(30);
+            Assert.AreEqual(OnlineOperationState.Idle, harness.System.Snapshot.OperationState);
+            Assert.AreEqual(1, harness.Network.ResponseHandlerCount<G2C_Ping>());
+            harness.Clock.Advance(2500);
+            harness.System.UpdateHeartbeat();
+            harness.System.UpdateHeartbeat();
+            Assert.AreEqual(1, harness.Network.TotalPingCalls);
+            Assert.AreEqual(1, harness.Network.PendingPingCount);
+        }
+
+        [UnityTest]
         public IEnumerator MissingResponseObserverDisconnectsAndDoesNotCommitAuthenticatedSnapshot()
         {
             var network = new FakeNetworkWithoutObserver();
@@ -579,12 +634,22 @@ namespace Game.Tests
 
             public void CompleteNextLogoutSuccess()
             {
+                CompleteNextLogoutError(0);
+            }
+
+            public void CompleteNextLogoutError(int error)
+            {
                 var call = TakeNext<C2G_Logout>();
                 var response = G2C_Logout.Create();
                 response.RpcId = call.Request.RpcId;
-                response.Error = 0;
+                response.Error = error;
                 NotifyResponse(response);
                 call.TrySetResult(response);
+            }
+
+            public void FailNextLogout(Exception exception)
+            {
+                TakeNext<C2G_Logout>().TrySetException(exception);
             }
 
             public void CompletePing(int rpcId)
