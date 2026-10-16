@@ -114,7 +114,7 @@ namespace Game
                 data.CompletedArenaCount < 0 || data.NextArenaNumber != data.CompletedArenaCount + 1 ||
                 data.Score < 0 || data.ScoreMultiplier < 1 || data.MultiplierProgress < 0 || (data.HasResult ? data.RemainingLives < 0 : data.RemainingLives <= 0) || data.RunGold < 0 || data.EmergencyResources == null ||
                 data.PurchasedUpgradeStacks == null || data.Consumables == null || data.EquipmentBySlot == null ||
-                data.Shop == null || data.PendingRewards == null || string.IsNullOrWhiteSpace(data.UpdatedAtUtc))
+                data.Checkpoint == null || data.PendingRewards == null || string.IsNullOrWhiteSpace(data.UpdatedAtUtc))
             {
                 error = "街机安全节点必需字段无效";
                 return false;
@@ -141,9 +141,9 @@ namespace Game
                 error = "街机休闲路线或胜利节点无效";
                 return false;
             }
-            if (data.Shop.ArenaNumber != data.NextArenaNumber || data.Shop.RefreshCount < 0 || data.Shop.Offers == null)
+            if (data.Checkpoint.ArenaNumber != data.NextArenaNumber)
             {
-                error = "街机商店重建状态无效";
+                error = "街机恢复节点状态无效";
                 return false;
             }
 
@@ -162,19 +162,6 @@ namespace Game
             {
                 error = "竞技场角色入场状态无效";
                 return false;
-            }
-
-            var offerIds = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var offer in data.Shop.Offers)
-            {
-                if (offer == null || string.IsNullOrWhiteSpace(offer.OfferId) || !offerIds.Add(offer.OfferId) ||
-                    string.IsNullOrWhiteSpace(offer.ProductId) || !Enum.IsDefined(typeof(ArcadePurchaseKind), offer.Kind) ||
-                    offer.Price < 0 || offer.Amount <= 0 ||
-                    offer.Kind == ArcadePurchaseKind.Equipment && string.IsNullOrWhiteSpace(offer.EquipmentSlotId))
-                {
-                    error = "街机商店商品状态无效";
-                    return false;
-                }
             }
 
             foreach (var reward in data.PendingRewards)

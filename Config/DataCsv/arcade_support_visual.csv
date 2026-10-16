@@ -1,0 +1,3 @@
+##var,Id,ProductId,EquipmentSlotId,ActiveVisualPrefabName,VisualOffsetX,VisualOffsetY,VisualOffsetZ
+##type,string,string,string,string,float,float,float
+,arcade.support.visual.drone,arcade.support.drone,support,ArcadeSupportDroneVisual,0.9,1.3,-0.8

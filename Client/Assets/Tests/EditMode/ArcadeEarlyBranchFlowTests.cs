@@ -43,7 +43,7 @@ namespace Game.Tests
         {
             var data = new ArcadeRunSaveData { RunId = Guid.NewGuid().ToString("N"), RemainingLives = 3,
                 IsCasualRoute = casual, ArenaConfigNumber = map, NextArenaNumber = 2, CompletedArenaCount = 1,
-                UpdatedAtUtc = DateTime.UtcNow.ToString("O"), Shop = new ArcadeShopSaveData { ArenaNumber = 2 } };
+                UpdatedAtUtc = DateTime.UtcNow.ToString("O"), Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 } };
             data.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId] = catalog.Rule.BaseWeaponId;
             run.CommitSafeNode(data);
             run.EnterArena();
@@ -114,13 +114,13 @@ namespace Game.Tests
             if (map == 1)
             {
                 var data = run.Current; data.NextArenaNumber = 1; data.CompletedArenaCount = 0;
-                data.Shop.ArenaNumber = 1; run.CommitSafeNode(data); run.EnterArena(); runtime.ArenaNumber = 1;
+                data.Checkpoint.ArenaNumber = 1; run.CommitSafeNode(data); run.EnterArena(); runtime.ArenaNumber = 1;
             }
             var current = run.Current; current.RunGold = 123; run.CommitSafeNode(current); run.EnterArena();
             runtime.SelectedExitConfigNumber = catalog.Arenas.Single(a => a.ArenaNumber == map).NextArenaNumbers[0];
             Call("CompleteArena", runtime);
             Assert.That(runtime.CompletionAwaitingRetry, Is.False, operationError);
-            Assert.That(run.Phase, Is.EqualTo(ArcadeRunPhase.SafeShop));
+            Assert.That(run.Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
             Assert.That(run.Current.RunGold, Is.EqualTo(123));
             Assert.That(new ArcadeRunFileStore(root).Inspect().Data.RunGold, Is.EqualTo(123));
         }

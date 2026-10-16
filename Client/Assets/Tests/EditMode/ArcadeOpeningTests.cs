@@ -41,7 +41,7 @@ namespace Game.Tests
                 .Select(w => w.Id).ToArray();
             Assert.That(catalog.Drops.Any(d => meleeIds.Contains(d.ProductId)), Is.False,
                 "所有场次的掉落池都应移除近战武器");
-            Assert.That(catalog.ShopItems.Any(s => meleeIds.Contains(s.ProductId)), Is.False,
+            Assert.That(catalog.SupportVisuals.Any(s => meleeIds.Contains(s.ProductId)), Is.False,
                 "商店不应继续出售近战武器");
         }
 

@@ -1,6 +1,7 @@
 using Game;
 using Newtonsoft.Json.Linq;
 
+if (args.Length == 3 && args[0] == "testClass=ShopRemovalSave" && args[1] == "maxTests=4" && args[2] == "includePassingTests=true") return ShopRemovalChecks.Run();
 if (args.Length == 3 && args[0] == "testClass=ArenaEntrySave" && args[1] == "maxTests=6" && args[2] == "includePassingTests=true") return ArenaEntryChecks.Run();
 if (args.Length != 3 || args[0] != "testClass=IslandRoundSave" || args[1] != "maxTests=12" || args[2] != "includePassingTests=true") throw new Exception("Explicit IslandRoundSave scope required");
 var tests = new (string, Action)[] {

@@ -43,7 +43,7 @@ namespace Game.Tests
             Assert.That(run.TryStartConfiguredRun(out var first, out var error), Is.True, error);
             Assert.That(run.TryResume(out var restored, out error), Is.True, error);
             Assert.That(restored.RunId, Is.EqualTo(first.RunId));
-            Assert.That(restored.Shop.GenerationSeed, Is.EqualTo(first.Shop.GenerationSeed));
+            Assert.That(restored.Checkpoint.GenerationSeed, Is.EqualTo(first.Checkpoint.GenerationSeed));
             Assert.That(File.Exists(Path.Combine(root, "Saves/base.json")), Is.False);
         }
 

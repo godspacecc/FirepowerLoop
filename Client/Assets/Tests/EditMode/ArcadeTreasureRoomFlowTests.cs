@@ -31,7 +31,7 @@ namespace Game.Tests
             architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             runs=new ArcadeRunSystem();architecture.RegisterSystem(runs);runs.ConfigureForTests(root);
             var data=new ArcadeRunSaveData{RunId=Guid.NewGuid().ToString("N"),RemainingLives=3,IsCasualRoute=true,ArenaConfigNumber=1,
-                UpdatedAtUtc=DateTime.UtcNow.ToString("O"),Shop=new ArcadeShopSaveData{ArenaNumber=1}};
+                UpdatedAtUtc=DateTime.UtcNow.ToString("O"),Checkpoint=new ArcadeCheckpointSaveData{ArenaNumber=1}};
             data.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId]=ArcadeRunDefaults.BasicWeaponId;
             Assert.That(new ArcadeRunFileStore(root).Save(data,out error),Is.True,error);
             run.CommitSafeNode(data);run.EnterArena();
@@ -95,7 +95,7 @@ namespace Game.Tests
         }
         [Test] public void DeathResetsMultiplierAndCloneKeepsScore()
         {run.SetTransientTreasureScore(new ArcadeTreasureScoreState(1000,3,500,3));typeof(ArcadeCombatSystem).GetMethod("ResetTreasureMultiplierAfterDeath",Flags).Invoke(system,null);Assert.That(run.Current.Score,Is.EqualTo(1000));Assert.That(run.Current.ScoreMultiplier,Is.EqualTo(1));Assert.That(run.Current.Clone().MultiplierProgress,Is.Zero);}
-        private ArcadeArenaCompletion Completion()=>new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,NextShop=new ArcadeShopSaveData{ArenaNumber=2},Score=run.Current.Score,ScoreMultiplier=run.Current.ScoreMultiplier,MultiplierProgress=run.Current.MultiplierProgress,EmergencyResources=run.Current.EmergencyResources,EquipmentBySlot=run.Current.EquipmentBySlot};
+        private ArcadeArenaCompletion Completion()=>new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=2},Score=run.Current.Score,ScoreMultiplier=run.Current.ScoreMultiplier,MultiplierProgress=run.Current.MultiplierProgress,EmergencyResources=run.Current.EmergencyResources,EquipmentBySlot=run.Current.EquipmentBySlot};
         private sealed class TestView : IArcadeCombatViewPort
         {
             public bool IsActive => true;

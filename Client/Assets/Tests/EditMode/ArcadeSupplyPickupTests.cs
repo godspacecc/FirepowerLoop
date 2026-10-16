@@ -31,7 +31,7 @@ namespace Game.Tests
                 new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out catalog, out var error), Is.True, error);
             run.CommitSafeNode(new ArcadeRunSaveData { RunId = "supply-test", RemainingLives = 3,
-                Shop = new ArcadeShopSaveData { ArenaNumber = 1 } });
+                Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1 } });
             run.EnterArena();
             system = new ArcadeCombatSystem();
             ((ICanSetArchitecture)system).SetArchitecture(architecture);

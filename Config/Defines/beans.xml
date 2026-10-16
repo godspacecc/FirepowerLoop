@@ -160,7 +160,6 @@
         <var name="InitialBombs" type="int"/>
         <var name="InitialDashes" type="int"/>
         <var name="BaseWeaponId" type="string#ref=TbArcadeWeapon"/>
-        <var name="ShopOfferCount" type="int"/>
         <var name="MaxAliveEnemies" type="int"/>
         <var name="MaxProjectiles" type="int"/>
         <var name="MaxDrops" type="int"/>
@@ -231,7 +230,7 @@
         <var name="IsBoss" type="bool"/>
         <var name="BossId" type="string"/>
         <var name="ClearGold" type="int"/>
-        <var name="ShopSeedSalt" type="int"/>
+        <var name="EncounterSeedSalt" type="int"/>
         <var name="Hazards" type="(array#sep=;),(ArcadeHazardConfig#sep=|)"/>
         <var name="NextArenaNumbers" type="(array#sep=;),int"/>
         <var name="FinalBossId" type="string"/>
@@ -343,21 +342,14 @@
         <var name="ProjectileSpeed" type="float"/>
         <var name="Charges" type="int"/>
     </bean>
-    <bean name="ArcadeShopItemConfig" group="e">
+    <bean name="ArcadeSupportVisualConfig" group="e">
         <var name="Id" type="string"/>
         <var name="ProductId" type="string"/>
-        <var name="ProductType" type="ArcadeShopProductType"/>
-        <var name="UnlockArena" type="int"/>
-        <var name="Weight" type="int"/>
-        <var name="BasePrice" type="int"/>
-        <var name="PricePerArena" type="int"/>
-        <var name="Amount" type="int"/>
         <var name="EquipmentSlotId" type="string"/>
         <var name="ActiveVisualPrefabName" type="string"/>
         <var name="VisualOffsetX" type="float"/>
         <var name="VisualOffsetY" type="float"/>
         <var name="VisualOffsetZ" type="float"/>
-        <var name="MaxPurchases" type="int"/>
     </bean>
     <bean name="ArcadeUpgradeConfig" group="e">
         <var name="Id" type="string"/>

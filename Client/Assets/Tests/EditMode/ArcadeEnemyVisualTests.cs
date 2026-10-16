@@ -90,7 +90,7 @@ namespace Game.Tests
             foreach (var entry in Enumerable.Range(0, shared.Count).Select(shared.Get))
             {
                 Assert.That(arcade.Weapons.Any(weapon => weapon.Id == entry.Id), Is.True, entry.Id);
-                Assert.That(entry.Id == arcade.Rule.BaseWeaponId || arcade.ShopItems.Any(item =>
+                Assert.That(entry.Id == arcade.Rule.BaseWeaponId || arcade.SupportVisuals.Any(item =>
                     item.ProductId == entry.Id), Is.True, entry.Id);
             }
         }

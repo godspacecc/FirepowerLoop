@@ -37,7 +37,7 @@ void Check(string name, Action<OnlineArcadeRunManagerComponent, OnlineArcadeRunA
 }
 OnlineArcadeRunRecord Record(long id = 101) => new()
 {
-    RunId = id, RoomId = id + 1000, Revision = 4, Phase = OnlineArcadeRunPhase.SafeShop,
+    RunId = id, RoomId = id + 1000, Revision = 4, Phase = OnlineArcadeRunPhase.SafeCheckpoint,
     CompletedArena = 2, NextArena = 3,
     ConfigFingerprint = config.ArcadeRule.ConfigFingerprint, ClientVersion = "transaction-check",
     CreatedAtUtc = DateTime.UtcNow.ToString("O"), UpdatedAtUtc = DateTime.UtcNow.ToString("O"),
@@ -50,8 +50,6 @@ OnlineArcadePlayerRecord Player(long id) => new()
     PlayerId = id, Lives = 3, RunGold = 100, Bombs = 2, Dashes = 2, WeaponId = "arcade.weapon.basic",
     UpgradeStacks = new() { ["arcade.upgrade.damage"] = 1 }, Consumables = new() { ["old-item"] = 1 },
     EquipmentBySlot = new() { ["support"] = "old-support" },
-    ShopOffers = new() { new() { OfferId = "offer", ShopItemId = "arcade.shop.bomb", ProductId = "arcade.resource.bomb",
-        ProductType = (int)ArcadeShopProductType.Consumable, Price = 10, Amount = 1, MaxPurchases = 5 } }
 };
 OnlineArcadeRunActor Actor(OnlineArcadeRunRecord record)
 {
@@ -84,8 +82,7 @@ void RequireBaseline(OnlineArcadeRunRecord record)
         $"resources leaked: gold={player.RunGold} bombs={player.Bombs} dashes={player.Dashes} lives={player.Lives}");
     Require(player.WeaponId == "arcade.weapon.basic" && player.UpgradeStacks["arcade.upgrade.damage"] == 1 &&
         player.Consumables["old-item"] == 1 && player.EquipmentBySlot["support"] == "old-support", "loadout leaked");
-    Require(player.ShopOffers[0].PurchaseCount == 0 &&
-        record.Operations.Count == 1 && record.Operations[0].OperationId == "old-purchase", "shop purchases or operations leaked");
+    Require(record.Operations.Count == 1 && record.Operations[0].OperationId == "old-purchase", "shop purchases or operations leaked");
     Require(record.NextArena == 3 && record.CompletedArena == 2, "arena progress changed");
 }
 Check("Disconnect restores all resources, loadout and operation ledger", (manager, actor) =>
@@ -143,7 +140,6 @@ Check("Committed checkpoint and live record do not alias nested values", (manage
     Dirty(actor); RequireBaseline(Committed(actor));
     Call("TryRollbackDisconnectedBattle", manager, actor);
     actor.Record.Players[0].RunGold = 999;
-    actor.Record.Players[0].ShopOffers[0].PurchaseCount = 3;
     RequireBaseline(Committed(actor));
 });
 Check("Missing committed checkpoint fails closed instead of saving runtime", (manager, actor) =>
@@ -187,25 +183,25 @@ Check("Actual file replacement failure leaves both checkpoint and live battle in
     Require((bool)Call("TryRollbackDisconnectedBattle", manager, actor), "file retry rejected");
     RequireBaseline(DiskRun(manager));
 });
-Check("Safe shop purchase advances checkpoint once; duplicate and stale requests remain safe", (manager, actor) =>
+Check("Ready advances checkpoint once; duplicate and stale requests remain safe", (manager, actor) =>
 {
     long playerId = actor.Record.Players[0].PlayerId;
-    async Task<(bool Accepted, OnlineArcadeRunSnapshot Snapshot)> Purchase(string id, long revision) =>
-        await manager.OperateSafeShop(playerId, id, revision, (int)OnlineArcadeSafeShopActionKind.Purchase, "offer", 0, false);
+    async Task<(bool Accepted, OnlineArcadeRunSnapshot Snapshot)> Ready(string id, long revision) =>
+        await manager.OperateSafeCheckpoint(playerId, id, revision, (int)OnlineArcadeSafeCheckpointActionKind.SetReady, true);
     manager.RemainingFailSaveCount = 1;
     bool failedSave = false;
-    try { Purchase("purchase", 4).GetAwaiter().GetResult(); }
+    try { Ready("ready", 4).GetAwaiter().GetResult(); }
     catch (RpcException error) when (error.Error == ErrorCode.ERR_OnlineArcadeSaveFailed) { failedSave = true; }
-    Require(failedSave && actor.Record.Players[0].RunGold == 100, "failed purchase changed state");
+    Require(failedSave && !actor.Record.Players[0].Ready, "failed ready changed state");
     RequireBaseline(Committed(actor));
-    Require(Purchase("purchase", 4).GetAwaiter().GetResult().Accepted, "purchase rejected");
-    Require(actor.Record.Players[0].RunGold == 90 && actor.Record.Players[0].Bombs == 3 && actor.Record.Revision == 5,
-        "purchase result invalid");
-    Require(Committed(actor).Players[0].RunGold == 90 && DiskRun(manager).Players[0].RunGold == 90, "purchase checkpoint missing");
-    Purchase("purchase", 4).GetAwaiter().GetResult();
-    Require(actor.Record.Players[0].RunGold == 90 && actor.Record.Revision == 5, "duplicate purchase charged twice");
+    Require(Ready("ready", 4).GetAwaiter().GetResult().Accepted, "ready rejected");
+    Require(actor.Record.Players[0].RunGold == 100 && actor.Record.Players[0].Bombs == 2 && actor.Record.Players[0].Ready && actor.Record.Revision == 5,
+        "ready result invalid");
+    Require(Committed(actor).Players[0].Ready && DiskRun(manager).Players[0].Ready, "ready checkpoint missing");
+    Ready("ready", 4).GetAwaiter().GetResult();
+    Require(actor.Record.Players[0].RunGold == 100 && actor.Record.Revision == 5, "duplicate ready changed resources or revision");
     bool stale = false;
-    try { Purchase("stale", 4).GetAwaiter().GetResult(); }
+    try { Ready("stale", 4).GetAwaiter().GetResult(); }
     catch (RpcException error) when (error.Error == ErrorCode.ERR_OnlineArcadeStateInvalid) { stale = true; }
     Require(stale, "stale request accepted");
 });

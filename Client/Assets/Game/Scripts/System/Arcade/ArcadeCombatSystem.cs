@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>竞技场完成并已成功写入下一安全节点；界面据此从 HUD 切换到商店。</summary>
+    /// <summary>竞技场完成并已成功写入下一安全节点；界面据此继续战斗或展示结果。</summary>
     public readonly struct ArcadeArenaCompletedEvent { }
 
     /// <summary>街机战斗操作失败；仅用于界面提示，不代表安全节点已被修改。</summary>
@@ -300,7 +300,7 @@ namespace Game
                 var found = false;
                 foreach (var candidate in catalog.Challenges)
                 {
-                    if (!string.Equals(candidate.Id, run.Shop?.ChallengeId, StringComparison.Ordinal)) continue;
+                    if (!string.Equals(candidate.Id, run.Checkpoint?.ChallengeId, StringComparison.Ordinal)) continue;
                     challenge = candidate;
                     found = true;
                     break;
@@ -1544,11 +1544,11 @@ namespace Game
                 [ArcadeRunDefaults.DashResourceId] = runtime.Dashes
             };
             var nextArena = runtime.ArenaNumber + 1;
-            var seed = unchecked((run.Shop?.GenerationSeed ?? 0) ^ arena.ShopSeedSalt ^ nextArena * 7919);
+            var seed = unchecked((run.Checkpoint?.GenerationSeed ?? 0) ^ arena.EncounterSeedSalt ^ nextArena * 7919);
             var victory = run.IsCasualRoute && runtime.FinalBossDefeated;
-            ArcadeShopSaveData shop = null;
+            ArcadeCheckpointSaveData checkpoint = null;
             string error = null;
-            if (!victory) shop = new ArcadeShopSaveData { ArenaNumber = nextArena, GenerationSeed = seed };
+            if (!victory) checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = nextArena, GenerationSeed = seed };
             var completion = new ArcadeArenaCompletion
             {
                 ArenaNumber = runtime.ArenaNumber,
@@ -1557,7 +1557,7 @@ namespace Game
                 EmergencyResources = resources,
                 EquipmentBySlot = new Dictionary<string, string>(run.EquipmentBySlot, StringComparer.Ordinal),
                 EarnedRewards = BuildRewards(runtime.ArenaNumber, arena.IsBoss),
-                NextShop = shop,
+                NextCheckpoint = checkpoint,
                 NextArenaConfigNumber = runtime.SelectedExitConfigNumber,
                 Victory = victory,
                 PlayerState = carriedPlayer
@@ -1778,19 +1778,19 @@ namespace Game
                 view.SetPowerup(powerup.Definition,
                     powerup.Definition.VisualFollowPlayer ? runtime.PlayerPosition : powerup.Position,
                     powerup.ShotDirection);
-            if (TryGetSupportVisual(out ArcadeShopItemDefinition support))
+            if (TryGetSupportVisual(out ArcadeSupportVisualDefinition support))
                 view.SetSupport(support, runtime.PlayerPosition);
             view.EndEffectSync();
         }
 
         /// <summary>从安全节点装备槽解析支援表现；未装备或配置无视觉时不创建占位对象。</summary>
-        private bool TryGetSupportVisual(out ArcadeShopItemDefinition support)
+        private bool TryGetSupportVisual(out ArcadeSupportVisualDefinition support)
         {
             support = default;
             ArcadeRunSaveData run = this.GetModel<ArcadeRunModel>().Current;
             if (run == null || !run.EquipmentBySlot.TryGetValue(ArcadeRunDefaults.SupportSlotId,
                     out string productId) || string.IsNullOrWhiteSpace(productId)) return false;
-            foreach (ArcadeShopItemDefinition candidate in catalog.ShopItems)
+            foreach (ArcadeSupportVisualDefinition candidate in catalog.SupportVisuals)
             {
                 if (!string.Equals(candidate.ProductId, productId, StringComparison.Ordinal) ||
                     !string.Equals(candidate.EquipmentSlotId, ArcadeRunDefaults.SupportSlotId,

@@ -4,8 +4,8 @@ using System.Linq;
 
 namespace Game
 {
-    public enum ArcadeRunPhase { None, SafeShop, Arena, Challenge, Victory, Result }
-    public enum ArcadePurchaseKind { Upgrade, ExtraLife, Consumable, Equipment }
+    /// <summary>安全节点只承担恢复与准备，数值顺序兼容本项目旧局阶段。</summary>
+    public enum ArcadeRunPhase { None, SafeCheckpoint, Arena, Challenge, Victory, Result }
     public enum ArcadeDeathResult { Rejected, Respawn, RunFailed }
     public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, ExitFirstPerson }
 
@@ -37,50 +37,25 @@ namespace Game
         public ArcadeRewardSaveData Clone() => new ArcadeRewardSaveData { RewardId = RewardId, Amount = Amount };
     }
 
-    [Serializable]
-    public sealed class ArcadeShopOfferSaveData
-    {
-        public string OfferId { get; set; }
-        public string ProductId { get; set; }
-        public ArcadePurchaseKind Kind { get; set; }
-        public long Price { get; set; }
-        public int Amount { get; set; } = 1;
-        public string EquipmentSlotId { get; set; }
-        public bool Purchased { get; set; }
 
-        public ArcadeShopOfferSaveData Clone() => new ArcadeShopOfferSaveData
-        {
-            OfferId = OfferId,
-            ProductId = ProductId,
-            Kind = Kind,
-            Price = Price,
-            Amount = Amount,
-            EquipmentSlotId = EquipmentSlotId,
-            Purchased = Purchased
-        };
-    }
 
-    /// <summary>保存可确定重建同一商店的种子、刷新次数及实际报价，不依赖随机数实现细节。</summary>
+    /// <summary>保存目的地、战斗随机种子与挑战恢复状态；不包含商品或交易数据。</summary>
     [Serializable]
-    public sealed class ArcadeShopSaveData
+    public sealed class ArcadeCheckpointSaveData
     {
         public int ArenaNumber { get; set; } = 1;
         public int GenerationSeed { get; set; }
-        public int RefreshCount { get; set; }
-        /// <summary>当前安全商店可进入的挑战；空值表示本节点没有挑战。</summary>
+        /// <summary>当前安全节点可进入的挑战；空值表示本节点没有挑战。</summary>
         public string ChallengeId { get; set; }
         /// <summary>进入挑战前先持久化，确保退出、失败或崩溃不能重复刷取奖励。</summary>
         public bool ChallengeAttempted { get; set; }
-        public List<ArcadeShopOfferSaveData> Offers { get; set; } = new List<ArcadeShopOfferSaveData>();
 
-        public ArcadeShopSaveData Clone() => new ArcadeShopSaveData
+        public ArcadeCheckpointSaveData Clone() => new ArcadeCheckpointSaveData
         {
             ArenaNumber = ArenaNumber,
             GenerationSeed = GenerationSeed,
-            RefreshCount = RefreshCount,
             ChallengeId = ChallengeId,
             ChallengeAttempted = ChallengeAttempted,
-            Offers = Offers?.Select(value => value?.Clone()).ToList() ?? new List<ArcadeShopOfferSaveData>()
         };
     }
 
@@ -180,11 +155,16 @@ namespace Game
         /// <summary>当前倍率累计进度，达到配置阈值升倍；死亡清零。</summary>
         public int MultiplierProgress { get; set; }
         public Dictionary<string, int> EmergencyResources { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
-        /// <summary>强化 ID 到已购买层数；层数上限来自 Luban ArcadeUpgrade 配置。</summary>
+        /// <summary>本项目旧局已持有的属性层数；只恢复效果，不再提供购买或新增入口。</summary>
         public Dictionary<string, int> PurchasedUpgradeStacks { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
         public Dictionary<string, int> Consumables { get; set; } = new Dictionary<string, int>(StringComparer.Ordinal);
         public Dictionary<string, string> EquipmentBySlot { get; set; } = new Dictionary<string, string>(StringComparer.Ordinal);
-        public ArcadeShopSaveData Shop { get; set; } = new ArcadeShopSaveData();
+        /// <summary>下场目的地、战斗种子与挑战尝试状态；与交易无关。</summary>
+        public ArcadeCheckpointSaveData Checkpoint { get; set; } = new ArcadeCheckpointSaveData();
+        /// <summary>仅接受本项目旧节点身份，报价由 JSON 反序列化自动忽略；新文件不再写入 Shop。</summary>
+        [Newtonsoft.Json.JsonProperty("Shop")]
+        private ArcadeCheckpointSaveData LegacyShop { set { if (value != null) Checkpoint = value; } }
+
         public List<ArcadeRewardSaveData> PendingRewards { get; set; } = new List<ArcadeRewardSaveData>();
         public string UpdatedAtUtc { get; set; }
 
@@ -205,7 +185,7 @@ namespace Game
             PurchasedUpgradeStacks = new Dictionary<string, int>(PurchasedUpgradeStacks ?? new Dictionary<string, int>(), StringComparer.Ordinal),
             Consumables = new Dictionary<string, int>(Consumables ?? new Dictionary<string, int>(), StringComparer.Ordinal),
             EquipmentBySlot = new Dictionary<string, string>(EquipmentBySlot ?? new Dictionary<string, string>(), StringComparer.Ordinal),
-            Shop = Shop?.Clone(),
+            Checkpoint = Checkpoint?.Clone(),
             PendingRewards = PendingRewards?.Select(value => value?.Clone()).ToList() ?? new List<ArcadeRewardSaveData>(),
             UpdatedAtUtc = UpdatedAtUtc
         };
@@ -224,7 +204,7 @@ namespace Game
         public IReadOnlyDictionary<string, int> EmergencyResources { get; set; }
         public IReadOnlyDictionary<string, string> EquipmentBySlot { get; set; }
         public IReadOnlyList<ArcadeRewardSaveData> EarnedRewards { get; set; }
-        public ArcadeShopSaveData NextShop { get; set; }
+        public ArcadeCheckpointSaveData NextCheckpoint { get; set; }
         /// <summary>从当前有效出口选择的配置编号；胜利时为零。</summary>
         public int NextArenaConfigNumber { get; set; }
         public bool Victory { get; set; }

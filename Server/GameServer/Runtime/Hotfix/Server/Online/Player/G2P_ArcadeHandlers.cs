@@ -27,13 +27,13 @@ namespace ET.Server
     }
 
     [MessageHandler(SceneType.Player)]
-    public sealed class G2P_OperateOnlineArcadeSafeShopHandler : MessageHandler<OnlinePlayerActor, G2P_OperateOnlineArcadeSafeShop, P2G_OperateOnlineArcadeSafeShop>
+    public sealed class G2P_OperateOnlineArcadeSafeCheckpointHandler : MessageHandler<OnlinePlayerActor, G2P_OperateOnlineArcadeSafeCheckpoint, P2G_OperateOnlineArcadeSafeCheckpoint>
     {
-        protected override async ETTask Run(OnlinePlayerActor actor, G2P_OperateOnlineArcadeSafeShop request,
-            P2G_OperateOnlineArcadeSafeShop response)
+        protected override async ETTask Run(OnlinePlayerActor actor, G2P_OperateOnlineArcadeSafeCheckpoint request,
+            P2G_OperateOnlineArcadeSafeCheckpoint response)
         {
-            var result = await actor.OperateOnlineArcadeSafeShop(request.SessionEpoch, request.OperationId,
-                request.ExpectedRevision, request.ActionKind, request.OfferId, request.GoldAmount, request.Ready);
+            var result = await actor.OperateOnlineArcadeSafeCheckpoint(request.SessionEpoch, request.OperationId,
+                request.ExpectedRevision, request.ActionKind, request.Ready);
             response.Error = result.Error;
             response.Message = result.Message;
             response.Accepted = result.Accepted;

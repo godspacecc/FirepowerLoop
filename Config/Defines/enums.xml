@@ -86,12 +86,6 @@
         <var name="TimedExplosive" value="4"/>
           <var name="Melee" value="5"/>
     </enum>
-    <enum name="ArcadeShopProductType" group="e">
-        <var name="Upgrade" value="1"/>
-        <var name="ExtraLife" value="2"/>
-        <var name="Consumable" value="3"/>
-        <var name="Equipment" value="4"/>
-    </enum>
     <enum name="ArcadeUpgradeKind" group="e">
         <var name="DamagePercent" value="1"/>
         <var name="FireRatePercent" value="2"/>

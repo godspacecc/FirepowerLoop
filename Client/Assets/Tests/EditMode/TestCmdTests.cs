@@ -230,7 +230,7 @@ namespace Game.Tests
                 Array.Empty<ArcadeBossDefinition>(),
                 Array.Empty<ArcadeChallengeDefinition>(),
                 Array.Empty<ArcadeDropDefinition>(),
-                Array.Empty<ArcadeShopItemDefinition>(),
+                Array.Empty<ArcadeSupportVisualDefinition>(),
                 Array.Empty<ArcadeUpgradeDefinition>(),
                 Array.Empty<ArcadeRewardDefinition>());
             typeof(ArcadeCombatSystem).GetField("catalog", BindingFlags.Instance | BindingFlags.NonPublic)

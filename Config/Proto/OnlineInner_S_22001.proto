@@ -707,8 +707,8 @@ message R2P_GetCurrentOnlineArcadeRun // IResponse
 }
 
 // Opcode 22142
-// ResponseType P2G_OperateOnlineArcadeSafeShop
-message G2P_OperateOnlineArcadeSafeShop // IRequest
+// ResponseType P2G_OperateOnlineArcadeSafeCheckpoint
+message G2P_OperateOnlineArcadeSafeCheckpoint // IRequest
 {
 	int32 RpcId = 1;
 	int64 PlayerId = 2;
@@ -722,7 +722,7 @@ message G2P_OperateOnlineArcadeSafeShop // IRequest
 }
 
 // Opcode 22143
-message P2G_OperateOnlineArcadeSafeShop // IResponse
+message P2G_OperateOnlineArcadeSafeCheckpoint // IResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;
@@ -732,8 +732,8 @@ message P2G_OperateOnlineArcadeSafeShop // IResponse
 }
 
 // Opcode 22144
-// ResponseType R2P_OperateOnlineArcadeSafeShop
-message P2R_OperateOnlineArcadeSafeShop // IRequest
+// ResponseType R2P_OperateOnlineArcadeSafeCheckpoint
+message P2R_OperateOnlineArcadeSafeCheckpoint // IRequest
 {
 	int32 RpcId = 1;
 	int64 PlayerId = 2;
@@ -746,7 +746,7 @@ message P2R_OperateOnlineArcadeSafeShop // IRequest
 }
 
 // Opcode 22145
-message R2P_OperateOnlineArcadeSafeShop // IResponse
+message R2P_OperateOnlineArcadeSafeCheckpoint // IResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

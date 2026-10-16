@@ -348,7 +348,7 @@ namespace Game.Tests
                 Assert.That(resumed.Victory, Is.True);
                 Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.Victory));
                 Assert.That(system.TryContinue(out _, out _), Is.False);
-                Assert.That(system.TryPurchase("unused", out _, out _), Is.False);
+                Assert.That(typeof(ArcadeRunSystem).GetMethod("TryPurchase"), Is.Null);
                 Assert.That(system.TryCompleteArena(Completion(10, 0, true), out _, out _), Is.False);
             });
         }
@@ -360,7 +360,7 @@ namespace Game.Tests
                 EmergencyResources = new Dictionary<string, int>(),
                 EquipmentBySlot = new Dictionary<string, string> { [ArcadeRunDefaults.WeaponSlotId] = ArcadeRunDefaults.BasicWeaponId },
                 EarnedRewards = new[] { new ArcadeRewardSaveData { RewardId = "arcade.test", Amount = 1 } },
-                NextShop = victory ? null : new ArcadeShopSaveData { ArenaNumber = ordinal + 1 }
+                NextCheckpoint = victory ? null : new ArcadeCheckpointSaveData { ArenaNumber = ordinal + 1 }
             };
 
         private static void WithRun(int ordinal, int configId, Action<ArcadeRunSystem, ArcadeRunModel> action)
@@ -378,7 +378,7 @@ namespace Game.Tests
             {
                 RunId = Guid.NewGuid().ToString("N"), IsCasualRoute = true, ArenaConfigNumber = configId,
                 NextArenaNumber = ordinal, CompletedArenaCount = ordinal - 1, RemainingLives = 3,
-                UpdatedAtUtc = DateTime.UtcNow.ToString("O"), Shop = new ArcadeShopSaveData { ArenaNumber = ordinal }
+                UpdatedAtUtc = DateTime.UtcNow.ToString("O"), Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = ordinal }
             };
             run.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId] = ArcadeRunDefaults.BasicWeaponId;
             model.CommitSafeNode(run);

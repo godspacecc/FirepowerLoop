@@ -100,7 +100,7 @@ namespace Game.Tests
             snapshot.Score = 12750;
             snapshot.CompletedArenaCount = 4;
             snapshot.NextArenaNumber = 5;
-            snapshot.Shop.ArenaNumber = 5;
+            snapshot.Checkpoint.ArenaNumber = 5;
             snapshot.RemainingLives = 2;
             snapshot.Outcome = hasResult ? "failed" : null;
             Assert.That(new ArcadeRunFileStore(saveRoot).Save(snapshot, out error), Is.True, error);

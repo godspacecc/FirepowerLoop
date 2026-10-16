@@ -29,7 +29,7 @@ namespace Game.Tests
             Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);
             architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             var data = new ArcadeRunSaveData { RunId="opening-test", RemainingLives=3, IsCasualRoute=true,
-                ArenaConfigNumber=1, NextArenaNumber=1, Shop=new ArcadeShopSaveData{ArenaNumber=1} };
+                ArenaConfigNumber=1, NextArenaNumber=1, Checkpoint=new ArcadeCheckpointSaveData{ArenaNumber=1} };
             run.CommitSafeNode(data); run.EnterArena();
             system = new ArcadeCombatSystem(); ((ICanSetArchitecture)system).SetArchitecture(architecture);
             runtime = new ArcadeCombatRuntime{ArenaNumber=1,PlayerMaxHealth=100,PlayerHealth=100};
@@ -113,17 +113,10 @@ namespace Game.Tests
             Assert.That(((ArcadeWeaponDefinition)args[1]).Id, Is.EqualTo(catalog.Rule.BaseWeaponId));
         }
 
-        [Test] public void LegacyMeleeOffer_CannotBePurchased()
+        [Test] public void ShoppingApiCannotBeUsedByLegacyNodes()
         {
-            var data = run.Current;
-            data.RunGold = 100;
-            data.Shop.Offers.Add(new ArcadeShopOfferSaveData { OfferId="legacy-melee", ProductId="weapon.knife",
-                Kind=ArcadePurchaseKind.Equipment, EquipmentSlotId=ArcadeRunDefaults.WeaponSlotId, Price=1 });
-            run.CommitSafeNode(data);
-            var shop = new ArcadeRunSystem(); ((ICanSetArchitecture)shop).SetArchitecture(architecture);
-            Assert.That(shop.TryPurchase("legacy-melee", out _, out var error), Is.False);
-            Assert.That(error, Does.Contain("近战"));
-            Assert.That(run.Current.RunGold, Is.EqualTo(100));
+            Assert.That(typeof(ArcadeRunSystem).GetMethod("TryPurchase"), Is.Null);
+            Assert.That(typeof(ArcadeCheckpointSaveData).GetProperty("Offers"), Is.Null);
         }
         [Test] public void PendingQueue_PreventsFalseClearEvenWhenNoEnemyIsAlive()
         {

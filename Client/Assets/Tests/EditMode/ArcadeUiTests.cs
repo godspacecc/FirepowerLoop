@@ -53,51 +53,25 @@ namespace Game.Tests
         [TestCase("", false, false)]
         [TestCase("challenge.time", false, true)]
         [TestCase("challenge.time", true, false)]
-        public void ArcadeShopChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(
+        public void ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(
             string challengeId, bool attempted, bool expected)
         {
-            Assert.That(ArcadeShopUICtrl.ShouldShowChallengeButton(challengeId, attempted), Is.EqualTo(expected));
+            Assert.That(ArcadeResumeUICtrl.ShouldShowChallengeButton(challengeId, attempted), Is.EqualTo(expected));
         }
 
         [Test]
-        public void ArcadeShopOwnedContent_AggregatesRunInventoryAndOmitsBasicWeapon()
+        public void ShoppingControllerIsNotAvailable()
         {
-            // 本测试会通过 Loc 读取真实语言表；独立运行时不能依赖先前测试初始化资源包。
-            TestReset.ResetArchitecture();
-            ResourceLoader.SetLoaderForTests(new LocalizationAssetResourceLoader());
-            try
-            {
-            string content = ArcadeShopUICtrl.FormatOwnedContent(
-                new Dictionary<string, int> { ["test.upgrade"] = 2 },
-                new Dictionary<string, int> { ["test.supply"] = 3 },
-                new Dictionary<string, string>
-                {
-                    [ArcadeRunDefaults.WeaponSlotId] = ArcadeRunDefaults.BasicWeaponId,
-                    ["support"] = "test.equipment",
-                });
-
-            Assert.That(content, Does.Contain("test.upgrade × 2"));
-            Assert.That(content, Does.Contain("test.supply × 3"));
-            Assert.That(content, Does.Contain("test.equipment × 1"));
-            Assert.That(content, Does.Not.Contain(ArcadeRunDefaults.BasicWeaponId));
-            }
-            finally
-            {
-                TestReset.ResetArchitecture();
-                ResourceLoader.SetLoaderForTests(null);
-            }
+            Assert.That(typeof(ArcadeResumeUICtrl).Assembly.GetType("Game.ArcadeShopUICtrl"), Is.Null);
         }
 
         [Test]
         public void ArcadeControllers_UseExpectedBlockingLayers()
         {
             var hud = new ArcadeHudUICtrl();
-            var shop = new ArcadeShopUICtrl();
             var resume = new ArcadeResumeUICtrl();
             Assert.That(hud.Layer(), Is.EqualTo(UILayer.HUD));
             Assert.That(hud.BlocksGame, Is.False);
-            Assert.That(shop.Layer(), Is.EqualTo(UILayer.Dialog));
-            Assert.That(shop.BlocksGame, Is.True);
             Assert.That(resume.Layer(), Is.EqualTo(UILayer.Dialog));
             Assert.That(resume.BlocksGame, Is.True);
         }

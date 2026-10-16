@@ -31,7 +31,7 @@ namespace Game.Tests
             foreach (var weapon in catalog.Weapons.Where(value => value.Behavior == ArcadeWeaponBehavior.Melee))
             {
                 Assert.That(catalog.Drops.Any(value => value.ProductId == weapon.Id), Is.False);
-                Assert.That(catalog.ShopItems.Any(value => value.ProductId == weapon.Id), Is.False);
+                Assert.That(catalog.SupportVisuals.Any(value => value.ProductId == weapon.Id), Is.False);
             }
         }
 

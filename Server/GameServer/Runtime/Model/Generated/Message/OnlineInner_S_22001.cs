@@ -2804,13 +2804,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineInner.G2P_OperateOnlineArcadeSafeShop)]
-    [ResponseType(nameof(P2G_OperateOnlineArcadeSafeShop))]
-    public partial class G2P_OperateOnlineArcadeSafeShop : MessageObject, IRequest
+    [Message(OnlineInner.G2P_OperateOnlineArcadeSafeCheckpoint)]
+    [ResponseType(nameof(P2G_OperateOnlineArcadeSafeCheckpoint))]
+    public partial class G2P_OperateOnlineArcadeSafeCheckpoint : MessageObject, IRequest
     {
-        public static G2P_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static G2P_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(G2P_OperateOnlineArcadeSafeShop), isFromPool) as G2P_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(G2P_OperateOnlineArcadeSafeCheckpoint), isFromPool) as G2P_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -2862,12 +2862,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineInner.P2G_OperateOnlineArcadeSafeShop)]
-    public partial class P2G_OperateOnlineArcadeSafeShop : MessageObject, IResponse
+    [Message(OnlineInner.P2G_OperateOnlineArcadeSafeCheckpoint)]
+    public partial class P2G_OperateOnlineArcadeSafeCheckpoint : MessageObject, IResponse
     {
-        public static P2G_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static P2G_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(P2G_OperateOnlineArcadeSafeShop), isFromPool) as P2G_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(P2G_OperateOnlineArcadeSafeCheckpoint), isFromPool) as P2G_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -2903,13 +2903,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineInner.P2R_OperateOnlineArcadeSafeShop)]
-    [ResponseType(nameof(R2P_OperateOnlineArcadeSafeShop))]
-    public partial class P2R_OperateOnlineArcadeSafeShop : MessageObject, IRequest
+    [Message(OnlineInner.P2R_OperateOnlineArcadeSafeCheckpoint)]
+    [ResponseType(nameof(R2P_OperateOnlineArcadeSafeCheckpoint))]
+    public partial class P2R_OperateOnlineArcadeSafeCheckpoint : MessageObject, IRequest
     {
-        public static P2R_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static P2R_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(P2R_OperateOnlineArcadeSafeShop), isFromPool) as P2R_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(P2R_OperateOnlineArcadeSafeCheckpoint), isFromPool) as P2R_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -2957,12 +2957,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineInner.R2P_OperateOnlineArcadeSafeShop)]
-    public partial class R2P_OperateOnlineArcadeSafeShop : MessageObject, IResponse
+    [Message(OnlineInner.R2P_OperateOnlineArcadeSafeCheckpoint)]
+    public partial class R2P_OperateOnlineArcadeSafeCheckpoint : MessageObject, IResponse
     {
-        public static R2P_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static R2P_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(R2P_OperateOnlineArcadeSafeShop), isFromPool) as R2P_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(R2P_OperateOnlineArcadeSafeCheckpoint), isFromPool) as R2P_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -3480,10 +3480,10 @@ namespace ET
         public const ushort P2G_GetCurrentOnlineArcadeRun = 22139;
         public const ushort P2R_GetCurrentOnlineArcadeRun = 22140;
         public const ushort R2P_GetCurrentOnlineArcadeRun = 22141;
-        public const ushort G2P_OperateOnlineArcadeSafeShop = 22142;
-        public const ushort P2G_OperateOnlineArcadeSafeShop = 22143;
-        public const ushort P2R_OperateOnlineArcadeSafeShop = 22144;
-        public const ushort R2P_OperateOnlineArcadeSafeShop = 22145;
+        public const ushort G2P_OperateOnlineArcadeSafeCheckpoint = 22142;
+        public const ushort P2G_OperateOnlineArcadeSafeCheckpoint = 22143;
+        public const ushort P2R_OperateOnlineArcadeSafeCheckpoint = 22144;
+        public const ushort R2P_OperateOnlineArcadeSafeCheckpoint = 22145;
         public const ushort R2P_OnlineArcadeRunChanged = 22146;
         public const ushort R2R_OnlineArcadeConnectionChanged = 22147;
         public const ushort P2G_OnlineArcadeRunChanged = 22148;

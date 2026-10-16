@@ -1336,59 +1336,6 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineOuter.OnlineArcadeShopOfferInfo)]
-    public partial class OnlineArcadeShopOfferInfo : MessageObject
-    {
-        public static OnlineArcadeShopOfferInfo Create(bool isFromPool = false)
-        {
-            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeShopOfferInfo), isFromPool) as OnlineArcadeShopOfferInfo;
-        }
-
-        [MemoryPackOrder(0)]
-        public string OfferId { get; set; }
-
-        [MemoryPackOrder(1)]
-        public string ShopItemId { get; set; }
-
-        [MemoryPackOrder(2)]
-        public string ProductId { get; set; }
-
-        [MemoryPackOrder(3)]
-        public int ProductType { get; set; }
-
-        [MemoryPackOrder(4)]
-        public int Price { get; set; }
-
-        [MemoryPackOrder(5)]
-        public int Amount { get; set; }
-
-        [MemoryPackOrder(6)]
-        public int PurchaseCount { get; set; }
-
-        [MemoryPackOrder(7)]
-        public int MaxPurchases { get; set; }
-
-        public override void Dispose()
-        {
-            if (!this.IsFromPool)
-            {
-                return;
-            }
-
-            this.OfferId = default;
-            this.ShopItemId = default;
-            this.ProductId = default;
-            this.ProductType = default;
-            this.Price = default;
-            this.Amount = default;
-            this.PurchaseCount = default;
-            this.MaxPurchases = default;
-
-            ObjectPool.Instance.Recycle(this);
-        }
-    }
-
-    [MemoryPackable]
     [Message(OnlineOuter.OnlineArcadeOwnedAmountInfo)]
     public partial class OnlineArcadeOwnedAmountInfo : MessageObject
     {
@@ -1964,9 +1911,6 @@ namespace ET
         [MemoryPackOrder(7)]
         public bool Ready { get; set; }
 
-        [MemoryPackOrder(8)]
-        public List<OnlineArcadeShopOfferInfo> ShopOffers { get; set; } = new();
-
         [MemoryPackOrder(9)]
         public List<OnlineArcadeOwnedAmountInfo> UpgradeStacks { get; set; } = new();
 
@@ -2012,7 +1956,6 @@ namespace ET
             this.Dashes = default;
             this.WeaponId = default;
             this.Ready = default;
-            this.ShopOffers.Clear();
             this.UpgradeStacks.Clear();
             this.Consumables.Clear();
             this.Equipment.Clear();
@@ -2281,13 +2224,13 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineOuter.C2G_OperateOnlineArcadeSafeShop)]
-    [ResponseType(nameof(G2C_OperateOnlineArcadeSafeShop))]
-    public partial class C2G_OperateOnlineArcadeSafeShop : MessageObject, ISessionRequest
+    [Message(OnlineOuter.C2G_OperateOnlineArcadeSafeCheckpoint)]
+    [ResponseType(nameof(G2C_OperateOnlineArcadeSafeCheckpoint))]
+    public partial class C2G_OperateOnlineArcadeSafeCheckpoint : MessageObject, ISessionRequest
     {
-        public static C2G_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static C2G_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(C2G_OperateOnlineArcadeSafeShop), isFromPool) as C2G_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(C2G_OperateOnlineArcadeSafeCheckpoint), isFromPool) as C2G_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -2301,12 +2244,6 @@ namespace ET
 
         [MemoryPackOrder(3)]
         public int ActionKind { get; set; }
-
-        [MemoryPackOrder(4)]
-        public string OfferId { get; set; }
-
-        [MemoryPackOrder(5)]
-        public int GoldAmount { get; set; }
 
         [MemoryPackOrder(6)]
         public bool Ready { get; set; }
@@ -2322,8 +2259,6 @@ namespace ET
             this.OperationId = default;
             this.ExpectedRevision = default;
             this.ActionKind = default;
-            this.OfferId = default;
-            this.GoldAmount = default;
             this.Ready = default;
 
             ObjectPool.Instance.Recycle(this);
@@ -2331,12 +2266,12 @@ namespace ET
     }
 
     [MemoryPackable]
-    [Message(OnlineOuter.G2C_OperateOnlineArcadeSafeShop)]
-    public partial class G2C_OperateOnlineArcadeSafeShop : MessageObject, ISessionResponse
+    [Message(OnlineOuter.G2C_OperateOnlineArcadeSafeCheckpoint)]
+    public partial class G2C_OperateOnlineArcadeSafeCheckpoint : MessageObject, ISessionResponse
     {
-        public static G2C_OperateOnlineArcadeSafeShop Create(bool isFromPool = false)
+        public static G2C_OperateOnlineArcadeSafeCheckpoint Create(bool isFromPool = false)
         {
-            return ObjectPool.Instance.Fetch(typeof(G2C_OperateOnlineArcadeSafeShop), isFromPool) as G2C_OperateOnlineArcadeSafeShop;
+            return ObjectPool.Instance.Fetch(typeof(G2C_OperateOnlineArcadeSafeCheckpoint), isFromPool) as G2C_OperateOnlineArcadeSafeCheckpoint;
         }
 
         [MemoryPackOrder(0)]
@@ -2544,7 +2479,6 @@ namespace ET
         public const ushort PublicRoomSummary = 12073;
         public const ushort C2G_GetPublicRoomList = 12074;
         public const ushort G2C_GetPublicRoomList = 12075;
-        public const ushort OnlineArcadeShopOfferInfo = 12076;
         public const ushort OnlineArcadeOwnedAmountInfo = 12077;
         public const ushort OnlineArcadeEquipmentInfo = 12078;
         public const ushort OnlineArcadePowerupInfo = 12079;
@@ -2560,8 +2494,8 @@ namespace ET
         public const ushort G2C_StartOnlineArcadeRun = 12090;
         public const ushort C2G_GetCurrentOnlineArcadeRun = 12091;
         public const ushort G2C_GetCurrentOnlineArcadeRun = 12092;
-        public const ushort C2G_OperateOnlineArcadeSafeShop = 12093;
-        public const ushort G2C_OperateOnlineArcadeSafeShop = 12094;
+        public const ushort C2G_OperateOnlineArcadeSafeCheckpoint = 12093;
+        public const ushort G2C_OperateOnlineArcadeSafeCheckpoint = 12094;
         public const ushort G2C_OnlineArcadeRunChanged = 12095;
         public const ushort C2G_SubmitOnlineArcadeInput = 12096;
         public const ushort G2C_SubmitOnlineArcadeInput = 12097;

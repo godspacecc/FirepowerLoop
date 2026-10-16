@@ -10,49 +10,34 @@
 using Luban;
 
 
-namespace ET
+
+public sealed partial class ArcadeSupportVisualConfig : Luban.BeanBase
 {
-public sealed partial class ArcadeShopItemConfig : Luban.BeanBase
-{
-    public ArcadeShopItemConfig(ByteBuf _buf) 
+    public ArcadeSupportVisualConfig(ByteBuf _buf) 
     {
         Id = _buf.ReadString();
         ProductId = _buf.ReadString();
-        ProductType = (ArcadeShopProductType)_buf.ReadInt();
-        UnlockArena = _buf.ReadInt();
-        Weight = _buf.ReadInt();
-        BasePrice = _buf.ReadInt();
-        PricePerArena = _buf.ReadInt();
-        Amount = _buf.ReadInt();
         EquipmentSlotId = _buf.ReadString();
         ActiveVisualPrefabName = _buf.ReadString();
         VisualOffsetX = _buf.ReadFloat();
         VisualOffsetY = _buf.ReadFloat();
         VisualOffsetZ = _buf.ReadFloat();
-        MaxPurchases = _buf.ReadInt();
     }
 
-    public static ArcadeShopItemConfig DeserializeArcadeShopItemConfig(ByteBuf _buf)
+    public static ArcadeSupportVisualConfig DeserializeArcadeSupportVisualConfig(ByteBuf _buf)
     {
-        return new ArcadeShopItemConfig(_buf);
+        return new ArcadeSupportVisualConfig(_buf);
     }
 
     public readonly string Id;
     public readonly string ProductId;
-    public readonly ArcadeShopProductType ProductType;
-    public readonly int UnlockArena;
-    public readonly int Weight;
-    public readonly int BasePrice;
-    public readonly int PricePerArena;
-    public readonly int Amount;
     public readonly string EquipmentSlotId;
     public readonly string ActiveVisualPrefabName;
     public readonly float VisualOffsetX;
     public readonly float VisualOffsetY;
     public readonly float VisualOffsetZ;
-    public readonly int MaxPurchases;
    
-    public const int __ID__ = -134744805;
+    public const int __ID__ = 747734209;
     public override int GetTypeId() => __ID__;
 
     public  void ResolveRef(Tables tables)
@@ -64,21 +49,14 @@ public sealed partial class ArcadeShopItemConfig : Luban.BeanBase
         return "{ "
         + "Id:" + Id + ","
         + "ProductId:" + ProductId + ","
-        + "ProductType:" + ProductType + ","
-        + "UnlockArena:" + UnlockArena + ","
-        + "Weight:" + Weight + ","
-        + "BasePrice:" + BasePrice + ","
-        + "PricePerArena:" + PricePerArena + ","
-        + "Amount:" + Amount + ","
         + "EquipmentSlotId:" + EquipmentSlotId + ","
         + "ActiveVisualPrefabName:" + ActiveVisualPrefabName + ","
         + "VisualOffsetX:" + VisualOffsetX + ","
         + "VisualOffsetY:" + VisualOffsetY + ","
         + "VisualOffsetZ:" + VisualOffsetZ + ","
-        + "MaxPurchases:" + MaxPurchases + ","
         + "}";
     }
 }
 
-}
+
 

@@ -52,10 +52,10 @@ namespace ET.Server
     [MessageSessionHandler(SceneType.GameGate)]
     [FriendOf(typeof(OnlineSessionComponent))]
     [FriendOf(typeof(GatePlayerProxy))]
-    public sealed class C2G_OperateOnlineArcadeSafeShopHandler : MessageSessionHandler<C2G_OperateOnlineArcadeSafeShop, G2C_OperateOnlineArcadeSafeShop>
+    public sealed class C2G_OperateOnlineArcadeSafeCheckpointHandler : MessageSessionHandler<C2G_OperateOnlineArcadeSafeCheckpoint, G2C_OperateOnlineArcadeSafeCheckpoint>
     {
-        protected override async ETTask Run(Session session, C2G_OperateOnlineArcadeSafeShop request,
-            G2C_OperateOnlineArcadeSafeShop response)
+        protected override async ETTask Run(Session session, C2G_OperateOnlineArcadeSafeCheckpoint request,
+            G2C_OperateOnlineArcadeSafeCheckpoint response)
         {
             GatePlayerProxy proxy = session.GetComponent<OnlineSessionComponent>()?.Proxy;
             if (proxy == null || !proxy.IsAuthenticated)
@@ -63,17 +63,15 @@ namespace ET.Server
                 response.Error = ErrorCode.ERR_OnlineSessionNotLoggedIn;
                 return;
             }
-            G2P_OperateOnlineArcadeSafeShop inner = G2P_OperateOnlineArcadeSafeShop.Create();
+            G2P_OperateOnlineArcadeSafeCheckpoint inner = G2P_OperateOnlineArcadeSafeCheckpoint.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
             inner.OperationId = request.OperationId ?? string.Empty;
             inner.ExpectedRevision = request.ExpectedRevision;
             inner.ActionKind = request.ActionKind;
-            inner.OfferId = request.OfferId ?? string.Empty;
-            inner.GoldAmount = request.GoldAmount;
             inner.Ready = request.Ready;
-            using P2G_OperateOnlineArcadeSafeShop result = await session.Root().GetComponent<MessageSender>()
-                .Call(proxy.PlayerActorId, inner, false) as P2G_OperateOnlineArcadeSafeShop;
+            using P2G_OperateOnlineArcadeSafeCheckpoint result = await session.Root().GetComponent<MessageSender>()
+                .Call(proxy.PlayerActorId, inner, false) as P2G_OperateOnlineArcadeSafeCheckpoint;
             response.Error = result.Error;
             response.Message = result.Message;
             response.Accepted = result.Accepted;

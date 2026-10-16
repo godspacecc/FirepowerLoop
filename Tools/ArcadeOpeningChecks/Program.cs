@@ -15,7 +15,7 @@ int passed=0;
 void Check(string name,Action action){action();passed++;Console.WriteLine("PASS "+name);}
 OnlineArcadeRunRecord Record()=>new(){RunId=1,RoomId=2,Revision=1,NextArena=1,ArenaConfigNumber=1,
     ConfigFingerprint=config.ArcadeRule.ConfigFingerprint,
-    IsCasualRoute=true,Phase=OnlineArcadeRunPhase.SafeShop,Players=new(){
+    IsCasualRoute=true,Phase=OnlineArcadeRunPhase.SafeCheckpoint,Players=new(){
         new(){PlayerId=1,Lives=3,Bombs=0,Dashes=4,Ready=true,WeaponId=config.ArcadeRule.BaseWeaponId},
         new(){PlayerId=2,Lives=3,Bombs=2,Dashes=0,Ready=true,WeaponId=config.ArcadeRule.BaseWeaponId}}};
 Check("Dual opening queues 160/170/180/190 under the global alive budget",()=>{
@@ -151,7 +151,7 @@ Check("Melee has no drop or shop source",()=>{
     var meleeIds=config.Tables.TbArcadeWeapon.DataList.Where(w=>w.Behavior==ArcadeWeaponBehavior.Melee)
         .Select(w=>w.Id).ToHashSet();
     Require(!config.Tables.TbArcadeDrop.DataList.Any(d=>meleeIds.Contains(d.ProductId)),"melee drop remains");
-    Require(!config.Tables.TbArcadeShopItem.DataList.Any(s=>meleeIds.Contains(s.ProductId)),"melee shop item remains");
+    Require(typeof(OnlineArcadePlayerRecord).GetProperty("ShopOffers") == null,"trade records remain");
 });
 Check("Legacy melee attacks use the baseline gun",()=>{
     foreach(var weapon in config.Tables.TbArcadeWeapon.DataList.Where(w=>w.Behavior==ArcadeWeaponBehavior.Melee)){

@@ -34,7 +34,7 @@ namespace Game.Tests
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
             var addresses = catalog.Drops.Select(drop => drop.VisualPrefabAddress)
                 .Concat(catalog.Powerups.Select(powerup => powerup.ActiveVisualPrefabAddress))
-                .Concat(catalog.ShopItems.Select(item => item.ActiveVisualPrefabAddress))
+                .Concat(catalog.SupportVisuals.Select(item => item.ActiveVisualPrefabAddress))
                 .Where(address => !string.IsNullOrWhiteSpace(address)).Distinct().ToArray();
             Assert.That(addresses, Is.Not.Empty);
             var type = AppDomain.CurrentDomain.GetAssemblies()

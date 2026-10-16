@@ -50,7 +50,7 @@ namespace Game
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeCombatHudChangedEvent>(OnCombatChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeStageNoticeChangedEvent>(_ => TryPresentStageNotice()).UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<ArcadeArenaCompletedEvent>(_ => OpenSafeShop()).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<ArcadeArenaCompletedEvent>(_ => OpenSafeCheckpoint()).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeCombatOperationFailedEvent>(evt => Notify.ShowFloatTips(evt.Error)).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnOnlineRunChanged(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -111,12 +111,12 @@ namespace Game
         {
             if (!onlineMode || !IsShow()) return;
             if (!snapshot.HasRun) { Hide(); return; }
-            if (snapshot.Phase is OnlineArcadeRunPhase.SafeShop or OnlineArcadeRunPhase.Victory)
+            if (snapshot.Phase is OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory)
             {
                 Hide();
-                if (snapshot.Phase == OnlineArcadeRunPhase.SafeShop && snapshot.Players.All(p => p.ShopOffers.Count == 0))
+                if (snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint && string.IsNullOrEmpty(snapshot.ChallengeId))
                     UIHelper.ShowUI<OnlineRoomUICtrl>();
-                else UIHelper.ShowUI<ArcadeShopUICtrl>();
+                else UIHelper.ShowUI<ArcadeResumeUICtrl>();
                 return;
             }
             RenderOnline(snapshot);
@@ -193,14 +193,14 @@ namespace Game
                 this.GetSystem<AudioSystem>().PlayUiSound("ArcadeUiClick");
         }
 
-        private void OpenSafeShop()
+        private void OpenSafeCheckpoint()
         {
             hasCombatSnapshot = false;
             Hide();
             var current = this.GetModel<ArcadeRunModel>().Current;
-            if (current != null && !current.Victory && current.Shop?.Offers.Count == 0)
+            if (current != null && !current.Victory && string.IsNullOrEmpty(current.Checkpoint?.ChallengeId))
             { ContinueOrdinaryArenaAsync().Forget(); return; }
-            UIHelper.ShowUI<ArcadeShopUICtrl>();
+            UIHelper.ShowUI<ArcadeResumeUICtrl>();
         }
 
         /// <summary>普通场间先保有已落盘节点再进入目的地；失败可从原恢复入口重试，不构造商店。</summary>

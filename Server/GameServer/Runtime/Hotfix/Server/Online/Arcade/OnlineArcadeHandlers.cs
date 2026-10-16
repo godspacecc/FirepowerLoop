@@ -47,16 +47,16 @@ namespace ET.Server
     }
 
     [MessageHandler(SceneType.OnlineRoom)]
-    public sealed class P2R_OperateOnlineArcadeSafeShopHandler : MessageHandler<Scene, P2R_OperateOnlineArcadeSafeShop, R2P_OperateOnlineArcadeSafeShop>
+    public sealed class P2R_OperateOnlineArcadeSafeCheckpointHandler : MessageHandler<Scene, P2R_OperateOnlineArcadeSafeCheckpoint, R2P_OperateOnlineArcadeSafeCheckpoint>
     {
-        protected override async ETTask Run(Scene scene, P2R_OperateOnlineArcadeSafeShop request,
-            R2P_OperateOnlineArcadeSafeShop response)
+        protected override async ETTask Run(Scene scene, P2R_OperateOnlineArcadeSafeCheckpoint request,
+            R2P_OperateOnlineArcadeSafeCheckpoint response)
         {
             try
             {
-                var result = await scene.GetComponent<OnlineArcadeRunManagerComponent>().OperateSafeShop(
+                var result = await scene.GetComponent<OnlineArcadeRunManagerComponent>().OperateSafeCheckpoint(
                     request.PlayerId, request.OperationId, request.ExpectedRevision, request.ActionKind,
-                    request.OfferId, request.GoldAmount, request.Ready);
+                    request.Ready);
                 response.Error = ErrorCode.ERR_Success;
                 response.Accepted = result.Accepted;
                 response.Run = result.Snapshot;

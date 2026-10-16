@@ -74,7 +74,7 @@ namespace Game
             }
             transitionGeneration++;
             EndPresentation();
-            bool transit = latest.Phase == OnlineArcadeRunPhase.SafeShop && latest.Players.All(p => p.ShopOffers.Count == 0);
+            bool transit = latest.Phase == OnlineArcadeRunPhase.SafeCheckpoint;
             if (!transit && this.GetModel<MapSceneModel>().CurrentMapId == MapIds.Arcade && !transitionBusy)
                 ReturnToMainMenuAsync(transitionGeneration).Forget();
         }
@@ -301,7 +301,7 @@ namespace Game
             }
 
             if (string.IsNullOrWhiteSpace(player.SupportId)) return;
-            ArcadeShopItemDefinition support = catalog.ShopItems.FirstOrDefault(x =>
+            ArcadeSupportVisualDefinition support = catalog.SupportVisuals.FirstOrDefault(x =>
                 string.Equals(x.ProductId, player.SupportId, StringComparison.Ordinal) &&
                 string.Equals(x.EquipmentSlotId, ArcadeRunDefaults.SupportSlotId, StringComparison.Ordinal));
             if (!string.IsNullOrWhiteSpace(support.ProductId))

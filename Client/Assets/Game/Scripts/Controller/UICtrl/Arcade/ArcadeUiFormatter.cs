@@ -24,7 +24,6 @@ namespace Game
             return string.Equals(value, key, StringComparison.Ordinal) ? productId : value;
         }
 
-        public static string OfferType(ArcadePurchaseKind kind) => Loc.T("ui.arcade.offer_type." + kind.ToString().ToLowerInvariant());
 
         /// <summary>把联机街机领域结果转换为玩家可读提示；未知异常保留统一兜底，不泄漏内部枚举名。</summary>
         public static string OnlineResult(OnlineArcadeResultCode code)
@@ -45,22 +44,6 @@ namespace Game
             };
         }
 
-        public static string OfferEffect(ArcadeShopOfferSaveData offer, IRuntimeConfigProvider config)
-        {
-            if (offer == null) return string.Empty;
-            if (offer.Kind == ArcadePurchaseKind.Upgrade && config != null && config.TryGetArcadeCatalog(out var catalog, out _))
-            {
-                var upgrade = catalog.Upgrades.FirstOrDefault(value => string.Equals(value.Id, offer.ProductId, StringComparison.Ordinal));
-                if (!string.IsNullOrWhiteSpace(upgrade.Id))
-                {
-                    var percent = (int)Math.Round(upgrade.ValuePerStack * 100f);
-                    return Loc.T("ui.arcade.effect." + upgrade.Kind.ToString().ToLowerInvariant(), percent);
-                }
-            }
-            if (offer.Kind == ArcadePurchaseKind.ExtraLife) return Loc.T("ui.arcade.effect.life", offer.Amount);
-            if (offer.Kind == ArcadePurchaseKind.Consumable) return Loc.T("ui.arcade.effect.consumable", offer.Amount);
-            if (offer.Kind == ArcadePurchaseKind.Equipment) return Loc.T("ui.arcade.effect.equipment");
-            return string.Empty;
-        }
+
     }
 }

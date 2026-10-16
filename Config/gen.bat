@@ -74,8 +74,8 @@ if not "!SERVER_TABLE_COUNT!"=="20" (
     echo Error: server table count expected 20 but got !SERVER_TABLE_COUNT!
     exit /b 1
 )
-for %%F in (ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeShopItemConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeShopItem TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
-for %%F in (tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadeshopitem tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
+for %%F in (ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeSupportVisualConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeSupportVisual TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
+for %%F in (tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadesupportvisual tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
 
 echo.
 echo === Publish generated files ===

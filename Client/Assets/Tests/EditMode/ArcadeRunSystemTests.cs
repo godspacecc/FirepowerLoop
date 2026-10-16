@@ -46,7 +46,7 @@ namespace Game.Tests
             var model=architecture.GetModel<ArcadeRunModel>();
             model.SetTransientLives(2);model.SetTransientTreasureScore(new AnotherDay.Arcade.ArcadeTreasureScoreState(201000,2,4,2));
             var completion=new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,Score=201000,ScoreMultiplier=2,MultiplierProgress=4,
-                NextShop=new ArcadeShopSaveData{ArenaNumber=2},EquipmentBySlot=initial.EquipmentBySlot,
+                NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=2},EquipmentBySlot=initial.EquipmentBySlot,
                 EmergencyResources=new Dictionary<string,int>{{ArcadeRunDefaults.BombResourceId,3},{ArcadeRunDefaults.DashResourceId,4}}};
             var store=new ArcadeRunFileStore(runtimeRoot);
             using(var locked=new FileStream(store.RunPath,FileMode.Open,FileAccess.Read,FileShare.None))
@@ -55,7 +55,7 @@ namespace Game.Tests
                 Assert.That(model.Phase,Is.EqualTo(ArcadeRunPhase.Arena));Assert.That(model.Current.ArenaConfigNumber,Is.EqualTo(1));
             }
             Assert.That(arcade.TryCompleteArena(completion,out var saved,out error),Is.True,error);
-            Assert.That(saved.ArenaConfigNumber,Is.EqualTo(2));Assert.That(saved.Shop.Offers,Is.Empty);
+            Assert.That(saved.ArenaConfigNumber,Is.EqualTo(2));Assert.That(saved.Checkpoint.ArenaNumber,Is.EqualTo(2));
             Assert.That(saved.RemainingLives,Is.EqualTo(2));Assert.That(saved.Score,Is.EqualTo(201000));
             Assert.That(arcade.TryResume(out var restored,out error),Is.True,error);
             Assert.That(restored.ArenaConfigNumber,Is.EqualTo(2));Assert.That(restored.EmergencyResources[ArcadeRunDefaults.BombResourceId],Is.EqualTo(3));
@@ -66,7 +66,7 @@ namespace Game.Tests
         [Test]
         public void NewRunUsesFixedIsolatedLoadoutAndWritesSafeNode()
         {
-            Assert.That(arcade.TryStartNewRun(Shop(1), out var run, out var error), Is.True, error);
+            Assert.That(arcade.TryStartNewRun(Checkpoint(1), out var run, out var error), Is.True, error);
 
             Assert.That(run.RemainingLives, Is.EqualTo(3));
             Assert.That(run.RunGold, Is.Zero);
@@ -84,8 +84,6 @@ namespace Game.Tests
             Assert.That(run.EmergencyResources[ArcadeRunDefaults.BombResourceId], Is.EqualTo(1));
             Assert.That(run.EmergencyResources[ArcadeRunDefaults.DashResourceId], Is.EqualTo(2));
             Assert.That(run.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId], Is.EqualTo("arcade.weapon.basic"));
-            Assert.That(run.Shop.Offers, Is.Empty);
-            Assert.That(run.Shop.Offers.All(value => !value.Purchased), Is.True);
         }
 
         [Test]
@@ -155,7 +153,7 @@ namespace Game.Tests
         {
             Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
 
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeShop));
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
             Assert.That(arcade.InspectPending().IsValid, Is.True);
             Assert.That(arcade.InspectPending().Data.CompletedArenaCount, Is.Zero);
             Assert.That(arcade.InspectPending().Data.NextArenaNumber, Is.EqualTo(1));
@@ -177,7 +175,7 @@ namespace Game.Tests
         [Test]
         public void ArenaExitRestoresPreviousSafeNodeWithoutLifeCost()
         {
-            Assert.That(arcade.TryStartNewRun(Shop(1), out _, out var error), Is.True, error);
+            Assert.That(arcade.TryStartNewRun(Checkpoint(1), out _, out var error), Is.True, error);
             Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
             Assert.That(arcade.TryHandleDeath(out var afterDeath, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
             Assert.That(afterDeath.RemainingLives, Is.EqualTo(2));
@@ -186,13 +184,13 @@ namespace Game.Tests
 
             Assert.That(restored.RemainingLives, Is.EqualTo(3));
             Assert.That(restored.RunGold, Is.Zero);
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeShop));
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
         }
 
         [Test]
-        public void CompletedArenaCommitsOnlyStableResultsAndNextShop()
+        public void CompletedArenaCommitsOnlyStableResultsAndNextCheckpoint()
         {
-            Assert.That(arcade.TryStartNewRun(Shop(1), out _, out var error), Is.True, error);
+            Assert.That(arcade.TryStartNewRun(Checkpoint(1), out _, out var error), Is.True, error);
             Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
             var completion = Completion(1, 25, 2, "reward.scrap", 4);
 
@@ -202,38 +200,25 @@ namespace Game.Tests
             Assert.That(safe.NextArenaNumber, Is.EqualTo(2));
             Assert.That(safe.RunGold, Is.EqualTo(25));
             Assert.That(safe.PendingRewards, Is.Empty, "街机不保存局外奖励");
-            Assert.That(safe.Shop.ArenaNumber, Is.EqualTo(2));
+            Assert.That(safe.Checkpoint.ArenaNumber, Is.EqualTo(2));
         }
 
         [Test]
-        public void PurchasePersistsImmediatelyAndResumeKeepsIdenticalOfferState()
+        public void CompletedCheckpointResumesWithoutTransactions()
         {
-            var shop = Shop(1);
-            shop.Offers.Add(new ArcadeShopOfferSaveData
-            {
-                OfferId = "offer.life",
-                ProductId = "life",
-                Kind = ArcadePurchaseKind.ExtraLife,
-                Price = 10,
-                Amount = 1
-            });
-            Assert.That(arcade.TryStartNewRun(shop, out _, out var error), Is.True, error);
+            Assert.That(arcade.TryStartNewRun(Checkpoint(1), out _, out var error), Is.True, error);
             Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
-            Assert.That(arcade.TryCompleteArena(Completion(1, 10, 2, nextOffers: shop.Offers), out _, out error), Is.True, error);
-
-            Assert.That(arcade.TryPurchase("offer.life", out var purchased, out error), Is.True, error);
-            Assert.That(purchased.RemainingLives, Is.EqualTo(4));
-            Assert.That(purchased.RunGold, Is.Zero);
-            Assert.That(purchased.Shop.Offers[0].Purchased, Is.True);
+            Assert.That(arcade.TryCompleteArena(Completion(1, 10, 2), out _, out error), Is.True, error);
             Assert.That(arcade.TryResume(out var restored, out error), Is.True, error);
-            Assert.That(restored.Shop.Offers[0].Purchased, Is.True);
-            Assert.That(restored.RemainingLives, Is.EqualTo(4));
+            Assert.That(restored.RunGold, Is.EqualTo(10));
+            Assert.That(restored.Checkpoint.ArenaNumber, Is.EqualTo(2));
+            Assert.That(typeof(ArcadeRunSystem).GetMethod("TryPurchase"), Is.Null);
         }
 
         [Test]
         public void LastLifeDeletesRunAndClearsAllSessionValue()
         {
-            Assert.That(arcade.TryStartNewRun(Shop(1), out _, out var error), Is.True, error);
+            Assert.That(arcade.TryStartNewRun(Checkpoint(1), out _, out var error), Is.True, error);
             Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
             Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
             Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
@@ -246,47 +231,28 @@ namespace Game.Tests
         }
 
         [Test]
-        public void FailedPurchaseSaveDoesNotCommitGoldOrOffer()
+        public void CheckpointContractContainsNoOffers()
         {
-            var shop = Shop(1);
-            shop.Offers.Add(new ArcadeShopOfferSaveData
-            {
-                OfferId = "offer.life",
-                ProductId = "life",
-                Kind = ArcadePurchaseKind.ExtraLife,
-                Price = 10,
-                Amount = 1
-            });
-            Assert.That(arcade.TryStartNewRun(shop, out _, out var error), Is.True, error);
-            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
-            Assert.That(arcade.TryCompleteArena(Completion(1, 10, 2, nextOffers: shop.Offers), out _, out error), Is.True, error);
-            var backupPath = new ArcadeRunFileStore(runtimeRoot).BackupPath;
-            if (File.Exists(backupPath)) File.Delete(backupPath);
-            Directory.CreateDirectory(backupPath);
-
-            Assert.That(arcade.TryPurchase("offer.life", out var unchanged, out error), Is.False);
-
-            Assert.That(unchanged.RunGold, Is.EqualTo(10));
-            Assert.That(unchanged.RemainingLives, Is.EqualTo(3));
-            Assert.That(unchanged.Shop.Offers[0].Purchased, Is.False);
+            Assert.That(typeof(ArcadeCheckpointSaveData).GetProperty("Offers"), Is.Null);
+            Assert.That(typeof(ArcadeRunSystem).GetMethod("TryBuildConfiguredShop"), Is.Null);
         }
 
         [Test]
         public void ChallengeAttemptPersistsAndCompletionDoesNotAdvanceArena()
         {
-            ArcadeShopSaveData shop = Shop(2);
+            ArcadeCheckpointSaveData shop = Checkpoint(2);
             shop.ChallengeId = "arcade.challenge.timed-clear";
             Assert.That(arcade.TryStartNewRun(shop, out _, out var error), Is.True, error);
 
             Assert.That(arcade.TryStartChallenge(out var entered, out error), Is.True, error);
-            Assert.That(entered.Shop.ChallengeAttempted, Is.True);
+            Assert.That(entered.Checkpoint.ChallengeAttempted, Is.True);
             Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Challenge));
 
             var rewards = Array.Empty<ArcadeRewardSaveData>();
             Assert.That(arcade.TryCompleteChallenge(true, rewards, out var completed, out error), Is.True, error);
             Assert.That(completed.NextArenaNumber, Is.EqualTo(1));
             Assert.That(completed.CompletedArenaCount, Is.Zero);
-            Assert.That(completed.Shop.ChallengeAttempted, Is.True);
+            Assert.That(completed.Checkpoint.ChallengeAttempted, Is.True);
             Assert.That(completed.PendingRewards, Is.Empty);
             Assert.That(arcade.TryStartChallenge(out _, out _), Is.False);
         }
@@ -294,7 +260,7 @@ namespace Game.Tests
         [Test]
         public void FailedChallengeReturnsPersistedShopWithoutLifeCost()
         {
-            ArcadeShopSaveData shop = Shop(2);
+            ArcadeCheckpointSaveData shop = Checkpoint(2);
             shop.ChallengeId = "arcade.challenge.timed-clear";
             Assert.That(arcade.TryStartNewRun(shop, out _, out var error), Is.True, error);
             Assert.That(arcade.TryStartChallenge(out _, out error), Is.True, error);
@@ -303,16 +269,15 @@ namespace Game.Tests
                 out var restored, out error), Is.True, error);
 
             Assert.That(restored.RemainingLives, Is.EqualTo(3));
-            Assert.That(restored.Shop.ChallengeAttempted, Is.True);
+            Assert.That(restored.Checkpoint.ChallengeAttempted, Is.True);
             Assert.That(restored.PendingRewards, Is.Empty);
-            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeShop));
+            Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
         }
 
-        private static ArcadeShopSaveData Shop(int arenaNumber) => new ArcadeShopSaveData
+        private static ArcadeCheckpointSaveData Checkpoint(int arenaNumber) => new ArcadeCheckpointSaveData
         {
             ArenaNumber = arenaNumber,
-            GenerationSeed = 12345 + arenaNumber,
-            RefreshCount = 0
+            GenerationSeed = 12345 + arenaNumber
         };
 
         private static ArcadeArenaCompletion Completion(
@@ -320,14 +285,9 @@ namespace Game.Tests
             long gold,
             int nextArena,
             string rewardId = null,
-            long rewardAmount = 0,
-            IReadOnlyList<ArcadeShopOfferSaveData> nextOffers = null)
+            long rewardAmount = 0)
         {
-            var shop = Shop(nextArena);
-            if (nextOffers != null)
-            {
-                foreach (var offer in nextOffers) shop.Offers.Add(offer.Clone());
-            }
+            var shop = Checkpoint(nextArena);
             var rewards = new List<ArcadeRewardSaveData>();
             if (!string.IsNullOrWhiteSpace(rewardId)) rewards.Add(new ArcadeRewardSaveData { RewardId = rewardId, Amount = rewardAmount });
             return new ArcadeArenaCompletion
@@ -340,7 +300,7 @@ namespace Game.Tests
                     [ArcadeRunDefaults.WeaponSlotId] = ArcadeRunDefaults.BasicWeaponId
                 },
                 EarnedRewards = rewards,
-                NextShop = shop
+                NextCheckpoint = shop
             };
         }
 

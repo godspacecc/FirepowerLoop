@@ -6,7 +6,7 @@ using QFramework;
 namespace Game
 {
     /// <summary>
-    /// 管理街机局的安全节点事务、购买、死亡、恢复、结算与放弃；战斗现场和界面表现不由本系统保存。
+    /// 管理街机局的安全节点事务、死亡、恢复、结算与放弃；战斗现场和界面表现不由本系统保存。
     /// </summary>
     public sealed class ArcadeRunSystem : AbstractSystem
     {
@@ -28,7 +28,7 @@ namespace Game
 
         public SaveReadResult<ArcadeRunSaveData> InspectPending() => store.Inspect();
 
-        /// <summary>从正式 Luban 目录建立可调数值的新局；种子与首个商店内容一并写入安全节点。</summary>
+        /// <summary>从正式 Luban 目录建立可调数值的新局；随机种子与目的地一并写入安全节点。</summary>
         public bool TryStartConfiguredRun(out ArcadeRunSaveData snapshot, out string error)
         {
             snapshot = null;
@@ -38,9 +38,9 @@ namespace Game
 
             var runId = Guid.NewGuid().ToString("N");
             var seed = unchecked((int)Convert.ToUInt32(runId.Substring(0, 8), 16));
-            // 普通开局只保存恢复资料；空报价节点不代表实际购物区域。
-            var shop = new ArcadeShopSaveData { ArenaNumber = 1, GenerationSeed = seed };
-            var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, shop);
+            // 普通开局只保存恢复资料；节点不承载交易数据。
+            var checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1, GenerationSeed = seed };
+            var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, checkpoint);
             candidate.IsCasualRoute = true;
             candidate.ArenaConfigNumber = catalog.Arenas[0].ArenaNumber;
             candidate.EmergencyResources[ArcadeRunDefaults.BombResourceId] = catalog.Rule.InitialBombs;
@@ -48,36 +48,16 @@ namespace Game
             return TrySaveNewRun(candidate, out snapshot, out error);
         }
 
-        /// <summary>按竞技场、保存种子和当前强化层数确定性抽取下一商店，供完成事务复用。</summary>
-        public bool TryBuildConfiguredShop(int arenaNumber, int seed, ArcadeRunSaveData run,
-            out ArcadeShopSaveData shop, out string error)
-        {
-            shop = null;
-            var config = this.GetUtility<IRuntimeConfigProvider>();
-            if (config == null)
-            {
-                error = "运行时配置不可用";
-                return false;
-            }
-            if (!config.TryGetArcadeCatalog(out var catalog, out error)) return false;
-            return TryBuildConfiguredShop(catalog, arenaNumber, seed, run, out shop, out error);
-        }
-
         /// <summary>只以固定三命和基础武器建立第一安全节点，先落盘成功才公开运行态。</summary>
-        public bool TryStartNewRun(ArcadeShopSaveData initialShop, out ArcadeRunSaveData snapshot, out string error)
+        public bool TryStartNewRun(ArcadeCheckpointSaveData initialCheckpoint, out ArcadeRunSaveData snapshot, out string error)
         {
             snapshot = null;
             if (!EnsureNoPendingRun(out error)) return false;
 
-            var shop = initialShop?.Clone() ?? new ArcadeShopSaveData();
-            shop.ArenaNumber = 1;
-            if (shop.Offers.Any(offer => offer != null && offer.Purchased))
-            {
-                error = "新开局商店不能包含已购买商品";
-                return false;
-            }
+            var checkpoint = initialCheckpoint?.Clone() ?? new ArcadeCheckpointSaveData();
+            checkpoint.ArenaNumber = 1;
 
-            var candidate = CreateNewRunCandidate(Guid.NewGuid().ToString("N"), ArcadeRunDefaults.InitialLives, ArcadeRunDefaults.BasicWeaponId, shop);
+            var candidate = CreateNewRunCandidate(Guid.NewGuid().ToString("N"), ArcadeRunDefaults.InitialLives, ArcadeRunDefaults.BasicWeaponId, checkpoint);
             return TrySaveNewRun(candidate, out snapshot, out error);
         }
 
@@ -101,10 +81,10 @@ namespace Game
                     error = "存档路线场地不在当前配置中";
                     return false;
                 }
-                // 旧普通节点的随机报价只作历史数据；恢复仍使用同一目的地和资源，不重新要求购物。
-                if (!read.Data.HasResult && read.Data.Shop?.ChallengeAttempted != true)
-                    read.Data.Shop = new ArcadeShopSaveData
-                    { ArenaNumber = read.Data.NextArenaNumber, GenerationSeed = read.Data.Shop?.GenerationSeed ?? 0 };
+                // 旧普通节点保留同一目的地和资源；未尝试挑战沿用普通继续规则。
+                if (!read.Data.HasResult && read.Data.Checkpoint?.ChallengeAttempted != true)
+                    read.Data.Checkpoint = new ArcadeCheckpointSaveData
+                    { ArenaNumber = read.Data.NextArenaNumber, GenerationSeed = read.Data.Checkpoint?.GenerationSeed ?? 0 };
             }
             CommitSafeNode(read.Data);
             snapshot = read.Data.Clone();
@@ -115,10 +95,10 @@ namespace Game
         public bool TryContinue(out ArcadeRunSaveData snapshot, out string error)
         {
             var model = this.GetModel<ArcadeRunModel>();
-            if (!model.HasRun || model.Phase != ArcadeRunPhase.SafeShop)
+            if (!model.HasRun || model.Phase != ArcadeRunPhase.SafeCheckpoint)
             {
                 snapshot = model.Current;
-                error = "当前不在安全商店";
+                error = "当前不在安全节点";
                 return false;
             }
 
@@ -169,16 +149,16 @@ namespace Game
             return true;
         }
 
-        /// <summary>先持久化本安全节点的挑战尝试，再公开挑战阶段；保存失败时仍停留在商店。</summary>
+        /// <summary>先持久化本安全节点的挑战尝试，再公开挑战阶段；保存失败时仍保留安全节点。</summary>
         public bool TryStartChallenge(out ArcadeRunSaveData snapshot, out string error)
         {
             var model = this.GetModel<ArcadeRunModel>();
             var current = model.Current;
             snapshot = current;
-            if (model.Phase != ArcadeRunPhase.SafeShop || current?.Shop == null ||
-                string.IsNullOrWhiteSpace(current.Shop.ChallengeId) || current.Shop.ChallengeAttempted)
+            if (model.Phase != ArcadeRunPhase.SafeCheckpoint || current?.Checkpoint == null ||
+                string.IsNullOrWhiteSpace(current.Checkpoint.ChallengeId) || current.Checkpoint.ChallengeAttempted)
             {
-                error = "当前安全商店没有可进入的特殊挑战";
+                error = "当前安全节点没有可进入的特殊挑战";
                 return false;
             }
             var provider = this.GetUtility<IRuntimeConfigProvider>();
@@ -188,14 +168,14 @@ namespace Game
                 return false;
             }
             if (!provider.TryGetArcadeCatalog(out var catalog, out error)) return false;
-            if (!catalog.Challenges.Any(value => string.Equals(value.Id, current.Shop.ChallengeId, StringComparison.Ordinal)))
+            if (!catalog.Challenges.Any(value => string.Equals(value.Id, current.Checkpoint.ChallengeId, StringComparison.Ordinal)))
             {
                 error = "特殊挑战配置不存在";
                 return false;
             }
 
             var candidate = current.Clone();
-            candidate.Shop.ChallengeAttempted = true;
+            candidate.Checkpoint.ChallengeAttempted = true;
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;
             model.CommitSafeNode(candidate);
@@ -213,7 +193,7 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var current = model.Current;
             snapshot = current;
-            if (model.Phase != ArcadeRunPhase.Challenge || current?.Shop == null || !current.Shop.ChallengeAttempted)
+            if (model.Phase != ArcadeRunPhase.Challenge || current?.Checkpoint == null || !current.Checkpoint.ChallengeAttempted)
             {
                 error = "特殊挑战完成身份无效";
                 return false;
@@ -301,8 +281,8 @@ namespace Game
                 return false;
             }
 
-            if (completion.Score < 0 || completion.ScoreMultiplier < 1 || completion.MultiplierProgress < 0 || completion.EarnedGold < 0 || !completion.Victory && (completion.NextShop == null ||
-                completion.NextShop.ArenaNumber != current.NextArenaNumber + 1))
+            if (completion.Score < 0 || completion.ScoreMultiplier < 1 || completion.MultiplierProgress < 0 || completion.EarnedGold < 0 || !completion.Victory && (completion.NextCheckpoint == null ||
+                completion.NextCheckpoint.ArenaNumber != current.NextArenaNumber + 1))
             {
                 error = "竞技场完成结果无效";
                 return false;
@@ -363,86 +343,9 @@ namespace Game
             candidate.Outcome = completion.Victory ? "victory" : null;
             candidate.PendingRewards.Clear();
             if (current.IsCasualRoute && !completion.Victory) candidate.ArenaConfigNumber = completion.NextArenaConfigNumber;
-            candidate.Shop = completion.Victory
-                ? new ArcadeShopSaveData { ArenaNumber = candidate.NextArenaNumber }
-                : completion.NextShop.Clone();
-            candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
-            if (!store.Save(candidate, out error)) return false;
-            CommitSafeNode(candidate);
-            snapshot = candidate.Clone();
-            return true;
-        }
-
-        /// <summary>购买先构造完整候选并保存；只有安全节点写入成功才提交金币与商品状态。</summary>
-        public bool TryPurchase(string offerId, out ArcadeRunSaveData snapshot, out string error)
-        {
-            var model = this.GetModel<ArcadeRunModel>();
-            var current = model.Current;
-            snapshot = current;
-            if (model.Phase != ArcadeRunPhase.SafeShop || current == null)
-            {
-                error = "当前不在安全商店";
-                return false;
-            }
-
-            var offer = current.Shop.Offers.FirstOrDefault(value => value != null && string.Equals(value.OfferId, offerId, StringComparison.Ordinal));
-            if (offer == null || offer.Purchased)
-            {
-                error = "商品不存在或已经购买";
-                return false;
-            }
-            // 旧安全节点保留报价用于读档，但已移除的近战商品必须在扣款前拒绝。
-            if (offer.Kind == ArcadePurchaseKind.Equipment &&
-                offer.EquipmentSlotId == ArcadeRunDefaults.WeaponSlotId)
-            {
-                var provider = this.GetUtility<IRuntimeConfigProvider>();
-                if (provider != null && provider.TryGetArcadeCatalog(out var activeCatalog, out _) &&
-                    activeCatalog.Weapons.Any(w => w.Id == offer.ProductId &&
-                        w.Behavior == global::ArcadeWeaponBehavior.Melee))
-                {
-                    error = "街机已移除近战武器商品";
-                    return false;
-                }
-            }
-            if (current.RunGold < offer.Price)
-            {
-                error = Loc.T("ui.shop.error.insufficient_gold");
-                return false;
-            }
-
-            var candidate = current.Clone();
-            var candidateOffer = candidate.Shop.Offers.First(value => string.Equals(value.OfferId, offerId, StringComparison.Ordinal));
-            try
-            {
-                candidate.RunGold = checked(candidate.RunGold - candidateOffer.Price);
-                switch (candidateOffer.Kind)
-                {
-                    case ArcadePurchaseKind.Upgrade:
-                        candidate.PurchasedUpgradeStacks.TryGetValue(candidateOffer.ProductId, out var stacks);
-                        candidate.PurchasedUpgradeStacks[candidateOffer.ProductId] = checked(stacks + candidateOffer.Amount);
-                        break;
-                    case ArcadePurchaseKind.ExtraLife:
-                        candidate.RemainingLives = checked(candidate.RemainingLives + candidateOffer.Amount);
-                        break;
-                    case ArcadePurchaseKind.Consumable:
-                        candidate.Consumables.TryGetValue(candidateOffer.ProductId, out var count);
-                        candidate.Consumables[candidateOffer.ProductId] = checked(count + candidateOffer.Amount);
-                        break;
-                    case ArcadePurchaseKind.Equipment:
-                        candidate.EquipmentBySlot[candidateOffer.EquipmentSlotId] = candidateOffer.ProductId;
-                        break;
-                    default:
-                        error = "商品类型无效";
-                        return false;
-                }
-            }
-            catch (OverflowException)
-            {
-                error = "购买结果数值溢出";
-                return false;
-            }
-
-            candidateOffer.Purchased = true;
+            candidate.Checkpoint = completion.Victory
+                ? new ArcadeCheckpointSaveData { ArenaNumber = candidate.NextArenaNumber }
+                : completion.NextCheckpoint.Clone();
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;
             CommitSafeNode(candidate);
@@ -503,7 +406,7 @@ namespace Game
             return false;
         }
 
-        private ArcadeRunSaveData CreateNewRunCandidate(string runId, int initialLives, string baseWeaponId, ArcadeShopSaveData shop)
+        private ArcadeRunSaveData CreateNewRunCandidate(string runId, int initialLives, string baseWeaponId, ArcadeCheckpointSaveData checkpoint)
         {
             var candidate = new ArcadeRunSaveData
             {
@@ -512,7 +415,7 @@ namespace Game
                 NextArenaNumber = 1,
                 RemainingLives = initialLives,
                 RunGold = 0,
-                Shop = shop,
+                Checkpoint = checkpoint,
                 UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O")
             };
             candidate.EquipmentBySlot[ArcadeRunDefaults.WeaponSlotId] = baseWeaponId;
@@ -526,91 +429,6 @@ namespace Game
             CommitSafeNode(candidate);
             snapshot = candidate.Clone();
             return true;
-        }
-
-        private static bool TryBuildConfiguredShop(ArcadeConfigCatalogDefinition catalog, int arenaNumber, int seed, ArcadeRunSaveData run,
-            out ArcadeShopSaveData shop, out string error)
-        {
-            shop = null;
-            if (catalog == null || arenaNumber <= 0)
-            {
-                error = "街机商店生成参数无效";
-                return false;
-            }
-
-            var upgrades = catalog.Upgrades.ToDictionary(value => value.Id, StringComparer.Ordinal);
-            var candidates = new List<ArcadeShopItemDefinition>();
-            foreach (var item in catalog.ShopItems)
-            {
-                if (item.UnlockArena > arenaNumber) continue;
-                if (item.ProductType == global::ArcadeShopProductType.Upgrade && run != null &&
-                    upgrades.TryGetValue(item.ProductId, out var upgrade))
-                {
-                    run.PurchasedUpgradeStacks.TryGetValue(item.ProductId, out var stacks);
-                    if (stacks >= Math.Min(item.MaxPurchases, upgrade.MaxStacks)) continue;
-                }
-                candidates.Add(item);
-            }
-            if (candidates.Count < catalog.Rule.ShopOfferCount)
-            {
-                error = $"竞技场 {arenaNumber} 可用街机商品不足 {catalog.Rule.ShopOfferCount} 个";
-                return false;
-            }
-
-            var random = new Random(seed);
-            var offers = new List<ArcadeShopOfferSaveData>();
-            for (var index = 0; index < catalog.Rule.ShopOfferCount; index++)
-            {
-                var totalWeight = candidates.Sum(value => value.Weight);
-                var roll = random.Next(totalWeight);
-                var selectedIndex = 0;
-                while (roll >= candidates[selectedIndex].Weight) roll -= candidates[selectedIndex++].Weight;
-                var selected = candidates[selectedIndex];
-                candidates.RemoveAt(selectedIndex);
-                long price;
-                try { price = checked((long)selected.BasePrice + (long)selected.PricePerArena * (arenaNumber - 1)); }
-                catch (OverflowException) { error = $"街机商品 {selected.Id} 价格溢出"; return false; }
-                offers.Add(new ArcadeShopOfferSaveData
-                {
-                    OfferId = $"{selected.Id}.{arenaNumber}.{index}",
-                    ProductId = selected.ProductId,
-                    Kind = ToPurchaseKind(selected.ProductType),
-                    Price = price,
-                    Amount = selected.Amount,
-                    EquipmentSlotId = selected.EquipmentSlotId
-                });
-            }
-
-            var completedArena = arenaNumber - 1;
-            var challengeId = catalog.Challenges
-                .Where(value => completedArena >= value.StartArena &&
-                                (completedArena - value.StartArena) % value.Interval == 0)
-                .OrderBy(value => value.Id, StringComparer.Ordinal)
-                .Select(value => value.Id)
-                .FirstOrDefault();
-            shop = new ArcadeShopSaveData
-            {
-                ArenaNumber = arenaNumber,
-                GenerationSeed = seed,
-                RefreshCount = 0,
-                ChallengeId = challengeId,
-                ChallengeAttempted = false,
-                Offers = offers
-            };
-            error = null;
-            return true;
-        }
-
-        private static ArcadePurchaseKind ToPurchaseKind(global::ArcadeShopProductType value)
-        {
-            switch (value)
-            {
-                case global::ArcadeShopProductType.Upgrade: return ArcadePurchaseKind.Upgrade;
-                case global::ArcadeShopProductType.ExtraLife: return ArcadePurchaseKind.ExtraLife;
-                case global::ArcadeShopProductType.Consumable: return ArcadePurchaseKind.Consumable;
-                case global::ArcadeShopProductType.Equipment: return ArcadePurchaseKind.Equipment;
-                default: throw new ArgumentOutOfRangeException(nameof(value), value, null);
-            }
         }
 
         private static Dictionary<string, int> CopyAmounts(IReadOnlyDictionary<string, int> source)

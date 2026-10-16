@@ -21,7 +21,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
         IsBoss = _buf.ReadBool();
         BossId = _buf.ReadString();
         ClearGold = _buf.ReadInt();
-        ShopSeedSalt = _buf.ReadInt();
+        EncounterSeedSalt = _buf.ReadInt();
         {int __n0 = _buf.ReadSize(); Hazards = new ArcadeHazardConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeHazardConfig __e0;__e0 = global::ArcadeHazardConfig.DeserializeArcadeHazardConfig(_buf); Hazards[__index0] = __e0;}}
         {int __n0 = _buf.ReadSize(); NextArenaNumbers = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); NextArenaNumbers[__index0] = __e0;}}
         FinalBossId = _buf.ReadString();
@@ -51,7 +51,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
     public readonly bool IsBoss;
     public readonly string BossId;
     public readonly int ClearGold;
-    public readonly int ShopSeedSalt;
+    public readonly int EncounterSeedSalt;
     public readonly ArcadeHazardConfig[] Hazards;
     public readonly int[] NextArenaNumbers;
     public readonly string FinalBossId;
@@ -88,7 +88,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
         + "IsBoss:" + IsBoss + ","
         + "BossId:" + BossId + ","
         + "ClearGold:" + ClearGold + ","
-        + "ShopSeedSalt:" + ShopSeedSalt + ","
+        + "EncounterSeedSalt:" + EncounterSeedSalt + ","
         + "Hazards:" + Luban.StringUtil.CollectionToString(Hazards) + ","
         + "NextArenaNumbers:" + Luban.StringUtil.CollectionToString(NextArenaNumbers) + ","
         + "FinalBossId:" + FinalBossId + ","

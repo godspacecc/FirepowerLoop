@@ -19,7 +19,7 @@ void Check(string name, Action action)
 }
 OnlineArcadeRunActor Actor(bool casual = true, int map = 1)
 {
-    var record = new OnlineArcadeRunRecord { RunId = 101, RoomId = 202, Revision = 1, Phase = OnlineArcadeRunPhase.SafeShop,
+    var record = new OnlineArcadeRunRecord { RunId = 101, RoomId = 202, Revision = 1, Phase = OnlineArcadeRunPhase.SafeCheckpoint,
         IsCasualRoute = casual, ArenaConfigNumber = map, NextArena = 1, ConfigFingerprint = config.ArcadeRule.ConfigFingerprint,
         ClientVersion = "treasure-check", CreatedAtUtc = DateTime.UtcNow.ToString("O"), UpdatedAtUtc = DateTime.UtcNow.ToString("O"),
         Players = new() { new() { PlayerId = 1, Lives = 3, Bombs = 2, Dashes = 2, Ready = true, WeaponId = "arcade.weapon.basic" },

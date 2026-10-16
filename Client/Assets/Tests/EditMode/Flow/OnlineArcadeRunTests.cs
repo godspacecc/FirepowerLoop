@@ -74,56 +74,39 @@ namespace Game.Tests
         [Test]
         public void SnapshotCopiesCallerOwnedCollections()
         {
-            var offers = new List<OnlineArcadeShopOfferSnapshot>
-            {
-                new("offer-a", "shop-a", "product-a", 1, 10, 1, 0, 1)
-            };
             var players = new List<OnlineArcadePlayerSnapshot>
             {
-                new(1, "one", 3, 0, 1, 2, "weapon", false, offers)
+                new(1, "one", 3, 0, 1, 2, "weapon", false)
             };
             var snapshot = new OnlineArcadeRunClientSnapshot(true, 10, 20, 1,
-                OnlineArcadeRunPhase.SafeShop, 0, 1, "fingerprint", players,
+                OnlineArcadeRunPhase.SafeCheckpoint, 0, 1, "fingerprint", players,
                 OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success);
-            offers.Clear();
             players.Clear();
 
             Assert.That(snapshot.Players.Count, Is.EqualTo(1));
-            Assert.That(snapshot.Players[0].ShopOffers.Count, Is.EqualTo(1));
+            Assert.That(typeof(OnlineArcadePlayerSnapshot).GetProperty("ShopOffers"), Is.Null);
             Assert.That(((IList<OnlineArcadePlayerSnapshot>)snapshot.Players).IsReadOnly, Is.True);
         }
 
         [Test]
-        public void SafeShopApisCarryCurrentRevisionAndExplicitIntent()
+        public void SafeCheckpointApisCarryCurrentRevisionAndExplicitIntent()
         {
             Harness harness = CreateHarness();
             harness.System.StartAsync().GetAwaiter().GetResult();
 
-            harness.System.PurchaseAsync("offer-one").GetAwaiter().GetResult();
-            var purchase = (C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest;
-            Assert.That(purchase.ExpectedRevision, Is.EqualTo(1));
-            Assert.That(purchase.ActionKind, Is.EqualTo(1));
-            Assert.That(purchase.OfferId, Is.EqualTo("offer-one"));
-
-            harness.System.TransferGoldAsync(12).GetAwaiter().GetResult();
-            var transfer = (C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest;
-            Assert.That(transfer.ExpectedRevision, Is.EqualTo(2));
-            Assert.That(transfer.ActionKind, Is.EqualTo(2));
-            Assert.That(transfer.GoldAmount, Is.EqualTo(12));
-
             harness.System.SetReadyAsync(true).GetAwaiter().GetResult();
-            var ready = (C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest;
-            Assert.That(ready.ExpectedRevision, Is.EqualTo(3));
+            var ready = (C2G_OperateOnlineArcadeSafeCheckpoint)harness.Network.LastRequest;
+            Assert.That(ready.ExpectedRevision, Is.EqualTo(1));
             Assert.That(ready.ActionKind, Is.EqualTo(3));
             Assert.That(ready.Ready, Is.True);
-            Assert.That(harness.System.Snapshot.Revision, Is.EqualTo(4));
+            Assert.That(harness.System.Snapshot.Revision, Is.EqualTo(2));
 
             harness.System.SetChallengeReadyAsync(true).GetAwaiter().GetResult();
-            var challenge = (C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest;
-            Assert.That(challenge.ExpectedRevision, Is.EqualTo(4));
+            var challenge = (C2G_OperateOnlineArcadeSafeCheckpoint)harness.Network.LastRequest;
+            Assert.That(challenge.ExpectedRevision, Is.EqualTo(2));
             Assert.That(challenge.ActionKind, Is.EqualTo(7));
             Assert.That(challenge.Ready, Is.True);
-            Assert.That(harness.System.Snapshot.Revision, Is.EqualTo(5));
+            Assert.That(harness.System.Snapshot.Revision, Is.EqualTo(3));
         }
 
         [Test]
@@ -335,13 +318,13 @@ namespace Game.Tests
             harness.System.StartAsync().GetAwaiter().GetResult();
 
             harness.System.ConfirmSettlementAsync().GetAwaiter().GetResult();
-            Assert.That(((C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest).ActionKind, Is.EqualTo(4));
+            Assert.That(((C2G_OperateOnlineArcadeSafeCheckpoint)harness.Network.LastRequest).ActionKind, Is.EqualTo(4));
             harness.System.ConfirmAbandonAsync().GetAwaiter().GetResult();
-            Assert.That(((C2G_OperateOnlineArcadeSafeShop)harness.Network.LastRequest).ActionKind, Is.EqualTo(5));
+            Assert.That(((C2G_OperateOnlineArcadeSafeCheckpoint)harness.Network.LastRequest).ActionKind, Is.EqualTo(5));
         }
 
         [Test]
-        public void StartPublishesIndependentPlayerShopSnapshots()
+        public void StartPublishesIndependentPlayerCheckpointSnapshots()
         {
             Harness harness = CreateHarness();
             OnlineArcadeOperationResult result = harness.System.StartAsync().GetAwaiter().GetResult();
@@ -351,8 +334,7 @@ namespace Game.Tests
             Assert.That(result.Code, Is.EqualTo(OnlineArcadeResultCode.Success));
             Assert.That(result.Snapshot.HasRun, Is.True);
             Assert.That(result.Snapshot.Players.Count, Is.EqualTo(2));
-            Assert.That(result.Snapshot.Players[0].ShopOffers[0].OfferId,
-                Is.Not.EqualTo(result.Snapshot.Players[1].ShopOffers[0].OfferId));
+            Assert.That(result.Snapshot.Players[0].PlayerId, Is.Not.EqualTo(result.Snapshot.Players[1].PlayerId));
             Assert.That(result.Snapshot.Players[0].SettlementConfirmed, Is.True);
             Assert.That(result.Snapshot.Players[0].SettlementState, Is.EqualTo(1));
         }
@@ -437,10 +419,10 @@ namespace Game.Tests
                 IResponse response;
                 if (request is C2G_StartOnlineArcadeRun)
                     response = new G2C_StartOnlineArcadeRun { Error = 0, HasRun = true, Run = ProtocolRun() };
-                else if (request is C2G_OperateOnlineArcadeSafeShop operate)
+                else if (request is C2G_OperateOnlineArcadeSafeCheckpoint operate)
                 {
                     revision = operate.ExpectedRevision + 1;
-                    response = new G2C_OperateOnlineArcadeSafeShop { Error = 0, Accepted = true, Run = ProtocolRun() };
+                    response = new G2C_OperateOnlineArcadeSafeCheckpoint { Error = 0, Accepted = true, Run = ProtocolRun() };
                 }
                 else if (request is C2G_SubmitOnlineArcadeInput input)
                     response = new G2C_SubmitOnlineArcadeInput
@@ -578,10 +560,6 @@ namespace Game.Tests
                 OnlineArcadeEquipmentInfo equipment = OnlineArcadeEquipmentInfo.Create();
                 equipment.SlotId = "weapon"; equipment.ProductId = player.WeaponId;
                 player.Equipment.Add(equipment);
-                OnlineArcadeShopOfferInfo offer = OnlineArcadeShopOfferInfo.Create();
-                offer.OfferId = offerId; offer.ShopItemId = "arcade.shop.bomb"; offer.ProductId = "arcade.resource.bomb";
-                offer.ProductType = 3; offer.Price = 35; offer.Amount = 1; offer.MaxPurchases = 5;
-                player.ShopOffers.Add(offer);
                 return player;
             }
         }

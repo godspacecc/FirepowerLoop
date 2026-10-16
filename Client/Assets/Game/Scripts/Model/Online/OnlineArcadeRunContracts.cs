@@ -5,38 +5,21 @@ using QFramework;
 
 namespace Game
 {
-    public enum OnlineArcadeRunPhase { None = 0, SafeShop = 1, Arena = 2, Challenge = 3, Victory = 4 }
+    public enum OnlineArcadeRunPhase { None = 0, SafeCheckpoint = 1, Arena = 2, Challenge = 3, Victory = 4 }
     public enum OnlineArcadeOperationState
-    { Idle, Starting, Restoring, Purchasing, TransferringGold, SettingReady, SettingChallengeReady, Settling, Abandoning }
+    { Idle, Starting, Restoring, SettingReady, SettingChallengeReady, Settling, Abandoning }
     public enum OnlineArcadeResultCode
     {
         None, Success, NotLoggedIn, InvalidState, SaveFailed, OperationConflict, VersionMismatch,
         OperationInProgress, Timeout, Disconnected, UnknownFailure
     }
 
-    public readonly struct OnlineArcadeShopOfferSnapshot
-    {
-        public OnlineArcadeShopOfferSnapshot(string offerId, string shopItemId, string productId, int productType,
-            int price, int amount, int purchaseCount, int maxPurchases)
-        {
-            OfferId = offerId ?? string.Empty; ShopItemId = shopItemId ?? string.Empty;
-            ProductId = productId ?? string.Empty; ProductType = productType; Price = price; Amount = amount;
-            PurchaseCount = purchaseCount; MaxPurchases = maxPurchases;
-        }
-        public string OfferId { get; }
-        public string ShopItemId { get; }
-        public string ProductId { get; }
-        public int ProductType { get; }
-        public int Price { get; }
-        public int Amount { get; }
-        public int PurchaseCount { get; }
-        public int MaxPurchases { get; }
-    }
+
 
     public readonly struct OnlineArcadePlayerSnapshot
     {
         public OnlineArcadePlayerSnapshot(long playerId, string displayName, int lives, int runGold, int bombs,
-            int dashes, string weaponId, bool ready, IReadOnlyList<OnlineArcadeShopOfferSnapshot> shopOffers,
+            int dashes, string weaponId, bool ready,
             IReadOnlyDictionary<string, int> upgradeStacks = null,
             IReadOnlyDictionary<string, int> consumables = null,
             IReadOnlyDictionary<string, string> equipment = null,
@@ -46,7 +29,6 @@ namespace Game
         {
             PlayerId = playerId; DisplayName = displayName ?? string.Empty; Lives = lives; RunGold = runGold;
             Bombs = bombs; Dashes = dashes; WeaponId = weaponId ?? string.Empty; Ready = ready;
-            ShopOffers = Array.AsReadOnly(Copy(shopOffers));
             UpgradeStacks = ReadOnly(upgradeStacks);
             Consumables = ReadOnly(consumables);
             Equipment = ReadOnly(equipment);
@@ -63,7 +45,6 @@ namespace Game
         public int Dashes { get; }
         public string WeaponId { get; }
         public bool Ready { get; }
-        public IReadOnlyList<OnlineArcadeShopOfferSnapshot> ShopOffers { get; }
         public IReadOnlyDictionary<string, int> UpgradeStacks { get; }
         public IReadOnlyDictionary<string, int> Consumables { get; }
         public IReadOnlyDictionary<string, string> Equipment { get; }
@@ -75,13 +56,7 @@ namespace Game
         public long Score { get; }
         public int ScoreMultiplier { get; }
         public int MultiplierProgress { get; }
-        private static OnlineArcadeShopOfferSnapshot[] Copy(IReadOnlyList<OnlineArcadeShopOfferSnapshot> source)
-        {
-            if (source == null || source.Count == 0) return Array.Empty<OnlineArcadeShopOfferSnapshot>();
-            var copy = new OnlineArcadeShopOfferSnapshot[source.Count];
-            for (int i = 0; i < source.Count; i++) copy[i] = source[i];
-            return copy;
-        }
+
         private static IReadOnlyDictionary<string, TValue> ReadOnly<TValue>(IReadOnlyDictionary<string, TValue> source)
         {
             Dictionary<string, TValue> copy = new(StringComparer.Ordinal);

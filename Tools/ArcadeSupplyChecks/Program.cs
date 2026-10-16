@@ -11,6 +11,12 @@ World.Instance.AddSingleton<ObjectPool>();
 // 定向检查必须显式声明真实类、最大数量和通过项输出，错误过滤绝不回退到历史全集。
 if (args.Length > 1)
 {
+    if (args.Length == 7 && args[1] == "--testClass" && args[2] == nameof(ArcadeCheckpointChecks) &&
+        args[3] == "--maxTests" && args[4] == "6" && args[5] == "--includePassingTests" && args[6] == "true")
+    {
+        Environment.ExitCode = ArcadeCheckpointChecks.Run(config, 6);
+        return;
+    }
     if (args.Length != 7 || args[1] != "--testClass" || args[2] != nameof(ArcadeDropLifetimeChecks) ||
         args[3] != "--maxTests" || !int.TryParse(args[4], out int maximum) || maximum < 4 ||
         args[5] != "--includePassingTests" || args[6] != "true")
@@ -26,7 +32,7 @@ void Check(string name, Action action) { action(); passed++; Console.WriteLine("
 OnlineArcadeRunActor Actor()
 {
     var record = new OnlineArcadeRunRecord { RunId = 1, RoomId = 2, NextArena = 1, ArenaConfigNumber = 1,
-        Phase = OnlineArcadeRunPhase.SafeShop, ConfigFingerprint = config.ArcadeRule.ConfigFingerprint,
+        Phase = OnlineArcadeRunPhase.SafeCheckpoint, ConfigFingerprint = config.ArcadeRule.ConfigFingerprint,
         Players = new() { new() { PlayerId = 1, Lives = 3, Ready = true, WeaponId = config.ArcadeRule.BaseWeaponId },
             new() { PlayerId = 2, Lives = 3, Ready = true, WeaponId = config.ArcadeRule.BaseWeaponId } } };
     var battle = OnlineArcadeRunActorSystem.PrepareBattle(record, false);

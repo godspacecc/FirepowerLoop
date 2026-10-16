@@ -17,7 +17,7 @@ object BattleCall(string method, params object[] values) => Invoke(typeof(Online
 void Check(string name, Action test) { test(); passed++; Console.WriteLine("PASS " + name); }
 OnlineArcadeRunRecord Record(int ordinal = 10, int map = 20) => new()
 {
-    RunId = 101, RoomId = 202, Revision = 1, Phase = OnlineArcadeRunPhase.SafeShop,
+    RunId = 101, RoomId = 202, Revision = 1, Phase = OnlineArcadeRunPhase.SafeCheckpoint,
     IsCasualRoute = true, ArenaConfigNumber = map, CompletedArena = ordinal - 1, NextArena = ordinal,
     ConfigFingerprint = config.ArcadeRule.ConfigFingerprint, CreatedAtUtc = DateTime.UtcNow.ToString("O"),
     UpdatedAtUtc = DateTime.UtcNow.ToString("O"),
@@ -134,7 +134,7 @@ Check("Branch and victory transactions persist distinct states", () =>
         Require((bool)Invoke(typeof(OnlineArcadeRunManagerSystem), "TryCommitArenaCompletion", manager, actor), "victory save failed");
         Require(actor.Record.Phase == OnlineArcadeRunPhase.Victory && actor.Record.CompletedArena == 10 && actor.Battle == null,
             "victory advanced to another arena");
-        Require(actor.Record.Players.All(player => player.ShopOffers.Count == 0), "victory has a shop");
+        Require(typeof(OnlineArcadePlayerRecord).GetProperty("ShopOffers") == null, "trade records remain");
         Require(File.ReadAllText(manager.StorePath).Contains("ArenaConfigNumber"), "route omitted from disk");
     }
     finally { Directory.Delete(root, true); }

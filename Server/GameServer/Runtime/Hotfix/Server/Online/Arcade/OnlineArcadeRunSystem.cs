@@ -103,7 +103,7 @@ namespace ET.Server
             return self.Get(runId);
         }
 
-        /// <summary>同步原始房间成员连接状态；竞技场断线立即暂停，安全商店仅累计单独结束资格时间。</summary>
+        /// <summary>同步原始房间成员连接状态；竞技场断线立即暂停，安全节点仅累计单独结束资格时间。</summary>
         public static async ETTask SetPlayerConnection(this OnlineArcadeRunManagerComponent self, long roomId,
             long playerId, bool connected)
         {
@@ -232,41 +232,44 @@ namespace ET.Server
             new(true, false, code, message, now);
 
         /// <summary>
-        /// 串行执行安全商店写操作。候选节点和幂等记录一起原子落盘，保存失败时 Actor 内存保持原样。
+        /// 串行执行安全节点写操作。候选节点和幂等记录一起原子落盘，保存失败时 Actor 内存保持原样。
         /// </summary>
-        public static async ETTask<(bool Accepted, OnlineArcadeRunSnapshot Snapshot)> OperateSafeShop(
+        public static async ETTask<(bool Accepted, OnlineArcadeRunSnapshot Snapshot)> OperateSafeCheckpoint(
             this OnlineArcadeRunManagerComponent self, long playerId, string operationId, long expectedRevision,
-            int actionKind, string offerId, int goldAmount, bool ready)
+            int actionKind, bool ready)
         {
+            // 已撤销的购买/转账数值不得通过旧幂等记录重放。
+            if (!Enum.IsDefined(typeof(OnlineArcadeSafeCheckpointActionKind), actionKind))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "安全节点操作类型无效");
             if (!self.RunIdsByPlayer.TryGetValue(playerId, out long runId))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "没有可操作的联机街机局");
             OnlineArcadeRunActor actor = self.Get(runId);
             if (actor == null || actor.IsDisposed)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "联机街机局不可用");
             if (actor.Record.Players.Any(x => x.SettlementState != 0) &&
-                (OnlineArcadeSafeShopActionKind)actionKind != OnlineArcadeSafeShopActionKind.ConfirmSettlement)
+                (OnlineArcadeSafeCheckpointActionKind)actionKind != OnlineArcadeSafeCheckpointActionKind.ConfirmSettlement)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "结算事务已开始，只能继续重试结算");
             if (string.IsNullOrWhiteSpace(operationId) || operationId.Length > 64)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeOperationConflict, "操作标识无效或冲突");
 
-            string fingerprint = OperationFingerprint(playerId, expectedRevision, actionKind, offerId, goldAmount, ready);
+            string fingerprint = OperationFingerprint(playerId, expectedRevision, actionKind, ready);
             OnlineArcadeOperationRecord previous = actor.Record.Operations?.FirstOrDefault(x =>
                 string.Equals(x.OperationId, operationId, StringComparison.Ordinal));
             if (previous != null)
             {
                 if (previous.PlayerId != playerId || !string.Equals(previous.Fingerprint, fingerprint, StringComparison.Ordinal))
                     throw new RpcException(ErrorCode.ERR_OnlineArcadeOperationConflict, "操作标识已用于不同参数");
-                if ((OnlineArcadeSafeShopActionKind)actionKind == OnlineArcadeSafeShopActionKind.ConfirmSettlement &&
+                if ((OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.ConfirmSettlement &&
                     await self.TryCompleteSettlement(actor, playerId)) return (true, null);
-                if ((OnlineArcadeSafeShopActionKind)actionKind == OnlineArcadeSafeShopActionKind.ConfirmAbandon &&
+                if ((OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.ConfirmAbandon &&
                     actor.Record.Players.All(x => x.AbandonConfirmed) && await self.TryCommitRunFailure(actor))
                     return (true, null);
                 return (true, actor.BuildSnapshot());
             }
-            if (actor.Battle != null || actor.Record.Phase is not (OnlineArcadeRunPhase.SafeShop or OnlineArcadeRunPhase.Victory))
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前不在安全商店");
+            if (actor.Battle != null || actor.Record.Phase is not (OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前不在安全节点");
             if (actor.Record.Phase == OnlineArcadeRunPhase.Victory &&
-                (OnlineArcadeSafeShopActionKind)actionKind != OnlineArcadeSafeShopActionKind.ConfirmSettlement)
+                (OnlineArcadeSafeCheckpointActionKind)actionKind != OnlineArcadeSafeCheckpointActionKind.ConfirmSettlement)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "通关节点只允许结算");
             if (expectedRevision != actor.Record.Revision)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "安全节点版本已更新，请刷新后重试");
@@ -275,48 +278,7 @@ namespace ET.Server
             EnsureCollections(candidate);
             OnlineArcadePlayerRecord player = candidate.Players.FirstOrDefault(x => x.PlayerId == playerId) ??
                                               throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "玩家不属于该街机局");
-            EnsureRequiredLifeOffer(candidate, player);
-            switch ((OnlineArcadeSafeShopActionKind)actionKind)
-            {
-                case OnlineArcadeSafeShopActionKind.Purchase:
-                    ApplyPurchase(player, offerId);
-                    break;
-                case OnlineArcadeSafeShopActionKind.TransferGold:
-                    ApplyGoldTransfer(candidate, player, goldAmount);
-                    break;
-                case OnlineArcadeSafeShopActionKind.SetReady:
-                    if (ready && player.Lives <= 0)
-                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "生命为零时必须先购买额外生命");
-                    player.Ready = ready;
-                    player.ChallengeReady = false;
-                    break;
-                case OnlineArcadeSafeShopActionKind.SetChallengeReady:
-                    if (ready && (player.Lives <= 0 || string.IsNullOrWhiteSpace(candidate.ChallengeId) ||
-                                  candidate.ChallengeAttempted))
-                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前特殊挑战不可进入");
-                    player.ChallengeReady = ready;
-                    player.Ready = false;
-                    break;
-                case OnlineArcadeSafeShopActionKind.ConfirmSettlement:
-                    player.SettlementConfirmed = true;
-                    player.AbandonConfirmed = false;
-                    player.Ready = false;
-                    player.ChallengeReady = false;
-                    break;
-                case OnlineArcadeSafeShopActionKind.ConfirmAbandon:
-                    player.AbandonConfirmed = true;
-                    player.SettlementConfirmed = false;
-                    player.Ready = false;
-                    player.ChallengeReady = false;
-                    break;
-                default:
-                    throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "安全商店操作类型无效");
-            }
-            if ((OnlineArcadeSafeShopActionKind)actionKind is OnlineArcadeSafeShopActionKind.Purchase or
-                OnlineArcadeSafeShopActionKind.TransferGold or OnlineArcadeSafeShopActionKind.SetReady or
-                OnlineArcadeSafeShopActionKind.SetChallengeReady)
-                foreach (OnlineArcadePlayerRecord member in candidate.Players)
-                { member.SettlementConfirmed = false; member.AbandonConfirmed = false; }
+            ApplyCheckpointIntent(candidate, player, actionKind, ready);
 
             candidate.Revision = checked(candidate.Revision + 1);
             candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
@@ -330,9 +292,11 @@ namespace ET.Server
             });
             TrimOperations(candidate.Operations);
             bool startChallenge = candidate.Players.All(x => x.ChallengeReady && x.Lives > 0);
-            OnlineArcadeBattleRuntime preparedBattle = candidate.Players.Any(x => x.Lives > 0) && candidate.Players.Where(x => x.Lives > 0).All(x => x.Ready)
+            OnlineArcadeBattleRuntime preparedBattle = (OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.SetReady &&
+                candidate.Players.Any(x => x.Lives > 0) && candidate.Players.Where(x => x.Lives > 0).All(x => x.Ready)
                 ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, false)
-                : startChallenge ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, true) : null;
+                : (OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.SetChallengeReady && startChallenge
+                    ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, true) : null;
             if (startChallenge) candidate.ChallengeAttempted = true;
             try
             {
@@ -340,7 +304,7 @@ namespace ET.Server
             }
             catch (Exception exception)
             {
-                Log.Error($"online arcade save failed stage=SafeShop runId={candidate.RunId} playerId={playerId} exception={exception}");
+                Log.Error($"online arcade save failed stage=SafeCheckpoint runId={candidate.RunId} playerId={playerId} exception={exception}");
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeSaveFailed, "街机安全节点保存失败，请重试");
             }
 
@@ -350,12 +314,12 @@ namespace ET.Server
                 actor.StartBattle(preparedBattle);
                 self.StartBattleTick(actor, actor.BattleGeneration);
             }
-            if ((OnlineArcadeSafeShopActionKind)actionKind == OnlineArcadeSafeShopActionKind.ConfirmSettlement)
+            if ((OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.ConfirmSettlement)
             {
                 bool ended = await self.TryCompleteSettlement(actor, playerId);
                 if (ended) return (true, null);
             }
-            else if ((OnlineArcadeSafeShopActionKind)actionKind == OnlineArcadeSafeShopActionKind.ConfirmAbandon &&
+            else if ((OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.ConfirmAbandon &&
                      actor.Record.Players.All(x => x.AbandonConfirmed))
             {
                 if (await self.TryCommitRunFailure(actor)) return (true, null);
@@ -365,6 +329,47 @@ namespace ET.Server
         }
 
         /// <summary>按玩家顺序独立保存本局结果；任一步失败保留已成功玩家状态，后续操作可继续重试。</summary>
+        /// <summary>只处理准备、挑战和结果确认意图；无交易分支，候选落盘前不改变 Actor。</summary>
+        private static void ApplyCheckpointIntent(OnlineArcadeRunRecord candidate, OnlineArcadePlayerRecord player,
+            int actionKind, bool ready)
+        {
+            switch ((OnlineArcadeSafeCheckpointActionKind)actionKind)
+            {
+                case OnlineArcadeSafeCheckpointActionKind.SetReady:
+                    if (ready && player.Lives <= 0)
+                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "生命为零的成员继续观战，不能准备开战");
+                    player.Ready = ready;
+                    player.ChallengeReady = false;
+                    break;
+                case OnlineArcadeSafeCheckpointActionKind.SetChallengeReady:
+                    if (ready && (player.Lives <= 0 || string.IsNullOrWhiteSpace(candidate.ChallengeId) ||
+                                  candidate.ChallengeAttempted))
+                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前特殊挑战不可进入");
+                    player.ChallengeReady = ready;
+                    player.Ready = false;
+                    break;
+                case OnlineArcadeSafeCheckpointActionKind.ConfirmSettlement:
+                    player.SettlementConfirmed = true;
+                    player.AbandonConfirmed = false;
+                    player.Ready = false;
+                    player.ChallengeReady = false;
+                    break;
+                case OnlineArcadeSafeCheckpointActionKind.ConfirmAbandon:
+                    player.AbandonConfirmed = true;
+                    player.SettlementConfirmed = false;
+                    player.Ready = false;
+                    player.ChallengeReady = false;
+                    break;
+                default:
+                    throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "安全节点操作类型无效");
+            }
+            if ((OnlineArcadeSafeCheckpointActionKind)actionKind is OnlineArcadeSafeCheckpointActionKind.SetReady or
+                OnlineArcadeSafeCheckpointActionKind.SetChallengeReady)
+                foreach (OnlineArcadePlayerRecord member in candidate.Players)
+                { member.SettlementConfirmed = false; member.AbandonConfirmed = false; }
+
+        }
+
         private static async ETTask<bool> TryCompleteSettlement(this OnlineArcadeRunManagerComponent self,
             OnlineArcadeRunActor actor, long requestingPlayerId)
         {
@@ -480,7 +485,7 @@ namespace ET.Server
                 player.Ready = false;
                 player.ChallengeReady = false;
             }
-            candidate.Phase = OnlineArcadeRunPhase.SafeShop;
+            candidate.Phase = OnlineArcadeRunPhase.SafeCheckpoint;
             candidate.Revision = checked(Math.Max(candidate.Revision, actor.Record.Revision) + 1);
             candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
             try { self.CommitWithCandidate(candidate, candidate.RunId); }
@@ -496,7 +501,7 @@ namespace ET.Server
             return true;
         }
 
-        /// <summary>最终轮完成时构造下一安全节点；文件成功前不切换阶段、不刷新商店。</summary>
+        /// <summary>最终轮完成时构造下一安全节点；文件成功前不切换阶段。</summary>
         private static bool TryCommitArenaCompletion(this OnlineArcadeRunManagerComponent self,
             OnlineArcadeRunActor actor)
         {
@@ -526,9 +531,8 @@ namespace ET.Server
                     ApplyConfiguredRewards(player, completedArena, arena.IsBoss);
                     player.Ready = false;
                     player.ChallengeReady = false;
-                    player.ShopOffers = new List<OnlineArcadeShopOfferRecord>();
                 }
-                candidate.Phase = victory ? OnlineArcadeRunPhase.Victory : OnlineArcadeRunPhase.SafeShop;
+                candidate.Phase = victory ? OnlineArcadeRunPhase.Victory : OnlineArcadeRunPhase.SafeCheckpoint;
                 candidate.ChallengeId = string.Empty;
                 candidate.ChallengeAttempted = false;
                 candidate.Revision = checked(candidate.Revision + 1);
@@ -565,7 +569,7 @@ namespace ET.Server
                     if (battle.ChallengeSucceeded)
                         ApplyChallengeRewards(player, Math.Max(1, candidate.CompletedArena));
                 }
-                candidate.Phase = OnlineArcadeRunPhase.SafeShop;
+                candidate.Phase = OnlineArcadeRunPhase.SafeCheckpoint;
                 candidate.Revision = checked(Math.Max(candidate.Revision, actor.Record.Revision) + 1);
                 candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
                 self.CommitWithCandidate(candidate, candidate.RunId);
@@ -641,11 +645,11 @@ namespace ET.Server
             return exact ?? arenas.OrderBy(x => x.ArenaNumber).ElementAt((arenaNumber - 1) % arenas.Count);
         }
 
-        /// <summary>空报价节点是普通恢复点；先保有提交点，再以工作态构造下一场，不借商店做准备界面。</summary>
+        /// <summary>普通恢复点先保有提交节点，再以双方准备后的工作态构造下一场。</summary>
         private static bool TryStartTransitBattle(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor)
         {
-            if (actor == null || actor.IsDisposed || actor.Record == null || actor.Battle != null || actor.Record.Phase != OnlineArcadeRunPhase.SafeShop ||
-                !actor.Record.IsCasualRoute || actor.Record.Players.Any(p => p.ShopOffers.Count > 0) ||
+            if (actor == null || actor.IsDisposed || actor.Record == null || actor.Battle != null || actor.Record.Phase != OnlineArcadeRunPhase.SafeCheckpoint ||
+                !actor.Record.IsCasualRoute || !actor.Record.Players.Any(p => p.Lives > 0) ||
                 actor.Record.Players.Any(p => p.Lives > 0 && !p.Ready) ||
                 actor.DisconnectedAtByPlayer.Count > 0) return false;
             try
@@ -673,7 +677,7 @@ namespace ET.Server
                 RunId = runId,
                 RoomId = room.RoomId,
                 Revision = 1,
-                Phase = OnlineArcadeRunPhase.SafeShop,
+                Phase = OnlineArcadeRunPhase.SafeCheckpoint,
                 CompletedArena = 0,
                 NextArena = 1,
                 IsCasualRoute = true,
@@ -695,7 +699,6 @@ namespace ET.Server
                     Dashes = rule.InitialDashes,
                     WeaponId = rule.BaseWeaponId,
                     Ready = false,
-                    ShopOffers = new List<OnlineArcadeShopOfferRecord>(),
                     UpgradeStacks = new Dictionary<string, int>(StringComparer.Ordinal),
                     Consumables = new Dictionary<string, int>(StringComparer.Ordinal),
                     EquipmentBySlot = new Dictionary<string, string>(StringComparer.Ordinal)
@@ -707,54 +710,15 @@ namespace ET.Server
             return record;
         }
 
-        /// <summary>同一 RunId、玩家和竞技场必定生成同一组个人报价，两名玩家不会共享购买状态。</summary>
-        private static List<OnlineArcadeShopOfferRecord> BuildShopOffers(long runId, long playerId, int arenaNumber, int count)
-        {
-            List<ArcadeShopItemConfig> candidates = ServerConfig.Instance.Tables.TbArcadeShopItem.DataList
-                .Where(x => x.UnlockArena <= arenaNumber).OrderBy(x => x.Id, StringComparer.Ordinal).ToList();
-            if (candidates.Count < count)
-                throw new InvalidOperationException($"Arcade shop has only {candidates.Count} candidates for arena {arenaNumber}.");
-
-            int seed = unchecked((int)(runId ^ (runId >> 32) ^ playerId ^ (playerId >> 32) ^ arenaNumber));
-            Random random = new(seed);
-            List<OnlineArcadeShopOfferRecord> result = new(count);
-            for (int slot = 0; slot < count; slot++)
-            {
-                int totalWeight = candidates.Sum(x => x.Weight);
-                int roll = random.Next(totalWeight);
-                int index = 0;
-                for (; index < candidates.Count - 1; index++)
-                {
-                    if (roll < candidates[index].Weight) break;
-                    roll -= candidates[index].Weight;
-                }
-                ArcadeShopItemConfig item = candidates[index];
-                candidates.RemoveAt(index);
-                result.Add(new OnlineArcadeShopOfferRecord
-                {
-                    OfferId = $"{runId}:{playerId}:{arenaNumber}:{slot}",
-                    ShopItemId = item.Id,
-                    ProductId = item.ProductId,
-                    ProductType = (int)item.ProductType,
-                    Price = checked(item.BasePrice + item.PricePerArena * Math.Max(0, arenaNumber - 1)),
-                    Amount = item.Amount,
-                    PurchaseCount = 0,
-                    MaxPurchases = item.MaxPurchases,
-                    EquipmentSlotId = item.EquipmentSlotId ?? string.Empty,
-                });
-            }
-            return result;
-        }
-
         private static void AddLoaded(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunRecord source)
         {
             OnlineArcadeRunRecord record = Clone(source);
+            NormalizeLoadedCheckpoint(record);
             EnsureCollections(record);
-            // 兼容旧普通安全节点的随机商店；资源与路线保留，已实际尝试的特殊挑战仍按原恢复规则。
-            if (record.IsCasualRoute && record.Phase == OnlineArcadeRunPhase.SafeShop && !record.ChallengeAttempted)
+            // 恢复资源与路线，已实际尝试的特殊挑战仍按原恢复规则。
+            if (record.IsCasualRoute && record.Phase == OnlineArcadeRunPhase.SafeCheckpoint && !record.ChallengeAttempted)
             {
                 record.ChallengeId = string.Empty;
-                foreach (OnlineArcadePlayerRecord player in record.Players) player.ShopOffers.Clear();
             }
             // 服务重启不恢复瞬时战斗现场，也不沿用旧的双方准备提交。
             foreach (OnlineArcadePlayerRecord player in record.Players)
@@ -835,7 +799,7 @@ namespace ET.Server
             foreach (OnlineArcadeRunRecord run in snapshot.Runs ?? new List<OnlineArcadeRunRecord>())
             {
                 if (run == null || run.RunId <= 0 || run.RoomId <= 0 || !runIds.Add(run.RunId) || !roomIds.Add(run.RoomId) ||
-                    run.Revision <= 0 || run.Phase is not (OnlineArcadeRunPhase.SafeShop or OnlineArcadeRunPhase.Victory) || run.NextArena <= 0 ||
+                    run.Revision <= 0 || run.Phase is not (OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory) || run.NextArena <= 0 ||
                     string.IsNullOrWhiteSpace(run.ConfigFingerprint) || run.Players == null || run.Players.Count != 2)
                     throw new InvalidOperationException("OnlineArcadeStore contains an invalid run.");
                 if (run.IsCasualRoute && (run.ArenaConfigNumber <= 0 || run.CompletedArena > 10 ||
@@ -846,93 +810,10 @@ namespace ET.Server
                 foreach (OnlineArcadePlayerRecord player in run.Players)
                     if (player == null || player.PlayerId <= 0 || !playerIds.Add(player.PlayerId) || player.Lives < 0 ||
                         player.Score < 0 || player.ScoreMultiplier < 1 || player.MultiplierProgress < 0 ||
-                        player.RunGold < 0 || player.Bombs < 0 || player.Dashes < 0 || player.ShopOffers == null ||
                         player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null)
                         throw new InvalidOperationException("OnlineArcadeStore contains an invalid player.");
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
-            }
-        }
-
-        private static void ApplyPurchase(OnlineArcadePlayerRecord player, string offerId)
-        {
-            OnlineArcadeShopOfferRecord offer = player.ShopOffers.FirstOrDefault(x =>
-                string.Equals(x.OfferId, offerId, StringComparison.Ordinal));
-            if (offer == null || offer.PurchaseCount >= offer.MaxPurchases)
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "商品不存在或购买次数已用完");
-            if (player.RunGold < offer.Price)
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "局内金币不足");
-            ArcadeShopItemConfig item = ServerConfig.Instance.Tables.TbArcadeShopItem.GetOrDefault(offer.ShopItemId);
-            if (item == null || !string.Equals(item.ProductId, offer.ProductId, StringComparison.Ordinal) ||
-                (int)item.ProductType != offer.ProductType)
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "商品配置已失效");
-
-            try
-            {
-                player.RunGold = checked(player.RunGold - offer.Price);
-                switch ((ArcadeShopProductType)offer.ProductType)
-                {
-                    case ArcadeShopProductType.Upgrade:
-                        ArcadeUpgradeConfig upgrade = ServerConfig.Instance.Tables.TbArcadeUpgrade.GetOrDefault(offer.ProductId);
-                        if (upgrade == null) throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "强化配置不存在");
-                        player.UpgradeStacks.TryGetValue(offer.ProductId, out int stacks);
-                        int nextStacks = checked(stacks + offer.Amount);
-                        if (nextStacks > Math.Min(upgrade.MaxStacks, offer.MaxPurchases))
-                            throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "强化已达到上限");
-                        player.UpgradeStacks[offer.ProductId] = nextStacks;
-                        break;
-                    case ArcadeShopProductType.ExtraLife:
-                        player.Lives = checked(player.Lives + offer.Amount);
-                        break;
-                    case ArcadeShopProductType.Consumable:
-                        if (string.Equals(offer.ProductId, "arcade.resource.bomb", StringComparison.Ordinal))
-                            player.Bombs = checked(player.Bombs + offer.Amount);
-                        else if (string.Equals(offer.ProductId, "arcade.resource.dash", StringComparison.Ordinal))
-                            player.Dashes = checked(player.Dashes + offer.Amount);
-                        else
-                        {
-                            player.Consumables.TryGetValue(offer.ProductId, out int amount);
-                            player.Consumables[offer.ProductId] = checked(amount + offer.Amount);
-                        }
-                        break;
-                    case ArcadeShopProductType.Equipment:
-                        string slotId = string.IsNullOrWhiteSpace(offer.EquipmentSlotId) ? item.EquipmentSlotId : offer.EquipmentSlotId;
-                        if (string.IsNullOrWhiteSpace(slotId))
-                            throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "装备槽位无效");
-                        player.EquipmentBySlot[slotId] = offer.ProductId;
-                        if (string.Equals(slotId, "weapon", StringComparison.Ordinal)) player.WeaponId = offer.ProductId;
-                        break;
-                    default:
-                        throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "商品类型无效");
-                }
-                offer.PurchaseCount = checked(offer.PurchaseCount + 1);
-                player.Ready = false;
-                player.ChallengeReady = false;
-            }
-            catch (OverflowException)
-            {
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "购买结果数值溢出");
-            }
-        }
-
-        private static void ApplyGoldTransfer(OnlineArcadeRunRecord run, OnlineArcadePlayerRecord sender, int amount)
-        {
-            if (amount < 0) throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "转赠金币不能为负数");
-            OnlineArcadePlayerRecord receiver = run.Players.FirstOrDefault(x => x.PlayerId != sender.PlayerId) ??
-                                                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "未找到队友");
-            if (sender.RunGold < amount) throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "局内金币不足");
-            try
-            {
-                sender.RunGold = checked(sender.RunGold - amount);
-                receiver.RunGold = checked(receiver.RunGold + amount);
-                sender.Ready = false;
-                receiver.Ready = false;
-                sender.ChallengeReady = false;
-                receiver.ChallengeReady = false;
-            }
-            catch (OverflowException)
-            {
-                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "转赠结果数值溢出");
             }
         }
 
@@ -942,40 +823,23 @@ namespace ET.Server
             run.Operations ??= new List<OnlineArcadeOperationRecord>();
             foreach (OnlineArcadePlayerRecord player in run.Players)
             {
-                player.ShopOffers ??= new List<OnlineArcadeShopOfferRecord>();
                 player.UpgradeStacks ??= new Dictionary<string, int>(StringComparer.Ordinal);
                 player.Consumables ??= new Dictionary<string, int>(StringComparer.Ordinal);
                 player.EquipmentBySlot ??= new Dictionary<string, string>(StringComparer.Ordinal);
-                EnsureRequiredLifeOffer(run, player);
             }
         }
 
-        /// <summary>零生命玩家始终获得不占随机槽位的确定性额外生命报价。</summary>
-        private static void EnsureRequiredLifeOffer(OnlineArcadeRunRecord run, OnlineArcadePlayerRecord player)
+        /// <summary>仅兼容本项目移除商店前的配置版本；不接受另一项目或任意未知版本。</summary>
+        private static void NormalizeLoadedCheckpoint(OnlineArcadeRunRecord run)
         {
-            if (run.Phase == OnlineArcadeRunPhase.Victory) return;
-            if (player.Lives > 0 || player.ShopOffers.Any(x => x.ProductType == (int)ArcadeShopProductType.ExtraLife && x.PurchaseCount < x.MaxPurchases))
-                return;
-            ArcadeShopItemConfig item = ServerConfig.Instance.Tables.TbArcadeShopItem.DataList
-                .Where(x => x.ProductType == ArcadeShopProductType.ExtraLife && x.UnlockArena <= run.NextArena)
-                .OrderBy(x => x.Id, StringComparer.Ordinal).FirstOrDefault();
-            if (item == null) throw new InvalidOperationException("Arcade extra-life shop item is unavailable.");
-            int sequence = player.ShopOffers.Count(x => x.ProductType == (int)ArcadeShopProductType.ExtraLife);
-            player.ShopOffers.Add(new OnlineArcadeShopOfferRecord
-            {
-                OfferId = $"{run.RunId}:{player.PlayerId}:{run.NextArena}:life:{sequence}",
-                ShopItemId = item.Id,
-                ProductId = item.ProductId,
-                ProductType = (int)item.ProductType,
-                Price = checked(item.BasePrice + item.PricePerArena * Math.Max(0, run.NextArena - 1)),
-                Amount = item.Amount,
-                MaxPurchases = item.MaxPurchases,
-                EquipmentSlotId = item.EquipmentSlotId ?? string.Empty,
-            });
+            const string previousVersion = "firepowerloop-20261014-v1";
+            const string checkpointVersion = "firepowerloop-20261016-v2";
+            if (run.ConfigFingerprint == previousVersion &&
+                ServerConfig.Instance.ArcadeRule.ConfigFingerprint == checkpointVersion)
+                run.ConfigFingerprint = checkpointVersion;
         }
 
-        private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, string offerId,
-            int goldAmount, bool ready) => $"{playerId}|{expectedRevision}|{actionKind}|{offerId ?? string.Empty}|{goldAmount}|{ready}";
+        private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready) => $"{playerId}|{expectedRevision}|{actionKind}|{ready}";
 
         private static void TrimOperations(List<OnlineArcadeOperationRecord> operations)
         {
@@ -2868,19 +2732,7 @@ namespace ET.Server
                 player.SettlementConfirmed = source.SettlementConfirmed;
                 player.AbandonConfirmed = source.AbandonConfirmed;
                 player.SettlementState = source.SettlementState;
-                foreach (OnlineArcadeShopOfferRecord sourceOffer in source.ShopOffers)
-                {
-                    OnlineArcadeShopOfferInfo offer = OnlineArcadeShopOfferInfo.Create();
-                    offer.OfferId = sourceOffer.OfferId ?? string.Empty;
-                    offer.ShopItemId = sourceOffer.ShopItemId ?? string.Empty;
-                    offer.ProductId = sourceOffer.ProductId ?? string.Empty;
-                    offer.ProductType = sourceOffer.ProductType;
-                    offer.Price = sourceOffer.Price;
-                    offer.Amount = sourceOffer.Amount;
-                    offer.PurchaseCount = sourceOffer.PurchaseCount;
-                    offer.MaxPurchases = sourceOffer.MaxPurchases;
-                    player.ShopOffers.Add(offer);
-                }
+
                 foreach (KeyValuePair<string, int> entry in source.UpgradeStacks.OrderBy(x => x.Key, StringComparer.Ordinal))
                 {
                     OnlineArcadeOwnedAmountInfo amount = OnlineArcadeOwnedAmountInfo.Create();
@@ -3054,19 +2906,7 @@ namespace ET.Server
                 player.SettlementConfirmed = sourcePlayer.SettlementConfirmed;
                 player.AbandonConfirmed = sourcePlayer.AbandonConfirmed;
                 player.SettlementState = sourcePlayer.SettlementState;
-                foreach (OnlineArcadeShopOfferInfo sourceOffer in sourcePlayer.ShopOffers)
-                {
-                    OnlineArcadeShopOfferInfo offer = OnlineArcadeShopOfferInfo.Create();
-                    offer.OfferId = sourceOffer.OfferId ?? string.Empty;
-                    offer.ShopItemId = sourceOffer.ShopItemId ?? string.Empty;
-                    offer.ProductId = sourceOffer.ProductId ?? string.Empty;
-                    offer.ProductType = sourceOffer.ProductType;
-                    offer.Price = sourceOffer.Price;
-                    offer.Amount = sourceOffer.Amount;
-                    offer.PurchaseCount = sourceOffer.PurchaseCount;
-                    offer.MaxPurchases = sourceOffer.MaxPurchases;
-                    player.ShopOffers.Add(offer);
-                }
+
                 foreach (OnlineArcadeOwnedAmountInfo sourceAmount in sourcePlayer.UpgradeStacks)
                 {
                     OnlineArcadeOwnedAmountInfo amount = OnlineArcadeOwnedAmountInfo.Create();

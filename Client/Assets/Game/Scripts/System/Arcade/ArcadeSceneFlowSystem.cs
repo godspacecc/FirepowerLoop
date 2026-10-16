@@ -72,7 +72,7 @@ namespace Game
                 }
                 this.GetSystem<AppStateSystem>().TryTransition(AppState.Paused);
                 UIHelper.HideUI<ArcadeHudUICtrl>();
-                UIHelper.HideUI<ArcadeShopUICtrl>();
+                UIHelper.HideUI<ArcadeResumeUICtrl>();
                 UIHelper.ShowUI<StartUICtrl>();
                 return ArcadeSceneFlowResult.Ok();
             }

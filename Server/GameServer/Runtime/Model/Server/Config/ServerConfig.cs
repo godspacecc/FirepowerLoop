@@ -289,7 +289,7 @@ namespace ET
             if (!string.Equals(this.arcadeRule.Id, "arcade.default", StringComparison.Ordinal) ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.ConfigFingerprint) || this.arcadeRule.ConfigFingerprint.Length > 128 ||
                 this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||
-                this.arcadeRule.ShopOfferCount <= 0 || string.IsNullOrWhiteSpace(this.arcadeRule.BaseWeaponId) ||
+                string.IsNullOrWhiteSpace(this.arcadeRule.BaseWeaponId) ||
                 this.tables.TbArcadeWeapon.GetOrDefault(this.arcadeRule.BaseWeaponId) == null)
                 throw ConfigError(this.Profile, "TbArcadeRule", this.arcadeRule.Id, "identity or initial resources are invalid.");
 
@@ -353,16 +353,13 @@ namespace ET
                         "invalid drop values or product reference.");
             }
 
-            HashSet<string> shopIds = new(StringComparer.Ordinal);
-            foreach (ArcadeShopItemConfig item in this.tables.TbArcadeShopItem.DataList)
-            {
-                if (string.IsNullOrWhiteSpace(item.Id) || !shopIds.Add(item.Id) || string.IsNullOrWhiteSpace(item.ProductId) ||
-                    item.UnlockArena <= 0 || item.Weight <= 0 || item.BasePrice < 0 || item.PricePerArena < 0 ||
-                    item.Amount <= 0 || item.MaxPurchases <= 0)
-                    throw ConfigError(this.Profile, "TbArcadeShopItem", item.Id, "invalid or duplicate shop item.");
-            }
-            if (shopIds.Count < this.arcadeRule.ShopOfferCount)
-                throw ConfigError(this.Profile, "TbArcadeShopItem", "count", "not enough shop items for one offer set.");
+            // 支援视觉仅服务旧局已持有装备，不提供商品与价格。
+            HashSet<string> supportIds = new(StringComparer.Ordinal);
+            foreach (ArcadeSupportVisualConfig visual in this.tables.TbArcadeSupportVisual.DataList)
+                if (string.IsNullOrWhiteSpace(visual.Id) || !supportIds.Add(visual.Id) ||
+                    string.IsNullOrWhiteSpace(visual.ProductId) || visual.EquipmentSlotId != "support" ||
+                    !float.IsFinite(visual.VisualOffsetX) || !float.IsFinite(visual.VisualOffsetY) || !float.IsFinite(visual.VisualOffsetZ))
+                    throw ConfigError(this.Profile, "TbArcadeSupportVisual", visual.Id, "invalid support visual.");
 
             Dictionary<string, ArcadeBossConfig> bosses = new(StringComparer.Ordinal);
             foreach (ArcadeBossConfig boss in this.tables.TbArcadeBoss.DataList)

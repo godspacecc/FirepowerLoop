@@ -391,10 +391,10 @@ namespace ET.Server
             }
         }
 
-        /// <summary>转发安全商店写意图；玩家 Actor 只校验会话并维护 RunId 路由，不复制商店状态。</summary>
+        /// <summary>转发安全节点写意图；玩家 Actor 只校验会话并维护 RunId 路由，不复制安全节点状态。</summary>
         public static async ETTask<(int Error, string Message, bool Accepted, OnlineArcadeRunSnapshot Run)>
-            OperateOnlineArcadeSafeShop(this OnlinePlayerActor self, long sessionEpoch, string operationId,
-                long expectedRevision, int actionKind, string offerId, int goldAmount, bool ready)
+            OperateOnlineArcadeSafeCheckpoint(this OnlinePlayerActor self, long sessionEpoch, string operationId,
+                long expectedRevision, int actionKind, bool ready)
         {
             if (sessionEpoch != self.SessionEpoch || self.State != OnlinePlayerState.Online)
                 return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, null);
@@ -403,16 +403,14 @@ namespace ET.Server
             try
             {
                 ActorId roomScene = ServerConfig.Instance.GetSceneByName(self.Zone(), "OnlineRoom").ActorId;
-                P2R_OperateOnlineArcadeSafeShop request = P2R_OperateOnlineArcadeSafeShop.Create();
+                P2R_OperateOnlineArcadeSafeCheckpoint request = P2R_OperateOnlineArcadeSafeCheckpoint.Create();
                 request.PlayerId = self.PlayerId;
                 request.OperationId = operationId ?? string.Empty;
                 request.ExpectedRevision = expectedRevision;
                 request.ActionKind = actionKind;
-                request.OfferId = offerId ?? string.Empty;
-                request.GoldAmount = goldAmount;
                 request.Ready = ready;
-                using R2P_OperateOnlineArcadeSafeShop response = await self.Root().GetComponent<MessageSender>()
-                    .Call(roomScene, request, false) as R2P_OperateOnlineArcadeSafeShop;
+                using R2P_OperateOnlineArcadeSafeCheckpoint response = await self.Root().GetComponent<MessageSender>()
+                    .Call(roomScene, request, false) as R2P_OperateOnlineArcadeSafeCheckpoint;
                 return (response.Error, response.Message, response.Accepted,
                     OnlineArcadeRunActorSystem.CloneSnapshot(response.Run));
             }

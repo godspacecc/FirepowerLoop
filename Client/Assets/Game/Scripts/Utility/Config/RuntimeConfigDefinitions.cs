@@ -503,14 +503,14 @@ namespace Game
     public readonly struct ArcadeRuleDefinition
     {
         public ArcadeRuleDefinition(string id, int initialLives, int initialBombs, int initialDashes, string baseWeaponId,
-            int shopOfferCount, int maxAliveEnemies, int maxProjectiles, int maxDrops, float healthGrowthPerArena,
+            int maxAliveEnemies, int maxProjectiles, int maxDrops, float healthGrowthPerArena,
             float damageGrowthPerArena, float speedGrowthPerArena, float goldGrowthPerArena, int bossEveryArenas,
             int playerMaxHealth, float playerMoveSpeed, float playerRadius, float enemyContactRadius,
             float contactInvulnerabilitySeconds, float respawnDelaySeconds, float arenaHalfWidth, float arenaHalfHeight,
             float dropChance, float supportFireIntervalSeconds, string configFingerprint = "")
         {
             Id = id; InitialLives = initialLives; InitialBombs = initialBombs; InitialDashes = initialDashes;
-            BaseWeaponId = baseWeaponId; ShopOfferCount = shopOfferCount; MaxAliveEnemies = maxAliveEnemies;
+            BaseWeaponId = baseWeaponId; MaxAliveEnemies = maxAliveEnemies;
             MaxProjectiles = maxProjectiles; MaxDrops = maxDrops; HealthGrowthPerArena = healthGrowthPerArena;
             DamageGrowthPerArena = damageGrowthPerArena; SpeedGrowthPerArena = speedGrowthPerArena;
             GoldGrowthPerArena = goldGrowthPerArena; BossEveryArenas = bossEveryArenas;
@@ -528,7 +528,6 @@ namespace Game
         public int InitialBombs { get; }
         public int InitialDashes { get; }
         public string BaseWeaponId { get; }
-        public int ShopOfferCount { get; }
         public int MaxAliveEnemies { get; }
         public int MaxProjectiles { get; }
         public int MaxDrops { get; }
@@ -641,7 +640,7 @@ namespace Game
     {
         public ArcadeArenaDefinition(int arenaNumber, System.Collections.Generic.IEnumerable<string> waveGroupIds,
             System.Collections.Generic.IEnumerable<ArcadeObstacleDefinition> obstacles,
-            bool isBoss, string bossId, int clearGold, int shopSeedSalt,
+            bool isBoss, string bossId, int clearGold, int encounterSeedSalt,
             System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeHazardParameters> hazards = null,
             System.Collections.Generic.IEnumerable<int> nextArenaNumbers = null, string finalBossId = null,
             AnotherDay.Arcade.ArcadeOpeningParameters opening = default,
@@ -650,7 +649,7 @@ namespace Game
             ArenaNumber = arenaNumber;
             WaveGroupIds = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(waveGroupIds ?? System.Array.Empty<string>()));
             Obstacles = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(obstacles ?? System.Array.Empty<ArcadeObstacleDefinition>()));
-            IsBoss = isBoss; BossId = bossId ?? string.Empty; ClearGold = clearGold; ShopSeedSalt = shopSeedSalt;
+            IsBoss = isBoss; BossId = bossId ?? string.Empty; ClearGold = clearGold; EncounterSeedSalt = encounterSeedSalt;
             Hazards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(hazards ?? System.Array.Empty<AnotherDay.Arcade.ArcadeHazardParameters>()));
             NextArenaNumbers = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(nextArenaNumbers ?? System.Array.Empty<int>()));
             FinalBossId = finalBossId ?? string.Empty;
@@ -670,7 +669,7 @@ namespace Game
         /// <summary>非空时，最后一轮唯一敌人使用该专用 Boss 行为；空值仍保留旧倍率占位规则。</summary>
         public string BossId { get; }
         public int ClearGold { get; }
-        public int ShopSeedSalt { get; }
+        public int EncounterSeedSalt { get; }
         /// <summary>清场后实体出口的稳定目的地配置编号；空列表表示主线末场。</summary>
         public System.Collections.Generic.IReadOnlyList<int> NextArenaNumbers { get; }
         /// <summary>四轮主线之后独立战斗的 Boss；不占用任何主线轮次。</summary>
@@ -781,32 +780,23 @@ namespace Game
         public int Charges { get; }
     }
 
-    public readonly struct ArcadeShopItemDefinition
+    /// <summary>旧局已持有支援的表现定义，不提供价格、商品或发放能力。</summary>
+    public readonly struct ArcadeSupportVisualDefinition
     {
-        public ArcadeShopItemDefinition(string id, string productId, global::ArcadeShopProductType productType, int unlockArena,
-            int weight, int basePrice, int pricePerArena, int amount, string equipmentSlotId,
-            string activeVisualPrefabAddress, Vector3 visualOffset, int maxPurchases)
-        {
-            Id = id; ProductId = productId; ProductType = productType; UnlockArena = unlockArena;
-            Weight = weight; BasePrice = basePrice; PricePerArena = pricePerArena; Amount = amount;
-            EquipmentSlotId = equipmentSlotId ?? string.Empty;
-            ActiveVisualPrefabAddress = activeVisualPrefabAddress ?? string.Empty;
-            VisualOffset = visualOffset; MaxPurchases = maxPurchases;
-        }
+        /// <summary>从正式配置映射旧局已持有支援的表现，不创建任何装备。</summary>
+        public ArcadeSupportVisualDefinition(string id, string productId, string equipmentSlotId,
+            string activeVisualPrefabAddress, Vector3 visualOffset)
+        { Id = id; ProductId = productId; EquipmentSlotId = equipmentSlotId; ActiveVisualPrefabAddress = activeVisualPrefabAddress; VisualOffset = visualOffset; }
+        /// <summary>支援表现配置身份。</summary>
         public string Id { get; }
+        /// <summary>旧局装备身份，保持原值以恢复已有支援。</summary>
         public string ProductId { get; }
-        public global::ArcadeShopProductType ProductType { get; }
-        public int UnlockArena { get; }
-        public int Weight { get; }
-        public int BasePrice { get; }
-        public int PricePerArena { get; }
-        public int Amount { get; }
+        /// <summary>所属支援装备槽。</summary>
         public string EquipmentSlotId { get; }
-        /// <summary>装备生效期间加载的纯视觉 Prefab 地址；普通商品为空。</summary>
+        /// <summary>纯表现资源地址，由视图拥有加载句柄。</summary>
         public string ActiveVisualPrefabAddress { get; }
-        /// <summary>装备视觉相对玩家的本地偏移，单位米。</summary>
+        /// <summary>相对角色的本地表现偏移。</summary>
         public Vector3 VisualOffset { get; }
-        public int MaxPurchases { get; }
     }
 
     public readonly struct ArcadeUpgradeDefinition
@@ -843,12 +833,12 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeBossDefinition> bosses,
             System.Collections.Generic.IEnumerable<ArcadeChallengeDefinition> challenges,
             System.Collections.Generic.IEnumerable<ArcadeDropDefinition> drops,
-            System.Collections.Generic.IEnumerable<ArcadeShopItemDefinition> shopItems,
+            System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
             System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
             : this(rule, weapons, arenas, enemyGroups, bosses, challenges, drops,
-                System.Array.Empty<ArcadePowerupDefinition>(), shopItems, upgrades, rewards, treasureRooms)
+                System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms)
         {
         }
 
@@ -860,7 +850,7 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeChallengeDefinition> challenges,
             System.Collections.Generic.IEnumerable<ArcadeDropDefinition> drops,
             System.Collections.Generic.IEnumerable<ArcadePowerupDefinition> powerups,
-            System.Collections.Generic.IEnumerable<ArcadeShopItemDefinition> shopItems,
+            System.Collections.Generic.IEnumerable<ArcadeSupportVisualDefinition> supportVisuals,
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
             System.Collections.Generic.IEnumerable<AnotherDay.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null)
@@ -873,7 +863,7 @@ namespace Game
             Challenges = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(challenges));
             Drops = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(drops));
             Powerups = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(powerups));
-            ShopItems = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(shopItems));
+            SupportVisuals = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(supportVisuals));
             Upgrades = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(upgrades));
             Rewards = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(rewards));
             TreasureRooms = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(treasureRooms ?? System.Array.Empty<AnotherDay.Arcade.ArcadeTreasureRoomParameters>()));
@@ -887,7 +877,7 @@ namespace Game
         public System.Collections.Generic.IReadOnlyList<ArcadeChallengeDefinition> Challenges { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeDropDefinition> Drops { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadePowerupDefinition> Powerups { get; }
-        public System.Collections.Generic.IReadOnlyList<ArcadeShopItemDefinition> ShopItems { get; }
+        public System.Collections.Generic.IReadOnlyList<ArcadeSupportVisualDefinition> SupportVisuals { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeUpgradeDefinition> Upgrades { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeRewardDefinition> Rewards { get; }
         public System.Collections.Generic.IReadOnlyList<AnotherDay.Arcade.ArcadeTreasureRoomParameters> TreasureRooms { get; }

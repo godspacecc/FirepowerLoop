@@ -335,18 +335,7 @@ message G2C_GetPublicRoomList // ISessionResponse
 	bool HasMore = 6;
 }
 
-// Opcode 12076
-message OnlineArcadeShopOfferInfo
-{
-	string OfferId = 1;
-	string ShopItemId = 2;
-	string ProductId = 3;
-	int32 ProductType = 4;
-	int32 Price = 5;
-	int32 Amount = 6;
-	int32 PurchaseCount = 7;
-	int32 MaxPurchases = 8;
-}
+
 
 // Opcode 12077
 message OnlineArcadeOwnedAmountInfo
@@ -496,7 +485,6 @@ message OnlineArcadePlayerInfo
 	int32 Dashes = 6;
 	string WeaponId = 7;
 	bool Ready = 8;
-	repeated OnlineArcadeShopOfferInfo ShopOffers = 9;
 	repeated OnlineArcadeOwnedAmountInfo UpgradeStacks = 10;
 	repeated OnlineArcadeOwnedAmountInfo Consumables = 11;
 	repeated OnlineArcadeEquipmentInfo Equipment = 12;
@@ -575,20 +563,18 @@ message G2C_GetCurrentOnlineArcadeRun // ISessionResponse
 }
 
 // Opcode 12093
-// ResponseType G2C_OperateOnlineArcadeSafeShop
-message C2G_OperateOnlineArcadeSafeShop // ISessionRequest
+// ResponseType G2C_OperateOnlineArcadeSafeCheckpoint
+message C2G_OperateOnlineArcadeSafeCheckpoint // ISessionRequest
 {
 	int32 RpcId = 1;
 	string OperationId = 2;
 	int64 ExpectedRevision = 3;
 	int32 ActionKind = 4;
-	string OfferId = 5;
-	int32 GoldAmount = 6;
 	bool Ready = 7;
 }
 
 // Opcode 12094
-message G2C_OperateOnlineArcadeSafeShop // ISessionResponse
+message G2C_OperateOnlineArcadeSafeCheckpoint // ISessionResponse
 {
 	int32 RpcId = 1;
 	int32 Error = 2;

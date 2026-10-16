@@ -278,8 +278,8 @@ namespace Game
                     Notify.ShowFloatTips(ArcadeUiFormatter.OnlineResult(result.Code));
                 }
             }
-            else if (system.Snapshot.Phase == OnlineArcadeRunPhase.SafeShop &&
-                system.Snapshot.Players.All(p => p.ShopOffers.Count == 0))
+            else if (system.Snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint &&
+                string.IsNullOrEmpty(system.Snapshot.ChallengeId))
             {
                 transitAttemptedRunId = 0;
                 PrepareTransitAsync(system.Snapshot).Forget();
@@ -297,12 +297,12 @@ namespace Game
         private void OpenArcadeSnapshot(OnlineArcadeRunClientSnapshot snapshot)
         {
             // 普通安全节点复用房间准备与重试入口，不弹出商品界面；服务器通常已直接开始下一场。
-            if (snapshot.Phase == OnlineArcadeRunPhase.SafeShop && snapshot.Players.All(p => p.ShopOffers.Count == 0))
+            if (snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint && string.IsNullOrEmpty(snapshot.ChallengeId))
             { PrepareTransitAsync(snapshot).Forget(); return; }
             Hide();
             if (snapshot.Phase is OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge)
                 UIHelper.ShowUI<ArcadeHudUICtrl>();
-            else if (snapshot.Phase is OnlineArcadeRunPhase.SafeShop or OnlineArcadeRunPhase.Victory) UIHelper.ShowUI<ArcadeShopUICtrl>();
+            else if (snapshot.Phase is OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory) UIHelper.ShowUI<ArcadeResumeUICtrl>();
         }
 
         /// <summary>普通节点自动准备资源和地图后提交现有 ready；失败留在房间，可用原按钮重试，不提前开战。</summary>
@@ -318,7 +318,7 @@ namespace Game
             bool Current() => generation == operationGeneration && ReferenceEquals(owner,BaseUI) && IsShow() &&
                 this.GetSystem<OnlineArcadeRunSystem>().Snapshot.RunId == snapshot.RunId &&
                 this.GetSystem<OnlineArcadeRunSystem>().Snapshot.NextArena == snapshot.NextArena &&
-                this.GetSystem<OnlineArcadeRunSystem>().Snapshot.Phase == OnlineArcadeRunPhase.SafeShop;
+                this.GetSystem<OnlineArcadeRunSystem>().Snapshot.Phase == OnlineArcadeRunPhase.SafeCheckpoint;
             RefreshArcadeButton();
             try
             {

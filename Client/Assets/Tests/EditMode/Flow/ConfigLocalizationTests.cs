@@ -109,7 +109,7 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapDisplay", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadeSoloDrop", "TbArcadePowerup", "TbArcadeShopItem", "TbArcadeUpgrade", "TbArcadeReward" }));
+            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapDisplay", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadeSoloDrop", "TbArcadePowerup", "TbArcadeSupportVisual", "TbArcadeUpgrade", "TbArcadeReward" }));
 
             var configAssembly = typeof(Tables).Assembly;
             Assert.That(configAssembly.GetType("StartMachineConfig"), Is.Null);

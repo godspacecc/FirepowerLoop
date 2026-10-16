@@ -22,7 +22,7 @@ namespace Game
         internal void CommitSafeNode(ArcadeRunSaveData value)
         {
             current = value?.Clone();
-            Phase = current == null ? ArcadeRunPhase.None : current.Victory ? ArcadeRunPhase.Victory : current.HasResult ? ArcadeRunPhase.Result : ArcadeRunPhase.SafeShop;
+            Phase = current == null ? ArcadeRunPhase.None : current.Victory ? ArcadeRunPhase.Victory : current.HasResult ? ArcadeRunPhase.Result : ArcadeRunPhase.SafeCheckpoint;
         }
 
         internal void EnterArena()

@@ -46,8 +46,8 @@ public static class ArcadeBabylonPlayProbe
             var runs = a.GetSystem<Game.ArcadeRunSystem>();
             if (!runs.TryStartConfiguredRun(out var data, out var error)) throw new Exception(error);
             data.NextArenaNumber = 2; data.CompletedArenaCount = 1; data.ArenaConfigNumber = 2;
-            if (!runs.TryBuildConfiguredShop(2, 123, data, out var shop, out error)) throw new Exception(error);
-            data.Shop = shop;
+            var shop = new ArcadeCheckpointSaveData { ArenaNumber = 2, GenerationSeed = 123 };
+            data.Checkpoint = shop;
             if (!new Game.ArcadeRunFileStore(temp).Save(data, out error)) throw new Exception(error);
             if (!runs.TryResume(out _, out error)) throw new Exception(error);
             var loaded = await a.GetSystem<Game.ArcadeSceneFlowSystem>().EnterArenaMapAsync();

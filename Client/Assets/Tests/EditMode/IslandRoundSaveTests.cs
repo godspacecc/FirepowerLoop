@@ -105,7 +105,7 @@ namespace Game.Tests
             Assert.That(system.TryContinue(out _, out error), Is.True, error);
             Assert.That(system.TryCompleteArena(new ArcadeArenaCompletion
             {
-                ArenaNumber = 1, NextArenaConfigNumber = 2, NextShop = new ArcadeShopSaveData { ArenaNumber = 2 },
+                ArenaNumber = 1, NextArenaConfigNumber = 2, NextCheckpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 },
                 Score = saved.Score, ScoreMultiplier = saved.ScoreMultiplier, MultiplierProgress = saved.MultiplierProgress,
                 EarnedGold = 17, EmergencyResources = saved.EmergencyResources, EquipmentBySlot = saved.EquipmentBySlot
             }, out saved, out error), Is.True, error);

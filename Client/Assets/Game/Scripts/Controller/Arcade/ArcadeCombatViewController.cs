@@ -90,8 +90,8 @@ namespace Game
             Vector2 shotDirection) => SetPowerup(ownerPlayerId, definition, anchorPosition);
         /// <summary>护盾挡伤后播放短暂闪光；不改变护盾次数或伤害结算。</summary>
         void PlayShieldBlock(long ownerPlayerId, Vector2 anchorPosition) { }
-        void SetSupport(ArcadeShopItemDefinition definition, Vector2 playerPosition) { }
-        void SetSupport(long ownerPlayerId, ArcadeShopItemDefinition definition, Vector2 playerPosition) =>
+        void SetSupport(ArcadeSupportVisualDefinition definition, Vector2 playerPosition) { }
+        void SetSupport(long ownerPlayerId, ArcadeSupportVisualDefinition definition, Vector2 playerPosition) =>
             SetSupport(definition, playerPosition);
         void EndEffectSync() { }
         void SetRemotePlayer(long playerId, Vector2 position, Vector2 facing, bool visible,
@@ -654,13 +654,13 @@ namespace Game
             if (entry.Instance != null) entry.Instance.transform.localRotation = entry.LocalRotation;
         }
 
-        public void SetSupport(ArcadeShopItemDefinition definition, Vector2 playerPosition)
+        public void SetSupport(ArcadeSupportVisualDefinition definition, Vector2 playerPosition)
         {
             SetSupport(0, definition, playerPosition);
         }
 
         /// <summary>按玩家身份维护支援视觉，使本机和远端装备可独立替换、回收。</summary>
-        public void SetSupport(long ownerPlayerId, ArcadeShopItemDefinition definition, Vector2 playerPosition)
+        public void SetSupport(long ownerPlayerId, ArcadeSupportVisualDefinition definition, Vector2 playerPosition)
         {
             SetEffectVisual($"support:{ownerPlayerId}", definition.ProductId, definition.ActiveVisualPrefabAddress,
                 playerPosition, definition.VisualOffset);

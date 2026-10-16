@@ -61,7 +61,7 @@ namespace Game.Tests
             var entry=Entry();entry.ArenaGold=17;
             Assert.That(system.TryCompleteArena(Completion(entry),out _,out _),Is.False);
             Assert.That(model.Phase,Is.EqualTo(ArcadeRunPhase.Arena));
-            var data=model.Current;data.CompletedArenaCount=1;data.NextArenaNumber=2;data.ArenaConfigNumber=2;data.Shop.ArenaNumber=2;
+            var data=model.Current;data.CompletedArenaCount=1;data.NextArenaNumber=2;data.ArenaConfigNumber=2;data.Checkpoint.ArenaNumber=2;
             model.CommitSafeNode(data);model.EnterArena();
             Assert.That(system.TryCompleteArena(Completion(Entry()),out _,out _),Is.False);
             Assert.That(model.Current.ArenaEntryState,Is.Null);
@@ -80,7 +80,7 @@ namespace Game.Tests
         private ArcadeArenaCompletion Completion(ArcadeIslandRoundCheckpoint entry)
         {
             var current=model.Current;var arena=catalog.Arenas.First(a=>a.ArenaNumber==current.ArenaConfigNumber);
-            return new ArcadeArenaCompletion { ArenaNumber=current.NextArenaNumber,NextArenaConfigNumber=arena.NextArenaNumbers[0],NextShop=new ArcadeShopSaveData{ArenaNumber=current.NextArenaNumber+1},EarnedGold=17,EmergencyResources=current.EmergencyResources,EquipmentBySlot=current.EquipmentBySlot,PlayerState=entry };
+            return new ArcadeArenaCompletion { ArenaNumber=current.NextArenaNumber,NextArenaConfigNumber=arena.NextArenaNumbers[0],NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=current.NextArenaNumber+1},EarnedGold=17,EmergencyResources=current.EmergencyResources,EquipmentBySlot=current.EquipmentBySlot,PlayerState=entry };
         }
         private static ArcadeIslandRoundCheckpoint Entry()=>new ArcadeIslandRoundCheckpoint
         {

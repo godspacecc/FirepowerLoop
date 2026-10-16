@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>提交联机街机创建/恢复意图并发布服务端快照；不裁决生命、金币、商店或战斗。</summary>
+    /// <summary>提交联机街机创建/恢复意图并发布服务端快照；不裁决生命、金币或战斗。</summary>
     public sealed class OnlineArcadeRunSystem : AbstractSystem
     {
         private const int RpcTimeoutMilliseconds = 10000;
@@ -84,24 +84,18 @@ namespace Game
                     RpcTimeoutMilliseconds, token));
         }
 
-        public Task<OnlineArcadeOperationResult> PurchaseAsync(string offerId) =>
-            OperateSafeShop(OnlineArcadeOperationState.Purchasing, 1, offerId, 0, false);
-
-        public Task<OnlineArcadeOperationResult> TransferGoldAsync(int amount) =>
-            OperateSafeShop(OnlineArcadeOperationState.TransferringGold, 2, string.Empty, amount, false);
-
         public Task<OnlineArcadeOperationResult> SetReadyAsync(bool ready) =>
-            OperateSafeShop(OnlineArcadeOperationState.SettingReady, 3, string.Empty, 0, ready);
+            OperateSafeCheckpoint(OnlineArcadeOperationState.SettingReady, 3, ready);
 
         /// <summary>设置本安全节点的挑战准备；双方都准备后服务器先落盘尝试标记，再创建挑战现场。</summary>
         public Task<OnlineArcadeOperationResult> SetChallengeReadyAsync(bool ready) =>
-            OperateSafeShop(OnlineArcadeOperationState.SettingChallengeReady, 7, string.Empty, 0, ready);
+            OperateSafeCheckpoint(OnlineArcadeOperationState.SettingChallengeReady, 7, ready);
 
         public Task<OnlineArcadeOperationResult> ConfirmSettlementAsync() =>
-            OperateSafeShop(OnlineArcadeOperationState.Settling, 4, string.Empty, 0, false);
+            OperateSafeCheckpoint(OnlineArcadeOperationState.Settling, 4, false);
 
         public Task<OnlineArcadeOperationResult> ConfirmAbandonAsync() =>
-            OperateSafeShop(OnlineArcadeOperationState.Abandoning, 5, string.Empty, 0, false);
+            OperateSafeCheckpoint(OnlineArcadeOperationState.Abandoning, 5, false);
 
         /// <summary>
         /// 上报本地玩家的移动、瞄准、持续射击及一次性消耗品意图；位置、命中及伤害始终由服务器裁决。
@@ -242,20 +236,18 @@ namespace Game
             else if (evt.Action == ArcadeHudActionKind.Dash) input.QueueDash();
         }
 
-        private Task<OnlineArcadeOperationResult> OperateSafeShop(OnlineArcadeOperationState operation,
-            int actionKind, string offerId, int goldAmount, bool ready)
+        private Task<OnlineArcadeOperationResult> OperateSafeCheckpoint(OnlineArcadeOperationState operation,
+            int actionKind, bool ready)
         {
             long expectedRevision = lastSnapshot.Revision;
             return Run(operation, async token =>
             {
-                C2G_OperateOnlineArcadeSafeShop request = C2G_OperateOnlineArcadeSafeShop.Create();
+                C2G_OperateOnlineArcadeSafeCheckpoint request = C2G_OperateOnlineArcadeSafeCheckpoint.Create();
                 request.OperationId = Guid.NewGuid().ToString("N");
                 request.ExpectedRevision = expectedRevision;
                 request.ActionKind = actionKind;
-                request.OfferId = offerId ?? string.Empty;
-                request.GoldAmount = goldAmount;
                 request.Ready = ready;
-                return await network.CallAsync<G2C_OperateOnlineArcadeSafeShop>(request, RpcTimeoutMilliseconds, token);
+                return await network.CallAsync<G2C_OperateOnlineArcadeSafeCheckpoint>(request, RpcTimeoutMilliseconds, token);
             });
         }
 
@@ -286,7 +278,7 @@ namespace Game
                 else if (response is G2C_GetCurrentOnlineArcadeRun restore) { hasRun = restore.HasRun; run = restore.Run; }
                 else
                 {
-                    var operate = (G2C_OperateOnlineArcadeSafeShop)(object)response;
+                    var operate = (G2C_OperateOnlineArcadeSafeCheckpoint)(object)response;
                     hasRun = operate.Run != null;
                     run = operate.Run;
                 }
@@ -353,10 +345,6 @@ namespace Game
             List<OnlineArcadePlayerSnapshot> players = new(source.Players.Count);
             foreach (OnlineArcadePlayerInfo sourcePlayer in source.Players)
             {
-                List<OnlineArcadeShopOfferSnapshot> offers = new(sourcePlayer.ShopOffers.Count);
-                foreach (OnlineArcadeShopOfferInfo offer in sourcePlayer.ShopOffers)
-                    offers.Add(new OnlineArcadeShopOfferSnapshot(offer.OfferId, offer.ShopItemId, offer.ProductId,
-                        offer.ProductType, offer.Price, offer.Amount, offer.PurchaseCount, offer.MaxPurchases));
                 Dictionary<string, int> upgrades = new(StringComparer.Ordinal);
                 foreach (OnlineArcadeOwnedAmountInfo amount in sourcePlayer.UpgradeStacks)
                     upgrades[amount.Id ?? string.Empty] = amount.Amount;
@@ -368,7 +356,7 @@ namespace Game
                     equipment[item.SlotId ?? string.Empty] = item.ProductId ?? string.Empty;
                 players.Add(new OnlineArcadePlayerSnapshot(sourcePlayer.PlayerId, sourcePlayer.DisplayName,
                     sourcePlayer.Lives, sourcePlayer.RunGold, sourcePlayer.Bombs, sourcePlayer.Dashes,
-                    sourcePlayer.WeaponId, sourcePlayer.Ready, offers, upgrades, consumables, equipment,
+                    sourcePlayer.WeaponId, sourcePlayer.Ready, upgrades, consumables, equipment,
                     sourcePlayer.SettlementConfirmed, sourcePlayer.AbandonConfirmed,
                     sourcePlayer.SettlementState, sourcePlayer.ChallengeReady, sourcePlayer.Score,
                     Math.Max(1, sourcePlayer.ScoreMultiplier), sourcePlayer.MultiplierProgress));

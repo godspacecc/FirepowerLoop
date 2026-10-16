@@ -4,7 +4,7 @@ namespace ET.Server
 {
     public enum OnlineArcadeRunPhase
     {
-        SafeShop = 1,
+        SafeCheckpoint = 1,
         Arena = 2,
         Challenge = 3,
         Victory = 4,
@@ -19,33 +19,18 @@ namespace ET.Server
         RayTelegraph = 3,
     }
 
-    /// <summary>安全商店写操作类型；协议只传递数值，权威校验由街机 Actor 完成。</summary>
-    public enum OnlineArcadeSafeShopActionKind
+    /// <summary>安全节点写操作类型；协议只传递数值，权威校验由街机 Actor 完成。</summary>
+    public enum OnlineArcadeSafeCheckpointActionKind
     {
-        Purchase = 1,
-        TransferGold = 2,
         SetReady = 3,
         ConfirmSettlement = 4,
         ConfirmAbandon = 5,
         SetChallengeReady = 7,
     }
 
-    /// <summary>安全商店报价的持久化副本；价格和商品身份在创建后不随配置热变。</summary>
-    [EnableClass]
-    public sealed class OnlineArcadeShopOfferRecord
-    {
-        public string OfferId { get; set; }
-        public string ShopItemId { get; set; }
-        public string ProductId { get; set; }
-        public int ProductType { get; set; }
-        public int Price { get; set; }
-        public int Amount { get; set; }
-        public int PurchaseCount { get; set; }
-        public int MaxPurchases { get; set; }
-        public string EquipmentSlotId { get; set; }
-    }
 
-    /// <summary>单名原始成员的局内安全节点；双方资源、商店和准备状态始终独立。</summary>
+
+    /// <summary>单名原始成员的局内安全节点；双方资源和准备状态始终独立。</summary>
     [EnableClass]
     public sealed class OnlineArcadePlayerRecord
     {
@@ -63,7 +48,6 @@ namespace ET.Server
         public bool Ready { get; set; }
         /// <summary>是否已确认进入本安全节点的特殊挑战；与普通开战准备互斥。</summary>
         public bool ChallengeReady { get; set; }
-        public List<OnlineArcadeShopOfferRecord> ShopOffers { get; set; } = new();
         public Dictionary<string, int> UpgradeStacks { get; set; } = new();
         public Dictionary<string, int> Consumables { get; set; } = new();
         public Dictionary<string, string> EquipmentBySlot { get; set; } = new();

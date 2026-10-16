@@ -29,7 +29,7 @@ internal static class ArcadeDropLifetimeChecks
     private static OnlineArcadeRunActor Actor(ServerConfig config)
     {
         var record = new OnlineArcadeRunRecord { RunId = 1, RoomId = 2, NextArena = 1, ArenaConfigNumber = 1,
-            Phase = OnlineArcadeRunPhase.SafeShop, ConfigFingerprint = config.ArcadeRule.ConfigFingerprint,
+            Phase = OnlineArcadeRunPhase.SafeCheckpoint, ConfigFingerprint = config.ArcadeRule.ConfigFingerprint,
             Players = new() { new() { PlayerId = 1, Lives = 3, Ready = true, WeaponId = config.ArcadeRule.BaseWeaponId },
                 new() { PlayerId = 2, Lives = 3, Ready = true, WeaponId = config.ArcadeRule.BaseWeaponId } } };
         var battle = OnlineArcadeRunActorSystem.PrepareBattle(record, false);

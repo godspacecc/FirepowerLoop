@@ -23,7 +23,6 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         InitialDashes = _buf.ReadInt();
         BaseWeaponId = _buf.ReadString();
         BaseWeaponId_Ref = null;
-        ShopOfferCount = _buf.ReadInt();
         MaxAliveEnemies = _buf.ReadInt();
         MaxProjectiles = _buf.ReadInt();
         MaxDrops = _buf.ReadInt();
@@ -56,7 +55,6 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
     public readonly int InitialDashes;
     public readonly string BaseWeaponId;
     public ArcadeWeaponConfig BaseWeaponId_Ref;
-    public readonly int ShopOfferCount;
     public readonly int MaxAliveEnemies;
     public readonly int MaxProjectiles;
     public readonly int MaxDrops;
@@ -93,7 +91,6 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         + "InitialBombs:" + InitialBombs + ","
         + "InitialDashes:" + InitialDashes + ","
         + "BaseWeaponId:" + BaseWeaponId + ","
-        + "ShopOfferCount:" + ShopOfferCount + ","
         + "MaxAliveEnemies:" + MaxAliveEnemies + ","
         + "MaxProjectiles:" + MaxProjectiles + ","
         + "MaxDrops:" + MaxDrops + ","

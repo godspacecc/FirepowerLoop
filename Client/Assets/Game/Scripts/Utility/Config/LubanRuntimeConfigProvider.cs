@@ -1119,10 +1119,10 @@ namespace Game
                 if (error != null) return error;
             }
 
-            foreach (var row in tables.TbArcadeShopItem.DataList)
+            foreach (var row in tables.TbArcadeSupportVisual.DataList)
             {
                 var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, true,
-                    "TbArcadeShopItem", row.Id, "ActiveVisualPrefabName");
+                    "TbArcadeSupportVisual", row.Id, "ActiveVisualPrefabName");
                 if (error != null) return error;
             }
 
@@ -1191,7 +1191,7 @@ namespace Game
             if (rule == null || !string.Equals(rule.Id, "arcade.default", StringComparison.Ordinal)) return "TbArcadeRule[arcade.default] 缺失";
             if (string.IsNullOrWhiteSpace(rule.ConfigFingerprint) || rule.ConfigFingerprint.Length > 128 ||
                 rule.InitialLives <= 0 || rule.InitialBombs < 0 || rule.InitialDashes < 0 || string.IsNullOrWhiteSpace(rule.BaseWeaponId) ||
-                rule.ShopOfferCount <= 0 || rule.MaxAliveEnemies <= 0 || rule.MaxProjectiles <= 0 || rule.MaxDrops <= 0 || rule.BossEveryArenas <= 0 ||
+                rule.MaxAliveEnemies <= 0 || rule.MaxProjectiles <= 0 || rule.MaxDrops <= 0 || rule.BossEveryArenas <= 0 ||
                 !IsNonNegativeFinite(rule.HealthGrowthPerArena) || !IsNonNegativeFinite(rule.DamageGrowthPerArena) ||
                 !IsNonNegativeFinite(rule.SpeedGrowthPerArena) || !IsNonNegativeFinite(rule.GoldGrowthPerArena) ||
                 rule.PlayerMaxHealth <= 0 || !IsPositiveFinite(rule.PlayerMoveSpeed) || !IsPositiveFinite(rule.PlayerRadius) ||
@@ -1348,7 +1348,7 @@ namespace Game
                         !string.Equals(row.WaveGroupIds[row.WaveGroupIds.Length - 1], boss.EnemyGroupId, StringComparison.Ordinal))
                         return $"TbArcadeArena[{row.ArenaNumber}].BossId 必须引用与最后一轮敌群匹配的 Boss";
                 }
-                if (row.ClearGold < 0 || !salts.Add(row.ShopSeedSalt)) return $"TbArcadeArena[{row.ArenaNumber}] 金币或商店种子盐无效";
+                if (row.ClearGold < 0 || !salts.Add(row.EncounterSeedSalt)) return $"TbArcadeArena[{row.ArenaNumber}] 金币或战斗种子盐无效";
             }
 
             // 深度受十场限制，即使配置有环也不会无界递归或进入无法通关的路线。
@@ -1369,20 +1369,12 @@ namespace Game
                     return $"TbArcadeUpgrade[{row?.Id ?? "<null>"}] 无效";
             }
 
-            var shopIds = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var row in tables.TbArcadeShopItem.DataList)
-            {
-                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !shopIds.Add(row.Id) || string.IsNullOrWhiteSpace(row.ProductId) ||
-                    !Enum.IsDefined(typeof(global::ArcadeShopProductType), row.ProductType) || row.UnlockArena <= 0 || row.Weight <= 0 ||
-                    row.BasePrice <= 0 || row.PricePerArena < 0 || row.Amount <= 0 || row.MaxPurchases <= 0 ||
+            var supportIds = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var row in tables.TbArcadeSupportVisual.DataList)
+                if (row == null || string.IsNullOrWhiteSpace(row.Id) || !supportIds.Add(row.Id) ||
+                    string.IsNullOrWhiteSpace(row.ProductId) || row.EquipmentSlotId != ArcadeRunDefaults.SupportSlotId ||
                     !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
-                    return $"TbArcadeShopItem[{row?.Id ?? "<null>"}] 数值无效";
-                if (row.ProductType == global::ArcadeShopProductType.Upgrade && !upgradeIds.Contains(row.ProductId))
-                    return $"TbArcadeShopItem[{row.Id}].ProductId 强化引用不存在";
-                if ((row.ProductType == global::ArcadeShopProductType.Equipment) != !string.IsNullOrWhiteSpace(row.EquipmentSlotId))
-                    return $"TbArcadeShopItem[{row.Id}].EquipmentSlotId 与商品类型不匹配";
-            }
-            if (rule.ShopOfferCount > shopIds.Count) return "TbArcadeRule.ShopOfferCount 超过商品总数";
+                    return "支援视觉配置无效";
 
             var dropIds = new HashSet<string>(StringComparer.Ordinal);
             var powerupIds = new HashSet<string>(StringComparer.Ordinal);
@@ -1439,8 +1431,7 @@ namespace Game
         {
             var rule = tables.TbArcadeRule.DataList[0];
             value = new ArcadeConfigCatalogDefinition(
-                new ArcadeRuleDefinition(rule.Id, rule.InitialLives, rule.InitialBombs, rule.InitialDashes, rule.BaseWeaponId,
-                    rule.ShopOfferCount, rule.MaxAliveEnemies, rule.MaxProjectiles, rule.MaxDrops, rule.HealthGrowthPerArena,
+                new ArcadeRuleDefinition(rule.Id, rule.InitialLives, rule.InitialBombs, rule.InitialDashes, rule.BaseWeaponId, rule.MaxAliveEnemies, rule.MaxProjectiles, rule.MaxDrops, rule.HealthGrowthPerArena,
                     rule.DamageGrowthPerArena, rule.SpeedGrowthPerArena, rule.GoldGrowthPerArena, rule.BossEveryArenas,
                     rule.PlayerMaxHealth, rule.PlayerMoveSpeed, rule.PlayerRadius, rule.EnemyContactRadius,
                     rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
@@ -1456,7 +1447,7 @@ namespace Game
                     .Select(row => new ArcadeArenaDefinition(row.ArenaNumber, row.WaveGroupIds,
                         row.Obstacles.Select(obstacle => new ArcadeObstacleDefinition(obstacle.CenterX, obstacle.CenterY,
                             obstacle.HalfWidth, obstacle.HalfHeight)),
-                        row.IsBoss, row.BossId, row.ClearGold, row.ShopSeedSalt, row.Hazards.Select(ToHazardParameters),
+                        row.IsBoss, row.BossId, row.ClearGold, row.EncounterSeedSalt, row.Hazards.Select(ToHazardParameters),
                         row.NextArenaNumbers, row.FinalBossId, AnotherDay.Arcade.ArcadeOpeningParameters.FromConfig(row), AnotherDay.Arcade.ArcadeBabylonParameters.FromConfig(row))),
                 tables.TbArcadeEnemyGroup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeEnemyGroupDefinition(row.Id,
@@ -1481,11 +1472,10 @@ namespace Game
                         ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName),
                         row.VisualFollowPlayer, new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ),
                         row.Magnitude, row.Damage, row.IntervalSeconds, row.Radius, row.ProjectileSpeed, row.Charges)),
-                tables.TbArcadeShopItem.DataList.OrderBy(row => row.UnlockArena).ThenBy(row => row.Id, StringComparer.Ordinal)
-                    .Select(row => new ArcadeShopItemDefinition(row.Id, row.ProductId, row.ProductType, row.UnlockArena,
-                        row.Weight, row.BasePrice, row.PricePerArena, row.Amount, row.EquipmentSlotId,
+                tables.TbArcadeSupportVisual.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
+                    .Select(row => new ArcadeSupportVisualDefinition(row.Id, row.ProductId, row.EquipmentSlotId,
                         ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, true),
-                        new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ), row.MaxPurchases)),
+                        new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ))),
                 tables.TbArcadeUpgrade.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeUpgradeDefinition(row.Id, row.Kind, row.ValuePerStack, row.MaxStacks)),
                 tables.TbArcadeReward.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
