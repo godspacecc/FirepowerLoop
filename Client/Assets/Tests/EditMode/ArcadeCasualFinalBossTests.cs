@@ -5,6 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Luban;
 using NUnit.Framework;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using QFramework;
 
@@ -153,27 +155,109 @@ namespace Game.Tests
             });
         }
 
-        [Test]
-        public void ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds()
+        [TestCase(1)]
+        [TestCase(3)]
+        [TestCase(4)]
+        [TestCase(20)]
+        public void ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds(int arenaNumber)
         {
-            var view = new ArcadeCombatViewController();
-            var root = new GameObject("ArcadeExitTest");
-            typeof(ArcadeCombatViewController).GetField("root", BindingFlags.NonPublic | BindingFlags.Instance).SetValue(view, root);
-            try
+            WithExitView(arenaNumber, true, (view, root) =>
             {
                 view.SetExits(new[] { 2, 3 }, 20f, false);
                 Assert.That(root.transform.childCount, Is.EqualTo(2));
                 var first = root.transform.GetChild(0).gameObject;
-                Assert.That(first.GetComponent<Collider>(), Is.Null);
+                Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
+                if (arenaNumber <= 3)
+                {
+                    Assert.That(first.GetComponentInChildren<TextMeshPro>(true).text,
+                        Is.EqualTo(Loc.T("ui.arcade.destination.babylon")));
+                    Assert.That(root.transform.GetChild(1).GetComponentInChildren<TextMeshPro>(true).text,
+                        Is.EqualTo(Loc.T("ui.arcade.destination.forest")));
+                }
                 view.SetExits(new[] { 2, 3 }, 20f, false);
                 Assert.That(root.transform.GetChild(0).gameObject, Is.SameAs(first));
                 view.SetExits(Array.Empty<int>(), 20f, true);
                 Assert.That(root.transform.childCount, Is.EqualTo(1));
                 Assert.That(root.transform.GetChild(0).name, Is.EqualTo("ArcadeVictoryExit"));
+                Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
                 view.End();
                 Assert.That(root == null, Is.True);
+            });
+        }
+
+        /// <summary>正式模板未就绪时暂缓生成；完成加载后必须重绘已收到的出口快照。</summary>
+        [Test]
+        public void ExitVisuals_PendingSnapshotRendersAfterContentLoads()
+        {
+            WithExitView(1, false, (view, root) =>
+            {
+                view.SetExits(new[] { 2, 3 }, 20f, false);
+                Assert.That(root.transform.childCount, Is.Zero);
+                Call(view, "LoadContentAsync", 1);
+                Assert.That(root.transform.childCount, Is.EqualTo(2));
+                Assert.That(root.transform.GetChild(0).name, Is.EqualTo("ArcadeRouteExit_2"));
+                Assert.That(root.transform.GetChild(1).name, Is.EqualTo("ArcadeRouteExit_3"));
+                Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
+                var first = root.transform.GetChild(0);
+                view.SetExits(new[] { 2, 3 }, 20f, false);
+                Assert.That(root.transform.GetChild(0), Is.SameAs(first));
+            });
+        }
+
+        /// <summary>提供真实模板与本地语言表，隔离展示测试对全局架构及资源加载器的影响。</summary>
+        private static void WithExitView(int arenaNumber, bool templatesReady,
+            Action<ArcadeCombatViewController, GameObject> action)
+        {
+            var architectureField = typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic);
+            var previousArchitecture = architectureField.GetValue(null);
+            var previousLoader = ResourceLoader.Current;
+            var view = new ArcadeCombatViewController();
+            var root = new GameObject("ArcadeExitTest");
+            try
+            {
+                ResourceLoader.SetLoaderForTests(new ExitVisualResourceLoader());
+                LocalizationLanguages.ResetForTests();
+                var architecture = new Game();
+                architectureField.SetValue(null, architecture);
+                typeof(Architecture<Game>).GetField("mInited", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(architecture, true);
+                architecture.RegisterModel(new LocalizationModel());
+                architecture.RegisterUtility(new LocalizationUtility());
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(ArcadeCombatViewController).GetField("root", flags).SetValue(view, root);
+                typeof(ArcadeCombatViewController).GetField("contentArena", flags).SetValue(view, arenaNumber);
+                if (templatesReady && arenaNumber <= 3)
+                {
+                    var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                        "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");
+                    Assert.That(prefab, Is.Not.Null);
+                    var templates = prefab.transform.Find("Content");
+                    Assert.That(templates, Is.Not.Null);
+                    typeof(ArcadeCombatViewController).GetField("contentTemplates", flags).SetValue(view, templates);
+                }
+                action(view, root);
             }
-            finally { view.End(); }
+            finally
+            {
+                try { view.End(); }
+                finally
+                {
+                    if (root != null) UnityEngine.Object.DestroyImmediate(root);
+                    architectureField.SetValue(null, previousArchitecture);
+                    ResourceLoader.Use(previousLoader);
+                    LocalizationLanguages.ResetForTests();
+                }
+            }
+        }
+
+        /// <summary>仅加载工程内现有语言表和正式表现 Prefab，不启动 YooAsset、网络或玩家存档。</summary>
+        private sealed class ExitVisualResourceLoader : IResourceLoader
+        {
+            public T LoadAsset<T>(string path) where T : UnityEngine.Object =>
+                AssetDatabase.LoadAssetAtPath<T>(typeof(T) == typeof(TextAsset)
+                    ? "Assets/Game/Config/Localization/" + path : "Assets/Game/" + path + ".prefab");
+            public ResourceLoadHandle LoadAssetAsync<T>(string path, Action<T> onLoaded) where T : UnityEngine.Object
+            { onLoaded?.Invoke(LoadAsset<T>(path)); return ResourceLoadHandle.Empty; }
+            public void Release(ResourceLoadHandle handle) { }
         }
 
         [Test]

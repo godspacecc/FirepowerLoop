@@ -1351,6 +1351,8 @@ namespace Game
                         if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.Weight <= 0) continue;
                         if (roll < candidate.Weight)
                         {
+                            // 单机敌人抽中武器时留空，保留原权重且不重抽；箱子等独立来源不受影响。
+                            if (candidate.Kind == global::ArcadeDropKind.TemporaryWeapon) break;
                             var drop = runtimePool.RentDrop();
                             drop.Id = runtime.NextEntityId++;
                             drop.Definition = candidate;
