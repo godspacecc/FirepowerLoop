@@ -1,6 +1,6 @@
 # PC 安装器与整包更新使用说明
 
-Windows x64 使用当前用户安装器，首次可选择本地磁盘上的独立空目录，默认 `%LOCALAPPDATA%\Programs\AnotherDay`；所选目录必须对当前用户可写。固定 AppId 保持同一卸载入口，后续升级自动沿用已注册目录，拒绝通过 `/DIR` 把升级变成迁移。旧固定目录安装也能被识别。需要迁移时先卸载再安装到新目录，LocalLow 存档仍保留。安装和卸载均不清理存档。
+Windows x64 使用当前用户安装器，首次可选择本地磁盘上的独立空目录，默认 `%LOCALAPPDATA%\Programs\FirepowerLoop`；所选目录必须对当前用户可写。固定 AppId 保持同一卸载入口，后续升级自动沿用已注册目录，拒绝通过 `/DIR` 把升级变成迁移。旧固定目录安装也能被识别。需要迁移时先卸载再安装到新目录，LocalLow 存档仍保留。安装和卸载均不清理存档。
 
 ## 首次发布
 
@@ -15,18 +15,18 @@ Windows x64 使用当前用户安装器，首次可选择本地磁盘上的独�
 
 ```powershell
 & .\Tools\WindowsInstaller\build_installer.ps1 `
-  -PlayerDirectory 'D:\Packages\AnotherDay' `
+  -PlayerDirectory 'D:\Packages\FirepowerLoop' `
   -Compiler 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' `
   -OutputDirectory 'D:\Packages\Installer_001'
 ```
 
-转换工具不调用 Unity。它要求 `AnotherDay.exe`、`UnityPlayer.dll`、`GameAssembly.dll`、有效热更程序集注册及内置 PC 身份，排除运行时 `AnotherDay_Data\yoo` 缓存、调试资料和额外顶层用户文件。不要在构建输出中手工替换 DLL 或发布身份后继续生成安装器。
+转换工具不调用 Unity。它要求 `FirepowerLoop.exe`、`UnityPlayer.dll`、`GameAssembly.dll`、有效热更程序集注册及内置 PC 身份，排除运行时 `FirepowerLoop_Data\yoo` 缓存、调试资料和额外顶层用户文件。不要在构建输出中手工替换 DLL 或发布身份后继续生成安装器。
 
 ## 版本与后续更新
 
 `Client/Assets/Editor/Build/windows-release-version.json` 是共享 PC 版本台账。发布前可调整 `versionName`（三段数字），不要降低 `releaseNumber`。每次正式 PC Player 成功构建并通过程序集及符号分离检查后，序号递增一次；构建失败恢复原台账及 StreamingAssets 身份。准备 Player、仅热更资源、转换安装器不会消耗新序号。成功构建后应把台账变化同步到版本库，跨机器出包必须使用最新台账。
 
-正式构建把身份写到 `AnotherDay_Data\StreamingAssets\windows-release.json`；安装器版本只读取这个身份。显示版本与 Android `Application.version`、Android code 独立。完整安装器包含所有托管程序文件，因此可从序号 1 直接更新到序号 10，更新后的 Boot 继续比较序号 11、12 等。
+正式构建把身份写到 `FirepowerLoop_Data\StreamingAssets\windows-release.json`；安装器版本只读取这个身份。显示版本与 Android `Application.version`、Android code 独立。完整安装器包含所有托管程序文件，因此可从序号 1 直接更新到序号 10，更新后的 Boot 继续比较序号 11、12 等。
 
 版本台账与源 StreamingAssets 身份在准备、提交和回滚时均使用同目录临时文件原子替换，不原地截断 Unity 可能仍在映射的 TextAsset，`.meta` 与 GUID 保留。准备失败且恢复失败时同时保留原始异常和恢复异常。2026-10-08 的 Win32 1224 回归已在临时内存映射文件中复现，修复后 `WindowsReleaseIdentityTests` 6 项通过；项目真实资产准备后回滚也验证了原字节和 GUID 恢复，没有执行 Player 构建。
 
@@ -38,7 +38,7 @@ PC 启动在加载 Game.dll 前检查新版；开始界面主动“检查更新�
 
 安装器通过 PID 和创建时间等待发起游戏退出，不按名称强杀进程。其他实例占用文件时由安装向导处理，请关闭实例再继续。向导会备份旧托管文件、记录恢复日志，全部新文件 SHA256 验证后才提交并删除旧版本已移除文件；普通失败尝试恢复，异常中断后再次运行安装器先恢复旧程序。注册表和快捷方式不属于文件事务，失败后可用同一 AppId 安装器修复注册信息。不要手动删除 `.update-backup`，不要在安装目录中使用 junction 或符号链接。
 
-安装完成首次启动时，Boot 使旧宿主资源缓存及 `AnotherDay.LastSuccessfulHostVersion` 标记一起失效，然后按新宿主重新初始化资源。缓存删除失败会终止本轮启动，不混用旧宿主资源；存档不受影响。
+安装完成首次启动时，Boot 使旧宿主资源缓存及 `FirepowerLoop.LastSuccessfulHostVersion` 标记一起失效，然后按新宿主重新初始化资源。缓存删除失败会终止本轮启动，不混用旧宿主资源；存档不受影响。
 
 ## 发布到资源服务器
 
@@ -48,7 +48,7 @@ PC 启动在加载 Game.dll 前检查新版；开始界面主动“检查更新�
 
 ```powershell
 & .\Server\ResourceServer\publish_windows_update.ps1 `
-  -Installer 'D:\Packages\Installer_001\AnotherDay-Setup-1.exe' `
+  -Installer 'D:\Packages\Installer_001\FirepowerLoop-Setup-1.exe' `
   -Manifest 'D:\Packages\Installer_001\app-update-windows.json' `
   -Bundle 'D:\ResourceServerBundle_20261008_120000'
 ```

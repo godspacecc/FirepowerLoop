@@ -1,6 +1,6 @@
 ﻿param([switch]$RoutesOnly)
 $ErrorActionPreference = 'Stop'
-$pcTestRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('AnotherDayPcTests_' + [Guid]::NewGuid().ToString('N'))
+$pcTestRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('FirepowerLoopPcTests_' + [Guid]::NewGuid().ToString('N'))
 $serverProcess = $null
 try {
     New-Item -ItemType Directory -Path $pcTestRoot | Out-Null
@@ -11,9 +11,9 @@ try {
         Invoke-Expression $function.Extent.Text
     }
     function Check([bool]$condition, [string]$message) { if (-not $condition) { throw $message } }
-    $installer = Join-Path $pcTestRoot 'AnotherDay-Setup-2.exe'
+    $installer = Join-Path $pcTestRoot 'FirepowerLoop-Setup-2.exe'
     [System.IO.File]::WriteAllBytes($installer, [byte[]](1,2,3))
-    Check ((Resolve-WindowsAppUpdatePath '/app-updates/windows/AnotherDay-Setup-2.exe' $pcTestRoot).Status -eq 200) 'Installer route should resolve'
+    Check ((Resolve-WindowsAppUpdatePath '/app-updates/windows/FirepowerLoop-Setup-2.exe' $pcTestRoot).Status -eq 200) 'Installer route should resolve'
     foreach ($path in @('/app-updates/windows/../secret.exe', '/app-updates/windows/%2e%2e%2fsecret.exe', '/app-updates/windows/a/b.exe', '/app-updates/windows/secret.json', '/app-updates/windows/a%5cb.exe')) {
         Check ((Resolve-WindowsAppUpdatePath $path $pcTestRoot).Status -eq 403) "Unsafe route accepted: $path"
     }
@@ -43,7 +43,7 @@ try {
         catch { $legacyRejected = $true }
         Check $legacyRejected 'Legacy product publication accepted'
         Check ((Get-Content -Raw -LiteralPath (Join-Path $folder 'app-update-windows.json')) -eq $beforeLegacy) 'Legacy product changed latest manifest'
-        $installer = Join-Path $pcTestRoot 'AnotherDay-Setup-3.exe'
+        $installer = Join-Path $pcTestRoot 'FirepowerLoop-Setup-3.exe'
         [IO.File]::WriteAllBytes($installer, [byte[]](1,2,3))
         Write-Manifest 3
         & (Join-Path $PSScriptRoot 'publish_windows_update.ps1') -Installer $installer -Manifest $pcManifestPath -Bundle $bundle
@@ -100,7 +100,7 @@ try {
     # 只删除本次在系统临时目录创建的唯一测试目录。
     $pcTestResolved = [IO.Path]::GetFullPath($pcTestRoot)
     $pcTestTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
-    if ($pcTestResolved.StartsWith($pcTestTemp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $pcTestResolved -Leaf).StartsWith('AnotherDayPcTests_')) {
+    if ($pcTestResolved.StartsWith($pcTestTemp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $pcTestResolved -Leaf).StartsWith('FirepowerLoopPcTests_')) {
         Remove-Item -LiteralPath $pcTestResolved -Recurse -Force
     }
 }

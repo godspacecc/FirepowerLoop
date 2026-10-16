@@ -12,7 +12,7 @@ namespace Game.Editor
     public static class WindowsInstallerMenu
     {
         private static bool running;
-        private const string CompilerKey = "AnotherDay.WindowsInstaller.Compiler";
+        private const string CompilerKey = "FirepowerLoop.WindowsInstaller.Compiler";
 
         [MenuItem("Tools/打包/PC/为已有Player生成当前用户安装器", false, 150)]
         private static async void Generate()

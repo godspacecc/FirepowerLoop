@@ -3,11 +3,11 @@ $ErrorActionPreference = 'Stop'
 
 # 不执行打包：检查 Gradle 默认源码集，传入已有 APK 时检查最终 DEX 类是否齐全。
 $repository = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
-$plugin = Join-Path $repository 'Client/Assets/Plugins/Android/AnotherDayUpdate.androidlib'
+$plugin = Join-Path $repository 'Client/Assets/Plugins/Android/FirepowerLoopUpdate.androidlib'
 [xml]$manifest = Get-Content -LiteralPath (Join-Path $plugin 'AndroidManifest.xml')
 $provider = $manifest.manifest.application.provider.GetAttribute('name', 'http://schemas.android.com/apk/res/android')
-if ($provider -ne 'com.anotherday.update.ApkProvider') { throw '更新提供器声明不符合约定。' }
-$classes = @($provider, 'com.anotherday.update.ApkInstaller')
+if ($provider -ne 'com.firepowerloop.update.ApkProvider') { throw '更新提供器声明不符合约定。' }
+$classes = @($provider, 'com.firepowerloop.update.ApkInstaller')
 foreach ($name in $classes) {
     $source = Join-Path $plugin ('src/main/java/' + $name.Replace('.', '/') + '.java')
     if (-not (Test-Path -LiteralPath $source -PathType Leaf)) {
@@ -17,11 +17,11 @@ foreach ($name in $classes) {
 Write-Output 'Android update plugin source-set checks passed.'
 
 # 重启 Activity 也必须进入默认源码集；清单声明存在不能证明 Java 类已编译进 APK。
-$restartPlugin = Join-Path $repository 'Client/Assets/Plugins/Android/AnotherDayRestart.androidlib'
+$restartPlugin = Join-Path $repository 'Client/Assets/Plugins/Android/FirepowerLoopRestart.androidlib'
 [xml]$restartManifest = Get-Content -LiteralPath (Join-Path $restartPlugin 'AndroidManifest.xml')
 $restartActivity = $restartManifest.manifest.application.activity
 $restartClass = $restartActivity.GetAttribute('name', 'http://schemas.android.com/apk/res/android')
-if ($restartClass -ne 'com.anotherday.restart.ResourceRestartActivity' -or
+if ($restartClass -ne 'com.firepowerloop.restart.ResourceRestartActivity' -or
     $restartActivity.GetAttribute('process', 'http://schemas.android.com/apk/res/android') -ne ':resource_restart' -or
     $restartActivity.GetAttribute('exported', 'http://schemas.android.com/apk/res/android') -ne 'false') {
     throw '重启 Activity 声明不符合独立私有进程约定。'
@@ -35,7 +35,7 @@ Write-Output 'Android restart plugin source-set checks passed.'
 
 # 新宿主使用异步交接 API，仅验证类存在不能发现 APK 内仍携带旧版同步插件。
 $bridgeMethods = @('beginInstall', 'getInstallResult', 'cancelInstall')
-$installerSource = Get-Content -Raw -LiteralPath (Join-Path $plugin 'src/main/java/com/anotherday/update/ApkInstaller.java')
+$installerSource = Get-Content -Raw -LiteralPath (Join-Path $plugin 'src/main/java/com/firepowerloop/update/ApkInstaller.java')
 foreach ($method in $bridgeMethods) {
     if ($installerSource -notmatch ('public\s+static\s+(void|String)\s+' + $method + '\s*\(')) {
         throw "安装插件缺少异步接口：$method"

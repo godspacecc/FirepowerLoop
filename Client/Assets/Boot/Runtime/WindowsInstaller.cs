@@ -109,12 +109,12 @@ namespace Boot
             if (!Supported) return;
             var installed = WindowsUpdateManifest.ReadInstalled();
             if (installed == null) return;
-            const string key = "AnotherDay.WindowsHostRelease";
+            const string key = "FirepowerLoop.WindowsHostRelease";
             if (PlayerPrefs.GetInt(key, -1) == installed.releaseNumber) return;
             string root = Path.GetFullPath(Path.Combine(Application.dataPath, "yoo"));
             // 路径来自当前 Player 的固定缓存目录，清理失败则抛出并阻止旧缓存启动。
             if (Directory.Exists(root)) Directory.Delete(root, true);
-            PlayerPrefs.DeleteKey("AnotherDay.LastSuccessfulHostVersion");
+            PlayerPrefs.DeleteKey("FirepowerLoop.LastSuccessfulHostVersion");
             PlayerPrefs.SetInt(key, installed.releaseNumber);
             PlayerPrefs.Save();
         }

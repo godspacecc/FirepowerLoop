@@ -1,4 +1,4 @@
-package com.anotherday.restart;
+package com.firepowerloop.restart;
 
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -35,7 +35,7 @@ public final class ResourceRestartActivity extends Activity {
             Process.killProcess(mainPid);
             waitForOldProcess();
         } catch (RuntimeException exception) {
-            Log.e("AnotherDayRestart", "Restart handoff failed", exception);
+            Log.e("FirepowerLoopRestart", "Restart handoff failed", exception);
             showFailure();
         }
     }
@@ -67,7 +67,7 @@ public final class ResourceRestartActivity extends Activity {
             finish();
             Process.killProcess(Process.myPid());
         } catch (RuntimeException exception) {
-            Log.e("AnotherDayRestart", "Restart launch failed", exception);
+            Log.e("FirepowerLoopRestart", "Restart launch failed", exception);
             showFailure();
         }
     }

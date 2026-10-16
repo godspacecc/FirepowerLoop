@@ -52,12 +52,12 @@ $checksums = @($managed | Where-Object { $_ -ne 'windows-payload-sha256.txt' } |
     (Get-FileHash -LiteralPath (Join-Path $payload $_) -Algorithm SHA256).Hash.ToLowerInvariant() + '|' + $_
 })
 [IO.File]::WriteAllLines((Join-Path $payload 'windows-payload-sha256.txt'), $checksums, [Text.UTF8Encoding]::new($true))
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'AnotherDay.iss') -Destination (Join-Path $output 'AnotherDay.iss')
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'FirepowerLoop.iss') -Destination (Join-Path $output 'FirepowerLoop.iss')
 $name = "FirepowerLoop-Setup-$($identity.releaseNumber)"
 if ($PrepareOnly) { Write-Output "Validated installer input: $output"; return }
 if (-not (Test-Path -LiteralPath $Compiler -PathType Leaf)) { throw 'Configure the full path of Inno Setup 6 ISCC.exe.' }
 $payloadBytes = (Get-ChildItem -LiteralPath $payload -File -Recurse | Measure-Object -Property Length -Sum).Sum
-& $Compiler "/DPayloadBytes=$([long]$payloadBytes)" "/DRelease=$($identity.releaseNumber)" "/DVersion=$($identity.versionName)" "/DOutputName=$name" (Join-Path $output 'AnotherDay.iss')
+& $Compiler "/DPayloadBytes=$([long]$payloadBytes)" "/DRelease=$($identity.releaseNumber)" "/DVersion=$($identity.versionName)" "/DOutputName=$name" (Join-Path $output 'FirepowerLoop.iss')
 if ($LASTEXITCODE -ne 0) { throw "ISCC failed: $LASTEXITCODE" }
 $installer = Join-Path $output "$name.exe"
 if (-not (Test-Path -LiteralPath $installer -PathType Leaf)) { throw 'Compiler did not produce installer.' }

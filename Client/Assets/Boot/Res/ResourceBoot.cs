@@ -19,7 +19,7 @@ namespace Boot
         private const int REMOTE_VERSION_TIMEOUT_SECONDS = 8;
         /// <summary>资源清单允许比版本文件更长的传输时间，超时后仍自动降级。</summary>
         private const int REMOTE_MANIFEST_TIMEOUT_SECONDS = 15;
-        private const string LAST_SUCCESSFUL_HOST_VERSION_KEY = "AnotherDay.LastSuccessfulHostVersion";
+        private const string LAST_SUCCESSFUL_HOST_VERSION_KEY = "FirepowerLoop.LastSuccessfulHostVersion";
         /// <summary>独立游戏在启动时统一准备基础与街机资源；在线下载和本地完整性校验共用此范围。</summary>
         private static readonly string[] StartupResourceTags =
         {
@@ -211,7 +211,7 @@ namespace Boot
         {
 #if UNITY_EDITOR
             _actualPlayMode = _editorPlayMode;
-#elif ANOTHERDAY_ANDROID_BUILTIN_RESOURCES
+#elif FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES
             // Android 完整测试包自带完整 YooAsset 资源，不读取 Host 配置，也不访问资源服务器。
             _actualPlayMode = ResourcePlayMode.OfflinePlayMode;
 #else

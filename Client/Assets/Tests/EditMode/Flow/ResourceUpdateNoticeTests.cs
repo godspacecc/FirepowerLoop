@@ -145,7 +145,7 @@ namespace Game.Tests
             };
 
             var script = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "Server", "ResourceServer", "validate_resource_update_notices.ps1"));
-            var temp = Path.Combine(Path.GetTempPath(), "AnotherDayNoticeValidation", Guid.NewGuid().ToString("N"));
+            var temp = Path.Combine(Path.GetTempPath(), "FirepowerLoopNoticeValidation", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(temp);
             try
             {

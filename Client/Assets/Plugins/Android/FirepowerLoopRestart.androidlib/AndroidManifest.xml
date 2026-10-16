@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.anotherday.restart">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.firepowerloop.restart">
     <application>
-        <activity android:name="com.anotherday.restart.ResourceRestartActivity"
+        <activity android:name="com.firepowerloop.restart.ResourceRestartActivity"
             android:process=":resource_restart" android:exported="false"
             android:excludeFromRecents="true"
             android:theme="@android:style/Theme.Material.NoActionBar" />

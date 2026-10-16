@@ -70,9 +70,9 @@ namespace Game.Tests
             string androidBuild = File.ReadAllText("Assets/Editor/Build/AndroidBuildUtility.cs");
             string resourceBoot = File.ReadAllText("Assets/Boot/Res/ResourceBoot.cs");
 
-            Assert.That(androidBuild, Does.Contain("ANOTHERDAY_ANDROID_BUILTIN_RESOURCES"));
+            Assert.That(androidBuild, Does.Contain("FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES"));
             Assert.That(androidBuild, Does.Contain("extraScriptingDefines"));
-            Assert.That(resourceBoot, Does.Contain("#elif ANOTHERDAY_ANDROID_BUILTIN_RESOURCES"));
+            Assert.That(resourceBoot, Does.Contain("#elif FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES"));
             Assert.That(resourceBoot, Does.Contain("_actualPlayMode = ResourcePlayMode.OfflinePlayMode;"));
             Assert.That(resourceBoot, Does.Contain("_actualPlayMode = ResourcePlayMode.HostPlayMode;"));
         }

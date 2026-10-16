@@ -109,13 +109,13 @@ try {
     $Version = (Get-Content -Raw $VersionFile).Trim()
 
     try {
-        $Host.UI.RawUI.WindowTitle = "Another Day YooAsset资源服 - $Port"
+        $Host.UI.RawUI.WindowTitle = "FirepowerLoop YooAsset资源服 - $Port"
     } catch {
         Write-Warning "Unable to set console title: $_"
     }
 
     Write-Host "========================================"
-    Write-Host "Another Day YooAsset资源服"
+    Write-Host "FirepowerLoop YooAsset资源服"
     Write-Host "资源版本: $Version"
     Write-Host "资源目录: $Root"
     $ListenAddress = if ($ListenOnLan) { [System.Net.IPAddress]::Any } else { [System.Net.IPAddress]::Loopback }

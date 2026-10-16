@@ -51,7 +51,7 @@ namespace Game.Tests
             return type;
         }
 
-        private static string Manifest(int release = 10, string name = "AnotherDay-Setup-10.exe",
+        private static string Manifest(int release = 10, string name = "FirepowerLoop-Setup-10.exe",
             string product = "com.firepowerloop.game", string platform = "Windows", string arch = "x64",
             long size = 3, string hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") =>
             $"{{\"schemaVersion\":1,\"productId\":\"{product}\",\"platform\":\"{platform}\",\"architecture\":\"{arch}\",\"versionName\":\"0.1.10\",\"releaseNumber\":{release},\"installerFileName\":\"{name}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";

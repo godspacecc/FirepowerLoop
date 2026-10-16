@@ -15,7 +15,7 @@ namespace Game.Tests.Flow
         [SetUp]
         public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDayUpdateCache-" + Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoopUpdateCache-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             cache = Type.GetType("Boot.UpdatePackageCache, Boot");
             Assert.That(cache, Is.Not.Null, "缺少已安装整包缓存清理器。");

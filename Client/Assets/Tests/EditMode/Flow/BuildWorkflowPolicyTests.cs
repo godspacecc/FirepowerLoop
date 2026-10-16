@@ -50,11 +50,11 @@ namespace Game.Tests
             Assert.Throws<TargetInvocationException>(() => run.Invoke(timing, new object[] { "PublishAndroidApk", fail }));
             var format = RequiredType("BuildWorkflowUtility").GetMethod("FormatFailure");
             Assert.That(format, Is.Not.Null);
-            string text = (string)format.Invoke(null, new[] { timing, "sample-failure", "E:/Release/AnotherDay.apk" });
+            string text = (string)format.Invoke(null, new[] { timing, "sample-failure", "E:/Release/FirepowerLoop.apk" });
             Assert.That(text, Does.Contain("入口: Android 首包完整打包"));
             Assert.That(text, Does.Contain("失败阶段: PublishAndroidApk"));
             Assert.That(text, Does.Contain("sample-failure"));
-            Assert.That(text, Does.Contain("E:/Release/AnotherDay.apk"));
+            Assert.That(text, Does.Contain("E:/Release/FirepowerLoop.apk"));
             Assert.That(text, Does.Contain("总耗时："));
             Assert.That(text, Does.Contain("PublishAndroidApk:"));
         }

@@ -12,7 +12,7 @@ namespace Game.Tests
         private string root, apk, bundle;
         [SetUp] public void SetUp()
         {
-            root = Path.Combine(Path.GetTempPath(), "AnotherDayApkPublishTests", Guid.NewGuid().ToString("N"));
+            root = Path.Combine(Path.GetTempPath(), "FirepowerLoopApkPublishTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             apk = Path.Combine(root, "input.apk"); File.WriteAllBytes(apk, new byte[] { 1, 2, 3 });
             bundle = Path.Combine(root, "Bundle");

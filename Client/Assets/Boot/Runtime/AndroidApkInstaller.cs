@@ -20,7 +20,7 @@ namespace Boot
             string requestId = Guid.NewGuid().ToString("N");
             using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
             using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
-            using (var bridge = new AndroidJavaClass("com.anotherday.update.ApkInstaller"))
+            using (var bridge = new AndroidJavaClass("com.firepowerloop.update.ApkInstaller"))
             {
                 try
                 {
@@ -50,7 +50,7 @@ namespace Boot
 #if UNITY_ANDROID && !UNITY_EDITOR
             using (var player = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
             using (var activity = player.GetStatic<AndroidJavaObject>("currentActivity"))
-            using (var bridge = new AndroidJavaClass("com.anotherday.update.ApkInstaller"))
+            using (var bridge = new AndroidJavaClass("com.firepowerloop.update.ApkInstaller"))
                 return bridge.CallStatic<T>(method, activity);
 #else
             throw new PlatformNotSupportedException();

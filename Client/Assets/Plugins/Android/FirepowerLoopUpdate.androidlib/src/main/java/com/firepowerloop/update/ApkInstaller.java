@@ -1,4 +1,4 @@
-package com.anotherday.update;
+package com.firepowerloop.update;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -95,10 +95,10 @@ public final class ApkInstaller {
                         }
                 });
             } catch (Exception failure) {
-                Log.e("AnotherDayUpdate", "APK request failed", failure);
+                Log.e("FirepowerLoopUpdate", "APK request failed", failure);
                 complete(id, request, -1, "VALIDATION_EXCEPTION", "package_validation", Log.getStackTraceString(failure));
             }
-        }, "AnotherDayApkValidation").start();
+        }, "FirepowerLoopApkValidation").start();
     }
 
     public static String getInstallResult(String id) {

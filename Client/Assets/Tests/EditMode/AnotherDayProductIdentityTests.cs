@@ -12,10 +12,10 @@ namespace Game.Tests
             var projectRoot = Directory.GetParent(Application.dataPath).FullName;
             var source = File.ReadAllText(Path.Combine(projectRoot, "ProjectSettings/ProjectSettings.asset"));
 
-            Assert.That(source, Does.Contain("companyName: AnotherDay"));
+            Assert.That(source, Does.Contain("companyName: FirepowerLoop"));
             Assert.That(source, Does.Contain("productName: FirepowerLoop"));
-            Assert.That(source, Does.Contain("Android: com.anotherday.firepowerloop"));
-            Assert.That(source, Does.Contain("iPhone: com.anotherday.firepowerloop"));
+            Assert.That(source, Does.Contain("Android: com.firepowerloop.game"));
+            Assert.That(source, Does.Contain("iPhone: com.firepowerloop.game"));
         }
 
         [Test]

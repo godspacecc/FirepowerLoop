@@ -1,4 +1,4 @@
-package com.anotherday.update;
+package com.firepowerloop.update;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -40,7 +40,7 @@ public final class ApkProvider extends ContentProvider {
             MatrixCursor cursor = new MatrixCursor(columns, 1);
             Object[] row = new Object[columns.length];
             for (int i = 0; i < columns.length; ++i) {
-                if (OpenableColumns.DISPLAY_NAME.equals(columns[i])) row[i] = "AnotherDay-update.apk";
+                if (OpenableColumns.DISPLAY_NAME.equals(columns[i])) row[i] = "FirepowerLoop-update.apk";
                 if (OpenableColumns.SIZE.equals(columns[i])) row[i] = file.length();
             }
             cursor.addRow(row);

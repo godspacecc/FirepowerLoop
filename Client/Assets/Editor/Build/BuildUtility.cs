@@ -24,8 +24,8 @@ namespace Game.Editor
         private const string Il2CppDebugInformationSuffix = "_BackUpThisFolder_ButDontShipItWithYourGame";
         private static bool s_isBuilding;
         /// <summary>仅在当前编辑器会话保存待恢复入口；不序列化委托，重载后按白名单重新进入。</summary>
-        private const string PendingWorkflowKey = "AnotherDay.PCBuild.PendingWorkflow";
-        private const string ReloadCompletedKey = "AnotherDay.PCBuild.ReloadCompleted";
+        private const string PendingWorkflowKey = "FirepowerLoop.PCBuild.PendingWorkflow";
+        private const string ReloadCompletedKey = "FirepowerLoop.PCBuild.ReloadCompleted";
         /// <summary>运行中或等待重载期间占用编辑器构建入口，防止另一平台抢占目标。</summary>
         internal static bool HasActiveWorkflow => s_isBuilding ||
             !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
@@ -862,13 +862,13 @@ namespace Game.Editor
         private static string GetBuildStateRoot()
         {
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(projectPath, "Library", "AnotherDayBuild");
+            return Path.Combine(projectPath, "Library", "FirepowerLoopBuild");
         }
 
         private static string GetPreparatoryPlayerBuildPath()
         {
             string projectPath = Directory.GetParent(Application.dataPath).FullName;
-            return Path.Combine(projectPath, "Temp", "AnotherDayBuild", "PrepPlayer_Temp");
+            return Path.Combine(projectPath, "Temp", "FirepowerLoopBuild", "PrepPlayer_Temp");
         }
 
         private static void RequireFile(string path)

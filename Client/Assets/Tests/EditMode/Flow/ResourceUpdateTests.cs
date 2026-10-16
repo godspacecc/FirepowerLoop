@@ -334,7 +334,7 @@ namespace Game.Tests
         {
             var launcher = new FakeProcessLauncher();
             var quitter = new FakeQuitter();
-            var restart = new ApplicationRestartUtility(launcher, quitter, () => false, () => @"C:\Game\AnotherDay.exe");
+            var restart = new ApplicationRestartUtility(launcher, quitter, () => false, () => @"C:\Game\FirepowerLoop.exe");
 
             launcher.Result = false;
             Assert.IsFalse(restart.TryRestart(out var error));
@@ -353,7 +353,7 @@ namespace Game.Tests
             var launcher = new FakeProcessLauncher();
             var quitter = new FakeQuitter();
 
-            var editorRestart = new ApplicationRestartUtility(launcher, quitter, () => true, () => @"C:\Game\AnotherDay.exe");
+            var editorRestart = new ApplicationRestartUtility(launcher, quitter, () => true, () => @"C:\Game\FirepowerLoop.exe");
             Assert.IsFalse(editorRestart.TryRestart(out var editorError));
             Assert.That(editorError, Does.Contain("编辑器内不支持重启应用"));
             Assert.IsFalse(quitter.QuitCalled);

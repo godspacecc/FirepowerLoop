@@ -11,7 +11,7 @@ namespace Game.Editor
     /// <summary>消费已校验 Player 并生成、发布安装器；不调用 Unity 构建、不启动服务器或游戏。</summary>
     public static class WindowsInstallerPublishUtility
     {
-        private const string CompilerKey = "AnotherDay.WindowsInstaller.Compiler";
+        private const string CompilerKey = "FirepowerLoop.WindowsInstaller.Compiler";
 
         /// <summary>昂贵构建前检查设备本地编译器；交互选取仅记录 EditorPrefs，批处理缺配置直接失败。</summary>
         public static string EnsureCompiler()

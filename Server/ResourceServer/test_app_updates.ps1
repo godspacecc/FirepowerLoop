@@ -1,6 +1,6 @@
 ﻿param([switch]$RoutesOnly)
 $ErrorActionPreference = 'Stop'
-$apkTestRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('AnotherDayApkTests_' + [Guid]::NewGuid().ToString('N'))
+$apkTestRoot = Join-Path ([System.IO.Path]::GetTempPath()) ('FirepowerLoopApkTests_' + [Guid]::NewGuid().ToString('N'))
 $serverProcess = $null
 try {
     New-Item -ItemType Directory -Path $apkTestRoot | Out-Null
@@ -79,7 +79,7 @@ try {
     # 只删除本次在系统临时目录创建的唯一测试目录。
     $apkTestResolved = [IO.Path]::GetFullPath($apkTestRoot)
     $apkTestTemp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
-    if ($apkTestResolved.StartsWith($apkTestTemp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $apkTestResolved -Leaf).StartsWith('AnotherDayApkTests_')) {
+    if ($apkTestResolved.StartsWith($apkTestTemp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $apkTestResolved -Leaf).StartsWith('FirepowerLoopApkTests_')) {
         Remove-Item -LiteralPath $apkTestResolved -Recurse -Force
     }
 }

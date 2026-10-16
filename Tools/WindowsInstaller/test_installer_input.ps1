@@ -1,6 +1,6 @@
 param([string]$Compiler = '')
 $ErrorActionPreference = 'Stop'
-$testRoot = Join-Path ([IO.Path]::GetTempPath()) ('AnotherDayInstallerTests_' + [Guid]::NewGuid().ToString('N'))
+$testRoot = Join-Path ([IO.Path]::GetTempPath()) ('FirepowerLoopInstallerTests_' + [Guid]::NewGuid().ToString('N'))
 function Check([bool]$value, [string]$message) { if (-not $value) { throw $message } }
 try {
     $player = Join-Path $testRoot 'Player'
@@ -24,7 +24,7 @@ try {
     Check ((Get-Content -Raw -LiteralPath (Join-Path $output 'payload/windows-install.ini')) -match 'Number=3') 'Installer release changed'
     if ($Compiler) {
         $payloadBytes = (Get-ChildItem -LiteralPath (Join-Path $output 'payload') -File -Recurse | Measure-Object Length -Sum).Sum
-        & $Compiler '/Q' "/DPayloadBytes=$([long]$payloadBytes)" '/DRelease=3' '/DVersion=0.1.0' '/DOutputName=Fixture-Setup-3' (Join-Path $output 'AnotherDay.iss')
+        & $Compiler '/Q' "/DPayloadBytes=$([long]$payloadBytes)" '/DRelease=3' '/DVersion=0.1.0' '/DOutputName=Fixture-Setup-3' (Join-Path $output 'FirepowerLoop.iss')
         Check ($LASTEXITCODE -eq 0) 'Installer template did not compile'
         Check (Test-Path -LiteralPath (Join-Path $output 'Fixture-Setup-3.exe')) 'Compiled installer missing'
         Write-Output 'Installer template compiled; fixture installer was not executed.'
@@ -47,7 +47,7 @@ try {
 } finally {
     $resolved = [IO.Path]::GetFullPath($testRoot)
     $temp = [IO.Path]::GetFullPath([IO.Path]::GetTempPath()).TrimEnd('\') + '\'
-    if ($resolved.StartsWith($temp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $resolved -Leaf).StartsWith('AnotherDayInstallerTests_')) {
+    if ($resolved.StartsWith($temp, [StringComparison]::OrdinalIgnoreCase) -and (Split-Path $resolved -Leaf).StartsWith('FirepowerLoopInstallerTests_')) {
         Remove-Item -LiteralPath $resolved -Recurse -Force
     }
 }

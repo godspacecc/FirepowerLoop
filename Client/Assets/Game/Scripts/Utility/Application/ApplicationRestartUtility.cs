@@ -54,7 +54,7 @@ namespace Game
                 using var launch = manager.Call<AndroidJavaObject>("getLaunchIntentForPackage", activity.Call<string>("getPackageName"));
                 if (launch == null) throw new InvalidOperationException("Android 启动入口不可用");
                 // 先解析新 APK 内的中转类；旧 APK 缺类时返回失败，绝不先关闭游戏。
-                using var restartClass = new AndroidJavaClass("com.anotherday.restart.ResourceRestartActivity");
+                using var restartClass = new AndroidJavaClass("com.firepowerloop.restart.ResourceRestartActivity");
                 using var intent = new AndroidJavaObject("android.content.Intent", activity, restartClass);
                 using var process = new AndroidJavaClass("android.os.Process");
                 using var pidExtra = intent.Call<AndroidJavaObject>("putExtra", "main_pid", process.CallStatic<int>("myPid"));

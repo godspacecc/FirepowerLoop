@@ -24,7 +24,7 @@ namespace Game.Editor
             get
             {
                 string projectPath = Directory.GetParent(Application.dataPath).FullName;
-                return Path.Combine(projectPath, "Library", "AnotherDayBuild", "LocalResourceServer.json");
+                return Path.Combine(projectPath, "Library", "FirepowerLoopBuild", "LocalResourceServer.json");
             }
         }
 

@@ -26,11 +26,11 @@ namespace Game.Editor
         private const string PlayerGuidePath = "安卓联机玩家说明.md";
         private const string PlayerGuideFileName = "安卓联机玩家说明.md";
         /// <summary>仅随 Android 完整内置测试包传入 Player 编译，不改变 Windows 与 Host 包的启动策略。</summary>
-        internal const string BuiltinResourcesScriptingDefine = "ANOTHERDAY_ANDROID_BUILTIN_RESOURCES";
+        internal const string BuiltinResourcesScriptingDefine = "FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES";
         private static bool s_isBuilding;
         /// <summary>只在本编辑器会话保存请求身份；真实重载后按白名单恢复一次，不保存委托。</summary>
-        private const string PendingWorkflowKey = "AnotherDay.AndroidBuild.PendingWorkflow";
-        private const string ReloadCompletedKey = "AnotherDay.AndroidBuild.ReloadCompleted";
+        private const string PendingWorkflowKey = "FirepowerLoop.AndroidBuild.PendingWorkflow";
+        private const string ReloadCompletedKey = "FirepowerLoop.AndroidBuild.ReloadCompleted";
         internal static bool HasActiveWorkflow => s_isBuilding ||
             !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
 
@@ -1026,7 +1026,7 @@ namespace Game.Editor
                 string projectPath = Directory.GetParent(Application.dataPath)?.FullName ??
                                      throw new InvalidOperationException("无法确定 Unity 项目根目录。");
                 BatchDirectory = Path.GetFullPath(Path.Combine(projectPath, "Build", "Android", timestamp.ToString("yyyyMMdd_HHmmss")));
-                PreparatoryDirectory = Path.GetFullPath(Path.Combine(projectPath, "Temp", "AnotherDayBuild", "Android", runId));
+                PreparatoryDirectory = Path.GetFullPath(Path.Combine(projectPath, "Temp", "FirepowerLoopBuild", "Android", runId));
                 PreparatoryApkPath = Path.Combine(PreparatoryDirectory, "FirepowerLoop-preparatory.apk");
             }
 

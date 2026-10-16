@@ -17,7 +17,7 @@ MonoBehaviour:
   UniqueBundleName: 0
   Packages:
   - PackageName: DefaultPackage
-    PackageDesc: "Another Day\u9ED8\u8BA4\u8D44\u6E90\u5305"
+    PackageDesc: "FirepowerLoop\u9ED8\u8BA4\u8D44\u6E90\u5305"
     EnableAddressable: 1
     SupportExtensionless: 1
     LocationToLower: 0

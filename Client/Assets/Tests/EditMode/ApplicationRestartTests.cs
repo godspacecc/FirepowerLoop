@@ -22,7 +22,7 @@ namespace Game.Tests
         public void AndroidPackageDeclaresPrivateSeparateProcessActivity()
         {
             var path = Path.Combine(Application.dataPath,
-                "Plugins/Android/AnotherDayRestart.androidlib/AndroidManifest.xml");
+                "Plugins/Android/FirepowerLoopRestart.androidlib/AndroidManifest.xml");
             Assert.That(File.Exists(path), Is.True);
             var document = System.Xml.Linq.XDocument.Load(path);
             System.Xml.Linq.XNamespace android = "http://schemas.android.com/apk/res/android";

@@ -19,7 +19,7 @@ namespace Game.Tests
                 return type;
             }
         }
-        private string Json(string version = "0.1.10", string file = "AnotherDay-0.1.10.apk",
+        private string Json(string version = "0.1.10", string file = "FirepowerLoop-0.1.10.apk",
             string package = "com.firepowerloop.game", int code = 2, long size = 3,
             string hash = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa") =>
             $"{{\"schemaVersion\":1,\"platform\":\"Android\",\"packageName\":\"{package}\",\"versionName\":\"{version}\",\"versionCode\":{code},\"apkFileName\":\"{file}\",\"sizeBytes\":{size},\"sha256\":\"{hash}\"}}";

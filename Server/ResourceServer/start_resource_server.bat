@@ -1,7 +1,7 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Another Day Resource Server
+title FirepowerLoop Resource Server
 powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File "%~dp0resource_server.ps1" -Port 8001 -Root "%~dp0ResourceFiles" -NoticeFile "%~dp0Notices\resource-update-notices.json" -AppUpdateRoot "%~dp0AppUpdates\Android"
 set "EXIT_CODE=%ERRORLEVEL%"
 if not "%EXIT_CODE%"=="0" (

@@ -69,7 +69,7 @@ namespace Game.Tests
         [Test]
         public void InstallerAllowsFirstDirectoryChoiceAndLocksUpgradeToRegisteredDirectory()
         {
-            string source = File.ReadAllText(Path.Combine(Application.dataPath, "../../Tools/WindowsInstaller/AnotherDay.iss"));
+            string source = File.ReadAllText(Path.Combine(Application.dataPath, "../../Tools/WindowsInstaller/FirepowerLoop.iss"));
             Assert.That(source, Does.Contain("UsePreviousAppDir=yes"));
             Assert.That(source, Does.Contain("DisableDirPage=auto"));
             Assert.That(source, Does.Contain("ExistingInstallDir"));
@@ -80,7 +80,7 @@ namespace Game.Tests
         [Test]
         public void InstallerPublicationRejectsWrongReleaseAndCorruptedBytes()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayInstallerValidation_" + Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopInstallerValidation_" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             try
             {
@@ -147,7 +147,7 @@ namespace Game.Tests
             SetField(state, "LastHost", CreateHostRecord("202607161500", "StandaloneWindows64", "C:/Host", "C:/Dlls"));
             SetField(state, "LastAotBaseline", CreateAotRecord("StandaloneWindows64", "C:/Aot", "C:/Dlls/HybridCLRAssemblyList.bytes", "C:/Dlls"));
             SetField(state, "LastPackage", CreatePackageRecord("202607161500", "StandaloneWindows64", "C:/Package", "Host"));
-            SetField(state, "LastPlayer", CreatePlayerRecord("C:/Player/AnotherDay.exe", "202607161500", "Full"));
+            SetField(state, "LastPlayer", CreatePlayerRecord("C:/Player/FirepowerLoop.exe", "202607161500", "Full"));
 
             string json = JsonUtility.ToJson(state, true);
             object restored = JsonUtility.FromJson(json, BuildStateType);
@@ -155,7 +155,7 @@ namespace Game.Tests
             Assert.That(GetField(GetField(restored, "LastHost"), "Version"), Is.EqualTo("202607161500"));
             Assert.That(GetField(GetField(restored, "LastAotBaseline"), "AotDirectory"), Is.EqualTo("C:/Aot"));
             Assert.That(GetField(GetField(restored, "LastPackage"), "BuildKind"), Is.EqualTo("Host"));
-            Assert.That(GetField(GetField(restored, "LastPlayer"), "PlayerPath"), Is.EqualTo("C:/Player/AnotherDay.exe"));
+            Assert.That(GetField(GetField(restored, "LastPlayer"), "PlayerPath"), Is.EqualTo("C:/Player/FirepowerLoop.exe"));
         }
 
         [Test]
@@ -278,7 +278,7 @@ namespace Game.Tests
 
             Assert.That(info.FileName, Does.EndWith("start_yooasset_local_server.bat").IgnoreCase);
             Assert.That(info.FileName.Replace('\\', '/'), Does.Contain("Assets/Editor/YooAsset/LocalServer"));
-            Assert.That(info.FileName.Replace('\\', '/'), Does.Not.Contain("Assets/Editor/AnotherDay"));
+            Assert.That(info.FileName.Replace('\\', '/'), Does.Not.Contain("Assets/Editor/FirepowerLoop"));
             Assert.That(info.UseShellExecute, Is.True);
             Assert.That(info.WindowStyle, Is.EqualTo(ProcessWindowStyle.Normal));
             Assert.That(info.Arguments, Does.Contain("8001"));
@@ -652,7 +652,7 @@ namespace Game.Tests
 
         private static string CreateTempPackageRoot()
         {
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayPackageTests", Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopPackageTests", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             return root;
         }

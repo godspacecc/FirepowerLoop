@@ -425,7 +425,7 @@ try {
     $listenIp = if ($ListenAddress -eq '0.0.0.0') { [System.Net.IPAddress]::Any } else { [System.Net.IPAddress]::Loopback }
     $listener = [System.Net.Sockets.TcpListener]::new($listenIp, $Port)
     $listener.Start()
-    Write-Host "Another Day Resource Server"
+    Write-Host "FirepowerLoop Resource Server"
     Write-Host "Root: $resolvedRoot"
     if (-not [string]::IsNullOrWhiteSpace($resolvedNoticeFile)) {
         Write-Host "Notice: $resolvedNoticeFile"

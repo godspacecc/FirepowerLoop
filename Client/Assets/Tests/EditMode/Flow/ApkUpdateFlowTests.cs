@@ -51,7 +51,7 @@ namespace Game.Tests
         private static async UniTask DownloadCheck(bool validHash, bool cancel)
         {
             var view = CloneView();
-            string root = Path.Combine(Path.GetTempPath(), "AnotherDayDownload-" + Guid.NewGuid().ToString("N"));
+            string root = Path.Combine(Path.GetTempPath(), "FirepowerLoopDownload-" + Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(root);
             string hash = validHash ? "039058c6f2c0cb492c533b0a4d14ef77cc0f78abccced5287d84a1a2011cfb81" : new string('a', 64);
             string path = Path.Combine(root, hash + ".apk");

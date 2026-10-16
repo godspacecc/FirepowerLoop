@@ -18,7 +18,7 @@ namespace Game.Editor
     {
         private const string PACKAGE_NAME = "DefaultPackage";
         private const string BUILD_PIPELINE = "ScriptableBuildPipeline";
-        private const string ManifestOnlyBuiltinTag = "__AnotherDayManifestOnlyBuiltin__";
+        private const string ManifestOnlyBuiltinTag = "__FirepowerLoopManifestOnlyBuiltin__";
         private const string RequiredAddressRule = "AddressByGameRelativePathNoExtension";
         private const string RequiredFilterRule = "CollectAll";
         private static readonly string[] FixedRuntimePrefabLocations =
