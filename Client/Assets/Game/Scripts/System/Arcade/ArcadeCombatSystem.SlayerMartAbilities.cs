@@ -37,6 +37,14 @@ namespace Game
             => runtime.PlayerHealth>0&&runtime.RespawnRemaining<=0&&!runtime.IslandTransitionPending&&!runtime.IslandRoomTransitionPending&&
                 !runtime.CompletionAwaitingRetry&&!runtime.CompletionSubmitted&&
                 !(runtime.SlayerMart?.Ready==true&&!runtime.SlayerMart.Closing);
+        /// <summary>风暴仅由活动状态投影，伤害与控制继续使用同一配置半径。</summary>
+        private void SyncSlayerMartStormVisual(ArcadeCombatRuntime runtime)
+        {
+            var state=SlayerMartAbility(runtime);
+            if(state?.StormRemaining>0&&state.Owned.Contains("slayermart.item.16")&&runtime.PlayerHealth>0&&
+                runtime.RespawnRemaining<=0&&!runtime.InTreasureRoom&&runtime.SlayerMartReturnWave<=0&&slayerMartConfig!=null)
+                view.SetSlayerMartStorm(state.PlayerId,runtime.PlayerPosition,slayerMartConfig.Parameter("storm.radius"));
+        }
         /// <summary>消费单人设备的一次意图；拒绝后不缓冲到复起或退出菜单。</summary>
         private void ReadFieldUpgradeInput(ArcadeCombatRuntime runtime)
         {

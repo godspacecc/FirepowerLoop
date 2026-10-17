@@ -24,6 +24,8 @@ namespace Game
         private readonly HashSet<long> seenIds = new();
         private IArcadeCombatViewPort view;
         private ArcadeConfigCatalogDefinition catalog;
+        /// <summary>专属风暴视觉只读正式半径，不持有客户端伤害时钟。</summary>
+        private FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration stormVisualConfig;
         private ArcadeArenaDefinition activeArena;
         private FirepowerLoop.Arcade.ArcadeRoundLayoutParameters activeRoundLayout;
         private int activeRoundGeneration;
@@ -338,6 +340,11 @@ namespace Game
         /// <summary>把单名玩家的权威强化与支援配置映射为视觉；固定型强化使用服务器落点。</summary>
         private void SyncPlayerEffects(OnlineArcadeBattlePlayerSnapshot player, Vector2 displayPosition)
         {
+            if(player.Alive&&player.RespawnSeconds<=0&&player.HasStorm&&player.StormSeconds>0&&!player.InTreasureRoom)
+            {
+                if(stormVisualConfig==null)this.GetUtility<IRuntimeConfigProvider>().TryGetSlayerMart(out stormVisualConfig,out _);
+                if(stormVisualConfig!=null)view.SetSlayerMartStorm(player.PlayerId,displayPosition,stormVisualConfig.Parameter("storm.radius"));
+            }
             foreach(var body in player.SlayerMartSupports)
             {
                 var definition=catalog.Powerups.FirstOrDefault(p=>p.Id==body.ProductId);

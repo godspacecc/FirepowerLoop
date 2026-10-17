@@ -91,6 +91,8 @@ namespace Game
         /// <summary>仅接受产品定义中的稳定 ID，显示名称沿用现有本地化定义。</summary>
         void PlayProductPickup(string productId) { }
         void BeginEffectSync() { }
+        /// <summary>风暴权威半径的专属表现，不复用普通电球。</summary>
+        void SetSlayerMartStorm(long ownerPlayerId,Vector2 position,float radius) { }
         /// <summary>稳定实例与接触体身份只用于表现，位置由战斗权威给定。</summary>
         void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
             Vector2 bodyPosition,Vector2 shotDirection) { }
@@ -646,6 +648,7 @@ namespace Game
             if (effectSyncRevision != 0) return;
             effectSyncRevision = 1;
             foreach (EffectVisualEntry entry in effectVisuals.Values) entry.LastSeenRevision = 0;
+            foreach(var storm in stormVisuals.Values)storm.SeenRevision=0;
         }
 
         public void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition)
@@ -719,6 +722,7 @@ namespace Game
 
         public void EndEffectSync()
         {
+            EndStormSync();
             staleEffectVisualKeys.Clear();
             foreach (KeyValuePair<string, EffectVisualEntry> pair in effectVisuals)
                 if (pair.Value.LastSeenRevision != effectSyncRevision && pair.Value.ShieldFlashRemaining <= 0f)
@@ -995,6 +999,7 @@ namespace Game
 
         private void ReleaseAllEffectVisuals()
         {
+            EndStormSync(true);
             staleEffectVisualKeys.Clear();
             staleEffectVisualKeys.AddRange(effectVisuals.Keys);
             for (var index = 0; index < staleEffectVisualKeys.Count; index++)

@@ -1915,6 +1915,7 @@ namespace Game
                     powerup.ShotDirection);
             }
             SyncSlayerMartSupportVisuals(runtime);
+            SyncSlayerMartStormVisual(runtime);
             if (TryGetSupportVisual(out ArcadeSupportVisualDefinition support))
                 view.SetSupport(support, runtime.PlayerPosition);
             view.EndEffectSync();
