@@ -347,7 +347,11 @@ namespace Game
             if(catalog==null)return candidate;
             var position=ResolvePosition(candidate,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
             var layout=RoundLayout(r);
-            return layout==null || layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)
+            if(layout==null || layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight))return position;
+            // 加减障碍中心会产生浮点接触误差；仅失败时留一毫米余量重投影，避免合法墙边跳回出生点。
+            const float placementClearance=.001f;
+            position=ResolvePosition(position,catalog.Rule.PlayerRadius+placementClearance,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
+            return layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)
                 ? position : new Vector2(layout.SpawnX,layout.SpawnY);
         }
         /// <summary>单条快照保留真实端点，长射线不创建大量替代圆。</summary>

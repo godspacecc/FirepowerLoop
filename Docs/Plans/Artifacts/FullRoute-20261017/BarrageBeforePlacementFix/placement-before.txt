@@ -1,0 +1,1 @@
+playerX=11.480113 playerY=-3.45 radius=0.55 resolvedX=0 resolvedY=-13

@@ -1,0 +1,73 @@
+{
+  "green": {
+    "executed": 6,
+    "results": [
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ClearGroundKeepsExactPosition",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ConfiguredSpawnRemainsUnchanged",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.FarCornerProjectsNearActualMapCorner",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.InsideObstacleProjectsToNearbyLegalEdge",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ObservedWallContactDoesNotTeleportToSpawn",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.OppositeWallContactRemainsLocal",
+        "Status": "Passed"
+      }
+    ],
+    "passed": 6,
+    "failed": 0
+  },
+  "red": {
+    "executed": 6,
+    "results": [
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ClearGroundKeepsExactPosition",
+        "Status": "Passed",
+        "Message": null
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ConfiguredSpawnRemainsUnchanged",
+        "Status": "Passed",
+        "Message": null
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.FarCornerProjectsNearActualMapCorner",
+        "Status": "Failed",
+        "Message": "  Expected: less than 0.00999999978f\r\n  But was:  37.1470718f\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.InsideObstacleProjectsToNearbyLegalEdge",
+        "Status": "Failed",
+        "Message": "  Expected: less than 4\r\n  But was:  12.2065554f\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.ObservedWallContactDoesNotTeleportToSpawn",
+        "Status": "Failed",
+        "Message": "  Expected: less than 0.00999999978f\r\n  But was:  14.9330339f\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeContentPlacementTests.OppositeWallContactRemainsLocal",
+        "Status": "Passed",
+        "Message": null
+      }
+    ],
+    "passed": 3,
+    "failed": 3
+  },
+  "testClass": "ArcadeContentPlacementTests",
+  "includePassingTests": true,
+  "maximum": 6
+}
