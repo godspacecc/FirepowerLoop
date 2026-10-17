@@ -2365,6 +2365,7 @@ namespace ET.Server
             bool changed = false;
             foreach (OnlineArcadeBattlePlayerRuntime player in battle.Players.Values.OrderBy(x => x.PlayerId))
             {
+                FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.AdvanceOrdinaryOrbits(SlayerMartAbility(battle,player.PlayerId),deltaSeconds,ServerConfig.Instance.SlayerMart.Parameter);
                 foreach (KeyValuePair<ArcadePowerupBehavior, OnlineArcadePowerupRuntime> pair in
                          player.Powerups.ToList())
                 {
@@ -2380,7 +2381,9 @@ namespace ET.Server
                         player.Powerups.Remove(pair.Key);
                         continue;
                     }
-                    if (!player.Alive || player.InTreasureRoom || powerup.CooldownSeconds > 0f || battle.Enemies.Count == 0) continue;
+                    if (!player.Alive || player.InTreasureRoom || battle.Enemies.Count == 0) continue;
+                    if (self.TickSlayerMartOrdinaryOrbit(battle,player,powerup)) continue;
+                    if (powerup.CooldownSeconds > 0f) continue;
                     switch (pair.Key)
                     {
                         case ArcadePowerupBehavior.Chicken:

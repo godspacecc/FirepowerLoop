@@ -1084,10 +1084,12 @@ namespace Game
         /// <summary>结算全部并存强化；固定设施使用拾取点，随身效果使用玩家当前位置。</summary>
         private void TickPowerups(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            if(slayerMartConfig!=null)FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.AdvanceOrdinaryOrbits(SlayerMartAbility(runtime),deltaTime,slayerMartConfig.Parameter);
             if (runtime.Powerups.Count == 0 || runtime.Enemies.Count == 0) return;
             foreach (var pair in runtime.Powerups)
             {
                 var powerup = pair.Value;
+                if (TickSlayerMartOrdinaryOrbit(runtime,powerup)) continue;
                 if (powerup.CooldownSeconds > 0f) continue;
                 switch (pair.Key)
                 {

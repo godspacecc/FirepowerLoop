@@ -49,6 +49,8 @@ namespace FirepowerLoop.Arcade
         private static bool SupportsValid(ArcadeSlayerMartPlayer player,string runId,int visit,long grantSequence)
         {
             if(player.Supports==null||player.Queues==null||player.SupportHits==null||player.AppliedSupportGrants==null||
+                !Finite(player.OrdinarySawPhase)||player.OrdinarySawPhase<0||player.OrdinarySawPhase>=Math.PI*2||
+                !Finite(player.OrdinaryBarrelPhase)||player.OrdinaryBarrelPhase<0||player.OrdinaryBarrelPhase>=Math.PI*2||
                 player.Supports.Any(p=>p==null)||player.Queues.Any(p=>p==null||p.Waiting==null||p.Waiting.Any(i=>i==null))||
                 player.Queues.Select(p=>p.QueueId).Distinct(StringComparer.Ordinal).Count()!=player.Queues.Count)return false;
             var all=player.Supports.Concat(player.Queues.SelectMany(p=>p.Waiting)).ToArray();

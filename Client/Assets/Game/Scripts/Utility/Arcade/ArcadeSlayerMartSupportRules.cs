@@ -88,7 +88,7 @@ namespace FirepowerLoop.Arcade
                 if(item.Kind==SlayerMartSupportKind.Barrel)speed=ArcadeSlayerMartAbilityRules.MasteryOrbitSpeed((float)speed,player,parameter);
                 item.Phase=(item.Phase+speed*seconds)%(Math.PI*2);
             }
-            foreach(var hit in player.SupportHits)hit.RemainingSeconds=Math.Max(0,hit.RemainingSeconds-seconds);
+            foreach(var hit in player.SupportHits.Where(p=>!p.GroupId.StartsWith("ordinary:",StringComparison.Ordinal)))hit.RemainingSeconds=Math.Max(0,hit.RemainingSeconds-seconds);
             player.SupportHits.RemoveAll(p=>p.RemainingSeconds<=0);
             player.Supports.RemoveAll(p=>p.RemainingSeconds<=0||p.Kind==SlayerMartSupportKind.Barrel&&p.Charges<=0);
             player.Chickens=Math.Max(0,player.Chickens-previousChickenCount)+player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0);
@@ -138,10 +138,24 @@ namespace FirepowerLoop.Arcade
         private static bool IsSupport(SlayerMartEffect effect)=>effect==SlayerMartEffect.Chicken||effect==SlayerMartEffect.ChickenPack||effect==SlayerMartEffect.Saw||
             effect==SlayerMartEffect.SawBarrel||effect==SlayerMartEffect.TeslaPack||effect==SlayerMartEffect.BarrelRelay;
         private static bool Finite(double value)=>!double.IsNaN(value)&&!double.IsInfinity(value);
+        /// <summary>普通槽沿用宿主既有活动时钟，不能因队友复起而只扣寿命不转动。</summary>
+        public static void AdvanceOrdinaryOrbits(ArcadeSlayerMartPlayer player,double seconds,Func<string,float> parameter)
+        {
+            if(player==null||!Finite(seconds)||seconds<0)return;
+            player.OrdinarySawPhase=(player.OrdinarySawPhase+parameter("support.orbitSpeed")*seconds)%(Math.PI*2);
+            player.OrdinaryBarrelPhase=(player.OrdinaryBarrelPhase+ArcadeSlayerMartAbilityRules.MasteryOrbitSpeed(parameter("support.orbitSpeed"),player,parameter)*seconds)%(Math.PI*2);
+            foreach(var hit in player.SupportHits.Where(p=>p.GroupId.StartsWith("ordinary:",StringComparison.Ordinal)))hit.RemainingSeconds=Math.Max(0,hit.RemainingSeconds-seconds);
+            player.SupportHits.RemoveAll(p=>p.RemainingSeconds<=0);
+        }
+        private static bool ValidPhase(double value)=>Finite(value)&&value>=0&&value<Math.PI*2;
+        /// <summary>普通槽投影到同一接触几何，不加入购买实例或重赠来源事件。</summary>
+        public static ArcadeSlayerMartEffectInstance OrdinaryBody(ArcadeSlayerMartPlayer player,SlayerMartSupportKind kind,double remaining)
+            =>new ArcadeSlayerMartEffectInstance{InstanceId="ordinary:"+player.PlayerId+":"+kind,GroupId="ordinary:"+player.PlayerId+":"+kind,
+                OwnerId=player.PlayerId,Kind=kind,RemainingSeconds=remaining,Phase=kind==SlayerMartSupportKind.Saw?player.OrdinarySawPhase:player.OrdinaryBarrelPhase};
         /// <summary>按当前正式商品与基础能力配置校验恢复上界，不接受额外时长、次数或冷却。</summary>
         public static bool IsValid(ArcadeSlayerMartPlayer player,ArcadeSlayerMartConfiguration config)
         {
-            if(player==null||player.Supports==null||player.Queues==null||player.SupportHits==null||player.Owned==null||
+            if(player==null||!ValidPhase(player.OrdinarySawPhase)||!ValidPhase(player.OrdinaryBarrelPhase)||player.Supports==null||player.Queues==null||player.SupportHits==null||player.Owned==null||
                 player.AppliedSupportGrants==null||player.Chickens<0||player.Chickens>config.Catalog.MaxChickens||
                 player.Supports.Any(p=>p==null)||player.Queues.Any(p=>p==null||p.Waiting==null||p.Waiting.Any(i=>i==null)))return false;
             if(player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken)>config.Catalog.MaxChickens||

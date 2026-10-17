@@ -10,6 +10,13 @@ internal static class SlayerSupportOnlineChecks
     public static int Run(int max)
     {
         var tests=new (string,Action<OnlineArcadeRunActor,OnlineArcadeBattleRuntime>)[]{
+            ("Living ordinary saw keeps working during teammate respawn",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Saw);b.Players[2].RespawnSeconds=1;float phase=Config.Parameter("support.orbitSpeed")*.1f,r=Config.Supports.Get(SlayerMartSupportKind.Saw).Radius;var e=Enemy(b,1,MathF.Cos(phase)*r,MathF.Sin(phase)*r);Call("TickPowerups",a,b,.1f);Require(e.CurrentHealth<1000);}),
+            ("Ordinary phases persist without reapplying barrel speed mastery",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Barrel);S(b).Owned.Add("slayermart.item.22");Call("TickPowerups",a,b,1f);double phase=S(b).OrdinaryBarrelPhase;Require(Math.Abs(phase-Config.Parameter("support.orbitSpeed")*1.25)<.0001);ManagerCall("CaptureRoundCheckpoint",a.Record,b);var restored=OnlineArcadeRunActorSystem.PrepareBattle(a.Record,false);Require(restored.SlayerMart.Players[0].OrdinaryBarrelPhase==phase);}),
+            ("Ordinary mastered saw contacts opposite body",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Saw);S(b).Owned.Add("slayermart.item.11");float r=Config.Supports.Get(SlayerMartSupportKind.Saw).Radius*2;var e=Enemy(b,1,-r,0);Call("TickPowerups",a,b,0f);Require(e.CurrentHealth<1000);}),
+            ("Ordinary saw leaves empty ring center safe",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Saw);var e=Enemy(b,1,0,0);Call("TickPowerups",a,b,0f);Require(e.CurrentHealth==1000);}),
+            ("Ordinary saw shares target cooldown across bodies",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Saw);S(b).Owned.Add("slayermart.item.11");float r=Config.Supports.Get(SlayerMartSupportKind.Saw).Radius*2;var e=Enemy(b,1,r,0);Call("TickPowerups",a,b,0f);int hp=e.CurrentHealth;Call("TickPowerups",a,b,0f);Require(hp<1000&&e.CurrentHealth==hp);}),
+            ("Ordinary barrel triggers at real orbit body",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Barrel);var power=b.Players[1].Powerups[ArcadePowerupBehavior.Barrel];Enemy(b,1,Config.Parameter("support.orbitRadius"),0);int charges=power.Charges;Call("TickPowerups",a,b,0f);Require(power.Charges==charges-1);}),
+            ("Ordinary barrel cannot trigger at empty ring center",(a,b)=>{Ordinary(a,SlayerMartSupportKind.Barrel);var power=b.Players[1].Powerups[ArcadePowerupBehavior.Barrel];Enemy(b,1,0,0);int charges=power.Charges;Call("TickPowerups",a,b,0f);Require(power.Charges==charges);}),
             ("Three chickens emit three attributed sources",(a,b)=>{Grant(a,SlayerMartEffect.ChickenPack,3,300);Enemy(b,1,5,0);Step(a,0);Require(b.Projectiles.Count==3&&b.Projectiles.Values.All(p=>p.OwnerPlayerId==1)&&b.Projectiles.Values.Select(p=>p.SupportInstanceId).Distinct().Count()==3);}),
             ("Chicken clocks are independent",(a,b)=>{Grant(a,SlayerMartEffect.ChickenPack,3,300);Enemy(b,1,5,0);Step(a,0);Step(a,.1f);Require(b.Projectiles.Count==3&&S(b).Supports.All(p=>p.CooldownSeconds>0));}),
             ("Projectile cap consumes only successful chicken clocks",(a,b)=>{Grant(a,SlayerMartEffect.ChickenPack,3,300);Enemy(b,1,5,0);for(int i=0;i<ServerConfig.Instance.ArcadeRule.MaxProjectiles-1;i++)b.Projectiles[100000+i]=new(){RuntimeId=100000+i};Step(a,0);Require(b.Projectiles.Count==ServerConfig.Instance.ArcadeRule.MaxProjectiles&&S(b).Supports.Count(p=>p.CooldownSeconds>0)==1);}),
@@ -42,9 +49,11 @@ internal static class SlayerSupportOnlineChecks
     private static ArcadeSlayerMartPlayer S(OnlineArcadeBattleRuntime b,long id=1)=>b.SlayerMart.Players.Single(p=>p.PlayerId==id);
     private static void Grant(OnlineArcadeRunActor a,SlayerMartEffect effect,int amount,float duration=0,long owner=1)
     {var s=a.Battle.SlayerMart;s.PendingGrants.Add(new(){EventId=s.RegionInstanceId+":"+(++s.GrantSequence),PlayerId=owner,Effect=effect,Amount=amount,Duration=duration});Require(ArcadeSlayerMartSupportRules.TryApplyGrants(s,Config,new Dictionary<long,int>(),out var next,out var error),error);a.Battle.SlayerMart=next;}
+    private static void Ordinary(OnlineArcadeRunActor a,SlayerMartSupportKind kind)
+    {var drop=ServerConfig.Instance.Tables.TbArcadeDrop.DataList.Single(p=>p.ProductId==Config.Supports.Get(kind).ProductId);Require((bool)Call("ApplyDrop",a,a.Battle.Players[1],drop));}
     private static ArcadeDropConfig ChickenDrop()=>ServerConfig.Instance.Tables.TbArcadeDrop.DataList.Single(p=>p.ProductId==Config.Supports.Get(SlayerMartSupportKind.Chicken).ProductId);
     private static OnlineArcadeEnemyRuntime Enemy(OnlineArcadeBattleRuntime b,long id,float x,float z)
-    {var e=new OnlineArcadeEnemyRuntime{RuntimeId=id,PositionX=x,PositionZ=z,CurrentHealth=1000,MaxHealth=1000};b.Enemies.Add(id,e);return e;}
+    {var e=new OnlineArcadeEnemyRuntime{RuntimeId=id,PositionX=x,PositionZ=z,CurrentHealth=1000,MaxHealth=1000};b.Enemies.Add(id,e);b.EnemyIterationIds.Add(id);return e;}
     private static OnlineArcadeEnemyRuntime AtBody(OnlineArcadeBattleRuntime b,long id,ArcadeSlayerMartEffectInstance i=null)
     {var p=S(b);i??=p.Supports[0];var pos=ArcadeSlayerMartSupportRules.Bodies(p,i,0,0,Config.Supports,Config.Parameter)[0];return Enemy(b,id,pos.X,pos.Y);}
     private static void MoveToUpcoming(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime e,ArcadeSlayerMartEffectInstance i,float seconds)

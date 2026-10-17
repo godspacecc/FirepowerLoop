@@ -18,6 +18,9 @@ namespace FirepowerLoop.Arcade
         public int StormCharge { get; set; }
         public double StormRemaining { get; set; }
         public double StormTickElapsed { get; set; }
+        /// <summary>普通锯和爆桶沿用个人轨道时钟，轮前保存直接保留相位。</summary>
+        public double OrdinarySawPhase { get; set; }
+        public double OrdinaryBarrelPhase { get; set; }
         /// <summary>购买支援、未启动接力、共享命中冷却与已交付事件，均随轮节点整体克隆。</summary>
         public List<ArcadeSlayerMartEffectInstance> Supports { get; set; } = new List<ArcadeSlayerMartEffectInstance>();
         public List<ArcadeSlayerMartEffectQueue> Queues { get; set; } = new List<ArcadeSlayerMartEffectQueue>();

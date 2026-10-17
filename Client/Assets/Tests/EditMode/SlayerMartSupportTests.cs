@@ -55,6 +55,16 @@ namespace Game.Tests
         {Grant(SlayerMartEffect.BarrelRelay,3);Player.VestSlots=2;Player.Owned.Add("slayermart.item.16");Player.StormCharge=99;foreach(var kind in new[]{ArcadePowerupBehavior.Chicken,ArcadePowerupBehavior.Saw,ArcadePowerupBehavior.Barrel})runtime.Powerups[kind]=new(){RemainingSeconds=10};runtime.PlayerHealth=10;Call("DamagePlayerCore",runtime,20,SlayerMartHitKind.Ordinary);Assert.That(Player.Supports,Is.Empty);Assert.That(Player.Queues,Is.Empty);Assert.That(runtime.Powerups,Is.Empty);Assert.That(Player.VestSlots,Is.EqualTo(2));Assert.That(Player.StormCharge,Is.EqualTo(99));}
         [Test] public void ExpiryImmediatelyReleasesChickenCapacity()
         {Grant(SlayerMartEffect.ChickenPack,3,300);Step(301);Assert.That(Player.Supports,Is.Empty);Assert.That(Player.Chickens,Is.Zero);}
+        [Test] public void OrdinaryMasteredSawTouchesOppositeBody()
+        {Ordinary(SlayerMartSupportKind.Saw);Player.Owned.Add("slayermart.item.11");var e=Enemy(1,-config.Supports.Get(SlayerMartSupportKind.Saw).Radius*2,0);Call("TickPowerups",runtime,0f);Assert.That(e.Health,Is.LessThan(1000));}
+        [Test] public void OrdinarySawLeavesRingCenterSafe()
+        {Ordinary(SlayerMartSupportKind.Saw);var e=Enemy(1,0,0);Call("TickPowerups",runtime,0f);Assert.That(e.Health,Is.EqualTo(1000));}
+        [Test] public void OrdinaryBarrelTriggersOnlyAtOrbitBody()
+        {Ordinary(SlayerMartSupportKind.Barrel);var power=runtime.Powerups[ArcadePowerupBehavior.Barrel];Enemy(1,config.Parameter("support.orbitRadius"),0);int charges=power.Charges;Call("TickPowerups",runtime,0f);Assert.That(power.Charges,Is.EqualTo(charges-1));}
+        [Test] public void OrdinaryBarrelLeavesRingCenterSafe()
+        {Ordinary(SlayerMartSupportKind.Barrel);var power=runtime.Powerups[ArcadePowerupBehavior.Barrel];Enemy(1,0,0);int charges=power.Charges;Call("TickPowerups",runtime,0f);Assert.That(power.Charges,Is.EqualTo(charges));}
+        private void Ordinary(SlayerMartSupportKind kind)
+        {var drop=catalog.Drops.Single(p=>p.ProductId==config.Supports.Get(kind).ProductId);Assert.That(Call("ApplyDrop",runtime,drop),Is.True);}
         private void Grant(SlayerMartEffect effect,int amount,float duration=0)
         {var s=runtime.SlayerMart;s.PendingGrants.Add(new(){EventId=s.RegionInstanceId+":"+(++s.GrantSequence),PlayerId=1,Effect=effect,Amount=amount,Duration=duration});Assert.That(ArcadeSlayerMartSupportRules.TryApplyGrants(s,config,new Dictionary<long,int>(),out var next,out var error),Is.True,error);runtime.SlayerMart=next;}
         private ArcadeDropDefinition ChickenDrop()=>catalog.Drops.Single(d=>d.ProductId==config.Supports.Get(SlayerMartSupportKind.Chicken).ProductId);

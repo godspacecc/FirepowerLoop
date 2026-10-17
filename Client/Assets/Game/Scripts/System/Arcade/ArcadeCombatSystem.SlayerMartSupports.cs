@@ -7,6 +7,33 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
+        /// <summary>普通槽复用真实轨道和共享目标周期；购买同类活动时只结算购买实例。</summary>
+        private bool TickSlayerMartOrdinaryOrbit(ArcadeCombatRuntime runtime,ArcadePowerupRuntime powerup)
+        {
+            var state=SlayerMartAbility(runtime);var behavior=powerup.Definition.Behavior;
+            if(state==null||slayerMartConfig==null||(behavior!=global::ArcadePowerupBehavior.Saw&&behavior!=global::ArcadePowerupBehavior.Barrel))return false;
+            var kind=behavior==global::ArcadePowerupBehavior.Saw?SlayerMartSupportKind.Saw:SlayerMartSupportKind.Barrel;
+            if(!SlayerMartClockActive(runtime)||state.Supports.Any(p=>p.Kind==kind&&p.RemainingSeconds>0))return true;
+            var item=ArcadeSlayerMartSupportRules.OrdinaryBody(state,kind,powerup.RemainingSeconds);
+            if(kind==SlayerMartSupportKind.Barrel)
+            {
+                if(powerup.Charges<=0||powerup.CooldownSeconds>0)return true;
+                var body=ArcadeSlayerMartSupportRules.Bodies(state,item,runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter)[0];
+                var origin=new Vector2(body.X,body.Y);float radius=slayerMartConfig.Parameter("support.contactRadius")+catalog.Rule.EnemyContactRadius;
+                if(!HasEnemyInRadius(runtime,origin,radius))return true;
+                DamageEnemiesInRadius(runtime,origin,powerup.Definition.Radius,powerup.Definition.Damage);
+                powerup.Charges--;powerup.CooldownSeconds=slayerMartConfig.Supports.Get(kind).Interval;
+                if(powerup.Charges==0)powerup.RemainingSeconds=0;return true;
+            }
+            foreach(var enemy in runtime.Enemies.Values.ToArray())
+            {
+                string target=runtime.ArenaNumber+":"+runtime.WaveIndex+":"+runtime.IsChallenge+":"+enemy.Id;
+                if(!ArcadeSlayerMartSupportRules.TryContact(state,item,target,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,
+                    runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter))continue;
+                DamageEnemy(enemy,powerup.Definition.Damage);if(enemy.Health<=0)KillEnemy(runtime,enemy);
+            }
+            return true;
+        }
         /// <summary>原普通鸡和购买实例只占一套总容量，不用商店打开次数重算奖励。</summary>
         private void SyncSlayerMartCapacity(ArcadeCombatRuntime runtime)
         {

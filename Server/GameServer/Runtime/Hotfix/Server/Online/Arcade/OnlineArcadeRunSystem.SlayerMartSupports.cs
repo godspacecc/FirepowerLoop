@@ -6,6 +6,35 @@ namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
+        /// <summary>权威普通锯／桶使用和购买支援相同的接触轨道，保持原伤害与剩余次数。</summary>
+        private static bool TickSlayerMartOrdinaryOrbit(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime battle,OnlineArcadeBattlePlayerRuntime owner,OnlineArcadePowerupRuntime powerup)
+        {
+            var state=SlayerMartAbility(battle,owner.PlayerId);
+            if(state==null||(powerup.Behavior!=ArcadePowerupBehavior.Saw&&powerup.Behavior!=ArcadePowerupBehavior.Barrel))return false;
+            var config=ServerConfig.Instance.SlayerMart;
+            var kind=powerup.Behavior==ArcadePowerupBehavior.Saw?SlayerMartSupportKind.Saw:SlayerMartSupportKind.Barrel;
+            if(state.Supports.Any(p=>p.Kind==kind&&p.RemainingSeconds>0))return true;
+            var item=ArcadeSlayerMartSupportRules.OrdinaryBody(state,kind,powerup.RemainingSeconds);
+            if(kind==SlayerMartSupportKind.Barrel)
+            {
+                if(powerup.Charges<=0||powerup.CooldownSeconds>0)return true;
+                var body=ArcadeSlayerMartSupportRules.Bodies(state,item,owner.PositionX,owner.PositionZ,config.Supports,config.Parameter)[0];
+                float radius=config.Parameter("support.contactRadius")+ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
+                if(!battle.Enemies.Values.Any(e=>DistanceSquared(body.X,body.Y,e.PositionX,e.PositionZ)<=radius*radius))return true;
+                battle.EnemyIterationIds.Clear();battle.EnemyIterationIds.AddRange(battle.Enemies.Keys.OrderBy(p=>p));
+                actor.DamageEnemiesInRadius(battle,body.X,body.Y,powerup.Radius,powerup.Damage,owner.PlayerId);
+                powerup.Charges--;powerup.CooldownSeconds=config.Supports.Get(kind).Interval;
+                if(powerup.Charges==0)powerup.RemainingSeconds=0;return true;
+            }
+            foreach(var enemy in battle.Enemies.Values.ToArray())
+            {
+                string target=battle.ArenaNumber+":"+battle.WaveIndex+":"+battle.IsChallenge+":"+enemy.RuntimeId;
+                if(!ArcadeSlayerMartSupportRules.TryContact(state,item,target,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,
+                    owner.PositionX,owner.PositionZ,config.Supports,config.Parameter))continue;
+                enemy.LastDamagePlayerId=owner.PlayerId;DamageEnemy(battle,enemy,powerup.Damage);if(enemy.CurrentHealth<=0)actor.KillEnemy(battle,enemy);
+            }
+            return true;
+        }
         /// <summary>普通支援槽与已购实例共用总鸡容量，纯交易读取前也复用此同步。</summary>
         private static void SyncSlayerMartCapacity(OnlineArcadeBattleRuntime battle,OnlineArcadeBattlePlayerRuntime owner)
         {

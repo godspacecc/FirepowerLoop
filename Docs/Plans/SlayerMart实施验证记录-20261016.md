@@ -67,3 +67,10 @@
 - SlayerMartSupportOnline 从1/18红到18/18绿；Unity SlayerMartSupportTests 从1/12红到12/12绿（上限24，includePassingTests=true），实际执行12项。原FullRouteOnline回归28/28；只读审查本段未发现确定P1／P2。
 - 新增射击朝向字段有限值校验，SlayerMartSupportTests纯规则23/24红后24/24绿，SlayerMartSave8/8。正式Config/gen.bat双端生成support.orbKnockback=0.8；未触发Player Build。
 - 普通双锯、普通桶交接、资源表现和协议投影继续下一段；release.enabled仍为0，不提前声明正式商店可玩。
+
+## 第九段：普通锯与爆桶真实轨道
+
+- 新规则普通锯／桶复用同源接触体；双锯精通生成相反双体并扩大轨道，同目标共享周期；桶在真实体位置触发并从该处爆炸，保留消耗次数。旧规则版本0继续既有行为。
+- 普通轨道相位随个人账本保存，桶精通转速只乘一次；普通槽保留其原活动时钟，不套用购买支援的全队复起冻结。
+- Unity SlayerMartSupportTests 13/16红→16/16绿；服务器轨道检查19/23红→23/23绿，扩展相位保存后24/24绿。只读评审发现队友复起期间普通锯停攻但仍扣寿命，回归复现后修复，最终SlayerMartSupportOnline25/25绿。纯支援24/24、结构保存8/8、原FullRouteOnline28/28通过。
+- 普通与购买同类的候选交接由任务5统一交付处理，资源表现继续下一段；入口保持关闭。
