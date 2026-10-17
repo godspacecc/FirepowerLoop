@@ -1,0 +1,20 @@
+[
+  {
+    "asset": "Client\\Assets\\Game\\Dlls\\Game.dll.bytes",
+    "sha256": "71532b8a9b654a8d437b893e845f00064693f788f7d743c0cd7b0f8586f527cb",
+    "same_as_build_input": true,
+    "comparison_input": "Client\\HybridCLRData\\HotUpdateDlls\\Android\\Game.dll"
+  },
+  {
+    "asset": "Client\\Assets\\Game\\Dlls\\Newtonsoft.Json.dll.bytes",
+    "sha256": "dffc896242386ef77e2480869becf522c2d11b968c01e12543f297b550dd9e61",
+    "same_as_build_input": true,
+    "comparison_input": "Client\\Library\\FirepowerLoopBuild\\AndroidQuickAot\\20261017170250\\Newtonsoft.Json.dll"
+  },
+  {
+    "asset": "Client\\Assets\\Game\\Dlls\\mscorlib.dll.bytes",
+    "sha256": "d5c560a63bf766b8f9a2053796221cfbafc9227866673f9f9bc637dda99c9e15",
+    "same_as_build_input": true,
+    "comparison_input": "Client\\Library\\FirepowerLoopBuild\\AndroidQuickAot\\20261017170250\\mscorlib.dll"
+  }
+]

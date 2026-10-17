@@ -79,6 +79,16 @@ namespace Game.Editor
             }
         }
 
+        [MenuItem("Tools/打包/Android/复用本次AOT和资源快速打包", false, 154)]
+        private static void BuildQuickReuseApkMenu()
+        {
+            if (Application.isBatchMode || EditorUtility.DisplayDialog(
+                    "Android 复用本次 AOT 和资源快速打包",
+                    "复用本次已生成的 Android AOT、Game DLL 和首包清单，只重建最终 APK 并发布。不会重建资源，也不会包含后续修改；输入变化会被阻止。",
+                    "开始快速打包", "取消"))
+                BuildQuickReuseApkBatch();
+        }
+
         [MenuItem("Tools/服务器/Android/发布资源服", false, 210)]
         private static void PublishAndroidResourceServerMenu()
         {
@@ -132,6 +142,73 @@ namespace Game.Editor
             {
                 Debug.LogError($"[AndroidBuildUtility] Android 资源服启动失败：{exception.Message}");
                 ShowDialog("Android 资源服启动失败", exception.Message);
+            }
+        }
+
+        /// <summary>复用已校验的同轮 AOT 与资源，只构建一次最终首包 APK；发布失败保留产物与复用快照。</summary>
+        public static void BuildQuickReuseApkBatch()
+        {
+            if (!BeginWorkflow("Android 复用本次 AOT和资源快速打包")) return;
+            var timing = new BuildStageTiming("Android 复用本次 AOT和资源快速打包");
+            var context = new AndroidBuildContext(DateTime.Now, Guid.NewGuid().ToString("N"));
+            var previous = AndroidEditorOptions.Capture();
+            bool finalApkValidated = false;
+            bool outputPrepared = false;
+            try
+            {
+                timing.Run("ValidateAndroidEnvironment", ValidateAndroidEnvironment);
+                timing.Run("ValidateAndroidHostConfig", ValidateAndroidHostConfig);
+                timing.Run("ValidateAndroidNetworkConfig", ValidateAndroidNetworkConfig);
+                var inputs = timing.Run("ValidateQuickReuseInputs", AndroidQuickBuildUtility.LoadAndValidate);
+                previous.ApplyTestBuildOptions();
+                timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
+                outputPrepared = true;
+                string appVersion = timing.Run("BuildQuickFinalApk", () => BuildFinalPlayerWithIncrementedPatchVersion(context, false));
+                timing.Run("ValidateFinalQuickApk", context.ValidateFinalApk);
+                finalApkValidated = true;
+                timing.Run("RevalidateQuickReuseInputs", () => AndroidQuickBuildUtility.Validate(inputs));
+                timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
+                timing.Run("CleanupPreparatoryDirectory", context.CleanupPreparatoryDirectory);
+                var publish = timing.Run("PublishExistingAndroidResources", () =>
+                    ResourceServerPublishUtility.PublishOrUpdateAndroidPackage(inputs.PackageDirectory, inputs.Version));
+                if (!publish.Success) throw new InvalidOperationException("快速打包资源同步失败：" + publish.Error);
+                string bundle = publish.BundleDirectory;
+                timing.Run("RevalidatePublishedResources", () => ValidateQuickPublishedResources(bundle, inputs));
+                string update = timing.Run("PublishAndroidApk", () => AndroidApkPublishUtility.Publish(
+                    context.FinalApkPath, bundle, appVersion, PlayerSettings.Android.bundleVersionCode));
+                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(inputs.Version, "SmallHostBase",
+                    inputs.PackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory));
+                Debug.Log($"[AndroidBuildUtility] Android 快速打包完成：Version={inputs.Version}，AppVersion={appVersion}，APK={context.FinalApkPath}，更新描述={update}\n{timing.BuildSummary()}");
+                OfferStartServer("Android 快速打包成功", $"APK: {context.FinalApkPath}\n应用版本: {appVersion}\n复用资源版本: {inputs.Version}");
+            }
+            catch (Exception exception)
+            {
+                if (finalApkValidated) context.CleanupPreparatoryDirectory();
+                else if (outputPrepared) context.CleanupFailedBuild();
+                Debug.LogError($"[AndroidBuildUtility] 快速打包失败：{exception.Message}\n{timing.BuildSummary()}");
+                ShowDialog("Android 快速打包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
+                    finalApkValidated ? context.FinalApkPath : null));
+                throw;
+            }
+            finally
+            {
+                previous.Restore();
+                EditorUtility.ClearProgressBar();
+                s_isBuilding = false;
+            }
+        }
+
+        /// <summary>快速入口不修改远端资源，构建前后都要求目标资源版本和清单与复用输入一致。</summary>
+        private static void ValidateQuickPublishedResources(string bundle, AndroidQuickBuildInputs inputs)
+        {
+            string resources = Path.Combine(bundle, "ResourceFiles");
+            if (!YooAssetBuildUtility.ValidateBuildResult(resources, inputs.Version))
+                throw new InvalidOperationException("已发布资源与复用版本不一致，请先发布匹配资源。");
+            foreach (string extension in new[] { ".bytes", ".hash" })
+            {
+                string name = "DefaultPackage_" + inputs.Version + extension;
+                if (!File.ReadAllBytes(Path.Combine(resources, name)).SequenceEqual(File.ReadAllBytes(Path.Combine(inputs.PackageDirectory, name))))
+                    throw new InvalidOperationException("已发布资源清单内容与复用版本不一致。");
             }
         }
 
@@ -287,6 +364,7 @@ namespace Game.Editor
                 previous.ApplyTestBuildOptions();
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
+                string compilationFingerprint = timing.Run("CaptureQuickCompilationInputs", AndroidQuickBuildUtility.CaptureCompilationFingerprint);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
                 timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, false));
                 timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
@@ -298,6 +376,7 @@ namespace Game.Editor
                 var package = timing.Run("BuildAndroidSmallHostPackage", () => BuildSmallHostPackageOrThrow(version));
                 timing.Run("ValidateAndroidHostPackage", () => ValidateHostPackage(package.OutputPackageDirectory, version));
                 timing.Run("ValidateManifestOnlyBuiltin", () => ValidateManifestOnlyBuiltin(version));
+                timing.Run("CaptureQuickReuseInputs", () => AndroidQuickBuildUtility.Capture(version, package.OutputPackageDirectory, compilationFingerprint));
                 string appVersion = timing.Run("BuildFinalSmallHostApk", () =>
                     BuildFinalPlayerWithIncrementedPatchVersion(context, false));
                 timing.Run("ValidateFinalSmallHostApk", context.ValidateFinalApk);
@@ -616,7 +695,8 @@ namespace Game.Editor
             string packageDirectory,
             string playerPath,
             bool updateAot,
-            string bootFingerprint = null)
+            string bootFingerprint = null,
+            string aotDirectory = null)
         {
             if (!string.IsNullOrEmpty(playerPath) && string.IsNullOrWhiteSpace(bootFingerprint))
                 throw new InvalidOperationException("Android 首包缺少本次构建的 Boot 指纹，不能保存宿主基线，请重新执行首包完整打包。");
@@ -637,7 +717,7 @@ namespace Game.Editor
                 state.LastAndroidAotBaseline = new AotBaselineRecord
                 {
                     BuildTarget = BuildTarget.Android.ToString(),
-                    AotDirectory = HybridCLRBuildUtility.GetAotDirectory(BuildTarget.Android),
+                    AotDirectory = aotDirectory ?? HybridCLRBuildUtility.GetAotDirectory(BuildTarget.Android),
                     RuntimeListPath = HybridCLRBuildUtility.GetRuntimeListPath(),
                     GameDllDirectory = gameDllDirectory,
                     CompletedUtcTicks = completedUtcTicks
@@ -693,7 +773,7 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 最终 APK 构建前递增应用版本的补丁号；构建失败时恢复原版本，临时 Player 不消耗版本号。
+        /// 最终 APK 构建前预留高于项目及发布记录的身份；失败恢复编辑器版本但保留预留记录。
         /// </summary>
         private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources)
         {
@@ -701,12 +781,15 @@ namespace Game.Editor
             string bootFingerprint = AndroidBootBuildGuard.ComputeFingerprint(projectRoot);
             string previousVersion = PlayerSettings.bundleVersion;
             int previousCode = PlayerSettings.Android.bundleVersionCode;
-            if (previousCode == int.MaxValue) throw new InvalidOperationException("Android 版本码已达到上限。");
-            string nextVersion = IncrementAndroidPatchVersion(previousVersion);
+            string workspaceRoot = Directory.GetParent(Application.dataPath).Parent.FullName;
+            var identity = AndroidApkVersionUtility.Reserve(previousVersion, previousCode,
+                Path.Combine(workspaceRoot, "Release", "ResourceServer", "Android"),
+                Path.Combine(projectRoot, "Library", "FirepowerLoopBuild", "AndroidVersionReservation.json"));
+            string nextVersion = identity.VersionName;
             context.SetFinalApkVersion(nextVersion);
             PlayerSettings.bundleVersion = nextVersion;
             // 整包覆盖更新要求发布版本码递增，与版本名在失败时一起回滚。
-            PlayerSettings.Android.bundleVersionCode = previousCode + 1;
+            PlayerSettings.Android.bundleVersionCode = identity.VersionCode;
 
             try
             {
@@ -721,7 +804,7 @@ namespace Game.Editor
             }
             catch
             {
-                // 最终 APK 未生成时不消耗版本号，便于下一次修复后重新构建同一版本。
+                // 恢复编辑器设置；磁盘预留记录继续占用本次身份，避免重试发布时撞号。
                 PlayerSettings.bundleVersion = previousVersion;
                 PlayerSettings.Android.bundleVersionCode = previousCode;
                 AssetDatabase.SaveAssets();
@@ -872,7 +955,7 @@ namespace Game.Editor
             }
         }
 
-        /// <summary>只解析已授权的四个菜单入口；解析本身不执行构建。</summary>
+        /// <summary>只解析已登记的 Android 菜单入口；解析本身不执行构建。</summary>
         private static Action ResolveWorkflow(string workflow)
         {
             switch (workflow)
@@ -881,6 +964,7 @@ namespace Game.Editor
                 case "Android Host 基础包完整打包": return BuildHostBaseCodeAndResourcesBatch;
                 case "Android 首包完整打包": return BuildSmallHostBaseCodeAndResourcesBatch;
                 case "Android Host 代码+资源更新": return BuildHostCodeAndResourcesBatch;
+                case "Android 复用本次 AOT和资源快速打包": return BuildQuickReuseApkBatch;
                 default: return null;
             }
         }

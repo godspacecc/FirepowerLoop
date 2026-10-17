@@ -129,11 +129,43 @@ namespace Game.Editor
                 DateTime.Now);
         }
 
-        internal static ResourceServerPublishResult Publish(
+        /// <summary>只同步指定 Android 资源版本；快速 APK 重试不得扫描并发布另一轮的最新资源。</summary>
+        public static ResourceServerPublishResult PublishOrUpdateAndroidPackage(string packageDirectory, string version)
+        {
+            string workspace = GetWorkspaceRoot();
+            string root = Path.Combine(workspace, "Client", "Bundles", "Android", PackageName);
+            if (string.IsNullOrEmpty(version) || version.IndexOfAny(new[] { '/', '\\', '.' }) >= 0 ||
+                !string.Equals(FullPath(packageDirectory), FullPath(Path.Combine(root, version)), StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("快速打包只能发布本项目 Android 的指定资源版本。");
+            string release = Path.Combine(workspace, "Release", "ResourceServer", "Android");
+            return TryFindLatestBundle(release, out _, out _)
+                ? UpdatePackage(root, release, version)
+                : PublishPackage(root, Path.Combine(workspace, "Server", "ResourceServer"), release, DateTime.Now, version);
+        }
+
+        /// <summary>指定版本时只解析该目录；其他菜单继续使用原来的最新有效包策略。</summary>
+        private static bool TryFindPackage(string root, string requiredVersion, out string directory, out string version, out string error)
+        {
+            if (requiredVersion == null)
+                return YooAssetBuildUtility.TryFindLatestValidPackage(root, out directory, out version, out error);
+            version = requiredVersion;
+            directory = FullPath(Path.Combine(root, version));
+            EnsureWithin(directory, root, "指定资源目录");
+            bool valid = YooAssetBuildUtility.ValidateBuildResult(directory, version);
+            error = valid ? null : "指定资源版本无效：" + version;
+            return valid;
+        }
+
+        internal static ResourceServerPublishResult Publish(string packageRoot, string templateRoot, string releaseRoot, DateTime timestamp) =>
+            PublishPackage(packageRoot, templateRoot, releaseRoot, timestamp, null);
+
+        /// <summary>创建发布包事务；可绑定指定资源版本，保持旧入口签名不变。</summary>
+        private static ResourceServerPublishResult PublishPackage(
             string packageRoot,
             string templateRoot,
             string releaseRoot,
-            DateTime timestamp)
+            DateTime timestamp,
+            string requiredVersion)
         {
             string source = null;
             string target = null;
@@ -149,7 +181,7 @@ namespace Game.Editor
                 ValidateTemplate(templateRoot);
                 ValidateNoticeFile(Path.Combine(templateRoot, "Notices", "resource-update-notices.json"));
 
-                if (!YooAssetBuildUtility.TryFindLatestValidPackage(packageRoot, out source, out var version, out var findError))
+                if (!TryFindPackage(packageRoot, requiredVersion, out source, out var version, out var findError))
                 {
                     return Fail(PublishOperation, "查找资源", packageRoot, releaseRoot,
                         $"未找到有效 Host 资源，请先执行对应平台的“Host代码+资源更新”。{findError}");
@@ -205,9 +237,13 @@ namespace Game.Editor
             }
         }
 
-        internal static ResourceServerPublishResult Update(
+        internal static ResourceServerPublishResult Update(string packageRoot, string releaseRoot) => UpdatePackage(packageRoot, releaseRoot, null);
+
+        /// <summary>替换资源事务；指定版本重试不受其他较新构建目录影响。</summary>
+        private static ResourceServerPublishResult UpdatePackage(
             string packageRoot,
-            string releaseRoot)
+            string releaseRoot,
+            string requiredVersion)
         {
             string source = null;
             string bundle = null;
@@ -232,7 +268,7 @@ namespace Game.Editor
                     return Fail(UpdateOperation, "验证旧资源", resourceFiles, bundle, "旧 ResourceFiles 校验失败，阻止更新");
                 }
 
-                if (!YooAssetBuildUtility.TryFindLatestValidPackage(packageRoot, out source, out var version, out var findError))
+                if (!TryFindPackage(packageRoot, requiredVersion, out source, out var version, out var findError))
                 {
                     return Fail(UpdateOperation, "查找资源", packageRoot, bundle,
                         $"未找到有效 Host 资源，请先执行对应平台的“Host代码+资源更新”。{findError}");

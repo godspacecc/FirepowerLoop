@@ -1,5 +1,9 @@
 # FirepowerLoop 文档
 
+构建自动化方案见 [Jenkins接入方案](Plans/Jenkins接入方案-20261017.md)：支持 PC／Android 首包与 Host 更新，统一串行、手动触发；目前仅方案归档，尚未实施。
+
+Android 首包发布失败后的复用入口、版本防重与验收边界见 [Android快速APK打包入口](Plans/Android快速APK打包入口-20261017.md)。
+
 产品范围以根 README 与 AGENTS.md 为准。只开发独立街机，保留既有单人和双人对局；首轮仅分数与本局结果，不发放局外奖励。
 
 资料入口（2026-10-17）：[参考游戏各代确定资料](参考游戏/README.md)分别整理Dead Ops Arcade第1—4代，并区分第4代各模式、来源时间与待核实内容；[FirepowerLoop已实现功能](当前项目/FirepowerLoop已实现功能.md)单独说明当前功能、默认关闭项及实际验收边界。后续改动按已验证结果维护，不将项目参数写成原作事实。
