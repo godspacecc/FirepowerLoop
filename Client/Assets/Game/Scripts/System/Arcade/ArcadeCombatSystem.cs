@@ -383,6 +383,7 @@ namespace Game
 
         private void EndCombat()
         {
+            ClearSlayerMartClock();
             EndFirstPerson(this.GetModel<ArcadeCombatModel>()?.Runtime);
             islandRegion = null; islandMovementPath.Clear();
             islandRegionRound = islandObstacleRound = -1; islandRoundObstacles = null;
@@ -456,18 +457,20 @@ namespace Game
         private void OnUpdate()
         {
             var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
-            if (runtime == null || catalog == null || arena == null) return;
+            if(runtime==null){ClearSlayerMartClock();return;}
+            if(catalog==null||arena==null)return;
             view.TickPlayerFeedback(Time.deltaTime);
-            Tick(runtime, Mathf.Min(Time.deltaTime, 0.05f));
+            TickFrame(runtime, Time.deltaTime);
         }
 
-        /// <summary>单帧推进有最大步长，避免切后台后的长帧直接跨过复活和接触伤害窗口。</summary>
-        internal void Tick(ArcadeCombatRuntime runtime, float deltaTime)
+        /// <summary>确定性活动步进；正式Update由TickFrame独立提供实时期限。</summary>
+        internal void Tick(ArcadeCombatRuntime runtime,float deltaTime)=>TickCore(runtime,deltaTime,deltaTime);
+        private void TickCore(ArcadeCombatRuntime runtime,float deltaTime,float shopSeconds)
         {
             var inputApp=this.GetModel<AppStateModel>();
             if(!SlayerMartClockActive(runtime)||runtime.SlayerMartReturnWave>0||UIHelper.HasUIOpen||
                 inputApp!=null&&inputApp.CurrentState.Value!=AppState.Playing)input?.ClearFieldUpgradePulse();
-            if(TickSlayerMartRegion(runtime,deltaTime))return;
+            if(TickSlayerMartRegionFrame(runtime,shopSeconds,deltaTime))return;
             if (runtime.IslandTransitionPending)
             { ClearArcadeInput(runtime); TryFinishIslandTransition(runtime); return; }
             if (runtime.IslandRoomTransitionPending)

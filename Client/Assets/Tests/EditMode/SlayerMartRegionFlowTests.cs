@@ -13,14 +13,14 @@ namespace Game.Tests
     /// <summary>商店真实出口与轮前候选的定向回归，仅使用临时存档和内存表现端口。</summary>
     public sealed class SlayerMartRegionFlowTests
     {
-        private Game architecture;
-        private ArcadeCombatSystem combat;
-        private ArcadeCombatRuntime runtime;
-        private ArcadeConfigCatalogDefinition catalog;
+        internal Game architecture;
+        internal ArcadeCombatSystem combat;
+        internal ArcadeCombatRuntime runtime;
+        internal ArcadeConfigCatalogDefinition catalog;
         private string directory;
         private ArcadeSlayerMartConfiguration shopConfig;
         private int operation;
-        private View view;
+        internal View view;
         private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
 
         [SetUp] public void SetUp()
@@ -116,7 +116,7 @@ namespace Game.Tests
             }
         }
         private void AtStore(){ExitRound(2);Assert.That(runtime.SlayerMart,Is.Not.Null,"正式第11轮出口尚未挂接商店");}
-        private void Shopping(){AtStore();Operate(SlayerMartAction.SelectEnter);Step(0);Assert.That(runtime.SlayerMart.Ready,Is.True);}
+        internal void Shopping(){AtStore();Operate(SlayerMartAction.SelectEnter);Step(0);Assert.That(runtime.SlayerMart.Ready,Is.True);}
         private void Step(float seconds){var method=typeof(ArcadeCombatSystem).GetMethod("TickSlayerMartRegion",Flags);Assert.That(method,Is.Not.Null,"缺少正式区域活动帧");method.Invoke(combat,new object[]{runtime,seconds});}
         private void Offer(int number)
         {var p=runtime.SlayerMart.Players[0];p.Cash=100000;string id="slayermart.item."+number.ToString("00");if(!p.Offers.Contains(id)){p.Offers.RemoveAt(0);p.Offers.Add(id);}}
@@ -125,7 +125,7 @@ namespace Game.Tests
             var s=runtime.SlayerMart;var request=new ArcadeSlayerMartRequest{Action=action,PlayerId=1,RegionInstanceId=s.RegionInstanceId,Generation=s.Generation,ExpectedRevision=s.Revision,OperationId=operationId??"test:"+(++operation),ItemId=item==0?null:"slayermart.item."+item.ToString("00"),ConfirmedAmount=amount,Value=value,BoxId=box};
             var method=typeof(ArcadeCombatSystem).GetMethod("TryOperateSlayerMart");Assert.That(method,Is.Not.Null,"缺少正式交易入口");object[] args={request,null};Assert.That(method.Invoke(combat,args),Is.EqualTo(success),args[1] as string);
         }
-        private sealed class View : IArcadeCombatViewPort
+        internal sealed class View : IArcadeCombatViewPort
         {
             public bool Ready = true;
             public bool IsSlayerMartRegionReady=>Ready;

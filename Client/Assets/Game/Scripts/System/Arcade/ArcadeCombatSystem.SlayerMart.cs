@@ -35,8 +35,12 @@ namespace Game
         {
             error="shop_not_active";var runtime=this.GetModel<ArcadeCombatModel>().Runtime;
             if(runtime?.SlayerMart==null||runtime.SlayerMartReturnWave<=0||slayerMartConfig==null||request==null)return false;
+            SyncLiveSlayerMartClock(runtime,slayerMartRealtime());
             var current=runtime.SlayerMart.Clone();SyncSlayerMartInventory(runtime,current.Players[0]);
             bool receipt=current.Receipts.Any(p=>p.PlayerId==request.PlayerId&&p.OperationId==request.OperationId);
+            if(!receipt&&current.Ready&&!view.IsSlayerMartRegionReady&&
+                (request.Action is SlayerMartAction.Buy or SlayerMartAction.Reroll or SlayerMartAction.CollectCash))
+            {error="not_ready";return false;}
             if(!receipt&&request.Action==SlayerMartAction.CollectCash)
             {
                 var layout=SlayerMartLayout(runtime);int index=request.BoxId-1;
@@ -108,6 +112,9 @@ namespace Game
         }
         /// <summary>接在现有战斗生命周期；菜单只阻止移动，不能阻止区域硬截止。</summary>
         private bool TickSlayerMartRegion(ArcadeCombatRuntime runtime,float seconds)
+            =>TickSlayerMartRegionFrame(runtime,seconds,seconds);
+        /// <summary>期限与移动分开输入；实际长帧不能延长期限或放大位移。</summary>
+        private bool TickSlayerMartRegionFrame(ArcadeCombatRuntime runtime,float seconds,float motionSeconds)
         {
             if(runtime.SlayerMartReturnWave<=0||runtime.SlayerMart==null)return false;
             if(runtime.CompletionAwaitingRetry){ClearArcadeInput(runtime);return true;}
@@ -131,13 +138,13 @@ namespace Game
                 int wave=runtime.SlayerMartReturnWave;runtime.SlayerMartReturnWave=0;runtime.SlayerMartRegionPrepared=false;
                 runtime.SlayerMartRoundBenefitsPending=true;StartContentRound(runtime,wave);return true;
             }
-            if(!runtime.SlayerMart.Ready)return true;
+            if(!runtime.SlayerMart.Ready||!view.IsSlayerMartRegionReady){ClearArcadeInput(runtime);return true;}
             if(!paused&&!UIHelper.HasUIOpen&&!runtime.SlayerMart.Players[0].MenuOpen)
             {
                 if(view.TryGetPlayerPosition(out var actual))runtime.PlayerPosition=new Vector2(Mathf.Clamp(actual.x,-layout.HalfWidth+catalog.Rule.PlayerRadius,layout.HalfWidth-catalog.Rule.PlayerRadius),Mathf.Clamp(actual.y,-layout.HalfHeight+catalog.Rule.PlayerRadius,layout.HalfHeight-catalog.Rule.PlayerRadius));
                 runtime.MoveDirection=input?.MoveInput??Vector2.zero;runtime.Firing=false;
                 float speed=CalculatePlayerSpeed(catalog.Rule.PlayerMoveSpeed,UpgradeTotal(this.GetModel<ArcadeRunModel>().Current,global::ArcadeUpgradeKind.MoveSpeedPercent),false,0);
-                runtime.PlayerPosition=ResolvePosition(runtime.PlayerPosition+runtime.MoveDirection*speed*seconds,catalog.Rule.PlayerRadius,layout.HalfWidth,layout.HalfHeight,Array.Empty<ArcadeObstacleDefinition>());
+                runtime.PlayerPosition=ResolvePosition(runtime.PlayerPosition+runtime.MoveDirection*speed*motionSeconds,catalog.Rule.PlayerRadius,layout.HalfWidth,layout.HalfHeight,Array.Empty<ArcadeObstacleDefinition>());
             }
             else ClearArcadeInput(runtime);
             if(!paused)for(int index=0;index<layout.Boxes.Count;index++)
