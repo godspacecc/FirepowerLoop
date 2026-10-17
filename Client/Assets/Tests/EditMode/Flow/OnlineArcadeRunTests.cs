@@ -411,6 +411,7 @@ namespace Game.Tests
             public string ConfigFingerprint { get; set; }
             private Action<G2C_OnlineArcadeRunChanged> arcadeRunChanged;
             public Func<IRequest, IResponse> OverrideResponse;
+            public Func<IRequest,Task<IResponse>> OverrideAsyncResponse;
             public Action<ET.OnlineArcadeRunSnapshot> ConfigureRun;
             public void PushConfigured() => arcadeRunChanged?.Invoke(new G2C_OnlineArcadeRunChanged { HasRun=true, Run=ProtocolRun() });
             private long revision = 1;
@@ -423,6 +424,7 @@ namespace Game.Tests
             {
                 LastRequest = request;
                 IResponse response;
+                if(OverrideAsyncResponse!=null)return CallOverrideAsync<TResponse>(request);
                 if(OverrideResponse!=null) return Task.FromResult((TResponse)OverrideResponse(request));
                 if (request is C2G_StartOnlineArcadeRun)
                     response = new G2C_StartOnlineArcadeRun { Error = 0, HasRun = true, Run = ProtocolRun() };
@@ -443,6 +445,8 @@ namespace Game.Tests
                     response = new G2C_GetCurrentOnlineArcadeRun { Error = 0, HasRun = !ReturnNoRun, Run = ReturnNoRun ? null : ProtocolRun() };
                 return Task.FromResult((TResponse)response);
             }
+            private async Task<TResponse> CallOverrideAsync<TResponse>(IRequest request) where TResponse:class,IResponse
+                =>(TResponse)await OverrideAsyncResponse(request);
             public IDisposable RegisterPushHandler<TMessage>(Action<TMessage> handler) where TMessage : class, IMessage
             {
                 if (typeof(TMessage) == typeof(G2C_OnlineArcadeRunChanged))

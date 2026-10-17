@@ -65,13 +65,19 @@ namespace Game
             view.SetPlayer(predictedLocalPosition,new Vector2(player.AimX,player.AimZ),true,false);
         }
         /// <summary>重试同一代次资源；不发交易、不重置服务器库存与剩余时间。</summary>
+        public bool TryRetrySlayerMartPreparation()
+        {
+            if(!active||latest.Battle?.SlayerMart?.Active!=true||!latest.Battle.SlayerMart.Prepared)return false;
+            roundLoadPrompt=false;presentedSlayerMart=false;ApplyAuthoritativeSnapshot(latest.Battle);return true;
+        }
+        /// <summary>错误提示捕获当前代次，防止旧对话框重建新地图。</summary>
         private void ShowSlayerMartLoadRetry()
         {
             if(roundLoadPrompt)return;roundLoadPrompt=true;int generation=activeRoundGeneration;
             Notify.ShowMessage(Loc.T("ui.arcade.menu.failed"),view.SlayerMartRegionLoadError,new List<MessageButtonConfig>{
                 new(){ButtonText=Loc.T("ui.common.confirm"),Role=MessageButtonRole.Confirm,OnClick=()=>{
                     roundLoadPrompt=false;if(active&&activeRoundGeneration==generation&&latest.Battle?.SlayerMart?.Active==true)
-                    {presentedSlayerMart=false;ApplyAuthoritativeSnapshot(latest.Battle);}}},
+                    {TryRetrySlayerMartPreparation();}}},
                 new(){ButtonText=Loc.T("ui.common.cancel"),Role=MessageButtonRole.Cancel,OnClick=()=>roundLoadPrompt=false}});
         }
     }
