@@ -42,6 +42,7 @@ public partial class Tables
     public TbArcadeSlayerMartItem TbArcadeSlayerMartItem {get; }
     public TbArcadeSlayerMartRegion TbArcadeSlayerMartRegion {get; }
     public TbArcadeSlayerMartAbility TbArcadeSlayerMartAbility {get; }
+    public TbArcadeSlayerChallenge TbArcadeSlayerChallenge {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -75,6 +76,7 @@ public partial class Tables
         TbArcadeSlayerMartItem = new TbArcadeSlayerMartItem(loader("tbarcadeslayermartitem"));
         TbArcadeSlayerMartRegion = new TbArcadeSlayerMartRegion(loader("tbarcadeslayermartregion"));
         TbArcadeSlayerMartAbility = new TbArcadeSlayerMartAbility(loader("tbarcadeslayermartability"));
+        TbArcadeSlayerChallenge = new TbArcadeSlayerChallenge(loader("tbarcadeslayerchallenge"));
         ResolveRef();
     }
     
@@ -110,6 +112,7 @@ public partial class Tables
         TbArcadeSlayerMartItem.ResolveRef(this);
         TbArcadeSlayerMartRegion.ResolveRef(this);
         TbArcadeSlayerMartAbility.ResolveRef(this);
+        TbArcadeSlayerChallenge.ResolveRef(this);
     }
 }
 

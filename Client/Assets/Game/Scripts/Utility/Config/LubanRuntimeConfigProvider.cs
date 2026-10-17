@@ -23,6 +23,7 @@ namespace Game
         private ArcadeConfigCatalogDefinition arcadeCatalog;
         /// <summary>正式商店配置独立于旧街机目录，开放门禁由配置明确控制。</summary>
         private FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration slayerMart;
+        private FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration slayerChallenge;
 
         public LubanRuntimeConfigProvider()
             : this(() => DataLoader.Tables)
@@ -298,6 +299,9 @@ namespace Game
             return true;
         }
 
+        public bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
+        {value=null;if(!EnsureValid(out error))return false;value=slayerChallenge;return value!=null;}
+
         public bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
         {
             value=null;if(!EnsureValid(out error))return false;
@@ -412,6 +416,7 @@ namespace Game
                     BuildPlayerWeaponAppearanceSnapshot(cachedTables, out playerWeaponAppearanceByItemId);
                     BuildArcadeSnapshot(cachedTables, out arcadeCatalog);
                     slayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(cachedTables);
+                    slayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(cachedTables);
                 }
                 else
                 {

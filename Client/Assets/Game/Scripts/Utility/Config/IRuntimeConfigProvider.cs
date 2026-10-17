@@ -8,6 +8,9 @@ namespace Game
     {
         /// <summary>区分必须提供正式商店配置的数据源与旧测试提供者，避免配置读取失败时静默降级。</summary>
         bool HasSlayerMartConfiguration => false;
+        /// <summary>首批Slayer只读规则；缺配置拒绝进入，不在旧提供者伪造默认值。</summary>
+        bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
+        {value=null;error="Slayer挑战配置不可用";return false;}
 
         /// <summary>读取新商店只读目录；旧测试提供者缺省不开放商店。</summary>
         bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)

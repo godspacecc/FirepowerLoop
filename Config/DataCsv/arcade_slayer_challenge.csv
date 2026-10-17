@@ -1,0 +1,3 @@
+##var,Id,Enabled,AfterArena,ArenaConfigNumber,LayoutRound,ChallengeId,PreparationSeconds,CollectionSeconds,DownLimit,RespawnSeconds,CollectionWaveTotal,CoinDropId,MaxCollectionCash,BossBonusCash,ShopSeconds,BossEnemyId,BossHealthPerPlayer,BossMoveSpeed,AttackPeriod,AttackWarning,HammerRadius,FireballSpeed,FireballDamage,FireballRadius,BurnSeconds,BurnInterval,BurnDamage,FlameLength,FlameRadius,BossContactDamage
+##type,string,bool,int,int,int,string,float,float,int,float,int,string,long,long,float,string,int,float,float,float,float,float,int,float,float,float,int,float,float,int
+,slayer.guardian,1,3,4,1,arcade.challenge.slayer-guardian,1200,90,4,3,30,arcade.drop.gold.small,20000,5000,300,enemy.arcade.brute,1500,2.4,5,1,2.5,7,25,2,4,0.5,10,10,1,30

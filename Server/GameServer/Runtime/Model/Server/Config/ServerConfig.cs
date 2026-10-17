@@ -30,6 +30,8 @@ namespace ET
         private ArcadeRuleConfig arcadeRule;
         /// <summary>同源新商店目录；正式能力未完成时目录可验证但入口关闭。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration SlayerMart { get; private set; }
+        /// <summary>独立Slayer挑战正式配置，启动时完整校验。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration SlayerChallenge {get;private set;}
         // 街机敌人及其投射物仍消费共用表现配置，不加载开放世界库存或地图规则。
         private readonly Dictionary<string, EnemyConfig> enemies = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ProjectileConfig> projectiles = new(StringComparer.Ordinal);
@@ -277,6 +279,7 @@ namespace ET
         private void ValidateArcadeConfig()
         {
             this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
+            this.SlayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(this.tables);
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
             {
                 var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);

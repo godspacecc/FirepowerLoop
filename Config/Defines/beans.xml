@@ -484,4 +484,36 @@
         <var name="Id" type="string"/>
         <var name="Value" type="float"/>
     </bean>
+    <bean name="ArcadeSlayerChallengeConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Enabled" type="bool"/>
+        <var name="AfterArena" type="int"/>
+        <var name="ArenaConfigNumber" type="int"/>
+        <var name="LayoutRound" type="int"/>
+        <var name="ChallengeId" type="string#ref=TbArcadeChallenge"/>
+        <var name="PreparationSeconds" type="float"/>
+        <var name="CollectionSeconds" type="float"/>
+        <var name="DownLimit" type="int"/>
+        <var name="RespawnSeconds" type="float"/>
+        <var name="CollectionWaveTotal" type="int"/>
+        <var name="CoinDropId" type="string#ref=TbArcadeDrop"/>
+        <var name="MaxCollectionCash" type="long"/>
+        <var name="BossBonusCash" type="long"/>
+        <var name="ShopSeconds" type="float"/>
+        <var name="BossEnemyId" type="string#ref=TbEnemy"/>
+        <var name="BossHealthPerPlayer" type="int"/>
+        <var name="BossMoveSpeed" type="float"/>
+        <var name="AttackPeriod" type="float"/>
+        <var name="AttackWarning" type="float"/>
+        <var name="HammerRadius" type="float"/>
+        <var name="FireballSpeed" type="float"/>
+        <var name="FireballDamage" type="int"/>
+        <var name="FireballRadius" type="float"/>
+        <var name="BurnSeconds" type="float"/>
+        <var name="BurnInterval" type="float"/>
+        <var name="BurnDamage" type="int"/>
+        <var name="FlameLength" type="float"/>
+        <var name="FlameRadius" type="float"/>
+        <var name="BossContactDamage" type="int"/>
+    </bean>
 </beans>
