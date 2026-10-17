@@ -246,6 +246,8 @@ namespace Game
         public bool IsChallenge;
         public string ChallengeId;
         public float ChallengeSeconds;
+        /// <summary>Slayer独立阶段与队伍容错，不等同于主线轮或旧清怪挑战。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerChallengeState SlayerChallenge;
         public int WaveIndex;
         public Vector2 PlayerPosition;
         public Vector2 AimDirection = Vector2.up;

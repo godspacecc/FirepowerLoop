@@ -48,6 +48,10 @@ namespace Game
             if (current != null) Phase = ArcadeRunPhase.Challenge;
         }
 
+        /// <summary>挑战进入或返回候选已成功保存，更新数据时保持独立挑战阶段。</summary>
+        internal void CommitChallenge(ArcadeRunSaveData value)
+        {current=value.Clone();Phase=ArcadeRunPhase.Challenge;}
+
         /// <summary>竞技场内生命变化只改运行态；回到安全节点时会被最近落盘快照覆盖。</summary>
         internal void SetTransientLives(int value)
         {

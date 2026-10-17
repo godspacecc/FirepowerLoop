@@ -17,7 +17,8 @@ namespace Game
         /// <summary>海岛保留已有兼容节点，其余主题使用通用轮级事务。</summary>
         private bool UsesContentRounds(ArcadeCombatRuntime runtime) => UsesRoundLayouts(runtime) && arena.ArenaNumber > 1;
 
-        private ArcadeRoundLayoutParameters RoundLayout(ArcadeCombatRuntime runtime) => !UsesRoundLayouts(runtime) ? null :
+        private ArcadeRoundLayoutParameters RoundLayout(ArcadeCombatRuntime runtime) => runtime?.SlayerChallenge!=null ?
+            catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==slayerChallengeConfig.ArenaConfigNumber&&p.RoundNumber==slayerChallengeConfig.LayoutRound) : !UsesRoundLayouts(runtime) ? null :
             catalog.RoundLayouts.FirstOrDefault(p => p.ArenaConfigNumber == arena.ArenaNumber &&
                 p.RoundNumber == Mathf.Clamp(runtime.WaveIndex + 1, 1, 4));
 

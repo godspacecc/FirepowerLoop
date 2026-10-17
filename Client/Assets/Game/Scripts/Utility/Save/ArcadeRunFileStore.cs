@@ -84,7 +84,10 @@ namespace Game
             catch (Exception exception)
             {
                 error = exception.Message;
-                TryDelete(TempPath);
+                // 写入失败时临时文件可能仍被占用；清理不能覆盖原错误或阻止调用者重试。
+                try { TryDelete(TempPath); }
+                catch (IOException) { }
+                catch (UnauthorizedAccessException) { }
                 return false;
             }
         }

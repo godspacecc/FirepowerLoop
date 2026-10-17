@@ -8,7 +8,7 @@ namespace Game
     /// <summary>
     /// 管理街机局的安全节点事务、死亡、恢复、结算与放弃；战斗现场和界面表现不由本系统保存。
     /// </summary>
-    public sealed class ArcadeRunSystem : AbstractSystem
+    public sealed partial class ArcadeRunSystem : AbstractSystem
     {
         private ArcadeRunFileStore store;
         private ISaveClock clock = new UnitySaveClock();
@@ -233,7 +233,9 @@ namespace Game
             }
 
             var candidate = current.Clone();
-            candidate.Checkpoint.ChallengeAttempted = true;
+            bool isSlayer=provider.TryGetSlayerChallenge(out var slayerConfig,out _)&&slayerConfig.Enabled&&current.SlayerMartRulesVersion==1&&current.Checkpoint.ChallengeId==slayerConfig.ChallengeId;
+            if(current.Checkpoint.ChallengeId=="arcade.challenge.slayer-guardian"&&!isSlayer){error="Slayer配置或规则版本不可用";return false;}
+            candidate.Checkpoint.ChallengeAttempted = !isSlayer;
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;
             model.CommitSafeNode(candidate);
@@ -408,6 +410,7 @@ namespace Game
             candidate.Checkpoint = completion.Victory
                 ? new ArcadeCheckpointSaveData { ArenaNumber = candidate.NextArenaNumber }
                 : completion.NextCheckpoint.Clone();
+            ConfigureSlayerOpportunity(candidate);
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;
             CommitSafeNode(candidate);

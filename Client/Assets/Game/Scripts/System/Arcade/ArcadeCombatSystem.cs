@@ -349,7 +349,8 @@ namespace Game
             {
                 this.GetModel<ArcadeCombatModel>().Begin(runtime);
                 input.Enable();
-                if (UsesIslandRounds(runtime))
+                if(InitializeSlayerChallenge(runtime,run)) { }
+                else if (UsesIslandRounds(runtime))
                     StartIslandRound(runtime, (run.IslandRoundCheckpoint?.RoundNumber ?? 1) - 1, run.IslandRoundCheckpoint);
                 else if (UsesContentRounds(runtime))
                 {
@@ -486,6 +487,7 @@ namespace Game
             { ClearArcadeInput(runtime); return; }
             if (deltaTime <= 0f || runtime.CompletionSubmitted) return;
             if (runtime.CompletionAwaitingRetry) return;
+            if(runtime.SlayerChallenge!=null&&!TickSlayerChallenge(runtime,deltaTime)){SyncView(runtime);PublishHud(runtime);return;}
             var hazardPreviousPlayer = runtime.PlayerPosition;
             runtime.HazardPreviousEnemyPositions.Clear();
             foreach (var enemy in runtime.Enemies.Values)
@@ -501,7 +503,7 @@ namespace Game
             TickTreasureRoom(runtime, deltaTime);
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending)
             { SyncView(runtime); PublishHud(runtime); return; }
-            if (runtime.IsChallenge)
+            if (runtime.IsChallenge && runtime.SlayerChallenge==null)
             {
                 runtime.ChallengeSeconds = Mathf.Max(0f, runtime.ChallengeSeconds - deltaTime);
                 if (runtime.ChallengeSeconds <= 0f)
@@ -637,7 +639,7 @@ namespace Game
             if (runtime.RespawnRemaining <= 0f)
             {
                 runtime.PlayerHealth = runtime.PlayerMaxHealth;
-                runtime.PlayerPosition = Vector2.zero;
+                runtime.PlayerPosition = runtime.SlayerChallenge==null?Vector2.zero:new Vector2(RoundLayout(runtime).SpawnX,RoundLayout(runtime).SpawnY);
                 runtime.PlayerInvulnerability = slayerMartConfig==null?catalog.Rule.ContactInvulnerabilitySeconds*2f:
                     ArcadeSlayerMartAbilityRules.RespawnProtection(catalog.Rule.ContactInvulnerabilitySeconds,SlayerMartAbility(runtime),slayerMartConfig.Parameter);
             }
@@ -1165,6 +1167,11 @@ namespace Game
 
         private void TickWaveTransition(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            if(runtime.SlayerChallenge!=null)
+            {
+                if(runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Collecting&&runtime.SpawnQueue.Count==0&&runtime.Enemies.Count==0)BeginSlayerCollectionWave(runtime);
+                return;
+            }
             if (runtime.IsFinalBoss || runtime.AwaitingExit || runtime.InTreasureRoom ||
                 runtime.ThemeBossStarted && !runtime.ThemeBossDefeated) return;
             if (runtime.SpawnQueue.Count > 0 || runtime.Enemies.Count > 0) return;
@@ -1470,6 +1477,7 @@ namespace Game
         /// <summary>正式挡伤入口；失命机关显式跳过新增护甲，旧保护与护盾优先级保留。</summary>
         private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind)
         {
+            if(runtime.SlayerChallenge!=null&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Collecting&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Boss)return;
             if (runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f || runtime.RespawnRemaining > 0f) return;
             if (TryConsumeShield(runtime))
             {
@@ -1491,6 +1499,7 @@ namespace Game
 
             if (runtime.IsChallenge)
             {
+                if(runtime.SlayerChallenge!=null){DownSlayerPlayer(runtime);return;}
                 ArcadeSlayerMartAbilityRules.OnDeath(ability);
                 ClearSlayerMartOrdinarySupports(runtime);
                 runtime.PlayerHealth = 0;
