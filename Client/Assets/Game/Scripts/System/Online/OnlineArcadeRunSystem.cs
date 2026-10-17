@@ -12,7 +12,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>提交联机街机创建/恢复意图并发布服务端快照；不裁决生命、金币或战斗。</summary>
-    public sealed class OnlineArcadeRunSystem : AbstractSystem
+    public sealed partial class OnlineArcadeRunSystem : AbstractSystem
     {
         private const int RpcTimeoutMilliseconds = 10000;
         private const float InputSendIntervalSeconds = 0.05f;
@@ -310,6 +310,9 @@ namespace Game
                 OnlineArcadeResultCode code = MapServerError(error);
                 if (code == OnlineArcadeResultCode.Success)
                 {
+                    // 恢复RPC在途时可能已收到更新推送，旧响应不能回滚地图或个人报价。
+                    if(hasRun&&run!=null&&IsStaleRunSnapshot(run))
+                    {Publish(WithIdle(code));return new OnlineArcadeOperationResult(code,lastSnapshot);}
                     OnlineArcadeRunClientSnapshot snapshot = hasRun && run != null
                         ? CopySnapshot(run, code)
                         : OnlineArcadeRunClientSnapshot.Empty(code);
@@ -365,8 +368,9 @@ namespace Game
                    string.Equals(fingerprint, catalog.Rule.ConfigFingerprint, StringComparison.Ordinal);
         }
 
-        private static OnlineArcadeRunClientSnapshot CopySnapshot(ET.OnlineArcadeRunSnapshot source, OnlineArcadeResultCode code)
+        private OnlineArcadeRunClientSnapshot CopySnapshot(ET.OnlineArcadeRunSnapshot source, OnlineArcadeResultCode code)
         {
+            ObserveSlayerMart(source);
             List<OnlineArcadePlayerSnapshot> players = new(source.Players.Count);
             foreach (OnlineArcadePlayerInfo sourcePlayer in source.Players)
             {
@@ -460,6 +464,7 @@ namespace Game
 
         private void Publish(OnlineArcadeRunClientSnapshot snapshot)
         {
+            if(!snapshot.HasRun)ClearSlayerMart();
             bool ended = lastSnapshot.HasRun && !snapshot.HasRun && snapshot.LastResultCode == OnlineArcadeResultCode.Success;
             if (ended)
             {
@@ -490,10 +495,8 @@ namespace Game
         /// <summary>合并 RPC 与推送可能乱序到达的快照，只允许版本向前推进。</summary>
         private void TryPublishNewerSnapshot(ET.OnlineArcadeRunSnapshot run)
         {
-            if (run.Revision < lastSnapshot.Revision) return;
-            if (run.Revision == lastSnapshot.Revision && run.Battle != null &&
-                lastSnapshot.Battle != null && run.Battle.BattleRevision < lastSnapshot.Battle.BattleRevision)
-                return;
+            if(lastSnapshot.HasRun&&run.RunId!=lastSnapshot.RunId)return;
+            if(IsStaleRunSnapshot(run))return;
             OnlineArcadeRunClientSnapshot snapshot = CopySnapshot(run, OnlineArcadeResultCode.Success);
             if (!MatchesLocalConfig(snapshot.ConfigFingerprint))
             {
@@ -507,6 +510,18 @@ namespace Game
                     snapshot.LastResultCode, snapshot.Battle, snapshot.Connections, snapshot.BattlePaused,
                     snapshot.ChallengeId, snapshot.ChallengeAttempted);
             Publish(snapshot);
+        }
+
+        /// <summary>同一对局的恢复、输入和推送共用单调版本门禁。</summary>
+        private bool IsStaleRunSnapshot(ET.OnlineArcadeRunSnapshot run)
+        {
+            if(!lastSnapshot.HasRun||run.RunId!=lastSnapshot.RunId)return false;
+            if(run.Revision!=lastSnapshot.Revision)return run.Revision<lastSnapshot.Revision;
+            var old=lastSnapshot.Battle;var next=run.Battle;
+            if(old==null||next==null)return old!=null&&next==null;
+            if(next.ArenaNumber==old.ArenaNumber&&next.RoundGeneration!=old.RoundGeneration)
+                return next.RoundGeneration<old.RoundGeneration;
+            return next.BattleRevision<old.BattleRevision;
         }
 
         private void OnAccountChanged(OnlineAccountChangedEvent evt)
@@ -567,6 +582,7 @@ namespace Game
 
         private void CancelOperation()
         {
+            ClearSlayerMart();
             operationGeneration++;
             operationCancellation?.Cancel();
             operationCancellation?.Dispose();

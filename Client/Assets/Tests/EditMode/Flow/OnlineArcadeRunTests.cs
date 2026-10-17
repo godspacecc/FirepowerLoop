@@ -355,7 +355,7 @@ namespace Game.Tests
             Assert.That(result.Snapshot.LastResultCode, Is.EqualTo(OnlineArcadeResultCode.Success));
         }
 
-        private static Harness CreateHarness()
+        internal static Harness CreateHarness()
         {
             ResetArchitecture();
             TestArchitecture.Network = new FakeNetwork();
@@ -367,7 +367,7 @@ namespace Game.Tests
             return new Harness(architecture.GetSystem<OnlineArcadeRunSystem>(), TestArchitecture.Network);
         }
 
-        private static void ResetArchitecture()
+        internal static void ResetArchitecture()
         {
             FieldInfo field = typeof(Architecture<TestArchitecture>).GetField("mArchitecture",
                 BindingFlags.Static | BindingFlags.NonPublic);
@@ -394,14 +394,14 @@ namespace Game.Tests
             }
         }
 
-        private readonly struct Harness
+        internal readonly struct Harness
         {
             public Harness(OnlineArcadeRunSystem system, FakeNetwork network) { System = system; Network = network; }
             public OnlineArcadeRunSystem System { get; }
             public FakeNetwork Network { get; }
         }
 
-        private sealed class FakeNetwork : INetworkRuntime
+        internal sealed class FakeNetwork : INetworkRuntime
         {
             public bool IsInitialized => true;
             public NetworkConnectionState ConnectionState => NetworkConnectionState.Connected;
@@ -410,6 +410,9 @@ namespace Game.Tests
             public bool ReturnNoRun { get; set; }
             public string ConfigFingerprint { get; set; }
             private Action<G2C_OnlineArcadeRunChanged> arcadeRunChanged;
+            public Func<IRequest, IResponse> OverrideResponse;
+            public Action<ET.OnlineArcadeRunSnapshot> ConfigureRun;
+            public void PushConfigured() => arcadeRunChanged?.Invoke(new G2C_OnlineArcadeRunChanged { HasRun=true, Run=ProtocolRun() });
             private long revision = 1;
             private OnlineArcadeBattleInfo currentBattle;
             public void Initialize() { }
@@ -420,6 +423,7 @@ namespace Game.Tests
             {
                 LastRequest = request;
                 IResponse response;
+                if(OverrideResponse!=null) return Task.FromResult((TResponse)OverrideResponse(request));
                 if (request is C2G_StartOnlineArcadeRun)
                     response = new G2C_StartOnlineArcadeRun { Error = 0, HasRun = true, Run = ProtocolRun() };
                 else if (request is C2G_OperateOnlineArcadeSafeCheckpoint operate)
@@ -550,6 +554,7 @@ namespace Game.Tests
                 run.Battle = currentBattle;
                 run.Players.Add(Player(10, "one", "offer-one"));
                 run.Players.Add(Player(20, "two", "offer-two"));
+                ConfigureRun?.Invoke(run);
                 return run;
             }
 

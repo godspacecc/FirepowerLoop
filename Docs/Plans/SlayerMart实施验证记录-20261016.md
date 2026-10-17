@@ -131,3 +131,11 @@
 - UseFieldUpgrade已接通服务器输入全链，按单调输入序列幂等；同帧技能意图优先且不同时扣炸弹／冲刺。旧地图输入保留满充。客户端输入采集与HUD继续后续接线。
 - SlayerMartRpcOnline初始1/8红→8/8绿，覆盖三层映射、实际MemoryPack编解码、真实SubmitInput能力消费与重放以及Handler请求族绑定；SlayerMartRoundOnline16/16、SlayerStormOnline10/10回归通过。一次EntityRef使用var的编译错误改为正式目标类型，不当作功能红证据。
 - 上述不等同于真实双客户端连通验收；客户端接收、未决请求保留、场景与支援投影以及正式UI继续实施，release.enabled仍为0，未打包。
+
+## 第十七段：客户端个人报价与未决交易
+
+- OnlineArcadeRunSystem接收定向个人报价，深拷贝报价、库存与已拥有列表；服务器报价拒绝原因原样显示，不在客户端重新计算限购。公共广播只更新时间、阶段和公开成员状态，不清掉本人的现金与卡牌。
+- 缓存按账号、对局、区域和代次隔离，拒绝其他玩家报价及旧报价版本；离开区域、对局结束或退出登录清理缓存与待处理请求。统一只读快照增加炸弹／冲刺容量、护甲及成员命数，供后续UI截断和全队加命预览。
+- 正式OperateSlayerMartAsync／RetryPendingSlayerMartAsync接入专用RPC。超时和未知结果保留原OperationId、版本及完整载荷，禁止另发新购买；明确成功／拒绝后解除等待。没有本地预扣款或提前施加效果。
+- 新SlayerMartOnlineFlowTests有效0/12红→12/12绿；扩展异步竞态后19/20红，统一恢复／输入／推送版本门禁后20/20绿。原OnlineArcadeRunTests18/18回归通过，includePassingTests=true，实际短类数量受20／18上限约束。
+- Unity MCP再次确认连接E:/GitHub/FirepowerLoop/Client/Assets、Boot场景；未运行完整套件或Player Build。场景／支援投影、正式UI输入及真实双客户端实连继续下一部分，release.enabled保持0。
