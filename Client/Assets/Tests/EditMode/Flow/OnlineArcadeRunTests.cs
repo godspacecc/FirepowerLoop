@@ -224,6 +224,8 @@ namespace Game.Tests
             Harness harness = CreateHarness();
             harness.System.StartAsync().GetAwaiter().GetResult();
             harness.Network.PushBattle(5, 1);
+            // 输入用例使用已完成复起的玩家；战斗快照字段用例仍保留其复起倒计时夹具。
+            harness.Network.ConfigureRun=run=>run.Battle.Players[0].RespawnSeconds=0;harness.Network.PushConfigured();
 
             OnlineArcadeInputResult first = harness.System.SubmitInputAsync(.5f, -.25f, 1f, 0f, true, true, true)
                 .GetAwaiter().GetResult();

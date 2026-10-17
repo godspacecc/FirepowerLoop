@@ -116,15 +116,15 @@ namespace Game
         /// 同一时刻只保留一个输入 RPC，失败不会回滚已经发出的单调序号。
         /// </summary>
         public async Task<OnlineArcadeInputResult> SubmitInputAsync(float moveX, float moveZ, float aimX,
-            float aimZ, bool firing, bool useBomb = false, bool useDash = false)
+            float aimZ, bool firing, bool useBomb = false, bool useDash = false, bool useFieldUpgrade = false)
         {
             return await SubmitInputWithSequenceAsync(++lastIssuedInputSequence, moveX, moveZ, aimX, aimZ,
-                firing, useBomb, useDash);
+                firing, useBomb, useDash,useFieldUpgrade);
         }
 
         /// <summary>允许输入发送泵在响应不确定时复用原序号；服务端会以 LastAcceptedInputSequence 幂等确认。</summary>
         private async Task<OnlineArcadeInputResult> SubmitInputWithSequenceAsync(long sequence, float moveX,
-            float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash)
+            float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, bool useFieldUpgrade = false)
         {
             OnlineAccountSnapshot account = this.GetModel<OnlineAccountModel>().Snapshot.Value;
             if (!account.IsAuthenticated || network == null || network.ConnectionState != NetworkConnectionState.Connected)
@@ -140,6 +140,7 @@ namespace Game
 
             CancellationTokenSource currentInputCancellation = new();
             inputCancellation = currentInputCancellation;
+            long inputRunId=lastSnapshot.RunId;
             try
             {
                 C2G_SubmitOnlineArcadeInput request = C2G_SubmitOnlineArcadeInput.Create();
@@ -150,7 +151,8 @@ namespace Game
                 request.AimX = aimX; request.AimZ = aimZ;
                 request.Firing = firing;
                 request.UseBomb = useBomb;
-                request.UseDash = useDash;
+                request.UseDash = useDash;request.UseFieldUpgrade=useFieldUpgrade;
+                if(useFieldUpgrade)request.UseBomb=request.UseDash=false;
                 request.RoundGeneration=lastSnapshot.Battle.RoundGeneration;
                 request.RoundReady=combatView?.IsRoundLayoutReady==true && combatView.IsIslandRoundReady &&
                     string.IsNullOrEmpty(combatView.RoundLayoutLoadError) && string.IsNullOrEmpty(combatView.IslandRoundLoadError);
@@ -158,17 +160,23 @@ namespace Game
                 if(shop?.Active==true)
                 {
                     request.RoundReady=shop.Prepared&&combatView?.IsSlayerMartRegionReady==true&&string.IsNullOrEmpty(combatView.SlayerMartRegionLoadError);
-                    request.Firing=request.UseBomb=request.UseDash=false;
+                    request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;
                     if(!shop.Ready||shop.Closing||ArcadeShopUICtrl.IsShownForInput||shop.Members.Any(m=>m.PlayerId==account.PlayerId&&m.MenuOpen))request.MoveX=request.MoveZ=0;
                     request.ConfirmExit=false;
                 }
                 long localId=account.PlayerId;
                 var localPlayer=lastSnapshot.Battle.Players.FirstOrDefault(p=>p.PlayerId==localId);
-                if(localPlayer.InTreasureRoom) request.RoundReady &= combatView.IsIslandTreasureReady;
+                if(localPlayer.InTreasureRoom) request.RoundReady &= combatView?.IsIslandTreasureReady==true;
+                if(InputContextBlocked(localPlayer))
+                {request.MoveX=request.MoveZ=0;request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;}
+                if(localPlayer.InTreasureRoom||lastSnapshot.Battle.AwaitingExit)request.UseFieldUpgrade=false;
                 request.ConfirmExit=shop?.Active!=true&&confirmedExitGeneration>0&&confirmedExitGeneration==request.RoundGeneration;
                 request.ExitTarget=confirmedExitTarget;
                 G2C_SubmitOnlineArcadeInput response = await network.CallAsync<G2C_SubmitOnlineArcadeInput>(
                     request, RpcTimeoutMilliseconds, currentInputCancellation.Token);
+                if(currentInputCancellation.IsCancellationRequested||!lastSnapshot.HasRun||lastSnapshot.RunId!=inputRunId||
+                    lastSnapshot.Battle?.ArenaNumber!=request.ArenaNumber||lastSnapshot.Battle.RoundGeneration!=request.RoundGeneration)
+                    return new OnlineArcadeInputResult(OnlineArcadeResultCode.InvalidState,false,sequence,lastSnapshot);
                 lastIssuedInputSequence = Math.Max(lastIssuedInputSequence, response.LastAcceptedInputSequence);
                 if(response.Accepted&&request.ConfirmExit)confirmedExitGeneration=0;
                 OnlineArcadeResultCode code = MapServerError(response.Error);
@@ -209,7 +217,8 @@ namespace Game
                 pendingInputSequence = 0;
                 return;
             }
-            if (input?.IsEnabled == false) input.Enable();
+            if(CanSamplePhysicalInput()){if(input?.IsEnabled==false)input.Enable();}
+            else{input?.Disable(true);pendingInputSequence=0;}
             if (inputPumpBusy || Time.unscaledTime < nextInputSendTime) return;
             PumpInputAsync().Forget();
         }
@@ -228,12 +237,14 @@ namespace Game
                     pendingInputSequence = ++lastIssuedInputSequence;
                 }
                 long sequence = pendingInputSequence;
+                var frame=pendingInput;
                 OnlineArcadeInputResult result = await SubmitInputWithSequenceAsync(sequence,
-                    pendingInput.Move.x, pendingInput.Move.y, pendingInput.Aim.x, pendingInput.Aim.y,
-                    pendingInput.Firing, pendingInput.Bomb, pendingInput.Dash);
+                    frame.Move.x, frame.Move.y, frame.Aim.x, frame.Aim.y,
+                    frame.Firing, frame.Bomb, frame.Dash);
+                if(pendingInputSequence!=sequence)return;
                 if (result.InputSequence >= sequence && (result.Accepted || result.Code == OnlineArcadeResultCode.Success))
                 {
-                    input.Acknowledge(pendingInput.Bomb, pendingInput.Dash);
+                    input.Acknowledge(frame.Bomb, frame.Dash);
                     pendingInputSequence = 0;
                 }
                 else if (result.Code == OnlineArcadeResultCode.InvalidState ||
@@ -475,10 +486,13 @@ namespace Game
 
         private void Publish(OnlineArcadeRunClientSnapshot snapshot)
         {
+            ResetInputOnBoundary(snapshot);
             if(!snapshot.HasRun)ClearSlayerMart();
             bool ended = lastSnapshot.HasRun && !snapshot.HasRun && snapshot.LastResultCode == OnlineArcadeResultCode.Success;
             if (ended)
             {
+                // 结束推送作废尚未返回的恢复/安全节点操作，旧RPC不能重新发布已结束的局。
+                CancelOperation();
                 pendingResult = new OnlineArcadeResultData { RunId = lastSnapshot.RunId,
                     Outcome = lastSnapshot.Phase == OnlineArcadeRunPhase.Victory ? "victory" :
                         lastSnapshot.OperationState == OnlineArcadeOperationState.Abandoning ? "abandoned" : "failed" };
