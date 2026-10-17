@@ -1,0 +1,1 @@
+status=combat inactive: Result phase=Result lives=0 score=84000 result=True

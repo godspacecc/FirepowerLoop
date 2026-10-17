@@ -1,0 +1,38 @@
+{
+  "Version": 1,
+  "SlayerMartRulesVersion": 0,
+  "SlayerMart": null,
+  "RunId": "c41305f920e34d0386afa3047d0d0a17",
+  "CompletedArenaCount": 1,
+  "NextArenaNumber": 2,
+  "IsCasualRoute": true,
+  "ArenaConfigNumber": 2,
+  "IslandRoundCheckpoint": null,
+  "RoundCheckpoint": null,
+  "ArenaEntryState": null,
+  "Victory": false,
+  "Outcome": "failed",
+  "HasResult": true,
+  "RemainingLives": 0,
+  "RunGold": 0,
+  "Score": 84000,
+  "ScoreMultiplier": 1,
+  "MultiplierProgress": 0,
+  "EmergencyResources": {
+    "arcade.resource.bomb": 4,
+    "arcade.resource.dash": 8
+  },
+  "PurchasedUpgradeStacks": {},
+  "Consumables": {},
+  "EquipmentBySlot": {
+    "weapon": "arcade.weapon.basic"
+  },
+  "Checkpoint": {
+    "ArenaNumber": 2,
+    "GenerationSeed": -1005373374,
+    "ChallengeId": null,
+    "ChallengeAttempted": false
+  },
+  "PendingRewards": [],
+  "UpdatedAtUtc": "2026-10-17T06:02:35.4909785Z"
+}

@@ -1,0 +1,55 @@
+{
+  "Version": 1,
+  "SlayerMartRulesVersion": 0,
+  "SlayerMart": null,
+  "RunId": "c41305f920e34d0386afa3047d0d0a17",
+  "CompletedArenaCount": 0,
+  "NextArenaNumber": 1,
+  "IsCasualRoute": true,
+  "ArenaConfigNumber": 1,
+  "IslandRoundCheckpoint": {
+    "RoundNumber": 4,
+    "MapId": "island.round.4",
+    "PlayerHealth": 100,
+    "PlayerMaxHealth": 100,
+    "Bombs": 3,
+    "Dashes": 4,
+    "ArenaGold": 0,
+    "TemporaryWeaponId": null,
+    "TemporaryWeaponRemaining": 0.0,
+    "FirstPersonRemaining": 0.0,
+    "FireCooldown": 0.0,
+    "InvulnerabilityRemaining": 0.0,
+    "DashRemaining": 0.0,
+    "AimDirectionX": 0.997390151,
+    "AimDirectionY": 0.07220026,
+    "Powerups": []
+  },
+  "RoundCheckpoint": null,
+  "ArenaEntryState": null,
+  "Victory": false,
+  "Outcome": null,
+  "HasResult": false,
+  "RemainingLives": 3,
+  "RunGold": 0,
+  "Score": 41600,
+  "ScoreMultiplier": 3,
+  "MultiplierProgress": 900,
+  "EmergencyResources": {
+    "arcade.resource.bomb": 3,
+    "arcade.resource.dash": 4
+  },
+  "PurchasedUpgradeStacks": {},
+  "Consumables": {},
+  "EquipmentBySlot": {
+    "weapon": "arcade.weapon.basic"
+  },
+  "Checkpoint": {
+    "ArenaNumber": 1,
+    "GenerationSeed": -1005386247,
+    "ChallengeId": null,
+    "ChallengeAttempted": false
+  },
+  "PendingRewards": [],
+  "UpdatedAtUtc": "2026-10-17T05:57:03.1370104Z"
+}

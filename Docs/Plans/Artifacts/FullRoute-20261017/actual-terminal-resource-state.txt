@@ -1,0 +1,1 @@
+viewRootNull=True ownedMeshes=0 ownedMaterials=0 liveRoundOwnedMaterials=0

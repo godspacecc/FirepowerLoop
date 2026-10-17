@@ -1,0 +1,96 @@
+{
+  "Version": 1,
+  "SlayerMartRulesVersion": 0,
+  "SlayerMart": null,
+  "RunId": "c41305f920e34d0386afa3047d0d0a17",
+  "CompletedArenaCount": 1,
+  "NextArenaNumber": 2,
+  "IsCasualRoute": true,
+  "ArenaConfigNumber": 2,
+  "IslandRoundCheckpoint": null,
+  "RoundCheckpoint": {
+    "SlayerMart": null,
+    "ArenaNumber": 2,
+    "ArenaConfigNumber": 2,
+    "RoundNumber": 1,
+    "LayoutVersion": 1,
+    "MapId": "arena.2.round.1",
+    "PlayerState": {
+      "RoundNumber": 1,
+      "MapId": "arena.2.round.1",
+      "PlayerHealth": 100,
+      "PlayerMaxHealth": 100,
+      "Bombs": 4,
+      "Dashes": 6,
+      "ArenaGold": 0,
+      "TemporaryWeaponId": null,
+      "TemporaryWeaponRemaining": 0.0,
+      "FirstPersonRemaining": 0.0,
+      "FireCooldown": 0.0,
+      "InvulnerabilityRemaining": 0.0,
+      "DashRemaining": 0.0,
+      "AimDirectionX": 0.0,
+      "AimDirectionY": 1.0,
+      "Powerups": [
+        {
+          "ProductId": "arcade.powerup.boots",
+          "RemainingSeconds": 16.2722816,
+          "Charges": 0,
+          "CooldownSeconds": 0.0,
+          "PositionX": -8.820816,
+          "PositionY": -8.55
+        }
+      ]
+    },
+    "RemainingCrateIds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "CrateHealth": {
+      "1": 30,
+      "2": 30,
+      "3": 30,
+      "4": 30,
+      "5": 30,
+      "6": 30,
+      "7": 30,
+      "8": 30
+    },
+    "DestroyedBarrelIds": [],
+    "CratesInitialized": true,
+    "TreasureCompleted": false,
+    "EncounterSeed": -997682831
+  },
+  "ArenaEntryState": null,
+  "Victory": false,
+  "Outcome": null,
+  "HasResult": false,
+  "RemainingLives": 3,
+  "RunGold": 0,
+  "Score": 83600,
+  "ScoreMultiplier": 3,
+  "MultiplierProgress": 900,
+  "EmergencyResources": {
+    "arcade.resource.bomb": 4,
+    "arcade.resource.dash": 6
+  },
+  "PurchasedUpgradeStacks": {},
+  "Consumables": {},
+  "EquipmentBySlot": {
+    "weapon": "arcade.weapon.basic"
+  },
+  "Checkpoint": {
+    "ArenaNumber": 2,
+    "GenerationSeed": -1005373374,
+    "ChallengeId": null,
+    "ChallengeAttempted": false
+  },
+  "PendingRewards": [],
+  "UpdatedAtUtc": "2026-10-17T05:58:46.4037045Z"
+}
