@@ -45,6 +45,7 @@ namespace Game
         public void PlayUpperBodyGunFire()
         {
             if (!UsesUpperBodyGunFire || animator == null || reloadDefinition != null) return;
+            BeginArcadeGunKick();
             int layer = animator.GetLayerIndex(GunFireLayer);
             if (layer < 0) return;
             gunFireRemainingSeconds = current.Animations.Attack.Clip.length;
@@ -55,6 +56,7 @@ namespace Game
         /// <summary>复用本机及远端既有表现帧，动作结束后撤销覆盖，恢复完整移动姿态。</summary>
         public void TickUpperBodyGunFire(float deltaSeconds)
         {
+            gunKickRemainingSeconds = Mathf.Max(0f, gunKickRemainingSeconds - Mathf.Max(0f, deltaSeconds));
             if (gunFireRemainingSeconds <= 0f) return;
             gunFireRemainingSeconds = Mathf.Max(0f, gunFireRemainingSeconds - deltaSeconds);
             if (gunFireRemainingSeconds <= 0f) ClearUpperBodyGunFire();
@@ -63,6 +65,7 @@ namespace Game
         /// <summary>切装、禁用、受击与死亡共同撤销上身射击，避免旧武器姿态残留。</summary>
         public void ClearUpperBodyGunFire()
         {
+            gunKickRemainingSeconds = 0f;
             gunFireRemainingSeconds = 0f;
             if (animator == null) return;
             int layer = animator.GetLayerIndex(GunFireLayer);
@@ -653,10 +656,31 @@ namespace Game
 
         private void SetVisualPose(Vector3 position, Quaternion rotation, Vector3 scale)
         {
+            // 每次在解析出的基础姿态上重算，不把上帧后坐累加到手骨或枪口。
+            if (!manualPoseSampling && gunKickRemainingSeconds > 0f && gunKickDurationSeconds > 0f)
+            {
+                var remaining = Mathf.Clamp01(gunKickRemainingSeconds / gunKickDurationSeconds);
+                position += rotation * Vector3.back * (gunKickDistance * remaining * remaining);
+            }
             var root = visual.transform;
             if (root.localPosition != position) root.localPosition = position;
             if (root.localRotation != rotation) root.localRotation = rotation;
             if (root.localScale != scale) root.localScale = scale;
+        }
+
+        /// <summary>首批街机枪体的短回弹，由既有表现帧推进；切装、受击、死亡沿用统一清理入口。</summary>
+        private float gunKickRemainingSeconds, gunKickDurationSeconds, gunKickDistance;
+
+        private void BeginArcadeGunKick()
+        {
+            switch (current?.Id)
+            {
+                case "arcade.weapon.basic": gunKickDistance = .035f; gunKickDurationSeconds = .12f; break;
+                case "arcade.weapon.rapid": gunKickDistance = .022f; gunKickDurationSeconds = .07f; break;
+                case "arcade.weapon.spread": gunKickDistance = .075f; gunKickDurationSeconds = .19f; break;
+                default: gunKickRemainingSeconds = 0f; return;
+            }
+            gunKickRemainingSeconds = gunKickDurationSeconds;
         }
 
         private bool CanGripCurrentAnimation()

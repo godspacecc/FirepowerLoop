@@ -1,0 +1,34 @@
+隔离临时档=C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopThreeGun-80d0406faf15435599e15dc2999c2b7b
+正式新局按钮进入Island第一轮；非自然拾取，后续用正式测试掉落入口切枪。
+聚焦GameView后开始输入观察
+0.01 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+1.01 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=ArcadeBulletBasic
+2.03 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 109，掉落 1  visible=ArcadeBulletBasic
+3.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 108，掉落 2  visible=ArcadeBulletBasic
+4.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 107，掉落 2  visible=ArcadeBulletBasic
+5.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 106，掉落 3  visible=ArcadeBulletBasic
+6.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 104，掉落 4  visible=ArcadeBulletBasic
+7.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 101，掉落 5  visible=ArcadeBulletBasic
+arcade.drop.weapon.rapid=True 已模拟拾取 arcade.drop.weapon.rapid（TemporaryWeapon / arcade.weapon.rapid） 
+8.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 99，掉落 6  visible=ArcadeBulletBasic
+9.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 97，掉落 6  visible=ArcadeBulletRapid
+10.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 94，掉落 6  visible=ArcadeBulletRapid
+11.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 89，掉落 7  visible=ArcadeBulletRapid
+12.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 87，掉落 7  visible=ArcadeBulletRapid
+13.01 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 85，掉落 8  visible=ArcadeBulletRapid
+14.01 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 83，掉落 8  visible=ArcadeBulletRapid
+15.01 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 81，掉落 8  visible=ArcadeBulletRapid
+arcade.drop.weapon.spread=True 已模拟拾取 arcade.drop.weapon.spread（TemporaryWeapon / arcade.weapon.spread） 
+16.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 78，掉落 8  visible=ArcadeBulletRapid
+17.01 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 75，掉落 9  visible=ArcadeBulletSpread
+18.01 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 73，掉落 10  visible=ArcadeBulletSpread
+19.01 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 71，掉落 10  visible=ArcadeBulletSpread
+20.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 70，掉落 11  visible=ArcadeBulletSpread
+System.Exception: 主菜单超时
+  at ArcadeThreeGunPlayProbe.Run () [0x001b3] in <2ea800818ef34ee48b408342058c7161>:0 
+21.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 66，掉落 13  visible=ArcadeBulletSpread
+22.01 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 64，掉落 14  visible=ArcadeBulletSpread
+23.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 64，掉落 14  visible=ArcadeBulletSpread
+24.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 61，掉落 15  visible=ArcadeBulletSpread
+观察完成，输入设备已回收
+临时局已正式放弃，地图句柄=null TimeScale=1

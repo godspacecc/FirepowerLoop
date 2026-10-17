@@ -227,7 +227,8 @@ namespace Game
             }
 
             // 特殊模型原本依赖箭 Prefab 的根缩放；保留载体，避免默认变短时连带缩小火箭等模型。
-            var address = hostile || !string.IsNullOrWhiteSpace(visualResourceName) ? arcadeArrowAddress : arcadeProjectileAddress;
+            var address = hostile || !string.IsNullOrWhiteSpace(visualResourceName) &&
+                !ProjectileView.UsesOrdinaryArcadeBullet(visualResourceName) ? arcadeArrowAddress : arcadeProjectileAddress;
             if (!committedPrefabs.TryGetValue(address ?? string.Empty, out var prefab) || prefab.Prefab == null)
             {
                 error = $"街机投射物 Prefab 未预加载：{address}";

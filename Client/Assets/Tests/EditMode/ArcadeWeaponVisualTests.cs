@@ -715,7 +715,7 @@ public sealed class ArcadeWeaponVisualTests
         Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
         var basic = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.basic");
         Assert.That(basic.HeldVisualResourceName, Is.EqualTo("ArcadePistol"));
-        Assert.That(basic.ProjectileVisualResourceName, Is.Empty);
+        Assert.That(basic.ProjectileVisualResourceName, Is.EqualTo("ArcadeBulletBasic"));
         Assert.That(basic.MuzzleFlash, Is.True);
         Assert.That(basic.ProjectileFirePointLocalPosition, Is.EqualTo(new Vector3(0f, 0.05f, 0.23f)));
         var grenade = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.grenade");

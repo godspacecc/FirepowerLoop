@@ -1,8 +1,8 @@
 ##var,Id,HeldVisualResourceName,ProjectileVisualResourceName,MuzzleFlash,ProjectileFirePointX,ProjectileFirePointY,ProjectileFirePointZ,Damage,FireIntervalSeconds,ProjectileSpeed,ProjectileLifetimeSeconds,ProjectileCount,SpreadDegrees,Behavior,MaxHits,ExplosionRadius,MeleeRange,MeleeArcDegrees
 ##type,string,string,string,bool,float,float,float,int,float,float,float,int,float,ArcadeWeaponBehavior,int,float,float,float
-,arcade.weapon.basic,ArcadePistol,,true,0.000,0.050,0.230,18,0.24,16,1.60,1,0,Direct,1,0,0,0
-,arcade.weapon.rapid,ArcadeRifle,,true,-0.010,-0.040,0.630,10,0.10,18,1.50,1,0,Direct,1,0,0,0
-,arcade.weapon.spread,ArcadeScifiShotgun,,true,0.000,0.070,0.540,11,0.36,15,1.20,5,28,Direct,1,0,0,0
+,arcade.weapon.basic,ArcadePistol,ArcadeBulletBasic,true,0.000,0.050,0.230,18,0.24,16,1.60,1,0,Direct,1,0,0,0
+,arcade.weapon.rapid,ArcadeRifle,ArcadeBulletRapid,true,-0.010,-0.040,0.630,10,0.10,18,1.50,1,0,Direct,1,0,0,0
+,arcade.weapon.spread,ArcadeScifiShotgun,ArcadeBulletSpread,true,0.000,0.070,0.540,11,0.36,15,1.20,5,28,Direct,1,0,0,0
 ,arcade.weapon.piercing,ArcadePiercingGun,ArcadePiercingRay,true,0.000,-0.010,0.250,17,0.24,20,1.50,1,0,Piercing,5,0,0,0
 ,arcade.weapon.rocket,ArcadePanzerschreck,ArcadePanzerschreckRocket,false,0.000,0.060,1.250,38,0.72,11,2.00,1,0,Explosive,1,2.8,0,0
 ,arcade.weapon.grenade,ArcadeGrenade,ArcadeGrenade,false,-0.020,-0.020,0.030,30,0.48,9,0.85,1,0,TimedExplosive,1,3.2,0,0

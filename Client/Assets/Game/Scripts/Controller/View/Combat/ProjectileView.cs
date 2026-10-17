@@ -72,6 +72,11 @@ namespace Game
             if (defaultArcadeRenderer != null) defaultArcadeRenderer.enabled = !matched;
         }
 
+        /// <summary>三种普通枪的视觉变体共用短弹载体；弓箭、敌弹和特殊模型仍使用既有载体。</summary>
+        internal static bool UsesOrdinaryArcadeBullet(string visualResourceName) =>
+            visualResourceName == "ArcadeBulletBasic" || visualResourceName == "ArcadeBulletRapid" ||
+            visualResourceName == "ArcadeBulletSpread";
+
         private static void SetActive(GameObject target, bool active)
         {
             if (target != null && target.activeSelf != active) target.SetActive(active);

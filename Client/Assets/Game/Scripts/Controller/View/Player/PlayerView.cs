@@ -682,8 +682,31 @@ namespace Game
             if (presenter == null || !presenter.TryGetProjectileOrigin(out var origin)) return;
             muzzleFlash.transform.position = origin;
             muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            ConfigureArcadeGunMuzzle(presenter.Current?.Id);
             muzzleFlash.Play(true);
         }
+
+        /// <summary>三种普通枪按稳定身份选择短促闪光；其余共享武器恢复原模板参数，不继承上把枪。</summary>
+        private void ConfigureArcadeGunMuzzle(string weaponId)
+        {
+            float size = .42f, lifetime = .045f;
+            switch (weaponId)
+            {
+                case "arcade.weapon.basic": size = .44f; lifetime = .04f; break;
+                case "arcade.weapon.rapid": size = .30f; lifetime = .025f; break;
+                case "arcade.weapon.spread": size = .70f; lifetime = .055f; break;
+            }
+            gunMuzzleParticles ??= muzzleFlash.GetComponentsInChildren<ParticleSystem>(true);
+            foreach (var particles in gunMuzzleParticles)
+            {
+                var main = particles.main;
+                main.startSize = particles == muzzleFlash ? size : size * (.25f / .42f);
+                main.startLifetime = lifetime;
+            }
+        }
+
+        /// <summary>缓存当前玩家自有的枪口子粒子，避免每次连射查询并分配数组。</summary>
+        private ParticleSystem[] gunMuzzleParticles;
 
         private void PlayRangedFireFeedback(bool showMuzzleFlash)
         {

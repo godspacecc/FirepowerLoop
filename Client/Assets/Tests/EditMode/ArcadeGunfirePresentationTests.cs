@@ -106,8 +106,8 @@ namespace Game.Tests
             {
                 typeof(ArcadeCombatViewController).GetMethod("LoadContentAsync", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(view, new object[] { 15 });
-                Assert.That(typeof(ArcadeCombatViewController).GetField("contentTemplates", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view), Is.Null,
-                    "后续竞技场不应启用前三场的环境和出口模板");
+                Assert.That(typeof(ArcadeCombatViewController).GetField("contentEnvironment", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(view), Is.Null,
+                    "公共模板可准备，但后续竞技场不应创建前三场的环境覆盖实例");
                 typeof(ArcadeCombatViewController).GetMethod("PlayBulletImpact", BindingFlags.Instance | BindingFlags.NonPublic)
                     .Invoke(view, new object[] { Vector2.zero });
                 Assert.That(root.GetComponentsInChildren<ParticleSystem>().Length, Is.EqualTo(1), "后续竞技场仍需命中火星");
