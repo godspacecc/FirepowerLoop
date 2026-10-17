@@ -283,6 +283,7 @@ namespace Game
             hazardPresentation?.Dispose();
             hazardPresentation = null;
             ClearBulletImpacts();
+            ClearProjectileBlasts();
             ReleaseContent();
             remoteGeneration++;
             obstacleVisualGeneration++;
@@ -473,11 +474,12 @@ namespace Game
                 0, mapRoot.TransformPoint(new Vector3(position.x, 0f, position.y))));
         }
 
-        /// <summary>只有投射物引爆事件调用；按爆炸半径区分常规与镭射弹试听音色。</summary>
+        /// <summary>只有投射物引爆事件调用；保留原半径音色分类，视觉不受音频限频抑制。</summary>
         public void PlayProjectileExplosion(Vector2 position, float radius)
         {
             if (root == null || mapRoot == null || radius <= 0f) return;
             var sciFi = radius <= 1.5f;
+            PlayProjectileBlast(position, radius, sciFi);
             var now = Time.unscaledTime;
             var previous = sciFi ? lastSciFiExplosionSoundTime : lastExplosionSoundTime;
             if (now - previous < (sciFi ? 0.4f : 0.15f)) return;

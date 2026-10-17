@@ -1,0 +1,7 @@
+{
+  "clientSha256": "1D99AB46BB139F24129BA4F215116D0C5E72618DCEBCEF73F41CF9E72B7A3F42",
+  "projectMcpRegistered": true,
+  "serverSha256": "1D99AB46BB139F24129BA4F215116D0C5E72618DCEBCEF73F41CF9E72B7A3F42",
+  "nativeUnityToolsVisibleInCurrentTurn": 0,
+  "onlyCsvChange": "raygun.ProjectileVisualResourceName=ArcadeRaygunBolt"
+}

@@ -1,0 +1,55 @@
+隔离临时档=C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopSpecial-5247b74027ce4d28b175aff0ff4595ea
+RunId=a2d2aa7333f24337909358edf1caef09
+正式新局按钮进入；每6秒正式测试掉落切枪，非自然拾取，不改生命、敌人或伤害。
+0.01 stage=0 fireSequence=0 queued=(0.00, 1.00) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+1.00 stage=0 fireSequence=0 queued=(0.00, 1.00) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+2.00 stage=0 fireSequence=0 queued=(-0.40, -0.92) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+3.00 stage=0 fireSequence=0 queued=(-0.43, -0.90) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+4.00 stage=0 fireSequence=0 queued=(-0.32, -0.95) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+5.00 stage=0 fireSequence=0 queued=(-0.20, -0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+arcade.drop.weapon.rapid=True 已模拟拾取 arcade.drop.weapon.rapid（TemporaryWeapon / arcade.weapon.rapid）
+6.00 stage=1 fireSequence=0 queued=(-0.06, -1.00) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+7.00 stage=1 fireSequence=0 queued=(0.10, -0.99) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+8.00 stage=1 fireSequence=0 queued=(0.31, -0.95) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+9.00 stage=1 fireSequence=0 queued=(0.60, -0.80) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+10.01 stage=1 fireSequence=0 queued=(0.98, -0.22) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+11.00 stage=1 fireSequence=0 queued=(0.64, 0.77) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 90/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+arcade.drop.weapon.spread=True 已模拟拾取 arcade.drop.weapon.spread（TemporaryWeapon / arcade.weapon.spread）
+12.00 stage=2 fireSequence=0 queued=(-0.41, 0.91) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 80/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+13.00 stage=2 fireSequence=0 queued=(-0.18, -0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 70/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+14.00 stage=2 fireSequence=0 queued=(-0.16, 0.99) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 70/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+15.00 stage=2 fireSequence=0 queued=(0.67, 0.74) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 60/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+16.00 stage=2 fireSequence=0 queued=(-1.00, -0.04) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 50/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+17.00 stage=2 fireSequence=0 queued=(-0.39, -0.92) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 40/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+arcade.drop.weapon.raygun=True 已模拟拾取 arcade.drop.weapon.raygun（TemporaryWeapon / arcade.weapon.raygun）
+18.00 stage=3 fireSequence=0 queued=(-1.00, 0.03) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 30/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+19.00 stage=3 fireSequence=0 queued=(-0.86, -0.51) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 20/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+20.00 stage=3 fireSequence=0 queued=(-0.32, -0.95) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 10/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+21.00 stage=3 fireSequence=0 queued=(0.51, -0.86) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 0/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+22.00 stage=3 fireSequence=0 queued=(0.42, -0.91) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+23.00 stage=3 fireSequence=0 queued=(-0.04, -1.00) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.raygun，敌人 110，掉落 0  visible=
+arcade.drop.weapon.rocket=True 已模拟拾取 arcade.drop.weapon.rocket（TemporaryWeapon / arcade.weapon.rocket）
+24.00 stage=4 fireSequence=0 queued=(0.34, -0.94) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+25.00 stage=4 fireSequence=0 queued=(0.22, -0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+26.00 stage=4 fireSequence=0 queued=(0.76, -0.65) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+27.00 stage=4 fireSequence=0 queued=(1.00, 0.07) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+28.00 stage=4 fireSequence=0 queued=(0.80, 0.59) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+29.01 stage=4 fireSequence=0 queued=(0.48, 0.88) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 90/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rocket，敌人 110，掉落 0  visible=
+arcade.drop.weapon.grenade=True 已模拟拾取 arcade.drop.weapon.grenade（TemporaryWeapon / arcade.weapon.grenade）
+30.00 stage=5 fireSequence=0 queued=(0.91, 0.42) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 80/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+31.00 stage=5 fireSequence=0 queued=(0.21, 0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 70/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+32.01 stage=5 fireSequence=0 queued=(-0.48, 0.87) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 60/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+33.00 stage=5 fireSequence=0 queued=(-0.52, 0.86) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 50/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+34.00 stage=5 fireSequence=0 queued=(-0.90, 0.43) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 40/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+35.01 stage=5 fireSequence=0 queued=(-1.00, -0.06) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 30/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.grenade，敌人 110，掉落 0  visible=
+arcade.drop.weapon.piercing=True 已模拟拾取 arcade.drop.weapon.piercing（TemporaryWeapon / arcade.weapon.piercing）
+36.00 stage=6 fireSequence=0 queued=(-0.83, 0.55) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 20/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+37.00 stage=6 fireSequence=0 queued=(-1.00, 0.08) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 10/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+38.00 stage=6 fireSequence=0 queued=(-0.20, -0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 0/100，剩余命数 1，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+39.00 stage=6 fireSequence=0 queued=(-0.20, -0.98) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 0/100，剩余命数 1，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+40.00 stage=6 fireSequence=0 queued=(-0.86, -0.50) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 1，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+41.00 stage=6 fireSequence=0 queued=(-0.80, -0.60) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 1，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+42.00 stage=6 fireSequence=0 queued=(-0.74, -0.67) aim=(0.00, 0.00) 竞技场 1，波次 1，生命 100/100，剩余命数 1，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.piercing，敌人 110，掉落 0  visible=
+观察完成，输入/路由/重载锁已恢复
+清理失败：System.Exception: 拒绝清理身份不符的局
+  at ArcadeSpecialWeaponPlayProbe.CleanupAsync (System.Int32 expectedGeneration, System.Threading.CancellationToken token) [0x000a1] in <efc0720bcb8d40029cbae2ec4053c39d>:0
