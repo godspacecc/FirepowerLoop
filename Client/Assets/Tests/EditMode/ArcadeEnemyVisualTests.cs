@@ -43,8 +43,10 @@ namespace Game.Tests
                 Assert.That(catalog.Find(enemy.WeaponId), Is.Not.Null, EnemyIds[index]);
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                     $"Assets/Game/Prefabs/Characters/{PrefabNames[index]}.prefab");
-                Assert.That(prefab.GetComponent<CharacterWeaponPresenter>()?.Catalog,
-                    Is.SameAs(catalog), PrefabNames[index]);
+                var bound = prefab.GetComponent<CharacterWeaponPresenter>()?.Catalog?.Find(enemy.WeaponId);
+                Assert.That(bound, Is.Not.Null, PrefabNames[index]);
+                Assert.That(bound.VisualSource, Is.SameAs(catalog.Find(enemy.WeaponId).VisualSource));
+                Assert.That(bound.Animations.Attack, Is.SameAs(catalog.Find(enemy.WeaponId).Animations.Attack));
             }
         }
 
@@ -55,12 +57,19 @@ namespace Game.Tests
             var catalog = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
                 "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
             Assert.That(catalog, Is.Not.Null);
-            Assert.That(catalog.Count, Is.EqualTo(13));
+            Assert.That(catalog.Count, Is.GreaterThan(0));
+            Assert.That(catalog.ValidateIdentities(out var identityError), Is.True, identityError);
             for (var index = 0; index < catalog.Count; index++)
             {
                 var entry = catalog.Get(index);
                 Assert.That(entry.WorldItemId, Is.GreaterThan(0), entry.Id);
                 Assert.That(catalog.FindByWorldItemId(entry.WorldItemId), Is.SameAs(entry));
+                Assert.That(provider.TryGetItem(entry.WorldItemId, out var item, out var itemError),
+                    Is.True, $"{entry.Id}: {itemError}");
+                Assert.That(entry.HasVisual, Is.True, entry.Id);
+                // 共用目录也收录手持照明工具；工具不应被误当成有伤害的武器配置。
+                if (item.ItemType == global::ItemType.Tool) continue;
+                Assert.That(item.ItemType, Is.EqualTo(global::ItemType.Weapon), entry.Id);
                 Assert.That(provider.TryGetWeapon(entry.WorldItemId, out var weapon, out var error),
                     Is.True, $"{entry.Id}: {error}");
                 Assert.That(provider.TryGetPlayerWeaponAppearance(entry.WorldItemId,
@@ -81,16 +90,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeCatalogOffersEverySharedWeapon()
+        public void ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops()
         {
             var provider = new LubanRuntimeConfigProvider(LoadTables);
             var shared = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
                 "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
             Assert.That(provider.TryGetArcadeCatalog(out var arcade, out var error), Is.True, error);
-            foreach (var entry in Enumerable.Range(0, shared.Count).Select(shared.Get))
+            foreach (var entry in arcade.Weapons.Where(weapon => weapon.Id.StartsWith("arcade.weapon.")))
             {
-                Assert.That(arcade.Weapons.Any(weapon => weapon.Id == entry.Id), Is.True, entry.Id);
-                Assert.That(entry.Id == arcade.Rule.BaseWeaponId || arcade.SupportVisuals.Any(item =>
+                Assert.That(shared.Find(entry.Id), Is.Not.Null, entry.Id);
+                Assert.That(entry.Id == arcade.Rule.BaseWeaponId || arcade.Drops.Any(item =>
                     item.ProductId == entry.Id), Is.True, entry.Id);
             }
         }
@@ -198,7 +207,7 @@ namespace Game.Tests
             AnimatorState attack = controller.layers[0].stateMachine.states
                 .Select(state => state.state).Single(state => state.name == "Attack");
             Assert.That(attack.motion.name, Does.Contain("Attack2H01"));
-            Assert.That(bow.transform.parent.name, Is.EqualTo("Hand_L"));
+            Assert.That(bow.transform.parent, Is.EqualTo(animator.GetBoneTransform(HumanBodyBones.LeftHand)));
             Assert.That(AssetDatabase.GetDependencies(path, true).Any(dependency =>
                 dependency.StartsWith("Assets/Art/", StringComparison.Ordinal)), Is.False);
         }
@@ -303,6 +312,91 @@ namespace Game.Tests
             Assert.That(bossArcher.GetComponentsInChildren<SkinnedMeshRenderer>(true)
                     .Single(renderer => renderer.enabled).sharedMaterial.name,
                 Is.EqualTo("ArcadeEnemyBoss"));
+        }
+
+        [Test]
+        public void LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants()
+        {
+            foreach (string name in new[] { "ArcadeEnemyBasic", "ArcadeEnemyArcher" })
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                    $"Assets/Game/Prefabs/Characters/{name}.prefab");
+                var animator = prefab.GetComponentInChildren<Animator>(true);
+                Assert.That(AssetDatabase.GetAssetPath(animator.avatar),
+                    Is.EqualTo("Assets/Game/Art/Enemies/InfectedSoldier/Source/SoldierA.fbx"), name);
+                Assert.That(animator.avatar.isHuman && animator.avatar.isValid, Is.True, name);
+                var presenter = prefab.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.BodyAnimator, Is.EqualTo(animator), name);
+                var variants = prefab.GetComponent<EnemyView>().PresentationVariantCount;
+                Assert.That(variants, Is.EqualTo(6), name);
+                foreach (var renderer in prefab.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+                {
+                    Assert.That(renderer.sharedMesh.subMeshCount, Is.EqualTo(4), renderer.name);
+                    Assert.That(renderer.sharedMaterials.Length, Is.EqualTo(4), renderer.name);
+                    Assert.That(renderer.sharedMesh.boneWeights.Length,
+                        Is.EqualTo(renderer.sharedMesh.vertexCount), renderer.name);
+                    Assert.That(renderer.bones.All(bone => bone != null), Is.True, renderer.name);
+                    Assert.That(renderer.sharedMaterials.All(material => material != null &&
+                        material.shader.name == "Universal Render Pipeline/Lit"), Is.True, renderer.name);
+                    Assert.That(renderer.sharedMesh.bounds.size.y, Is.InRange(1.6f, 2.1f), renderer.name);
+                }
+                Assert.That(prefab.GetComponentsInChildren<Transform>(true)
+                    .Any(part => part.name == "MG42" || part.name == "PanzerSchreck"), Is.False, name);
+                var instance = UnityEngine.Object.Instantiate(prefab);
+                try
+                {
+                    var view = instance.GetComponent<EnemyView>();
+                    Assert.That(view.SetCombatWeapon(name == "ArcadeEnemyBasic" ? "weapon.short-sword" : "weapon.bow"),
+                        Is.True, instance.GetComponent<CharacterWeaponPresenter>().LastError);
+                    var bodyAnimator = view.Animator;
+                    foreach (var state in new[] { "Idle", "Run", "Attack", "Hit", "Death" })
+                    {
+                        bodyAnimator.Rebind(); bodyAnimator.Update(0f);
+                        bodyAnimator.Play(state, 0, .35f); bodyAnimator.Update(.02f);
+                        instance.GetComponent<CharacterWeaponPresenter>().ApplyOffhandGrip();
+                        var weapon = instance.GetComponent<CharacterWeaponPresenter>().Visual;
+                        Assert.That(weapon.GetComponentsInChildren<Renderer>().All(part =>
+                            part.bounds.size.magnitude < 3f), Is.True, name + " " + state + " 武器不能继承原骨架放大");
+                    }
+                    for (int variant = 0; variant < 12; variant++)
+                    {
+                        view.SetPresentationVariant(variant);
+                        Assert.That(instance.GetComponentsInChildren<SkinnedMeshRenderer>(true).Count(part => part.enabled),
+                            Is.EqualTo(1), name);
+                    }
+                }
+                finally { UnityEngine.Object.DestroyImmediate(instance); }
+            }
+        }
+
+        [Test]
+        public void PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator()
+        {
+            var instance = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab"));
+            var messages = new System.Collections.Generic.List<string>();
+            Application.LogCallback capture = (message, stack, type) =>
+            {
+                if (type != LogType.Log && message.IndexOf("Animator", StringComparison.OrdinalIgnoreCase) >= 0)
+                    messages.Add(message);
+            };
+            Application.logMessageReceived += capture;
+            try
+            {
+                var view = instance.GetComponent<EnemyView>();
+                view.Animator.Rebind(); view.Animator.Update(.01f); view.Animator.SetBool("Dead", true);
+                instance.SetActive(false);
+                view.BeginPresentationUse();
+                Assert.That(view.SetCombatWeapon("weapon.short-sword"), Is.True);
+                view.SetNavigationEnabled(false);
+                instance.SetActive(true);
+                typeof(EnemyView).GetMethod("OnEnable", System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic).Invoke(view, null);
+                Assert.That(view.Animator.GetBool("Dead"), Is.False, "复用激活后必须回到存活状态");
+                Assert.That(view.Animator.GetFloat("MoveSpeed"), Is.Zero);
+                Assert.That(messages, Is.Empty, "不可见准备阶段不得求值Animator或访问未初始化的层");
+            }
+            finally { Application.logMessageReceived -= capture; UnityEngine.Object.DestroyImmediate(instance); }
         }
 
         private static Transform LoadVisual(string prefabName)

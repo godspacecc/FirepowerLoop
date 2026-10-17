@@ -96,13 +96,16 @@ namespace Game
         private bool unitHealthBarsVisible;
         private float feedbackRemainingSeconds;
         private Renderer[] feedbackRenderers = new Renderer[0];
-        private Color[] feedbackBaseColors = new Color[0];
+        // 保存受击前的完整覆盖块；多材质身体恢复时不能把首个材质颜色写到全部槽位。
+        private MaterialPropertyBlock[] feedbackOriginalBlocks = Array.Empty<MaterialPropertyBlock>();
         private MaterialPropertyBlock feedbackPropertyBlock;
         private int unitId;
         private long mapInstanceId;
         private bool isCorpse;
         private bool isFocused;
         private bool animationDead;
+        // 池化准备保持物体不可见，待激活且控制器绑定完成后再求值存活初态。
+        private bool animationResetPending;
         // 实例选择独立于启停；空串是显式空手，未指定才采用 Prefab 默认武器。
         private bool hasWeaponSelection;
         private string selectedWeaponId;
@@ -206,6 +209,7 @@ namespace Game
             ResetWeaponSelection();
             ResetMovementSampling();
             ResetAnimationPresentation();
+            if (feedbackRemainingSeconds > 0f) RestoreFeedbackColors();
             feedbackRemainingSeconds = 0f;
             if (combatCollider == null) combatCollider = GetComponent<Collider>();
             if (combatCollider != null) combatCollider.enabled = true;
@@ -409,6 +413,7 @@ namespace Game
                 if (!SetCombatWeapon(weaponId))
                     Debug.LogError($"[{nameof(EnemyView)}] 武器表现不可用：{weaponId}", this);
             }
+            if (animationResetPending) ResetAnimationPresentation();
             if (animationDead && animator != null)
             {
                 animator.SetFloat(MoveSpeedAnimatorParameter, 0f);
@@ -420,6 +425,8 @@ namespace Game
 
         private void OnDisable()
         {
+            if (feedbackRemainingSeconds > 0f) RestoreFeedbackColors();
+            feedbackRemainingSeconds = 0f;
             ReleaseTemporaryWeaponVisual();
             GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);
             ResetMovementSampling();
@@ -631,7 +638,7 @@ namespace Game
 
         public void ReviveOnline()
         {
-            feedbackRemainingSeconds=0f;RestoreFeedbackColors();SetCorpsePresentation(false);
+            if(feedbackRemainingSeconds>0f)RestoreFeedbackColors();feedbackRemainingSeconds=0f;SetCorpsePresentation(false);
             if(combatCollider==null)combatCollider=GetComponent<Collider>();if(combatCollider!=null)combatCollider.enabled=true;
             if(corpseSearchTrigger!=null)corpseSearchTrigger.enabled=false;
             SetHealthBarVisible(true);
@@ -711,14 +718,15 @@ namespace Game
         {
             previousMovementPosition = transform.position;
             hasMovementSample = false;
-            if (animator != null) animator.SetFloat(MoveSpeedAnimatorParameter, 0f);
+            if (animator != null && animator.isActiveAndEnabled && animator.isInitialized)
+                animator.SetFloat(MoveSpeedAnimatorParameter, 0f);
             GetComponent<CharacterWeaponPresenter>()?.SetMovementDirection(Vector3.zero);
         }
 
         /// <summary>按规则层已经提交的世界速度刷新移动表现；不会写入 Transform 或 NavMesh 状态。</summary>
         public void SetMovementSpeed(float worldUnitsPerSecond)
         {
-            if (animator == null || animationDead)
+            if (animator == null || !animator.isActiveAndEnabled || !animator.isInitialized || animationDead)
             {
                 return;
             }
@@ -765,7 +773,8 @@ namespace Game
                 animator.SetTrigger(HitAnimatorParameter);
             }
 
-            CaptureFeedbackColors();
+            // 连续受击只延长闪红，不能把上一发的红色覆盖保存成恢复基线。
+            if (feedbackRemainingSeconds <= 0f) CaptureFeedbackColors();
             feedbackRemainingSeconds = HitFeedbackDurationSeconds;
             ApplyFeedbackColor(HitFeedbackColor);
         }
@@ -824,17 +833,19 @@ namespace Game
             }
         }
 
+        /// <summary>在一段受击开始时保存现有覆盖；材质本色继续由各槽位独立提供。</summary>
         private void CaptureFeedbackColors()
         {
             feedbackRenderers = GetComponentsInChildren<Renderer>(true);
-            if (feedbackBaseColors.Length != feedbackRenderers.Length)
+            if (feedbackOriginalBlocks.Length != feedbackRenderers.Length)
             {
-                feedbackBaseColors = new Color[feedbackRenderers.Length];
+                feedbackOriginalBlocks = new MaterialPropertyBlock[feedbackRenderers.Length];
             }
 
             for (var i = 0; i < feedbackRenderers.Length; i++)
             {
-                feedbackBaseColors[i] = GetRendererColor(feedbackRenderers[i]);
+                feedbackOriginalBlocks[i] ??= new MaterialPropertyBlock();
+                feedbackRenderers[i].GetPropertyBlock(feedbackOriginalBlocks[i]);
             }
         }
 
@@ -846,22 +857,14 @@ namespace Game
             }
         }
 
+        /// <summary>反馈结束或回池时归还原覆盖块，空块清除覆盖，不改写共享材质。</summary>
         private void RestoreFeedbackColors()
         {
-            for (var i = 0; i < feedbackRenderers.Length && i < feedbackBaseColors.Length; i++)
+            for (var i = 0; i < feedbackRenderers.Length && i < feedbackOriginalBlocks.Length; i++)
             {
-                SetRendererColor(feedbackRenderers[i], feedbackBaseColors[i]);
+                if (feedbackRenderers[i] != null)
+                    feedbackRenderers[i].SetPropertyBlock(feedbackOriginalBlocks[i].isEmpty ? null : feedbackOriginalBlocks[i]);
             }
-        }
-
-        private static Color GetRendererColor(Renderer targetRenderer)
-        {
-            if (targetRenderer == null || targetRenderer.sharedMaterial == null)
-            {
-                return Color.white;
-            }
-
-            return targetRenderer.sharedMaterial.color;
         }
 
         private void SetRendererColor(Renderer targetRenderer, Color color)
@@ -903,12 +906,18 @@ namespace Game
         private void ResetAnimationPresentation()
         {
             animationDead = false;
+            animationResetPending = false;
             if (animator == null)
             {
                 return;
             }
 
             animator.applyRootMotion = false;
+            if (!animator.isActiveAndEnabled)
+            {
+                animationResetPending = true;
+                return;
+            }
             animator.Rebind();
             animator.ResetTrigger(AttackAnimatorParameter);
             animator.ResetTrigger(HitAnimatorParameter);

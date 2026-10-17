@@ -1,0 +1,57 @@
+隔离临时档=C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopInfected-34fdf20512784003af853386db7c8e93
+正式新局按钮进入Island第一轮；非自然拾取，后续用正式测试掉落入口切枪。
+聚焦GameView后开始输入观察
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=0 bodyMeshes=
+0.02 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+focus=True window=ConsoleWindow enabled=True move=(0.68, 0.73) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=1 bodyMeshes=InfectedSoldierBody
+1.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.36, 0.93) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=4 bodyMeshes=InfectedSoldierBody
+2.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 109，掉落 0  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=5 bodyMeshes=InfectedSoldierBody
+3.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 108，掉落 0  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=6 bodyMeshes=InfectedSoldierBody
+4.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 106，掉落 0  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(-0.99, 0.11) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=6 bodyMeshes=InfectedSoldierBody
+5.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 105，掉落 0  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=8 bodyMeshes=InfectedSoldierBody
+6.01 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 102，掉落 1  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=7 bodyMeshes=InfectedSoldierBody
+7.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 100，掉落 2  visible=ArcadeBulletBasic
+arcade.drop.weapon.rapid=True 已模拟拾取 arcade.drop.weapon.rapid（TemporaryWeapon / arcade.weapon.rapid）
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=7 bodyMeshes=InfectedSoldierBody
+8.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 98，掉落 2  visible=ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=7 bodyMeshes=InfectedSoldierBody
+9.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 97，掉落 2  visible=ArcadeBulletRapid;ArcadeBulletBasic
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=7 bodyMeshes=InfectedSoldierBody
+10.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 91，掉落 3  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.12, -0.99) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=4 bodyMeshes=InfectedSoldierBody
+11.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 87，掉落 3  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+12.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 87，掉落 3  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=4 bodyMeshes=InfectedSoldierBody
+13.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 85，掉落 3  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=5 bodyMeshes=InfectedSoldierBody
+14.03 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 83，掉落 3  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=5 bodyMeshes=InfectedSoldierBody
+15.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 81，掉落 4  visible=ArcadeBulletRapid
+arcade.drop.weapon.spread=True 已模拟拾取 arcade.drop.weapon.spread（TemporaryWeapon / arcade.weapon.spread）
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=5 bodyMeshes=InfectedSoldierBody
+16.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 79，掉落 5  visible=ArcadeBulletRapid
+focus=True window=ConsoleWindow enabled=True move=(0.94, 0.34) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=4 bodyMeshes=InfectedSoldierBody
+17.01 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 76，掉落 6  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(0.80, 0.60) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+18.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 72，掉落 8  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(0.58, 0.81) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+19.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 70，掉落 8  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(0.32, 0.95) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+20.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 70，掉落 8  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(0.02, 1.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=5 bodyMeshes=InfectedSoldierBody
+21.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 66，掉落 8  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(-0.27, 0.96) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+22.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 64，掉落 8  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(0.00, 0.00) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+23.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 61，掉落 9  visible=ArcadeBulletSpread
+focus=True window=ConsoleWindow enabled=True move=(-0.77, 0.64) aim=(0.00, 0.00) pad=(0.00, 0.00) app=Playing blocking=False\nenemyViews=3 bodyMeshes=InfectedSoldierBody
+24.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 60，掉落 9  visible=ArcadeBulletSpread
+观察完成，输入设备已回收
+临时局已正式放弃，地图句柄=null TimeScale=1

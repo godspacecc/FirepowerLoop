@@ -67,7 +67,8 @@ namespace Game
         {
             gunKickRemainingSeconds = 0f;
             gunFireRemainingSeconds = 0f;
-            if (animator == null) return;
+            // 不可见候选和池化禁用阶段只清本地计时，Animator尚未准备时不查询层。
+            if (animator == null || !animator.isActiveAndEnabled || !animator.isInitialized) return;
             int layer = animator.GetLayerIndex(GunFireLayer);
             if (layer < 0) return;
             animator.SetLayerWeight(layer, 0f);
@@ -102,7 +103,7 @@ namespace Game
         public void ClearReload()
         {
             reloadDefinition = null;
-            if (animator == null) return;
+            if (animator == null || !animator.isActiveAndEnabled || !animator.isInitialized) return;
             var layer = animator.GetLayerIndex("RifleReload");
             if (layer >= 0) animator.SetLayerWeight(layer, 0f);
         }

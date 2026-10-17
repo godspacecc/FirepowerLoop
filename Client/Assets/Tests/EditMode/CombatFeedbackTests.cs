@@ -229,6 +229,39 @@ namespace Game.Tests
             }
         }
 
+        [Test]
+        public void EnemyMultimaterialFeedbackRestoresOverridesAfterRepeatedHitsAndReuse()
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab"));
+            try
+            {
+                var view = instance.GetComponent<EnemyView>();
+                view.SetPresentationVariant(0);
+                var renderer = instance.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single(part => part.enabled);
+                var colors = renderer.sharedMaterials.Select(material => material.color).ToArray();
+                var block = new MaterialPropertyBlock();
+                block.SetFloat("_Smoothness", .71f); renderer.SetPropertyBlock(block);
+                view.PlayHitFeedback(); view.TickCombatFeedback(.04f); view.PlayHitFeedback();
+                view.TickCombatFeedback(.2f);
+                renderer.GetPropertyBlock(block);
+                Assert.That(block.HasColor("_BaseColor"), Is.False, "不能用皮肤颜色覆盖全部制服材质");
+                Assert.That(block.GetFloat("_Smoothness"), Is.EqualTo(.71f), "已有非颜色覆盖必须保留");
+                Assert.That(renderer.sharedMaterials.Select(material => material.color), Is.EqualTo(colors));
+                view.PlayHitFeedback();
+                // 显式调用正式池化禁用回调，编辑态不依赖MonoBehaviour自动调度。
+                typeof(EnemyView).GetMethod("OnDisable", System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic).Invoke(view, null);
+                view.BeginPresentationUse(); view.SetPresentationVariant(4);
+                renderer.GetPropertyBlock(block);
+                Assert.That(block.HasColor("_BaseColor"), Is.False, "受击中回池不能留下红色覆盖");
+                var reused = instance.GetComponentsInChildren<SkinnedMeshRenderer>(true).Single(part => part.enabled);
+                reused.GetPropertyBlock(block);
+                Assert.That(block.HasColor("_BaseColor"), Is.False, "未显示的变体也要恢复");
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+
         private static Material CreateMaterial(Color color)
         {
             var material = new Material(Shader.Find("Universal Render Pipeline/Lit") ?? Shader.Find("Standard"));
@@ -240,7 +273,7 @@ namespace Game.Tests
         {
             var propertyBlock = new MaterialPropertyBlock();
             targetRenderer.GetPropertyBlock(propertyBlock);
-            return propertyBlock.GetColor("_Color");
+            return propertyBlock.HasColor("_Color") ? propertyBlock.GetColor("_Color") : targetRenderer.sharedMaterial.color;
         }
     }
 }

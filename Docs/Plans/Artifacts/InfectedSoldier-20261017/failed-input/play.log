@@ -1,0 +1,56 @@
+隔离临时档=C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopInfected-bfe46a322dcc42fbbc1edf3318436d81
+正式新局按钮进入Island第一轮；非自然拾取，后续用正式测试掉落入口切枪。
+聚焦GameView后开始输入观察
+enemyViews=0 bodyMeshes=
+0.01 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=0 bodyMeshes=
+1.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=1 bodyMeshes=InfectedSoldierBody
+2.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=3 bodyMeshes=InfectedSoldierBody
+3.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=5 bodyMeshes=InfectedSoldierBody
+4.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=7 bodyMeshes=InfectedSoldierBody
+5.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=10 bodyMeshes=InfectedSoldierBody
+6.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+7.00 stage=0 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.basic，敌人 110，掉落 0  visible=
+arcade.drop.weapon.rapid=True 已模拟拾取 arcade.drop.weapon.rapid（TemporaryWeapon / arcade.weapon.rapid）
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+8.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+9.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+10.00 stage=1 竞技场 1，波次 1，生命 100/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+11.07 stage=1 竞技场 1，波次 1，生命 90/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+12.01 stage=1 竞技场 1，波次 1，生命 80/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+13.00 stage=1 竞技场 1，波次 1，生命 70/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+14.00 stage=1 竞技场 1，波次 1，生命 70/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+15.00 stage=1 竞技场 1，波次 1，生命 60/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.rapid，敌人 110，掉落 0  visible=
+arcade.drop.weapon.spread=True 已模拟拾取 arcade.drop.weapon.spread（TemporaryWeapon / arcade.weapon.spread）
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+16.00 stage=2 竞技场 1，波次 1，生命 50/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+17.00 stage=2 竞技场 1，波次 1，生命 40/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+18.00 stage=2 竞技场 1，波次 1，生命 30/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+19.00 stage=2 竞技场 1，波次 1，生命 20/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+20.00 stage=2 竞技场 1，波次 1，生命 10/100，剩余命数 3，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+21.01 stage=2 竞技场 1，波次 1，生命 0/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+22.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+23.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+enemyViews=12 bodyMeshes=InfectedSoldierBody
+24.00 stage=2 竞技场 1，波次 1，生命 100/100，剩余命数 2，本场金币 0，炸弹 1，冲刺 2，武器 arcade.weapon.spread，敌人 110，掉落 0  visible=
+观察完成，输入设备已回收
