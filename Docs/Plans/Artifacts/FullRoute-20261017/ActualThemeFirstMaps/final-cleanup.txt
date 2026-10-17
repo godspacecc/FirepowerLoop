@@ -1,0 +1,1 @@
+rootNull=True ownerMaterials=0 liveRoundMaterials=0 ownerMeshes=0 liveRoundMeshes=0 compilationFailed=False

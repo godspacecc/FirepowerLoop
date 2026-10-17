@@ -1,0 +1,28 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections;
+using Game;
+using QFramework;
+using UnityEditor;
+using UnityEngine;
+public class Script
+{
+    static double started,last,changed;static int lastArena=-1;
+    const string output="E:/GitHub/FirepowerLoop/Client/Temp/ActualThemeFirstMaps-20261017-141954/live-owned-resources.csv";
+    public static object Main(){started=EditorApplication.timeSinceStartup;File.WriteAllText(output,"elapsed,arenaConfig,ownedMaterials,globalRoundNamedMaterials,ownedMeshes,globalRoundNamedMeshes\n");EditorApplication.update+=Sample;return "Readonly live resource observation,240s maximum; samples after2s of stable arena";}
+    static void Sample()
+    {
+        if(!Application.isPlaying||EditorApplication.timeSinceStartup-started>240||SessionState.GetString("ActualThemeFirstMap20","").StartsWith("completed")){EditorApplication.update-=Sample;return;}
+        if(EditorApplication.timeSinceStartup-last<1)return;last=EditorApplication.timeSinceStartup;
+        var a=Game.Game.Interface;var f=BindingFlags.Instance|BindingFlags.NonPublic;var s=a.GetSystem<ArcadeCombatSystem>();var arena=(ArcadeArenaDefinition)typeof(ArcadeCombatSystem).GetField("arena",f).GetValue(s);if(arena==null)return;
+        if(lastArena!=arena.ArenaNumber){lastArena=arena.ArenaNumber;changed=last;return;}if(last-changed<2)return;
+        var view=typeof(ArcadeCombatSystem).GetField("view",f).GetValue(s);var root=(GameObject)view.GetType().GetField("root",f).GetValue(view);if(root==null)return;
+        int materialCount=((ICollection)view.GetType().GetField("roundOwnedMaterials",f).GetValue(view)).Count;
+        int meshCount=((ICollection)view.GetType().GetField("roundOwnedMeshes",f).GetValue(view)).Count;
+        int globalMaterials=Resources.FindObjectsOfTypeAll<Material>().Count(x=>x!=null&&x.name.StartsWith("RoundOwned_"));
+        int globalMeshes=Resources.FindObjectsOfTypeAll<Mesh>().Count(x=>x!=null&&x.name.StartsWith("RoundOwned"));
+        File.AppendAllText(output,string.Join(",",(last-started).ToString("F2",System.Globalization.CultureInfo.InvariantCulture),lastArena,materialCount,globalMaterials,meshCount,globalMeshes)+"\n");
+    }
+}

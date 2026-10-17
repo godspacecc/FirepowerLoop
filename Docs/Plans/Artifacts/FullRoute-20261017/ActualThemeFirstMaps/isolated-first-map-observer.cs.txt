@@ -1,0 +1,94 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using Game;
+using QFramework;
+using FirepowerLoop.Arcade;
+using Cysharp.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEditor;
+public class Script
+{
+    const string batchKind="ActualThemeFirstMap20";
+    static readonly BindingFlags f=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
+    static ArcadeConfigCatalogDefinition catalog;static int index=-1,release;static Gamepad pad;
+    static string folder;static double began,activeAt,lastSample,lastPoll;static bool firstShot,secondShot;
+    static object F(object o,string n)=>o.GetType().GetField(n,f).GetValue(o);
+    static object Runtime()=>typeof(ArcadeCombatModel).GetProperty("Runtime",f).GetValue(Game.Game.Interface.GetModel<ArcadeCombatModel>());
+    public static object Main()
+    {
+        if(!Application.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("Wrong project or Play state");
+        var provider=Game.Game.Interface.GetUtility<IRuntimeConfigProvider>();if(!provider.TryGetArcadeCatalog(out catalog,out var error)||catalog.Arenas.Count!=20)throw new Exception(error??"Expected20 formal themes");
+        folder="E:/GitHub/FirepowerLoop/Client/Temp/ActualThemeFirstMaps-"+DateTime.Now.ToString("yyyyMMdd-HHmmss");Directory.CreateDirectory(folder);
+        File.WriteAllText(folder+"/samples.csv","arenaConfig,theme,elapsed,hp,lives,enemies,areas,warnings,ownedTransforms,ownedMeshes,ownedMaterials\n");
+        File.WriteAllText(folder+"/outcomes.csv","arenaConfig,theme,outcome\n");
+        pad=InputSystem.AddDevice<Gamepad>();InputSystem.onBeforeUpdate+=Drive;EditorApplication.update+=Poll;Next();return "20 isolated first-map Play observations;12 activity seconds each,15 preparation seconds maximum; output="+folder;
+    }
+    static int Ordinal(int arena)
+    {
+        var depths=new Dictionary<int,int>{{1,1}};var queue=new Queue<int>();queue.Enqueue(1);
+        while(queue.Count>0){int current=queue.Dequeue();foreach(int next in catalog.Arenas.First(a=>a.ArenaNumber==current).NextArenaNumbers)if(!depths.ContainsKey(next)){depths[next]=depths[current]+1;queue.Enqueue(next);}}
+        if(!depths.TryGetValue(arena,out int ordinal))throw new Exception("Unreachable configured theme");return ordinal;
+    }
+    static void Next()
+    {
+        if(++index>=20){Stop("completed20 bounded theme observations");return;}
+        int arena=index+1;began=EditorApplication.timeSinceStartup;activeAt=-1;lastSample=0;release=4;firstShot=secondShot=false;
+        var runs=Game.Game.Interface.GetSystem<ArcadeRunSystem>();string root=folder+"/arena-"+arena.ToString("00");runs.ConfigureForTests(root);
+        if(!runs.TryStartConfiguredRun(out var initial,out var error))throw new Exception(error);
+        var candidate=initial.Clone();candidate.ArenaConfigNumber=arena;candidate.CompletedArenaCount=Ordinal(arena)-1;candidate.NextArenaNumber=Ordinal(arena);candidate.Checkpoint.ArenaNumber=candidate.NextArenaNumber;
+        if(!new ArcadeRunFileStore(root).Save(candidate,out error))throw new Exception(error);
+        typeof(ArcadeRunSystem).GetMethod("CommitSafeNode",f).Invoke(runs,new object[]{candidate});
+        ((UniTask)typeof(ArcadeResumeUICtrl).GetMethod("EnterNewRunAsync",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{runs})).Forget();
+        SessionState.SetString(batchKind,"starting "+arena+" output="+folder);
+    }
+    static string Theme()=>catalog.RoundLayouts.First(l=>l.ArenaConfigNumber==index+1&&l.RoundNumber==1).ThemeKey;
+    static bool Ready(object r,out object view)
+    {
+        var sys=Game.Game.Interface.GetSystem<ArcadeCombatSystem>();view=F(sys,"view");
+        return r!=null&&((ArcadeArenaDefinition)F(sys,"arena")).ArenaNumber==index+1&&!(bool)F(r,"IslandTransitionPending")&&!(bool)F(r,"IslandRoomTransitionPending")&&((IArcadeCombatViewPort)view).IsIslandRoundReady&&Game.Game.Interface.GetModel<AppStateModel>().CurrentState.Value==AppState.Playing&&!UIHelper.HasUIOpen;
+    }
+    static void Poll()
+    {
+        if(EditorApplication.timeSinceStartup-lastPoll<.1)return;lastPoll=EditorApplication.timeSinceStartup;
+        try
+        {
+            if(!Application.isPlaying){Stop("Play ended");return;}var r=Runtime();bool ready=Ready(r,out var view);
+            if(activeAt<0)
+            {
+                if(ready){activeAt=lastPoll;SessionState.SetString(batchKind,"observing "+(index+1)+" "+Theme());}
+                else if(lastPoll-began>15){File.AppendAllText(folder+"/outcomes.csv",(index+1)+","+Theme()+",preparation-timeout\n");Next();}return;
+            }
+            double elapsed=lastPoll-activeAt;
+            if(r==null){File.AppendAllText(folder+"/outcomes.csv",(index+1)+","+Theme()+",runtime-ended-before12s\n");Next();return;}
+            if(elapsed-lastSample>=1)
+            {
+                lastSample=elapsed;var root=(GameObject)F(view,"root");var areas=(List<ArcadeContentAreaSnapshot>)F(r,"ContentPresentationSnapshots");
+                File.AppendAllText(folder+"/samples.csv",string.Join(",",index+1,Theme(),elapsed.ToString("F2",System.Globalization.CultureInfo.InvariantCulture),F(r,"PlayerHealth"),Game.Game.Interface.GetModel<ArcadeRunModel>().Current.RemainingLives,((IDictionary)F(r,"Enemies")).Count,areas.Count,areas.Count(x=>x.Warning),root==null?0:root.GetComponentsInChildren<Transform>(true).Length,((ICollection)F(view,"roundOwnedMeshes")).Count,((ICollection)F(view,"roundOwnedMaterials")).Count)+"\n");
+            }
+            if(!firstShot&&elapsed>=2){firstShot=true;ScreenCapture.CaptureScreenshot(folder+"/theme-"+(index+1).ToString("00")+"-early.png");}
+            if(!secondShot&&elapsed>=9){secondShot=true;ScreenCapture.CaptureScreenshot(folder+"/theme-"+(index+1).ToString("00")+"-late.png");}
+            if(elapsed>=12){File.AppendAllText(folder+"/outcomes.csv",(index+1)+","+Theme()+",observed12s\n");Next();}
+        }
+        catch(Exception error){File.AppendAllText(folder+"/error.txt",error+"\n");Stop("observer error "+error.Message);}
+    }
+    static void Drive()
+    {
+        if(InputState.currentUpdateType!=InputUpdateType.Dynamic)return;
+        try
+        {
+            var r=Runtime();if(r==null||!Ready(r,out _)){InputSystem.QueueStateEvent(pad,new GamepadState());release=4;return;}
+            var p=(Vector2)F(r,"PlayerPosition");var enemies=(IDictionary)F(r,"Enemies");var target=p+Vector2.up;float nearest=float.MaxValue;
+            foreach(var enemy in enemies.Values){var point=(Vector2)F(enemy,"Position");float d=(point-p).sqrMagnitude;if(d<nearest){nearest=d;target=point;}}
+            var aim=(target-p).normalized;var move=new Vector2(-aim.y,aim.x)*.6f;if(nearest<25)move-=aim*.9f;if(p.magnitude>11)move-=p.normalized;
+            InputSystem.QueueStateEvent(pad,new GamepadState{leftStick=Vector2.ClampMagnitude(move,1),rightStick=release-->0||enemies.Count==0?Vector2.zero:aim});
+        }
+        catch(Exception error){File.AppendAllText(folder+"/error.txt",error+"\n");Stop("input observer error "+error.Message);}
+    }
+    static void Stop(string reason){EditorApplication.update-=Poll;InputSystem.onBeforeUpdate-=Drive;if(pad!=null){InputSystem.RemoveDevice(pad);pad=null;}SessionState.SetString(batchKind,reason+" output="+folder);File.AppendAllText(folder+"/completion.txt",reason+"\n");}
+}
