@@ -64,14 +64,14 @@ namespace Game.Tests
             map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
             var ctrl = UIHelper.ShowUI<PauseUICtrl>();
             var text = GetBaseUI<PauseUI>(ctrl).BtnOnline.GetComponentInChildren<TMP_Text>();
-            Assert.That(text.text, Is.EqualTo("离开街机"));
+            Assert.That(text.text, Is.EqualTo("返回主菜单"));
             Game.Interface.GetModel<LocalizationModel>().CurrentLanguageCode.Value = "en-US";
             Game.Interface.SendEvent(new LanguageChangedEvent("zh-CN", "en-US"));
-            Assert.That(text.text, Is.EqualTo("Leave Arcade"));
+            Assert.That(text.text, Is.EqualTo("Return to Main Menu"));
             ctrl.Hide();
             map.SetLoaded(MapIds.Arcade, null);
             ctrl.Show();
-            Assert.That(text.text, Is.EqualTo("Leave Arcade"));
+            Assert.That(text.text, Is.EqualTo("Return to Main Menu"));
             Assert.That(GetBaseUI<PauseUI>(ctrl).BtnMainMenu.gameObject.activeSelf, Is.False);
             Assert.That(GetBaseUI<PauseUI>(ctrl).BtnReturnCamp.gameObject.activeSelf, Is.False);
         }
@@ -650,9 +650,9 @@ namespace Game.Tests
                 [LocalizationLanguages.LanguagesAddress] = new TextAsset(
                     "{\"default\":\"zh-CN\",\"languages\":[{\"code\":\"zh-CN\",\"label\":\"简体中文\"},{\"code\":\"en-US\",\"label\":\"English\"}]}"),
                 ["zh-CN.json"] = new TextAsset(
-                    "{\"ui.pause.abandon_confirm\":\"放弃将丢失背包和装备\",\"ui.pause.return_camp\":\"返回营地\",\"ui.pause.title\":\"暂停\",\"ui.pause.leave_arcade\":\"离开街机\",\"ui.start.online\":\"联机游戏\",\"ui.pause.resume\":\"继续\",\"ui.pause.main_menu\":\"主界面\",\"ui.start.settings\":\"设置\",\"ui.start.exit\":\"退出\"}"),
+                    "{\"ui.pause.abandon_confirm\":\"放弃将丢失背包和装备\",\"ui.pause.return_camp\":\"返回营地\",\"ui.pause.title\":\"暂停\",\"ui.pause.leave_arcade\":\"离开街机\",\"ui.start.online\":\"联机游戏\",\"ui.pause.resume\":\"继续\",\"ui.pause.main_menu\":\"返回主菜单\",\"ui.start.settings\":\"设置\",\"ui.start.exit\":\"退出\"}"),
                 ["en-US.json"] = new TextAsset(
-                    "{\"ui.pause.title\":\"Paused\",\"ui.pause.leave_arcade\":\"Leave Arcade\",\"ui.start.online\":\"Online Game\",\"ui.pause.resume\":\"Resume\",\"ui.pause.main_menu\":\"Main Menu\",\"ui.start.settings\":\"Settings\",\"ui.start.exit\":\"Exit\"}")
+                    "{\"ui.pause.title\":\"Paused\",\"ui.pause.leave_arcade\":\"Leave Arcade\",\"ui.start.online\":\"Online Game\",\"ui.pause.resume\":\"Resume\",\"ui.pause.main_menu\":\"Return to Main Menu\",\"ui.start.settings\":\"Settings\",\"ui.start.exit\":\"Exit\"}")
             };
 
             public T LoadAsset<T>(string path) where T : Object

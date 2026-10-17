@@ -67,7 +67,7 @@ namespace Game
         /// <summary>暂停菜单只呈现街机继续与离开意图；离开事务完成前拒绝重复请求。</summary>
         private void RefreshOnlineAction()
         {
-            UI.OnlineActionText.text = Loc.T("ui.pause.leave_arcade");
+            UI.OnlineActionText.text = Loc.T("ui.pause.main_menu");
             UI.BtnOnline.interactable = !leavingMap;
             UI.BtnContinue.interactable = !leavingMap && this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
             UI.BtnReturnCamp.gameObject.SetActive(false);
