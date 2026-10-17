@@ -1747,7 +1747,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d9d803d5e2ff64586147615c2e8fbf, type: 3}
   m_Name:
   m_EditorClassIdentifier:
-  Key: ui.start.continue
+  Key: ui.arcade.resume
   Texts: []
 --- !u!1 &8156672553454484094
 GameObject:
