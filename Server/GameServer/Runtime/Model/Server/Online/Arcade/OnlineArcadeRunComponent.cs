@@ -320,6 +320,9 @@ namespace ET.Server
         /// <summary>商店现场返回目标与区域准备状态，进店和购买不单独保存。</summary>
         public int SlayerMartReturnWave;
         public bool SlayerMartRegionPrepared;
+        /// <summary>服务器购物硬截止及断线暂停起点，只属于现场，不写入安全节点。</summary>
+        public long SlayerMartDeadlineAt;
+        public long SlayerMartPausedAt;
         /// <summary>同步风暴结算作用域，阻止自身或连锁击杀给风暴充能；不保存。</summary>
         public bool SlayerMartStormDamage;
         /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>

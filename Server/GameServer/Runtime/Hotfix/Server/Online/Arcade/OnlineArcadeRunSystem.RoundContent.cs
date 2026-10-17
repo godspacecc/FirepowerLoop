@@ -32,6 +32,7 @@ namespace ET.Server
         {
             var previous=actor.Battle;
             if(previous==null||!previous.RoundTransitionPending)return false;
+            if(actor.TryBeginSlayerMart(previous))return true;
             try
             {
                 var candidate=Clone(actor.Record);
@@ -42,9 +43,11 @@ namespace ET.Server
                 if(layout.Id!=previous.RoundLayout.Id||layout.Version!=previous.RoundLayout.Version)candidate.DestroyedBarrelIds.Clear();
                 candidate.RoundLayoutId=layout.Id;candidate.RoundLayoutVersion=layout.Version;
                 candidate.Revision=checked(candidate.Revision+1);candidate.UpdatedAtUtc=DateTime.UtcNow.ToString("O");
+                if(!OnlineArcadeRunActorSystem.ApplySlayerMartRoundCandidate(candidate,out var benefitError))throw new InvalidOperationException(benefitError);
                 // 新轮只补空库存一次，候选写盘失败不会触碰工作态。
                 if(!candidate.RoundBossEncounter)foreach(var p in candidate.Players.Where(p=>p.Lives>0))
                 {p.Bombs=ArcadeOpeningRules.ReplenishEmpty(p.Bombs);p.Dashes=ArcadeOpeningRules.ReplenishEmpty(p.Dashes);}
+                OnlineArcadeRunActorSystem.SyncSlayerMartRoundInventory(candidate);
                 var prepared=OnlineArcadeRunActorSystem.PrepareBattle(candidate,false);
                 prepared.RoundGeneration=checked(previous.RoundGeneration+1);
                 prepared.BattleRevision=checked(previous.BattleRevision+1);

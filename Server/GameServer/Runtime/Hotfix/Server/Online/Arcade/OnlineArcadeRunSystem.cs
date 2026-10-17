@@ -117,6 +117,7 @@ namespace ET.Server
                 if (actor.Battle != null && actor.DisconnectedAtByPlayer.Count == 0)
                 {
                     actor.ArenaReconnectDeadline = 0;
+                    OnlineArcadeRunActorSystem.UpdateSlayerMartPause(actor.Battle,false,now);
                     actor.Battle.LastTickAt = now;
                     actor.Battle.InputsDirty = true;
                 }
@@ -127,6 +128,7 @@ namespace ET.Server
                 if (actor.Battle != null)
                 {
                     actor.ArenaReconnectDeadline = now + ArenaReconnectGraceMilliseconds;
+                    OnlineArcadeRunActorSystem.UpdateSlayerMartPause(actor.Battle,true,now);
                     foreach (OnlineArcadeBattlePlayerRuntime player in actor.Battle.Players.Values)
                     { player.MoveX = 0f; player.MoveZ = 0f; player.Firing = false; }
                 }
@@ -1024,7 +1026,7 @@ namespace ET.Server
                 if (roundGeneration != battle.RoundGeneration)
                     throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "轮代次已过期");
                 if (roundReady) player.ReadyRoundGeneration = roundGeneration;
-                if (confirmExit && player.Alive && !player.InTreasureRoom && battle.AwaitingExit)
+                if (battle.SlayerMartReturnWave<=0 && confirmExit && player.Alive && !player.InTreasureRoom && battle.AwaitingExit)
                     player.ConfirmedExitTarget = exitTarget;
                 if (!RoundPlayersReady(battle) || battle.RoundTransitionPending)
                 { player.LastInputSequence=inputSequence; battle.InputsDirty=true; return (true,inputSequence); }
@@ -1037,6 +1039,12 @@ namespace ET.Server
             {
                 player.AimX = aimX;
                 player.AimZ = aimZ;
+            }
+            if(battle.SlayerMartReturnWave>0)
+            {
+                var owner=SlayerMartAbility(battle,playerId);player.Firing=false;
+                if(!battle.SlayerMart.Ready||owner?.MenuOpen==true||!player.Alive)player.MoveX=player.MoveZ=0;
+                player.LastInputSequence=inputSequence;player.LastInputAt=TimeInfo.Instance.ServerNow();battle.InputsDirty=true;return(true,inputSequence);
             }
             player.Firing = firing;
             player.LastInputSequence = inputSequence;
@@ -1303,6 +1311,12 @@ namespace ET.Server
             OnlineArcadeBattleRuntime battle = self.Battle;
             if (battle == null || battle.AllPlayersDefeated || battle.ArenaCompletionReady ||
                 battle.ChallengeCompletionReady) return false;
+            if(battle.SlayerMartReturnWave>0)
+            {
+                float shopSeconds=Math.Clamp((now-battle.LastTickAt)/1000f,0f,.2f);battle.LastTickAt=now;
+                if(self.DisconnectedAtByPlayer.Count>0)return battle.InputsDirty;
+                self.TickSlayerMartRegion(battle,shopSeconds);battle.InputsDirty=false;battle.BattleRevision++;return true;
+            }
             if (!RoundPlayersReady(battle) || battle.RoundTransitionPending || self.DisconnectedAtByPlayer.Count>0)
             { battle.LastTickAt=now; return battle.InputsDirty; }
             float deltaSeconds = Math.Clamp((now - battle.LastTickAt) / 1000f, 0f, 0.2f);
@@ -2900,12 +2914,13 @@ namespace ET.Server
         private static OnlineArcadeBattleInfo BuildBattleSnapshot(OnlineArcadeBattleRuntime source)
         {
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
+            AppendSlayerMartBattleSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;
             battle.RoundLayoutId=source.RoundLayout?.Id ?? string.Empty;
             battle.RoundLayoutVersion=source.RoundLayout?.Version ?? 0;
-            battle.RoundLoading=!RoundPlayersReady(source);battle.RoundLoadError=source.RoundLoadError;
+            battle.RoundLoading=!RoundPlayersReady(source)||source.RoundTransitionPending;battle.RoundLoadError=source.RoundLoadError;
             battle.ContentElapsed=(float)source.ContentClock.Elapsed;
             AppendGroundBarrelSnapshots(source,battle);
             foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
@@ -2971,6 +2986,7 @@ namespace ET.Server
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
                     player.Powerups.Add(powerup);
                 }
+                AppendSlayerMartPlayerSnapshot(source,sourcePlayer,player);
                 battle.Players.Add(player);
             }
             foreach (OnlineArcadeEnemyRuntime sourceEnemy in source.Enemies.Values.OrderBy(x => x.RuntimeId))
@@ -3026,6 +3042,7 @@ namespace ET.Server
             clone.CompletedArena = source.CompletedArena;
             clone.NextArena = source.NextArena;
             clone.ConfigFingerprint = source.ConfigFingerprint ?? string.Empty;
+            clone.SelfSlayerMart=ClonePersonalSlayerMart(source.SelfSlayerMart);
             clone.Battle = CloneBattleSnapshot(source.Battle);
             clone.BattlePaused = source.BattlePaused;
             foreach (OnlineArcadeConnectionInfo sourceConnection in source.Connections)
@@ -3085,6 +3102,7 @@ namespace ET.Server
         {
             if (source == null) return null;
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
+            CloneSlayerMartBattleSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;battle.RoundLayoutId=source.RoundLayoutId;battle.RoundLayoutVersion=source.RoundLayoutVersion;
@@ -3150,6 +3168,7 @@ namespace ET.Server
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
                     player.Powerups.Add(powerup);
                 }
+                CloneSlayerMartPlayerSnapshot(sourcePlayer,player);
                 battle.Players.Add(player);
             }
             foreach (OnlineArcadeEnemyInfo sourceEnemy in source.Enemies)

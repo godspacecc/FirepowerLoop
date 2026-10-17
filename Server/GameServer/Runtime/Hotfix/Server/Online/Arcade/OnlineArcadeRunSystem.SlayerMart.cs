@@ -8,6 +8,21 @@ namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
+        /// <summary>实体出口确认后、下一轮候选构造前准备店次，不写进店或购买专用文件。</summary>
+        public static bool TryBeginSlayerMart(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime battle)
+        {
+            if(battle.SlayerMartRulesVersion!=1||!battle.IsCasualRoute||battle.IsChallenge||battle.RoundLayout==null||
+                !battle.RoundTransitionPending||battle.PendingBossEncounter||!battle.WaveClearAwarded||battle.SlayerMartReturnWave>0)return false;
+            int completed=(battle.ArenaNumber-1)*4+battle.WaveIndex+1;
+            var state=ArcadeSlayerMartRules.BeginVisit(actor.Record.RunId.ToString(CultureInfo.InvariantCulture),completed,false,
+                actor.Record.Players.Select(p=>p.PlayerId).ToArray(),(ulong)actor.Record.RunId^((ulong)completed<<32)^0x534C41594552UL,
+                ServerConfig.Instance.SlayerMart,battle.SlayerMart);
+            if(state==null)return false;
+            SyncSlayerMartInventory(actor,state);battle.SlayerMart=state;battle.SlayerMartReturnWave=battle.WaveIndex+1;
+            battle.SlayerMartRegionPrepared=false;battle.SlayerMartDeadlineAt=battle.SlayerMartPausedAt=0;battle.RoundTransitionPending=false;
+            battle.RoundLoadError=string.Empty;foreach(var player in battle.Players.Values){player.MoveX=player.MoveZ=0;player.Firing=false;}
+            return true;
+        }
         /// <summary>真实成员库存只同步到候选，商店现金和券不从旧RunGold导入。</summary>
         private static void SyncSlayerMartInventory(OnlineArcadeRunActor actor,ArcadeSlayerMartState state)
         {
@@ -25,6 +40,12 @@ namespace ET.Server
             var battle=actor.Battle;
             if(battle?.SlayerMart==null||battle.SlayerMartRulesVersion!=1||request==null||request.PlayerId!=authenticatedPlayer||
                 !battle.Players.ContainsKey(authenticatedPlayer))return SlayerMartFail("invalid_player");
+            if(battle.SlayerMartReturnWave>0&&actor.DisconnectedAtByPlayer.Count==0&&battle.SlayerMart.Ready&&!battle.SlayerMart.Closing&&
+                battle.SlayerMartDeadlineAt>0&&TimeInfo.Instance.ServerNow()>=battle.SlayerMartDeadlineAt)
+            {
+                battle.SlayerMart=ArcadeSlayerMartRules.AdvanceVisit(battle.SlayerMart,battle.SlayerMart.RemainingSeconds,true,false);
+                CloseSlayerMartRegion(battle);
+            }
             var config=ServerConfig.Instance.SlayerMart;var current=battle.SlayerMart.Clone();SyncSlayerMartInventory(actor,current);
             var evaluated=ArcadeSlayerMartRules.Evaluate(current,request,config.Catalog);
             if(!evaluated.Success||evaluated.Replayed)return evaluated;
@@ -95,6 +116,50 @@ namespace ET.Server
         }
         private static void ApplySlayerMartScore(OnlineArcadePlayerRecord record,ArcadeTreasureScoreState score)
         {record.Score=score.Score;record.ScoreMultiplier=score.Multiplier;record.MultiplierProgress=score.Progress;record.Lives=score.Lives;}
+        /// <summary>只修改即将原子写盘的全员候选；零命加到一命沿现有复起等待加入，不在商店恢复HP。</summary>
+        public static bool ApplySlayerMartRoundCandidate(OnlineArcadeRunRecord record,out string error)
+        {
+            error=null;var state=record.SlayerMart;if(state==null||record.RoundBossEncounter)return true;
+            bool pending=state.PendingGrants.Any(g=>g.Effect==SlayerMartEffect.NextRoundLife&&
+                !state.Players.Single(p=>p.PlayerId==g.PlayerId).AppliedBenefitGrants.Contains(g.EventId));
+            int target=ServerConfig.Instance.SlayerMart.Catalog.Regions.Single(p=>p.Visit==state.Visit).AfterRound+1;
+            if((record.NextArena-1)*4+record.RoundNumber!=target)
+            {if(pending){error="下轮加命事件与普通轮目标不一致";return false;}return true;}
+            if(!TrySlayerMartBenefits(record,state,true,out var candidate,out var scores,out error))return false;
+            foreach(var member in record.Players)
+            {
+                int previousLives=member.Lives;ApplySlayerMartScore(member,scores[member.PlayerId]);
+                if(previousLives<=0&&member.Lives>0&&!member.RoundAlive)
+                {member.Ready=true;if(member.RoundRespawnSeconds<=0)member.RoundRespawnSeconds=ServerConfig.Instance.ArcadeRule.RespawnDelaySeconds;}
+            }
+            record.SlayerMart=candidate;return true;
+        }
+        /// <summary>补空库存后把同一候选的实际库存同步入商店账本，避免保存两份互相矛盾的数值。</summary>
+        public static void SyncSlayerMartRoundInventory(OnlineArcadeRunRecord record)
+        {
+            if(record.SlayerMart==null)return;
+            foreach(var owner in record.SlayerMart.Players)
+            {
+                var member=record.Players.Single(p=>p.PlayerId==owner.PlayerId);owner.Lives=member.Lives;owner.Bombs=member.Bombs;owner.Dashes=member.Dashes;
+                owner.Chickens=owner.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)+
+                    (member.RoundPowerups.Any(p=>p.Behavior==ArcadePowerupBehavior.Chicken&&p.RemainingSeconds>0)?1:0);
+            }
+        }
+        /// <summary>断线只平移当前硬截止，不重置剩余时长，也不把断线间隔算入购物窗口。</summary>
+        public static void UpdateSlayerMartPause(OnlineArcadeBattleRuntime battle,bool paused,long now)
+        {
+            if(battle?.SlayerMart==null||battle.SlayerMartReturnWave<=0)return;
+            if(paused){if(battle.SlayerMartPausedAt==0)battle.SlayerMartPausedAt=now;return;}
+            if(battle.SlayerMartPausedAt<=0)return;
+            if(battle.SlayerMartDeadlineAt>0)battle.SlayerMartDeadlineAt=checked(battle.SlayerMartDeadlineAt+Math.Max(0,now-battle.SlayerMartPausedAt));
+            battle.SlayerMartPausedAt=0;
+        }
+        /// <summary>关闭只申请下一普通轮事务，不在此处补命或保存。</summary>
+        private static void CloseSlayerMartRegion(OnlineArcadeBattleRuntime battle)
+        {
+            battle.SlayerMartReturnWave=0;battle.SlayerMartRegionPrepared=false;battle.RoundTransitionPending=true;battle.PendingBossEncounter=false;
+            foreach(var player in battle.Players.Values){player.MoveX=player.MoveZ=0;player.Firing=false;}
+        }
         private static ArcadeSlayerMartResult SlayerMartFail(string error)=>new(){Error=error};
         /// <summary>店次活动在普通战斗帧之前处理；双方资源就绪前和断线期间不扣购物时长。</summary>
         private static bool TickSlayerMartRegion(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime battle,float seconds)
@@ -112,11 +177,15 @@ namespace ET.Server
                     player.PositionZ=layout.SpawnY;
                 }
             }
-            battle.SlayerMart=ArcadeSlayerMartRules.AdvanceVisit(state,seconds,battle.SlayerMartRegionPrepared&&RoundPlayersReady(battle),false);
+            double elapsed=seconds;long now=TimeInfo.Instance.ServerNow();
+            if(state.Ready&&battle.SlayerMartDeadlineAt>0)
+                elapsed=Math.Max(0,state.RemainingSeconds-Math.Max(0,(battle.SlayerMartDeadlineAt-now)/1000d));
+            battle.SlayerMart=ArcadeSlayerMartRules.AdvanceVisit(state,elapsed,battle.SlayerMartRegionPrepared&&RoundPlayersReady(battle),false);
+            if(!state.Ready&&battle.SlayerMart.Ready&&!battle.SlayerMart.Closing)
+                battle.SlayerMartDeadlineAt=checked(now+(long)Math.Ceiling(battle.SlayerMart.RemainingSeconds*1000d));
             if(battle.SlayerMart.Closing)
             {
-                battle.SlayerMartReturnWave=0;battle.SlayerMartRegionPrepared=false;battle.RoundTransitionPending=true;battle.PendingBossEncounter=false;
-                foreach(var player in battle.Players.Values){player.MoveX=player.MoveZ=0;player.Firing=false;}return true;
+                CloseSlayerMartRegion(battle);return true;
             }
             if(!battle.SlayerMart.Ready)return true;
             foreach(var player in battle.Players.Values.OrderBy(p=>p.PlayerId))

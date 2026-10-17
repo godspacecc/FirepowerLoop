@@ -28,7 +28,7 @@ namespace ET.Server
             }
             foreach(var enemy in battle.Enemies.Values.ToArray())
             {
-                string target=battle.ArenaNumber+":"+battle.WaveIndex+":"+battle.IsChallenge+":"+enemy.RuntimeId;
+                string target=battle.RoundGeneration+":"+battle.ArenaNumber+":"+battle.WaveIndex+":"+battle.IsChallenge+":"+enemy.RuntimeId;
                 if(!ArcadeSlayerMartSupportRules.TryContact(state,item,target,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,
                     owner.PositionX,owner.PositionZ,config.Supports,config.Parameter))continue;
                 enemy.LastDamagePlayerId=owner.PlayerId;DamageEnemy(battle,enemy,powerup.Damage);if(enemy.CurrentHealth<=0)actor.KillEnemy(battle,enemy);
@@ -89,7 +89,7 @@ namespace ET.Server
                     }
                     foreach(var enemy in battle.Enemies.Values.ToArray())
                     {
-                        string targetKey=battle.ArenaNumber+":"+battle.WaveIndex+":"+battle.IsChallenge+":"+enemy.RuntimeId;
+                        string targetKey=battle.RoundGeneration+":"+battle.ArenaNumber+":"+battle.WaveIndex+":"+battle.IsChallenge+":"+enemy.RuntimeId;
                         if(!ArcadeSlayerMartSupportRules.TryContact(state,item,targetKey,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,
                             owner.PositionX,owner.PositionZ,config.Supports,config.Parameter))continue;
                         enemy.LastDamagePlayerId=owner.PlayerId;DamageEnemy(battle,enemy,definition.Damage);changed=true;
