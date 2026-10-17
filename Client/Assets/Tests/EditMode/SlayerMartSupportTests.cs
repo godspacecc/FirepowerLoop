@@ -65,6 +65,34 @@ namespace Game.Tests
         {Ordinary(SlayerMartSupportKind.Barrel);var power=runtime.Powerups[ArcadePowerupBehavior.Barrel];Enemy(1,0,0);int charges=power.Charges;Call("TickPowerups",runtime,0f);Assert.That(power.Charges,Is.EqualTo(charges));}
         private void Ordinary(SlayerMartSupportKind kind)
         {var drop=catalog.Drops.Single(p=>p.ProductId==config.Supports.Get(kind).ProductId);Assert.That(Call("ApplyDrop",runtime,drop),Is.True);}
+        [Test] public void PurchasedBodiesProjectSeparateVisualsAtActualContactPoints()
+        {
+            Grant(SlayerMartEffect.ChickenPack,3,300);Grant(SlayerMartEffect.TeslaPack,3);Grant(SlayerMartEffect.Saw,1,300);Player.Owned.Add("slayermart.item.11");
+            var recorder=new SupportView();Set("view",recorder);runtime.PlayerPosition=new(4,5);Call("SyncSlayerMartSupportVisuals",runtime);
+            Assert.That(recorder.Bodies.Count,Is.EqualTo(8));Assert.That(recorder.Bodies.Select(p=>p.key).Distinct().Count(),Is.EqualTo(8));
+            var expected=Player.Supports.SelectMany(i=>ArcadeSlayerMartSupportRules.Bodies(Player,i,4,5,config.Supports,config.Parameter)).Select(p=>new Vector2(p.X,p.Y)).ToArray();
+            CollectionAssert.AreEquivalent(expected,recorder.Bodies.Select(p=>p.position).ToArray());
+        }
+        private sealed class SupportView:IArcadeCombatViewPort
+        {
+            public readonly List<(string key,Vector2 position)> Bodies=new();
+            public void SetSlayerMartSupport(long owner,string id,int index,ArcadePowerupDefinition d,Vector2 p,Vector2 shot)=>Bodies.Add((owner+":"+id+":"+index,p));
+            public bool IsActive=>true;
+            public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}
+            public void End(){}
+            public bool TryScreenToArena(Vector2 s,out Vector2 p){p=default;return false;}
+            public void SetPlayer(Vector2 p,Vector2 f,bool v,bool i){}
+            public void SetPlayerHealth(int c,int m){}
+            public void SetEnemy(int id,string config,Vector2 p,int c,int m,bool telegraph=false,int attackSequence=0,bool persistentHealthBar=false){}
+            public void RemoveEnemy(int id,bool playDeath=false){}
+            public void SetProjectile(int id,bool hostile,Vector2 p,Vector2 d){}
+            public void RemoveProjectile(int id){}
+            public void SetDrop(int id,ArcadeDropDefinition d,Vector2 p){}
+            public void RemoveDrop(int id){}
+            public void SetRemotePlayer(long id,Vector2 p,Vector2 f,bool v,bool i,int c,int m){}
+            public void RemoveRemotePlayer(long id){}
+            public void TickPlayerFeedback(float s){}
+        }
         private void Grant(SlayerMartEffect effect,int amount,float duration=0)
         {var s=runtime.SlayerMart;s.PendingGrants.Add(new(){EventId=s.RegionInstanceId+":"+(++s.GrantSequence),PlayerId=1,Effect=effect,Amount=amount,Duration=duration});Assert.That(ArcadeSlayerMartSupportRules.TryApplyGrants(s,config,new Dictionary<long,int>(),out var next,out var error),Is.True,error);runtime.SlayerMart=next;}
         private ArcadeDropDefinition ChickenDrop()=>catalog.Drops.Single(d=>d.ProductId==config.Supports.Get(SlayerMartSupportKind.Chicken).ProductId);

@@ -87,6 +87,9 @@ namespace Game
         /// <summary>仅接受产品定义中的稳定 ID，显示名称沿用现有本地化定义。</summary>
         void PlayProductPickup(string productId) { }
         void BeginEffectSync() { }
+        /// <summary>稳定实例与接触体身份只用于表现，位置由战斗权威给定。</summary>
+        void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
+            Vector2 bodyPosition,Vector2 shotDirection) { }
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
             SetPowerup(definition, anchorPosition);
@@ -643,6 +646,19 @@ namespace Game
         public void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition)
         {
             SetPowerup(0, definition, anchorPosition);
+        }
+
+        /// <summary>每个真实接触体持有独立表现；高度沿用美术定义，水平坐标不再二次偏移。</summary>
+        public void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
+            Vector2 bodyPosition,Vector2 shotDirection)
+        {
+            if(string.IsNullOrWhiteSpace(instanceId)||bodyIndex<0)return;
+            string key=$"slayermart:{ownerPlayerId}:{instanceId}:{bodyIndex}";
+            SetEffectVisual(key,definition.Id,definition.ActiveVisualPrefabAddress,bodyPosition,new Vector3(0,definition.VisualOffset.y,0));
+            if(definition.Behavior!=global::ArcadePowerupBehavior.Chicken||shotDirection.sqrMagnitude<.000001f||
+                !effectVisuals.TryGetValue(key,out var entry))return;
+            entry.LocalRotation=Quaternion.LookRotation(new Vector3(shotDirection.x,0,shotDirection.y));entry.HasShotDirection=true;
+            if(entry.Instance!=null)entry.Instance.transform.localRotation=entry.LocalRotation;
         }
 
         /// <summary>按玩家身份隔离同类强化视觉；联机双方持有相同强化时不会覆盖彼此。</summary>

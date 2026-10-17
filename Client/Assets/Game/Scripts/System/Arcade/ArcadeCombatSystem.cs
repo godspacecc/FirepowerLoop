@@ -1891,9 +1891,13 @@ namespace Game
             }
             view.BeginEffectSync();
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
+            {
+                if(SyncSlayerMartOrdinaryOrbitVisual(runtime,powerup))continue;
                 view.SetPowerup(powerup.Definition,
                     powerup.Definition.VisualFollowPlayer ? runtime.PlayerPosition : powerup.Position,
                     powerup.ShotDirection);
+            }
+            SyncSlayerMartSupportVisuals(runtime);
             if (TryGetSupportVisual(out ArcadeSupportVisualDefinition support))
                 view.SetSupport(support, runtime.PlayerPosition);
             view.EndEffectSync();

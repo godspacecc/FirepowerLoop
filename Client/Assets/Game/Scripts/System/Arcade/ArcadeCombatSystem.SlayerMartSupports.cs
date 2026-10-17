@@ -7,6 +7,34 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
+        /// <summary>普通锯／桶只投影其真实接触体，避免同时残留旧中心模型。</summary>
+        private bool SyncSlayerMartOrdinaryOrbitVisual(ArcadeCombatRuntime runtime,ArcadePowerupRuntime powerup)
+        {
+            var state=SlayerMartAbility(runtime);var behavior=powerup.Definition.Behavior;
+            if(state==null||slayerMartConfig==null||(behavior!=global::ArcadePowerupBehavior.Saw&&behavior!=global::ArcadePowerupBehavior.Barrel))return false;
+            var kind=behavior==global::ArcadePowerupBehavior.Saw?SlayerMartSupportKind.Saw:SlayerMartSupportKind.Barrel;
+            if(powerup.RemainingSeconds<=0||state.Supports.Any(p=>p.Kind==kind&&p.RemainingSeconds>0))return true;
+            SyncSlayerMartBodyVisual(runtime,state,ArcadeSlayerMartSupportRules.OrdinaryBody(state,kind,powerup.RemainingSeconds),powerup.Definition);
+            return true;
+        }
+        /// <summary>每帧只发出活动实例的只读位置，缺资源不改变能力或交付账本。</summary>
+        private void SyncSlayerMartSupportVisuals(ArcadeCombatRuntime runtime)
+        {
+            var state=SlayerMartAbility(runtime);if(state==null||slayerMartConfig==null)return;
+            foreach(var item in state.Supports.Where(p=>p.RemainingSeconds>0))
+            {
+                var definition=catalog.Powerups.FirstOrDefault(p=>p.Id==item.ProductId);
+                if(string.IsNullOrEmpty(definition.Id))continue;
+                SyncSlayerMartBodyVisual(runtime,state,item,definition);
+            }
+        }
+        /// <summary>几何和视觉共用Bodies，两个锯片各自有身份且保留同一逻辑命中组。</summary>
+        private void SyncSlayerMartBodyVisual(ArcadeCombatRuntime runtime,ArcadeSlayerMartPlayer state,ArcadeSlayerMartEffectInstance item,ArcadePowerupDefinition definition)
+        {
+            var bodies=ArcadeSlayerMartSupportRules.Bodies(state,item,runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter);
+            for(int index=0;index<bodies.Length;index++)view.SetSlayerMartSupport(state.PlayerId,item.InstanceId,index,definition,
+                new Vector2(bodies[index].X,bodies[index].Y),new Vector2(item.ShotDirectionX,item.ShotDirectionY));
+        }
         /// <summary>普通槽复用真实轨道和共享目标周期；购买同类活动时只结算购买实例。</summary>
         private bool TickSlayerMartOrdinaryOrbit(ArcadeCombatRuntime runtime,ArcadePowerupRuntime powerup)
         {
