@@ -2,9 +2,10 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
-if(!new[]{"FullRouteOnline","SlayerCheckpointOnline","SlayerArmorOnline","SlayerStormOnline","SlayerMasteryOnline","SlayerMartSupportOnline","SlayerMartOnline","SlayerMartProtocolGate","SlayerMartRoundOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
+if(!new[]{"FullRouteOnline","SlayerCheckpointOnline","SlayerArmorOnline","SlayerStormOnline","SlayerMasteryOnline","SlayerMartSupportOnline","SlayerMartOnline","SlayerMartProtocolGate","SlayerMartRoundOnline","SlayerMartRpcOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
 var config=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
 World.Instance.AddSingleton(config);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+if(opts["testClass"]=="SlayerMartRpcOnline"){Environment.ExitCode=SlayerMartRpcOnlineChecks.Run(max);return;}
 if(opts["testClass"]=="SlayerMartRoundOnline"){Environment.ExitCode=SlayerMartRoundOnlineChecks.Run(max);return;}
 if(opts["testClass"]=="SlayerMartProtocolGate"){Environment.ExitCode=SlayerMartProtocolGateChecks.Run(max);return;}
 if(opts["testClass"]=="SlayerMartOnline"){Environment.ExitCode=SlayerMartOnlineChecks.Run(max);return;}

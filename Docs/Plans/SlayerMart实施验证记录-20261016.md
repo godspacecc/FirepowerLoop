@@ -123,3 +123,11 @@
 - SlayerMartRoundOnline有效3/16红→16/16绿，原FullRouteOnline28/28、SlayerCheckpointOnline8/8。新掉落夹具改读正式Drop ID，不把不存在ID异常当功能红。
 - 补同轮序切新地图复用敌人ID回归：完成新代次就绪后，原命中键25/26红；加入RoundGeneration后SlayerMartSupportOnline26/26绿。同类初始未确认新代次的冻结另列为夹具问题。SlayerMartOnline24/24继续通过。
 - 本段完成服务器正式生命周期与保存接线；RPC三跳调用、客户端接收／地图／支援投影、UI与双客户端实连仍继续，开关保持关闭，未打包。
+
+## 第十六段：商店RPC三跳与统一风暴意图
+
+- 新增Gate→Player→Room正式商店Handler与显式请求映射。每层以已认证宿主提供玩家身份，透传同一OperationId／区域／代次／预期revision与实际截断确认，不接受客户端价格或效果值。
+- 管理器同步发布完整交易后只广播公共快照；定向操作、恢复与输入响应携带本人报价，经过既有深拷贝链转发。RPC响应不确定时仍可用原操作ID查询同一回执。
+- UseFieldUpgrade已接通服务器输入全链，按单调输入序列幂等；同帧技能意图优先且不同时扣炸弹／冲刺。旧地图输入保留满充。客户端输入采集与HUD继续后续接线。
+- SlayerMartRpcOnline初始1/8红→8/8绿，覆盖三层映射、实际MemoryPack编解码、真实SubmitInput能力消费与重放以及Handler请求族绑定；SlayerMartRoundOnline16/16、SlayerStormOnline10/10回归通过。一次EntityRef使用var的编译错误改为正式目标类型，不当作功能红证据。
+- 上述不等同于真实双客户端连通验收；客户端接收、未决请求保留、场景与支援投影以及正式UI继续实施，release.enabled仍为0，未打包。

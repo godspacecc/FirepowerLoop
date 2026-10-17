@@ -140,14 +140,14 @@ namespace ET.Server
         /// <summary>提交高频战斗输入；不写安全节点，旧序号只返回当前权威快照。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence, OnlineArcadeRunSnapshot Snapshot) SubmitBattleInput(
             this OnlineArcadeRunManagerComponent self, long playerId, int arenaNumber, long inputSequence,
-            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false)
+            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false)
         {
             OnlineArcadeRunActor actor = self.GetActorForPlayer(playerId);
             if (actor == null || actor.IsDisposed || actor.Battle == null)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前没有可操作的竞技场现场");
             var result = actor.SubmitInput(playerId, arenaNumber, inputSequence, moveX, moveZ, aimX, aimZ, firing,
-                useBomb, useDash, roundGeneration, roundReady, exitTarget, confirmExit);
-            return (result.Accepted, result.LastAcceptedInputSequence, actor.BuildSnapshot());
+                useBomb, useDash, roundGeneration, roundReady, exitTarget, confirmExit, useFieldUpgrade);
+            return (result.Accepted, result.LastAcceptedInputSequence, actor.BuildSnapshotForPlayer(playerId));
         }
 
         /// <summary>
@@ -1009,7 +1009,7 @@ namespace ET.Server
         /// <summary>只接受递增输入序号并把向量限制在单位圆内；客户端位置不会直接成为权威位置。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence) SubmitInput(this OnlineArcadeRunActor self,
             long playerId, int arenaNumber, long inputSequence, float moveX, float moveZ, float aimX, float aimZ,
-            bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false)
+            bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false)
         {
             OnlineArcadeBattleRuntime battle = self.Battle;
             if (battle == null || battle.ArenaNumber != arenaNumber || !battle.Players.TryGetValue(playerId, out OnlineArcadeBattlePlayerRuntime player))
@@ -1051,8 +1051,8 @@ namespace ET.Server
             player.LastInputAt = TimeInfo.Instance.ServerNow();
             if (player.Alive)
             {
-                if (useBomb) self.UseBomb(battle, player);
-                if (useDash) self.UseDash(player);
+                if(useFieldUpgrade)self.UseSlayerMartUpgrade(battle,player);
+                else{if (useBomb) self.UseBomb(battle, player);if (useDash) self.UseDash(player);}
             }
             battle.InputsDirty = true;
             return (true, player.LastInputSequence);

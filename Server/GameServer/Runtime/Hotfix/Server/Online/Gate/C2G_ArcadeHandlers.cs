@@ -126,6 +126,7 @@ namespace ET.Server
             inner.Firing = request.Firing;
             inner.UseBomb = request.UseBomb;
             inner.UseDash = request.UseDash;
+            inner.UseFieldUpgrade=request.UseFieldUpgrade;
             inner.RoundGeneration=request.RoundGeneration;inner.RoundReady=request.RoundReady;inner.ExitTarget=request.ExitTarget;inner.ConfirmExit=request.ConfirmExit;
             using P2G_SubmitOnlineArcadeInput result = await session.Root().GetComponent<MessageSender>()
                 .Call(proxy.PlayerActorId, inner, false) as P2G_SubmitOnlineArcadeInput;

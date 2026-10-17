@@ -41,7 +41,7 @@ namespace ET.Server
             OnlineArcadeRunActor actor = scene.GetComponent<OnlineArcadeRunManagerComponent>().GetActorForPlayer(request.PlayerId);
             response.Error = ErrorCode.ERR_Success;
             response.HasRun = actor != null && !actor.IsDisposed;
-            response.Run = response.HasRun ? actor.BuildSnapshot() : null;
+            response.Run = response.HasRun ? actor.BuildSnapshotForPlayer(request.PlayerId) : null;
             await ETTask.CompletedTask;
         }
     }
@@ -79,7 +79,7 @@ namespace ET.Server
             {
                 var result = scene.GetComponent<OnlineArcadeRunManagerComponent>().SubmitBattleInput(
                     request.PlayerId, request.ArenaNumber, request.InputSequence, request.MoveX, request.MoveZ,
-                    request.AimX, request.AimZ, request.Firing, request.UseBomb, request.UseDash, request.RoundGeneration, request.RoundReady, request.ExitTarget, request.ConfirmExit);
+                    request.AimX, request.AimZ, request.Firing, request.UseBomb, request.UseDash, request.RoundGeneration, request.RoundReady, request.ExitTarget, request.ConfirmExit,request.UseFieldUpgrade);
                 response.Error = ErrorCode.ERR_Success;
                 response.Accepted = result.Accepted;
                 response.LastAcceptedInputSequence = result.LastAcceptedInputSequence;
