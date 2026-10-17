@@ -130,7 +130,7 @@ namespace ET.Server
             {
                 int previousLives=member.Lives;ApplySlayerMartScore(member,scores[member.PlayerId]);
                 if(previousLives<=0&&member.Lives>0&&!member.RoundAlive)
-                {member.Ready=true;if(member.RoundRespawnSeconds<=0)member.RoundRespawnSeconds=ServerConfig.Instance.ArcadeRule.RespawnDelaySeconds;}
+                {member.Ready=true;member.RoundDownedSeconds=0;if(member.RoundRespawnSeconds<=0)member.RoundRespawnSeconds=ServerConfig.Instance.ArcadeRule.RespawnDelaySeconds;}
             }
             record.SlayerMart=candidate;return true;
         }

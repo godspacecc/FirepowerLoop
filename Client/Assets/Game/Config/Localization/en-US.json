@@ -1319,5 +1319,9 @@
   "ui.arcade.slayermart.error.visit_limit": "Already purchased this visit",
   "ui.arcade.slayermart.error.expired": "This visit has ended",
   "ui.arcade.slayermart.error.shop_not_active": "Shop is closed",
-  "ui.arcade.slayermart.error.generic": "Result not confirmed; retry or wait for an update"
+  "ui.arcade.slayermart.error.generic": "Result not confirmed; retry or wait for an update",
+  "ui.arcade.coop.donate": "Donate a life",
+  "ui.arcade.coop.donate_pc": "Donate a life [{0}]",
+  "ui.arcade.coop.downed": "Recovering: {0}s · Teammate proximity helps",
+  "ui.arcade.coop.helped": "Teammate helping ×{1} · {0}s"
 }

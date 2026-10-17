@@ -26,7 +26,7 @@ namespace Game
             IReadOnlyDictionary<string, string> equipment = null,
             bool settlementConfirmed = false,
             bool abandonConfirmed = false, int settlementState = 0, bool challengeReady = false,
-            long score = 0, int scoreMultiplier = 1, int multiplierProgress = 0)
+            long score = 0, int scoreMultiplier = 1, int multiplierProgress = 0, bool canReadyForArena=false)
         {
             PlayerId = playerId; DisplayName = displayName ?? string.Empty; Lives = lives; RunGold = runGold;
             Bombs = bombs; Dashes = dashes; WeaponId = weaponId ?? string.Empty; Ready = ready;
@@ -36,7 +36,7 @@ namespace Game
             SettlementConfirmed = settlementConfirmed; AbandonConfirmed = abandonConfirmed;
             SettlementState = settlementState;
             ChallengeReady = challengeReady;
-            Score = score; ScoreMultiplier = scoreMultiplier; MultiplierProgress = multiplierProgress;
+            Score = score; ScoreMultiplier = scoreMultiplier; MultiplierProgress = multiplierProgress;CanReadyForArena=canReadyForArena||lives>0;
         }
         public long PlayerId { get; }
         public string DisplayName { get; }
@@ -46,6 +46,8 @@ namespace Game
         public int Dashes { get; }
         public string WeaponId { get; }
         public bool Ready { get; }
+        /// <summary>服务端恢复点活动资格；零命恢复者也可正常准备下一场。</summary>
+        public bool CanReadyForArena { get; }
         public IReadOnlyDictionary<string, int> UpgradeStacks { get; }
         public IReadOnlyDictionary<string, int> Consumables { get; }
         public IReadOnlyDictionary<string, string> Equipment { get; }
@@ -99,11 +101,11 @@ namespace Game
             string temporaryWeaponId = null, float temporaryWeaponSeconds = 0f, string supportId = null,
             float supportSeconds = 0f, float dashSeconds = 0f,
             IReadOnlyList<OnlineArcadePowerupSnapshot> powerups = null, int fireSequence = 0, bool inTreasureRoom = false, int vestSlots = 0, int plates = 0, bool hasStorm = false,
-            int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null)
+            int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null, float downedSeconds=0, float rescueRate=0)
         {
             PlayerId = playerId; PositionX = positionX; PositionZ = positionZ; AimX = aimX; AimZ = aimZ;
             CurrentHealth = currentHealth; MaxHealth = maxHealth; Alive = alive;
-            Invulnerable = invulnerable; RespawnSeconds = respawnSeconds;
+            Invulnerable = invulnerable; RespawnSeconds = respawnSeconds;DownedSeconds=downedSeconds;RescueRate=rescueRate;
             TemporaryWeaponId = temporaryWeaponId ?? string.Empty; TemporaryWeaponSeconds = temporaryWeaponSeconds;
             SupportId = supportId ?? string.Empty; SupportSeconds = supportSeconds;
             DashSeconds = dashSeconds;
@@ -122,6 +124,9 @@ namespace Game
         public bool Alive { get; }
         public bool Invulnerable { get; }
         public float RespawnSeconds { get; }
+        /// <summary>服务器独立倒地剩余量与当前救援推进倍率。</summary>
+        public float DownedSeconds { get; }
+        public float RescueRate { get; }
         public string TemporaryWeaponId { get; }
         public float TemporaryWeaponSeconds { get; }
         public string SupportId { get; }

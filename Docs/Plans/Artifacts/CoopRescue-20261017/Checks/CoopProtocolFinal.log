@@ -1,0 +1,12 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerMartProtocolGate.Previous development payload cannot enter new shape
+PASS SlayerMartProtocolGate.Battle pushes require protocol acknowledgement in current login epoch
+PASS SlayerMartProtocolGate.Every arcade RPC gate rejects absent or old capability
+PASS SlayerMartProtocolGate.Old raw fingerprint cannot create or match arcade room
+PASS SlayerMartProtocolGate.Current protocol capability can create arcade room
+PASS SlayerMartProtocolGate.Different config with correct protocol still rejects
+PASS SlayerMartProtocolGate.General room compatibility stays unchanged
+PASS SlayerMartProtocolGate.Old existing arcade room cannot accept old client
+PASS SlayerMartProtocolGate.Matching current clients can join current room
+PASS SlayerMartProtocolGate.Capability derivation never rewrites saved config fingerprint
+10/10 passed

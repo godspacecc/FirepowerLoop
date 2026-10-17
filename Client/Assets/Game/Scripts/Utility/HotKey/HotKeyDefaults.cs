@@ -7,6 +7,8 @@ namespace Game
     {
         /// <summary>可重绑的战场升级动作。</summary>
         public const string UseFieldUpgrade = "arcade.field-upgrade";
+        /// <summary>双人主动捐命，可在设置中重绑。</summary>
+        public const string DonateLife = "arcade.donate-life";
         public const string TogglePause = "game.pause.toggle";
         public const string ToggleRuntimeLog = "runtime-log.toggle";
     }
@@ -18,6 +20,7 @@ namespace Game
         public const string F1 = "<Keyboard>/f1";
         public static List<HotKeyBinding> Create() => new List<HotKeyBinding>
         {
+            new HotKeyBinding { ActionId=HotKeyActionIds.DonateLife, Context=HotKeyContext.Gameplay, BindingPath="<Keyboard>/r" },
             new HotKeyBinding { ActionId=HotKeyActionIds.UseFieldUpgrade, Context=HotKeyContext.Gameplay, BindingPath="<Keyboard>/f" },
             new HotKeyBinding
             {

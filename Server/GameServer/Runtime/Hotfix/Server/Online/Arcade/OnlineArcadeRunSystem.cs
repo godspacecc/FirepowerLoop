@@ -1166,11 +1166,11 @@ namespace ET.Server
         }
 
         /// <summary>双方准备成功后完整构造并校验不落盘的战斗现场候选。</summary>
-        public static OnlineArcadeBattleRuntime PrepareBattle(OnlineArcadeRunRecord record, bool challenge)
+        public static OnlineArcadeBattleRuntime PrepareBattle(OnlineArcadeRunRecord record, bool challenge, bool requireReady=true)
         {
             if (record == null || record.Players.Count != 2 || !record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
                 challenge && record.Players.Any(x => !x.ChallengeReady) ||
-                !challenge && record.Players.Any(x => OnlineArcadeRunActorSystem.CanContinueCoop(x) && !x.Ready))
+                !challenge && requireReady && record.Players.Any(x => OnlineArcadeRunActorSystem.CanContinueCoop(x) && !x.Ready))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "双方尚未满足进入竞技场条件");
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             if (!string.Equals(record.ConfigFingerprint, rule.ConfigFingerprint, StringComparison.Ordinal))
@@ -1256,7 +1256,7 @@ namespace ET.Server
                 if(record.RoundBossEncounter) PrepareRoundBoss(battle);
             }
             if (!challenge && string.IsNullOrEmpty(record.RoundLayoutId))
-                foreach (var player in record.Players.Where(p => p.Lives > 0))
+                foreach (var player in record.Players.Where(CanContinueCoop))
                 {
                     player.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Bombs);
                     player.Dashes = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(player.Dashes);
@@ -2902,6 +2902,7 @@ namespace ET.Server
                 player.PlayerId = source.PlayerId;
                 player.DisplayName = source.DisplayName ?? string.Empty;
                 player.Lives = source.Lives;
+                player.CanReadyForArena=CanContinueCoop(source);
                 player.RunGold = source.RunGold;
                 player.Score = source.Score; player.ScoreMultiplier = source.ScoreMultiplier; player.MultiplierProgress = source.MultiplierProgress;
                 player.Bombs = source.Bombs;
@@ -2952,6 +2953,7 @@ namespace ET.Server
             battle.RoundLoading=!RoundPlayersReady(source)||source.RoundTransitionPending;battle.RoundLoadError=source.RoundLoadError;
             battle.ContentElapsed=(float)source.ContentClock.Elapsed;
             AppendGroundBarrelSnapshots(source,battle);
+            AppendCoopRescueMarkers(source,battle);
             foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
 
             battle.ArenaConfigNumber = source.ArenaConfigNumber;
@@ -3092,6 +3094,7 @@ namespace ET.Server
                 player.PlayerId = sourcePlayer.PlayerId;
                 player.DisplayName = sourcePlayer.DisplayName ?? string.Empty;
                 player.Lives = sourcePlayer.Lives;
+                player.CanReadyForArena=sourcePlayer.CanReadyForArena;
                 player.RunGold = sourcePlayer.RunGold;
                 player.Score = sourcePlayer.Score; player.ScoreMultiplier = sourcePlayer.ScoreMultiplier; player.MultiplierProgress = sourcePlayer.MultiplierProgress;
                 player.Bombs = sourcePlayer.Bombs;

@@ -46,6 +46,7 @@ namespace Game
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
             UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
             UI.BtnFieldUpgrade.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.FieldUpgrade));
+            UI.BtnDonateLife.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.DonateLife));
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);
             UI.BtnRetry.onClick.AddListener(() => SendAction(ArcadeHudActionKind.RetryCompletion));
             UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
@@ -60,7 +61,7 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_ => { if (IsShow()) ApplyJoystickLayout(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<HotKeyBindingsChangedEvent>(_=>SyncFieldUpgradeUi()).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<HotKeyBindingsChangedEvent>(_=>{SyncFieldUpgradeUi();SyncCoopRescueUi();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ => { if(onlineMode)RenderOnline(this.GetSystem<OnlineArcadeRunSystem>().Snapshot);else Render(); SyncFieldUpgradeUi(); RenderStageBannerText(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
@@ -78,6 +79,7 @@ namespace Game
             ClearStageBanner();
             TryPresentStageNotice();
             if (onlineMode) { RenderOnline(online); return; }
+            UI.BtnDonateLife.gameObject.SetActive(false);
             var run = this.GetModel<ArcadeRunModel>();
             if (run.Phase != ArcadeRunPhase.Arena && run.Phase != ArcadeRunPhase.Challenge)
             {
@@ -140,7 +142,8 @@ namespace Game
                 UI.AimJoystickRoot.SetActive(false);
                 RefreshJoystickVisibility();
             }
-            if (IsShow()){Render();SyncSlayerMartUi();}
+            if (IsShow()){Render();SyncSlayerMartUi();
+            SyncCoopRescueUi();}
         }
 
         private void Render(ArcadeRunSaveData snapshot = null)
@@ -265,6 +268,7 @@ namespace Game
         private void RefreshJoystickArea()
         {
             SyncSlayerMartUi();
+            SyncCoopRescueUi();
             UpdateStageBanner(Time.unscaledTimeAsDouble);
             if (UI.JoystickLayoutArea.rect.size != joystickAreaSize) ApplyJoystickLayout();
         }
@@ -288,7 +292,7 @@ namespace Game
             RefreshOnlinePlayerStatuses(snapshot, selfId);
             Set(UI.TextRespawn, snapshot.BattlePaused
                 ? Loc.T("ui.arcade.online.paused")
-                : battlePlayer.RespawnSeconds > 0f ? Loc.T("ui.arcade.hud.respawn", Mathf.CeilToInt(battlePlayer.RespawnSeconds)) : string.Empty);
+                : battlePlayer.DownedSeconds>0 ? CoopDownedText(battlePlayer) : battlePlayer.RespawnSeconds > 0f ? Loc.T("ui.arcade.hud.respawn", Mathf.CeilToInt(battlePlayer.RespawnSeconds)) : string.Empty);
             Set(UI.TextArena, snapshot.Battle.IsChallenge
                 ? Loc.T("ui.arcade.hud.challenge", Mathf.CeilToInt(snapshot.Battle.ChallengeSeconds))
                 : Loc.T("ui.arcade.hud.arena", snapshot.Battle.ArenaNumber));
@@ -307,6 +311,7 @@ namespace Game
             UI.AimJoystick.enabled = !snapshot.BattlePaused;
             UI.BtnRetry.gameObject.SetActive(false);
             SyncSlayerMartUi();
+            SyncCoopRescueUi();
         }
 
         /// <summary>用单机权威快照刷新唯一玩家行；战斗首帧尚无血量快照时显示满血占位。</summary>
@@ -346,7 +351,7 @@ namespace Game
             string state = string.Empty;
             if (!connected) state = Loc.T("ui.arcade.hud.reconnecting");
             else if (battle.PlayerId != 0 && !battle.Alive)
-                state = player.Lives <= 0
+                state = battle.DownedSeconds>0 ? CoopDownedText(battle) : player.Lives <= 0
                     ? Loc.T("ui.arcade.hud.eliminated")
                     : battle.RespawnSeconds > 0f
                         ? Loc.T("ui.arcade.hud.respawn_short", Mathf.CeilToInt(battle.RespawnSeconds))

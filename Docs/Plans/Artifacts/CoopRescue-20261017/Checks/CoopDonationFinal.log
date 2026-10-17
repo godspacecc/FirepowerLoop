@@ -1,0 +1,22 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS CoopDonationOnline.One life immediately restores downed teammate
+PASS CoopDonationOnline.Last donor life is preserved
+PASS CoopDonationOnline.Dead donor cannot donate
+PASS CoopDonationOnline.Self donation is rejected
+PASS CoopDonationOnline.Active target cannot receive another donation
+PASS CoopDonationOnline.Identical operation returns original success without double cost
+PASS CoopDonationOnline.Operation identity cannot change target
+PASS CoopDonationOnline.Replay after next death cannot rescue again
+PASS CoopDonationOnline.Old run is rejected before consumption
+PASS CoopDonationOnline.Old map generation is rejected
+PASS CoopDonationOnline.Disconnected team cannot donate
+PASS CoopDonationOnline.Shop and challenge cannot bypass ordinary eligibility
+PASS CoopDonationOnline.Treasure region cannot donate across boundary
+PASS CoopDonationOnline.Unready and transitioning maps reject donation
+PASS CoopDonationOnline.Round node captures cost and recovery together
+PASS CoopDonationOnline.Rejected operation cannot charge after eligibility changes
+PASS CoopDonationOnline.Official input consumes donation once
+PASS CoopDonationOnline.Official input rejects different run donation
+PASS CoopDonationOnline.Outer and inner request shapes carry explicit donation identity
+PASS CoopDonationOnline.Downed state is included in authoritative snapshot
+20/20 passed

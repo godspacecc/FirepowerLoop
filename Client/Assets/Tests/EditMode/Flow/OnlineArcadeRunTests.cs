@@ -93,11 +93,11 @@ namespace Game.Tests
         {
             Harness harness = CreateHarness();
             harness.System.StartAsync().GetAwaiter().GetResult();
-            Assert.That(((C2G_StartOnlineArcadeRun)harness.Network.LastRequest).ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v1"));
+            Assert.That(((C2G_StartOnlineArcadeRun)harness.Network.LastRequest).ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v2"));
 
             harness.System.SetReadyAsync(true).GetAwaiter().GetResult();
             var ready = (C2G_OperateOnlineArcadeSafeCheckpoint)harness.Network.LastRequest;
-            Assert.That(ready.ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v1"));
+            Assert.That(ready.ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v2"));
             Assert.That(ready.ExpectedRevision, Is.EqualTo(1));
             Assert.That(ready.ActionKind, Is.EqualTo(3));
             Assert.That(ready.Ready, Is.True);
@@ -234,7 +234,7 @@ namespace Game.Tests
             Assert.That(first.Accepted, Is.True);
             Assert.That(firstRequest.ArenaNumber, Is.EqualTo(1));
             Assert.That(firstRequest.InputSequence, Is.EqualTo(1));
-            Assert.That(firstRequest.ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v1"));
+            Assert.That(firstRequest.ProtocolFingerprint,Is.EqualTo(harness.Network.ConfigFingerprint+"|slayermart.v2|coop-rescue.v2"));
             Assert.That(firstRequest.MoveX, Is.EqualTo(.5f));
             Assert.That(firstRequest.MoveZ, Is.EqualTo(-.25f));
             Assert.That(firstRequest.AimX, Is.EqualTo(1f));

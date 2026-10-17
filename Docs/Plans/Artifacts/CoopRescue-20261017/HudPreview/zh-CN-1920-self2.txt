@@ -1,0 +1,2 @@
+TextState overflow=False text=队友救援中 ×2 · 43秒
+Label overflow=False text=捐出一命 [R]

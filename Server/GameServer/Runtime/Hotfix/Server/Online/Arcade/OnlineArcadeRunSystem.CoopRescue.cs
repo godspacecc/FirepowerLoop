@@ -8,6 +8,29 @@ namespace ET.Server
         /// <summary>零命恢复者凭显式轮节点身份参与，旧档默认 Alive 不构成免费活动资格。</summary>
         internal static bool CanContinueCoop(OnlineArcadePlayerRecord p)
             => p.Lives>0 || p.CoopRescueEligible && p.RoundAlive && p.RoundHealth>0;
+
+        /// <summary>延迟弹丸等正常积分加命，把零命倒地转回付命短复活，禁止保存矛盾身份。</summary>
+        private static void NormalizeCoopLifeGain(OnlineArcadeRunActor actor,OnlineArcadePlayerRecord record)
+        {
+            if(record.Lives<=0||actor.Battle==null||!actor.Battle.Players.TryGetValue(record.PlayerId,out var player)||
+                player.Alive||player.DownedSeconds<=0)return;
+            player.DownedSeconds=0;player.RespawnSeconds=ServerConfig.Instance.ArcadeRule.RespawnDelaySeconds;
+        }
+
+        /// <summary>仅快照携带非伤害救援圈与倒地点；不加入实际机关或伤害集合。</summary>
+        private static void AppendCoopRescueMarkers(OnlineArcadeBattleRuntime source,OnlineArcadeBattleInfo snapshot)
+        {
+            if(!source.IsCasualRoute||source.IsChallenge||source.SlayerMartReturnWave>0)return;
+            int index=0;
+            foreach(var player in source.Players.Values.OrderBy(p=>p.PlayerId))
+            {
+                int id=-20000-index++;
+                if(player.Alive||player.DownedSeconds<=0||player.InTreasureRoom)continue;
+                var marker=OnlineArcadeContentAreaInfo.Create();marker.Id=id;marker.Kind=12;
+                marker.X=player.PositionX;marker.Y=player.PositionZ;marker.Radius=ServerConfig.Instance.ArcadeRule.CoopRescueRadius;
+                marker.Warning=true;snapshot.ContentAreas.Add(marker);
+            }
+        }
         /// <summary>倒地使用独立时钟；不能占用会冻结整场机关的付命短复活字段。</summary>
         private static bool TickCoopDowned(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player,float seconds,long now)

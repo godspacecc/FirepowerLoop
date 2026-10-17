@@ -2065,6 +2065,9 @@ namespace ET
         [MemoryPackOrder(19)]
         public int MultiplierProgress { get; set; }
 
+        [MemoryPackOrder(20)]
+        public bool CanReadyForArena { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2090,6 +2093,7 @@ namespace ET
             this.Score = default;
             this.ScoreMultiplier = default;
             this.MultiplierProgress = default;
+            this.CanReadyForArena = default;
 
             ObjectPool.Instance.Recycle(this);
         }

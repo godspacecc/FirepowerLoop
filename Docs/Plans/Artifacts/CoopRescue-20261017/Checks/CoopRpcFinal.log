@@ -1,0 +1,10 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerMartRpcOnline.Gate mapping preserves intent and supplies authenticated identity
+PASS SlayerMartRpcOnline.Player mapping never trusts incoming player identifier
+PASS SlayerMartRpcOnline.Room mapping supplies only domain intent without client prices
+PASS SlayerMartRpcOnline.Generated operation codec roundtrips complete payload
+PASS SlayerMartRpcOnline.Upgrade input consumes one storm without bomb or dash
+PASS SlayerMartRpcOnline.Replayed upgrade sequence cannot consume another pulse
+PASS SlayerMartRpcOnline.Stale map upgrade leaves full charge and inventory intact
+PASS SlayerMartRpcOnline.All three handler types bind exact generated request family
+8/8 passed

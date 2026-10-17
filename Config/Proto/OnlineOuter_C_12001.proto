@@ -526,6 +526,7 @@ message OnlineArcadePlayerInfo
 	int64 Score = 18;
 	int32 ScoreMultiplier = 19;
 	int32 MultiplierProgress = 20;
+	bool CanReadyForArena = 21;
 }
 
 

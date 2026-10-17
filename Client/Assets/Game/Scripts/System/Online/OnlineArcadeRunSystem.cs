@@ -116,15 +116,15 @@ namespace Game
         /// 同一时刻只保留一个输入 RPC，失败不会回滚已经发出的单调序号。
         /// </summary>
         public async Task<OnlineArcadeInputResult> SubmitInputAsync(float moveX, float moveZ, float aimX,
-            float aimZ, bool firing, bool useBomb = false, bool useDash = false, bool useFieldUpgrade = false)
+            float aimZ, bool firing, bool useBomb = false, bool useDash = false, bool useFieldUpgrade = false, long donateLifeTargetId = 0)
         {
             return await SubmitInputWithSequenceAsync(++lastIssuedInputSequence, moveX, moveZ, aimX, aimZ,
-                firing, useBomb, useDash,useFieldUpgrade);
+                firing, useBomb, useDash,useFieldUpgrade,donateLifeTargetId);
         }
 
         /// <summary>允许输入发送泵在响应不确定时复用原序号；服务端会以 LastAcceptedInputSequence 幂等确认。</summary>
         private async Task<OnlineArcadeInputResult> SubmitInputWithSequenceAsync(long sequence, float moveX,
-            float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, bool useFieldUpgrade = false)
+            float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, bool useFieldUpgrade = false, long donateLifeTargetId = 0)
         {
             OnlineAccountSnapshot account = this.GetModel<OnlineAccountModel>().Snapshot.Value;
             if (!account.IsAuthenticated || network == null || network.ConnectionState != NetworkConnectionState.Connected)
@@ -152,7 +152,8 @@ namespace Game
                 request.Firing = firing;
                 request.UseBomb = useBomb;
                 request.UseDash = useDash;request.UseFieldUpgrade=useFieldUpgrade;
-                if(useFieldUpgrade)request.UseBomb=request.UseDash=false;
+                request.DonationRunId=inputRunId;request.DonateLifeTargetId=donateLifeTargetId;
+                if(useFieldUpgrade||donateLifeTargetId!=0)request.UseBomb=request.UseDash=false;
                 request.RoundGeneration=lastSnapshot.Battle.RoundGeneration;
                 request.RoundReady=combatView?.IsRoundLayoutReady==true && combatView.IsIslandRoundReady &&
                     string.IsNullOrEmpty(combatView.RoundLayoutLoadError) && string.IsNullOrEmpty(combatView.IslandRoundLoadError);
@@ -160,7 +161,7 @@ namespace Game
                 if(shop?.Active==true)
                 {
                     request.RoundReady=shop.Prepared&&combatView?.IsSlayerMartRegionReady==true&&string.IsNullOrEmpty(combatView.SlayerMartRegionLoadError);
-                    request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;
+                    request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;request.DonateLifeTargetId=0;
                     if(!shop.Ready||shop.Closing||ArcadeShopUICtrl.IsShownForInput||shop.Members.Any(m=>m.PlayerId==account.PlayerId&&m.MenuOpen))request.MoveX=request.MoveZ=0;
                     request.ConfirmExit=false;
                 }
@@ -168,8 +169,9 @@ namespace Game
                 var localPlayer=lastSnapshot.Battle.Players.FirstOrDefault(p=>p.PlayerId==localId);
                 if(localPlayer.InTreasureRoom) request.RoundReady &= combatView?.IsIslandTreasureReady==true;
                 if(InputContextBlocked(localPlayer))
-                {request.MoveX=request.MoveZ=0;request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;}
+                {request.MoveX=request.MoveZ=0;request.Firing=request.UseBomb=request.UseDash=request.UseFieldUpgrade=false;request.DonateLifeTargetId=0;}
                 if(localPlayer.InTreasureRoom||lastSnapshot.Battle.AwaitingExit)request.UseFieldUpgrade=false;
+                if(localPlayer.InTreasureRoom||lastSnapshot.Battle.IsChallenge)request.DonateLifeTargetId=0;
                 request.ConfirmExit=shop?.Active!=true&&confirmedExitGeneration>0&&confirmedExitGeneration==request.RoundGeneration;
                 request.ExitTarget=confirmedExitTarget;
                 G2C_SubmitOnlineArcadeInput response = await network.CallAsync<G2C_SubmitOnlineArcadeInput>(
@@ -240,11 +242,12 @@ namespace Game
                 var frame=pendingInput;
                 OnlineArcadeInputResult result = await SubmitInputWithSequenceAsync(sequence,
                     frame.Move.x, frame.Move.y, frame.Aim.x, frame.Aim.y,
-                    frame.Firing, frame.Bomb, frame.Dash, frame.FieldUpgrade);
+                    frame.Firing, frame.Bomb, frame.Dash, frame.FieldUpgrade, frame.DonateLifeTargetId);
                 if(pendingInputSequence!=sequence)return;
                 if (result.InputSequence >= sequence && (result.Accepted || result.Code == OnlineArcadeResultCode.Success))
                 {
                     input.Acknowledge(frame.Bomb, frame.Dash, frame.FieldUpgrade);
+                    input.AcknowledgeDonation(frame.DonateLifeTargetId);
                     pendingInputSequence = 0;
                 }
                 else if (result.Code == OnlineArcadeResultCode.InvalidState ||
@@ -275,6 +278,7 @@ namespace Game
         {
             if (lastSnapshot.Phase is not (OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge) ||
                 lastSnapshot.BattlePaused || input == null) return;
+            if(evt.Action==ArcadeHudActionKind.DonateLife){if(TryGetDonationTarget(out long target))input.QueueDonateLife(target);return;}
             if(evt.Action==ArcadeHudActionKind.FieldUpgrade){if(CanQueueFieldUpgrade())input.QueueFieldUpgrade();return;}
             if (evt.Action == ArcadeHudActionKind.Bomb) input.QueueBomb();
             else if (evt.Action == ArcadeHudActionKind.Dash) input.QueueDash();
@@ -408,7 +412,7 @@ namespace Game
                     sourcePlayer.WeaponId, sourcePlayer.Ready, upgrades, consumables, equipment,
                     sourcePlayer.SettlementConfirmed, sourcePlayer.AbandonConfirmed,
                     sourcePlayer.SettlementState, sourcePlayer.ChallengeReady, sourcePlayer.Score,
-                    Math.Max(1, sourcePlayer.ScoreMultiplier), sourcePlayer.MultiplierProgress));
+                    Math.Max(1, sourcePlayer.ScoreMultiplier), sourcePlayer.MultiplierProgress,sourcePlayer.CanReadyForArena));
             }
             return new OnlineArcadeRunClientSnapshot(true, source.RunId, source.RoomId, source.Revision,
                 (OnlineArcadeRunPhase)source.Phase, source.CompletedArena, source.NextArena,
@@ -445,7 +449,7 @@ namespace Game
                     player.Invulnerable, player.RespawnSeconds, player.TemporaryWeaponId,
                     player.TemporaryWeaponSeconds, player.SupportId, player.SupportSeconds, player.DashSeconds,
                     powerups, player.FireSequence, player.InTreasureRoom,player.VestSlots,player.Plates,player.HasStorm,player.StormCharge,player.StormSeconds,
-                    player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray()));
+                    player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray(),player.DownedSeconds,player.RescueRate));
             }
             List<OnlineArcadeEnemySnapshot> enemies = new(source.Enemies.Count);
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)

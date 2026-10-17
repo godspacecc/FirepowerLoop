@@ -311,7 +311,14 @@ namespace Game
                 {
                     go=RoundGroup(roundAreaRoot.transform,"Area_"+area.Id+"_Kind_"+area.Kind);roundAreas[area.Id]=go;roundAreaIdentities[area.Id]=identity;
                     uint color=area.Warning?0xEBCB5AFFu:area.Kind==7||area.Kind==8?0x97B43BFFu:area.Kind==5||area.Kind==6?0xA9DDEAFFu:0xDE6255FFu;
-                    if(area.Kind==11)
+                    if(area.Kind==12)
+                    {
+                        // 救援圈只读服务器位置与半径，十字明确区别于伤害警告，不创建 Collider。
+                        RoundRing(go.transform,"CoopRescueRadius",area.Radius,.15f,0x72DCC7FFu);
+                        RoundBox(go.transform,"RescueCrossHorizontal",0,.2f,0,1.1f,.12f,.28f,0xB8FFF0FFu);
+                        RoundBox(go.transform,"RescueCrossVertical",0,.2f,0,.28f,.12f,1.1f,0xB8FFF0FFu);
+                    }
+                    else if(area.Kind==11)
                     {
                         var barrel=RoundGroup(go.transform,"GroundBarrel_"+area.Id).transform;
                         RoundCylinder(barrel,"BarrelBody",0,.55f,0,.9f,1.1f,0x8E5135FFu);

@@ -25,6 +25,10 @@ namespace Game
         private readonly Func<int> frameProvider;
         private readonly ArcadeFieldUpgradeChord chord = new ArcadeFieldUpgradeChord();
         private int lastUpgradeFrame = int.MinValue;
+        /// <summary>双人仅保留一个显式受益人，确认前不重复累计点击。</summary>
+        private long queuedDonationTarget;
+        public void QueueDonateLife(long target){if(target>0&&queuedDonationTarget==0)queuedDonationTarget=target;}
+        public void AcknowledgeDonation(long target){if(target==queuedDonationTarget)queuedDonationTarget=0;}
 
         public OnlineArcadeInputController() : this(()=>Time.frameCount) {}
 
@@ -100,7 +104,7 @@ namespace Game
             }
             if (aim.sqrMagnitude < AimDeadZone * AimDeadZone) aim = Vector2.zero;
             return new OnlineArcadeInputFrame(move, aim, stickFiring || mouseFiring || triggerAction.IsPressed(),
-                queuedUpgrades.Count==0&&queuedBombs.Count>0, queuedUpgrades.Count==0&&queuedDashes.Count>0, queuedUpgrades.Count>0);
+                queuedUpgrades.Count==0&&queuedDonationTarget==0&&queuedBombs.Count>0, queuedUpgrades.Count==0&&queuedDonationTarget==0&&queuedDashes.Count>0, queuedUpgrades.Count>0,queuedDonationTarget);
         }
 
         public void QueueBomb(){if(lastUpgradeFrame!=frameProvider())queuedBombs.Enqueue(frameProvider());}
@@ -124,7 +128,7 @@ namespace Game
         internal int QueuedBombs=>queuedBombs.Count;
         internal int QueuedDashes=>queuedDashes.Count;
         internal int QueuedFieldUpgrades=>queuedUpgrades.Count;
-        internal void ClearPulses(){queuedBombs.Clear();queuedDashes.Clear();queuedUpgrades.Clear();chord.ClearPulse();lastUpgradeFrame=int.MinValue;}
+        internal void ClearPulses(){queuedBombs.Clear();queuedDashes.Clear();queuedUpgrades.Clear();queuedDonationTarget=0;chord.ClearPulse();lastUpgradeFrame=int.MinValue;}
         private void OnBomb(InputAction.CallbackContext _) => QueueBomb();
         private void OnDash(InputAction.CallbackContext _) => QueueDash();
 
@@ -142,13 +146,14 @@ namespace Game
     /// <summary>单次待发送的联机街机输入采样；脉冲字段在服务端确认前保持不变。</summary>
     public readonly struct OnlineArcadeInputFrame
     {
-        public OnlineArcadeInputFrame(Vector2 move, Vector2 aim, bool firing, bool bomb, bool dash, bool fieldUpgrade=false)
-        { Move = move; Aim = aim; Firing = firing; Bomb = bomb; Dash = dash; FieldUpgrade=fieldUpgrade; }
+        public OnlineArcadeInputFrame(Vector2 move, Vector2 aim, bool firing, bool bomb, bool dash, bool fieldUpgrade=false,long donateLifeTargetId=0)
+        { Move = move; Aim = aim; Firing = firing; Bomb = bomb; Dash = dash; FieldUpgrade=fieldUpgrade;DonateLifeTargetId=donateLifeTargetId; }
         public Vector2 Move { get; }
         public Vector2 Aim { get; }
         public bool Firing { get; }
         public bool Bomb { get; }
         public bool Dash { get; }
         public bool FieldUpgrade { get; }
+        public long DonateLifeTargetId { get; }
     }
 }

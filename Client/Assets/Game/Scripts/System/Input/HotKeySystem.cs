@@ -248,6 +248,7 @@ namespace Game
         private void RegisterDefaultActions()
         {
             var registry = this.GetUtility<HotKeyActionRegistry>();
+            registry.Register(new HotKeyAction { ActionId=HotKeyActionIds.DonateLife, Context=HotKeyContext.Gameplay, Priority=20, CanExecute=()=>this.GetSystem<OnlineArcadeRunSystem>()?.TryGetDonationTarget(out _)==true, Execute=()=>this.SendEvent(new ArcadeHudActionRequestedEvent(ArcadeHudActionKind.DonateLife)) });
             registry.Register(new HotKeyAction { ActionId=HotKeyActionIds.UseFieldUpgrade, Context=HotKeyContext.Gameplay, Priority=20, CanExecute=CanUseFieldUpgrade, Execute=()=>this.SendEvent(new ArcadeHudActionRequestedEvent(ArcadeHudActionKind.FieldUpgrade)) });
             registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.TogglePause, Context = HotKeyContext.Gameplay, Priority = 10, CanExecute = () => ResolveTogglePauseRoute().CanExecute, Execute = () => ExecuteTogglePauseRoute(ResolveTogglePauseRoute()) });
             registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.ToggleRuntimeLog, Context = HotKeyContext.Global, Priority = 1, CanExecute = () => true, Execute = () =>

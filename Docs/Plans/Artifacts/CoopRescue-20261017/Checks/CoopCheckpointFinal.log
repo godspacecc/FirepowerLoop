@@ -1,0 +1,10 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerCheckpointOnline.Record clone owns its complete shop ledger
+PASS SlayerCheckpointOnline.Unknown shop rules version is rejected
+PASS SlayerCheckpointOnline.Foreign beneficiary and open shop refuse persistence
+PASS SlayerCheckpointOnline.Old record cannot gain new economy
+PASS SlayerCheckpointOnline.Prepared battle cannot mutate saved shop
+PASS SlayerCheckpointOnline.Capture clones all members without publishing candidate
+PASS SlayerCheckpointOnline.Another room save uses only committed shop
+PASS SlayerCheckpointOnline.Real write failure preserves committed and working snapshots
+8/8 passed

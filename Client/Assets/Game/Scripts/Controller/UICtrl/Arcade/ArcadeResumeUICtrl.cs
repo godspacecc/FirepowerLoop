@@ -350,6 +350,8 @@ namespace Game
             !string.IsNullOrWhiteSpace(challengeId) && !attempted;
 
         /// <summary>每次权威变更重绘双方准备与结果状态；交易列表不再参与阶段判断。</summary>
+        internal static bool CanReadyOnline(OnlineArcadePlayerSnapshot player,bool idle)=>idle&&player.CanReadyForArena;
+
         private void RefreshOnline()
         {
             if (!onlineMode || !IsShow()) return;
@@ -365,7 +367,7 @@ namespace Game
             UI.ResumeDetails.SetActive(true);
             UI.DialogTitle.text = Loc.T(victory ? "ui.arcade.dialog.result" : "ui.arcade.dialog.progress");
             UI.BtnContinue.gameObject.SetActive(!victory);
-            UI.BtnContinue.interactable = idle && self.Lives > 0;
+            UI.BtnContinue.interactable = CanReadyOnline(self,idle);
             SetButton(UI.BtnContinue, Loc.T(self.Ready ? "ui.arcade.online.cancel_ready" : "ui.arcade.online.ready"));
             UI.BtnSettle.gameObject.SetActive(victory);
             UI.BtnSettle.interactable = snapshot.OperationState == OnlineArcadeOperationState.Idle;

@@ -13,6 +13,7 @@ namespace Game
         public Sprite BootsIcon;
         public Button BtnBomb;
         public Button BtnDash;
+        public Button BtnDonateLife;
         public Button BtnExitFirstPerson;
         public Button BtnFieldUpgrade;
         public Button BtnPause;

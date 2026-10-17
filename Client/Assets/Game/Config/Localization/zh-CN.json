@@ -1319,5 +1319,9 @@
   "ui.arcade.slayermart.error.visit_limit": "本店已购买，限购用尽",
   "ui.arcade.slayermart.error.expired": "本次商店时间已结束",
   "ui.arcade.slayermart.error.shop_not_active": "当前商店已关闭",
-  "ui.arcade.slayermart.error.generic": "操作结果暂未确认，请重试或等待同步"
+  "ui.arcade.slayermart.error.generic": "操作结果暂未确认，请重试或等待同步",
+  "ui.arcade.coop.donate": "捐出一命",
+  "ui.arcade.coop.donate_pc": "捐出一命 [{0}]",
+  "ui.arcade.coop.downed": "倒地恢复 {0}秒 · 靠近可加速",
+  "ui.arcade.coop.helped": "队友救援中 ×{1} · {0}秒"
 }

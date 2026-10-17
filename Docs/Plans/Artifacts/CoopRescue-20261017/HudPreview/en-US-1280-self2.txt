@@ -1,0 +1,2 @@
+TextState overflow=False text=Teammate helping ×2 · 43s
+Label overflow=False text=Donate a life [R]

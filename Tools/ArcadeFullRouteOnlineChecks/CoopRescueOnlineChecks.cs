@@ -49,7 +49,37 @@ internal static class CoopRescueOnlineChecks
             ("Shop phase freezes ordinary recovery",()=>{var a=Actor();Kill(a);a.Battle.SlayerMartReturnWave=3;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"shop consumed timer");}),
             ("Exit waiting permits nearby recovery",()=>{var a=Actor();Kill(a);Near(a);a.Battle.AwaitingExit=true;Tick(a,30);Require(a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==0,"exit prevented recovery");}),
             ("All treasure members freeze ordinary recovery",()=>{var a=Actor();Kill(a);foreach(var p in a.Battle.Players.Values)p.InTreasureRoom=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"all treasure consumed timer");}),
-            ("Round transition freezes independent timer",()=>{var a=Actor();Kill(a);a.Battle.RoundTransitionPending=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"transition consumed timer");})
+            ("Round transition freezes independent timer",()=>{var a=Actor();Kill(a);a.Battle.RoundTransitionPending=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"transition consumed timer");}),
+            ("Downed marker locates recovery body without creating damage",()=>{var a=Actor();Kill(a);using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",a.Battle);var marker=snapshot.ContentAreas.SingleOrDefault(p=>p.Kind==12);Require(marker!=null&&marker.Warning&&marker.X==a.Battle.Players[1].PositionX&&marker.Radius==2&&!a.Battle.ContentAreas.Any(p=>p.Kind==12),"missing or harmful rescue marker");}),
+            ("Shop next-round life replaces zero-life countdown",()=>{
+                var a=Actor();Kill(a);var r=Capture(a);r.NextArena=3;r.CompletedArena=2;r.RoundNumber=4;
+                var state=FirepowerLoop.Arcade.ArcadeSlayerMartRules.Create("1",1,new long[]{1,2},17,ServerConfig.Instance.SlayerMart.Catalog);
+                state.Ready=state.Closing=true;state.PendingGrants.Add(new(){PlayerId=1,Effect=FirepowerLoop.Arcade.SlayerMartEffect.NextRoundLife,Amount=1,EventId=state.RegionInstanceId+":"+(++state.GrantSequence)});r.SlayerMart=state;
+                Require(OnlineArcadeRunActorSystem.ApplySlayerMartRoundCandidate(r,out var error),error??"life grant failed");
+                Require(r.Players[0].Lives==1&&r.Players[0].RoundDownedSeconds==0&&r.Players[0].RoundRespawnSeconds>0,"life grant kept zero-life downed identity");
+            }),
+            ("Zero-life active eligibility reaches safe-node snapshot",()=>{var a=Actor();Kill(a);Tick(a,60);a.Record=Capture(a);using var snapshot=a.BuildSnapshot();var p=snapshot.Players.First(p=>p.PlayerId==1);Require(p.GetType().GetProperty("CanReadyForArena")?.GetValue(p) is true,"safe-node readiness identity missing");}),
+            ("Recovered transit member does not need old safe-node ready bit",()=>{var a=Actor();Kill(a);a.Record.Players[0].Ready=false;a.Record.Phase=OnlineArcadeRunPhase.SafeCheckpoint;Tick(a,60);var b=OnlineArcadeRunActorSystem.PrepareBattle(Capture(a),false,false);Require(b.Players[1].Alive,"internal round blocked by stale ready bit");}),
+            ("Actual round transaction ignores stale ready and writes recoverable zero-life identity",()=>{
+                string prefix=System.IO.Path.GetFullPath(System.IO.Path.Combine(System.IO.Path.GetTempPath(),"CoopRescueOnline"));string root=System.IO.Path.Combine(prefix,Guid.NewGuid().ToString("N"));System.IO.Directory.CreateDirectory(root);
+                try{
+                    var a=Actor();Kill(a);a.Record.Players[0].Ready=false;Tick(a,60);a.Record=Capture(a);a.Record.Phase=OnlineArcadeRunPhase.SafeCheckpoint;a.CommittedRecord=OnlineArcadeRunManagerSystem.Clone(a.Record);
+                    typeof(Entity).GetProperty("InstanceId")!.SetValue(a,1L);var manager=new OnlineArcadeRunManagerComponent{StorePath=System.IO.Path.Combine(root,"runs.json")};
+                    var flags=BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public;
+                    typeof(OnlineArcadeRunManagerSystem).GetMethod("CommitWithCandidate",flags)!.Invoke(null,new object[]{manager,a.Record,0L});manager.Runs.Add(1,a);
+                    a.Battle.RoundTransitionPending=true;
+                    Require((bool)typeof(OnlineArcadeRunManagerSystem).GetMethod("TryCommitRoundTransition",flags)!.Invoke(null,new object[]{manager,a})!,"real round transaction frozen: "+a.Battle.RoundLoadError);
+                    var saved=System.Text.Json.JsonSerializer.Deserialize<OnlineArcadeRunStoreSnapshot>(System.IO.File.ReadAllText(manager.StorePath))!.Runs.Single();
+                    Require(a.Battle.WaveIndex==1&&a.Battle.Players[1].Alive&&saved.Players[0].RoundAlive&&saved.Players[0].Lives==0,"real saved node lost zero-life identity");
+                }finally{Require(System.IO.Path.GetFullPath(root).StartsWith(prefix+System.IO.Path.DirectorySeparatorChar,StringComparison.OrdinalIgnoreCase),"unsafe scratch root");System.IO.Directory.Delete(root,true);}
+            }),
+            ("Active zero-life member keeps normal new-arena empty refill",()=>{var a=Actor();Kill(a);Tick(a,60);var r=Capture(a);r.RoundLayoutId=string.Empty;r.Players[0].Bombs=r.Players[0].Dashes=0;OnlineArcadeRunActorSystem.PrepareBattle(r,false);Require(r.Players[0].Bombs==1&&r.Players[0].Dashes==1,"active member excluded from normal next-arena refill");}),
+            ("Delayed island kill life gain converts downed state",()=>{
+                var a=Actor();a.Record.ArenaConfigNumber=1;a.Battle=OnlineArcadeRunActorSystem.PrepareBattle(a.Record,false);foreach(var p in a.Battle.Players.Values)p.InvulnerabilitySeconds=0;
+                Kill(a);var rules=FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.First());a.Record.Players[0].Score=rules.LifeThreshold-100;
+                Call("AwardIslandKill",a,a.Battle,new OnlineArcadeEnemyRuntime{LastDamagePlayerId=1});
+                Require(a.Record.Players[0].Lives==1&&Down(a.Battle.Players[1])==0&&a.Battle.Players[1].RespawnSeconds>0,"delayed life gain kept invalid downed state");
+            })
         };
         if(tests.Length>maximum)throw new ArgumentException("Declared maximum smaller than actual scope");int failed=0;
         foreach(var(name,test)in tests)try{test();Console.WriteLine("PASS CoopRescueOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL CoopRescueOnline."+name+": "+(e.InnerException??e).Message);}

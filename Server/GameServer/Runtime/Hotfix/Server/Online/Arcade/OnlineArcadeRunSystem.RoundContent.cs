@@ -46,10 +46,11 @@ namespace ET.Server
                 candidate.Revision=checked(candidate.Revision+1);candidate.UpdatedAtUtc=DateTime.UtcNow.ToString("O");
                 if(!OnlineArcadeRunActorSystem.ApplySlayerMartRoundCandidate(candidate,out var benefitError))throw new InvalidOperationException(benefitError);
                 // 新轮只补空库存一次，候选写盘失败不会触碰工作态。
-                if(!candidate.RoundBossEncounter)foreach(var p in candidate.Players.Where(p=>p.Lives>0))
+                if(!candidate.RoundBossEncounter)foreach(var p in candidate.Players.Where(OnlineArcadeRunActorSystem.CanContinueCoop))
                 {p.Bombs=ArcadeOpeningRules.ReplenishEmpty(p.Bombs);p.Dashes=ArcadeOpeningRules.ReplenishEmpty(p.Dashes);}
                 OnlineArcadeRunActorSystem.SyncSlayerMartRoundInventory(candidate);
-                var prepared=OnlineArcadeRunActorSystem.PrepareBattle(candidate,false);
+                // 场内切轮靠地图代次确认加载，不重复使用安全节点的开场准备位。
+                var prepared=OnlineArcadeRunActorSystem.PrepareBattle(candidate,false,false);
                 prepared.RoundGeneration=checked(previous.RoundGeneration+1);
                 prepared.BattleRevision=checked(previous.BattleRevision+1);
                 candidate.RoundGeneration=prepared.RoundGeneration;
