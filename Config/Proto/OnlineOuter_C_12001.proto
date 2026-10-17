@@ -392,6 +392,8 @@ message OnlineArcadeBattlePlayerInfo
 	int32 StormCharge = 22;
 	float StormSeconds = 23;
 	repeated OnlineSlayerMartSupportInfo SlayerMartSupports = 24;
+	float DownedSeconds = 25;
+	float RescueRate = 26;
 }
 
 // Opcode 12081
@@ -644,6 +646,8 @@ message C2G_SubmitOnlineArcadeInput // ISessionRequest
 	bool ConfirmExit = 14;
 	bool UseFieldUpgrade = 15;
  string ProtocolFingerprint = 16;
+ int64 DonationRunId = 17;
+ int64 DonateLifeTargetId = 18;
 }
 
 // Opcode 12097

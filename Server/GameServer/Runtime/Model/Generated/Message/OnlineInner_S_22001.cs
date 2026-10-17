@@ -3161,6 +3161,12 @@ namespace ET
         [MemoryPackOrder(16)]
         public bool UseFieldUpgrade { get; set; }
 
+        [MemoryPackOrder(17)]
+        public long DonationRunId { get; set; }
+
+        [MemoryPackOrder(18)]
+        public long DonateLifeTargetId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3185,6 +3191,8 @@ namespace ET
             this.ExitTarget = default;
             this.ConfirmExit = default;
             this.UseFieldUpgrade = default;
+            this.DonationRunId = default;
+            this.DonateLifeTargetId = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3293,6 +3301,12 @@ namespace ET
         [MemoryPackOrder(15)]
         public bool UseFieldUpgrade { get; set; }
 
+        [MemoryPackOrder(16)]
+        public long DonationRunId { get; set; }
+
+        [MemoryPackOrder(17)]
+        public long DonateLifeTargetId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3316,6 +3330,8 @@ namespace ET
             this.ExitTarget = default;
             this.ConfirmExit = default;
             this.UseFieldUpgrade = default;
+            this.DonationRunId = default;
+            this.DonateLifeTargetId = default;
 
             ObjectPool.Instance.Recycle(this);
         }

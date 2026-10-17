@@ -140,13 +140,13 @@ namespace ET.Server
         /// <summary>提交高频战斗输入；不写安全节点，旧序号只返回当前权威快照。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence, OnlineArcadeRunSnapshot Snapshot) SubmitBattleInput(
             this OnlineArcadeRunManagerComponent self, long playerId, int arenaNumber, long inputSequence,
-            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false)
+            float moveX, float moveZ, float aimX, float aimZ, bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false, long donationRunId = 0, long donateLifeTargetId = 0)
         {
             OnlineArcadeRunActor actor = self.GetActorForPlayer(playerId);
             if (actor == null || actor.IsDisposed || actor.Battle == null)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前没有可操作的竞技场现场");
             var result = actor.SubmitInput(playerId, arenaNumber, inputSequence, moveX, moveZ, aimX, aimZ, firing,
-                useBomb, useDash, roundGeneration, roundReady, exitTarget, confirmExit, useFieldUpgrade);
+                useBomb, useDash, roundGeneration, roundReady, exitTarget, confirmExit, useFieldUpgrade, donationRunId, donateLifeTargetId);
             return (result.Accepted, result.LastAcceptedInputSequence, actor.BuildSnapshotForPlayer(playerId));
         }
 
@@ -1015,7 +1015,7 @@ namespace ET.Server
         /// <summary>只接受递增输入序号并把向量限制在单位圆内；客户端位置不会直接成为权威位置。</summary>
         public static (bool Accepted, long LastAcceptedInputSequence) SubmitInput(this OnlineArcadeRunActor self,
             long playerId, int arenaNumber, long inputSequence, float moveX, float moveZ, float aimX, float aimZ,
-            bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false)
+            bool firing, bool useBomb, bool useDash, int roundGeneration = 0, bool roundReady = false, int exitTarget = 0, bool confirmExit = false, bool useFieldUpgrade = false, long donationRunId = 0, long donateLifeTargetId = 0)
         {
             OnlineArcadeBattleRuntime battle = self.Battle;
             if (battle == null || battle.ArenaNumber != arenaNumber || !battle.Players.TryGetValue(playerId, out OnlineArcadeBattlePlayerRuntime player))
@@ -1026,6 +1026,8 @@ namespace ET.Server
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "竞技场正在等待队友重连");
             if (!Finite(moveX, moveZ, aimX, aimZ) || inputSequence <= 0)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "战斗输入无效");
+            if(donateLifeTargetId!=0 && (donationRunId!=self.Record.RunId || roundGeneration!=battle.RoundGeneration))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"捐命请求身份已过期");
             if (inputSequence <= player.LastInputSequence) return (false, player.LastInputSequence);
             if (battle.RoundLayout != null)
             {
@@ -1057,6 +1059,7 @@ namespace ET.Server
             player.LastInputAt = TimeInfo.Instance.ServerNow();
             if (player.Alive)
             {
+                if(donateLifeTargetId!=0)self.DonateCoopLife(playerId,donationRunId,roundGeneration,donateLifeTargetId,inputSequence);
                 if(useFieldUpgrade)self.UseSlayerMartUpgrade(battle,player);
                 else{if (useBomb) self.UseBomb(battle, player);if (useDash) self.UseDash(player);}
             }
@@ -2993,6 +2996,8 @@ namespace ET.Server
                 player.Alive = sourcePlayer.Alive;
                 player.Invulnerable = sourcePlayer.InvulnerabilitySeconds > 0f;
                 player.RespawnSeconds = sourcePlayer.RespawnSeconds;
+                player.DownedSeconds=sourcePlayer.DownedSeconds;
+                player.RescueRate=sourcePlayer.DownedSeconds>0?CoopRescueRate(source,sourcePlayer):0;
                 player.TemporaryWeaponId = sourcePlayer.TemporaryWeaponId ?? string.Empty;
                 player.FireSequence = sourcePlayer.FireSequence;
                 player.InTreasureRoom = sourcePlayer.InTreasureRoom;
@@ -3175,6 +3180,8 @@ namespace ET.Server
                 player.Alive = sourcePlayer.Alive;
                 player.Invulnerable = sourcePlayer.Invulnerable;
                 player.RespawnSeconds = sourcePlayer.RespawnSeconds;
+                player.DownedSeconds=sourcePlayer.DownedSeconds;
+                player.RescueRate=sourcePlayer.RescueRate;
                 player.TemporaryWeaponId = sourcePlayer.TemporaryWeaponId ?? string.Empty;
                 player.FireSequence = sourcePlayer.FireSequence;
                 player.InTreasureRoom = sourcePlayer.InTreasureRoom;

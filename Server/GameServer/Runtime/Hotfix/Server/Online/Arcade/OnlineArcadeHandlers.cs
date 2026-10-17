@@ -79,7 +79,7 @@ namespace ET.Server
             {
                 var result = scene.GetComponent<OnlineArcadeRunManagerComponent>().SubmitBattleInput(
                     request.PlayerId, request.ArenaNumber, request.InputSequence, request.MoveX, request.MoveZ,
-                    request.AimX, request.AimZ, request.Firing, request.UseBomb, request.UseDash, request.RoundGeneration, request.RoundReady, request.ExitTarget, request.ConfirmExit,request.UseFieldUpgrade);
+                    request.AimX, request.AimZ, request.Firing, request.UseBomb, request.UseDash, request.RoundGeneration, request.RoundReady, request.ExitTarget, request.ConfirmExit,request.UseFieldUpgrade,request.DonationRunId,request.DonateLifeTargetId);
                 response.Error = ErrorCode.ERR_Success;
                 response.Accepted = result.Accepted;
                 response.LastAcceptedInputSequence = result.LastAcceptedInputSequence;

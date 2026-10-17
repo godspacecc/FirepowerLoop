@@ -801,6 +801,8 @@ message G2P_SubmitOnlineArcadeInput // IRequest
 	int32 ExitTarget = 15;
 	bool ConfirmExit = 16;
 	bool UseFieldUpgrade = 17;
+	int64 DonationRunId = 18;
+	int64 DonateLifeTargetId = 19;
 }
 
 // Opcode 22150
@@ -834,6 +836,8 @@ message P2R_SubmitOnlineArcadeInput // IRequest
 	int32 ExitTarget = 14;
 	bool ConfirmExit = 15;
 	bool UseFieldUpgrade = 16;
+	int64 DonationRunId = 17;
+	int64 DonateLifeTargetId = 18;
 }
 
 // Opcode 22152

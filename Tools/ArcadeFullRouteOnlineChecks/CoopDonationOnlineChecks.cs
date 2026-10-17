@@ -32,10 +32,21 @@ internal static class CoopDonationOnlineChecks
             ("Treasure region cannot donate across boundary",()=>{var a=Downed();a.Battle.Players[2].InTreasureRoom=true;Require(!Donate(a)&&a.Record.Players[1].Lives==3,"cross-region donation");}),
             ("Unready and transitioning maps reject donation",()=>{foreach(bool loading in new[]{true,false}){var a=Downed();if(loading)a.Battle.Players[2].ReadyRoundGeneration=-1;else a.Battle.RoundTransitionPending=true;Require(!Donate(a)&&a.Record.Players[1].Lives==3,"loading donation");}}),
             ("Round node captures cost and recovery together",()=>{var a=Downed();var before=CoopRescueOnlineChecks.Capture(a);Donate(a);var after=CoopRescueOnlineChecks.Capture(a);var b=OnlineArcadeRunActorSystem.PrepareBattle(after,false);Require(after.Players[1].Lives==2&&b.Players[1].Alive&&before.Players[1].Lives==3&&!before.Players[0].RoundAlive,"checkpoint split cost from recovery");}),
-            ("Rejected operation cannot charge after eligibility changes",()=>{var a=Downed();a.Record.Players[1].Lives=1;Require(!Donate(a),"last life accepted");a.Record.Players[1].Lives=3;Require(!Donate(a)&&a.Record.Players[1].Lives==3,"failed operation unexpectedly retried as new donation");})
+            ("Rejected operation cannot charge after eligibility changes",()=>{var a=Downed();a.Record.Players[1].Lives=1;Require(!Donate(a),"last life accepted");a.Record.Players[1].Lives=3;Require(!Donate(a)&&a.Record.Players[1].Lives==3,"failed operation unexpectedly retried as new donation");}),
+            ("Official input consumes donation once",()=>{var a=Downed();Input(a,1);Input(a,1);Require(a.Record.Players[1].Lives==2&&a.Battle.Players[1].Alive,"input missing donation or duplicate cost");}),
+            ("Official input rejects different run donation",()=>{var a=Downed();Require(Rejects(()=>Input(a,1,99))&&a.Record.Players[1].Lives==3,"input ignored donation run identity");}),
+            ("Outer and inner request shapes carry explicit donation identity",()=>{foreach(var type in new[]{typeof(C2G_SubmitOnlineArcadeInput),typeof(G2P_SubmitOnlineArcadeInput),typeof(P2R_SubmitOnlineArcadeInput)})Require(type.GetProperty("DonationRunId")?.PropertyType==typeof(long)&&type.GetProperty("DonateLifeTargetId")?.PropertyType==typeof(long),"missing generated identity "+type.Name);}),
+            ("Downed state is included in authoritative snapshot",()=>{var a=Downed();var method=typeof(OnlineArcadeRunActorSystem).GetMethod("BuildBattleSnapshot",BindingFlags.Static|BindingFlags.NonPublic)!;using var b=(OnlineArcadeBattleInfo)method.Invoke(null,new object[]{a.Battle})!;var p=b.Players.First(p=>p.PlayerId==1);Require(p.GetType().GetProperty("DownedSeconds")?.GetValue(p) is float seconds&&seconds==60,"missing downed protocol projection");})
         };
         if(tests.Length>maximum)throw new ArgumentException("Declared maximum smaller than actual scope");int failed=0;
         foreach(var(name,test)in tests)try{test();Console.WriteLine("PASS CoopDonationOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL CoopDonationOnline."+name+": "+(e.InnerException??e).Message);}
         Console.WriteLine($"{tests.Length-failed}/{tests.Length} passed");return failed==0?0:1;
+    }
+
+    static void Input(OnlineArcadeRunActor a,long sequence,long run=1)
+    {
+        var method=typeof(OnlineArcadeRunActorSystem).GetMethod("SubmitInput")!;
+        Require(method.GetParameters().Length==18,"official input has no donation identity");
+        method.Invoke(null,new object[]{a,2L,a.Battle.ArenaNumber,sequence,0f,0f,0f,1f,false,false,false,a.Battle.RoundGeneration,true,0,false,false,run,1L});
     }
 }
