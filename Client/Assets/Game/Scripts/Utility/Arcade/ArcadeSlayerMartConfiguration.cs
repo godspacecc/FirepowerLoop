@@ -55,7 +55,7 @@ namespace FirepowerLoop.Arcade
     public sealed class ArcadeSlayerMartConfiguration
     {
         /// <summary>网络能力标签与存档配置指纹分离，拒绝旧协议而不改写旧局保存身份。</summary>
-        public static string NetworkFingerprint(string configFingerprint)=>string.IsNullOrWhiteSpace(configFingerprint)?string.Empty:configFingerprint+"|slayermart.v1";
+        public static string NetworkFingerprint(string configFingerprint)=>string.IsNullOrWhiteSpace(configFingerprint)?string.Empty:configFingerprint+"|slayermart.v2";
         public ArcadeSlayerMartCatalog Catalog { get; private set; }
         public bool Enabled { get; private set; }
         public IReadOnlyList<ArcadeSlayerMartRegionLayout> Regions { get; private set; }

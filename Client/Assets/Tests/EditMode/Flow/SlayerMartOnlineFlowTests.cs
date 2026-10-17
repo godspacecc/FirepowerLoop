@@ -16,7 +16,7 @@ namespace Game.Tests
         {
             var h=OnlineArcadeRunTests.CreateHarness();h.Network.ConfigureRun=r=>SetShop(r);h.System.StartAsync().GetAwaiter().GetResult();return h;
         }
-        private static void SetShop(ET.OnlineArcadeRunSnapshot r,int generation=4,long revision=7,long owner=10)
+        internal static void SetShop(ET.OnlineArcadeRunSnapshot r,int generation=4,long revision=7,long owner=10)
         {
             r.Phase=2;r.Battle=OnlineArcadeBattleInfo.Create();r.Battle.ArenaNumber=3;r.Battle.RoundGeneration=generation;
             r.Battle.BattleRevision=revision;r.Battle.SlayerMartRulesVersion=1;r.Battle.SlayerMartActive=true;
@@ -57,7 +57,7 @@ namespace Game.Tests
             var h=Open();var request=Buy();h.Network.OverrideResponse=_=>throw new TimeoutException();Invoke(h.System,"OperateSlayerMartAsync",request).GetAwaiter().GetResult();
             var first=(C2G_OperateOnlineSlayerMart)h.Network.LastRequest;request.ItemId="mutated";request.OperationId="mutated";request.ConfirmedAmount=99;
             Assert.That(Read(h.System).Cash,Is.EqualTo(22000));Invoke(h.System,"RetryPendingSlayerMartAsync").GetAwaiter().GetResult();
-            var retry=(C2G_OperateOnlineSlayerMart)h.Network.LastRequest;Assert.That(retry.OperationId,Is.EqualTo("stable-buy"));Assert.That(retry.ItemId,Is.EqualTo(first.ItemId));Assert.That(retry.ConfirmedAmount,Is.EqualTo(1));Assert.That(retry.ProtocolFingerprint,Does.EndWith("|slayermart.v1"));
+            var retry=(C2G_OperateOnlineSlayerMart)h.Network.LastRequest;Assert.That(retry.OperationId,Is.EqualTo("stable-buy"));Assert.That(retry.ItemId,Is.EqualTo(first.ItemId));Assert.That(retry.ConfirmedAmount,Is.EqualTo(1));Assert.That(retry.ProtocolFingerprint,Does.EndWith("|slayermart.v2"));
         }
         [Test] public void PendingUnknownOutcomeDoesNotSendDifferentPurchase()
         {var h=Open();int calls=0;h.Network.OverrideResponse=_=>{calls++;throw new TimeoutException();};Invoke(h.System,"OperateSlayerMartAsync",Buy()).GetAwaiter().GetResult();var next=Buy();next.OperationId="new";Invoke(h.System,"OperateSlayerMartAsync",next).GetAwaiter().GetResult();Assert.That(calls,Is.EqualTo(1));}

@@ -139,3 +139,13 @@
 - 正式OperateSlayerMartAsync／RetryPendingSlayerMartAsync接入专用RPC。超时和未知结果保留原OperationId、版本及完整载荷，禁止另发新购买；明确成功／拒绝后解除等待。没有本地预扣款或提前施加效果。
 - 新SlayerMartOnlineFlowTests有效0/12红→12/12绿；扩展异步竞态后19/20红，统一恢复／输入／推送版本门禁后20/20绿。原OnlineArcadeRunTests18/18回归通过，includePassingTests=true，实际短类数量受20／18上限约束。
 - Unity MCP再次确认连接E:/GitHub/FirepowerLoop/Client/Assets、Boot场景；未运行完整套件或Player Build。场景／支援投影、正式UI输入及真实双客户端实连继续下一部分，release.enabled保持0。
+
+## 第十八段：双人商店区域与真实支援投影
+
+- 公共协议追加SlayerMartPrepared字段48，明确区分选择完成与服务端已创建区域地图代次。通过Tools/gen-protocol.ps1生成双端；全部字段／Opcode无冲突、原142个显式Opcode保持、双端Outer输出相同。
+- 网络能力由slayermart.v1更新为slayermart.v2，旧开发载荷在房间／RPC／推送门禁继续明确拒绝；持久配置指纹不变。协议门禁有效5/10红→10/10绿，区域状态与Clone有效16/17红→17/17绿。一次反射把生成属性误当字段的夹具错误单列，不算功能红。
+- 客户端新增公共商店／真实接触体只读快照，接收护甲与风暴状态，深拷贝列表。只有Prepared后才按同源商店配置重建区域，重复帧复用资源，旧地图代次不能重置预测或重建地图。
+- 地图就绪确认改读商店专用就绪与错误状态，不能用上一战斗地图已加载代替；慢加载和菜单期间保留网络轮询但冻结移动，商店输入不发射击／炸弹／冲刺。资源重试只重建当前表现，不改权威交易、库存或剩余时间。
+- 战斗表现按权威InstanceId／BodyIndex／实际坐标投影购买支援及普通双锯／桶，不重复生成旧单轨道。商店只呈现区域与成员，冻结的战斗支援不继续播放。
+- SlayerMartOnlineProjectionTests有效0/10红→10/10绿，扩展旧代次、菜单与重复区域后12/12绿；最初替身缺两个接口方法的编译错误不计功能红。原个人报价20/20、原联机18/18、奖励房表现15/15回归通过，真实短类分别受12／20／18／20上限约束，includePassingTests=true。服务端RPC8/8回归通过。
+- 以上不是双客户端人工实连证据；正式商店UI、技能输入与HUD仍继续，release.enabled保持0，无Player Build。

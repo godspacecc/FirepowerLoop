@@ -154,10 +154,18 @@ namespace Game
                 request.RoundGeneration=lastSnapshot.Battle.RoundGeneration;
                 request.RoundReady=combatView?.IsRoundLayoutReady==true && combatView.IsIslandRoundReady &&
                     string.IsNullOrEmpty(combatView.RoundLayoutLoadError) && string.IsNullOrEmpty(combatView.IslandRoundLoadError);
+                var shop=lastSnapshot.Battle.SlayerMart;
+                if(shop?.Active==true)
+                {
+                    request.RoundReady=shop.Prepared&&combatView?.IsSlayerMartRegionReady==true&&string.IsNullOrEmpty(combatView.SlayerMartRegionLoadError);
+                    request.Firing=request.UseBomb=request.UseDash=false;
+                    if(!shop.Ready||shop.Closing||shop.Members.Any(m=>m.PlayerId==account.PlayerId&&m.MenuOpen))request.MoveX=request.MoveZ=0;
+                    request.ConfirmExit=false;
+                }
                 long localId=account.PlayerId;
                 var localPlayer=lastSnapshot.Battle.Players.FirstOrDefault(p=>p.PlayerId==localId);
                 if(localPlayer.InTreasureRoom) request.RoundReady &= combatView.IsIslandTreasureReady;
-                request.ConfirmExit=confirmedExitGeneration>0&&confirmedExitGeneration==request.RoundGeneration;
+                request.ConfirmExit=shop?.Active!=true&&confirmedExitGeneration>0&&confirmedExitGeneration==request.RoundGeneration;
                 request.ExitTarget=confirmedExitTarget;
                 G2C_SubmitOnlineArcadeInput response = await network.CallAsync<G2C_SubmitOnlineArcadeInput>(
                     request, RpcTimeoutMilliseconds, currentInputCancellation.Token);
@@ -424,7 +432,8 @@ namespace Game
                     player.AimX, player.AimZ, player.CurrentHealth, player.MaxHealth, player.Alive,
                     player.Invulnerable, player.RespawnSeconds, player.TemporaryWeaponId,
                     player.TemporaryWeaponSeconds, player.SupportId, player.SupportSeconds, player.DashSeconds,
-                    powerups, player.FireSequence, player.InTreasureRoom));
+                    powerups, player.FireSequence, player.InTreasureRoom,player.VestSlots,player.Plates,player.HasStorm,player.StormCharge,player.StormSeconds,
+                    player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray()));
             }
             List<OnlineArcadeEnemySnapshot> enemies = new(source.Enemies.Count);
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)
@@ -452,7 +461,9 @@ namespace Game
                 source.TreasureDiscovered, source.TreasureOpen, source.TreasureExpired, source.TreasureSeconds,
                 source.TreasureRewardIds, source.CrateIds, supplyPickups, source.TreasureRewardSeconds,
                 source.RoundLayoutId,source.RoundLayoutVersion,source.RoundGeneration,source.RoundLoading,source.RoundLoadError,
-                source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated);
+                source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated,
+                new OnlineSlayerMartRegionSnapshot(source.SlayerMartRulesVersion,source.SlayerMartActive,source.SlayerMartVisit,source.SlayerMartGeneration,source.SlayerMartRevision,
+                    source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds));
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

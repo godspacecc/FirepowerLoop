@@ -500,6 +500,7 @@ message OnlineArcadeBattleInfo
 	repeated OnlineSlayerMartMemberInfo SlayerMartMembers = 45;
 	repeated int32 SlayerMartCashBoxIds = 46;
 	int64 SlayerMartRevision = 47;
+	bool SlayerMartPrepared = 48;
 }
 
 // Opcode 12085

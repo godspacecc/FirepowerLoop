@@ -1931,6 +1931,9 @@ namespace ET
         [MemoryPackOrder(46)]
         public long SlayerMartRevision { get; set; }
 
+        [MemoryPackOrder(47)]
+        public bool SlayerMartPrepared { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1985,6 +1988,7 @@ namespace ET
             this.SlayerMartMembers.Clear();
             this.SlayerMartCashBoxIds.Clear();
             this.SlayerMartRevision = default;
+            this.SlayerMartPrepared = default;
 
             ObjectPool.Instance.Recycle(this);
         }

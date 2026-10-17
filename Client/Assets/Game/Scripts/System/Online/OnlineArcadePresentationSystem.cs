@@ -10,7 +10,7 @@ namespace Game
     /// <summary>
     /// 把服务器街机快照投影到正式地图表现对象；只做插值、轻量本地移动预测和权威校正，不裁决战斗结果。
     /// </summary>
-    public sealed class OnlineArcadePresentationSystem : AbstractSystem
+    public sealed partial class OnlineArcadePresentationSystem : AbstractSystem
     {
         private const float SnapDistance = 2.5f;
         private const float DashSpeedMultiplier = 2.4f;
@@ -129,6 +129,7 @@ namespace Game
         private void OnUpdate()
         {
             if (!active || latest.Battle == null || catalog == null || latest.BattlePaused) return;
+            if(latest.Battle.SlayerMart?.Active==true){TickSlayerMartPresentation();return;}
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)||!string.IsNullOrEmpty(view.IslandRoundLoadError))
             {ShowRoundLoadRetry();return;}
             if(!view.IsRoundLayoutReady||!view.IsIslandRoundReady||presentedInTreasureRoom&&!view.IsIslandTreasureReady||latest.Battle.RoundLoading)return;
@@ -182,8 +183,10 @@ namespace Game
         {
             if (!active || battle == null || battle.RoundGeneration<activeRoundGeneration ||
                 battle.RoundGeneration==activeRoundGeneration && battle.BattleRevision < lastAppliedBattleRevision) return;
-            if(battle.RoundGeneration!=activeRoundGeneration)
+            if(battle.SlayerMart?.Active==true){ApplySlayerMartPresentation(battle);return;}
+            if(battle.RoundGeneration!=activeRoundGeneration||presentedSlayerMart)
             {
+                presentedSlayerMart=false;
                 activeRoundLayout=catalog.RoundLayouts.FirstOrDefault(p=>p.Id==battle.RoundLayoutId&&p.Version==battle.RoundLayoutVersion);
                 if(activeRoundLayout==null&&!battle.IsChallenge) {Log.Error("联机轮布局不可用："+battle.RoundLayoutId);return;}
                 activeRoundGeneration=battle.RoundGeneration;lastAppliedBattleRevision=-1;hasPrediction=false;predictionIsland=null;predictedIceVelocity=Vector2.zero;
@@ -335,8 +338,15 @@ namespace Game
         /// <summary>把单名玩家的权威强化与支援配置映射为视觉；固定型强化使用服务器落点。</summary>
         private void SyncPlayerEffects(OnlineArcadeBattlePlayerSnapshot player, Vector2 displayPosition)
         {
+            foreach(var body in player.SlayerMartSupports)
+            {
+                var definition=catalog.Powerups.FirstOrDefault(p=>p.Id==body.ProductId);
+                if(!string.IsNullOrWhiteSpace(definition.Id))view.SetSlayerMartSupport(player.PlayerId,body.InstanceId,body.BodyIndex,definition,
+                    new Vector2(body.PositionX,body.PositionZ),new Vector2(body.ShotDirectionX,body.ShotDirectionZ));
+            }
             foreach (OnlineArcadePowerupSnapshot value in player.Powerups)
             {
+                if(player.SlayerMartSupports.Any(b=>b.ProductId==value.ProductId))continue;
                 ArcadePowerupDefinition definition = catalog.Powerups.FirstOrDefault(x =>
                     string.Equals(x.Id, value.ProductId, StringComparison.Ordinal));
                 if (string.IsNullOrWhiteSpace(definition.Id) || player.InTreasureRoom && !definition.VisualFollowPlayer) continue;
@@ -523,7 +533,7 @@ namespace Game
         private void EndPresentation()
         {
             StageNotices.Clear();
-            activeRoundLayout=null;activeRoundGeneration=0;roundExitContact=roundExitPrompt=false;predictedIceVelocity=Vector2.zero;
+            presentedSlayerMart=false;activeSlayerMartLayout=null;activeRoundLayout=null;activeRoundGeneration=0;roundExitContact=roundExitPrompt=false;predictedIceVelocity=Vector2.zero;
             if (active) view?.End();
             active = false; activeBattleArenaNumber = 0; hasPrediction = false; predictionIsland = null; presentedInTreasureRoom = false; presentedRoomId = null; lastAppliedBattleRevision = -1; catalog = null; activeArena = null;
             enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); seenIds.Clear(); nextPresentationId = 1;

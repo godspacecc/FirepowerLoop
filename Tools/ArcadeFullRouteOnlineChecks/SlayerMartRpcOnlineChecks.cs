@@ -23,7 +23,7 @@ internal static class SlayerMartRpcOnlineChecks
         foreach(var(name,test)in tests)try{test();Console.WriteLine("PASS SlayerMartRpcOnline."+name);}catch(Exception ex){failed++;Console.WriteLine("FAIL SlayerMartRpcOnline."+name+": "+(ex.InnerException??ex).Message);}
         Console.WriteLine($"{tests.Length-failed}/{tests.Length} passed");return failed==0?0:1;
     }
-    private static C2G_OperateOnlineSlayerMart Request()=>new(){RegionInstanceId="1:slayermart:2",Generation=2,ExpectedRevision=9,OperationId="stable-operation",ActionKind=1,ItemId="slayermart.item.01",BoxId=4,ConfirmedAmount=1,Value=true,ProtocolFingerprint="fingerprint|slayermart.v1"};
+    private static C2G_OperateOnlineSlayerMart Request()=>new(){RegionInstanceId="1:slayermart:2",Generation=2,ExpectedRevision=9,OperationId="stable-operation",ActionKind=1,ItemId="slayermart.item.01",BoxId=4,ConfirmedAmount=1,Value=true,ProtocolFingerprint="fingerprint|slayermart.v2"};
     private static object Map(string name,params object[] args)
     {var type=typeof(OnlineRoomSnapshotHelper).Assembly.GetType("ET.Server.OnlineSlayerMartProtocol")??throw new InvalidOperationException("Missing authenticated RPC mapper");return type.GetMethod(name)!.Invoke(null,args)!;}
     private static void Input(OnlineArcadeRunActor a,long sequence,int generation)

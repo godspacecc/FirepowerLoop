@@ -9,7 +9,7 @@ namespace ET.Server
         /// <summary>公共快照只投影区域和成员状态，不携带现金、券或个人报价。</summary>
         private static void AppendSlayerMartBattleSnapshot(OnlineArcadeBattleRuntime source,OnlineArcadeBattleInfo target)
         {
-            target.SlayerMartRulesVersion=source.SlayerMartRulesVersion;target.SlayerMartActive=source.SlayerMartReturnWave>0;
+            target.SlayerMartPrepared=source.SlayerMartRegionPrepared;target.SlayerMartRulesVersion=source.SlayerMartRulesVersion;target.SlayerMartActive=source.SlayerMartReturnWave>0;
             var state=source.SlayerMart;if(state==null)return;
             target.SlayerMartVisit=state.Visit;target.SlayerMartGeneration=state.Generation;target.SlayerMartReady=state.Ready;
             target.SlayerMartClosing=state.Closing;target.SlayerMartSeconds=state.RemainingSeconds;target.SlayerMartRevision=state.Revision;
@@ -62,7 +62,7 @@ namespace ET.Server
         private static void CloneSlayerMartBattleSnapshot(OnlineArcadeBattleInfo source,OnlineArcadeBattleInfo target)
         {
             target.SlayerMartRulesVersion=source.SlayerMartRulesVersion;target.SlayerMartActive=source.SlayerMartActive;target.SlayerMartVisit=source.SlayerMartVisit;
-            target.SlayerMartGeneration=source.SlayerMartGeneration;target.SlayerMartReady=source.SlayerMartReady;target.SlayerMartClosing=source.SlayerMartClosing;
+            target.SlayerMartPrepared=source.SlayerMartPrepared;target.SlayerMartGeneration=source.SlayerMartGeneration;target.SlayerMartReady=source.SlayerMartReady;target.SlayerMartClosing=source.SlayerMartClosing;
             target.SlayerMartSeconds=source.SlayerMartSeconds;target.SlayerMartRevision=source.SlayerMartRevision;target.SlayerMartCashBoxIds.AddRange(source.SlayerMartCashBoxIds);
             foreach(var member in source.SlayerMartMembers)target.SlayerMartMembers.Add(CloneSlayerMartMember(member));
         }
