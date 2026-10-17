@@ -9,7 +9,8 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>在克隆候选中一次交付全部支援，失败不发布半份套餐。</summary>
         public static bool TryApplyGrants(ArcadeSlayerMartState state,ArcadeSlayerMartConfiguration config,
-            IReadOnlyDictionary<long,int> ordinaryChickens,out ArcadeSlayerMartState candidate,out string error)
+            IReadOnlyDictionary<long,int> ordinaryChickens,out ArcadeSlayerMartState candidate,out string error,
+            IReadOnlyDictionary<long,IReadOnlyList<ArcadeSlayerMartEffectInstance>> ordinaryOrbitSupports=null)
         {
             candidate=null;error="invalid_support_grant";
             if(config==null)return false;
@@ -18,6 +19,8 @@ namespace FirepowerLoop.Arcade
                 state.Players.Any(p=>p==null||p.Supports==null||p.Queues==null||p.SupportHits==null||p.AppliedSupportGrants==null)||
                 state.PendingGrants.Any(g=>g==null)||state.PendingGrants.Select(g=>g.EventId).Distinct(StringComparer.Ordinal).Count()!=state.PendingGrants.Count)return false;
             if(state.Players.Any(p=>!IsValid(p,config)))return false;
+            if(ordinaryOrbitSupports!=null&&ordinaryOrbitSupports.Any(p=>!state.Players.Any(owner=>owner.PlayerId==p.Key)||p.Value==null||
+                p.Value.Select(i=>i?.Kind).Distinct().Count()!=p.Value.Count||p.Value.Any(i=>!ValidOrdinary(i,p.Key,state.Players.Single(owner=>owner.PlayerId==p.Key),config))))return false;
             var next=state.Clone();
             // 先在候选中完成上一帧耗尽的交接，避免新套餐另起一条并行爆桶队列。
             foreach(var player in next.Players)Advance(player,0,true,catalog,parameter);
@@ -30,12 +33,13 @@ namespace FirepowerLoop.Arcade
                 if(grant.Amount<=0||!Finite(grant.Duration)||grant.Duration<0)return false;
                 var product=config.Catalog.Items.Single(p=>p.Effect==grant.Effect);
                 if(grant.Amount!=product.Amount||grant.Duration!=product.Duration)return false;
+                var ordinary=ordinaryOrbitSupports!=null&&ordinaryOrbitSupports.TryGetValue(player.PlayerId,out var held)?held:Array.Empty<ArcadeSlayerMartEffectInstance>();
                 if(grant.Effect==SlayerMartEffect.Chicken||grant.Effect==SlayerMartEffect.ChickenPack)
                 {
-                    int ordinary=ordinaryChickens!=null&&ordinaryChickens.TryGetValue(player.PlayerId,out int value)?value:0;
+                    int ordinaryCount=ordinaryChickens!=null&&ordinaryChickens.TryGetValue(player.PlayerId,out int value)?value:0;
                     int maximum=(int)parameter("inventory.maxChickens");
-                    if(ordinary<0||grant.Amount!=(grant.Effect==SlayerMartEffect.Chicken?1:3)||
-                        player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)+(long)ordinary+grant.Amount>maximum)return false;
+                    if(ordinaryCount<0||grant.Amount!=(grant.Effect==SlayerMartEffect.Chicken?1:3)||
+                        player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)+(long)ordinaryCount+grant.Amount>maximum)return false;
                     for(int index=0;index<grant.Amount;index++)
                     {
                         var item=Create(player,grant,SlayerMartSupportKind.Chicken,index,catalog,parameter);
@@ -53,6 +57,12 @@ namespace FirepowerLoop.Arcade
                 {
                     if(grant.Amount!=3)return false;
                     var active=player.Supports.FirstOrDefault(p=>p.Kind==SlayerMartSupportKind.Barrel&&p.RemainingSeconds>0&&p.Charges>0);
+                    var prior=ordinary.FirstOrDefault(p=>p.Kind==SlayerMartSupportKind.Barrel);
+                    if(active==null&&prior!=null)
+                    {
+                        active=Create(player,grant,SlayerMartSupportKind.Barrel,-1,catalog,parameter);
+                        CopyOrdinaryState(active,prior);player.Supports.Add(active);TransferOrdinaryHits(player,prior.GroupId,active.GroupId);
+                    }
                     var queue=active==null?null:player.Queues.FirstOrDefault(p=>p.QueueId==active.QueueId);
                     if(queue==null){queue=new ArcadeSlayerMartEffectQueue{QueueId=grant.EventId+":queue"};player.Queues.Add(queue);if(active!=null)active.QueueId=queue.QueueId;}
                     for(int index=0;index<3;index++)
@@ -62,8 +72,8 @@ namespace FirepowerLoop.Arcade
                 else
                 {
                     if(grant.Amount!=1)return false;
-                    Merge(player,Create(player,grant,SlayerMartSupportKind.Saw,0,catalog,parameter));
-                    if(grant.Effect==SlayerMartEffect.SawBarrel)Merge(player,Create(player,grant,SlayerMartSupportKind.Barrel,0,catalog,parameter));
+                    Merge(player,Create(player,grant,SlayerMartSupportKind.Saw,0,catalog,parameter),ordinary.FirstOrDefault(p=>p.Kind==SlayerMartSupportKind.Saw));
+                    if(grant.Effect==SlayerMartEffect.SawBarrel)Merge(player,Create(player,grant,SlayerMartSupportKind.Barrel,0,catalog,parameter),ordinary.FirstOrDefault(p=>p.Kind==SlayerMartSupportKind.Barrel));
                 }
                 player.AppliedSupportGrants.Add(grant.EventId);
             }
@@ -156,7 +166,7 @@ namespace FirepowerLoop.Arcade
         public static bool IsValid(ArcadeSlayerMartPlayer player,ArcadeSlayerMartConfiguration config)
         {
             if(player==null||!ValidPhase(player.OrdinarySawPhase)||!ValidPhase(player.OrdinaryBarrelPhase)||player.Supports==null||player.Queues==null||player.SupportHits==null||player.Owned==null||
-                player.AppliedSupportGrants==null||player.Chickens<0||player.Chickens>config.Catalog.MaxChickens||
+                player.AppliedSupportGrants==null||player.AppliedBenefitGrants==null||player.Chickens<0||player.Chickens>config.Catalog.MaxChickens||
                 player.Supports.Any(p=>p==null)||player.Queues.Any(p=>p==null||p.Waiting==null||p.Waiting.Any(i=>i==null)))return false;
             if(player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken)>config.Catalog.MaxChickens||
                 player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Saw)>1||player.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Barrel)>1||
@@ -189,10 +199,37 @@ namespace FirepowerLoop.Arcade
             return true;
         }
         /// <summary>延长同类效果只取更大剩余，不能把已耗次数和冷却补满。</summary>
-        private static void Merge(ArcadeSlayerMartPlayer player,ArcadeSlayerMartEffectInstance item)
+        private static void Merge(ArcadeSlayerMartPlayer player,ArcadeSlayerMartEffectInstance item,ArcadeSlayerMartEffectInstance ordinary)
         {
             var existing=player.Supports.FirstOrDefault(p=>p.Kind==item.Kind&&p.RemainingSeconds>0);
-            if(existing==null)player.Supports.Add(item);else existing.RemainingSeconds=Math.Max(existing.RemainingSeconds,item.RemainingSeconds);
+            if(existing==null)
+            {
+                if(ordinary!=null){double duration=item.RemainingSeconds;CopyOrdinaryState(item,ordinary);item.RemainingSeconds=Math.Max(duration,item.RemainingSeconds);TransferOrdinaryHits(player,ordinary.GroupId,item.GroupId);}
+                player.Supports.Add(item);
+            }
+            else if(item.RemainingSeconds>existing.RemainingSeconds){existing.RemainingSeconds=item.RemainingSeconds;existing.SourceEffect=item.SourceEffect;}
+        }
+        /// <summary>只接纳宿主正式普通槽的有限状态，拒绝超时长、次数或冷却的伪造输入。</summary>
+        private static bool ValidOrdinary(ArcadeSlayerMartEffectInstance item,long owner,ArcadeSlayerMartPlayer player,ArcadeSlayerMartConfiguration config)
+        {
+            if(item==null||item.OwnerId!=owner||(item.Kind!=SlayerMartSupportKind.Saw&&item.Kind!=SlayerMartSupportKind.Barrel))return false;
+            var definition=config.Supports.Get(item.Kind);var mastery=item.Kind==SlayerMartSupportKind.Barrel?SlayerMartEffect.BarrelMastery:0;
+            return item.ProductId==definition.ProductId&&!string.IsNullOrWhiteSpace(item.GroupId)&&ValidPhase(item.Phase)&&
+                Finite(item.RemainingSeconds)&&item.RemainingSeconds>0&&item.RemainingSeconds<=ArcadeSlayerMartAbilityRules.MasteryDuration(definition.Duration,mastery,player,config.Parameter)&&
+                Finite(item.CooldownSeconds)&&item.CooldownSeconds>=0&&item.CooldownSeconds<=definition.Interval&&item.Charges>=0&&item.Charges<=definition.Charges&&
+                (item.Kind!=SlayerMartSupportKind.Barrel||item.Charges>0);
+        }
+        /// <summary>交接保留已耗次数、冷却和相位；接力的普通份不补成完整新份。</summary>
+        private static void CopyOrdinaryState(ArcadeSlayerMartEffectInstance target,ArcadeSlayerMartEffectInstance source)
+        {target.RemainingSeconds=source.RemainingSeconds;target.Charges=source.Charges;target.CooldownSeconds=source.CooldownSeconds;target.Phase=source.Phase;}
+        /// <summary>改换支援来源时合并相同目标的较大冷却，不能因模型替换立即多打一次。</summary>
+        private static void TransferOrdinaryHits(ArcadeSlayerMartPlayer player,string oldGroup,string newGroup)
+        {
+            foreach(var hit in player.SupportHits.Where(p=>p.GroupId==oldGroup).ToArray())
+            {
+                var existing=player.SupportHits.FirstOrDefault(p=>p.GroupId==newGroup&&p.TargetKey==hit.TargetKey);
+                if(existing==null)hit.GroupId=newGroup;else{existing.RemainingSeconds=Math.Max(existing.RemainingSeconds,hit.RemainingSeconds);player.SupportHits.Remove(hit);}
+            }
         }
         /// <summary>稳定事件与分件序生成身份，创建时才应用时长精通。</summary>
         private static ArcadeSlayerMartEffectInstance Create(ArcadeSlayerMartPlayer player,ArcadeSlayerMartGrant grant,SlayerMartSupportKind kind,int index,ArcadeSlayerMartSupportCatalog catalog,Func<string,float> parameter)

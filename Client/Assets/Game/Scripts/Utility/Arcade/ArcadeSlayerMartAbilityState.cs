@@ -26,5 +26,7 @@ namespace FirepowerLoop.Arcade
         public List<ArcadeSlayerMartEffectQueue> Queues { get; set; } = new List<ArcadeSlayerMartEffectQueue>();
         public List<ArcadeSlayerMartSupportHit> SupportHits { get; set; } = new List<ArcadeSlayerMartSupportHit>();
         public HashSet<string> AppliedSupportGrants { get; set; } = new HashSet<string>(StringComparer.Ordinal);
+        /// <summary>宝石与下一普通轮加命的已消费事件，死亡或跨店不能重新领取。</summary>
+        public HashSet<string> AppliedBenefitGrants { get; set; } = new HashSet<string>(StringComparer.Ordinal);
     }
 }

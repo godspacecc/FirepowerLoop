@@ -48,7 +48,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>不依赖当前配置的支援保存结构；跨店来源允许早期visit，跨局或异主来源拒绝。</summary>
         private static bool SupportsValid(ArcadeSlayerMartPlayer player,string runId,int visit,long grantSequence)
         {
-            if(player.Supports==null||player.Queues==null||player.SupportHits==null||player.AppliedSupportGrants==null||
+            if(player.Supports==null||player.Queues==null||player.SupportHits==null||player.AppliedSupportGrants==null||player.AppliedBenefitGrants==null||
                 !Finite(player.OrdinarySawPhase)||player.OrdinarySawPhase<0||player.OrdinarySawPhase>=Math.PI*2||
                 !Finite(player.OrdinaryBarrelPhase)||player.OrdinaryBarrelPhase<0||player.OrdinaryBarrelPhase>=Math.PI*2||
                 player.Supports.Any(p=>p==null)||player.Queues.Any(p=>p==null||p.Waiting==null||p.Waiting.Any(i=>i==null))||
@@ -65,7 +65,7 @@ namespace FirepowerLoop.Arcade
             foreach(var queue in player.Queues)
                 if(string.IsNullOrWhiteSpace(queue.QueueId)||queue.Waiting.Any(p=>p.QueueId!=queue.QueueId||p.Kind!=SlayerMartSupportKind.Barrel))return false;
             if(player.Supports.Any(p=>!string.IsNullOrEmpty(p.QueueId)&&!player.Queues.Any(q=>q.QueueId==p.QueueId)))return false;
-            if(player.AppliedSupportGrants.Any(p=>!SupportEvent(p,runId,visit,grantSequence)))return false;
+            if(player.AppliedSupportGrants.Any(p=>!SupportEvent(p,runId,visit,grantSequence))||player.AppliedBenefitGrants.Any(p=>!SupportEvent(p,runId,visit,grantSequence)))return false;
             if(player.SupportHits.Any(p=>p==null||string.IsNullOrWhiteSpace(p.GroupId)||string.IsNullOrWhiteSpace(p.TargetKey)||!Finite(p.RemainingSeconds)||p.RemainingSeconds<0)||
                 player.SupportHits.Select(p=>(p.GroupId,p.TargetKey)).Distinct().Count()!=player.SupportHits.Count)return false;
             return true;
