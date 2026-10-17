@@ -18,6 +18,43 @@ namespace Game.Tests
     public sealed class MobileControlLayoutTests
     {
         [Test]
+        public void ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection()
+        {
+            var layout = new MobileControlLayoutData().Sanitize();
+            foreach (var size in new[] { new Vector2(1920, 1080), new Vector2(2400, 1080), new Vector2(1800, 900) })
+            {
+                var move = MobileControlLayoutGeometry.Fit(size, layout.Move, true);
+                var aim = MobileControlLayoutGeometry.Fit(size, layout.Aim, false);
+                Assert.That(move.x / size.x, Is.GreaterThanOrEqualTo(.17f));
+                Assert.That(aim.x / size.x, Is.LessThanOrEqualTo(.83f));
+                Assert.That(move.y / size.y, Is.GreaterThanOrEqualTo(.23f));
+                Assert.That(aim.y, Is.EqualTo(move.y).Within(.01f));
+                Assert.That(MobileControlLayoutGeometry.Fit(size, layout.OrdinaryStick(true), true), Is.EqualTo(move));
+                Assert.That(MobileControlLayoutGeometry.Fit(size, layout.OrdinaryStick(false), false), Is.EqualTo(aim));
+            }
+        }
+
+        [Test]
+        public void LegacyDefaultSticks_MigrateIdempotentlyWithoutOverwritingCustomThumbs()
+        {
+            var layout = JsonConvert.DeserializeObject<MobileControlLayoutData>(
+                "{\"move\":{\"x\":0.114583336,\"y\":0.18981482,\"scale\":1.3,\"opacity\":0.6},\"aim\":{\"x\":0.8802083,\"y\":0.18981482}}").Sanitize();
+            Assert.That(layout.Move.X, Is.GreaterThan(.17f));
+            Assert.That(layout.Aim.X, Is.LessThan(.83f));
+            Assert.That(layout.Move.Scale, Is.EqualTo(1.3f));
+            Assert.That(layout.Move.Opacity, Is.EqualTo(.6f));
+            var saved = JsonConvert.SerializeObject(layout);
+            Assert.That(JsonConvert.SerializeObject(layout.Sanitize()), Is.EqualTo(saved));
+            layout.Move.X = .28f; layout.Move.Y = .31f;
+            layout.Aim.X = .76f; layout.Aim.Y = .29f;
+            var copy = layout.Clone();
+            Assert.That(copy.Move.X, Is.EqualTo(.28f));
+            Assert.That(copy.Move.Y, Is.EqualTo(.31f));
+            Assert.That(copy.Aim.X, Is.EqualTo(.76f));
+            Assert.That(copy.Aim.Y, Is.EqualTo(.29f));
+        }
+
+        [Test]
         public void Editor_HudRowsIndependentlyDragScaleSaveAndCancel()
         {
             var architecture = CreateEditorArchitecture();
@@ -226,7 +263,7 @@ namespace Game.Tests
                 Move = new MobileStickLayoutData { X = float.NaN, Y = float.PositiveInfinity, Scale = -1, Opacity = 0 },
                 Aim = null
             }.Sanitize();
-            Assert.That(invalid.Move.X, Is.EqualTo(220f / 1920f));
+            Assert.That(invalid.Move.X, Is.EqualTo(.18f));
             Assert.That(invalid.Move.Scale, Is.EqualTo(0.7f));
             Assert.That(invalid.Move.Opacity, Is.EqualTo(0.25f));
             Assert.That(invalid.Aim, Is.Not.Null);
@@ -406,7 +443,7 @@ namespace Game.Tests
                 Assert.That(rect.anchoredPosition.y, Is.EqualTo(start.y + 50).Within(0.01f));
                 architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
                 Assert.That(ctrl.IsShow(), Is.False);
-                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.X, Is.EqualTo(220f / 1920f));
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.X, Is.EqualTo(.18f));
             }
             finally { Object.DestroyImmediate(root); }
         }

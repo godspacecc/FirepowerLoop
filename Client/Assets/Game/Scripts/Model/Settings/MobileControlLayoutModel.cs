@@ -19,8 +19,8 @@ namespace Game
 
         internal void Sanitize(bool move)
         {
-            X = Finite(X, move ? 220f / 1920f : 1690f / 1920f, move ? 0f : 0.52f, move ? 0.48f : 1f);
-            Y = Finite(Y, 205f / 1080f, 0f, 0.55f);
+            X = Finite(X, move ? .18f : .82f, move ? 0f : 0.52f, move ? 0.48f : 1f);
+            Y = Finite(Y, .24f, 0f, 0.55f);
             Scale = Finite(Scale, 1f, 0.7f, 1.5f);
             Opacity = Finite(Opacity, 1f, 0.25f, 1f);
         }
@@ -70,9 +70,9 @@ namespace Game
     public sealed class MobileControlLayoutData
     {
         [JsonProperty("move")] public MobileStickLayoutData Move { get; set; } =
-            new MobileStickLayoutData { X = 220f / 1920f, Y = 205f / 1080f };
+            new MobileStickLayoutData { X = .18f, Y = .24f };
         [JsonProperty("aim")] public MobileStickLayoutData Aim { get; set; } =
-            new MobileStickLayoutData { X = 1690f / 1920f, Y = 205f / 1080f };
+            new MobileStickLayoutData { X = .82f, Y = .24f };
         [JsonProperty("pause")] public MobileButtonLayoutData Pause { get; set; } = DefaultButton(MobileLayoutButton.Pause);
         [JsonProperty("inventory")] public MobileButtonLayoutData Inventory { get; set; } = DefaultButton(MobileLayoutButton.Inventory);
         [JsonProperty("build")] public MobileButtonLayoutData Build { get; set; } = DefaultButton(MobileLayoutButton.Build);
@@ -142,16 +142,8 @@ namespace Game
             return value;
         }
 
-        /// <summary>常规基地默认适配保留旧设备值；用户调整过的位置直接使用，返回副本不改写设置。</summary>
-        public MobileStickLayoutData OrdinaryStick(bool move)
-        {
-            var value = (move ? Move : Aim).Clone();
-            var defaults = new MobileControlLayoutData();
-            var old = move ? defaults.Move : defaults.Aim;
-            if (Mathf.Approximately(value.X, old.X) && Mathf.Approximately(value.Y, old.Y))
-            { value.X = move ? .18f : .72f; value.Y = move ? .22f : .25f; }
-            return value;
-        }
+        /// <summary>所有预览与实战使用同一摇杆中心；返回副本，不再应用历史基地偏移。</summary>
+        public MobileStickLayoutData OrdinaryStick(bool move) => (move ? Move : Aim).Clone();
 
         public MobileControlLayoutData Sanitize()
         {
@@ -159,6 +151,8 @@ namespace Game
             Aim ??= new MobileControlLayoutData().Aim;
             Move.Sanitize(true);
             Aim.Sanitize(false);
+            MigrateDefaultStick(Move, true);
+            MigrateDefaultStick(Aim, false);
             Pause ??= DefaultButton(MobileLayoutButton.Pause);
             Inventory ??= DefaultButton(MobileLayoutButton.Inventory);
             Build ??= DefaultButton(MobileLayoutButton.Build);
@@ -189,6 +183,15 @@ namespace Game
             var defaults = DefaultButton(id);
             value.X = defaults.X;
             value.Y = defaults.Y;
+        }
+
+        /// <summary>仅迁移旧版原始默认中心；保留尺寸、透明度及任何已自定义的位置，重复加载结果不变。</summary>
+        private static void MigrateDefaultStick(MobileStickLayoutData value, bool move)
+        {
+            var oldX = move ? 220f / 1920f : 1690f / 1920f;
+            if (!Mathf.Approximately(value.X, oldX) || !Mathf.Approximately(value.Y, 205f / 1080f)) return;
+            value.X = move ? .18f : .82f;
+            value.Y = .24f;
         }
     }
 
