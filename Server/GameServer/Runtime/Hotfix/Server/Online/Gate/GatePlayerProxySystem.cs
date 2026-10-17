@@ -16,6 +16,7 @@ namespace ET.Server
             self.PlayerId = playerId;
             self.PlayerActorId = playerActorId;
             self.SessionEpoch = sessionEpoch;
+            self.ArcadeProtocolEpoch = 0;
             self.Session = session;
             self.IsAuthenticated = true;
         }

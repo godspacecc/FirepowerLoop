@@ -800,6 +800,7 @@ message G2P_SubmitOnlineArcadeInput // IRequest
 	bool RoundReady = 14;
 	int32 ExitTarget = 15;
 	bool ConfirmExit = 16;
+	bool UseFieldUpgrade = 17;
 }
 
 // Opcode 22150
@@ -832,6 +833,7 @@ message P2R_SubmitOnlineArcadeInput // IRequest
 	bool RoundReady = 13;
 	int32 ExitTarget = 14;
 	bool ConfirmExit = 15;
+	bool UseFieldUpgrade = 16;
 }
 
 // Opcode 22152
@@ -863,4 +865,62 @@ message R2G_ExecuteOnlineArcadeTestCmd // IResponse
 	bool Success = 4;
 	int32 ResultCode = 5;
 	int64 ServerTime = 6;
+}
+
+
+// Opcode 22155
+// ResponseType P2G_OperateOnlineSlayerMart
+message G2P_OperateOnlineSlayerMart // IRequest
+{
+ int32 RpcId = 1;
+ int64 PlayerId = 2;
+ int64 SessionEpoch = 3;
+ string RegionInstanceId = 4;
+ int32 Generation = 5;
+ int64 ExpectedRevision = 6;
+ string OperationId = 7;
+ int32 ActionKind = 8;
+ string ItemId = 9;
+ int32 BoxId = 10;
+ int32 ConfirmedAmount = 11;
+ bool Value = 12;
+}
+
+// Opcode 22156
+message P2G_OperateOnlineSlayerMart // IResponse
+{
+ int32 RpcId = 1;
+ int32 Error = 2;
+ string Message = 3;
+ bool Accepted = 4;
+ bool Replayed = 5;
+ OnlineArcadeRunSnapshot Run = 6;
+}
+
+// Opcode 22157
+// ResponseType R2P_OperateOnlineSlayerMart
+message P2R_OperateOnlineSlayerMart // IRequest
+{
+ int32 RpcId = 1;
+ int64 PlayerId = 2;
+ string RegionInstanceId = 3;
+ int32 Generation = 4;
+ int64 ExpectedRevision = 5;
+ string OperationId = 6;
+ int32 ActionKind = 7;
+ string ItemId = 8;
+ int32 BoxId = 9;
+ int32 ConfirmedAmount = 10;
+ bool Value = 11;
+}
+
+// Opcode 22158
+message R2P_OperateOnlineSlayerMart // IResponse
+{
+ int32 RpcId = 1;
+ int32 Error = 2;
+ string Message = 3;
+ bool Accepted = 4;
+ bool Replayed = 5;
+ OnlineArcadeRunSnapshot Run = 6;
 }

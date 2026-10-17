@@ -7,6 +7,8 @@ namespace ET.Server
         public long PlayerId;
         public ActorId PlayerActorId;
         public long SessionEpoch;
+        /// <summary>当前登录代次已确认新版街机协议，防止旧客户端收到无法解析的新战斗广播。</summary>
+        public long ArcadeProtocolEpoch;
         public EntityRef<Session> Session;
         public bool IsAuthenticated;
         public bool SuppressDisconnect;

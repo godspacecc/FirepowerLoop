@@ -386,6 +386,12 @@ message OnlineArcadeBattlePlayerInfo
 	// 本场成功攻击序列，客户端仅用于动作去重。
 	int32 FireSequence = 17;
 	bool InTreasureRoom = 18;
+	int32 VestSlots = 19;
+	int32 Plates = 20;
+	bool HasStorm = 21;
+	int32 StormCharge = 22;
+	float StormSeconds = 23;
+	repeated OnlineSlayerMartSupportInfo SlayerMartSupports = 24;
 }
 
 // Opcode 12081
@@ -484,6 +490,16 @@ message OnlineArcadeBattleInfo
 	repeated OnlineArcadeContentAreaInfo ContentAreas = 35;
  bool RoundBossEncounter = 36;
  bool RoundBossDefeated = 37;
+	int32 SlayerMartRulesVersion = 38;
+	bool SlayerMartActive = 39;
+	int32 SlayerMartVisit = 40;
+	int32 SlayerMartGeneration = 41;
+	bool SlayerMartReady = 42;
+	bool SlayerMartClosing = 43;
+	float SlayerMartSeconds = 44;
+	repeated OnlineSlayerMartMemberInfo SlayerMartMembers = 45;
+	repeated int32 SlayerMartCashBoxIds = 46;
+	int64 SlayerMartRevision = 47;
 }
 
 // Opcode 12085
@@ -537,6 +553,8 @@ message OnlineArcadeRunSnapshot
 	bool BattlePaused = 11;
 	string ChallengeId = 12;
 	bool ChallengeAttempted = 13;
+	// 仅定向本人响应填写；公共广播始终为空。
+	OnlineSlayerMartSnapshotInfo SelfSlayerMart = 14;
 }
 
 // Opcode 12089
@@ -545,6 +563,7 @@ message C2G_StartOnlineArcadeRun // ISessionRequest
 {
 	int32 RpcId = 1;
 	string OperationId = 2;
+ string ProtocolFingerprint = 3;
 }
 
 // Opcode 12090
@@ -562,6 +581,7 @@ message G2C_StartOnlineArcadeRun // ISessionResponse
 message C2G_GetCurrentOnlineArcadeRun // ISessionRequest
 {
 	int32 RpcId = 1;
+ string ProtocolFingerprint = 2;
 }
 
 // Opcode 12092
@@ -583,6 +603,7 @@ message C2G_OperateOnlineArcadeSafeCheckpoint // ISessionRequest
 	int64 ExpectedRevision = 3;
 	int32 ActionKind = 4;
 	bool Ready = 7;
+ string ProtocolFingerprint = 8;
 }
 
 // Opcode 12094
@@ -620,6 +641,8 @@ message C2G_SubmitOnlineArcadeInput // ISessionRequest
 	bool RoundReady = 12;
 	int32 ExitTarget = 13;
 	bool ConfirmExit = 14;
+	bool UseFieldUpgrade = 15;
+ string ProtocolFingerprint = 16;
 }
 
 // Opcode 12097
@@ -645,4 +668,89 @@ message OnlineArcadeContentAreaInfo
  float EndX = 7;
  float EndY = 8;
  bool Segment = 9;
+}
+
+
+// Opcode 12099
+message OnlineSlayerMartOfferInfo
+{
+ string ItemId = 1;
+ string Error = 2;
+}
+
+// Opcode 12100
+message OnlineSlayerMartMemberInfo
+{
+ int64 PlayerId = 1;
+ int32 Choice = 2;
+ bool MenuOpen = 3;
+ bool Finished = 4;
+ int32 Lives = 5;
+}
+
+// Opcode 12101
+message OnlineSlayerMartSnapshotInfo
+{
+ string RegionInstanceId = 1;
+ int32 Generation = 2;
+ int64 Revision = 3;
+ int32 Visit = 4;
+ int64 PlayerId = 5;
+ int64 Cash = 6;
+ int32 Tokens = 7;
+ float RemainingSeconds = 8;
+ bool Ready = 9;
+ bool Closing = 10;
+ repeated OnlineSlayerMartOfferInfo Offers = 11;
+ repeated OnlineSlayerMartMemberInfo Members = 12;
+ int32 Bombs = 13;
+ int32 Dashes = 14;
+ int32 Lives = 15;
+ int32 VestSlots = 16;
+ int32 Plates = 17;
+ repeated string Owned = 18;
+ string Error = 19;
+}
+
+// Opcode 12102
+message OnlineSlayerMartSupportInfo
+{
+ string ProductId = 1;
+ string InstanceId = 2;
+ int32 Kind = 3;
+ int32 BodyIndex = 4;
+ float PositionX = 5;
+ float PositionZ = 6;
+ float ShotDirectionX = 7;
+ float ShotDirectionZ = 8;
+ float RemainingSeconds = 9;
+ int32 Charges = 10;
+}
+
+// Opcode 12103
+// ResponseType G2C_OperateOnlineSlayerMart
+message C2G_OperateOnlineSlayerMart // ISessionRequest
+{
+ int32 RpcId = 1;
+ string RegionInstanceId = 2;
+ int32 Generation = 3;
+ int64 ExpectedRevision = 4;
+ string OperationId = 5;
+ int32 ActionKind = 6;
+ string ItemId = 7;
+ int32 BoxId = 8;
+ int32 ConfirmedAmount = 9;
+ bool Value = 10;
+ string ProtocolFingerprint = 11;
+}
+
+// Opcode 12104
+message G2C_OperateOnlineSlayerMart // ISessionResponse
+{
+ int32 RpcId = 1;
+ int32 Error = 2;
+ string Message = 3;
+ bool Accepted = 4;
+ bool Replayed = 5;
+ OnlineArcadeRunSnapshot Run = 6;
 }

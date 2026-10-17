@@ -64,6 +64,13 @@ namespace Game
             runChangedSubscription = null;
         }
 
+        /// <summary>网络能力指纹只用于RPC门禁；已保存对局继续使用原配置指纹。</summary>
+        private string ArcadeProtocolFingerprint()
+        {
+            var provider=this.GetUtility<IRuntimeConfigProvider>();
+            return provider!=null&&provider.TryGetArcadeCatalog(out var catalog,out _)?FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(catalog.Rule.ConfigFingerprint):string.Empty;
+        }
+
         public Task<OnlineArcadeOperationResult> StartAsync()
         {
             if (resultReadFailed)
@@ -76,6 +83,7 @@ namespace Game
             return Run(OnlineArcadeOperationState.Starting, async token =>
             {
                 C2G_StartOnlineArcadeRun request = C2G_StartOnlineArcadeRun.Create();
+                request.ProtocolFingerprint=ArcadeProtocolFingerprint();
                 request.OperationId = Guid.NewGuid().ToString("N");
                 return await network.CallAsync<G2C_StartOnlineArcadeRun>(request, RpcTimeoutMilliseconds, token);
             });
@@ -84,8 +92,10 @@ namespace Game
         public Task<OnlineArcadeOperationResult> RestoreAsync()
         {
             return Run(OnlineArcadeOperationState.Restoring, token =>
-                network.CallAsync<G2C_GetCurrentOnlineArcadeRun>(C2G_GetCurrentOnlineArcadeRun.Create(),
-                    RpcTimeoutMilliseconds, token));
+            {
+                var request=C2G_GetCurrentOnlineArcadeRun.Create();request.ProtocolFingerprint=ArcadeProtocolFingerprint();
+                return network.CallAsync<G2C_GetCurrentOnlineArcadeRun>(request,RpcTimeoutMilliseconds,token);
+            });
         }
 
         public Task<OnlineArcadeOperationResult> SetReadyAsync(bool ready) =>
@@ -133,6 +143,7 @@ namespace Game
             try
             {
                 C2G_SubmitOnlineArcadeInput request = C2G_SubmitOnlineArcadeInput.Create();
+                request.ProtocolFingerprint=ArcadeProtocolFingerprint();
                 request.ArenaNumber = lastSnapshot.Battle.ArenaNumber;
                 request.InputSequence = sequence;
                 request.MoveX = moveX; request.MoveZ = moveZ;
@@ -256,6 +267,7 @@ namespace Game
             return Run(operation, async token =>
             {
                 C2G_OperateOnlineArcadeSafeCheckpoint request = C2G_OperateOnlineArcadeSafeCheckpoint.Create();
+                request.ProtocolFingerprint=ArcadeProtocolFingerprint();
                 request.OperationId = Guid.NewGuid().ToString("N");
                 request.ExpectedRevision = expectedRevision;
                 request.ActionKind = actionKind;

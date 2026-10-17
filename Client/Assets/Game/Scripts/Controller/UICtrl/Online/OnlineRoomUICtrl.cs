@@ -340,7 +340,7 @@ namespace Game
             fingerprint = string.Empty;
             return this.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var catalog, out _) &&
                    !string.IsNullOrWhiteSpace(version) &&
-                   !string.IsNullOrWhiteSpace(fingerprint = catalog.Rule.ConfigFingerprint);
+                   !string.IsNullOrWhiteSpace(fingerprint = FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(catalog.Rule.ConfigFingerprint));
         }
 
         private void ApplyModeVisibility()

@@ -7,7 +7,7 @@ namespace ET.Server
     {
         protected override async ETTask Run(GatePlayerProxy proxy, P2G_OnlineArcadeRunChanged message)
         {
-            if (!proxy.IsAuthenticated || proxy.PlayerId != message.PlayerId ||
+            if (!OnlineArcadeProtocolGuard.CanSendPush(proxy) || proxy.PlayerId != message.PlayerId ||
                 proxy.SessionEpoch != message.SessionEpoch || message.HasRun && message.Run == null)
                 return;
             Session session = proxy.Session;

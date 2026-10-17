@@ -317,6 +317,9 @@ namespace ET.Server
         /// <summary>本局新商店版本和全员内存事务，成功轮前保存后才公开提交。</summary>
         public int SlayerMartRulesVersion;
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;
+        /// <summary>商店现场返回目标与区域准备状态，进店和购买不单独保存。</summary>
+        public int SlayerMartReturnWave;
+        public bool SlayerMartRegionPrepared;
         /// <summary>同步风暴结算作用域，阻止自身或连锁击杀给风暴充能；不保存。</summary>
         public bool SlayerMartStormDamage;
         /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>

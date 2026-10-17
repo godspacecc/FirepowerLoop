@@ -3158,6 +3158,9 @@ namespace ET
         [MemoryPackOrder(15)]
         public bool ConfirmExit { get; set; }
 
+        [MemoryPackOrder(16)]
+        public bool UseFieldUpgrade { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3181,6 +3184,7 @@ namespace ET
             this.RoundReady = default;
             this.ExitTarget = default;
             this.ConfirmExit = default;
+            this.UseFieldUpgrade = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3286,6 +3290,9 @@ namespace ET
         [MemoryPackOrder(14)]
         public bool ConfirmExit { get; set; }
 
+        [MemoryPackOrder(15)]
+        public bool UseFieldUpgrade { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3308,6 +3315,7 @@ namespace ET
             this.RoundReady = default;
             this.ExitTarget = default;
             this.ConfirmExit = default;
+            this.UseFieldUpgrade = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3437,6 +3445,232 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineInner.G2P_OperateOnlineSlayerMart)]
+    [ResponseType(nameof(P2G_OperateOnlineSlayerMart))]
+    public partial class G2P_OperateOnlineSlayerMart : MessageObject, IRequest
+    {
+        public static G2P_OperateOnlineSlayerMart Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(G2P_OperateOnlineSlayerMart), isFromPool) as G2P_OperateOnlineSlayerMart;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long PlayerId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long SessionEpoch { get; set; }
+
+        [MemoryPackOrder(3)]
+        public string RegionInstanceId { get; set; }
+
+        [MemoryPackOrder(4)]
+        public int Generation { get; set; }
+
+        [MemoryPackOrder(5)]
+        public long ExpectedRevision { get; set; }
+
+        [MemoryPackOrder(6)]
+        public string OperationId { get; set; }
+
+        [MemoryPackOrder(7)]
+        public int ActionKind { get; set; }
+
+        [MemoryPackOrder(8)]
+        public string ItemId { get; set; }
+
+        [MemoryPackOrder(9)]
+        public int BoxId { get; set; }
+
+        [MemoryPackOrder(10)]
+        public int ConfirmedAmount { get; set; }
+
+        [MemoryPackOrder(11)]
+        public bool Value { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PlayerId = default;
+            this.SessionEpoch = default;
+            this.RegionInstanceId = default;
+            this.Generation = default;
+            this.ExpectedRevision = default;
+            this.OperationId = default;
+            this.ActionKind = default;
+            this.ItemId = default;
+            this.BoxId = default;
+            this.ConfirmedAmount = default;
+            this.Value = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineInner.P2G_OperateOnlineSlayerMart)]
+    public partial class P2G_OperateOnlineSlayerMart : MessageObject, IResponse
+    {
+        public static P2G_OperateOnlineSlayerMart Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(P2G_OperateOnlineSlayerMart), isFromPool) as P2G_OperateOnlineSlayerMart;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public bool Accepted { get; set; }
+
+        [MemoryPackOrder(4)]
+        public bool Replayed { get; set; }
+
+        [MemoryPackOrder(5)]
+        public OnlineArcadeRunSnapshot Run { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.Accepted = default;
+            this.Replayed = default;
+            this.Run = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineInner.P2R_OperateOnlineSlayerMart)]
+    [ResponseType(nameof(R2P_OperateOnlineSlayerMart))]
+    public partial class P2R_OperateOnlineSlayerMart : MessageObject, IRequest
+    {
+        public static P2R_OperateOnlineSlayerMart Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(P2R_OperateOnlineSlayerMart), isFromPool) as P2R_OperateOnlineSlayerMart;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long PlayerId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string RegionInstanceId { get; set; }
+
+        [MemoryPackOrder(3)]
+        public int Generation { get; set; }
+
+        [MemoryPackOrder(4)]
+        public long ExpectedRevision { get; set; }
+
+        [MemoryPackOrder(5)]
+        public string OperationId { get; set; }
+
+        [MemoryPackOrder(6)]
+        public int ActionKind { get; set; }
+
+        [MemoryPackOrder(7)]
+        public string ItemId { get; set; }
+
+        [MemoryPackOrder(8)]
+        public int BoxId { get; set; }
+
+        [MemoryPackOrder(9)]
+        public int ConfirmedAmount { get; set; }
+
+        [MemoryPackOrder(10)]
+        public bool Value { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.PlayerId = default;
+            this.RegionInstanceId = default;
+            this.Generation = default;
+            this.ExpectedRevision = default;
+            this.OperationId = default;
+            this.ActionKind = default;
+            this.ItemId = default;
+            this.BoxId = default;
+            this.ConfirmedAmount = default;
+            this.Value = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineInner.R2P_OperateOnlineSlayerMart)]
+    public partial class R2P_OperateOnlineSlayerMart : MessageObject, IResponse
+    {
+        public static R2P_OperateOnlineSlayerMart Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(R2P_OperateOnlineSlayerMart), isFromPool) as R2P_OperateOnlineSlayerMart;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        [MemoryPackOrder(3)]
+        public bool Accepted { get; set; }
+
+        [MemoryPackOrder(4)]
+        public bool Replayed { get; set; }
+
+        [MemoryPackOrder(5)]
+        public OnlineArcadeRunSnapshot Run { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+            this.Accepted = default;
+            this.Replayed = default;
+            this.Run = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineInner
     {
         public const ushort G2A_Register = 22002;
@@ -3525,5 +3759,9 @@ namespace ET
         public const ushort R2P_SubmitOnlineArcadeInput = 22152;
         public const ushort G2R_ExecuteOnlineArcadeTestCmd = 22153;
         public const ushort R2G_ExecuteOnlineArcadeTestCmd = 22154;
+        public const ushort G2P_OperateOnlineSlayerMart = 22155;
+        public const ushort P2G_OperateOnlineSlayerMart = 22156;
+        public const ushort P2R_OperateOnlineSlayerMart = 22157;
+        public const ushort R2P_OperateOnlineSlayerMart = 22158;
     }
 }

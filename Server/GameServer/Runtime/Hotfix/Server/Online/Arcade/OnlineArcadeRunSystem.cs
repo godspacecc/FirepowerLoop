@@ -65,7 +65,7 @@ namespace ET.Server
                     throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "成员已有未结束的街机对局");
 
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
-            if (!string.Equals(room.ArcadeConfigFingerprint, rule.ConfigFingerprint, StringComparison.Ordinal))
+            if (!string.Equals(room.ArcadeConfigFingerprint, FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(rule.ConfigFingerprint), StringComparison.Ordinal))
                 throw new RpcException(ErrorCode.ERR_OnlineRoomVersionMismatch, "街机配置版本与服务器不一致");
 
             long runId = IdGenerater.Instance.GenerateId();

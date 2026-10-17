@@ -1,5 +1,14 @@
 namespace ET.Server
 {
+    /// <summary>在返回任何新版战斗快照之前拒绝缺少当前协议能力的街机请求。</summary>
+    [FriendOf(typeof(GatePlayerProxy))]
+    public static class OnlineArcadeProtocolGuard
+    {
+        public static bool Matches(string value)=>string.Equals(value,
+            FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.NetworkFingerprint(ServerConfig.Instance.ArcadeRule.ConfigFingerprint),System.StringComparison.Ordinal);
+        /// <summary>协议确认只对当前登录代次有效，重连或切换会话后须重新确认。</summary>
+        public static bool CanSendPush(GatePlayerProxy proxy)=>proxy!=null&&proxy.IsAuthenticated&&proxy.SessionEpoch>0&&proxy.ArcadeProtocolEpoch==proxy.SessionEpoch;
+    }
     [MessageSessionHandler(SceneType.GameGate)]
     [FriendOf(typeof(OnlineSessionComponent))]
     [FriendOf(typeof(GatePlayerProxy))]
@@ -13,6 +22,9 @@ namespace ET.Server
                 response.Error = ErrorCode.ERR_OnlineSessionNotLoggedIn;
                 return;
             }
+            if(!OnlineArcadeProtocolGuard.Matches(request.ProtocolFingerprint))
+            {response.Error=ErrorCode.ERR_OnlineRoomVersionMismatch;response.Message="街机协议版本不匹配，请更新客户端";return;}
+            proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_StartOnlineArcadeRun inner = G2P_StartOnlineArcadeRun.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
@@ -38,6 +50,9 @@ namespace ET.Server
                 response.Error = ErrorCode.ERR_OnlineSessionNotLoggedIn;
                 return;
             }
+            if(!OnlineArcadeProtocolGuard.Matches(request.ProtocolFingerprint))
+            {response.Error=ErrorCode.ERR_OnlineRoomVersionMismatch;response.Message="街机协议版本不匹配，请更新客户端";return;}
+            proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_GetCurrentOnlineArcadeRun inner = G2P_GetCurrentOnlineArcadeRun.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
@@ -63,6 +78,9 @@ namespace ET.Server
                 response.Error = ErrorCode.ERR_OnlineSessionNotLoggedIn;
                 return;
             }
+            if(!OnlineArcadeProtocolGuard.Matches(request.ProtocolFingerprint))
+            {response.Error=ErrorCode.ERR_OnlineRoomVersionMismatch;response.Message="街机协议版本不匹配，请更新客户端";return;}
+            proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_OperateOnlineArcadeSafeCheckpoint inner = G2P_OperateOnlineArcadeSafeCheckpoint.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
@@ -93,6 +111,9 @@ namespace ET.Server
                 response.Error = ErrorCode.ERR_OnlineSessionNotLoggedIn;
                 return;
             }
+            if(!OnlineArcadeProtocolGuard.Matches(request.ProtocolFingerprint))
+            {response.Error=ErrorCode.ERR_OnlineRoomVersionMismatch;response.Message="街机协议版本不匹配，请更新客户端";return;}
+            proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_SubmitOnlineArcadeInput inner = G2P_SubmitOnlineArcadeInput.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;

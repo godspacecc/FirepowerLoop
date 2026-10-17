@@ -59,6 +59,7 @@ namespace ET.Server
                 return;
             }
 
+            if(OnlineArcadeProtocolGuard.Matches(request.ArcadeConfigFingerprint))proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_CreateRoom inner = G2P_CreateRoom.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
@@ -95,6 +96,7 @@ namespace ET.Server
                 return;
             }
 
+            if(OnlineArcadeProtocolGuard.Matches(request.ArcadeConfigFingerprint))proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_MatchArcadeRoom inner = G2P_MatchArcadeRoom.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
@@ -130,6 +132,7 @@ namespace ET.Server
                 return;
             }
 
+            if(OnlineArcadeProtocolGuard.Matches(request.ArcadeConfigFingerprint))proxy.ArcadeProtocolEpoch=proxy.SessionEpoch;
             G2P_JoinRoom inner = G2P_JoinRoom.Create();
             inner.PlayerId = proxy.PlayerId;
             inner.SessionEpoch = proxy.SessionEpoch;
