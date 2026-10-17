@@ -934,6 +934,12 @@ namespace Game
                 var remove = expired ||
                              Mathf.Abs(projectile.Position.x) > catalog.Rule.ArenaHalfWidth ||
                              Mathf.Abs(projectile.Position.y) > catalog.Rule.ArenaHalfHeight || hitObstacle;
+                // 只补已确认的普通三枪墙面接触，不把过期、敌弹或爆炸弹移除误当成命中。
+                if (!expired && !projectile.Hostile && hitObstacle &&
+                    (projectile.SourceWeaponId == "arcade.weapon.basic" ||
+                     projectile.SourceWeaponId == "arcade.weapon.rapid" ||
+                     projectile.SourceWeaponId == "arcade.weapon.spread"))
+                    view.PlayProjectileSurfaceImpact(projectile.Position, projectile.Velocity);
                 if (!projectile.Hostile && ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
                 {
                     // 只在规则确认引爆时发出表现通知，普通移除和火箭寿命耗尽都保持静音。

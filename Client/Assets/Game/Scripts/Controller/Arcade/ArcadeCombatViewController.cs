@@ -67,6 +67,8 @@ namespace Game
         void PlayBombExplosion(Vector2 position) { }
         /// <summary>已结算的单次命中声音，不参与伤害与投射物生命周期。</summary>
         void PlayImpactSound(Vector2 position, bool melee) { }
+        /// <summary>普通枪弹实际撞障碍的接触反馈；不作为命中敌人或伤害事件。</summary>
+        void PlayProjectileSurfaceImpact(Vector2 position, Vector2 incomingDirection) { }
         void SetPlayerHealth(int current, int maximum);
         void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false);

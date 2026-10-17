@@ -14,10 +14,16 @@ using UnityEngine.UI;
 /// <summary>临时存档隔离武器起点，以正式掉落入口切枪并用虚拟手柄实战射击；不改生命、敌人或伤害。</summary>
 public static class ArcadeThreeGunPlayProbe
 {
-    const string Output = "Temp/WeaponEffects/Actual";
+    static string Output => wallMode ? "Temp/WeaponEffects/WallActual" : "Temp/WeaponEffects/Actual";
+    static bool wallMode;
+    static bool reloadLocked;
+    static bool[] capturedSurface = new bool[3];
     static Gamepad pad; static Mouse mouse; static bool mouseEnabled;
     static double started; static int stage, sample; static string temp;
-    public static string Start() { Run().Forget(); return "三枪隔离实玩起点初始化"; }
+    public static string Start() => Begin(false);
+    /// <summary>同一正式新局观察流程，改为移动到首图障碍前开火，不生成测试敌人或弹丸。</summary>
+    public static string StartWalls() => Begin(true);
+    static string Begin(bool walls) { wallMode = walls; Run().Forget(); return "三枪隔离实玩起点初始化"; }
     static async UniTaskVoid Run()
     {
         try
@@ -41,7 +47,7 @@ public static class ArcadeThreeGunPlayProbe
             File.WriteAllText(Output + "/play.log", "隔离临时档=" + temp + "\n正式新局按钮进入Island第一轮；非自然拾取，后续用正式测试掉落入口切枪。\n");
             Drive();
         }
-        catch (Exception e) { Directory.CreateDirectory(Output); File.AppendAllText(Output + "/play.log", e + "\n"); Stop(); }
+        catch (Exception e) { Stop(); Directory.CreateDirectory(Output); File.AppendAllText(Output + "/play.log", e + "\n"); }
     }
     static object Field(object obj, string name) => obj.GetType().GetField(name).GetValue(obj);
     /// <summary>只重试日志所绑定的隔离局输入，不覆盖存档或重新创建权威现场。</summary>
@@ -51,15 +57,28 @@ public static class ArcadeThreeGunPlayProbe
         if (!Path.GetFileName(temp).StartsWith("FirepowerLoopThreeGun-") ||
             new Game.ArcadeRunFileStore(temp).Inspect().Data?.RunId != Game.Game.Interface.GetModel<Game.ArcadeRunModel>().Current?.RunId)
             throw new Exception("隔离局身份不符，拒绝重试");
-        Stop(); mouse = Mouse.current; mouseEnabled = mouse != null && mouse.enabled;
+        Stop();
+        try
+        {
+        // GameView聚焦可能触发自动刷新；只在24秒观察期间持有本工具的重载锁，结束或异常均释放。
+        EditorApplication.LockReloadAssemblies(); reloadLocked = true;
+        mouse = Mouse.current; mouseEnabled = mouse != null && mouse.enabled;
         if (mouseEnabled) InputSystem.DisableDevice(mouse);
         pad = InputSystem.AddDevice<Gamepad>("ThreeGunVisualProbe");
         EditorWindow.GetWindow(typeof(EditorWindow).Assembly.GetType("UnityEditor.GameView")).Focus();
         started = EditorApplication.timeSinceStartup; stage = sample = 0;
+        capturedSurface = new bool[3];
         File.AppendAllText(Output + "/play.log", "聚焦GameView后开始输入观察\n");
         EditorApplication.update += Tick; return "当前隔离局输入已启动";
+        }
+        catch { Stop(); throw; }
     }
     static void Tick()
+    {
+        try { TickCore(); }
+        catch (Exception e) { Stop(); File.AppendAllText(Output + "/play.log", "观察异常：" + e + "\n"); }
+    }
+    static void TickCore()
     {
         if (!EditorApplication.isPlaying || pad == null) { Stop(); return; }
         var a = Game.Game.Interface; var combat = a.GetSystem<Game.ArcadeCombatSystem>();
@@ -74,11 +93,26 @@ public static class ArcadeThreeGunPlayProbe
             File.AppendAllText(Output + "/play.log", drop + "=" + applied + " " + text + " " + error + "\n"); stage = desired;
         }
         var p = (Vector2)Field(r, "PlayerPosition");
-        var target = new Vector2(Mathf.Cos((float)elapsed * .3f), Mathf.Sin((float)elapsed * .3f)) * 8;
-        var aim = Vector2.up; float closest = float.MaxValue;
-        foreach (var enemy in ((IDictionary)Field(r, "Enemies")).Values)
-        { var d = (Vector2)Field(enemy, "Position") - p; if (d.sqrMagnitude < closest) { closest = d.sqrMagnitude; aim = d.normalized; } }
-        InputSystem.QueueStateEvent(pad, new GamepadState { leftStick = (target - p).normalized, rightStick = aim });
+        var target = wallMode ? new Vector2(8, -4) : new Vector2(Mathf.Cos((float)elapsed * .3f), Mathf.Sin((float)elapsed * .3f)) * 8;
+        var aim = wallMode ? (new Vector2(12, -4) - p).normalized : Vector2.up;
+        if (!wallMode)
+        {
+            float closest = float.MaxValue;
+            foreach (var enemy in ((IDictionary)Field(r, "Enemies")).Values)
+            { var d = (Vector2)Field(enemy, "Position") - p; if (d.sqrMagnitude < closest) { closest = d.sqrMagnitude; aim = d.normalized; } }
+        }
+        InputSystem.QueueStateEvent(pad, new GamepadState { leftStick = (target - p).sqrMagnitude > .1f ? (target - p).normalized : Vector2.zero, rightStick = aim });
+        if (wallMode && !capturedSurface[stage] && elapsed >= stage * 8 + 3)
+        {
+            var owner = a.GetModel<Game.MapSceneModel>().CurrentHandle.Context.DynamicObjectRoot;
+            var sparks = owner.GetComponentsInChildren<ParticleSystem>().FirstOrDefault(ps => ps.name.StartsWith("BulletImpact") && ps.shape.shapeType == ParticleSystemShapeType.Cone && ps.particleCount > 0);
+            if (sparks != null)
+            {
+                capturedSurface[stage] = true;
+                ScreenCapture.CaptureScreenshot(Output + "/surface-" + stage + ".png");
+                File.AppendAllText(Output + "/play.log", "实际墙面火星 stage=" + stage + " position=" + sparks.transform.localPosition + " particles=" + sparks.particleCount + "\n");
+            }
+        }
         if (elapsed >= sample)
         {
             combat.TryGetTestStatus(out var text, out var error);
@@ -94,13 +128,23 @@ public static class ArcadeThreeGunPlayProbe
     public static string Stop()
     {
         EditorApplication.update -= Tick;
-        if (pad != null && pad.added) InputSystem.RemoveDevice(pad); pad = null;
-        if (mouseEnabled && mouse != null && mouse.added) InputSystem.EnableDevice(mouse);
-        mouse = null; mouseEnabled = false; return "临时输入已释放";
+        try
+        {
+            if (pad != null && pad.added) InputSystem.RemoveDevice(pad);
+            if (mouseEnabled && mouse != null && mouse.added) InputSystem.EnableDevice(mouse);
+        }
+        finally
+        {
+            pad = null; mouse = null; mouseEnabled = false;
+            if (reloadLocked) { reloadLocked = false; EditorApplication.UnlockReloadAssemblies(); }
+        }
+        return "临时输入已释放";
     }
 
     /// <summary>核对临时档身份后正式放弃和卸载；不写玩家正式档，退出Play前恢复时间倍率。</summary>
-    public static string Cleanup() { CleanupAsync().Forget(); return "隔离局清理已启动"; }
+    public static string Cleanup() => BeginCleanup(false);
+    public static string CleanupWalls() => BeginCleanup(true);
+    static string BeginCleanup(bool walls) { wallMode = walls; CleanupAsync().Forget(); return "隔离局清理已启动"; }
     static async UniTaskVoid CleanupAsync()
     {
         try

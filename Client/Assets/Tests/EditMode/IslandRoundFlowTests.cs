@@ -213,6 +213,30 @@ namespace Game.Tests
             Assert.That(runtime.Projectiles.ContainsKey(50), Is.False, "弹丸两端都在船外也必须被中间船壳阻挡");
         }
 
+        [Test]
+        public void OrdinaryGunWallContactEmitsOnceOnlyForActualLivePlayerHit()
+        {
+            foreach (var (source, hostile, life, expected) in new[] {
+                ("arcade.weapon.basic", false, 10f, true), ("arcade.weapon.rapid", false, 10f, true),
+                ("arcade.weapon.spread", false, 10f, true), ("arcade.weapon.basic", true, 10f, false),
+                ("arcade.weapon.basic", false, .1f, false), ("arcade.weapon.raygun", false, 10f, false) })
+            {
+            view.SurfaceHits = 0;
+            Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
+            Call("StartIslandRound", runtime, 2, null);
+            runtime.Projectiles.Add(50, new ArcadeProjectileRuntime { Id = 50, Position = new Vector2(-2, 3),
+                Velocity = new Vector2(30, 0), RemainingSeconds = life, SourceWeaponId = source, Hostile = hostile });
+            var recorder = view;
+            Call("TickProjectiles", runtime, .5f); Call("TickProjectiles", runtime, .5f);
+            Assert.That(recorder.SurfaceHits, Is.EqualTo(expected ? 1 : 0), source + " hostile=" + hostile + " life=" + life);
+            if (expected)
+            {
+                Assert.That(recorder.SurfacePosition.x, Is.InRange(-2f, 13f));
+                Assert.That(recorder.SurfacePosition.y, Is.EqualTo(3f));
+            }
+            }
+        }
+
         [Test] public void DashCannotPassThroughShipAndPathRemainsOutsideObstacle()
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
@@ -315,6 +339,9 @@ namespace Game.Tests
         private sealed class View : IArcadeCombatViewPort
         {
             public bool Ready = true;
+            public int SurfaceHits;
+            public Vector2 SurfacePosition;
+            public void PlayProjectileSurfaceImpact(Vector2 position, Vector2 direction) { SurfaceHits++; SurfacePosition = position; }
             public bool FirstPerson;
             public int Round;
             public bool TreasureEntranceShown;

@@ -15,6 +15,18 @@ namespace Game
         /// <summary>只消费规则已确认的命中位置；模板未准备好时略过该次反馈，不排队补播。</summary>
         private void PlayBulletImpact(Vector2 position)
         {
+            PlayBulletImpactBurst(position, Vector2.zero, false);
+        }
+
+        /// <summary>只消费权威障碍接触点；向来弹反方向散开，与敌人命中共用有界池，不发身体命中声音。</summary>
+        public void PlayProjectileSurfaceImpact(Vector2 position, Vector2 incomingDirection)
+        {
+            PlayBulletImpactBurst(position, incomingDirection, true);
+        }
+
+        /// <summary>复用时同时覆盖形状、寿命、朝向和发射量，防止墙面火星污染后续敌人命中。</summary>
+        private void PlayBulletImpactBurst(Vector2 position, Vector2 incomingDirection, bool surface)
+        {
             if (root == null || bulletImpactTemplate == null) return;
             ParticleSystem particles;
             if (bulletImpactPool.Count < BulletImpactCapacity)
@@ -29,6 +41,18 @@ namespace Game
             // 复用先清空旧粒子再移动，避免上一击的火星拖到新位置；仅使用地图局部坐标。
             particles.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
             particles.transform.localPosition = new Vector3(position.x, .75f, position.y);
+            particles.transform.localRotation = surface && incomingDirection.sqrMagnitude > .0001f
+                ? Quaternion.LookRotation(new Vector3(-incomingDirection.x, .35f, -incomingDirection.y))
+                : Quaternion.identity;
+            var main = particles.main;
+            main.startLifetime = surface ? new ParticleSystem.MinMaxCurve(.07f, .13f) : new ParticleSystem.MinMaxCurve(.09f, .18f);
+            main.startSpeed = surface ? new ParticleSystem.MinMaxCurve(2f, 4f) : new ParticleSystem.MinMaxCurve(1.5f, 3.5f);
+            main.startSize = surface ? new ParticleSystem.MinMaxCurve(.04f, .07f) : new ParticleSystem.MinMaxCurve(.05f, .09f);
+            var shape = particles.shape;
+            shape.shapeType = surface ? ParticleSystemShapeType.Cone : ParticleSystemShapeType.Sphere;
+            if (surface) shape.angle = 55f;
+            var emission = particles.emission;
+            emission.SetBurst(0, new ParticleSystem.Burst(0f, (short)(surface ? 4 : 6)));
             particles.Play(true);
         }
 
