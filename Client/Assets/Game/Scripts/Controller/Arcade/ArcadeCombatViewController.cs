@@ -41,6 +41,10 @@ namespace Game
         void SetIslandRound(int roundNumber) { }
         bool IsIslandRoundReady => true;
         bool IsIslandTreasureReady => true;
+        /// <summary>区域资源就绪才开始商店时钟，旧端口不会误报已支持新区域。</summary>
+        bool IsSlayerMartRegionReady => false;
+        string SlayerMartRegionLoadError => null;
+        void SetSlayerMartRegion(FirepowerLoop.Arcade.ArcadeSlayerMartRegionLayout layout,IReadOnlyList<int> remainingIds) { }
         string IslandRoundLoadError => null;
         void RetryIslandRoundLoad() { }
         void SetIslandCampfireWarning(bool warning) { }
@@ -257,6 +261,7 @@ namespace Game
 
         public void End()
         {
+            ReleaseSlayerMartRegion();
             ReleaseRoundContent();
             ReleaseIslandEntryWarning();
             ClearPickupFeedback();

@@ -128,6 +128,8 @@ namespace Game
                 (!view.TryBeginFirstPerson(out var error) || !view.TryReadFirstPersonAim(out _)))
             { view.EndFirstPerson(); FailIslandTransition(runtime, error ?? "地图相机尚未准备完成"); return false; }
             var run = this.GetModel<ArcadeRunModel>().Current;
+            if(!TryApplySlayerMartRoundBenefits(runtime,out var benefitError))
+            {FailIslandTransition(runtime,benefitError);return false;}
             if (run.RoundCheckpoint?.MapId != RoundLayout(runtime).Id &&
                 !this.GetSystem<ArcadeRunSystem>().TrySaveRound(CaptureRoundCheckpoint(runtime), out var saveError))
             { FailIslandTransition(runtime, saveError); return false; }
@@ -197,7 +199,8 @@ namespace Game
                 runtime.CompletionSubmitted || !runtime.IslandExitPrompt || runtime.WaveIndex != expectedWave ||
                 (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
             runtime.IslandExitPrompt = false;
-            if (runtime.IslandRoundAwaitingExit) StartContentRound(runtime, expectedWave + 1);
+            if (runtime.IslandRoundAwaitingExit)
+            {if(!TryBeginSlayerMart(runtime,expectedWave+1))StartContentRound(runtime,expectedWave+1);}
             else if (runtime.FinalBossDefeated || selected >= 0 && selected < arena.NextArenaNumbers.Count)
             { runtime.SelectedExitConfigNumber = runtime.FinalBossDefeated ? 0 : arena.NextArenaNumbers[selected]; CompleteArena(runtime); }
         }

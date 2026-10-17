@@ -93,6 +93,8 @@ namespace Game.Tests
             public void RemoveRemotePlayer(long id){}
             public void TickPlayerFeedback(float s){}
         }
+        [Test] public void OrdinaryBarrelExtendsPurchasedLifetimeWithoutRefillingCharges()
+        {Grant(SlayerMartEffect.SawBarrel,1,300);var item=Player.Supports.Single(p=>p.Kind==SlayerMartSupportKind.Barrel);item.RemainingSeconds=1;item.Charges=1;item.CooldownSeconds=.2;var drop=catalog.Drops.Single(p=>p.ProductId==config.Supports.Get(SlayerMartSupportKind.Barrel).ProductId);Assert.That(Call("ApplyDrop",runtime,drop),Is.True);Assert.That(runtime.Powerups.ContainsKey(ArcadePowerupBehavior.Barrel),Is.False);Assert.That(item.RemainingSeconds,Is.EqualTo(config.Supports.Get(SlayerMartSupportKind.Barrel).Duration));Assert.That(item.Charges,Is.EqualTo(1));Assert.That(item.CooldownSeconds,Is.EqualTo(.2));}
         private void Grant(SlayerMartEffect effect,int amount,float duration=0)
         {var s=runtime.SlayerMart;s.PendingGrants.Add(new(){EventId=s.RegionInstanceId+":"+(++s.GrantSequence),PlayerId=1,Effect=effect,Amount=amount,Duration=duration});Assert.That(ArcadeSlayerMartSupportRules.TryApplyGrants(s,config,new Dictionary<long,int>(),out var next,out var error),Is.True,error);runtime.SlayerMart=next;}
         private ArcadeDropDefinition ChickenDrop()=>catalog.Drops.Single(d=>d.ProductId==config.Supports.Get(SlayerMartSupportKind.Chicken).ProductId);

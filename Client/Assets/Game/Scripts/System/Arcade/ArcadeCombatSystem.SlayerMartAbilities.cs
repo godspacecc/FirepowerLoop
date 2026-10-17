@@ -48,7 +48,7 @@ namespace Game
         }
         /// <summary>可控、非菜单且处于当前战斗时才消耗满充。</summary>
         private bool UseSlayerMartUpgrade(ArcadeCombatRuntime runtime)
-            => slayerMartConfig!=null&&ArcadeSlayerMartAbilityRules.TryActivate(SlayerMartAbility(runtime),
+            => runtime.SlayerMartReturnWave<=0&&slayerMartConfig!=null&&ArcadeSlayerMartAbilityRules.TryActivate(SlayerMartAbility(runtime),
                 SlayerMartClockActive(runtime)&&!runtime.InTreasureRoom&&!runtime.AwaitingExit&&SlayerMartAbility(runtime)?.MenuOpen!=true,slayerMartConfig.Parameter);
         /// <summary>伤害仍进入正式敌人护甲/特殊规则入口；结算作用域屏蔽风暴自身充能。</summary>
         private void TickSlayerMartStorm(ArcadeCombatRuntime runtime,float seconds)

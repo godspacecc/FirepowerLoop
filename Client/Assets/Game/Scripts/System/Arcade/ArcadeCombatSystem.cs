@@ -458,6 +458,7 @@ namespace Game
         /// <summary>单帧推进有最大步长，避免切后台后的长帧直接跨过复活和接触伤害窗口。</summary>
         internal void Tick(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            if(TickSlayerMartRegion(runtime,deltaTime))return;
             if (runtime.IslandTransitionPending)
             { ClearArcadeInput(runtime); TryFinishIslandTransition(runtime); return; }
             if (runtime.IslandRoomTransitionPending)
@@ -1275,7 +1276,7 @@ namespace Game
             runtime.WaveTransitionRemaining = 0f;
             runtime.WaveClearAwarded = false;
             runtime.RestAttackReleased = false;
-            if (!runtime.IsChallenge)
+            if (!runtime.IsChallenge&&!runtime.SlayerMartRoundBenefitsPending)
             {
                 runtime.Bombs = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Bombs);
                 runtime.Dashes = FirepowerLoop.Arcade.ArcadeOpeningRules.ReplenishEmpty(runtime.Dashes);
@@ -1305,6 +1306,7 @@ namespace Game
         /// <summary>攻击冷却结束且瞄准有效时，按当前临时或已购武器结算近战/发射弹丸；不消耗基地弹药。</summary>
         private void TryFire(ArcadeCombatRuntime runtime)
         {
+            if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.AwaitingExit || runtime.RespawnRemaining > 0f || runtime.FireCooldown > 0f || runtime.AimDirection.sqrMagnitude < 0.001f) return;
             if (!TryGetWeapon(runtime, out var weapon)) return;
@@ -1377,6 +1379,7 @@ namespace Game
 
         private void UseBomb(ArcadeCombatRuntime runtime)
         {
+            if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.AwaitingExit || runtime.InTreasureRoom || runtime.Bombs <= 0 || runtime.RespawnRemaining > 0f) return;
             runtime.Bombs--;
@@ -1393,6 +1396,7 @@ namespace Game
 
         private void UseDash(ArcadeCombatRuntime runtime)
         {
+            if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.Dashes <= 0 || runtime.RespawnRemaining > 0f || runtime.DashRemaining > 0f) return;
             runtime.Dashes--;
@@ -1614,6 +1618,9 @@ namespace Game
                 break;
             }
             if (!found) return;
+            float duration=slayerMartConfig==null?drop.DurationSeconds:ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(runtime),slayerMartConfig.Parameter);
+            if((definition.Behavior==global::ArcadePowerupBehavior.Saw||definition.Behavior==global::ArcadePowerupBehavior.Barrel)&&
+                ArcadeSlayerMartSupportRules.TryExtendOrdinaryDrop(SlayerMartAbility(runtime),definition.Behavior==global::ArcadePowerupBehavior.Saw?SlayerMartSupportKind.Saw:SlayerMartSupportKind.Barrel,duration,slayerMartConfig))return;
             if (!runtime.Powerups.TryGetValue(definition.Behavior, out var powerup))
             {
                 powerup = new ArcadePowerupRuntime();
@@ -1621,8 +1628,7 @@ namespace Game
             }
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;
-            powerup.RemainingSeconds = slayerMartConfig==null?drop.DurationSeconds:ArcadeSlayerMartAbilityRules.MasteryDuration(
-                drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(runtime),slayerMartConfig.Parameter);
+            powerup.RemainingSeconds = duration;
             powerup.Charges = definition.Charges;
             powerup.CooldownSeconds = 0f;
             powerup.Position = runtime.PlayerPosition;
@@ -1702,6 +1708,7 @@ namespace Game
         /// <summary>仅响应玩家显式重试；竞技场清场金币只记一次，安全节点事务仍由 ArcadeRunSystem 保证原子性。</summary>
         private void RetryCompletion(ArcadeCombatRuntime runtime)
         {
+            if(runtime.SlayerMartReturnWave>0){TryRetrySlayerMartPreparation();return;}
             if ((runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending) && runtime.CompletionAwaitingRetry)
             { RetryIslandTransition(runtime); return; }
             if (!TryConsumeCompletionRetry(runtime)) return;

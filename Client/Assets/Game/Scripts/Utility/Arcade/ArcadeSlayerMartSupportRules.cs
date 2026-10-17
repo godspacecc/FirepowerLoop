@@ -115,6 +115,19 @@ namespace FirepowerLoop.Arcade
             if(instance.Kind!=SlayerMartSupportKind.Chicken||instance.RemainingSeconds<=0||instance.CooldownSeconds>0)return false;
             instance.CooldownSeconds=catalog.Get(instance.Kind).Interval;return true;
         }
+        /// <summary>普通短掉落延长已活动同类时只取更大剩余，不能重置购买次数、相位或冷却。</summary>
+        public static bool TryExtendOrdinaryDrop(ArcadeSlayerMartPlayer player,SlayerMartSupportKind kind,double duration,ArcadeSlayerMartConfiguration config)
+        {
+            if(player==null||config==null||!Finite(duration)||duration<=0||(kind!=SlayerMartSupportKind.Saw&&kind!=SlayerMartSupportKind.Barrel))return false;
+            var current=player.Supports.FirstOrDefault(p=>p.Kind==kind&&p.RemainingSeconds>0&&(kind!=SlayerMartSupportKind.Barrel||p.Charges>0));
+            if(current==null)return false;
+            var source=config.Catalog.Items.Single(p=>p.Effect==current.SourceEffect);var definition=config.Supports.Get(kind);
+            double maximum=source.Duration>0?source.Duration:definition.Duration;
+            if(kind==SlayerMartSupportKind.Barrel&&current.SourceEffect!=SlayerMartEffect.SawBarrel)
+                maximum=ArcadeSlayerMartAbilityRules.MasteryDuration((float)maximum,SlayerMartEffect.BarrelMastery,player,config.Parameter);
+            if(duration>maximum)return false;
+            current.RemainingSeconds=Math.Max(current.RemainingSeconds,duration);return true;
+        }
         /// <summary>实际接触才消耗一次爆炸，耗尽即结束，不由剩余秒数补回次数。</summary>
         public static bool TryTriggerBarrel(ArcadeSlayerMartEffectInstance instance,bool touching,ArcadeSlayerMartSupportCatalog catalog)
         {

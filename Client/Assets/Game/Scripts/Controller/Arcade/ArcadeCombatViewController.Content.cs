@@ -73,6 +73,7 @@ namespace Game
         /// <summary>区域身份变化才替换环境；原场地碰撞保留，宝藏房仅覆盖可见地面。</summary>
         private void SyncContentEnvironment()
         {
+            if(slayerMartRegionRoot!=null){HideIslandBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);return;}
             if(contentTemplates==null || root==null)return;
             if (roundLayout != null && contentArena > 1)
             {

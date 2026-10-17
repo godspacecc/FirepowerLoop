@@ -193,6 +193,13 @@ namespace Game
         /// <summary>本局新商店版本与独占工作态，外部保存只能使用捕获的深拷贝。</summary>
         public int SlayerMartRulesVersion;
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;
+        /// <summary>商店返回目标只在现场保留，购买和进店不建立独立安全节点。</summary>
+        public int SlayerMartReturnWave;
+        public bool SlayerMartRegionPrepared;
+        /// <summary>场景准备失败保留当前账本和期限，显式重试只重建资源。</summary>
+        public string SlayerMartRegionError;
+        /// <summary>下轮资源就绪时交付加命，再随同一个轮前候选保存。</summary>
+        public bool SlayerMartRoundBenefitsPending;
         /// <summary>当前同步风暴伤害作用域，不保存，避免自身及连锁死亡充能。</summary>
         public bool SlayerMartStormDamage;
         /// <summary>本轮内容活动时钟；加载、清场和暂停由系统门禁停止推进。</summary>

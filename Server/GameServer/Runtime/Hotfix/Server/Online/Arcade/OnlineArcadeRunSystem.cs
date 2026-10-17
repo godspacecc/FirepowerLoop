@@ -2337,6 +2337,9 @@ namespace ET.Server
                     if(definition.Behavior==ArcadePowerupBehavior.Chicken&&self.Battle?.SlayerMartRulesVersion==1&&
                         !TryGetPowerup(player,ArcadePowerupBehavior.Chicken,out _)&&
                         (SlayerMartAbility(self.Battle,player.PlayerId)?.Supports.Count(p=>p.Kind==FirepowerLoop.Arcade.SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=ServerConfig.Instance.SlayerMart.Catalog.MaxChickens)return false;
+                    float duration=FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(self.Battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
+                    if((definition.Behavior==ArcadePowerupBehavior.Saw||definition.Behavior==ArcadePowerupBehavior.Barrel)&&
+                        FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.TryExtendOrdinaryDrop(SlayerMartAbility(self.Battle,player.PlayerId),definition.Behavior==ArcadePowerupBehavior.Saw?FirepowerLoop.Arcade.SlayerMartSupportKind.Saw:FirepowerLoop.Arcade.SlayerMartSupportKind.Barrel,duration,ServerConfig.Instance.SlayerMart))break;
                     player.Powerups[definition.Behavior] = new OnlineArcadePowerupRuntime
                     {
                         ProductId = definition.Id,
@@ -2346,7 +2349,7 @@ namespace ET.Server
                         IntervalSeconds = definition.IntervalSeconds,
                         Radius = definition.Radius,
                         ProjectileSpeed = definition.ProjectileSpeed,
-                        RemainingSeconds = FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(self.Battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter),
+                        RemainingSeconds = duration,
                         Charges = definition.Charges,
                         PositionX = player.PositionX,
                         PositionZ = player.PositionZ,
