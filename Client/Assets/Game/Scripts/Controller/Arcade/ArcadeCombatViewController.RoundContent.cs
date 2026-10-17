@@ -102,28 +102,29 @@ namespace Game
             var t=RoundGroup(roundEnvironmentRoot.transform,"ThemeDecor").transform;
             // 只缩放地面、道路和边缘装饰；实际障碍与入口仍逐项使用配置的米制坐标。
             t.localScale=new Vector3(roundHalfWidth/19.5f,1,roundHalfHeight/19.5f);
-            uint soil=0x777267FFu,stone=0x9D9C8BFFu,trim=0xD4C9AAFFu;
+            // 明快场景以浅色低饱和地面承托深色障碍，主题强调色与机关警告色沿用原资源。
+            uint soil=0xB5B2A1FFu,stone=0x687D83FFu,trim=0xD4C9AAFFu;
             switch(p.ThemeKey)
             {
-                case "babylon":soil=0x9D845FFFu;stone=0xC1AA7DFFu;break;
-                case "barrage":soil=0x52684CFFu;stone=0x6E5841FFu;break;
-                case "graveyard":soil=0x3D494AFFu;stone=0x81918FFFu;break;
-                case "nuketown":soil=0x647179FFu;stone=0xCFB258FFu;break;
-                case "henge":soil=0x67714DFFu;stone=0xB0B09EFFu;break;
-                case "volcano":soil=0x3E3537FFu;stone=0x713A35FFu;break;
-                case "fort":soil=0x777260FFu;stone=0x9D8A69FFu;break;
-                case "church":soil=0x626169FFu;stone=0xA3A4A3FFu;break;
-                case "motel":soil=0x6D716DFFu;stone=0xA9B5A0FFu;break;
-                case "museum":soil=0xB2AAA0FFu;stone=0x768E9CFFu;break;
-                case "garden":soil=0x435A43FFu;stone=0x698649FFu;break;
-                case "koi":soil=0x9B9982FFu;stone=0x756D61FFu;break;
-                case "homestead":soil=0x9BB6BAFFu;stone=0xA97B62FFu;break;
-                case "shiver":soil=0x6F9AAEFFu;stone=0xC8DFDFFFu;break;
-                case "piazza":soil=0xBBA48AFFu;stone=0xE2CCAEFFu;break;
-                case "estate":soil=0x968478FFu;stone=0xAA9E8CFFu;break;
-                case "swamp":soil=0x465348FFu;stone=0x797B58FFu;break;
-                case "spore":soil=0x49495AFFu;stone=0x8D6B8BFFu;break;
-                case "papaback":soil=0x464D58FFu;stone=0x73808EFFu;break;
+                case "babylon":soil=0xC9B083FFu;stone=0x8B9BA0FFu;break;
+                case "barrage":soil=0x8D9E78FFu;stone=0x52685DFFu;break;
+                case "graveyard":soil=0x98ABA5FFu;stone=0x566E74FFu;break;
+                case "nuketown":soil=0xADB8B6FFu;stone=0x607984FFu;break;
+                case "henge":soil=0xA4B286FFu;stone=0x657478FFu;break;
+                case "volcano":soil=0x887874FFu;stone=0x4E5661FFu;break;
+                case "fort":soil=0xB5AB88FFu;stone=0x627C7CFFu;break;
+                case "church":soil=0xA6A0ADFFu;stone=0x667382FFu;break;
+                case "motel":soil=0xB2B7A1FFu;stone=0x687F83FFu;break;
+                case "museum":soil=0xD3C8B1FFu;stone=0x657F91FFu;break;
+                case "garden":soil=0xA3B78DFFu;stone=0x54756AFFu;break;
+                case "koi":soil=0xC3C5AFFFu;stone=0x6B7E87FFu;break;
+                case "homestead":soil=0xC0D0CEFFu;stone=0x7B8B96FFu;break;
+                case "shiver":soil=0xB4D0D4FFu;stone=0x748FA5FFu;break;
+                case "piazza":soil=0xD4C1A1FFu;stone=0x8F9FADFFu;break;
+                case "estate":soil=0xC4B7A8FFu;stone=0x738C87FFu;break;
+                case "swamp":soil=0x96ABA0FFu;stone=0x66776DFFu;break;
+                case "spore":soil=0xB5A8BAFFu;stone=0x756C96FFu;break;
+                case "papaback":soil=0x99A9B5FFu;stone=0x596F85FFu;break;
                 default:throw new InvalidOperationException("未知主题表现："+p.ThemeKey);
             }
             RoundBox(t,"ThemeGround",0,-.15f,0,39,.22f,39,soil);
