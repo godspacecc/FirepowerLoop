@@ -222,6 +222,12 @@ namespace Game
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged);
             this.RegisterEvent<ArcadeHudActionRequestedEvent>(OnHudAction);
             this.RegisterEvent<MapLoadingStartedEvent>(_ => EndFirstPerson(this.GetModel<ArcadeCombatModel>().Runtime));
+            // Editor 切换设备模式时同样释放旧触点；不能跨模式保留触屏转向或开火。
+            this.RegisterEvent<MobileInputModeChangedEvent>(_ =>
+            {
+                var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
+                if (runtime != null) ClearArcadeInput(runtime);
+            });
             LifeCycle.RegisterUpdate(OnUpdate);
         }
 

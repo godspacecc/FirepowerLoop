@@ -7,6 +7,8 @@ using Luban;
 using NUnit.Framework;
 using QFramework;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
 
 namespace Game.Tests
 {
@@ -52,6 +54,82 @@ namespace Game.Tests
             typeof(ArcadeCombatSystem).GetMethod(method, Private).Invoke(system, args);
         private void Add(int id) => runtime.Drops.Add(id,
             new ArcadeDropRuntime { Id = id, Definition = Drop, Position = Vector2.zero });
+
+        [Test]
+        public void MobileFirstPerson_RightScreenDragTurnsHorizontallyWithoutFiring()
+        {
+            var mobile = new MobileInputSystem(); architecture.RegisterSystem(mobile);
+            mobile.TrySetEditorSimulation(true);
+            var touchscreen = InputSystem.AddDevice<Touchscreen>();
+            using var controls = new PlayerInputCtrl();
+            controls.Enable();
+            typeof(ArcadeCombatSystem).GetField("input", Private).SetValue(system, controls);
+            try
+            {
+                Add(1); Call("TickDrops", runtime);
+                var start = new Vector2(Screen.width * .7f, Screen.height * .5f);
+                InputSystem.QueueStateEvent(touchscreen, new TouchState { touchId = 71, phase = UnityEngine.InputSystem.TouchPhase.Began, position = start });
+                InputSystem.Update();
+                Call("ReadFirstPersonInput", runtime, Vector2.up, Vector2.right, true);
+                InputSystem.QueueStateEvent(touchscreen, new TouchState { touchId = 71, phase = UnityEngine.InputSystem.TouchPhase.Moved, position = start + new Vector2(30, 20) });
+                InputSystem.Update();
+                Call("ReadFirstPersonInput", runtime, Vector2.up, Vector2.right, true);
+                Assert.That(view.LastLook.x, Is.EqualTo(30f * 1080 / Screen.height).Within(.001f));
+                Assert.That(view.LastLook.y, Is.Zero, "滑屏上下位移不能改变水平瞄准规则");
+                Assert.That(runtime.Firing, Is.False, "滑动和旧右摇杆都不能触发第一人称开火");
+                Assert.That(runtime.MoveDirection, Is.EqualTo(Vector2.up));
+            }
+            finally { InputSystem.RemoveDevice(touchscreen); mobile.TrySetEditorSimulation(false); }
+        }
+
+        [Test]
+        public void MobileFirstPerson_IndependentPressFiresAndPauseDropsHeldInput()
+        {
+            var mobile = new MobileInputSystem(); architecture.RegisterSystem(mobile);
+            mobile.TrySetEditorSimulation(true);
+            try
+            {
+                Add(1); Call("TickDrops", runtime);
+                var press = typeof(ArcadeCombatSystem).GetMethod("SetMobileFirstPersonFireHeld");
+                Assert.That(press, Is.Not.Null, "需要独立触屏开火入口");
+                press.Invoke(system, new object[] { true });
+                Call("ReadFirstPersonInput", runtime, Vector2.zero, Vector2.zero, false);
+                Assert.That(runtime.Firing, Is.True, "新按钮按下第一帧即可射击");
+                press.Invoke(system, new object[] { false });
+                Call("ReadFirstPersonInput", runtime, Vector2.zero, Vector2.zero, false);
+                Assert.That(runtime.Firing, Is.False);
+                press.Invoke(system, new object[] { true });
+                architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Paused;
+                system.Tick(runtime, 0);
+                architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Playing;
+                Call("ReadFirstPersonInput", runtime, Vector2.zero, Vector2.zero, false);
+                Assert.That(runtime.Firing, Is.False, "暂停前按住的开火意图不能恢复");
+                press.Invoke(system, new object[] { true });
+                Call("EndFirstPerson", runtime);
+                Add(2); Call("TickDrops", runtime);
+                Call("ReadFirstPersonInput", runtime, Vector2.zero, Vector2.zero, false);
+                Assert.That(runtime.Firing, Is.False, "重新进入第一人称必须重新按下开火");
+            }
+            finally { mobile.TrySetEditorSimulation(false); }
+        }
+
+        [Test]
+        public void MobileFirstPerson_PrefabHasGeneratedFirePressAndReadableLabel()
+        {
+            var prefab = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
+            var collector = prefab.GetComponent<ReferenceCollector>();
+            var entry = collector.data.SingleOrDefault(item => item.key == "FirstPersonFirePress");
+            Assert.That(entry, Is.Not.Null, "开火组件必须通过正式引用收集器生成绑定");
+            Assert.That(entry.gameObject, Is.InstanceOf<MobileCombatPressView>());
+            var field = typeof(ArcadeHudUI).GetField(entry.key);
+            Assert.That(field, Is.Not.Null);
+            Assert.That(field.GetValue(prefab.GetComponent<ArcadeHudUI>()), Is.SameAs(entry.gameObject));
+            var press = (MobileCombatPressView)entry.gameObject;
+            Assert.That(press.gameObject.activeSelf, Is.False);
+            var label = press.GetComponentInChildren<TMPro.TMP_Text>(true);
+            Assert.That(label.text, Is.EqualTo("开火"));
+            Assert.That(label.GetComponent<LocalizedText>().Key, Is.EqualTo("ui.mobile_base.fire"));
+        }
 
         [Test]
         public void Config_OnlyFirstArenaHasPositiveTimedCameraDrop()
@@ -235,6 +313,8 @@ namespace Game.Tests
             public bool CanReadAim = true;
             public bool IsFirstPersonActive { get; private set; }
             public int Entries, Exits, Feedback;
+            public Vector2 LastLook;
+            public void ApplyFirstPersonLook(Vector2 delta) => LastLook = delta;
             public readonly List<int> Removed = new();
             public bool TryBeginFirstPerson(out string error)
             { error = null; if (!AllowEntry) return false; Entries++; IsFirstPersonActive = true; return true; }

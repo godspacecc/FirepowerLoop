@@ -7,6 +7,22 @@ namespace Game
     {
         /// <summary>视角切换及暂停后的旧持续按压须释放一次；不保存、不改设备绑定。</summary>
         private bool arcadeAttackRequiresRelease;
+        /// <summary>只保存当前触屏按钮的瞬时按压；切换视角、暂停或失效时清空，不进入存档。</summary>
+        private bool mobileFirstPersonFireHeld;
+
+        /// <summary>接收独立开火按钮的按下/释放；只有活动单人第一人称现场可以接收新按压。</summary>
+        public void SetMobileFirstPersonFireHeld(bool held)
+        {
+            if (!held) { mobileFirstPersonFireHeld = false; return; }
+            var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
+            if (runtime == null || runtime.FirstPersonRemaining <= 0 || runtime.IslandFirstPersonSuspended ||
+                !view.IsFirstPersonActive || runtime.PlayerHealth <= 0 || runtime.RespawnRemaining > 0 ||
+                runtime.InTreasureRoom || this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing ||
+                UIHelper.HasUIOpen || this.GetSystem<MobileInputSystem>()?.IsMobileInputMode != true) return;
+            mobileFirstPersonFireHeld = true;
+            // 按钮已在模式切换时释放触点，此处是新的 PointerDown，不受旧鼠标/摇杆按压闸门影响。
+            arcadeAttackRequiresRelease = false;
+        }
         /// <summary>只在第一场普通单人现场提交相机事务；成功后才刷新时长，不接触武器计时。</summary>
         private bool TryBeginFirstPerson(ArcadeCombatRuntime runtime, ArcadeDropDefinition drop, out string error)
         {
@@ -48,12 +64,15 @@ namespace Game
         {
             runtime.MoveDirection = Vector2.zero;
             runtime.Firing = false;
+            mobileFirstPersonFireHeld = false;
+            // 同时观察仍按着的触点；新视角不能把旧摇杆手指的 Began 当成新滑屏。
+            input?.ReadMobileLookDelta(false);
             input?.ResetMobileLook();
             input?.ClearFieldUpgradePulse();
             arcadeAttackRequiresRelease = true;
         }
 
-        /// <summary>镜头只水平转向；右摇杆仍表达持续射击，但不再被解释为世界方向。</summary>
+        /// <summary>镜头只水平转向；触屏滑动和独立开火分离，桌面保留原鼠标/摇杆操作。</summary>
         private bool ReadFirstPersonInput(ArcadeCombatRuntime runtime, Vector2 move, Vector2 stickAim, bool stickFiring)
         {
             if (runtime.FirstPersonRemaining <= 0) return false;
@@ -63,21 +82,25 @@ namespace Game
             if (input?.CancelPressedThisFrame == true)
             { EndFirstPerson(runtime); return true; }
             var mobile = this.GetSystem<MobileInputSystem>();
-            var look = mobile != null && mobile.IsMobileInputMode
-                ? new Vector2(stickAim.x * 750f * Time.deltaTime, 0)
+            bool mobileMode = mobile != null && mobile.IsMobileInputMode;
+            var look = mobileMode
+                ? new Vector2(input?.ReadMobileLookDelta(true).x ?? 0, 0)
                 : new Vector2(input?.LookDelta.x ?? 0, 0);
             view.ApplyFirstPersonLook(look);
             if (!view.TryReadFirstPersonAim(out var forward))
             { EndFirstPerson(runtime); return true; }
             runtime.AimDirection = forward;
             runtime.MoveDirection = RelativeFirstPersonMovement(move, forward);
-            runtime.Firing = ReadArcadeFiring(stickFiring);
+            runtime.Firing = mobileMode ? ReadArcadeAttackHeld(mobileFirstPersonFireHeld) : ReadArcadeFiring(stickFiring);
             return true;
         }
 
         private bool ReadArcadeFiring(bool stickFiring)
+            => ReadArcadeAttackHeld(stickFiring || input?.AttackHeld == true);
+
+        /// <summary>共享旧按压释放闸门；触屏第一人称只传独立按钮，滑屏或右摇杆不得夹带射击。</summary>
+        private bool ReadArcadeAttackHeld(bool held)
         {
-            var held = stickFiring || input?.AttackHeld == true;
             if (arcadeAttackRequiresRelease)
             {
                 if (!held) arcadeAttackRequiresRelease = false;

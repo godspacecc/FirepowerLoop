@@ -24,6 +24,7 @@ namespace Game
         public Image DesktopBombIcon;
         public TextMeshProUGUI DesktopDashIcon;
         public CustomListView EffectList;
+        public MobileCombatPressView FirstPersonFirePress;
         public GameObject FirstPersonRoot;
         public Sprite GlovesIcon;
         public Sprite GrenadeIcon;

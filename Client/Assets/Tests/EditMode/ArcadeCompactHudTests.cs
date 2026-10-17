@@ -36,6 +36,43 @@ namespace Game.Tests
         [TearDown]
         public void Cleanup()
         { ArchitectureField.SetValue(null, previousArchitecture); ResourceLoader.Use(previousLoader); LanguageCache.SetValue(null, previousLanguageCache); }
+        [Test]
+        public void FirstPersonTouchControls_ReleaseFireOnPauseAndRestoreAimOnExit()
+        {
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui = root.GetComponent<ArcadeHudUI>();
+                var ctrl = new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+                var snapshot = new ArcadeCombatHudSnapshot { FirstPersonSeconds = 10, PlayerHealth = 100 };
+                typeof(ArcadeHudUICtrl).GetField("combat", Private).SetValue(ctrl, snapshot);
+                typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", Private).SetValue(ctrl, true);
+                var refresh = typeof(ArcadeHudUICtrl).GetMethod("RefreshFirstPersonMobileControls", Private);
+                refresh.Invoke(ctrl, new object[] { true, true });
+                Assert.That(ui.AimJoystickRoot.activeSelf, Is.False);
+                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.True);
+                int releases = 0;
+                ui.FirstPersonFirePress.Released += () => releases++;
+                var pointer = new UnityEngine.EventSystems.PointerEventData(null) { pointerId = 41 };
+                ui.FirstPersonFirePress.OnPointerDown(pointer);
+                refresh.Invoke(ctrl, new object[] { true, false });
+                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False);
+                Assert.That(releases, Is.EqualTo(1), "暂停必须释放原触点");
+                refresh.Invoke(ctrl, new object[] { true, true });
+                ui.FirstPersonFirePress.OnPointerUp(pointer);
+                Assert.That(releases, Is.EqualTo(1), "重开后旧触点的释放不能成为新请求");
+                snapshot.FirstPersonSeconds = 0;
+                refresh.Invoke(ctrl, new object[] { true, true });
+                Assert.That(ui.AimJoystickRoot.activeSelf, Is.True);
+                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False);
+                snapshot.FirstPersonSeconds = 10;
+                refresh.Invoke(ctrl, new object[] { false, false });
+                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False, "桌面不显示触屏开火控件");
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
         [TestCase(false, false)]
         [TestCase(false, true)]
         [TestCase(true, false)]
