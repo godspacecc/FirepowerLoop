@@ -1,0 +1,30 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS FullRouteOnline.Barrel explosion damages each target by its maximum health
+PASS FullRouteOnline.Barrel danger damages players by maximum health and expires at 1.2 seconds
+PASS FullRouteOnline.Clear requires explicit round exit even after long wait
+PASS FullRouteOnline.Readiness gate exists before simulation
+PASS FullRouteOnline.Every route round resolves an explicit layout
+PASS FullRouteOnline.Stale readiness cannot unlock current map
+PASS FullRouteOnline.Loading freezes effects drops and event clocks
+PASS FullRouteOnline.Simultaneous route confirmations choose lowest player once
+PASS FullRouteOnline.Failed round save preserves all members then retry publishes together
+PASS FullRouteOnline.Mannequin hit freeze survives ordinary ally aura scan
+PASS FullRouteOnline.Dedicated bosses survive bombs and only final boss marks total victory
+PASS FullRouteOnline.Content clock freezes during exits respawn and all-member treasure
+PASS FullRouteOnline.Island constraining still respects current round obstacles
+PASS FullRouteOnline.Mannequin requires separated three hits and drop armor warns safely
+PASS FullRouteOnline.Elder evolves each nearby ally once
+PASS FullRouteOnline.Storm consumes drops without award and ghost contact is lethal
+PASS FullRouteOnline.Frozen special enemies never execute close contact attacks
+PASS FullRouteOnline.Ranged specials own attacks without legacy double fire
+PASS FullRouteOnline.Mega boss actually warns fires four rays eight shots and two reinforcements
+PASS FullRouteOnline.Guardian fan and ZRex fields preserve dedicated attack shapes
+PASS FullRouteOnline.Papaback actual chase charge and ray use original boss configuration
+PASS FullRouteOnline.Ground barrels remain inert authoritative non-enemy objects
+PASS FullRouteOnline.Player shot crossing ground barrel detonates once and applies maximum-health explosion
+PASS FullRouteOnline.Nearest ground barrel respects walls enemies crates and player-weapon origin
+PASS FullRouteOnline.Ground barrel destruction survives same-map projection and round-node restore only
+PASS FullRouteOnline.Explosive weapon hitting ground barrel preserves its own explosion damage and radius
+PASS FullRouteOnline.Cross-frame player projectiles resolve nearer enemy and crate impact before ground barrel
+PASS FullRouteOnline.Fortieth round retains final encounter boundary
+28/28 passed

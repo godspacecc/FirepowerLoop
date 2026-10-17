@@ -1,0 +1,11 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+FAIL CasualPopulationOnline.Later two-player round nine uses240: round9 expected240
+FAIL CasualPopulationOnline.Different themes keep same ordinal total: map identity changed total
+FAIL CasualPopulationOnline.Round thirty caps at450: round30 expected450
+FAIL CasualPopulationOnline.Round forty remains450: round40 expected450
+FAIL CasualPopulationOnline.Old boss placeholder becomes ordinary population: old boss group was expanded or kept as single
+FAIL CasualPopulationOnline.Actual spawn uses selected ordinary group tuning: spawn re-resolved old boss multipliers
+PASS CasualPopulationOnline.Legacy sequential mode retains configured total
+PASS CasualPopulationOnline.Timed challenge keeps its independent scaling
+PASS CasualPopulationOnline.Independent boss stages never expand ordinary queues
+3/9 passed

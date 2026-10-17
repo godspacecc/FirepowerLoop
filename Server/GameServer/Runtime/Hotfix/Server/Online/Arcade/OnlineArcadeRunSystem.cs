@@ -1267,7 +1267,7 @@ namespace ET.Server
             self.BattleGeneration++;
         }
 
-        /// <summary>按场创建时人数建立整轮队列；前期分支使用累计轮数，权重分配不改变同屏预算。</summary>
+        /// <summary>休闲普通轮按累计轮数建立整轮队列；独立Boss和挑战保持各自预算。</summary>
         private static void PrepareWave(OnlineArcadeBattleRuntime battle, ArcadeArenaConfig arena, int waveIndex)
         {
             InitializeCrates(battle);
@@ -1285,7 +1285,8 @@ namespace ET.Server
             battle.SpawnQueueIndex = 0;
             battle.SpawnedInWave = 0;
             int totalWeight = group.Members.Sum(member => member.Count);
-            int total = UsesEarlyRounds(battle)
+            bool casualOrdinary = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss && !battle.RoundBossEncounter;
+            int total = casualOrdinary
                 ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((battle.ArenaNumber - 1) * 4 + waveIndex + 1, battle.DifficultyPlayerCount)
                 : arena.WaterSpeedRatio > 0 && !battle.IsChallenge
                     ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal(waveIndex + 1, battle.DifficultyPlayerCount)
@@ -2585,7 +2586,8 @@ namespace ET.Server
                 ArcadeArenaConfig arena = ResolveBattleArena(battle);
                 if (!battle.IsChallenge && !UsesEarlyRounds(battle))
                 {
-                    ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, battle.WaveIndex);
+                    // 清轮奖励属于原轮配置，不随普通生成组替换而改变。
+                    ArcadeEnemyGroupConfig group = ServerConfig.Instance.Tables.TbArcadeEnemyGroup.Get(arena.WaveGroupIds[battle.WaveIndex]);
                     int gold = ScaleWaveGold(group.ClearGold, battle.ArenaNumber,
                         ServerConfig.Instance.ArcadeRule.GoldGrowthPerArena);
                     foreach (OnlineArcadePlayerRecord player in self.Record.Players)
@@ -2812,7 +2814,20 @@ namespace ET.Server
                 ArcadeBossConfig boss = ServerConfig.Instance.Tables.TbArcadeBoss.Get(arena.FinalBossId);
                 groupId = battle.FinalBossEnemyId == 0 ? boss.EnemyGroupId : boss.ReinforcementGroupId;
             }
-            return ServerConfig.Instance.Tables.TbArcadeEnemyGroup.Get(groupId);
+            var tables = ServerConfig.Instance.Tables;
+            var group = tables.TbArcadeEnemyGroup.Get(groupId);
+            if (!battle.IsCasualRoute || battle.IsChallenge || battle.IsFinalBoss || battle.RoundBossEncounter) return group;
+
+            // 普通轮不能把旧单体Boss占位扩为数百只；后续生成再次解析时也必须取得同一普通组。
+            bool Ordinary(ArcadeEnemyGroupConfig candidate) => candidate != null && candidate.MaxAlive > 1 && candidate.Members.Length > 0 &&
+                !tables.TbArcadeBoss.DataList.Any(b => string.Equals(b.EnemyGroupId, candidate.Id, StringComparison.Ordinal));
+            if (Ordinary(group)) return group;
+            for (int index = waveIndex - 1; index >= 0; index--)
+            {
+                var previous = tables.TbArcadeEnemyGroup.Get(arena.WaveGroupIds[index]);
+                if (Ordinary(previous)) return previous;
+            }
+            throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "本场缺少普通敌群，不能放大旧Boss组");
         }
 
         /// <summary>只有竞技场显式声明且与当前敌群匹配时才启用专用 Boss 行为。</summary>

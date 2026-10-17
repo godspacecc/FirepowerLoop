@@ -1173,7 +1173,8 @@ namespace Game
             if (!runtime.WaveClearAwarded)
             {
                 if (!runtime.IsChallenge && !UsesEarlyRounds(runtime))
-                    runtime.ArenaGold += ScaleGold(group?.ClearGold ?? 0, runtime.ArenaNumber, catalog.Rule.GoldGrowthPerArena);
+                    // 清轮奖励仍来自原轮配置，不能随实际生成组回退而改价。
+                    runtime.ArenaGold += ScaleGold(FindGroup(arena.WaveGroupIds[runtime.WaveIndex]).ClearGold, runtime.ArenaNumber, catalog.Rule.GoldGrowthPerArena);
                 runtime.WaveClearAwarded = true;
                 if (UsesContentRounds(runtime))
                 {
@@ -1304,8 +1305,21 @@ namespace Game
                 break;
             }
             if (group == null) throw new InvalidOperationException($"街机敌人组不存在：{groupId}");
+            bool casualOrdinary = this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute == true &&
+                !runtime.IsChallenge && !runtime.IsFinalBoss && !runtime.ThemeBossStarted;
+            if (casualOrdinary)
+            {
+                // 保留普通组的比例与生成预算；旧单体Boss占位只借用本场前序普通组。
+                bool Ordinary(ArcadeEnemyGroupDefinition candidate) => candidate != null && candidate.MaxAlive > 1 && candidate.Members.Count > 0 &&
+                    !catalog.Bosses.Any(b => string.Equals(b.EnemyGroupId, candidate.Id, StringComparison.Ordinal));
+                if (!Ordinary(group))
+                {
+                    group = arena.WaveGroupIds.Take(waveIndex).Reverse().Select(FindGroup).FirstOrDefault(Ordinary);
+                    if (group == null) throw new InvalidOperationException("本场缺少普通敌群，不能放大旧Boss组");
+                }
+            }
             var totalWeight = group.Members.Sum(member => member.Count);
-            var total = UsesEarlyRounds(runtime)
+            var total = casualOrdinary
                 ? FirepowerLoop.Arcade.ArcadeOpeningRules.OrdinaryRoundTotal((runtime.ArenaNumber - 1) * 4 + waveIndex + 1, 1)
                 : totalWeight;
             var previousWeight = 0;

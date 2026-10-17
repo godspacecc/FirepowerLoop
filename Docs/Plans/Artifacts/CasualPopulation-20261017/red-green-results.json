@@ -1,0 +1,258 @@
+{
+  "Client": [
+    {
+      "Name": "clientInitialRed",
+      "Executed": 9,
+      "Passed": 3,
+      "Failed": 6,
+      "Status": "Failed",
+      "Cases": [
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.DifferentThemesAtSameOrdinalUseSamePopulation",
+          "Status": "Failed",
+          "Message": "  Expected: 190\r\n  But was:  10\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.FinalBossStageNeverExpandsOrdinaryPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LaterOrdinaryRoundUsesCumulativeRoundNine",
+          "Status": "Failed",
+          "Message": "  Expected: 190\r\n  But was:  16\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LegacySequentialModeRetainsConfiguredPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.MixedCompositionRetainsExactIntegerAllocation",
+          "Status": "Failed",
+          "Message": "  Expected: 310\r\n  But was:  24\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.OldBossPlaceholderUsesNearestEarlierOrdinaryGroup",
+          "Status": "Failed",
+          "Message": "  Expected: 220\r\n  But was:  1\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundFortyDoesNotExceedPopulationCap",
+          "Status": "Failed",
+          "Message": "  Expected: 400\r\n  But was:  24\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundThirtyReachesFourHundredCap",
+          "Status": "Failed",
+          "Message": "  Expected: 400\r\n  But was:  24\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.TimedChallengeRetainsItsOwnPopulation",
+          "Status": "Passed",
+          "Message": null
+        }
+      ]
+    },
+    {
+      "Name": "clientGoldRed",
+      "Executed": 10,
+      "Passed": 9,
+      "Failed": 1,
+      "Status": "Failed",
+      "Cases": [
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.DifferentThemesAtSameOrdinalUseSamePopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.FinalBossStageNeverExpandsOrdinaryPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LaterOrdinaryRoundUsesCumulativeRoundNine",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LegacySequentialModeRetainsConfiguredPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.MixedCompositionRetainsExactIntegerAllocation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.OldBossPlaceholderUsesNearestEarlierOrdinaryGroup",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.OrdinaryGroupSubstitutionPreservesOriginalWaveGold",
+          "Status": "Failed",
+          "Message": "  Expected: 56\r\n  But was:  22\r\n"
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundFortyDoesNotExceedPopulationCap",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundThirtyReachesFourHundredCap",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.TimedChallengeRetainsItsOwnPopulation",
+          "Status": "Passed",
+          "Message": null
+        }
+      ]
+    },
+    {
+      "Name": "clientFinal",
+      "Executed": 10,
+      "Passed": 10,
+      "Failed": 0,
+      "Status": "Passed",
+      "Cases": [
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.DifferentThemesAtSameOrdinalUseSamePopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.FinalBossStageNeverExpandsOrdinaryPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LaterOrdinaryRoundUsesCumulativeRoundNine",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.LegacySequentialModeRetainsConfiguredPopulation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.MixedCompositionRetainsExactIntegerAllocation",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.OldBossPlaceholderUsesNearestEarlierOrdinaryGroup",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.OrdinaryGroupSubstitutionPreservesOriginalWaveGold",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundFortyDoesNotExceedPopulationCap",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.RoundThirtyReachesFourHundredCap",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.CasualPopulationFlowTests.TimedChallengeRetainsItsOwnPopulation",
+          "Status": "Passed",
+          "Message": null
+        }
+      ]
+    },
+    {
+      "Name": "clientContentRegression",
+      "Executed": 11,
+      "Passed": 11,
+      "Failed": 0,
+      "Status": "Passed",
+      "Cases": [
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.BumperMovesToDifferentLegalLandingAndKeepsCooldown",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.BurrowWarningRejectsDamageThenExposes",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.ContentClockDoesNotAdvanceAfterClear",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.HomingProjectileTurnsAtSpeedAndPoolResetDropsContent",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.IceMomentumCannotCrossThinWallInOneFrame",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.LaserWarningIsSafeAndActiveCapsuleDamages",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.MannequinNeedsThreeSeparatedHitsAndFreezes",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.MegaReinforcementsUseOrdinaryGroupWhenBossGroupCapIsOne",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.ParasiteHitReducesMovementForRemainingDuration",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.SpecialSpawnSelectionDoesNotAddEnemyBudget",
+          "Status": "Passed",
+          "Message": null
+        },
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.ToxicDeathCreatesOwnedAreaWithoutResurrectingEnemy",
+          "Status": "Passed",
+          "Message": null
+        }
+      ]
+    }
+  ],
+  "Server": {
+    "InitialValidRed": "3/9",
+    "InitialGreen": "9/9",
+    "RewardRed": "9/10",
+    "Final": "10/10",
+    "FullRouteRegression": "28/28"
+  },
+  "Limits": {
+    "Client": 10,
+    "ClientContent": 11,
+    "Server": 10,
+    "ServerFullRoute": 28
+  },
+  "IncludePassingTests": true,
+  "RuleBytesSha256": "8014F6E01CBCB4395E26FBA533DFB43D4048567BE7CB08B220FF25E0587973A7",
+  "Fingerprint": "firepowerloop-20261017-v6-casual-population",
+  "ReleaseEnabled": 0,
+  "Note": "Only actual filtered results counted; initial malformed server boss fixture excluded; no Player Build or real two-client acceptance"
+}
