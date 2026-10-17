@@ -21,6 +21,8 @@ namespace Game
         /// <summary>统一输入适配入口；成功后才发布HUD，不消费其他能力库存。</summary>
         public bool TryUseFieldUpgrade()
         {
+            var app=this.GetModel<AppStateModel>();
+            if(app==null||app.CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen)return false;
             var runtime=this.GetModel<ArcadeCombatModel>().Runtime;
             if(runtime==null||!UseSlayerMartUpgrade(runtime))return false;
             PublishHud(runtime);return true;

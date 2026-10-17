@@ -43,3 +43,5 @@
 - SlayerStormOnline观察0/10缺接点红→10/10绿；Unity SlayerMartAbilityFlowTests扩为20项，新增能力接点缺失的红阶段后最终20/20绿，包含实际TickEnemies冻结与离圈恢复。原FullRouteOnline回归28/28。
 - Unity测试前Boot临时脏状态按项目授权从磁盘重载；不保存测试环境变化。一次脏场景拒绝和两项夹具未提供arena导致的异常均单独排除，不当作功能缺失的有效红证据。
 - 普通宝藏房保留既有活动计时；购物、资源转场与轮候选期间冻结风暴时钟。输入、协议与HUD仍依任务6／7继续，普通道具精通和复起保护仍在任务3内继续。
+
+- 风暴释放门禁评审修复：正式公开入口补AppState与阻断UI检查；真实 StormInMenuRetainsCharge 方法观察0/1红（暂停时误返回true），补门禁后整个SlayerMartAbilityFlowTests 20/20绿，包含Playing可用、Paused／Loading拒绝且保留满充。
