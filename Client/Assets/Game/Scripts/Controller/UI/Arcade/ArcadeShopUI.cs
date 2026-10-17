@@ -6,17 +6,23 @@ namespace Game
 {
     public class ArcadeShopUI : BaseUI
     {
-        public Button BtnAbandon;
         public Button BtnBuy;
-        public Button BtnContinue;
-        public Button BtnSettle;
+        public Button BtnCloseMenu;
+        public Button BtnEnter;
+        public Button BtnFinish;
+        public Button BtnReroll;
+        public Button BtnRetry;
+        public Button BtnSkip;
+        public GameObject ChoiceRoot;
+        public GameObject LoadingRoot;
         public CustomListView OfferList;
+        public GameObject ShoppingRoot;
+        public TextMeshProUGUI TextCash;
+        public TextMeshProUGUI TextDeadline;
         public TextMeshProUGUI TextDetailEffect;
         public TextMeshProUGUI TextDetailName;
+        public TextMeshProUGUI TextMembers;
         public TextMeshProUGUI TextMessage;
-        public TextMeshProUGUI TextProgress;
-        public TextMeshProUGUI TextResources;
-        public TextMeshProUGUI TextRewards;
-        public Button BtnChallenge;
+        public TextMeshProUGUI TextTokens;
     }
 }

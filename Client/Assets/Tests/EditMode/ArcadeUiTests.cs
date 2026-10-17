@@ -34,19 +34,12 @@ namespace Game.Tests
             var box = AssetDatabase.LoadAssetAtPath<GameObject>(Root + "Box/ArcadeShopOfferBox.prefab");
             Assert.That(AssetDatabase.GetAssetPath(shop.OfferList.itemPrefab), Is.EqualTo(AssetDatabase.GetAssetPath(box)));
             Assert.That(shop.OfferList.transform.childCount, Is.Zero, "正式列表元素不应内嵌在主 Prefab 中");
-            Assert.That(shop.BtnBuy.gameObject.activeSelf, Is.False, "购买入口应位于商品卡，底部旧购买按钮必须隐藏");
-            Assert.That(shop.TextDetailEffect.rectTransform.rect.height, Is.GreaterThanOrEqualTo(100f),
-                "底部已购内容需要足够的多行展示高度");
-
-            RectTransform challenge = shop.BtnChallenge.GetComponent<RectTransform>();
-            RectTransform settle = shop.BtnSettle.GetComponent<RectTransform>();
-            RectTransform continueButton = shop.BtnContinue.GetComponent<RectTransform>();
-            Assert.That(challenge.anchoredPosition.x,
-                Is.LessThanOrEqualTo(settle.anchoredPosition.x - settle.rect.width),
-                "挑战按钮不得与结算按钮重叠");
-            Assert.That(settle.anchoredPosition.x,
-                Is.LessThanOrEqualTo(continueButton.anchoredPosition.x - continueButton.rect.width),
-                "结算按钮不得与继续按钮重叠");
+            Assert.That(shop.BtnBuy.gameObject.activeSelf, Is.True, "购买入口在商品详情区独立呈现");
+            Assert.That(shop.TextDetailEffect.rectTransform.rect.height, Is.GreaterThanOrEqualTo(400f),
+                "正式商品详情需容纳前置、限购与作用范围");
+            Assert.That(shop.OfferList.GetComponent<GridLayoutGroup>().constraintCount, Is.EqualTo(4));
+            Assert.That(shop.BtnReroll, Is.Not.Null);Assert.That(shop.BtnFinish, Is.Not.Null);
+            Assert.That(shop.BtnCloseMenu, Is.Not.Null);
         }
 
         [TestCase(null, false, false)]
@@ -60,9 +53,9 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ShoppingControllerIsNotAvailable()
+        public void SlayerMartUsesPreservedResourceHost()
         {
-            Assert.That(typeof(ArcadeResumeUICtrl).Assembly.GetType("Game.ArcadeShopUICtrl"), Is.Null);
+            Assert.That(AssetDatabase.LoadAssetAtPath<GameObject>(Root + "ArcadeShop.prefab").GetComponent<ArcadeShopUI>(), Is.Not.Null);
         }
 
         [Test]
