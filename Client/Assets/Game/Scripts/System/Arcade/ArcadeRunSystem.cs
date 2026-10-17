@@ -36,12 +36,25 @@ namespace Game
             var config = this.GetUtility<IRuntimeConfigProvider>();
             if (config == null || !config.TryGetArcadeCatalog(out var catalog, out error)) return false;
 
+            // 仅正式新局读取发布门禁，恢复和旧兼容入口保留各自已保存的规则版本。
+            int slayerMartRulesVersion = 0;
+            if (config.HasSlayerMartConfiguration)
+            {
+                if (!config.TryGetSlayerMart(out var shop, out error) || shop == null)
+                {
+                    error = string.IsNullOrWhiteSpace(error) ? "正式商店配置不可用，不能创建新局" : error;
+                    return false;
+                }
+                slayerMartRulesVersion = shop.Enabled ? 1 : 0;
+            }
+
             var runId = Guid.NewGuid().ToString("N");
             var seed = unchecked((int)Convert.ToUInt32(runId.Substring(0, 8), 16));
             // 普通开局只保存恢复资料；节点不承载交易数据。
             var checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1, GenerationSeed = seed };
             var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, checkpoint);
             candidate.IsCasualRoute = true;
+            candidate.SlayerMartRulesVersion = slayerMartRulesVersion;
             candidate.ArenaConfigNumber = catalog.Arenas[0].ArenaNumber;
             candidate.EmergencyResources[ArcadeRunDefaults.BombResourceId] = catalog.Rule.InitialBombs;
             candidate.EmergencyResources[ArcadeRunDefaults.DashResourceId] = catalog.Rule.InitialDashes;

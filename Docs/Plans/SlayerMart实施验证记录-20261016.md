@@ -254,3 +254,11 @@
 - 初始夹具漏掉Input System在编辑模式默认跳过Dynamic游戏动作的设置，后续还遇到位域状态写法与Update重载编译错误，全部排除，不计功能红。按本机Input System1.7源码启用只在内存有效的RUN_PLAYER_UPDATES_IN_EDIT_MODE并在TearDown恢复后，得到有效3/5红→5/5绿；[精简红绿结果](Artifacts/SlayerMart-20261017/solo-aim-red-green.json)只统计实际执行5项。
 - 原第一人称类实际13/13通过，但运行前误按10个Test标记声明上限10，漏算3个TestCase，数量守卫拒绝接纳；这是本次范围声明失误，未回退完整套件，未重跑已通过用例。其后单人技能入口按真实上限4执行4/4通过。所有调用includePassingTests=true。
 - 已停止观察器和Play，临时设备成对移除；本段不宣称完整路线通关或实体手柄验收。release.enabled仍0，未打包。
+
+## 第三十二段：正式新局发布门禁接线
+
+- 发现客户端正式新局与服务端房间创建入口尚未读取release.enabled；即使以后开启配置，新局仍会停留规则0。现仅在这两个新局入口写入配置决定的SlayerMartRulesVersion；恢复旧0局不升级，恢复新1局不降级，不预发现金或商店账本。
+- 正式Luban提供者声明必须提供商店配置，读取失败或空配置时在保存／发布前拒绝开局；旧测试提供者保留缺省关闭合同，旧兼容开局入口不改规则。未改Config权威源、生成代码或bytes，当前release.enabled仍0；双端商店能力bytes SHA256相同。
+- 客户端SlayerMartReleaseGateTests有效4/7红→7/7绿，原ArcadeRunSystemTests回归14/14；服务端SlayerMartReleaseGateOnline有效2/6红→6/6绿，原SlayerCheckpointOnline回归8/8。均使用明确短类、上限7／14／6／8及includePassingTests=true，无全套回退。客户端夹具缺接口实现与服务端未就绪夹具修正均排除，不计功能红。
+- 新鲜只读评审覆盖本段入口、提供者与测试，未发现确定正确性或兼容性缺陷；检查版本1首次入店前空账本的使用路径，不要求提前创建经济。评审不代替自然进出店、真实双端与实体设备验收。
+- [精简红绿与回归结果](Artifacts/SlayerMart-20261017/release-gate-results.json)。服务端构建仅报告NU1900漏洞索引网络警告，检查正常执行。Unity最终仅Boot场景且无脏状态；未打包，未启用发布开关。

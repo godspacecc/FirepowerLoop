@@ -1,0 +1,205 @@
+{
+  "Client": [
+    {
+      "Name": "clientRed",
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3317,
+        "PassedTests": 4,
+        "FailedTests": 3,
+        "SkippedTests": 0,
+        "Duration": "00:00:06.4140046"
+      },
+      "Executed": 7,
+      "Results": [
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.DisabledFormalNewRunKeepsVersionZero",
+          "Status": "Passed",
+          "Duration": "00:00:02.4390000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.EnabledFormalNewRunPersistsVersionOne",
+          "Status": "Failed",
+          "Duration": "00:00:00.4050000",
+          "Message": "  Expected: 1\r\n  But was:  0\r\n",
+          "StackTrace": "at Game.Tests.SlayerMartReleaseGateTests.EnabledFormalNewRunPersistsVersionOne () [0x00009] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\SlayerMartReleaseGateTests.cs:20\r\n"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.LegacyNewRunHelperKeepsItsOriginalContract",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.LegacyProviderWithoutShopRemainsVersionZero",
+          "Status": "Passed",
+          "Duration": "00:00:00.3680000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.MissingRequiredShopConfigRejectsBeforeWriting",
+          "Status": "Failed",
+          "Duration": "00:00:00.3090000",
+          "Message": "  Expected: False\r\n  But was:  True\r\n",
+          "StackTrace": "at Game.Tests.SlayerMartReleaseGateTests.MissingRequiredShopConfigRejectsBeforeWriting () [0x00009] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\SlayerMartReleaseGateTests.cs:23\r\n"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.NewRunDoesNotDowngradeWhenGateCloses",
+          "Status": "Failed",
+          "Duration": "00:00:00.8710000",
+          "Message": "  Expected: 1\r\n  But was:  0\r\n",
+          "StackTrace": "at Game.Tests.SlayerMartReleaseGateTests.NewRunDoesNotDowngradeWhenGateCloses () [0x00038] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\SlayerMartReleaseGateTests.cs:25\r\n"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.OldRunDoesNotUpgradeWhenGateOpens",
+          "Status": "Passed",
+          "Duration": "00:00:00.6850000"
+        }
+      ]
+    },
+    {
+      "Name": "clientGreen",
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3317,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:07.5214171"
+      },
+      "Executed": 7,
+      "Results": [
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.DisabledFormalNewRunKeepsVersionZero",
+          "Status": "Passed",
+          "Duration": "00:00:02.5600000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.EnabledFormalNewRunPersistsVersionOne",
+          "Status": "Passed",
+          "Duration": "00:00:00.8290000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.LegacyNewRunHelperKeepsItsOriginalContract",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.LegacyProviderWithoutShopRemainsVersionZero",
+          "Status": "Passed",
+          "Duration": "00:00:00.4580000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.MissingRequiredShopConfigRejectsBeforeWriting",
+          "Status": "Passed",
+          "Duration": "00:00:00.3400000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.NewRunDoesNotDowngradeWhenGateCloses",
+          "Status": "Passed",
+          "Duration": "00:00:00.8010000"
+        },
+        {
+          "Name": "Game.Tests.SlayerMartReleaseGateTests.OldRunDoesNotUpgradeWhenGateOpens",
+          "Status": "Passed",
+          "Duration": "00:00:00.7470000"
+        }
+      ]
+    },
+    {
+      "Name": "clientRunRegression",
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3317,
+        "PassedTests": 14,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.6696537"
+      },
+      "Executed": 14,
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.ArenaExitRestoresPreviousSafeNodeWithoutLifeCost",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.ChallengeAttemptPersistsAndCompletionDoesNotAdvanceArena",
+          "Status": "Passed",
+          "Duration": "00:00:00.6580000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.CheckpointContractContainsNoOffers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.CompletedArenaCommitsOnlyStableResultsAndNextCheckpoint",
+          "Status": "Passed",
+          "Duration": "00:00:00.0220000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.CompletedCheckpointResumesWithoutTransactions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredEntryFailureKeepsPersistedNodeForRetry",
+          "Status": "Passed",
+          "Duration": "00:00:00.3820000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredRunPersistsInitialSafeNodeBeforeSceneEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.3470000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredRunUsesOpeningLoadoutAndTransitNodeWithoutShopOffers",
+          "Status": "Passed",
+          "Duration": "00:00:00.3500000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.FailedChallengeReturnsPersistedShopWithoutLifeCost",
+          "Status": "Passed",
+          "Duration": "00:00:00.8020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.GeneratedArcadeMap_ReusesTaskSceneWithOnePlayerSpawn",
+          "Status": "Passed",
+          "Duration": "00:00:00.3140000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.GeneratedCatalogHasTwentyFourWaveArenasAndMobileBudgets",
+          "Status": "Passed",
+          "Duration": "00:00:00.3470000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.LastLifeDeletesRunAndClearsAllSessionValue",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.NewRunUsesFixedIsolatedLoadoutAndWritesSafeNode",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.TransitCompletionSaveFailureKeepsRouteAndRetryPreservesExactResourcesWithoutShop",
+          "Status": "Passed",
+          "Duration": "00:00:00.3770000"
+        }
+      ]
+    }
+  ],
+  "Server": {
+    "ValidRed": "2/6 passed",
+    "Green": "6/6 passed",
+    "CheckpointRegression": "8/8 passed",
+    "IncludePassingTests": true,
+    "MaxTests": [
+      6,
+      8
+    ]
+  },
+  "ReleaseEnabled": 0,
+  "AbilityBytesSha256": "CFB13D2290F6DB6773356961BF1CC4D88E4449A28569F46F1A1B0AC21E628B1C",
+  "Review": "未发现确定缺陷；不代替实际双端和设备验收"
+}

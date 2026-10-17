@@ -8,6 +8,9 @@ namespace Game
     /// <summary>校验并转换 Luban 配置为运行时只读定义；仅提供街机和共用表现所需只读配置。</summary>
     public sealed class LubanRuntimeConfigProvider : IRuntimeConfigProvider
     {
+        /// <summary>正式Luban源必须提供商店门禁；损坏配置不能伪装成旧规则开局。</summary>
+        public bool HasSlayerMartConfiguration => true;
+
         private readonly Func<global::Tables> tablesFactory;
         private global::Tables cachedTables;
         private bool validated;

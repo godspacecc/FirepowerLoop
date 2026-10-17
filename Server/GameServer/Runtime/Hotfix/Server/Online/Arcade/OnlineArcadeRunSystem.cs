@@ -692,6 +692,8 @@ namespace ET.Server
             OnlineArcadeRunRecord record = new()
             {
                 RunId = runId,
+                // 只在新局创建时采纳正式配置，已有局恢复不随发布开关迁移。
+                SlayerMartRulesVersion = ServerConfig.Instance.SlayerMart.Enabled ? 1 : 0,
                 RoomId = room.RoomId,
                 Revision = 1,
                 Phase = OnlineArcadeRunPhase.SafeCheckpoint,
