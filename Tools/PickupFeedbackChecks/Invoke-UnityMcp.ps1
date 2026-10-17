@@ -39,7 +39,7 @@ if (!$Tool) {
 } else { $parsed | ConvertTo-Json -Depth 100 }
 if ($parsed.error -or $parsed.result.isError) { throw 'Unity MCP tool returned an error; inspect saved response' }
 if ($Tool -eq 'tests-run') {
-    $results = @($parsed.result.structuredContent.result.Results)
+    $results = @($parsed.result.structuredContent.result.Results | Where-Object { $null -ne $_ })
     if (!$results.Count -or $results.Count -gt $MaxTests) { throw 'Empty result or scope exceeds maximum; refusing fallback' }
     if ($results | Where-Object { $_.Name -notlike "*.$fixture.*" }) { throw 'Unexpected test scope' }
 }
