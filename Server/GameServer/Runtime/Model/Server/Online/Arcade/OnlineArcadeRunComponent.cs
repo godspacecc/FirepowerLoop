@@ -2,6 +2,14 @@ using System.Collections.Generic;
 
 namespace ET.Server
 {
+    /// <summary>当前地图内的捐命回执；随战场销毁，不生成额外中途存档。</summary>
+    [EnableClass]
+    public sealed class OnlineArcadeDonationReceipt
+    {
+        public long TargetPlayerId;
+        public bool Success;
+    }
+
     public enum OnlineArcadeRunPhase
     {
         SafeCheckpoint = 1,
@@ -198,6 +206,9 @@ namespace ET.Server
         public float RespawnSeconds;
         /// <summary>零命合作倒地时钟，独立于短复活和机关冻结。</summary>
         public float DownedSeconds;
+        /// <summary>单调捐命操作序号及最近回执；旧序号被淘汰后也不能再次扣命。</summary>
+        public long LastDonationOperation;
+        public SortedDictionary<long, OnlineArcadeDonationReceipt> DonationReceipts = new();
         /// <summary>当前竞技场临时武器及剩余秒数；离开现场即丢弃，不写安全节点。</summary>
         public string TemporaryWeaponId = string.Empty;
         public float TemporaryWeaponSeconds;

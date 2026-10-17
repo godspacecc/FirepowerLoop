@@ -11,7 +11,7 @@ internal static class CoopRescueOnlineChecks
     {
         var field=p.GetType().GetField("DownedSeconds");Require(field!=null,"missing independent downed timer");return (float)field!.GetValue(p)!;
     }
-    static OnlineArcadeRunActor Actor()
+    internal static OnlineArcadeRunActor Actor()
     {
         var r=new OnlineArcadeRunRecord{RunId=1,RoomId=2,Revision=1,IsCasualRoute=true,ArenaConfigNumber=3,NextArena=2,CompletedArena=1,
             ConfigFingerprint=ServerConfig.Instance.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=1,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};
@@ -20,9 +20,9 @@ internal static class CoopRescueOnlineChecks
         b.Players[2].PositionX=b.Players[1].PositionX+10;return new(){Record=r,Battle=b};
     }
     static void Near(OnlineArcadeRunActor a){a.Battle.Players[2].PositionX=a.Battle.Players[1].PositionX;a.Battle.Players[2].PositionZ=a.Battle.Players[1].PositionZ;}
-    static void Kill(OnlineArcadeRunActor a,long id=1)=>Call("DamagePlayerCore",a,a.Battle,a.Battle.Players[id],100000,FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
-    static void Tick(OnlineArcadeRunActor a,float seconds)=>Call("TickPlayers",a,a.Battle,seconds,TimeInfo.Instance.ServerNow());
-    static OnlineArcadeRunRecord Capture(OnlineArcadeRunActor a)
+    internal static void Kill(OnlineArcadeRunActor a,long id=1)=>Call("DamagePlayerCore",a,a.Battle,a.Battle.Players[id],100000,FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
+    internal static void Tick(OnlineArcadeRunActor a,float seconds)=>Call("TickPlayers",a,a.Battle,seconds,TimeInfo.Instance.ServerNow());
+    internal static OnlineArcadeRunRecord Capture(OnlineArcadeRunActor a)
     {
         var r=OnlineArcadeRunManagerSystem.Clone(a.Record);
         typeof(OnlineArcadeRunManagerSystem).GetMethod("CaptureRoundCheckpoint",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,new object[]{r,a.Battle});return r;

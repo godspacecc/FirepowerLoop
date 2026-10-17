@@ -33,12 +33,48 @@ namespace ET.Server
         }
 
         /// <summary>恢复只补生命及一次复起保护，命数和死亡清理过的支援、队列均不返还。</summary>
-        private static void RestoreCoopPlayer(OnlineArcadeBattleRuntime battle,OnlineArcadeBattlePlayerRuntime player,long now)
+        private static void RestoreCoopPlayer(OnlineArcadeBattleRuntime battle,OnlineArcadeBattlePlayerRuntime player,long now,float protection=-1)
         {
+            if(protection<0)protection=FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RespawnProtection(
+                ServerConfig.Instance.ArcadeRule.ContactInvulnerabilitySeconds,SlayerMartAbility(battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
             player.DownedSeconds=0;player.RespawnSeconds=0;player.CurrentHealth=player.MaxHealth;player.Alive=true;
             player.MoveX=player.MoveZ=0;player.Firing=false;player.LastInputAt=now;
-            player.InvulnerabilitySeconds=FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RespawnProtection(
-                ServerConfig.Instance.ArcadeRule.ContactInvulnerabilitySeconds,SlayerMartAbility(battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
+            player.InvulnerabilitySeconds=protection;
+        }
+
+        /// <summary>Actor 串行裁决捐命；候选与回执先准备，随后扣命和救起一次发布，不另建中途存档。</summary>
+        public static bool DonateCoopLife(this OnlineArcadeRunActor actor,long donorId,long runId,int generation,long targetId,long operation)
+        {
+            var battle=actor.Battle;
+            if(battle==null || actor.Record.RunId!=runId || generation!=battle.RoundGeneration || operation<=0 ||
+                !battle.Players.TryGetValue(donorId,out var donor))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"捐命请求身份或地图代次已过期");
+            if(donor.DonationReceipts.TryGetValue(operation,out var old))
+            {
+                if(old.TargetPlayerId!=targetId)throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"捐命操作不能更换目标");
+                return old.Success;
+            }
+            if(operation<=donor.LastDonationOperation)return false;
+            var source=actor.Record.Players.First(p=>p.PlayerId==donorId);
+            var targetRecord=actor.Record.Players.FirstOrDefault(p=>p.PlayerId==targetId);
+            battle.Players.TryGetValue(targetId,out var target);
+            bool eligible=battle.IsCasualRoute && !battle.IsChallenge && !battle.AllPlayersDefeated &&
+                !battle.ArenaCompletionReady && !battle.ChallengeCompletionReady && !battle.RoundTransitionPending &&
+                battle.SlayerMartReturnWave<=0 && RoundPlayersReady(battle) && actor.DisconnectedAtByPlayer.Count==0 &&
+                donor.Alive && !donor.InTreasureRoom && donor.RespawnSeconds<=0 && source.Lives>=ServerConfig.Instance.ArcadeRule.CoopDonationMinLives &&
+                targetId!=donorId && targetRecord?.Lives==0 && targetRecord.CoopRescueEligible &&
+                target!=null && !target.Alive && !target.InTreasureRoom && target.DownedSeconds>0;
+            float protection=eligible?FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RespawnProtection(
+                ServerConfig.Instance.ArcadeRule.ContactInvulnerabilitySeconds,SlayerMartAbility(battle,targetId),ServerConfig.Instance.SlayerMart.Parameter):0;
+            // 分配回执与计算保护等可能失败的工作必须在扣命之前完成。
+            var receipt=new OnlineArcadeDonationReceipt{TargetPlayerId=targetId,Success=eligible};
+            donor.DonationReceipts.Add(operation,receipt);donor.LastDonationOperation=operation;
+            if(donor.DonationReceipts.Count>32)donor.DonationReceipts.Remove(donor.DonationReceipts.Keys.First());
+            if(!eligible)return false;
+            source.Lives--;
+            RestoreCoopPlayer(battle,target,TimeInfo.Instance.ServerNow(),protection);
+            battle.InputsDirty=true;
+            return true;
         }
     }
 }
