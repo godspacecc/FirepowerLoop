@@ -1,8 +1,9 @@
 using FirepowerLoop.Arcade;
 // 必须显式声明真实过滤和数量；不存在全套回退。
 var options=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length==2?a[1]:"");
-if(!new[]{"SlayerMartRules","SlayerMartConfig","SlayerMartSave","SlayerMartAbilityRules","SlayerMartMasteryRules","SlayerMartSupportTests"}.Contains(options.GetValueOrDefault("testClass"))||options.GetValueOrDefault("includePassingTests")!="true"||
+if(!new[]{"SlayerMartRules","SlayerMartConfig","SlayerMartSave","SlayerMartAbilityRules","SlayerMartMasteryRules","SlayerMartSupportTests","SlayerMartRegionRules"}.Contains(options.GetValueOrDefault("testClass"))||options.GetValueOrDefault("includePassingTests")!="true"||
     !int.TryParse(options.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Require testClass=SlayerMartRules maxTests=N includePassingTests=true");
+if(options["testClass"]=="SlayerMartRegionRules"){Environment.ExitCode=RegionChecks.Run(max);return;}
 if(options["testClass"]=="SlayerMartConfig"){Environment.ExitCode=ConfigChecks.Run(max);return;}
 if(options["testClass"]=="SlayerMartSave"){Environment.ExitCode=SaveChecks.Run(max);return;}
 if(options["testClass"]=="SlayerMartAbilityRules"){Environment.ExitCode=AbilityChecks.Run(max);return;}

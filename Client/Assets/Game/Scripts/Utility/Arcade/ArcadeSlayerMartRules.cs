@@ -8,6 +8,46 @@ namespace FirepowerLoop.Arcade
     /// <summary>区域消费纯规则：只计算候选，不修改宿主工作态。</summary>
     public static class ArcadeSlayerMartRules
     {
+        /// <summary>按实际普通轮号准备唯一店次；仅继承已关闭的同局原始成员账本。</summary>
+        public static ArcadeSlayerMartState BeginVisit(string runId,int completedOrdinaryRounds,bool challenge,IReadOnlyList<long> members,
+            ulong seed,ArcadeSlayerMartConfiguration config,ArcadeSlayerMartState previous)
+        {
+            if(challenge||config==null||members==null)return null;
+            var region=config.Catalog.Regions.SingleOrDefault(p=>p.AfterRound==completedOrdinaryRounds);
+            if(region==null)return null;
+            if(previous==null&&region.Visit!=1)return null;
+            if(previous!=null&&(previous.Visit!=region.Visit-1||
+                !ArcadeSlayerMartSaveRules.TryValidate(previous,runId,members,completedOrdinaryRounds,out _)||
+                previous.Players.Any(p=>!ArcadeSlayerMartAbilityRules.IsValid(p,config.Parameter)||!ArcadeSlayerMartSupportRules.IsValid(p,config))))return null;
+            var next=Create(runId,region.Visit,members,seed,config.Catalog);
+            if(previous==null)return next;
+            next.Players=previous.Players.Select(p=>p.Clone()).OrderBy(p=>p.PlayerId).ToList();
+            foreach(var player in next.Players)
+            {
+                player.RerollSequence=0;player.Choice=0;player.MenuOpen=player.Finished=false;player.Bought.Clear();
+                player.Offers=Draw(next,player,config.Catalog);
+            }
+            return next;
+        }
+        /// <summary>只计算区域工作候选；菜单不暂停，准备帧不扣加载时长，硬截止关闭所有菜单。</summary>
+        public static ArcadeSlayerMartState AdvanceVisit(ArcadeSlayerMartState current,double seconds,bool resourcesReady,bool paused)
+        {
+            if(current==null||double.IsNaN(seconds)||double.IsInfinity(seconds)||seconds<0)throw new ArgumentException("非法区域时钟");
+            var next=current.Clone();if(next.Closing||paused)return next;
+            if(!next.Ready)
+            {
+                if(next.Players.All(p=>p.Choice==2)){next.Ready=next.Closing=true;next.Revision=checked(next.Revision+1);}
+                else if(resourcesReady&&next.Players.All(p=>p.Choice==1)){next.Ready=true;next.Revision=checked(next.Revision+1);}
+                return next;
+            }
+            next.RemainingSeconds=(float)Math.Max(0,next.RemainingSeconds-seconds);
+            if(next.RemainingSeconds<=0||next.Players.All(p=>p.Finished&&!p.MenuOpen))
+            {
+                next.Closing=true;next.Revision=checked(next.Revision+1);
+                foreach(var player in next.Players)player.MenuOpen=false;
+            }
+            return next;
+        }
         public static ArcadeSlayerMartState Create(long runId,int visit,IReadOnlyList<long> members,ulong seed,ArcadeSlayerMartCatalog catalog)
             =>runId>0?Create(runId.ToString(CultureInfo.InvariantCulture),visit,members,seed,catalog):throw new ArgumentException("非法本局身份");
 
