@@ -1081,6 +1081,8 @@ namespace Game
                 long goldBefore = runtime.ArenaGold;
                 // 先移出权威集合，防止同步反馈或重复范围检查再次结算同一掉落。
                 if (!runtime.Drops.Remove(drop.Id)) continue;
+                if(runtime.SlayerChallenge!=null&&definition.Id==slayerChallengeConfig.CoinDropId)
+                {runtime.SlayerChallenge=ArcadeSlayerChallengeRules.CollectCoin(runtime.SlayerChallenge,slayerChallengeConfig,drop.Id);view.RemoveDrop(drop.Id);runtimePool.Return(drop);continue;}
                 if (!ApplyDrop(runtime, definition))
                 {
                     runtime.Drops.Add(drop.Id, drop);
@@ -1533,6 +1535,7 @@ namespace Game
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
             if(SlayerGuardianDefeated(runtime,enemy))return;
+            if(SpawnSlayerCoin(runtime,enemy,hazardKill))return;
             if(slayerMartConfig!=null)ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(runtime),!hazardKill,runtime.SlayerMartStormDamage,slayerMartConfig.Parameter);
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {
@@ -1727,6 +1730,7 @@ namespace Game
         /// <summary>挑战成功只提交挑战奖励，失败恢复进入前已经落盘的“已尝试”安全节点。</summary>
         private void CompleteChallenge(ArcadeCombatRuntime runtime, bool succeeded)
         {
+            if(runtime.SlayerChallenge!=null){CompleteSlayerChallenge(runtime);return;}
             if (runtime.CompletionSubmitted) return;
             runtime.CompletionSubmitted = true;
             // 挑战属于刚完成竞技场的安全节点；不能用下一竞技场编号提前增长奖励。

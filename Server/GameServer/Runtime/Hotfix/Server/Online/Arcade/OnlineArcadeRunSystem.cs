@@ -268,6 +268,8 @@ namespace ET.Server
                     return (true, null);
                 return (true, actor.BuildSnapshot());
             }
+            if(actor.Battle?.SlayerChallenge!=null&&actionKind==8)
+            {bool accepted=OnlineArcadeRunActorSystem.OperateSlayerExit(actor,playerId,operationId,expectedRevision,ready);await self.BroadcastRunChanged(actor);return(accepted,actor.BuildSnapshot());}
             if(actor.Battle?.SlayerChallenge?.Phase==FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Preparing)
             {bool accepted=OperateSlayerPreparation(self,actor,playerId,operationId,expectedRevision,actionKind,ready);await self.BroadcastRunChanged(actor);return(accepted,actor.BuildSnapshot());}
             if (actor.Battle != null || actor.Record.Phase is not (OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory))
@@ -579,13 +581,13 @@ namespace ET.Server
             OnlineArcadeRunRecord candidate = null;
             try
             {
-                candidate = CloneCommittedRecord(actor);
+                candidate = battle.SlayerChallenge!=null?BuildSlayerReturnCandidate(actor):CloneCommittedRecord(actor);
                 EnsureCollections(candidate);
                 foreach (OnlineArcadePlayerRecord player in candidate.Players)
                 {
                     player.Ready = false;
                     player.ChallengeReady = false;
-                    if (battle.ChallengeSucceeded)
+                    if (battle.ChallengeSucceeded&&battle.SlayerChallenge==null)
                         ApplyChallengeRewards(player, Math.Max(1, candidate.CompletedArena));
                 }
                 candidate.Phase = OnlineArcadeRunPhase.SafeCheckpoint;
@@ -1343,13 +1345,14 @@ namespace ET.Server
             }
             if (!RoundPlayersReady(battle) || battle.RoundTransitionPending || self.DisconnectedAtByPlayer.Count>0)
             { battle.LastTickAt=now; return battle.InputsDirty; }
-            float deltaSeconds = Math.Clamp((now - battle.LastTickAt) / 1000f, 0f, 0.2f);
+            float slayerElapsed=Math.Max(0,(now-battle.LastTickAt)/1000f);
+            float deltaSeconds = Math.Clamp(slayerElapsed, 0f, 0.2f);
             battle.LastTickAt = now;
             bool changed = battle.InputsDirty;
             battle.InputsDirty = false;
             if(battle.SlayerChallenge!=null)
             {
-                changed|=TickSlayerChallenge(self,battle,deltaSeconds);
+                changed|=TickSlayerChallenge(self,battle,slayerElapsed);
                 if(battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Boss)
                 {if(changed)battle.BattleRevision++;return changed;}
             }
@@ -2195,6 +2198,7 @@ namespace ET.Server
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
             if(SlayerGuardianDefeated(battle,enemy))return;
+            if(SpawnSlayerCoin(battle,enemy,hazardKill))return;
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
                 !hazardKill&&enemy.LastDamagePlayerId>0,battle.SlayerMartStormDamage,ServerConfig.Instance.SlayerMart.Parameter);
             if (!hazardKill) AwardIslandKill(self, battle, enemy);
@@ -2328,6 +2332,8 @@ namespace ET.Server
                 long beforeScore = winnerRecord.Score;
                 int beforeGold = winnerRecord.RunGold;
                 if (!battle.Drops.Remove(dropId)) continue;
+                if(battle.SlayerChallenge!=null&&drop.DropConfigId==ServerConfig.Instance.SlayerChallenge.CoinDropId)
+                {battle.SlayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeRules.CollectCoin(battle.SlayerChallenge,ServerConfig.Instance.SlayerChallenge,dropId);changed=true;continue;}
                 if (!self.ApplyDrop(winner, definition))
                 {
                     battle.Drops.Add(dropId, drop);

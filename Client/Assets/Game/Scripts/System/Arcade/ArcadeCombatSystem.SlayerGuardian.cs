@@ -48,7 +48,7 @@ namespace Game
             runtime.ChallengeSeconds=(float)runtime.SlayerChallenge.RemainingSeconds;runtime.SlayerGuardian=null;
             runtime.ContentAreas.Clear();runtime.ContentAreaSnapshots.Clear();
             foreach(int id in runtime.Projectiles.Keys.ToArray())RemoveProjectile(runtime,id);
-            view?.RemoveEnemy(enemy.Id,true);runtimePool.Return(enemy);runtime.AwaitingExit=false;return true;
+            view?.RemoveEnemy(enemy.Id,true);runtimePool.Return(enemy);runtime.AwaitingExit=false;BeginSlayerChallengeShop(runtime);return true;
         }
     }
 }

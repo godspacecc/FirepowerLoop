@@ -25,11 +25,12 @@ namespace Game.Tests
             var provider=new LubanRuntimeConfigProvider(()=>tables);architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);config=ArcadeSlayerChallengeConfiguration.FromTables(tables);
             run=new ArcadeRunSaveData{RunId=Guid.NewGuid().ToString("N"),IsCasualRoute=true,ArenaConfigNumber=5,CompletedArenaCount=3,NextArenaNumber=4,RemainingLives=3,SlayerMartRulesVersion=1};
+            run.SlayerMart=ArcadeSlayerMartRules.Create(run.RunId,1,new long[]{1},17,ArcadeSlayerMartConfiguration.FromTables(tables).Catalog);run.SlayerMart.Ready=run.SlayerMart.Closing=true;
             run.Checkpoint.ChallengeId=config.ChallengeId;run.EquipmentBySlot["weapon"]=ArcadeRunDefaults.BasicWeaponId;architecture.GetModel<ArcadeRunModel>().CommitSafeNode(run);
             system=new ArcadeCombatSystem();((ICanSetArchitecture)system).SetArchitecture(architecture);
             typeof(ArcadeCombatSystem).GetField("catalog",Flags).SetValue(system,catalog);typeof(ArcadeCombatSystem).GetField("view",Flags).SetValue(system,new View());
             typeof(ArcadeCombatSystem).GetField("random",Flags).SetValue(system,new System.Random(17));
-            runtime=new ArcadeCombatRuntime{ArenaNumber=4,IsChallenge=true,ChallengeId=config.ChallengeId,PlayerHealth=100,PlayerMaxHealth=100,SlayerMartRulesVersion=1};architecture.GetModel<ArcadeCombatModel>().Begin(runtime);
+            runtime=new ArcadeCombatRuntime{ArenaNumber=4,IsChallenge=true,ChallengeId=config.ChallengeId,PlayerHealth=100,PlayerMaxHealth=100,SlayerMart=run.SlayerMart.Clone(),SlayerMartRulesVersion=1};architecture.GetModel<ArcadeCombatModel>().Begin(runtime);
             Call("InitializeSlayerChallenge",runtime,run);
         }
         [TearDown] public void Cleanup(){architecture?.GetModel<ArcadeCombatModel>().Clear();}
@@ -51,6 +52,9 @@ namespace Game.Tests
         [Test] public void GuardianHammerRespectsProtection(){var e=Guardian();runtime.PlayerInvulnerability=10;Call("TickSlayerGuardian",runtime,e,.1f);Call("TickSlayerGuardian",runtime,e,1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100));}
         [Test] public void GuardianDeathOpensShoppingWithoutMainExit(){var e=Guardian();Call("KillEnemy",runtime,e,false);Assert.That(State.Phase,Is.EqualTo(ArcadeSlayerChallengePhase.Shopping));Assert.That(runtime.AwaitingExit,Is.False);Assert.That(runtime.CompletionSubmitted,Is.False);}
         [Test] public void GuardianBombCannotClearBoss(){var e=Guardian();runtime.Bombs=1;Call("UseBomb",runtime);Assert.That(runtime.Enemies.ContainsKey(e.Id),Is.True);}
+        [Test] public void GuardianVictoryCreditsIndependentShop(){Guardian();Call("KillEnemy",runtime,runtime.Enemies.Values.Single(),false);Assert.That(runtime.SlayerMartReturnWave,Is.GreaterThan(0));Assert.That(runtime.SlayerMart.Players[0].Cash,Is.EqualTo(5000));Assert.That(runtime.SlayerMart.Generation,Is.EqualTo(2));Assert.That(runtime.SlayerMart.CollectedBoxes.Count,Is.EqualTo(9));}
+        [Test] public void CollectionKillGuaranteesPhysicalCoin(){Start();var e=new ArcadeEnemyRuntime{Id=71,Position=runtime.PlayerPosition};runtime.Enemies.Add(e.Id,e);Call("KillEnemy",runtime,e,false);Assert.That(runtime.Drops.Count,Is.EqualTo(1));Assert.That(State.CashCollected,Is.Zero);}
+        [Test] public void PhysicalCoinCreditsChallengeCashInsteadOfRunGold(){Start();var e=new ArcadeEnemyRuntime{Id=71,Position=runtime.PlayerPosition};runtime.Enemies.Add(e.Id,e);Call("KillEnemy",runtime,e,false);Call("TickDrops",runtime);Assert.That(State.CashCollected,Is.EqualTo(100));Assert.That(runtime.ArenaGold,Is.Zero);Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RunGold,Is.Zero);}
         private sealed class View:IArcadeCombatViewPort
         {
             public bool IsActive=>true;public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}public void End(){}

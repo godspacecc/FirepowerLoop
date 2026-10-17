@@ -47,7 +47,7 @@ namespace ET.Server
             if(battle.SlayerGuardian==null||enemy.RuntimeId!=battle.SlayerGuardianEnemyId)return false;
             battle.SlayerChallenge=ArcadeSlayerChallengeRules.BossDefeated(battle.SlayerChallenge,ServerConfig.Instance.SlayerChallenge);
             battle.ChallengeSeconds=(float)battle.SlayerChallenge.RemainingSeconds;
-            battle.SlayerGuardian=null;battle.ContentAreas.Clear();battle.Projectiles.Clear();battle.AwaitingExit=false;return true;
+            battle.SlayerGuardian=null;battle.ContentAreas.Clear();battle.Projectiles.Clear();battle.AwaitingExit=false;BeginSlayerChallengeShop(battle);return true;
         }
     }
 }

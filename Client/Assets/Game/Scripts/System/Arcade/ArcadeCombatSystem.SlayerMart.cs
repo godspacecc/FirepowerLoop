@@ -135,6 +135,7 @@ namespace Game
             runtime.SlayerMart=ArcadeSlayerMartRules.AdvanceVisit(state,seconds,runtime.SlayerMartRegionPrepared&&view.IsSlayerMartRegionReady,paused);
             if(runtime.SlayerMart.Closing)
             {
+                if(runtime.SlayerChallenge!=null){runtime.SlayerMartReturnWave=0;runtime.SlayerChallenge=ArcadeSlayerChallengeRules.Advance(runtime.SlayerChallenge,slayerChallengeConfig,slayerChallengeConfig.ShopSeconds,true);CompleteSlayerChallenge(runtime);return true;}
                 int wave=runtime.SlayerMartReturnWave;runtime.SlayerMartReturnWave=0;runtime.SlayerMartRegionPrepared=false;
                 runtime.SlayerMartRoundBenefitsPending=true;StartContentRound(runtime,wave);return true;
             }

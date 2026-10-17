@@ -34,6 +34,7 @@ namespace ET.Server
         ConfirmSettlement = 4,
         ConfirmAbandon = 5,
         SetChallengeReady = 7,
+        SetSlayerExit = 8,
     }
 
 
@@ -398,6 +399,8 @@ namespace ET.Server
         /// <summary>独立Guardian权威攻击与敌人身份，仅本地图有效。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerGuardianState SlayerGuardian;
         public long SlayerGuardianEnemyId;
+        /// <summary>挑战退出操作回执，最多128条，离场即清空。</summary>
+        public readonly Dictionary<string,string> SlayerExitRequests=new();
         public bool ChallengeCompletionReady;
         public bool ChallengeSucceeded;
         /// <summary>安全节点写入失败后的最早重试服务器时间戳，单位毫秒。</summary>

@@ -30,6 +30,7 @@ namespace Game
             if(runtime.ChallengeId!=c.ChallengeId)return false;
             if(run.SlayerMartRulesVersion!=1||!run.IsCasualRoute)throw new InvalidOperationException("Slayer需要有效规则1休闲局");
             if(!provider.TryGetSlayerMart(out slayerMartConfig,out error))throw new InvalidOperationException(error);
+            if(run.ArenaEntryState!=null)RestoreIslandCheckpoint(runtime,run.ArenaEntryState);runtime.PlayerHealth=runtime.PlayerMaxHealth;
             slayerChallengeConfig=c;arena=catalog.Arenas.Single(p=>p.ArenaNumber==c.ArenaConfigNumber);
             challenge=catalog.Challenges.Single(p=>p.Id==c.ChallengeId);
             runtime.SlayerChallenge=ArcadeSlayerChallengeRules.Create(c,run.RunId,new long[]{1},run.NextArenaNumber,run.ArenaConfigNumber,1);
@@ -71,7 +72,8 @@ namespace Game
                 runtime.ContentAreas.Clear();runtime.ContentAreaSnapshots.Clear();SpawnSlayerGuardian(runtime);
             }
             bool combat=runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Collecting||runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Boss;
-            if(!combat){runtime.MoveDirection=Vector2.zero;runtime.Firing=false;}return combat;
+            if(!combat){runtime.MoveDirection=Vector2.zero;runtime.Firing=false;}
+            if(runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Returning)CompleteSlayerChallenge(runtime);return combat;
         }
 
         /// <summary>独立容错不调用主线失命事务，死亡清理仍沿既有支援合同。</summary>

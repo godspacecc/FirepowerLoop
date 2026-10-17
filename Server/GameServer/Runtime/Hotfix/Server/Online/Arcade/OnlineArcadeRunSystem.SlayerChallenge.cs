@@ -60,7 +60,10 @@ namespace ET.Server
             battle.SlayerChallenge=ArcadeSlayerChallengeRules.Create(c,record.RunId.ToString(System.Globalization.CultureInfo.InvariantCulture),record.Players.Select(p=>p.PlayerId).ToArray(),record.NextArena,record.ArenaConfigNumber,battle.RoundGeneration);
             battle.ChallengeSeconds=c.PreparationSeconds;battle.SpawnQueue.Clear();battle.SpawnQueueIndex=battle.SpawnedInWave=battle.TotalInWave=0;
             int index=0;foreach(var p in battle.Players.Values.OrderBy(p=>p.PlayerId))
-            {p.PositionX=battle.RoundLayout.SpawnX+(index++==0?-1:1);p.PositionZ=battle.RoundLayout.SpawnY;}
+            {p.PositionX=battle.RoundLayout.SpawnX+(index++==0?-1:1);p.PositionZ=battle.RoundLayout.SpawnY;
+                var entry=record.Players.Single(v=>v.PlayerId==p.PlayerId);p.TemporaryWeaponId=entry.RoundTemporaryWeaponId;p.TemporaryWeaponSeconds=entry.RoundTemporaryWeaponSeconds;
+                foreach(var power in entry.RoundPowerups)p.Powerups[power.Behavior]=ClonePowerup(power);
+            }
         }
 
         /// <summary>收币阶段连续补充有界批次，不走普通清轮奖励和挑战提前清完成功。</summary>

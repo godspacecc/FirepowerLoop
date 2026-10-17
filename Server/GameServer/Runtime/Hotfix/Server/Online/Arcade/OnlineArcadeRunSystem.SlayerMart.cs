@@ -157,6 +157,7 @@ namespace ET.Server
         /// <summary>关闭只申请下一普通轮事务，不在此处补命或保存。</summary>
         private static void CloseSlayerMartRegion(OnlineArcadeBattleRuntime battle)
         {
+            if(battle.SlayerChallenge!=null){battle.SlayerMart.Ready=battle.SlayerMart.Closing=true;battle.SlayerChallenge=ArcadeSlayerChallengeRules.Advance(battle.SlayerChallenge,ServerConfig.Instance.SlayerChallenge,ServerConfig.Instance.SlayerChallenge.ShopSeconds,true);battle.ChallengeCompletionReady=true;battle.ChallengeSucceeded=true;battle.SlayerMartReturnWave=0;battle.RoundTransitionPending=false;return;}
             battle.SlayerMartReturnWave=0;battle.SlayerMartRegionPrepared=false;battle.RoundTransitionPending=true;battle.PendingBossEncounter=false;
             foreach(var player in battle.Players.Values){player.MoveX=player.MoveZ=0;player.Firing=false;}
         }

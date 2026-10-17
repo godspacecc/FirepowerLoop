@@ -8,6 +8,19 @@ namespace FirepowerLoop.Arcade
     /// <summary>区域消费纯规则：只计算候选，不修改宿主工作态。</summary>
     public static class ArcadeSlayerMartRules
     {
+        /// <summary>Slayer胜利复用原店次账本的新会话，不推进墓穴访问号，不重复现金箱。</summary>
+        public static ArcadeSlayerMartState BeginChallengeVisit(ArcadeSlayerMartState previous,ArcadeSlayerMartConfiguration config)
+        {
+            if(previous==null||config==null||!previous.Ready||!previous.Closing)throw new ArgumentException("Slayer购物缺少已关闭的主线账本");
+            var next=previous.Clone();next.Generation=checked(previous.Generation+1);next.Revision=checked(previous.Revision+1);
+            next.Seed=Mix(previous.Seed^(ulong)next.Generation);next.Ready=next.Closing=false;
+            next.RemainingSeconds=config.Catalog.Regions.Single(p=>p.Visit==next.Visit).Duration;
+            next.CollectedBoxes=new HashSet<int>(Enumerable.Range(1,config.Catalog.Regions.Single(p=>p.Visit==next.Visit).CashBoxes));
+            next.Receipts.Clear();
+            foreach(var player in next.Players)
+            {player.RerollSequence=0;player.Choice=1;player.MenuOpen=player.Finished=false;player.Bought.Clear();player.Offers=Draw(next,player,config.Catalog);}
+            return next;
+        }
         /// <summary>按实际普通轮号准备唯一店次；仅继承已关闭的同局原始成员账本。</summary>
         public static ArcadeSlayerMartState BeginVisit(string runId,int completedOrdinaryRounds,bool challenge,IReadOnlyList<long> members,
             ulong seed,ArcadeSlayerMartConfiguration config,ArcadeSlayerMartState previous)
