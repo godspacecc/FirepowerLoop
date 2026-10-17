@@ -387,7 +387,7 @@ namespace ET.Server
                         player.PositionX=nx;player.PositionZ=ny;player.IceVelocityX=player.IceVelocityZ=0;player.ContentBumperCooldown=p.EventPeriod;
                     }
                     else if((p.EventKind!=3||firstActive)&&b.ContentClock.TryHit(player.PlayerId,p.EventWarning))
-                        actor.ContentDamagePlayer(b,player,p.EventKind==2?player.MaxHealth:ArcadeRoundContentRules.Damage(player.MaxHealth,p.EventDamage));
+                        actor.DamagePlayerCore(b,player,p.EventKind==2?player.MaxHealth:ArcadeRoundContentRules.Damage(player.MaxHealth,p.EventDamage),p.EventKind==2?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
                 }
             }
             foreach(var zone in b.DeathZones.ToArray())

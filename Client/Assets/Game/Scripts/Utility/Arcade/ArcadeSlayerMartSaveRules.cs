@@ -20,7 +20,9 @@ namespace FirepowerLoop.Arcade
                 state.CollectedBoxes==null||state.Receipts==null||state.PendingGrants==null)return false;
             if(state.Players.Any(p=>p==null)||!state.Players.Select(p=>p.PlayerId).OrderBy(p=>p).SequenceEqual(members.OrderBy(p=>p)))return false;
             foreach(var p in state.Players)
-                if(p.Cash<0||p.Tokens<0||p.RerollSequence<0||p.Bombs<0||p.Dashes<0||p.Lives<0||p.VestSlots<0||p.VestSlots>2||p.Plates<0||p.Plates>p.VestSlots||p.Chickens<0||
+                if(p.StormCharge<0||p.StormRemaining<0||double.IsNaN(p.StormRemaining)||double.IsInfinity(p.StormRemaining)||
+                    p.StormTickElapsed<0||double.IsNaN(p.StormTickElapsed)||double.IsInfinity(p.StormTickElapsed)||
+                    p.Cash<0||p.Tokens<0||p.RerollSequence<0||p.Bombs<0||p.Dashes<0||p.Lives<0||p.VestSlots<0||p.VestSlots>2||p.Plates<0||p.Plates>p.VestSlots||p.Chickens<0||
                     p.Choice<0||p.Choice>2||p.Offers==null||p.Offers.Count!=16||p.Offers.Distinct(StringComparer.Ordinal).Count()!=16||p.Offers.Any(id=>!ItemId(id))||
                     p.Owned==null||p.Bought==null||p.Owned.Any(id=>!ItemId(id))||p.Bought.Any(id=>!ItemId(id)))return false;
             int boxes=state.Visit==1?9:11;

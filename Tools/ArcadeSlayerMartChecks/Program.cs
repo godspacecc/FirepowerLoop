@@ -1,10 +1,11 @@
 using FirepowerLoop.Arcade;
 // 必须显式声明真实过滤和数量；不存在全套回退。
 var options=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length==2?a[1]:"");
-if(!new[]{"SlayerMartRules","SlayerMartConfig","SlayerMartSave"}.Contains(options.GetValueOrDefault("testClass"))||options.GetValueOrDefault("includePassingTests")!="true"||
+if(!new[]{"SlayerMartRules","SlayerMartConfig","SlayerMartSave","SlayerMartAbilityRules"}.Contains(options.GetValueOrDefault("testClass"))||options.GetValueOrDefault("includePassingTests")!="true"||
     !int.TryParse(options.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Require testClass=SlayerMartRules maxTests=N includePassingTests=true");
 if(options["testClass"]=="SlayerMartConfig"){Environment.ExitCode=ConfigChecks.Run(max);return;}
 if(options["testClass"]=="SlayerMartSave"){Environment.ExitCode=SaveChecks.Run(max);return;}
+if(options["testClass"]=="SlayerMartAbilityRules"){Environment.ExitCode=AbilityChecks.Run(max);return;}
 var prices=new long[]{3000,1500,1250,750,500,2000,2500,4000,7000,7000,7000,35000,15000,30000,2000,15000,250,250,500,2000,7000,7000,12500,7500};
 var items=Enumerable.Range(1,24).Select(n=>new ArcadeSlayerMartItem("slayermart.item."+n.ToString("00"),(SlayerMartEffect)n,prices[n-1],n>=7&&n<=14||n==16||n>=21&&n<=23,n==1||n==2?2:n==3||n==18||n==19||n==20?3:1,n==4||n==5||n==6||n==20?300:0)).ToArray();
 var catalog=new ArcadeSlayerMartCatalog(items,new[]{new ArcadeSlayerMartRegion(1,11,9,2000,300),new ArcadeSlayerMartRegion(2,31,11,2000,300)},16,9,9,9,5,8,16);

@@ -3,4 +3,4 @@
   <ItemGroup><Compile Include="Program.cs" /><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartContracts.cs" /><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartRules.cs" /></ItemGroup>
   <ItemGroup><Compile Include="ConfigChecks.cs"/><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartConfiguration.cs"/><Compile Include="../../Client/Assets/Game/Scripts/Model/Config/*.cs"/><Compile Include="../../Client/Assets/Game/Scripts/ThirdParty/Luban/*.cs"/></ItemGroup>
   <ItemGroup><Compile Include="SaveChecks.cs"/><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartSaveRules.cs"/></ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartAbilityState.cs" /></ItemGroup><ItemGroup><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartAbilityRules.cs" /></ItemGroup><ItemGroup><Compile Include="AbilityChecks.cs" /></ItemGroup></Project>

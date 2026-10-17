@@ -12,4 +12,4 @@
     <Compile Include="../../Client/Assets/Tests/EditMode/RoundCheckpointTests.cs" Link="RoundCheckpointTests.cs" />
     <Reference Include="Newtonsoft.Json"><HintPath>../../Client/Library/PackageCache/com.unity.nuget.newtonsoft-json@3.2.1/Runtime/Newtonsoft.Json.dll</HintPath></Reference>
   </ItemGroup>
-</Project>
+<ItemGroup><Compile Include="../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerMartAbilityState.cs" /></ItemGroup></Project>

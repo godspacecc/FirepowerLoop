@@ -289,6 +289,10 @@ namespace Game
                 RejectArenaEntry("街机战斗配置或表现端口不可用");
                 return;
             }
+            if(run.SlayerMartRulesVersion==1&&run.SlayerMart!=null&&
+                (!provider.TryGetSlayerMart(out var abilityConfig,out error)||
+                 run.SlayerMart.Players.Any(p=>!ArcadeSlayerMartAbilityRules.IsValid(p,abilityConfig.Parameter))))
+            {RejectArenaEntry(error??"商店能力恢复状态无效");return;}
             runtimePool.Configure(catalog.Rule.MaxAliveEnemies, catalog.Rule.MaxProjectiles, catalog.Rule.MaxDrops);
 
             arena = run.IsCasualRoute
@@ -1396,8 +1400,8 @@ namespace Game
                     hazard.TryHit(-1, previousPlayer.x, previousPlayer.y, runtime.PlayerPosition.x,
                         runtime.PlayerPosition.y, catalog.Rule.PlayerRadius))
                 {
-                    DamagePlayer(runtime, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
-                        hazard.Parameters.PlayerDamageRatio));
+                    DamagePlayerCore(runtime, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
+                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
                     if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.RespawnRemaining > 0f) return;
                 }
                 enemyIterationIds.Clear();
@@ -1416,12 +1420,23 @@ namespace Game
         }
 
         private void DamagePlayer(ArcadeCombatRuntime runtime, int damage)
+            => DamagePlayerCore(runtime,damage,SlayerMartHitKind.Ordinary);
+
+        /// <summary>正式挡伤入口；失命机关显式跳过新增护甲，旧保护与护盾优先级保留。</summary>
+        private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind)
         {
             if (runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f || runtime.RespawnRemaining > 0f) return;
             if (TryConsumeShield(runtime))
             {
                 runtime.PlayerInvulnerability = catalog.Rule.ContactInvulnerabilitySeconds;
                 view?.PlayShieldBlock(0, runtime.PlayerPosition);
+                return;
+            }
+            var ability=runtime.SlayerMartRulesVersion==1?runtime.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==1):null;
+            if(ArcadeSlayerMartAbilityRules.TryBlockHit(kind,ability,false,false)==SlayerMartBlockResult.Plate)
+            {
+                runtime.PlayerInvulnerability=catalog.Rule.ContactInvulnerabilitySeconds;
+                view?.PlayShieldBlock(0,runtime.PlayerPosition);
                 return;
             }
             runtime.PlayerHealth -= Mathf.Max(1, damage);
@@ -1431,6 +1446,7 @@ namespace Game
 
             if (runtime.IsChallenge)
             {
+                ArcadeSlayerMartAbilityRules.OnDeath(ability);
                 runtime.PlayerHealth = 0;
                 CompleteChallenge(runtime, false);
                 return;
@@ -1440,6 +1456,7 @@ namespace Game
             var result = this.GetSystem<ArcadeRunSystem>().TryHandleDeath(out _, out var error);
             if (result == ArcadeDeathResult.Respawn)
             {
+                ArcadeSlayerMartAbilityRules.OnDeath(ability);
                 runtime.PlayerHealth = 0;
                 runtime.RespawnRemaining = catalog.Rule.RespawnDelaySeconds;
                 runtime.PlayerPosition = Vector2.zero;

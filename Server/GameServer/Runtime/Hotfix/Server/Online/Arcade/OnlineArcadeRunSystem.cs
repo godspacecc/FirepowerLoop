@@ -837,6 +837,8 @@ namespace ET.Server
                 if(run.SlayerMart!=null&&!FirepowerLoop.Arcade.ArcadeSlayerMartSaveRules.TryValidate(run.SlayerMart,run.RunId.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     run.Players.Select(p=>p.PlayerId).ToArray(),(run.NextArena-1)*4+run.RoundNumber-1,out var shopError))
                     throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart checkpoint: "+shopError);
+                if(run.SlayerMart!=null&&run.SlayerMart.Players.Any(p=>!FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.IsValid(p,ServerConfig.Instance.SlayerMart.Parameter)))
+                    throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart ability state.");
 
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
@@ -2456,8 +2458,13 @@ namespace ET.Server
         /// <summary>应用一次受击；死亡只消耗本局生命，复活保持死亡坐标且不写安全节点。</summary>
         private static void DamagePlayer(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player, int damage)
+            => self.DamagePlayerCore(battle,player,damage,FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
+
+        /// <summary>统一分源挡伤；保留旧护盾，新增板不能抵消明确失命机关。</summary>
+        private static void DamagePlayerCore(this OnlineArcadeRunActor self,OnlineArcadeBattleRuntime battle,
+            OnlineArcadeBattlePlayerRuntime player,int damage,FirepowerLoop.Arcade.SlayerMartHitKind kind)
         {
-            if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f) return;
+            if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f || player.DashSeconds>0 || player.RespawnSeconds>0) return;
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             if (TryGetPowerup(player, ArcadePowerupBehavior.Shield,
                     out OnlineArcadePowerupRuntime shield) && shield.Charges > 0)
@@ -2467,12 +2474,16 @@ namespace ET.Server
                 player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds;
                 return;
             }
+            var ability=battle.SlayerMartRulesVersion==1?battle.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==player.PlayerId):null;
+            if(FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.TryBlockHit(kind,ability,false,false)==FirepowerLoop.Arcade.SlayerMartBlockResult.Plate)
+            {player.InvulnerabilitySeconds=rule.ContactInvulnerabilitySeconds;return;}
             player.CurrentHealth -= Math.Max(1, damage);
             player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds;
             if (player.CurrentHealth > 0) return;
 
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             player.CurrentHealth = 0;
+            FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.OnDeath(ability);
             player.Alive = false;
             player.MoveX = 0f;
             player.MoveZ = 0f;
@@ -2509,8 +2520,8 @@ namespace ET.Server
                     if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f || player.DashSeconds > 0f) continue;
                     if (!hazard.TryHit(-player.PlayerId, player.HazardPreviousX, player.HazardPreviousZ,
                         player.PositionX, player.PositionZ, rule.PlayerRadius)) continue;
-                    self.DamagePlayer(battle, player, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(player.MaxHealth,
-                        hazard.Parameters.PlayerDamageRatio));
+                    self.DamagePlayerCore(battle, player, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(player.MaxHealth,
+                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?FirepowerLoop.Arcade.SlayerMartHitKind.LethalMechanism:FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
                     if (battle.AllPlayersDefeated || player.RespawnSeconds > 0f) return true;
                 }
                 battle.EnemyIterationIds.Clear();

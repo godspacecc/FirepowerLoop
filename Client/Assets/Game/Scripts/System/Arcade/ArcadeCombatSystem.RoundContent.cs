@@ -199,7 +199,7 @@ namespace Game
                     { r.Drops.Remove(drop.Id);view?.RemoveDrop(drop.Id);runtimePool.Return(drop); }
             bool harmful=kind==1 || kind==2 || kind==3 || kind==4 || kind==6 || kind==7;
             if(harmful && touching && (kind!=3 || firstActive) && r.ContentClock.TryHit(-100-kind,p.SkillWarning))
-                DamageContentPlayer(r,kind==2 ? r.PlayerMaxHealth : ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage));
+                DamagePlayerCore(r,kind==2 ? r.PlayerMaxHealth : ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage),kind==2?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
             if(kind==3 && firstActive && this.GetModel<ArcadeCombatModel>().Runtime==r && catalog!=null)
                 DamageContentEnemies(r,center,p.EventRadius,p.EventDamage);
         }

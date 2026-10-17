@@ -75,7 +75,7 @@ namespace FirepowerLoop.Arcade
 #if DOTNET
     [ET.EnableClass]
 #endif
-    public sealed class ArcadeSlayerMartPlayer
+    public sealed class ArcadeSlayerMartPlayer : ArcadeSlayerMartAbilityState
     {
         public long PlayerId { get; set; }
         public long Cash { get; set; }
@@ -84,15 +84,12 @@ namespace FirepowerLoop.Arcade
         public int Bombs { get; set; }
         public int Dashes { get; set; }
         public int Lives { get; set; }
-        public int VestSlots { get; set; }
-        public int Plates { get; set; }
         public int Chickens { get; set; }
         public bool MenuOpen { get; set; }
         public bool Finished { get; set; }
         /// <summary>0未选、1进入、2跳过；不替队友决定。</summary>
         public int Choice { get; set; }
         public List<string> Offers { get; set; } = new List<string>();
-        public HashSet<string> Owned { get; set; } = new HashSet<string>(StringComparer.Ordinal);
         public HashSet<string> Bought { get; set; } = new HashSet<string>(StringComparer.Ordinal);
         public ArcadeSlayerMartPlayer Clone()
         { var p=(ArcadeSlayerMartPlayer)MemberwiseClone();p.Offers=new List<string>(Offers);p.Owned=new HashSet<string>(Owned,StringComparer.Ordinal);p.Bought=new HashSet<string>(Bought,StringComparer.Ordinal);return p; }
