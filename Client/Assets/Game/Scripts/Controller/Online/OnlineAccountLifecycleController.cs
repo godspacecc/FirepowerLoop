@@ -32,6 +32,7 @@ namespace Game
         private bool backgrounded;
         /// <summary>分别记忆焦点和暂停信号，二者都恢复后才开始恢复心跳期限。</summary>
         private bool hasFocus = true;
+        /// <summary>平台暂停通知独立于窗口焦点。</summary>
         private bool isPaused;
         private bool disposed;
 

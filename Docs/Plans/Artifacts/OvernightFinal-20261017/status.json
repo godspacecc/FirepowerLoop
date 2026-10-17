@@ -1,0 +1,12 @@
+{
+  "Timestamp": "2026-10-17T21:55:55.9752751+08:00",
+  "ServiceId": 88924,
+  "ServicePath": "E:\\GitHub\\FirepowerLoop\\Client\\Library\\mcp-server\\win-x64\\gamedev-mcp-server.exe",
+  "ConfigHost": "http://localhost:21032",
+  "ConfigTimeoutMs": 180000,
+  "DefaultSaveFiles": [],
+  "ReleaseGate": ",release.enabled,0",
+  "NativeUnityToolsVisible": 0,
+  "NativeEntry": "CLI reads project config; current long-session tool refresh unverified",
+  "LastFeatureCommit": "ae147c507c2c5d0234c1b1a7b4e2aa6ca7c6255d"
+}
