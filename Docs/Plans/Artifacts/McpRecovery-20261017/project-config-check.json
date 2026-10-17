@@ -1,0 +1,14 @@
+{
+  "name": "unity_firepowerloop",
+  "enabled": true,
+  "startup_timeout_sec": 180.0,
+  "tool_timeout_sec": 180.0,
+  "transport": {
+    "type": "streamable_http",
+    "url": "http://localhost:21032/mcp",
+    "bearer_token_env_var": null,
+    "http_headers": null,
+    "env_http_headers": null,
+    "http_headers_helper": null
+  }
+}
