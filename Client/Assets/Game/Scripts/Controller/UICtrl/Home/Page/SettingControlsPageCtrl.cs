@@ -80,6 +80,7 @@ namespace Game
         {
             switch (actionId)
             {
+                case HotKeyActionIds.UseFieldUpgrade: return Loc.T("ui.arcade.slayermart.hotkey");
                 case HotKeyActionIds.TogglePause: return Texts.HotkeyTogglePause;
                 case HotKeyActionIds.ToggleRuntimeLog: return Texts.HotkeyToggleRuntimeLog;
                 default: return Texts.HotkeyUnknown;

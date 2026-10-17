@@ -232,7 +232,7 @@ namespace Game
                 if (pendingInputSequence == 0)
                 {
                     Vector2 playerPosition = FindLocalBattlePlayerPosition();
-                    pendingInput = input.Read(combatView, playerPosition);
+                    pendingInput = input.Read(combatView, playerPosition, CanQueueFieldUpgrade());
                     lastSampledInput = pendingInput;
                     pendingInputSequence = ++lastIssuedInputSequence;
                 }
@@ -240,11 +240,11 @@ namespace Game
                 var frame=pendingInput;
                 OnlineArcadeInputResult result = await SubmitInputWithSequenceAsync(sequence,
                     frame.Move.x, frame.Move.y, frame.Aim.x, frame.Aim.y,
-                    frame.Firing, frame.Bomb, frame.Dash);
+                    frame.Firing, frame.Bomb, frame.Dash, frame.FieldUpgrade);
                 if(pendingInputSequence!=sequence)return;
                 if (result.InputSequence >= sequence && (result.Accepted || result.Code == OnlineArcadeResultCode.Success))
                 {
-                    input.Acknowledge(frame.Bomb, frame.Dash);
+                    input.Acknowledge(frame.Bomb, frame.Dash, frame.FieldUpgrade);
                     pendingInputSequence = 0;
                 }
                 else if (result.Code == OnlineArcadeResultCode.InvalidState ||
@@ -275,6 +275,7 @@ namespace Game
         {
             if (lastSnapshot.Phase is not (OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge) ||
                 lastSnapshot.BattlePaused || input == null) return;
+            if(evt.Action==ArcadeHudActionKind.FieldUpgrade){if(CanQueueFieldUpgrade())input.QueueFieldUpgrade();return;}
             if (evt.Action == ArcadeHudActionKind.Bomb) input.QueueBomb();
             else if (evt.Action == ArcadeHudActionKind.Dash) input.QueueDash();
         }

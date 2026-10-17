@@ -7,7 +7,7 @@ namespace Game
     /// <summary>安全节点只承担恢复与准备，数值顺序兼容本项目旧局阶段。</summary>
     public enum ArcadeRunPhase { None, SafeCheckpoint, Arena, Challenge, Victory, Result }
     public enum ArcadeDeathResult { Rejected, Respawn, RunFailed }
-    public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, ExitFirstPerson }
+    public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, ExitFirstPerson, FieldUpgrade }
 
     /// <summary>街机模式固定开局合同；不读取基地角色、装备、弹药、货币或背包。</summary>
     public static class ArcadeRunDefaults

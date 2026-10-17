@@ -248,6 +248,7 @@ namespace Game
         private void RegisterDefaultActions()
         {
             var registry = this.GetUtility<HotKeyActionRegistry>();
+            registry.Register(new HotKeyAction { ActionId=HotKeyActionIds.UseFieldUpgrade, Context=HotKeyContext.Gameplay, Priority=20, CanExecute=CanUseFieldUpgrade, Execute=()=>this.SendEvent(new ArcadeHudActionRequestedEvent(ArcadeHudActionKind.FieldUpgrade)) });
             registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.TogglePause, Context = HotKeyContext.Gameplay, Priority = 10, CanExecute = () => ResolveTogglePauseRoute().CanExecute, Execute = () => ExecuteTogglePauseRoute(ResolveTogglePauseRoute()) });
             registry.Register(new HotKeyAction { ActionId = HotKeyActionIds.ToggleRuntimeLog, Context = HotKeyContext.Global, Priority = 1, CanExecute = () => true, Execute = () =>
             {
@@ -259,6 +260,23 @@ namespace Game
             } });
         }
 
+        /// <summary>键盘只发当前可控玩家的技能意图；充能是否足够仍由战斗权威判断。</summary>
+        private bool CanUseFieldUpgrade()
+        {
+            if(this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen||ArcadeShopUICtrl.IsShownForInput)return false;
+            var online=this.GetSystem<OnlineArcadeRunSystem>();
+            if(online?.Snapshot.HasRun==true)
+            {
+                var snapshot=online.Snapshot;var battle=snapshot.Battle;
+                if(battle==null||snapshot.BattlePaused||battle.RoundLoading||battle.SlayerMart?.RulesVersion!=1||battle.SlayerMart?.Active==true)return false;
+                long self=this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
+                return battle.Players.Any(p=>p.PlayerId==self&&p.Alive&&p.RespawnSeconds<=0&&p.HasStorm);
+            }
+            var runtime=this.GetModel<ArcadeCombatModel>()?.Runtime;
+            return runtime!=null&&runtime.SlayerMartRulesVersion==1&&runtime.PlayerHealth>0&&runtime.RespawnRemaining<=0&&
+                !runtime.IslandTransitionPending&&!runtime.IslandRoomTransitionPending&&!runtime.CompletionSubmitted&&
+                runtime.SlayerMartReturnWave<=0&&runtime.SlayerMart?.Players.Any(p=>p.PlayerId==1&&p.Owned.Contains("slayermart.item.16"))==true;
+        }
         private TogglePauseRoute ResolveTogglePauseRoute()
         {
             var topmostBlockingUI = UIHelper.GetTopmostBlockingUI();

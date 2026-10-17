@@ -5,6 +5,15 @@ namespace Game
 {
     public sealed partial class OnlineArcadeRunSystem
     {
+        /// <summary>旧规则或未持有技能时不劫持原消耗品输入。</summary>
+        private bool CanQueueFieldUpgrade()
+        {
+            var battle=lastSnapshot.Battle;
+            if(battle==null||battle.SlayerMart?.RulesVersion!=1||battle.SlayerMart?.Active==true)return false;
+            long self=this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
+            var player=battle.Players.FirstOrDefault(p=>p.PlayerId==self);
+            return player.HasStorm&&!InputContextBlocked(player);
+        }
         /// <summary>只约束本地意图，资源就绪确认与网络轮询不因个人菜单停止。</summary>
         private bool InputContextBlocked(OnlineArcadeBattlePlayerSnapshot player)=>lastSnapshot.BattlePaused||lastSnapshot.Battle.RoundLoading||
             !player.Alive||player.RespawnSeconds>0||UIHelper.HasUIOpen||ArcadeShopUICtrl.IsShownForInput;

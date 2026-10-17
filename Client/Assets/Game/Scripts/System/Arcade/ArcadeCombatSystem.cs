@@ -428,6 +428,9 @@ namespace Game
             if (this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing || UIHelper.HasUIOpen) return;
             switch (evt.Action)
             {
+                case ArcadeHudActionKind.FieldUpgrade:
+                    TryUseFieldUpgrade();
+                    break;
                 case ArcadeHudActionKind.Fire:
                     TryFire(runtime);
                     break;

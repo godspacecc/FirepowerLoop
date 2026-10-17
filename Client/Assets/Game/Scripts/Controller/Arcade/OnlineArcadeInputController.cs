@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,11 +18,19 @@ namespace Game
         private readonly InputAction bombAction;
         private readonly InputAction dashAction;
         private readonly PointerUiBlocker pointerUiBlocker = new PointerUiBlocker();
-        private int queuedBombs;
-        private int queuedDashes;
+        // 帧号隔离同帧技能优先级，旧帧未确认的消耗品不能被新技能丢弃。
+        private readonly Queue<int> queuedBombs = new Queue<int>();
+        private readonly Queue<int> queuedDashes = new Queue<int>();
+        private readonly Queue<int> queuedUpgrades = new Queue<int>();
+        private readonly Func<int> frameProvider;
+        private readonly ArcadeFieldUpgradeChord chord = new ArcadeFieldUpgradeChord();
+        private int lastUpgradeFrame = int.MinValue;
 
-        public OnlineArcadeInputController()
+        public OnlineArcadeInputController() : this(()=>Time.frameCount) {}
+
+        public OnlineArcadeInputController(Func<int> frameProvider)
         {
+            this.frameProvider=frameProvider??throw new ArgumentNullException(nameof(frameProvider));
             moveAction = new InputAction("OnlineArcadeMove", InputActionType.Value, expectedControlType: "Vector2");
             moveAction.AddCompositeBinding("2DVector")
                 .With("Up", "<Keyboard>/w").With("Down", "<Keyboard>/s")
@@ -46,6 +55,7 @@ namespace Game
 
         public void Enable()
         {
+            chord.Enable();
             moveAction.Enable();
             aimAction.Enable();
             fireAction.Enable();
@@ -56,6 +66,7 @@ namespace Game
 
         public void Disable(bool clearPulses)
         {
+            chord.Disable();
             moveAction.Disable();
             aimAction.Disable();
             fireAction.Disable();
@@ -66,8 +77,10 @@ namespace Game
         }
 
         /// <summary>读取持续状态；右摇杆同时表达瞄准和射击，鼠标与实体扳机保留桌面/手柄入口。</summary>
-        public OnlineArcadeInputFrame Read(IArcadeCombatViewPort view, Vector2 playerPosition)
+        public OnlineArcadeInputFrame Read(IArcadeCombatViewPort view, Vector2 playerPosition, bool allowFieldUpgrade = true)
         {
+            if(chord.TryConsume()&&allowFieldUpgrade)QueueFieldUpgrade();
+            if(!allowFieldUpgrade)queuedUpgrades.Clear();
             Vector2 move = Vector2.ClampMagnitude(moveAction.ReadValue<Vector2>(), 1f);
             Vector2 aim = Vector2.ClampMagnitude(aimAction.ReadValue<Vector2>(), 1f);
             bool stickFiring = aim.sqrMagnitude >= AimDeadZone * AimDeadZone;
@@ -87,22 +100,31 @@ namespace Game
             }
             if (aim.sqrMagnitude < AimDeadZone * AimDeadZone) aim = Vector2.zero;
             return new OnlineArcadeInputFrame(move, aim, stickFiring || mouseFiring || triggerAction.IsPressed(),
-                queuedBombs > 0, queuedDashes > 0);
+                queuedUpgrades.Count==0&&queuedBombs.Count>0, queuedUpgrades.Count==0&&queuedDashes.Count>0, queuedUpgrades.Count>0);
         }
 
-        public void QueueBomb() => queuedBombs++;
-        public void QueueDash() => queuedDashes++;
-
-        /// <summary>服务器确认输入序号已处理后才消费对应脉冲；在途期间新增的脉冲留待下一包。</summary>
-        public void Acknowledge(bool bomb, bool dash)
+        public void QueueBomb(){if(lastUpgradeFrame!=frameProvider())queuedBombs.Enqueue(frameProvider());}
+        public void QueueDash(){if(lastUpgradeFrame!=frameProvider())queuedDashes.Enqueue(frameProvider());}
+        /// <summary>技能优先于同帧炸弹和冲刺，多个输入来源只产生一个技能脉冲。</summary>
+        public void QueueFieldUpgrade()
         {
-            if (bomb && queuedBombs > 0) queuedBombs--;
-            if (dash && queuedDashes > 0) queuedDashes--;
+            int frame=frameProvider();if(lastUpgradeFrame==frame)return;
+            lastUpgradeFrame=frame;queuedUpgrades.Enqueue(frame);
+            RemoveFrame(queuedBombs,frame);RemoveFrame(queuedDashes,frame);
         }
-
-        internal int QueuedBombs => queuedBombs;
-        internal int QueuedDashes => queuedDashes;
-        internal void ClearPulses() { queuedBombs = 0; queuedDashes = 0; }
+        private static void RemoveFrame(Queue<int> queue,int frame)
+        {int count=queue.Count;while(count-->0){int value=queue.Dequeue();if(value!=frame)queue.Enqueue(value);}}
+        /// <summary>只在权威确认后消费已捕获的一次脉冲。</summary>
+        public void Acknowledge(bool bomb,bool dash,bool fieldUpgrade=false)
+        {
+            if(bomb&&queuedBombs.Count>0)queuedBombs.Dequeue();
+            if(dash&&queuedDashes.Count>0)queuedDashes.Dequeue();
+            if(fieldUpgrade&&queuedUpgrades.Count>0)queuedUpgrades.Dequeue();
+        }
+        internal int QueuedBombs=>queuedBombs.Count;
+        internal int QueuedDashes=>queuedDashes.Count;
+        internal int QueuedFieldUpgrades=>queuedUpgrades.Count;
+        internal void ClearPulses(){queuedBombs.Clear();queuedDashes.Clear();queuedUpgrades.Clear();chord.ClearPulse();lastUpgradeFrame=int.MinValue;}
         private void OnBomb(InputAction.CallbackContext _) => QueueBomb();
         private void OnDash(InputAction.CallbackContext _) => QueueDash();
 
@@ -111,6 +133,7 @@ namespace Game
             bombAction.performed -= OnBomb;
             dashAction.performed -= OnDash;
             Disable(true);
+            chord.Dispose();
             moveAction.Dispose(); aimAction.Dispose(); fireAction.Dispose();
             triggerAction.Dispose(); bombAction.Dispose(); dashAction.Dispose();
         }
@@ -119,12 +142,13 @@ namespace Game
     /// <summary>单次待发送的联机街机输入采样；脉冲字段在服务端确认前保持不变。</summary>
     public readonly struct OnlineArcadeInputFrame
     {
-        public OnlineArcadeInputFrame(Vector2 move, Vector2 aim, bool firing, bool bomb, bool dash)
-        { Move = move; Aim = aim; Firing = firing; Bomb = bomb; Dash = dash; }
+        public OnlineArcadeInputFrame(Vector2 move, Vector2 aim, bool firing, bool bomb, bool dash, bool fieldUpgrade=false)
+        { Move = move; Aim = aim; Firing = firing; Bomb = bomb; Dash = dash; FieldUpgrade=fieldUpgrade; }
         public Vector2 Move { get; }
         public Vector2 Aim { get; }
         public bool Firing { get; }
         public bool Bomb { get; }
         public bool Dash { get; }
+        public bool FieldUpgrade { get; }
     }
 }
