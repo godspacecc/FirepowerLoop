@@ -2,12 +2,13 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
-if(!new[]{"FullRouteOnline","SlayerCheckpointOnline","SlayerArmorOnline","SlayerStormOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
+if(!new[]{"FullRouteOnline","SlayerCheckpointOnline","SlayerArmorOnline","SlayerStormOnline","SlayerMasteryOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
 var config=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
 World.Instance.AddSingleton(config);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
 if(opts["testClass"]=="SlayerCheckpointOnline"){Environment.ExitCode=SlayerCheckpointOnlineChecks.Run(max);return;}
 if(opts["testClass"]=="SlayerArmorOnline"){Environment.ExitCode=SlayerArmorOnlineChecks.Run(max);return;}
 if(opts["testClass"]=="SlayerStormOnline"){Environment.ExitCode=SlayerStormOnlineChecks.Run(max);return;}
+if(opts["testClass"]=="SlayerMasteryOnline"){Environment.ExitCode=SlayerMasteryOnlineChecks.Run(max);return;}
 object ManagerCall(string name,params object[] values)=>typeof(OnlineArcadeRunManagerSystem).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,values)!;
 object Call(string name,params object[] values)=>typeof(OnlineArcadeRunActorSystem).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,values)!;
 OnlineArcadeRunRecord Record(int ordinal=1,int map=1)=>new(){RunId=1,RoomId=2,Revision=1,IsCasualRoute=true,ArenaConfigNumber=map,CompletedArena=ordinal-1,NextArena=ordinal,ConfigFingerprint=config.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};

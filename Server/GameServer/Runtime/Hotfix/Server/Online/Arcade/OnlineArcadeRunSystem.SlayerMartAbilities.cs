@@ -8,7 +8,25 @@ namespace ET.Server
     {
         /// <summary>依原始成员身份读取个人能力，不从队友或客户端快照借用。</summary>
         private static ArcadeSlayerMartPlayer SlayerMartAbility(OnlineArcadeBattleRuntime battle,long playerId)
-            => battle.SlayerMartRulesVersion==1?battle.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==playerId):null;
+            => battle?.SlayerMartRulesVersion==1?battle.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==playerId):null;
+        /// <summary>普通道具与个人精通的固定映射，不修改正式掉落基础数值。</summary>
+        private static SlayerMartEffect SlayerMartMastery(ArcadePowerupBehavior behavior)
+            => behavior switch
+            {
+                ArcadePowerupBehavior.Magnet=>SlayerMartEffect.MagnetMastery,
+                ArcadePowerupBehavior.Decoy=>SlayerMartEffect.DecoyMastery,
+                ArcadePowerupBehavior.Gloves=>SlayerMartEffect.GlovesMastery,
+                ArcadePowerupBehavior.Chicken=>SlayerMartEffect.ChickenMastery,
+                ArcadePowerupBehavior.Barrel=>SlayerMartEffect.BarrelMastery,
+                ArcadePowerupBehavior.Saw=>SlayerMartEffect.SawMastery,
+                _=>0
+            };
+        /// <summary>从基础半径按当前拥有状态求值；买精通后已有实例立即使用新几何。</summary>
+        private static float SlayerMartRadius(OnlineArcadeBattleRuntime battle,long owner,OnlineArcadePowerupRuntime powerup)
+            => ArcadeSlayerMartAbilityRules.MasteryRadius(powerup.Radius,SlayerMartMastery(powerup.Behavior),SlayerMartAbility(battle,owner),ServerConfig.Instance.SlayerMart.Parameter);
+        /// <summary>伤害只在发射时求值一次，在途弹丸保持已确定的数值。</summary>
+        private static int SlayerMartDamage(OnlineArcadeBattleRuntime battle,long owner,int damage,SlayerMartDamageSource source)
+            => ArcadeSlayerMartAbilityRules.ResolveDamage(damage,source,SlayerMartAbility(battle,owner),ServerConfig.Instance.SlayerMart.Parameter);
         /// <summary>购物、加载与轮前候选冻结战斗能力；普通宝藏房继续原活动计时。</summary>
         private static bool SlayerMartClockActive(OnlineArcadeBattleRuntime battle)
             => !battle.RoundTransitionPending&&!battle.ArenaCompletionReady&&!battle.AllPlayersDefeated&&

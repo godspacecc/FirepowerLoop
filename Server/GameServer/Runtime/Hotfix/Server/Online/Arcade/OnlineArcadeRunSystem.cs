@@ -1470,7 +1470,7 @@ namespace ET.Server
                     if (respawnRecord.Lives <= 0) continue;
                     player.CurrentHealth = player.MaxHealth;
                     player.Alive = true;
-                    player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds * 2f;
+                    player.InvulnerabilitySeconds = FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RespawnProtection(rule.ContactInvulnerabilitySeconds,SlayerMartAbility(battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
                     player.LastInputAt = now;
                     changed = true;
                     continue;
@@ -1891,6 +1891,7 @@ namespace ET.Server
             float aimZ = player.AimZ * inverseAimLength;
             int damage = Math.Max(1, (int)MathF.Round(weapon.Damage *
                 (1f + UpgradeTotal(record, ArcadeUpgradeKind.DamagePercent))));
+            damage=SlayerMartDamage(battle,player.PlayerId,damage,FirepowerLoop.Arcade.SlayerMartDamageSource.Weapon);
             if (weapon.Behavior == ArcadeWeaponBehavior.Melee)
             {
                 // 近战不占投射物预算；复用身份缓冲，死亡掉落移除敌人不会使遍历失效。
@@ -2262,7 +2263,7 @@ namespace ET.Server
                     float pickupRadius = BasePickupRadius *
                                          (1f + UpgradeTotal(record, ArcadeUpgradeKind.PickupRadiusPercent));
                     if (TryGetPowerup(player, ArcadePowerupBehavior.Magnet, out OnlineArcadePowerupRuntime magnet))
-                        pickupRadius = Math.Max(pickupRadius, magnet.Radius);
+                        pickupRadius = Math.Max(pickupRadius, SlayerMartRadius(battle,player.PlayerId,magnet));
                     float distance = DistanceSquared(drop.PositionX, drop.PositionZ, player.PositionX, player.PositionZ);
                     if (distance > pickupRadius * pickupRadius || distance > winnerDistance ||
                         MathF.Abs(distance - winnerDistance) < 0.0001f && winner != null && player.PlayerId > winner.PlayerId)
@@ -2340,7 +2341,7 @@ namespace ET.Server
                         IntervalSeconds = definition.IntervalSeconds,
                         Radius = definition.Radius,
                         ProjectileSpeed = definition.ProjectileSpeed,
-                        RemainingSeconds = drop.DurationSeconds,
+                        RemainingSeconds = FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(self.Battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter),
                         Charges = definition.Charges,
                         PositionX = player.PositionX,
                         PositionZ = player.PositionZ,
@@ -2369,7 +2370,7 @@ namespace ET.Server
                     {
                         if (!player.InTreasureRoom && pair.Key == ArcadePowerupBehavior.Decoy)
                             self.DamageEnemiesInRadius(battle, powerup.PositionX, powerup.PositionZ,
-                                powerup.Radius, powerup.Damage, player.PlayerId);
+                                SlayerMartRadius(battle,player.PlayerId,powerup), powerup.Damage, player.PlayerId);
                         player.Powerups.Remove(pair.Key);
                         continue;
                     }
@@ -2437,7 +2438,7 @@ namespace ET.Server
                 PositionZ = originZ,
                 VelocityX = offsetX / length * powerup.ProjectileSpeed,
                 VelocityZ = offsetZ / length * powerup.ProjectileSpeed,
-                Damage = powerup.Damage,
+                Damage = SlayerMartDamage(battle,owner.PlayerId,powerup.Damage,powerup.Behavior==ArcadePowerupBehavior.Sentry?FirepowerLoop.Arcade.SlayerMartDamageSource.Sentry:powerup.Behavior==ArcadePowerupBehavior.Chicken?FirepowerLoop.Arcade.SlayerMartDamageSource.Chicken:FirepowerLoop.Arcade.SlayerMartDamageSource.Orb),
                 RemainingSeconds = SupportProjectileLifetimeSeconds,
                 Behavior = ArcadeWeaponBehavior.Direct,
                 RemainingHits = 1,

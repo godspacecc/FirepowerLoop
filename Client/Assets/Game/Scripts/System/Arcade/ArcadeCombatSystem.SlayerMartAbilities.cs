@@ -13,6 +13,25 @@ namespace Game
         /// <summary>单人固定原始成员1，不把商店余额当作另一份能力状态。</summary>
         private ArcadeSlayerMartPlayer SlayerMartAbility(ArcadeCombatRuntime runtime)
             => runtime.SlayerMartRulesVersion==1?runtime.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==1):null;
+        /// <summary>普通强化只映射对应精通，价格和倍率仍来自正式配置。</summary>
+        private static SlayerMartEffect SlayerMartMastery(global::ArcadePowerupBehavior behavior)
+            => behavior switch
+            {
+                global::ArcadePowerupBehavior.Magnet=>SlayerMartEffect.MagnetMastery,
+                global::ArcadePowerupBehavior.Decoy=>SlayerMartEffect.DecoyMastery,
+                global::ArcadePowerupBehavior.Gloves=>SlayerMartEffect.GlovesMastery,
+                global::ArcadePowerupBehavior.Chicken=>SlayerMartEffect.ChickenMastery,
+                global::ArcadePowerupBehavior.Barrel=>SlayerMartEffect.BarrelMastery,
+                global::ArcadePowerupBehavior.Saw=>SlayerMartEffect.SawMastery,
+                _=>0
+            };
+        /// <summary>原始半径每次只乘一次，已有实例购买精通后立即使用新半径。</summary>
+        private float SlayerMartRadius(ArcadeCombatRuntime runtime,ArcadePowerupRuntime powerup)
+            => slayerMartConfig==null?powerup.Definition.Radius:ArcadeSlayerMartAbilityRules.MasteryRadius(powerup.Definition.Radius,
+                SlayerMartMastery(powerup.Definition.Behavior),SlayerMartAbility(runtime),slayerMartConfig.Parameter);
+        /// <summary>发射时叠到旧属性结果之上，命中时不再重复乘精通。</summary>
+        private int SlayerMartDamage(ArcadeCombatRuntime runtime,int damage,SlayerMartDamageSource source)
+            => slayerMartConfig==null?damage:ArcadeSlayerMartAbilityRules.ResolveDamage(damage,source,SlayerMartAbility(runtime),slayerMartConfig.Parameter);
         /// <summary>原活动帧推进能力，购物和加载冻结；普通宝藏房的既有时钟保留。</summary>
         private static bool SlayerMartClockActive(ArcadeCombatRuntime runtime)
             => runtime.PlayerHealth>0&&runtime.RespawnRemaining<=0&&!runtime.IslandTransitionPending&&!runtime.IslandRoomTransitionPending&&

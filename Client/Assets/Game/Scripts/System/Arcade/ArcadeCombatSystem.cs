@@ -611,7 +611,7 @@ namespace Game
             {
                 if (!runtime.InTreasureRoom && behavior == global::ArcadePowerupBehavior.Decoy &&
                     runtime.Powerups.TryGetValue(behavior, out var decoy))
-                    DamageEnemiesInRadius(runtime, decoy.Position, decoy.Definition.Radius, decoy.Definition.Damage);
+                    DamageEnemiesInRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
                 runtime.Powerups.Remove(behavior);
             }
             if (runtime.TemporaryWeaponRemaining <= 0f) runtime.TemporaryWeaponId = null;
@@ -621,7 +621,8 @@ namespace Game
             {
                 runtime.PlayerHealth = runtime.PlayerMaxHealth;
                 runtime.PlayerPosition = Vector2.zero;
-                runtime.PlayerInvulnerability = catalog.Rule.ContactInvulnerabilitySeconds * 2f;
+                runtime.PlayerInvulnerability = slayerMartConfig==null?catalog.Rule.ContactInvulnerabilitySeconds*2f:
+                    ArcadeSlayerMartAbilityRules.RespawnProtection(catalog.Rule.ContactInvulnerabilitySeconds,SlayerMartAbility(runtime),slayerMartConfig.Parameter);
             }
         }
 
@@ -1040,7 +1041,7 @@ namespace Game
         {
             var pickupBonus = UpgradeTotal(this.GetModel<ArcadeRunModel>().Current, global::ArcadeUpgradeKind.PickupRadiusPercent);
             var magnetRadius = TryGetPowerup(runtime, global::ArcadePowerupBehavior.Magnet, out var magnet)
-                ? magnet.Definition.Radius
+                ? SlayerMartRadius(runtime,magnet)
                 : 0f;
             var pickupRadius = CalculatePickupRadius(1.1f, pickupBonus, magnetRadius);
             CopyKeys(runtime.Drops, dropIterationIds);
@@ -1138,7 +1139,8 @@ namespace Game
             if (runtime.Projectiles.Count < catalog.Rule.MaxProjectiles)
                 powerup.ShotDirection = direction;
             SpawnProjectile(runtime, false, origin, direction * powerup.Definition.ProjectileSpeed,
-                powerup.Definition.Damage, 1.5f);
+                SlayerMartDamage(runtime,powerup.Definition.Damage,powerup.Definition.Behavior==global::ArcadePowerupBehavior.Sentry?SlayerMartDamageSource.Sentry:
+                    powerup.Definition.Behavior==global::ArcadePowerupBehavior.Chicken?SlayerMartDamageSource.Chicken:SlayerMartDamageSource.Orb), 1.5f);
             powerup.CooldownSeconds = powerup.Definition.IntervalSeconds;
         }
 
@@ -1306,6 +1308,7 @@ namespace Game
             var damageBonus = UpgradeTotal(run, global::ArcadeUpgradeKind.DamagePercent);
             var fireRateBonus = UpgradeTotal(run, global::ArcadeUpgradeKind.FireRatePercent);
             var damage = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * (1f + damageBonus)));
+            damage=SlayerMartDamage(runtime,damage,SlayerMartDamageSource.Weapon);
             if (weapon.Behavior == global::ArcadeWeaponBehavior.Melee)
             {
                 // 近战在按下攻击的当帧按面向结算，仍通过同一开火序列驱动共享攻击片段。
@@ -1607,7 +1610,8 @@ namespace Game
             }
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;
-            powerup.RemainingSeconds = drop.DurationSeconds;
+            powerup.RemainingSeconds = slayerMartConfig==null?drop.DurationSeconds:ArcadeSlayerMartAbilityRules.MasteryDuration(
+                drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(runtime),slayerMartConfig.Parameter);
             powerup.Charges = definition.Charges;
             powerup.CooldownSeconds = 0f;
             powerup.Position = runtime.PlayerPosition;

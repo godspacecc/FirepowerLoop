@@ -61,6 +61,26 @@ namespace FirepowerLoop.Arcade
         /// <summary>只在真正复起时生成一次保护，恢复剩余量不再乘。</summary>
         public static float RespawnProtection(float contactSeconds,ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
             => contactSeconds*2*(Owns(state,21)?parameter("mastery.respawn"):1);
+        /// <summary>只在新实例生成或正常刷新时计算时长，购买精通不回填已过去时间。</summary>
+        public static float MasteryDuration(float seconds,SlayerMartEffect mastery,ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
+        {
+            if(!Owns(state,(int)mastery))return seconds;
+            string key=mastery==SlayerMartEffect.MagnetMastery?"mastery.magnet":
+                mastery==SlayerMartEffect.GlovesMastery?"mastery.gloves":mastery==SlayerMartEffect.ChickenMastery?"mastery.chicken":
+                mastery==SlayerMartEffect.BarrelMastery?"mastery.barrel":null;
+            return key==null?seconds:seconds*parameter(key);
+        }
+        /// <summary>活动半径从原始配置求值，重复帧不会把上次结果再次相乘。</summary>
+        public static float MasteryRadius(float radius,SlayerMartEffect mastery,ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
+        {
+            if(!Owns(state,(int)mastery))return radius;
+            string key=mastery==SlayerMartEffect.MagnetMastery?"mastery.magnet":
+                mastery==SlayerMartEffect.DecoyMastery?"mastery.decoy":mastery==SlayerMartEffect.SawMastery?"mastery.sawDistance":null;
+            return key==null?radius:radius*parameter(key);
+        }
+        /// <summary>爆桶轨道速度独立于触发次数和命中冷却。</summary>
+        public static float MasteryOrbitSpeed(float speed,ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
+            => Owns(state,22)?speed*parameter("mastery.barrel"):speed;
         /// <summary>恢复时依正式配置校验上界；文件层只检查不依赖配置的结构。</summary>
         public static bool IsValid(ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
         {
