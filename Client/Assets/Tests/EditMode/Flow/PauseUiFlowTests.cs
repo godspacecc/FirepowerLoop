@@ -53,7 +53,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadePause_ReopensAsOnlineInBaseAndRefreshesLanguage()
+        public void ArcadePause_ReopensWithLeaveActionAndRefreshesLanguage()
         {
             var map = Game.Interface.GetModel<MapSceneModel>();
             map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
@@ -66,7 +66,9 @@ namespace Game.Tests
             ctrl.Hide();
             map.SetLoaded(MapIds.Arcade, null);
             ctrl.Show();
-            Assert.That(text.text, Is.EqualTo("Online Game"));
+            Assert.That(text.text, Is.EqualTo("Leave Arcade"));
+            Assert.That(GetBaseUI<PauseUI>(ctrl).BtnMainMenu.gameObject.activeSelf, Is.False);
+            Assert.That(GetBaseUI<PauseUI>(ctrl).BtnReturnCamp.gameObject.activeSelf, Is.False);
         }
 
         [Test]
@@ -146,43 +148,38 @@ namespace Game.Tests
         }
 
         [Test]
-        public void PauseLayout_ShrinksForArcadeAndRestoresForBaseWithoutButtonGaps()
+        public void PauseLayout_KeepsArcadeActionsCompactAcrossReopen()
         {
             var map = Game.Interface.GetModel<MapSceneModel>();
             map.SetLoaded(MapIds.Arcade, null);
             var ctrl = UIHelper.ShowUI<PauseUICtrl>();
             var view = GetBaseUI<PauseUI>(ctrl);
-            var panel = (RectTransform)view.transform.Find("ContentRoot/Panel");
+            var panel = view.PausePanel;
             var group = (RectTransform)panel.Find("ButtonGroup");
-            var baseHeight = panel.rect.height;
-            var baseGroupHeight = group.rect.height;
-            var baseBottomMargin = ButtonBottomMargin(panel, view.BtnExit);
-            Assert.That(view.BtnMainMenu.gameObject.activeSelf, Is.True);
-            Assert.That(baseBottomMargin, Is.EqualTo(36f).Within(0.1f), "最后一个按钮应保持固定底部留白");
-            Assert.That(baseHeight, Is.GreaterThan(baseGroupHeight));
-
-            ctrl.Hide();
-            map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
-            ctrl.Show();
+            var height = panel.rect.height;
+            var groupHeight = group.rect.height;
             Assert.That(view.BtnMainMenu.gameObject.activeSelf, Is.False);
-            Assert.That(baseHeight - panel.rect.height, Is.EqualTo(84f).Within(0.1f), "隐藏按钮应同时移除 68 高度和 16 间距");
-            Assert.That(baseGroupHeight - group.rect.height, Is.EqualTo(84f).Within(0.1f));
-            Assert.That(ButtonBottomMargin(panel, view.BtnExit), Is.EqualTo(baseBottomMargin).Within(0.1f));
+            Assert.That(view.BtnReturnCamp.gameObject.activeSelf, Is.False);
+            Assert.That(group.GetComponentsInChildren<Button>().Select(button => button.name),
+                Is.EquivalentTo(new[] { "BtnContinue", "BtnOnline", "BtnSetting", "BtnExit" }));
+            Assert.That(ButtonBottomMargin(panel, view.BtnExit), Is.EqualTo(36f).Within(0.1f));
+            Assert.That(height, Is.GreaterThan(groupHeight));
             Assert.That(panel.anchoredPosition, Is.EqualTo(Vector2.zero));
             Assert.That(panel.rect.width, Is.EqualTo(560f).Within(0.1f));
 
-            // 进一步隐藏任意按钮，验证由内容驱动，而不是按地图硬编码四/五按钮尺寸。
+            // 隐藏一个现役按钮时，布局应移除按钮高度及间距，不留下旧菜单空位。
             view.BtnSetting.gameObject.SetActive(false);
             LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
-            Assert.That(baseHeight - panel.rect.height, Is.EqualTo(168f).Within(0.1f));
-            Assert.That(ButtonBottomMargin(panel, view.BtnExit), Is.EqualTo(baseBottomMargin).Within(0.1f));
+            Assert.That(height - panel.rect.height, Is.EqualTo(84f).Within(0.1f));
+            Assert.That(ButtonBottomMargin(panel, view.BtnExit), Is.EqualTo(36f).Within(0.1f));
             view.BtnSetting.gameObject.SetActive(true);
-
             ctrl.Hide();
-            map.SetLoaded(MapIds.Arcade, null);
+            map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
             ctrl.Show();
-            Assert.That(panel.rect.height, Is.EqualTo(baseHeight).Within(0.1f));
-            Assert.That(group.rect.height, Is.EqualTo(baseGroupHeight).Within(0.1f));
+            Assert.That(panel.rect.height, Is.EqualTo(height).Within(0.1f));
+            Assert.That(group.rect.height, Is.EqualTo(groupHeight).Within(0.1f));
+            Assert.That(view.BtnMainMenu.gameObject.activeSelf, Is.False);
+            Assert.That(view.BtnReturnCamp.gameObject.activeSelf, Is.False);
         }
 
         private static float ButtonBottomMargin(RectTransform panel, Button button)
@@ -304,25 +301,26 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EscapeClosesOnlyTopmostWhitelistedController()
+        public void EscapeClosesTopLayerBeforeLaterDialog()
         {
             var save = RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd"));
             var log = RegisterShown(new RuntimeLogUICtrl(), CreateBaseUI<RuntimeLogUI>("RuntimeLog"));
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
             Assert.IsTrue(hotKeys.ExecuteBinding(HotKeyDefaults.Escape));
-            Assert.IsTrue(save.IsShow());
-            Assert.IsFalse(log.IsShow());
+            // Top 工具窗口先于后显示的 Dialog 关闭；第二次 Escape 才关闭日志。
+            Assert.IsFalse(save.IsShow());
+            Assert.IsTrue(log.IsShow());
 
             Assert.IsTrue(hotKeys.ExecuteBinding(HotKeyDefaults.Escape));
-            Assert.IsFalse(save.IsShow());
+            Assert.IsFalse(log.IsShow());
         }
 
         [Test]
         public void NonWhitelistedBlockingUiShieldsUnderlyingWindowAndPause()
         {
             EnterPlaying();
-            var save = RegisterShown(new TestCmdUICtrl(), CreateBaseUI<TestCmdUI>("TestCmd"));
+            var save = RegisterShown(new RuntimeLogUICtrl(), CreateBaseUI<RuntimeLogUI>("RuntimeLog"));
             var sameLayerShield = RegisterShown(new ShieldDialogUICtrl(), CreateBaseUI("ShieldDialog"));
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
@@ -357,7 +355,7 @@ namespace Game.Tests
             EnterPlaying();
             var hotKeys = Game.Interface.GetSystem<HotKeySystem>();
 
-            Assert.IsTrue(hotKeys.BeginRebind("inventory.toggle").Success);
+            Assert.IsTrue(hotKeys.BeginRebind(HotKeyActionIds.UseFieldUpgrade).Success);
             var result = hotKeys.ReceiveBindingPath(HotKeyDefaults.Escape);
 
             Assert.IsFalse(result.Success);
@@ -374,8 +372,11 @@ namespace Game.Tests
             Assert.That(bindings.Count(item => item.BindingPath == HotKeyDefaults.Escape), Is.EqualTo(1));
             Assert.That(bindings.Single(item => item.BindingPath == HotKeyDefaults.Escape).ActionId,
                 Is.EqualTo(HotKeyActionIds.TogglePause));
-            Assert.That(bindings.Single(item => item.BindingPath == "<Keyboard>/tab").ActionId,
-                Is.EqualTo("inventory.toggle"));
+            Assert.That(bindings.Any(item => item.BindingPath == "<Keyboard>/tab" || item.ActionId == "inventory.toggle"), Is.False);
+            Assert.That(bindings.Single(item => item.BindingPath == "<Keyboard>/f").ActionId,
+                Is.EqualTo(HotKeyActionIds.UseFieldUpgrade));
+            Assert.That(bindings.Single(item => item.BindingPath == "<Keyboard>/r").ActionId,
+                Is.EqualTo(HotKeyActionIds.DonateLife));
             Assert.That(bindings.Single(item => item.BindingPath == HotKeyDefaults.F1).ActionId,
                 Is.EqualTo(HotKeyActionIds.ToggleRuntimeLog));
             Assert.That(bindings.Any(item => item.BindingPath == "<Keyboard>/c"), Is.False);
