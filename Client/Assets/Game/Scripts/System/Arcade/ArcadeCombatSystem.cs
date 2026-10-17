@@ -426,6 +426,9 @@ namespace Game
             if ((runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry ||
                 runtime.CompletionSubmitted) && evt.Action != ArcadeHudActionKind.RetryCompletion) return;
             if (this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing || UIHelper.HasUIOpen) return;
+            // 同帧双肩技能优先于单键消耗品，未解锁时保留旧输入规则。
+            if(evt.Action is ArcadeHudActionKind.Bomb or ArcadeHudActionKind.Dash&&input?.FieldUpgradePressedThisFrame==true&&
+                SlayerMartAbility(runtime)?.Owned.Contains("slayermart.item.16")==true)return;
             switch (evt.Action)
             {
                 case ArcadeHudActionKind.FieldUpgrade:
@@ -461,6 +464,9 @@ namespace Game
         /// <summary>单帧推进有最大步长，避免切后台后的长帧直接跨过复活和接触伤害窗口。</summary>
         internal void Tick(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            var inputApp=this.GetModel<AppStateModel>();
+            if(!SlayerMartClockActive(runtime)||runtime.SlayerMartReturnWave>0||UIHelper.HasUIOpen||
+                inputApp!=null&&inputApp.CurrentState.Value!=AppState.Playing)input?.ClearFieldUpgradePulse();
             if(TickSlayerMartRegion(runtime,deltaTime))return;
             if (runtime.IslandTransitionPending)
             { ClearArcadeInput(runtime); TryFinishIslandTransition(runtime); return; }
@@ -567,6 +573,7 @@ namespace Game
         /// <summary>从同一 Input System 通道读取键鼠、手柄和屏幕摇杆；右摇杆超过死区即持续开火。</summary>
         private void ReadInput(ArcadeCombatRuntime runtime)
         {
+            ReadFieldUpgradeInput(runtime);
             runtime.MoveDirection = input?.MoveInput ?? Vector2.zero;
             var stickAim = input?.AimInput ?? Vector2.zero;
             var stickFiring = stickAim.sqrMagnitude >= AimDeadZone * AimDeadZone;
@@ -1960,6 +1967,12 @@ namespace Game
                 TemporaryWeaponNameKey = runtime.TemporaryWeaponRemaining > 0f ? ProductNameKey(temporary.ProductId) : null,
                 TemporaryWeaponSeconds = runtime.TemporaryWeaponRemaining,
                 FirstPersonSeconds = runtime.FirstPersonRemaining,
+                SlayerMartRulesVersion=runtime.SlayerMartRulesVersion,
+                HasStorm=SlayerMartAbility(runtime)?.Owned.Contains("slayermart.item.16")==true,
+                StormCharge=SlayerMartAbility(runtime)?.StormCharge??0,
+                StormSeconds=(float)(SlayerMartAbility(runtime)?.StormRemaining??0),
+                VestSlots=SlayerMartAbility(runtime)?.VestSlots??0,
+                Plates=SlayerMartAbility(runtime)?.Plates??0,
                 Powerups = powerups.ToArray(),
                 Bombs = runtime.Bombs,
                 Dashes = runtime.Dashes,

@@ -45,6 +45,7 @@ namespace Game
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
             UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
+            UI.BtnFieldUpgrade.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.FieldUpgrade));
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);
             UI.BtnRetry.onClick.AddListener(() => SendAction(ArcadeHudActionKind.RetryCompletion));
             UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
@@ -55,11 +56,12 @@ namespace Game
             this.RegisterEvent<ArcadeCombatOperationFailedEvent>(evt => Notify.ShowFloatTips(evt.Error)).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnOnlineRunChanged(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<MobileInputModeChangedEvent>(_ => { RefreshJoystickVisibility(); RenderFirstPersonStatus(); })
+            this.RegisterEvent<MobileInputModeChangedEvent>(_ => { RefreshJoystickVisibility(); RenderFirstPersonStatus(); SyncFieldUpgradeUi(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_ => { if (IsShow()) ApplyJoystickLayout(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<LanguageChangedEvent>(_ => { Render(); RenderStageBannerText(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<HotKeyBindingsChangedEvent>(_=>SyncFieldUpgradeUi()).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<LanguageChangedEvent>(_ => { if(onlineMode)RenderOnline(this.GetSystem<OnlineArcadeRunSystem>().Snapshot);else Render(); SyncFieldUpgradeUi(); RenderStageBannerText(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
         protected override void OnShow()

@@ -9,6 +9,7 @@ namespace Game
         private void SyncSlayerMartUi()
         {
             if(UI==null||!IsShow())return;
+            SyncFieldUpgradeUi();
             var online=this.GetSystem<OnlineArcadeRunSystem>();
             var quote=online?.Snapshot.HasRun==true?online.GetSlayerMartSnapshot():this.GetSystem<ArcadeCombatSystem>()?.GetSlayerMartSnapshot();
             var window=UIHelper.GetUICtrl<ArcadeShopUICtrl>();

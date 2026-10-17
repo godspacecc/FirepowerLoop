@@ -301,6 +301,13 @@ namespace Game
         public float TemporaryWeaponSeconds { get; set; }
         /// <summary>单人临时第一人称剩余秒数；联机快照保持默认零。</summary>
         public float FirstPersonSeconds { get; set; }
+        /// <summary>本局规则与本人能力只读投影，不参与扣费或充能。</summary>
+        public int SlayerMartRulesVersion { get; set; }
+        public bool HasStorm { get; set; }
+        public int StormCharge { get; set; }
+        public float StormSeconds { get; set; }
+        public int VestSlots { get; set; }
+        public int Plates { get; set; }
         public ArcadePowerupHudEntry[] Powerups { get; set; } = Array.Empty<ArcadePowerupHudEntry>();
         public int Bombs { get; set; }
         public int Dashes { get; set; }

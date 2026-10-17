@@ -37,6 +37,11 @@ namespace Game
             => runtime.PlayerHealth>0&&runtime.RespawnRemaining<=0&&!runtime.IslandTransitionPending&&!runtime.IslandRoomTransitionPending&&
                 !runtime.CompletionAwaitingRetry&&!runtime.CompletionSubmitted&&
                 !(runtime.SlayerMart?.Ready==true&&!runtime.SlayerMart.Closing);
+        /// <summary>消费单人设备的一次意图；拒绝后不缓冲到复起或退出菜单。</summary>
+        private void ReadFieldUpgradeInput(ArcadeCombatRuntime runtime)
+        {
+            if(input?.TryConsumeFieldUpgrade()==true)TryUseFieldUpgrade();
+        }
         /// <summary>统一输入适配入口；成功后才发布HUD，不消费其他能力库存。</summary>
         public bool TryUseFieldUpgrade()
         {

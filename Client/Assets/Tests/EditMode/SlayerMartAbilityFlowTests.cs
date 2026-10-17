@@ -13,10 +13,10 @@ namespace Game.Tests
     /// <summary>通过正式战斗伤害入口验证护甲，使用生成配置且不启动场景或真实存档。</summary>
     public sealed class SlayerMartAbilityFlowTests
     {
-        private ArcadeCombatSystem system;
-        private ArcadeCombatRuntime runtime;
-        private ArcadeSlayerMartPlayer player;
-        private Game architecture;
+        internal ArcadeCombatSystem system;
+        internal ArcadeCombatRuntime runtime;
+        internal ArcadeSlayerMartPlayer player;
+        internal Game architecture;
         [SetUp] public void Setup()
         {
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));

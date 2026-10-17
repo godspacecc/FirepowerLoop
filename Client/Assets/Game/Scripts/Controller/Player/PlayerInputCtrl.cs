@@ -9,6 +9,11 @@ namespace Game
     /// <summary>读取设备原始意图并管理监听寿命；不裁决相机模式、装备资格或战斗数值。</summary>
     public sealed class PlayerInputCtrl : IDisposable
     {
+        /// <summary>只采集原始双肩意图；是否可释放由街机System裁决。</summary>
+        private readonly ArcadeFieldUpgradeChord fieldUpgradeChord=new ArcadeFieldUpgradeChord();
+        public bool TryConsumeFieldUpgrade()=>fieldUpgradeChord.TryConsume();
+        public void ClearFieldUpgradePulse()=>fieldUpgradeChord.ClearPulse();
+        public bool FieldUpgradePressedThisFrame=>fieldUpgradeChord.WasPressedThisFrame;
         private readonly InputAction moveAction;
         private readonly InputAction aimAction;
         private readonly InputAction attackAction;
@@ -125,6 +130,7 @@ namespace Game
 
         public void Enable()
         {
+            fieldUpgradeChord.Enable();
             if (!moveAction.enabled)
             {
                 moveAction.Enable();
@@ -187,6 +193,7 @@ namespace Game
 
         public void Disable()
         {
+            fieldUpgradeChord.Disable();
             mobileLook.ResetCapture();
             if (moveAction.enabled)
             {
@@ -252,6 +259,7 @@ namespace Game
 
         public void Dispose()
         {
+            fieldUpgradeChord.Dispose();
             mobileLook.Dispose();
             moveAction.performed -= OnMovePerformed;
             moveAction.canceled -= OnMoveCanceled;

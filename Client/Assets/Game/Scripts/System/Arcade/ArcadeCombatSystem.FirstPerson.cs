@@ -49,6 +49,7 @@ namespace Game
             runtime.MoveDirection = Vector2.zero;
             runtime.Firing = false;
             input?.ResetMobileLook();
+            input?.ClearFieldUpgradePulse();
             arcadeAttackRequiresRelease = true;
         }
 

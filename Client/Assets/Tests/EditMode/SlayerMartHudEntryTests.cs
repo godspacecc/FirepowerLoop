@@ -17,7 +17,7 @@ namespace Game.Tests
     public sealed class SlayerMartHudEntryTests
     {
         private const BindingFlags Private=BindingFlags.Instance|BindingFlags.NonPublic;
-        private SlayerMartUiFlowTests h;private ArcadeHudUICtrl controller;private GameObject root,fixtureRoot;private ArcadeHudUI ui;
+        internal SlayerMartUiFlowTests h;internal ArcadeHudUICtrl controller;private GameObject root,fixtureRoot;internal ArcadeHudUI ui;
         [SetUp]public void Setup()
         {
             UIHelper.ResetForTests();h=new SlayerMartUiFlowTests();h.Setup();
@@ -34,11 +34,11 @@ namespace Game.Tests
             typeof(BaseUICtrl).GetField("BaseUI",Private).SetValue(controller,ui);typeof(BaseUICtrl).GetField("_isActive",Private).SetValue(controller,true);typeof(ArcadeHudUICtrl).GetField("onlineMode",Private).SetValue(controller,true);
             typeof(ArcadeHudUICtrl).GetMethod("OnInit",Private).Invoke(controller,null);
         }
-        private void Configure(Action<ET.OnlineArcadeRunSnapshot> customize=null)
+        internal void Configure(Action<ET.OnlineArcadeRunSnapshot> customize=null)
         {h.Configure(r=>{var player=OnlineArcadeBattlePlayerInfo.Create();player.PlayerId=10;player.Alive=true;player.CurrentHealth=player.MaxHealth=100;r.Battle.Players.Add(player);r.Battle.SlayerMartMembers[0].MenuOpen=false;customize?.Invoke(r);});h.Network.PushConfigured();}
         private T Field<T>(string name) where T:Object
         {var field=typeof(ArcadeHudUI).GetField(name);Assert.That(field,Is.Not.Null,"HUD缺少正式序列化入口："+name);var value=field.GetValue(ui);Assert.That(value,Is.Not.Null);return (T)value;}
-        private void Sync(){var method=typeof(ArcadeHudUICtrl).GetMethod("SyncSlayerMartUi",Private);Assert.That(method,Is.Not.Null,"HUD尚未接商店区域状态");method.Invoke(controller,null);}
+        internal void Sync(){var method=typeof(ArcadeHudUICtrl).GetMethod("SyncSlayerMartUi",Private);Assert.That(method,Is.Not.Null,"HUD尚未接商店区域状态");method.Invoke(controller,null);}
         private ArcadeShopUI Window()
         {var shop=UIHelper.GetUICtrl<ArcadeShopUICtrl>();Assert.That(shop,Is.Not.Null);return (ArcadeShopUI)typeof(BaseUICtrl).GetField("BaseUI",Private).GetValue(shop);}
         [TearDown]public void Cleanup()
