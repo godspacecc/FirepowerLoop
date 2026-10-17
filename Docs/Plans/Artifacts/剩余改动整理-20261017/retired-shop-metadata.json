@@ -1,0 +1,34 @@
+[
+  {
+    "path": "Client/Assets/Game/Config/tbarcadeshopitem.bytes.meta",
+    "guid": "be3a0f4ef7558c24eb82f0b2254db5ab",
+    "removed_owner": "Client/Assets/Game/Config/tbarcadeshopitem.bytes",
+    "owner_removed_commit": "ab4e8d1 \u6e05\u7406\u5355\u4eba\u548c\u53cc\u4eba\u5546\u5e97\u529f\u80fd\u5e76\u4fdd\u7559\u6062\u590d\u7ed3\u7b97\u51c6\u5907\u6d41\u7a0b",
+    "current_references": [],
+    "original_meta": "fileFormatVersion: 2\nguid: be3a0f4ef7558c24eb82f0b2254db5ab\nTextScriptImporter:\n  externalObjects: {}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/ArcadeShopItemConfig.cs.meta",
+    "guid": "e764aa4263d04ca4ba9c6d0ea9acf879",
+    "removed_owner": "Client/Assets/Game/Scripts/Model/Config/ArcadeShopItemConfig.cs",
+    "owner_removed_commit": "ab4e8d1 \u6e05\u7406\u5355\u4eba\u548c\u53cc\u4eba\u5546\u5e97\u529f\u80fd\u5e76\u4fdd\u7559\u6062\u590d\u7ed3\u7b97\u51c6\u5907\u6d41\u7a0b",
+    "current_references": [],
+    "original_meta": "fileFormatVersion: 2\nguid: e764aa4263d04ca4ba9c6d0ea9acf879\nMonoImporter:\n  externalObjects: {}\n  serializedVersion: 2\n  defaultReferences: []\n  executionOrder: 0\n  icon: {instanceID: 0}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/ArcadeShopProductType.cs.meta",
+    "guid": "ba2a01d4a1bd0ea4bbf4f5ac8ee34d18",
+    "removed_owner": "Client/Assets/Game/Scripts/Model/Config/ArcadeShopProductType.cs",
+    "owner_removed_commit": "ab4e8d1 \u6e05\u7406\u5355\u4eba\u548c\u53cc\u4eba\u5546\u5e97\u529f\u80fd\u5e76\u4fdd\u7559\u6062\u590d\u7ed3\u7b97\u51c6\u5907\u6d41\u7a0b",
+    "current_references": [],
+    "original_meta": "fileFormatVersion: 2\nguid: ba2a01d4a1bd0ea4bbf4f5ac8ee34d18\nMonoImporter:\n  externalObjects: {}\n  serializedVersion: 2\n  defaultReferences: []\n  executionOrder: 0\n  icon: {instanceID: 0}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/TbArcadeShopItem.cs.meta",
+    "guid": "428090254a4b9af4f893ac3c403c0edb",
+    "removed_owner": "Client/Assets/Game/Scripts/Model/Config/TbArcadeShopItem.cs",
+    "owner_removed_commit": "ab4e8d1 \u6e05\u7406\u5355\u4eba\u548c\u53cc\u4eba\u5546\u5e97\u529f\u80fd\u5e76\u4fdd\u7559\u6062\u590d\u7ed3\u7b97\u51c6\u5907\u6d41\u7a0b",
+    "current_references": [],
+    "original_meta": "fileFormatVersion: 2\nguid: 428090254a4b9af4f893ac3c403c0edb\nMonoImporter:\n  externalObjects: {}\n  serializedVersion: 2\n  defaultReferences: []\n  executionOrder: 0\n  icon: {instanceID: 0}\n  userData: \n  assetBundleName: \n  assetBundleVariant: \n"
+  }
+]
