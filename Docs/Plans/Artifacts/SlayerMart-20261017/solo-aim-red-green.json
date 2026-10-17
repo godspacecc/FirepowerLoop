@@ -1,0 +1,64 @@
+{
+  "testClass": "ArcadeAimPriorityTests",
+  "red": {
+    "failed": 2,
+    "results": [
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ActiveStickWinsOverIdleMouse",
+        "Status": "Failed",
+        "Message": "  Expected: (1.00, 0.00)\r\n  But was:  (-1.00, 0.00)\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ActiveStickWinsOverPressedMouse",
+        "Status": "Failed",
+        "Message": "  Expected: (0.00, 1.00)\r\n  But was:  (-1.00, 0.00)\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ReleasedStickAllowsMouseFire",
+        "Status": "Passed",
+        "Message": null
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ReleasedStickRestoresMouseAim",
+        "Status": "Passed",
+        "Message": null
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.StickBelowDeadZoneUsesMouse",
+        "Status": "Passed",
+        "Message": null
+      }
+    ],
+    "passed": 3,
+    "executed": 5
+  },
+  "includePassingTests": true,
+  "green": {
+    "failed": 0,
+    "results": [
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ActiveStickWinsOverIdleMouse",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ActiveStickWinsOverPressedMouse",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ReleasedStickAllowsMouseFire",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.ReleasedStickRestoresMouseAim",
+        "Status": "Passed"
+      },
+      {
+        "Name": "Game.Tests.ArcadeAimPriorityTests.StickBelowDeadZoneUsesMouse",
+        "Status": "Passed"
+      }
+    ],
+    "passed": 5,
+    "executed": 5
+  },
+  "maximum": 5
+}

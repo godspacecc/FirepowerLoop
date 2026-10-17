@@ -585,7 +585,8 @@ namespace Game
             {
                 runtime.AimDirection = stickAim.normalized;
             }
-            if (input != null && input.TryGetPointerScreenPosition(out var screen) &&
+            // 有效右摇杆拥有当前瞄准；桌面鼠标仅在摇杆回到死区后接管。
+            if (!stickFiring && input != null && input.TryGetPointerScreenPosition(out var screen) &&
                 view.TryScreenToArena(screen, out var target))
             {
                 var aim = target - runtime.PlayerPosition;
