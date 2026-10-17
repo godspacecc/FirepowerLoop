@@ -1,0 +1,81 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections;
+using Game;
+using QFramework;
+using FirepowerLoop.Arcade;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+using UnityEditor;
+using Cysharp.Threading.Tasks;
+public class Script
+{
+    const string probeKind="BarrageVisual90";
+    const string folder="E:/GitHub/FirepowerLoop/Client/Temp/BarrageActualVisualAfterPlacementFix";
+    static Gamepad pad;static double started,lastSample;static int frames,lastBarrels=-1;static bool warningCaptured,airMid,airLow;
+    static readonly BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public;
+    static object F(object o,string n)=>o.GetType().GetField(n,flags).GetValue(o);
+    public static object Main()
+    {
+        if(!Application.isPlaying || Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("Wrong visual environment");
+        foreach(var assembly in AppDomain.CurrentDomain.GetAssemblies()){var t=assembly.GetType("Script");if(t?.GetField("probeKind",BindingFlags.Static|BindingFlags.NonPublic)?.GetRawConstantValue() as string==probeKind)t.GetMethod("Stop",BindingFlags.Static|BindingFlags.NonPublic)?.Invoke(null,new object[]{"replace isolated observer"});}
+        string testRoot="E:/GitHub/FirepowerLoop/Client/Temp/FullRouteVisualAcceptance/barrage-"+DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        var runs=Game.Game.Interface.GetSystem<ArcadeRunSystem>();runs.ConfigureForTests(testRoot);
+        if(!runs.TryStartConfiguredRun(out var initial,out var startError))throw new Exception(startError);
+        var candidate=initial.Clone();candidate.ArenaConfigNumber=3;candidate.CompletedArenaCount=1;candidate.NextArenaNumber=2;candidate.Checkpoint.ArenaNumber=2;
+        if(!new ArcadeRunFileStore(testRoot).Save(candidate,out startError))throw new Exception(startError);
+        typeof(ArcadeRunSystem).GetMethod("CommitSafeNode",flags).Invoke(runs,new object[]{candidate});
+        ((UniTask)typeof(ArcadeResumeUICtrl).GetMethod("EnterNewRunAsync",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{runs})).Forget();
+        SessionState.SetString("BarrageVisualRoot",testRoot);frames=0;lastSample=0;lastBarrels=-1;warningCaptured=false;airMid=airLow=false;
+        Directory.CreateDirectory(folder);File.WriteAllText(folder+"/air-barrel.csv","elapsed,frame,x,y,z,viewportX,viewportY,inFront\n");File.WriteAllText(folder+"/trace.csv","elapsed,frame,wave,hp,lives,enemies,groundBarrels,destroyedBarrels,fireSequence,areaKinds,warning\n");
+        started=EditorApplication.timeSinceStartup;pad=InputSystem.AddDevice<Gamepad>();InputSystem.onBeforeUpdate+=Tick;InputSystem.onAfterUpdate+=Sample;SessionState.SetString("BarrageVisualProbe","running");return "Isolated Barrage visual observation; maximum90 seconds; actual input only";
+    }
+    static object Runtime()=>typeof(ArcadeCombatModel).GetProperty("Runtime",flags).GetValue(Game.Game.Interface.GetModel<ArcadeCombatModel>());
+    static void Tick()
+    {
+        if(InputState.currentUpdateType!=InputUpdateType.Dynamic)return;
+        try
+        {
+            if(!Application.isPlaying||EditorApplication.timeSinceStartup-started>90){Stop("time limit");return;}
+            var a=Game.Game.Interface;var r=Runtime();if(r==null){if(a.GetModel<ArcadeRunModel>().Phase==ArcadeRunPhase.Result)Stop("failed result");return;}
+            var sys=a.GetSystem<ArcadeCombatSystem>();var arena=(ArcadeArenaDefinition)F(sys,"arena");if(arena.ArenaNumber!=3||(int)F(r,"WaveIndex")!=0){Stop("single-map scope ended");return;}
+            var catalog=(ArcadeConfigCatalogDefinition)F(sys,"catalog");var p=(Vector2)F(r,"PlayerPosition");var barrels=(IDictionary)F(r,"GroundBarrels");var enemies=(IDictionary)F(r,"Enemies");
+            var target=p+Vector2.up;float nearest=float.MaxValue;bool shooting=false;
+            foreach(Vector2 point in barrels.Values){float d=(point-p).sqrMagnitude;if(d<nearest){nearest=d;target=point;shooting=true;}}
+            if(!shooting)foreach(var e in enemies.Values){var point=(Vector2)F(e,"Position");float d=(point-p).sqrMagnitude;if(d<nearest){nearest=d;target=point;shooting=true;}}
+            var aim=(target-p).normalized;var move=Vector2.zero;var obstacles=typeof(ArcadeCombatSystem).GetMethod("ObstaclesFor",flags).Invoke(sys,new[]{r});
+            bool blocked=(bool)typeof(ArcadeCombatSystem).GetMethod("SegmentCrossesObstacle",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{p,target,0f,obstacles});
+            if(barrels.Count>0){if(nearest>36||blocked)move=(Vector2)typeof(ArcadeCombatSystem).GetMethod("ResolveNavigationDirection",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{p,target,catalog.Rule.PlayerRadius,obstacles});}
+            else{move=new Vector2(-aim.y,aim.x)*.8f;if(nearest<25)move-=aim;if(p.magnitude>12)move-=p.normalized;}
+            bool wait=(bool)F(r,"IslandTransitionPending")||(float)F(r,"RespawnRemaining")>0;if(wait)frames=0;
+            InputSystem.QueueStateEvent(pad,new GamepadState{leftStick=Vector2.ClampMagnitude(move,1),rightStick=wait||frames++<3||!shooting?Vector2.zero:aim});
+        }
+        catch(Exception e){Stop("error "+e);}
+    }
+    static void Sample()
+    {
+        if(InputState.currentUpdateType!=InputUpdateType.Dynamic||EditorApplication.timeSinceStartup-lastSample<.25)return;
+        try
+        {
+            var r=Runtime();if(r==null)return;lastSample=EditorApplication.timeSinceStartup;int barrels=((IDictionary)F(r,"GroundBarrels")).Count;
+            var areas=(System.Collections.Generic.List<ArcadeContentAreaSnapshot>)F(r,"ContentPresentationSnapshots");bool warning=areas.Any(x=>x.Id==-100&&x.Kind==3&&x.Warning);
+            File.AppendAllText(folder+"/trace.csv",string.Join(",",(lastSample-started).ToString("F3",System.Globalization.CultureInfo.InvariantCulture),frames,F(r,"WaveIndex"),F(r,"PlayerHealth"),Game.Game.Interface.GetModel<ArcadeRunModel>().Current.RemainingLives,((IDictionary)F(r,"Enemies")).Count,barrels,((IEnumerable)F(r,"DestroyedGroundBarrelIds")).Cast<object>().Count(),F(r,"PlayerFireSequence"),string.Join("|",areas.Select(x=>x.Kind).Distinct()),warning)+"\n");
+            var view=F(Game.Game.Interface.GetSystem<ArcadeCombatSystem>(),"view");var root=(GameObject)F(view,"root");var falling=root==null?null:root.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name.StartsWith("RoofFallingBarrel_"));
+            if(falling!=null&&falling.gameObject.activeInHierarchy&&Camera.main!=null)
+            {
+                var p=falling.position;var vp=Camera.main.WorldToViewportPoint(p);var inv=System.Globalization.CultureInfo.InvariantCulture;
+                File.AppendAllText(folder+"/air-barrel.csv",string.Join(",",(lastSample-started).ToString("F3",inv),Time.frameCount,p.x.ToString("F3",inv),p.y.ToString("F3",inv),p.z.ToString("F3",inv),vp.x.ToString("F3",inv),vp.y.ToString("F3",inv),vp.z>0)+"\n");
+                bool visible=vp.z>0&&vp.x>0&&vp.x<1&&vp.y>0&&vp.y<1;
+                if(visible&&p.y>1&&!airMid){airMid=true;ScreenCapture.CaptureScreenshot(folder+"/air-visible-mid.png");}
+                if(visible&&p.y<1.5f&&!airLow){airLow=true;ScreenCapture.CaptureScreenshot(folder+"/air-visible-low.png");}
+            }
+            if(lastBarrels>=0&&barrels<lastBarrels)ScreenCapture.CaptureScreenshot(folder+"/ground-remaining-"+barrels+".png");lastBarrels=barrels;
+            if(warning&&!warningCaptured){warningCaptured=true;ScreenCapture.CaptureScreenshot(folder+"/falling-warning.png");}
+        }
+        catch(Exception e){Stop("sample error "+e);}
+    }
+    static void Stop(string reason){InputSystem.onBeforeUpdate-=Tick;InputSystem.onAfterUpdate-=Sample;if(pad!=null){InputSystem.RemoveDevice(pad);pad=null;}SessionState.SetString("BarrageVisualProbe",reason);}
+}
