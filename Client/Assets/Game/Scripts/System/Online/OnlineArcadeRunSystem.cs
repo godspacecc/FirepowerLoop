@@ -159,7 +159,7 @@ namespace Game
                 {
                     request.RoundReady=shop.Prepared&&combatView?.IsSlayerMartRegionReady==true&&string.IsNullOrEmpty(combatView.SlayerMartRegionLoadError);
                     request.Firing=request.UseBomb=request.UseDash=false;
-                    if(!shop.Ready||shop.Closing||shop.Members.Any(m=>m.PlayerId==account.PlayerId&&m.MenuOpen))request.MoveX=request.MoveZ=0;
+                    if(!shop.Ready||shop.Closing||ArcadeShopUICtrl.IsShownForInput||shop.Members.Any(m=>m.PlayerId==account.PlayerId&&m.MenuOpen))request.MoveX=request.MoveZ=0;
                     request.ConfirmExit=false;
                 }
                 long localId=account.PlayerId;

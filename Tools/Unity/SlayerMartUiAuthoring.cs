@@ -91,6 +91,40 @@ public static class SlayerMartUiAuthoring
         typeof(UICodeSpawner).GetMethod("BindGeneratedUiComponent",flags).Invoke(null,new object[]{Host,"Game.ArcadeShopUI"});
         return "Box与宿主正式生成引用已绑定";
     }
+    /// <summary>只追加本功能四个HUD控件，保留原玩家行、摇杆、效果列表与所有资源引用。</summary>
+    public static string BuildHud()
+    {
+        Guard();const string path="Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab";
+        var root=PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var names=new[]{"BtnSlayerMart","BtnFieldUpgrade","TextStormCharge","TextArmor"};
+            var rc=root.GetComponent<ReferenceCollector>();
+            foreach(var name in names){var old=root.transform.Find(name);if(old!=null)Object.DestroyImmediate(old.gameObject);}
+            rc.data.RemoveAll(e=>Array.IndexOf(names,e.key)>=0);
+            var shop=Button(root.transform,"BtnSlayerMart","商店",new Vector2(360,-80),new Vector2(300,96));
+            var upgrade=Button(root.transform,"BtnFieldUpgrade","释放风暴",new Vector2(360,-80),new Vector2(280,96));
+            var storm=Text(root.transform,"TextStormCharge","风暴 0/100",new Vector2(170,-155),new Vector2(380,42),26);
+            var armor=Text(root.transform,"TextArmor","护甲板 0/0",new Vector2(170,-205),new Vector2(380,42),26);
+            foreach(var control in new Component[]{shop,upgrade,storm,armor})
+            {
+                var rect=(RectTransform)control.transform;rect.anchorMin=rect.anchorMax=new Vector2(.5f,1);
+                control.gameObject.SetActive(false);rc.Add(control.name,control);
+            }
+            rc.Sort();PrefabUtility.SaveAsPrefabAsset(root,path);
+        }
+        finally{PrefabUtility.UnloadPrefabContents(root);}
+        Selection.activeObject=AssetDatabase.LoadAssetAtPath<GameObject>(path);
+        if(!EditorApplication.ExecuteMenuItem("Assets/智能更新UI"))throw new InvalidOperationException("HUD生成入口未执行");
+        return "HUD商店与风暴控件已追加，普通入口默认隐藏";
+    }
+    /// <summary>编译后执行同一生成器的HUD引用绑定阶段。</summary>
+    public static string FinishHudBindings()
+    {
+        Guard();typeof(UICodeSpawner).GetMethod("BindGeneratedUiComponent",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic)
+            .Invoke(null,new object[]{"Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab","Game.ArcadeHudUI"});
+        return "HUD引用已绑定";
+    }
     static void Guard()
     {
         if(EditorApplication.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new InvalidOperationException("项目或编辑模式不匹配");

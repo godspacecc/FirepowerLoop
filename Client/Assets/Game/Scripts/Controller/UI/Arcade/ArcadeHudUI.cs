@@ -14,8 +14,10 @@ namespace Game
         public Button BtnBomb;
         public Button BtnDash;
         public Button BtnExitFirstPerson;
+        public Button BtnFieldUpgrade;
         public Button BtnPause;
         public Button BtnRetry;
+        public Button BtnSlayerMart;
         public GameObject DesktopAbilityRoot;
         public Image DesktopBombIcon;
         public TextMeshProUGUI DesktopDashIcon;
@@ -37,11 +39,13 @@ namespace Game
         public GameObject StageBannerRoot;
         public GameObject SupportEffectRoot;
         public TextMeshProUGUI TextArena;
+        public TextMeshProUGUI TextArmor;
         public TextMeshProUGUI TextBombCount;
         public TextMeshProUGUI TextDashCount;
         public TextMeshProUGUI TextFirstPerson;
         public TextMeshProUGUI TextRespawn;
         public TextMeshProUGUI TextStageBanner;
+        public TextMeshProUGUI TextStormCharge;
         public TextMeshProUGUI TextWave;
         public CustomListView WeaponEffectList;
         public GameObject WeaponEffectRoot;

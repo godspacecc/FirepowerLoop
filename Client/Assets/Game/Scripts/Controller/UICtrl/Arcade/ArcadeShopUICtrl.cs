@@ -19,7 +19,9 @@ namespace Game
         /// <summary>选择与等待属于本次显示；真实报价及原请求重试由System保存。</summary>
         private ArcadeSlayerMartSnapshot quote;
         private string selectedItem,regionIdentity,lastError;
-        private bool updateRegistered,requestBusy,menuCloseConfirmed,finishAfterClose,hideAfterClose;
+        private bool updateRegistered,requestBusy,menuCloseConfirmed,finishAfterClose,hideAfterClose,awaitingEntry;
+        /// <summary>输入仅按本地显示阻止移动，不把个人菜单当全局暂停。</summary>
+        public static bool IsShownForInput=>UIHelper.GetUICtrl<ArcadeShopUICtrl>()?.IsShow()==true;
         private int displayGeneration;
         private float nextRefresh;
         private OnlineArcadeRunSystem Online=>this.GetSystem<OnlineArcadeRunSystem>();
@@ -44,8 +46,8 @@ namespace Game
         /// <summary>重开显示只重置界面代次，保留System的原交易及本人报价。</summary>
         protected override void OnShow()
         {
-            bool first=!updateRegistered;if(first){displayGeneration++;requestBusy=false;LifeCycle.RegisterUpdate(OnUpdate);updateRegistered=true;}
-            Refresh();if(first&&quote?.Stage==ArcadeSlayerMartStage.Shopping&&!OwnMenuOpen()&&!Waiting)OperateClicked(SlayerMartAction.SetMenuOpen,true);
+            bool first=!updateRegistered;if(first){displayGeneration++;requestBusy=false;awaitingEntry=ReadSnapshot()?.Stage is ArcadeSlayerMartStage.Choosing or ArcadeSlayerMartStage.Loading;LifeCycle.RegisterUpdate(OnUpdate);updateRegistered=true;}
+            Refresh();if(first&&IsShow()&&quote?.Stage==ArcadeSlayerMartStage.Shopping&&!OwnMenuOpen()&&!Waiting)OperateClicked(SlayerMartAction.SetMenuOpen,true);
         }
         /// <summary>释放刷新与本窗口焦点；外部关闭只提交关菜单，不标记完成。</summary>
         protected override void OnHide()
@@ -64,6 +66,11 @@ namespace Game
             quote=ReadSnapshot();if(quote==null||quote.Stage==ArcadeSlayerMartStage.Closing){Hide();return;}
             string identity=quote.RegionInstanceId+":"+quote.Generation;
             if(identity!=regionIdentity){if(regionIdentity!=null){displayGeneration++;requestBusy=false;}regionIdentity=identity;selectedItem=null;lastError=null;finishAfterClose=hideAfterClose=false;}
+            if(awaitingEntry&&quote.Stage==ArcadeSlayerMartStage.Shopping)
+            {
+                awaitingEntry=false;
+                if(!OwnMenuOpen()){FinishUiFlow();return;}
+            }
             UI.ChoiceRoot.SetActive(quote.Stage==ArcadeSlayerMartStage.Choosing);UI.LoadingRoot.SetActive(quote.Stage==ArcadeSlayerMartStage.Loading);UI.ShoppingRoot.SetActive(quote.Stage==ArcadeSlayerMartStage.Shopping);
             ApplyStaticLabels();
             UI.TextCash.text=Loc.T(Key+"cash",quote.Cash.ToString("N0"));UI.TextTokens.text=Loc.T(Key+"tokens",quote.Tokens);UI.TextDeadline.text=Loc.T(Key+"deadline",Math.Max(0,(int)Math.Ceiling(quote.RemainingSeconds)));

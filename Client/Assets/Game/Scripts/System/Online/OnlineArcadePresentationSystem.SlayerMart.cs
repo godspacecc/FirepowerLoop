@@ -55,7 +55,7 @@ namespace Game
             if(!presentedSlayerMart||!shop.Prepared)return;
             if(!string.IsNullOrEmpty(view.SlayerMartRegionLoadError)){ShowSlayerMartLoadRetry();return;}
             long selfId=this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
-            if(!shop.Ready||shop.Closing||latest.Battle.RoundLoading||!view.IsSlayerMartRegionReady||shop.Members.Any(m=>m.PlayerId==selfId&&m.MenuOpen))return;
+            if(!shop.Ready||shop.Closing||ArcadeShopUICtrl.IsShownForInput||latest.Battle.RoundLoading||!view.IsSlayerMartRegionReady||shop.Members.Any(m=>m.PlayerId==selfId&&m.MenuOpen))return;
             var player=latest.Battle.Players.FirstOrDefault(p=>p.PlayerId==selfId);if(!player.Alive)return;
             var input=this.GetSystem<OnlineArcadeRunSystem>().LastSampledInput;
             predictedLocalPosition=PredictLocalPosition(predictedLocalPosition,input.Move,catalog.Rule.PlayerMoveSpeed,Mathf.Min(Time.deltaTime,.05f),

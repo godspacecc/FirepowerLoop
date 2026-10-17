@@ -44,6 +44,7 @@ namespace Game
             UI.PlayerStatusList.AddItemRefreshListener(RefreshPlayerStatus);
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
+            UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);
             UI.BtnRetry.onClick.AddListener(() => SendAction(ArcadeHudActionKind.RetryCompletion));
             UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
@@ -137,7 +138,7 @@ namespace Game
                 UI.AimJoystickRoot.SetActive(false);
                 RefreshJoystickVisibility();
             }
-            if (IsShow()) Render();
+            if (IsShow()){Render();SyncSlayerMartUi();}
         }
 
         private void Render(ArcadeRunSaveData snapshot = null)
@@ -261,6 +262,7 @@ namespace Game
         }
         private void RefreshJoystickArea()
         {
+            SyncSlayerMartUi();
             UpdateStageBanner(Time.unscaledTimeAsDouble);
             if (UI.JoystickLayoutArea.rect.size != joystickAreaSize) ApplyJoystickLayout();
         }
@@ -302,6 +304,7 @@ namespace Game
             UI.MoveJoystick.enabled = !snapshot.BattlePaused;
             UI.AimJoystick.enabled = !snapshot.BattlePaused;
             UI.BtnRetry.gameObject.SetActive(false);
+            SyncSlayerMartUi();
         }
 
         /// <summary>用单机权威快照刷新唯一玩家行；战斗首帧尚无血量快照时显示满血占位。</summary>
