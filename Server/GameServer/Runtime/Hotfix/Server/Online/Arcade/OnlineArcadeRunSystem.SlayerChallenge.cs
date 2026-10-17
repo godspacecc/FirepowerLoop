@@ -4,6 +4,49 @@ using FirepowerLoop.Arcade;
 
 namespace ET.Server
 {
+    public static partial class OnlineArcadeRunManagerSystem
+    {
+        /// <summary>唯一一次机会来自实际主线完成数；规则0与其他节点保持既有行为。</summary>
+        private static void ConfigureSlayerOpportunity(OnlineArcadeRunRecord record)
+        {
+            var c=ServerConfig.Instance.SlayerChallenge;
+            if(c.Enabled&&record.IsCasualRoute&&record.SlayerMartRulesVersion==1&&record.Phase==OnlineArcadeRunPhase.SafeCheckpoint&&
+                record.CompletedArena==c.AfterArena&&!record.ChallengeAttempted)record.ChallengeId=c.ChallengeId;
+        }
+
+        /// <summary>准备选择和幂等记录先原子保存，最后一票通过后才发布收币阶段；失败不消耗尝试。</summary>
+        private static bool OperateSlayerPreparation(OnlineArcadeRunManagerComponent manager,OnlineArcadeRunActor actor,long playerId,
+            string operationId,long expectedRevision,int actionKind,bool ready)
+        {
+            if(string.IsNullOrWhiteSpace(operationId)||operationId.Length>64||actionKind!=3&&actionKind!=7||!ready)
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"Slayer准备意图无效");
+            string fingerprint=OperationFingerprint(playerId,expectedRevision,actionKind,ready);
+            var previous=actor.Record.Operations.FirstOrDefault(p=>p.OperationId==operationId);
+            if(previous!=null)
+            {
+                if(previous.PlayerId!=playerId||previous.Fingerprint!=fingerprint)throw new RpcException(ErrorCode.ERR_OnlineArcadeOperationConflict,"Slayer准备操作参数冲突");
+                return true;
+            }
+            var battle=actor.Battle;var state=battle?.SlayerChallenge;
+            if(state?.Phase!=ArcadeSlayerChallengePhase.Preparing||actor.Record.ChallengeAttempted||expectedRevision!=actor.Record.Revision||
+                actor.DisconnectedAtByPlayer.Count>0||!state.Members.Contains(playerId))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"Slayer准备身份或版本已失效");
+            if(actionKind==7&&actor.Record.Players.Any(p=>!OnlineArcadeRunActorSystem.CanContinueCoop(p)))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"原始成员尚未全部恢复主线活动资格");
+            var next=ArcadeSlayerChallengeRules.SetEntryChoice(state,ServerConfig.Instance.SlayerChallenge,playerId,actionKind==7);
+            var candidate=Clone(actor.Record);var player=candidate.Players.Single(p=>p.PlayerId==playerId);
+            player.Ready=actionKind==3;player.ChallengeReady=actionKind==7;
+            candidate.ChallengeAttempted=next.Phase!=ArcadeSlayerChallengePhase.Preparing;
+            candidate.Revision=checked(candidate.Revision+1);candidate.UpdatedAtUtc=DateTime.UtcNow.ToString("O");
+            candidate.Operations.Add(new OnlineArcadeOperationRecord{OperationId=operationId,PlayerId=playerId,ActionKind=actionKind,Fingerprint=fingerprint,CompletedAtUtc=candidate.UpdatedAtUtc});
+            TrimOperations(candidate.Operations);manager.CommitWithCandidate(candidate,candidate.RunId);CommitActorRecord(actor,candidate);
+            battle.SlayerChallenge=next;battle.ChallengeSeconds=(float)next.RemainingSeconds;
+            if(next.Phase==ArcadeSlayerChallengePhase.Collecting)OnlineArcadeRunActorSystem.BeginSlayerCollectionWave(battle);
+            if(next.Phase==ArcadeSlayerChallengePhase.Returning){battle.ChallengeCompletionReady=true;battle.ChallengeSucceeded=false;}
+            battle.InputsDirty=true;battle.BattleRevision++;return true;
+        }
+    }
+
     public static partial class OnlineArcadeRunActorSystem
     {
         /// <summary>挑战独立地图和准备状态；ReturnMap始终取原主线，不改记录中的目的地。</summary>
@@ -21,7 +64,7 @@ namespace ET.Server
         }
 
         /// <summary>收币阶段连续补充有界批次，不走普通清轮奖励和挑战提前清完成功。</summary>
-        private static void BeginSlayerCollectionWave(OnlineArcadeBattleRuntime battle)
+        internal static void BeginSlayerCollectionWave(OnlineArcadeBattleRuntime battle)
         {
             var config=ServerConfig.Instance.SlayerChallenge;var challenge=ServerConfig.Instance.Tables.TbArcadeChallenge.Get(config.ChallengeId);
             var group=ServerConfig.Instance.Tables.TbArcadeEnemyGroup.Get(challenge.EnemyGroupId);int totalWeight=group.Members.Sum(p=>p.Count),previous=0;

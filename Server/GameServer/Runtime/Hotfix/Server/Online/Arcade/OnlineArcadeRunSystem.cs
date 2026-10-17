@@ -268,6 +268,8 @@ namespace ET.Server
                     return (true, null);
                 return (true, actor.BuildSnapshot());
             }
+            if(actor.Battle?.SlayerChallenge?.Phase==FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Preparing)
+            {bool accepted=OperateSlayerPreparation(self,actor,playerId,operationId,expectedRevision,actionKind,ready);await self.BroadcastRunChanged(actor);return(accepted,actor.BuildSnapshot());}
             if (actor.Battle != null || actor.Record.Phase is not (OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "当前不在安全节点");
             if (actor.Record.Phase == OnlineArcadeRunPhase.Victory &&
@@ -551,6 +553,7 @@ namespace ET.Server
                 candidate.Phase = victory ? OnlineArcadeRunPhase.Victory : OnlineArcadeRunPhase.SafeCheckpoint;
                 candidate.ChallengeId = string.Empty;
                 candidate.ChallengeAttempted = false;
+                ConfigureSlayerOpportunity(candidate);
                 candidate.Revision = checked(candidate.Revision + 1);
                 candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
                 self.CommitWithCandidate(candidate, candidate.RunId);
@@ -586,6 +589,7 @@ namespace ET.Server
                         ApplyChallengeRewards(player, Math.Max(1, candidate.CompletedArena));
                 }
                 candidate.Phase = OnlineArcadeRunPhase.SafeCheckpoint;
+                if(battle.SlayerChallenge!=null){candidate.ChallengeAttempted=true;candidate.ChallengeId=string.Empty;}
                 candidate.Revision = checked(Math.Max(candidate.Revision, actor.Record.Revision) + 1);
                 candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
                 self.CommitWithCandidate(candidate, candidate.RunId);
@@ -664,6 +668,11 @@ namespace ET.Server
         /// <summary>普通恢复点先保有提交节点，再以双方准备后的工作态构造下一场。</summary>
         private static bool TryStartTransitBattle(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor)
         {
+            if(actor!=null&&!actor.IsDisposed&&actor.Battle==null&&actor.Record?.Phase==OnlineArcadeRunPhase.SafeCheckpoint&&
+                actor.Record.ChallengeId==ServerConfig.Instance.SlayerChallenge.ChallengeId&&!actor.Record.ChallengeAttempted&&actor.DisconnectedAtByPlayer.Count==0)
+            {
+                var preparation=OnlineArcadeRunActorSystem.PrepareBattle(actor.Record,true,false);actor.StartBattle(preparation);self.StartBattleTick(actor,actor.BattleGeneration);return true;
+            }
             if (actor == null || actor.IsDisposed || actor.Record == null || actor.Battle != null || actor.Record.Phase != OnlineArcadeRunPhase.SafeCheckpoint ||
                 !actor.Record.IsCasualRoute || !actor.Record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
                 actor.Record.Players.Any(p => OnlineArcadeRunActorSystem.CanContinueCoop(p) && !p.Ready) ||

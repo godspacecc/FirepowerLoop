@@ -8,9 +8,9 @@ internal static class SlayerChallengeOnlineChecks
 {
     static object Call(string method,params object[] args)=>typeof(OnlineArcadeRunActorSystem).GetMethod(method,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,args)!;
     static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
-    static ArcadeSlayerChallengeState State(OnlineArcadeBattleRuntime b)
+    internal static ArcadeSlayerChallengeState State(OnlineArcadeBattleRuntime b)
     {var field=b.GetType().GetField("SlayerChallenge");Require(field!=null,"missing actual Slayer runtime");return (ArcadeSlayerChallengeState)field!.GetValue(b)!;}
-    static OnlineArcadeRunActor Actor()
+    internal static OnlineArcadeRunActor Actor()
     {
         var config=ServerConfig.Instance;var shop=ArcadeSlayerMartRules.Create("1",1,new long[]{1,2},17,config.SlayerMart.Catalog);shop.Ready=shop.Closing=true;
         var r=new OnlineArcadeRunRecord{RunId=1,RoomId=2,Revision=1,Phase=OnlineArcadeRunPhase.SafeCheckpoint,IsCasualRoute=true,ArenaConfigNumber=5,NextArena=4,CompletedArena=3,

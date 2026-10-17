@@ -1,0 +1,11 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerChallengeTransitionOnline.First vote saves choice without consuming attempt
+PASS SlayerChallengeTransitionOnline.Both votes persist attempt before publishing collection
+PASS SlayerChallengeTransitionOnline.Unanimous skip requests safe return without reward
+PASS SlayerChallengeTransitionOnline.Failed entry save leaves preparation and retry identity intact
+PASS SlayerChallengeTransitionOnline.Stale revision cannot change entry choice
+PASS SlayerChallengeTransitionOnline.Same operation replay never advances choice twice
+PASS SlayerChallengeTransitionOnline.Operation conflict cannot switch enter to skip
+PASS SlayerChallengeTransitionOnline.Mainline eliminated member cannot enter free challenge revival
+PASS SlayerChallengeTransitionOnline.Opportunity is unique to rule1 after arena3
+9/9 passed
