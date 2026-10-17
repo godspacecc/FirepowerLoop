@@ -1,0 +1,19 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerMartRoundOnline.Public prepared metadata distinguishes selection from crypt loading
+PASS SlayerMartRoundOnline.Eleventh exit prepares store without writing twelfth round
+PASS SlayerMartRoundOnline.Other round retains original round transaction
+PASS SlayerMartRoundOnline.Old rules never prepare new store
+PASS SlayerMartRoundOnline.Thirty first exit inherits first store without writing next round
+PASS SlayerMartRoundOnline.Formal Tick freezes combat effects and drops inside store
+PASS SlayerMartRoundOnline.Shop input cannot consume dash bomb or enable firing
+PASS SlayerMartRoundOnline.Formal Tick processes fresh shop readiness before combat gate
+PASS SlayerMartRoundOnline.Public support bodies preserve real positions and instance identity
+PASS SlayerMartRoundOnline.Directed snapshot clone retains private quote without aliasing
+PASS SlayerMartRoundOnline.Closed store life enters one whole next-round candidate
+PASS SlayerMartRoundOnline.Zero-life member joins next round through respawn wait
+PASS SlayerMartRoundOnline.File lock preserves original then retry applies life once
+PASS SlayerMartRoundOnline.Repeated transition callback never adds a second life
+PASS SlayerMartRoundOnline.Expired wall deadline rejects purchase before another Tick
+PASS SlayerMartRoundOnline.Disconnect pause shifts hard deadline without resetting duration
+PASS SlayerMartRoundOnline.Stale map input cannot acknowledge new shop generation
+17/17 passed

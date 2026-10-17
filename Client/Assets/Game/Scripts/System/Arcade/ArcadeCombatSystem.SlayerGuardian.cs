@@ -16,7 +16,7 @@ namespace Game
             var enemy=runtimePool.RentEnemy();enemy.Id=runtime.NextEntityId++;enemy.ConfigId=c.BossEnemyId;
             enemy.MaxHealth=enemy.Health=checked(c.BossHealthPerPlayer*runtime.SlayerChallenge.Members.Count);
             enemy.Damage=c.BossContactDamage;enemy.Speed=c.BossMoveSpeed;enemy.Position=Vector2.zero;
-            enemy.AttackKind=definition.AttackKind;enemy.ContentBossKind=1;enemy.IsBossPresentation=true;
+            enemy.AttackKind=definition.AttackKind;enemy.AttackInterval=definition.AttackCooldownSeconds;enemy.ContentBossKind=1;enemy.IsBossPresentation=true;
             runtime.SlayerGuardian=new ArcadeSlayerGuardianState();runtime.SlayerGuardianEnemyId=enemy.Id;runtime.ContentBossEnemyId=enemy.Id;
             runtime.Enemies.Add(enemy.Id,enemy);
         }
@@ -37,7 +37,12 @@ namespace Game
             runtime.ContentAreaSnapshots.Clear();runtime.ContentAreaSnapshots.AddRange(runtime.SlayerGuardian.Snapshots);
             enemy.ContentWarning=runtime.SlayerGuardian.Snapshots.Any(p=>p.Warning);
             if(!enemy.ContentWarning&&runtime.PlayerHealth>0&&runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Boss)
+                {
                 MoveEnemyTowards(runtime,enemy,runtime.PlayerPosition,seconds);
+                float radius=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius;
+                if(enemy.AttackCooldown<=0&&(enemy.Position-runtime.PlayerPosition).sqrMagnitude<=radius*radius)
+                {DamagePlayer(runtime,slayerChallengeConfig.BossContactDamage);enemy.AttackCooldown=enemy.AttackInterval;}
+            }
             return true;
         }
         /// <summary>实际Boss死亡只开启独立购物阶段，不开放主线出口。</summary>

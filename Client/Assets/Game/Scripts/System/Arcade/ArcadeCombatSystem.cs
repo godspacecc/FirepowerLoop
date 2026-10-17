@@ -487,7 +487,12 @@ namespace Game
             { ClearArcadeInput(runtime); return; }
             if (deltaTime <= 0f || runtime.CompletionSubmitted) return;
             if (runtime.CompletionAwaitingRetry) return;
-            if(runtime.SlayerChallenge!=null&&!TickSlayerChallenge(runtime,deltaTime)){SyncView(runtime);PublishHud(runtime);return;}
+            if(runtime.SlayerChallenge!=null&&!TickSlayerChallenge(runtime,(float)(slayerFrameSeconds>=0?slayerFrameSeconds:deltaTime)))
+            {
+                // 返回保存会同步结束或替换战场；原现场释放后不能继续渲染或发布旧HUD。
+                if(this.GetModel<ArcadeCombatModel>().Runtime==runtime){SyncView(runtime);PublishHud(runtime);}
+                return;
+            }
             var hazardPreviousPlayer = runtime.PlayerPosition;
             runtime.HazardPreviousEnemyPositions.Clear();
             foreach (var enemy in runtime.Enemies.Values)
@@ -1535,8 +1540,9 @@ namespace Game
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
             if(SlayerGuardianDefeated(runtime,enemy))return;
-            if(SpawnSlayerCoin(runtime,enemy,hazardKill))return;
+
             if(slayerMartConfig!=null)ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(runtime),!hazardKill,runtime.SlayerMartStormDamage,slayerMartConfig.Parameter);
+            if(SpawnSlayerCoin(runtime,enemy,hazardKill))return;
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {
                 runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;

@@ -14,6 +14,19 @@ namespace Game
         /// <summary>双精度活动预算避免逐帧float舍入累积；快照仍投影原字段。</summary>
         private double slayerMartLastRealtime,slayerMartClockRemaining;
         private bool slayerMartClockRunning;
+        /// <summary>挑战期限与模拟小步长分离；资源等待和暂停后的首帧不补扣等待时间。</summary>
+        private ArcadeCombatRuntime slayerClockOwner;
+        private double slayerLastRealtime,slayerFrameSeconds=-1;
+        private bool slayerClockRunning;
+        private double SlayerElapsed(ArcadeCombatRuntime runtime,double now)
+        {
+            var app=this.GetModel<AppStateModel>();
+            bool running=runtime.SlayerChallenge!=null&&view?.IsRoundLayoutReady==true&&!UIHelper.HasUIOpen&&
+                !runtime.CompletionAwaitingRetry&&!runtime.CompletionSubmitted&&(app==null||app.CurrentState.Value==AppState.Playing);
+            if(!ReferenceEquals(slayerClockOwner,runtime)){slayerClockOwner=runtime;slayerLastRealtime=now;slayerClockRunning=false;}
+            double elapsed=running&&slayerClockRunning?Math.Max(0,now-slayerLastRealtime):0;
+            slayerLastRealtime=now;slayerClockRunning=running;return elapsed;
+        }
         /// <summary>正式Update帧：期限取实际时钟，移动仍限制为小步长。</summary>
         internal void TickFrame(ArcadeCombatRuntime runtime,float simulationSeconds)
         {
@@ -21,7 +34,9 @@ namespace Game
             PrepareSlayerMartClock(runtime,now);
             SyncLiveSlayerMartClock(runtime,now);
             bool wasReady=runtime.SlayerMart?.Ready==true;
-            TickCore(runtime,Mathf.Clamp(simulationSeconds,0,.05f),0);
+            slayerFrameSeconds=SlayerElapsed(runtime,now);
+            try{TickCore(runtime,Mathf.Clamp(simulationSeconds,0,.05f),0);}
+            finally{slayerFrameSeconds=-1;}
             bool running=CanCountSlayerMartClock(runtime);
             if(!wasReady&&running)
             {
@@ -64,6 +79,7 @@ namespace Game
             slayerMartClockRunning=CanCountSlayerMartClock(runtime);
         }
         private void ClearSlayerMartClock()
-        {slayerMartClockOwner=null;slayerMartClockRegion=null;slayerMartClockGeneration=0;slayerMartClockRunning=false;slayerMartLastRealtime=slayerMartClockRemaining=0;}
+        {slayerMartClockOwner=null;slayerMartClockRegion=null;slayerMartClockGeneration=0;slayerMartClockRunning=false;slayerMartLastRealtime=slayerMartClockRemaining=0;
+            slayerClockOwner=null;slayerClockRunning=false;slayerLastRealtime=0;slayerFrameSeconds=-1;}
     }
 }

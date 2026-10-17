@@ -99,6 +99,7 @@ namespace Game
                     read.Data.Checkpoint = new ArcadeCheckpointSaveData
                     { ArenaNumber = read.Data.NextArenaNumber, GenerationSeed = read.Data.Checkpoint?.GenerationSeed ?? 0 };
             }
+            ConfigureSlayerOpportunity(read.Data);
             CommitSafeNode(read.Data);
             snapshot = read.Data.Clone();
             error = null;

@@ -37,8 +37,14 @@ namespace ET.Server
                     hit.Lethal?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
             battle.ContentAreas.Clear();battle.ContentAreas.AddRange(battle.SlayerGuardian.Snapshots);
             enemy.ContentWarning=battle.SlayerGuardian.Snapshots.Any(p=>p.Warning);
+            enemy.AttackCooldownSeconds=Math.Max(0,enemy.AttackCooldownSeconds-seconds);
             if(!enemy.ContentWarning&&target.Alive&&battle.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Boss)
+                {
                 MoveEnemy(enemy,target.PositionX,target.PositionZ,seconds,rule,EffectiveObstacles(battle),null);
+                float radius=rule.PlayerRadius+rule.EnemyContactRadius;
+                if(enemy.AttackCooldownSeconds<=0&&DistanceSquared(enemy.PositionX,enemy.PositionZ,target.PositionX,target.PositionZ)<=radius*radius)
+                {actor.DamagePlayer(battle,target,c.BossContactDamage);enemy.AttackCooldownSeconds=enemy.AttackIntervalSeconds;}
+            }
             return true;
         }
         /// <summary>胜利仅开启购物，不开放普通场出口或直接提交挑战返回。</summary>

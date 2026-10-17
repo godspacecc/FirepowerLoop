@@ -1323,5 +1323,20 @@
   "ui.arcade.coop.donate": "捐出一命",
   "ui.arcade.coop.donate_pc": "捐出一命 [{0}]",
   "ui.arcade.coop.downed": "倒地恢复 {0}秒 · 靠近可加速",
-  "ui.arcade.coop.helped": "队友救援中 ×{1} · {0}秒"
+  "ui.arcade.coop.helped": "队友救援中 ×{1} · {0}秒",
+  "ui.arcade.slayer.phase.3": "SLAYER · Guardian",
+  "ui.arcade.slayer.enter": "准备进入",
+  "ui.arcade.slayer.phase.5": "SLAYER · 正在保存并返回",
+  "ui.arcade.slayer.progress": "倒地 {0}/{1} · 已收现金 {2} · 退出 {3}/{4}",
+  "ui.arcade.slayer.options": "Slayer选项",
+  "ui.arcade.slayer.exit_body": "全员同意后返回主线。保留已收现金，不发胜利奖金，也不开放购物；可撤回自己的退出票。",
+  "ui.arcade.slayer.phase.2": "SLAYER · 收币 {0}秒",
+  "ui.arcade.slayer.preparing": "进入 {0}/{2} · 跳过 {1}/{2} · 超时自动继续主线",
+  "ui.arcade.slayer.phase.1": "SLAYER · 准备 {0}秒",
+  "ui.arcade.slayer.skip": "跳过并继续主线",
+  "ui.arcade.slayer.withdraw": "继续战斗／撤回退出",
+  "ui.arcade.slayer.phase.4": "SLAYER · 购物 {0}秒",
+  "ui.arcade.slayer.vote_exit": "确认提前退出",
+  "ui.arcade.slayer.exit_options": "提前退出",
+  "ui.arcade.slayer.prepare_body": "收币90秒后迎战Guardian。全队共享4次倒地，第四次结束挑战，不扣主线命数。胜利后开放5分钟购物；双人须全员同意。"
 }

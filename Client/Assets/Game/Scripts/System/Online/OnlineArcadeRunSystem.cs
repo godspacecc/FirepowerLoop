@@ -105,6 +105,8 @@ namespace Game
         public Task<OnlineArcadeOperationResult> SetChallengeReadyAsync(bool ready) =>
             OperateSafeCheckpoint(OnlineArcadeOperationState.SettingChallengeReady, 7, ready);
 
+        /// <summary>提前退出投票沿现有有身份与版本校验的意图通道，支持撤票。</summary>
+        public Task<OnlineArcadeOperationResult> SetSlayerExitAsync(bool value)=>OperateSafeCheckpoint(OnlineArcadeOperationState.SettingChallengeReady,8,value);
         public Task<OnlineArcadeOperationResult> ConfirmSettlementAsync() =>
             OperateSafeCheckpoint(OnlineArcadeOperationState.Settling, 4, false);
 
@@ -479,7 +481,7 @@ namespace Game
                 source.RoundLayoutId,source.RoundLayoutVersion,source.RoundGeneration,source.RoundLoading,source.RoundLoadError,
                 source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated,
                 new OnlineSlayerMartRegionSnapshot(source.SlayerMartRulesVersion,source.SlayerMartActive,source.SlayerMartVisit,source.SlayerMartGeneration,source.SlayerMartRevision,
-                    source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds));
+                    source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds),new OnlineSlayerChallengeSnapshot(source.SlayerPhase,source.SlayerDowns,source.SlayerDownLimit,source.SlayerCashCollected,source.SlayerOutcome,source.SlayerExitVotes,source.SlayerEnterReady,source.SlayerSkipReady));
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

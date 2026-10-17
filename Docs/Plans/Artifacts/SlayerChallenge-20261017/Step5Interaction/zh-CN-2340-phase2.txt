@@ -1,0 +1,3 @@
+TextArena overflow=False text=SLAYER · 收币 65秒
+TextWave overflow=False text=倒地 2/4 · 已收现金 1600 · 退出 1/2
+Label overflow=False text=提前退出

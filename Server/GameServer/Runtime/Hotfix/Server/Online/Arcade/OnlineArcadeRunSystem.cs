@@ -750,6 +750,7 @@ namespace ET.Server
             if (record.IsCasualRoute && record.Phase == OnlineArcadeRunPhase.SafeCheckpoint && !record.ChallengeAttempted)
             {
                 record.ChallengeId = string.Empty;
+                ConfigureSlayerOpportunity(record);
             }
             // 服务重启不恢复瞬时战斗现场，也不沿用旧的双方准备提交。
             foreach (OnlineArcadePlayerRecord player in record.Players)
@@ -2198,9 +2199,10 @@ namespace ET.Server
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
             if(SlayerGuardianDefeated(battle,enemy))return;
-            if(SpawnSlayerCoin(battle,enemy,hazardKill))return;
+
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
                 !hazardKill&&enemy.LastDamagePlayerId>0,battle.SlayerMartStormDamage,ServerConfig.Instance.SlayerMart.Parameter);
+            if(SpawnSlayerCoin(battle,enemy,hazardKill))return;
             if (!hazardKill) AwardIslandKill(self, battle, enemy);
             if (!hazardKill) self.SpawnContentDeathZone(battle,enemy);
             if (enemy.ContentBossKind>0)
@@ -2980,7 +2982,7 @@ namespace ET.Server
         private static OnlineArcadeBattleInfo BuildBattleSnapshot(OnlineArcadeBattleRuntime source)
         {
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
-            AppendSlayerMartBattleSnapshot(source,battle);
+            AppendSlayerMartBattleSnapshot(source,battle);AppendSlayerChallengeBattleSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;
@@ -3172,7 +3174,7 @@ namespace ET.Server
         {
             if (source == null) return null;
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
-            CloneSlayerMartBattleSnapshot(source,battle);
+            CloneSlayerMartBattleSnapshot(source,battle);CloneSlayerChallengeBattleSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;battle.RoundLayoutId=source.RoundLayoutId;battle.RoundLayoutVersion=source.RoundLayoutVersion;

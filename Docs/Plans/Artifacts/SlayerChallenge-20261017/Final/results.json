@@ -1,0 +1,92 @@
+[
+  {
+    "Passed": 20,
+    "testClass": "SlayerChallengeRulesTests",
+    "Kind": "Unity EditMode",
+    "Failed": 0,
+    "maxTests": 20,
+    "Executed": 20,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 11,
+    "testClass": "SlayerChallengeEntryTests",
+    "Kind": "Unity EditMode",
+    "Failed": 0,
+    "maxTests": 11,
+    "Executed": 11,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 21,
+    "testClass": "SlayerChallengeFlowTests",
+    "Kind": "Unity EditMode",
+    "Failed": 0,
+    "maxTests": 21,
+    "Executed": 21,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 14,
+    "testClass": "SlayerChallengeReturnOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 14,
+    "Executed": 14,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 12,
+    "testClass": "SlayerChallengeOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 12,
+    "Executed": 12,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 9,
+    "testClass": "SlayerChallengeTransitionOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 9,
+    "Executed": 9,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 11,
+    "testClass": "SlayerGuardianOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 11,
+    "Executed": 11,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 8,
+    "testClass": "SlayerChallengeIntentOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 8,
+    "Executed": 8,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 27,
+    "testClass": "CoopRescueOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 27,
+    "Executed": 27,
+    "includePassingTests": true
+  },
+  {
+    "Passed": 17,
+    "testClass": "SlayerMartRoundOnline",
+    "Kind": "Server actual Actor",
+    "Failed": 0,
+    "maxTests": 17,
+    "Executed": 17,
+    "includePassingTests": true
+  }
+]

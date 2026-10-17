@@ -1942,6 +1942,33 @@ namespace ET
         [MemoryPackOrder(47)]
         public bool SlayerMartPrepared { get; set; }
 
+        /// <summary>
+        /// 独立Slayer挑战公共权威状态；现金为每位原始成员同额收集额，不公开个人购物余额。
+        /// </summary>
+        [MemoryPackOrder(48)]
+        public int SlayerPhase { get; set; }
+
+        [MemoryPackOrder(49)]
+        public int SlayerDowns { get; set; }
+
+        [MemoryPackOrder(50)]
+        public int SlayerDownLimit { get; set; }
+
+        [MemoryPackOrder(51)]
+        public long SlayerCashCollected { get; set; }
+
+        [MemoryPackOrder(52)]
+        public List<long> SlayerExitVotes { get; set; } = new();
+
+        [MemoryPackOrder(53)]
+        public List<long> SlayerEnterReady { get; set; } = new();
+
+        [MemoryPackOrder(54)]
+        public List<long> SlayerSkipReady { get; set; } = new();
+
+        [MemoryPackOrder(55)]
+        public int SlayerOutcome { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1997,6 +2024,14 @@ namespace ET
             this.SlayerMartCashBoxIds.Clear();
             this.SlayerMartRevision = default;
             this.SlayerMartPrepared = default;
+            this.SlayerPhase = default;
+            this.SlayerDowns = default;
+            this.SlayerDownLimit = default;
+            this.SlayerCashCollected = default;
+            this.SlayerExitVotes.Clear();
+            this.SlayerEnterReady.Clear();
+            this.SlayerSkipReady.Clear();
+            this.SlayerOutcome = default;
 
             ObjectPool.Instance.Recycle(this);
         }

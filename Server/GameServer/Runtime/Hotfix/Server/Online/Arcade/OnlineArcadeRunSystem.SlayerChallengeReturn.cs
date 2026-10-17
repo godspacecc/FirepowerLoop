@@ -42,6 +42,8 @@ namespace ET.Server
         private static OnlineArcadeRunRecord BuildSlayerReturnCandidate(OnlineArcadeRunActor actor)
         {
             var battle=actor.Battle;var candidate=CloneCommittedRecord(actor);
+            // 返回后的普通场必须高于挑战及购物现场代次，不能接受延迟的旧输入或加载确认。
+            candidate.RoundGeneration=Math.Max(candidate.RoundGeneration,battle.RoundGeneration);
             var shop=battle.SlayerMart.Clone();
             long cash=ArcadeSlayerChallengeRules.UnclaimedCash(battle.SlayerChallenge,ServerConfig.Instance.SlayerChallenge);
             shop.Ready=shop.Closing=true;foreach(var owner in shop.Players){owner.Cash=checked(owner.Cash+cash);owner.MenuOpen=false;}
@@ -51,6 +53,8 @@ namespace ET.Server
                 var live=actor.Record.Players.Single(p=>p.PlayerId==target.PlayerId);var player=battle.Players[target.PlayerId];
                 target.Bombs=live.Bombs;target.Dashes=live.Dashes;target.Score=live.Score;target.ScoreMultiplier=live.ScoreMultiplier;target.MultiplierProgress=live.MultiplierProgress;
                 target.RoundPowerups=player.Powerups.Values.Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
+                target.RoundTemporaryWeaponId=player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:string.Empty;
+                target.RoundTemporaryWeaponSeconds=Math.Max(0,player.TemporaryWeaponSeconds);
                 var owner=shop.Players.Single(p=>p.PlayerId==target.PlayerId);owner.Bombs=target.Bombs;owner.Dashes=target.Dashes;owner.Lives=target.Lives;
                 owner.Chickens=owner.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)+
                     (player.Powerups.TryGetValue(ArcadePowerupBehavior.Chicken,out var chicken)&&chicken.RemainingSeconds>0?1:0);

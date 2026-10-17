@@ -45,6 +45,7 @@ namespace Game
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
             UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
+            UI.BtnSlayerChallenge.onClick.AddListener(OpenSlayerChallengeOptions);
             UI.BtnFieldUpgrade.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.FieldUpgrade));
             UI.BtnDonateLife.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.DonateLife));
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);

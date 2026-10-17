@@ -1,0 +1,3 @@
+TextArena overflow=False text=SLAYER · 准备 1200秒
+TextWave overflow=False text=进入 1/2 · 跳过 0/2 · 超时自动继续主线
+Label overflow=False text=Slayer选项

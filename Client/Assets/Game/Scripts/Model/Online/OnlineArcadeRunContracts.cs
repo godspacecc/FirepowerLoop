@@ -258,9 +258,9 @@ namespace Game
             IReadOnlyList<int> crateIds = null, IReadOnlyList<OnlineArcadeDropSnapshot> supplyPickups = null,
             float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
-            float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null)
+            float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null)
         {
-            SlayerMart=slayerMart;
+            SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
             HazardElapsedSeconds = hazardElapsedSeconds;
             ArenaConfigNumber = arenaConfigNumber;
@@ -286,6 +286,8 @@ namespace Game
         /// <summary>服务器提交的地图身份与加载代次；旧快照不能确认新代次。</summary>
         /// <summary>商店区域与资源代次的只读公共状态。</summary>
         public OnlineSlayerMartRegionSnapshot SlayerMart { get; }
+        /// <summary>独立Slayer公共状态，不以旧限时清怪倒计时推断阶段。</summary>
+        public OnlineSlayerChallengeSnapshot SlayerChallenge {get;}
         public bool RoundBossEncounter { get; }
         public bool RoundBossDefeated { get; }
         public string RoundLayoutId { get; }

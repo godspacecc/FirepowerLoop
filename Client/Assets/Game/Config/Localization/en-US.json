@@ -1323,5 +1323,20 @@
   "ui.arcade.coop.donate": "Donate a life",
   "ui.arcade.coop.donate_pc": "Donate a life [{0}]",
   "ui.arcade.coop.downed": "Recovering: {0}s · Teammate proximity helps",
-  "ui.arcade.coop.helped": "Teammate helping ×{1} · {0}s"
+  "ui.arcade.coop.helped": "Teammate helping ×{1} · {0}s",
+  "ui.arcade.slayer.phase.3": "SLAYER · Guardian",
+  "ui.arcade.slayer.enter": "Ready to enter",
+  "ui.arcade.slayer.phase.5": "SLAYER · Saving and returning",
+  "ui.arcade.slayer.progress": "Downs {0}/{1} · Cash collected {2} · Exit {3}/{4}",
+  "ui.arcade.slayer.options": "Slayer options",
+  "ui.arcade.slayer.exit_body": "Return when all members agree. Keep collected cash; no victory bonus or shop. You can withdraw your vote.",
+  "ui.arcade.slayer.phase.2": "SLAYER · Collect {0}s",
+  "ui.arcade.slayer.preparing": "Enter {0}/{2} · Skip {1}/{2} · Timeout continues main route",
+  "ui.arcade.slayer.phase.1": "SLAYER · Prepare {0}s",
+  "ui.arcade.slayer.skip": "Skip to main route",
+  "ui.arcade.slayer.withdraw": "Keep fighting / Withdraw",
+  "ui.arcade.slayer.phase.4": "SLAYER · Shop {0}s",
+  "ui.arcade.slayer.vote_exit": "Vote to leave",
+  "ui.arcade.slayer.exit_options": "Leave challenge",
+  "ui.arcade.slayer.prepare_body": "Collect coins for 90 seconds, then face Guardian. The fourth team down ends the challenge without losing main-route lives. Victory opens a five-minute shop. Both members must agree."
 }

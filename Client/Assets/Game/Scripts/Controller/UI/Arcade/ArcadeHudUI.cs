@@ -18,6 +18,7 @@ namespace Game
         public Button BtnFieldUpgrade;
         public Button BtnPause;
         public Button BtnRetry;
+        public Button BtnSlayerChallenge;
         public Button BtnSlayerMart;
         public GameObject DesktopAbilityRoot;
         public Image DesktopBombIcon;

@@ -1,0 +1,15 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerChallengeReturnOnline.Victory opens fresh shop generation and credits each original member
+PASS SlayerChallengeReturnOnline.Challenge shop has no repeat tomb cash boxes
+PASS SlayerChallengeReturnOnline.Old shop generation cannot buy in challenge
+PASS SlayerChallengeReturnOnline.Shop close requests challenge return without next ordinary round
+PASS SlayerChallengeReturnOnline.Guaranteed Slayer coin does not enter RunGold
+PASS SlayerChallengeReturnOnline.Return keeps spent supplies and cash but preserves main life and map
+PASS SlayerChallengeReturnOnline.Failed return save retains frozen candidate and retries without duplicate cash
+PASS SlayerChallengeReturnOnline.Abandon retains collected cash without boss bonus or shopping
+PASS SlayerChallengeReturnOnline.Challenge next-round life is delivered once in return transaction
+PASS SlayerChallengeReturnOnline.Challenge kill keeps existing Storm charge contract
+PASS SlayerChallengeReturnOnline.Return keeps actual temporary weapon remainder
+FAIL SlayerChallengeReturnOnline.Return advances generation and rejects delayed challenge ready input: old challenge input confirmed new mainline map
+PASS SlayerChallengeReturnOnline.Challenge shop ledger still permits later main visit two
+12/13 passed

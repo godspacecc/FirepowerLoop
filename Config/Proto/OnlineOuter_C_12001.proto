@@ -503,6 +503,15 @@ message OnlineArcadeBattleInfo
 	repeated int32 SlayerMartCashBoxIds = 46;
 	int64 SlayerMartRevision = 47;
 	bool SlayerMartPrepared = 48;
+    // 独立Slayer挑战公共权威状态；现金为每位原始成员同额收集额，不公开个人购物余额。
+    int32 SlayerPhase = 49;
+    int32 SlayerDowns = 50;
+    int32 SlayerDownLimit = 51;
+    int64 SlayerCashCollected = 52;
+    repeated int64 SlayerExitVotes = 53;
+    repeated int64 SlayerEnterReady = 54;
+    repeated int64 SlayerSkipReady = 55;
+    int32 SlayerOutcome = 56;
 }
 
 // Opcode 12085

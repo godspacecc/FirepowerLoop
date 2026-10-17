@@ -13,7 +13,7 @@ namespace FirepowerLoop.Arcade
         {
             if(previous==null||config==null||!previous.Ready||!previous.Closing)throw new ArgumentException("Slayer购物缺少已关闭的主线账本");
             var next=previous.Clone();next.Generation=checked(previous.Generation+1);next.Revision=checked(previous.Revision+1);
-            next.Seed=Mix(previous.Seed^(ulong)next.Generation);next.Ready=next.Closing=false;
+            next.Seed=Mix(previous.Seed^(ulong)next.Generation);next.Ready=next.Closing=false;next.TeamLifeBought=false;
             next.RemainingSeconds=config.Catalog.Regions.Single(p=>p.Visit==next.Visit).Duration;
             next.CollectedBoxes=new HashSet<int>(Enumerable.Range(1,config.Catalog.Regions.Single(p=>p.Visit==next.Visit).CashBoxes));
             next.Receipts.Clear();

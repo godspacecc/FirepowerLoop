@@ -44,6 +44,6 @@ namespace Game
             runtime.SlayerChallenge=ArcadeSlayerChallengeRules.SetExitVote(runtime.SlayerChallenge,1,value);error=null;return true;
         }
         /// <summary>界面只取得深复制的挑战工作快照，不持有权威对象。</summary>
-        public ArcadeSlayerChallengeState GetSlayerChallengeSnapshot()=>this.GetModel<ArcadeCombatModel>().Runtime?.SlayerChallenge?.Clone();
+        public ArcadeSlayerChallengeState GetSlayerChallengeSnapshot(){var r=this.GetModel<ArcadeCombatModel>().Runtime;var next=r?.SlayerChallenge?.Clone();if(next?.Phase==ArcadeSlayerChallengePhase.Shopping&&r.SlayerMart!=null)next.RemainingSeconds=r.SlayerMart.RemainingSeconds;return next;}
     }
 }

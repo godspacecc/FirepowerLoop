@@ -1,0 +1,10 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerChallengeIntentOnline.Public snapshot and clone carry independent phase and allowance
+PASS SlayerChallengeIntentOnline.One exit vote does not abandon duo
+PASS SlayerChallengeIntentOnline.Unanimous exit returns without victory shopping
+PASS SlayerChallengeIntentOnline.Exit cancellation leaves combat running
+PASS SlayerChallengeIntentOnline.Exit replay cannot resurrect cancelled vote
+PASS SlayerChallengeIntentOnline.Exit payload conflict rejected
+PASS SlayerChallengeIntentOnline.Old revision and nonmember exit rejected
+PASS SlayerChallengeIntentOnline.Active clock uses elapsed time rather than clamped movement step
+8/8 passed

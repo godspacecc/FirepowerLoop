@@ -55,6 +55,19 @@ namespace Game.Tests
         [Test] public void GuardianVictoryCreditsIndependentShop(){Guardian();Call("KillEnemy",runtime,runtime.Enemies.Values.Single(),false);Assert.That(runtime.SlayerMartReturnWave,Is.GreaterThan(0));Assert.That(runtime.SlayerMart.Players[0].Cash,Is.EqualTo(5000));Assert.That(runtime.SlayerMart.Generation,Is.EqualTo(2));Assert.That(runtime.SlayerMart.CollectedBoxes.Count,Is.EqualTo(9));}
         [Test] public void CollectionKillGuaranteesPhysicalCoin(){Start();var e=new ArcadeEnemyRuntime{Id=71,Position=runtime.PlayerPosition};runtime.Enemies.Add(e.Id,e);Call("KillEnemy",runtime,e,false);Assert.That(runtime.Drops.Count,Is.EqualTo(1));Assert.That(State.CashCollected,Is.Zero);}
         [Test] public void PhysicalCoinCreditsChallengeCashInsteadOfRunGold(){Start();var e=new ArcadeEnemyRuntime{Id=71,Position=runtime.PlayerPosition};runtime.Enemies.Add(e.Id,e);Call("KillEnemy",runtime,e,false);Call("TickDrops",runtime);Assert.That(State.CashCollected,Is.EqualTo(100));Assert.That(runtime.ArenaGold,Is.Zero);Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RunGold,Is.Zero);}
+        [Test] public void LongFrameDoesNotExtendSlayerDeadline(){Start();double now=0;typeof(ArcadeCombatSystem).GetField("slayerMartRealtime",Flags).SetValue(system,new Func<double>(()=>now));system.TickFrame(runtime,.001f);now=3;system.TickFrame(runtime,.05f);Assert.That(State.RemainingSeconds,Is.EqualTo(87).Within(.0001));}
+        [Test] public void ChallengeAttributedKillStillChargesOwnedStorm(){Start();runtime.SlayerMart.Players[0].Owned.Add("slayermart.item.16");var e=new ArcadeEnemyRuntime{Id=71,Position=runtime.PlayerPosition};runtime.Enemies.Add(e.Id,e);Call("KillEnemy",runtime,e,false);Assert.That(runtime.SlayerMart.Players[0].StormCharge,Is.EqualTo(1));}
+        [Test] public void ReturningTickStopsAfterSynchronousCombatRelease()
+        {
+            string root=Path.Combine(Path.GetTempPath(),"FirepowerSlayerTick-"+Guid.NewGuid().ToString("N"));
+            var runSystem=new ArcadeRunSystem();architecture.RegisterSystem(runSystem);runSystem.ConfigureForTests(root);
+            run.Checkpoint.ArenaNumber=4;run.Checkpoint.ChallengeAttempted=true;run.UpdatedAtUtc=DateTime.UtcNow.ToString("O");
+            Assert.That(new ArcadeRunFileStore(root).Save(run,out var error),Is.True,error);architecture.GetModel<ArcadeRunModel>().CommitChallenge(run);
+            Start();runtime.SlayerChallenge=ArcadeSlayerChallengeRules.SetExitVote(State,1,true);
+            var registration=architecture.RegisterEvent<ArcadeRunChangedEvent>(evt=>Call("OnRunChanged",evt));
+            try{Assert.DoesNotThrow(()=>system.Tick(runtime,.1f));Assert.That(architecture.GetModel<ArcadeCombatModel>().Runtime,Is.Null);}
+            finally{registration.UnRegister();Assert.That(Path.GetFullPath(root).StartsWith(Path.GetFullPath(Path.GetTempPath()),StringComparison.OrdinalIgnoreCase),Is.True);if(Directory.Exists(root))Directory.Delete(root,true);}
+        }
         private sealed class View:IArcadeCombatViewPort
         {
             public bool IsActive=>true;public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}public void End(){}

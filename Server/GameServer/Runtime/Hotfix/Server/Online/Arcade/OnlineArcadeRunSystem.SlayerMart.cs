@@ -182,6 +182,7 @@ namespace ET.Server
             if(state.Ready&&battle.SlayerMartDeadlineAt>0)
                 elapsed=Math.Max(0,state.RemainingSeconds-Math.Max(0,(battle.SlayerMartDeadlineAt-now)/1000d));
             battle.SlayerMart=ArcadeSlayerMartRules.AdvanceVisit(state,elapsed,battle.SlayerMartRegionPrepared&&RoundPlayersReady(battle),false);
+            if(battle.SlayerChallenge!=null){battle.SlayerChallenge.RemainingSeconds=battle.SlayerMart.RemainingSeconds;battle.ChallengeSeconds=battle.SlayerMart.RemainingSeconds;}
             if(!state.Ready&&battle.SlayerMart.Ready&&!battle.SlayerMart.Closing)
                 battle.SlayerMartDeadlineAt=checked(now+(long)Math.Ceiling(battle.SlayerMart.RemainingSeconds*1000d));
             if(battle.SlayerMart.Closing)

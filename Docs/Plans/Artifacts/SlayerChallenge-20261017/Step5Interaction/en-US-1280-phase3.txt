@@ -1,0 +1,3 @@
+TextArena overflow=False text=SLAYER · Guardian
+TextWave overflow=False text=Downs 2/4 · Cash collected 1600 · Exit 1/2
+Label overflow=False text=Leave challenge

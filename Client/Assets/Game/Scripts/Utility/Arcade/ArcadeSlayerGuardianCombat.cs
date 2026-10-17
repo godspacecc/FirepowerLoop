@@ -9,12 +9,19 @@ namespace FirepowerLoop.Arcade
 #endif
     public sealed class ArcadeSlayerGuardianState
     {
+        /// <summary>仅活动模拟推进的累计秒数。</summary>
         public double Elapsed {get;set;}
+        /// <summary>已锁定预警与已释放攻击的周期，禁止重复施放。</summary>
         public long Cycle=-1,AttackCycle=-1;
+        /// <summary>当前预警锁定的起点与目标点，不在释放前追踪玩家。</summary>
         public float OriginX,OriginY,TargetX,TargetY;
+        /// <summary>本独立场内区域与火球的稳定递增身份。</summary>
         public int NextId=1;
+        /// <summary>尚未到期的持续伤害区域。</summary>
         public readonly List<ArcadeSlayerGuardianArea> Areas=new List<ArcadeSlayerGuardianArea>();
+        /// <summary>仍在飞行的火球；终点或碰撞后即移除。</summary>
         public readonly List<ArcadeSlayerGuardianBall> Balls=new List<ArcadeSlayerGuardianBall>();
+        /// <summary>本帧只读表现投影，不接受表现端伤害回写。</summary>
         public readonly List<ArcadeContentAreaSnapshot> Snapshots=new List<ArcadeContentAreaSnapshot>();
     }
 #if DOTNET
@@ -36,14 +43,18 @@ namespace FirepowerLoop.Arcade
         public int Id;
         public float X,Y,TargetX,TargetY;
     }
+    /// <summary>宿主提供的存活目标逻辑坐标，不持有角色对象。</summary>
     public readonly struct ArcadeSlayerGuardianTarget
     {
+        /// <summary>原始成员身份与当前场内坐标。</summary>
         public readonly long Id;
         public readonly float X,Y;
         public ArcadeSlayerGuardianTarget(long id,float x,float y){Id=id;X=x;Y=y;}
     }
+    /// <summary>同源攻击命中意图，实际扣血及保护仍由宿主裁决。</summary>
     public readonly struct ArcadeSlayerGuardianHit
     {
+        /// <summary>受击成员、基础伤害及致命机关标记。</summary>
         public readonly long Id;
         public readonly int Damage;
         public readonly bool Lethal;
@@ -52,6 +63,7 @@ namespace FirepowerLoop.Arcade
     /// <summary>双端同源Guardian三技能裁决；宿主仍负责无敌、护盾、生命和独立倒地。</summary>
     public static class ArcadeSlayerGuardianCombat
     {
+        /// <summary>点到有限线段的距离；圆区用相同起终点退化表示。</summary>
         public static float DistanceToSegment(float x,float y,float ax,float ay,float bx,float by)
         {
             float dx=bx-ax,dy=by-ay,d=dx*dx+dy*dy;
