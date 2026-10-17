@@ -69,7 +69,7 @@ namespace FirepowerLoop.Arcade
             foreach(string key in new[]{"release.enabled","inventory.cards","inventory.maxLives","inventory.maxBombs","inventory.maxDashes","inventory.maxChickens",
                 "storm.kills","storm.duration","storm.radius","storm.interval","storm.damage","storm.eliteSpeedScale","mastery.magnet","mastery.decoy","mastery.gloves",
                 "mastery.chicken","mastery.barrel","mastery.sawDistance","mastery.deadOperator","mastery.sentry","mastery.respawn","support.orbitSpeed","support.orbitRadius",
-                "support.contactRadius","support.barrelCharges","support.barrelInterval","gem.minimum","gem.maximum"})
+                "support.contactRadius","support.barrelCharges","support.barrelInterval","support.orbKnockback","gem.minimum","gem.maximum"})
             {
                 float value=c.Parameter(key);
                 if(float.IsNaN(value)||float.IsInfinity(value)||value<0||(key!="release.enabled"&&value==0))throw new ArgumentException("商店参数无效："+key);

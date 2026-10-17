@@ -27,6 +27,8 @@ namespace Game
         private const float ProjectileHitRadius = 0.45f;
         private const float EnemyProjectileSpeed = 7.5f;
         private const float EnemyProjectileLifetime = 4f;
+        /// <summary>普通鸡与购买鸡共用既有支援弹寿命。</summary>
+        private const float SupportProjectileLifetimeSeconds = 1.5f;
         private const float WaveTransitionSeconds = 1.1f;
         private const float DashSeconds = 0.28f;
         private const float DashSpeedMultiplier = 2.4f;
@@ -170,7 +172,7 @@ namespace Game
             }
             if (definition.Kind == global::ArcadeDropKind.FirstPerson &&
                 !TryBeginFirstPerson(runtime, definition, out error)) return false;
-            ApplyDrop(runtime, definition);
+            if(!ApplyDrop(runtime, definition)){error="当前强化容量不足或配置无效";return false;}
             SyncView(runtime);
             PublishHud(runtime);
             summary = $"已模拟拾取 {definition.Id}（{definition.Kind} / {definition.ProductId}）";
@@ -508,6 +510,7 @@ namespace Game
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending)
             { SyncView(runtime); PublishHud(runtime); return; }
             TickSlayerMartStorm(runtime,deltaTime);
+            TickSlayerMartSupports(runtime,deltaTime);
             if (runtime.InTreasureRoom) { SyncView(runtime); PublishHud(runtime); return; }
             TickOpeningFire(runtime, deltaTime);
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
@@ -1139,7 +1142,7 @@ namespace Game
                 powerup.ShotDirection = direction;
             SpawnProjectile(runtime, false, origin, direction * powerup.Definition.ProjectileSpeed,
                 SlayerMartDamage(runtime,powerup.Definition.Damage,powerup.Definition.Behavior==global::ArcadePowerupBehavior.Sentry?SlayerMartDamageSource.Sentry:
-                    powerup.Definition.Behavior==global::ArcadePowerupBehavior.Chicken?SlayerMartDamageSource.Chicken:SlayerMartDamageSource.Orb), 1.5f);
+                    powerup.Definition.Behavior==global::ArcadePowerupBehavior.Chicken?SlayerMartDamageSource.Chicken:SlayerMartDamageSource.Orb), SupportProjectileLifetimeSeconds);
             powerup.CooldownSeconds = powerup.Definition.IntervalSeconds;
         }
 
@@ -1455,6 +1458,7 @@ namespace Game
             if (runtime.IsChallenge)
             {
                 ArcadeSlayerMartAbilityRules.OnDeath(ability);
+                ClearSlayerMartOrdinarySupports(runtime);
                 runtime.PlayerHealth = 0;
                 CompleteChallenge(runtime, false);
                 return;
@@ -1465,6 +1469,7 @@ namespace Game
             if (result == ArcadeDeathResult.Respawn)
             {
                 ArcadeSlayerMartAbilityRules.OnDeath(ability);
+                ClearSlayerMartOrdinarySupports(runtime);
                 runtime.PlayerHealth = 0;
                 runtime.RespawnRemaining = catalog.Rule.RespawnDelaySeconds;
                 runtime.PlayerPosition = Vector2.zero;
@@ -1564,6 +1569,10 @@ namespace Game
         /// <summary>只在奖励实际写入后返回成功，反馈消费本次实际变化。</summary>
         private bool ApplyDrop(ArcadeCombatRuntime runtime, ArcadeDropDefinition drop)
         {
+            if(drop.Kind==global::ArcadeDropKind.Powerup&&runtime.SlayerMartRulesVersion==1&&slayerMartConfig!=null&&
+                catalog.Powerups.Any(p=>p.Id==drop.ProductId&&p.Behavior==global::ArcadePowerupBehavior.Chicken)&&
+                !TryGetPowerup(runtime,global::ArcadePowerupBehavior.Chicken,out _)&&
+                (SlayerMartAbility(runtime)?.Supports.Count(p=>p.Kind==SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=slayerMartConfig.Catalog.MaxChickens)return false;
             switch (drop.Kind)
             {
                 case global::ArcadeDropKind.RunGold:
@@ -1584,6 +1593,7 @@ namespace Game
                     break;
                 case global::ArcadeDropKind.Powerup:
                     ApplyPowerup(runtime, drop);
+                    SyncSlayerMartCapacity(runtime);
                     break;
             }
             return true;

@@ -60,3 +60,10 @@
 - SlayerMartSupportTests 初始0/24红→24/24绿。补组合精通上限23/24红→24/24；评审发现到期鸡占位和交接帧重复队列，回归22/24红→24/24。非法恢复相位23/24红→24/24；交付参数与正式商品不一致23/24红→24/24。支援异主结构校验7/8红→8/8。
 - Config/gen.bat再次双端生成，新增support.barrelInterval=0.45，能力bytes双端SHA256相同。SlayerMartConfig7/7、SlayerMartAbilityRules24/24、实际单人保存8/8、服务器保存8/8、风暴运行10/10通过。Unity SlayerMartCheckpointTests实际8/8，正式文件已验证支援剩余和相位保存。
 - 这是任务4的规则与保存基础；实际多实体发射／接触适配、普通双锯、正式资源实例生命周期与联机投影仍继续实施，不宣称支援已在正式场景可玩。
+
+## 第八段：购买支援接入双端实际战斗
+
+- 单人与权威服务端接入独立鸡弹、实际轨道接触的球／锯、有限触发爆桶和接力；弹丸保留拥有者与支援实例身份。满弹丸预算不消费鸡冷却，普通鸡与购买鸡共用五只容量，到期释放占位。死亡同时清除普通支援槽与购买队列。
+- SlayerMartSupportOnline 从1/18红到18/18绿；Unity SlayerMartSupportTests 从1/12红到12/12绿（上限24，includePassingTests=true），实际执行12项。原FullRouteOnline回归28/28；只读审查本段未发现确定P1／P2。
+- 新增射击朝向字段有限值校验，SlayerMartSupportTests纯规则23/24红后24/24绿，SlayerMartSave8/8。正式Config/gen.bat双端生成support.orbKnockback=0.8；未触发Player Build。
+- 普通双锯、普通桶交接、资源表现和协议投影继续下一段；release.enabled仍为0，不提前声明正式商店可玩。

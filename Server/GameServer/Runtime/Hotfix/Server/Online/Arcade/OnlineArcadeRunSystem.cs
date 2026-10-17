@@ -1340,6 +1340,7 @@ namespace ET.Server
             changed |= self.TickTreasureRoom(battle, 0f);
             changed |= self.TickOpeningFire(battle, deltaSeconds);
             changed |= self.TickSlayerMartStorm(battle,deltaSeconds);
+            changed |= self.TickSlayerMartSupports(battle,deltaSeconds);
             if (battle.AwaitingExit)
             {
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
@@ -2333,6 +2334,9 @@ namespace ET.Server
                 case ArcadeDropKind.Powerup:
                     ArcadePowerupConfig definition = ServerConfig.Instance.Tables.TbArcadePowerup.GetOrDefault(drop.ProductId);
                     if (definition == null || drop.DurationSeconds <= 0) return false;
+                    if(definition.Behavior==ArcadePowerupBehavior.Chicken&&self.Battle?.SlayerMartRulesVersion==1&&
+                        !TryGetPowerup(player,ArcadePowerupBehavior.Chicken,out _)&&
+                        (SlayerMartAbility(self.Battle,player.PlayerId)?.Supports.Count(p=>p.Kind==FirepowerLoop.Arcade.SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=ServerConfig.Instance.SlayerMart.Catalog.MaxChickens)return false;
                     player.Powerups[definition.Behavior] = new OnlineArcadePowerupRuntime
                     {
                         ProductId = definition.Id,
@@ -2347,6 +2351,7 @@ namespace ET.Server
                         PositionX = player.PositionX,
                         PositionZ = player.PositionZ,
                     };
+                    SyncSlayerMartCapacity(self.Battle,player);
                     break;
                 default: return false;
             }
@@ -2490,6 +2495,7 @@ namespace ET.Server
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             player.CurrentHealth = 0;
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.OnDeath(ability);
+            ClearSlayerMartOrdinarySupports(battle,player);
             player.Alive = false;
             player.MoveX = 0f;
             player.MoveZ = 0f;

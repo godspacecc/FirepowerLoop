@@ -30,6 +30,9 @@ namespace FirepowerLoop.Arcade
         /// <summary>固定设施的逻辑锚点；移动支援由拥有者实时位置投影。</summary>
         public float AnchorX { get; set; }
         public float AnchorY { get; set; }
+        /// <summary>最后一次真实射击的朝向，仅用于支援模型姿态。</summary>
+        public float ShotDirectionX { get; set; }
+        public float ShotDirectionY { get; set; }
         public ArcadeSlayerMartEffectInstance Clone()=>(ArcadeSlayerMartEffectInstance)MemberwiseClone();
     }
     /// <summary>当前份在个人Supports内，Waiting只保存尚未启动的完整份。</summary>

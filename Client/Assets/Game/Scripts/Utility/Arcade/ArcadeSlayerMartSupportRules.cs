@@ -154,7 +154,8 @@ namespace FirepowerLoop.Arcade
             {
                 if(!Enum.IsDefined(typeof(SlayerMartSupportKind),item.Kind)||string.IsNullOrWhiteSpace(item.InstanceId)||item.OwnerId!=player.PlayerId||
                     !Finite(item.RemainingSeconds)||item.RemainingSeconds<0||!Finite(item.Phase)||item.Phase<0||item.Phase>=Math.PI*2||
-                    !Finite(item.CooldownSeconds)||item.CooldownSeconds<0)return false;
+                    !Finite(item.CooldownSeconds)||item.CooldownSeconds<0||!Finite(item.AnchorX)||!Finite(item.AnchorY)||
+                    !Finite(item.ShotDirectionX)||!Finite(item.ShotDirectionY))return false;
                 bool sourceMatches=item.Kind==SlayerMartSupportKind.Chicken&&(item.SourceEffect==SlayerMartEffect.Chicken||item.SourceEffect==SlayerMartEffect.ChickenPack)||
                     item.Kind==SlayerMartSupportKind.Orb&&item.SourceEffect==SlayerMartEffect.TeslaPack||
                     item.Kind==SlayerMartSupportKind.Saw&&(item.SourceEffect==SlayerMartEffect.Saw||item.SourceEffect==SlayerMartEffect.SawBarrel)||

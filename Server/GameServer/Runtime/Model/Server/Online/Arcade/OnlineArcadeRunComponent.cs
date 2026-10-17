@@ -260,6 +260,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeProjectileRuntime
     {
+        /// <summary>购买支援的稳定实例来源，不复用普通武器标记。</summary>
+        public string SupportInstanceId;
         public long RuntimeId;
         /// <summary>主题追踪弹的限幅转向速度，零为原有直线弹。</summary>
         public float TrackingTurnRate, ContentSlowSeconds;

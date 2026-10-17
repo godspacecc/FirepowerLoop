@@ -59,7 +59,7 @@ namespace FirepowerLoop.Arcade
                     string.IsNullOrWhiteSpace(item.GroupId)||string.IsNullOrWhiteSpace(item.ProductId)||
                     !Finite(item.RemainingSeconds)||item.RemainingSeconds<0||!Finite(item.CooldownSeconds)||item.CooldownSeconds<0||
                     !Finite(item.Phase)||item.Phase<0||item.Phase>=Math.PI*2||item.Charges<0||
-                    float.IsNaN(item.AnchorX)||float.IsInfinity(item.AnchorX)||float.IsNaN(item.AnchorY)||float.IsInfinity(item.AnchorY))return false;
+                    !Finite(item.AnchorX)||!Finite(item.AnchorY)||!Finite(item.ShotDirectionX)||!Finite(item.ShotDirectionY))return false;
             foreach(var queue in player.Queues)
                 if(string.IsNullOrWhiteSpace(queue.QueueId)||queue.Waiting.Any(p=>p.QueueId!=queue.QueueId||p.Kind!=SlayerMartSupportKind.Barrel))return false;
             if(player.Supports.Any(p=>!string.IsNullOrEmpty(p.QueueId)&&!player.Queues.Any(q=>q.QueueId==p.QueueId)))return false;
