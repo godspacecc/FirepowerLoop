@@ -8,6 +8,7 @@ using NUnit.Framework;
 using QFramework;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 namespace Game.Tests
@@ -20,10 +21,19 @@ namespace Game.Tests
         private StartUICtrl controller;
         private DeferredPreparation preparation;
         private string saveRoot;
+        private GameObject uiRoot;
 
         [SetUp]
         public void SetUp()
         {
+            UIHelper.ResetForTests();
+            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/" + path + ".prefab"));
+            uiRoot = new GameObject("UIRoot", typeof(RectTransform), typeof(Canvas), typeof(UnityEngine.UI.CanvasScaler), typeof(UnityEngine.UI.GraphicRaycaster));
+            foreach (var layer in new[] { "HUD", "Dialog", "Popup", "Tips", "Top" })
+                new GameObject(layer, typeof(RectTransform)).transform.SetParent(uiRoot.transform, false);
+            var events = new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule));
+            events.transform.SetParent(uiRoot.transform, false);
+            uiRoot.AddComponent<UIRoot>();
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, null);
             architecture = new Game();
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, architecture);
@@ -50,11 +60,65 @@ namespace Game.Tests
         {
             controller.Hide();
             preparation.CompleteAll();
+            UIHelper.ResetForTests();
+            if (uiRoot != null) Object.DestroyImmediate(uiRoot);
             Object.DestroyImmediate(instance);
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, null);
             ResourceLoader.ResetForTests();
             LocalizationLanguages.ResetForTests();
             if (Directory.Exists(saveRoot)) Directory.Delete(saveRoot, true);
+        }
+
+        [Test]
+        public void SinglePlayerClick_ShowsLoadingBeforePreparationAndClosesOnFailure()
+        {
+            Invoke("OnNewGameClick");
+            var loading = UIHelper.GetUICtrl<LoadingUICtrl>();
+            Assert.That(loading?.IsShow(), Is.True, "等待资源检查期间必须有可见反馈");
+            var view = Object.FindObjectOfType<LoadingUI>();
+            Assert.That(view.MapRoot.activeSelf, Is.True);
+            Assert.That(view.ErrorRoot.activeSelf, Is.False);
+            loading.Hide();
+            Assert.That(loading.IsShow(), Is.True, "开局准备中不能关闭加载遮罩");
+            preparation.Requests[0].TrySetResult(false);
+            Assert.That(loading.IsShow(), Is.False, "资源准备失败应恢复可操作菜单");
+            Assert.That(controller.IsShow(), Is.True);
+        }
+
+        [Test]
+        public void Loading_MapEventsUpdateProgressAndStayUntilEntryFinishes()
+        {
+            Invoke("OnNewGameClick");
+            var loading = UIHelper.GetUICtrl<LoadingUICtrl>();
+            Assert.That(loading?.IsShow(), Is.True);
+            var view = Object.FindObjectOfType<LoadingUI>();
+            architecture.SendEvent(new MapLoadingStartedEvent(global::Game.MapIds.Arcade));
+            architecture.SendEvent(new MapLoadingProgressEvent(global::Game.MapIds.Arcade, .5f));
+            Assert.That(view.ProgressSlider.value, Is.EqualTo(.5f));
+            architecture.SendEvent(new MapLoadingCompletedEvent(global::Game.MapIds.Arcade));
+            Assert.That(loading.IsShow(), Is.True, "整个开局事务结束前继续遮挡菜单");
+            preparation.Requests[0].TrySetResult(false);
+            Assert.That(loading.IsShow(), Is.False);
+        }
+
+        [Test]
+        public void Loading_MapFailureRemainsVisibleAndCanReturnToMenu()
+        {
+            Invoke("OnNewGameClick");
+            var loading = UIHelper.GetUICtrl<LoadingUICtrl>();
+            Assert.That(loading?.IsShow(), Is.True);
+            var view = Object.FindObjectOfType<LoadingUI>();
+            architecture.SendEvent(new MapLoadingStartedEvent(global::Game.MapIds.Arcade));
+            LogAssert.Expect(LogType.Error, "[LoadingUICtrl] 地图加载失败：test map failure");
+            architecture.SendEvent(new MapLoadingFailedEvent(global::Game.MapIds.Arcade, "test map failure"));
+            preparation.Requests[0].TrySetResult(false);
+            Assert.That(loading.IsShow(), Is.True);
+            Assert.That(view.ErrorRoot.activeSelf, Is.True);
+            Assert.That(view.ErrorText.text, Does.Contain("test map failure"));
+            Assert.That(view.BtnBack.interactable, Is.True);
+            view.BtnBack.onClick.Invoke();
+            Assert.That(loading.IsShow(), Is.False);
+            Assert.That(controller.IsShow(), Is.True);
         }
 
         [Test]
@@ -86,6 +150,7 @@ namespace Game.Tests
             Invoke("OnNewGameClick");
             Assert.That(preparation.Requests.Count, Is.EqualTo(1));
             controller.Hide();
+            Assert.That(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow(), Is.Not.True);
             Assert.That(preparation.Owners[0](), Is.False);
             preparation.Requests[0].TrySetResult(true);
             Assert.That(architecture.GetSystem<ArcadeRunSystem>().InspectPending().Status, Is.EqualTo(SaveFileStatus.Missing));

@@ -44,6 +44,10 @@ namespace Game
             busy = true;
             try
             {
+                // 先初始化订阅；前置检查拒绝时没有地图事件，不能留下无进度的遮罩。
+                bool loadingWasVisible = UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() == true;
+                var loading = UIHelper.ShowUI<LoadingUICtrl>();
+                if (!loadingWasVisible) loading.Hide();
                 var result = await this.GetSystem<MapSceneSystem>().LoadArcadeMapAsync(cancellationToken);
                 if (result.Success) UIHelper.HideUI<StartUICtrl>();
                 return result.Success ? ArcadeSceneFlowResult.Ok() : ArcadeSceneFlowResult.Fail(result.Error);

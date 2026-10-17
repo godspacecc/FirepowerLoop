@@ -24,6 +24,10 @@ namespace Game
         private int startGeneration;
         /// <summary>开局准备到地图事务结束期间拒绝重复提交。</summary>
         private bool startingRun;
+        /// <summary>当前开局的加载表现请求；离开菜单时释放，旧回调不得关闭新请求。</summary>
+        private LoadingUICtrl startLoading;
+        /// <summary>与当前加载控制器配对，只释放该次开局持有的表现请求。</summary>
+        private int startLoadingRequestId;
         private StartUI UI => BaseUI as StartUI;
 
         public override UILayer Layer()
@@ -90,6 +94,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
             manualChecking = false;
@@ -98,6 +103,7 @@ namespace Game
 
         protected override void OnUnload()
         {
+            ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
             manualChecking = false;
@@ -167,8 +173,12 @@ namespace Game
             bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
             try
             {
+                startLoading = UIHelper.ShowUI<LoadingUICtrl>();
+                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
                 var preparation = this.GetUtility<IGameplayResourcePreparation>();
                 if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
+                // 先让加载界面完成一帧绘制，再执行可能同步耗时的落盘和场景准备。
+                await UniTask.NextFrame();
                 if (!IsCurrent()) return;
                 if (!system.TryStartConfiguredRun(out _, out var error))
                 {
@@ -186,10 +196,19 @@ namespace Game
             {
                 if (IsCurrent())
                 {
+                    ReleaseStartLoading();
                     startingRun = false;
                     RefreshSaveButtons();
                 }
             }
+        }
+
+        /// <summary>取消等待或入口结束时恢复加载显示；失败地图仍保留错误和返回按钮。</summary>
+        private void ReleaseStartLoading()
+        {
+            startLoading?.EndEntryPreparation(startLoadingRequestId);
+            startLoading = null;
+            startLoadingRequestId = 0;
         }
 
         private void OnContinueClick()

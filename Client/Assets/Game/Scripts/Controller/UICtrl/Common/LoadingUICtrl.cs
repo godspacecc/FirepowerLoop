@@ -17,6 +17,10 @@ namespace Game
         /// <summary>玩家已收起弹窗或转入地图加载；完成后不能强制打开原 NPC 界面。</summary>
         private bool downloadDismissed;
         private bool mapLoadingActive;
+        /// <summary>开局资源检查到战斗初始化的表现请求；地图完成后也等待入口释放。</summary>
+        private bool entryPreparing;
+        /// <summary>隔离旧入口的异步清理，避免关闭后来发起的加载请求。</summary>
+        private int entryRequestId;
         /// <summary>最近地图请求是否为基地；下载覆盖显示期间仍保留，结束后恢复。</summary>
         private bool baseMapLoading;
         /// <summary>最近地图进度，范围 0～1；下载覆盖期间继续由地图事件更新。</summary>
@@ -33,8 +37,8 @@ namespace Game
         /// <summary>当前请求的实际字节与文件进度；总字节未取得时只显示准备状态。</summary>
         private OptionalGameplayDownloadProgress downloadProgress;
         private LoadingUI UI => BaseUI as LoadingUI;
-        /// <summary>下载门禁结束前禁止普通关闭入口隐藏正在执行的准备事务。</summary>
-        protected override bool CanHide() => !downloadActive;
+        /// <summary>开局准备、地图加载或下载执行期间禁止普通关闭入口隐藏遮罩。</summary>
+        protected override bool CanHide() => !downloadActive && !entryPreparing && !mapLoadingActive;
         public bool ShouldResumeDownloadEntry => downloadActive && !downloadDismissed;
 
         public override UILayer Layer()
@@ -69,7 +73,7 @@ namespace Game
         protected override void OnShow()
         {
             RefreshPresentation();
-            UI.BtnBack.interactable = !downloadActive;
+            UI.BtnBack.interactable = CanHide();
         }
 
         protected override void OnHide()
@@ -107,25 +111,50 @@ namespace Game
             // 已显示时 Show 不触发 OnShow，必须刷新最新地图身份和进度。
             RefreshPresentation();
             UI.ErrorRoot.SetActive(false);
+            UI.BtnBack.interactable = false;
+        }
+
+        /// <summary>点击开局立即显示现有地图加载界面；先订阅事件，再交接后续地图进度。</summary>
+        public int BeginEntryPreparation(string mapId)
+        {
+            entryPreparing = true;
+            int requestId = ++entryRequestId;
+            OnLoadingStarted(new MapLoadingStartedEvent(mapId));
+            mapLoadingActive = false;
+            return requestId;
+        }
+
+        /// <summary>仅释放对应入口的遮罩；地图失败详情保留，玩家可返回原菜单重试。</summary>
+        public void EndEntryPreparation(int requestId)
+        {
+            if (!entryPreparing || requestId != entryRequestId) return;
+            entryPreparing = false;
+            if (UI == null) return;
+            UI.BtnBack.interactable = CanHide();
+            if (!mapLoadingActive && string.IsNullOrEmpty(mapError)) Hide();
         }
 
         private void OnLoadingCompleted(MapLoadingCompletedEvent evt)
         {
+            if (evt.MapId != loadingMapId) return;
             if(mapStage.HasValue)RenderMapStage();
             mapLoadingActive = false;
             mapError = null;
             if (displayMode == DisplayMode.ResourceDownload) return;
+            UI.BtnBack.interactable = CanHide();
             Hide();
         }
 
         private void OnProgress(MapLoadingProgressEvent e)
         {
+            if (e.MapId != loadingMapId) return;
             mapProgress = e.Progress;
             if (displayMode == DisplayMode.Map) SetMapProgress(e.Progress);
         }
 
         private void OnFailed(MapLoadingFailedEvent e)
         {
+            if (e.MapId != loadingMapId) return;
             Log.Error($"[LoadingUICtrl] 地图加载失败：{e.Error}");
             if(mapStage.HasValue)RenderMapStage();
             mapLoadingActive = false;
@@ -134,6 +163,7 @@ namespace Game
             mapError=FormatMapFailure();
             if (displayMode == DisplayMode.ResourceDownload) return;
             ShowError(mapError);
+            UI.BtnBack.interactable = CanHide();
         }
 
         /// <summary>空原因保留通用提示，实际原因作为动态文本展示并保留在下载切换后的失败快照中。</summary>
