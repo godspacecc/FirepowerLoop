@@ -190,6 +190,8 @@ namespace Game
         /// <summary>本局新商店版本与独占工作态，外部保存只能使用捕获的深拷贝。</summary>
         public int SlayerMartRulesVersion;
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;
+        /// <summary>当前同步风暴伤害作用域，不保存，避免自身及连锁死亡充能。</summary>
+        public bool SlayerMartStormDamage;
         /// <summary>本轮内容活动时钟；加载、清场和暂停由系统门禁停止推进。</summary>
         public FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
         /// <summary>本地图独占领域，离场整体释放，不写入存档。</summary>

@@ -289,6 +289,9 @@ namespace Game
                 RejectArenaEntry("街机战斗配置或表现端口不可用");
                 return;
             }
+            slayerMartConfig=null;
+            if(run.SlayerMartRulesVersion==1&&!provider.TryGetSlayerMart(out slayerMartConfig,out error))
+            {RejectArenaEntry(error??"商店能力配置不可用");return;}
             if(run.SlayerMartRulesVersion==1&&run.SlayerMart!=null&&
                 (!provider.TryGetSlayerMart(out var abilityConfig,out error)||
                  run.SlayerMart.Players.Any(p=>!ArcadeSlayerMartAbilityRules.IsValid(p,abilityConfig.Parameter))))
@@ -505,6 +508,7 @@ namespace Game
             TickTreasureRoom(runtime, 0f);
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending)
             { SyncView(runtime); PublishHud(runtime); return; }
+            TickSlayerMartStorm(runtime,deltaTime);
             if (runtime.InTreasureRoom) { SyncView(runtime); PublishHud(runtime); return; }
             TickOpeningFire(runtime, deltaTime);
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
@@ -729,6 +733,7 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
+                if(SlayerMartStormSpeed(runtime,enemy)==0)continue;
                 enemy.AttackCooldown = Mathf.Max(0f, enemy.AttackCooldown - deltaTime);
                 var targetPosition = runtime.PlayerPosition;
                 var targetIsDecoy = false;
@@ -741,6 +746,7 @@ namespace Game
                 var distance = offset.magnitude;
                 var direction = distance > 0.001f ? offset / distance : Vector2.up;
                 var movementDelta = deltaTime * EnemySpeedMultiplier(runtime);
+                movementDelta *= SlayerMartStormSpeed(runtime,enemy);
                 bool entering = enemy.EnteringIsland;
                 if (entering)
                 {
@@ -1476,6 +1482,7 @@ namespace Game
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
+            if(slayerMartConfig!=null)ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(runtime),!hazardKill,runtime.SlayerMartStormDamage,slayerMartConfig.Parameter);
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {
                 runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;

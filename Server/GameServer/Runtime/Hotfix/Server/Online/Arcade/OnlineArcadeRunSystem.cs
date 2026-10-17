@@ -1338,6 +1338,7 @@ namespace ET.Server
             changed |= self.TickPlayers(battle, deltaSeconds, now);
             changed |= self.TickTreasureRoom(battle, 0f);
             changed |= self.TickOpeningFire(battle, deltaSeconds);
+            changed |= self.TickSlayerMartStorm(battle,deltaSeconds);
             if (battle.AwaitingExit)
             {
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
@@ -1543,7 +1544,7 @@ namespace ET.Server
                     return changed || battle.AllPlayersDefeated;
                 }
 
-                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed)continue;
+                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)continue;
                 enemy.TargetPlayerId = target.PlayerId;
                 enemy.AttackCooldownSeconds = Math.Max(0f, enemy.AttackCooldownSeconds - deltaSeconds);
                 float targetX = target.PositionX;
@@ -1565,6 +1566,7 @@ namespace ET.Server
                 float directionX = distance > 0.001f ? offsetX / distance : 0f;
                 float directionZ = distance > 0.001f ? offsetZ / distance : 1f;
                 float movementDelta = deltaSeconds * EnemySpeedMultiplier(battle);
+                movementDelta *= SlayerMartStormSpeed(battle,enemy);
                 movementDelta *= EnemyContentMotion(battle,enemy,deltaSeconds);
                 if (self.TickContentBoss(battle,enemy,target,deltaSeconds)) { changed=true;continue; }
                 if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
@@ -2142,6 +2144,8 @@ namespace ET.Server
             OnlineArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
+            FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
+                !hazardKill&&enemy.LastDamagePlayerId>0,battle.SlayerMartStormDamage,ServerConfig.Instance.SlayerMart.Parameter);
             if (!hazardKill) AwardIslandKill(self, battle, enemy);
             if (!hazardKill) self.SpawnContentDeathZone(battle,enemy);
             if (enemy.ContentBossKind>0)

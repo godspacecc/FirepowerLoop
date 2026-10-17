@@ -129,7 +129,7 @@ namespace Game
             float radius=catalog.Rule.EnemyContactRadius*(low ? .65f : 1);
             bool charging=e.ContentSpecialKind==5 || e.ContentSpecialKind==10 || e.ContentSpecialKind==14 || e.ContentBossKind>0;
             var move=charging ? direction : ResolveNavigationDirection(e.Position,target,radius,ObstaclesFor(r));
-            e.Position=ResolvePosition(e.Position+move*e.Speed*motion*EnemySpeedMultiplier(r)*dt,radius,
+            e.Position=ResolvePosition(e.Position+move*e.Speed*motion*EnemySpeedMultiplier(r)*SlayerMartStormSpeed(r,e)*dt,radius,
                 catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
         }
 
