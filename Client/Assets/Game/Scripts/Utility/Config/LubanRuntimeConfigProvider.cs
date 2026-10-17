@@ -1230,7 +1230,8 @@ namespace Game
                 !IsPositiveFinite(rule.EnemyContactRadius) || !IsPositiveFinite(rule.ContactInvulnerabilitySeconds) ||
                 !IsPositiveFinite(rule.RespawnDelaySeconds) || !IsPositiveFinite(rule.ArenaHalfWidth) ||
                 !IsPositiveFinite(rule.ArenaHalfHeight) || !IsFinite(rule.DropChance) || rule.DropChance < 0f || rule.DropChance > 1f ||
-                !IsPositiveFinite(rule.SupportFireIntervalSeconds))
+                !IsPositiveFinite(rule.SupportFireIntervalSeconds) || !IsPositiveFinite(rule.CoopDownedSeconds) ||
+                !IsPositiveFinite(rule.CoopRescueRadius) || !IsPositiveFinite(rule.CoopRescueSpeed) || rule.CoopRescueSpeed<1 || rule.CoopDonationMinLives<2)
                 return "TbArcadeRule[arcade.default] 数值无效";
 
             var weaponIds = new HashSet<string>(StringComparer.Ordinal);
@@ -1467,7 +1468,8 @@ namespace Game
                     rule.DamageGrowthPerArena, rule.SpeedGrowthPerArena, rule.GoldGrowthPerArena, rule.BossEveryArenas,
                     rule.PlayerMaxHealth, rule.PlayerMoveSpeed, rule.PlayerRadius, rule.EnemyContactRadius,
                     rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
-                    rule.DropChance, rule.SupportFireIntervalSeconds, rule.ConfigFingerprint),
+                    rule.DropChance, rule.SupportFireIntervalSeconds, rule.ConfigFingerprint,
+                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives),
                 tables.TbArcadeWeapon.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeWeaponDefinition(row.Id, row.HeldVisualResourceName,
                         row.ProjectileVisualResourceName, row.MuzzleFlash,

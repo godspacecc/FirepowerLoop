@@ -298,6 +298,9 @@ namespace ET
             if (!string.Equals(this.arcadeRule.Id, "arcade.default", StringComparison.Ordinal) ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.ConfigFingerprint) || this.arcadeRule.ConfigFingerprint.Length > 128 ||
                 this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||
+                !float.IsFinite(this.arcadeRule.CoopDownedSeconds) || this.arcadeRule.CoopDownedSeconds<=0 ||
+                !float.IsFinite(this.arcadeRule.CoopRescueRadius) || this.arcadeRule.CoopRescueRadius<=0 ||
+                !float.IsFinite(this.arcadeRule.CoopRescueSpeed) || this.arcadeRule.CoopRescueSpeed<1 || this.arcadeRule.CoopDonationMinLives<2 ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.BaseWeaponId) ||
                 this.tables.TbArcadeWeapon.GetOrDefault(this.arcadeRule.BaseWeaponId) == null)
                 throw ConfigError(this.Profile, "TbArcadeRule", this.arcadeRule.Id, "identity or initial resources are invalid.");

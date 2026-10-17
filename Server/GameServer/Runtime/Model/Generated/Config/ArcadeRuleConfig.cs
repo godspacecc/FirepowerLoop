@@ -41,6 +41,10 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         ArenaHalfHeight = _buf.ReadFloat();
         DropChance = _buf.ReadFloat();
         SupportFireIntervalSeconds = _buf.ReadFloat();
+        CoopDownedSeconds = _buf.ReadFloat();
+        CoopRescueRadius = _buf.ReadFloat();
+        CoopRescueSpeed = _buf.ReadFloat();
+        CoopDonationMinLives = _buf.ReadInt();
     }
 
     public static ArcadeRuleConfig DeserializeArcadeRuleConfig(ByteBuf _buf)
@@ -73,6 +77,10 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
     public readonly float ArenaHalfHeight;
     public readonly float DropChance;
     public readonly float SupportFireIntervalSeconds;
+    public readonly float CoopDownedSeconds;
+    public readonly float CoopRescueRadius;
+    public readonly float CoopRescueSpeed;
+    public readonly int CoopDonationMinLives;
    
     public const int __ID__ = -284300626;
     public override int GetTypeId() => __ID__;
@@ -109,6 +117,10 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         + "ArenaHalfHeight:" + ArenaHalfHeight + ","
         + "DropChance:" + DropChance + ","
         + "SupportFireIntervalSeconds:" + SupportFireIntervalSeconds + ","
+        + "CoopDownedSeconds:" + CoopDownedSeconds + ","
+        + "CoopRescueRadius:" + CoopRescueRadius + ","
+        + "CoopRescueSpeed:" + CoopRescueSpeed + ","
+        + "CoopDonationMinLives:" + CoopDonationMinLives + ","
         + "}";
     }
 }

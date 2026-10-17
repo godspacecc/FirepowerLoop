@@ -178,6 +178,10 @@
         <var name="ArenaHalfHeight" type="float"/>
         <var name="DropChance" type="float"/>
         <var name="SupportFireIntervalSeconds" type="float"/>
+        <var name="CoopDownedSeconds" type="float"/>
+        <var name="CoopRescueRadius" type="float"/>
+        <var name="CoopRescueSpeed" type="float"/>
+        <var name="CoopDonationMinLives" type="int"/>
     </bean>
     <bean name="ArcadeWeaponConfig" group="e">
         <var name="Id" type="string"/>

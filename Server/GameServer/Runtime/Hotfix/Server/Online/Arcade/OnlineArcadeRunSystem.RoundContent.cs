@@ -20,6 +20,7 @@ namespace ET.Server
             {
                 var target=record.Players.First(p=>p.PlayerId==source.PlayerId);
                 target.RoundHealth=source.CurrentHealth;target.RoundAlive=source.Alive;
+                target.RoundDownedSeconds=source.DownedSeconds;
                 target.RoundInvulnerabilitySeconds=source.InvulnerabilitySeconds;target.RoundRespawnSeconds=source.RespawnSeconds;
                 target.RoundDashSeconds=source.DashSeconds;target.RoundFireCooldownSeconds=source.FireCooldownSeconds;
                 target.RoundTemporaryWeaponId=source.TemporaryWeaponId;

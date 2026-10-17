@@ -295,7 +295,7 @@ namespace ET.Server
             TrimOperations(candidate.Operations);
             bool startChallenge = candidate.Players.All(x => x.ChallengeReady && x.Lives > 0);
             OnlineArcadeBattleRuntime preparedBattle = (OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.SetReady &&
-                candidate.Players.Any(x => x.Lives > 0) && candidate.Players.Where(x => x.Lives > 0).All(x => x.Ready)
+                candidate.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) && candidate.Players.Where(OnlineArcadeRunActorSystem.CanContinueCoop).All(x => x.Ready)
                 ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, false)
                 : (OnlineArcadeSafeCheckpointActionKind)actionKind == OnlineArcadeSafeCheckpointActionKind.SetChallengeReady && startChallenge
                     ? OnlineArcadeRunActorSystem.PrepareBattle(candidate, true) : null;
@@ -339,7 +339,7 @@ namespace ET.Server
             switch ((OnlineArcadeSafeCheckpointActionKind)actionKind)
             {
                 case OnlineArcadeSafeCheckpointActionKind.SetReady:
-                    if (ready && player.Lives <= 0)
+                    if (ready && !OnlineArcadeRunActorSystem.CanContinueCoop(player))
                         throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "生命为零的成员继续观战，不能准备开战");
                     player.Ready = ready;
                     player.ChallengeReady = false;
@@ -533,10 +533,11 @@ namespace ET.Server
                         throw new InvalidOperationException("Invalid casual route completion.");
                     if (!victory) candidate.ArenaConfigNumber = actor.Battle.SelectedExitConfigNumber;
                 }
+                if(actor.Battle.RoundLayout!=null)CaptureRoundCheckpoint(candidate,actor.Battle);
                 candidate.RoundLayoutId = string.Empty; candidate.RoundNumber = 1;
                 candidate.RoundLayoutVersion = 0; candidate.RoundBossEncounter = false;
                 candidate.DestroyedCrateIds.Clear();candidate.CrateHealth.Clear();candidate.DestroyedBarrelIds.Clear();
-                foreach (var member in candidate.Players) { member.RoundHealth=0;member.RoundTemporaryWeaponId=string.Empty;member.RoundTemporaryWeaponSeconds=0;member.RoundPowerups.Clear(); }
+                foreach (var member in candidate.Players) { member.RoundTemporaryWeaponId=string.Empty;member.RoundTemporaryWeaponSeconds=0;member.RoundPowerups.Clear(); }
                 candidate.CompletedArena = completedArena;
                 candidate.NextArena = nextArena;
                 foreach (OnlineArcadePlayerRecord player in candidate.Players)
@@ -664,8 +665,8 @@ namespace ET.Server
         private static bool TryStartTransitBattle(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor)
         {
             if (actor == null || actor.IsDisposed || actor.Record == null || actor.Battle != null || actor.Record.Phase != OnlineArcadeRunPhase.SafeCheckpoint ||
-                !actor.Record.IsCasualRoute || !actor.Record.Players.Any(p => p.Lives > 0) ||
-                actor.Record.Players.Any(p => p.Lives > 0 && !p.Ready) ||
+                !actor.Record.IsCasualRoute || !actor.Record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
+                actor.Record.Players.Any(p => OnlineArcadeRunActorSystem.CanContinueCoop(p) && !p.Ready) ||
                 actor.DisconnectedAtByPlayer.Count > 0) return false;
             try
             {
@@ -830,6 +831,9 @@ namespace ET.Server
                 foreach (OnlineArcadePlayerRecord player in run.Players)
                     if (player == null || player.PlayerId <= 0 || !playerIds.Add(player.PlayerId) || player.Lives < 0 ||
                         player.Score < 0 || player.ScoreMultiplier < 1 || player.MultiplierProgress < 0 ||
+                        !float.IsFinite(player.RoundDownedSeconds) || player.RoundDownedSeconds<0 ||
+                        player.RoundDownedSeconds>ServerConfig.Instance.ArcadeRule.CoopDownedSeconds ||
+                        player.RoundDownedSeconds>0 && (!player.CoopRescueEligible || player.RoundAlive || player.Lives>0) ||
                         player.UpgradeStacks == null || player.Consumables == null || player.EquipmentBySlot == null)
                         throw new InvalidOperationException("OnlineArcadeStore contains an invalid player.");
                 if(run.RoundNumber<1||run.RoundNumber>4||run.RoundGeneration<0||run.DestroyedCrateIds==null||run.CrateHealth==null||run.DestroyedBarrelIds==null||run.DestroyedBarrelIds.Any(id=>id<0)||run.DestroyedBarrelIds.Distinct().Count()!=run.DestroyedBarrelIds.Count||
@@ -1161,9 +1165,9 @@ namespace ET.Server
         /// <summary>双方准备成功后完整构造并校验不落盘的战斗现场候选。</summary>
         public static OnlineArcadeBattleRuntime PrepareBattle(OnlineArcadeRunRecord record, bool challenge)
         {
-            if (record == null || record.Players.Count != 2 || record.Players.All(x => x.Lives <= 0) ||
+            if (record == null || record.Players.Count != 2 || !record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
                 challenge && record.Players.Any(x => !x.ChallengeReady) ||
-                !challenge && record.Players.Any(x => x.Lives > 0 && !x.Ready))
+                !challenge && record.Players.Any(x => OnlineArcadeRunActorSystem.CanContinueCoop(x) && !x.Ready))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "双方尚未满足进入竞技场条件");
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             if (!string.Equals(record.ConfigFingerprint, rule.ConfigFingerprint, StringComparison.Ordinal))
@@ -1204,8 +1208,9 @@ namespace ET.Server
                     PlayerId = source.PlayerId,
                     PositionX = playerIndex++ == 0 ? -2f : 2f,
                     PositionZ = 0f,
-                    CurrentHealth = source.Lives > 0 ? maxHealth : 0,
-                    Alive = source.Lives > 0,
+                    CurrentHealth = OnlineArcadeRunActorSystem.CanContinueCoop(source) ? maxHealth : 0,
+                    Alive = OnlineArcadeRunActorSystem.CanContinueCoop(source),
+                    DownedSeconds = source.CoopRescueEligible ? source.RoundDownedSeconds : 0,
                     MaxHealth = maxHealth,
                     SupportId = supportId ?? string.Empty,
                 });
@@ -1236,8 +1241,9 @@ namespace ET.Server
                     player.PositionZ=battle.RoundLayout.SpawnY;
                     if (!string.IsNullOrEmpty(record.RoundLayoutId))
                     {
-                        player.CurrentHealth=Math.Min(player.MaxHealth,Math.Max(0,source.RoundHealth));player.Alive=source.Lives>0&&source.RoundAlive;
+                        player.CurrentHealth=Math.Min(player.MaxHealth,Math.Max(0,source.RoundHealth));player.Alive=source.RoundAlive && (source.Lives>0 || source.CoopRescueEligible && source.RoundHealth>0);
                         player.InvulnerabilitySeconds=source.RoundInvulnerabilitySeconds;player.RespawnSeconds=source.RoundRespawnSeconds;
+                        player.DownedSeconds=source.RoundDownedSeconds;
                         player.DashSeconds=source.RoundDashSeconds;player.FireCooldownSeconds=source.RoundFireCooldownSeconds;
                         player.TemporaryWeaponId=source.RoundTemporaryWeaponId;
                         player.TemporaryWeaponSeconds=source.RoundTemporaryWeaponSeconds;
@@ -1480,6 +1486,7 @@ namespace ET.Server
                     player.MoveX = 0f;
                     player.MoveZ = 0f;
                     player.Firing = false;
+                    if (player.DownedSeconds>0) { changed |= TickCoopDowned(self,battle,player,deltaSeconds,now); continue; }
                     if (player.RespawnSeconds <= 0f) continue;
                     float previousRespawn = player.RespawnSeconds;
                     player.RespawnSeconds = Math.Max(0f, player.RespawnSeconds - deltaSeconds);
@@ -1559,7 +1566,7 @@ namespace ET.Server
                     .ThenBy(x => x.PlayerId).FirstOrDefault();
                 if (target == null)
                 {
-                    battle.AllPlayersDefeated = self.Record.Players.All(x => x.Lives <= 0);
+                    battle.AllPlayersDefeated = battle.Players.Values.All(p=>!p.Alive && p.RespawnSeconds<=0);
                     return changed || battle.AllPlayersDefeated;
                 }
 
@@ -2536,6 +2543,8 @@ namespace ET.Server
             record.ScoreMultiplier = 1; record.MultiplierProgress = 0;
             record.Lives = Math.Max(0, record.Lives - 1);
             player.RespawnSeconds = record.Lives > 0 ? rule.RespawnDelaySeconds : 0f;
+            if(battle.IsCasualRoute && record.Lives==0)
+            {record.CoopRescueEligible=true;player.DownedSeconds=rule.CoopDownedSeconds;}
             battle.AllPlayersDefeated = battle.Players.Values.All(x => !x.Alive &&
                 self.Record.Players.First(recordPlayer => recordPlayer.PlayerId == x.PlayerId).Lives <= 0);
         }

@@ -1,0 +1,47 @@
+using System.Reflection;
+using ET;
+using ET.Server;
+
+/// <summary>仅执行双人救援权威死亡、计时与轮节点的明确范围，不启动服务器或全量测试。</summary>
+internal static class CoopRescueOnlineChecks
+{
+    static object Call(string name, params object[] values) => typeof(OnlineArcadeRunActorSystem).GetMethod(name, BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,values)!;
+    static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
+    static float Down(OnlineArcadeBattlePlayerRuntime p)
+    {
+        var field=p.GetType().GetField("DownedSeconds");Require(field!=null,"missing independent downed timer");return (float)field!.GetValue(p)!;
+    }
+    static OnlineArcadeRunActor Actor()
+    {
+        var r=new OnlineArcadeRunRecord{RunId=1,RoomId=2,Revision=1,IsCasualRoute=true,ArenaConfigNumber=3,NextArena=2,CompletedArena=1,
+            ConfigFingerprint=ServerConfig.Instance.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=1,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};
+        var b=OnlineArcadeRunActorSystem.PrepareBattle(r,false);
+        foreach(var p in b.Players.Values){p.ReadyRoundGeneration=b.RoundGeneration;p.InvulnerabilitySeconds=0;p.LastInputAt=TimeInfo.Instance.ServerNow();}
+        return new(){Record=r,Battle=b};
+    }
+    static void Kill(OnlineArcadeRunActor a,long id=1)=>Call("DamagePlayerCore",a,a.Battle,a.Battle.Players[id],100000,FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
+    static void Tick(OnlineArcadeRunActor a,float seconds)=>Call("TickPlayers",a,a.Battle,seconds,TimeInfo.Instance.ServerNow());
+    static OnlineArcadeRunRecord Capture(OnlineArcadeRunActor a)
+    {
+        var r=OnlineArcadeRunManagerSystem.Clone(a.Record);
+        typeof(OnlineArcadeRunManagerSystem).GetMethod("CaptureRoundCheckpoint",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,new object[]{r,a.Battle});return r;
+    }
+    public static int Run(int maximum)
+    {
+        var tests=new (string,Action)[]{
+            ("Zero life death starts independent60 seconds",()=>{var a=Actor();Kill(a);var p=a.Battle.Players[1];Require(!p.Alive&&a.Record.Players[0].Lives==0&&Down(p)==60&&p.RespawnSeconds==0&&!a.Battle.AllPlayersDefeated,"zero-life death contract");}),
+            ("Base timer restores full health without granting life",()=>{var a=Actor();Kill(a);Tick(a,59);Require(!a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==1,"early recovery");Tick(a,1);var p=a.Battle.Players[1];Require(p.Alive&&p.CurrentHealth==p.MaxHealth&&Down(p)==0&&a.Record.Players[0].Lives==0&&p.InvulnerabilitySeconds>0,"recovery granted life or lost protection");}),
+            ("Recovered zero-life member can die into a new countdown",()=>{var a=Actor();Kill(a);Tick(a,60);a.Battle.Players[1].InvulnerabilitySeconds=0;Kill(a);Require(!a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==60&&a.Record.Players[0].Lives==0,"repeat death underflow or permanent spectator");}),
+            ("Paid short respawn remains separate",()=>{var a=Actor();a.Record.Players[0].Lives=2;Kill(a);Require(a.Battle.Players[1].RespawnSeconds==ServerConfig.Instance.ArcadeRule.RespawnDelaySeconds&&Down(a.Battle.Players[1])==0,"paid respawn replaced");Tick(a,2);Require(a.Battle.Players[1].Alive&&a.Record.Players[0].Lives==1,"paid respawn broken");}),
+            ("All zero-life downed members fail immediately",()=>{var a=Actor();a.Record.Players[1].Lives=1;Kill(a);Kill(a,2);Require(a.Battle.AllPlayersDefeated,"timers incorrectly prevent team defeat");Tick(a,60);Require(a.Battle.Players.Values.All(p=>!p.Alive),"failed battle resurrected");}),
+            ("Downed timer survives round-node clone and restore",()=>{var a=Actor();Kill(a);Tick(a,17);var r=Capture(a);var b=OnlineArcadeRunActorSystem.PrepareBattle(OnlineArcadeRunManagerSystem.Clone(r),false);Require(!b.Players[1].Alive&&Down(b.Players[1])==43&&b.Players[1].RespawnSeconds==0,"round node reset downed state");}),
+            ("Recovered zero-life identity survives round restore",()=>{var a=Actor();Kill(a);Tick(a,60);var b=OnlineArcadeRunActorSystem.PrepareBattle(Capture(a),false);Require(b.Players[1].Alive&&b.Players[1].CurrentHealth==100&&Down(b.Players[1])==0,"zero life active member lost");}),
+            ("Both recovered zero-life members may restore",()=>{var a=Actor();Kill(a);Tick(a,60);a.Record.Players[1].Lives=1;Kill(a,2);Tick(a,60);var b=OnlineArcadeRunActorSystem.PrepareBattle(Capture(a),false);Require(b.Players.Values.All(p=>p.Alive)&&!b.AllPlayersDefeated,"lives-only entrance rejected active team");}),
+            ("Challenge death never enters casual rescue",()=>{var a=Actor();a.Battle.IsChallenge=true;Kill(a);Require(!a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==0&&a.Record.Players[0].Lives==1,"challenge consumed life or entered rescue");}),
+            ("Round transition freezes independent timer",()=>{var a=Actor();Kill(a);a.Battle.RoundTransitionPending=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"transition consumed timer");})
+        };
+        if(tests.Length>maximum)throw new ArgumentException("Declared maximum smaller than actual scope");int failed=0;
+        foreach(var(name,test)in tests)try{test();Console.WriteLine("PASS CoopRescueOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL CoopRescueOnline."+name+": "+(e.InnerException??e).Message);}
+        Console.WriteLine($"{tests.Length-failed}/{tests.Length} passed");return failed==0?0:1;
+    }
+}

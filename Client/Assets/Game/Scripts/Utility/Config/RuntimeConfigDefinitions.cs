@@ -507,7 +507,8 @@ namespace Game
             float damageGrowthPerArena, float speedGrowthPerArena, float goldGrowthPerArena, int bossEveryArenas,
             int playerMaxHealth, float playerMoveSpeed, float playerRadius, float enemyContactRadius,
             float contactInvulnerabilitySeconds, float respawnDelaySeconds, float arenaHalfWidth, float arenaHalfHeight,
-            float dropChance, float supportFireIntervalSeconds, string configFingerprint = "")
+            float dropChance, float supportFireIntervalSeconds, string configFingerprint = "",
+            float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0)
         {
             Id = id; InitialLives = initialLives; InitialBombs = initialBombs; InitialDashes = initialDashes;
             BaseWeaponId = baseWeaponId; MaxAliveEnemies = maxAliveEnemies;
@@ -519,6 +520,7 @@ namespace Game
             RespawnDelaySeconds = respawnDelaySeconds; ArenaHalfWidth = arenaHalfWidth; ArenaHalfHeight = arenaHalfHeight;
             DropChance = dropChance; SupportFireIntervalSeconds = supportFireIntervalSeconds;
             ConfigFingerprint = configFingerprint ?? string.Empty;
+            CoopDownedSeconds=coopDownedSeconds;CoopRescueRadius=coopRescueRadius;CoopRescueSpeed=coopRescueSpeed;CoopDonationMinLives=coopDonationMinLives;
         }
 
         public string Id { get; }
@@ -546,6 +548,11 @@ namespace Game
         public float ArenaHalfHeight { get; }
         public float DropChance { get; }
         public float SupportFireIntervalSeconds { get; }
+        /// <summary>合作倒地与救援规则，由双端 Config 提供。</summary>
+        public float CoopDownedSeconds { get; }
+        public float CoopRescueRadius { get; }
+        public float CoopRescueSpeed { get; }
+        public int CoopDonationMinLives { get; }
     }
 
     /// <summary>街机武器的近战或投射规则及表现参数。</summary>

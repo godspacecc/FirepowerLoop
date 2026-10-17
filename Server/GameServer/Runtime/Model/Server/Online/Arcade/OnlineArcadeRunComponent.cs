@@ -51,6 +51,9 @@ namespace ET.Server
         /// <summary>保护、复活、冲刺与攻击冷却只保存剩余秒数，切轮不刷新或丢失。</summary>
         public float RoundInvulnerabilitySeconds { get; set; }
         public float RoundRespawnSeconds { get; set; }
+        /// <summary>零命恢复资格及独立倒地剩余秒数；不借用短复活。</summary>
+        public bool CoopRescueEligible { get; set; }
+        public float RoundDownedSeconds { get; set; }
         public float RoundDashSeconds { get; set; }
         public float RoundFireCooldownSeconds { get; set; }
         public string RoundTemporaryWeaponId { get; set; } = string.Empty;
@@ -193,6 +196,8 @@ namespace ET.Server
         public float InvulnerabilitySeconds;
         /// <summary>大于零时玩家保持死亡表现，归零后在死亡原地恢复。</summary>
         public float RespawnSeconds;
+        /// <summary>零命合作倒地时钟，独立于短复活和机关冻结。</summary>
+        public float DownedSeconds;
         /// <summary>当前竞技场临时武器及剩余秒数；离开现场即丢弃，不写安全节点。</summary>
         public string TemporaryWeaponId = string.Empty;
         public float TemporaryWeaponSeconds;
