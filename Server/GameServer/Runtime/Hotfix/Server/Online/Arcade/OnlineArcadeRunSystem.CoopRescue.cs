@@ -16,9 +16,20 @@ namespace ET.Server
                 battle.RoundTransitionPending || battle.SlayerMartReturnWave>0 || !RoundPlayersReady(battle) ||
                 actor.DisconnectedAtByPlayer.Count>0 || player.InTreasureRoom ||
                 battle.Players.Values.All(p=>p.InTreasureRoom))return false;
-            player.DownedSeconds=Math.Max(0,player.DownedSeconds-seconds);
+            player.DownedSeconds=Math.Max(0,player.DownedSeconds-seconds*CoopRescueRate(battle,player));
             if(player.DownedSeconds==0)RestoreCoopPlayer(battle,player,now);
             return seconds>0;
+        }
+
+        /// <summary>同区域存活队友靠近且当前障碍不遮挡时加速；离开后保留已完成进度。</summary>
+        private static float CoopRescueRate(OnlineArcadeBattleRuntime battle,OnlineArcadeBattlePlayerRuntime downed)
+        {
+            var rule=ServerConfig.Instance.ArcadeRule;
+            bool helping=battle.Players.Values.Any(helper=>helper.PlayerId!=downed.PlayerId && helper.Alive &&
+                !helper.InTreasureRoom && helper.RespawnSeconds<=0 &&
+                DistanceSquared(helper.PositionX,helper.PositionZ,downed.PositionX,downed.PositionZ)<=rule.CoopRescueRadius*rule.CoopRescueRadius &&
+                !SegmentCrossesObstacle(helper.PositionX,helper.PositionZ,downed.PositionX,downed.PositionZ,0,EffectiveObstacles(battle)));
+            return helping?rule.CoopRescueSpeed:1;
         }
 
         /// <summary>恢复只补生命及一次复起保护，命数和死亡清理过的支援、队列均不返还。</summary>

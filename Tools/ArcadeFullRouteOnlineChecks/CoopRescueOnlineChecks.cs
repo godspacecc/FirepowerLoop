@@ -17,8 +17,9 @@ internal static class CoopRescueOnlineChecks
             ConfigFingerprint=ServerConfig.Instance.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=1,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};
         var b=OnlineArcadeRunActorSystem.PrepareBattle(r,false);
         foreach(var p in b.Players.Values){p.ReadyRoundGeneration=b.RoundGeneration;p.InvulnerabilitySeconds=0;p.LastInputAt=TimeInfo.Instance.ServerNow();}
-        return new(){Record=r,Battle=b};
+        b.Players[2].PositionX=b.Players[1].PositionX+10;return new(){Record=r,Battle=b};
     }
+    static void Near(OnlineArcadeRunActor a){a.Battle.Players[2].PositionX=a.Battle.Players[1].PositionX;a.Battle.Players[2].PositionZ=a.Battle.Players[1].PositionZ;}
     static void Kill(OnlineArcadeRunActor a,long id=1)=>Call("DamagePlayerCore",a,a.Battle,a.Battle.Players[id],100000,FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
     static void Tick(OnlineArcadeRunActor a,float seconds)=>Call("TickPlayers",a,a.Battle,seconds,TimeInfo.Instance.ServerNow());
     static OnlineArcadeRunRecord Capture(OnlineArcadeRunActor a)
@@ -38,6 +39,16 @@ internal static class CoopRescueOnlineChecks
             ("Recovered zero-life identity survives round restore",()=>{var a=Actor();Kill(a);Tick(a,60);var b=OnlineArcadeRunActorSystem.PrepareBattle(Capture(a),false);Require(b.Players[1].Alive&&b.Players[1].CurrentHealth==100&&Down(b.Players[1])==0,"zero life active member lost");}),
             ("Both recovered zero-life members may restore",()=>{var a=Actor();Kill(a);Tick(a,60);a.Record.Players[1].Lives=1;Kill(a,2);Tick(a,60);var b=OnlineArcadeRunActorSystem.PrepareBattle(Capture(a),false);Require(b.Players.Values.All(p=>p.Alive)&&!b.AllPlayersDefeated,"lives-only entrance rejected active team");}),
             ("Challenge death never enters casual rescue",()=>{var a=Actor();a.Battle.IsChallenge=true;Kill(a);Require(!a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==0&&a.Record.Players[0].Lives==1,"challenge consumed life or entered rescue");}),
+            ("Nearby living helper doubles recovery rate",()=>{var a=Actor();Kill(a);Near(a);Tick(a,10);Require(Down(a.Battle.Players[1])==40,"nearby helper did not accelerate");}),
+            ("Radius includes boundary and excludes outside",()=>{var a=Actor();Kill(a);Near(a);a.Battle.Players[2].PositionX+=2;Tick(a,1);Require(Down(a.Battle.Players[1])==58,"boundary excluded");a.Battle.Players[2].PositionX+=.01f;Tick(a,1);Require(Down(a.Battle.Players[1])==57,"outside still helped");}),
+            ("Leaving radius preserves earned progress",()=>{var a=Actor();Kill(a);Near(a);Tick(a,5);a.Battle.Players[2].PositionX+=10;Tick(a,5);Require(Down(a.Battle.Players[1])==45,"leaving reset or retained speed");}),
+            ("Current obstacle blocks nearby helper",()=>{var a=Actor();Kill(a);var o=a.Battle.RoundLayout.Obstacles[0];var p=a.Battle.Players[1];var h=a.Battle.Players[2];p.PositionX=o.X+o.HalfWidth+.1f;p.PositionZ=o.Y+o.HalfHeight-.2f;h.PositionX=o.X+o.HalfWidth-.2f;h.PositionZ=o.Y+o.HalfHeight+.1f;Tick(a,1);Require(Down(p)==59,"help passed through wall");}),
+            ("Treasure helper cannot accelerate outside member",()=>{var a=Actor();Kill(a);Near(a);a.Battle.Players[2].InTreasureRoom=true;Tick(a,10);Require(Down(a.Battle.Players[1])==50&&!a.Battle.AllPlayersDefeated,"cross-region rescue or false defeat");}),
+            ("Disconnected player freezes recovery",()=>{var a=Actor();Kill(a);a.DisconnectedAtByPlayer[2]=1;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"disconnect consumed timer");}),
+            ("Unacknowledged map freezes recovery",()=>{var a=Actor();Kill(a);a.Battle.Players[2].ReadyRoundGeneration=-1;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"loading consumed timer");}),
+            ("Shop phase freezes ordinary recovery",()=>{var a=Actor();Kill(a);a.Battle.SlayerMartReturnWave=3;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"shop consumed timer");}),
+            ("Exit waiting permits nearby recovery",()=>{var a=Actor();Kill(a);Near(a);a.Battle.AwaitingExit=true;Tick(a,30);Require(a.Battle.Players[1].Alive&&Down(a.Battle.Players[1])==0,"exit prevented recovery");}),
+            ("All treasure members freeze ordinary recovery",()=>{var a=Actor();Kill(a);foreach(var p in a.Battle.Players.Values)p.InTreasureRoom=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"all treasure consumed timer");}),
             ("Round transition freezes independent timer",()=>{var a=Actor();Kill(a);a.Battle.RoundTransitionPending=true;Tick(a,10);Require(Down(a.Battle.Players[1])==60,"transition consumed timer");})
         };
         if(tests.Length>maximum)throw new ArgumentException("Declared maximum smaller than actual scope");int failed=0;
