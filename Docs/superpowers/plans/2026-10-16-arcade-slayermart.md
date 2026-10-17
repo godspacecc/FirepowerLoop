@@ -62,12 +62,12 @@
 - `ArcadeSlayerMartRules.Evaluate(ArcadeSlayerMartState current, ArcadeSlayerMartRequest request, ArcadeSlayerMartCatalog catalog) : ArcadeSlayerMartResult`。
 - `ArcadeSlayerMartRules.Create(long runId, int visit, IReadOnlyList<long> members, ulong seed, ArcadeSlayerMartCatalog catalog) : ArcadeSlayerMartState`。
 
-- [ ] 创建 `Tools/ArcadeSlayerMartChecks` 独立同源检查入口，只接受 `testClass=SlayerMartRules`、`maxTests=24`、`includePassingTests=true`；无匹配或超上限失败。先写 16 卡去重、不能变库存不扣券、满资源不扣款、每人等额现金、同请求重放、同 ID 异参拒绝、全队加命并发只一笔、三鸡容量不足整单拒绝、checked 溢出拒绝的行为用例。
-- [ ] 在仅测试／合同代码存在时运行上述真实过滤，记录缺实现造成的预期失败；不是靠缺依赖或配置报错冒充红阶段。
-- [ ] 新建三张源表，24 商品 ID 固定 `slayermart.item.01`—`.24`，效果引用独立、价格照设计。区域 `.first/.second` 对应 11／31、300 秒、每箱 2000、9／11 箱，位置必须可达。所有几何和能力试调值进配置；规则代码不嵌入价格和倍率默认值。
-- [ ] 实现纯规则，抽样使用保存的稳定 seed+个人抽取序，不以请求 ID 或当前时钟做种子。每次请求先重放查重再检查当前 revision；同 ID 异参永远拒绝。显式前置／限购和效果容量在扣款前全部验证。
-- [ ] 更新生成器实际计数门禁后运行唯一 `Config/gen.bat`，验证双端 bytes 散列及配置适配。正式入口保持关闭，纯检查允许直接构造目录验证 24 项。
-- [ ] 运行 `dotnet run --project Tools/ArcadeSlayerMartChecks/ArcadeSlayerMartChecks.csproj -- testClass=SlayerMartRules maxTests=24 includePassingTests=true`，逐项通过；本任务完成不等于商店已可玩。
+- [x] 创建 `Tools/ArcadeSlayerMartChecks` 独立同源检查入口，只接受 `testClass=SlayerMartRules`、`maxTests=24`、`includePassingTests=true`；无匹配或超上限失败。先写 16 卡去重、不能变库存不扣券、满资源不扣款、每人等额现金、同请求重放、同 ID 异参拒绝、全队加命并发只一笔、三鸡容量不足整单拒绝、checked 溢出拒绝的行为用例。
+- [x] 在仅测试／合同代码存在时运行上述真实过滤，记录缺实现造成的预期失败；不是靠缺依赖或配置报错冒充红阶段。
+- [x] 新建三张源表，24 商品 ID 固定 `slayermart.item.01`—`.24`，效果引用独立、价格照设计。区域 `.first/.second` 对应 11／31、300 秒、每箱 2000、9／11 箱，位置必须可达。所有几何和能力试调值进配置；规则代码不嵌入价格和倍率默认值。
+- [x] 实现纯规则，抽样使用保存的稳定 seed+个人抽取序，不以请求 ID 或当前时钟做种子。每次请求先重放查重再检查当前 revision；同 ID 异参永远拒绝。显式前置／限购和效果容量在扣款前全部验证。
+- [x] 更新生成器实际计数门禁后运行唯一 `Config/gen.bat`，验证双端 bytes 散列及配置适配。正式入口保持关闭，纯检查允许直接构造目录验证 24 项。
+- [x] 运行 `dotnet run --project Tools/ArcadeSlayerMartChecks/ArcadeSlayerMartChecks.csproj -- testClass=SlayerMartRules maxTests=24 includePassingTests=true`，逐项通过；本任务完成不等于商店已可玩。
 
 ## Task 2：工作态、轮级保存与旧局隔离
 

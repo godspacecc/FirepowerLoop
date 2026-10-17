@@ -60,5 +60,6 @@
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeRoundContentRules.cs" Link="Share\ArcadeRoundContentRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeSlayerMartContracts.cs" Link="Share\ArcadeSlayerMartContracts.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeSlayerMartRules.cs" Link="Share\ArcadeSlayerMartRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeSlayerMartConfiguration.cs" Link="Share\ArcadeSlayerMartConfiguration.cs" />
     </ItemGroup>
 </Project>

@@ -1,0 +1,4 @@
+##var,Id,AfterRound,Duration,CashPerMember,CashBoxes,HalfWidth,HalfHeight,SpawnX,SpawnY,ExitX,ExitY,PickupRadius
+##type,int,int,float,long,"(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)",float,float,float,float,float,float,float
+,1,11,300,2000,-6|-2;0|-2;6|-2;-6|1;0|1;6|1;-6|4;0|4;6|4,9,7,0,-4,0,-5.5,0.8
+,2,31,300,2000,-6|-2;0|-2;6|-2;-6|1;0|1;6|1;-6|4;0|4;6|4;-3|4;3|4,9,7,0,-4,0,-5.5,0.8

@@ -55,15 +55,18 @@ namespace FirepowerLoop.Arcade
         public int MaxBombs { get; }
         public int MaxDashes { get; }
         public int MaxChickens { get; }
+        public int GemMinimum { get; }
+        public int GemMaximum { get; }
         public ArcadeSlayerMartCatalog(IEnumerable<ArcadeSlayerMartItem> items,IEnumerable<ArcadeSlayerMartRegion> regions,
-            int cards,int maxLives,int maxBombs,int maxDashes,int maxChickens)
+            int cards,int maxLives,int maxBombs,int maxDashes,int maxChickens,int gemMinimum,int gemMaximum)
         {
             Items=Array.AsReadOnly(items.ToArray());Regions=Array.AsReadOnly(regions.ToArray());
             Cards=cards;MaxLives=maxLives;MaxBombs=maxBombs;MaxDashes=maxDashes;MaxChickens=maxChickens;
+            GemMinimum=gemMinimum;GemMaximum=gemMaximum;
             if(Items.Count!=24||Items.Select(p=>p.Id).Distinct(StringComparer.Ordinal).Count()!=24 ||
                 Items.Select(p=>p.Effect).Distinct().Count()!=24 || Items.Any(p=>string.IsNullOrWhiteSpace(p.Id)||p.Price<=0||p.Amount<=0||float.IsNaN(p.Duration)||float.IsInfinity(p.Duration)||p.Duration<0)||
                 Regions.Count!=2||Regions.Select(p=>p.Visit).Distinct().Count()!=2||Regions.Any(p=>p.Visit<1||p.Visit>2||p.AfterRound<=0||p.CashBoxes<=0||p.CashPerMember<=0||float.IsNaN(p.Duration)||float.IsInfinity(p.Duration)||p.Duration<=0)||
-                cards!=16||maxLives<1||maxBombs<1||maxDashes<1||maxChickens<3)
+                cards!=16||maxLives<1||maxBombs<1||maxDashes<1||maxChickens<3||gemMinimum<1||gemMaximum<gemMinimum)
                 throw new ArgumentException("SlayerMart目录缺失或参数无效");
         }
     }

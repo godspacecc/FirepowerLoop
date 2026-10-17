@@ -95,7 +95,7 @@ namespace FirepowerLoop.Arcade
             else if(item.Effect==SlayerMartEffect.Gems)
             {
                 ulong random=Mix(state.Seed^(ulong)state.Visit^(ulong)player.PlayerId^0x47454D53UL);
-                amount=8+(int)Next(ref random,9);
+                amount=catalog.GemMinimum+(int)Next(ref random,(uint)(catalog.GemMaximum-catalog.GemMinimum+1));
             }
             player.Cash-=item.Price;
             if(item.OncePerRun)player.Owned.Add(item.Id);

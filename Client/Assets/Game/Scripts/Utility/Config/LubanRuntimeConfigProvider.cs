@@ -18,6 +18,8 @@ namespace Game
         private IReadOnlyList<ProjectileConfigDefinition> projectiles;
         private IReadOnlyDictionary<int, PlayerWeaponAppearanceDefinition> playerWeaponAppearanceByItemId;
         private ArcadeConfigCatalogDefinition arcadeCatalog;
+        /// <summary>正式商店配置独立于旧街机目录，开放门禁由配置明确控制。</summary>
+        private FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration slayerMart;
 
         public LubanRuntimeConfigProvider()
             : this(() => DataLoader.Tables)
@@ -293,6 +295,12 @@ namespace Game
             return true;
         }
 
+        public bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
+        {
+            value=null;if(!EnsureValid(out error))return false;
+            value=slayerMart;error=null;return value!=null;
+        }
+
         /// <summary>读取地图显示范围；允许多个历史道具指向同一地图，但要求至少一个地图道具入口。</summary>
         public bool TryGetMapDisplay(string mapId, out MapDisplayDefinition value, out string error)
         {
@@ -400,6 +408,7 @@ namespace Game
                     BuildProjectileSnapshot(cachedTables, out projectiles);
                     BuildPlayerWeaponAppearanceSnapshot(cachedTables, out playerWeaponAppearanceByItemId);
                     BuildArcadeSnapshot(cachedTables, out arcadeCatalog);
+                    slayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(cachedTables);
                 }
                 else
                 {
@@ -409,6 +418,7 @@ namespace Game
                     projectiles = Array.Empty<ProjectileConfigDefinition>();
                     playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
                     arcadeCatalog = null;
+                    slayerMart=null;
                 }
             }
             catch (Exception e)
@@ -420,6 +430,7 @@ namespace Game
                 projectiles = Array.Empty<ProjectileConfigDefinition>();
                 playerWeaponAppearanceByItemId = new Dictionary<int, PlayerWeaponAppearanceDefinition>();
                 arcadeCatalog = null;
+                slayerMart=null;
                 validationError = $"Tables.Constructor 配置读取异常：{e.Message}";
             }
 

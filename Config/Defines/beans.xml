@@ -451,4 +451,33 @@
         <!-- 地图预置可射桶；数组索引在本地图及版本内作为稳定身份。 -->
         <var name="Barrels" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
     </bean>
+    <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
+    <bean name="ArcadeSlayerMartItemConfig">
+        <var name="Id" type="string"/>
+        <var name="Effect" type="int"/>
+        <var name="Price" type="long"/>
+        <var name="OncePerRun" type="bool"/>
+        <var name="Amount" type="int"/>
+        <var name="Duration" type="float"/>
+        <var name="NameKey" type="string"/>
+        <var name="DescKey" type="string"/>
+    </bean>
+    <bean name="ArcadeSlayerMartRegionConfig">
+        <var name="Id" type="int"/>
+        <var name="AfterRound" type="int"/>
+        <var name="Duration" type="float"/>
+        <var name="CashPerMember" type="long"/>
+        <var name="CashBoxes" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
+        <var name="HalfWidth" type="float"/>
+        <var name="HalfHeight" type="float"/>
+        <var name="SpawnX" type="float"/>
+        <var name="SpawnY" type="float"/>
+        <var name="ExitX" type="float"/>
+        <var name="ExitY" type="float"/>
+        <var name="PickupRadius" type="float"/>
+    </bean>
+    <bean name="ArcadeSlayerMartAbilityConfig">
+        <var name="Id" type="string"/>
+        <var name="Value" type="float"/>
+    </bean>
 </beans>

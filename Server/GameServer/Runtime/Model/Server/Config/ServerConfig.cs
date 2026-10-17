@@ -28,6 +28,8 @@ namespace ET
         private readonly List<StartSceneConfig> routers = new();
         private readonly List<StartSceneConfig> maps = new();
         private ArcadeRuleConfig arcadeRule;
+        /// <summary>同源新商店目录；正式能力未完成时目录可验证但入口关闭。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration SlayerMart { get; private set; }
         // 街机敌人及其投射物仍消费共用表现配置，不加载开放世界库存或地图规则。
         private readonly Dictionary<string, EnemyConfig> enemies = new(StringComparer.Ordinal);
         private readonly Dictionary<string, ProjectileConfig> projectiles = new(StringComparer.Ordinal);
@@ -274,6 +276,7 @@ namespace ET
         /// <summary>服务启动时拒绝不能创建权威安全节点的街机配置。</summary>
         private void ValidateArcadeConfig()
         {
+            this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
             {
                 var room = FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig(row);

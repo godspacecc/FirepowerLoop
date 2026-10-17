@@ -34,4 +34,7 @@
     <table name="TbStartZone" value="StartZoneConfig" input="server_start_zone.csv" group="s"/>
     <table name="TbStartScene" value="StartSceneConfig" input="server_start_scene.csv" group="s"/>
     <table name="TbArcadeRoundLayout" value="ArcadeRoundLayoutConfig" input="arcade_round_layout.csv" group="e"/>
+    <table name="TbArcadeSlayerMartItem" value="ArcadeSlayerMartItemConfig" input="arcade_slayermart_item.csv" group="e"/>
+    <table name="TbArcadeSlayerMartRegion" value="ArcadeSlayerMartRegionConfig" input="arcade_slayermart_region.csv" group="e"/>
+    <table name="TbArcadeSlayerMartAbility" value="ArcadeSlayerMartAbilityConfig" input="arcade_slayermart_ability.csv" group="e"/>
 </tables>

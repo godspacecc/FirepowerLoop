@@ -6,6 +6,10 @@ namespace Game
 {
     public interface IRuntimeConfigProvider : IUtility
     {
+        /// <summary>读取新商店只读目录；旧测试提供者缺省不开放商店。</summary>
+        bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
+        { value=null;error="SlayerMart配置不可用";return false; }
+
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {
             value = default;
