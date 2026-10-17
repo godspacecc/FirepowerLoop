@@ -353,10 +353,12 @@ namespace Game
             }
             foreach (OnlineArcadePowerupSnapshot value in player.Powerups)
             {
-                if(player.SlayerMartSupports.Any(b=>b.ProductId==value.ProductId))continue;
                 ArcadePowerupDefinition definition = catalog.Powerups.FirstOrDefault(x =>
                     string.Equals(x.Id, value.ProductId, StringComparison.Ordinal));
                 if (string.IsNullOrWhiteSpace(definition.Id) || player.InTreasureRoom && !definition.VisualFollowPlayer) continue;
+                // 只有普通锯／桶已转换为真实接触体；普通鸡／球仍由原槽独立显示。
+                if(definition.Behavior is global::ArcadePowerupBehavior.Saw or global::ArcadePowerupBehavior.Barrel&&
+                    player.SlayerMartSupports.Any(b=>b.ProductId==value.ProductId))continue;
                 Vector2 anchor = definition.VisualFollowPlayer
                     ? displayPosition
                     : new Vector2(value.PositionX, value.PositionZ);
