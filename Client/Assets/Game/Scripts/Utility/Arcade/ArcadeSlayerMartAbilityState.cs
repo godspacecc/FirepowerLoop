@@ -18,5 +18,10 @@ namespace FirepowerLoop.Arcade
         public int StormCharge { get; set; }
         public double StormRemaining { get; set; }
         public double StormTickElapsed { get; set; }
+        /// <summary>购买支援、未启动接力、共享命中冷却与已交付事件，均随轮节点整体克隆。</summary>
+        public List<ArcadeSlayerMartEffectInstance> Supports { get; set; } = new List<ArcadeSlayerMartEffectInstance>();
+        public List<ArcadeSlayerMartEffectQueue> Queues { get; set; } = new List<ArcadeSlayerMartEffectQueue>();
+        public List<ArcadeSlayerMartSupportHit> SupportHits { get; set; } = new List<ArcadeSlayerMartSupportHit>();
+        public HashSet<string> AppliedSupportGrants { get; set; } = new HashSet<string>(StringComparer.Ordinal);
     }
 }

@@ -4,8 +4,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 #if DOTNET
 using SlayerTables = ET.Tables;
+using SlayerPowerupBehavior = ET.ArcadePowerupBehavior;
+using SlayerDropKind = ET.ArcadeDropKind;
 #else
 using SlayerTables = global::Tables;
+using SlayerPowerupBehavior = global::ArcadePowerupBehavior;
+using SlayerDropKind = global::ArcadeDropKind;
 #endif
 
 namespace FirepowerLoop.Arcade
@@ -53,6 +57,7 @@ namespace FirepowerLoop.Arcade
         public ArcadeSlayerMartCatalog Catalog { get; private set; }
         public bool Enabled { get; private set; }
         public IReadOnlyList<ArcadeSlayerMartRegionLayout> Regions { get; private set; }
+        public ArcadeSlayerMartSupportCatalog Supports { get; private set; }
         private IReadOnlyDictionary<string,float> parameters;
         /// <summary>缺值直接拒绝，不用硬编码默认值继续运行。</summary>
         public float Parameter(string id) => parameters.TryGetValue(id,out float value)?value:throw new ArgumentException("缺少商店参数："+id);
@@ -64,7 +69,7 @@ namespace FirepowerLoop.Arcade
             foreach(string key in new[]{"release.enabled","inventory.cards","inventory.maxLives","inventory.maxBombs","inventory.maxDashes","inventory.maxChickens",
                 "storm.kills","storm.duration","storm.radius","storm.interval","storm.damage","storm.eliteSpeedScale","mastery.magnet","mastery.decoy","mastery.gloves",
                 "mastery.chicken","mastery.barrel","mastery.sawDistance","mastery.deadOperator","mastery.sentry","mastery.respawn","support.orbitSpeed","support.orbitRadius",
-                "support.contactRadius","support.barrelCharges","gem.minimum","gem.maximum"})
+                "support.contactRadius","support.barrelCharges","support.barrelInterval","gem.minimum","gem.maximum"})
             {
                 float value=c.Parameter(key);
                 if(float.IsNaN(value)||float.IsInfinity(value)||value<0||(key!="release.enabled"&&value==0))throw new ArgumentException("商店参数无效："+key);
@@ -86,6 +91,16 @@ namespace FirepowerLoop.Arcade
             c.Catalog=new ArcadeSlayerMartCatalog(items,regions.Select(p=>new ArcadeSlayerMartRegion(p.Id,p.AfterRound,p.CashBoxes.Length,p.CashPerMember,p.Duration)),
                 (int)c.Parameter("inventory.cards"),(int)c.Parameter("inventory.maxLives"),(int)c.Parameter("inventory.maxBombs"),(int)c.Parameter("inventory.maxDashes"),(int)c.Parameter("inventory.maxChickens"),
                 (int)c.Parameter("gem.minimum"),(int)c.Parameter("gem.maximum"));
+            c.Supports=new ArcadeSlayerMartSupportCatalog(Enum.GetValues(typeof(SlayerMartSupportKind)).Cast<SlayerMartSupportKind>().Select(kind=>
+            {
+                var behavior=kind==SlayerMartSupportKind.Orb?SlayerPowerupBehavior.ElectricOrb:kind==SlayerMartSupportKind.Chicken?SlayerPowerupBehavior.Chicken:
+                    kind==SlayerMartSupportKind.Saw?SlayerPowerupBehavior.Saw:SlayerPowerupBehavior.Barrel;
+                var source=tables.TbArcadePowerup.DataList.Single(p=>p.Behavior==behavior);
+                var drop=tables.TbArcadeDrop.DataList.Single(p=>p.Kind==SlayerDropKind.Powerup&&p.ProductId==source.Id);
+                return new ArcadeSlayerMartSupportDefinition(kind,source.Id,drop.DurationSeconds,source.Damage,
+                    kind==SlayerMartSupportKind.Barrel?c.Parameter("support.barrelInterval"):source.IntervalSeconds,source.Radius,source.ProjectileSpeed,
+                    kind==SlayerMartSupportKind.Barrel?(int)c.Parameter("support.barrelCharges"):source.Charges);
+            }));
             return c;
         }
     }

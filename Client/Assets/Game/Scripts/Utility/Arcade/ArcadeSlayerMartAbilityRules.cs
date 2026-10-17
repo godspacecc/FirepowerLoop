@@ -57,7 +57,8 @@ namespace FirepowerLoop.Arcade
             => !inRange||boss?1:elite?parameter("storm.eliteSpeedScale"):0;
         /// <summary>死亡保留背心、精通和未使用充能；清除板与活动风暴。</summary>
         public static void OnDeath(ArcadeSlayerMartAbilityState state)
-        {if(state==null)return;state.Plates=0;state.StormRemaining=0;state.StormTickElapsed=0;}
+        {if(state==null)return;state.Plates=0;state.StormRemaining=0;state.StormTickElapsed=0;state.Supports.Clear();state.Queues.Clear();state.SupportHits.Clear();
+            if(state is ArcadeSlayerMartPlayer player)player.Chickens=0;}
         /// <summary>只在真正复起时生成一次保护，恢复剩余量不再乘。</summary>
         public static float RespawnProtection(float contactSeconds,ArcadeSlayerMartAbilityState state,Func<string,float> parameter)
             => contactSeconds*2*(Owns(state,21)?parameter("mastery.respawn"):1);

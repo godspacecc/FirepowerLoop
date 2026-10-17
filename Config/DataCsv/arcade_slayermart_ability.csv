@@ -25,5 +25,6 @@
 ,support.orbitRadius,1.7
 ,support.contactRadius,0.45
 ,support.barrelCharges,3
+,support.barrelInterval,0.45
 ,gem.minimum,8
 ,gem.maximum,16

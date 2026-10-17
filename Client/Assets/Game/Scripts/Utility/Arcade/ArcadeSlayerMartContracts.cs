@@ -92,7 +92,8 @@ namespace FirepowerLoop.Arcade
         public List<string> Offers { get; set; } = new List<string>();
         public HashSet<string> Bought { get; set; } = new HashSet<string>(StringComparer.Ordinal);
         public ArcadeSlayerMartPlayer Clone()
-        { var p=(ArcadeSlayerMartPlayer)MemberwiseClone();p.Offers=new List<string>(Offers);p.Owned=new HashSet<string>(Owned,StringComparer.Ordinal);p.Bought=new HashSet<string>(Bought,StringComparer.Ordinal);return p; }
+        { var p=(ArcadeSlayerMartPlayer)MemberwiseClone();p.Offers=new List<string>(Offers);p.Owned=new HashSet<string>(Owned,StringComparer.Ordinal);p.Bought=new HashSet<string>(Bought,StringComparer.Ordinal);
+            p.Supports=Supports.Select(x=>x.Clone()).ToList();p.Queues=Queues.Select(x=>x.Clone()).ToList();p.SupportHits=SupportHits.Select(x=>x.Clone()).ToList();p.AppliedSupportGrants=new HashSet<string>(AppliedSupportGrants,StringComparer.Ordinal);return p; }
     }
 
     /// <summary>一次已接受操作的稳定回执；同ID异参不重放。</summary>

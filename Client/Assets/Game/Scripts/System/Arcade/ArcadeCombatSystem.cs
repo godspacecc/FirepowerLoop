@@ -293,8 +293,7 @@ namespace Game
             if(run.SlayerMartRulesVersion==1&&!provider.TryGetSlayerMart(out slayerMartConfig,out error))
             {RejectArenaEntry(error??"商店能力配置不可用");return;}
             if(run.SlayerMartRulesVersion==1&&run.SlayerMart!=null&&
-                (!provider.TryGetSlayerMart(out var abilityConfig,out error)||
-                 run.SlayerMart.Players.Any(p=>!ArcadeSlayerMartAbilityRules.IsValid(p,abilityConfig.Parameter))))
+                run.SlayerMart.Players.Any(p=>!ArcadeSlayerMartAbilityRules.IsValid(p,slayerMartConfig.Parameter)||!ArcadeSlayerMartSupportRules.IsValid(p,slayerMartConfig)))
             {RejectArenaEntry(error??"商店能力恢复状态无效");return;}
             runtimePool.Configure(catalog.Rule.MaxAliveEnemies, catalog.Rule.MaxProjectiles, catalog.Rule.MaxDrops);
 

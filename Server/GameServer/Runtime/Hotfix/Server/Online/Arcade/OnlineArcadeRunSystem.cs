@@ -837,7 +837,8 @@ namespace ET.Server
                 if(run.SlayerMart!=null&&!FirepowerLoop.Arcade.ArcadeSlayerMartSaveRules.TryValidate(run.SlayerMart,run.RunId.ToString(System.Globalization.CultureInfo.InvariantCulture),
                     run.Players.Select(p=>p.PlayerId).ToArray(),(run.NextArena-1)*4+run.RoundNumber-1,out var shopError))
                     throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart checkpoint: "+shopError);
-                if(run.SlayerMart!=null&&run.SlayerMart.Players.Any(p=>!FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.IsValid(p,ServerConfig.Instance.SlayerMart.Parameter)))
+                if(run.SlayerMart!=null&&run.SlayerMart.Players.Any(p=>!FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.IsValid(p,ServerConfig.Instance.SlayerMart.Parameter)||
+                    !FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.IsValid(p,ServerConfig.Instance.SlayerMart)))
                     throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart ability state.");
 
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
