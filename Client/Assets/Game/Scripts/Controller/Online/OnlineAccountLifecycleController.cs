@@ -30,6 +30,9 @@ namespace Game
         private IOnlineHeartbeatLifecycle heartbeatLifecycle;
         private bool registered;
         private bool backgrounded;
+        /// <summary>分别记忆焦点和暂停信号，二者都恢复后才开始恢复心跳期限。</summary>
+        private bool hasFocus = true;
+        private bool isPaused;
         private bool disposed;
 
         public OnlineAccountLifecycleController()
@@ -89,6 +92,8 @@ namespace Game
             runtime = null;
             heartbeatLifecycle = null;
             backgrounded = false;
+            hasFocus = true;
+            isPaused = false;
         }
 
         private void Update()
@@ -99,6 +104,7 @@ namespace Game
 
         private void OnFocusChanged(bool focused)
         {
+            hasFocus = focused;
             if (!focused)
             {
                 backgrounded = true;
@@ -110,6 +116,7 @@ namespace Game
 
         private void OnPauseStateChanged(PauseState state)
         {
+            isPaused = state == PauseState.Paused;
             if (state == PauseState.Paused)
             {
                 backgrounded = true;
@@ -121,7 +128,7 @@ namespace Game
 
         private void ResumeIfNeeded()
         {
-            if (!backgrounded)
+            if (!backgrounded || !hasFocus || isPaused)
             {
                 return;
             }

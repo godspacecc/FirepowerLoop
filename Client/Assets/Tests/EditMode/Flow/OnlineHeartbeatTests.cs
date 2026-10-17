@@ -21,6 +21,30 @@ namespace Game.Tests
             ResetArchitecture();
         }
 
+        /// <summary>焦点和暂停是独立信号，两个恢复顺序都不能提前或重复启动三秒恢复窗口。</summary>
+        [UnityTest]
+        public IEnumerator RecoveryWaitsForBothFocusAndUnpauseInEitherOrder()
+        {
+            var harness = CreateHarness(withController: true);
+            yield return harness.Login();
+            harness.Application.RaiseFocus(false);
+            harness.Application.RaisePause(PauseState.Paused);
+            harness.Application.RaiseFocus(true);
+            Assert.AreEqual(0, harness.Network.TotalPingCalls, "仍暂停时不能提前发恢复心跳");
+            harness.Application.RaisePause(PauseState.Unpaused);
+            Assert.AreEqual(1, harness.Network.TotalPingCalls);
+            harness.Application.RaiseFocus(true);
+            harness.Application.RaisePause(PauseState.Unpaused);
+            Assert.AreEqual(1, harness.Network.TotalPingCalls, "重复前台通知不重发");
+            harness.Network.CompletePing(harness.Network.PendingPingRpcIds.Single());
+            harness.Application.RaiseFocus(false);
+            harness.Application.RaisePause(PauseState.Paused);
+            harness.Application.RaisePause(PauseState.Unpaused);
+            Assert.AreEqual(1, harness.Network.TotalPingCalls, "仍失焦时不能提前发恢复心跳");
+            harness.Application.RaiseFocus(true);
+            Assert.AreEqual(2, harness.Network.TotalPingCalls);
+        }
+
         [UnityTest]
         public IEnumerator AuthenticatedSessionSendsFirstPingAfter2500Milliseconds()
         {
