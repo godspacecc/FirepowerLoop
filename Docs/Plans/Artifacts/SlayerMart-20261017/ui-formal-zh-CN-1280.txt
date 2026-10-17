@@ -1,0 +1,18 @@
+Actual Controller + formal source localization; zh-CN 1280x720 safe=False
+cards=16
+炸弹包 preferred=39.1 available=40
+冲刺包 preferred=39.1 available=40
+重抽券包 preferred=39.1 available=40
+战斗鸡 preferred=39.1 available=40
+旋转锯 preferred=39.1 available=40
+锯与爆桶组合 preferred=39.1 available=40
+磁铁专精 preferred=39.1 available=40
+诱饵猴专精 preferred=39.1 available=40
+拳套专精 preferred=39.1 available=40
+战斗鸡专精 preferred=39.1 available=40
+旋转锯专精 preferred=39.1 available=40
+Dead Operator preferred=39.1 available=40
+基础护甲背心 preferred=39.1 available=40
+战术护甲背心 preferred=39.1 available=40
+护甲板 preferred=39.1 available=40
+电击风暴 preferred=39.1 available=40

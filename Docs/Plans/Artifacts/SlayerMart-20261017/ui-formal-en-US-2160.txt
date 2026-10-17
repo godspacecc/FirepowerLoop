@@ -1,0 +1,18 @@
+Actual Controller + formal source localization; en-US 2160x1080 safe=True
+cards=16
+Explosive Bundle preferred=39.1 available=40
+Boost Bundle preferred=39.1 available=40
+Token Bundle preferred=39.1 available=40
+Battle Chicken preferred=39.1 available=40
+Saw Blade preferred=39.1 available=40
+Saw + Barrel preferred=39.1 available=40
+Magnet Mastery preferred=39.1 available=40
+Decoy Mastery preferred=39.1 available=40
+Gloves Mastery preferred=39.1 available=40
+Chicken Mastery preferred=39.1 available=40
+Saw Mastery preferred=39.1 available=40
+Dead Operator preferred=39.1 available=40
+Armor Vest preferred=39.1 available=40
+Tactical Vest preferred=39.1 available=40
+Armor Plate preferred=39.1 available=40
+Lightning Storm preferred=39.1 available=40
