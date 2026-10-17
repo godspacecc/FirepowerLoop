@@ -128,6 +128,8 @@ namespace Game
     [Serializable]
     public sealed class ArcadeRoundCheckpoint
     {
+        /// <summary>本轮完整商店账本；随下一正式轮节点整体提交，不保存购物中间态。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         /// <summary>本局场序。</summary>
         public int ArenaNumber { get; set; }
         /// <summary>正式场地配置编号。</summary>
@@ -156,6 +158,7 @@ namespace Game
         public ArcadeRoundCheckpoint Clone()
         {
             var copy = (ArcadeRoundCheckpoint)MemberwiseClone();
+            copy.SlayerMart=SlayerMart?.Clone();
             copy.PlayerState = PlayerState?.Clone();
             copy.RemainingCrateIds = RemainingCrateIds?.ToList();
             copy.CrateHealth = CrateHealth == null ? null : new Dictionary<int, int>(CrateHealth);
@@ -170,6 +173,10 @@ namespace Game
     {
         public const int CurrentVersion = 1;
         public int Version { get; set; } = CurrentVersion;
+        /// <summary>旧档缺省0，只有明确启用的新局采用版本1，不转换旧局金币。</summary>
+        public int SlayerMartRulesVersion { get; set; }
+        /// <summary>最近成功提交的商店全量状态，与轮节点中的副本一致。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         public string RunId { get; set; }
         public int CompletedArenaCount { get; set; }
         public int NextArenaNumber { get; set; } = 1;
@@ -213,6 +220,8 @@ namespace Game
         public ArcadeRunSaveData Clone() => new ArcadeRunSaveData
         {
             Version = Version,
+            SlayerMartRulesVersion=SlayerMartRulesVersion,
+            SlayerMart=SlayerMart?.Clone(),
             RunId = RunId,
             CompletedArenaCount = CompletedArenaCount,
             NextArenaNumber = NextArenaNumber,
@@ -237,6 +246,8 @@ namespace Game
     /// <summary>战斗模块完成整座竞技场后提交的稳定结果；瞬时战斗对象不跨越此边界。</summary>
     public sealed class ArcadeArenaCompletion
     {
+        /// <summary>整场离场时携带当前已关闭商店账本，胜利结果丢弃。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         /// <summary>下场角色与效果入场状态；金币必须清零，胜利结果不保留。</summary>
         public ArcadeIslandRoundCheckpoint PlayerState { get; set; }
         public int ArenaNumber { get; set; }

@@ -2,12 +2,13 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
-if(opts.GetValueOrDefault("testClass")!="FullRouteOnline"||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
+if(!new[]{"FullRouteOnline","SlayerCheckpointOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
 var config=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
 World.Instance.AddSingleton(config);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+if(opts["testClass"]=="SlayerCheckpointOnline"){Environment.ExitCode=SlayerCheckpointOnlineChecks.Run(max);return;}
 object ManagerCall(string name,params object[] values)=>typeof(OnlineArcadeRunManagerSystem).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,values)!;
 object Call(string name,params object[] values)=>typeof(OnlineArcadeRunActorSystem).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,values)!;
-OnlineArcadeRunRecord Record(int ordinal=1,int map=1)=>new(){RunId=1,RoomId=2,Revision=1,IsCasualRoute=true,ArenaConfigNumber=map,NextArena=ordinal,ConfigFingerprint=config.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};
+OnlineArcadeRunRecord Record(int ordinal=1,int map=1)=>new(){RunId=1,RoomId=2,Revision=1,IsCasualRoute=true,ArenaConfigNumber=map,CompletedArena=ordinal-1,NextArena=ordinal,ConfigFingerprint=config.ArcadeRule.ConfigFingerprint,Players=new(){new(){PlayerId=1,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"},new(){PlayerId=2,Lives=3,Ready=true,WeaponId="arcade.weapon.basic"}}};
 OnlineArcadeRunActor ContentActor(int special=0,int evt=0){var row=config.Tables.TbArcadeRoundLayout.DataList.First(p=>special>0?p.SpecialKind==special:p.EventKind==evt);var r=Record(2,row.ArenaConfigNumber);var b=OnlineArcadeRunActorSystem.PrepareBattle(r,false);Call("PrepareWave",b,config.Tables.TbArcadeArena.Get(row.ArenaConfigNumber),row.RoundNumber-1);return new(){Record=r,Battle=b};}
 OnlineArcadeRunActor GroundActor(){var r=Record(2,3);return new(){Record=r,Battle=OnlineArcadeRunActorSystem.PrepareBattle(r,false)};}
 int GroundCount(OnlineArcadeBattleRuntime b)=>((OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",b)).ContentAreas.Count(v=>v.Kind==11);

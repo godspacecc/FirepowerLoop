@@ -1,5 +1,6 @@
 using System.Reflection;
 using Game.Tests;
+if (args.Length == 3 && args[0] == "testClass=SlayerCheckpointTransaction" && args[1] == "maxTests=8" && args[2] == "includePassingTests=true") return SlayerCheckpointChecks.Run(8);
 if (args.Length == 3 && args[0] == "testClass=RoundCheckpointTransaction" && args[1] == "maxTests=9" && args[2] == "includePassingTests=true") return SystemChecks.Run();
 if (args.Length != 3 || args[0] != "testClass=RoundCheckpointTests" || args[1] != "maxTests=19" || args[2] != "includePassingTests=true") throw new Exception("Explicit short testClass, maxTests=19, includePassingTests=true required");
 var methods = typeof(RoundCheckpointTests).GetMethods().Where(m => m.IsDefined(typeof(NUnit.Framework.TestAttribute))).ToArray();

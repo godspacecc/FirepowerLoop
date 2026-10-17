@@ -10,6 +10,7 @@ namespace ET.Server
         /// <summary>仅捕获稳定逻辑值；世界敌人、弹丸、掉落、句柄不进入轮前节点。</summary>
         private static void CaptureRoundCheckpoint(OnlineArcadeRunRecord record, OnlineArcadeBattleRuntime battle)
         {
+            record.SlayerMart=battle.SlayerMart?.Clone();
             record.RoundLayoutId=battle.RoundLayout.Id;record.RoundLayoutVersion=battle.RoundLayout.Version;
             record.RoundNumber=battle.WaveIndex+1;record.RoundBossEncounter=battle.RoundBossEncounter;record.RoundGeneration=battle.RoundGeneration;
             record.DestroyedCrateIds=battle.DestroyedCrateIds.OrderBy(id=>id).ToList();

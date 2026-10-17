@@ -313,6 +313,8 @@ namespace Game
             }
             var runtime = new ArcadeCombatRuntime
             {
+                SlayerMartRulesVersion=run.SlayerMartRulesVersion,
+                SlayerMart=run.SlayerMart?.Clone(),
                 ArenaNumber = run.NextArenaNumber,
                 IsChallenge = isChallenge,
                 ChallengeId = isChallenge ? challenge.Id : null,
@@ -1617,6 +1619,7 @@ namespace Game
             if (!victory) checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = nextArena, GenerationSeed = seed };
             var completion = new ArcadeArenaCompletion
             {
+                SlayerMart=runtime.SlayerMart?.Clone(),
                 ArenaNumber = runtime.ArenaNumber,
                 EarnedGold = runtime.ArenaGold,
                 Score = run.Score, ScoreMultiplier = run.ScoreMultiplier, MultiplierProgress = run.MultiplierProgress,

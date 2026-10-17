@@ -544,6 +544,7 @@ namespace ET.Server
                     player.Ready = false;
                     player.ChallengeReady = false;
                 }
+                candidate.SlayerMart= victory ? null : actor.Battle.SlayerMart?.Clone();
                 candidate.Phase = victory ? OnlineArcadeRunPhase.Victory : OnlineArcadeRunPhase.SafeCheckpoint;
                 candidate.ChallengeId = string.Empty;
                 candidate.ChallengeAttempted = false;
@@ -762,6 +763,7 @@ namespace ET.Server
                     snapshot.Runs.Add(CloneCommittedRecord(actor));
             }
             snapshot.Runs.Add(Clone(candidate));
+            ValidateStore(snapshot);
             WriteAtomic(self.StorePath, snapshot);
         }
 
@@ -830,6 +832,12 @@ namespace ET.Server
                     run.CrateHealth.Any(p=>p.Key<=0||p.Value<=0||run.DestroyedCrateIds.Contains(p.Key))||
                     !string.IsNullOrEmpty(run.RoundLayoutId)&&(ServerConfig.Instance.Tables.TbArcadeRoundLayout.GetOrDefault(run.RoundLayoutId)?.Version!=run.RoundLayoutVersion||run.RoundLayoutId!="arena."+run.ArenaConfigNumber+".round."+run.RoundNumber))
                     throw new InvalidOperationException("OnlineArcadeStore contains an invalid round checkpoint.");
+                if(run.SlayerMartRulesVersion<0||run.SlayerMartRulesVersion>1||run.SlayerMartRulesVersion==0&&run.SlayerMart!=null)
+                    throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart version.");
+                if(run.SlayerMart!=null&&!FirepowerLoop.Arcade.ArcadeSlayerMartSaveRules.TryValidate(run.SlayerMart,run.RunId.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                    run.Players.Select(p=>p.PlayerId).ToArray(),(run.NextArena-1)*4+run.RoundNumber-1,out var shopError))
+                    throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart checkpoint: "+shopError);
+
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
             }
@@ -1155,6 +1163,8 @@ namespace ET.Server
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "特殊挑战身份已失效");
             OnlineArcadeBattleRuntime battle = new()
             {
+                SlayerMartRulesVersion=record.SlayerMartRulesVersion,
+                SlayerMart=record.SlayerMart?.Clone(),
                 ArenaNumber = record.NextArena,
                 ArenaConfigNumber = arena.ArenaNumber,
                 IsCasualRoute = record.IsCasualRoute,

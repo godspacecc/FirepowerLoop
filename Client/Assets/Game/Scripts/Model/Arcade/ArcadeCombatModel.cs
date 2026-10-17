@@ -187,6 +187,9 @@ namespace Game
     /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
     internal sealed class ArcadeCombatRuntime
     {
+        /// <summary>本局新商店版本与独占工作态，外部保存只能使用捕获的深拷贝。</summary>
+        public int SlayerMartRulesVersion;
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;
         /// <summary>本轮内容活动时钟；加载、清场和暂停由系统门禁停止推进。</summary>
         public FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
         /// <summary>本地图独占领域，离场整体释放，不写入存档。</summary>

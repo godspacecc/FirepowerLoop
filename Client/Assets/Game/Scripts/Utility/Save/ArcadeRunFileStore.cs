@@ -120,6 +120,21 @@ namespace Game
                 return false;
             }
 
+            if(data.SlayerMartRulesVersion<0||data.SlayerMartRulesVersion>1||
+                data.SlayerMartRulesVersion==0&&(data.SlayerMart!=null||data.RoundCheckpoint?.SlayerMart!=null)||
+                data.HasResult&&(data.SlayerMart!=null||data.RoundCheckpoint?.SlayerMart!=null))
+            {error="商店规则版本或结果状态无效";return false;}
+            if(data.SlayerMart!=null)
+            {
+                int completed=(data.NextArenaNumber-1)*4+(data.RoundCheckpoint?.RoundNumber??1)-1;
+                if(!data.IsCasualRoute){error="旧顺序局不能携带新商店";return false;}
+                if(!FirepowerLoop.Arcade.ArcadeSlayerMartSaveRules.TryValidate(data.SlayerMart,data.RunId,new long[]{1},completed,out error))return false;
+            }
+            if(data.RoundCheckpoint!=null&&!JToken.DeepEquals(
+                data.SlayerMart==null?JValue.CreateNull():JObject.FromObject(data.SlayerMart),
+                data.RoundCheckpoint.SlayerMart==null?JValue.CreateNull():JObject.FromObject(data.RoundCheckpoint.SlayerMart)))
+            {error="轮级商店快照与全局账本不一致";return false;}
+
             if (data.Outcome != null && data.Outcome != "victory" && data.Outcome != "failed" && data.Outcome != "abandoned" ||
                 data.Outcome == "victory" && !data.Victory || data.Victory && data.Outcome != "victory")
             {

@@ -9,11 +9,15 @@ namespace FirepowerLoop.Arcade
     public static class ArcadeSlayerMartRules
     {
         public static ArcadeSlayerMartState Create(long runId,int visit,IReadOnlyList<long> members,ulong seed,ArcadeSlayerMartCatalog catalog)
+            =>runId>0?Create(runId.ToString(CultureInfo.InvariantCulture),visit,members,seed,catalog):throw new ArgumentException("非法本局身份");
+
+        /// <summary>单人使用完整GUID，双人使用服务器ID；不截断或Hash本局身份。</summary>
+        public static ArcadeSlayerMartState Create(string runId,int visit,IReadOnlyList<long> members,ulong seed,ArcadeSlayerMartCatalog catalog)
         {
-            if(runId<=0||catalog==null||members==null||members.Count<1||members.Count>2||members.Any(p=>p<=0)||members.Distinct().Count()!=members.Count)
+            if(string.IsNullOrWhiteSpace(runId)||runId.Length>128||runId.Contains(":" )||catalog==null||members==null||members.Count<1||members.Count>2||members.Any(p=>p<=0)||members.Distinct().Count()!=members.Count)
                 throw new ArgumentException("非法本局或原始成员");
             var region=catalog.Regions.SingleOrDefault(p=>p.Visit==visit)??throw new ArgumentException("商店区域不存在");
-            var s=new ArcadeSlayerMartState {RegionInstanceId=runId.ToString(CultureInfo.InvariantCulture)+":slayermart:"+visit,
+            var s=new ArcadeSlayerMartState {RegionInstanceId=runId+":slayermart:"+visit,
                 Visit=visit,Generation=visit,Revision=1,Seed=seed,RemainingSeconds=region.Duration};
             foreach(long id in members.OrderBy(p=>p))
             {

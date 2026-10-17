@@ -168,6 +168,7 @@ namespace Game
             }
             var candidate = current.Clone();
             candidate.RoundCheckpoint = checkpoint.Clone();
+            candidate.SlayerMart=checkpoint.SlayerMart?.Clone();
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;
             if (checkpoint.PlayerState != null)
@@ -299,6 +300,7 @@ namespace Game
             var candidate = current.Clone();
             candidate.RemainingLives = 0;
             candidate.Outcome = "failed";
+            candidate.SlayerMart=null;
             candidate.RoundCheckpoint = null;
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;
@@ -387,6 +389,7 @@ namespace Game
             candidate.Victory = completion.Victory;
             candidate.ArenaEntryState = completion.Victory ? null : completion.PlayerState?.Clone();
             candidate.Outcome = completion.Victory ? "victory" : null;
+            candidate.SlayerMart=completion.Victory?null:(completion.SlayerMart??current.SlayerMart)?.Clone();
             candidate.PendingRewards.Clear();
             if (current.IsCasualRoute && !completion.Victory) candidate.ArenaConfigNumber = completion.NextArenaConfigNumber;
             candidate.Checkpoint = completion.Victory
@@ -425,6 +428,7 @@ namespace Game
             if (current.HasResult) { error = null; return true; }
             var candidate = current.Clone();
             candidate.Outcome = "abandoned";
+            candidate.SlayerMart=null;
             candidate.RoundCheckpoint = null;
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;

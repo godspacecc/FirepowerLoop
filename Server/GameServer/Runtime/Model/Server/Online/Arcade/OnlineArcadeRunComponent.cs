@@ -83,6 +83,10 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeRunRecord
     {
+        /// <summary>新商店仅对明确启用的新局开放，旧记录缺省0。</summary>
+        public int SlayerMartRulesVersion { get; set; }
+        /// <summary>已提交轮前的全员商店账本，不与战斗现场共用对象。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         public long RunId { get; set; }
         public long RoomId { get; set; }
         public long Revision { get; set; }
@@ -308,6 +312,9 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeBattleRuntime
     {
+        /// <summary>本局新商店版本和全员内存事务，成功轮前保存后才公开提交。</summary>
+        public int SlayerMartRulesVersion;
+        public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;
         /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters RoundLayout;
         public int RoundGeneration;
