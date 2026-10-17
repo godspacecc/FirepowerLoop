@@ -1,0 +1,116 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using Game;
+using QFramework;
+using Luban;
+using FirepowerLoop.Arcade;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.LowLevel;
+
+// 一次有界自然流程观察；只提交输入和正式UI点击，不写战斗／进度状态。
+public class Script
+{
+    static readonly BindingFlags f=BindingFlags.Instance|BindingFlags.Public|BindingFlags.NonPublic;
+    static Gamepad pad;static IRuntimeConfigProvider original;static ArcadeConfigCatalogDefinition catalog;
+    static double started,lastLog,lastUi,lastBomb;static string folder;static bool began;static int release=4,lastArena=-1,lastWave=-1,lastLives=-1;
+    static Vector2 previousMove;static readonly Dictionary<int,Vector2> previous=new();static double previousAt;
+    static object F(object o,string n)=>o.GetType().GetField(n,f).GetValue(o);
+    static object Runtime()=>typeof(ArcadeCombatModel).GetProperty("Runtime",f).GetValue(Game.Game.Interface.GetModel<ArcadeCombatModel>());
+    public static object Main()
+    {
+        if(!Application.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("Wrong project / Play state");
+        var a=Game.Game.Interface;
+        if(a.GetModel<ArcadeRunModel>().Phase==ArcadeRunPhase.Arena)
+        {
+            var expected="E:/GitHub/FirepowerLoop/Client/Temp/CasualNatural-20261017-145008";var saved=new ArcadeRunFileStore(expected).Inspect();
+            if(saved.Data?.RunId!=a.GetModel<ArcadeRunModel>().Current?.RunId)throw new Exception("Refusing attach outside known temporary natural run");
+            foreach(var asm in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                var type=asm.GetType("Script");var field=type?.GetField("folder",BindingFlags.Static|BindingFlags.NonPublic);if(field?.GetValue(null) as string!=expected)continue;
+                folder=expected;started=(double)type.GetField("started",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);original=(IRuntimeConfigProvider)type.GetField("original",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
+                var drive=type.GetMethod("Drive",BindingFlags.Static|BindingFlags.NonPublic);InputSystem.onBeforeUpdate-=(Action)Delegate.CreateDelegate(typeof(Action),drive);
+                var oldPad=(Gamepad)type.GetField("pad",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);if(oldPad!=null)InputSystem.RemoveDevice(oldPad);type.GetField("pad",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,null);type.GetField("folder",BindingFlags.Static|BindingFlags.NonPublic).SetValue(null,null);break;
+            }
+            if(folder==null)throw new Exception("No unique natural observer to replace");
+            if(!a.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out catalog,out var e))throw new Exception(e);
+            pad=InputSystem.AddDevice<Gamepad>();began=true;InputSystem.onBeforeUpdate+=Drive;File.AppendAllText(folder+"/events.txt","Input observer improved LOS / obstacle / hazard avoidance; same natural RunId, no combat writes\n");return "Attached improved input observer to same natural run";
+        }
+        var start=UnityEngine.Object.FindObjectOfType<StartUI>();if(start==null)throw new Exception("StartUI not ready");
+        original=a.GetUtility<IRuntimeConfigProvider>();
+        var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
+        typeof(ArcadeSlayerMartAbilityConfig).GetField("Value").SetValue(tables.TbArcadeSlayerMartAbility.Get("release.enabled"),1f);
+        var provider=new LubanRuntimeConfigProvider(()=>tables);if(!provider.TryGetArcadeCatalog(out catalog,out var error))throw new Exception(error);
+        a.RegisterUtility<IRuntimeConfigProvider>(provider);
+        folder="E:/GitHub/FirepowerLoop/Client/Temp/CasualNatural-"+DateTime.Now.ToString("yyyyMMdd-HHmmss");Directory.CreateDirectory(folder);
+        File.WriteAllText(folder+"/input.csv","elapsed,arena,wave,hp,lives,enemies,x,y,score,shopStage,cash\n");
+        File.WriteAllText(folder+"/scope.txt","Natural start from round1 via StartUI; temporary store; formal configuration with only in-memory release.enabled=1; no HP/enemy/progress writes; virtual Gamepad and formal UI; maximum1200 wall seconds.\n");
+        a.GetSystem<ArcadeRunSystem>().ConfigureForTests(folder);pad=InputSystem.AddDevice<Gamepad>();started=EditorApplication.timeSinceStartup;Application.runInBackground=true;
+        InputSystem.onBeforeUpdate+=Drive;start.BtnNewGame.onClick.Invoke();SessionState.SetString("CasualNaturalAcceptance",folder);return folder;
+    }
+    static Vector2 Navigate(object sys,object r,Vector2 p,Vector2 target)
+    {
+        var obs=typeof(ArcadeCombatSystem).GetMethod("ObstaclesFor",f).Invoke(sys,new[]{r});
+        return (Vector2)typeof(ArcadeCombatSystem).GetMethod("ResolveNavigationDirection",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{p,target,catalog.Rule.PlayerRadius,obs});
+    }
+    static void Drive()
+    {
+        if(InputState.currentUpdateType!=InputUpdateType.Dynamic)return;
+        try
+        {
+            double now=EditorApplication.timeSinceStartup;if(!Application.isPlaying||now-started>1200){Stop("bounded time limit");return;}
+            var a=Game.Game.Interface;var run=a.GetModel<ArcadeRunModel>().Current;var r=Runtime();
+            if(r==null){if(began&&(a.GetModel<ArcadeRunModel>().Phase==ArcadeRunPhase.Result||a.GetModel<ArcadeRunModel>().Phase==ArcadeRunPhase.Victory))Stop("run ended: "+a.GetModel<ArcadeRunModel>().Phase);return;}began=true;
+            var sys=a.GetSystem<ArcadeCombatSystem>();var p=(Vector2)F(r,"PlayerPosition");var enemies=(IDictionary)F(r,"Enemies");var shop=sys.GetSlayerMartSnapshot();
+            int arena=(int)F(r,"ArenaNumber"),wave=(int)F(r,"WaveIndex"),hp=(int)F(r,"PlayerHealth");
+            if(arena!=lastArena||wave!=lastWave||run.RemainingLives!=lastLives){release=5;lastArena=arena;lastWave=wave;lastLives=run.RemainingLives;File.AppendAllText(folder+"/events.txt",(now-started).ToString("F2")+" arena="+arena+" wave="+wave+" hp="+hp+" lives="+lastLives+"\n");ScreenCapture.CaptureScreenshot(folder+"/arena-"+arena+"-wave-"+wave+"-life-"+lastLives+".png");}
+            var obs=typeof(ArcadeCombatSystem).GetMethod("ObstaclesFor",f).Invoke(sys,new[]{r}); bool clearTarget=false;Vector2 target=p+Vector2.up,velocity=Vector2.zero;float nearest=float.MaxValue;double sampleAt=Time.realtimeSinceStartupAsDouble;float dt=(float)(sampleAt-previousAt);
+            foreach(var e in enemies.Values){var ep=(Vector2)F(e,"Position");float d=(ep-p).sqrMagnitude;bool visible=!(bool)typeof(ArcadeCombatSystem).GetMethod("SegmentCrossesObstacle",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{p,ep,0f,obs});if(visible&&!clearTarget||visible==clearTarget&&d<nearest){clearTarget=visible;nearest=d;target=ep;int id=(int)F(e,"Id");velocity=dt>0&&previous.TryGetValue(id,out var old)?(ep-old)/dt:Vector2.zero;}}
+            previous.Clear();foreach(var e in enemies.Values)previous[(int)F(e,"Id")]=(Vector2)F(e,"Position");previousAt=sampleAt;
+            var aim=(target+Vector2.ClampMagnitude(velocity,12)*Mathf.Clamp(Mathf.Sqrt(nearest)/16f,0,1.5f)-p).normalized;
+            Vector2 tangent=new Vector2(-p.y,p.x).normalized;float best=float.NegativeInfinity;Vector2 move=Vector2.zero;
+            for(int i=0;i<16;i++)
+            {
+                float angle=i*Mathf.PI/8;var dir=new Vector2(Mathf.Cos(angle),Mathf.Sin(angle));var candidate=p+dir*2;
+                var projected=(Vector2)typeof(ArcadeCombatSystem).GetMethod("ResolvePosition",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{candidate,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,obs,null});
+                float score=-Mathf.Max(0,Vector2.Distance(candidate,target)-8)*2f+Vector2.Dot(dir,tangent)*.8f+Vector2.Dot(dir,previousMove)*.3f-(candidate-projected).sqrMagnitude*12-Mathf.Max(0,Mathf.Abs(candidate.x)-12)*2-Mathf.Max(0,Mathf.Abs(candidate.y)-10)*2;
+                if((bool)typeof(ArcadeCombatSystem).GetMethod("SegmentCrossesObstacle",BindingFlags.Static|BindingFlags.NonPublic).Invoke(null,new object[]{p,candidate,catalog.Rule.PlayerRadius,obs}))score-=100;
+                foreach(var hazard in (IEnumerable<ArcadeHazardState>)F(r,"Hazards")){var h=hazard.Parameters;float gap=Vector2.Distance(candidate,new Vector2(h.X,h.Y))-h.Extent-catalog.Rule.PlayerRadius;score-=20/Mathf.Max(.2f,gap*gap);if(gap<.5f)score-=100;}
+                foreach(var e in enemies.Values){var ep=(Vector2)F(e,"Position");float d=(candidate-ep).magnitude;score-=12/Mathf.Max(.25f,d*d);}
+                if(score>best){best=score;move=dir;}
+            }
+            if(enemies.Count==0)move=-p.normalized*.5f; else if(!clearTarget)move=Vector2.ClampMagnitude(Navigate(sys,r,p,target)*.75f+move*.25f,1);
+            if((bool)F(r,"IslandRoundAwaitingExit")||(bool)F(r,"AwaitingExit"))
+            {
+                var cfg=(ArcadeArenaDefinition)F(sys,"arena");int exits=(bool)F(r,"IslandRoundAwaitingExit")||(bool)F(r,"FinalBossDefeated")?1:Math.Max(1,cfg.NextArenaNumbers.Count);
+                Vector2 exit=arena==1?ArcadeIslandLayout.GetExitPosition(wave+1,0,exits,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius):(Vector2)typeof(ArcadeCombatSystem).GetMethod("ContentExitPosition",f).Invoke(sys,new object[]{r,0,exits});
+                move=Navigate(sys,r,p,exit);
+                if(now-lastUi>.5)foreach(var button in UnityEngine.Object.FindObjectsOfType<MessageButtonBoxUI>())if(button.ButtonText.text==Loc.T("ui.common.confirm")){lastUi=now;button.BtnButton.onClick.Invoke();break;}
+            }
+            if((bool)F(r,"InTreasureRoom"))
+            {
+                var room=F(r,"TreasureRoom");var rules=room.GetType().GetProperty("Parameters").GetValue(room);var destination=new Vector2((float)rules.GetType().GetProperty("ExitX").GetValue(rules),(float)rules.GetType().GetProperty("ExitY").GetValue(rules));float distance=float.MaxValue;
+                foreach(var reward in (IEnumerable)room.GetType().GetProperty("RemainingRewards").GetValue(room)){var point=new Vector2((float)reward.GetType().GetProperty("X").GetValue(reward),(float)reward.GetType().GetProperty("Y").GetValue(reward));float d=(point-p).sqrMagnitude;if(d<distance){distance=d;destination=point;}}
+                move=(destination-p).normalized;aim=Vector2.zero;
+            }
+            if(shop!=null)
+            {
+                var ui=UnityEngine.Object.FindObjectOfType<ArcadeShopUI>();
+                if(shop.Stage==ArcadeSlayerMartStage.Choosing&&ui!=null&&now-lastUi>1){lastUi=now;ui.BtnEnter.onClick.Invoke();File.AppendAllText(folder+"/events.txt","Clicked formal enter button\n");}
+                if(shop.Stage==ArcadeSlayerMartStage.Shopping){ScreenCapture.CaptureScreenshot(folder+"/natural-shop.png");File.WriteAllText(folder+"/shop-reached.txt","arena="+arena+" wave="+wave+" cash="+shop.Cash+" offers="+shop.Offers.Count);Stop("natural shop reached; ready for bounded purchase observation");return;}
+            }
+            if(nearest<3&&now-lastBomb>2&&hp>0&&enemies.Count>0&&shop==null){var hud=UnityEngine.Object.FindObjectOfType<ArcadeHudUI>();if(hud!=null){lastBomb=now;hud.BtnBomb.onClick.Invoke();File.AppendAllText(folder+"/events.txt","Clicked formal bomb button\n");}}
+            bool blocked=(bool)F(r,"IslandTransitionPending")||(bool)F(r,"IslandRoomTransitionPending")||(float)F(r,"RespawnRemaining")>0||hp<=0||UIHelper.HasUIOpen;if(blocked)release=5;bool neutral=blocked||release-->0;
+            if((float)F(r,"FirstPersonRemaining")>0){var hud=UnityEngine.Object.FindObjectOfType<ArcadeHudUI>();if(hud!=null)hud.BtnExitFirstPerson.onClick.Invoke();release=5;}
+            previousMove=move;InputSystem.QueueStateEvent(pad,new GamepadState{leftStick=blocked?Vector2.zero:Vector2.ClampMagnitude(move,1),rightStick=neutral||enemies.Count==0?Vector2.zero:aim});
+            if(now-lastLog>=2){lastLog=now;File.AppendAllText(folder+"/input.csv",string.Join(",",(now-started).ToString("F2",System.Globalization.CultureInfo.InvariantCulture),arena,wave,hp,run.RemainingLives,enemies.Count,p.x,p.y,run.Score,shop?.Stage.ToString()??"none",shop?.Cash??0)+"\n");SessionState.SetString("CasualNaturalAcceptance","running "+(now-started).ToString("F0")+"s arena="+arena+" wave="+wave+" hp="+hp+" root="+folder);}
+        }
+        catch(Exception error){Stop("observer error: "+error);}
+    }
+    static void Stop(string reason){InputSystem.onBeforeUpdate-=Drive;if(pad!=null){InputSystem.RemoveDevice(pad);pad=null;}if(original!=null){Game.Game.Interface.RegisterUtility<IRuntimeConfigProvider>(original);original=null;}SessionState.SetString("CasualNaturalAcceptance",reason+" root="+folder);if(folder!=null)File.WriteAllText(folder+"/completion.txt",reason);}
+}

@@ -262,3 +262,10 @@
 - 客户端SlayerMartReleaseGateTests有效4/7红→7/7绿，原ArcadeRunSystemTests回归14/14；服务端SlayerMartReleaseGateOnline有效2/6红→6/6绿，原SlayerCheckpointOnline回归8/8。均使用明确短类、上限7／14／6／8及includePassingTests=true，无全套回退。客户端夹具缺接口实现与服务端未就绪夹具修正均排除，不计功能红。
 - 新鲜只读评审覆盖本段入口、提供者与测试，未发现确定正确性或兼容性缺陷；检查版本1首次入店前空账本的使用路径，不要求提前创建经济。评审不代替自然进出店、真实双端与实体设备验收。
 - [精简红绿与回归结果](Artifacts/SlayerMart-20261017/release-gate-results.json)。服务端构建仅报告NU1900漏洞索引网络警告，检查正常执行。Unity最终仅Boot场景且无脏状态；未打包，未启用发布开关。
+
+## 第三十三段：规则1新局自然推进的有界观察
+
+- 从正式Boot与新局按钮开始，临时目录CasualNatural-20261017-145008，RunId=0e210b64d6e54956bb046b8d66fea78f。只在独立反序列化Tables内把release.enabled改1，经正式Luban适配注册；未修改Config／bytes或正式门禁，未注入血量、轮次、敌人或终局。
+- 通过Dynamic虚拟Gamepad、正式出口确认和HUD炸弹按钮实际完成海岛4轮，292.76秒进入Babylon，454.91秒推进其第2轮。最后约469秒结束本次观察；[实际轮前节点](Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2-checkpoint.json)为规则1、arena.2.round.2、93700分、2命，[实际Game View](Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2.png)已查看。
+- 最初Play域重载期间MCP请求失败，未形成观察；之后确认StartUI就绪才启动。输入驱动曾因射程／障碍／机关导航滞留并失去一命，改善输入策略后继续同一Run，不改战斗状态。输入脚本与CSV均归档，不能把驱动导航问题直接判为产品缺陷。
+- 本段没有抵达第11轮商店，没有完成40轮或最终结果，P0-1/P0-2保持待验；不重复把先前规则0自然路线证据记作本段新成果。临时输入事件／设备已移除，原配置提供者已恢复，Play停止；编辑器核对正确项目且无编译失败，未打包。

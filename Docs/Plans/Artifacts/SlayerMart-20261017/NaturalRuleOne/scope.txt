@@ -1,0 +1,1 @@
+Natural start from round1 via StartUI; temporary store; formal configuration with only in-memory release.enabled=1; no HP/enemy/progress writes; virtual Gamepad and formal UI; maximum1200 wall seconds.

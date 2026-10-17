@@ -1,0 +1,104 @@
+{
+  "Version": 1,
+  "SlayerMartRulesVersion": 1,
+  "SlayerMart": null,
+  "RunId": "0e210b64d6e54956bb046b8d66fea78f",
+  "CompletedArenaCount": 1,
+  "NextArenaNumber": 2,
+  "IsCasualRoute": true,
+  "ArenaConfigNumber": 2,
+  "IslandRoundCheckpoint": null,
+  "RoundCheckpoint": {
+    "SlayerMart": null,
+    "ArenaNumber": 2,
+    "ArenaConfigNumber": 2,
+    "RoundNumber": 2,
+    "LayoutVersion": 1,
+    "MapId": "arena.2.round.2",
+    "PlayerState": {
+      "RoundNumber": 2,
+      "MapId": "arena.2.round.2",
+      "PlayerHealth": 100,
+      "PlayerMaxHealth": 100,
+      "Bombs": 3,
+      "Dashes": 9,
+      "ArenaGold": 0,
+      "TemporaryWeaponId": null,
+      "TemporaryWeaponRemaining": 0.0,
+      "FirstPersonRemaining": 0.0,
+      "FireCooldown": 0.0,
+      "InvulnerabilityRemaining": 0.0,
+      "DashRemaining": 0.0,
+      "AimDirectionX": 0.9182889,
+      "AimDirectionY": -0.395910978,
+      "Powerups": [
+        {
+          "ProductId": "arcade.powerup.magnet",
+          "RemainingSeconds": 19.1382713,
+          "Charges": 0,
+          "CooldownSeconds": 0.0,
+          "PositionX": -6.51599073,
+          "PositionY": -16.8367958
+        },
+        {
+          "ProductId": "arcade.powerup.boots",
+          "RemainingSeconds": 17.094038,
+          "Charges": 0,
+          "CooldownSeconds": 0.0,
+          "PositionX": -6.850467,
+          "PositionY": -17.0337448
+        }
+      ]
+    },
+    "RemainingCrateIds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "CrateHealth": {
+      "1": 30,
+      "2": 30,
+      "3": 12,
+      "4": 30,
+      "5": 30,
+      "6": 30,
+      "7": 30,
+      "8": 30
+    },
+    "DestroyedBarrelIds": [],
+    "CratesInitialized": true,
+    "TreasureCompleted": false,
+    "EncounterSeed": -2066533392
+  },
+  "ArenaEntryState": null,
+  "Victory": false,
+  "Outcome": null,
+  "HasResult": false,
+  "RemainingLives": 2,
+  "RunGold": 0,
+  "Score": 93700,
+  "ScoreMultiplier": 1,
+  "MultiplierProgress": 800,
+  "EmergencyResources": {
+    "arcade.resource.bomb": 3,
+    "arcade.resource.dash": 9
+  },
+  "PurchasedUpgradeStacks": {},
+  "Consumables": {},
+  "EquipmentBySlot": {
+    "weapon": "arcade.weapon.basic"
+  },
+  "Checkpoint": {
+    "ArenaNumber": 2,
+    "GenerationSeed": 237057759,
+    "ChallengeId": null,
+    "ChallengeAttempted": false
+  },
+  "PendingRewards": [],
+  "UpdatedAtUtc": "2026-10-17T06:57:43.6806535Z"
+}

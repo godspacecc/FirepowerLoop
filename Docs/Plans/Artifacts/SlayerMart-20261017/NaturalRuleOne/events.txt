@@ -1,0 +1,16 @@
+3.35 arena=1 wave=0 hp=100 lives=3
+61.08 arena=1 wave=1 hp=100 lives=3
+Clicked formal bomb button
+Clicked formal bomb button
+145.01 arena=1 wave=2 hp=100 lives=3
+Clicked formal bomb button
+221.56 arena=1 wave=3 hp=100 lives=3
+292.76 arena=2 wave=0 hp=88 lives=3
+Clicked formal bomb button
+332.68 arena=2 wave=0 hp=0 lives=2
+Input observer improved LOS / obstacle / hazard avoidance; same natural RunId, no combat writes
+353.10 arena=2 wave=0 hp=100 lives=2
+Input observer improved LOS / obstacle / hazard avoidance; same natural RunId, no combat writes
+395.27 arena=2 wave=0 hp=100 lives=2
+Clicked formal bomb button
+454.91 arena=2 wave=1 hp=100 lives=2

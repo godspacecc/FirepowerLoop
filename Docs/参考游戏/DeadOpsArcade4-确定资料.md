@@ -22,6 +22,8 @@
 
 ## 攻略身份与商店事实
 
+2026-10-17继续核对时，通过同一攻略的[PS4站点入口](https://gamefaqs.gamespot.com/ps4/539653-call-of-duty-black-ops-7/faqs/82246/the-papaback-trail)取得v1.45完整路线正文：Casual所有分支均40轮，击败Papaback结束；全局总量表独立于主题，单人40轮11650、双人13650，第30—40轮每轮分别400／450。作者标明为游戏行为与社区验证，并非官方数值表；不把其耗时估计当生成间隔。前文FAQ只有摘要的记录仍保留为首次核对状态。
+
 本次取得的 MKillBill PC攻略页面页首为 **Version 1.45，Updated 04/08/2026（2026-04-08）**。这是攻略版本，不是游戏补丁号；本稿不声称其覆盖2026-10-17游戏全部最新调整。
 
 该攻略明确：购物现金与普通积分分开；重抽券刷新库存；每次访问展示16项随机商品，并显示价格、图标、说明和可购买次数，现金不足锁定。商品包含独立强化、护甲、弹药模组和战场升级。[SlayerMart机制与策略](https://gamefaqs.gamespot.com/pc/539641-call-of-duty-black-ops-7/faqs/82246/slayermart-info-and-strategy)
