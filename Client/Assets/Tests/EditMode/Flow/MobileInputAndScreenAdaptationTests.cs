@@ -114,79 +114,43 @@ namespace Game.Tests
         }
 
         [Test]
-        public void JoystickPrefab_HasGeneratedViewValidReferencesAndRaycastSurface()
+        public void ArcadeJoystickPrefab_HasGeneratedViewValidReferencesAndRaycastSurfaces()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
-
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
             Assert.That(prefab, Is.Not.Null);
             var collector = prefab.GetComponent<ReferenceCollector>();
-            var ui = prefab.GetComponent<MobileJoystickUI>();
-            Assert.That(collector, Is.Not.Null);
-            Assert.That(ui, Is.Not.Null);
-            Assert.That(ui.ContentRoot, Is.Not.Null);
-            Assert.That(ui.JoystickSurface, Is.Not.Null);
-            Assert.That(ui.InteractionButton, Is.Not.Null);
-            var inventoryField = typeof(MobileJoystickUI).GetField("InventoryButton");
-            Assert.That(inventoryField, Is.Not.Null, "手机 HUD 必须提供背包触屏入口");
-            var inventoryButton = inventoryField.GetValue(ui) as Button;
-            Assert.That(inventoryButton, Is.Not.Null);
-            Assert.That(inventoryButton.transform.IsChildOf(ui.ContentRoot.transform), Is.True);
-            Assert.That(inventoryButton.GetComponent<Image>().raycastTarget, Is.True);
-            var inventoryRect = inventoryButton.GetComponent<RectTransform>();
-            Assert.That(inventoryRect.anchorMin, Is.EqualTo(Vector2.zero));
-            Assert.That(inventoryRect.anchorMax, Is.EqualTo(Vector2.zero));
-            Assert.That(inventoryRect.sizeDelta, Is.EqualTo(new Vector2(80, 80)));
-            Assert.That(inventoryButton.GetComponentsInChildren<TMPro.TMP_Text>(true), Is.Empty);
-            Assert.That(inventoryButton.transform.Find("Icon").GetComponent<Image>().raycastTarget, Is.False);
-            var buildRect = ui.BuildButton.GetComponent<RectTransform>();
-            Assert.That(buildRect.anchoredPosition.y, Is.EqualTo(inventoryRect.anchoredPosition.y));
-            Assert.That(buildRect.anchoredPosition.x - inventoryRect.anchoredPosition.x, Is.EqualTo(96f));
-            var guide = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab");
-            var pauseRect = guide.transform.Find("MobileBtnPause").GetComponent<RectTransform>();
-            Assert.That(pauseRect.anchorMin, Is.EqualTo(Vector2.one));
-            Assert.That(pauseRect.sizeDelta, Is.EqualTo(new Vector2(80, 80)));
-            Assert.That(collector.data.Select(item => item.key),
-                Is.EquivalentTo(new[] { "ContentRoot", "ContentVisibility", "InteractionButton", "JoystickSurface", "AttackButton", "ReticleRoot", "InventoryButton", "MoveJoystickRoot", "MoveOpacity", "JoystickLayoutArea", "BuildButton" }));
-            var surfaceObject = ui.JoystickSurface.gameObject;
-            var image = surfaceObject.GetComponent<Image>();
-            Assert.That(image, Is.Not.Null);
-            Assert.That(image.sprite, Is.Not.Null);
-            Assert.That(image.sprite.name, Is.EqualTo("Knob"));
-            Assert.That(image.raycastTarget, Is.True);
-            Assert.That(surfaceObject.transform.IsChildOf(ui.ContentRoot.transform), Is.True);
-            Assert.That(ui.JoystickSurface, Is.TypeOf<OnScreenStick>());
-            Assert.That(ui.JoystickSurface.controlPath, Is.EqualTo("<Gamepad>/leftStick"));
-            Assert.That(ui.JoystickSurface.behaviour,
-                Is.EqualTo(OnScreenStick.Behaviour.RelativePositionWithStaticOrigin));
-            Assert.That(((RectTransform)surfaceObject.transform).sizeDelta,
-                Is.EqualTo(new Vector2(180f, 180f)),
-                "通用移动摇杆应提供与街机一致的移动端拇指触控区域");
-            Assert.That(ui.JoystickSurface.movementRange, Is.EqualTo(75f));
-            var source = PrefabUtility.GetCorrespondingObjectFromSource(surfaceObject);
-            Assert.That(AssetDatabase.GetAssetPath(source), Is.EqualTo(OfficialStickPrefabPath));
-            Assert.That(surfaceObject.transform.Find("Text"), Is.Null, "摇杆不保留英文占位文字");
-
-            var interactionButton = ui.InteractionButton;
-            Assert.That(interactionButton.transform.IsChildOf(ui.ContentRoot.transform), Is.True);
-            Assert.That(interactionButton.gameObject.activeSelf, Is.False);
-            var interactionRect = interactionButton.GetComponent<RectTransform>();
-            Assert.That(interactionRect.anchorMin, Is.EqualTo(new Vector2(1f, 0f)));
-            Assert.That(interactionRect.anchorMax, Is.EqualTo(new Vector2(1f, 0f)));
-            Assert.That(interactionRect.anchoredPosition.x, Is.LessThan(0f));
-            Assert.That(interactionRect.anchoredPosition.y, Is.GreaterThan(0f));
-            Assert.That(interactionButton.GetComponentsInChildren<TMPro.TMP_Text>(true), Is.Empty);
-            var interactionIcon = interactionButton.transform.Find("InteractionIcon").GetComponent<Image>();
-            Assert.That(interactionIcon.sprite, Is.Not.Null);
-            Assert.That(AssetDatabase.GetAssetPath(interactionIcon.sprite),
-                Is.EqualTo("Assets/Game/Art/UI/UtilityButtons/Interact.png"));
-            Assert.That(interactionIcon.raycastTarget, Is.False, "装饰图标不抢占按钮点击");
-            Assert.That(interactionIcon.preserveAspect, Is.True);
-            Assert.That(interactionRect.sizeDelta, Is.EqualTo(new Vector2(120, 120)));
-            Assert.That(interactionButton.GetComponent<Image>().color,
-                Is.EqualTo(new Color(.68f, .22f, .13f, .82f)));
+            var ui = prefab.GetComponent<ArcadeHudUI>();
+            Assert.That(collector, Is.Not.Null); Assert.That(ui, Is.Not.Null);
+            foreach (var item in collector.data)
+            {
+                var field = typeof(ArcadeHudUI).GetField(item.key);
+                Assert.That(field, Is.Not.Null, item.key);
+                Assert.That(field.GetValue(ui) as UnityEngine.Object, Is.Not.Null, item.key);
+            }
+            var sticks = new[] { ui.MoveJoystick, ui.AimJoystick };
+            var wrappers = new[] { ui.MoveJoystickRoot, ui.AimJoystickRoot };
+            var paths = new[] { "<Gamepad>/leftStick", "<Gamepad>/rightStick" };
+            for (var i = 0; i < sticks.Length; i++)
+            {
+                var stick = sticks[i];
+                Assert.That(stick.transform.parent, Is.EqualTo(wrappers[i].transform));
+                Assert.That(wrappers[i].transform.IsChildOf(ui.JoystickLayoutArea), Is.True);
+                Assert.That(stick.controlPath, Is.EqualTo(paths[i]));
+                Assert.That(stick.behaviour, Is.EqualTo(OnScreenStick.Behaviour.RelativePositionWithStaticOrigin));
+                Assert.That(stick.movementRange, Is.EqualTo(75));
+                Assert.That(((RectTransform)stick.transform).rect.size, Is.EqualTo(new Vector2(180, 180)));
+                Assert.That(stick.GetComponent<Image>().raycastTarget, Is.True);
+                foreach (var label in stick.GetComponentsInChildren<TMPro.TMP_Text>(true))
+                {
+                    Assert.That(label.raycastTarget, Is.False, "摇杆提示文字不能截获拖动触点");
+                    Assert.That(label.GetComponent<LocalizedText>()?.Key,
+                        Is.EqualTo(i == 0 ? "ui.arcade.hud.move_stick" : "ui.arcade.hud.aim_stick"));
+                }
+            }
+            foreach (var button in new[] { ui.BtnPause, ui.BtnBomb, ui.BtnDash, ui.BtnFieldUpgrade, ui.BtnDonateLife, ui.BtnExitFirstPerson })
+                Assert.That(button.image.raycastTarget, Is.True, button.name);
+            Assert.That(ui.FirstPersonFirePress.GetComponent<Image>().raycastTarget, Is.True);
         }
-
         [Test]
         public void JoystickNormalization_PreservesSmallInputAndCapsDiagonalMagnitude()
         {

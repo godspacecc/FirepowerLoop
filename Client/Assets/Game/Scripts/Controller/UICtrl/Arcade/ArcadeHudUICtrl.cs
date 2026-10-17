@@ -20,6 +20,22 @@ namespace Game
         /// <summary>只在本 HUD 可见期间订阅输入阻断及尺寸检查，隐藏或销毁时成对释放。</summary>
         private bool joystickUpdateRegistered;
         private Vector2 joystickAreaSize;
+        /// <summary>刘海换边和Canvas缩放可能不改变逻辑尺寸；同时记录世界原点和缩放，重新投影跨容器按钮。</summary>
+        private Vector3 joystickAreaPosition, joystickAreaScale;
+        /// <summary>首次触屏适配前缓存Prefab布局；切回桌面时恢复，设备触屏设置不改变PC按钮位置。</summary>
+        private ButtonPlacement[] desktopButtonPlacements;
+        private bool touchButtonsApplied;
+
+        /// <summary>只缓存View原始锚点以恢复桌面展示，不作为设备设置保存。</summary>
+        private sealed class ButtonPlacement
+        {
+            private readonly RectTransform rect;
+            private readonly Vector2 min, max, pivot, position;
+            public ButtonPlacement(RectTransform value)
+            { rect = value; min = value.anchorMin; max = value.anchorMax; pivot = value.pivot; position = value.anchoredPosition; }
+            public void Restore()
+            { rect.anchorMin = min; rect.anchorMax = max; rect.pivot = pivot; rect.anchoredPosition = position; }
+        }
         /// <summary>正式掉落目录，只用来投影效果类型与规则持续时间。</summary>
         private ArcadeConfigCatalogDefinition hudCatalog;
         /// <summary>当前 HUD 玩家行的只读展示快照；每次权威快照刷新时整体重建，本机始终排在首行。</summary>
@@ -104,7 +120,8 @@ namespace Game
             UI.FirstPersonRoot.SetActive(false);
         }
 
-        protected override void OnUnload() { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); }
+        protected override void OnUnload()
+        { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); desktopButtonPlacements = null; touchButtonsApplied = false; }
 
         private void OnRunChanged(ArcadeRunChangedEvent evt)
         {
@@ -251,7 +268,8 @@ namespace Game
             var visible = mobile && !UIHelper.HasUIOpen;
             if (UI.MoveJoystickRoot.activeSelf != visible) UI.MoveJoystickRoot.SetActive(visible);
             RefreshFirstPersonMobileControls(mobile, visible);
-            if (visible) ApplyJoystickLayout();
+            // 切回桌面或被阻断时也同步布局，避免跳过触屏自定义位置的桌面恢复。
+            ApplyJoystickLayout();
         }
 
         /// <summary>第一人称用独立开火按钮替代右摇杆；失效、暂停、转场和重生时隐藏并释放原始触点。</summary>
@@ -280,8 +298,23 @@ namespace Game
         {
             joystickAreaSize = UI.JoystickLayoutArea.rect.size;
             if (joystickAreaSize.x <= 0 || joystickAreaSize.y <= 0) return;
+            joystickAreaPosition = UI.JoystickLayoutArea.position;
+            joystickAreaScale = UI.JoystickLayoutArea.lossyScale;
             var data = this.GetModel<MobileControlLayoutModel>().ToData();
-            var obstacles = new[]
+            var buttons = new[] { (RectTransform)UI.BtnPause.transform, (RectTransform)UI.BtnBomb.transform,
+                (RectTransform)UI.BtnDash.transform, (RectTransform)UI.BtnFieldUpgrade.transform,
+                (RectTransform)UI.BtnDonateLife.transform, (RectTransform)UI.BtnExitFirstPerson.transform,
+                (RectTransform)UI.FirstPersonFirePress.transform };
+            desktopButtonPlacements ??= buttons.Select(rect => new ButtonPlacement(rect)).ToArray();
+            var mobile = this.GetSystem<MobileInputSystem>()?.IsMobileInputMode == true;
+            if (!mobile && touchButtonsApplied)
+            {
+                foreach (var placement in desktopButtonPlacements) placement.Restore();
+                UI.GetComponent<SafeAreaFitter>()?.ApplyNow();
+                touchButtonsApplied = false;
+            }
+            var firstPerson = !onlineMode && hasCombatSnapshot && combat.FirstPersonSeconds > 0;
+            var obstacles = mobile ? MobileControlLayoutGeometry.RenderArcadeButtons(UI.JoystickLayoutArea, data, buttons, firstPerson) : new[]
             {
                 MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnDash.transform),
                 MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnBomb.transform),
@@ -290,6 +323,7 @@ namespace Game
                 UI.FirstPersonFirePress.gameObject.activeSelf
                     ? MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.FirstPersonFirePress.transform) : default
             };
+            if (mobile) touchButtonsApplied = true;
             MobileControlLayoutGeometry.Render(UI.JoystickLayoutArea, (RectTransform)UI.MoveJoystickRoot.transform, UI.MoveOpacity, data.Move, true, obstacles);
             MobileControlLayoutGeometry.Render(UI.JoystickLayoutArea, (RectTransform)UI.AimJoystickRoot.transform, UI.AimOpacity, data.Aim, false, obstacles);
         }
@@ -298,7 +332,8 @@ namespace Game
             SyncSlayerMartUi();
             SyncCoopRescueUi();
             UpdateStageBanner(Time.unscaledTimeAsDouble);
-            if (UI.JoystickLayoutArea.rect.size != joystickAreaSize) ApplyJoystickLayout();
+            if (UI.JoystickLayoutArea.rect.size != joystickAreaSize || UI.JoystickLayoutArea.position != joystickAreaPosition ||
+                UI.JoystickLayoutArea.lossyScale != joystickAreaScale) ApplyJoystickLayout();
         }
         private void OnBlockingUiChanged(bool _) { if (IsShow()) RefreshJoystickVisibility(); }
         private void ReleaseJoystickUpdate()

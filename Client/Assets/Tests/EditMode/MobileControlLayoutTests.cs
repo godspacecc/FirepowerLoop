@@ -18,6 +18,143 @@ namespace Game.Tests
     public sealed class MobileControlLayoutTests
     {
         [Test]
+        public void ArcadeButtons_RoundTripKeepsRealActionsAndIgnoresRetiredActions()
+        {
+            var data = JsonConvert.DeserializeObject<MobileControlLayoutData>(
+                "{\"pause\":{\"x\":0.7,\"y\":0.8},\"bomb\":{\"x\":0.68,\"y\":0.42},\"dash\":{\"x\":0.75,\"y\":0.55},\"fieldUpgrade\":{\"x\":0.6,\"y\":0.7},\"donateLife\":{\"x\":0.65,\"y\":0.65},\"exitFirstPerson\":{\"x\":0.8,\"y\":0.6},\"firstPersonFire\":{\"x\":0.85,\"y\":0.25},\"inventory\":{\"x\":0.3,\"y\":0.3}}");
+            var saved = JObject.FromObject(data.Clone());
+            Assert.That((float?)saved["bomb"]?["x"], Is.EqualTo(.68f));
+            foreach (var key in new[] { "pause", "bomb", "dash", "fieldUpgrade", "donateLife", "exitFirstPerson", "firstPersonFire" })
+                Assert.That(saved[key], Is.Not.Null, key);
+            foreach (var key in new[] { "inventory", "build", "attack", "reload" }) Assert.That(saved[key], Is.Null, key);
+        }
+
+        [Test]
+        public void ArcadeEditor_FormalReferencesExposeRealActionsWithoutBaseControls()
+        {
+            var root = PrefabUtility.LoadPrefabContents("Assets/Game/Prefabs/UI/Home/MobileControlLayout.prefab");
+            try
+            {
+                var collector = root.GetComponent<ReferenceCollector>();
+                var ui = root.GetComponent<MobileControlLayoutUI>();
+                foreach (var key in new[] { "PausePreview", "BombPreview", "DashPreview", "FieldUpgradePreview", "DonateLifePreview", "ExitFirstPersonPreview", "FirstPersonFirePreview", "PreviewViewport" })
+                {
+                    Assert.That(collector.data.Any(item => item.key == key), Is.True, key);
+                    var value = typeof(MobileControlLayoutUI).GetField(key)?.GetValue(ui) as Object;
+                    Assert.That(value, Is.Not.Null, key);
+                }
+                foreach (var key in new[] { "InventoryPreview", "BuildPreview", "AttackPreview", "ReloadPreview", "StatusPreview", "HealthPreview", "WeaponPreview" })
+                    Assert.That(collector.data.Any(item => item.key == key), Is.False, key);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+
+        [Test]
+        public void ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks()
+        {
+            var architecture = CreateEditorArchitecture();
+            var layout = JsonConvert.DeserializeObject<MobileControlLayoutData>("{\"bomb\":{\"x\":0.68,\"y\":0.42}}");
+            architecture.GetModel<MobileControlLayoutModel>().Apply(layout);
+            var canvas = new GameObject("ArcadeLayoutTest", typeof(RectTransform), typeof(Canvas));
+            canvas.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+            ((RectTransform)canvas.transform).sizeDelta = new Vector2(1920, 1080);
+            try
+            {
+                var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), canvas.transform, false);
+                var ui = root.GetComponent<ArcadeHudUI>();
+                var ctrl = new ArcadeHudUICtrl();
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(ctrl, ui);
+                Canvas.ForceUpdateCanvases();
+                var originalAnchor = ((RectTransform)ui.BtnBomb.transform).anchorMin;
+                var originalPosition = ((RectTransform)ui.BtnBomb.transform).anchoredPosition;
+                typeof(ArcadeHudUICtrl).GetMethod("ApplyJoystickLayout", flags).Invoke(ctrl, null);
+                var bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnBomb.transform);
+                Assert.That(bounds.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.68f).Within(.001f));
+                Assert.That(bounds.center.y / ui.JoystickLayoutArea.rect.height, Is.EqualTo(.42f).Within(.001f));
+                // 刘海换边可能只改变安全区原点而不改变尺寸；更新后仍必须保留保存的比例位置。
+                ui.JoystickLayoutArea.anchoredPosition += new Vector2(40, 0);
+                typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickArea", flags).Invoke(ctrl, null);
+                bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnBomb.transform);
+                Assert.That(bounds.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.68f).Within(.001f));
+                var upgrade = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnFieldUpgrade.transform);
+                Assert.That(upgrade.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.6875f).Within(.001f));
+                architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
+                typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickVisibility", flags).Invoke(ctrl, null);
+                Assert.That(((RectTransform)ui.BtnBomb.transform).anchorMin, Is.EqualTo(originalAnchor));
+                Assert.That(((RectTransform)ui.BtnBomb.transform).anchoredPosition, Is.EqualTo(originalPosition));
+            }
+            finally { Object.DestroyImmediate(canvas); }
+        }
+
+        [Test]
+        public void Editor_PreviewUsesActualSafeAreaBeforeScalingBelowToolbar()
+        {
+            CreateEditorArchitecture();
+            var root = CreateEditor(out var ctrl, out var ui);
+            try
+            {
+                // 手工实例化的测试夹具补齐BaseUICtrl.Load正式添加的同一安全区适配器。
+                var fitter = ui.gameObject.AddComponent<SafeAreaFitter>();
+                fitter.ApplyAnchors(new Vector2(.1f, 0), new Vector2(.9f, 1));
+                Canvas.ForceUpdateCanvases();
+                ctrl.Show();
+                Assert.That(ui.LayoutArea.rect.width, Is.EqualTo(1536).Within(.1f));
+                Assert.That(ui.LayoutArea.rect.height, Is.EqualTo(1080).Within(.1f));
+                Assert.That(ui.LayoutArea.rect.height * ui.LayoutArea.localScale.y, Is.LessThanOrEqualTo(ui.PreviewViewport.rect.height + .1f));
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        [TestCase(1920, 1080)]
+        [TestCase(2340, 1080)]
+        [TestCase(1440, 1080)]
+        public void EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(int width, int height)
+        {
+            var architecture = CreateEditorArchitecture();
+            var data = new MobileControlLayoutData(); data.Move.Scale = 1.4f;
+            data.Bomb.X = .68f; data.Bomb.Y = .42f;
+            architecture.GetModel<MobileControlLayoutModel>().Apply(data);
+            var root = CreateEditor(out var ctrl, out var preview);
+            ((RectTransform)root.transform).sizeDelta = new Vector2(width, height);
+            try
+            {
+                var hudRoot = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), root.transform, false);
+                var hud = hudRoot.GetComponent<ArcadeHudUI>(); var hudCtrl = new ArcadeHudUICtrl();
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(hudCtrl, hud);
+                foreach (var go in new[] { preview.gameObject, hudRoot })
+                    go.AddComponent<SafeAreaFitter>().ApplyAnchors(new Vector2(.05f, 0), new Vector2(.95f, 1));
+                Canvas.ForceUpdateCanvases(); ctrl.Show();
+                var previews = new[] { preview.PausePreview.transform, preview.BombPreview.transform, preview.DashPreview.transform,
+                    preview.FieldUpgradePreview.transform, preview.DonateLifePreview.transform, preview.ExitFirstPersonPreview.transform, preview.FirstPersonFirePreview.transform };
+                var actual = new[] { hud.BtnPause.transform, hud.BtnBomb.transform, hud.BtnDash.transform,
+                    hud.BtnFieldUpgrade.transform, hud.BtnDonateLife.transform, hud.BtnExitFirstPerson.transform, hud.FirstPersonFirePress.transform };
+                foreach (var firstPerson in new[] { false, true })
+                {
+                    if (firstPerson) preview.ModeButton.onClick.Invoke();
+                    typeof(ArcadeHudUICtrl).GetField("combat", flags).SetValue(hudCtrl,
+                        new ArcadeCombatHudSnapshot { FirstPersonSeconds = firstPerson ? 10 : 0, PlayerHealth = 100 });
+                    typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", flags).SetValue(hudCtrl, true);
+                    typeof(ArcadeHudUICtrl).GetMethod("ApplyJoystickLayout", flags).Invoke(hudCtrl, null);
+                    Assert.That(preview.LayoutArea.rect.size, Is.EqualTo(hud.JoystickLayoutArea.rect.size));
+                    for (var i = 0; i < (firstPerson ? 7 : 5); i++)
+                    {
+                        var expected = MobileControlLayoutGeometry.Bounds(preview.LayoutArea, (RectTransform)previews[i]);
+                        var result = MobileControlLayoutGeometry.Bounds(hud.JoystickLayoutArea, (RectTransform)actual[i]);
+                        Assert.That(Vector2.Distance(expected.center, result.center), Is.LessThan(.1f), actual[i].name);
+                        Assert.That(Vector2.Distance(expected.size, result.size), Is.LessThan(.1f), actual[i].name);
+                    }
+                    var move = MobileControlLayoutGeometry.Bounds(preview.LayoutArea, (RectTransform)preview.MovePreview.transform);
+                    var actualMove = MobileControlLayoutGeometry.Bounds(hud.JoystickLayoutArea, (RectTransform)hud.MoveJoystickRoot.transform);
+                    Assert.That(Vector2.Distance(move.center, actualMove.center), Is.LessThan(.1f));
+                }
+                ctrl.Hide();
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        [Test]
         public void ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection()
         {
             var layout = new MobileControlLayoutData().Sanitize();
@@ -55,57 +192,41 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Editor_HudRowsIndependentlyDragScaleSaveAndCancel()
+        public void Editor_FirstPersonPreviewKeepsFireSeparateAndCancelDiscardsItsDraft()
         {
             var architecture = CreateEditorArchitecture();
             var root = CreateEditor(out var ctrl, out var ui);
             try
             {
                 ctrl.Show();
-                var names = new[] { "StatusPreview", "HealthPreview", "WeaponPreview" };
-                for (var i = 0; i < names.Length; i++)
-                {
-                    var name = names[i];
-                    var field = typeof(MobileControlLayoutUI).GetField(name);
-                    Assert.That(field, Is.Not.Null, "设置页需要独立的信息栏预览：" + name);
-                    var handle = (MobileLayoutStickHandle)field.GetValue(ui);
-                    handle.Selected();
-                    Assert.That(ui.SizeSlider.interactable, Is.True);
-                    Assert.That(ui.OpacitySlider.interactable, Is.False);
-                    ui.SizeSlider.value = 1.1f + i * .1f;
-                    var point = ui.LayoutArea.TransformPoint(ui.LayoutArea.rect.min + ui.LayoutArea.rect.size * (.3f + i * .2f));
-                    handle.Dragged(RectTransformUtility.WorldToScreenPoint(null, point));
-                }
+                Assert.That(ui.AimPreview.gameObject.activeSelf, Is.True);
+                Assert.That(ui.FirstPersonFirePreview.gameObject.activeSelf, Is.False);
+                ui.ModeButton.onClick.Invoke();
+                Assert.That(ui.AimPreview.gameObject.activeSelf, Is.False);
+                Assert.That(ui.FirstPersonFirePreview.gameObject.activeSelf, Is.True);
+                Assert.That(ui.ExitFirstPersonPreview.gameObject.activeSelf, Is.True);
+                var point = ui.LayoutArea.TransformPoint(ui.LayoutArea.rect.min + ui.LayoutArea.rect.size * .6f);
+                ui.FirstPersonFirePreview.Dragged(RectTransformUtility.WorldToScreenPoint(null, point));
                 ui.SaveButton.onClick.Invoke();
-                var saved = JObject.FromObject(architecture.GetModel<MobileControlLayoutModel>().ToData());
-                var keys = new[] { "status", "health", "weapon" };
-                for (var i = 0; i < keys.Length; i++)
-                {
-                    Assert.That((float)saved[keys[i]]["x"], Is.EqualTo(.3f + i * .2f).Within(.001f));
-                    Assert.That((float)saved[keys[i]]["scale"], Is.EqualTo(1.1f + i * .1f).Within(.001f));
-                }
+                var saved = architecture.GetModel<MobileControlLayoutModel>().ToData();
+                Assert.That(saved.FirstPersonFire.X, Is.EqualTo(.6f).Within(.001f));
                 ctrl.Show(); ui.ResetButton.onClick.Invoke(); ui.CancelButton.onClick.Invoke();
-                Assert.That(JObject.FromObject(architecture.GetModel<MobileControlLayoutModel>().ToData()), Is.EqualTo(saved));
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().FirstPersonFire.X, Is.EqualTo(.6f).Within(.001f));
             }
             finally { Object.DestroyImmediate(root); }
         }
-
         [Test]
         public void ButtonPositions_SurviveSettingsCloneAndLegacyDefaults()
         {
-            var input = "{\"mobileControlLayout\":{\"move\":{\"x\":0.3,\"y\":0.2},\"pause\":{\"x\":0.7,\"y\":0.8},\"attack\":{\"x\":0.8,\"y\":0.4},\"reload\":{\"x\":0.6,\"y\":0.3},\"inventory\":{\"x\":0.7,\"y\":0.7},\"build\":{\"x\":0.7,\"y\":0.6}}}";
-            var data = JsonConvert.DeserializeObject<SettingsData>(input).Sanitize();
-            var saved = JObject.Parse(JsonConvert.SerializeObject(data.Clone()))["mobileControlLayout"];
-            foreach (var key in new[] { "pause", "attack", "reload", "inventory", "build" })
-                Assert.That(saved[key], Is.Not.Null, "克隆和正式保存不能丢失按钮位置：" + key);
-            Assert.That((float)saved["reload"]["x"], Is.EqualTo(0.6f));
-            Assert.That((float)saved["move"]["x"], Is.EqualTo(0.3f), "增加按钮设置不能重置旧摇杆位置");
-            var legacy = JObject.Parse(JsonConvert.SerializeObject(JsonConvert.DeserializeObject<SettingsData>("{\"version\":1}").Sanitize()))["mobileControlLayout"];
-            Assert.That((float)legacy["pause"]["x"], Is.LessThan(.2f));
-            Assert.That((float)legacy["build"]["x"], Is.LessThan(.2f));
-            Assert.That((float)legacy["inventory"]["x"], Is.GreaterThan(.8f));
+            var data = JsonConvert.DeserializeObject<SettingsData>("{\"mobileControlLayout\":{\"move\":{\"x\":0.3,\"y\":0.2},\"pause\":{\"x\":0.7,\"y\":0.8},\"bomb\":{\"x\":0.8,\"y\":0.4}}}").Sanitize();
+            var saved = JObject.FromObject(data.Clone())["mobileControlLayout"];
+            Assert.That((float)saved["bomb"]["x"], Is.EqualTo(.8f));
+            Assert.That((float)saved["pause"]["x"], Is.EqualTo(.7f));
+            Assert.That((float)saved["move"]["x"], Is.EqualTo(.3f));
+            var legacy = JsonConvert.DeserializeObject<SettingsData>("{\"version\":1}").Sanitize();
+            Assert.That(legacy.MobileControlLayout.Bomb, Is.Not.Null);
+            Assert.That(legacy.MobileControlLayout.FirstPersonFire, Is.Not.Null);
         }
-
         [Test]
         public void OrdinarySticks_HaveMatchingFixedRingsAndMovingKnobsWithoutLabels()
         {
@@ -131,7 +252,7 @@ namespace Game.Tests
             try
             {
                 ctrl.Show();
-                var previews = new[] { ui.PausePreview, ui.InventoryPreview, ui.BuildPreview, ui.AttackPreview, ui.ReloadPreview };
+                var previews = new[] { ui.PausePreview, ui.BombPreview, ui.DashPreview, ui.FieldUpgradePreview, ui.DonateLifePreview, ui.ExitFirstPersonPreview, ui.FirstPersonFirePreview };
                 var area = ui.LayoutArea;
                 for (var i = 0; i < previews.Length; i++)
                 {
@@ -142,7 +263,7 @@ namespace Game.Tests
                     Assert.That(previews[i].GetComponent<Button>(), Is.Null, "预览不能带真实暂停、背包或攻击回调");
                     Assert.That(previews[i].GetComponent<MobileCombatPressView>(), Is.Null);
                 }
-                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(.05f), "草稿不能提前写入权威设置");
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(1818f / 1920f), "草稿不能提前写入权威设置");
                 ui.SaveButton.onClick.Invoke();
                 var saved = architecture.GetModel<MobileControlLayoutModel>().ToData();
                 for (var i = 0; i < previews.Length; i++)
@@ -154,7 +275,7 @@ namespace Game.Tests
                 ui.ResetButton.onClick.Invoke(); ui.CancelButton.onClick.Invoke();
                 Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(.6f).Within(.001f));
                 ctrl.Show(); ui.ResetButton.onClick.Invoke(); ui.SaveButton.onClick.Invoke();
-                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(.05f));
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(1818f / 1920f));
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -187,8 +308,8 @@ namespace Game.Tests
             try
             {
                 ctrl.Show();
-                var targets = new[] { ui.PausePreview.transform, ui.InventoryPreview.transform, ui.BuildPreview.transform,
-                    ui.AttackPreview.transform, ui.ReloadPreview.transform, ui.MovePreview.transform, ui.AimPreview.transform };
+                var targets = new[] { ui.PausePreview.transform, ui.BombPreview.transform, ui.DashPreview.transform,
+                    ui.FieldUpgradePreview.transform, ui.DonateLifePreview.transform, ui.MovePreview.transform, ui.AimPreview.transform };
                 var bounds = targets.Select(t => MobileControlLayoutGeometry.Bounds(ui.LayoutArea, (RectTransform)t)).ToArray();
                 for (var i = 0; i < bounds.Length; i++)
                 {
@@ -198,14 +319,6 @@ namespace Game.Tests
                     Assert.That(bounds[i].yMax, Is.LessThanOrEqualTo(height + .01f));
                     for (var j = 0; j < i; j++) Assert.That(bounds[i].Overlaps(bounds[j]), Is.False, targets[i].name + " overlap " + targets[j].name);
                 }
-                Assert.That(bounds[0].center.x, Is.LessThan(width * .2f));
-                Assert.That(bounds[2].center.x, Is.LessThan(width * .2f));
-                Assert.That(bounds[1].center.x, Is.GreaterThan(width * .8f));
-                Assert.That(bounds[0].center.y, Is.EqualTo(bounds[1].center.y).Within(.01f));
-                Assert.That(bounds[0].center.x, Is.EqualTo(bounds[2].center.x).Within(.01f));
-                Assert.That(bounds[0].center.y, Is.GreaterThan(bounds[2].center.y));
-                Assert.That(bounds[4].center.x, Is.LessThan(bounds[3].center.x));
-                Assert.That(bounds[4].center.y, Is.LessThan(bounds[3].center.y));
                 ctrl.Hide();
             }
             finally { Object.DestroyImmediate(root); }
@@ -278,7 +391,7 @@ namespace Game.Tests
                 var store = new SettingsFileStore(root);
                 var data = new SettingsData(); data.MobileControlLayout.Move.X = 0.3f;
                 data.MobileControlLayout.Aim.Opacity = 0.4f;
-                data.MobileControlLayout.Reload.X = .7f;
+                data.MobileControlLayout.Bomb.X = .7f;
                 data.MobileControlLayout.Status.X = .2f;
                 data.MobileControlLayout.Health.Scale = 1.4f;
                 data.MobileControlLayout.Weapon.Y = .35f;
@@ -287,7 +400,7 @@ namespace Game.Tests
                 Assert.That(result, Is.EqualTo(SettingsLoadResult.LoadedPrimary));
                 Assert.That(read.MobileControlLayout.Move.X, Is.EqualTo(0.3f));
                 Assert.That(read.MobileControlLayout.Aim.Opacity, Is.EqualTo(0.4f));
-                Assert.That(read.MobileControlLayout.Reload.X, Is.EqualTo(.7f));
+                Assert.That(read.MobileControlLayout.Bomb.X, Is.EqualTo(.7f));
                 Assert.That(read.MobileControlLayout.Status.X, Is.EqualTo(.2f));
                 Assert.That(read.MobileControlLayout.Health.Scale, Is.EqualTo(1.4f));
                 Assert.That(read.MobileControlLayout.Weapon.Y, Is.EqualTo(.35f));
@@ -439,8 +552,8 @@ namespace Game.Tests
                 var point = RectTransformUtility.WorldToScreenPoint(null, rect.position) + new Vector2(30, 20);
                 handle.OnPointerDown(new PointerEventData(EventSystem.current) { pointerId = 1, position = point });
                 handle.OnDrag(new PointerEventData(EventSystem.current) { pointerId = 1, position = point + new Vector2(100, 50) });
-                Assert.That(rect.anchoredPosition.x, Is.EqualTo(start.x + 100).Within(0.01f));
-                Assert.That(rect.anchoredPosition.y, Is.EqualTo(start.y + 50).Within(0.01f));
+                Assert.That(rect.anchoredPosition.x, Is.EqualTo(start.x + 100 / rect.parent.lossyScale.x).Within(0.01f));
+                Assert.That(rect.anchoredPosition.y, Is.EqualTo(start.y + 50 / rect.parent.lossyScale.y).Within(0.01f));
                 architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
                 Assert.That(ctrl.IsShow(), Is.False);
                 Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.X, Is.EqualTo(.18f));
@@ -483,7 +596,7 @@ namespace Game.Tests
                 Assert.That(architecture.GetSystem<SettingsSystem>().SaveMobileControlLayout(draft), Is.False);
                 Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.Scale, Is.EqualTo(1));
                 Assert.That(draft.Move.Scale, Is.EqualTo(1.4f)); Assert.That(events, Is.Zero);
-                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(.05f));
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Pause.X, Is.EqualTo(1818f / 1920f));
             }
             finally { subscription.UnRegister(); }
         }

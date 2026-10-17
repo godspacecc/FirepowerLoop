@@ -29,8 +29,8 @@ namespace Game
             float.IsNaN(value) || float.IsInfinity(value) ? fallback : Mathf.Clamp(value, min, max);
     }
 
-    /// <summary>固定五枚按钮的身份；与显示文字及 Prefab 名称无关。</summary>
-    public enum MobileLayoutButton { Pause, Inventory, Build, Attack, Reload }
+    /// <summary>现役街机触屏动作的稳定身份；顺序同时用于编辑预览和实战布局，不依赖显示文字。</summary>
+    public enum MobileLayoutButton { Pause, Bomb, Dash, FieldUpgrade, DonateLife, ExitFirstPerson, FirstPersonFire }
 
     /// <summary>按钮中心在安全区内的比例位置；不保存 Unity 对象，不提供大小或透明度设置。</summary>
     [Serializable]
@@ -74,35 +74,41 @@ namespace Game
         [JsonProperty("aim")] public MobileStickLayoutData Aim { get; set; } =
             new MobileStickLayoutData { X = .82f, Y = .24f };
         [JsonProperty("pause")] public MobileButtonLayoutData Pause { get; set; } = DefaultButton(MobileLayoutButton.Pause);
-        [JsonProperty("inventory")] public MobileButtonLayoutData Inventory { get; set; } = DefaultButton(MobileLayoutButton.Inventory);
-        [JsonProperty("build")] public MobileButtonLayoutData Build { get; set; } = DefaultButton(MobileLayoutButton.Build);
-        [JsonProperty("attack")] public MobileButtonLayoutData Attack { get; set; } = DefaultButton(MobileLayoutButton.Attack);
-        [JsonProperty("reload")] public MobileButtonLayoutData Reload { get; set; } = DefaultButton(MobileLayoutButton.Reload);
+        [JsonProperty("bomb")] public MobileButtonLayoutData Bomb { get; set; } = DefaultButton(MobileLayoutButton.Bomb);
+        [JsonProperty("dash")] public MobileButtonLayoutData Dash { get; set; } = DefaultButton(MobileLayoutButton.Dash);
+        [JsonProperty("fieldUpgrade")] public MobileButtonLayoutData FieldUpgrade { get; set; } = DefaultButton(MobileLayoutButton.FieldUpgrade);
+        [JsonProperty("donateLife")] public MobileButtonLayoutData DonateLife { get; set; } = DefaultButton(MobileLayoutButton.DonateLife);
+        [JsonProperty("exitFirstPerson")] public MobileButtonLayoutData ExitFirstPerson { get; set; } = DefaultButton(MobileLayoutButton.ExitFirstPerson);
+        [JsonProperty("firstPersonFire")] public MobileButtonLayoutData FirstPersonFire { get; set; } = DefaultButton(MobileLayoutButton.FirstPersonFire);
         [JsonProperty("status")] public MobileHudLayoutData Status { get; set; } = DefaultHud(MobileLayoutHud.Status);
         [JsonProperty("health")] public MobileHudLayoutData Health { get; set; } = DefaultHud(MobileLayoutHud.Health);
         [JsonProperty("weapon")] public MobileHudLayoutData Weapon { get; set; } = DefaultHud(MobileLayoutHud.Weapon);
 
         public MobileControlLayoutData Clone() => new MobileControlLayoutData
         {
-            Move = Move?.Clone(), Aim = Aim?.Clone(), Pause = Pause?.Clone(), Inventory = Inventory?.Clone(),
-            Build = Build?.Clone(), Attack = Attack?.Clone(), Reload = Reload?.Clone(),
+            Move = Move?.Clone(), Aim = Aim?.Clone(), Pause = Pause?.Clone(), Bomb = Bomb?.Clone(),
+            Dash = Dash?.Clone(), FieldUpgrade = FieldUpgrade?.Clone(), DonateLife = DonateLife?.Clone(),
+            ExitFirstPerson = ExitFirstPerson?.Clone(), FirstPersonFire = FirstPersonFire?.Clone(),
             Status = Status?.Clone(), Health = Health?.Clone(), Weapon = Weapon?.Clone()
         }.Sanitize();
 
         public MobileButtonLayoutData Button(MobileLayoutButton id) => id switch
         {
-            MobileLayoutButton.Pause => Pause, MobileLayoutButton.Inventory => Inventory,
-            MobileLayoutButton.Build => Build, MobileLayoutButton.Attack => Attack,
-            MobileLayoutButton.Reload => Reload, _ => throw new ArgumentOutOfRangeException(nameof(id))
+            MobileLayoutButton.Pause => Pause, MobileLayoutButton.Bomb => Bomb,
+            MobileLayoutButton.Dash => Dash, MobileLayoutButton.FieldUpgrade => FieldUpgrade,
+            MobileLayoutButton.DonateLife => DonateLife, MobileLayoutButton.ExitFirstPerson => ExitFirstPerson,
+            MobileLayoutButton.FirstPersonFire => FirstPersonFire, _ => throw new ArgumentOutOfRangeException(nameof(id))
         };
 
         private static MobileButtonLayoutData DefaultButton(MobileLayoutButton id) => id switch
         {
-            MobileLayoutButton.Pause => new MobileButtonLayoutData { X = .05f, Y = .93f },
-            MobileLayoutButton.Inventory => new MobileButtonLayoutData { X = .88f, Y = .93f },
-            MobileLayoutButton.Build => new MobileButtonLayoutData { X = .05f, Y = .82f },
-            MobileLayoutButton.Attack => new MobileButtonLayoutData { X = .91f, Y = .48f },
-            MobileLayoutButton.Reload => new MobileButtonLayoutData { X = .82f, Y = .37f },
+            MobileLayoutButton.Pause => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 1016f / 1080f },
+            MobileLayoutButton.Bomb => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 910f / 1080f },
+            MobileLayoutButton.Dash => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 794f / 1080f },
+            MobileLayoutButton.FieldUpgrade => new MobileButtonLayoutData { X = .6875f, Y = 1000f / 1080f },
+            MobileLayoutButton.DonateLife => new MobileButtonLayoutData { X = .6875f, Y = .75f },
+            MobileLayoutButton.ExitFirstPerson => new MobileButtonLayoutData { X = 1760f / 1920f, Y = 690f / 1080f },
+            MobileLayoutButton.FirstPersonFire => new MobileButtonLayoutData { X = .82f, Y = .24f },
             _ => throw new ArgumentOutOfRangeException(nameof(id))
         };
 
@@ -154,21 +160,16 @@ namespace Game
             MigrateDefaultStick(Move, true);
             MigrateDefaultStick(Aim, false);
             Pause ??= DefaultButton(MobileLayoutButton.Pause);
-            Inventory ??= DefaultButton(MobileLayoutButton.Inventory);
-            Build ??= DefaultButton(MobileLayoutButton.Build);
-            Attack ??= DefaultButton(MobileLayoutButton.Attack);
-            Reload ??= DefaultButton(MobileLayoutButton.Reload);
+            Bomb ??= DefaultButton(MobileLayoutButton.Bomb);
+            Dash ??= DefaultButton(MobileLayoutButton.Dash);
+            FieldUpgrade ??= DefaultButton(MobileLayoutButton.FieldUpgrade);
+            DonateLife ??= DefaultButton(MobileLayoutButton.DonateLife);
+            ExitFirstPerson ??= DefaultButton(MobileLayoutButton.ExitFirstPerson);
+            FirstPersonFire ??= DefaultButton(MobileLayoutButton.FirstPersonFire);
             // 仅迁移旧默认按钮位置；保留玩家主动拖动保存的位置。
             MigrateDefaultButton(Pause, .95f, .93f, MobileLayoutButton.Pause);
-            MigrateDefaultButton(Inventory, .95f, .82f, MobileLayoutButton.Inventory);
-            MigrateDefaultButton(Inventory, .95f, .93f, MobileLayoutButton.Inventory);
-            MigrateDefaultButton(Build, .95f, .71f, MobileLayoutButton.Build);
-            MigrateDefaultButton(Build, .12f, .93f, MobileLayoutButton.Build);
-            Pause.Sanitize(DefaultButton(MobileLayoutButton.Pause));
-            Inventory.Sanitize(DefaultButton(MobileLayoutButton.Inventory));
-            Build.Sanitize(DefaultButton(MobileLayoutButton.Build));
-            Attack.Sanitize(DefaultButton(MobileLayoutButton.Attack));
-            Reload.Sanitize(DefaultButton(MobileLayoutButton.Reload));
+            MigrateDefaultButton(Pause, .05f, .93f, MobileLayoutButton.Pause);
+            foreach (MobileLayoutButton id in Enum.GetValues(typeof(MobileLayoutButton))) Button(id).Sanitize(DefaultButton(id));
             Status ??= DefaultHud(MobileLayoutHud.Status);
             Health ??= DefaultHud(MobileLayoutHud.Health);
             Weapon ??= DefaultHud(MobileLayoutHud.Weapon);

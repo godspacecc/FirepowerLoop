@@ -6,35 +6,33 @@ namespace Game
 {
     public class MobileControlLayoutUI : BaseUI
     {
-        public RectTransform LayoutArea;
-        public Button MoveButton;
         public Button AimButton;
-        public Button TrialButton;
-        public TextMeshProUGUI TrialText;
-        public Slider SizeSlider;
-        public TextMeshProUGUI SizeValue;
-        public Slider OpacitySlider;
-        public TextMeshProUGUI OpacityValue;
-        public TextMeshProUGUI HintText;
-        public Button ResetButton;
-        public Button SaveButton;
-        public Button CancelButton;
-        public RectTransform DashArea;
-        public RectTransform BombArea;
-        public MobileLayoutStickHandle MovePreview;
-        public CanvasGroup MovePreviewOpacity;
         public MobileLayoutStickHandle AimPreview;
         public CanvasGroup AimPreviewOpacity;
-        public MobileLayoutStickHandle PausePreview;
-        public MobileLayoutStickHandle InventoryPreview;
-        public MobileLayoutStickHandle BuildPreview;
-        public MobileLayoutStickHandle AttackPreview;
-        public MobileLayoutStickHandle ReloadPreview;
+        public MobileLayoutStickHandle BombPreview;
+        public Button CancelButton;
+        public RectTransform ControlSafeArea;
+        public MobileLayoutStickHandle DashPreview;
+        public MobileLayoutStickHandle DonateLifePreview;
+        public MobileLayoutStickHandle ExitFirstPersonPreview;
+        public MobileLayoutStickHandle FieldUpgradePreview;
+        public MobileLayoutStickHandle FirstPersonFirePreview;
+        public TextMeshProUGUI HintText;
+        public RectTransform LayoutArea;
         public Button ModeButton;
         public TextMeshProUGUI ModeText;
-        public MobileLayoutStickHandle StatusPreview;
-        public MobileLayoutStickHandle HealthPreview;
-        public MobileLayoutStickHandle WeaponPreview;
-        public RectTransform ArcadePauseArea;
+        public Button MoveButton;
+        public MobileLayoutStickHandle MovePreview;
+        public CanvasGroup MovePreviewOpacity;
+        public Slider OpacitySlider;
+        public TextMeshProUGUI OpacityValue;
+        public MobileLayoutStickHandle PausePreview;
+        public RectTransform PreviewViewport;
+        public Button ResetButton;
+        public Button SaveButton;
+        public Slider SizeSlider;
+        public TextMeshProUGUI SizeValue;
+        public Button TrialButton;
+        public TextMeshProUGUI TrialText;
     }
 }

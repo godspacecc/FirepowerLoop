@@ -187,9 +187,9 @@ namespace Game.Tests
                 Assert.That(model.ToData().Aim.Scale, Is.EqualTo(1.5f));
                 Assert.That(ui.AimOpacity.alpha, Is.EqualTo(.5f));
                 var preview = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/MobileControlLayout.prefab").GetComponent<MobileControlLayoutUI>();
-                Assert.That(preview.BombArea.anchoredPosition, Is.EqualTo(((RectTransform)ui.BtnBomb.transform).anchoredPosition));
-                Assert.That(preview.DashArea.anchoredPosition, Is.EqualTo(((RectTransform)ui.BtnDash.transform).anchoredPosition));
-                Assert.That(preview.ArcadePauseArea.anchoredPosition, Is.EqualTo(((RectTransform)ui.BtnPause.transform).anchoredPosition));
+                Assert.That(((RectTransform)preview.BombPreview.transform).rect.size, Is.EqualTo(((RectTransform)ui.BtnBomb.transform).rect.size));
+                Assert.That(((RectTransform)preview.DashPreview.transform).rect.size, Is.EqualTo(((RectTransform)ui.BtnDash.transform).rect.size));
+                Assert.That(((RectTransform)preview.PausePreview.transform).rect.size, Is.EqualTo(((RectTransform)ui.BtnPause.transform).rect.size));
             }
             finally { Object.DestroyImmediate(canvas); }
         }
