@@ -63,6 +63,27 @@ namespace Game
                     battle.SlayerMartSeconds,old.Cash,old.Tokens,old.Bombs,old.Dashes,old.Lives,old.VestSlots,old.Plates,
                     Stage(battle),old.Error,old.Offers,battle.SlayerMartMembers.Select(Member),old.Owned);
         }
+        /// <summary>公共战斗先到时仍独立吸收更新的本人报价；公共时钟、成员及地图绝不回滚。</summary>
+        private bool TryMergeLateSlayerMartQuote(ET.OnlineArcadeRunSnapshot run)
+        {
+            var current=lastSnapshot.Battle;var region=current?.SlayerMart;var oldBattle=run.Battle;var quote=run.SelfSlayerMart;
+            if(!lastSnapshot.HasRun||run.RunId!=lastSnapshot.RunId||!MatchesLocalConfig(run.ConfigFingerprint)||
+                region?.Active!=true||region.RulesVersion!=1||oldBattle==null||!oldBattle.SlayerMartActive||
+                oldBattle.SlayerMartRulesVersion!=1||oldBattle.ArenaNumber!=current.ArenaNumber||
+                oldBattle.RoundGeneration!=current.RoundGeneration||oldBattle.SlayerMartVisit!=region.Visit||
+                oldBattle.SlayerMartGeneration!=region.Generation||quote==null||quote.Revision>region.Revision||
+                personalSlayerMart!=null&&quote.Revision<=personalSlayerMart.Revision)return false;
+            long previous=personalSlayerMart?.Revision??-1;
+            ObserveSlayerMart(run);
+            var value=personalSlayerMart;
+            if(value==null)return false;
+            var stage=region.Closing?ArcadeSlayerMartStage.Closing:region.Ready?ArcadeSlayerMartStage.Shopping:
+                region.Members.Count>0&&region.Members.All(m=>m.Choice==1)?ArcadeSlayerMartStage.Loading:ArcadeSlayerMartStage.Choosing;
+            personalSlayerMart=new ArcadeSlayerMartSnapshot(value.RegionInstanceId,value.Generation,value.Revision,value.Visit,value.PlayerId,
+                region.RemainingSeconds,value.Cash,value.Tokens,value.Bombs,value.Dashes,value.Lives,value.VestSlots,value.Plates,
+                stage,value.Error,value.Offers,region.Members,value.Owned);
+            return value.Revision>previous;
+        }
         private static ArcadeSlayerMartStage Stage(OnlineArcadeBattleInfo battle)=>battle.SlayerMartClosing?ArcadeSlayerMartStage.Closing:
             battle.SlayerMartReady?ArcadeSlayerMartStage.Shopping:battle.SlayerMartMembers.Count>0&&battle.SlayerMartMembers.All(m=>m.Choice==1)?ArcadeSlayerMartStage.Loading:ArcadeSlayerMartStage.Choosing;
         private static ArcadeSlayerMartMemberSnapshot Member(OnlineSlayerMartMemberInfo m)=>new(m.PlayerId,m.Choice,m.MenuOpen,m.Finished,m.Lives);

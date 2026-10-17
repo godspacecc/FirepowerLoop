@@ -332,7 +332,7 @@ namespace Game
                 {
                     // 恢复RPC在途时可能已收到更新推送，旧响应不能回滚地图或个人报价。
                     if(hasRun&&run!=null&&IsStaleRunSnapshot(run))
-                    {Publish(WithIdle(code));return new OnlineArcadeOperationResult(code,lastSnapshot);}
+                    {TryMergeLateSlayerMartQuote(run);Publish(WithIdle(code));return new OnlineArcadeOperationResult(code,lastSnapshot);}
                     OnlineArcadeRunClientSnapshot snapshot = hasRun && run != null
                         ? CopySnapshot(run, code)
                         : OnlineArcadeRunClientSnapshot.Empty(code);
@@ -522,7 +522,7 @@ namespace Game
         private void TryPublishNewerSnapshot(ET.OnlineArcadeRunSnapshot run)
         {
             if(lastSnapshot.HasRun&&run.RunId!=lastSnapshot.RunId)return;
-            if(IsStaleRunSnapshot(run))return;
+            if(IsStaleRunSnapshot(run)){if(TryMergeLateSlayerMartQuote(run))Publish(lastSnapshot);return;}
             OnlineArcadeRunClientSnapshot snapshot = CopySnapshot(run, OnlineArcadeResultCode.Success);
             if (!MatchesLocalConfig(snapshot.ConfigFingerprint))
             {
