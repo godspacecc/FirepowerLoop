@@ -123,7 +123,7 @@ namespace ET.Server
         }
         private static void InitializeEnemyContent(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime enemy)
         {
-            if(b.RoundLayout==null)return;var p=ContentTuning(b);
+            if(b.RoundLayout==null||b.SlayerChallenge!=null)return;var p=ContentTuning(b);
             if(b.RoundBossEncounter&&b.SpawnedInWave==0)
             {
                 enemy.ContentBossKind=p.BossKind;

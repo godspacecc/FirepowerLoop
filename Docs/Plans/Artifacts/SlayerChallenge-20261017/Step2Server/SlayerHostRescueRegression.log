@@ -1,0 +1,29 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS CoopRescueOnline.Zero life death starts independent60 seconds
+PASS CoopRescueOnline.Base timer restores full health without granting life
+PASS CoopRescueOnline.Recovered zero-life member can die into a new countdown
+PASS CoopRescueOnline.Paid short respawn remains separate
+PASS CoopRescueOnline.All zero-life downed members fail immediately
+PASS CoopRescueOnline.Downed timer survives round-node clone and restore
+PASS CoopRescueOnline.Recovered zero-life identity survives round restore
+PASS CoopRescueOnline.Both recovered zero-life members may restore
+PASS CoopRescueOnline.Challenge death never enters casual rescue
+PASS CoopRescueOnline.Nearby living helper doubles recovery rate
+PASS CoopRescueOnline.Radius includes boundary and excludes outside
+PASS CoopRescueOnline.Leaving radius preserves earned progress
+PASS CoopRescueOnline.Current obstacle blocks nearby helper
+PASS CoopRescueOnline.Treasure helper cannot accelerate outside member
+PASS CoopRescueOnline.Disconnected player freezes recovery
+PASS CoopRescueOnline.Unacknowledged map freezes recovery
+PASS CoopRescueOnline.Shop phase freezes ordinary recovery
+PASS CoopRescueOnline.Exit waiting permits nearby recovery
+PASS CoopRescueOnline.All treasure members freeze ordinary recovery
+PASS CoopRescueOnline.Round transition freezes independent timer
+PASS CoopRescueOnline.Downed marker locates recovery body without creating damage
+PASS CoopRescueOnline.Shop next-round life replaces zero-life countdown
+PASS CoopRescueOnline.Zero-life active eligibility reaches safe-node snapshot
+PASS CoopRescueOnline.Recovered transit member does not need old safe-node ready bit
+PASS CoopRescueOnline.Actual round transaction ignores stale ready and writes recoverable zero-life identity
+PASS CoopRescueOnline.Active zero-life member keeps normal new-arena empty refill
+PASS CoopRescueOnline.Delayed island kill life gain converts downed state
+27/27 passed

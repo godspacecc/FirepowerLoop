@@ -1,0 +1,14 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerChallengeOnline.Dedicated layout retains actual mainline return identity
+PASS SlayerChallengeOnline.Preparation never spawns or accepts combat
+PASS SlayerChallengeOnline.Collection repeats finite batches without early success
+PASS SlayerChallengeOnline.Collection deadline switches to boss rather than failure
+PASS SlayerChallengeOnline.First death uses independent allowance without main life cost
+PASS SlayerChallengeOnline.Fourth team death returns whole challenge
+PASS SlayerChallengeOnline.Zero-life active original member uses challenge short revival
+PASS SlayerChallengeOnline.Map loading freezes Slayer collection clock
+PASS SlayerChallengeOnline.Disconnected team freezes Slayer collection clock
+PASS SlayerChallengeOnline.Preparation timeout requests safe return instead of battle loss
+PASS SlayerChallengeOnline.Borrowed layout never injects ordinary theme specials
+PASS SlayerChallengeOnline.Preparation and terminal phases reject damage
+12/12 passed

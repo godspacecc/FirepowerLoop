@@ -1039,6 +1039,8 @@ namespace ET.Server
                 if (!RoundPlayersReady(battle) || battle.RoundTransitionPending)
                 { player.LastInputSequence=inputSequence; battle.InputsDirty=true; return (true,inputSequence); }
             }
+            if(battle.SlayerChallenge?.Phase==FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Preparing)
+            {player.MoveX=player.MoveZ=0;player.Firing=false;player.LastInputSequence=inputSequence;player.LastInputAt=TimeInfo.Instance.ServerNow();battle.InputsDirty=true;return(true,inputSequence);}
             Normalize(ref moveX, ref moveZ);
             Normalize(ref aimX, ref aimZ);
             player.MoveX = moveX;
@@ -1169,7 +1171,7 @@ namespace ET.Server
         public static OnlineArcadeBattleRuntime PrepareBattle(OnlineArcadeRunRecord record, bool challenge, bool requireReady=true)
         {
             if (record == null || record.Players.Count != 2 || !record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
-                challenge && record.Players.Any(x => !x.ChallengeReady) ||
+                challenge && requireReady && record.Players.Any(x => !x.ChallengeReady) ||
                 !challenge && requireReady && record.Players.Any(x => OnlineArcadeRunActorSystem.CanContinueCoop(x) && !x.Ready))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "双方尚未满足进入竞技场条件");
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
@@ -1264,6 +1266,7 @@ namespace ET.Server
             if (!challenge)
                 foreach (ArcadeHazardConfig definition in arena.Hazards)
                     battle.Hazards.Add(new FirepowerLoop.Arcade.ArcadeHazardState(ServerConfig.GetHazardParameters(definition)));
+            InitializeSlayerChallenge(record,battle);
             battle.LastTickAt = TimeInfo.Instance.ServerNow();
             return battle;
         }
@@ -1335,6 +1338,12 @@ namespace ET.Server
             battle.LastTickAt = now;
             bool changed = battle.InputsDirty;
             battle.InputsDirty = false;
+            if(battle.SlayerChallenge!=null)
+            {
+                changed|=TickSlayerChallenge(self,battle,deltaSeconds);
+                if(battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Boss)
+                {if(changed)battle.BattleRevision++;return changed;}
+            }
             changed |= TickDropLifetimes(battle, deltaSeconds);
             bool hazardRespawnWaiting = battle.Players.Values.Any(player => player.RespawnSeconds > 0f);
             foreach (var player in battle.Players.Values)
@@ -1347,7 +1356,7 @@ namespace ET.Server
                 enemy.HazardPreviousX = enemy.PositionX;
                 enemy.HazardPreviousZ = enemy.PositionZ;
             }
-            if (battle.IsChallenge)
+            if (battle.IsChallenge && battle.SlayerChallenge==null)
             {
                 float previous = battle.ChallengeSeconds;
                 battle.ChallengeSeconds = Math.Max(0f, battle.ChallengeSeconds - deltaSeconds);
@@ -1496,7 +1505,7 @@ namespace ET.Server
                     changed |= MathF.Abs(previousRespawn - player.RespawnSeconds) > 0.0001f;
                     if (player.RespawnSeconds > 0f) continue;
                     OnlineArcadePlayerRecord respawnRecord = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
-                    if (respawnRecord.Lives <= 0) continue;
+                    if (respawnRecord.Lives <= 0 && battle.SlayerChallenge==null) continue;
                     player.CurrentHealth = player.MaxHealth;
                     player.Alive = true;
                     player.InvulnerabilitySeconds = FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RespawnProtection(rule.ContactInvulnerabilitySeconds,SlayerMartAbility(battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
@@ -2508,6 +2517,8 @@ namespace ET.Server
         private static void DamagePlayerCore(this OnlineArcadeRunActor self,OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player,int damage,FirepowerLoop.Arcade.SlayerMartHitKind kind)
         {
+            if(battle.SlayerChallenge!=null&&battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&
+                battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Boss)return;
             if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f || player.DashSeconds>0 || player.RespawnSeconds>0) return;
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             if (TryGetPowerup(player, ArcadePowerupBehavior.Shield,
@@ -2535,6 +2546,7 @@ namespace ET.Server
             player.Firing = false;
             if (battle.IsChallenge)
             {
+                if(battle.SlayerChallenge!=null){DownSlayerPlayer(battle,player);return;}
                 player.RespawnSeconds = 0f;
                 if (battle.Players.Values.All(x => !x.Alive))
                 {
@@ -2590,6 +2602,12 @@ namespace ET.Server
         private static bool TryAdvanceWave(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float deltaSeconds)
         {
+            if(battle.SlayerChallenge!=null)
+            {
+                if(battle.SlayerChallenge.Phase==FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&battle.SpawnQueueIndex>=battle.SpawnQueue.Count&&battle.Enemies.Count==0)
+                {BeginSlayerCollectionWave(battle);return true;}
+                return false;
+            }
             if (battle.Players.Values.Any(p => p.Alive) && battle.Players.Values.Where(p => p.Alive).All(p => p.InTreasureRoom)) return false;
             if (battle.IsFinalBoss || battle.RoundBossEncounter || battle.AwaitingExit || battle.SpawnQueueIndex < battle.SpawnQueue.Count || battle.Enemies.Count > 0) return false;
             if (battle.WaveIndex == 2 && battle.IsCasualRoute && battle.ArenaConfigNumber == 1 && !battle.TreasureCompleted) return false;

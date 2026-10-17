@@ -393,6 +393,8 @@ namespace ET.Server
         public string ChallengeId = string.Empty;
         /// <summary>限时挑战剩余秒数；普通竞技场恒为零。</summary>
         public float ChallengeSeconds;
+        /// <summary>独立Slayer阶段与共享容错，不能复用普通挑战自动清场成功。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerChallengeState SlayerChallenge;
         public bool ChallengeCompletionReady;
         public bool ChallengeSucceeded;
         /// <summary>安全节点写入失败后的最早重试服务器时间戳，单位毫秒。</summary>
