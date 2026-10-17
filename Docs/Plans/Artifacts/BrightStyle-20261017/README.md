@@ -5,3 +5,5 @@
 正式Start/Loading引用同一张Unity搭景渲染，主角与轻型敌人为当前正式资源；不是自然游玩截图。原图及meta保留。菜单两比例均检查，无TMP溢出；Loading只验证原正式Image绑定和限定测试，未计为实际加载流程新截图。
 
 FullRouteContentFlowTests最多11、StartMenuPresentationTests最多5，EditMode/includePassingTests=true，分别11/11、5/5；发现3433不等于执行数。只读复核无可确认Critical/Important。未运行Player Build。
+
+菜单后续修订：背景搭景中隐藏固定中文关卡文字，底部渐暗提高版本号/更新入口可读性；不改正式地图文字。中英文1920×1080、2400×1080四张最终图见menu-final；溢出0，StartMenuPresentationTests限定5项再次5/5。

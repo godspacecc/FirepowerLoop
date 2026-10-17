@@ -52,9 +52,6 @@ public static class ArcadeInfectedBackgroundAuthoring
                 Call(view,"CreateArenaCollision",1,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ArcadeIslandLayout.GetObstacles(round,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight));
                 Call(view,"LoadContentAsync",1);view.SetIslandRound(round);view.SetOpening(opening,round==4);
                 if(!view.IsIslandRoundReady)throw new InvalidOperationException(view.IslandRoundLoadError??"海岛正式资源未准备完成");
-                if(round!=3)view.SetExits(round<3?new[]{-(round+1)}:new[]{2,3},catalog.Rule.ArenaHalfHeight,false);
-                var region=new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,round);
-                var edge=region.Outer[round==2?48:72];view.SetIslandEntryWarning(new Vector2(edge.X*.95f,edge.Y*.95f),true);
                 var actors=new GameObject("Actors");actors.transform.SetParent(root.transform,false);actors.SetActive(false);
                 for(int i=0;i<6;i++)
                 {
@@ -126,6 +123,18 @@ public static class ArcadeInfectedBackgroundAuthoring
         go.GetComponent<MeshFilter>().sharedMesh=mesh;go.GetComponent<MeshRenderer>().sharedMaterial=material;
         go.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
         owned.Add(mesh);owned.Add(material);
+        // 页脚版本/更新提示使用白字，在浅沙地上增加柔和底部遮罩。
+        var footer=new Mesh{name="MenuFooterGradient"};vertices.Clear();colors.Clear();indices.Clear();
+        for(int row=0;row<3;row++)
+        {
+            float v=row*.14f;float alpha=new[]{.65f,.18f,0f}[row];
+            for(int x=0;x<2;x++){vertices.Add(camera.ViewportToWorldPoint(new Vector3(x,v,1f)));colors.Add(new Color(.015f,.035f,.065f,alpha));}
+            if(row>0){int i=row*2;indices.AddRange(new[]{i-2,i-1,i,i,i-1,i+1});}
+        }
+        footer.SetVertices(vertices);footer.SetColors(colors);footer.SetTriangles(indices,0);footer.RecalculateBounds();
+        var footerGo=new GameObject("MenuFooterGradient",typeof(MeshFilter),typeof(MeshRenderer));footerGo.transform.SetParent(parent,false);
+        footerGo.GetComponent<MeshFilter>().sharedMesh=footer;footerGo.GetComponent<MeshRenderer>().sharedMaterial=material;
+        footerGo.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;owned.Add(footer);
     }
     /// <summary>保留旧图及.meta，只把既有RawImage/Image引用切到同一张正式模型渲染图。</summary>
     private static void BindArtwork(string source)
@@ -141,11 +150,19 @@ public static class ArcadeInfectedBackgroundAuthoring
             var root=PrefabUtility.LoadPrefabContents(path);
             try
             {
+                bool changed=false;
                 if(path.Contains("/Start.prefab"))
-                    root.GetComponentsInChildren<UnityEngine.UI.RawImage>(true).Single(image=>image.texture!=null&&
-                        (AssetDatabase.GetAssetPath(image.texture).Contains("_StartBackground")||AssetDatabase.GetAssetPath(image.texture)==asset)).texture=texture;
-                else root.GetComponentsInChildren<UnityEngine.UI.Image>(true).Single(image=>image.name=="BackgroundArtwork").sprite=sprite;
-                PrefabUtility.SaveAsPrefabAsset(root,path);
+                {
+                    var image=root.GetComponentsInChildren<UnityEngine.UI.RawImage>(true).Single(i=>i.texture!=null&&
+                        (AssetDatabase.GetAssetPath(i.texture).Contains("_StartBackground")||AssetDatabase.GetAssetPath(i.texture)==asset));
+                    changed=image.texture!=texture;image.texture=texture;
+                }
+                else
+                {
+                    var image=root.GetComponentsInChildren<UnityEngine.UI.Image>(true).Single(i=>i.name=="BackgroundArtwork");
+                    changed=image.sprite!=sprite;image.sprite=sprite;
+                }
+                if(changed)PrefabUtility.SaveAsPrefabAsset(root,path);
             }
             finally{PrefabUtility.UnloadPrefabContents(root);}
         }
