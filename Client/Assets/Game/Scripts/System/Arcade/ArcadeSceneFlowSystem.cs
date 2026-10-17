@@ -71,6 +71,8 @@ namespace Game
                     return ArcadeSceneFlowResult.Fail(result.Error);
                 }
                 this.GetSystem<AppStateSystem>().TryTransition(AppState.Paused);
+                // 无活动句柄时卸载不会发送地图释放事件，返回成功仍须关闭旧暂停界面。
+                UIHelper.HideUI<PauseUICtrl>();
                 UIHelper.HideUI<ArcadeHudUICtrl>();
                 UIHelper.HideUI<ArcadeResumeUICtrl>();
                 UIHelper.ShowUI<StartUICtrl>();

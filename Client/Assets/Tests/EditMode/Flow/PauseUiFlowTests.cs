@@ -17,6 +17,7 @@ namespace Game.Tests
     {
         private GameObject closablePrefab;
         private GameObject poolRoot;
+        private string leaveTestRoot;
 
         [SetUp]
         public void SetUp()
@@ -35,7 +36,8 @@ namespace Game.Tests
                 if (path == "Prefabs/UI/Home/Setting") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Setting.prefab");
                 if (path == "Prefabs/UI/Notify/Float") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Notify/Float.prefab");
                 if (path == "Prefabs/UI/Notify/Message") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Notify/Message.prefab");
-                return path == "Prefabs/UI/Home/Start" ? CreateStartPrefab() : null;
+                return path == "Prefabs/UI/Home/Start"
+                    ? AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Start.prefab") : null;
             });
         }
 
@@ -50,6 +52,9 @@ namespace Game.Tests
             ResourceLoader.ResetForTests();
             LocalizationLanguages.ResetForTests();
             ResetArchitecture();
+            if (leaveTestRoot != null && System.IO.Directory.Exists(leaveTestRoot))
+                System.IO.Directory.Delete(leaveTestRoot, true);
+            leaveTestRoot = null;
         }
 
         [Test]
@@ -72,18 +77,58 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeLeave_WithoutBaseSnapshotKeepsPauseAndDoesNotOpenLogin()
+        public void ArcadeLeave_WithoutActiveHandleReturnsToMainMenuAndClosesPause()
         {
-            poolRoot = new GameObject(SceneRoot.PoolRootName);
-            Game.Interface.RegisterSystem(new ArcadeSceneFlowSystem());
-            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
+            InstallArcadeLeaveDependencies();
+            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
             var ctrl = UIHelper.ShowUI<PauseUICtrl>();
             GetBaseUI<PauseUI>(ctrl).BtnOnline.onClick.Invoke();
+            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
+            Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
+            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
+            Assert.That(ctrl.IsShow(), Is.False, "成功返回主菜单后不能留下可再次点击的旧暂停界面");
+            Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow(), Is.Not.True);
+        }
+
+        [Test]
+        public void ArcadeLeave_WhenSceneFlowBusyKeepsPauseAndAllowsRetry()
+        {
+            InstallArcadeLeaveDependencies();
+            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
+            var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
+            // 仅在测试中模拟另一个场景请求占用事务；失败和重试仍走正式按钮及领域入口。
+            var busy = typeof(ArcadeSceneFlowSystem).GetField("busy", BindingFlags.Instance | BindingFlags.NonPublic);
+            busy.SetValue(flow, true);
+            var ctrl = UIHelper.ShowUI<PauseUICtrl>();
+            var view = GetBaseUI<PauseUI>(ctrl);
+            view.BtnOnline.onClick.Invoke();
             Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
             Assert.That(Game.Interface.GetModel<AppStateModel>().CurrentState.Value, Is.EqualTo(AppState.Paused));
             Assert.That(ctrl.IsShow(), Is.True);
+            Assert.That(view.BtnOnline.interactable, Is.True);
+            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.Not.True);
             Assert.That(UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow(), Is.Not.True);
-            Assert.That(GetBaseUI<PauseUI>(ctrl).BtnOnline.interactable, Is.True);
+            busy.SetValue(flow, false);
+            view.BtnOnline.onClick.Invoke();
+            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
+            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
+            Assert.That(ctrl.IsShow(), Is.False);
+        }
+
+        /// <summary>离开测试使用真实可回滚控制器和隔离存档，不能用null依赖掩盖事务或读取正式档。</summary>
+        private void InstallArcadeLeaveDependencies()
+        {
+            poolRoot = new GameObject(SceneRoot.PoolRootName);
+            leaveTestRoot = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "FirepowerLoopPauseTests", Guid.NewGuid().ToString("N"));
+            System.IO.Directory.CreateDirectory(leaveTestRoot);
+            Game.Interface.RegisterModel(new ArcadeRunModel());
+            var run = new ArcadeRunSystem();
+            run.ConfigureForTests(leaveTestRoot);
+            Game.Interface.RegisterSystem(run);
+            Game.Interface.RegisterSystem(new RedPointSystem());
+            Game.Interface.RegisterSystem(new MapSceneSystem(new ProjectileCtrl(Game.Interface),
+                new PlayerCtrl(Game.Interface), new EnemyCtrl(Game.Interface), new LootCtrl(Game.Interface)));
+            Game.Interface.RegisterSystem(new ArcadeSceneFlowSystem());
         }
 
         [Test]
@@ -403,21 +448,6 @@ namespace Game.Tests
             return new GameObject("TestClosable", typeof(RectTransform), typeof(TestClosableUI));
         }
 
-        private static GameObject CreateStartPrefab()
-        {
-            var root = new GameObject("Start", typeof(RectTransform), typeof(StartUI));
-            var ui = root.GetComponent<StartUI>();
-            ui.BtnNewGame = AddButton(root.transform, "BtnNewGame");
-            ui.BtnContinue = AddButton(root.transform, "BtnContinue");
-            ui.BtnOnline = AddButton(root.transform, "BtnOnline");
-            ui.BtnCheckUpdate = AddButton(root.transform, "BtnCheckUpdate");
-            ui.BtnSetting = AddButton(root.transform, "BtnSetting");
-            ui.BtnExit = AddButton(root.transform, "BtnExit");
-            ui.VersionText = AddText(root.transform, "Version").GetComponent<TextMeshProUGUI>();
-            ui.UpdateStatusText = AddText(root.transform, "UpdateStatus").GetComponent<TextMeshProUGUI>();
-            return root;
-        }
-
         private static T RegisterShown<T>(T ctrl, BaseUI ui) where T : BaseUICtrl
         {
             var dict = (Dictionary<string, BaseUICtrl>)typeof(UIHelper)
@@ -448,82 +478,6 @@ namespace Game.Tests
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(T));
             return go.GetComponent<T>();
-        }
-
-        /// <summary>关闭路由使用正式背包 View 契约，避免手工空 View 遗漏数量弹窗等必需引用。</summary>
-        private static BagUI CreateBagUI()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Inventory/Bag.prefab");
-            Assert.That(prefab, Is.Not.Null);
-            return Object.Instantiate(prefab).GetComponent<BagUI>();
-        }
-
-        private static CraftUI CreateCraftUI()
-        {
-            var ui = CreateBaseUI<CraftUI>("Craft");
-            ui.BtnClose = AddButton(ui.transform, "Close");
-            ui.RecipeList = new GameObject("RecipeList", typeof(RectTransform), typeof(CustomListView))
-                .GetComponent<CustomListView>();
-            ui.RecipeList.transform.SetParent(ui.transform, false);
-            return ui;
-        }
-
-        private static ShopUI CreateShopUI()
-        {
-            var ui = CreateBaseUI<ShopUI>("Shop");
-            ui.ItemList = new GameObject("ItemList", typeof(RectTransform), typeof(CustomListView))
-                .GetComponent<CustomListView>();
-            ui.ItemList.transform.SetParent(ui.transform, false);
-            return ui;
-        }
-
-        private static EquipmentSlotBoxUI AddEquipmentSlot(Transform parent, string name)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(EquipmentSlotBoxUI));
-            go.transform.SetParent(parent, false);
-            return go.GetComponent<EquipmentSlotBoxUI>();
-        }
-
-        private static Button AddButton(Transform parent, string name)
-        {
-            return AddButton(parent, name, null);
-        }
-
-        private static Button AddButton(Transform parent, string name, string localizationKey)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(Button));
-            go.transform.SetParent(parent, false);
-            var text = AddText(go.transform, "Text");
-            if (!string.IsNullOrWhiteSpace(localizationKey))
-            {
-                text.gameObject.AddComponent<LocalizedText>().Key = localizationKey;
-            }
-
-            return go.GetComponent<Button>();
-        }
-
-        private static TMP_Text AddText(Transform parent, string name)
-        {
-            var go = new GameObject(name, typeof(RectTransform), typeof(TextMeshProUGUI));
-            go.transform.SetParent(parent, false);
-            return go.GetComponent<TMP_Text>();
-        }
-
-        private static TMP_Text AddLocalizedText(Transform parent, string name, string localizationKey)
-        {
-            var text = AddText(parent, name);
-            text.gameObject.AddComponent<LocalizedText>().Key = localizationKey;
-            return text;
-        }
-
-        private static string GetButtonText(Button button)
-        {
-            return button.GetComponentInChildren<TMP_Text>(true).text;
-        }
-
-        private static string GetText(Transform root, string path)
-        {
-            return root.Find(path).GetComponent<TMP_Text>().text;
         }
 
         private static void CreateUIRoot()
