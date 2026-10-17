@@ -68,7 +68,7 @@ namespace Game
                 foreach(var enemy in runtime.Enemies.Values){view.RemoveEnemy(enemy.Id);runtimePool.Return(enemy);}
                 runtime.Enemies.Clear();runtime.SpawnQueue.Clear();
                 foreach(int id in runtime.Projectiles.Where(p=>p.Value.Hostile).Select(p=>p.Key).ToArray())RemoveProjectile(runtime,id);
-                runtime.ContentAreas.Clear();runtime.ContentAreaSnapshots.Clear();
+                runtime.ContentAreas.Clear();runtime.ContentAreaSnapshots.Clear();SpawnSlayerGuardian(runtime);
             }
             bool combat=runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Collecting||runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Boss;
             if(!combat){runtime.MoveDirection=Vector2.zero;runtime.Firing=false;}return combat;

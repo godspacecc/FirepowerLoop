@@ -395,6 +395,9 @@ namespace ET.Server
         public float ChallengeSeconds;
         /// <summary>独立Slayer阶段与共享容错，不能复用普通挑战自动清场成功。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerChallengeState SlayerChallenge;
+        /// <summary>独立Guardian权威攻击与敌人身份，仅本地图有效。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerGuardianState SlayerGuardian;
+        public long SlayerGuardianEnemyId;
         public bool ChallengeCompletionReady;
         public bool ChallengeSucceeded;
         /// <summary>安全节点写入失败后的最早重试服务器时间戳，单位毫秒。</summary>

@@ -248,6 +248,9 @@ namespace Game
         public float ChallengeSeconds;
         /// <summary>Slayer独立阶段与队伍容错，不等同于主线轮或旧清怪挑战。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerChallengeState SlayerChallenge;
+        /// <summary>独立Guardian攻击现场与敌人ID，不进入主线节点。</summary>
+        public FirepowerLoop.Arcade.ArcadeSlayerGuardianState SlayerGuardian;
+        public int SlayerGuardianEnemyId;
         public int WaveIndex;
         public Vector2 PlayerPosition;
         public Vector2 AimDirection = Vector2.up;

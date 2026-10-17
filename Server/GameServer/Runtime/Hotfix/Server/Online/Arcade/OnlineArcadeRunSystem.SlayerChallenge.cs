@@ -89,7 +89,7 @@ namespace ET.Server
             {
                 battle.Enemies.Clear();battle.EnemyIterationIds.Clear();battle.SpawnQueue.Clear();battle.SpawnQueueIndex=battle.TotalInWave=battle.SpawnedInWave=0;
                 foreach(long id in battle.Projectiles.Where(p=>p.Value.OwnerPlayerId<=0).Select(p=>p.Key).ToArray())battle.Projectiles.Remove(id);
-                battle.DeathZones.Clear();battle.ContentAreas.Clear();
+                battle.DeathZones.Clear();battle.ContentAreas.Clear();SpawnSlayerGuardian(battle);
             }
             if(next.Phase==ArcadeSlayerChallengePhase.Returning)
             {battle.ChallengeCompletionReady=true;battle.ChallengeSucceeded=next.Outcome==ArcadeSlayerChallengeOutcome.Won;}

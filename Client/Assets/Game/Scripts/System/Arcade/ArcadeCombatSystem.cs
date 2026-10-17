@@ -783,7 +783,7 @@ namespace Game
                         enemy.Position = new Vector2(x, y);
                     }
                 }
-                if (TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
+                if (TickSlayerGuardian(runtime,enemy,deltaTime)||TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
                 {
                     if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
@@ -1532,6 +1532,7 @@ namespace Game
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
+            if(SlayerGuardianDefeated(runtime,enemy))return;
             if(slayerMartConfig!=null)ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(runtime),!hazardKill,runtime.SlayerMartStormDamage,slayerMartConfig.Parameter);
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {

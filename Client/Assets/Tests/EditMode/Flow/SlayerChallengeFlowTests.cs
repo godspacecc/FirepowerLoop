@@ -45,6 +45,12 @@ namespace Game.Tests
         [Test] public void FourthDeathReturnsWithoutMainRunFailure(){Start();for(int i=0;i<4;i++)Kill();Assert.That(State.Outcome,Is.EqualTo(ArcadeSlayerChallengeOutcome.Failed));Assert.That(State.Phase,Is.EqualTo(ArcadeSlayerChallengePhase.Returning));Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RemainingLives,Is.EqualTo(3));}
         [Test] public void PaidChallengeRespawnRestoresOnce(){Start();Kill();Call("TickTimers",runtime,3f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100));Assert.That(runtime.PlayerInvulnerability,Is.GreaterThan(0));}
         [Test] public void PreparationRejectsDamage(){Call("DamagePlayerCore",runtime,100000,SlayerMartHitKind.Ordinary);Assert.That(runtime.PlayerHealth,Is.EqualTo(100));Assert.That(State.TeamDowns,Is.Zero);}
+        private ArcadeEnemyRuntime Guardian(){Start();Call("TickSlayerChallenge",runtime,90f);Assert.That(runtime.Enemies.Count,Is.EqualTo(1),"缺少实际Guardian");var e=runtime.Enemies.Values.Single();e.Position=Vector2.zero;runtime.PlayerPosition=Vector2.up;return e;}
+        [Test] public void GuardianHasConfiguredHealth(){var e=Guardian();Assert.That(e.Health,Is.EqualTo(1500));Assert.That(e.IsBossPresentation,Is.True);}
+        [Test] public void GuardianHammerUsesIndependentDown(){var e=Guardian();Call("TickSlayerGuardian",runtime,e,.1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100));Call("TickSlayerGuardian",runtime,e,1f);Assert.That(State.TeamDowns,Is.EqualTo(1));Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RemainingLives,Is.EqualTo(3));}
+        [Test] public void GuardianHammerRespectsProtection(){var e=Guardian();runtime.PlayerInvulnerability=10;Call("TickSlayerGuardian",runtime,e,.1f);Call("TickSlayerGuardian",runtime,e,1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100));}
+        [Test] public void GuardianDeathOpensShoppingWithoutMainExit(){var e=Guardian();Call("KillEnemy",runtime,e,false);Assert.That(State.Phase,Is.EqualTo(ArcadeSlayerChallengePhase.Shopping));Assert.That(runtime.AwaitingExit,Is.False);Assert.That(runtime.CompletionSubmitted,Is.False);}
+        [Test] public void GuardianBombCannotClearBoss(){var e=Guardian();runtime.Bombs=1;Call("UseBomb",runtime);Assert.That(runtime.Enemies.ContainsKey(e.Id),Is.True);}
         private sealed class View:IArcadeCombatViewPort
         {
             public bool IsActive=>true;public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}public void End(){}

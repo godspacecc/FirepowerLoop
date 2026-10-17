@@ -363,7 +363,7 @@ namespace Game
         private void SyncRoundContent(ArcadeCombatRuntime r)
         {
             bool active=RoundContentActive(r);r.ContentPresentationSnapshots.Clear();
-            if(active)r.ContentPresentationSnapshots.AddRange(r.ContentAreaSnapshots);
+            if(active||r.SlayerGuardian!=null)r.ContentPresentationSnapshots.AddRange(r.ContentAreaSnapshots);
             AppendGroundBarrelSnapshots(r);
             view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
             foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);

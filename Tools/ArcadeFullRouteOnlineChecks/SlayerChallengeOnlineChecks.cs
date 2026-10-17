@@ -20,7 +20,7 @@ internal static class SlayerChallengeOnlineChecks
         var b=OnlineArcadeRunActorSystem.PrepareBattle(r,true);foreach(var p in b.Players.Values){p.ReadyRoundGeneration=b.RoundGeneration;p.InvulnerabilitySeconds=0;}
         return new(){Record=r,CommittedRecord=OnlineArcadeRunManagerSystem.Clone(r),Battle=b};
     }
-    static void Start(OnlineArcadeRunActor a)
+    internal static void Start(OnlineArcadeRunActor a)
     {
         var field=a.Battle.GetType().GetField("SlayerChallenge");Require(field!=null,"missing actual Slayer runtime");var s=State(a.Battle);
         foreach(var id in s.Members)s=ArcadeSlayerChallengeRules.SetEntryChoice(s,ServerConfig.Instance.SlayerChallenge,id,true);

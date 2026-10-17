@@ -1592,6 +1592,7 @@ namespace ET.Server
                 }
 
                 if(enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)continue;
+                if(TickSlayerGuardian(self,battle,enemy,target,deltaSeconds)){changed=true;continue;}
                 enemy.TargetPlayerId = target.PlayerId;
                 enemy.AttackCooldownSeconds = Math.Max(0f, enemy.AttackCooldownSeconds - deltaSeconds);
                 float targetX = target.PositionX;
@@ -1755,7 +1756,8 @@ namespace ET.Server
             enemy.BossPhaseSeconds = boss.TelegraphSeconds;
             enemy.BossChargeDirectionX = directionX;
             enemy.BossChargeDirectionZ = directionZ;
-            enemy.TargetPlayerId = target.PlayerId;
+            
+                enemy.TargetPlayerId = target.PlayerId;
             enemy.BossHitPlayers.Clear();
             return true;
         }
@@ -2192,6 +2194,7 @@ namespace ET.Server
             OnlineArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
+            if(SlayerGuardianDefeated(battle,enemy))return;
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
                 !hazardKill&&enemy.LastDamagePlayerId>0,battle.SlayerMartStormDamage,ServerConfig.Instance.SlayerMart.Parameter);
             if (!hazardKill) AwardIslandKill(self, battle, enemy);

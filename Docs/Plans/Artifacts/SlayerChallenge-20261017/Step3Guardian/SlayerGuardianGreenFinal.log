@@ -1,0 +1,12 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS SlayerGuardianOnline.Unique Guardian scales health by original member count
+PASS SlayerGuardianOnline.Bomb cannot erase Slayer Guardian
+PASS SlayerGuardianOnline.Hammer warns before lethal impact
+PASS SlayerGuardianOnline.Hammer impact uses independent challenge down
+PASS SlayerGuardianOnline.Existing invulnerability blocks lethal hammer
+PASS SlayerGuardianOnline.Hammer radius does not hit distant member
+PASS SlayerGuardianOnline.Fireball explodes and leaves finite burn area
+PASS SlayerGuardianOnline.Fireball burn ticks after explosion without becoming lethal
+PASS SlayerGuardianOnline.Flame path crosses borrowed stone obstacle
+PASS SlayerGuardianOnline.Guardian victory opens shop instead of ending ordinary arena
+10/10 passed
