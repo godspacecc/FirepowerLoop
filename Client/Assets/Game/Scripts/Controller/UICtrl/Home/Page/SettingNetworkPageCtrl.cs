@@ -14,6 +14,8 @@ namespace Game
     {
         private CancellationTokenSource loadCancellation;
         private int lastPending = -1;
+        /// <summary>保留反馈语义，切换语言时不重新载入或覆盖正在输入的地址。</summary>
+        private string gameFeedbackKey, resourceFeedbackKey;
         /// <summary>仅页面可见期间跟踪发送器版本，页面关闭不会取消后台上传。</summary>
         private int lastDiagnosticRevision = -1;
         private SettingNetworkPageUI UI => BaseUI as SettingNetworkPageUI;
@@ -26,7 +28,7 @@ namespace Game
             UI.ResourceServerResetButton.onClick.AddListener(ResetResourceServer);
             UI.DiagnosticClearButton.onClick.AddListener(ClearDiagnostic);
             UI.DiagnosticUploadButton.onClick.AddListener(UploadDiagnostic);
-            this.RegisterEvent<LanguageChangedEvent>(_ => RefreshDiagnostic()).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<LanguageChangedEvent>(_ => { RefreshFeedback(); RefreshDiagnostic(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
         protected override void OnShow()
@@ -52,9 +54,10 @@ namespace Game
                 var resource = await this.GetUtility<IResourceServerConfigProvider>().LoadAsync(token);
                 if (token.IsCancellationRequested || UI == null) return;
                 UI.GameServerInput.text = game.Success ? game.Endpoint.ToString() : string.Empty;
-                UI.GameServerFeedback.text = game.Success ? "下次联机时使用此地址。" : "读取联机服务器地址失败。";
+                gameFeedbackKey = game.Success ? "game_hint" : "game_load_failed";
                 UI.ResourceServerInput.text = resource.Success ? resource.ResourceServer : string.Empty;
-                UI.ResourceServerFeedback.text = resource.Success ? "下次启动时用于资源更新。" : "读取资源服务器地址失败。";
+                resourceFeedbackKey = resource.Success ? "resource_hint" : "resource_load_failed";
+                RefreshFeedback();
             }
             catch (OperationCanceledException)
             {
@@ -68,16 +71,18 @@ namespace Game
             if (provider != null && provider.TrySaveEndpoint(UI.GameServerInput.text, out var endpoint, out _))
             {
                 UI.GameServerInput.text = endpoint.ToString();
-                UI.GameServerFeedback.text = "已保存，下次联机生效。";
+                gameFeedbackKey = "game_saved";
+                RefreshFeedback();
                 return;
             }
-            UI.GameServerFeedback.text = "地址格式无效，请输入 IP 或域名:端口。";
+            gameFeedbackKey = "game_invalid";
+            RefreshFeedback();
         }
 
         private void ResetGameServer()
         {
             var provider = this.GetUtility<INetworkConfigProvider>() as IResettableNetworkConfigProvider;
-            if (provider == null || !provider.TryResetEndpoint(out _)) { UI.GameServerFeedback.text = "恢复默认失败。"; return; }
+            if (provider == null || !provider.TryResetEndpoint(out _)) { gameFeedbackKey = "reset_failed"; RefreshFeedback(); return; }
             RestartLoad();
         }
 
@@ -86,16 +91,26 @@ namespace Game
             if (this.GetUtility<IResourceServerConfigProvider>().TrySave(UI.ResourceServerInput.text, out var server, out _))
             {
                 UI.ResourceServerInput.text = server;
-                UI.ResourceServerFeedback.text = "已保存，下次启动时生效。";
+                resourceFeedbackKey = "resource_saved";
+                RefreshFeedback();
                 return;
             }
-            UI.ResourceServerFeedback.text = "地址格式无效，请输入完整 HTTP/HTTPS 地址。";
+            resourceFeedbackKey = "resource_invalid";
+            RefreshFeedback();
         }
 
         private void ResetResourceServer()
         {
-            if (!this.GetUtility<IResourceServerConfigProvider>().TryReset(out _)) { UI.ResourceServerFeedback.text = "恢复默认失败。"; return; }
+            if (!this.GetUtility<IResourceServerConfigProvider>().TryReset(out _)) { resourceFeedbackKey = "reset_failed"; RefreshFeedback(); return; }
             RestartLoad();
+        }
+
+        /// <summary>只刷新反馈文案，不改动用户尚未应用的输入。</summary>
+        private void RefreshFeedback()
+        {
+            if (UI == null) return;
+            if (gameFeedbackKey != null) UI.GameServerFeedback.text = Loc.T("ui.settings.network." + gameFeedbackKey);
+            if (resourceFeedbackKey != null) UI.ResourceServerFeedback.text = Loc.T("ui.settings.network." + resourceFeedbackKey);
         }
 
         private void RefreshDiagnostic()

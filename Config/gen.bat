@@ -93,6 +93,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generate
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-generated.ps1" -Source "%SERVER_CODE_STAGE%" -Destination "%SERVER_CODE_DIR%" -Pattern "*.cs" || exit /b 1
 
 echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" || exit /b 1
 echo === Generation complete ===
 echo Client code: "%CLIENT_CODE_DIR%"
 echo Client data: "%CLIENT_DATA_DIR%"

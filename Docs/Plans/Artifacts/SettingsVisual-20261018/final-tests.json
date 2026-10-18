@@ -1,0 +1,162 @@
+{
+  "IndependentUiGenerationMigrationTests": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3540,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.2963236"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.GameplayGuideHudPrefab_HasGeneratedPauseButtonAndStableBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0460000"
+      },
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiControllers_KeepPrefabPaths",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.1110000"
+      },
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SearchContainerPrefab_ViewportUsesRectMask2D",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingNetworkPagePrefab_HasGeneratedDiagnosticBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingsPrefabs_HaveGeneratedBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      }
+    ]
+  },
+  "SettingsVisualTests": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3540,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.5691392"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SettingsVisualTests.AudioValues_FollowSlidersAndModelOnReopen",
+        "Status": "Passed",
+        "Duration": "00:00:00.4490000"
+      },
+      {
+        "Name": "Game.Tests.SettingsVisualTests.ClickingCurrentPage_DoesNotCancelItsPendingInput",
+        "Status": "Passed",
+        "Duration": "00:00:00.0510000"
+      },
+      {
+        "Name": "Game.Tests.SettingsVisualTests.FormalViews_HaveResolvedGeneratedReferencesAndValueSelectors",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SettingsVisualTests.LegacyTheme_DoesNotOverwriteAuthoredSettingsControls",
+        "Status": "Passed",
+        "Duration": "00:00:00.0170000"
+      },
+      {
+        "Name": "Game.Tests.SettingsVisualTests.NetworkFeedback_ChangesLanguageWithoutReplacingPendingAddress",
+        "Status": "Passed",
+        "Duration": "00:00:00.0390000"
+      },
+      {
+        "Name": "Game.Tests.SettingsVisualTests.PageSwitchAndReopen_KeepAnExplicitSelectedAppearance",
+        "Status": "Passed",
+        "Duration": "00:00:00.0200000"
+      }
+    ]
+  },
+  "SimpleBoxUiGenerationMigrationTests": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3540,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1715786"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.FloatPrefab_UsesEmbeddedTemplateAndGeneratedBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0160000"
+      },
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.HostPrefabs_KeepItemTemplateReferences",
+        "Status": "Passed",
+        "Duration": "00:00:00.0260000"
+      },
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.HotKeyRefresh_ClickSubmitsOnlyCurrentRebindActionOnReusedRow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0960000"
+      },
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.RuntimeLogRefresh_RepaintsAllTextsOnReusedRow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.SimpleBoxPrefabs_HaveCollectorGeneratedViewAndStableBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SimpleBoxUiGenerationMigrationTests.SimpleBoxPrefabs_KeepFixedLayoutValues",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      }
+    ]
+  },
+  "MobileGeneralEntryUiTests": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3540,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1131964"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.MobileGeneralEntryUiTests.CancelReturnsToPopulatedGeneralPageAndSidebarHasNoHiddenTabGap",
+        "Status": "Passed",
+        "Duration": "00:00:00.1170000"
+      }
+    ]
+  },
+  "SettingTheme": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3540,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6020255"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.UIThemeTests.ThemePreservesSettingBackdropAndAuthoredPanel",
+        "Status": "Passed",
+        "Duration": "00:00:00.4420000"
+      }
+    ]
+  }
+}

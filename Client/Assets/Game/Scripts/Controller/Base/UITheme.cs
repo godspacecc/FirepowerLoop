@@ -202,8 +202,8 @@ namespace Game
             int instanceSuffix = name.IndexOf('(');
             string screenName = instanceSuffix >= 0 ? name.Substring(0, instanceSuffix).Trim() : name;
             // 开始页、联机登录及手机大厅以正式 Prefab 的风景样式和触控尺寸为准，避免 Awake 覆盖配色与布局。
-            return screenName == "Setting" ||
-                   screenName == "Inventory" || screenName == "Message";
+            // 设置页的街机配色和触控尺寸由正式 Prefab 持有，避免旧主题覆盖。
+            return screenName == "Inventory" || screenName == "Message";
         }
 
         private static bool IsPrimaryAction(string name)

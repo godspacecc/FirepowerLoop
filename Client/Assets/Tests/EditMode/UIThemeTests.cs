@@ -77,13 +77,15 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ThemePreservesSettingBackdropAndThemesItsPanel()
+        public void ThemePreservesSettingBackdropAndAuthoredPanel()
         {
             var root = PrefabUtility.LoadPrefabContents("Assets/Game/Prefabs/UI/Home/Setting.prefab");
             try
             {
                 var backdrop = root.GetComponent<Image>();
                 var expectedColor = backdrop.color;
+                var panel = root.transform.Find("Panel").GetComponent<Image>();
+                var panelColor = panel.color;
                 Assert.That(expectedColor, Is.EqualTo(new Color(0f, 0f, 0f, 0.45f)));
 
                 UITheme.Apply(root);
@@ -91,8 +93,7 @@ namespace Game.Tests
 
                 Assert.That(backdrop.color, Is.EqualTo(expectedColor), "主题不得加深设置窗口的全屏遮罩。");
                 Assert.That(backdrop.raycastTarget, Is.True);
-                Assert.That(root.transform.Find("Panel").GetComponent<Image>().color,
-                    Is.EqualTo(UITheme.SurfaceRaised), "保留遮罩不应取消中央面板的主题样式。");
+                Assert.That(panel.color, Is.EqualTo(panelColor), "设置面板样式由正式Prefab持有。");
             }
             finally
             {

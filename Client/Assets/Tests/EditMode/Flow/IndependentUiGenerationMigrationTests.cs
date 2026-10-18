@@ -35,6 +35,12 @@ namespace Game.Tests
             AssertPrefab<LoadingUI>("Assets/Game/Prefabs/UI/Common/Loading.prefab", LoadingFields);
             AssertPrefab<PlayerConditionHudUI>("Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab", PlayerConditionHudFields);
             AssertPrefab<GameplayGuideHudUI>("Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab", GameplayGuideHudFields);
+            SettingsPrefabs_HaveGeneratedBindings();
+        }
+
+        [Test]
+        public void SettingsPrefabs_HaveGeneratedBindings()
+        {
             AssertPrefab<SettingUI>("Assets/Game/Prefabs/UI/Home/Setting.prefab", SettingFields);
             AssertPrefab<SettingGeneralPageUI>("Assets/Game/Prefabs/UI/Home/Page/SettingGeneral.prefab", SettingGeneralFields);
             AssertPrefab<SettingAudioPageUI>("Assets/Game/Prefabs/UI/Home/Page/SettingAudio.prefab", SettingAudioFields);
@@ -92,7 +98,7 @@ namespace Game.Tests
                 var collectedValue = ResolveReferenceObject(collected.gameObject, field.FieldType);
 
                 Assert.That(field.FieldType, Is.EqualTo(expected.DeclaredType), expected.Name);
-                Assert.That(collected.TypeName, Is.EqualTo(expected.ActualType.FullName), expected.Name);
+                Assert.That(collected.TypeName, Is.EqualTo(expected.CollectedType.FullName), expected.Name);
                 Assert.That(viewValue, Is.Not.Null, expected.Name);
                 Assert.That(collected.gameObject, Is.Not.Null, expected.Name);
                 Assert.That(collectedValue, Is.Not.Null, expected.Name);
@@ -170,18 +176,19 @@ namespace Game.Tests
                 ?.Invoke(ctrl, null);
         }
 
-        private static FieldExpectation F(string name, Type declaredType, Type actualType, string path, string objectName)
+        private static FieldExpectation F(string name, Type declaredType, Type actualType, string path, string objectName, Type collectedType = null)
         {
-            return new FieldExpectation(name, declaredType, actualType, path, objectName);
+            return new FieldExpectation(name, declaredType, actualType, path, objectName, collectedType ?? actualType);
         }
 
         private readonly struct FieldExpectation
         {
-            public FieldExpectation(string name, Type declaredType, Type actualType, string path, string objectName)
+            public FieldExpectation(string name, Type declaredType, Type actualType, string path, string objectName, Type collectedType)
             {
                 Name = name;
                 DeclaredType = declaredType;
                 ActualType = actualType;
+                CollectedType = collectedType;
                 Path = path;
                 ObjectName = objectName;
             }
@@ -189,55 +196,96 @@ namespace Game.Tests
             public string Name { get; }
             public Type DeclaredType { get; }
             public Type ActualType { get; }
+            /// <summary>收集器可保存基类类型；与实际组件类型分别校验，避免把合法多态引用误判为错绑。</summary>
+            public Type CollectedType { get; }
             public string Path { get; }
             public string ObjectName { get; }
         }
 
         private static readonly FieldExpectation[] ExpeditionHudFields =
         {
-            F("TimerText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/TimerText", "TimerText"),
-            F("StatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/StatusText", "StatusText"),
-            F("ResourceText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/ResourceText", "ResourceText"),
+            // 桌面字段保留TMP_Text声明，手机布局由独立引用明确约束，禁止漏绑或串绑两套面板。
+            F("TimerText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/TimerText", "TimerText", typeof(TMP_Text)),
+            F("StatusText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/StatusText", "StatusText", typeof(TMP_Text)),
+            F("ResourceText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/ResourceText", "ResourceText", typeof(TMP_Text)),
             F("BtnReturn", typeof(Button), typeof(Button), "ExpeditionHud/HudPanel/BtnReturn", "BtnReturn"),
-            F("ReturnButtonText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/BtnReturn/Text", "Text")
+            F("ReturnButtonText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/BtnReturn/Text", "Text", typeof(TMP_Text)),
+            F("DesktopHudPanel", typeof(GameObject), typeof(GameObject), "ExpeditionHud/HudPanel", "HudPanel"),
+            F("MobileHudPanel", typeof(GameObject), typeof(GameObject), "ExpeditionHud/MobileHudPanel", "MobileHudPanel"),
+            F("MobileBtnReturn", typeof(Button), typeof(Button), "ExpeditionHud/MobileHudPanel/BtnReturn", "BtnReturn"),
+            F("MobileTimerText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/TimerText", "TimerText"),
+            F("MobileStatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/StatusText", "StatusText"),
+            F("MobileResourceText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/ResourceText", "ResourceText"),
+            F("MobileReturnButtonText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/BtnReturn/Text", "Text")
         };
 
         private static readonly FieldExpectation[] LoadingFields =
         {
-            F("BaseArtwork", typeof(GameObject), typeof(GameObject), "Loading/BaseArtwork", "BaseArtwork"),
-            F("MapArtwork", typeof(GameObject), typeof(GameObject), "Loading/BackgroundArtwork", "BackgroundArtwork"),
-            F("BaseTitle", typeof(GameObject), typeof(GameObject), "Loading/BaseTitle", "BaseTitle"),
-            F("MapTitle", typeof(GameObject), typeof(GameObject), "Loading/Title", "Title"),
-            F("MessageText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/Message", "Message"),
-            F("ProgressSlider", typeof(Slider), typeof(Slider), "Loading/Progress", "Progress"),
-            F("PercentText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/Percent", "Percent"),
-            F("ErrorRoot", typeof(GameObject), typeof(GameObject), "Loading/ErrorRoot", "ErrorRoot"),
-            F("ErrorText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/ErrorRoot/ErrorText", "ErrorText"),
-            F("BtnBack", typeof(Button), typeof(Button), "Loading/ErrorRoot/BackButton", "BackButton")
+            F("BtnBack", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/BackButton", "BackButton"),
+            F("ErrorRoot", typeof(GameObject), typeof(GameObject), "Loading/MapRoot/ErrorRoot", "ErrorRoot"),
+            F("ErrorText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/ErrorRoot/ErrorText", "ErrorText"),
+            F("MessageText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/Message", "Message"),
+            F("PercentText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/Percent", "Percent"),
+            F("ProgressSlider", typeof(Slider), typeof(Slider), "Loading/MapRoot/Progress", "Progress"),
+            F("BaseArtwork", typeof(GameObject), typeof(GameObject), "Loading/MapRoot/BaseArtwork", "BaseArtwork"),
+            F("MapArtwork", typeof(GameObject), typeof(GameObject), "Loading/MapRoot/BackgroundArtwork", "BackgroundArtwork"),
+            F("BaseTitle", typeof(GameObject), typeof(GameObject), "Loading/MapRoot/BaseTitle", "BaseTitle"),
+            F("MapTitle", typeof(GameObject), typeof(GameObject), "Loading/MapRoot/Title", "Title"),
+            F("MapRoot", typeof(GameObject), typeof(GameObject), "Loading/MapRoot", "MapRoot"),
+            F("DownloadRoot", typeof(GameObject), typeof(GameObject), "Loading/DownloadRoot", "DownloadRoot"),
+            F("DownloadPercentText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/DownloadRoot/Panel/DownloadPercent", "DownloadPercent"),
+            F("DownloadMessageText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/DownloadRoot/Panel/DownloadMessage", "DownloadMessage"),
+            F("DownloadSlider", typeof(Slider), typeof(Slider), "Loading/DownloadRoot/Panel/DownloadProgress", "DownloadProgress"),
+            F("BtnDownloadClose", typeof(Button), typeof(Button), "Loading/DownloadRoot/Panel/DownloadClose", "DownloadClose"),
+            F("BtnCopyLog", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/CopyLogButton", "CopyLogButton"),
+            F("CopyStatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/ErrorRoot/CopyStatusText", "CopyStatusText"),
         };
 
         private static readonly FieldExpectation[] PlayerConditionHudFields =
         {
+            // 明确锁定桌面与手机HUD的现有对象路径，保留每个字段的类型与对象同一性检查。
+            F("AmmoBackground", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/AmmoBackground", "AmmoBackground"),
+            F("AmmoFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/AmmoFill", "AmmoFill"),
             F("ContentRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot", "ContentRoot"),
-            F("PowerRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/PowerRoot", "PowerRoot"),
-            F("PowerFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/PowerRoot/PowerFill", "PowerFill"),
-            F("PowerIconText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerIconText", "PowerIconText"),
-            F("PowerValueText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerValueText", "PowerValueText"),
-            F("WaterRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/WaterRoot", "WaterRoot"),
-            F("WaterFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/WaterRoot/WaterFill", "WaterFill"),
-            F("WaterIconText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterIconText", "WaterIconText"),
-            F("WaterValueText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterValueText", "WaterValueText"),
-            F("TemperatureRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TemperatureRoot", "TemperatureRoot"),
-            F("TemperatureFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureFill", "TemperatureFill"),
-            F("TemperatureIconText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureIconText", "TemperatureIconText"),
-            F("TemperatureValueText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureValueText", "TemperatureValueText"),
-            F("TiliRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TiliRoot", "TiliRoot"),
-            F("TiliFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TiliRoot/TiliFill", "TiliFill"),
-            F("TiliIconText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliIconText", "TiliIconText"),
-            F("TiliValueText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliValueText", "TiliValueText"),
-            F("HealthRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/HealthRoot", "HealthRoot"),
             F("HealthFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/HealthRoot/HealthFill", "HealthFill"),
-            F("HealthIconText", typeof(TMP_Text), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/HealthRoot/HealthIconText", "HealthIconText")
+            F("HealthIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/HealthRoot/HealthIconText", "HealthIconText"),
+            F("HealthRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/HealthRoot", "HealthRoot"),
+            F("HudLayoutArea", typeof(RectTransform), typeof(RectTransform), "PlayerConditionHud/HudLayoutArea", "HudLayoutArea"),
+            F("MobileContentRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot", "MobileContentRoot"),
+            F("MobileHealthFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot/HealthFill", "HealthFill"),
+            F("MobileHealthIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot/HealthIconText", "HealthIconText"),
+            F("MobileHealthRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot", "HealthRoot"),
+            F("MobilePowerFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot/PowerFill", "PowerFill"),
+            F("MobilePowerIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot/PowerIcon", "PowerIcon"),
+            F("MobilePowerRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot", "PowerRoot"),
+            F("MobileStatusRow", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow", "MobileStatusRow"),
+            F("MobileTemperatureBulb", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot/ThermometerIcon/Bulb", "Bulb"),
+            F("MobileTemperatureRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot", "TemperatureRoot"),
+            F("MobileTemperatureStem", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot/ThermometerIcon/Stem", "Stem"),
+            F("MobileTiliFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot/TiliFill", "TiliFill"),
+            F("MobileTiliIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot/TiliIcon", "TiliIcon"),
+            F("MobileTiliRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot", "TiliRoot"),
+            F("MobileWaterFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot/WaterFill", "WaterFill"),
+            F("MobileWaterIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot/WaterIcon", "WaterIcon"),
+            F("MobileWaterRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot", "WaterRoot"),
+            F("PowerFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/PowerRoot/PowerFill", "PowerFill"),
+            F("PowerIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerIconText", "PowerIconText"),
+            F("PowerRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/PowerRoot", "PowerRoot"),
+            F("PowerValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerValueText", "PowerValueText"),
+            F("TemperatureFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureFill", "TemperatureFill"),
+            F("TemperatureIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureIconText", "TemperatureIconText"),
+            F("TemperatureRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TemperatureRoot", "TemperatureRoot"),
+            F("TemperatureValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureValueText", "TemperatureValueText"),
+            F("TiliFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TiliRoot/TiliFill", "TiliFill"),
+            F("TiliIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliIconText", "TiliIconText"),
+            F("TiliRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TiliRoot", "TiliRoot"),
+            F("TiliValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliValueText", "TiliValueText"),
+            F("WaterFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/WaterRoot/WaterFill", "WaterFill"),
+            F("WaterIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterIconText", "WaterIconText"),
+            F("WaterRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/WaterRoot", "WaterRoot"),
+            F("WaterValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterValueText", "WaterValueText"),
+            F("WeaponIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/WeaponIcon", "WeaponIcon"),
+            F("WeaponInfoRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot", "WeaponInfoRoot"),
         };
 
         private static readonly FieldExpectation[] GameplayGuideHudFields =
@@ -245,7 +293,11 @@ namespace Game.Tests
             F("GuideRoot", typeof(GameObject), typeof(GameObject), "GameplayGuideHud/GuideRoot", "GuideRoot"),
             F("GuideText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/GuideRoot/GuideText", "GuideText"),
             F("VersionText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/VersionText", "VersionText"),
-            F("BtnPause", typeof(Button), typeof(Button), "GameplayGuideHud/BtnPause", "BtnPause")
+            F("BtnPause", typeof(Button), typeof(Button), "GameplayGuideHud/BtnPause", "BtnPause"),
+            F("MobileBtnPause", typeof(Button), typeof(Button), "GameplayGuideHud/MobilePauseArea/MobileBtnPause", "MobileBtnPause"),
+            F("MobilePauseArea", typeof(RectTransform), typeof(RectTransform), "GameplayGuideHud/MobilePauseArea", "MobilePauseArea"),
+            F("InteractionRoot", typeof(GameObject), typeof(GameObject), "GameplayGuideHud/InteractionRoot", "InteractionRoot"),
+            F("InteractionText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/InteractionRoot/InteractionText", "InteractionText")
         };
 
         private static readonly FieldExpectation[] SettingFields =
@@ -258,7 +310,8 @@ namespace Game.Tests
             F("SettingAudioRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingAudio", "SettingAudio"),
             F("SettingControlsRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingControls", "SettingControls"),
             F("SettingGeneralRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingGeneral", "SettingGeneral"),
-            F("SettingNetworkRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingNetwork", "SettingNetwork")
+            F("SettingNetworkRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingNetwork", "SettingNetwork"),
+            F("SettingMobileRoot", typeof(GameObject), typeof(GameObject), "Setting/Panel/Content/SettingMobile", "SettingMobile")
         };
 
         private static readonly FieldExpectation[] SettingGeneralFields =
@@ -269,6 +322,11 @@ namespace Game.Tests
 
         private static readonly FieldExpectation[] SettingAudioFields =
         {
+            F("MasterVolumeValue", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "SettingAudio/MasterVolume/VolumeValue", "VolumeValue"),
+            F("MusicVolumeValue", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "SettingAudio/MusicVolume/VolumeValue", "VolumeValue"),
+            F("SoundVolumeValue", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "SettingAudio/SoundVolume/VolumeValue", "VolumeValue"),
+            F("MuteThumb", typeof(RectTransform), typeof(RectTransform), "SettingAudio/Mute/Toggle/SwitchTrack/Thumb", "Thumb"),
+            F("MuteTrack", typeof(Image), typeof(Image), "SettingAudio/Mute/Toggle/SwitchTrack", "SwitchTrack"),
             F("MasterVolumeSlider", typeof(Slider), typeof(Slider), "SettingAudio/MasterVolume/Slider", "Slider"),
             F("MusicVolumeSlider", typeof(Slider), typeof(Slider), "SettingAudio/MusicVolume/Slider", "Slider"),
             F("MuteToggle", typeof(Toggle), typeof(Toggle), "SettingAudio/Mute/Toggle", "Toggle"),
@@ -304,25 +362,97 @@ namespace Game.Tests
         {
             F("ActionRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot/BagOnlyActionRoot", "BagOnlyActionRoot"),
             F("BackgroundImage", typeof(Image), typeof(Image), "Bag", "Bag"),
+            F("BagScrollRect", typeof(ScrollRect), typeof(ScrollRect), "Bag/ManagementRoot/InventoryPageRoot/Storage/BagViewport", "BagViewport"),
+            F("BtnClose", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BtnClose", "BtnClose"),
             F("BtnDrop", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnDrop", "BagOnlyBtnDrop"),
+            F("BtnManagementClose", typeof(Button), typeof(Button), "Bag/ManagementRoot/BtnManagementClose", "BtnManagementClose"),
+            F("BtnMove", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/BtnMove", "BtnMove"),
+            F("BtnPageBackpack", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageBackpack", "BtnPageBackpack"),
+            F("BtnPageEquipment", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageEquipment", "BtnPageEquipment"),
+            F("BtnPageJournal", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageJournal", "BtnPageJournal"),
+            F("BtnPageMap", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageMap", "BtnPageMap"),
+            F("BtnPageStatus", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageStatus", "BtnPageStatus"),
+            F("BtnPageTasks", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageTasks", "BtnPageTasks"),
             F("BtnSplit", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnSplit", "BagOnlyBtnSplit"),
             F("BtnUse", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnUse", "BagOnlyBtnUse"),
             F("CapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyCapacityText", "BagOnlyCapacityText"),
+            F("CompanionRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot", "BagOnlyRoot"),
             F("DetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailAmountText", "BagOnlyDetailAmountText"),
             F("DetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailDescText", "BagOnlyDetailDescText"),
+            F("DetailIcon", typeof(Image), typeof(Image), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/DetailIcon", "DetailIcon"),
             F("DetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailNameText", "BagOnlyDetailNameText"),
             F("DetailRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot/BagOnlyDetailRoot", "BagOnlyDetailRoot"),
-            F("MeleeWeaponSlotBox", typeof(EquipmentSlotBoxUI), typeof(EquipmentSlotBoxUI), "Bag/BagOnlyRoot/BagOnlyEquipmentRow/BagOnlyMeleeEquipmentGroup/BagOnlyMeleeWeaponSlotBox", "BagOnlyMeleeWeaponSlotBox"),
+            F("EmptyDetailHint", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/EmptyDetailHint", "EmptyDetailHint"),
+            F("EquipmentPage", typeof(EquipmentManagementPageUI), typeof(EquipmentManagementPageUI), "Bag/ManagementRoot/EquipmentManagement", "EquipmentManagement"),
+            F("FullActionRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot", "FullActionRoot"),
+            F("FullBtnDrop", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnDrop", "FullBtnDrop"),
+            F("FullBtnSplit", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnSplit", "FullBtnSplit"),
+            F("FullBtnUse", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnUse", "FullBtnUse"),
+            F("FullCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/FullCapacityText", "FullCapacityText"),
+            F("FullDetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailAmountText", "FullDetailAmountText"),
+            F("FullDetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailDescText", "FullDetailDescText"),
+            F("FullDetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailNameText", "FullDetailNameText"),
+            F("FullDetailRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot", "FullDetailRoot"),
+            F("FullPlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/ManagementRoot/InventoryPageRoot/Storage/BagViewport/FullPlayerBagList", "FullPlayerBagList"),
+            F("InventoryPageRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot", "InventoryPageRoot"),
+            F("ManagementRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot", "ManagementRoot"),
+            F("PageTitleText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/PageTitleText", "PageTitleText"),
+            F("PlaceholderRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/PlaceholderRoot", "PlaceholderRoot"),
             F("PlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/BagOnlyRoot/BagOnlyPlayerBagSlotRoot", "BagOnlyPlayerBagSlotRoot"),
-            F("RangedWeaponSlotBox", typeof(EquipmentSlotBoxUI), typeof(EquipmentSlotBoxUI), "Bag/BagOnlyRoot/BagOnlyEquipmentRow/BagOnlyRangedEquipmentGroup/BagOnlyRangedWeaponSlotBox", "BagOnlyRangedWeaponSlotBox")
+            F("PocketCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketCapacityText", "PocketCapacityText"),
+            F("PocketList", typeof(CustomListView), typeof(CustomListView), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketList", "PocketList"),
+            F("PocketNoticeText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketNoticeText", "PocketNoticeText"),
+            F("SelectedBackpack", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageBackpack/Selected", "Selected"),
+            F("SelectedEquipment", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageEquipment/Selected", "Selected"),
+            F("SelectedJournal", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageJournal/Selected", "Selected"),
+            F("SelectedMap", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageMap/Selected", "Selected"),
+            F("SelectedStatus", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageStatus/Selected", "Selected"),
+            F("SelectedTasks", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageTasks/Selected", "Selected"),
+            F("TransferAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferAmountText", "TransferAmountText"),
+            F("StatusPage", typeof(StatusManagementPageUI), typeof(StatusManagementPageUI), "Bag/ManagementRoot/StatusManagement", "StatusManagement"),
+            F("MapPage", typeof(MapManagementPageUI), typeof(MapManagementPageUI), "Bag/ManagementRoot/MapManagement", "MapManagement"),
+            F("CompanionDetailIcon", typeof(Image), typeof(Image), "Bag/BagOnlyRoot/BagOnlyDetailRoot/CompanionDetailIcon", "CompanionDetailIcon"),
+            F("BtnStore", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BtnStore", "BtnStore"),
+            F("WarehouseCompanionRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot", "WarehouseCompanionRoot"),
+            F("WarehousePlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/WarehouseCompanionRoot/BagOnlyPlayerBagSlotRoot", "BagOnlyPlayerBagSlotRoot"),
+            F("WarehouseCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyCapacityText", "BagOnlyCapacityText"),
+            F("WarehouseDetailRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot", "BagOnlyDetailRoot"),
+            F("WarehouseDetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailNameText", "BagOnlyDetailNameText"),
+            F("WarehouseDetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailDescText", "BagOnlyDetailDescText"),
+            F("WarehouseDetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailAmountText", "BagOnlyDetailAmountText"),
+            F("WarehouseDetailIcon", typeof(Image), typeof(Image), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/CompanionDetailIcon", "CompanionDetailIcon"),
+            F("WarehouseActionRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot", "BagOnlyActionRoot"),
+            F("WarehouseBtnUse", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnUse", "BagOnlyBtnUse"),
+            F("WarehouseBtnSplit", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnSplit", "BagOnlyBtnSplit"),
+            F("WarehouseBtnDrop", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnDrop", "BagOnlyBtnDrop"),
+            F("WarehouseBtnStore", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BtnStore", "BtnStore"),
+            F("TasksPage", typeof(TasksManagementPageUI), typeof(TasksManagementPageUI), "Bag/ManagementRoot/TasksManagement", "TasksManagement"),
+            F("JournalPage", typeof(JournalManagementPageUI), typeof(JournalManagementPageUI), "Bag/ManagementRoot/JournalManagement", "JournalManagement"),
+            F("TransferQuantityRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/TransferQuantityRoot", "TransferQuantityRoot"),
+            F("TransferQuantityTitleText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferQuantityTitleText", "TransferQuantityTitleText"),
+            F("TransferItemNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferItemNameText", "TransferItemNameText"),
+            F("BtnTransferDecrease", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferDecrease", "BtnTransferDecrease"),
+            F("BtnTransferIncrease", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferIncrease", "BtnTransferIncrease"),
+            F("BtnTransferCancel", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferCancel", "BtnTransferCancel"),
+            F("BtnTransferConfirm", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferConfirm", "BtnTransferConfirm"),
+            F("BackpackCharacterPreview", typeof(RawImage), typeof(RawImage), "Bag/ManagementRoot/InventoryPageRoot/CharacterPanel/CharacterPreview", "CharacterPreview"),
         };
 
         private static readonly FieldExpectation[] WarehouseFields =
         {
             F("BackgroundImage", typeof(Image), typeof(Image), "Warehouse", "Warehouse"),
-            F("BtnClose", typeof(Button), typeof(Button), "Warehouse/WarehousePanel/BtnClose", "BtnClose"),
+            F("BtnClose", typeof(Button), typeof(Button), "Warehouse/BtnClose", "BtnClose"),
             F("WarehouseList", typeof(CustomListView), typeof(CustomListView), "Warehouse/WarehousePanel/WarehouseScrollRect/Viewport/WarehouseSlotRoot", "WarehouseSlotRoot"),
             F("WarehouseScrollRect", typeof(ScrollRect), typeof(ScrollRect), "Warehouse/WarehousePanel/WarehouseScrollRect", "WarehouseScrollRect"),
+            F("CapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/CapacityText", "CapacityText"),
+            F("DetailRoot", typeof(GameObject), typeof(GameObject), "Warehouse/WarehousePanel/DetailRoot", "DetailRoot"),
+            F("DetailIcon", typeof(Image), typeof(Image), "Warehouse/WarehousePanel/DetailRoot/DetailIcon", "DetailIcon"),
+            F("DetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailNameText", "DetailNameText"),
+            F("DetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailDescText", "DetailDescText"),
+            F("DetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailAmountText", "DetailAmountText"),
+            F("BtnTake", typeof(Button), typeof(Button), "Warehouse/WarehousePanel/BtnTake", "BtnTake"),
+            F("BtnExpand", typeof(Button), typeof(Button), "Warehouse/WarehousePanel/BtnExpand", "BtnExpand"),
+            F("ExpansionCostText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/ExpansionCostText", "ExpansionCostText"),
         };
 
         private static readonly FieldExpectation[] SearchContainerFields =
@@ -331,7 +461,8 @@ namespace Game.Tests
             F("SearchRootRect", typeof(RectTransform), typeof(RectTransform), "SearchContainer/SearchRoot", "SearchRoot"),
             F("SearchScrollRect", typeof(ScrollRect), typeof(ScrollRect), "SearchContainer/SearchRoot", "SearchRoot"),
             F("SearchList", typeof(LoopGridLayoutGroup), typeof(LoopGridLayoutGroup), "SearchContainer/SearchRoot/Viewport/SlotRoot", "SlotRoot"),
-            F("SearchViewport", typeof(RectTransform), typeof(RectTransform), "SearchContainer/SearchRoot/Viewport", "Viewport")
+            F("SearchViewport", typeof(RectTransform), typeof(RectTransform), "SearchContainer/SearchRoot/Viewport", "Viewport"),
+            F("BtnClose", typeof(Button), typeof(Button), "SearchContainer/SearchRoot/BtnClose", "BtnClose"),
         };
     }
 }

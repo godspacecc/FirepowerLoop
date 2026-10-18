@@ -65,6 +65,8 @@ namespace Game
 
         private void ShowPage(Page page)
         {
+            // 重复选择当前页不重新进入，保留未完成的按键录入或地址编辑。
+            if (current != null && lastPage == page) return;
             current?.Hide();
             lastPage = page;
             current = page switch
@@ -81,9 +83,14 @@ namespace Game
             SetTabState(UI.NetworkTabButton, page == Page.Network);
         }
 
+        /// <summary>选中分页保持可操作，以Prefab配置的强调色显示，避免把当前页表现成禁用项。</summary>
         private static void SetTabState(Button button, bool selected)
         {
-            button.interactable = !selected;
+            button.interactable = true;
+            button.image.color = selected ? button.colors.selectedColor : button.colors.normalColor;
+            button.GetComponentInChildren<TMPro.TMP_Text>().color = selected
+                ? new UnityEngine.Color32(18, 52, 60, 255)
+                : new UnityEngine.Color32(243, 235, 216, 255);
         }
 
         internal static bool ShouldShowDesktopDisplaySettings(UnityEngine.RuntimePlatform platform)

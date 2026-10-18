@@ -85,7 +85,7 @@ namespace Game.Tests
         public void SimpleBoxPrefabs_KeepFixedLayoutValues()
         {
             AssertLayout(RuntimeLogItemBoxPath, false, new Vector2(812f, 36f), new Vector2(812f, 36f));
-            AssertLayout(HotKeyItemBoxPath, true, new Vector2(560f, 42f), null);
+            AssertLayout(HotKeyItemBoxPath, true, new Vector2(864f, 82f), new Vector2(-1f, 82f));
         }
 
         [Test]
@@ -219,7 +219,7 @@ namespace Game.Tests
             return row;
         }
 
-        private static TMP_Text CreateText(Transform parent, string name)
+        private static TextMeshProUGUI CreateText(Transform parent, string name)
         {
             var text = new GameObject(name, typeof(RectTransform)).AddComponent<TextMeshProUGUI>();
             text.transform.SetParent(parent, false);
@@ -468,8 +468,8 @@ namespace Game.Tests
 
         private static readonly FieldExpectation[] HotKeyItemFields =
         {
-            F("ActionNameText", typeof(TMP_Text), typeof(TextMeshProUGUI), "HotKeyItemBox/ActionNameText", "ActionNameText", "GlobalObjectId_V1-1-33cac0bbdb1427947ac764abdfaca0dc-6472032488254085280-0"),
-            F("BindingText", typeof(TMP_Text), typeof(TextMeshProUGUI), "HotKeyItemBox/BindingText", "BindingText", "GlobalObjectId_V1-1-33cac0bbdb1427947ac764abdfaca0dc-5700933094101811989-0"),
+            F("ActionNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "HotKeyItemBox/ActionNameText", "ActionNameText", "GlobalObjectId_V1-1-33cac0bbdb1427947ac764abdfaca0dc-6472032488254085280-0"),
+            F("BindingText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "HotKeyItemBox/BindingText", "BindingText", "GlobalObjectId_V1-1-33cac0bbdb1427947ac764abdfaca0dc-5700933094101811989-0"),
             F("RebindButton", typeof(Button), typeof(Button), "HotKeyItemBox/RebindButton", "RebindButton", "GlobalObjectId_V1-1-33cac0bbdb1427947ac764abdfaca0dc-7226248874544816665-0")
         };
 

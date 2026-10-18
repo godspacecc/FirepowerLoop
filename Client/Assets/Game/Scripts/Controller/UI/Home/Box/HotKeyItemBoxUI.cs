@@ -6,8 +6,8 @@ namespace Game
 {
     public class HotKeyItemBoxUI : BaseBoxUI
     {
-        public TMP_Text ActionNameText;
-        public TMP_Text BindingText;
+        public TextMeshProUGUI ActionNameText;
+        public TextMeshProUGUI BindingText;
         public Button RebindButton;
     }
 }

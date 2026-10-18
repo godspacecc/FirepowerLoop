@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-18",
+  "project": "E:/GitHub/FirepowerLoop/Client",
+  "render": {
+    "source": "formal Prefabs in an isolated PreviewScene with sample values",
+    "images": 16,
+    "textOverflowCount": 0,
+    "languages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "resolutions": [
+      "1920x1080",
+      "2340x1080",
+      "1440x1080"
+    ],
+    "deviceAcceptance": false
+  },
+  "finalTargetedPassingTests": {
+    "IndependentUiGenerationMigrationTests": 6,
+    "SettingsVisualTests": 6,
+    "SimpleBoxUiGenerationMigrationTests": 6,
+    "MobileGeneralEntryUiTests": 1,
+    "UIThemeTests.ThemePreservesSettingBackdropAndAuthoredPanel": 1
+  },
+  "otherFailuresObserved": [],
+  "generation": "Config/gen.bat succeeded for both targets and localization; publisher repeated-run hash check passed",
+  "review": "Scoped independent review; HUD and inherited UI expectations updated against deserialized Prefabs, exact reference checks retained.",
+  "editor": "Boot clean; EditMode; not compiling; timeScale restored to 1",
+  "playerBuildRun": false
+}

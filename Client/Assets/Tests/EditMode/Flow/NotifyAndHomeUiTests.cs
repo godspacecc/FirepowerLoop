@@ -748,6 +748,8 @@ namespace Game.Tests
             Assert.That(displayApplier.LastWindowMode, Is.EqualTo(FullScreenMode.Windowed));
             Assert.That(Game.Interface.GetModel<DisplaySettingsModel>().CurrentResolutionCode.Value, Is.EqualTo("1920x1080"));
             Assert.That(Game.Interface.GetModel<DisplaySettingsModel>().CurrentWindowMode.Value, Is.EqualTo(FullScreenMode.Windowed));
+            // 显示立即生效，落盘由设置系统延迟合并；检查文件前显式完成待保存内容。
+            Assert.That(Game.Interface.GetSystem<SettingsSystem>().Flush(), Is.True);
             Assert.That(settingsStore.LastSaved.Display.ResolutionCode, Is.EqualTo("1920x1080"));
             Assert.That(settingsStore.LastSaved.Display.WindowMode, Is.EqualTo(FullScreenMode.Windowed));
         }
@@ -1164,6 +1166,13 @@ namespace Game.Tests
             audioUi.MasterVolumeSlider = CreateSlider(audioRoot.transform, "MasterVolume");
             audioUi.MusicVolumeSlider = CreateSlider(audioRoot.transform, "MusicVolume");
             audioUi.SoundVolumeSlider = CreateSlider(audioRoot.transform, "SoundVolume");
+            audioUi.MasterVolumeValue = CreateText(audioRoot.transform, "MasterVolumeValue");
+            audioUi.MusicVolumeValue = CreateText(audioRoot.transform, "MusicVolumeValue");
+            audioUi.SoundVolumeValue = CreateText(audioRoot.transform, "SoundVolumeValue");
+            audioUi.MuteThumb = new GameObject("MuteThumb", typeof(RectTransform)).GetComponent<RectTransform>();
+            audioUi.MuteThumb.SetParent(audioRoot.transform, false);
+            audioUi.MuteTrack = new GameObject("MuteTrack", typeof(RectTransform), typeof(Image)).GetComponent<Image>();
+            audioUi.MuteTrack.transform.SetParent(audioRoot.transform, false);
             audioUi.MuteToggle = CreateToggle(audioRoot.transform, "Mute");
             audioUi.TestSoundButton = CreateButton(audioRoot.transform, "TestSound", out _);
             audioUi.ResetButton = CreateButton(audioRoot.transform, "ResetButton", out _);
@@ -1209,7 +1218,7 @@ namespace Game.Tests
             return root;
         }
 
-        private static TMP_Text CreateText(Transform parent, string name)
+        private static TextMeshProUGUI CreateText(Transform parent, string name)
         {
             var go = new GameObject(name, typeof(RectTransform));
             go.transform.SetParent(parent, false);

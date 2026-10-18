@@ -2,6 +2,8 @@
 
 `Config/` 是客户端和服务端 Luban 配置的唯一权威源。
 
+设置界面新增文案以 `Localization/settings-visuals.json` 为权威源；`gen.bat` 完成双端生成后调用 `publish-localization.ps1`，仅发布其中声明的键到客户端两种语言 JSON，其它历史文案保留。
+
 - Schema：`Defines/*.xml`
 - 数据：`DataCsv/*.csv`
 - 目标与组：`luban.conf`
