@@ -512,6 +512,8 @@ message OnlineArcadeBattleInfo
     repeated int64 SlayerEnterReady = 54;
     repeated int64 SlayerSkipReady = 55;
     int32 SlayerOutcome = 56;
+	// 成功炸弹的有界表现记录；只读，不改变伤害判定。
+	repeated OnlineArcadeBombBlastInfo BombBlasts = 57;
 }
 
 // Opcode 12085
@@ -768,4 +770,14 @@ message G2C_OperateOnlineSlayerMart // ISessionResponse
  bool Accepted = 4;
  bool Replayed = 5;
  OnlineArcadeRunSnapshot Run = 6;
+}
+
+// Opcode 12105
+message OnlineArcadeBombBlastInfo
+{
+ int64 Sequence = 1;
+ int64 PlayerId = 2;
+ float PositionX = 3;
+ float PositionZ = 4;
+ int32 RoundGeneration = 5;
 }

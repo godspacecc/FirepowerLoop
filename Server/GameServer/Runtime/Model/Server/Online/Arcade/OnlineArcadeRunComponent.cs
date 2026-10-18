@@ -381,6 +381,10 @@ namespace ET.Server
         public long NextProjectileRuntimeId = 1;
         public long NextDropRuntimeId = 1;
         public long BattleRevision = 1;
+        /// <summary>本场成功炸弹序列；仅同步表现，不保存到轮前存档。</summary>
+        public long NextBombBlastSequence = 1;
+        /// <summary>保留最近三十二次成功使用，覆盖快照间的连续炸弹。</summary>
+        public List<OnlineArcadeBombBlastRuntime> BombBlasts { get; } = new();
         public long LastTickAt;
         public float WaveTransitionSeconds;
         public bool WaveClearAwarded;
@@ -434,6 +438,20 @@ namespace ET.Server
         public readonly Dictionary<long, EntityRef<OnlineArcadeRunActor>> Runs = new();
         public readonly Dictionary<long, long> RunIdsByPlayer = new();
         public readonly Dictionary<long, long> RunIdsByRoom = new();
+    }
+
+    /// <summary>一次已成功消耗的炸弹表现，坐标锁定在使用瞬间。</summary>
+    [EnableClass]
+    public sealed class OnlineArcadeBombBlastRuntime
+    {
+        /// <summary>本场单调递增身份。</summary>
+        public long Sequence;
+        /// <summary>实际使用者。</summary>
+        public long PlayerId;
+        /// <summary>权威地面坐标。</summary>
+        public float PositionX, PositionZ;
+        /// <summary>防止旧轮效果进入新地图。</summary>
+        public int RoundGeneration;
     }
 
     /// <summary>联机街机权威工作态与最近提交点；不自行写盘或发奖，Battle 现场仅存在于当前进程。</summary>

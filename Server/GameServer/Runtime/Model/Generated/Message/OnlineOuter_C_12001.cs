@@ -1969,6 +1969,12 @@ namespace ET
         [MemoryPackOrder(55)]
         public int SlayerOutcome { get; set; }
 
+        /// <summary>
+        /// 成功炸弹的有界表现记录；只读，不改变伤害判定。
+        /// </summary>
+        [MemoryPackOrder(56)]
+        public List<OnlineArcadeBombBlastInfo> BombBlasts { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2032,6 +2038,7 @@ namespace ET
             this.SlayerEnterReady.Clear();
             this.SlayerSkipReady.Clear();
             this.SlayerOutcome = default;
+            this.BombBlasts.Clear();
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3052,6 +3059,47 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeBombBlastInfo)]
+    public partial class OnlineArcadeBombBlastInfo : MessageObject
+    {
+        public static OnlineArcadeBombBlastInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeBombBlastInfo), isFromPool) as OnlineArcadeBombBlastInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public long Sequence { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long PlayerId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float PositionX { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float PositionZ { get; set; }
+
+        [MemoryPackOrder(4)]
+        public int RoundGeneration { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Sequence = default;
+            this.PlayerId = default;
+            this.PositionX = default;
+            this.PositionZ = default;
+            this.RoundGeneration = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3116,5 +3164,6 @@ namespace ET
         public const ushort OnlineSlayerMartSupportInfo = 12102;
         public const ushort C2G_OperateOnlineSlayerMart = 12103;
         public const ushort G2C_OperateOnlineSlayerMart = 12104;
+        public const ushort OnlineArcadeBombBlastInfo = 12105;
     }
 }

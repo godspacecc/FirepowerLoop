@@ -21,6 +21,8 @@ namespace Game
         private readonly Dictionary<long, int> shieldChargesByPlayer = new();
         /// <summary>本场已观察的成功补给实例 ID；首次快照只建基线，离场清空，区域切换保留。</summary>
         private readonly HashSet<long> observedSupplyPickupIds = new();
+        /// <summary>炸弹只播放权威成功记录，双人共用表现且不从库存差推断。</summary>
+        private readonly OnlineBombPresentationState bombPresentation = new();
         private readonly HashSet<long> seenIds = new();
         private IArcadeCombatViewPort view;
         private ArcadeConfigCatalogDefinition catalog;
@@ -294,6 +296,7 @@ namespace Game
             SyncProjectiles(inRoom ? Array.Empty<OnlineArcadeProjectileSnapshot>() : battle.Projectiles);
             SyncDrops(inRoom ? Array.Empty<OnlineArcadeDropSnapshot>() : battle.Drops);
             SyncSupplyPickups(battle.SupplyPickups, selfId, supplyBaseline);
+            bombPresentation.Observe(battle.BombBlasts,supplyBaseline,battle.RoundGeneration,!inRoom,view.PlayBombExplosion);
         }
 
         /// <summary>只播放本机新增成功拾取记录；先标记身份再回调，重复或历史通知不重复反馈。</summary>
@@ -549,6 +552,7 @@ namespace Game
             enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); seenIds.Clear(); nextPresentationId = 1;
             shieldChargesByPlayer.Clear();
             observedSupplyPickupIds.Clear();
+            bombPresentation.Clear();
             hasLocalFireBaseline = false;
             lastLocalFireSequence = 0;
         }

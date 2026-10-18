@@ -2243,6 +2243,11 @@ namespace ET.Server
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             if (battle.AwaitingExit || player.InTreasureRoom || record.Bombs <= 0) return;
             record.Bombs--;
+            // 只记录已确认消耗；先记录再清怪，避免清波同步漏掉表现。
+            battle.BombBlasts.Add(new OnlineArcadeBombBlastRuntime { Sequence = battle.NextBombBlastSequence++,
+                PlayerId = player.PlayerId, PositionX = player.PositionX, PositionZ = player.PositionZ,
+                RoundGeneration = battle.RoundGeneration });
+            if (battle.BombBlasts.Count > 32) battle.BombBlasts.RemoveAt(0);
             if (IslandFor(battle) != null) player.InvulnerabilitySeconds = Math.Max(player.InvulnerabilitySeconds, 3f);
             if (player.InTreasureRoom) return;
             battle.EnemyIterationIds.Clear();
@@ -2989,6 +2994,13 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = TimeInfo.Instance.ServerNow();
+            foreach (var receipt in source.BombBlasts)
+            {
+                var copy = OnlineArcadeBombBlastInfo.Create();
+                copy.Sequence = receipt.Sequence; copy.PlayerId = receipt.PlayerId;
+                copy.PositionX = receipt.PositionX; copy.PositionZ = receipt.PositionZ;
+                copy.RoundGeneration = receipt.RoundGeneration; battle.BombBlasts.Add(copy);
+            }
             battle.CrateIds.AddRange(source.Crates.Keys.OrderBy(id => id));
             foreach (var receipt in source.SupplyPickups)
             {
@@ -3179,6 +3191,13 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = source.ServerTime;
+            foreach (var receipt in source.BombBlasts)
+            {
+                var copy = OnlineArcadeBombBlastInfo.Create();
+                copy.Sequence = receipt.Sequence; copy.PlayerId = receipt.PlayerId;
+                copy.PositionX = receipt.PositionX; copy.PositionZ = receipt.PositionZ;
+                copy.RoundGeneration = receipt.RoundGeneration; battle.BombBlasts.Add(copy);
+            }
             battle.CrateIds.AddRange(source.CrateIds);
             foreach (var receipt in source.SupplyPickups)
             {

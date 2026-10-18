@@ -63,7 +63,7 @@ namespace Game
         void SetPlayerFireSequence(int sequence, float attackIntervalSeconds) => SetPlayerFireSequence(sequence);
         /// <summary>投射物确实引爆时播放表现反馈，不参与范围伤害结算。</summary>
         void PlayProjectileExplosion(Vector2 position, float radius) { }
-        /// <summary>局内快捷炸弹成功消耗后播放独立的清场音效。</summary>
+        /// <summary>局内快捷炸弹成功消耗后播放三阶段视觉与独立清场音效。</summary>
         void PlayBombExplosion(Vector2 position) { }
         /// <summary>已结算的单次命中声音，不参与伤害与投射物生命周期。</summary>
         void PlayImpactSound(Vector2 position, bool melee) { }
@@ -286,6 +286,7 @@ namespace Game
             hazardPresentation = null;
             ClearBulletImpacts();
             ClearProjectileBlasts();
+            ClearBombVisuals();
             ReleaseContent();
             remoteGeneration++;
             obstacleVisualGeneration++;
@@ -498,10 +499,11 @@ namespace Game
             else lastExplosionSoundTime = now;
         }
 
-        /// <summary>每次成功使用快捷炸弹播放一次；不与投射物爆炸限频共用状态。</summary>
+        /// <summary>每次权威成功使用播放一次视觉和音效；不与投射物爆炸限频共用状态。</summary>
         public void PlayBombExplosion(Vector2 position)
         {
             if (root == null || mapRoot == null) return;
+            PlayBombVisual(position);
             var worldPosition = mapRoot.TransformPoint(new Vector3(position.x, 0.75f, position.y));
             Game.Interface.GetSystem<AudioSystem>()?.PlaySoundAt("ArcadeBombExplosion", worldPosition, 40f, 30);
         }
@@ -806,6 +808,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            bombBlasts?.Tick(deltaTime);
             TickExitCues(deltaTime);
             playerMotor?.TickCombatFeedback(deltaTime);
             foreach (RemotePlayerEntry entry in remotePlayers.Values) entry.View?.Tick(deltaTime);

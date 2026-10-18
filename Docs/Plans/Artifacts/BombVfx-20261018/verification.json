@@ -1,0 +1,148 @@
+{
+  "date": "2026-10-18",
+  "scope": "Single-player and two-player bomb presentation only. Existing consumption, instant clearing, boss immunity and island protection rules retained.",
+  "implementation": {
+    "visual": "Flash, soft glow, expanding feathered ring, radial shards, sparks and sparse dust; one-second recycle; four pooled instances owned by the map.",
+    "online": "Server emits bounded successful-use receipts (32), generated protocol field 57/message 12105. Client uses per-round sequence deduplication; baseline/hidden-region/old-round records are not played.",
+    "generationCommand": "Tools/gen-protocol.ps1",
+    "authoring": "Tools/Unity/ArcadeBombAuthoring.cs"
+  },
+  "verification": {
+    "server": {
+      "filter": "ArcadeBombChecks",
+      "maximum": 5,
+      "passed": 5,
+      "failed": 0
+    },
+    "unity": [
+      {
+        "filter": "ArcadeBombPresentationTests",
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3591,
+          "PassedTests": 6,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:00.8403545"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.BaselineAndRepeatedSnapshotsDoNotReplay",
+            "Status": "Passed",
+            "Duration": "00:00:00.0480000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.HiddenRegionDoesNotReplayWhenReturning",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.NewRoundBaselineDoesNotReplayHistory",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.OldRoundCannotRaiseNewRoundSequence",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.ProtocolProjectionKeepsOriginIndependentFromMutableMessage",
+            "Status": "Passed",
+            "Duration": "00:00:00.0750000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.RapidUsesRemainDistinct",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          }
+        ]
+      },
+      {
+        "filter": "ArcadeBombVisualTests",
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3591,
+          "PassedTests": 4,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:00.8499719"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeBombVisualTests.FlashExpandsThenLeavesClearGround",
+            "Status": "Passed",
+            "Duration": "00:00:00.0180000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombVisualTests.PausedTickDoesNotAdvanceShockwave",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombVisualTests.RapidUsesStayBoundedAndDisposeReleasesAll",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombVisualTests.TemplateHasNoGameplayComponentsAndIsBoundToContent",
+            "Status": "Passed",
+            "Duration": "00:00:00.1910000"
+          }
+        ]
+      },
+      {
+        "filter": "Game.Tests.ArcadeOpeningFlowTests.BombProtectsForThreeSecondsWithoutShorteningLongProtectionOrRewardingInvalidUse",
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3591,
+          "PassedTests": 1,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.0593488"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.BombProtectsForThreeSecondsWithoutShorteningLongProtectionOrRewardingInvalidUse",
+            "Status": "Passed",
+            "Duration": "00:00:00.5130000"
+          }
+        ]
+      },
+      {
+        "filter": "Game.Tests.ArcadeCasualFinalBossTests.FinalBossBomb_DoesNotClearBossOrOpenVictoryExit",
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3591,
+          "PassedTests": 1,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.2754451"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeCasualFinalBossTests.FinalBossBomb_DoesNotClearBossOrOpenVictoryExit",
+            "Status": "Passed",
+            "Duration": "00:00:00.7110000"
+          }
+        ]
+      }
+    ],
+    "shaderMessages": [],
+    "review": "Independent review caught cross-round reset bug; regression reproduced failure then passed after fix; re-review cleared blocker.",
+    "render": {
+      "file": "three-stages.png",
+      "timesSeconds": [
+        0.05,
+        0.25,
+        0.8
+      ],
+      "mode": "Isolated Unity PreviewScene, production prefab and presentation class; sample tiled ground and player prefab; preview bloom .5; gameplay camera pitch72 distance16 FOV45. This is not a live match screenshot."
+    },
+    "notRun": [
+      "Live two-client network session",
+      "Player Build"
+    ]
+  },
+  "workspace": "Unrelated staged exit changes, dash/route changes, DLL/font caches and TimeManager changes pre-existed and remain untouched by this task. No commit or push performed."
+}

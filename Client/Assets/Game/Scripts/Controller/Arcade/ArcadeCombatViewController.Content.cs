@@ -53,6 +53,9 @@ namespace Game
                 projectileBlastTemplate = candidate.Find("ProjectileBlast");
                 if (projectileBlastTemplate == null) throw new InvalidOperationException("公共投射物爆炸模板缺失");
                 contentTemplates=candidate;
+                var bombTemplate=candidate.Find("BombBlast");
+                if(bombTemplate==null)throw new InvalidOperationException("公共炸弹三阶段模板缺失");
+                BindBombVisual(bombTemplate);
                 SyncContentEnvironment();
                 treasureVisualIdentity=null; exitVisualIdentity=null;
                 SetTreasureRoom(contentTreasure,contentInRoom,contentDiscovered,contentOpen,contentRemaining);
@@ -66,6 +69,7 @@ namespace Game
                 if(generation==contentGeneration)
                 {
                     contentLoadFailed = true;
+                    ClearBombVisuals();
                     exitCues.Clear(); exitCueElapsed = 0;
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;

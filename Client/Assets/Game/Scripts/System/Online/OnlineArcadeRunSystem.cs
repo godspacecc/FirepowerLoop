@@ -481,7 +481,8 @@ namespace Game
                 source.RoundLayoutId,source.RoundLayoutVersion,source.RoundGeneration,source.RoundLoading,source.RoundLoadError,
                 source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated,
                 new OnlineSlayerMartRegionSnapshot(source.SlayerMartRulesVersion,source.SlayerMartActive,source.SlayerMartVisit,source.SlayerMartGeneration,source.SlayerMartRevision,
-                    source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds),new OnlineSlayerChallengeSnapshot(source.SlayerPhase,source.SlayerDowns,source.SlayerDownLimit,source.SlayerCashCollected,source.SlayerOutcome,source.SlayerExitVotes,source.SlayerEnterReady,source.SlayerSkipReady));
+                    source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds),new OnlineSlayerChallengeSnapshot(source.SlayerPhase,source.SlayerDowns,source.SlayerDownLimit,source.SlayerCashCollected,source.SlayerOutcome,source.SlayerExitVotes,source.SlayerEnterReady,source.SlayerSkipReady),
+                source.BombBlasts.Select(b=>new OnlineArcadeBombBlastSnapshot(b.Sequence,b.PlayerId,b.PositionX,b.PositionZ,b.RoundGeneration)).ToArray());
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

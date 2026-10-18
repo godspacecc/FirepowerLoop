@@ -258,7 +258,8 @@ namespace Game
             IReadOnlyList<int> crateIds = null, IReadOnlyList<OnlineArcadeDropSnapshot> supplyPickups = null,
             float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
-            float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null)
+            float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
+            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null)
         {
             SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
@@ -275,6 +276,7 @@ namespace Game
             TreasureRewardIds = Array.AsReadOnly(Copy(treasureRewardIds));
             CrateIds = Array.AsReadOnly(Copy(crateIds));
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
+            BombBlasts = Array.AsReadOnly(Copy(bombBlasts));
             SpawnedInWave = spawnedInWave; TotalInWave = totalInWave;
             DifficultyPlayerCount = difficultyPlayerCount; BattleRevision = battleRevision; ServerTime = serverTime;
             Players = Array.AsReadOnly(Copy(players)); Enemies = Array.AsReadOnly(Copy(enemies));
@@ -327,6 +329,8 @@ namespace Game
         public IReadOnlyList<OnlineArcadeDropSnapshot> Drops { get; }
         /// <summary>本场成功补给记录的只读副本；不包含满额拒绝或自然移除。</summary>
         public IReadOnlyList<OnlineArcadeDropSnapshot> SupplyPickups { get; }
+        /// <summary>服务器成功使用炸弹的有界只读记录。</summary>
+        public IReadOnlyList<OnlineArcadeBombBlastSnapshot> BombBlasts { get; }
         public bool IsChallenge { get; }
         public string ChallengeId { get; }
         public float ChallengeSeconds { get; }
