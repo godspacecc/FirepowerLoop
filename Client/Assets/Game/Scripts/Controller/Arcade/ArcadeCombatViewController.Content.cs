@@ -62,6 +62,7 @@ namespace Game
                 if(generation==contentGeneration)
                 {
                     contentLoadFailed = true;
+                    exitCues.Clear(); exitCueElapsed = 0;
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;
                     bulletImpactTemplate=null;
@@ -112,8 +113,6 @@ namespace Game
         /// <summary>名称由实际场地配置身份绑定；4/15 仅描述现有蛮兽 Boss 与混合敌群，不实现后续场地。</summary>
         private static string DestinationKey(int number) => number >= 1 && number <= 20
             ? "ui.arcade.theme." + number : "ui.arcade.destination.next";
-        private string RoundDestinationKey(int number) => roundLayout == null || contentArena == 1
-            ? ArcadeIslandLayout.GetNameKey(number) : "ui.arcade." + roundLayout.ThemeKey + ".round." + number;
         private void ReleaseContent()
         {
             contentGeneration++;

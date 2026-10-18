@@ -1068,6 +1068,46 @@ namespace Game
         /// </summary>
         public static string ArcadeAbandonConfirm => Loc.T("ui.arcade.abandon_confirm");
         /// <summary>
+        /// 军械库入口 · 清场后开启
+        /// </summary>
+        public static string ArcadeArmoryLocked => Loc.T("ui.arcade.armory.locked");
+        /// <summary>
+        /// 军械库入口 · 可进入
+        /// </summary>
+        public static string ArcadeArmoryOpen => Loc.T("ui.arcade.armory.open");
+        /// <summary>
+        /// 巴比伦遗迹 · 第1图
+        /// </summary>
+        public static string ArcadeBabylonRound1 => Loc.T("ui.arcade.babylon.round.1");
+        /// <summary>
+        /// 巴比伦遗迹 · 第2图
+        /// </summary>
+        public static string ArcadeBabylonRound2 => Loc.T("ui.arcade.babylon.round.2");
+        /// <summary>
+        /// 巴比伦遗迹 · 第3图
+        /// </summary>
+        public static string ArcadeBabylonRound3 => Loc.T("ui.arcade.babylon.round.3");
+        /// <summary>
+        /// 巴比伦遗迹 · 第4图
+        /// </summary>
+        public static string ArcadeBabylonRound4 => Loc.T("ui.arcade.babylon.round.4");
+        /// <summary>
+        /// 弹幕林地 · 第1图
+        /// </summary>
+        public static string ArcadeBarrageRound1 => Loc.T("ui.arcade.barrage.round.1");
+        /// <summary>
+        /// 弹幕林地 · 第2图
+        /// </summary>
+        public static string ArcadeBarrageRound2 => Loc.T("ui.arcade.barrage.round.2");
+        /// <summary>
+        /// 弹幕林地 · 第3图
+        /// </summary>
+        public static string ArcadeBarrageRound3 => Loc.T("ui.arcade.barrage.round.3");
+        /// <summary>
+        /// 弹幕林地 · 第4图
+        /// </summary>
+        public static string ArcadeBarrageRound4 => Loc.T("ui.arcade.barrage.round.4");
+        /// <summary>
         /// 炸弹
         /// </summary>
         public static string ArcadeBomb => Loc.T("ui.arcade.bomb");
@@ -1096,9 +1136,41 @@ namespace Game
         /// </summary>
         public static string ArcadeChallengeReady => Loc.T("ui.arcade.challenge.ready");
         /// <summary>
+        /// 废弃教堂 · 第1图
+        /// </summary>
+        public static string ArcadeChurchRound1 => Loc.T("ui.arcade.church.round.1");
+        /// <summary>
+        /// 废弃教堂 · 第2图
+        /// </summary>
+        public static string ArcadeChurchRound2 => Loc.T("ui.arcade.church.round.2");
+        /// <summary>
+        /// 废弃教堂 · 第3图
+        /// </summary>
+        public static string ArcadeChurchRound3 => Loc.T("ui.arcade.church.round.3");
+        /// <summary>
+        /// 废弃教堂 · 第4图
+        /// </summary>
+        public static string ArcadeChurchRound4 => Loc.T("ui.arcade.church.round.4");
+        /// <summary>
         /// 继续下一竞技场
         /// </summary>
         public static string ArcadeContinue => Loc.T("ui.arcade.continue");
+        /// <summary>
+        /// 捐出一命
+        /// </summary>
+        public static string ArcadeCoopDonate => Loc.T("ui.arcade.coop.donate");
+        /// <summary>
+        /// 捐出一命 [{0}]
+        /// </summary>
+        public static string ArcadeCoopDonatePc(object arg0) => Loc.T("ui.arcade.coop.donate_pc", arg0);
+        /// <summary>
+        /// 倒地恢复 {0}秒 · 靠近可加速
+        /// </summary>
+        public static string ArcadeCoopDowned(object arg0) => Loc.T("ui.arcade.coop.downed", arg0);
+        /// <summary>
+        /// 队友救援中 ×{1} · {0}秒
+        /// </summary>
+        public static string ArcadeCoopHelped(object arg0, object arg1) => Loc.T("ui.arcade.coop.helped", arg0, arg1);
         /// <summary>
         /// 冲刺
         /// </summary>
@@ -1216,6 +1288,30 @@ namespace Game
         /// </summary>
         public static string ArcadeErrorOpen => Loc.T("ui.arcade.error.open");
         /// <summary>
+        /// 庄园中庭 · 第1图
+        /// </summary>
+        public static string ArcadeEstateRound1 => Loc.T("ui.arcade.estate.round.1");
+        /// <summary>
+        /// 庄园中庭 · 第2图
+        /// </summary>
+        public static string ArcadeEstateRound2 => Loc.T("ui.arcade.estate.round.2");
+        /// <summary>
+        /// 庄园中庭 · 第3图
+        /// </summary>
+        public static string ArcadeEstateRound3 => Loc.T("ui.arcade.estate.round.3");
+        /// <summary>
+        /// 庄园中庭 · 第4图
+        /// </summary>
+        public static string ArcadeEstateRound4 => Loc.T("ui.arcade.estate.round.4");
+        /// <summary>
+        /// 进入第 {0} 轮
+        /// </summary>
+        public static string ArcadeExitEnterRound(object arg0) => Loc.T("ui.arcade.exit.enter_round", arg0);
+        /// <summary>
+        /// 胜利出口
+        /// </summary>
+        public static string ArcadeExitVictory => Loc.T("ui.arcade.exit.victory");
+        /// <summary>
         /// 返回俯视
         /// </summary>
         public static string ArcadeFirstPersonExit => Loc.T("ui.arcade.first_person.exit");
@@ -1236,6 +1332,86 @@ namespace Game
         /// </summary>
         public static string ArcadeFirstPersonRemainingMobile(object arg0) => Loc.T("ui.arcade.first_person.remaining_mobile", arg0);
         /// <summary>
+        /// 要塞庭院 · 第1图
+        /// </summary>
+        public static string ArcadeFortRound1 => Loc.T("ui.arcade.fort.round.1");
+        /// <summary>
+        /// 要塞庭院 · 第2图
+        /// </summary>
+        public static string ArcadeFortRound2 => Loc.T("ui.arcade.fort.round.2");
+        /// <summary>
+        /// 要塞庭院 · 第3图
+        /// </summary>
+        public static string ArcadeFortRound3 => Loc.T("ui.arcade.fort.round.3");
+        /// <summary>
+        /// 要塞庭院 · 第4图
+        /// </summary>
+        public static string ArcadeFortRound4 => Loc.T("ui.arcade.fort.round.4");
+        /// <summary>
+        /// 邪异花园 · 第1图
+        /// </summary>
+        public static string ArcadeGardenRound1 => Loc.T("ui.arcade.garden.round.1");
+        /// <summary>
+        /// 邪异花园 · 第2图
+        /// </summary>
+        public static string ArcadeGardenRound2 => Loc.T("ui.arcade.garden.round.2");
+        /// <summary>
+        /// 邪异花园 · 第3图
+        /// </summary>
+        public static string ArcadeGardenRound3 => Loc.T("ui.arcade.garden.round.3");
+        /// <summary>
+        /// 邪异花园 · 第4图
+        /// </summary>
+        public static string ArcadeGardenRound4 => Loc.T("ui.arcade.garden.round.4");
+        /// <summary>
+        /// 幽雾墓园 · 第1图
+        /// </summary>
+        public static string ArcadeGraveyardRound1 => Loc.T("ui.arcade.graveyard.round.1");
+        /// <summary>
+        /// 幽雾墓园 · 第2图
+        /// </summary>
+        public static string ArcadeGraveyardRound2 => Loc.T("ui.arcade.graveyard.round.2");
+        /// <summary>
+        /// 幽雾墓园 · 第3图
+        /// </summary>
+        public static string ArcadeGraveyardRound3 => Loc.T("ui.arcade.graveyard.round.3");
+        /// <summary>
+        /// 幽雾墓园 · 第4图
+        /// </summary>
+        public static string ArcadeGraveyardRound4 => Loc.T("ui.arcade.graveyard.round.4");
+        /// <summary>
+        /// 巨石环阵 · 第1图
+        /// </summary>
+        public static string ArcadeHengeRound1 => Loc.T("ui.arcade.henge.round.1");
+        /// <summary>
+        /// 巨石环阵 · 第2图
+        /// </summary>
+        public static string ArcadeHengeRound2 => Loc.T("ui.arcade.henge.round.2");
+        /// <summary>
+        /// 巨石环阵 · 第3图
+        /// </summary>
+        public static string ArcadeHengeRound3 => Loc.T("ui.arcade.henge.round.3");
+        /// <summary>
+        /// 巨石环阵 · 第4图
+        /// </summary>
+        public static string ArcadeHengeRound4 => Loc.T("ui.arcade.henge.round.4");
+        /// <summary>
+        /// 冰湖农庄 · 第1图
+        /// </summary>
+        public static string ArcadeHomesteadRound1 => Loc.T("ui.arcade.homestead.round.1");
+        /// <summary>
+        /// 冰湖农庄 · 第2图
+        /// </summary>
+        public static string ArcadeHomesteadRound2 => Loc.T("ui.arcade.homestead.round.2");
+        /// <summary>
+        /// 冰湖农庄 · 第3图
+        /// </summary>
+        public static string ArcadeHomesteadRound3 => Loc.T("ui.arcade.homestead.round.3");
+        /// <summary>
+        /// 冰湖农庄 · 第4图
+        /// </summary>
+        public static string ArcadeHomesteadRound4 => Loc.T("ui.arcade.homestead.round.4");
+        /// <summary>
         /// 瞄准
         /// </summary>
         public static string ArcadeHudAimStick => Loc.T("ui.arcade.hud.aim_stick");
@@ -1243,6 +1419,14 @@ namespace Game
         /// 竞技场 {0}
         /// </summary>
         public static string ArcadeHudArena(object arg0) => Loc.T("ui.arcade.hud.arena", arg0);
+        /// <summary>
+        /// 军械库 {0} 秒 · 武器30秒后消失 · 绿色出口返回
+        /// </summary>
+        public static string ArcadeHudArmory(object arg0) => Loc.T("ui.arcade.hud.armory", arg0);
+        /// <summary>
+        /// 军械库
+        /// </summary>
+        public static string ArcadeHudArmoryMember => Loc.T("ui.arcade.hud.armory_member");
         /// <summary>
         /// 限时挑战 · 剩余 {0} 秒
         /// </summary>
@@ -1252,7 +1436,7 @@ namespace Game
         /// </summary>
         public static string ArcadeHudEliminated => Loc.T("ui.arcade.hud.eliminated");
         /// <summary>
-        /// 走进绿色出口继续
+        /// 前往金色箭头下的发光出口，确认前进
         /// </summary>
         public static string ArcadeHudExit => Loc.T("ui.arcade.hud.exit");
         /// <summary>
@@ -1404,9 +1588,97 @@ namespace Game
         /// </summary>
         public static string ArcadeHudWeaponGroup => Loc.T("ui.arcade.hud.weapon_group");
         /// <summary>
+        /// 确认前往{0}？未拾取的物品不会带入下一张地图。
+        /// </summary>
+        public static string ArcadeIslandExitConfirm(object arg0) => Loc.T("ui.arcade.island.exit.confirm", arg0);
+        /// <summary>
+        /// 前往下一张地图
+        /// </summary>
+        public static string ArcadeIslandExitTitle => Loc.T("ui.arcade.island.exit.title");
+        /// <summary>
+        /// 离开本局
+        /// </summary>
+        public static string ArcadeIslandLeaveTitle => Loc.T("ui.arcade.island.leave.title");
+        /// <summary>
+        /// 正在准备地图与本轮安全节点…
+        /// </summary>
+        public static string ArcadeIslandLoading => Loc.T("ui.arcade.island.loading");
+        /// <summary>
+        /// 清场完成 · 前往发光出口确认下一轮
+        /// </summary>
+        public static string ArcadeIslandPickup => Loc.T("ui.arcade.island.pickup");
+        /// <summary>
+        /// 将从第{0}轮「{1}」开始前恢复。本轮及其后未提交的宝藏收益、消耗、生命和临时效果变化将整体回滚。
+        /// </summary>
+        public static string ArcadeIslandResume(object arg0, object arg1) => Loc.T("ui.arcade.island.resume", arg0, arg1);
+        /// <summary>
+        /// 登陆滩头
+        /// </summary>
+        public static string ArcadeIslandRound1 => Loc.T("ui.arcade.island.round.1");
+        /// <summary>
+        /// 礁石湾口
+        /// </summary>
+        public static string ArcadeIslandRound2 => Loc.T("ui.arcade.island.round.2");
+        /// <summary>
+        /// 沉船浅滩
+        /// </summary>
+        public static string ArcadeIslandRound3 => Loc.T("ui.arcade.island.round.3");
+        /// <summary>
+        /// 营火高地
+        /// </summary>
+        public static string ArcadeIslandRound4 => Loc.T("ui.arcade.island.round.4");
+        /// <summary>
+        /// 锦鲤桥庭 · 第1图
+        /// </summary>
+        public static string ArcadeKoiRound1 => Loc.T("ui.arcade.koi.round.1");
+        /// <summary>
+        /// 锦鲤桥庭 · 第2图
+        /// </summary>
+        public static string ArcadeKoiRound2 => Loc.T("ui.arcade.koi.round.2");
+        /// <summary>
+        /// 锦鲤桥庭 · 第3图
+        /// </summary>
+        public static string ArcadeKoiRound3 => Loc.T("ui.arcade.koi.round.3");
+        /// <summary>
+        /// 锦鲤桥庭 · 第4图
+        /// </summary>
+        public static string ArcadeKoiRound4 => Loc.T("ui.arcade.koi.round.4");
+        /// <summary>
         /// 无法返回街机主界面，请重试；本局数据已保留。
         /// </summary>
         public static string ArcadeMenuFailed => Loc.T("ui.arcade.menu.failed");
+        /// <summary>
+        /// 路边旅馆 · 第1图
+        /// </summary>
+        public static string ArcadeMotelRound1 => Loc.T("ui.arcade.motel.round.1");
+        /// <summary>
+        /// 路边旅馆 · 第2图
+        /// </summary>
+        public static string ArcadeMotelRound2 => Loc.T("ui.arcade.motel.round.2");
+        /// <summary>
+        /// 路边旅馆 · 第3图
+        /// </summary>
+        public static string ArcadeMotelRound3 => Loc.T("ui.arcade.motel.round.3");
+        /// <summary>
+        /// 路边旅馆 · 第4图
+        /// </summary>
+        public static string ArcadeMotelRound4 => Loc.T("ui.arcade.motel.round.4");
+        /// <summary>
+        /// 安保博物馆 · 第1图
+        /// </summary>
+        public static string ArcadeMuseumRound1 => Loc.T("ui.arcade.museum.round.1");
+        /// <summary>
+        /// 安保博物馆 · 第2图
+        /// </summary>
+        public static string ArcadeMuseumRound2 => Loc.T("ui.arcade.museum.round.2");
+        /// <summary>
+        /// 安保博物馆 · 第3图
+        /// </summary>
+        public static string ArcadeMuseumRound3 => Loc.T("ui.arcade.museum.round.3");
+        /// <summary>
+        /// 安保博物馆 · 第4图
+        /// </summary>
+        public static string ArcadeMuseumRound4 => Loc.T("ui.arcade.museum.round.4");
         /// <summary>
         /// 当前没有待处理的本局进度或结果。
         /// </summary>
@@ -1415,6 +1687,22 @@ namespace Game
         /// 无
         /// </summary>
         public static string ArcadeNone => Loc.T("ui.arcade.none");
+        /// <summary>
+        /// 雪镇街区 · 第1图
+        /// </summary>
+        public static string ArcadeNuketownRound1 => Loc.T("ui.arcade.nuketown.round.1");
+        /// <summary>
+        /// 雪镇街区 · 第2图
+        /// </summary>
+        public static string ArcadeNuketownRound2 => Loc.T("ui.arcade.nuketown.round.2");
+        /// <summary>
+        /// 雪镇街区 · 第3图
+        /// </summary>
+        public static string ArcadeNuketownRound3 => Loc.T("ui.arcade.nuketown.round.3");
+        /// <summary>
+        /// 雪镇街区 · 第4图
+        /// </summary>
+        public static string ArcadeNuketownRound4 => Loc.T("ui.arcade.nuketown.round.4");
         /// <summary>
         /// 紧急资源
         /// </summary>
@@ -1517,6 +1805,22 @@ namespace Game
         /// </summary>
         public static string ArcadeOnlineWaitingTeammate => Loc.T("ui.arcade.online.waiting_teammate");
         /// <summary>
+        /// 终局巢穴 · 第1图
+        /// </summary>
+        public static string ArcadePapabackRound1 => Loc.T("ui.arcade.papaback.round.1");
+        /// <summary>
+        /// 终局巢穴 · 第2图
+        /// </summary>
+        public static string ArcadePapabackRound2 => Loc.T("ui.arcade.papaback.round.2");
+        /// <summary>
+        /// 终局巢穴 · 第3图
+        /// </summary>
+        public static string ArcadePapabackRound3 => Loc.T("ui.arcade.papaback.round.3");
+        /// <summary>
+        /// 终局巢穴 · 第4图
+        /// </summary>
+        public static string ArcadePapabackRound4 => Loc.T("ui.arcade.papaback.round.4");
+        /// <summary>
         /// 暂停
         /// </summary>
         public static string ArcadePause => Loc.T("ui.arcade.pause");
@@ -1524,6 +1828,22 @@ namespace Game
         /// 待结算基地奖励
         /// </summary>
         public static string ArcadePendingRewards => Loc.T("ui.arcade.pending_rewards");
+        /// <summary>
+        /// 雕像广场 · 第1图
+        /// </summary>
+        public static string ArcadePiazzaRound1 => Loc.T("ui.arcade.piazza.round.1");
+        /// <summary>
+        /// 雕像广场 · 第2图
+        /// </summary>
+        public static string ArcadePiazzaRound2 => Loc.T("ui.arcade.piazza.round.2");
+        /// <summary>
+        /// 雕像广场 · 第3图
+        /// </summary>
+        public static string ArcadePiazzaRound3 => Loc.T("ui.arcade.piazza.round.3");
+        /// <summary>
+        /// 雕像广场 · 第4图
+        /// </summary>
+        public static string ArcadePiazzaRound4 => Loc.T("ui.arcade.piazza.round.4");
         /// <summary>
         /// {0} 金币
         /// </summary>
@@ -1719,6 +2039,14 @@ namespace Game
         /// </summary>
         public static string ArcadeRetrySave => Loc.T("ui.arcade.retry_save");
         /// <summary>
+        /// 本轮准备失败，安全节点已保留，请重试。
+        /// </summary>
+        public static string ArcadeRoundFailed => Loc.T("ui.arcade.round.failed");
+        /// <summary>
+        /// 正在等待队友地图就绪…
+        /// </summary>
+        public static string ArcadeRoundWaiting => Loc.T("ui.arcade.round.waiting");
+        /// <summary>
         /// 街机存档损坏，无法恢复
         /// </summary>
         public static string ArcadeSaveCorrupted => Loc.T("ui.arcade.save_corrupted");
@@ -1726,6 +2054,22 @@ namespace Game
         /// 确认结果
         /// </summary>
         public static string ArcadeSettle => Loc.T("ui.arcade.settle");
+        /// <summary>
+        /// 寒流河谷 · 第1图
+        /// </summary>
+        public static string ArcadeShiverRound1 => Loc.T("ui.arcade.shiver.round.1");
+        /// <summary>
+        /// 寒流河谷 · 第2图
+        /// </summary>
+        public static string ArcadeShiverRound2 => Loc.T("ui.arcade.shiver.round.2");
+        /// <summary>
+        /// 寒流河谷 · 第3图
+        /// </summary>
+        public static string ArcadeShiverRound3 => Loc.T("ui.arcade.shiver.round.3");
+        /// <summary>
+        /// 寒流河谷 · 第4图
+        /// </summary>
+        public static string ArcadeShiverRound4 => Loc.T("ui.arcade.shiver.round.4");
         /// <summary>
         /// 尚未购买强化、资源或装备
         /// </summary>
@@ -1755,11 +2099,560 @@ namespace Game
         /// </summary>
         public static string ArcadeShopTitle => Loc.T("ui.arcade.shop.title");
         /// <summary>
+        /// 准备进入
+        /// </summary>
+        public static string ArcadeSlayerEnter => Loc.T("ui.arcade.slayer.enter");
+        /// <summary>
+        /// 全员同意后返回主线。保留已收现金，不发胜利奖金，也不开放购物；可撤回自己的退出票。
+        /// </summary>
+        public static string ArcadeSlayerExitBody => Loc.T("ui.arcade.slayer.exit_body");
+        /// <summary>
+        /// 提前退出
+        /// </summary>
+        public static string ArcadeSlayerExitOptions => Loc.T("ui.arcade.slayer.exit_options");
+        /// <summary>
+        /// Slayer选项
+        /// </summary>
+        public static string ArcadeSlayerOptions => Loc.T("ui.arcade.slayer.options");
+        /// <summary>
+        /// SLAYER · 准备 {0}秒
+        /// </summary>
+        public static string ArcadeSlayerPhase1(object arg0) => Loc.T("ui.arcade.slayer.phase.1", arg0);
+        /// <summary>
+        /// SLAYER · 收币 {0}秒
+        /// </summary>
+        public static string ArcadeSlayerPhase2(object arg0) => Loc.T("ui.arcade.slayer.phase.2", arg0);
+        /// <summary>
+        /// SLAYER · Guardian
+        /// </summary>
+        public static string ArcadeSlayerPhase3 => Loc.T("ui.arcade.slayer.phase.3");
+        /// <summary>
+        /// SLAYER · 购物 {0}秒
+        /// </summary>
+        public static string ArcadeSlayerPhase4(object arg0) => Loc.T("ui.arcade.slayer.phase.4", arg0);
+        /// <summary>
+        /// SLAYER · 正在保存并返回
+        /// </summary>
+        public static string ArcadeSlayerPhase5 => Loc.T("ui.arcade.slayer.phase.5");
+        /// <summary>
+        /// 收币90秒后迎战Guardian。全队共享4次倒地，第四次结束挑战，不扣主线命数。胜利后开放5分钟购物；双人须全员同意。
+        /// </summary>
+        public static string ArcadeSlayerPrepareBody => Loc.T("ui.arcade.slayer.prepare_body");
+        /// <summary>
+        /// 进入 {0}/{2} · 跳过 {1}/{2} · 超时自动继续主线
+        /// </summary>
+        public static string ArcadeSlayerPreparing(object arg0, object arg1, object arg2) => Loc.T("ui.arcade.slayer.preparing", arg0, arg1, arg2);
+        /// <summary>
+        /// 倒地 {0}/{1} · 已收现金 {2} · 退出 {3}/{4}
+        /// </summary>
+        public static string ArcadeSlayerProgress(object arg0, object arg1, object arg2, object arg3, object arg4) => Loc.T("ui.arcade.slayer.progress", arg0, arg1, arg2, arg3, arg4);
+        /// <summary>
+        /// 跳过并继续主线
+        /// </summary>
+        public static string ArcadeSlayerSkip => Loc.T("ui.arcade.slayer.skip");
+        /// <summary>
+        /// 确认提前退出
+        /// </summary>
+        public static string ArcadeSlayerVoteExit => Loc.T("ui.arcade.slayer.vote_exit");
+        /// <summary>
+        /// 继续战斗／撤回退出
+        /// </summary>
+        public static string ArcadeSlayerWithdraw => Loc.T("ui.arcade.slayer.withdraw");
+        /// <summary>
+        /// 本次可获得：{0}/{1}
+        /// </summary>
+        public static string ArcadeSlayermartAmountPreview(object arg0, object arg1) => Loc.T("ui.arcade.slayermart.amount_preview", arg0, arg1);
+        /// <summary>
+        /// 可购买
+        /// </summary>
+        public static string ArcadeSlayermartAvailable => Loc.T("ui.arcade.slayermart.available");
+        /// <summary>
+        /// 购买
+        /// </summary>
+        public static string ArcadeSlayermartBuy => Loc.T("ui.arcade.slayermart.buy");
+        /// <summary>
+        /// 现金 {0}
+        /// </summary>
+        public static string ArcadeSlayermartCash(object arg0) => Loc.T("ui.arcade.slayermart.cash", arg0);
+        /// <summary>
+        /// 收集现金，自选本局支援。双方选择一致后出发。
+        /// </summary>
+        public static string ArcadeSlayermartChoiceBody => Loc.T("ui.arcade.slayermart.choice_body");
+        /// <summary>
+        /// 进入商店区域
+        /// </summary>
+        public static string ArcadeSlayermartChoiceTitle => Loc.T("ui.arcade.slayermart.choice_title");
+        /// <summary>
+        /// 双方选择一致后出发；选择不同可更改本人选择。
+        /// </summary>
+        public static string ArcadeSlayermartChooseHelp => Loc.T("ui.arcade.slayermart.choose_help");
+        /// <summary>
+        /// 关闭菜单
+        /// </summary>
+        public static string ArcadeSlayermartClose => Loc.T("ui.arcade.slayermart.close");
+        /// <summary>
+        /// 即将截止，菜单与未确认操作不能延长区域时间。
+        /// </summary>
+        public static string ArcadeSlayermartClosingSoon => Loc.T("ui.arcade.slayermart.closing_soon");
+        /// <summary>
+        /// 确认容量截断
+        /// </summary>
+        public static string ArcadeSlayermartConfirmTitle => Loc.T("ui.arcade.slayermart.confirm_title");
+        /// <summary>
+        /// 本次只能获得{0}/{1}，仍支付全价{2}现金。确认购买？
+        /// </summary>
+        public static string ArcadeSlayermartConfirmTruncated(object arg0, object arg1, object arg2) => Loc.T("ui.arcade.slayermart.confirm_truncated", arg0, arg1, arg2);
+        /// <summary>
+        /// 剩余 {0} 秒
+        /// </summary>
+        public static string ArcadeSlayermartDeadline(object arg0) => Loc.T("ui.arcade.slayermart.deadline", arg0);
+        /// <summary>
+        /// 进入商店
+        /// </summary>
+        public static string ArcadeSlayermartEnter => Loc.T("ui.arcade.slayermart.enter");
+        /// <summary>
+        /// 本局已拥有
+        /// </summary>
+        public static string ArcadeSlayermartErrorAlreadyOwned => Loc.T("ui.arcade.slayermart.error.already_owned");
+        /// <summary>
+        /// 现金箱已领取或无法领取
+        /// </summary>
+        public static string ArcadeSlayermartErrorCashUnavailable => Loc.T("ui.arcade.slayermart.error.cash_unavailable");
+        /// <summary>
+        /// 战斗鸡容量不足，不能购买整包
+        /// </summary>
+        public static string ArcadeSlayermartErrorChickenCapacity => Loc.T("ui.arcade.slayermart.error.chicken_capacity");
+        /// <summary>
+        /// 容量已变化，请重新确认实际数量
+        /// </summary>
+        public static string ArcadeSlayermartErrorConfirmActualAmount => Loc.T("ui.arcade.slayermart.error.confirm_actual_amount");
+        /// <summary>
+        /// 本次商店时间已结束
+        /// </summary>
+        public static string ArcadeSlayermartErrorExpired => Loc.T("ui.arcade.slayermart.error.expired");
+        /// <summary>
+        /// 操作结果暂未确认，请重试或等待同步
+        /// </summary>
+        public static string ArcadeSlayermartErrorGeneric => Loc.T("ui.arcade.slayermart.error.generic");
+        /// <summary>
+        /// 现金不足
+        /// </summary>
+        public static string ArcadeSlayermartErrorInsufficientCash => Loc.T("ui.arcade.slayermart.error.insufficient_cash");
+        /// <summary>
+        /// 区域已变化，请等待最新状态
+        /// </summary>
+        public static string ArcadeSlayermartErrorInvalidIdentity => Loc.T("ui.arcade.slayermart.error.invalid_identity");
+        /// <summary>
+        /// 当前玩家无法操作此商店
+        /// </summary>
+        public static string ArcadeSlayermartErrorInvalidPlayer => Loc.T("ui.arcade.slayermart.error.invalid_player");
+        /// <summary>
+        /// 请先关闭购物菜单
+        /// </summary>
+        public static string ArcadeSlayermartErrorMenuStillOpen => Loc.T("ui.arcade.slayermart.error.menu_still_open");
+        /// <summary>
+        /// 当前已没有可替换的商品
+        /// </summary>
+        public static string ArcadeSlayermartErrorNoInventoryChange => Loc.T("ui.arcade.slayermart.error.no_inventory_change");
+        /// <summary>
+        /// 重抽券不足
+        /// </summary>
+        public static string ArcadeSlayermartErrorNoToken => Loc.T("ui.arcade.slayermart.error.no_token");
+        /// <summary>
+        /// 该商品不在当前个人报价中
+        /// </summary>
+        public static string ArcadeSlayermartErrorNotOffered => Loc.T("ui.arcade.slayermart.error.not_offered");
+        /// <summary>
+        /// 区域资源尚未就绪
+        /// </summary>
+        public static string ArcadeSlayermartErrorNotReady => Loc.T("ui.arcade.slayermart.error.not_ready");
+        /// <summary>
+        /// 无法完成本次交易，请重试
+        /// </summary>
+        public static string ArcadeSlayermartErrorNumericOverflow => Loc.T("ui.arcade.slayermart.error.numeric_overflow");
+        /// <summary>
+        /// 本次请求信息不一致，请同步后重试
+        /// </summary>
+        public static string ArcadeSlayermartErrorOperationPayloadChanged => Loc.T("ui.arcade.slayermart.error.operation_payload_changed");
+        /// <summary>
+        /// 需要背心及空护甲槽
+        /// </summary>
+        public static string ArcadeSlayermartErrorPlateCapacity => Loc.T("ui.arcade.slayermart.error.plate_capacity");
+        /// <summary>
+        /// 零命成员只能购买重抽券或可用的全队加命
+        /// </summary>
+        public static string ArcadeSlayermartErrorPlayerDead => Loc.T("ui.arcade.slayermart.error.player_dead");
+        /// <summary>
+        /// 当前商店已关闭
+        /// </summary>
+        public static string ArcadeSlayermartErrorShopNotActive => Loc.T("ui.arcade.slayermart.error.shop_not_active");
+        /// <summary>
+        /// 报价已更新，请核对后重新操作
+        /// </summary>
+        public static string ArcadeSlayermartErrorStaleRevision => Loc.T("ui.arcade.slayermart.error.stale_revision");
+        /// <summary>
+        /// 库存已满
+        /// </summary>
+        public static string ArcadeSlayermartErrorSupplyFull => Loc.T("ui.arcade.slayermart.error.supply_full");
+        /// <summary>
+        /// 本店全队加命已售或当前不可用
+        /// </summary>
+        public static string ArcadeSlayermartErrorTeamLifeUnavailable => Loc.T("ui.arcade.slayermart.error.team_life_unavailable");
+        /// <summary>
+        /// 已拥有相同或更好的背心
+        /// </summary>
+        public static string ArcadeSlayermartErrorVestOwned => Loc.T("ui.arcade.slayermart.error.vest_owned");
+        /// <summary>
+        /// 本店已购买，限购用尽
+        /// </summary>
+        public static string ArcadeSlayermartErrorVisitLimit => Loc.T("ui.arcade.slayermart.error.visit_limit");
+        /// <summary>
+        /// 完成购物
+        /// </summary>
+        public static string ArcadeSlayermartFinish => Loc.T("ui.arcade.slayermart.finish");
+        /// <summary>
+        /// 电击风暴
+        /// </summary>
+        public static string ArcadeSlayermartHotkey => Loc.T("ui.arcade.slayermart.hotkey");
+        /// <summary>
+        /// 护甲板 {0}/{1}
+        /// </summary>
+        public static string ArcadeSlayermartHudArmor(object arg0, object arg1) => Loc.T("ui.arcade.slayermart.hud_armor", arg0, arg1);
+        /// <summary>
+        /// 商店
+        /// </summary>
+        public static string ArcadeSlayermartHudOpen => Loc.T("ui.arcade.slayermart.hud_open");
+        /// <summary>
+        /// 风暴 {0}/{1}
+        /// </summary>
+        public static string ArcadeSlayermartHudStorm(object arg0, object arg1) => Loc.T("ui.arcade.slayermart.hud_storm", arg0, arg1);
+        /// <summary>
+        /// 风暴 {0} 秒
+        /// </summary>
+        public static string ArcadeSlayermartHudStormActive(object arg0) => Loc.T("ui.arcade.slayermart.hud_storm_active", arg0);
+        /// <summary>
+        /// 释放风暴
+        /// </summary>
+        public static string ArcadeSlayermartHudUpgrade => Loc.T("ui.arcade.slayermart.hud_upgrade");
+        /// <summary>
+        /// 风暴 [{0}]
+        /// </summary>
+        public static string ArcadeSlayermartHudUpgradePc(object arg0) => Loc.T("ui.arcade.slayermart.hud_upgrade_pc", arg0);
+        /// <summary>
+        /// 增加2枚炸弹。超过库存容量时只获得可容纳的数量，仍支付全价，需先确认。
+        /// </summary>
+        public static string ArcadeSlayermartItem01Desc => Loc.T("ui.arcade.slayermart.item.01.desc");
+        /// <summary>
+        /// 炸弹包
+        /// </summary>
+        public static string ArcadeSlayermartItem01Name => Loc.T("ui.arcade.slayermart.item.01.name");
+        /// <summary>
+        /// 增加2次冲刺。超过库存容量时只获得可容纳的数量，仍支付全价，需先确认。
+        /// </summary>
+        public static string ArcadeSlayermartItem02Desc => Loc.T("ui.arcade.slayermart.item.02.desc");
+        /// <summary>
+        /// 冲刺包
+        /// </summary>
+        public static string ArcadeSlayermartItem02Name => Loc.T("ui.arcade.slayermart.item.02.name");
+        /// <summary>
+        /// 获得3张个人重抽券。每次重抽消耗1张；重开菜单不会刷新商品。
+        /// </summary>
+        public static string ArcadeSlayermartItem03Desc => Loc.T("ui.arcade.slayermart.item.03.desc");
+        /// <summary>
+        /// 重抽券包
+        /// </summary>
+        public static string ArcadeSlayermartItem03Name => Loc.T("ui.arcade.slayermart.item.03.name");
+        /// <summary>
+        /// 召出一只战斗鸡，持续5分钟。总数最多5只；死亡后清除。
+        /// </summary>
+        public static string ArcadeSlayermartItem04Desc => Loc.T("ui.arcade.slayermart.item.04.desc");
+        /// <summary>
+        /// 战斗鸡
+        /// </summary>
+        public static string ArcadeSlayermartItem04Name => Loc.T("ui.arcade.slayermart.item.04.name");
+        /// <summary>
+        /// 提供5分钟旋转锯。与现有同类合并剩余时长，不额外叠一套普通锯。
+        /// </summary>
+        public static string ArcadeSlayermartItem05Desc => Loc.T("ui.arcade.slayermart.item.05.desc");
+        /// <summary>
+        /// 旋转锯
+        /// </summary>
+        public static string ArcadeSlayermartItem05Name => Loc.T("ui.arcade.slayermart.item.05.name");
+        /// <summary>
+        /// 旋转锯与爆桶持续最多5分钟；爆桶仍最多触发3次，不补充已有桶的触发次数。
+        /// </summary>
+        public static string ArcadeSlayermartItem06Desc => Loc.T("ui.arcade.slayermart.item.06.desc");
+        /// <summary>
+        /// 锯与爆桶组合
+        /// </summary>
+        public static string ArcadeSlayermartItem06Name => Loc.T("ui.arcade.slayermart.item.06.name");
+        /// <summary>
+        /// 磁铁吸取范围与持续时间提高50%。
+        /// </summary>
+        public static string ArcadeSlayermartItem07Desc => Loc.T("ui.arcade.slayermart.item.07.desc");
+        /// <summary>
+        /// 磁铁专精
+        /// </summary>
+        public static string ArcadeSlayermartItem07Name => Loc.T("ui.arcade.slayermart.item.07.name");
+        /// <summary>
+        /// 诱饵猴吸引半径翻倍。
+        /// </summary>
+        public static string ArcadeSlayermartItem08Desc => Loc.T("ui.arcade.slayermart.item.08.desc");
+        /// <summary>
+        /// 诱饵猴专精
+        /// </summary>
+        public static string ArcadeSlayermartItem08Name => Loc.T("ui.arcade.slayermart.item.08.name");
+        /// <summary>
+        /// 拳套持续时间提高60%。
+        /// </summary>
+        public static string ArcadeSlayermartItem09Desc => Loc.T("ui.arcade.slayermart.item.09.desc");
+        /// <summary>
+        /// 拳套专精
+        /// </summary>
+        public static string ArcadeSlayermartItem09Name => Loc.T("ui.arcade.slayermart.item.09.name");
+        /// <summary>
+        /// 战斗鸡持续时间提高25%。
+        /// </summary>
+        public static string ArcadeSlayermartItem10Desc => Loc.T("ui.arcade.slayermart.item.10.desc");
+        /// <summary>
+        /// 战斗鸡专精
+        /// </summary>
+        public static string ArcadeSlayermartItem10Name => Loc.T("ui.arcade.slayermart.item.10.name");
+        /// <summary>
+        /// 旋转锯距离翻倍，形成相对的两片真实锯刃。
+        /// </summary>
+        public static string ArcadeSlayermartItem11Desc => Loc.T("ui.arcade.slayermart.item.11.desc");
+        /// <summary>
+        /// 旋转锯专精
+        /// </summary>
+        public static string ArcadeSlayermartItem11Name => Loc.T("ui.arcade.slayermart.item.11.name");
+        /// <summary>
+        /// 武器与战斗鸡伤害提高25%。其他伤害不享受此加成。
+        /// </summary>
+        public static string ArcadeSlayermartItem12Desc => Loc.T("ui.arcade.slayermart.item.12.desc");
+        /// <summary>
+        /// Dead Operator
+        /// </summary>
+        public static string ArcadeSlayermartItem12Name => Loc.T("ui.arcade.slayermart.item.12.name");
+        /// <summary>
+        /// 解锁1个护甲板槽，不自动补充护甲板。挡一次合法伤害消耗一板；失命机关仍按原规则处理。
+        /// </summary>
+        public static string ArcadeSlayermartItem13Desc => Loc.T("ui.arcade.slayermart.item.13.desc");
+        /// <summary>
+        /// 基础护甲背心
+        /// </summary>
+        public static string ArcadeSlayermartItem13Name => Loc.T("ui.arcade.slayermart.item.13.name");
+        /// <summary>
+        /// 升级为2个护甲板槽，保留现有护甲板，不自动补满。
+        /// </summary>
+        public static string ArcadeSlayermartItem14Desc => Loc.T("ui.arcade.slayermart.item.14.desc");
+        /// <summary>
+        /// 战术护甲背心
+        /// </summary>
+        public static string ArcadeSlayermartItem14Name => Loc.T("ui.arcade.slayermart.item.14.name");
+        /// <summary>
+        /// 补充1块护甲板。必须已有背心且有空槽；可重复购买。
+        /// </summary>
+        public static string ArcadeSlayermartItem15Desc => Loc.T("ui.arcade.slayermart.item.15.desc");
+        /// <summary>
+        /// 护甲板
+        /// </summary>
+        public static string ArcadeSlayermartItem15Name => Loc.T("ui.arcade.slayermart.item.15.name");
+        /// <summary>
+        /// 本人归属击杀累计100名敌人充满，手动释放。持续10秒、半径5米，每0.5秒造成20伤害。普通敌人眩晕，精英减速50%，Boss只受伤不受控。
+        /// </summary>
+        public static string ArcadeSlayermartItem16Desc => Loc.T("ui.arcade.slayermart.item.16.desc");
+        /// <summary>
+        /// 电击风暴
+        /// </summary>
+        public static string ArcadeSlayermartItem16Name => Loc.T("ui.arcade.slayermart.item.16.name");
+        /// <summary>
+        /// 获得8至16颗正式宝石，计入积分与倍率。不会增加购物现金。
+        /// </summary>
+        public static string ArcadeSlayermartItem17Desc => Loc.T("ui.arcade.slayermart.item.17.desc");
+        /// <summary>
+        /// 宝石原石
+        /// </summary>
+        public static string ArcadeSlayermartItem17Name => Loc.T("ui.arcade.slayermart.item.17.name");
+        /// <summary>
+        /// 同时提供3个真实接触电球，接触造成伤害并击退。同一敌人共享命中间隔，不能三倍重复命中。
+        /// </summary>
+        public static string ArcadeSlayermartItem18Desc => Loc.T("ui.arcade.slayermart.item.18.desc");
+        /// <summary>
+        /// 特斯拉球三件包
+        /// </summary>
+        public static string ArcadeSlayermartItem18Name => Loc.T("ui.arcade.slayermart.item.18.name");
+        /// <summary>
+        /// 连续交付3份爆桶，前一份耗尽或到期后接下一份。不会补充当前爆桶的触发次数。
+        /// </summary>
+        public static string ArcadeSlayermartItem19Desc => Loc.T("ui.arcade.slayermart.item.19.desc");
+        /// <summary>
+        /// 爆桶接力包
+        /// </summary>
+        public static string ArcadeSlayermartItem19Name => Loc.T("ui.arcade.slayermart.item.19.name");
+        /// <summary>
+        /// 并行召出3只战斗鸡，各持续5分钟。总数最多5只，容量不足时整包拒绝。
+        /// </summary>
+        public static string ArcadeSlayermartItem20Desc => Loc.T("ui.arcade.slayermart.item.20.desc");
+        /// <summary>
+        /// 战斗鸡套装
+        /// </summary>
+        public static string ArcadeSlayermartItem20Name => Loc.T("ui.arcade.slayermart.item.20.name");
+        /// <summary>
+        /// 真正复起后的保护时间提高50%，不延长其他来源的无敌。
+        /// </summary>
+        public static string ArcadeSlayermartItem21Desc => Loc.T("ui.arcade.slayermart.item.21.desc");
+        /// <summary>
+        /// 复起保护专精
+        /// </summary>
+        public static string ArcadeSlayermartItem21Name => Loc.T("ui.arcade.slayermart.item.21.name");
+        /// <summary>
+        /// 爆桶旋转速度与持续时间提高25%。五分钟组合仍保留5分钟上限和3次触发限制。
+        /// </summary>
+        public static string ArcadeSlayermartItem22Desc => Loc.T("ui.arcade.slayermart.item.22.desc");
+        /// <summary>
+        /// 爆桶专精
+        /// </summary>
+        public static string ArcadeSlayermartItem22Name => Loc.T("ui.arcade.slayermart.item.22.name");
+        /// <summary>
+        /// 已支持的哨戒炮伤害提高75%。不新增其他炮塔类型。
+        /// </summary>
+        public static string ArcadeSlayermartItem23Desc => Loc.T("ui.arcade.slayermart.item.23.desc");
+        /// <summary>
+        /// 炮塔专精
+        /// </summary>
+        public static string ArcadeSlayermartItem23Name => Loc.T("ui.arcade.slayermart.item.23.name");
+        /// <summary>
+        /// 下一普通战斗轮开始时，原始成员各加1命，达到上限不再增加。零命成员进入原复起等待，不在店内救起。全队每店只买一次。
+        /// </summary>
+        public static string ArcadeSlayermartItem24Desc => Loc.T("ui.arcade.slayermart.item.24.desc");
+        /// <summary>
+        /// 下轮全队加命
+        /// </summary>
+        public static string ArcadeSlayermartItem24Name => Loc.T("ui.arcade.slayermart.item.24.name");
+        /// <summary>
+        /// {0}：已达命数上限，不增加
+        /// </summary>
+        public static string ArcadeSlayermartLifeCapped(object arg0) => Loc.T("ui.arcade.slayermart.life_capped", arg0);
+        /// <summary>
+        /// {0}：下一普通轮+1命
+        /// </summary>
+        public static string ArcadeSlayermartLifeNext(object arg0) => Loc.T("ui.arcade.slayermart.life_next", arg0);
+        /// <summary>
+        /// 本局1次
+        /// </summary>
+        public static string ArcadeSlayermartLimitRun => Loc.T("ui.arcade.slayermart.limit_run");
+        /// <summary>
+        /// 本店1次
+        /// </summary>
+        public static string ArcadeSlayermartLimitVisit => Loc.T("ui.arcade.slayermart.limit_visit");
+        /// <summary>
+        /// 正在等待区域资源就绪，尚未开始300秒窗口。
+        /// </summary>
+        public static string ArcadeSlayermartLoadingHelp => Loc.T("ui.arcade.slayermart.loading_help");
+        /// <summary>
+        /// 正在准备商店区域…
+        /// </summary>
+        public static string ArcadeSlayermartLoadingTitle => Loc.T("ui.arcade.slayermart.loading_title");
+        /// <summary>
+        /// {0}：{1}
+        /// </summary>
+        public static string ArcadeSlayermartMember(object arg0, object arg1) => Loc.T("ui.arcade.slayermart.member", arg0, arg1);
+        /// <summary>
+        /// 选择中
+        /// </summary>
+        public static string ArcadeSlayermartMemberChoosing => Loc.T("ui.arcade.slayermart.member_choosing");
+        /// <summary>
+        /// 进入
+        /// </summary>
+        public static string ArcadeSlayermartMemberEnter => Loc.T("ui.arcade.slayermart.member_enter");
+        /// <summary>
+        /// 已完成
+        /// </summary>
+        public static string ArcadeSlayermartMemberFinished => Loc.T("ui.arcade.slayermart.member_finished");
+        /// <summary>
+        /// 购物中
+        /// </summary>
+        public static string ArcadeSlayermartMemberShopping => Loc.T("ui.arcade.slayermart.member_shopping");
+        /// <summary>
+        /// 跳过
+        /// </summary>
+        public static string ArcadeSlayermartMemberSkip => Loc.T("ui.arcade.slayermart.member_skip");
+        /// <summary>
+        /// 玩家{0}
+        /// </summary>
+        public static string ArcadeSlayermartPlayer(object arg0) => Loc.T("ui.arcade.slayermart.player", arg0);
+        /// <summary>
+        /// 剩余限购：{0}/1
+        /// </summary>
+        public static string ArcadeSlayermartRemainingLimit(object arg0) => Loc.T("ui.arcade.slayermart.remaining_limit", arg0);
+        /// <summary>
+        /// 可重复
+        /// </summary>
+        public static string ArcadeSlayermartRepeatable => Loc.T("ui.arcade.slayermart.repeatable");
+        /// <summary>
+        /// 重抽（消耗1券）
+        /// </summary>
+        public static string ArcadeSlayermartReroll => Loc.T("ui.arcade.slayermart.reroll");
+        /// <summary>
+        /// 重试
+        /// </summary>
+        public static string ArcadeSlayermartRetry => Loc.T("ui.arcade.slayermart.retry");
+        /// <summary>
+        /// 本人
+        /// </summary>
+        public static string ArcadeSlayermartScopePersonal => Loc.T("ui.arcade.slayermart.scope_personal");
+        /// <summary>
+        /// 全队
+        /// </summary>
+        public static string ArcadeSlayermartScopeTeam => Loc.T("ui.arcade.slayermart.scope_team");
+        /// <summary>
+        /// 购买、重抽与完成购物互相独立。菜单不会暂停截止时间。
+        /// </summary>
+        public static string ArcadeSlayermartShoppingHelp => Loc.T("ui.arcade.slayermart.shopping_help");
+        /// <summary>
+        /// 跳过
+        /// </summary>
+        public static string ArcadeSlayermartSkip => Loc.T("ui.arcade.slayermart.skip");
+        /// <summary>
+        /// 重抽券 {0}
+        /// </summary>
+        public static string ArcadeSlayermartTokens(object arg0) => Loc.T("ui.arcade.slayermart.tokens", arg0);
+        /// <summary>
+        /// 不可购买
+        /// </summary>
+        public static string ArcadeSlayermartUnavailable => Loc.T("ui.arcade.slayermart.unavailable");
+        /// <summary>
+        /// 正在确认结果；超时后点重试，将继续原交易。
+        /// </summary>
+        public static string ArcadeSlayermartWaitingReceipt => Loc.T("ui.arcade.slayermart.waiting_receipt");
+        /// <summary>
+        /// 本人
+        /// </summary>
+        public static string ArcadeSlayermartYou => Loc.T("ui.arcade.slayermart.you");
+        /// <summary>
+        /// 孢子丛林 · 第1图
+        /// </summary>
+        public static string ArcadeSporeRound1 => Loc.T("ui.arcade.spore.round.1");
+        /// <summary>
+        /// 孢子丛林 · 第2图
+        /// </summary>
+        public static string ArcadeSporeRound2 => Loc.T("ui.arcade.spore.round.2");
+        /// <summary>
+        /// 孢子丛林 · 第3图
+        /// </summary>
+        public static string ArcadeSporeRound3 => Loc.T("ui.arcade.spore.round.3");
+        /// <summary>
+        /// 孢子丛林 · 第4图
+        /// </summary>
+        public static string ArcadeSporeRound4 => Loc.T("ui.arcade.spore.round.4");
+        /// <summary>
         /// 海岛完成
         /// </summary>
         public static string ArcadeStageIslandCompleted => Loc.T("ui.arcade.stage.island_completed");
         /// <summary>
-        /// 本波完成
+        /// 本轮完成
+        /// 前往发光出口继续
         /// </summary>
         public static string ArcadeStageWaveCompleted => Loc.T("ui.arcade.stage.wave_completed");
         /// <summary>
@@ -1770,6 +2663,102 @@ namespace Game
         /// 开始单人街机
         /// </summary>
         public static string ArcadeStart => Loc.T("ui.arcade.start");
+        /// <summary>
+        /// 毒雾沼泽 · 第1图
+        /// </summary>
+        public static string ArcadeSwampRound1 => Loc.T("ui.arcade.swamp.round.1");
+        /// <summary>
+        /// 毒雾沼泽 · 第2图
+        /// </summary>
+        public static string ArcadeSwampRound2 => Loc.T("ui.arcade.swamp.round.2");
+        /// <summary>
+        /// 毒雾沼泽 · 第3图
+        /// </summary>
+        public static string ArcadeSwampRound3 => Loc.T("ui.arcade.swamp.round.3");
+        /// <summary>
+        /// 毒雾沼泽 · 第4图
+        /// </summary>
+        public static string ArcadeSwampRound4 => Loc.T("ui.arcade.swamp.round.4");
+        /// <summary>
+        /// 海岛
+        /// </summary>
+        public static string ArcadeTheme1 => Loc.T("ui.arcade.theme.1");
+        /// <summary>
+        /// 锦鲤桥庭
+        /// </summary>
+        public static string ArcadeTheme10 => Loc.T("ui.arcade.theme.10");
+        /// <summary>
+        /// 雕像广场
+        /// </summary>
+        public static string ArcadeTheme11 => Loc.T("ui.arcade.theme.11");
+        /// <summary>
+        /// 庄园中庭
+        /// </summary>
+        public static string ArcadeTheme12 => Loc.T("ui.arcade.theme.12");
+        /// <summary>
+        /// 路边旅馆
+        /// </summary>
+        public static string ArcadeTheme13 => Loc.T("ui.arcade.theme.13");
+        /// <summary>
+        /// 安保博物馆
+        /// </summary>
+        public static string ArcadeTheme14 => Loc.T("ui.arcade.theme.14");
+        /// <summary>
+        /// 雪镇街区
+        /// </summary>
+        public static string ArcadeTheme15 => Loc.T("ui.arcade.theme.15");
+        /// <summary>
+        /// 冰湖农庄
+        /// </summary>
+        public static string ArcadeTheme16 => Loc.T("ui.arcade.theme.16");
+        /// <summary>
+        /// 寒流河谷
+        /// </summary>
+        public static string ArcadeTheme17 => Loc.T("ui.arcade.theme.17");
+        /// <summary>
+        /// 毒雾沼泽
+        /// </summary>
+        public static string ArcadeTheme18 => Loc.T("ui.arcade.theme.18");
+        /// <summary>
+        /// 孢子丛林
+        /// </summary>
+        public static string ArcadeTheme19 => Loc.T("ui.arcade.theme.19");
+        /// <summary>
+        /// 巴比伦遗迹
+        /// </summary>
+        public static string ArcadeTheme2 => Loc.T("ui.arcade.theme.2");
+        /// <summary>
+        /// 终局巢穴
+        /// </summary>
+        public static string ArcadeTheme20 => Loc.T("ui.arcade.theme.20");
+        /// <summary>
+        /// 弹幕林地
+        /// </summary>
+        public static string ArcadeTheme3 => Loc.T("ui.arcade.theme.3");
+        /// <summary>
+        /// 幽雾墓园
+        /// </summary>
+        public static string ArcadeTheme4 => Loc.T("ui.arcade.theme.4");
+        /// <summary>
+        /// 巨石环阵
+        /// </summary>
+        public static string ArcadeTheme5 => Loc.T("ui.arcade.theme.5");
+        /// <summary>
+        /// 熔火巢穴
+        /// </summary>
+        public static string ArcadeTheme6 => Loc.T("ui.arcade.theme.6");
+        /// <summary>
+        /// 要塞庭院
+        /// </summary>
+        public static string ArcadeTheme7 => Loc.T("ui.arcade.theme.7");
+        /// <summary>
+        /// 废弃教堂
+        /// </summary>
+        public static string ArcadeTheme8 => Loc.T("ui.arcade.theme.8");
+        /// <summary>
+        /// 邪异花园
+        /// </summary>
+        public static string ArcadeTheme9 => Loc.T("ui.arcade.theme.9");
         /// <summary>
         /// 宝藏入口 · 清场后开启
         /// </summary>
@@ -1786,6 +2775,22 @@ namespace Game
         /// 40 轮与最终 Boss 已完成 · 通关结算
         /// </summary>
         public static string ArcadeVictory => Loc.T("ui.arcade.victory");
+        /// <summary>
+        /// 熔火巢穴 · 第1图
+        /// </summary>
+        public static string ArcadeVolcanoRound1 => Loc.T("ui.arcade.volcano.round.1");
+        /// <summary>
+        /// 熔火巢穴 · 第2图
+        /// </summary>
+        public static string ArcadeVolcanoRound2 => Loc.T("ui.arcade.volcano.round.2");
+        /// <summary>
+        /// 熔火巢穴 · 第3图
+        /// </summary>
+        public static string ArcadeVolcanoRound3 => Loc.T("ui.arcade.volcano.round.3");
+        /// <summary>
+        /// 熔火巢穴 · 第4图
+        /// </summary>
+        public static string ArcadeVolcanoRound4 => Loc.T("ui.arcade.volcano.round.4");
         /// <summary>
         /// 调整物资
         /// </summary>
@@ -2931,7 +3936,7 @@ namespace Game
         /// </summary>
         public static string MobileBaseReload => Loc.T("ui.mobile_base.reload");
         /// <summary>
-        /// 右摇杆 · 瞄准
+        /// 右摇杆 · 瞄准射击
         /// </summary>
         public static string MobileLayoutAim => Loc.T("ui.mobile_layout.aim");
         /// <summary>
@@ -2963,7 +3968,7 @@ namespace Game
         /// </summary>
         public static string MobileLayoutCancel => Loc.T("ui.mobile_layout.cancel");
         /// <summary>
-        /// 调整摇杆的位置、大小和透明度，也可拖动暂停、攻击、装填、背包与建筑按钮。布局保存在当前设备。
+        /// 调整移动、瞄准射击和街机按钮的位置。摇杆支持大小与透明度；第一人称使用滑屏转向和独立开火。布局保存在当前设备。
         /// </summary>
         public static string MobileLayoutDescription => Loc.T("ui.mobile_layout.description");
         /// <summary>
@@ -2971,7 +3976,7 @@ namespace Game
         /// </summary>
         public static string MobileLayoutEdit => Loc.T("ui.mobile_layout.edit");
         /// <summary>
-        /// 拖动摇杆、按钮或信息栏调整位置；摇杆与信息栏可缩放，摇杆还可调整透明度。
+        /// 拖动摇杆或街机按钮调整位置；大小和透明度仅应用于摇杆。切换第一人称可编辑独立开火与返回俯视按钮。
         /// </summary>
         public static string MobileLayoutEditHint => Loc.T("ui.mobile_layout.edit_hint");
         /// <summary>
@@ -2991,13 +3996,17 @@ namespace Game
         /// </summary>
         public static string MobileLayoutHudWeapon => Loc.T("ui.mobile_layout.hud_weapon");
         /// <summary>
-        /// 街机操控
+        /// 俯视操控
         /// </summary>
         public static string MobileLayoutModeArcade => Loc.T("ui.mobile_layout.mode_arcade");
         /// <summary>
         /// 基地操控
         /// </summary>
         public static string MobileLayoutModeBase => Loc.T("ui.mobile_layout.mode_base");
+        /// <summary>
+        /// 第一人称操控
+        /// </summary>
+        public static string MobileLayoutModeFirstPerson => Loc.T("ui.mobile_layout.mode_first_person");
         /// <summary>
         /// 左摇杆 · 移动
         /// </summary>

@@ -236,7 +236,8 @@ namespace Game
             view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() :
                 activeArena.Hazards, battle.HazardElapsedSeconds);
             view.SetRoundContent(battle.ContentElapsed,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>():battle.ContentAreas);
-            var roundTargets=battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.ToArray();
+            // 负数仅表示下一轮标签；确认出口仍由独立入口提交服务器的正数场地身份。
+            var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
             view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? roundTargets : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss);

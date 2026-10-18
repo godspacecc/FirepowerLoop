@@ -46,6 +46,26 @@ namespace Game.Tests
         private void Tick(float seconds=0)=>typeof(ArcadeCombatSystem).GetMethod("TickTreasureRoom",Flags).Invoke(system,new object[]{runtime,seconds});
         private void Reward(int index)
         {runtime.PlayerPosition=new Vector2(runtime.TreasureRoom.Parameters.Rewards[index].X,runtime.TreasureRoom.Parameters.Rewards[index].Y);Tick();}
+        [Test] public void FirstRoundExitConfirmsSecondRoundAndRejectsDuplicateConfirmation()
+        {
+            var type = typeof(ArcadeCombatSystem);
+            type.GetMethod("StartIslandRound", Flags).Invoke(system, new object[] { runtime, 0, null });
+            Assert.That(runtime.CompletionAwaitingRetry, Is.False);
+            runtime.SpawnQueue.Clear();
+            type.GetMethod("TickWaveTransition", Flags).Invoke(system, new object[] { runtime, 0f });
+            Assert.That(runtime.IslandRoundAwaitingExit, Is.True);
+            // 取消及未确认状态不能推进；确认后保存下一轮并忽略同一旧弹窗的重复回调。
+            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
+            Assert.That(runtime.WaveIndex, Is.Zero);
+            runtime.IslandExitPrompt = true;
+            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
+            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
+            Assert.That(runtime.WaveIndex, Is.EqualTo(1));
+            Assert.That(runtime.IslandRoundAwaitingExit, Is.False);
+            Assert.That(runtime.CompletionAwaitingRetry, Is.False);
+            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(120));
+            Assert.That(new ArcadeRunFileStore(root).Inspect().Data.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(2));
+        }
         [Test] public void DiscoveryDoesNotEnterUnclearedWave()
         {
             var rules=catalog.TreasureRooms.First();

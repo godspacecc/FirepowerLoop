@@ -275,6 +275,8 @@ namespace Game
             ReleaseIsland();
             ReleaseBabylon();
             ClearTreasureVisuals();
+            exitCues.Clear();
+            exitCueElapsed = 0;
             foreach (var marker in exitVisuals) DestroyObject(marker);
             exitVisuals.Clear();
             DestroyObject(exitMaterial);
@@ -338,6 +340,8 @@ namespace Game
             var identity = (victory ? "victory" : string.Join(",", destinations)) + ":" + Loc.T("ui.arcade.destination.next");
             if (string.Equals(identity, exitVisualIdentity, StringComparison.Ordinal)) return;
             exitVisualIdentity = identity;
+            exitCues.Clear();
+            exitCueElapsed = 0;
             foreach (var marker in exitVisuals) DestroyObject(marker);
             exitVisuals.Clear();
             var count = victory ? 1 : destinations.Count;
@@ -361,8 +365,10 @@ namespace Game
                 if (formalExit)
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
-                    SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : destinations[index] < 0
-                        ? RoundDestinationKey(-destinations[index]) : DestinationKey(destinations[index]));
+                    if (!victory && destinations[index] < 0)
+                        marker.GetComponentInChildren<TMPro.TextMeshPro>(true).text = Loc.T("ui.arcade.exit.enter_round", -destinations[index]);
+                    else SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : DestinationKey(destinations[index]));
+                    BindExitCue(marker);
                 }
                 else
                 {
@@ -392,6 +398,7 @@ namespace Game
 
         public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable)
         {
+            SetExitGuidePlayer(position, visible);
             if (playerMotor == null || !playerMotor.IsValid || mapRoot == null) return;
             playerMotor.SetAlivePresentation(visible);
             playerMotor.SetArcadeProtectionActive(visible && invulnerable);
@@ -798,6 +805,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            TickExitCues(deltaTime);
             playerMotor?.TickCombatFeedback(deltaTime);
             foreach (RemotePlayerEntry entry in remotePlayers.Values) entry.View?.Tick(deltaTime);
             foreach (EffectVisualEntry entry in effectVisuals.Values)

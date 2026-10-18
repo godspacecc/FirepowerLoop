@@ -113,10 +113,24 @@ namespace Game.Tests
         }
         [Test] public void HudKeysInBothLanguages()
         { foreach (var lang in new[] { "zh-CN", "en-US" }) { var text = File.ReadAllText(Path.Combine(Application.dataPath, "Game/Config/Localization", lang + ".json")); Assert.That(text, Does.Contain("ui.arcade.hud.score")); Assert.That(text, Does.Contain("ui.arcade.hud.treasure")); } }
+        [Test] public void OnlineClearedRoundsLabelNextRoundAndKeepFourthRoundRouteChoices()
+        {
+            for (int round = 1; round <= 3; round++)
+            {
+                Apply(new OnlineArcadeBattleSnapshot(1, round, 4, 1, 1, 2, round, 0,
+                    Battle(1, false).Players, null, arenaConfigNumber: 1, awaitingExit: true));
+                Assert.That(view.ExitTargets, Is.EqualTo(new[] { -(round + 1) }), "普通轮出口显示下一轮而非当前主题");
+            }
+            Apply(new OnlineArcadeBattleSnapshot(1, 4, 4, 1, 1, 2, 4, 0,
+                Battle(1, false).Players, null, arenaConfigNumber: 1, awaitingExit: true));
+            Assert.That(view.ExitTargets, Is.EqualTo(new[] { 2, 3 }));
+        }
         private sealed class TestView : IArcadeCombatViewPort
         {
             public readonly Dictionary<int, float> DropOpacities = new();
             public float RewardOpacity;
+            public int[] ExitTargets;
+            public void SetExits(IReadOnlyList<int> destinations, float halfHeight, bool victory) => ExitTargets = destinations.ToArray();
             public void SetDropOpacity(int id, float opacity) => DropOpacities[id] = opacity;
             public void SetTreasureRewardOpacity(float opacity) => RewardOpacity = opacity;
             public readonly HashSet<int> Enemies = new(), Projectiles = new(), Drops = new(); public readonly HashSet<long> RemotePlayers = new();
