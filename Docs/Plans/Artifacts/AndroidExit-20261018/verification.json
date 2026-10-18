@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-18",
+  "android": {
+    "applicationVersion": "0.1.24",
+    "resourceVersion": "20261018142155",
+    "confirmedBy": "device boot-startup.log",
+    "exceptions": [
+      "ArgumentNullException: shader in ArcadeCombatViewController.SetIslandEntryWarning -> SyncIslandEntryWarning -> SyncView",
+      "ArgumentNullException: shader in ArcadeCombatViewController.SetExits -> SyncView"
+    ]
+  },
+  "verification": {
+    "red": [
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate",
+        "Status": "Failed",
+        "Duration": "00:00:00.1600000",
+        "Message": "  依赖随资源加载的 Shader 引用\r\n  Expected: same as <Universal Render Pipeline/Lit (UnityEngine.Shader)>\r\n  But was:  <Universal Render Pipeline/Unlit (UnityEngine.Shader)>\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot",
+        "Status": "Failed",
+        "Duration": "00:00:00.0060000",
+        "Message": "  模板未就绪时延迟表现，不能回退到按名称查找 Shader\r\n  Expected: null\r\n  But was:  <empty>\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FormalExitUsesOnlyLoadedTemplateMaterials",
+        "Status": "Failed",
+        "Duration": "00:00:00.8620000",
+        "Message": "  正式门不需要备用圆柱材质，不能因按名称查找 Shader 失败而阻断创建\r\n  Expected: null\r\n  But was:  <Universal Render Pipeline/Unlit (UnityEngine.Material)>\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FormalGateHasVisibleDirectionAndTriggerRingWithoutBlockingMovement",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FourthRoundStillPresentsBothRouteChoices",
+        "Status": "Passed",
+        "Duration": "00:00:00.8550000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.RoundExitKeepsAuthorityPositionWhileCueAnimatesAndRepeatedSyncDoesNotDuplicate",
+        "Status": "Passed",
+        "Duration": "00:00:00.4780000"
+      }
+    ],
+    "exit": [
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate",
+        "Status": "Passed",
+        "Duration": "00:00:00.1460000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FormalExitUsesOnlyLoadedTemplateMaterials",
+        "Status": "Passed",
+        "Duration": "00:00:00.4810000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FormalGateHasVisibleDirectionAndTriggerRingWithoutBlockingMovement",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.FourthRoundStillPresentsBothRouteChoices",
+        "Status": "Passed",
+        "Duration": "00:00:00.3690000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeExitVisualTests.RoundExitKeepsAuthorityPositionWhileCueAnimatesAndRepeatedSyncDoesNotDuplicate",
+        "Status": "Passed",
+        "Duration": "00:00:00.3630000"
+      }
+    ],
+    "island": [
+      {
+        "Name": "Game.Tests.IslandRoundPresentationTests.FourRealLayoutsWaitForResourcesAndGenerateTheirAuthoritativeMeshes",
+        "Status": "Passed",
+        "Duration": "00:00:00.4560000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundPresentationTests.FourthRoundWarningPrecedesFlameAndClearTurnsBothOff",
+        "Status": "Passed",
+        "Duration": "00:00:00.5030000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundPresentationTests.LateResourceCallbacksCannotRepopulateReleasedMapRoot",
+        "Status": "Passed",
+        "Duration": "00:00:00.3320000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundPresentationTests.ReleasedLocalLayoutCannotLeakIntoFollowingSharedMap",
+        "Status": "Passed",
+        "Duration": "00:00:00.3620000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundPresentationTests.ThirdRoundWreckCollisionAndExitUseTheSameLayout",
+        "Status": "Passed",
+        "Duration": "00:00:00.3980000"
+      }
+    ]
+  },
+  "limits": [
+    "只运行两个真实短类：ArcadeExitVisualTests 最多6项，IslandRoundPresentationTests 最多5项；EditMode/includePassingTests=true",
+    "测试工具TotalTests为发现数量，执行数量按Results及通过/失败计数",
+    "未打包、未发布、未修改设备存档；修复后Android新资源版本尚待设备复测"
+  ]
+}

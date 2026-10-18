@@ -43,6 +43,10 @@ namespace Game
                 string[] required={"Babylon","Forest","TreasureRoom","RouteGate","TreasureEntrance","GoldBar","Gem","ElectricTower"};
                 if(candidate==null || required.Any(n=>candidate.Find(n)==null) || candidate.GetComponentsInChildren<Collider>(true).Length>0)
                     throw new InvalidOperationException("前两场 Content 模板缺失或携带碰撞体");
+                // 方向预告与旧出口复制该材质；发布就绪前确认资源包保留了直接 Shader 引用。
+                var cueMaterial = candidate.Find("RouteGate/ExitCue/GroundRing")?.GetComponent<LineRenderer>()?.sharedMaterial;
+                if (cueMaterial == null || cueMaterial.shader == null)
+                    throw new InvalidOperationException("正式出口光圈材质或 Shader 引用缺失");
                 // 命中反馈属于所有竞技场；后续场地不启用前三场的环境、出口或宝藏覆盖。
                 bulletImpactTemplate = candidate.Find("BulletImpact")?.GetComponent<ParticleSystem>();
                 if (bulletImpactTemplate == null) throw new InvalidOperationException("公共枪弹命中模板缺失");

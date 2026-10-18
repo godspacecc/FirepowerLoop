@@ -1,0 +1,12 @@
+
+[2026-10-17T22:50:21.0178500+08:00] [Error] [LifeCycle] 生命周期阶段 Update 回调异常：System.ArgumentNullException: Value cannot be null.
+Parameter name: shader
+  at Game.ArcadeCombatViewController.SetIslandEntryWarning (UnityEngine.Vector2 position, System.Boolean visible) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.ArcadeCombatSystem.SyncIslandEntryWarning (Game.ArcadeCombatRuntime runtime) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.ArcadeCombatSystem.SyncView (Game.ArcadeCombatRuntime runtime) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.ArcadeCombatSystem.TickCore (Game.ArcadeCombatRuntime runtime, System.Single deltaTime, System.Single shopSeconds) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.ArcadeCombatSystem.TickFrame (Game.ArcadeCombatRuntime runtime, System.Single simulationSeconds) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.ArcadeCombatSystem.OnUpdate () [0x00000] in <00000000000000000000000000000000>:0
+  at Game.LifeCycle.InvokeCallbacks (System.Collections.Generic.List`1[T] callbacks, System.String phase) [0x00000] in <00000000000000000000000000000000>:0
+  at Game.GameStart.Update () [0x00000] in <00000000000000000000000000000000>:0
+Game.Log:Error(Object)

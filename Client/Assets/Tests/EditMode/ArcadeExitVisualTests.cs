@@ -117,5 +117,62 @@ namespace Game.Tests
                 Assert.That(gate.GetComponentInChildren<TextMeshPro>(true).text, Is.Not.Empty);
             }
         }
+
+        [Test] public void FormalExitUsesOnlyLoadedTemplateMaterials()
+        {
+            view.SetExits(new[] { -2 }, 19.5f, false);
+            Assert.That(root.transform.Find("ArcadeRouteExit_-2"), Is.Not.Null);
+            Assert.That(typeof(ArcadeCombatViewController).GetField("exitMaterial", Hidden).GetValue(view),
+                Is.Null, "正式门不需要备用圆柱材质，不能因按名称查找 Shader 失败而阻断创建");
+        }
+
+        [Test] public void EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot()
+        {
+            Set("contentTemplates", null);
+            Assert.DoesNotThrow(() => view.SetIslandEntryWarning(new Vector2(2, 4), true));
+            Assert.That(root.transform.Find("IslandEntryWarning"), Is.Null,
+                "模板未就绪时延迟表现，不能回退到按名称查找 Shader");
+            Set("contentTemplates", Bank().transform.Find("Content"));
+            view.SetIslandEntryWarning(new Vector2(2, 4), true);
+            Assert.That(root.transform.Find("IslandEntryWarning").gameObject.activeSelf, Is.True);
+        }
+
+        [Test] public void EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate()
+        {
+            var templates = UnityEngine.Object.Instantiate(Bank().transform.Find("Content").gameObject);
+            var source = new Material(Bank().transform.Find("Content/RouteGate/Threshold").GetComponent<Renderer>().sharedMaterial);
+            try
+            {
+                source.SetFloat("_Cull", 0);
+                var originalColor = source.GetColor("_BaseColor");
+                templates.transform.Find("RouteGate/ExitCue/GroundRing").GetComponent<LineRenderer>().sharedMaterial = source;
+                Set("contentTemplates", templates.transform);
+                view.SetIslandEntryWarning(new Vector2(2, 4), true);
+                var warning = root.transform.Find("IslandEntryWarning");
+                var material = warning.GetComponent<Renderer>().sharedMaterial;
+                Assert.That(material, Is.Not.SameAs(source), "预告颜色只改实例材质");
+                Assert.That(material.shader, Is.SameAs(source.shader), "依赖随资源加载的 Shader 引用");
+                Assert.That(material.GetFloat("_Cull"), Is.Zero, "保留模板渲染设置");
+                var color = material.GetColor("_BaseColor");
+                Assert.That(color.r, Is.EqualTo(1).Within(.001f));
+                Assert.That(color.g, Is.EqualTo(.72f).Within(.001f));
+                Assert.That(color.b, Is.EqualTo(.08f).Within(.001f));
+                Assert.That(color.a, Is.EqualTo(1).Within(.001f));
+                Assert.That(source.GetColor("_BaseColor"), Is.EqualTo(originalColor));
+                view.SetIslandEntryWarning(Vector2.zero, false);
+                Assert.That(warning.gameObject.activeSelf, Is.False);
+                view.SetIslandEntryWarning(new Vector2(-2, 5), true);
+                Assert.That(warning.localPosition, Is.EqualTo(new Vector3(-2, .08f, 5)));
+                Assert.That(warning.GetComponent<Renderer>().sharedMaterial, Is.SameAs(material));
+                view.End();
+                Assert.That(material == null, Is.True, "离场释放独占材质");
+                Assert.That(source != null, Is.True, "离场不能释放模板材质");
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(templates);
+                UnityEngine.Object.DestroyImmediate(source);
+            }
+        }
     }
 }

@@ -18,9 +18,12 @@ namespace Game
         {
             if (!visible || root == null)
             { if (islandEntryWarning != null) islandEntryWarning.SetActive(false); return; }
+            // 资源未就绪时等下一份快照；不得让缺失 Shader 的异常打断后续出口和角色同步。
+            if (contentTemplates == null) return;
             if (islandEntryWarning == null)
             {
-                islandEntryWarningMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+                // 保留资源包中的直接 Shader 引用及渲染设置，颜色只修改本地图独占副本。
+                islandEntryWarningMaterial = new Material(contentTemplates.Find("RouteGate/ExitCue/GroundRing").GetComponent<LineRenderer>().sharedMaterial);
                 islandEntryWarningMaterial.SetColor("_BaseColor", new Color(1, .72f, .08f, 1));
                 islandEntryWarning = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
                 islandEntryWarning.name = "IslandEntryWarning";

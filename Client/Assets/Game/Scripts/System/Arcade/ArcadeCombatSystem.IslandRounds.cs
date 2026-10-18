@@ -117,7 +117,7 @@ namespace Game
             { FailIslandTransition(runtime, error); return false; }
             runtime.IslandFirstPersonSuspended = false;
             runtime.IslandTransitionPending = false;
-            this.GetSystem<AudioSystem>()?.PlayUiSound("ArcadeUiConfirm");
+            // 开场只提交就绪状态；全局确认音会在未射击时产生突兀的枪响感。
             PublishHud(runtime);
             return true;
         }
@@ -216,7 +216,7 @@ namespace Game
             view.EndFirstPerson();
         }
 
-        /// <summary>入口批次依据已经生成的预算进度固定换向，生成前先完成声音及方向预告。</summary>
+        /// <summary>入口批次依据已经生成的预算进度固定换向，生成前先完成方向预告。</summary>
         private bool IslandEntryIsReady(ArcadeCombatRuntime runtime, float seconds)
         {
             int batchCount = runtime.WaveIndex == 1 ? 3 : 2;
@@ -226,7 +226,7 @@ namespace Game
             {
                 runtime.IslandEntryBatch = desiredBatch;
                 runtime.IslandEntryWarningRemaining = IslandWarningSeconds;
-                this.GetSystem<AudioSystem>()?.PlayUiSound("ArcadeUiConfirm");
+                // 换向沿用可见预告，不在活动战斗中额外请求全局确认音。
             }
             if (runtime.IslandEntryWarningRemaining <= 0) return true;
             runtime.IslandEntryWarningRemaining = Mathf.Max(0, runtime.IslandEntryWarningRemaining - seconds);

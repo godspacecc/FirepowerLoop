@@ -347,10 +347,11 @@ namespace Game
             var count = victory ? 1 : destinations.Count;
             if (count == 0) return;
             bool formalExit = roundLayout != null || contentArena <= 3 && !victory;
-            if (formalExit && contentTemplates == null) { exitVisualIdentity = null; return; }
-            if (exitMaterial == null)
+            if (contentTemplates == null) { exitVisualIdentity = null; return; }
+            // 正式门自带材质；旧圆柱出口也从资源引用复制，Android Host 不依赖 Shader 名称查找。
+            if (!formalExit && exitMaterial == null)
             {
-                exitMaterial = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+                exitMaterial = new Material(contentTemplates.Find("RouteGate/ExitCue/GroundRing").GetComponent<LineRenderer>().sharedMaterial);
                 exitMaterial.SetColor("_BaseColor", new Color(.15f, .85f, .55f, 1f));
             }
             for (var index = 0; index < count; index++)

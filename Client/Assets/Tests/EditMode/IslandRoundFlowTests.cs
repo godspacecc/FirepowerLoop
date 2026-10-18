@@ -5,7 +5,9 @@ using System.Reflection;
 using Luban;
 using NUnit.Framework;
 using QFramework;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.Audio;
 using FirepowerLoop.Arcade;
 
 namespace Game.Tests
@@ -92,6 +94,51 @@ namespace Game.Tests
             Assert.That(saved.IslandRoundCheckpoint.MapId, Is.EqualTo("island.round.1"));
             Assert.That(saved.IslandRoundCheckpoint.PlayerHealth, Is.EqualTo(73));
             Assert.That(saved.IslandRoundCheckpoint.Bombs, Is.EqualTo(1));
+        }
+
+        [Test] public void RoundStartDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(false);
+        [Test] public void EntryBatchDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(true);
+
+        private void AssertNoUnsolicitedSound(bool entryBatch)
+        {
+            if (entryBatch) Call("StartIslandRound", runtime, 0, null);
+            using (var capture = new SoundCapture(architecture))
+            {
+                if (entryBatch)
+                {
+                    // 第一轮110名敌人，已生成55名时切换下一入场方向。
+                    while (runtime.SpawnQueue.Count > 55) runtime.SpawnQueue.Dequeue();
+                    Call("TickSpawning", runtime, .01f);
+                    Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
+                    Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
+                }
+                else
+                {
+                    Call("StartIslandRound", runtime, 0, null);
+                    Assert.That(runtime.IslandTransitionPending, Is.False);
+                }
+                Assert.That(capture.Requests, Is.Empty, "未射击时，开场及入场换向不能播放突兀的全局确认音");
+                Assert.That(runtime.PlayerFireSequence, Is.Zero);
+            }
+        }
+
+        [Test] public void EntryBatchWarningKeepsExistingEnemiesMovingWithoutFiring()
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            Call("TickSpawning", runtime, 5f);
+            var enemy = System.Linq.Enumerable.First(runtime.Enemies.Values);
+            enemy.EnteringIsland = false;
+            enemy.Position = runtime.PlayerPosition + Vector2.up * 4f;
+            var before = enemy.Position;
+            while (runtime.SpawnQueue.Count > 55) runtime.SpawnQueue.Dequeue();
+
+            combat.Tick(runtime, .01f);
+
+            Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
+            Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "预告只等待下一批生成");
+            Assert.That(enemy.Position, Is.Not.EqualTo(before), "预告期间现有敌人仍须正常推进");
+            Assert.That(runtime.PlayerFireSequence, Is.Zero);
         }
 
         [Test] public void ResourceWaitFreezesEffectsAndDoesNotCommitTargetUntilReady()
@@ -334,6 +381,62 @@ namespace Game.Tests
             Assert.That(projectile.Position, Is.Not.EqualTo(before), "拾取阶段不能留下冻结弹丸");
             combat.Tick(runtime, 10f);
             Assert.That(runtime.Projectiles, Is.Empty); Assert.That(runtime.WaveIndex, Is.Zero);
+        }
+
+        /// <summary>保留真实声音系统，仅截获资源加载边界；不触碰正式资源或玩家存档。</summary>
+        private sealed class SoundCapture : IResourceLoader, IDisposable
+        {
+            public readonly List<string> Requests = new();
+            private readonly IResourceLoader previous = ResourceLoader.Current;
+            private readonly GameObject root;
+            private readonly AudioSystem audio;
+
+            public SoundCapture(Game architecture)
+            {
+                root = new GameObject("IslandRoundAudioTest");
+                try
+                {
+                    var bindings = root.AddComponent<AudioRootBindings>();
+                    bindings.Mixer = AssetDatabase.LoadAssetAtPath<AudioMixer>("Assets/Game/Audio/FirepowerLoopAudioMixer.mixer");
+                    bindings.MusicGroup = bindings.Mixer.FindMatchingGroups("Music")[0];
+                    bindings.SoundGroup = bindings.Mixer.FindMatchingGroups("Sound")[0];
+                    bindings.MusicSourceA = Child("MusicA").AddComponent<AudioSource>();
+                    bindings.MusicSourceB = Child("MusicB").AddComponent<AudioSource>();
+                    bindings.SoundPoolRoot = Child("Pool").transform;
+                    bindings.PlayingSoundRoot = Child("Playing").transform;
+                    ResourceLoader.Use(this);
+                    architecture.RegisterModel(new AudioSettingsModel());
+                    audio = new AudioSystem(); architecture.RegisterSystem(audio);
+                    ((ICanInit)audio).Init();
+                    Assert.That(audio.PooledSourceCount, Is.EqualTo(8), "必须启用真实声音系统才能捕获遗漏调用");
+                }
+                catch
+                {
+                    Dispose();
+                    throw;
+                }
+            }
+
+            private GameObject Child(string name)
+            {
+                var child = new GameObject(name); child.transform.SetParent(root.transform, false); return child;
+            }
+
+            public T LoadAsset<T>(string path) where T : UnityEngine.Object => null;
+            public ResourceLoadHandle LoadAssetAsync<T>(string path, Action<T> onLoaded) where T : UnityEngine.Object
+            {
+                Requests.Add(path); onLoaded?.Invoke(null); return new ResourceLoadHandle(path);
+            }
+            public void Release(ResourceLoadHandle handle) { }
+            public void Dispose()
+            {
+                try { audio?.Deinit(); }
+                finally
+                {
+                    ResourceLoader.Use(previous);
+                    UnityEngine.Object.DestroyImmediate(root);
+                }
+            }
         }
 
         private sealed class View : IArcadeCombatViewPort

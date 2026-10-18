@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-18",
+  "deviceApplicationVersion": "0.1.24",
+  "deviceResourceVersion": "20261018142155",
+  "cause": {
+    "unsolicitedSound": "ArcadeUiConfirm requested at island round ready and entry batch change",
+    "stalledPresentation": "Android runtime shader null exception in SetIslandEntryWarning interrupts SyncView",
+    "confirmPeak": 0.9999695,
+    "basicGunPeak": 0.3684082
+  },
+  "red": {
+    "RoundStartDoesNotRequestUnsolicitedSound": "Failed: unexpected Audio/Sound/ArcadeUiConfirm",
+    "EntryBatchDoesNotRequestUnsolicitedSound": "Failed: unexpected Audio/Sound/ArcadeUiConfirm"
+  },
+  "editMode": {
+    "IslandRoundFlowTests": 25,
+    "ArcadeExitVisualTests": 6,
+    "ArcadeCombatAudioTests": 2,
+    "failed": 0,
+    "includePassingTests": true
+  },
+  "notes": [
+    "Initial parameterized method filter matched zero; no fallback execution. Replaced with explicit independent test methods.",
+    "MCP Summary.TotalTests includes discovered tests; counts above come from PassedTests and matching Results.",
+    "Shader/exit fixes and audio fixes are included together in the user-requested commit after reviewing the combined scope.",
+    "Pre-commit rerun: IslandRoundFlowTests 25/25, ArcadeExitVisualTests 6/6, ArcadeCombatAudioTests 2/2. All EditMode with includePassingTests=true.",
+    "No Player Build, asset bundle build, device reinstall, or updated mobile runtime verification performed; mobile retest remains pending."
+  ]
+}
