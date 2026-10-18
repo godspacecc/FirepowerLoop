@@ -30,6 +30,8 @@ public static class ArcadeInfectedBruteAuthoring
             body.name = "InfectedBruteBody";
             body.transform.localScale = Vector3.one * 1.2f;
             var animator = body.GetComponent<Animator>();
+            if (body.GetComponent<CharacterAnimationEventReceiver>() == null)
+                body.AddComponent<CharacterAnimationEventReceiver>();
             if (animator.avatar == null || !animator.avatar.isValid || !animator.avatar.isHuman)
                 throw new InvalidOperationException("重型Avatar无效，保持旧Prefab");
             animator.runtimeAnimatorController = prior.runtimeAnimatorController;

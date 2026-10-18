@@ -1,0 +1,10 @@
+受控队首重型与一次近身摆位；其余由正式Spawn／追击／开火／受伤／死亡／池化驱动，不代表自然刷怪分布或实体机性能。
+2026-10-18T02:16:33.2295590Z Spawn id=5 view=-146854 mesh=Barbarian Wyder health=20 speed=2.2
+2026-10-18T02:16:38.2375969Z Contact attacks=4 playerHealth=100->50
+2026-10-18T02:16:38.2717787Z 受控1点正式伤害后Health=19
+2026-10-18T02:16:44.2748076Z 实弹击杀完成，死亡／回池等待
+2026-10-18T02:16:59.2990605Z FAILED System.Exception: 重型复用生成超时
+  at ArcadeHeavyCombatProbe.Wait (System.Func`1[TResult] condition, System.Double seconds, System.String label) [0x0004b] in <7f31b62596534e17bd52e1275de4cc7b>:0 
+  at Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1[TStateMachine].GetResult (System.Int16 token) [0x00000] in .\Library\PackageCache\com.cysharp.unitask@2.5.11\Runtime\CompilerServices\StateMachineRunner.cs:218 
+  at ArcadeHeavyCombatProbe.Run () [0x00bd3] in <7f31b62596534e17bd52e1275de4cc7b>:0 
+2026-10-18T02:16:59.3577395Z Restored store/model/input; mapNull=True

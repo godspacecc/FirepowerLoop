@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3500,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.0195879\"},\"Results\":[{\"Name\":\"Game.Tests.HeavyEnemyVisualTests.BruteAnimatorReceivesRetargetedFootAndHitEvents\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0180000\",\"Message\":\"  \\u65B0\\u6A21\\u578B\\u7684Animator\\u8282\\u70B9\\u5FC5\\u987B\\u4FDD\\u7559\\u8DD1\\u6B65\\u843D\\u811A\\u53CA\\u653B\\u51FB\\u4E8B\\u4EF6\\u63A5\\u6536\\u5668\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3500,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0195879"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HeavyEnemyVisualTests.BruteAnimatorReceivesRetargetedFootAndHitEvents",
+          "Status": "Failed",
+          "Duration": "00:00:00.0180000",
+          "Message": "  新模型的Animator节点必须保留跑步落脚及攻击事件接收器\r\n  Expected: not null\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

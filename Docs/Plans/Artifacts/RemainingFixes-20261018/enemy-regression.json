@@ -1,0 +1,93 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3500,\"PassedTests\":14,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:04.3650259\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.AllSharedWeaponsHaveUsableWorldDefinitions\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.5430000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_ExposeSixDeterministicBodyVariants\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1280000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyRuntime_ResetClearsAttackPresentationSequence\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.4020000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcadeHealthBarRule_HidesNormalFullHealthAndExpiresAfterHitWindow\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.ArcherEnemy_HumanoidAnimatorUsesTwoHandedAttackAndLeftHandBow\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1610000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.BasicEnemy_HumanoidAnimatorUsesInPlaceFormalAssets\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1590000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.BossVisuals_AreLargerAndUseDedicatedMaterial\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.GeneratedCatalog_UsesOnlyArcadeSpecificEnemyIds\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3510000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.GeneratedEnemyWeaponIdsResolveToTheSharedCatalog\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.4640000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.GrayboxPlayer_ArcadeMarkerReplacesRedundantWorldHealthBar\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.ArcadeEnemyVisualTests.PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3500,
+        "PassedTests": 14,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.3650259"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.AllSharedWeaponsHaveUsableWorldDefinitions",
+          "Status": "Passed",
+          "Duration": "00:00:00.5430000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_ExposeSixDeterministicBodyVariants",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies",
+          "Status": "Passed",
+          "Duration": "00:00:01.1280000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyRuntime_ResetClearsAttackPresentationSequence",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops",
+          "Status": "Passed",
+          "Duration": "00:00:00.4020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeHealthBarRule_HidesNormalFullHealthAndExpiresAfterHitWindow",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcherEnemy_HumanoidAnimatorUsesTwoHandedAttackAndLeftHandBow",
+          "Status": "Passed",
+          "Duration": "00:00:00.1610000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.BasicEnemy_HumanoidAnimatorUsesInPlaceFormalAssets",
+          "Status": "Passed",
+          "Duration": "00:00:00.1590000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.BossVisuals_AreLargerAndUseDedicatedMaterial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedCatalog_UsesOnlyArcadeSpecificEnemyIds",
+          "Status": "Passed",
+          "Duration": "00:00:00.3510000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedEnemyWeaponIdsResolveToTheSharedCatalog",
+          "Status": "Passed",
+          "Duration": "00:00:00.4640000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.GrayboxPlayer_ArcadeMarkerReplacesRedundantWorldHealthBar",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeEnemyVisualTests.PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

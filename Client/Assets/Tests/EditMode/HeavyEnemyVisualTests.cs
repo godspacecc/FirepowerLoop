@@ -12,6 +12,16 @@ namespace Game.Tests
         private const string Path = "Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab";
 
         [Test]
+        public void BruteAnimatorReceivesRetargetedFootAndHitEvents()
+        {
+            var animator = AssetDatabase.LoadAssetAtPath<GameObject>(Path).GetComponentInChildren<Animator>(true);
+            var receiver = animator.GetComponent<CharacterAnimationEventReceiver>();
+            Assert.That(receiver, Is.Not.Null, "新模型的Animator节点必须保留跑步落脚及攻击事件接收器");
+            foreach (string method in new[] { "FootL", "FootR", "Hit" })
+                Assert.That(receiver.GetType().GetMethod(method), Is.Not.Null, method);
+        }
+
+        [Test]
         public void BruteUsesLocalHumanoidCandidateAndKeepsCombatRoot()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
