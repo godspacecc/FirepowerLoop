@@ -26,7 +26,7 @@ namespace Game
             UI.BtnExit.onClick.AddListener(Hide);
             UI.GeneralTabButton.onClick.AddListener(() => ShowPage(Page.General));
             UI.AudioTabButton.onClick.AddListener(() => ShowPage(Page.Audio));
-            UI.ControlsTabButton.onClick.AddListener(OpenControls);
+            UI.ControlsTabButton.onClick.AddListener(() => ShowPage(Page.Controls));
             UI.NetworkTabButton.onClick.AddListener(() => ShowPage(Page.Network));
 
             general.SetUI(UI.SettingGeneralRoot.GetComponent<SettingGeneralPageUI>());
@@ -41,22 +41,15 @@ namespace Game
 
         protected override void OnShow() => RefreshNavigation();
 
-        /// <summary>恢复设置分页；桌面操作页切到手机模式时回到通用页，不自动弹出编辑器。</summary>
+        /// <summary>手机只在通用页提供布局按钮；模式切换时重绘当前页，避免保留桌面列表或空白内容。</summary>
         private void RefreshNavigation()
         {
-            ShowPage(lastPage == Page.Controls && this.GetSystem<MobileInputSystem>().IsMobileInputMode
+            var mobile = this.GetSystem<MobileInputSystem>().IsMobileInputMode;
+            UI.ControlsTabButton.gameObject.SetActive(!mobile);
+            current?.Hide();
+            current = null;
+            ShowPage(lastPage == Page.Controls && mobile
                 ? Page.General : lastPage);
-        }
-
-        /// <summary>手机直接打开全屏布局编辑器，保留当前设置页供保存或取消后返回；桌面仍使用热键分页。</summary>
-        private void OpenControls()
-        {
-            if (this.GetSystem<MobileInputSystem>().IsMobileInputMode)
-            {
-                UIHelper.ShowUI<MobileControlLayoutUICtrl>();
-                return;
-            }
-            ShowPage(Page.Controls);
         }
 
         protected override void OnHide()

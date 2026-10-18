@@ -5,12 +5,12 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>呈现通用设置并提交选择；安卓显示语言与帧率，桌面显示语言与窗口参数，不持有权威设置。</summary>
+    /// <summary>呈现通用设置；手机提供语言、帧率与布局编辑入口，桌面提供语言与窗口参数，不持有权威设置。</summary>
     public sealed class SettingGeneralPageCtrl : BasePageCtrl
     {
-        private enum Row { Language, Resolution, WindowMode, FrameRate }
+        private enum Row { Language, Resolution, WindowMode, FrameRate, ControlLayout }
         private static readonly Row[] DesktopRows = { Row.Language, Row.Resolution, Row.WindowMode };
-        private static readonly Row[] MobileRows = { Row.Language, Row.FrameRate };
+        private static readonly Row[] MobileRows = { Row.Language, Row.FrameRate, Row.ControlLayout };
         private IReadOnlyList<Row> rows = DesktopRows;
         private SettingGeneralPageUI UI => BaseUI as SettingGeneralPageUI;
 
@@ -20,7 +20,8 @@ namespace Game
             UI.ResetButton.onClick.AddListener(ResetPage);
             this.RegisterEvent<LanguageChangedEvent>(OnLanguageChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
-        protected override void OnShow() { rows = ShouldShowDesktopDisplaySettings(Application.platform) ? DesktopRows : MobileRows; Refresh(); }
+        /// <summary>安卓和编辑器手机模拟使用同一通用设置列表，操作按钮不作为独立分页。</summary>
+        protected override void OnShow() { rows = this.GetSystem<MobileInputSystem>().IsMobileInputMode ? MobileRows : DesktopRows; Refresh(); }
         protected override void OnHide() { }
 
         private void Refresh() { UI.SettingList.totalCount = rows.Count; UI.SettingList.RefreshCells(); }
@@ -56,6 +57,11 @@ namespace Game
                     row.TextSetting.text = Loc.T("ui.settings.frame_rate");
                     row.TextContext.text = display.CurrentMobileFrameRate.Value + " FPS";
                     row.BtnContext.onClick.AddListener(SelectFrameRate);
+                    break;
+                case Row.ControlLayout:
+                    row.TextSetting.text = Loc.T("ui.settings.category.controls");
+                    row.TextContext.text = Loc.T("ui.mobile_layout.open");
+                    row.BtnContext.onClick.AddListener(() => UIHelper.ShowUI<MobileControlLayoutUICtrl>());
                     break;
                 default:
                     row.TextSetting.text = Texts.SettingsWindowMode;

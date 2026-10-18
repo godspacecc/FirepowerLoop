@@ -840,17 +840,20 @@ namespace Game.Tests
 
         [TestCase(false)]
         [TestCase(true)]
-        public void Setting_MobileControlsOpenEditorDirectlyAndReturnAfterCancelOrSave(bool save)
+        public void Setting_MobileGeneralActionOpensEditorAndReturnsToPopulatedGeneralPage(bool save)
         {
             ConfigureControlLayoutEntry(true);
             var setting = UIHelper.ShowUI<SettingUICtrl>();
             var ui = GetBaseUI<SettingUI>(setting);
-            ui.AudioTabButton.onClick.Invoke();
-
-            ui.ControlsTabButton.onClick.Invoke();
+            Assert.That(ui.ControlsTabButton.gameObject.activeSelf, Is.False, "手机操作入口不是左侧分页");
+            Assert.That(ui.SettingGeneralRoot.activeSelf, Is.True);
+            var rows = General(ui).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
+            Assert.That(rows.Select(row => row.TextSetting.text), Is.EqualTo(new[] { "语言", "帧率上限", "操作" }));
+            Assert.That(rows[2].TextContext.text, Is.EqualTo("自定义操控布局"));
+            rows[2].BtnContext.onClick.Invoke();
 
             var editor = UIHelper.GetUICtrl<MobileControlLayoutUICtrl>();
-            Assert.That(editor, Is.Not.Null, "手机点击操作必须直接打开全屏编辑器");
+            Assert.That(editor, Is.Not.Null, "通用页操作按钮直接打开全屏编辑器");
             Assert.That(editor.IsShow(), Is.True);
             Assert.That(UIHelper.GetTopmostBlockingUI(), Is.SameAs(editor));
             Assert.That(ui.SettingMobileRoot.activeSelf, Is.False, "不再显示二次入口页");
@@ -862,16 +865,17 @@ namespace Game.Tests
             Assert.That(editor.IsShow(), Is.False);
             Assert.That(setting.IsShow(), Is.True);
             Assert.That(UIHelper.GetTopmostBlockingUI(), Is.SameAs(setting));
-            Assert.That(ui.SettingAudioRoot.activeSelf, Is.True, "返回进入前的设置页");
-            Assert.That(ui.ControlsTabButton.interactable, Is.True, "返回后仍可再次点击操作");
+            Assert.That(ui.SettingGeneralRoot.activeSelf, Is.True, "保存或取消后通用页仍有内容");
+            Assert.That(General(ui).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false), Has.Length.EqualTo(3));
             Assert.That(Game.Interface.GetModel<MobileControlLayoutModel>().ToData().Move.Scale,
                 Is.EqualTo(save ? 1.4f : 1f));
-            ui.ControlsTabButton.onClick.Invoke();
+            rows[2].BtnContext.onClick.Invoke();
             Assert.That(editor.IsShow(), Is.True);
             editorUi.CancelButton.onClick.Invoke();
             setting.Hide(); setting.Show();
             Assert.That(editor.IsShow(), Is.False, "重新打开设置不能自动进入编辑器");
-            Assert.That(ui.SettingAudioRoot.activeSelf, Is.True);
+            Assert.That(ui.SettingGeneralRoot.activeSelf, Is.True);
+            Assert.That(General(ui).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false), Has.Length.EqualTo(3));
         }
 
         [Test]
@@ -883,23 +887,33 @@ namespace Game.Tests
             ui.ControlsTabButton.onClick.Invoke();
             Assert.That(ui.SettingControlsRoot.activeSelf, Is.True);
             Assert.That(Controls(ui).HotKeyList.GetComponentsInChildren<HotKeyItemBoxUI>(false), Is.Not.Empty);
-            Assert.That(ui.ControlsTabButton.interactable, Is.False);
+            Assert.That(ui.ControlsTabButton.gameObject.activeSelf, Is.True);
             Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>(), Is.Null);
 
             Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(true);
             Assert.That(ui.SettingControlsRoot.activeSelf, Is.False);
             Assert.That(ui.SettingMobileRoot.activeSelf, Is.False);
             Assert.That(ui.SettingGeneralRoot.activeSelf, Is.True);
-            Assert.That(ui.ControlsTabButton.interactable, Is.True);
+            Assert.That(ui.ControlsTabButton.gameObject.activeSelf, Is.False);
             Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>(), Is.Null);
-            ui.ControlsTabButton.onClick.Invoke();
+            General(ui).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false)[2].BtnContext.onClick.Invoke();
             Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>().IsShow(), Is.True);
+            Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
+            Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>().IsShow(), Is.False);
+            Assert.That(ui.ControlsTabButton.gameObject.activeSelf, Is.True);
+            Assert.That(General(ui).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false)
+                .Select(row => row.TextSetting.text), Is.EqualTo(new[] { "语言", "窗口大小", "窗口模式" }));
+            ui.ControlsTabButton.onClick.Invoke();
+            Assert.That(ui.SettingControlsRoot.activeSelf, Is.True);
         }
 
         /// <summary>设置宿主使用已有夹具，按键编辑器加载正式Prefab验证真实保存、取消与浮层路径。</summary>
         private static void ConfigureControlLayoutEntry(bool mobile)
         {
             var architecture = Game.Interface;
+            var localization = architecture.GetUtility<LocalizationUtility>();
+            localization.LoadFromJson("zh-CN", File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));
+            localization.LoadFromJson("en-US", File.ReadAllText("Assets/Game/Config/Localization/en-US.json"));
             architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(mobile);
             UIHelper.SetPrefabLoaderForTests(path =>
             {
