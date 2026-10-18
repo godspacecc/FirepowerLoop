@@ -1,0 +1,9 @@
+正式Boot／新局按钮，隔离临时档；资源准备端口延迟1200ms仅为画面捕获，不代表自然加载耗时。
+LoadingVisible=True artwork=Assets/Game/Art/UI/Start/ArcadeIslandInfectedBackground.png
+EnteredPlaying=True LoadingHidden=True map=map.firepowerloop.arcade run=06c130a3515848a3beacd074c8c219ac
+SettledArena transitioning=False casual=True waveIndex=0
+FAILED System.InvalidOperationException: 预期观察中断：验证已入局后的依赖与菜单恢复
+  at ArcadeLoadingFlowProbe.Run (System.Threading.CancellationToken token) [0x00905] in <7d76f29b558a4c018d47d19cc7bbc8e3>:0 
+RestoredStore=True mapHandle=null
+RestoredModelAndMenu=True new=True continue=False
+PASS 预期异常后恢复模型、依赖与菜单，可在同一Play继续

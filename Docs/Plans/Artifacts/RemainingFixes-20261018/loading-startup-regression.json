@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3500,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.3067461\"},\"Results\":[{\"Name\":\"Game.Tests.StartupGameplayResourceTests.CancelledOrStaleEntryDoesNotQueryResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.StartupGameplayResourceTests.ReadyEntryCompletesWithoutWaitingForSeparateDownloadService\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.StartupGameplayResourceTests.StartupIncludesCoreAndArcadeResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3500,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3067461"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.StartupGameplayResourceTests.CancelledOrStaleEntryDoesNotQueryResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.StartupGameplayResourceTests.ReadyEntryCompletesWithoutWaitingForSeparateDownloadService",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.StartupGameplayResourceTests.StartupIncludesCoreAndArcadeResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

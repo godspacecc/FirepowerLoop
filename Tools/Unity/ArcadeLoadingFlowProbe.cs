@@ -16,18 +16,25 @@ public static class ArcadeLoadingFlowProbe
     private const string Output = "Temp/LoadingFlow-20261018";
     private const string OwnerKey = "FirepowerLoop.LoadingProbe.Assembly";
     private static object store, clock, failure;
+    private static object originalRun, originalPhase;
+    private static bool originalNewButton, originalContinueButton;
     private static string directory, runId;
     private static IGameplayResourcePreparation preparation;
     private static CancellationTokenSource cancellation;
     private static bool running;
+    private static bool interruptAfterEntry;
     private static readonly BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
 
-    public static string Start()
+    public static string Start() => Begin(false);
+    /// <summary>只在临时局已完整进入后注入观察异常，验证相同Play内失败收尾，不中断正式开局在途事务。</summary>
+    public static string StartFailure() => Begin(true);
+    private static string Begin(bool interrupt)
     {
         if (!EditorApplication.isPlaying || Application.dataPath != "E:/GitHub/FirepowerLoop/Client/Assets") throw new Exception("需本项目Play");
         var prior = Owner();
         if (prior != null && (bool)prior.GetField("running", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null)) throw new Exception("已有加载观察事务");
         SessionState.SetString(OwnerKey, typeof(ArcadeLoadingFlowProbe).Assembly.FullName);
+        interruptAfterEntry = interrupt;
         running = true; cancellation = new CancellationTokenSource(); Run(cancellation.Token).Forget(); return "正式加载流程观察已启动";
     }
 
@@ -53,6 +60,12 @@ public static class ArcadeLoadingFlowProbe
             var a = global::Game.Game.Interface;
             var runs = a.GetSystem<ArcadeRunSystem>();
             store = RunField("store").GetValue(runs); clock = RunField("clock").GetValue(runs); failure = RunField("nextDeleteFailureForTests").GetValue(runs);
+            var runModel = a.GetModel<ArcadeRunModel>();
+            originalRun = typeof(ArcadeRunModel).GetField("current", Hidden).GetValue(runModel);
+            originalPhase = typeof(ArcadeRunModel).GetField("<Phase>k__BackingField", Hidden).GetValue(runModel);
+            var originalMenu = (StartUI)typeof(BaseUICtrl).GetField("BaseUI", Hidden).GetValue(UIHelper.GetUICtrl<StartUICtrl>());
+            originalNewButton = originalMenu.BtnNewGame.gameObject.activeSelf;
+            originalContinueButton = originalMenu.BtnContinue.gameObject.activeSelf;
             directory = Path.Combine(Path.GetTempPath(), "FirepowerLoading-" + Guid.NewGuid().ToString("N"));
             runs.ConfigureForTests(directory);
             preparation = a.GetUtility<IGameplayResourcePreparation>();
@@ -86,18 +99,37 @@ public static class ArcadeLoadingFlowProbe
             if (transitioning) throw new Exception("短时观察后首轮仍未完成准备");
             ScreenCapture.CaptureScreenshot(Output + "/entered-game.png");
             await UniTask.Delay(200, true, cancellationToken: token);
+            if (interruptAfterEntry) throw new InvalidOperationException("预期观察中断：验证已入局后的依赖与菜单恢复");
             await Cleanup();
+            VerifyRestored();
             File.AppendAllText(Output + "/flow.log", "PASS 正式新局／真实背景／完成隐藏／放弃返回／恢复依赖\n");
         }
         catch (Exception e)
         {
             File.AppendAllText(Output + "/flow.log", "FAILED " + e + "\n");
-            try { await Cleanup(); } catch (Exception cleanup) { File.AppendAllText(Output + "/flow.log", "CLEANUP FAILED " + cleanup + "\n"); }
+            try
+            {
+                await Cleanup(); VerifyRestored();
+                if (interruptAfterEntry && e.Message.StartsWith("预期观察中断")) File.AppendAllText(Output + "/flow.log", "PASS 预期异常后恢复模型、依赖与菜单，可在同一Play继续\n");
+            }
+            catch (Exception cleanup) { File.AppendAllText(Output + "/flow.log", "CLEANUP FAILED " + cleanup + "\n"); }
         }
         finally { running = false; cancellation?.Dispose(); cancellation = null; }
     }
 
     private static FieldInfo RunField(string name) => typeof(ArcadeRunSystem).GetField(name, Hidden);
+
+    private static void VerifyRestored()
+    {
+        var a = global::Game.Game.Interface; var model = a.GetModel<ArcadeRunModel>();
+        if (!ReferenceEquals(typeof(ArcadeRunModel).GetField("current", Hidden).GetValue(model), originalRun) || !Equals(model.Phase, originalPhase))
+            throw new Exception("观察结束后临时结果仍残留在ArcadeRunModel");
+        var menu = UIHelper.GetUICtrl<StartUICtrl>();
+        var ui = (StartUI)typeof(BaseUICtrl).GetField("BaseUI", Hidden).GetValue(menu);
+        if (!menu.IsShow() || ui.BtnNewGame.gameObject.activeSelf != originalNewButton || ui.BtnContinue.gameObject.activeSelf != originalContinueButton)
+            throw new Exception("恢复依赖后菜单仍展示临时存档入口");
+        File.AppendAllText(Output + "/flow.log", "RestoredModelAndMenu=True new=" + originalNewButton + " continue=" + originalContinueButton + "\n");
+    }
 
     private static async UniTask Cleanup()
     {
@@ -122,7 +154,13 @@ public static class ArcadeLoadingFlowProbe
             if (store != null)
             {
                 RunField("store").SetValue(runs, store); RunField("clock").SetValue(runs, clock); RunField("nextDeleteFailureForTests").SetValue(runs, failure);
-                if (preparation != null) a.RegisterUtility(preparation);
+                a.RegisterUtility<IGameplayResourcePreparation>(preparation);
+                var model = a.GetModel<ArcadeRunModel>();
+                typeof(ArcadeRunModel).GetField("current", Hidden).SetValue(model, originalRun);
+                typeof(ArcadeRunModel).GetField("<Phase>k__BackingField", Hidden).SetValue(model, originalPhase);
+                // 先恢复状态与依赖，再让菜单按原store重读入口，不能残留临时放弃结果。
+                if (a.GetModel<MapSceneModel>().CurrentHandle == null && a.GetModel<AppStateModel>().CurrentState.Value == AppState.Paused)
+                { UIHelper.HideUI<StartUICtrl>(); UIHelper.ShowUI<StartUICtrl>(); }
                 File.AppendAllText(Output + "/flow.log", "RestoredStore=" + ReferenceEquals(RunField("store").GetValue(runs), store) + " mapHandle=" + (a.GetModel<MapSceneModel>().CurrentHandle == null ? "null" : "present") + "\n");
                 store = null;
             }

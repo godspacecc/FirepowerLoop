@@ -1,0 +1,8 @@
+正式Boot／新局按钮，隔离临时档；资源准备端口延迟1200ms仅为画面捕获，不代表自然加载耗时。
+LoadingVisible=True artwork=Assets/Game/Art/UI/Start/ArcadeIslandInfectedBackground.png
+EnteredPlaying=True LoadingHidden=True map=map.firepowerloop.arcade run=df2bb8bb2cd94ebfb5e71b0a6491acfa
+SettledArena transitioning=False casual=True waveIndex=0
+RestoredStore=True mapHandle=null
+FAILED System.Exception: 观察结束后临时结果仍残留在ArcadeRunModel
+  at ArcadeLoadingFlowProbe.VerifyRestored () [0x00055] in <575cced6a211491e91dd7cd66702a478>:0 
+  at ArcadeLoadingFlowProbe.Run (System.Threading.CancellationToken token) [0x00960] in <575cced6a211491e91dd7cd66702a478>:0 

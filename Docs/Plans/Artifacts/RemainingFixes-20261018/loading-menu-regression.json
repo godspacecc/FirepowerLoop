@@ -1,0 +1,48 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3500,\"PassedTests\":5,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.5310382\"},\"Results\":[{\"Name\":\"Game.Tests.StartMenuPresentationTests.CommonThemeDoesNotOverwriteStartPrefabGraphics\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0520000\"},{\"Name\":\"Game.Tests.StartMenuPresentationTests.EveryMenuButtonRequestsOneUiClickSoundWithoutReplacingBusinessAction\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0430000\"},{\"Name\":\"Game.Tests.StartMenuPresentationTests.MenuKeepsPrimaryActionsRightAndAuxiliaryActionsAtBottom\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.StartMenuPresentationTests.PointerCrossingMenuGapsDoesNotRestoreFirstItemOrOldKeyboardFocus\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0340000\"},{\"Name\":\"Game.Tests.StartMenuPresentationTests.SelectionMarkFollowsHoverAndKeyboardFocusAndResetsAfterHide\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0120000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3500,
+        "PassedTests": 5,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5310382"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.CommonThemeDoesNotOverwriteStartPrefabGraphics",
+          "Status": "Passed",
+          "Duration": "00:00:00.0520000"
+        },
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.EveryMenuButtonRequestsOneUiClickSoundWithoutReplacingBusinessAction",
+          "Status": "Passed",
+          "Duration": "00:00:00.0430000"
+        },
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.MenuKeepsPrimaryActionsRightAndAuxiliaryActionsAtBottom",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.PointerCrossingMenuGapsDoesNotRestoreFirstItemOrOldKeyboardFocus",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.SelectionMarkFollowsHoverAndKeyboardFocusAndResetsAfterHide",
+          "Status": "Passed",
+          "Duration": "00:00:00.0120000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
