@@ -1,0 +1,29 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3519,
+      "PassedTests": 3,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6596372"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.CiBuildSessionTests.CaptureFailureStillRestoresNormalStateRoute",
+        "Status": "Passed",
+        "Duration": "00:00:00.1590000"
+      },
+      {
+        "Name": "Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\"PC\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.2720000"
+      },
+      {
+        "Name": "Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\"Android\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.2350000"
+      }
+    ]
+  }
+}

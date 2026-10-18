@@ -29,7 +29,17 @@ namespace Game.Editor
         [Serializable] private sealed class SavedFile { public string Path, Hash; public long Size; }
         [Serializable] private sealed class Snapshot { public List<Slot> Slots = new List<Slot>(); public List<SavedFile> Files = new List<SavedFile>(); }
 
-        public static string JournalPath(string client) => Path.Combine(Path.GetFullPath(client), "Temp", "FirepowerLoop.CiInProgress.json");
+        /// <summary>按工作区绝对路径隔离持久恢复材料；Unity退出清理Temp不能清除唯一备份。</summary>
+        public static string RecoveryRoot(string client)
+        {
+            string normalized = Path.GetFullPath(client).TrimEnd('\\', '/').ToLowerInvariant();
+            using (var hash = SHA256.Create())
+            {
+                string key = BitConverter.ToString(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes(normalized))).Replace("-", "").ToLowerInvariant().Substring(0, 16);
+                return Path.Combine(Path.GetDirectoryName(Path.GetFullPath(client).TrimEnd('\\', '/')), "Release", "CiWorkspaceRecovery", key);
+            }
+        }
+        public static string JournalPath(string client) => Path.Combine(RecoveryRoot(client), "active.json");
         public static bool RequiresRecovery(string client) { WorkspaceBuildLock.EnsureNoLinks(JournalPath(client)); return File.Exists(JournalPath(client)); }
         public static void EnsureClean(string client)
         {
@@ -40,7 +50,7 @@ namespace Game.Editor
             using (WorkspaceBuildLock.Acquire(client))
             {
                 EnsureClean(client);
-                string directory = Path.Combine(Path.GetFullPath(client), "Temp", "FirepowerCiRecovery", Guid.NewGuid().ToString("N"));
+                string directory = Path.Combine(RecoveryRoot(client), "snapshots", Guid.NewGuid().ToString("N"));
                 WorkspaceBuildLock.EnsureNoLinks(directory); Directory.CreateDirectory(Path.Combine(directory, "backup"));
                 var snapshot = new Snapshot();
                 for (int i = 0; i < OwnedPaths.Length; i++)
@@ -117,7 +127,16 @@ namespace Game.Editor
                     throw;
                 }
                 string result = JsonConvert.SerializeObject(new { Status = "Recovered", RequestId = requestId, QuarantineDirectory = quarantine }, Formatting.Indented);
-                File.WriteAllText(Path.Combine(transaction, "result.json"), result); File.Delete(JournalPath(client)); return result;
+                File.WriteAllText(Path.Combine(transaction, "result.json"), result);
+                // 仅证明本次显式恢复保留的精确台账内容；节点另对Git基线核验身份与单调序号。
+                string ledger = Path.Combine(client, "Assets/Editor/Build/windows-release-version.json");
+                WorkspaceBuildLock.EnsureNoLinks(ledger);
+                if (File.Exists(ledger)) WriteJson(Path.Combine(RecoveryRoot(client), "retry.json"), new
+                {
+                    SchemaVersion = 1, ProjectId = "FirepowerLoop", Client = Path.GetFullPath(client), Commit = currentCommit,
+                    RequestId = requestId, LedgerPath = "Client/Assets/Editor/Build/windows-release-version.json", LedgerHash = Hash(ledger)
+                });
+                File.Delete(JournalPath(client)); return result;
             }
         }
 
@@ -125,7 +144,7 @@ namespace Game.Editor
         {
             string path = JournalPath(client); WorkspaceBuildLock.EnsureNoLinks(path);
             var record = JsonConvert.DeserializeObject<Journal>(File.ReadAllText(path));
-            string expectedParent = Path.Combine(Path.GetFullPath(client), "Temp", "FirepowerCiRecovery");
+            string expectedParent = Path.Combine(RecoveryRoot(client), "snapshots");
             if (record == null || record.SchemaVersion != 1 || record.ProjectId != "FirepowerLoop" || record.RequestId != requestId || !string.Equals(record.Client, Path.GetFullPath(client), StringComparison.OrdinalIgnoreCase) ||
                 string.IsNullOrWhiteSpace(record.SnapshotDirectory) || !string.Equals(Path.GetDirectoryName(Path.GetFullPath(record.SnapshotDirectory)), expectedParent, StringComparison.OrdinalIgnoreCase) ||
                 (record.Status != "Active" && record.Status != "Interrupted")) throw new InvalidOperationException("CI恢复身份或路径不符");

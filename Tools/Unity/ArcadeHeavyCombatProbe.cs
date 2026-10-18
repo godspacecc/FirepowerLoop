@@ -34,6 +34,7 @@ public static class ArcadeHeavyCombatProbe
         if (!EditorApplication.isPlaying || Application.dataPath != "E:/GitHub/FirepowerLoop/Client/Assets") throw new Exception("需本项目Play");
         if (Owner() is Type prior && (bool)prior.GetField("running", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null)) throw new Exception("已有观察任务");
         SessionState.SetString(OwnerKey, typeof(ArcadeHeavyCombatProbe).Assembly.FullName);
+        directory = runId = null;
         running = true; Run().Forget(); return "重型与受伤观察启动";
     }
     public static string State()
@@ -162,7 +163,7 @@ public static class ArcadeHeavyCombatProbe
         finally
         {
             try { await Cleanup(); } catch (Exception error) { Log("CLEANUP FAILED " + error); }
-            running = false;
+            running = oldStore != null;
         }
     }
     private static async UniTask Cleanup()
@@ -171,29 +172,24 @@ public static class ArcadeHeavyCombatProbe
         if (pad != null && pad.added) InputSystem.RemoveDevice(pad);
         if (pad != null) { InputSystem.settings.backgroundBehavior = background; InputSystem.settings.editorInputBehaviorInPlayMode = routing; pad = null; }
         var a = global::Game.Game.Interface; var runs = a.GetSystem<ArcadeRunSystem>();
-        try
+        if (oldStore == null) return;
+        // 先作废尚未提交的菜单请求；等待已提交的地图及入局续体完成，再卸载临时世界。
+        UIHelper.HideUI<StartUICtrl>();
+        var flow = a.GetSystem<ArcadeSceneFlowSystem>();
+        await UniTask.NextFrame();
+        await Wait(() => !(bool)Get(flow, "busy") && !(bool)Get(a.GetSystem<MapSceneSystem>(), "busy"), 60, "地图收敛，超时保留临时隔离");
+        await UniTask.NextFrame();
+        string saved = directory == null ? null : new ArcadeRunFileStore(directory).Inspect().Data?.RunId;
+        if (saved != null)
         {
-            if (directory != null && a.GetModel<ArcadeRunModel>().Current?.RunId == runId)
-            {
-                if (!a.GetModel<ArcadeRunModel>().Current.HasResult && !runs.TryAbandon(out var error)) throw new Exception(error);
-                var flow = a.GetSystem<ArcadeSceneFlowSystem>();
-                // 最后一命已发起异步返菜单，先等它完成，避免重复返回和过早刷新菜单。
-                await Wait(() => !(bool)Get(flow, "busy"), 20, "已有返菜单事务");
-                if (a.GetModel<MapSceneModel>().CurrentHandle != null)
-                {
-                    var returned = await flow.ReturnToMainMenuAsync(); Assert(returned.Success, returned.Error);
-                }
-            }
+            if (a.GetModel<ArcadeRunModel>().Current?.RunId != saved) throw new Exception("清理拒绝另一局身份，保留隔离");
+            if (!a.GetModel<ArcadeRunModel>().Current.HasResult && !runs.TryAbandon(out var error)) throw new Exception(error);
         }
-        finally
-        {
-            if (oldStore != null)
-            {
-                Set(runs, "store", oldStore); Set(runs, "clock", oldClock); Set(runs, "nextDeleteFailureForTests", oldFailure);
-                var model = a.GetModel<ArcadeRunModel>(); Set(model, "current", oldRun); Set(model, "<Phase>k__BackingField", oldPhase);
-                UIHelper.HideUI<StartUICtrl>(); UIHelper.ShowUI<StartUICtrl>(); oldStore = null;
-            }
-            Time.timeScale = 1; Log("Restored store/model/input; mapNull=" + (a.GetModel<MapSceneModel>().CurrentHandle == null));
-        }
+        var returned = await flow.ReturnToMainMenuAsync();
+        Assert(returned.Success && a.GetModel<MapSceneModel>().CurrentHandle == null, "清理未完成，保留隔离：" + returned.Error);
+        Set(runs, "store", oldStore); Set(runs, "clock", oldClock); Set(runs, "nextDeleteFailureForTests", oldFailure);
+        var model = a.GetModel<ArcadeRunModel>(); Set(model, "current", oldRun); Set(model, "<Phase>k__BackingField", oldPhase);
+        UIHelper.HideUI<StartUICtrl>(); UIHelper.ShowUI<StartUICtrl>(); oldStore = null;
+        Time.timeScale = 1; Log("Restored store/model/input; mapNull=True");
     }
 }

@@ -1,0 +1,99 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3517,
+      "PassedTests": 17,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.3966681"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.ActiveOwnerCannotBeRecovered",
+        "Status": "Passed",
+        "Duration": "00:00:00.2320000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.CancelAfterBuildPreservesArtifactAndSkipsPublishing",
+        "Status": "Passed",
+        "Duration": "00:00:00.0970000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.CancelBeforeBuildDoesNotRunOrDirtyWorkspace",
+        "Status": "Passed",
+        "Duration": "00:00:00.0170000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.CancelDuringPublishPreparationNeverExposesTarget",
+        "Status": "Passed",
+        "Duration": "00:00:00.0650000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.CancellationAfterPublishCommitReportsActualSuccess",
+        "Status": "Passed",
+        "Duration": "00:00:00.0650000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.ChangedCheckoutCannotRestorePreviousCommitInputs",
+        "Status": "Passed",
+        "Duration": "00:00:00.0690000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.DeadProcessMarkerStillBlocksUntilExplicitRecovery",
+        "Status": "Passed",
+        "Duration": "00:00:00.1250000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.InternalJournalCannotBeUsedAsCancellationSignal",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.InternalJournalCannotBeUsedAsReport",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.InterruptedWorkspaceRejectsNewValidationOrBuild",
+        "Status": "Passed",
+        "Duration": "00:00:00.0710000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.RecoveryScopeCannotBeForgedOutsideOwnedPaths",
+        "Status": "Passed",
+        "Duration": "00:00:00.0750000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.RecoverySurvivesUnityTempRemoval",
+        "Status": "Passed",
+        "Duration": "00:00:00.1140000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.RestoreFailureRollsBackPreviousSlotsAndKeepsJournal",
+        "Status": "Passed",
+        "Duration": "00:00:00.1210000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.RestoreRevertsOnlyOwnedInputsAndPreservesConsumedVersion",
+        "Status": "Passed",
+        "Duration": "00:00:00.1280000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.StageBoundaryStopsBeforeNextLongAction",
+        "Status": "Passed",
+        "Duration": "00:00:00.0670000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.TamperedSnapshotCannotOverwriteCurrentFiles",
+        "Status": "Passed",
+        "Duration": "00:00:00.0780000"
+      },
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.WrongRequestCannotRestoreAnotherAttempt",
+        "Status": "Passed",
+        "Duration": "00:00:00.0670000"
+      }
+    ]
+  }
+}

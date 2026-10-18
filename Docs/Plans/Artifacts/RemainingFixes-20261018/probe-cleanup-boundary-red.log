@@ -1,0 +1,9 @@
+受控地图busy窗口；正式菜单、临时空存档，不触发Player Build。
+ArcadeLoadingFlowProbe IsolationRetainedWhileBusy=False FAIL
+ERROR System.NullReferenceException: Object reference not set to an instance of an object
+  at ArcadeHeavyCombatProbe.Cleanup () [0x000f3] in <ab716a6c36514b31b4d002477d83b90b>:0
+  at Cysharp.Threading.Tasks.UniTask+ExceptionResultSource.GetResult (System.Int16 token) [0x00015] in .\Library\PackageCache\com.cysharp.unitask@2.5.11\Runtime\UniTask.Factory.cs:326
+  at ArcadeProbeCleanupBoundary.Check (System.Type probe, System.Boolean heavy) [0x003b3] in <ab716a6c36514b31b4d002477d83b90b>:0
+  at ArcadeProbeCleanupBoundary.Check (System.Type probe, System.Boolean heavy) [0x0056c] in <ab716a6c36514b31b4d002477d83b90b>:0
+  at Cysharp.Threading.Tasks.CompilerServices.AsyncUniTask`1[TStateMachine].GetResult (System.Int16 token) [0x00000] in .\Library\PackageCache\com.cysharp.unitask@2.5.11\Runtime\CompilerServices\StateMachineRunner.cs:218
+  at ArcadeProbeCleanupBoundary.Run () [0x000f9] in <ab716a6c36514b31b4d002477d83b90b>:0

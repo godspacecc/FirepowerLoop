@@ -89,6 +89,32 @@ namespace Game.Tests
             var value = Run(request, (_, __) => throw new Exception("must not build"));
             Assert.That((string)value["Status"], Is.EqualTo("Failed")); Assert.That((bool)value["RecoveryRequired"], Is.True);
         }
+        [Test] public void RecoverySurvivesUnityTempRemoval()
+        {
+            Interrupt(); Write("Assets/Game/Dlls/Game.dll.bytes", "changed");
+            string temp = Path.Combine(client, "Temp");
+            if (Directory.Exists(temp)) Directory.Delete(temp, true);
+            Assert.That((bool)Call("CiWorkspaceRecovery", "RequiresRecovery", client), Is.True, "Unity退出清除Temp后必须仍阻止复用");
+            Call("CiWorkspaceRecovery", "Restore", client, "test", Commit);
+            Assert.That(File.ReadAllText(Path.Combine(client, "Assets/Game/Dlls/Game.dll.bytes")), Is.EqualTo("original"));
+        }
+        [Test] public void RecoveryProofBindsPreservedLedgerAndOriginalCommit()
+        {
+            Interrupt(); Write("Assets/Editor/Build/windows-release-version.json", "reserved-2");
+            Call("CiWorkspaceRecovery", "Restore", client, "test", Commit);
+            string state = (string)Call("CiWorkspaceRecovery", "RecoveryRoot", client);
+            var proof = JObject.Parse(File.ReadAllText(Path.Combine(state, "retry.json")));
+            Assert.That((string)proof["Client"], Is.EqualTo(client)); Assert.That((string)proof["Commit"], Is.EqualTo(Commit));
+            Assert.That((string)proof["LedgerPath"], Is.EqualTo("Client/Assets/Editor/Build/windows-release-version.json"));
+            using (var hash = System.Security.Cryptography.SHA256.Create())
+                Assert.That((string)proof["LedgerHash"], Is.EqualTo(BitConverter.ToString(hash.ComputeHash(System.Text.Encoding.UTF8.GetBytes("reserved-2"))).Replace("-", "").ToLowerInvariant()));
+        }
+        [Test] public void RecoveryProofCannotBeOverwrittenByReport()
+        {
+            report = Path.Combine((string)Call("CiWorkspaceRecovery", "RecoveryRoot", client), "retry.json");
+            Assert.Throws<ArgumentException>(() => Run(Request(), Build));
+            Assert.That(File.Exists(report), Is.False);
+        }
         [Test] public void RestoreRevertsOnlyOwnedInputsAndPreservesConsumedVersion()
         {
             Interrupt(); Write("Assets/Game/Dlls/Game.dll.bytes", "changed"); Write("Assets/Game/Dlls/extra.bytes", "new");

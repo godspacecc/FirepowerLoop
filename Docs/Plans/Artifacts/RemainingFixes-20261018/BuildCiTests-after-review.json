@@ -1,0 +1,94 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3519,
+      "PassedTests": 16,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.4918500"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.BuildCiTests.BuildDefaultsToNoPublishAndReportsActualArtifact",
+        "Status": "Passed",
+        "Duration": "00:00:00.0400000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.BuildFailureIsReportedAndWorkspaceLockIsReleased",
+        "Status": "Passed",
+        "Duration": "00:00:00.0550000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.CommitMismatchDoesNotStartBuild",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.HostUpdateRequiresExplicitBaselineInsteadOfLatestState",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.MissingArtifactCannotAdvanceToPublish",
+        "Status": "Passed",
+        "Duration": "00:00:00.0450000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.PublishFailureRetainsBuiltArtifactAndSeparatesFailureStage",
+        "Status": "Passed",
+        "Duration": "00:00:00.0480000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.ReportCannotOverwriteProjectAssets",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.UnknownConfigurationFieldDoesNotSilentlyChangeWorkflow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.UnsupportedRouteFailsBeforeSideEffects(\"Linux\",\"FirstPackage\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.UnsupportedRouteFailsBeforeSideEffects(\"Android\",\"Unknown\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.ValidateOnlyRoutesNeverExecuteBuildOrPublish(\"PC\",\"FirstPackage\",\"PcFirst\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0160000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.ValidateOnlyRoutesNeverExecuteBuildOrPublish(\"PC\",\"HostUpdate\",\"PcHost\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0180000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.ValidateOnlyRoutesNeverExecuteBuildOrPublish(\"Android\",\"FirstPackage\",\"AndroidFirst\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0180000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.ValidateOnlyRoutesNeverExecuteBuildOrPublish(\"Android\",\"HostUpdate\",\"AndroidHost\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0180000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.WorkspaceLockSupportsNestedOwnerButBlocksOtherThreads",
+        "Status": "Passed",
+        "Duration": "00:00:00.0150000"
+      },
+      {
+        "Name": "Game.Tests.BuildCiTests.WrongProjectCannotUseThisBuildAdapter",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      }
+    ]
+  }
+}

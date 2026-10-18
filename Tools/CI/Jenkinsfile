@@ -15,13 +15,21 @@ pipeline {
         stage('固定代码') {
             steps {
                 script { if (!(params.COMMIT ==~ /[0-9a-fA-F]{40}/)) { error('COMMIT必须是固定40位SHA') } }
-                checkout scm
+                // 已有工作区先保留恢复台账；SCM插件的隐式reset不能发生在校验之前。
+                script { if (!fileExists('.git')) { checkout scm } }
                 powershell '''
                     $ErrorActionPreference = 'Stop'
-                    $dirty = git status --porcelain
-                    if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'Dedicated CI checkout must be clean.' }
-                    git checkout --detach $env:COMMIT
-                    if ($LASTEXITCODE -ne 0) { throw 'Cannot checkout requested commit.' }
+                    $head = (git rev-parse HEAD).Trim()
+                    & ./Tools/CI/Assert-FirepowerWorkspace.ps1 -WorkspaceRoot (Get-Location).Path -ExpectedCommit $head
+                    if ($head -ine $env:COMMIT) {
+                        $dirty = git status --porcelain
+                        if ($dirty) { throw 'Recovered ledger is bound to its original commit; do not switch this checkout.' }
+                        git fetch --no-tags origin $env:COMMIT
+                        if ($LASTEXITCODE -ne 0) { throw 'Cannot fetch requested fixed commit.' }
+                        git checkout --detach $env:COMMIT
+                        if ($LASTEXITCODE -ne 0) { throw 'Cannot checkout requested commit.' }
+                    }
+                    & ./Tools/CI/Assert-FirepowerWorkspace.ps1 -WorkspaceRoot (Get-Location).Path -ExpectedCommit $env:COMMIT
                 '''
             }
         }

@@ -43,8 +43,7 @@ Write-Output "Graceful cancellation signal: $($request.CancellationFile)"
 if (-not $Execute) { Write-Output "Prepared only: $requestPath"; return }
 
 # 独立构建节点必须是干净的固定提交；不清理、重置或杀死任何开发者进程。
-$dirty = & git -C $repo status --porcelain
-if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'CI workspace has uncommitted files; use a dedicated clean checkout.' }
+& (Join-Path $PSScriptRoot 'Assert-FirepowerWorkspace.ps1') -WorkspaceRoot $repo -ExpectedCommit $ExpectedCommit
 if (Test-Path -LiteralPath (Join-Path $client 'Temp/UnityLockfile')) { throw 'Unity is already using this Client; choose a dedicated checkout.' }
 if (-not [IO.Path]::IsPathRooted($UnityExe) -or -not (Test-Path -LiteralPath $UnityExe -PathType Leaf)) { throw 'Set FIREPOWER_UNITY_EXE to the project Unity.exe.' }
 if ($Build -and $Platform -eq 'PC' -and $BuildType -eq 'FirstPackage' -and (-not $InstallerCompiler -or -not (Test-Path -LiteralPath $InstallerCompiler -PathType Leaf))) { throw 'PC first package requires explicit FIREPOWER_ISCC.' }

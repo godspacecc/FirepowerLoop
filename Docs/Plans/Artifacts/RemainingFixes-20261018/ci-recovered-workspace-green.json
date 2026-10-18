@@ -1,0 +1,53 @@
+{
+  "Failed": 0,
+  "Passed": 11,
+  "UnityLaunched": false,
+  "Scope": "RecoveredWorkspaceOnly",
+  "PlayerBuild": false,
+  "Results": [
+    {
+      "Passed": true,
+      "Name": "CleanCheckoutAccepted"
+    },
+    {
+      "Passed": true,
+      "Name": "UnprovenLedgerRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "RecoveredMonotonicLedgerAccepted"
+    },
+    {
+      "Passed": true,
+      "Name": "OtherCommitRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "OtherWorkspaceRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "ChangedAfterRecoveryRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "LowerSequenceRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "ChangedIdentityRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "StagedLedgerRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "OtherDirtyFileRejected"
+    },
+    {
+      "Passed": true,
+      "Name": "UnrecoveredAttemptRejected"
+    }
+  ]
+}

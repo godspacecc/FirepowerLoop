@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3517,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1140170"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.CiCancellationRecoveryTests.RecoverySurvivesUnityTempRemoval",
+        "Status": "Failed",
+        "Duration": "00:00:00.2050000",
+        "Message": "  Unity退出清除Temp后必须仍阻止复用\r\n  Expected: True\r\n  But was:  False\r\n"
+      }
+    ]
+  }
+}

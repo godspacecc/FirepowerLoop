@@ -112,7 +112,7 @@ namespace Game.Editor
             }
             WorkspaceBuildLock.EnsureNoLinks(path);
             string temp = Path.GetFullPath(Path.Combine(clientRoot, "Temp"));
-            string recoveryRoot = Path.Combine(temp, "FirepowerCiRecovery");
+            string recoveryRoot = CiWorkspaceRecovery.RecoveryRoot(clientRoot);
             if (path.Equals(CiWorkspaceRecovery.JournalPath(clientRoot), StringComparison.OrdinalIgnoreCase) ||
                 path.Equals(Path.Combine(temp, "FirepowerLoop.Build.lock"), StringComparison.OrdinalIgnoreCase) ||
                 path.Equals(recoveryRoot, StringComparison.OrdinalIgnoreCase) || path.StartsWith(recoveryRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase))

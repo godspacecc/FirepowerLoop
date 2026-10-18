@@ -1,0 +1,5 @@
+受控地图busy窗口；正式菜单、临时空存档，不触发Player Build。
+ArcadeLoadingFlowProbe IsolationRetainedWhileBusy=True PASS
+ArcadeHeavyCombatProbe IsolationRetainedWhileBusy=True PASS
+ArcadeLoadingFlowProbe ActualMapInFlight=True IsolationRetained=True ModelAndStoreRestored=True PASS
+ArcadeHeavyCombatProbe ActualMapInFlight=True IsolationRetained=True ModelAndStoreRestored=True PASS

@@ -49,10 +49,10 @@ Platform只允许PC、Android；BuildType只允许FirstPackage、HostUpdate。Ho
 
 Unity在每个BuildStageTiming阶段前后、构建后／发布前、发布暂存完成且公开目录之前检查取消。长时间的Unity／外部编译调用需先返回，无法保证立即停止。报告`Status=Cancelled`、`ExitCode=2`，并保留已有产物；模板将此退出码标为ABORTED（模板未部署实跑）。发布已经改名公开时不撤回，报告实际Succeeded并置CancellationDeferred=true。
 
-真实构建动作前在`Client/Temp/FirepowerCiRecovery/<guid>/`保存受限输入快照及SHA256；进行中标记为`Client/Temp/FirepowerLoop.CiInProgress.json`。成功删除进行中标记，快照保留于Temp供节点按留存策略清理。失败／中途取消／进程崩溃时保留标记，后续ValidateOnly和真实构建都会拒绝复用。
+真实构建动作前在仓库`Release/CiWorkspaceRecovery/<Client路径SHA256前16位>/snapshots/<guid>/`保存受限输入快照及SHA256；同工作区目录下`active.json`为进行中标记。标记、快照和恢复隔离材料都不依赖Unity退出时清理的Temp／Library。成功删除进行中标记，快照保留在上述持久目录，供节点按留存策略清理。失败／中途取消／进程崩溃时保留标记，后续ValidateOnly和真实构建都会拒绝复用。
 
 显式恢复批处理入口为`Game.Editor.CiBuildEntry.Recover`，参数`-firepowerRecoveryRequest <原RequestId> -firepowerReport <源目录外绝对报告路径>`。只能在独立空闲批处理Unity执行；必须仍是原Commit，原活跃CI进程不能恢复。恢复前核对项目、工作区、RequestId、Commit、清单哈希、固定范围及逐文件SHA256；成功恢复限定DLL／HybridCLR生成输入／生成的StreamingAssets／ProjectSettings，并将恢复前现状留在快照的displaced隔离目录，再清除进行中标记。下次Unity启动重新导入恢复文件，本入口不触发构建或发布。恢复失败尽量逆序还原先前现状并保留标记；回退也失败则同时报告两种错误，禁止直接重跑。
 
-不会恢复普通手写脚本、玩家存档、Config权威源或回退已消耗的Windows版本台账／Android版本预留。恢复不是续跑到上次阶段：在同一固定Commit上重新提交任务，Host仍需原独立基线。取消信号需要由操作者为新任务使用新请求目录，旧信号不自动删除。快照包含构建原始输入，应使用节点专属权限及留存策略。
+不会恢复普通手写脚本、玩家存档、Config权威源或回退已消耗的Windows版本台账／Android版本预留。恢复成功会在工作区专属持久目录写入`retry.json`，绑定原Commit、Client、RequestId、唯一台账路径及保留内容SHA256。节点调用与Jenkins固定代码阶段共用`Assert-FirepowerWorkspace.ps1`，只接受凭据匹配、身份字段对比Git基线未变、releaseNumber不降低的这一项未暂存台账差异，其他源差异仍拒绝。已有工作区先检查，再决定是否切换Commit；保留台账的工作区只能同Commit重试，SCM插件不能先隐式reset台账。恢复不是续跑到上次阶段：在同一固定Commit上重新提交任务，Host仍需原独立基线。取消信号需要由操作者为新任务使用新请求目录，旧信号不自动删除。快照包含构建原始输入，应使用节点专属权限及留存策略。
 
 以上已用临时文件和模拟长阶段／发布事务定向验证；未执行真实Player Build、安装器、部署或Jenkins流水线。强制结束的标记及死进程路径已测试，实际工具链中止／授权／进程树退出仍需独立节点验收，不按进程名批量结束进程。

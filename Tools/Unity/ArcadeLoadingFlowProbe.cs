@@ -35,6 +35,7 @@ public static class ArcadeLoadingFlowProbe
         if (prior != null && (bool)prior.GetField("running", BindingFlags.Static | BindingFlags.NonPublic).GetValue(null)) throw new Exception("已有加载观察事务");
         SessionState.SetString(OwnerKey, typeof(ArcadeLoadingFlowProbe).Assembly.FullName);
         interruptAfterEntry = interrupt;
+        directory = runId = null;
         running = true; cancellation = new CancellationTokenSource(); Run(cancellation.Token).Forget(); return "正式加载流程观察已启动";
     }
 
@@ -114,7 +115,7 @@ public static class ArcadeLoadingFlowProbe
             }
             catch (Exception cleanup) { File.AppendAllText(Output + "/flow.log", "CLEANUP FAILED " + cleanup + "\n"); }
         }
-        finally { running = false; cancellation?.Dispose(); cancellation = null; }
+        finally { running = store != null; if (!running) { cancellation?.Dispose(); cancellation = null; } }
     }
 
     private static FieldInfo RunField(string name) => typeof(ArcadeRunSystem).GetField(name, Hidden);
@@ -135,37 +136,35 @@ public static class ArcadeLoadingFlowProbe
     {
         var a = global::Game.Game.Interface;
         var runs = a.GetSystem<ArcadeRunSystem>();
-        try
+        if (store == null) return;
+        // 隐藏使尚未提交的开局请求失效；已提交事务仍使用临时模型／端口直到完整收敛。
+        UIHelper.HideUI<StartUICtrl>();
+        var flow = a.GetSystem<ArcadeSceneFlowSystem>();
+        double deadline = EditorApplication.timeSinceStartup + 60;
+        do
         {
-            if (directory != null)
-            {
-                string saved = new ArcadeRunFileStore(directory).Inspect().Data?.RunId;
-                if (saved != null)
-                {
-                    if (a.GetModel<ArcadeRunModel>().Current?.RunId != saved) throw new Exception("清理拒绝另一局身份");
-                    if (!runs.TryAbandon(out var error)) throw new Exception(error);
-                    var result = await a.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
-                    if (!result.Success) throw new Exception(result.Error);
-                }
-            }
-        }
-        finally
+            await UniTask.NextFrame();
+            if (EditorApplication.timeSinceStartup > deadline) throw new Exception("清理未完成：地图仍在途，保留临时隔离与running状态");
+        } while ((bool)typeof(ArcadeSceneFlowSystem).GetField("busy", Hidden).GetValue(flow) ||
+                 (bool)typeof(MapSceneSystem).GetField("busy", Hidden).GetValue(a.GetSystem<MapSceneSystem>()));
+        // 让EnterNewRunAsync在地图结果后的同步续体先结束，不能提前恢复正式model。
+        await UniTask.NextFrame();
+        string saved = directory == null ? null : new ArcadeRunFileStore(directory).Inspect().Data?.RunId;
+        if (saved != null)
         {
-            if (store != null)
-            {
-                RunField("store").SetValue(runs, store); RunField("clock").SetValue(runs, clock); RunField("nextDeleteFailureForTests").SetValue(runs, failure);
-                a.RegisterUtility<IGameplayResourcePreparation>(preparation);
-                var model = a.GetModel<ArcadeRunModel>();
-                typeof(ArcadeRunModel).GetField("current", Hidden).SetValue(model, originalRun);
-                typeof(ArcadeRunModel).GetField("<Phase>k__BackingField", Hidden).SetValue(model, originalPhase);
-                // 先恢复状态与依赖，再让菜单按原store重读入口，不能残留临时放弃结果。
-                if (a.GetModel<MapSceneModel>().CurrentHandle == null && a.GetModel<AppStateModel>().CurrentState.Value == AppState.Paused)
-                { UIHelper.HideUI<StartUICtrl>(); UIHelper.ShowUI<StartUICtrl>(); }
-                File.AppendAllText(Output + "/flow.log", "RestoredStore=" + ReferenceEquals(RunField("store").GetValue(runs), store) + " mapHandle=" + (a.GetModel<MapSceneModel>().CurrentHandle == null ? "null" : "present") + "\n");
-                store = null;
-            }
-            Time.timeScale = 1f;
+            if (a.GetModel<ArcadeRunModel>().Current?.RunId != saved) throw new Exception("清理拒绝另一局身份，保留隔离");
+            if (!a.GetModel<ArcadeRunModel>().Current.HasResult && !runs.TryAbandon(out var error)) throw new Exception(error);
         }
+        var result = await flow.ReturnToMainMenuAsync();
+        if (!result.Success || a.GetModel<MapSceneModel>().CurrentHandle != null) throw new Exception("清理未完成，保留隔离：" + result.Error);
+        RunField("store").SetValue(runs, store); RunField("clock").SetValue(runs, clock); RunField("nextDeleteFailureForTests").SetValue(runs, failure);
+        a.RegisterUtility<IGameplayResourcePreparation>(preparation);
+        var model = a.GetModel<ArcadeRunModel>();
+        typeof(ArcadeRunModel).GetField("current", Hidden).SetValue(model, originalRun);
+        typeof(ArcadeRunModel).GetField("<Phase>k__BackingField", Hidden).SetValue(model, originalPhase);
+        UIHelper.HideUI<StartUICtrl>(); UIHelper.ShowUI<StartUICtrl>();
+        File.AppendAllText(Output + "/flow.log", "RestoredStore=True mapHandle=null\n");
+        store = null; Time.timeScale = 1f;
     }
 
     private sealed class CaptureWait : IGameplayResourcePreparation
