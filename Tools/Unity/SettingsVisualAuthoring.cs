@@ -101,8 +101,12 @@ public static class SettingsVisualAuthoring
         Place(ui.TextSetting.transform, -280, 0, 260, 72); Text(ui.TextSetting, 27, Ink, TextAlignmentOptions.MidlineLeft);
         Place(ui.BtnContext.transform, 190, 0, 440, 64); ButtonStyle(ui.BtnContext, Inset);
         foreach (var t in ui.BtnContext.GetComponentsInChildren<TMP_Text>(true)) if (t != ui.TextContext) t.gameObject.SetActive(false);
-        ui.TextContext.transform.SetParent(ui.BtnContext.transform, false); Stretch(ui.TextContext.rectTransform, 22, 6, 56, 6); Text(ui.TextContext, 26, Ink, TextAlignmentOptions.MidlineRight);
-        Chevron(ui.BtnContext.transform, "Chevron", 188, 0);
+        var usesDropdown = root.GetComponent<ReferenceCollector>().data.Any(entry => entry.key == "ValueDropdown");
+        ui.TextContext.transform.SetParent(ui.BtnContext.transform, false);
+        Stretch(ui.TextContext.rectTransform, 22, 6, usesDropdown ? 22 : 56, 6);
+        Text(ui.TextContext, 26, Ink, usesDropdown ? TextAlignmentOptions.Center : TextAlignmentOptions.MidlineRight);
+        if (!usesDropdown) Chevron(ui.BtnContext.transform, "Chevron", 188, 0);
+        else ui.BtnContext.transform.Find("Chevron").gameObject.SetActive(false);
     }
 
     private static void HotKeyRow(GameObject root)

@@ -9,5 +9,6 @@ namespace Game
         public Button BtnContext;
         public TextMeshProUGUI TextContext;
         public TextMeshProUGUI TextSetting;
+        public TMP_Dropdown ValueDropdown;
     }
 }

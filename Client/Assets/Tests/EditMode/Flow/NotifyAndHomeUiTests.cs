@@ -640,28 +640,22 @@ namespace Game.Tests
 
             Assert.That(rows.Length, Is.EqualTo(3));
             Assert.That(rows[0].TextSetting.text, Is.EqualTo("语言"));
-            Assert.That(rows[0].TextContext.text, Is.EqualTo("简体中文"));
-
-            rows[0].BtnContext.onClick.Invoke();
-            var messageUi = GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>());
-            AssertLanguageButtons(messageUi, "简体中文", "英语");
-            var englishButton = FindButton(messageUi, "英语");
-            englishButton.BtnButton.onClick.Invoke();
+            Assert.That(rows[0].ValueDropdown.captionText.text, Is.EqualTo("简体中文"));
+            Assert.That(rows[0].ValueDropdown.options.Select(option => option.text), Is.EqualTo(new[] { "简体中文", "英语" }));
+            SelectSettingOption(rows[0], "英语");
 
             Assert.That(Game.Interface.GetModel<LocalizationModel>().CurrentLanguageCode.Value, Is.EqualTo("en-US"));
             rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
             Assert.That(rows[0].TextSetting.text, Is.EqualTo("Language"));
-            Assert.That(rows[0].TextContext.text, Is.EqualTo("English"));
+            Assert.That(rows[0].ValueDropdown.captionText.text, Is.EqualTo("English"));
             Assert.That(Texts.SettingsFollowDesktop, Is.EqualTo("Follow Desktop"));
 
-            rows[0].BtnContext.onClick.Invoke();
-            messageUi = GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>());
-            AssertLanguageButtons(messageUi, "Simplified Chinese", "English");
+            Assert.That(rows[0].ValueDropdown.options.Select(option => option.text), Is.EqualTo(new[] { "Simplified Chinese", "English" }));
 
             settingUi.ControlsTabButton.onClick.Invoke();
             Game.Interface.SendEvent(new HotKeyRebindCapturedEvent(
                 HotKeyRebindResult.Conflict(HotKeyActionIds.ToggleRuntimeLog)));
-            messageUi = GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>());
+            var messageUi = GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>());
             Assert.That(messageUi.ContentText.text, Is.EqualTo("This key is already used by: Runtime Log"));
             Assert.That(messageUi.ContentText.text, Does.Not.Contain(HotKeyActionIds.ToggleRuntimeLog));
 
@@ -693,10 +687,8 @@ namespace Game.Tests
             var settingUi = GetBaseUI<SettingUI>(setting);
             var rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
 
-            rows[1].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "1920x1080").BtnButton.onClick.Invoke();
-            rows[2].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "无边框全屏").BtnButton.onClick.Invoke();
+            SelectSettingOption(rows[1], "1920x1080");
+            SelectSettingOption(rows[2], "无边框全屏");
 
             Assert.That(displayApplier.LastPreset.Code, Is.EqualTo("1920x1080"));
             Assert.That(displayApplier.LastWindowMode, Is.EqualTo(FullScreenMode.FullScreenWindow));
@@ -715,34 +707,31 @@ namespace Game.Tests
             var settingUi = GetBaseUI<SettingUI>(setting);
             var rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
 
-            rows[1].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "1920x1080").BtnButton.onClick.Invoke();
+            SelectSettingOption(rows[1], "1920x1080");
             rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
-            Assert.That(rows[1].TextContext.text, Is.EqualTo("1920x1080"));
+            Assert.That(rows[1].ValueDropdown.captionText.text, Is.EqualTo("1920x1080"));
 
-            rows[2].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "无边框全屏").BtnButton.onClick.Invoke();
+            SelectSettingOption(rows[2], "无边框全屏");
             rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
 
             Assert.That(rows.Length, Is.EqualTo(3));
             Assert.That(rows[1].TextSetting.text, Is.EqualTo(Texts.SettingsWindowSize));
-            Assert.That(rows[1].TextContext.text, Is.EqualTo(Texts.SettingsFollowDesktop));
-            Assert.That(rows[1].BtnContext.interactable, Is.False);
+            Assert.That(rows[1].ValueDropdown.captionText.text, Is.EqualTo(Texts.SettingsFollowDesktop));
+            Assert.That(rows[1].ValueDropdown.interactable, Is.False);
             Assert.That(UIHelper.GetUICtrl<MessageUICtrl>()?.IsShow() ?? false, Is.False);
 
-            rows[1].BtnContext.onClick.Invoke();
+            rows[1].ValueDropdown.Show();
             Assert.That(UIHelper.GetUICtrl<MessageUICtrl>()?.IsShow() ?? false, Is.False);
 
             Game.Interface.SendCommand(new SetLanguageCommand { LanguageCode = "en-US" });
             rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
-            Assert.That(rows[1].TextContext.text, Is.EqualTo("Follow Desktop"));
+            Assert.That(rows[1].ValueDropdown.captionText.text, Is.EqualTo("Follow Desktop"));
 
-            rows[2].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "Windowed").BtnButton.onClick.Invoke();
+            SelectSettingOption(rows[2], "Windowed");
             rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
 
-            Assert.That(rows[1].BtnContext.interactable, Is.True);
-            Assert.That(rows[1].TextContext.text, Is.EqualTo("1920x1080"));
+            Assert.That(rows[1].ValueDropdown.interactable, Is.True);
+            Assert.That(rows[1].ValueDropdown.captionText.text, Is.EqualTo("1920x1080"));
 
             Assert.That(displayApplier.LastPreset.Code, Is.EqualTo("1920x1080"));
             Assert.That(displayApplier.LastWindowMode, Is.EqualTo(FullScreenMode.Windowed));
@@ -758,8 +747,7 @@ namespace Game.Tests
         public void Setting_CloseAndPerPageReset_FollowImmediateSemantics()
         {
             OpenFreshSetting(out var currentSetting, out var currentUi, out var currentRows);
-            currentRows[1].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "1920x1080").BtnButton.onClick.Invoke();
+            SelectSettingOption(currentRows[1], "1920x1080");
             Assert.That(displayApplier.LastPreset.Code, Is.EqualTo("1920x1080"));
 
             General(currentUi).ResetButton.onClick.Invoke();
@@ -780,7 +768,7 @@ namespace Game.Tests
         [TestCase(0)]
         [TestCase(1)]
         [TestCase(2)]
-        public void Setting_SelectionMessage_BackgroundCancelsWithoutChangingSettings(int rowIndex)
+        public void Setting_DropdownClosesWithoutSelectionAndWithoutChangingSettings(int rowIndex)
         {
             var setting = UIHelper.ShowUI<SettingUICtrl>();
             var settingUi = GetBaseUI<SettingUI>(setting);
@@ -792,12 +780,12 @@ namespace Game.Tests
             var windowModeBefore = Game.Interface.GetModel<DisplaySettingsModel>()
                 .CurrentWindowMode.Value;
 
-            rows[rowIndex].BtnContext.onClick.Invoke();
-            var message = UIHelper.GetUICtrl<MessageUICtrl>();
-            var messageUi = GetBaseUI<MessageUI>(message);
-            messageUi.BackgroundButton.onClick.Invoke();
-
-            Assert.That(message.IsShow(), Is.False);
+            var dropdown = rows[rowIndex].ValueDropdown;
+            SettingsDropdownTestSupport.Start(dropdown); dropdown.Show();
+            Assert.That(dropdown.IsExpanded, Is.True);
+            SettingsDropdownTestSupport.ExpectNativeEditModeClose();
+            settingUi.AudioTabButton.onClick.Invoke();
+            Assert.That(dropdown.IsExpanded, Is.False);
             Assert.That(setting.IsShow(), Is.True);
             Assert.That(Game.Interface.GetModel<LocalizationModel>()
                 .CurrentLanguageCode.Value, Is.EqualTo(languageBefore));
@@ -814,8 +802,7 @@ namespace Game.Tests
             var settingUi = GetBaseUI<SettingUI>(setting);
             var rows = General(settingUi).SettingList.GetComponentsInChildren<SettingItemBoxUI>(false);
 
-            rows[1].BtnContext.onClick.Invoke();
-            FindButton(GetBaseUI<MessageUI>(UIHelper.GetUICtrl<MessageUICtrl>()), "1280x720").BtnButton.onClick.Invoke();
+            SelectSettingOption(rows[1], "1280x720");
             settingUi.BtnExit.onClick.Invoke();
 
             Assert.That(setting.IsShow(), Is.False);
@@ -969,6 +956,14 @@ namespace Game.Tests
         private static SettingGeneralPageUI General(SettingUI ui)
         {
             return ui.SettingGeneralRoot.GetComponent<SettingGeneralPageUI>();
+        }
+
+        /// <summary>通过真实下拉组件提交候选值，避免继续模拟已移除的消息弹窗。</summary>
+        private static void SelectSettingOption(SettingItemBoxUI row, string label)
+        {
+            var index = row.ValueDropdown.options.FindIndex(option => option.text == label);
+            Assert.That(index, Is.GreaterThanOrEqualTo(0), label);
+            row.ValueDropdown.value = index;
         }
 
         private static SettingAudioPageUI Audio(SettingUI ui)
@@ -1149,12 +1144,10 @@ namespace Game.Tests
             var generalRoot = new GameObject("SettingGeneral", typeof(RectTransform));
             generalRoot.transform.SetParent(root.transform, false);
             var generalUi = generalRoot.AddComponent<SettingGeneralPageUI>();
-            var templateGo = new GameObject("SettingItemTemplate", typeof(RectTransform));
-            templateGo.transform.SetParent(generalRoot.transform, false);
-            var item = templateGo.AddComponent<SettingItemBoxUI>();
-            item.TextSetting = CreateText(templateGo.transform, "TextSetting");
-            item.TextContext = CreateText(templateGo.transform, "TextContext");
-            item.BtnContext = CreateButton(templateGo.transform, "BtnContext", out _);
+            // 使用正式Box的原生下拉模板，夹具不再复制一套按钮式设置行。
+            var templateGo = Object.Instantiate(UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/UI/Home/Box/SettingItemBox.prefab"), generalRoot.transform, false);
+            templateGo.name = "SettingItemTemplate";
             templateGo.SetActive(false);
             generalUi.SettingList = CreateList(generalRoot.transform, "SettingList", templateGo);
             generalUi.ResetButton = CreateButton(generalRoot.transform, "ResetButton", out _);

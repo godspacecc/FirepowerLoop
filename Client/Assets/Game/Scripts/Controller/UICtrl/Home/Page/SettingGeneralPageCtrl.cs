@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QFramework;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game
 {
@@ -32,71 +33,75 @@ namespace Game
             if (row == null || index < 0 || index >= rows.Count) return;
             row.BtnContext.onClick.RemoveAllListeners();
             row.BtnContext.interactable = true;
+            row.BtnContext.gameObject.SetActive(false);
+            // 复用行先关闭原生列表并清除旧回调，避免语言或设备模式切换后选择到旧选项。
+            row.ValueDropdown.onValueChanged.RemoveAllListeners();
+            row.ValueDropdown.gameObject.SetActive(false);
             var display = this.GetModel<DisplaySettingsModel>();
             switch (rows[index])
             {
                 case Row.Language:
                     row.TextSetting.text = Texts.SettingsLanguage;
-                    row.TextContext.text = this.GetModel<LocalizationModel>().GetCurrentLanguage().LocalizedLabel;
-                    row.BtnContext.onClick.AddListener(SelectLanguage);
+                    var languages = LocalizationLanguages.All.ToArray();
+                    BindDropdown(row, languages.Select(language => language.LocalizedLabel).ToList(),
+                        System.Array.FindIndex(languages, language => language.Code == this.GetModel<LocalizationModel>().CurrentLanguageCode.Value),
+                        index => this.SendCommand(new SetLanguageCommand { LanguageCode = languages[index].Code }));
                     break;
                 case Row.Resolution:
                     row.TextSetting.text = Texts.SettingsWindowSize;
                     if (display.CurrentWindowMode.Value == FullScreenMode.FullScreenWindow)
                     {
-                        row.TextContext.text = Texts.SettingsFollowDesktop;
-                        row.BtnContext.interactable = false;
+                        BindDropdown(row, new List<string> { Texts.SettingsFollowDesktop }, 0, null, false);
                     }
                     else
                     {
-                        row.TextContext.text = DisplayResolutionPresets.FindOrDefault(display.CurrentResolutionCode.Value).Label;
-                        row.BtnContext.onClick.AddListener(SelectResolution);
+                        var resolutions = DisplayResolutionPresets.All.ToArray();
+                        BindDropdown(row, resolutions.Select(resolution => resolution.Label).ToList(),
+                            System.Array.FindIndex(resolutions, resolution => resolution.Code == display.CurrentResolutionCode.Value),
+                            index => ApplyDisplay(resolutions[index].Code, this.GetModel<DisplaySettingsModel>().CurrentWindowMode.Value));
                     }
                     break;
                 case Row.FrameRate:
                     row.TextSetting.text = Loc.T("ui.settings.frame_rate");
-                    row.TextContext.text = display.CurrentMobileFrameRate.Value + " FPS";
-                    row.BtnContext.onClick.AddListener(SelectFrameRate);
+                    var frameRates = new[] { 30, 60 };
+                    BindDropdown(row, frameRates.Select(rate => rate + " FPS").ToList(),
+                        System.Array.IndexOf(frameRates, display.CurrentMobileFrameRate.Value),
+                        index => ApplyFrameRate(frameRates[index]));
                     break;
                 case Row.ControlLayout:
                     row.TextSetting.text = Loc.T("ui.settings.category.controls");
                     row.TextContext.text = Loc.T("ui.mobile_layout.open");
+                    row.BtnContext.gameObject.SetActive(true);
                     row.BtnContext.onClick.AddListener(() => UIHelper.ShowUI<MobileControlLayoutUICtrl>());
                     break;
                 default:
                     row.TextSetting.text = Texts.SettingsWindowMode;
-                    row.TextContext.text = display.CurrentWindowMode.Value == FullScreenMode.FullScreenWindow ? Texts.SettingsFullscreenWindow : Texts.SettingsWindowed;
-                    row.BtnContext.onClick.AddListener(SelectWindowMode);
+                    var modes = new[] { FullScreenMode.Windowed, FullScreenMode.FullScreenWindow };
+                    BindDropdown(row, new List<string> { Texts.SettingsWindowed, Texts.SettingsFullscreenWindow },
+                        System.Array.IndexOf(modes, display.CurrentWindowMode.Value),
+                        index => ApplyDisplay(this.GetModel<DisplaySettingsModel>().CurrentResolutionCode.Value, modes[index]));
                     break;
             }
         }
 
-        private void SelectLanguage() => Notify.ShowMessage(Texts.SettingsSelectLanguageTitle, Texts.SettingsSelectLanguageContent,
-            LocalizationLanguages.All.Select(x => new MessageButtonConfig { ButtonText = x.LocalizedLabel, OnClick = () => this.SendCommand(new SetLanguageCommand { LanguageCode = x.Code }) }).ToList(), closeOnBackground: true);
-
-        /// <summary>打开两档选择弹窗；系统立即应用并保存偏好，刷新只读取模型。</summary>
-        private void SelectFrameRate() => Notify.ShowMessage(Loc.T("ui.settings.select_frame_rate_title"), Loc.T("ui.settings.select_frame_rate_content"),
-            new List<MessageButtonConfig>
-            {
-                new MessageButtonConfig { ButtonText = "30 FPS", OnClick = () => ApplyFrameRate(30) },
-                new MessageButtonConfig { ButtonText = "60 FPS", OnClick = () => ApplyFrameRate(60) }
-            }, closeOnBackground: true);
+        /// <summary>选项和值来自当前模型快照；绑定时不发送设置修改，仅响应用户实际选择。</summary>
+        private static void BindDropdown(SettingItemBoxUI row, List<string> options, int selected,
+            UnityAction<int> changed, bool interactable = true)
+        {
+            var dropdown = row.ValueDropdown;
+            dropdown.ClearOptions(); dropdown.AddOptions(options);
+            dropdown.SetValueWithoutNotify(Mathf.Max(0, selected));
+            dropdown.interactable = interactable;
+            if (changed != null) dropdown.onValueChanged.AddListener(changed);
+            dropdown.gameObject.SetActive(true);
+            dropdown.RefreshShownValue();
+        }
 
         private void ApplyFrameRate(int framesPerSecond)
         {
             this.GetSystem<SettingsSystem>().SetMobileFrameRate(framesPerSecond);
             Refresh();
         }
-
-        private void SelectResolution() => Notify.ShowMessage(Texts.SettingsSelectWindowSizeTitle, Texts.SettingsSelectWindowSizeContent,
-            DisplayResolutionPresets.All.Select(x => new MessageButtonConfig { ButtonText = x.Label, OnClick = () => ApplyDisplay(x.Code, this.GetModel<DisplaySettingsModel>().CurrentWindowMode.Value) }).ToList(), closeOnBackground: true);
-
-        private void SelectWindowMode() => Notify.ShowMessage(Texts.SettingsSelectWindowModeTitle, Texts.SettingsSelectWindowModeContent,
-            new List<MessageButtonConfig>
-            {
-                new MessageButtonConfig { ButtonText = Texts.SettingsWindowed, OnClick = () => ApplyDisplay(this.GetModel<DisplaySettingsModel>().CurrentResolutionCode.Value, FullScreenMode.Windowed) },
-                new MessageButtonConfig { ButtonText = Texts.SettingsFullscreenWindow, OnClick = () => ApplyDisplay(this.GetModel<DisplaySettingsModel>().CurrentResolutionCode.Value, FullScreenMode.FullScreenWindow) }
-            }, closeOnBackground: true);
 
         private void ApplyDisplay(string resolution, FullScreenMode mode)
         {
