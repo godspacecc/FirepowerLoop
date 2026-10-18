@@ -172,6 +172,7 @@ namespace Game
             FirstPersonRemaining = Mathf.Max(0, runtime.FirstPersonRemaining),
             FireCooldown = Mathf.Max(0, runtime.FireCooldown), InvulnerabilityRemaining = Mathf.Max(0, runtime.PlayerInvulnerability),
             DashRemaining = Mathf.Max(0, runtime.DashRemaining), AimDirectionX = runtime.AimDirection.x, AimDirectionY = runtime.AimDirection.y,
+            DashDirectionX = runtime.DashDirection.x, DashDirectionY = runtime.DashDirection.y,
             Powerups = runtime.Powerups.Values.Where(p => p.RemainingSeconds > 0).Select(p => new ArcadeIslandPowerupCheckpoint
             {
                 ProductId = p.ProductId, RemainingSeconds = p.RemainingSeconds, Charges = p.Charges,
@@ -191,6 +192,9 @@ namespace Game
             runtime.FireCooldown = saved.FireCooldown; runtime.PlayerInvulnerability = saved.InvulnerabilityRemaining;
             runtime.DashRemaining = saved.DashRemaining; runtime.AimDirection = new Vector2(saved.AimDirectionX, saved.AimDirectionY);
             if (runtime.AimDirection.sqrMagnitude < .001f) runtime.AimDirection = Vector2.up;
+            FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(saved.DashDirectionX, saved.DashDirectionY,
+                runtime.AimDirection.x, runtime.AimDirection.y, out var dashX, out var dashY);
+            runtime.DashDirection = new Vector2(dashX, dashY);
             runtime.Powerups.Clear();
             foreach (var effect in saved.Powerups)
             {

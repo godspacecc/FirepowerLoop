@@ -26,6 +26,7 @@
         <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
     </PropertyGroup>
     <ItemGroup>
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeDashRules.cs" Link="Share\ArcadeDashRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHazardRules.cs" Link="Share\ArcadeHazardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeTreasureRoomRules.cs" Link="Share\ArcadeTreasureRoomRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeOpeningRules.cs" Link="Share\ArcadeOpeningRules.cs" />

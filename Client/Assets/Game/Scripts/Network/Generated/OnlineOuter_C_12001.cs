@@ -1535,6 +1535,15 @@ namespace ET
         [MemoryPackOrder(25)]
         public float RescueRate { get; set; }
 
+        /// <summary>
+        /// 本次冲刺锁定方向，客户端预测使用同一权威向量。
+        /// </summary>
+        [MemoryPackOrder(26)]
+        public float DashDirectionX { get; set; }
+
+        [MemoryPackOrder(27)]
+        public float DashDirectionZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1568,6 +1577,8 @@ namespace ET
             this.SlayerMartSupports.Clear();
             this.DownedSeconds = default;
             this.RescueRate = default;
+            this.DashDirectionX = default;
+            this.DashDirectionZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }

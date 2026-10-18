@@ -109,6 +109,9 @@ namespace Game
         public float InvulnerabilityRemaining { get; set; }
         /// <summary>尚在执行的冲刺剩余秒数。</summary>
         public float DashRemaining { get; set; }
+        /// <summary>尚未结束的冲刺方向；旧节点缺失时由角色朝向补齐。</summary>
+        public float DashDirectionX { get; set; }
+        public float DashDirectionY { get; set; }
         /// <summary>角色朝向；输入意图不作为持久状态。</summary>
         public float AimDirectionX { get; set; }
         /// <summary>角色朝向纵向分量，不恢复旧移动或持续按压输入。</summary>

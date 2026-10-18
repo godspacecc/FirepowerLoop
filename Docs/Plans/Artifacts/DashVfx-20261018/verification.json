@@ -1,0 +1,165 @@
+{
+  "scope": "单人和双人冲刺三阶段纯视觉；冲刺次数、时长、倍率、无敌和沿途击杀规则未修改。",
+  "tests": [
+    {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3617,
+          "PassedTests": 7,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.4612880"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.DirectionStaysLockedAndRepeatedSnapshotsDoNotRestartBurst",
+            "Status": "Passed",
+            "Duration": "00:00:00.0800000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.EndingLeavesDetachedFragmentsInsteadOfFullSpeedBands",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.FormalTemplateHasNoGameplayOrAutomaticUpdateComponents",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.NewDashReusesSlotAndRemovalDisposesOwnedObjects",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.PausedTimeFreezesAndMissingSnapshotsCannotLeavePermanentTrail",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.RemoteDashFollowsRenderedPlayerInsteadOfSnapshotTarget",
+            "Status": "Passed",
+            "Duration": "00:00:00.4310000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashVisualTests.TwoPlayersHaveIndependentEndAndHiddenPlayerClearsImmediately",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          }
+        ]
+      }
+    },
+    {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3617,
+          "PassedTests": 10,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:05.4178881"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.DashActionSamplesNewInputBeforeNormalFrameRead",
+            "Status": "Passed",
+            "Duration": "00:00:00.8580000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.ExpiredDashReturnsToOrdinaryMovementInput",
+            "Status": "Passed",
+            "Duration": "00:00:00.4820000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.MoveInputWinsOverFacingAndUsesFullDashSpeed",
+            "Status": "Passed",
+            "Duration": "00:00:00.3620000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.ReleasingOrChangingInputDoesNotRedirectActiveDash",
+            "Status": "Passed",
+            "Duration": "00:00:00.4510000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.RepeatedDashDoesNotConsumeOrRedirectCurrentDash",
+            "Status": "Passed",
+            "Duration": "00:00:00.4380000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.RoundCheckpointRetainsDashDirectionIndependentOfFacing",
+            "Status": "Passed",
+            "Duration": "00:00:00.3660000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.StationaryDashMovesAlongCurrentFacing(1.0f,0.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.4300000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.StationaryDashMovesAlongCurrentFacing(-1.0f,0.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.3620000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.StationaryDashMovesAlongCurrentFacing(0.0f,1.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.4280000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashDirectionTests.StationaryDashMovesAlongCurrentFacing(0.0f,-1.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.3690000"
+          }
+        ]
+      }
+    },
+    {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3617,
+          "PassedTests": 5,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:00.9755527"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeDashPredictionTests.ActiveDashPredictionUsesCopiedAuthority(0.0f,0.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.1220000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashPredictionTests.ActiveDashPredictionUsesCopiedAuthority(-1.0f,0.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashPredictionTests.ActiveDashPredictionUsesCopiedAuthority(0.0f,-1.0f)",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashPredictionTests.ExpiredDashPredictionResumesCurrentInput",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDashPredictionTests.LegacySnapshotWithoutDirectionFallsBackToAuthoritativeFacing",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          }
+        ]
+      }
+    }
+  ],
+  "executedTests": 22,
+  "note": "Unity Summary.TotalTests 是发现总数，仅 Results 中的22项被过滤执行。",
+  "preview": "正式Dash.prefab与运行时表现类在隔离PreviewScene渲染0.035/0.17/0.37秒；相机俯角72、距离11、FOV45，预览Bloom0.5。非实机对局截图。",
+  "limitations": [
+    "未运行真实双客户端联机试玩",
+    "未执行Player Build"
+  ],
+  "review": "远端特效跟随插值显示位置，新增红绿回归并通过复核"
+}

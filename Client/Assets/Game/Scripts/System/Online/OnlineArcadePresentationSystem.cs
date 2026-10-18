@@ -152,7 +152,7 @@ namespace Game
                 ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,latest.Battle.WaveNumber) : null;
             if (island != null && island.IsShallow(predictedLocalPosition.x, predictedLocalPosition.y))
                 moveSpeed *= activeArena.Opening.WaterSpeedRatio;
-            predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, PredictContentMove(input.Move,moveSpeed,self), moveSpeed,
+            predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, PredictContentMove(PredictedMovementDirection(input.Move,self),moveSpeed,self), moveSpeed,
                 Mathf.Min(Time.deltaTime, .05f), catalog.Rule.PlayerRadius, self.InTreasureRoom ? TreasureParameters()?.HalfWidth ?? catalog.Rule.ArenaHalfWidth : catalog.Rule.ArenaHalfWidth,
                 self.InTreasureRoom ? TreasureParameters()?.HalfHeight ?? catalog.Rule.ArenaHalfHeight : catalog.Rule.ArenaHalfHeight,
                 self.InTreasureRoom ? Array.Empty<ArcadeObstacleDefinition>() : RoundObstacles, island);
@@ -161,6 +161,15 @@ namespace Game
             Vector2 facing = input.Aim.sqrMagnitude > .01f ? input.Aim : new Vector2(self.AimX, self.AimZ);
             view.SetPlayer(predictedLocalPosition, facing, true, self.Invulnerable || self.DashSeconds > 0);
             SyncPlayerEffects(self, predictedLocalPosition);
+        }
+
+        /// <summary>冲刺只使用权威锁定方向；旧快照缺少方向时使用权威朝向补齐，不采纳后续本地输入。</summary>
+        internal static Vector2 PredictedMovementDirection(Vector2 move, OnlineArcadeBattlePlayerSnapshot self)
+        {
+            if (self.DashSeconds <= 0) return move;
+            FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(self.DashDirectionX, self.DashDirectionZ,
+                self.AimX, self.AimZ, out var x, out var y);
+            return new Vector2(x, y);
         }
 
         /// <summary>读取同一权威领域预测冰面与孢子；预测仅改变表现，后续仍按服务器位置校正。</summary>
@@ -268,6 +277,8 @@ namespace Game
                         player.CurrentHealth, player.MaxHealth);
                 }
                 SyncPlayerCombat(player, selfId);
+                view.SetPlayerDash(player.PlayerId==selfId?0:player.PlayerId,displayPosition,
+                    PredictedMovementDirection(Vector2.zero,player),player.DashSeconds,player.Alive);
                 int shieldCharges = 0;
                 foreach (OnlineArcadePowerupSnapshot powerup in player.Powerups)
                     if (string.Equals(powerup.ProductId, "arcade.powerup.shield", StringComparison.Ordinal))

@@ -259,6 +259,8 @@ namespace Game
         /// <summary>每次规则层实际生成至少一枚玩家投射物后递增；仅供表现端去重播放开火反馈。</summary>
         public int PlayerFireSequence;
         public float DashRemaining;
+        /// <summary>本次冲刺开始时锁定的竞技场单位方向，与后续移动和瞄准输入独立。</summary>
+        public Vector2 DashDirection;
         public float TemporaryWeaponRemaining;
         /// <summary>单人视角道具剩余秒数；暂停冻结，退出/死亡/离场清零，独立于临时枪且不保存。</summary>
         public float FirstPersonRemaining;

@@ -394,6 +394,9 @@ message OnlineArcadeBattlePlayerInfo
 	repeated OnlineSlayerMartSupportInfo SlayerMartSupports = 24;
 	float DownedSeconds = 25;
 	float RescueRate = 26;
+	// 本次冲刺锁定方向，客户端预测使用同一权威向量。
+	float DashDirectionX = 27;
+	float DashDirectionZ = 28;
 }
 
 // Opcode 12081

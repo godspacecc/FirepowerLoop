@@ -1262,6 +1262,8 @@ namespace ET.Server
                         player.InvulnerabilitySeconds=source.RoundInvulnerabilitySeconds;player.RespawnSeconds=source.RoundRespawnSeconds;
                         player.DownedSeconds=source.RoundDownedSeconds;
                         player.DashSeconds=source.RoundDashSeconds;player.FireCooldownSeconds=source.RoundFireCooldownSeconds;
+                        FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(source.RoundDashDirectionX, source.RoundDashDirectionZ,
+                            player.AimX, player.AimZ, out player.DashDirectionX, out player.DashDirectionZ);
                         player.TemporaryWeaponId=source.RoundTemporaryWeaponId;
                         player.TemporaryWeaponSeconds=source.RoundTemporaryWeaponSeconds;
                         foreach(var power in source.RoundPowerups) player.Powerups[power.Behavior]=ClonePowerup(power);
@@ -2261,11 +2263,13 @@ namespace ET.Server
                 }
         }
 
-        /// <summary>冲刺只能在存活且未冲刺时消耗；速度与无敌均由服务器计时。</summary>
+        /// <summary>冲刺只能在存活且未冲刺时消耗；有移动输入时沿输入，否则沿当前朝向锁定方向。</summary>
         private static void UseDash(this OnlineArcadeRunActor self, OnlineArcadeBattlePlayerRuntime player)
         {
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             if (record.Dashes <= 0 || player.DashSeconds > 0f) return;
+            FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(player.MoveX, player.MoveZ, player.AimX, player.AimZ,
+                out player.DashDirectionX, out player.DashDirectionZ);
             record.Dashes--;
             player.DashSeconds = DashDurationSeconds;
             player.InvulnerabilitySeconds = Math.Max(player.InvulnerabilitySeconds, DashDurationSeconds);
@@ -3043,6 +3047,8 @@ namespace ET.Server
                 player.TemporaryWeaponSeconds = sourcePlayer.TemporaryWeaponSeconds;
                 player.SupportId = sourcePlayer.SupportId ?? string.Empty;
                 player.DashSeconds = sourcePlayer.DashSeconds;
+                player.DashDirectionX = sourcePlayer.DashDirectionX;
+                player.DashDirectionZ = sourcePlayer.DashDirectionZ;
                 foreach (OnlineArcadePowerupRuntime sourcePowerup in sourcePlayer.Powerups.Values
                              .OrderBy(x => x.Behavior))
                 {
@@ -3236,6 +3242,8 @@ namespace ET.Server
                 player.SupportId = sourcePlayer.SupportId ?? string.Empty;
                 player.SupportSeconds = sourcePlayer.SupportSeconds;
                 player.DashSeconds = sourcePlayer.DashSeconds;
+                player.DashDirectionX = sourcePlayer.DashDirectionX;
+                player.DashDirectionZ = sourcePlayer.DashDirectionZ;
                 foreach (OnlineArcadePowerupInfo sourcePowerup in sourcePlayer.Powerups)
                 {
                     OnlineArcadePowerupInfo powerup = OnlineArcadePowerupInfo.Create();

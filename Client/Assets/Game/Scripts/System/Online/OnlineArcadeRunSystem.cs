@@ -451,7 +451,8 @@ namespace Game
                     player.Invulnerable, player.RespawnSeconds, player.TemporaryWeaponId,
                     player.TemporaryWeaponSeconds, player.SupportId, player.SupportSeconds, player.DashSeconds,
                     powerups, player.FireSequence, player.InTreasureRoom,player.VestSlots,player.Plates,player.HasStorm,player.StormCharge,player.StormSeconds,
-                    player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray(),player.DownedSeconds,player.RescueRate));
+                    player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray(),player.DownedSeconds,player.RescueRate,
+                    player.DashDirectionX,player.DashDirectionZ));
             }
             List<OnlineArcadeEnemySnapshot> enemies = new(source.Enemies.Count);
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)

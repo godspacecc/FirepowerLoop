@@ -64,6 +64,9 @@ namespace ET.Server
         public bool CoopRescueEligible { get; set; }
         public float RoundDownedSeconds { get; set; }
         public float RoundDashSeconds { get; set; }
+        /// <summary>轮前保留未结束冲刺的锁定方向，避免恢复后跟随新输入。</summary>
+        public float RoundDashDirectionX { get; set; }
+        public float RoundDashDirectionZ { get; set; }
         public float RoundFireCooldownSeconds { get; set; }
         public string RoundTemporaryWeaponId { get; set; } = string.Empty;
         public float RoundTemporaryWeaponSeconds { get; set; }
@@ -219,6 +222,9 @@ namespace ET.Server
         public string SupportId = string.Empty;
         /// <summary>权威冲刺剩余秒数；大于零时提高移动速度，并由无敌计时覆盖受击保护。</summary>
         public float DashSeconds;
+        /// <summary>开始冲刺时锁定的单位方向；两名玩家各自持有，由服务器同步给预测端。</summary>
+        public float DashDirectionX;
+        public float DashDirectionZ;
         public long LastInputSequence;
         public long LastInputAt;
     }

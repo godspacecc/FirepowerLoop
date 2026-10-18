@@ -265,6 +265,7 @@ namespace Game
                 !ValidTimer(value.TemporaryWeaponRemaining) || !ValidTimer(value.FirstPersonRemaining) ||
                 !ValidTimer(value.FireCooldown) || !ValidTimer(value.InvulnerabilityRemaining) || !ValidTimer(value.DashRemaining) ||
                 !Finite(value.AimDirectionX) || !Finite(value.AimDirectionY) ||
+                !Finite(value.DashDirectionX) || !Finite(value.DashDirectionY) ||
                 (!string.IsNullOrEmpty(value.TemporaryWeaponId) && !ValidStableId(value.TemporaryWeaponId)) ||
                 value.TemporaryWeaponRemaining > 0 && string.IsNullOrEmpty(value.TemporaryWeaponId)) return false;
             var ids = new HashSet<string>(StringComparer.Ordinal);

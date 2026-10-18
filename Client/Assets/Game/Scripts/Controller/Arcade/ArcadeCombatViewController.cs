@@ -55,6 +55,8 @@ namespace Game
         bool TryScreenToArena(Vector2 screenPosition, out Vector2 position);
         bool TryGetPlayerPosition(out Vector2 position) { position = default; return false; }
         void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable);
+        /// <summary>只读有效冲刺状态；零号为本机，正数为联机队友，不从无敌或移速推断。</summary>
+        void SetPlayerDash(long playerId, Vector2 position, Vector2 direction, float remaining, bool visible) { }
         void SetPlayerWeapon(string weaponId) { }
         void SetPlayerWeapon(ArcadeWeaponDefinition weapon) => SetPlayerWeapon(weapon.Id);
         /// <summary>同步规则层开火序列；序列只用于表现去重，不参与射速或伤害判定。</summary>
@@ -287,6 +289,7 @@ namespace Game
             ClearBulletImpacts();
             ClearProjectileBlasts();
             ClearBombVisuals();
+            ClearDashVisuals();
             ReleaseContent();
             remoteGeneration++;
             obstacleVisualGeneration++;
@@ -400,6 +403,7 @@ namespace Game
 
         public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable)
         {
+            dashPresentation?.Move(0,position,visible);
             SetExitGuidePlayer(position, visible);
             if (playerMotor == null || !playerMotor.IsValid || mapRoot == null) return;
             playerMotor.SetAlivePresentation(visible);
@@ -775,6 +779,7 @@ namespace Game
 
         public void RemoveRemotePlayer(long playerId)
         {
+            dashPresentation?.Remove(playerId);
             if (!remotePlayers.TryGetValue(playerId, out RemotePlayerEntry entry)) return;
             remotePlayers.Remove(playerId);
             ReleaseRemotePlayer(entry);
@@ -809,9 +814,14 @@ namespace Game
         public void TickPlayerFeedback(float deltaTime)
         {
             bombBlasts?.Tick(deltaTime);
+            dashPresentation?.Tick(deltaTime);
             TickExitCues(deltaTime);
             playerMotor?.TickCombatFeedback(deltaTime);
-            foreach (RemotePlayerEntry entry in remotePlayers.Values) entry.View?.Tick(deltaTime);
+            foreach (RemotePlayerEntry entry in remotePlayers.Values)
+            {
+                entry.View?.Tick(deltaTime);
+                MoveRemoteDashVisual(entry);
+            }
             foreach (EffectVisualEntry entry in effectVisuals.Values)
             {
                 if (entry.ShieldFlashRemaining <= 0f) continue;

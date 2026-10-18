@@ -454,6 +454,8 @@ namespace Game
                     UseBomb(runtime);
                     break;
                 case ArcadeHudActionKind.Dash:
+                    // 按键回调可能早于本帧战斗更新，只采样方向，不重复消费相机转向或技能输入。
+                    ReadDashInput(runtime);
                     UseDash(runtime);
                     break;
                 case ArcadeHudActionKind.RetryCompletion:
@@ -599,6 +601,29 @@ namespace Game
             var stickAim = input?.AimInput ?? Vector2.zero;
             var stickFiring = stickAim.sqrMagnitude >= AimDeadZone * AimDeadZone;
             if (ReadFirstPersonInput(runtime, runtime.MoveDirection, stickAim, stickFiring)) return;
+            ReadTopDownAim(runtime, stickAim, stickFiring);
+            runtime.Firing = ReadArcadeFiring(stickFiring);
+        }
+
+        /// <summary>冲刺动作只读取当前移动和朝向；第一人称镜头增量仍由正常帧更新消费一次。</summary>
+        private void ReadDashInput(ArcadeCombatRuntime runtime)
+        {
+            var move = input?.MoveInput ?? Vector2.zero;
+            if (runtime.FirstPersonRemaining > 0 && !runtime.IslandFirstPersonSuspended &&
+                view.IsFirstPersonActive && view.TryReadFirstPersonAim(out var forward))
+            {
+                runtime.AimDirection = forward;
+                runtime.MoveDirection = RelativeFirstPersonMovement(move, forward);
+                return;
+            }
+            runtime.MoveDirection = move;
+            var stickAim = input?.AimInput ?? Vector2.zero;
+            ReadTopDownAim(runtime, stickAim, stickAim.sqrMagnitude >= AimDeadZone * AimDeadZone);
+        }
+
+        /// <summary>统一俯视输入与冲刺触发时的朝向优先级，有效右摇杆优先于鼠标。</summary>
+        private void ReadTopDownAim(ArcadeCombatRuntime runtime, Vector2 stickAim, bool stickFiring)
+        {
             if (stickFiring)
             {
                 runtime.AimDirection = stickAim.normalized;
@@ -610,7 +635,6 @@ namespace Game
                 var aim = target - runtime.PlayerPosition;
                 if (aim.sqrMagnitude > 0.001f) runtime.AimDirection = aim.normalized;
             }
-            runtime.Firing = ReadArcadeFiring(stickFiring);
         }
 
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
@@ -673,13 +697,14 @@ namespace Game
                 speed *= IslandFor(runtime) is { } region && region.IsShallow(runtime.PlayerPosition.x, runtime.PlayerPosition.y)
                     ? arena.Opening.WaterSpeedRatio : 1f;
             var island = IslandFor(runtime);
+            var move = runtime.DashRemaining > 0f ? runtime.DashDirection : runtime.MoveDirection;
             if (island != null)
             {
-                runtime.PlayerPosition = MoveOnIsland(runtime, RoundMovementDelta(runtime, runtime.MoveDirection, speed, deltaTime), catalog.Rule.PlayerRadius);
+                runtime.PlayerPosition = MoveOnIsland(runtime, RoundMovementDelta(runtime, move, speed, deltaTime), catalog.Rule.PlayerRadius);
                 KillAlongIslandDash(runtime);
             }
             else
-            runtime.PlayerPosition = ResolvePosition(runtime.PlayerPosition + RoundMovementDelta(runtime, runtime.MoveDirection, speed, deltaTime),
+            runtime.PlayerPosition = ResolvePosition(runtime.PlayerPosition + RoundMovementDelta(runtime, move, speed, deltaTime),
                 catalog.Rule.PlayerRadius,
                 runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : catalog.Rule.ArenaHalfWidth,
                 runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : catalog.Rule.ArenaHalfHeight,
@@ -1439,11 +1464,15 @@ namespace Game
             PublishHud(runtime);
         }
 
+        /// <summary>消耗一次冲刺并锁定方向；无移动输入时沿角色当前朝向，后续松键不取消位移。</summary>
         private void UseDash(ArcadeCombatRuntime runtime)
         {
             if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.Dashes <= 0 || runtime.RespawnRemaining > 0f || runtime.DashRemaining > 0f) return;
+            ArcadeDashRules.ResolveDirection(runtime.MoveDirection.x, runtime.MoveDirection.y,
+                runtime.AimDirection.x, runtime.AimDirection.y, out var dashX, out var dashY);
+            runtime.DashDirection = new Vector2(dashX, dashY);
             runtime.Dashes--;
             runtime.DashRemaining = DashSeconds;
             runtime.PlayerInvulnerability = Mathf.Max(runtime.PlayerInvulnerability, DashSeconds);
@@ -1965,6 +1994,7 @@ namespace Game
             view.SetIslandCampfireWarning(UsesIslandRounds(runtime) && runtime.WaveIndex == 3 &&
                 !runtime.WaveClearAwarded && !runtime.InTreasureRoom && runtime.IslandCampfireWarningRemaining > 0);
             SyncIslandEntryWarning(runtime);
+            view.SetPlayerDash(0,runtime.PlayerPosition,runtime.DashDirection,runtime.DashRemaining,runtime.RespawnRemaining<=0f);
             if (runtime.InTreasureRoom)
             {
                 view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);

@@ -56,6 +56,9 @@ namespace Game
                 var bombTemplate=candidate.Find("BombBlast");
                 if(bombTemplate==null)throw new InvalidOperationException("公共炸弹三阶段模板缺失");
                 BindBombVisual(bombTemplate);
+                var dashTemplate=candidate.Find("Dash");
+                if(dashTemplate==null)throw new InvalidOperationException("公共冲刺三阶段模板缺失");
+                BindDashVisual(dashTemplate);
                 SyncContentEnvironment();
                 treasureVisualIdentity=null; exitVisualIdentity=null;
                 SetTreasureRoom(contentTreasure,contentInRoom,contentDiscovered,contentOpen,contentRemaining);
@@ -70,6 +73,7 @@ namespace Game
                 {
                     contentLoadFailed = true;
                     ClearBombVisuals();
+                    ClearDashVisuals();
                     exitCues.Clear(); exitCueElapsed = 0;
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;

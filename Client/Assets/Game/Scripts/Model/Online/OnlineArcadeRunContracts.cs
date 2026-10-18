@@ -101,7 +101,8 @@ namespace Game
             string temporaryWeaponId = null, float temporaryWeaponSeconds = 0f, string supportId = null,
             float supportSeconds = 0f, float dashSeconds = 0f,
             IReadOnlyList<OnlineArcadePowerupSnapshot> powerups = null, int fireSequence = 0, bool inTreasureRoom = false, int vestSlots = 0, int plates = 0, bool hasStorm = false,
-            int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null, float downedSeconds=0, float rescueRate=0)
+            int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null, float downedSeconds=0, float rescueRate=0,
+            float dashDirectionX = 0, float dashDirectionZ = 0)
         {
             PlayerId = playerId; PositionX = positionX; PositionZ = positionZ; AimX = aimX; AimZ = aimZ;
             CurrentHealth = currentHealth; MaxHealth = maxHealth; Alive = alive;
@@ -109,6 +110,7 @@ namespace Game
             TemporaryWeaponId = temporaryWeaponId ?? string.Empty; TemporaryWeaponSeconds = temporaryWeaponSeconds;
             SupportId = supportId ?? string.Empty; SupportSeconds = supportSeconds;
             DashSeconds = dashSeconds;
+            DashDirectionX = dashDirectionX; DashDirectionZ = dashDirectionZ;
             Powerups = Array.AsReadOnly(Copy(powerups));
             FireSequence = fireSequence; InTreasureRoom = inTreasureRoom;
             VestSlots=vestSlots;Plates=plates;HasStorm=hasStorm;StormCharge=stormCharge;StormSeconds=stormSeconds;
@@ -132,6 +134,9 @@ namespace Game
         public string SupportId { get; }
         public float SupportSeconds { get; }
         public float DashSeconds { get; }
+        /// <summary>服务器锁定的本次冲刺方向，独立于本地当前移动和瞄准输入。</summary>
+        public float DashDirectionX { get; }
+        public float DashDirectionZ { get; }
         public IReadOnlyList<OnlineArcadePowerupSnapshot> Powerups { get; }
         /// <summary>服务器本场成功攻击序列；只驱动表现，不能作为客户端伤害依据。</summary>
         public int FireSequence { get; }

@@ -23,6 +23,7 @@ namespace ET.Server
                 target.RoundDownedSeconds=source.DownedSeconds;
                 target.RoundInvulnerabilitySeconds=source.InvulnerabilitySeconds;target.RoundRespawnSeconds=source.RespawnSeconds;
                 target.RoundDashSeconds=source.DashSeconds;target.RoundFireCooldownSeconds=source.FireCooldownSeconds;
+                target.RoundDashDirectionX=source.DashDirectionX;target.RoundDashDirectionZ=source.DashDirectionZ;
                 target.RoundTemporaryWeaponId=source.TemporaryWeaponId;
                 target.RoundTemporaryWeaponSeconds=source.TemporaryWeaponSeconds;
                 target.RoundPowerups=source.Powerups.Values.Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
@@ -324,7 +325,10 @@ namespace ET.Server
         /// <summary>冰面惯性与寄生/孢子减速仍走正式碰撞入口，暂停门禁在外层统一冻结。</summary>
         private static void ContentPlayerVelocity(OnlineArcadeBattleRuntime b,OnlineArcadeBattlePlayerRuntime player,float speed,float delta,out float vx,out float vy)
         {
-            vx=player.MoveX*speed;vy=player.MoveZ*speed;if(b.RoundLayout==null||player.InTreasureRoom)return;
+            // 锁定方向只覆盖冲刺期间的候选移动，仍沿正式地形和障碍碰撞链裁决。
+            vx=(player.DashSeconds>0?player.DashDirectionX:player.MoveX)*speed;
+            vy=(player.DashSeconds>0?player.DashDirectionZ:player.MoveZ)*speed;
+            if(b.RoundLayout==null||player.InTreasureRoom)return;
             var p=ContentTuning(b);bool ice=false,slow=false;
             foreach(var area in b.ContentAreas)
                 if(!area.Warning&&ArcadeRoundContentRules.TouchesCircle(player.PositionX,player.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,area.X,area.Y,area.Radius))
