@@ -1226,8 +1226,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 0.95, g: 0.69, b: 0.29, a: 1}
   m_RaycastTarget: 0
@@ -2265,7 +2265,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text:
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8af0e400391932142956d1ed77b5c703, type: 2}
   m_sharedMaterial: {fileID: 5620418019715026380, guid: 8af0e400391932142956d1ed77b5c703,
@@ -2372,7 +2372,7 @@ RectTransform:
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 1, y: 0.5}
 --- !u!222 &7550710095817445749
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2401,7 +2401,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 4984e55065d34a3418605b2caeec2762, type: 3}
+  m_Texture: {fileID: 2800000, guid: f18f4f19b79313d4d9ecc2d580207a0c, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3176,8 +3176,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ebcfe295f900a8544b2cbbcebe2f7d98, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   button: {fileID: 8995663017162651315}
   label: {fileID: 7812346446105038784}
   selectionMark: {fileID: 2665942002010229442}

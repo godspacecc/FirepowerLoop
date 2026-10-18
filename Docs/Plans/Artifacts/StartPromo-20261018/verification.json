@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-18",
+  "scope": "Only Start background; Loading unchanged; existing real title and buttons retained.",
+  "image": {
+    "method": "Built-in image_gen image edit",
+    "reference": "C:/Users/Administrator/.codex/generated_images/01a14d69-0cd7-79a2-baa1-fef47b016d43/exec-8a87e2f5-9d67-49aa-b16d-b677177ec37e.png",
+    "output": "Client/Assets/Game/Art/UI/Start/FirepowerLoop_PromoBackground.png",
+    "prompt": "Precisely edit the supplied approved FirepowerLoop main-menu artwork into a CLEAN BACKGROUND-ONLY asset for a Unity game. Remove ONLY all overlaid UI: remove the top-right FirepowerLoop title, all four right-side Chinese menu labels, the small amber selection dash, the translucent rounded selection pill, and the bottom-left Chinese update text. Seamlessly fill those small UI regions with the existing surrounding background. Preserve the entire existing artwork: identical composition, two rear-view heroes, enemy crowd, large stone creature, ruins, tropical shore, ocean, volcano, lighting, low-poly style, all colors and aspect ratio. In particular preserve the smooth dark teal atmospheric gradient on the right as empty clean negative space for REAL UI buttons added in Unity later. No text, no letters, no logo, no icons, no buttons, no selection marker anywhere in output. Do not redesign, move, add, or crop any scene elements. Keep the exact same wide landscape composition and proportions."
+  },
+  "loadingSha256Unchanged": "E2B94466EFAC543EFABC5351C76F8BDD58ABF06F01B102FBEEE46595F41DA692",
+  "tests": {
+    "filter": "StartMenuPresentationTests",
+    "mode": "EditMode",
+    "maxTests": 5,
+    "includePassingTests": true,
+    "results": [
+      {
+        "Name": "Game.Tests.StartMenuPresentationTests.CommonThemeDoesNotOverwriteStartPrefabGraphics",
+        "Status": "Passed",
+        "Duration": "00:00:00.0200000"
+      },
+      {
+        "Name": "Game.Tests.StartMenuPresentationTests.EveryMenuButtonRequestsOneUiClickSoundWithoutReplacingBusinessAction",
+        "Status": "Passed",
+        "Duration": "00:00:00.0610000"
+      },
+      {
+        "Name": "Game.Tests.StartMenuPresentationTests.MenuKeepsPrimaryActionsRightAndAuxiliaryActionsAtBottom",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.StartMenuPresentationTests.PointerCrossingMenuGapsDoesNotRestoreFirstItemOrOldKeyboardFocus",
+        "Status": "Passed",
+        "Duration": "00:00:00.0170000"
+      },
+      {
+        "Name": "Game.Tests.StartMenuPresentationTests.SelectionMarkFollowsHoverAndKeyboardFocusAndResetsAfterHide",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      }
+    ],
+    "note": "Runner Summary.TotalTests reports discovered tests; five filtered result entries executed and passed."
+  },
+  "preview": {
+    "source": "Formal Start prefab rendered in isolated Unity PreviewScene; no gameplay started.",
+    "files": [
+      "zh-CN-1920.png",
+      "en-US-1920.png",
+      "zh-CN-2400.png",
+      "en-US-1440.png"
+    ],
+    "textOverflow": 0,
+    "crop": "Right aligned to preserve menu negative space in narrower windows."
+  },
+  "review": "Read-only review found no blockers.",
+  "playerBuild": false,
+  "committed": false
+}
