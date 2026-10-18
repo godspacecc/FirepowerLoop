@@ -12,12 +12,14 @@ namespace Game
         private readonly Material material;
 
         /// <summary>把四段细线挂到角色子树，共享本实例独占材质，随角色移动与隐藏。</summary>
-        public ArcadeProtectionPresentation(Transform owner)
+        public ArcadeProtectionPresentation(Transform owner, Shader shader)
         {
+            // 先验证显式依赖，禁止失败后留下未归属的保护环对象。
+            if (shader == null) throw new ArgumentNullException(nameof(shader));
             root = new GameObject("ArcadeProtection");
             root.SetActive(false);
             root.transform.SetParent(owner, false);
-            material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));
+            material = new Material(shader);
             material.name = "ArcadeProtectionGoldWhite";
             material.SetColor("_BaseColor", new Color(1f, .88f, .48f, 1f));
             for (int segment = 0; segment < 4; segment++)

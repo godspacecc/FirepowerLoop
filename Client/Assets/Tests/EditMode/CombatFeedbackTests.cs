@@ -75,6 +75,8 @@ namespace Game.Tests
                 original.SetFloat("_ExistingValue", .7f);
                 body.SetPropertyBlock(original);
                 var view = root.GetComponent<PlayerView>();
+                typeof(PlayerView).GetField("arcadeProtectionShader", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+                    .SetValue(view, AssetDatabase.LoadAssetAtPath<Shader>("Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader"));
                 view.SetArcadePresentationActive(true);
                 view.PlayHurtFeedback();
                 Assert.That(GetFeedbackColor(body), Is.EqualTo(Color.red));

@@ -2538,6 +2538,7 @@ MonoBehaviour:
   flashlight: {fileID: 6529550542524021238}
   damageNumberEmitter: {fileID: 3782998820814227703}
   arcadePlayerMarker: {fileID: 1131477671112592730}
+  arcadeProtectionShader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
   flashlightDownwardAngleDegrees: 18
   firstPersonArmsPrefab: {fileID: 5175474898869639852, guid: ef72c8c9798ddca4cb520bc01bd15b39,
     type: 3}

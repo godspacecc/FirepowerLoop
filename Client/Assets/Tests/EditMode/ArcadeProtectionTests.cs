@@ -6,6 +6,7 @@ using Game;
 using Luban;
 using NUnit.Framework;
 using QFramework;
+using UnityEditor;
 using UnityEngine;
 
 namespace FirepowerLoop.Tests
@@ -21,11 +22,50 @@ namespace FirepowerLoop.Tests
         {
             player = new GameObject("ProtectionPlayer");
             view = player.AddComponent<PlayerView>();
+            typeof(PlayerView).GetField("arcadeProtectionShader", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(view, AssetDatabase.LoadAssetAtPath<Shader>("Packages/com.unity.render-pipelines.universal/Shaders/Unlit.shader"));
             view.SetArcadePresentationActive(true);
         }
 
         [TearDown]
         public void TearDown() => UnityEngine.Object.DestroyImmediate(player);
+
+        [Test]
+        public void PlayerWithoutAuthoredProtectionKeepsPresentationUsable()
+        {
+            var barePlayer = new GameObject("PlayerWithoutProtectionShader");
+            try
+            {
+                var bareView = barePlayer.AddComponent<PlayerView>();
+                Assert.DoesNotThrow(() =>
+                {
+                    bareView.SetArcadePresentationActive(true);
+                    bareView.SetArcadeProtectionActive(true);
+                    bareView.SetArcadeProtectionActive(true);
+                    bareView.TickCombatFeedback(0.1f);
+                });
+                Assert.That(barePlayer.transform.Find("ArcadeProtection"), Is.Null,
+                    "缺少显式表现依赖时不创建半成品，也不依赖 Shader.Find 偶然命中");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(barePlayer); }
+        }
+
+        [Test]
+        public void ProtectionShaderTravelsWithPlayerPrefab()
+        {
+            const string path = "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab";
+            var instance = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));
+            try
+            {
+                instance.GetComponent<PlayerView>().SetArcadePresentationActive(true);
+                var line = instance.transform.Find("ArcadeProtection").GetComponentInChildren<LineRenderer>(true);
+                var shaderPath = AssetDatabase.GetAssetPath(line.sharedMaterial.shader);
+                Assert.That(shaderPath, Is.Not.Empty);
+                Assert.That(AssetDatabase.GetDependencies(path, true), Does.Contain(shaderPath),
+                    "安卓按玩家 Prefab 加载时必须带入保护环 Shader，不能依赖编辑器的全局 Shader.Find 缓存");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(instance); }
+        }
 
         [Test]
         public void EnteringArcadePreparesInactiveProtectionBeforeFirstHit()

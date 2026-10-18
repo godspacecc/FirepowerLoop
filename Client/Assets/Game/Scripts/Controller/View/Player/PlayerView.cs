@@ -192,6 +192,10 @@ namespace Game
         // 受击暂时关闭上半身武器层；恢复时根据当前控制器选定的姿态重新计算。
         private float rangedAimSuppressionRemainingSeconds;
         private bool arcadePresentationActive;
+        /// <summary>随玩家 Prefab 显式加载保护环 Shader，避免安卓依赖全局查找缓存。</summary>
+        [SerializeField] private Shader arcadeProtectionShader;
+        /// <summary>旧资源缺少保护环依赖时只提示一次；纯表现缺失不能冻结街机活动。</summary>
+        private bool protectionShaderWarningReported;
         /// <summary>当前角色独占的保护表现；不保存保护时长或无敌来源。</summary>
         private ArcadeProtectionPresentation arcadeProtection;
 
@@ -491,7 +495,7 @@ namespace Game
             {
                 // 把对象和缓冲准备移到进场阶段，首次受击只切换既有表现。
                 PrepareFeedbackRenderers();
-                if (arcadeProtection == null) arcadeProtection = new ArcadeProtectionPresentation(transform);
+                PrepareArcadeProtection();
                 damageNumberEmitter?.Prepare();
             }
             else
@@ -507,8 +511,24 @@ namespace Game
         public void SetArcadeProtectionActive(bool active)
         {
             active &= arcadePresentationActive && presentationAlive && isActiveAndEnabled;
-            if (active && arcadeProtection == null) arcadeProtection = new ArcadeProtectionPresentation(transform);
+            if (active) PrepareArcadeProtection();
             arcadeProtection?.SetActive(active);
+        }
+
+        /// <summary>只创建依赖已就绪的保护表现；旧 Prefab 缺少引用时保留角色移动和战斗同步。</summary>
+        private void PrepareArcadeProtection()
+        {
+            if (arcadeProtection != null) return;
+            if (arcadeProtectionShader == null)
+            {
+                if (!protectionShaderWarningReported)
+                {
+                    protectionShaderWarningReported = true;
+                    Log.Warning("[PlayerView] 玩家 Prefab 缺少保护环 Shader 引用，已跳过保护环表现。");
+                }
+                return;
+            }
+            arcadeProtection = new ArcadeProtectionPresentation(transform, arcadeProtectionShader);
         }
 
         private static void SetActive(GameObject target, bool active)
