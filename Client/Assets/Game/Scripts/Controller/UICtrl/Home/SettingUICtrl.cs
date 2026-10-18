@@ -14,7 +14,6 @@ namespace Game
         private readonly SettingGeneralPageCtrl general = new SettingGeneralPageCtrl();
         private readonly SettingAudioPageCtrl audio = new SettingAudioPageCtrl();
         private readonly SettingControlsPageCtrl controls = new SettingControlsPageCtrl();
-        private readonly SettingMobilePageCtrl mobileControls = new SettingMobilePageCtrl();
         private readonly SettingNetworkPageCtrl network = new SettingNetworkPageCtrl();
         private BasePageCtrl current;
 
@@ -27,13 +26,12 @@ namespace Game
             UI.BtnExit.onClick.AddListener(Hide);
             UI.GeneralTabButton.onClick.AddListener(() => ShowPage(Page.General));
             UI.AudioTabButton.onClick.AddListener(() => ShowPage(Page.Audio));
-            UI.ControlsTabButton.onClick.AddListener(() => ShowPage(Page.Controls));
+            UI.ControlsTabButton.onClick.AddListener(OpenControls);
             UI.NetworkTabButton.onClick.AddListener(() => ShowPage(Page.Network));
 
             general.SetUI(UI.SettingGeneralRoot.GetComponent<SettingGeneralPageUI>());
             audio.SetUI(UI.SettingAudioRoot.GetComponent<SettingAudioPageUI>());
             controls.SetUI(UI.SettingControlsRoot.GetComponent<SettingControlsPageUI>());
-            mobileControls.SetUI(UI.SettingMobileRoot.GetComponent<SettingMobilePageUI>());
             network.SetUI(UI.SettingNetworkRoot.GetComponent<SettingNetworkPageUI>());
             this.RegisterEvent<MobileInputModeChangedEvent>(_ =>
             {
@@ -43,10 +41,22 @@ namespace Game
 
         protected override void OnShow() => RefreshNavigation();
 
-        /// <summary>打开窗口或切换输入模式时选择手机布局页或桌面热键页。</summary>
+        /// <summary>恢复设置分页；桌面操作页切到手机模式时回到通用页，不自动弹出编辑器。</summary>
         private void RefreshNavigation()
         {
-            ShowPage(lastPage);
+            ShowPage(lastPage == Page.Controls && this.GetSystem<MobileInputSystem>().IsMobileInputMode
+                ? Page.General : lastPage);
+        }
+
+        /// <summary>手机直接打开全屏布局编辑器，保留当前设置页供保存或取消后返回；桌面仍使用热键分页。</summary>
+        private void OpenControls()
+        {
+            if (this.GetSystem<MobileInputSystem>().IsMobileInputMode)
+            {
+                UIHelper.ShowUI<MobileControlLayoutUICtrl>();
+                return;
+            }
+            ShowPage(Page.Controls);
         }
 
         protected override void OnHide()
@@ -67,7 +77,7 @@ namespace Game
             current = page switch
             {
                 Page.Audio => audio,
-                Page.Controls => this.GetSystem<MobileInputSystem>().IsMobileInputMode ? mobileControls : controls,
+                Page.Controls => controls,
                 Page.Network => network,
                 _ => general
             };

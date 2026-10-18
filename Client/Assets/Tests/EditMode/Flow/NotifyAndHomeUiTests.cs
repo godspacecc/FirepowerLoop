@@ -838,6 +838,83 @@ namespace Game.Tests
             Assert.IsFalse(hotKeys.IsCapturingRebind);
         }
 
+        [TestCase(false)]
+        [TestCase(true)]
+        public void Setting_MobileControlsOpenEditorDirectlyAndReturnAfterCancelOrSave(bool save)
+        {
+            ConfigureControlLayoutEntry(true);
+            var setting = UIHelper.ShowUI<SettingUICtrl>();
+            var ui = GetBaseUI<SettingUI>(setting);
+            ui.AudioTabButton.onClick.Invoke();
+
+            ui.ControlsTabButton.onClick.Invoke();
+
+            var editor = UIHelper.GetUICtrl<MobileControlLayoutUICtrl>();
+            Assert.That(editor, Is.Not.Null, "手机点击操作必须直接打开全屏编辑器");
+            Assert.That(editor.IsShow(), Is.True);
+            Assert.That(UIHelper.GetTopmostBlockingUI(), Is.SameAs(editor));
+            Assert.That(ui.SettingMobileRoot.activeSelf, Is.False, "不再显示二次入口页");
+            var editorUi = GetBaseUI<MobileControlLayoutUI>(editor);
+            editorUi.SizeSlider.value = 1.4f;
+            if (save) editorUi.SaveButton.onClick.Invoke();
+            else editorUi.CancelButton.onClick.Invoke();
+
+            Assert.That(editor.IsShow(), Is.False);
+            Assert.That(setting.IsShow(), Is.True);
+            Assert.That(UIHelper.GetTopmostBlockingUI(), Is.SameAs(setting));
+            Assert.That(ui.SettingAudioRoot.activeSelf, Is.True, "返回进入前的设置页");
+            Assert.That(ui.ControlsTabButton.interactable, Is.True, "返回后仍可再次点击操作");
+            Assert.That(Game.Interface.GetModel<MobileControlLayoutModel>().ToData().Move.Scale,
+                Is.EqualTo(save ? 1.4f : 1f));
+            ui.ControlsTabButton.onClick.Invoke();
+            Assert.That(editor.IsShow(), Is.True);
+            editorUi.CancelButton.onClick.Invoke();
+            setting.Hide(); setting.Show();
+            Assert.That(editor.IsShow(), Is.False, "重新打开设置不能自动进入编辑器");
+            Assert.That(ui.SettingAudioRoot.activeSelf, Is.True);
+        }
+
+        [Test]
+        public void Setting_DesktopKeepsHotkeysAndSwitchingToMobileDoesNotOpenEditorAutomatically()
+        {
+            ConfigureControlLayoutEntry(false);
+            var setting = UIHelper.ShowUI<SettingUICtrl>();
+            var ui = GetBaseUI<SettingUI>(setting);
+            ui.ControlsTabButton.onClick.Invoke();
+            Assert.That(ui.SettingControlsRoot.activeSelf, Is.True);
+            Assert.That(Controls(ui).HotKeyList.GetComponentsInChildren<HotKeyItemBoxUI>(false), Is.Not.Empty);
+            Assert.That(ui.ControlsTabButton.interactable, Is.False);
+            Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>(), Is.Null);
+
+            Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(true);
+            Assert.That(ui.SettingControlsRoot.activeSelf, Is.False);
+            Assert.That(ui.SettingMobileRoot.activeSelf, Is.False);
+            Assert.That(ui.SettingGeneralRoot.activeSelf, Is.True);
+            Assert.That(ui.ControlsTabButton.interactable, Is.True);
+            Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>(), Is.Null);
+            ui.ControlsTabButton.onClick.Invoke();
+            Assert.That(UIHelper.GetUICtrl<MobileControlLayoutUICtrl>().IsShow(), Is.True);
+        }
+
+        /// <summary>设置宿主使用已有夹具，按键编辑器加载正式Prefab验证真实保存、取消与浮层路径。</summary>
+        private static void ConfigureControlLayoutEntry(bool mobile)
+        {
+            var architecture = Game.Interface;
+            architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(mobile);
+            UIHelper.SetPrefabLoaderForTests(path =>
+            {
+                if (path == "Prefabs/UI/Home/MobileControlLayout")
+                    return UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/MobileControlLayout.prefab");
+                var root = CreatePrefab(path);
+                if (path == "Prefabs/UI/Home/Setting")
+                {
+                    var mobileUi = root.GetComponent<SettingUI>().SettingMobileRoot.GetComponent<SettingMobilePageUI>();
+                    mobileUi.OpenLayoutButton = CreateButton(mobileUi.transform, "OpenLayoutButton", out _);
+                }
+                return root;
+            });
+        }
+
         [Test]
         public void ControllerPaths_UseCollectorAddresses()
         {
@@ -1250,6 +1327,7 @@ namespace Game.Tests
             architecture.RegisterModel(new ResourceUpdateModel());
             architecture.RegisterModel(new ArcadeRunModel());
             architecture.RegisterModel(new TestToolSettingsModel());
+            architecture.RegisterModel(new MobileControlLayoutModel());
             architecture.RegisterUtility<IDisplayResolutionApplier>(displayApplier);
             architecture.RegisterUtility<ISettingsFileStore>(settingsStore);
             architecture.RegisterUtility(new LocalizationUtility());
@@ -1261,6 +1339,7 @@ namespace Game.Tests
             architecture.RegisterSystem(new RuntimeLogSystem());
             architecture.RegisterSystem(new AudioSystem());
             architecture.RegisterSystem(new HotKeySystem());
+            architecture.RegisterSystem(new MobileInputSystem());
             architecture.RegisterSystem(new RedPointSystem());
             architecture.RegisterSystem(new ResourceUpdateSystem());
             architecture.RegisterSystem(new ArcadeRunSystem());
