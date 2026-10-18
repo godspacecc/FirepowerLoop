@@ -104,6 +104,44 @@ namespace Tests.EditMode
             Assert.That(animator.transform.localPosition, Is.EqualTo(original));
         }
 
+        [Test]
+        public void ArcadeSnapshots_GroundRaisedSpawnAndRegionTeleportBeforeAligningSoles()
+        {
+            var map = new GameObject("PlayerGroundContactMap");
+            map.transform.position = new Vector3(0, 1000, 0);
+            try
+            {
+                var controller = new ArcadeCombatViewController();
+                var motor = new PlayerViewCtrl(view, 1, 1, new ViewCtrlRegistry(), new UnityViewInstanceProvider());
+                const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                typeof(ArcadeCombatViewController).GetField("mapRoot", flags).SetValue(controller, map.transform);
+                typeof(ArcadeCombatViewController).GetField("playerMotor", flags).SetValue(controller, motor);
+                var playable = BindClip("HumanM@Idle01");
+                foreach (var teleport in new[] { false, true })
+                foreach (var spawnHeight in new[] { .1f, .6f })
+                {
+                    view.CharacterController.enabled = false;
+                    player.transform.position = new Vector3(0, 1000f + spawnHeight, 0);
+                    view.CharacterController.enabled = true;
+                    typeof(ArcadeCombatViewController).GetField("pendingRegionPosition", flags).SetValue(controller, teleport);
+                    for (int frame = 0; frame < 8; frame++)
+                    {
+                        controller.SetPlayer(new Vector2(frame * .02f, 0), Vector2.up, true, false);
+                        playable.SetTime(.4f); graph.Evaluate(0); Present();
+                        Assert.That(view.CharacterController.isGrounded, Is.True, "正式街机快照必须落地，不能保留出生高度");
+                        AssertSoleOnFloor("Base_Feet");
+                        Assert.That(player.transform.position.x, Is.EqualTo(frame * .02f).Within(.001f));
+                    }
+                    controller.SetPlayer(Vector2.zero, Vector2.up, false, false);
+                    controller.SetPlayer(Vector2.zero, Vector2.up, true, false);
+                    graph.Evaluate(0); Present();
+                    Assert.That(view.CharacterController.isGrounded, Is.True, "复活后同样恢复落地");
+                    AssertSoleOnFloor("Base_Feet");
+                }
+            }
+            finally { Object.DestroyImmediate(map); }
+        }
+
         private AnimationClipPlayable BindClip(string clipName)
         {
             graph = PlayableGraph.Create("PlayerGroundContactTest");

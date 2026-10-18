@@ -132,6 +132,8 @@ namespace Game
         private const float ObstacleVisualBaseWidth = 1.6f;
         private const float ObstacleVisualBaseLength = 4f;
         private const float ShieldBlockFlashSeconds = 0.3f;
+        /// <summary>街机平面角色每帧向地面保持的小幅接触距离，由 CharacterController 阻挡，避免出生或传送后悬空。</summary>
+        private const float PlayerGroundContactDistance = 0.1f;
 
         private GameObject root;
         private Transform mapRoot;
@@ -415,10 +417,16 @@ namespace Game
                 hasPlayerHealthBaseline = false;
                 return;
             }
-            var local = mapRoot.InverseTransformPoint(playerMotor.Position);
-            var target = mapRoot.TransformPoint(new Vector3(position.x, local.y, position.y));
-            if (pendingRegionPosition) { playerMotor.SetArcadeRegionPosition(target); pendingRegionPosition = false; }
-            else playerMotor.Move(target - playerMotor.Position);
+            // 街机权威只有平面坐标，地面是地图局部零高；不能沿用旧出生高度。
+            var target = mapRoot.TransformPoint(new Vector3(position.x, 0f, position.y));
+            if (pendingRegionPosition)
+            {
+                // 先留出碰撞皮肤间隙，再通过 Move 落地，不能把胶囊直接嵌入支撑面。
+                playerMotor.SetArcadeRegionPosition(target + mapRoot.up * PlayerGroundContactDistance);
+                pendingRegionPosition = false;
+            }
+            // 同一次移动完成水平投影与向下接触，碰撞皮肤厚度仍由角色控制器处理。
+            playerMotor.Move(target - playerMotor.Position - mapRoot.up * PlayerGroundContactDistance);
             if (facing.sqrMagnitude > 0.001f)
                 playerMotor.FaceDirection(mapRoot.TransformDirection(new Vector3(facing.x, 0f, facing.y)));
         }
@@ -545,7 +553,8 @@ namespace Game
             if (enemyPresentation == null || mapRoot == null) return;
             var localPlayer = mapRoot.InverseTransformPoint(playerMotor.Position);
             var facing = new Vector3(localPlayer.x - position.x, 0f, localPlayer.z - position.y);
-            enemyPresentation.TrySetEnemy(id, configId, mapRoot.TransformPoint(World(position, 0.6f)),
+            // 正式人形 Prefab 以脚底为原点，直接对齐地图地面，不能再叠加旧胶囊中心高度。
+            enemyPresentation.TrySetEnemy(id, configId, mapRoot.TransformPoint(World(position, 0f)),
                 mapRoot.TransformDirection(facing), currentHealth, maximumHealth, out _, telegraph,
                 attackSequence, persistentHealthBar);
         }

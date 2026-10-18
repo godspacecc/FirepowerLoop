@@ -1,0 +1,110 @@
+{
+  "visualTests": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3671,
+      "PassedTests": 18,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.4450698"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.AllSharedWeaponsHaveUsableWorldDefinitions",
+        "Status": "Passed",
+        "Duration": "00:00:00.5120000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_ExposeSixDeterministicBodyVariants",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies",
+        "Status": "Passed",
+        "Duration": "00:00:00.6050000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyRuntime_ResetClearsAttackPresentationSequence",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops",
+        "Status": "Passed",
+        "Duration": "00:00:00.3840000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeHealthBarRule_HidesNormalFullHealthAndExpiresAfterHitWindow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcherEnemy_HumanoidAnimatorUsesTwoHandedAttackAndLeftHandBow",
+        "Status": "Passed",
+        "Duration": "00:00:00.1430000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.BasicEnemy_HumanoidAnimatorUsesInPlaceFormalAssets",
+        "Status": "Passed",
+        "Duration": "00:00:00.1380000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.BossVisuals_AreLargerAndUseDedicatedMaterial",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedCatalog_UsesOnlyArcadeSpecificEnemyIds",
+        "Status": "Passed",
+        "Duration": "00:00:00.3810000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedEnemyWeaponIdsResolveToTheSharedCatalog",
+        "Status": "Passed",
+        "Duration": "00:00:00.3080000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.GrayboxPlayer_ArcadeMarkerReplacesRedundantWorldHealthBar",
+        "Status": "Passed",
+        "Duration": "00:00:00.1010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants",
+        "Status": "Passed",
+        "Duration": "00:00:00.0290000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.SetEnemy_AlignsHumanoidFeetWithMapGround(\"ArcadeEnemyBasic\",\"weapon.short-sword\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0260000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.SetEnemy_AlignsHumanoidFeetWithMapGround(\"ArcadeEnemyArcher\",\"weapon.bow\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0210000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.SetEnemy_AlignsHumanoidFeetWithMapGround(\"ArcadeEnemyBrute\",\"weapon.greatsword\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0220000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.SetEnemy_AlignsHumanoidFeetWithMapGround(\"ArcadeEnemyBossArcher\",\"weapon.bow\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0180000"
+      }
+    ]
+  },
+  "physicalTests": {
+    "testClass": "EnemyPhysicalReactionTests",
+    "passed": 24,
+    "failed": 0,
+    "mode": "EditMode"
+  }
+}

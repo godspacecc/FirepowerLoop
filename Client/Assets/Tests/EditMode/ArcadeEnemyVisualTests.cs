@@ -403,6 +403,96 @@ namespace Game.Tests
             finally { Application.logMessageReceived -= capture; UnityEngine.Object.DestroyImmediate(instance); }
         }
 
+        [TestCase("ArcadeEnemyBasic", "weapon.short-sword")]
+        [TestCase("ArcadeEnemyArcher", "weapon.bow")]
+        [TestCase("ArcadeEnemyBrute", "weapon.greatsword")]
+        [TestCase("ArcadeEnemyBossArcher", "weapon.bow")]
+        public void SetEnemy_AlignsHumanoidFeetWithMapGround(string prefabName, string weaponId)
+        {
+            var map = new GameObject("EnemyGroundingMap");
+            var actor = UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+                $"Assets/Game/Prefabs/Characters/{prefabName}.prefab"));
+            var mesh = new Mesh();
+            try
+            {
+                map.transform.SetPositionAndRotation(new Vector3(7, 3, -11), Quaternion.Euler(0, 37, 0));
+                var controller = new ArcadeCombatViewController();
+                var recorder = new GroundingEnemyPort();
+                const System.Reflection.BindingFlags flags = System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic;
+                foreach (var entry in new[] { ("mapRoot", (object)map.transform),
+                    ("playerMotor", new GroundingMotor()), ("enemyPresentation", recorder) })
+                    typeof(ArcadeCombatViewController).GetField(entry.Item1, flags).SetValue(controller, entry.Item2);
+
+                var position = new Vector2(-2, 5);
+                controller.SetEnemy(1, EnemyIds[Array.IndexOf(PrefabNames, prefabName)], position, 20, 20);
+                var local = map.transform.InverseTransformPoint(recorder.Position);
+                Assert.That(local.x, Is.EqualTo(position.x).Within(.001f));
+                Assert.That(local.z, Is.EqualTo(position.y).Within(.001f));
+
+                actor.transform.SetPositionAndRotation(recorder.Position, map.transform.rotation);
+                var view = actor.GetComponent<EnemyView>();
+                view.SetNavigationEnabled(false);
+                Assert.That(view.SetCombatWeapon(weaponId), Is.True);
+                view.Animator.Rebind(); view.Animator.Update(0f);
+                // 直接烘焙正式蒙皮顶点，避免 Renderer 包围盒把原点或武器误当成脚底。
+                foreach (var state in new[] { "Idle", "Run" })
+                for (int sample = 0; sample < 8; sample++)
+                {
+                    view.Animator.Play(state, 0, sample / 8f); view.Animator.Update(0f);
+                    float bottom = float.PositiveInfinity;
+                    foreach (var skin in actor.GetComponentsInChildren<SkinnedMeshRenderer>())
+                    {
+                        if (!skin.enabled) continue;
+                        skin.BakeMesh(mesh);
+                        foreach (var vertex in mesh.vertices)
+                            bottom = Mathf.Min(bottom, map.transform.InverseTransformPoint(
+                                skin.transform.TransformPoint(vertex)).y);
+                    }
+                    Assert.That(bottom, Is.InRange(-.12f, .25f), prefabName + " " + state + " 脚底应贴近地面，保留跑步自然起伏");
+                }
+            }
+            finally
+            {
+                UnityEngine.Object.DestroyImmediate(mesh);
+                UnityEngine.Object.DestroyImmediate(actor);
+                UnityEngine.Object.DestroyImmediate(map);
+            }
+        }
+
+        private sealed class GroundingEnemyPort : IArcadeEnemyPresentationPort
+        {
+            public Vector3 Position;
+            public bool TrySetEnemy(int id, string config, Vector3 position, Vector3 facing, int current,
+                int maximum, out string error, bool telegraph = false, int attackSequence = 0,
+                bool persistentHealthBar = false)
+            { Position = position; error = null; return true; }
+            public void RemoveEnemy(int id, bool playDeath = false) { }
+            public void ClearArcadeEnemies() { }
+        }
+
+        private sealed class GroundingMotor : ICharacterMotorPort
+        {
+            public int UnitId => 1;
+            public long MapInstanceId => 1;
+            public bool IsValid => true;
+            public bool IsEnabled => true;
+            public Vector3 Position => Vector3.zero;
+            public Quaternion Rotation => Quaternion.identity;
+            public float MovementYawDegrees => 0f;
+            public bool IsGrounded => true;
+            public void Move(Vector3 motion) { }
+            public void RotateTowards(Quaternion rotation, float maxDegreesDelta) { }
+            public void FaceDirection(Vector3 direction) { }
+            public void SetTiliRing(float current, float maximum, bool sprinting, bool exhausted) { }
+            public bool TryGetProjectileOrigin(Vector3 direction, out Vector3 origin) { origin = Position; return true; }
+            public void FaceWorldHud(Vector3 cameraPosition, Vector3 cameraUp) { }
+            public void PlayAttackFeedback() { }
+            public void PlayWeaponSwingFeedback() { }
+            public void PlayHurtFeedback() { }
+            public void TickCombatFeedback(float deltaTime) { }
+        }
+
         private static Transform LoadVisual(string prefabName)
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(

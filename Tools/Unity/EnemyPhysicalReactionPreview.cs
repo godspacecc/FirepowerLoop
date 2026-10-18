@@ -57,8 +57,10 @@ public static class EnemyPhysicalReactionPreview
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/" + names[col] + ".prefab");
                 var actor = Object.Instantiate(prefab); actor.name = names[col] + (row == 0 ? "_Normal" : "_Explosion");
                 SceneManager.MoveGameObjectToScene(actor, scene);
-                actor.transform.position = new Vector3((col - 1.5f) * 4, .6f, row * 4 - 2);
+                actor.transform.position = new Vector3((col - 1.5f) * 4, 0f, row * 4 - 2);
                 var view = actor.GetComponent<EnemyView>(); view.BeginPresentationUse(); view.SetNavigationEnabled(false);
+                if (!view.SetCombatWeapon(col == 2 ? "weapon.greatsword" : col == 0 ? "weapon.short-sword" : "weapon.bow"))
+                    throw new InvalidOperationException("观察实例未绑定正式武器动作：" + names[col]);
                 view.Animator.Rebind(); view.Animator.Update(0f);
                 views.Add(view); reactions.Add(actor.GetComponent<EnemyPhysicalReaction>());
                 initialY.Add(view.Animator.GetBoneTransform(HumanBodyBones.Hips).position.y);
