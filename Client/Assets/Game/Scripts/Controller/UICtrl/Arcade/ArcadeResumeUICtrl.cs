@@ -51,7 +51,6 @@ namespace Game
             var mapResult = await flow.EnterArenaMapAsync();
             if (mapResult.Success && TryEnterArena(system, out var error))
             {
-                Game.Interface.GetSystem<AudioSystem>().PlayUiSound("ArcadeUiConfirm");
                 UIHelper.HideUI<StartUICtrl>();
                 UIHelper.ShowUI<ArcadeHudUICtrl>();
                 return;
@@ -210,8 +209,6 @@ namespace Game
                     if (IsCurrent()) Set(UI.TextMessage, error);
                     return;
                 }
-                // 地图与战斗都已进入成功状态后才播放确认音，失败回滚不产生成功反馈。
-                this.GetSystem<AudioSystem>().PlayUiSound("ArcadeUiConfirm");
                 if (IsCurrent()) Hide();
                 UIHelper.HideUI<StartUICtrl>();
                 UIHelper.ShowUI<ArcadeHudUICtrl>();
