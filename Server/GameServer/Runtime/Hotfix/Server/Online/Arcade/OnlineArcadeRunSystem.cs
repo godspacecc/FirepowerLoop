@@ -1310,6 +1310,7 @@ namespace ET.Server
             battle.SpawnQueue.Clear();
             battle.SpawnQueueIndex = 0;
             battle.SpawnedInWave = 0;
+            battle.EnemyDeaths.Clear();
             int totalWeight = group.Members.Sum(member => member.Count);
             bool casualOrdinary = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss && !battle.RoundBossEncounter;
             int total = casualOrdinary
@@ -1440,8 +1441,14 @@ namespace ET.Server
             if (islandSpawn)
             {
                 // 岸段只决定合法出生位置，生成后直接使用当前玩家追击路径。
-                IslandFor(battle).Entry(battle.SpawnedInWave, ((runtimeId * 37) % 101) / 100f,
-                    ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out var start);
+                var region = IslandFor(battle);
+                FirepowerLoop.Arcade.ArcadeRegionPoint start;
+                float lane = ((runtimeId * 37) % 101) / 100f;
+                // 首轮四入口持续来敌；后续海岛轮沿用原来的两侧入口。
+                if (battle.WaveIndex == 0)
+                    region.EntryFromFourSides(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
+                else
+                    region.Entry(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
                 x = start.X; z = start.Y;
             }
             OnlineArcadeBattlePlayerRuntime target = battle.Players.Values.Where(player => player.Alive && !player.InTreasureRoom)
@@ -2025,7 +2032,7 @@ namespace ET.Server
                 if(self.TryHitGroundBarrel(battle,projectile,priorX,priorZ,projectile.PositionX,projectile.PositionZ))
                 {
                     // 与射中箱体一致，桶爆炸不能吞掉火箭/榴弹原有武器伤害与半径。
-                    if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInRadius(battle,projectile.PositionX,projectile.PositionZ,
+                    if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInExplosionRadius(battle,projectile.PositionX,projectile.PositionZ,
                         projectile.ExplosionRadius,projectile.Damage,projectile.OwnerPlayerId);
                     battle.Projectiles.Remove(projectileId);changed=true;continue;
                 }
@@ -2036,13 +2043,13 @@ namespace ET.Server
                               MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
-                    self.DamageEnemiesInRadius(battle, projectile.PositionX, projectile.PositionZ,
+                    self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ,
                         projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
                 if (!remove && projectile.OwnerPlayerId != 0 && self.HitCrate(battle, priorX, priorZ,
                     projectile.PositionX, projectile.PositionZ, projectile.Damage))
                 {
                     if (IsExplosiveBehavior(projectile.Behavior))
-                        self.DamageEnemiesInRadius(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
+                        self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
                     remove = true;
                 }
                 if (!remove && projectile.OwnerPlayerId == 0)
@@ -2070,7 +2077,7 @@ namespace ET.Server
                             continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
-                            self.DamageEnemiesInRadius(battle, projectile.PositionX, projectile.PositionZ,
+                            self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ,
                                 projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
                             remove = true;
                             break;
@@ -2092,6 +2099,15 @@ namespace ET.Server
         /// <summary>服务器在火箭命中帧一次性结算范围伤害，敌人顺序沿用稳定 RuntimeId 快照。</summary>
         private static void DamageEnemiesInRadius(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float centerX, float centerZ, float radius, int damage, long ownerPlayerId = 0)
+            => self.DamageEnemiesInArea(battle, centerX, centerZ, radius, damage, ownerPlayerId, false);
+
+        /// <summary>仅真实爆炸来源进入击飞类别，电球和锯片继续走普通范围伤害。</summary>
+        private static void DamageEnemiesInExplosionRadius(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            float centerX, float centerZ, float radius, int damage, long ownerPlayerId = 0)
+            => self.DamageEnemiesInArea(battle, centerX, centerZ, radius, damage, ownerPlayerId, true);
+
+        private static void DamageEnemiesInArea(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            float centerX, float centerZ, float radius, int damage, long ownerPlayerId, bool explosive)
         {
             if (radius <= 0f) return;
             self.DamageCratesInRadius(battle, centerX, centerZ, radius, damage);
@@ -2102,7 +2118,7 @@ namespace ET.Server
                     DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
                 enemy.LastDamagePlayerId = ownerPlayerId;
                 DamageEnemy(battle, enemy, damage);
-                if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
+                if (enemy.CurrentHealth <= 0) self.KillEnemyWithImpact(battle, enemy, false, explosive, centerX, centerZ);
             }
         }
 
@@ -2185,7 +2201,21 @@ namespace ET.Server
         private static void KillEnemy(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeEnemyRuntime enemy, bool hazardKill = false)
         {
+            battle.Players.TryGetValue(enemy.LastDamagePlayerId, out var attacker);
+            self.KillEnemyWithImpact(battle, enemy, hazardKill, false, attacker?.PositionX ?? 0f, attacker?.PositionZ ?? 0f);
+        }
+
+        /// <summary>死亡表现有界记录，只在首次移除成功后写入，不参与积分、掉落或骨骼模拟。</summary>
+        private static void KillEnemyWithImpact(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            OnlineArcadeEnemyRuntime enemy, bool hazardKill, bool explosive, float originX, float originZ)
+        {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
+            float dx = enemy.PositionX - originX, dz = enemy.PositionZ - originZ;
+            float length = MathF.Sqrt(dx * dx + dz * dz);
+            if (length > .0001f) { dx /= length; dz /= length; } else { dx = 0; dz = -1; }
+            if (battle.EnemyDeaths.Count == 24) battle.EnemyDeaths.RemoveAt(0);
+            battle.EnemyDeaths.Add(new OnlineArcadeEnemyDeathRuntime { RuntimeId = enemy.RuntimeId,
+                DirectionX = dx, DirectionZ = dz, Explosive = explosive, RoundGeneration = battle.RoundGeneration });
             if(SlayerGuardianDefeated(battle,enemy))return;
 
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
@@ -2259,7 +2289,7 @@ namespace ET.Server
                 if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
                 {
                     enemy.LastDamagePlayerId = player.PlayerId;
-                    self.KillEnemy(battle, enemy);
+                    self.KillEnemyWithImpact(battle, enemy, false, true, player.PositionX, player.PositionZ);
                 }
         }
 
@@ -2430,7 +2460,7 @@ namespace ET.Server
                     if (powerup.RemainingSeconds <= 0f)
                     {
                         if (!player.InTreasureRoom && pair.Key == ArcadePowerupBehavior.Decoy)
-                            self.DamageEnemiesInRadius(battle, powerup.PositionX, powerup.PositionZ,
+                            self.DamageEnemiesInExplosionRadius(battle, powerup.PositionX, powerup.PositionZ,
                                 SlayerMartRadius(battle,player.PlayerId,powerup), powerup.Damage, player.PlayerId);
                         player.Powerups.Remove(pair.Key);
                         continue;
@@ -2464,7 +2494,7 @@ namespace ET.Server
                                     DistanceSquared(player.PositionX, player.PositionZ,
                                         enemy.PositionX, enemy.PositionZ) <= powerup.Magnitude * powerup.Magnitude))
                             {
-                                self.DamageEnemiesInRadius(battle, player.PositionX, player.PositionZ,
+                                self.DamageEnemiesInExplosionRadius(battle, player.PositionX, player.PositionZ,
                                     powerup.Radius, powerup.Damage, player.PlayerId);
                                 powerup.Charges--;
                                 powerup.CooldownSeconds = 0.45f;
@@ -3000,6 +3030,12 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = TimeInfo.Instance.ServerNow();
+            foreach (var receipt in source.EnemyDeaths)
+            {
+                var copy = OnlineArcadeEnemyDeathInfo.Create();
+                copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration; battle.EnemyDeaths.Add(copy);
+            }
             foreach (var receipt in source.BombBlasts)
             {
                 var copy = OnlineArcadeBombBlastInfo.Create();
@@ -3199,6 +3235,12 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = source.ServerTime;
+            foreach (var receipt in source.EnemyDeaths)
+            {
+                var copy = OnlineArcadeEnemyDeathInfo.Create();
+                copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration; battle.EnemyDeaths.Add(copy);
+            }
             foreach (var receipt in source.BombBlasts)
             {
                 var copy = OnlineArcadeBombBlastInfo.Create();

@@ -67,7 +67,7 @@ namespace ET.Server
             if(!b.DestroyedBarrelIds.Add(selected))return false;
             shot.PositionX=ax+(bx-ax)*nearest;shot.PositionZ=ay+(by-ay)*nearest;
             var center=b.RoundLayout.Barrels[selected];var p=ContentTuning(b);
-            DamageContentEnemies(actor,b,center.X,center.Y,p.EventRadius,p.EventDamage,shot.OwnerPlayerId);
+            DamageContentExplosionEnemies(actor,b,center.X,center.Y,p.EventRadius,p.EventDamage,shot.OwnerPlayerId);
             foreach(var player in b.Players.Values.Where(v=>v.Alive&&!v.InTreasureRoom).ToArray())
                 if(ArcadeRoundContentRules.TouchesCircle(player.PositionX,player.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,center.X,center.Y,p.EventRadius))
                     actor.ContentDamagePlayer(b,player,ArcadeRoundContentRules.Damage(player.MaxHealth,p.EventDamage));

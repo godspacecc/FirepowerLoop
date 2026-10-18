@@ -159,6 +159,18 @@ namespace Game
         }
     }
 
+    /// <summary>已经裁决的死亡表现事实，不持有对象、骨骼或资源句柄。</summary>
+    public readonly struct OnlineArcadeEnemyDeathSnapshot
+    {
+        public OnlineArcadeEnemyDeathSnapshot(long runtimeId, float directionX, float directionZ, bool explosive, int roundGeneration)
+        { RuntimeId = runtimeId; DirectionX = directionX; DirectionZ = directionZ; Explosive = explosive; RoundGeneration = roundGeneration; }
+        public long RuntimeId { get; }
+        public float DirectionX { get; }
+        public float DirectionZ { get; }
+        public bool Explosive { get; }
+        public int RoundGeneration { get; }
+    }
+
     public readonly struct OnlineArcadeEnemySnapshot
     {
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
@@ -264,7 +276,7 @@ namespace Game
             float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
             float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
-            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null)
+            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null)
         {
             SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
@@ -282,6 +294,7 @@ namespace Game
             CrateIds = Array.AsReadOnly(Copy(crateIds));
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
             BombBlasts = Array.AsReadOnly(Copy(bombBlasts));
+            EnemyDeaths = Array.AsReadOnly(Copy(enemyDeaths));
             SpawnedInWave = spawnedInWave; TotalInWave = totalInWave;
             DifficultyPlayerCount = difficultyPlayerCount; BattleRevision = battleRevision; ServerTime = serverTime;
             Players = Array.AsReadOnly(Copy(players)); Enemies = Array.AsReadOnly(Copy(enemies));
@@ -336,6 +349,8 @@ namespace Game
         public IReadOnlyList<OnlineArcadeDropSnapshot> SupplyPickups { get; }
         /// <summary>服务器成功使用炸弹的有界只读记录。</summary>
         public IReadOnlyList<OnlineArcadeBombBlastSnapshot> BombBlasts { get; }
+        /// <summary>最多24条同轮死亡事实；只为已经可见且本次移除的敌人播放。</summary>
+        public IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> EnemyDeaths { get; }
         public bool IsChallenge { get; }
         public string ChallengeId { get; }
         public float ChallengeSeconds { get; }

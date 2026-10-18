@@ -123,6 +123,20 @@ namespace FirepowerLoop.Arcade
         {
             bool water = (sequence & 1) == 0;
             double angle = (water ? Math.PI * 1.5 : Math.PI * .5) + (Math.Max(0, Math.Min(1, lane)) - .5) * 1.2;
+            EntryAtAngle(angle, radius, out start);
+        }
+
+        /// <summary>首关按出生序持续交替南、东、北、西四个入口；不依赖击杀进度或其它实体编号。</summary>
+        public void EntryFromFourSides(int sequence, float lane, float radius, out ArcadeRegionPoint start)
+        {
+            double angle = Math.PI * 1.5 + (sequence % 4) * Math.PI * .5 +
+                (Math.Max(0, Math.Min(1, lane)) - .5) * .4;
+            EntryAtAngle(angle, radius, out start);
+        }
+
+        /// <summary>沿实际岛岸向内留出敌人半径，保证各入口都落在可达轮廓内。</summary>
+        private void EntryAtAngle(double angle, float radius, out ArcadeRegionPoint start)
+        {
             int i = ((int)Math.Round(angle / (Math.PI * 2) * Samples) + Samples) % Samples;
             var o = outer[i];
             float len = (float)Math.Sqrt(o.X * o.X + o.Y * o.Y);

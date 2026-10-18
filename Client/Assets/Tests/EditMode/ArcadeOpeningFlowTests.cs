@@ -88,8 +88,73 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>首关保持原生成间隔，但前四名敌人必须分别从四侧合法入口进场。</summary>
         [Test]
-        public void IslandEntry_FourMapsUseFixedBatchesAndMoveContinuouslyWithoutBorderSnap()
+        public void FirstRound_UsesFourEntrancesWithoutChangingSpawnInterval()
+        {
+            Call("BeginWave", runtime, 0);
+            runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
+            runtime.IslandEntryWarningRemaining = 0;
+            Call("TickSpawning", runtime, 0f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(1));
+            Call("TickSpawning", runtime, .44f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "原有 0.45 秒间隔尚未结束时不能提前补怪");
+            Call("TickSpawning", runtime, .01f);
+            Call("TickSpawning", runtime, .45f);
+            Call("TickSpawning", runtime, .45f);
+
+            var positions = runtime.Enemies.Values.Select(enemy => enemy.Position).ToArray();
+            Assert.That(positions.Length, Is.EqualTo(4));
+            Assert.That(positions.Any(position => position.y < -10), Is.True, "南侧入口缺失");
+            Assert.That(positions.Any(position => position.x > 10), Is.True, "东侧入口缺失");
+            Assert.That(positions.Any(position => position.y > 10), Is.True, "北侧入口缺失");
+            Assert.That(positions.Any(position => position.x < -10), Is.True, "西侧入口缺失");
+            var region = new ArcadeIslandRegion(19.5f, 19.5f, 1);
+            Assert.That(positions.All(position => region.Contains(position.x, position.y)), Is.True);
+        }
+
+        /// <summary>完整首轮逐个消耗预算，跨越旧半程换向点时也不能插入额外等待。</summary>
+        [Test]
+        public void FirstRound_SpawnsContinuouslyAcrossFormerBatchBoundary()
+        {
+            Call("BeginWave", runtime, 0);
+            runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
+            runtime.IslandEntryWarningRemaining = 0;
+            for (int spawned = 0; spawned < 110; spawned++)
+            {
+                runtime.Enemies.Clear();
+                Call("TickSpawning", runtime, .45f);
+                Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "第 " + (spawned + 1) + " 个敌人不应被入口批次暂停");
+                Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(109 - spawned));
+                runtime.NextEntityId++; // 其它战斗实体的编号不能改变入口轮换与预算。
+            }
+            runtime.Enemies.Clear();
+            Call("TickWaveTransition", runtime, 0f);
+            Assert.That(runtime.WaveClearAwarded, Is.True);
+        }
+
+        /// <summary>实测更高的同屏容量、满额暂停及正式击杀后的补位，避免只验证配置常量。</summary>
+        [Test]
+        public void FirstRound_AllowsTwentyFourEnemiesAndRefillsAfterKill()
+        {
+            Call("BeginWave", runtime, 0);
+            runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
+            runtime.IslandEntryWarningRemaining = 0;
+            for (int i = 0; i < 24; i++) Call("TickSpawning", runtime, .45f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(24));
+            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(86));
+            Call("TickSpawning", runtime, 1f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(24));
+            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(86), "满额不能丢弃待生成敌人");
+            Call("KillEnemy", runtime, runtime.Enemies.Values.First(), true);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(23));
+            Call("TickSpawning", runtime, 0f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(24));
+            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(85));
+        }
+
+        [Test]
+        public void IslandEntry_FourMapsPreserveBudgetsAndMoveContinuouslyWithoutBorderSnap()
         {
             typeof(ArcadeCombatSystem).GetField("random",Flags).SetValue(system,new System.Random(37));
             runtime.PlayerInvulnerability=1000f;

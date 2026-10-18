@@ -214,8 +214,13 @@ namespace ET.Server
         private static void AddContentZone(OnlineArcadeBattleRuntime b,int kind,float x,float y,float ex,float ey,float radius,float warning,float duration,float damage,bool segment,bool enemyDamage)
         {b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=kind,X=x,Y=y,EndX=ex,EndY=ey,Radius=radius,WarningRemaining=warning,Remaining=warning+duration,DamageRatio=damage,Segment=segment,EnemyDamage=enemyDamage});}
         private static void DamageContentEnemies(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float x,float y,float radius,float ratio,long ownerPlayerId=0)
+            => DamageContentEnemiesInArea(actor,b,x,y,radius,ratio,ownerPlayerId,false);
+        /// <summary>爆炸事件单独标记表现类别，不改变原有伤害与奖励归属。</summary>
+        private static void DamageContentExplosionEnemies(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float x,float y,float radius,float ratio,long ownerPlayerId=0)
+            => DamageContentEnemiesInArea(actor,b,x,y,radius,ratio,ownerPlayerId,true);
+        private static void DamageContentEnemiesInArea(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float x,float y,float radius,float ratio,long ownerPlayerId,bool explosive)
         {foreach(var e in b.Enemies.Values.ToArray())if(ArcadeRoundContentRules.TouchesCircle(e.PositionX,e.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,x,y,radius))
-            {if(ownerPlayerId>0)e.LastDamagePlayerId=ownerPlayerId;DamageEnemy(b,e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.CurrentHealth<=0)actor.KillEnemy(b,e,true);}}
+            {if(ownerPlayerId>0)e.LastDamagePlayerId=ownerPlayerId;DamageEnemy(b,e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.CurrentHealth<=0)actor.KillEnemyWithImpact(b,e,true,explosive,x,y);}}
 
         /// <summary>Guardian五弹扇面、ZRex锁位喷发/孢子、Mega四线/八弹/增援；最终Boss交还既有配置技能。</summary>
         private static bool TickContentBoss(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime e,OnlineArcadeBattlePlayerRuntime target,float delta)
@@ -317,7 +322,7 @@ namespace ET.Server
                         !b.ContentClock.TryHit(200000L+targetId,p.SkillWarning))continue;
                     target.LastDamagePlayerId=e.LastDamagePlayerId;
                     DamageEnemy(b,target,ArcadeRoundContentRules.Damage(target.MaxHealth,p.EventDamage));
-                    if(target.CurrentHealth<=0)actor.KillEnemy(b,target);
+                    if(target.CurrentHealth<=0)actor.KillEnemyWithImpact(b,target,false,true,e.PositionX,e.PositionZ);
                 }
             }
             b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=e.SpecialKind==15?7:3,X=e.PositionX,Y=e.PositionZ,Remaining=e.SpecialKind==15?p.SkillPeriod:p.SkillWarning,DamageRatio=p.EventDamage});
@@ -371,7 +376,7 @@ namespace ET.Server
                 if(p.EventKind==2&&!warning)
                     foreach(var enemy in b.Enemies.Values)
                         if(ArcadeRoundContentRules.TouchesCircle(enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,x,y,p.EventRadius))enemy.ContentStunUntil=now+p.SkillWarning;
-                if(p.EventKind==3&&firstActive)DamageContentEnemies(actor,b,x,y,p.EventRadius,p.EventDamage);
+            if(p.EventKind==3&&firstActive)DamageContentExplosionEnemies(actor,b,x,y,p.EventRadius,p.EventDamage);
                 if(p.EventKind==10)
                 {
                     var members=b.Players.Values.Where(v=>v.Alive&&!v.InTreasureRoom).OrderBy(v=>v.PlayerId).ToArray();bool pressed=members.Length>0;

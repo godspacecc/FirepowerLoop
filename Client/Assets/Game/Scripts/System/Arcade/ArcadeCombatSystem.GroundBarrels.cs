@@ -77,7 +77,7 @@ namespace Game
             if(!r.CompletionSubmitted && catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
             {
                 view?.PlayProjectileExplosion(projectile.Position,projectile.ExplosionRadius);
-                DamageEnemiesInRadius(r,projectile.Position,projectile.ExplosionRadius,projectile.Damage);
+                DamageEnemiesInExplosionRadius(r,projectile.Position,projectile.ExplosionRadius,projectile.Damage);
             }
             return true;
         }
@@ -90,7 +90,7 @@ namespace Game
             var p=ContentTuning(r);
             AddContentArea(r,3,position,position,p.EventRadius,0,p.SkillWarning,0,false,false);
             view?.PlayProjectileExplosion(position,p.EventRadius);
-            DamageContentEnemies(r,position,p.EventRadius,p.EventDamage);
+            DamageContentExplosionEnemies(r,position,p.EventRadius,p.EventDamage);
             if(RoundContentActive(r) && Vector2.Distance(r.PlayerPosition,position)<=p.EventRadius+catalog.Rule.PlayerRadius)
                 DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage));
         }

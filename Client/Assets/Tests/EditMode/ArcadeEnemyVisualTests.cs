@@ -161,7 +161,11 @@ namespace Game.Tests
                 Assert.That(visual.GetComponentsInChildren<MeshRenderer>(true)
                     .Count(renderer => renderer.enabled && renderer.name == weaponName), Is.EqualTo(1),
                     prefabName);
-                Assert.That(visual.GetComponentsInChildren<Collider>(true), Is.Empty, prefabName);
+                Assert.That(visual.GetComponentsInChildren<Collider>(true).All(collider =>
+                    collider is CapsuleCollider && !collider.enabled && collider.GetComponent<Rigidbody>() != null &&
+                    collider.GetComponent<Rigidbody>().isKinematic &&
+                    collider.gameObject.layer == LayerMask.NameToLayer(EnemyPhysicalReaction.BodyLayerName)),
+                    Is.True, prefabName + "模型内仅允许默认休眠的专用布娃娃碰撞体");
                 Assert.That(AssetDatabase.GetDependencies(path, true).Any(dependency =>
                     dependency.StartsWith("Assets/Art/", StringComparison.Ordinal)), Is.False, prefabName);
             }

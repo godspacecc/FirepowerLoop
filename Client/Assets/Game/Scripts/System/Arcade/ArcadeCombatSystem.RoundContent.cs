@@ -201,7 +201,7 @@ namespace Game
             if(harmful && touching && (kind!=3 || firstActive) && r.ContentClock.TryHit(-100-kind,p.SkillWarning))
                 DamagePlayerCore(r,kind==2 ? r.PlayerMaxHealth : ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage),kind==2?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
             if(kind==3 && firstActive && !r.CompletionSubmitted && this.GetModel<ArcadeCombatModel>().Runtime==r && catalog!=null)
-                DamageContentEnemies(r,center,p.EventRadius,p.EventDamage);
+                DamageContentExplosionEnemies(r,center,p.EventRadius,p.EventDamage);
         }
 
         /// <summary>零强度不会被正式伤害入口的一点下限放大。</summary>
@@ -210,12 +210,19 @@ namespace Game
 
         /// <summary>死亡爆炸不复用敌人主循环的临时列表，连锁死亡不会覆盖父循环。</summary>
         private void DamageContentEnemies(ArcadeCombatRuntime r,Vector2 center,float radius,float ratio)
+            => DamageContentEnemiesInArea(r,center,radius,ratio,false);
+
+        /// <summary>爆桶及爆炸事件保留原伤害归属，仅额外传递尸体受力来源。</summary>
+        private void DamageContentExplosionEnemies(ArcadeCombatRuntime r,Vector2 center,float radius,float ratio)
+            => DamageContentEnemiesInArea(r,center,radius,ratio,true);
+
+        private void DamageContentEnemiesInArea(ArcadeCombatRuntime r,Vector2 center,float radius,float ratio,bool explosive)
         {
             foreach(var e in r.Enemies.Values.ToArray())
             {
                 if(!r.Enemies.ContainsKey(e.Id) || Vector2.Distance(center,e.Position)>radius+catalog.Rule.EnemyContactRadius ||
                     !r.ContentClock.TryHit(200000L+e.Id,ContentTuning(r).SkillWarning))continue;
-                DamageEnemy(e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.Health<=0)KillEnemy(r,e,true);
+                DamageEnemy(e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.Health<=0)KillEnemyWithImpact(r,e,true,explosive,center);
                 if(this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
             }
         }
@@ -227,7 +234,7 @@ namespace Game
             if(e.ContentSpecialKind==1)
             {
                 AddContentArea(r,3,e.Position,e.Position,radius,0,p.SkillWarning,p.EventDamage,false,false);
-                DamageContentEnemies(r,e.Position,radius,p.EventDamage);
+                DamageContentExplosionEnemies(r,e.Position,radius,p.EventDamage);
             }
             else AddContentArea(r,7,e.Position,e.Position,radius,0,p.SkillPeriod,p.EventDamage,false,false);
         }

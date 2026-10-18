@@ -302,7 +302,8 @@ namespace Game
                 if (playerId != selfId && !seenIds.Contains(playerId)) shieldChargesByPlayer.Remove(playerId);
 
             var bossWave = activeRoundLayout != null ? battle.RoundBossEncounter : !battle.IsFinalBoss && activeArena?.IsBoss == true && battle.WaveNumber == activeArena.WaveGroupIds.Count;
-            SyncEnemies(inRoom ? Array.Empty<OnlineArcadeEnemySnapshot>() : battle.Enemies, bossWave);
+            SyncEnemies(inRoom ? Array.Empty<OnlineArcadeEnemySnapshot>() : battle.Enemies, bossWave,
+                battle.EnemyDeaths, battle.RoundGeneration, !inRoom && !supplyBaseline);
             view.SetBabylon(inRoom || battle.IsChallenge ? null : activeArena?.Babylon, battle.CrateIds);
             SyncProjectiles(inRoom ? Array.Empty<OnlineArcadeProjectileSnapshot>() : battle.Projectiles);
             SyncDrops(inRoom ? Array.Empty<OnlineArcadeDropSnapshot>() : battle.Drops);
@@ -389,7 +390,8 @@ namespace Game
                 view.SetSupport(player.PlayerId, support, displayPosition);
         }
 
-        private void SyncEnemies(IReadOnlyList<OnlineArcadeEnemySnapshot> values, bool bossWave)
+        private void SyncEnemies(IReadOnlyList<OnlineArcadeEnemySnapshot> values, bool bossWave,
+            IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> deaths, int roundGeneration, bool allowDeaths)
         {
             seenIds.Clear();
             foreach (OnlineArcadeEnemySnapshot value in values)
@@ -402,7 +404,22 @@ namespace Game
                 view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
             }
-            RemoveMissing(enemyIds, seenIds, id => view.RemoveEnemy(id));
+            // 只消费已见实体的同轮移除；重复快照与重连没有旧映射，因此不会补播尸体。
+            foreach (long runtimeId in enemyIds.Keys.Where(id => !seenIds.Contains(id)).ToArray())
+            {
+                int id = enemyIds[runtimeId];
+                bool played = false;
+                if (allowDeaths && deaths != null)
+                    for (int i = deaths.Count - 1; i >= 0; i--)
+                    {
+                        var death = deaths[i];
+                        if (death.RuntimeId != runtimeId || death.RoundGeneration != roundGeneration) continue;
+                        view.RemoveEnemy(id, true, new Vector2(death.DirectionX, death.DirectionZ), death.Explosive);
+                        played = true; break;
+                    }
+                if (!played) view.RemoveEnemy(id);
+                enemyIds.Remove(runtimeId);
+            }
         }
 
         private void SyncProjectiles(IReadOnlyList<OnlineArcadeProjectileSnapshot> values)

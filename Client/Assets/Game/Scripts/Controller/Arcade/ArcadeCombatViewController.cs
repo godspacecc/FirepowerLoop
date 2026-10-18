@@ -75,6 +75,8 @@ namespace Game
         void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false);
         void RemoveEnemy(int id, bool playDeath = false);
+        /// <summary>只传递权威死亡的表现方向与爆炸类别，兼容既有动画端口。</summary>
+        void RemoveEnemy(int id, bool playDeath, Vector2 direction, bool explosive) => RemoveEnemy(id, playDeath);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction, string visualResourceName) =>
             SetProjectile(id, hostile, position, direction);
@@ -549,10 +551,15 @@ namespace Game
         }
 
         public void RemoveEnemy(int id, bool playDeath = false)
+            => RemoveEnemy(id, playDeath, Vector2.zero, false);
+
+        public void RemoveEnemy(int id, bool playDeath, Vector2 direction, bool explosive)
         {
             RemoveRoundEnemyContent(id);
             RemoveArmor(id);
-            enemyPresentation?.RemoveEnemy(id, playDeath);
+            var worldDirection = new Vector3(direction.x, 0f, direction.y);
+            if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
+            enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive);
         }
 
         public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction)

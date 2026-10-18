@@ -28,32 +28,58 @@ Check("Dual opening queues 160/170/180/190 under the global alive budget",()=>{
     }
     Require(record.Players[0].Bombs==1&&record.Players[0].Dashes==4&&record.Players[1].Dashes==1,"opening resource refill");
 });
-Check("Queue prevents clear; rest requires release and new fire",()=>{
+Check("Queue prevents clear; completed round requires a confirmed exit",()=>{
     var record=Record();var battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false);
     var actor=new OnlineArcadeRunActor{Record=record,Battle=battle};
     Require(!(bool)Call("TryAdvanceWave",actor,battle,200f),"pending queue was ignored");
     battle.SpawnQueueIndex=battle.SpawnQueue.Count;battle.Players[1].Firing=true;battle.Players[2].Firing=true;
     Call("TryAdvanceWave",actor,battle,0f);Call("TryAdvanceWave",actor,battle,2f);
-    Require(battle.WaveIndex==0,"held attack skipped rest");
+    Require(battle.WaveIndex==0&&battle.AwaitingExit,"held attack skipped exit confirmation");
     battle.Players[1].Firing=false;Call("TryAdvanceWave",actor,battle,.1f);
     record.Players[0].Bombs=0;battle.Players[1].Firing=true;Call("TryAdvanceWave",actor,battle,.1f);
-    Require(battle.WaveIndex==1&&battle.TotalInWave==170&&record.Players[0].Bombs==1,"active advance failed");
+    Require(battle.WaveIndex==0&&!battle.RoundTransitionPending,"firing bypassed confirmed exit");
+    var player=battle.Players[1];player.PositionX=battle.RoundLayout.ExitX;player.PositionZ=battle.RoundLayout.ExitY;
+    player.ConfirmedExitTarget=1;
+    Require((bool)Call("TickRoundExit",battle)&&battle.RoundTransitionPending,"confirmed exit did not request next round");
 });
-Check("All four island waves enter from both sides continuously and exhaust the original queue",()=>{
+// 首关的节奏、同屏容量和满额后的补位均通过正式服务端生成入口验证。
+Check("First round keeps 450ms cadence and refills the 24-enemy alive budget",()=>{
+    var record=Record();var battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false);
+    var actor=new OnlineArcadeRunActor{Record=record,Battle=battle};
+    battle.NextSpawnAt=0;
+    Require((bool)Call("TrySpawnEnemy",battle,10000L),"first spawn missing");
+    Require(!(bool)Call("TrySpawnEnemy",battle,10449L),"spawn interval shortened");
+    Require((bool)Call("TrySpawnEnemy",battle,10450L),"450ms spawn missing");
+    long now=10450L;
+    for(int i=2;i<24;i++){now+=450;Require((bool)Call("TrySpawnEnemy",battle,now),"24-enemy budget not filled");}
+    Require(battle.Enemies.Count==24&&battle.SpawnQueueIndex==24&&battle.TotalInWave==160,"wrong initial budget");
+    now+=450;
+    Require(!(bool)Call("TrySpawnEnemy",battle,now)&&battle.SpawnQueueIndex==24,"full budget discarded queued enemy");
+    Call("KillEnemy",actor,battle,battle.Enemies.Values.First(),true);
+    Require((bool)Call("TrySpawnEnemy",battle,now)&&battle.Enemies.Count==24&&battle.SpawnQueueIndex==25,"killed enemy was not replaced");
+});
+Check("Island waves preserve continuous entries and exhaust the original queue",()=>{
     var record=Record();var battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false);
     var actor=new OnlineArcadeRunActor{Record=record,Battle=battle};
     foreach(var player in battle.Players.Values)player.InvulnerabilitySeconds=1000f;
     var rule=config.ArcadeRule;var arena=config.Tables.TbArcadeArena.Get(1);
     var p=ArcadeOpeningParameters.FromConfig(arena);
     for(int wave=0;wave<4;wave++){
+        // 此检查直接准备各轮现场；上一轮已确认的出口状态不属于下一轮。
+        battle.AwaitingExit=false;battle.RoundTransitionPending=false;
         battle.Enemies.Clear();Call("PrepareWave",battle,arena,wave);
         int total=battle.TotalInWave;
-        for(int i=0;i<2;i++){battle.NextSpawnAt=0;Require((bool)Call("TrySpawnEnemy",battle,10000L),"missing spawn");}
-        var region=new ArcadeIslandRegion(rule.ArenaHalfWidth,rule.ArenaHalfHeight);
-        var water=battle.Enemies.Values.Single(e=>e.PositionZ < 0);
-        var shore=battle.Enemies.Values.Single(e=>e.PositionZ > 0);
-        Require(region.Contains(water.PositionX,water.PositionZ)&&region.IsShallow(water.PositionX,water.PositionZ),"water spawn not in current island");
-        Require(!region.IsShallow(shore.PositionX,shore.PositionZ),"shore spawn not on sand");
+        int firstEntries=wave==0?4:2;
+        for(int i=0;i<firstEntries;i++){battle.NextSpawnAt=0;Require((bool)Call("TrySpawnEnemy",battle,10000L),"missing spawn");}
+        var region=new ArcadeIslandRegion(rule.ArenaHalfWidth,rule.ArenaHalfHeight,wave+1);
+        var entries=battle.Enemies.Values.OrderBy(enemy=>enemy.RuntimeId).ToArray();
+        var water=entries[0];var shore=entries[wave==0?2:1];
+        Require(entries.All(enemy=>region.Contains(enemy.PositionX,enemy.PositionZ)),"spawn outside current island");
+        if(wave==0){
+            Require(entries[0].PositionZ < -10&&entries[1].PositionX > 10&&
+                entries[2].PositionZ > 10&&entries[3].PositionX < -10,"first round must use all four entrances");
+            Require(region.IsShallow(water.PositionX,water.PositionZ),"first water-side spawn must retain shallow entry");
+        }
         float x=water.PositionX,z=water.PositionZ;
         Call("TickEnemies",actor,battle,.05f);
         Require(MathF.Sqrt((water.PositionX-x)*(water.PositionX-x)+(water.PositionZ-z)*(water.PositionZ-z))<=water.MoveSpeed*.05f+.001f,"entry snapped");
@@ -66,11 +92,16 @@ Check("All four island waves enter from both sides continuously and exhaust the 
         for(int i=0;i<500;i++)Call("TickEnemies",actor,battle,.05f);
         Require(!region.IsShallow(water.PositionX,water.PositionZ) &&
             region.Contains(shore.PositionX,shore.PositionZ),$"chase never reached sand wave={wave} water=({water.PositionX},{water.PositionZ}) shallow={region.IsShallow(water.PositionX,water.PositionZ)} shore=({shore.PositionX},{shore.PositionZ}) room={player.InTreasureRoom}");
-        int spawned=2;
+        int spawned=firstEntries;
         while(battle.SpawnQueueIndex<battle.SpawnQueue.Count){
             battle.Enemies.Clear();battle.NextSpawnAt=0;
             Require((bool)Call("TrySpawnEnemy",battle,10000L),"queue stuck");spawned++;
-            Require(battle.Enemies.Count==1 && (battle.Enemies.Values.Single().PositionZ<0)==((spawned&1)==1),"side selection or count wrong");
+            Require(battle.Enemies.Count==1,"spawn count wrong");
+            var enemy=battle.Enemies.Values.Single();
+            bool correctSide=wave==0 ? (((spawned-1)%4) switch {
+                0=>enemy.PositionZ < -10,1=>enemy.PositionX > 10,2=>enemy.PositionZ > 10,_=>enemy.PositionX < -10
+            }) : (enemy.PositionZ<0)==((spawned&1)==1);
+            Require(correctSide,"entrance selection wrong");
         }
         Require(spawned==total&&total==160+wave*10,"wave count changed");
         battle.Enemies.Clear();
@@ -96,9 +127,10 @@ Check("Fourth round fire uses health damage and protection; room is isolated",()
 Check("Water slows authoritative movement",()=>{
     var record=Record();var battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false);
     var actor=new OnlineArcadeRunActor{Record=record,Battle=battle};var player=battle.Players[1];
-    var region=new ArcadeIslandRegion(config.ArcadeRule.ArenaHalfWidth,config.ArcadeRule.ArenaHalfHeight);
-    region.Entry(0,.5f,config.ArcadeRule.EnemyContactRadius,out var water);
-    player.PositionX=water.X;player.PositionZ=water.Y;player.MoveX=1;player.LastInputAt=TimeInfo.Instance.ServerNow();
+    var region=new ArcadeIslandRegion(config.ArcadeRule.ArenaHalfWidth,config.ArcadeRule.ArenaHalfHeight,1);
+    int south=ArcadeIslandRegion.Samples*3/4;
+    player.PositionX=0;player.PositionZ=(region.Outer[south].Y+region.Sand[south].Y)*.5f;
+    player.MoveX=1;player.LastInputAt=TimeInfo.Instance.ServerNow();
     Call("TickPlayers",actor,battle,1f,player.LastInputAt);
     Require(Math.Abs(player.PositionX-config.ArcadeRule.PlayerMoveSpeed*.55f)<.001f,"water authority mismatch");
 });
@@ -166,4 +198,4 @@ Check("Legacy melee attacks use the baseline gun",()=>{
             "legacy melee did not become baseline projectile");
     }
 });
-Console.WriteLine($"Opening server checks: {passed}/12 passed.");World.Instance.Dispose();
+Console.WriteLine($"Opening server checks: {passed}/13 passed.");World.Instance.Dispose();

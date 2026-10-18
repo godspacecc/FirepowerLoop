@@ -1986,6 +1986,12 @@ namespace ET
         [MemoryPackOrder(56)]
         public List<OnlineArcadeBombBlastInfo> BombBlasts { get; set; } = new();
 
+        /// <summary>
+        /// 只读死亡表现事实；客户端不据此裁决伤害或同步骨骼。
+        /// </summary>
+        [MemoryPackOrder(57)]
+        public List<OnlineArcadeEnemyDeathInfo> EnemyDeaths { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2050,6 +2056,7 @@ namespace ET
             this.SlayerSkipReady.Clear();
             this.SlayerOutcome = default;
             this.BombBlasts.Clear();
+            this.EnemyDeaths.Clear();
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3111,6 +3118,47 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeEnemyDeathInfo)]
+    public partial class OnlineArcadeEnemyDeathInfo : MessageObject
+    {
+        public static OnlineArcadeEnemyDeathInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeEnemyDeathInfo), isFromPool) as OnlineArcadeEnemyDeathInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public long RuntimeId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public float DirectionX { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float DirectionZ { get; set; }
+
+        [MemoryPackOrder(3)]
+        public bool Explosive { get; set; }
+
+        [MemoryPackOrder(4)]
+        public int RoundGeneration { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RuntimeId = default;
+            this.DirectionX = default;
+            this.DirectionZ = default;
+            this.Explosive = default;
+            this.RoundGeneration = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3176,5 +3224,6 @@ namespace ET
         public const ushort C2G_OperateOnlineSlayerMart = 12103;
         public const ushort G2C_OperateOnlineSlayerMart = 12104;
         public const ushort OnlineArcadeBombBlastInfo = 12105;
+        public const ushort OnlineArcadeEnemyDeathInfo = 12106;
     }
 }

@@ -95,6 +95,9 @@ namespace Game
 
         private bool unitHealthBarsVisible;
         private float feedbackRemainingSeconds;
+        /// <summary>预制的纯表现骨骼反馈，所有推进均复用EnemyCtrl生命周期。</summary>
+        private EnemyPhysicalReaction physicalReaction;
+        private EnemyPhysicalReaction PhysicalReaction => physicalReaction != null ? physicalReaction : physicalReaction = GetComponent<EnemyPhysicalReaction>();
         private Renderer[] feedbackRenderers = new Renderer[0];
         // 保存受击前的完整覆盖块；多材质身体恢复时不能把首个材质颜色写到全部槽位。
         private MaterialPropertyBlock[] feedbackOriginalBlocks = Array.Empty<MaterialPropertyBlock>();
@@ -205,6 +208,7 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            PhysicalReaction?.ResetForReuse();
             EnsureAgent();
             ResetWeaponSelection();
             ResetMovementSampling();
@@ -425,6 +429,7 @@ namespace Game
 
         private void OnDisable()
         {
+            PhysicalReaction?.ResetForReuse();
             if (feedbackRemainingSeconds > 0f) RestoreFeedbackColors();
             feedbackRemainingSeconds = 0f;
             ReleaseTemporaryWeaponVisual();
@@ -765,9 +770,32 @@ namespace Game
             return true;
         }
 
+        /// <summary>死亡后关闭战斗碰撞与动画，实体位置不再参与任何战斗结算。</summary>
+        public bool TryPlayPhysicalDeath(Vector3 direction, bool explosive, out float durationSeconds)
+        {
+            durationSeconds = 0f;
+            if (PhysicalReaction == null || !PhysicalReaction.BeginDeath(direction, explosive)) return false;
+            animationDead = true;
+            // 独立挂载的武器不是物理骨架，死亡后收起，避免留在原位悬空。
+            GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);
+            SetWeaponPresentation(0);
+            SetNavigationEnabled(false);
+            if (combatCollider == null) combatCollider = GetComponent<Collider>();
+            if (combatCollider != null) combatCollider.enabled = false;
+            durationSeconds = EnemyPhysicalReaction.CorpseSeconds;
+            return true;
+        }
+
+        /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
+        public void LateTickCombatFeedback() => PhysicalReaction?.LateTick();
+        /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
+        public void ResetPhysicalFeedback() => PhysicalReaction?.ResetForReuse();
+
         public void PlayHitFeedback()
         {
-            if (animator != null && !animationDead)
+            if (PhysicalReaction != null && PhysicalReaction.IsReady && !animationDead)
+                PhysicalReaction.PlayHit(-transform.forward);
+            else if (animator != null && !animationDead)
             {
                 animator.ResetTrigger(AttackAnimatorParameter);
                 animator.SetTrigger(HitAnimatorParameter);
@@ -796,6 +824,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            PhysicalReaction?.Tick(deltaTime);
             SampleMovement(deltaTime);
             if (feedbackRemainingSeconds <= 0f)
             {

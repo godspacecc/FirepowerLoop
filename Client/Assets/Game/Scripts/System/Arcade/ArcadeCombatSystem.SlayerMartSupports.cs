@@ -49,7 +49,7 @@ namespace Game
                 var body=ArcadeSlayerMartSupportRules.Bodies(state,item,runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter)[0];
                 var origin=new Vector2(body.X,body.Y);float radius=slayerMartConfig.Parameter("support.contactRadius")+catalog.Rule.EnemyContactRadius;
                 if(!HasEnemyInRadius(runtime,origin,radius))return true;
-                DamageEnemiesInRadius(runtime,origin,powerup.Definition.Radius,powerup.Definition.Damage);
+                DamageEnemiesInExplosionRadius(runtime,origin,powerup.Definition.Radius,powerup.Definition.Damage);
                 powerup.Charges--;powerup.CooldownSeconds=slayerMartConfig.Supports.Get(kind).Interval;
                 if(powerup.Charges==0)powerup.RemainingSeconds=0;return true;
             }
@@ -105,7 +105,7 @@ namespace Game
                     float radius=slayerMartConfig.Parameter("support.contactRadius")+catalog.Rule.EnemyContactRadius;
                     bool touching=runtime.Enemies.Values.Any(e=>(e.Position-origin).sqrMagnitude<=radius*radius);
                     if(ArcadeSlayerMartSupportRules.TryTriggerBarrel(item,touching,slayerMartConfig.Supports))
-                        DamageEnemiesInRadius(runtime,origin,definition.Radius,definition.Damage);
+                        DamageEnemiesInExplosionRadius(runtime,origin,definition.Radius,definition.Damage);
                     continue;
                 }
                 foreach(var enemy in runtime.Enemies.Values.ToArray())

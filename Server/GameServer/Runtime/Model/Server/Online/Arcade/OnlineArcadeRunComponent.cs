@@ -391,6 +391,8 @@ namespace ET.Server
         public long NextBombBlastSequence = 1;
         /// <summary>保留最近三十二次成功使用，覆盖快照间的连续炸弹。</summary>
         public List<OnlineArcadeBombBlastRuntime> BombBlasts { get; } = new();
+        /// <summary>最近二十四条死亡表现事实；只保留当前轮，既不保存也不模拟骨骼。</summary>
+        public List<OnlineArcadeEnemyDeathRuntime> EnemyDeaths { get; } = new();
         public long LastTickAt;
         public float WaveTransitionSeconds;
         public bool WaveClearAwarded;
@@ -444,6 +446,20 @@ namespace ET.Server
         public readonly Dictionary<long, EntityRef<OnlineArcadeRunActor>> Runs = new();
         public readonly Dictionary<long, long> RunIdsByPlayer = new();
         public readonly Dictionary<long, long> RunIdsByRoom = new();
+    }
+
+    /// <summary>战斗权威已经裁决的敌人死亡方向与类别。</summary>
+    [EnableClass]
+    public sealed class OnlineArcadeEnemyDeathRuntime
+    {
+        /// <summary>本场已移除的权威敌人身份。</summary>
+        public long RuntimeId;
+        /// <summary>竞技场平面上的归一化受力方向。</summary>
+        public float DirectionX, DirectionZ;
+        /// <summary>仅区分尸体表现力度，不表示额外伤害。</summary>
+        public bool Explosive;
+        /// <summary>限制本事实只能用于原轮次的可见实体。</summary>
+        public int RoundGeneration;
     }
 
     /// <summary>一次已成功消耗的炸弹表现，坐标锁定在使用瞬间。</summary>

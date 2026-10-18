@@ -28,6 +28,9 @@ namespace Game
         private bool stagedArcade;
         private bool released;
         private bool stagedPrepared;
+        /// <summary>手机最多44个、桌面最多88个尸体刚体；超额先回收最旧尸体。</summary>
+        private readonly int corpseBudget = Application.isMobilePlatform ? 4 : 8;
+        private GameObject ragdollFloor;
         public EnemyCtrl(IArchitecture architecture)
         {
             this.architecture = architecture;
@@ -76,6 +79,7 @@ namespace Game
             ReleaseArcadePresentation();
             arcadeRoot = arcadeCandidateRoot;
             arcadeMapInstanceId = arcadeCandidateMapInstanceId;
+            CreateRagdollFloor();
             arcadeCandidateRoot = null;
             arcadeCandidateMapInstanceId = 0;
             stagedArcade = false;
@@ -95,6 +99,11 @@ namespace Game
 
         public void SetCurrentMapActive(bool activeState)
         {
+            if (!activeState)
+            {
+                foreach (var entry in dyingArcadeEnemies) RecycleArcadeEnemy(entry);
+                dyingArcadeEnemies.Clear();
+            }
             foreach (var entry in arcadeEnemies.Values)
                 if (entry.View != null && entry.View.gameObject.activeSelf != activeState)
                     entry.View.gameObject.SetActive(activeState);
@@ -214,17 +223,29 @@ namespace Game
         }
 
         public void RemoveEnemy(int runtimeId, bool playDeath = false)
+            => RemoveEnemy(runtimeId, playDeath, Vector3.zero, false);
+
+        public void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive)
         {
             if (!arcadeEnemies.TryGetValue(runtimeId, out var entry))
                 return;
             arcadeEnemies.Remove(runtimeId);
-            if (playDeath && entry.View != null && entry.View.TryPlayDeathAnimation(out var durationSeconds) && durationSeconds > 0f)
+            if (playDeath && entry.View != null)
             {
-                entry.View.SetHealthBarVisible(false);
-                entry.View.SetTelegraphVisible(false);
-                entry.ReleaseTime = Time.time + durationSeconds;
-                dyingArcadeEnemies.Add(entry);
-                return;
+                while (dyingArcadeEnemies.Count >= corpseBudget)
+                {
+                    RecycleArcadeEnemy(dyingArcadeEnemies[0]);
+                    dyingArcadeEnemies.RemoveAt(0);
+                }
+                if (entry.View.TryPlayPhysicalDeath(direction, explosive, out var durationSeconds) ||
+                    entry.View.TryPlayDeathAnimation(out durationSeconds))
+                {
+                    entry.View.SetHealthBarVisible(false);
+                    entry.View.SetTelegraphVisible(false);
+                    entry.ReleaseTime = Time.time + durationSeconds;
+                    dyingArcadeEnemies.Add(entry);
+                    return;
+                }
             }
 
             RecycleArcadeEnemy(entry);
@@ -244,6 +265,7 @@ namespace Game
         /// <summary>街机地图候选阶段只预载会出现在波次中的敌人 Prefab，不创建正式战斗实体。</summary>
         private async UniTask<MapControllerResult> PrepareArcadeAsync(MapPreparationContext context, CancellationToken cancellationToken)
         {
+            EnemyPhysicalReaction.ConfigureCollisionLayers();
             var provider = this.GetUtility<IRuntimeConfigProvider>();
             string catalogError = null;
             if (provider == null || !provider.TryGetArcadeCatalog(out var catalog, out catalogError))
@@ -290,6 +312,7 @@ namespace Game
                 return;
             entry.View.SetNavigationEnabled(false);
             entry.View.SetTelegraphVisible(false);
+            entry.View.ResetPhysicalFeedback();
             entry.View.gameObject.SetActive(false);
             entry.View.ResetWeaponSelection();
             if (!arcadeEnemyPool.TryGetValue(entry.ConfigId, out var pool))
@@ -301,8 +324,27 @@ namespace Game
             pool.Push(entry.View);
         }
 
+        /// <summary>地图持有的纯表现地面，只与尸体层接触，不改变战斗几何或导航。</summary>
+        private void CreateRagdollFloor()
+        {
+            int layer = LayerMask.NameToLayer(EnemyPhysicalReaction.FloorLayerName);
+            if (arcadeRoot == null || layer < 0) return;
+            ragdollFloor = new GameObject("EnemyRagdollFloor");
+            ragdollFloor.layer = layer;
+            ragdollFloor.transform.SetParent(arcadeRoot, false);
+            var collider = ragdollFloor.AddComponent<BoxCollider>();
+            collider.center = new Vector3(0, -.05f, 0);
+            collider.size = new Vector3(200, .1f, 200);
+        }
+
         private void ReleaseArcadePresentation()
         {
+            if (ragdollFloor != null)
+            {
+                if (Application.isPlaying) UnityEngine.Object.Destroy(ragdollFloor);
+                else UnityEngine.Object.DestroyImmediate(ragdollFloor);
+                ragdollFloor = null;
+            }
             foreach (var entry in arcadeEnemies.Values)
                 if (entry.View != null)
                     this.GetUtility<IViewInstanceProvider>().Release(entry.View.gameObject);
@@ -594,6 +636,7 @@ namespace Game
 
         private void OnLateUpdate()
         {
+            foreach (var entry in arcadeEnemies.Values) entry.View?.LateTickCombatFeedback();
             var camera = Camera.main;
             if (camera == null)
             {

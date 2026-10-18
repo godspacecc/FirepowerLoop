@@ -517,6 +517,8 @@ message OnlineArcadeBattleInfo
     int32 SlayerOutcome = 56;
 	// 成功炸弹的有界表现记录；只读，不改变伤害判定。
 	repeated OnlineArcadeBombBlastInfo BombBlasts = 57;
+	// 只读死亡表现事实；客户端不据此裁决伤害或同步骨骼。
+	repeated OnlineArcadeEnemyDeathInfo EnemyDeaths = 58;
 }
 
 // Opcode 12085
@@ -782,5 +784,15 @@ message OnlineArcadeBombBlastInfo
  int64 PlayerId = 2;
  float PositionX = 3;
  float PositionZ = 4;
+ int32 RoundGeneration = 5;
+}
+
+// Opcode 12106
+message OnlineArcadeEnemyDeathInfo
+{
+ int64 RuntimeId = 1;
+ float DirectionX = 2;
+ float DirectionZ = 3;
+ bool Explosive = 4;
  int32 RoundGeneration = 5;
 }

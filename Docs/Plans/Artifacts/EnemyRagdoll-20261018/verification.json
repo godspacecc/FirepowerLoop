@@ -1,0 +1,11 @@
+{
+    "rigs": 8,
+    "bodies": 88,
+    "finite": true,
+    "frozen": true,
+    "reusable": true,
+    "normalMaxLift": 0.005602002143859863,
+    "explosionMaxLift": 0.7185494899749756,
+    "finalHipHeight": 0.16588661074638368,
+    "scope": "Editor isolated PhysicsScene; 8 corpses, 120 fixed steps; not a phone or multiplayer session."
+}

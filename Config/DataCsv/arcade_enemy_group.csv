@@ -11,7 +11,7 @@
 ,arcade.group.boss.brute,enemy.arcade.brute|1,0.80,1,8.00,1.70,0.92,35
 ,arcade.group.boss.archer,enemy.arcade.boss.archer|1,0.76,1,7.00,1.60,0.95,40
 ,arcade.group.boss.final,enemy.arcade.brute|1,0.8,1,14,1.7,0.92,0
-,arcade.group.island.1,enemy.arcade.basic|110,0.45,12,1,1,1,0
+,arcade.group.island.1,enemy.arcade.basic|110,0.45,24,1,1,1,0
 ,arcade.group.island.2,enemy.arcade.basic|120,0.42,14,1,1,1,0
 ,arcade.group.island.3,enemy.arcade.basic|130,0.4,16,1,1,1,0
 ,arcade.group.island.4,enemy.arcade.basic|140,0.38,18,1,1,1,0

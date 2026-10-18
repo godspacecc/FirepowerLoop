@@ -670,7 +670,7 @@ namespace Game
             {
                 if (!runtime.InTreasureRoom && behavior == global::ArcadePowerupBehavior.Decoy &&
                     runtime.Powerups.TryGetValue(behavior, out var decoy))
-                    DamageEnemiesInRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
+                    DamageEnemiesInExplosionRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
                 runtime.Powerups.Remove(behavior);
             }
             if (runtime.TemporaryWeaponRemaining <= 0f) runtime.TemporaryWeaponId = null;
@@ -748,8 +748,12 @@ namespace Game
                     IslandRoundEntry(runtime, out enemy.Position);
                 else
                 {
-                    IslandFor(runtime).Entry(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius,
-                        out var start);
+                    var region = IslandFor(runtime);
+                    ArcadeRegionPoint start;
+                    if (runtime.WaveIndex == 0)
+                        region.EntryFromFourSides(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius, out start);
+                    else
+                        region.Entry(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius, out start);
                     enemy.Position = new Vector2(start.X, start.Y);
                 }
             }
@@ -965,14 +969,14 @@ namespace Game
                 {
                     // 只在规则确认引爆时发出表现通知，普通移除和火箭寿命耗尽都保持静音。
                     view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                    DamageEnemiesInRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
+                    DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
                 }
                 if (!remove && !projectile.Hostile && HitCrate(runtime, priorPosition, projectile.Position, projectile.Damage))
                 {
                     if (IsExplosiveBehavior(projectile.Behavior))
                     {
                         view?.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                        DamageEnemiesInRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
+                        DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
                     }
                     remove = true;
                 }
@@ -997,7 +1001,7 @@ namespace Game
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
                             view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                            DamageEnemiesInRadius(runtime, projectile.Position, projectile.ExplosionRadius,
+                            DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius,
                                 projectile.Damage);
                             remove = true;
                             break;
@@ -1018,8 +1022,15 @@ namespace Game
             }
         }
 
-        /// <summary>爆炸在触发帧一次性结算；同一枚爆炸弹不会因移除流程再次伤害。</summary>
+        /// <summary>电球、锯片等普通圆形伤害不附带爆炸击飞。</summary>
         private void DamageEnemiesInRadius(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage)
+            => DamageEnemiesInArea(runtime, center, radius, damage, false);
+
+        /// <summary>真实爆炸来源显式选择击飞类别，伤害与目标筛选仍沿用同一结算。</summary>
+        private void DamageEnemiesInExplosionRadius(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage)
+            => DamageEnemiesInArea(runtime, center, radius, damage, true);
+
+        private void DamageEnemiesInArea(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage, bool explosive)
         {
             if (radius <= 0f) return;
             DamageCratesInRadius(runtime, center, radius, damage);
@@ -1029,7 +1040,7 @@ namespace Game
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
                     !IsWithinExplosion(center, enemy.Position, radius)) continue;
                 DamageEnemy(enemy, damage);
-                if (enemy.Health <= 0) KillEnemy(runtime, enemy);
+                if (enemy.Health <= 0) KillEnemyWithImpact(runtime, enemy, false, explosive, center);
             }
         }
 
@@ -1165,7 +1176,7 @@ namespace Game
                         if (powerup.Charges > 0 && HasEnemyInRadius(runtime, runtime.PlayerPosition,
                                 powerup.Definition.Magnitude + catalog.Rule.EnemyContactRadius))
                         {
-                            DamageEnemiesInRadius(runtime, runtime.PlayerPosition, powerup.Definition.Radius,
+                            DamageEnemiesInExplosionRadius(runtime, runtime.PlayerPosition, powerup.Definition.Radius,
                                 powerup.Definition.Damage);
                             powerup.Charges--;
                             powerup.CooldownSeconds = 0.45f;
@@ -1460,7 +1471,8 @@ namespace Game
             CopyKeys(runtime.Enemies, enemyIterationIds);
             for (var index = 0; index < enemyIterationIds.Count; index++)
                 if (runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) &&
-                    enemy.Id != runtime.FinalBossEnemyId && enemy.Id != runtime.ContentBossEnemyId) KillEnemy(runtime, enemy);
+                    enemy.Id != runtime.FinalBossEnemyId && enemy.Id != runtime.ContentBossEnemyId)
+                    KillEnemyWithImpact(runtime, enemy, false, true, runtime.PlayerPosition);
             PublishHud(runtime);
         }
 
@@ -1622,6 +1634,11 @@ namespace Game
         }
 
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)
+            => KillEnemyWithImpact(runtime, enemy, hazardKill, false, runtime.PlayerPosition);
+
+        /// <summary>伤害已裁决后传递死亡方向；爆炸来源只影响骨骼表现，不改变奖励或场内预算。</summary>
+        private void KillEnemyWithImpact(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
+            bool explosive, Vector2 origin)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
             if(SlayerGuardianDefeated(runtime,enemy))return;
@@ -1648,7 +1665,7 @@ namespace Game
                 foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
             }
             foreach (var hazard in runtime.Hazards) hazard.ForgetTarget(enemy.Id);
-            view?.RemoveEnemy(enemy.Id, true);
+            view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive);
             var deathPosition = IslandPosition(runtime, enemy.Position, catalog.Rule.PlayerRadius);
             if (!hazardKill && !runtime.IsChallenge && runtime.Drops.Count < catalog.Rule.MaxDrops &&
                 UnityRandom(0f, 1f) <= catalog.Rule.DropChance)

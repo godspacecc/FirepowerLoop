@@ -29,6 +29,8 @@ namespace Game
             int currentHealth, int maximumHealth, out string error, bool telegraph = false,
             int attackSequence = 0, bool persistentHealthBar = false);
         void RemoveEnemy(int runtimeId, bool playDeath = false);
+        /// <summary>只携带已经裁决的死亡方向与爆炸类别，旧端口保留动画降级。</summary>
+        void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive) => RemoveEnemy(runtimeId, playDeath);
         void ClearArcadeEnemies();
     }
 }

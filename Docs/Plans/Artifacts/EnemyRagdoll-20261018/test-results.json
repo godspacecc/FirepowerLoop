@@ -1,0 +1,421 @@
+{
+  "date": "2026-10-18",
+  "scope": "Only explicitly filtered EditMode classes/method; includePassingTests=true. Summary.TotalTests is discovery count, never executed count.",
+  "runs": [
+    {
+      "name": "EnemyPhysicalReactionTests",
+      "max": 11,
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3607,
+          "PassedTests": 11,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.0375229"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(4)",
+            "Status": "Passed",
+            "Duration": "00:00:00.1770000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(8)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0550000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathActivatesPhysicsAndExplosionProducesStrongerLift",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathPhysicsFreezesThenDisableAndReuseRestoreAllBones",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionKeepsSimulatingPastFirstSecondInsteadOfFreezingInAir",
+            "Status": "Passed",
+            "Duration": "00:00:00.0170000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.HitRecoilMovesOnlyChestAndReturnsWithoutAccumulating",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBasic\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBrute\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBossArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.RepeatedDeathDoesNotApplyImpulseAgainAndZeroDeltaPreservesRecoil",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ArcadeEnemyVisualTests",
+      "max": 14,
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 3607,
+          "PassedTests": 13,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:03.8421666"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.AllSharedWeaponsHaveUsableWorldDefinitions",
+            "Status": "Passed",
+            "Duration": "00:00:00.6140000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_ExposeSixDeterministicBodyVariants",
+            "Status": "Passed",
+            "Duration": "00:00:00.2130000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies",
+            "Status": "Failed",
+            "Duration": "00:00:00.0110000",
+            "Message": "  ArcadeEnemyBasic\r\n  Expected: <empty>\r\n  But was:  < <German_soilder_Rig (UnityEngine.CapsuleCollider)>, <Bone.001 (UnityEngine.CapsuleCollider)>, <Bone.004 (UnityEngine.CapsuleCollider)>, <Bone.006 (UnityEngine.CapsuleCollider)>, <Bone.005 (UnityEngine.CapsuleCollider)>, <Bone.007 (UnityEngine.CapsuleCollider)>, <Bone.025 (UnityEngine.CapsuleCollider)>, <Bone.016 (UnityEngine.CapsuleCollider)>, <Bone.018 (UnityEngine.CapsuleCollider)>, <Bone.017 (UnityEngine.CapsuleCollider)>, <Bone.019 (UnityEngine.CapsuleCollider)> >\r\n"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyRuntime_ResetClearsAttackPresentationSequence",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops",
+            "Status": "Passed",
+            "Duration": "00:00:00.3780000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeHealthBarRule_HidesNormalFullHealthAndExpiresAfterHitWindow",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcherEnemy_HumanoidAnimatorUsesTwoHandedAttackAndLeftHandBow",
+            "Status": "Passed",
+            "Duration": "00:00:00.6240000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.BasicEnemy_HumanoidAnimatorUsesInPlaceFormalAssets",
+            "Status": "Passed",
+            "Duration": "00:00:00.1930000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.BossVisuals_AreLargerAndUseDedicatedMaterial",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedCatalog_UsesOnlyArcadeSpecificEnemyIds",
+            "Status": "Passed",
+            "Duration": "00:00:00.3150000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedEnemyWeaponIdsResolveToTheSharedCatalog",
+            "Status": "Passed",
+            "Duration": "00:00:00.3260000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GrayboxPlayer_ArcadeMarkerReplacesRedundantWorldHealthBar",
+            "Status": "Passed",
+            "Duration": "00:00:00.4130000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants",
+            "Status": "Passed",
+            "Duration": "00:00:00.0230000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator",
+            "Status": "Passed",
+            "Duration": "00:00:00.0050000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HeavyEnemyVisualTests",
+      "max": 4,
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3607,
+          "PassedTests": 4,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.0147613"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.BruteAnimatorReceivesRetargetedFootAndHitEvents",
+            "Status": "Passed",
+            "Duration": "00:00:00.2610000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.BruteUsesLocalHumanoidCandidateAndKeepsCombatRoot",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.FiveRetargetedActionsKeepFiniteBodyAndBoundedWeapon",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.HeavyVariantsRemainDistinctAndCompleteWhenReused",
+            "Status": "Passed",
+            "Duration": "00:00:00.0410000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ArcadeBombPresentationTests",
+      "max": 6,
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3607,
+          "PassedTests": 6,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:00.8397803"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.BaselineAndRepeatedSnapshotsDoNotReplay",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.HiddenRegionDoesNotReplayWhenReturning",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.NewRoundBaselineDoesNotReplayHistory",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.OldRoundCannotRaiseNewRoundSequence",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.ProtocolProjectionKeepsOriginIndependentFromMutableMessage",
+            "Status": "Passed",
+            "Duration": "00:00:00.0730000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeBombPresentationTests.RapidUsesRemainDistinct",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ArcadeOpeningFlowTests",
+      "max": 30,
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3607,
+          "PassedTests": 24,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:09.8351258"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.BombProtectsForThreeSecondsWithoutShorteningLongProtectionOrRewardingInvalidUse",
+            "Status": "Passed",
+            "Duration": "00:00:00.3420000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.Campfire_OnlyBurnsFourthRoundAndRespectsInvulnerability",
+            "Status": "Passed",
+            "Duration": "00:00:00.3590000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.ClearedIslandRound_RequiresExitConfirmationRegardlessOfFireOrTimeout",
+            "Status": "Passed",
+            "Duration": "00:00:00.3320000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.DashKillsSweptOrdinaryTargetButNotOffPathBossOrDeepSea",
+            "Status": "Passed",
+            "Duration": "00:00:00.3440000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.DualPlayerTotals_AddFiftyInsteadOfMultiplyingSolo",
+            "Status": "Passed",
+            "Duration": "00:00:00.3560000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.FinalClear_ShowsTwoExitsWithoutStartingAnotherWave",
+            "Status": "Passed",
+            "Duration": "00:00:00.3120000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.FirstRound_AllowsTwentyFourEnemiesAndRefillsAfterKill",
+            "Status": "Passed",
+            "Duration": "00:00:00.3480000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.FirstRound_SpawnsContinuouslyAcrossFormerBatchBoundary",
+            "Status": "Passed",
+            "Duration": "00:00:00.2980000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.FirstRound_UsesFourEntrancesWithoutChangingSpawnInterval",
+            "Status": "Passed",
+            "Duration": "00:00:00.3420000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandEnemyChasesCurrentPlayerFromFirstStepAndStaysInsideShore",
+            "Status": "Passed",
+            "Duration": "00:00:00.3270000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandEntry_FourMapsPreserveBudgetsAndMoveContinuouslyWithoutBorderSnap",
+            "Status": "Passed",
+            "Duration": "00:00:00.5480000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandKillCountsOnceUsesMultiplierAndDoesNotAdvanceTreasureProgress",
+            "Status": "Passed",
+            "Duration": "00:00:00.3270000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.short-sword\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.3230000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.greatsword\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.3500000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.knife\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.3170000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.axe\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.4080000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.pickaxe\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.3720000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.NewOrdinaryWave_ReplenishesOnlyEmptyInventoryAndQueuesFullWave",
+            "Status": "Passed",
+            "Duration": "00:00:00.3980000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.OrdinaryTreasure_AwardsPersonalMultiplierScoreWithoutCash",
+            "Status": "Passed",
+            "Duration": "00:00:00.3270000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PendingQueue_PreventsFalseClearEvenWhenNoEnemyIsAlive",
+            "Status": "Passed",
+            "Duration": "00:00:00.3130000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.ShoppingApiCannotBeUsedByLegacyNodes",
+            "Status": "Passed",
+            "Duration": "00:00:00.4130000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.StageNoticesFollowAuthorityWithoutChangingRestOrExit",
+            "Status": "Passed",
+            "Duration": "00:00:00.3690000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.ThirdClearWaitsForEntranceAndCannotRaceRestTimer",
+            "Status": "Passed",
+            "Duration": "00:00:00.4780000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.WaterMovement_UsesSameConfiguredZoneAsPresentation",
+            "Status": "Passed",
+            "Duration": "00:00:00.6020000"
+          }
+        ]
+      }
+    }
+  ],
+  "visualRecovery": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3615,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:04.3614281"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies",
+        "Status": "Passed",
+        "Duration": "00:00:03.1160000"
+      }
+    ]
+  },
+  "deathSourceTests": {
+    "class": "EnemyDeathPresentationTests",
+    "passed": 8,
+    "failed": 0,
+    "scope": "Latest targeted run verified in this task; normal/electric, explosion/bomb, ground barrel, carrier, online round/repeat and copy isolation."
+  },
+  "uniqueFinalPassed": 67,
+  "server": {
+    "passed": 6,
+    "failed": 0,
+    "build": {
+      "warnings": 0,
+      "errors": 0
+    }
+  },
+  "phoneMeasured": false,
+  "realTwoClientSession": false
+}
