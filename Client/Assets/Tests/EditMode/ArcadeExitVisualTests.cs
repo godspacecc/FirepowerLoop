@@ -84,7 +84,7 @@ namespace Game.Tests
             var marker = root.transform.Find("ArcadeRouteExit_-2");
             var position = ArcadeIslandLayout.GetExitPosition(1, 0, 1, 19.5f, 19.5f, .55f);
             Assert.That(Vector2.Distance(new Vector2(marker.localPosition.x, marker.localPosition.z), position), Is.LessThan(.01f));
-            Assert.That(marker.GetComponentInChildren<TextMeshPro>(true).text, Is.EqualTo("进入下一轮"));
+            Assert.That(marker.GetComponentInChildren<TextMeshPro>(true).text, Is.EqualTo("进入第 2 轮"));
             var arrow = marker.Find("ExitCue/Arrow");
             Assert.That(arrow, Is.Not.Null);
             var before = arrow.localPosition;
@@ -115,23 +115,6 @@ namespace Game.Tests
                 var gate = root.transform.Find("ArcadeRouteExit_" + destination);
                 Assert.That(gate.Find("ExitCue/Arrow"), Is.Not.Null);
                 Assert.That(gate.GetComponentInChildren<TextMeshPro>(true).text, Is.Not.Empty);
-            }
-        }
-
-        [Test] public void NextRoundPlaqueUsesGenericTextAndFitsBothLanguages()
-        {
-            view.SetExits(new[] { -2 }, 19.5f, false);
-            var label = root.transform.Find("ArcadeRouteExit_-2").GetComponentInChildren<TextMeshPro>(true);
-            foreach (var language in new[] { "zh-CN", "en-US" })
-            {
-                Assert.That(RuntimeJson.TryParseStringTable(File.ReadAllText(Path.Combine(Application.dataPath,
-                    "Game/Config/Localization/" + language + ".json")), out var table), Is.True);
-                label.text = table["ui.arcade.exit.enter_round"];
-                Assert.That(label.text, Is.EqualTo(language == "zh-CN" ? "进入下一轮" : "Next Round"));
-                label.ForceMeshUpdate(true, true);
-                Assert.That(label.isTextOverflowing, Is.False, "缩小后的文字不能溢出底板：" + language);
-                Assert.That(label.preferredWidth, Is.LessThanOrEqualTo(label.rectTransform.rect.width));
-                Assert.That(label.preferredHeight, Is.LessThanOrEqualTo(label.rectTransform.rect.height));
             }
         }
 

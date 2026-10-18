@@ -12,7 +12,7 @@
   "ui.arcade.island.exit.title": "Travel to the next map",
   "ui.arcade.island.exit.confirm": "Travel to {0}? Uncollected items will be left behind.",
   "ui.arcade.island.pickup": "Round cleared. Enter the glowing exit and confirm the next round.",
-  "ui.arcade.exit.enter_round": "Next Round",
+  "ui.arcade.exit.enter_round": "Enter Round {0}",
   "ui.arcade.island.loading": "Preparing the map and round checkpoint…",
   "ui.arcade.island.resume": "Resume before round {0}, {1}. All uncommitted gains, spending, health and temporary effect changes in this round and its treasure room will roll back together.",
   "ui.arcade.island.leave.title": "Leave this run",

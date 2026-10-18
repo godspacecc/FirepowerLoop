@@ -3,7 +3,7 @@
     [string]$Destination = "$PSScriptRoot/../Client/Assets/Game/Config/Localization"
 )
 $ErrorActionPreference = 'Stop'
-# 仅发布指定 Config/Localization 权威源中声明的文案；其它历史文案原样保留。
+# 此文件仅发布 Config/Localization 中声明的设置页文案；其它历史文案原样保留。
 $entries = Get-Content -LiteralPath $Source -Raw -Encoding UTF8 | ConvertFrom-Json
 $pending = @()
 foreach ($language in @('zh-CN', 'en-US')) {
@@ -34,4 +34,4 @@ foreach ($item in $pending) {
         [IO.File]::WriteAllText($item.Path, $item.Content, (New-Object Text.UTF8Encoding($false)))
     }
 }
-Write-Output 'Localization published: zh-CN, en-US.'
+Write-Output 'Settings localization published: zh-CN, en-US.'

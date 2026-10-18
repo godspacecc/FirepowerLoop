@@ -367,7 +367,7 @@ namespace Game
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
                     if (!victory && destinations[index] < 0)
-                        marker.GetComponentInChildren<TMPro.TextMeshPro>(true).text = Loc.T("ui.arcade.exit.enter_round");
+                        marker.GetComponentInChildren<TMPro.TextMeshPro>(true).text = Loc.T("ui.arcade.exit.enter_round", -destinations[index]);
                     else SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : DestinationKey(destinations[index]));
                     BindExitCue(marker);
                 }

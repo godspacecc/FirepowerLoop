@@ -11,7 +11,7 @@
   "ui.arcade.island.exit.title": "前往下一张地图",
   "ui.arcade.island.exit.confirm": "确认前往{0}？未拾取的物品不会带入下一张地图。",
   "ui.arcade.island.pickup": "清场完成 · 前往发光出口确认下一轮",
-  "ui.arcade.exit.enter_round": "进入下一轮",
+  "ui.arcade.exit.enter_round": "进入第 {0} 轮",
   "ui.arcade.island.loading": "正在准备地图与本轮安全节点…",
   "ui.arcade.island.resume": "将从第{0}轮「{1}」开始前恢复。本轮及其后未提交的宝藏收益、消耗、生命和临时效果变化将整体回滚。",
   "ui.arcade.island.leave.title": "离开本局",
