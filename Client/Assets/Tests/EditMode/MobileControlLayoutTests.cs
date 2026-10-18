@@ -88,7 +88,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Editor_PreviewUsesActualSafeAreaBeforeScalingBelowToolbar()
+        public void Editor_FillsActualSafeAreaAtCombatScale()
         {
             CreateEditorArchitecture();
             var root = CreateEditor(out var ctrl, out var ui);
@@ -101,7 +101,10 @@ namespace Game.Tests
                 ctrl.Show();
                 Assert.That(ui.LayoutArea.rect.width, Is.EqualTo(1536).Within(.1f));
                 Assert.That(ui.LayoutArea.rect.height, Is.EqualTo(1080).Within(.1f));
-                Assert.That(ui.LayoutArea.rect.height * ui.LayoutArea.localScale.y, Is.LessThanOrEqualTo(ui.PreviewViewport.rect.height + .1f));
+                Assert.That(ui.LayoutArea.lossyScale, Is.EqualTo(ui.ControlSafeArea.lossyScale));
+                var bounds = MobileControlLayoutGeometry.Bounds(ui.ControlSafeArea, ui.LayoutArea);
+                Assert.That(bounds.min, Is.EqualTo(Vector2.zero));
+                Assert.That(bounds.size, Is.EqualTo(new Vector2(1536, 1080)));
             }
             finally { Object.DestroyImmediate(root); }
         }
@@ -140,15 +143,55 @@ namespace Game.Tests
                     Assert.That(preview.LayoutArea.rect.size, Is.EqualTo(hud.JoystickLayoutArea.rect.size));
                     for (var i = 0; i < (firstPerson ? 7 : 5); i++)
                     {
-                        var expected = MobileControlLayoutGeometry.Bounds(preview.LayoutArea, (RectTransform)previews[i]);
-                        var result = MobileControlLayoutGeometry.Bounds(hud.JoystickLayoutArea, (RectTransform)actual[i]);
+                        // 必须比较最终屏幕几何；只比各自局部坐标会漏掉整块预览被缩小的回归。
+                        var expected = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)previews[i]);
+                        var result = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)actual[i]);
                         Assert.That(Vector2.Distance(expected.center, result.center), Is.LessThan(.1f), actual[i].name);
                         Assert.That(Vector2.Distance(expected.size, result.size), Is.LessThan(.1f), actual[i].name);
                     }
-                    var move = MobileControlLayoutGeometry.Bounds(preview.LayoutArea, (RectTransform)preview.MovePreview.transform);
-                    var actualMove = MobileControlLayoutGeometry.Bounds(hud.JoystickLayoutArea, (RectTransform)hud.MoveJoystickRoot.transform);
+                    var move = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)preview.MovePreview.transform);
+                    var actualMove = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)hud.MoveJoystickRoot.transform);
                     Assert.That(Vector2.Distance(move.center, actualMove.center), Is.LessThan(.1f));
+                    Assert.That(Vector2.Distance(move.size, actualMove.size), Is.LessThan(.1f));
                 }
+                ctrl.Hide();
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        [Test]
+        public void Editor_ToolbarCanCollapseWithoutChangingLayoutOrDraftAndReopensExpanded()
+        {
+            var architecture = CreateEditorArchitecture();
+            var root = CreateEditor(out var ctrl, out var ui);
+            try
+            {
+                ctrl.Show();
+                var toolbar = typeof(MobileControlLayoutUI).GetField("ToolbarRoot")?.GetValue(ui) as GameObject;
+                var collapse = typeof(MobileControlLayoutUI).GetField("CollapseToolbarButton")?.GetValue(ui) as Button;
+                var expand = typeof(MobileControlLayoutUI).GetField("ExpandToolbarButton")?.GetValue(ui) as Button;
+                Assert.That(toolbar, Is.Not.Null, "工具栏需要生成的正式View引用");
+                Assert.That(collapse, Is.Not.Null);
+                Assert.That(expand, Is.Not.Null);
+                ui.SizeSlider.value = 1.4f;
+                var before = MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)ui.MovePreview.transform);
+                collapse.onClick.Invoke();
+                Assert.That(toolbar.activeSelf, Is.False);
+                Assert.That(expand.gameObject.activeInHierarchy, Is.True);
+                Assert.That(ui.MovePreview.gameObject.activeInHierarchy, Is.True);
+                Assert.That(MobileControlLayoutGeometry.Bounds((RectTransform)root.transform, (RectTransform)ui.MovePreview.transform), Is.EqualTo(before));
+                Assert.That(architecture.GetModel<MobileControlLayoutModel>().ToData().Move.Scale, Is.EqualTo(1));
+                expand.onClick.Invoke();
+                Assert.That(toolbar.activeSelf, Is.True);
+                Assert.That(expand.gameObject.activeSelf, Is.False);
+                Assert.That(ui.SizeSlider.value, Is.EqualTo(1.4f));
+                ui.TrialButton.onClick.Invoke();
+                collapse.onClick.Invoke(); expand.onClick.Invoke();
+                Assert.That(ui.MovePreview.Trial, Is.True, "收起工具栏不能退出试用");
+                collapse.onClick.Invoke(); ctrl.Hide(); ctrl.Show();
+                Assert.That(toolbar.activeSelf, Is.True);
+                Assert.That(expand.gameObject.activeSelf, Is.False);
+                Assert.That(ui.SizeSlider.value, Is.EqualTo(1));
                 ctrl.Hide();
             }
             finally { Object.DestroyImmediate(root); }

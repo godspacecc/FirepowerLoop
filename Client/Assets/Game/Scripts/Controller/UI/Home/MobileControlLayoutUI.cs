@@ -11,10 +11,12 @@ namespace Game
         public CanvasGroup AimPreviewOpacity;
         public MobileLayoutStickHandle BombPreview;
         public Button CancelButton;
+        public Button CollapseToolbarButton;
         public RectTransform ControlSafeArea;
         public MobileLayoutStickHandle DashPreview;
         public MobileLayoutStickHandle DonateLifePreview;
         public MobileLayoutStickHandle ExitFirstPersonPreview;
+        public Button ExpandToolbarButton;
         public MobileLayoutStickHandle FieldUpgradePreview;
         public MobileLayoutStickHandle FirstPersonFirePreview;
         public TextMeshProUGUI HintText;
@@ -32,6 +34,7 @@ namespace Game
         public Button SaveButton;
         public Slider SizeSlider;
         public TextMeshProUGUI SizeValue;
+        public GameObject ToolbarRoot;
         public Button TrialButton;
         public TextMeshProUGUI TrialText;
     }

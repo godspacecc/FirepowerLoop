@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 namespace Game
 {
-    /// <summary>编辑本机街机触屏草稿；使用正式HUD的动作和共享几何，预览不发送玩法输入。</summary>
+    /// <summary>全屏实尺编辑本机触屏草稿；使用正式HUD的动作和共享几何，不发送玩法输入。</summary>
     public sealed class MobileControlLayoutUICtrl : BaseUICtrl
     {
         private MobileControlLayoutUI UI => (MobileControlLayoutUI)BaseUI;
@@ -41,6 +41,8 @@ namespace Game
             UI.ResetButton.onClick.AddListener(() => { draft = new MobileControlLayoutData(); SetTrial(false); });
             UI.CancelButton.onClick.AddListener(Hide);
             UI.SaveButton.onClick.AddListener(Save);
+            UI.CollapseToolbarButton.onClick.AddListener(() => SetToolbarExpanded(false));
+            UI.ExpandToolbarButton.onClick.AddListener(() => SetToolbarExpanded(true));
             this.RegisterEvent<LanguageChangedEvent>(_ => { if (IsShow()) Render(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileInputModeChangedEvent>(_ =>
             { if (IsShow() && !this.GetSystem<MobileInputSystem>().IsMobileInputMode) Hide(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -51,6 +53,7 @@ namespace Game
             if (!this.GetSystem<MobileInputSystem>().IsMobileInputMode) { Hide(); return; }
             draft = this.GetModel<MobileControlLayoutModel>().ToData();
             moveSelected = true; buttonSelected = null; firstPersonPreview = false;
+            SetToolbarExpanded(true);
             Canvas.ForceUpdateCanvases(); SetTrial(false);
             LifeCycle.RegisterUpdate(RefreshOnResize); updateRegistered = true;
         }
@@ -88,7 +91,16 @@ namespace Game
             Render();
         }
 
-        /// <summary>把缩放预览的屏幕触点还原为完整安全区比例，编辑与实战不各存一份坐标。</summary>
+        /// <summary>工具栏显隐只影响编辑工具；不更改草稿、试用状态或全屏操控几何。</summary>
+        private void SetToolbarExpanded(bool expanded)
+        {
+            ResetGestures();
+            EventSystem.current?.SetSelectedGameObject(null);
+            UI.ToolbarRoot.SetActive(expanded);
+            UI.ExpandToolbarButton.gameObject.SetActive(!expanded);
+        }
+
+        /// <summary>把全屏编辑触点转换为安全区比例，直接复用实战的坐标与尺寸。</summary>
         private bool TryPosition(Vector2 screenPoint, out Vector2 position)
         {
             position = default;
@@ -110,20 +122,10 @@ namespace Game
             moveSelected = move; buttonSelected = null; Render();
         }
 
-        /// <summary>完整安全区等比例缩放显示，给编辑工具留空间，同时保持与实战相同的几何单位。</summary>
-        private void FitPreview()
-        {
-            lastAreaSize = UI.ControlSafeArea.rect.size;
-            if (lastAreaSize.x <= 0 || lastAreaSize.y <= 0) return;
-            UI.LayoutArea.sizeDelta = lastAreaSize;
-            var room = UI.PreviewViewport.rect.size;
-            var scale = Mathf.Min(room.x / lastAreaSize.x, room.y / lastAreaSize.y);
-            UI.LayoutArea.localScale = Vector3.one * Mathf.Max(.01f, scale);
-        }
         private void Render()
         {
             if (draft == null) return;
-            FitPreview();
+            lastAreaSize = UI.ControlSafeArea.rect.size;
             if (lastAreaSize.x <= 0 || lastAreaSize.y <= 0) return;
             var buttons = ButtonPreviews();
             UI.ExitFirstPersonPreview.gameObject.SetActive(firstPersonPreview);
