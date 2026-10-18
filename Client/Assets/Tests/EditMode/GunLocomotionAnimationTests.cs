@@ -149,6 +149,56 @@ namespace Game.Tests
             });
         }
 
+        [Test]
+        public void ArcadeHurtKeepsRunningAndGunfireUntilDeath()
+        {
+            WithPlayer((presenter, view, animator, peer) =>
+            {
+                view.SetArcadePresentationActive(true);
+                Equip(presenter, view, animator, "arcade.weapon.basic");
+                view.SetMovementSpeed(3f);
+                Step(animator, view, 20);
+                view.PlayProjectileFireFeedback();
+                Step(animator, view, 2);
+                int layer = animator.GetLayerIndex("Shared Gun Upper Body");
+                view.PlayHurtFeedback();
+                Step(animator, view, 2);
+                Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Run"), Is.True,
+                    "街机受击不能用全身 Hit 动作打断移动表现");
+                Assert.That(animator.GetLayerWeight(layer), Is.EqualTo(1f), "非致命受击不能撤销当前射击");
+                view.SetAlivePresentation(false);
+                Assert.That(animator.GetLayerWeight(layer), Is.Zero, "死亡仍须撤销射击");
+            });
+        }
+
+        [Test]
+        public void ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody()
+        {
+            WithPlayer((presenter, view, animator, peer) =>
+            {
+                view.SetArcadePresentationActive(true);
+                foreach (var weapon in new[] { "arcade.weapon.basic", "arcade.weapon.rapid" })
+                {
+                    Equip(presenter, view, animator, weapon);
+                    view.PlayHurtFeedback();
+                    var block = new MaterialPropertyBlock();
+                    var visibleBody = animator.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                        .First(renderer => renderer.enabled && renderer.gameObject.activeInHierarchy);
+                    visibleBody.GetPropertyBlock(block);
+                    Assert.That(block.GetColor("_BaseColor"), Is.EqualTo(Color.red));
+                    foreach (var renderer in presenter.Visual.GetComponentsInChildren<Renderer>(true))
+                    {
+                        renderer.GetPropertyBlock(block);
+                        Assert.That(block.HasColor("_Color") && block.GetColor("_Color") == Color.red, Is.False,
+                            "枪体不参与人物受击闪红，入场与切装顺序不能改变该约定");
+                    }
+                    view.TickCombatFeedback(1f);
+                    visibleBody.GetPropertyBlock(block);
+                    Assert.That(block.HasColor("_BaseColor"), Is.False, "结束后应撤销临时覆盖");
+                }
+            });
+        }
+
         private static void Equip(CharacterWeaponPresenter presenter, PlayerView view, Animator animator, string id)
         {
             Assert.That(presenter.SetWeaponId(id), Is.True, presenter.LastError);

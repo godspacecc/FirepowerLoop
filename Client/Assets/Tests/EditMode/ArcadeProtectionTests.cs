@@ -28,6 +28,16 @@ namespace FirepowerLoop.Tests
         public void TearDown() => UnityEngine.Object.DestroyImmediate(player);
 
         [Test]
+        public void EnteringArcadePreparesInactiveProtectionBeforeFirstHit()
+        {
+            var effect = player.transform.Find("ArcadeProtection");
+            Assert.That(effect, Is.Not.Null, "创建成本必须发生在入场准备阶段");
+            Assert.That(effect.gameObject.activeSelf, Is.False);
+            SetProtection(true);
+            Assert.That(player.transform.Find("ArcadeProtection"), Is.SameAs(effect));
+        }
+
+        [Test]
         public void EffectiveProtectionShowsHollowEffectUntilStateEnds()
         {
             SetProtection(true);
@@ -86,7 +96,8 @@ namespace FirepowerLoop.Tests
             Assert.That(effect == null, Is.True);
             Assert.That(material == null, Is.True);
             view.SetArcadePresentationActive(true);
-            Assert.That(player.transform.Find("ArcadeProtection"), Is.Null);
+            Assert.That(player.transform.Find("ArcadeProtection"), Is.Not.Null);
+            Assert.That(player.transform.Find("ArcadeProtection").gameObject.activeSelf, Is.False);
             SetProtection(true);
             Assert.That(player.transform.Find("ArcadeProtection"), Is.Not.Null);
         }
@@ -123,7 +134,7 @@ namespace FirepowerLoop.Tests
                 runtime.PlayerHealth = 0;
                 runtime.RespawnRemaining = .1f;
                 Call(system, "SyncView", runtime);
-                Assert.That(player.transform.Find("ArcadeProtection"), Is.Null);
+                Assert.That(player.transform.Find("ArcadeProtection").gameObject.activeSelf, Is.False);
                 Call(system, "TickTimers", runtime, .1f);
                 Assert.That(runtime.PlayerInvulnerability, Is.EqualTo(catalog.Rule.ContactInvulnerabilitySeconds * 2f));
                 Call(system, "SyncView", runtime);

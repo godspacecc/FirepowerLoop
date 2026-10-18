@@ -55,6 +55,41 @@ namespace Game.Tests
         }
 
         [Test]
+        public void RepeatedHurtRestoresExistingOverridesWithoutTintingHiddenOrHudRenderers()
+        {
+            var root = new GameObject("Player", typeof(CharacterController), typeof(MeshRenderer), typeof(PlayerView));
+            var material = CreateMaterial(Color.white);
+            try
+            {
+                var body = root.GetComponent<MeshRenderer>();
+                body.sharedMaterial = material;
+                var hidden = new GameObject("HiddenOutfit", typeof(MeshRenderer));
+                hidden.transform.SetParent(root.transform);
+                hidden.GetComponent<MeshRenderer>().sharedMaterial = material;
+                hidden.SetActive(false);
+                var hud = new GameObject("HUD", typeof(Canvas), typeof(MeshRenderer));
+                hud.transform.SetParent(root.transform);
+                hud.GetComponent<MeshRenderer>().sharedMaterial = material;
+                var original = new MaterialPropertyBlock();
+                original.SetColor("_Color", Color.blue);
+                original.SetFloat("_ExistingValue", .7f);
+                body.SetPropertyBlock(original);
+                var view = root.GetComponent<PlayerView>();
+                view.SetArcadePresentationActive(true);
+                view.PlayHurtFeedback();
+                Assert.That(GetFeedbackColor(body), Is.EqualTo(Color.red));
+                Assert.That(GetFeedbackColor(hidden.GetComponent<MeshRenderer>()), Is.EqualTo(Color.white));
+                Assert.That(GetFeedbackColor(hud.GetComponent<MeshRenderer>()), Is.EqualTo(Color.white));
+                view.PlayHurtFeedback();
+                view.TickCombatFeedback(1f);
+                body.GetPropertyBlock(original);
+                Assert.That(original.GetColor("_Color"), Is.EqualTo(Color.blue));
+                Assert.That(original.GetFloat("_ExistingValue"), Is.EqualTo(.7f));
+            }
+            finally { Object.DestroyImmediate(root); Object.DestroyImmediate(material); }
+        }
+
+        [Test]
         public void FormalPlayerHumanoidReceivesMovementSpeed()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(

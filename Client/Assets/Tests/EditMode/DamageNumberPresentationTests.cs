@@ -41,6 +41,27 @@ namespace Game.Tests
         }
 
         [Test]
+        public void ArcadeEntryPreparesNumbersAndRepeatedHitsReuseThem()
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+            try
+            {
+                instance.GetComponent<PlayerView>().SetArcadePresentationActive(true);
+                var prepared = instance.GetComponentsInChildren<DamageNumberView>(true);
+                Assert.That(prepared, Is.Not.Empty, "首次伤害不能承担飘字实例化成本");
+                Assert.That(prepared.All(number => !number.gameObject.activeSelf), Is.True);
+                var emitter = instance.GetComponent<DamageNumberEmitter>();
+                for (int hit = 0; hit < 20; hit++) emitter.Show(17, true);
+                var after = instance.GetComponentsInChildren<DamageNumberView>(true);
+                Assert.That(after, Is.EquivalentTo(prepared), "超过并发上限也必须复用已准备的飘字");
+                Assert.That(after.Where(number => number.gameObject.activeSelf).All(number =>
+                    number.GetComponentInChildren<TMP_Text>(true).text == "-17"), Is.True);
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+
+        [Test]
         public void Emitter_ShowsBoundDamageAndReusesItsOwnChildren()
         {
             GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");

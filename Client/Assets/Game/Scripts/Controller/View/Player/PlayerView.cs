@@ -169,7 +169,10 @@ namespace Game
         private Transform projectileBodyRecoilBone;
         private float projectileBodyRecoilEndTime;
         private Renderer[] feedbackRenderers = new Renderer[0];
-        private Color[] feedbackBaseColors = new Color[0];
+        /// <summary>入场时准备颜色覆盖缓冲；受击只处理当前可见模型，不重新遍历角色子树。</summary>
+        private MaterialPropertyBlock[] feedbackOriginalBlocks = Array.Empty<MaterialPropertyBlock>();
+        private bool[] feedbackTinted = Array.Empty<bool>();
+        private bool feedbackTargetsPrepared;
         private MaterialPropertyBlock feedbackPropertyBlock;
         private bool presentationAlive = true;
         /// <summary>仅管理当前实例的脚底贴地表现与采样缓冲，权威位置仍属于移动系统。</summary>
@@ -484,8 +487,17 @@ namespace Game
         {
             arcadePresentationActive = active;
             SetActive(arcadePlayerMarker, presentationAlive && active);
-            if (!active)
+            if (active)
             {
+                // 把对象和缓冲准备移到进场阶段，首次受击只切换既有表现。
+                PrepareFeedbackRenderers();
+                if (arcadeProtection == null) arcadeProtection = new ArcadeProtectionPresentation(transform);
+                damageNumberEmitter?.Prepare();
+            }
+            else
+            {
+                RestoreFeedbackColors();
+                colorFeedbackRemainingSeconds = 0f;
                 arcadeProtection?.Dispose();
                 arcadeProtection = null;
             }
@@ -916,16 +928,20 @@ namespace Game
 
         public void PlayHurtFeedback()
         {
-            ResetWeaponAttackPresentation();
-            if (animator != null)
+            // 街机以闪红和飘字提示受伤，保持权威移动、瞄准与射击的连续表现。
+            // 普通地图及独立角色预览仍沿用原有全身受击动作，死亡继续走存活切换入口。
+            if (!arcadePresentationActive)
             {
-                // 受击期间暂时移除上半身持枪覆盖层，让基础层的 Hit 动画完整可见。
-                rangedAimSuppressionRemainingSeconds = HurtAimSuppressionSeconds;
-                UpdateWeaponAimAnimator(false);
-                animator.ResetTrigger(PistolFireAnimatorParameter);
-                animator.ResetTrigger(ShotgunFireAnimatorParameter);
-                animator.ResetTrigger(AttackAnimatorParameter);
-                animator.SetTrigger(HitAnimatorParameter);
+                ResetWeaponAttackPresentation();
+                if (animator != null)
+                {
+                    rangedAimSuppressionRemainingSeconds = HurtAimSuppressionSeconds;
+                    UpdateWeaponAimAnimator(false);
+                    animator.ResetTrigger(PistolFireAnimatorParameter);
+                    animator.ResetTrigger(ShotgunFireAnimatorParameter);
+                    animator.ResetTrigger(AttackAnimatorParameter);
+                    animator.SetTrigger(HitAnimatorParameter);
+                }
             }
 
             CaptureFeedbackColors();
@@ -1063,6 +1079,8 @@ namespace Game
 
         private void OnDisable()
         {
+            RestoreFeedbackColors();
+            colorFeedbackRemainingSeconds = 0f;
             arcadeProtection?.SetActive(false);
             ResetWeaponAttackPresentation();
             SetSprinting(false);
@@ -1338,17 +1356,36 @@ namespace Game
             weaponSwingBaseCaptured = true;
         }
 
+        /// <summary>缓存人物身体及服装；武器、保护线和 HUD 不闪红，切装无需重扫，隐藏服装显示后才参与。</summary>
+        private void PrepareFeedbackRenderers()
+        {
+            if (feedbackTargetsPrepared) return;
+            feedbackRenderers = GetComponentsInChildren<Renderer>(true);
+            feedbackOriginalBlocks = new MaterialPropertyBlock[feedbackRenderers.Length];
+            feedbackTinted = new bool[feedbackRenderers.Length];
+            for (int i = 0; i < feedbackRenderers.Length; i++)
+            {
+                var target = feedbackRenderers[i];
+                // 正式人物只处理骨骼蒙皮；无 Animator 的简单角色沿用网格反馈。
+                if ((target is SkinnedMeshRenderer || animator == null && target is MeshRenderer) &&
+                    target.GetComponentInParent<Canvas>() == null)
+                    feedbackOriginalBlocks[i] = new MaterialPropertyBlock();
+            }
+            feedbackPropertyBlock ??= new MaterialPropertyBlock();
+            feedbackTargetsPrepared = true;
+        }
+
+        /// <summary>重复受击延长闪红时间，不把上次红色覆盖误记为角色原色。</summary>
         private void CaptureFeedbackColors()
         {
-            feedbackRenderers = GetComponentsInChildren<Renderer>(true);
-            if (feedbackBaseColors.Length != feedbackRenderers.Length)
-            {
-                feedbackBaseColors = new Color[feedbackRenderers.Length];
-            }
-
+            PrepareFeedbackRenderers();
             for (var i = 0; i < feedbackRenderers.Length; i++)
             {
-                feedbackBaseColors[i] = GetRendererColor(feedbackRenderers[i]);
+                var target = feedbackRenderers[i];
+                if (feedbackTinted[i] || feedbackOriginalBlocks[i] == null || target == null ||
+                    !target.enabled || !target.gameObject.activeInHierarchy) continue;
+                target.GetPropertyBlock(feedbackOriginalBlocks[i]);
+                feedbackTinted[i] = true;
             }
         }
 
@@ -1356,26 +1393,19 @@ namespace Game
         {
             for (var i = 0; i < feedbackRenderers.Length; i++)
             {
-                SetRendererColor(feedbackRenderers[i], color);
+                if (feedbackTinted[i]) SetRendererColor(feedbackRenderers[i], color);
             }
         }
 
         private void RestoreFeedbackColors()
         {
-            for (var i = 0; i < feedbackRenderers.Length && i < feedbackBaseColors.Length; i++)
+            for (var i = 0; i < feedbackRenderers.Length; i++)
             {
-                SetRendererColor(feedbackRenderers[i], feedbackBaseColors[i]);
+                if (!feedbackTinted[i]) continue;
+                if (feedbackRenderers[i] != null)
+                    feedbackRenderers[i].SetPropertyBlock(feedbackOriginalBlocks[i].isEmpty ? null : feedbackOriginalBlocks[i]);
+                feedbackTinted[i] = false;
             }
-        }
-
-        private static Color GetRendererColor(Renderer targetRenderer)
-        {
-            if (targetRenderer == null || targetRenderer.sharedMaterial == null)
-            {
-                return Color.white;
-            }
-
-            return targetRenderer.sharedMaterial.color;
         }
 
         private void SetRendererColor(Renderer targetRenderer, Color color)

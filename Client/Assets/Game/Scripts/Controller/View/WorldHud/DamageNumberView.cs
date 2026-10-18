@@ -10,7 +10,7 @@ namespace Game
 
         public void Bind(int damage, Color color)
         {
-            label.text = $"-{Mathf.Max(0, damage)}";
+            label.SetText("-{0}", Mathf.Max(0, damage));
             label.color = color;
             canvasGroup.alpha = 1f;
         }

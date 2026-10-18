@@ -22,7 +22,7 @@ namespace Game
         [SerializeField, Min(1)] private int maxConcurrent = 8;
 
         private readonly List<Entry> active = new List<Entry>();
-        private readonly Stack<DamageNumberView> pooled = new Stack<DamageNumberView>();
+        private readonly Stack<Entry> pooled = new Stack<Entry>();
         private int sequence;
         private bool ticking;
 
@@ -40,20 +40,36 @@ namespace Game
                 LifeCycle.UnregisterUpdate(Tick);
                 ticking = false;
             }
-            for (int i = active.Count - 1; i >= 0; i--) Recycle(active[i].View);
+            for (int i = active.Count - 1; i >= 0; i--) Recycle(active[i]);
             active.Clear();
         }
 
+        /// <summary>由街机玩家入场准备调用；按并发上限预建实例与计时条目，重复准备不增加对象。</summary>
+        public void Prepare()
+        {
+            if (numberPrefab == null) return;
+            int limit = Mathf.Max(1, maxConcurrent);
+            if (active.Capacity < limit) active.Capacity = limit;
+            while (pooled.Count + active.Count < limit)
+            {
+                var view = Instantiate(numberPrefab, transform);
+                view.gameObject.SetActive(false);
+                pooled.Push(new Entry { View = view });
+            }
+        }
+
+        /// <summary>绑定伤害并启动既有飘字；超过上限时复用最早条目，不额外分配计时对象。</summary>
         public void Show(int damage, bool playerTarget)
         {
             if (damage <= 0 || !isActiveAndEnabled || numberPrefab == null) return;
             if (active.Count >= Mathf.Max(1, maxConcurrent))
             {
-                Recycle(active[0].View);
+                Recycle(active[0]);
                 active.RemoveAt(0);
             }
 
-            DamageNumberView view = pooled.Count > 0 ? pooled.Pop() : Instantiate(numberPrefab, transform);
+            Entry entry = pooled.Count > 0 ? pooled.Pop() : new Entry { View = Instantiate(numberPrefab, transform) };
+            DamageNumberView view = entry.View;
             if (view == null) return;
             float horizontal = ((sequence++ % 3) - 1) * 0.18f;
             Vector3 start = localOrigin + Vector3.right * horizontal;
@@ -61,7 +77,9 @@ namespace Game
             view.gameObject.SetActive(true);
             view.Bind(damage, playerTarget ? PlayerDamageColor : EnemyDamageColor);
             view.FaceCamera(Camera.main);
-            active.Add(new Entry { View = view, Start = start });
+            entry.Elapsed = 0f;
+            entry.Start = start;
+            active.Add(entry);
         }
 
         public bool Validate(out string error)
@@ -88,16 +106,17 @@ namespace Game
                 entry.View.SetAlpha(1f - progress);
                 entry.View.FaceCamera(camera);
                 if (entry.Elapsed < lifetimeSeconds) continue;
-                Recycle(entry.View);
+                Recycle(entry);
                 active.RemoveAt(i);
             }
         }
 
-        private void Recycle(DamageNumberView view)
+        /// <summary>视图与计时条目一起回池，下一次显示覆盖所有本次状态。</summary>
+        private void Recycle(Entry entry)
         {
-            if (view == null) return;
-            view.gameObject.SetActive(false);
-            pooled.Push(view);
+            if (entry.View == null) return;
+            entry.View.gameObject.SetActive(false);
+            pooled.Push(entry);
         }
     }
 }
