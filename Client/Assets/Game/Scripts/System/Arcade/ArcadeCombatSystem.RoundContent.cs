@@ -50,7 +50,7 @@ namespace Game
             e.Speed*=layout.EnemySpeedScale;
             if(e.ContentSpecialKind==2 || e.ContentSpecialKind==6)e.Speed*=Mathf.Sqrt(layout.SkillMagnitude);
             if(e.ContentSpecialKind==13)
-            { e.Position=ContentPosition(r,r.PlayerPosition+Vector2.up*layout.EventRadius);e.EnteringIsland=false; }
+            { e.Position=ContentPosition(r,r.PlayerPosition+Vector2.up*layout.EventRadius); }
         }
 
         /// <summary>所有伤害共用潜地免伤、空降预警、护甲与人偶三段受击规则。</summary>
@@ -70,10 +70,10 @@ namespace Game
             return Mathf.CeilToInt(damage*ArcadeRoundContentRules.IncomingDamageScale(e.ContentSpecialKind,age,p));
         }
 
-        /// <summary>特殊敌人拥有实际移动和技能；未入场单位交还既有入口路径。</summary>
+        /// <summary>特殊敌人从出生起使用自己的移动和技能，仍经过统一障碍及岸线限制。</summary>
         private bool TickRoundEnemyContent(ArcadeCombatRuntime r,ArcadeEnemyRuntime e,Vector2 target,bool decoy,float dt)
         {
-            if(e.EnteringIsland || RoundLayout(r)==null)return false;
+            if(RoundLayout(r)==null)return false;
             if(e.ContentStunUntil>r.ContentClock.Elapsed)return true;
             if(e.ContentBossKind==4)return false;
             if(e.ContentSpecialKind==0 && e.ContentBossKind==0 && e.ContentAllyBuff<=1)return false;

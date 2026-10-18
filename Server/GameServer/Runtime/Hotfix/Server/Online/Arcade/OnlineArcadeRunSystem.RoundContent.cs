@@ -136,7 +136,7 @@ namespace ET.Server
             {enemy.SpecialKind=p.SpecialKind;enemy.MaxHealth=Math.Max(1,(int)Math.Round(enemy.MaxHealth*p.EnemyHealthScale));enemy.MoveSpeed*=p.EnemySpeedScale;}
             if(enemy.SpecialKind==2||enemy.SpecialKind==6)enemy.MoveSpeed*=MathF.Sqrt(p.SkillMagnitude);
             if(enemy.SpecialKind==13)
-            {var target=b.Players.Values.Where(v=>v.Alive).OrderBy(v=>v.PlayerId).FirstOrDefault();if(target!=null){float x=target.PositionX,y=target.PositionZ+p.EventRadius;ResolvePosition(ref x,ref y,target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));enemy.PositionX=x;enemy.PositionZ=y;enemy.EnteringIsland=false;}}
+            {var target=b.Players.Values.Where(v=>v.Alive).OrderBy(v=>v.PlayerId).FirstOrDefault();if(target!=null){float x=target.PositionX,y=target.PositionZ+p.EventRadius;ResolvePosition(ref x,ref y,target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));enemy.PositionX=x;enemy.PositionZ=y;}}
             enemy.CurrentHealth=enemy.MaxHealth;
         }
         private static float EnemyContentMotion(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime enemy,float delta)
@@ -183,7 +183,7 @@ namespace ET.Server
         private static bool TickSpecialEnemy(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime e,
             OnlineArcadeBattlePlayerRuntime target,float targetX,float targetY,bool decoy,float movementDelta)
         {
-            if(e.SpecialKind==0||e.EnteringIsland)return false;
+            if(e.SpecialKind==0)return false;
             if(!RoundContentActive(b))return true;
             var p=ContentTuning(b);int kind=e.SpecialKind;
             actor.TickSpecialAttack(b,e,target);

@@ -1430,18 +1430,17 @@ namespace ET.Server
             int maxHealth = Math.Max(1, (int)MathF.Round(enemyConfig.MaxHP * group.HealthMultiplier * arenaGrowth));
             (float x, float z) = SpawnPosition(runtimeId, ServerConfig.Instance.ArcadeRule);
             var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena);
-            bool enteringIsland = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
-            float entryTargetZ = 0f;
-            float entryTargetX = x;
-            if (battle.RoundLayout != null && !enteringIsland)
+            bool islandSpawn = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
+            if (battle.RoundLayout != null && !islandSpawn)
             {
                 var entry=battle.RoundLayout.Entries[battle.SpawnedInWave % battle.RoundLayout.Entries.Count];x=entry.X;z=entry.Y;
             }
-            if (enteringIsland)
+            if (islandSpawn)
             {
+                // 岸段只决定合法出生位置，生成后直接使用当前玩家追击路径。
                 IslandFor(battle).Entry(battle.SpawnedInWave, ((runtimeId * 37) % 101) / 100f,
-                    ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out var start, out var destination);
-                x = start.X; z = start.Y; entryTargetX = destination.X; entryTargetZ = destination.Y;
+                    ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out var start);
+                x = start.X; z = start.Y;
             }
             OnlineArcadeBattlePlayerRuntime target = battle.Players.Values.Where(player => player.Alive && !player.InTreasureRoom)
                 .OrderBy(player => DistanceSquared(x, z, player.PositionX, player.PositionZ)).FirstOrDefault();
@@ -1451,9 +1450,6 @@ namespace ET.Server
                 EnemyConfigId = enemyConfigId,
                 PositionX = x,
                 PositionZ = z,
-                EnteringIsland = enteringIsland,
-                IslandEntryTargetX = entryTargetX,
-                IslandEntryTargetZ = entryTargetZ,
                 // 新生成目标本帧没有旧位置，避免从原点虚构一条机关扫掠路径。
                 HazardPreviousX = x,
                 HazardPreviousZ = z,
@@ -1623,16 +1619,7 @@ namespace ET.Server
                 if (self.TickContentBoss(battle,enemy,target,deltaSeconds)) { changed=true;continue; }
                 if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
 
-                bool entering = enemy.EnteringIsland;
-                if (entering)
-                {
-                    enemy.EnteringIsland = !FirepowerLoop.Arcade.ArcadeOpeningRules.AdvanceEntry(
-                        ref enemy.PositionX, ref enemy.PositionZ, enemy.IslandEntryTargetX, enemy.IslandEntryTargetZ,
-                        enemy.MoveSpeed * movementDelta);
-                    changed = true;
-                }
-
-                if (!entering && self.TickBoss(battle, enemy, target, directionX, directionZ, deltaSeconds, movementDelta,
+                if (self.TickBoss(battle, enemy, target, directionX, directionZ, deltaSeconds, movementDelta,
                         rule, EffectiveObstacles(battle)))
                 {
                     changed = true;
@@ -1642,7 +1629,7 @@ namespace ET.Server
 
                 if (enemy.AttackKind == EnemyAttackKind.Projectile)
                 {
-                    if (!entering && distance > enemy.AttackRange * 0.8f)
+                    if (distance > enemy.AttackRange * 0.8f)
                         MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
                     if (distance <= enemy.AttackRange && enemy.AttackCooldownSeconds <= 0f &&
                         battle.Projectiles.Count < rule.MaxProjectiles)
@@ -1653,7 +1640,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    if (!entering) MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
+                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
                     if (distance <= rule.PlayerRadius + rule.EnemyContactRadius && enemy.AttackCooldownSeconds <= 0f)
                     {
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
@@ -2134,10 +2121,9 @@ namespace ET.Server
                 if (length < 0.001f) { offsetX = 0f; offsetZ = 1f; length = 1f; }
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
-                // 入场阶段不夹取到玩家边界，避免击退把水侧目标瞬间搬上岸。
-                if (!enemy.EnteringIsland || IslandFor(battle) != null)
-                    ResolvePosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
-                        rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle));
+                // 浅水和陆地都按同一岸线约束击退，不投影到沙滩内部。
+                ResolvePosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
+                    rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle));
                 enemy.PositionX = nextX;
                 enemy.PositionZ = nextZ;
                 enemy.LastDamagePlayerId = ownerPlayerId;
@@ -2792,7 +2778,6 @@ namespace ET.Server
             {
                 OnlineArcadeEnemyRuntime left = battle.Enemies[battle.EnemyIterationIds[leftIndex]];
                 OnlineArcadeEnemyRuntime right = battle.Enemies[battle.EnemyIterationIds[rightIndex]];
-                if (left.EnteringIsland || right.EnteringIsland) continue;
                 float offsetX = right.PositionX - left.PositionX;
                 float offsetZ = right.PositionZ - left.PositionZ;
                 float distanceSquared = offsetX * offsetX + offsetZ * offsetZ;

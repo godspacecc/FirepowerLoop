@@ -2,6 +2,14 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="IslandEnemyChaseOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true" || !int.TryParse(opts.GetValueOrDefault("maxTests"),out int chaseMax) || chaseMax<1)
+        throw new ArgumentException("Explicit IslandEnemyChaseOnline limit required");
+    var chaseConfig=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
+    World.Instance.AddSingleton(chaseConfig);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=IslandEnemyChaseOnlineChecks.Run(chaseMax);return;
+}
 if(!new[]{"FullRouteOnline","SlayerCheckpointOnline","SlayerArmorOnline","SlayerStormOnline","SlayerMasteryOnline","SlayerMartSupportOnline","SlayerMartOnline","SlayerMartProtocolGate","SlayerMartRoundOnline","SlayerMartRpcOnline","SlayerMartReleaseGateOnline","CasualPopulationOnline","CoopRescueOnline","CoopDonationOnline","SlayerChallengeOnline","SlayerChallengeTransitionOnline","SlayerGuardianOnline","SlayerChallengeReturnOnline","SlayerChallengeIntentOnline"}.Contains(opts.GetValueOrDefault("testClass"))||opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int max)||max<1)throw new ArgumentException("Explicit FullRouteOnline filter required");
 var config=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
 World.Instance.AddSingleton(config);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();

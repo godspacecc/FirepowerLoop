@@ -238,11 +238,6 @@ namespace ET.Server
         public bool ContentWarning;
         public long LastContentAttackCycle = -1;
         public long LastDamagePlayerId;
-        /// <summary>海岛入口通道的瞬时阶段；不进入协议或安全存档，由权威移动连续推进。</summary>
-        public bool EnteringIsland;
-        /// <summary>入口场内终点，竞技场局部米；水侧须越过浅水边界才恢复原追击。</summary>
-        public float IslandEntryTargetX;
-        public float IslandEntryTargetZ;
         /// <summary>当前轮护甲耐久，不进入安全存档；协议只读投影供破甲表现。</summary>
         public int ArmorHealth;
         public float HazardPreviousX;

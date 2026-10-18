@@ -99,9 +99,8 @@ namespace ET.Server
                         if(dx==0&&dz==0){dz=1;length=1;}
                         float push=config.Parameter("support.orbKnockback");
                         float nextX=enemy.PositionX+dx/length*push,nextZ=enemy.PositionZ+dz/length*push;
-                        if(!enemy.EnteringIsland||IslandFor(battle)!=null)
-                            ResolvePosition(ref nextX,ref nextZ,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,
-                                ServerConfig.Instance.ArcadeRule,EffectiveObstacles(battle),IslandFor(battle));
+                        ResolvePosition(ref nextX,ref nextZ,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,
+                            ServerConfig.Instance.ArcadeRule,EffectiveObstacles(battle),IslandFor(battle));
                         enemy.PositionX=nextX;enemy.PositionZ=nextZ;
                     }
                 }

@@ -233,8 +233,8 @@ namespace Game
             return runtime.IslandEntryWarningRemaining <= 0;
         }
 
-        /// <summary>固定岸段与车道生成入口；预告查询不消耗入场序号。</summary>
-        private void IslandRoundEntry(ArcadeCombatRuntime runtime, out Vector2 start, out Vector2 target, bool consume = true)
+        /// <summary>固定岸段与车道只决定出生位置；预告查询不消耗序号，出生后立即普通追击。</summary>
+        private void IslandRoundEntry(ArcadeCombatRuntime runtime, out Vector2 start, bool consume = true)
         {
             var region = IslandFor(runtime);
             // 第2图左右接替，其余图先水侧再陆侧；车道按序循环，重试时一致。
@@ -244,11 +244,9 @@ namespace Game
             float lane = ((runtime.IslandSpawnSequence % 5) - 2) * .12f;
             if (consume) runtime.IslandSpawnSequence++;
             int index = (Mathf.RoundToInt((direction + lane) / (Mathf.PI * 2) * ArcadeIslandRegion.Samples) + ArcadeIslandRegion.Samples) % ArcadeIslandRegion.Samples;
-            var outer = region.Outer[index]; var sand = region.Sand[index];
+            var outer = region.Outer[index];
             var p = region.Constrain(outer.X * .95f, outer.Y * .95f, catalog.Rule.EnemyContactRadius);
             start = ResolvePosition(new Vector2(p.X, p.Y), catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion);
-            target = ResolvePosition(new Vector2(sand.X * .8f, sand.Y * .8f), catalog.Rule.EnemyContactRadius,
                 catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion);
         }
 
@@ -296,7 +294,7 @@ namespace Game
             bool visible = UsesIslandRounds(runtime) && !runtime.InTreasureRoom && !runtime.IslandTransitionPending &&
                 !runtime.WaveClearAwarded && !runtime.AwaitingExit && runtime.SpawnQueue.Count > 0 && runtime.IslandEntryWarningRemaining > 0;
             var position = Vector2.zero;
-            if (visible) IslandRoundEntry(runtime, out position, out _, false);
+            if (visible) IslandRoundEntry(runtime, out position, false);
             view.SetIslandEntryWarning(position, visible);
         }
 

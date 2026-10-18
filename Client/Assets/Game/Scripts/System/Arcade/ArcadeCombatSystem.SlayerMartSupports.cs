@@ -118,8 +118,7 @@ namespace Game
                     if(item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||enemy.IsBossPresentation||!string.IsNullOrEmpty(enemy.BossId)||enemy.Speed<=0)continue;
                     var offset=enemy.Position-runtime.PlayerPosition;var direction=offset.sqrMagnitude<.000001f?Vector2.up:offset.normalized;
                     var next=enemy.Position+direction*slayerMartConfig.Parameter("support.orbKnockback");
-                    if(!enemy.EnteringIsland||IslandFor(runtime)!=null)
-                        next=ResolvePosition(next,catalog.Rule.EnemyContactRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(runtime),IslandFor(runtime));
+                    next=ResolvePosition(next,catalog.Rule.EnemyContactRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(runtime),IslandFor(runtime));
                     enemy.Position=next;
                 }
             }

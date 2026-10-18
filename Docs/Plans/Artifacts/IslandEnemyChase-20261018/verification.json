@@ -1,0 +1,150 @@
+{
+  "date": "2026-10-18",
+  "behavior": "敌人出生后立即追踪当前目标；取消固定登陆点和入场状态，岸线、绕障和拥挤分离使用既有规则",
+  "scope": {
+    "unity": {
+      "testClass": "ArcadeOpeningFlowTests",
+      "maxTests": 21,
+      "includePassingTests": true,
+      "testMode": "EditMode"
+    },
+    "server": {
+      "testClass": "IslandEnemyChaseOnline",
+      "maxTests": 5,
+      "includePassingTests": true
+    }
+  },
+  "red": {
+    "unity": [
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandEnemyChasesCurrentPlayerFromFirstStepAndStaysInsideShore",
+        "Status": "Failed",
+        "Duration": "00:00:00.6930000",
+        "Message": "  出生首帧及玩家换向后均须立即追踪当前玩家，不能先走固定登陆点\r\n  Expected: greater than 0.899999976f\r\n  But was:  0.130895197f\r\n"
+      }
+    ],
+    "server": "5/5 在首步追击方向断言失败；修正测试轮廓后确认，不包含早期夹具失败"
+  },
+  "green": {
+    "unity": [
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.BombProtectsForThreeSecondsWithoutShorteningLongProtectionOrRewardingInvalidUse",
+        "Status": "Passed",
+        "Duration": "00:00:00.3630000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.Campfire_OnlyBurnsFourthRoundAndRespectsInvulnerability",
+        "Status": "Passed",
+        "Duration": "00:00:00.5050000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.ClearedIslandRound_RequiresExitConfirmationRegardlessOfFireOrTimeout",
+        "Status": "Passed",
+        "Duration": "00:00:00.3660000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.DashKillsSweptOrdinaryTargetButNotOffPathBossOrDeepSea",
+        "Status": "Passed",
+        "Duration": "00:00:00.6180000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.DualPlayerTotals_AddFiftyInsteadOfMultiplyingSolo",
+        "Status": "Passed",
+        "Duration": "00:00:00.4760000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.FinalClear_ShowsTwoExitsWithoutStartingAnotherWave",
+        "Status": "Passed",
+        "Duration": "00:00:00.3570000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandEnemyChasesCurrentPlayerFromFirstStepAndStaysInsideShore",
+        "Status": "Passed",
+        "Duration": "00:00:00.4370000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandEntry_FourMapsUseFixedBatchesAndMoveContinuouslyWithoutBorderSnap",
+        "Status": "Passed",
+        "Duration": "00:00:00.5080000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.IslandKillCountsOnceUsesMultiplierAndDoesNotAdvanceTreasureProgress",
+        "Status": "Passed",
+        "Duration": "00:00:00.4890000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.short-sword\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.5490000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.greatsword\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.9290000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.knife\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.3860000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.axe\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.4270000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.pickaxe\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.5860000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.NewOrdinaryWave_ReplenishesOnlyEmptyInventoryAndQueuesFullWave",
+        "Status": "Passed",
+        "Duration": "00:00:00.4160000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.OrdinaryTreasure_AwardsPersonalMultiplierScoreWithoutCash",
+        "Status": "Passed",
+        "Duration": "00:00:00.4180000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.PendingQueue_PreventsFalseClearEvenWhenNoEnemyIsAlive",
+        "Status": "Passed",
+        "Duration": "00:00:00.3660000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.ShoppingApiCannotBeUsedByLegacyNodes",
+        "Status": "Passed",
+        "Duration": "00:00:00.3980000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.StageNoticesFollowAuthorityWithoutChangingRestOrExit",
+        "Status": "Passed",
+        "Duration": "00:00:00.4280000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.ThirdClearGuaranteesTreasureAndCannotRaceRestTimer",
+        "Status": "Passed",
+        "Duration": "00:00:00.5840000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.WaterMovement_UsesSameConfiguredZoneAsPresentation",
+        "Status": "Passed",
+        "Duration": "00:00:00.5200000"
+      }
+    ],
+    "server": [
+      "PASS IslandEnemyChaseOnline.case0",
+      "PASS IslandEnemyChaseOnline.case1",
+      "PASS IslandEnemyChaseOnline.case2",
+      "PASS IslandEnemyChaseOnline.case3",
+      "PASS IslandEnemyChaseOnline.case4"
+    ]
+  },
+  "build": "dotnet build Tools/ArcadeOpeningChecks/ArcadeOpeningChecks.csproj --ignore-failed-sources -p:NuGetAudit=false -v quiet：成功，0警告0错误；未执行此旧工具的全部检查",
+  "limits": [
+    "Unity首次按参数化方法基础名筛选未匹配，未回退到广泛范围；改为同名非参数Test覆盖5种场景后按完整方法执行",
+    "未触发Unity打包、Player Build或资源发布；手机及真实双客户端待用户更新后复测",
+    "提交前再次限定复验：单人21/21、服务器5/5通过；保留其他会话和构建产物改动"
+  ]
+}

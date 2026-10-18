@@ -720,15 +720,13 @@ namespace Game
             if (arena.Opening.Enabled && !runtime.IsChallenge && !runtime.IsFinalBoss)
             {
                 if (UsesIslandRounds(runtime))
-                    IslandRoundEntry(runtime, out enemy.Position, out enemy.IslandEntryTarget);
+                    IslandRoundEntry(runtime, out enemy.Position);
                 else
                 {
                     IslandFor(runtime).Entry(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius,
-                        out var start, out var target);
+                        out var start);
                     enemy.Position = new Vector2(start.X, start.Y);
-                    enemy.IslandEntryTarget = new Vector2(target.X, target.Y);
                 }
-                enemy.EnteringIsland = true;
             }
             enemy.MaxHealth = Mathf.Max(1, Mathf.RoundToInt(definition.MaxHP * group.HealthMultiplier * healthGrowth));
             enemy.Damage = Mathf.Max(1, Mathf.RoundToInt(definition.AttackDamage * group.DamageMultiplier * damageGrowth));
@@ -783,35 +781,19 @@ namespace Game
                 var direction = distance > 0.001f ? offset / distance : Vector2.up;
                 var movementDelta = deltaTime * EnemySpeedMultiplier(runtime);
                 movementDelta *= SlayerMartStormSpeed(runtime,enemy);
-                bool entering = enemy.EnteringIsland;
-                if (entering)
-                {
-                    if (UsesIslandRounds(runtime))
-                    {
-                        MoveEnemyTowards(runtime, enemy, enemy.IslandEntryTarget, movementDelta);
-                        enemy.EnteringIsland = Vector2.Distance(enemy.Position, enemy.IslandEntryTarget) > .2f;
-                    }
-                    else
-                    {
-                        float x = enemy.Position.x, y = enemy.Position.y;
-                        enemy.EnteringIsland = !ArcadeOpeningRules.AdvanceEntry(ref x, ref y,
-                            enemy.IslandEntryTarget.x, enemy.IslandEntryTarget.y, enemy.Speed * movementDelta);
-                        enemy.Position = new Vector2(x, y);
-                    }
-                }
                 if (TickSlayerGuardian(runtime,enemy,deltaTime)||TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
                 {
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
-                if (!entering && TickBoss(runtime, enemy, direction, targetIsDecoy, deltaTime, movementDelta))
+                if (TickBoss(runtime, enemy, direction, targetIsDecoy, deltaTime, movementDelta))
                 {
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
                 if (enemy.AttackKind == global::EnemyAttackKind.Projectile)
                 {
-                    if (!entering && distance > enemy.AttackRange * 0.8f)
+                    if (distance > enemy.AttackRange * 0.8f)
                         MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
                     if (distance <= enemy.AttackRange && enemy.AttackCooldown <= 0f)
                     {
@@ -822,7 +804,7 @@ namespace Game
                 }
                 else
                 {
-                    if (!entering) MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
+                    MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
                     if (distance <= catalog.Rule.PlayerRadius + catalog.Rule.EnemyContactRadius && enemy.AttackCooldown <= 0f)
                     {
                         enemy.AttackSequence++;
@@ -832,10 +814,9 @@ namespace Game
                         enemy.AttackCooldown = enemy.AttackInterval;
                     }
                 }
-                // 入场仅改变移动路径，接触/攻击仍复用上面的正式分支；未到达前不夹取边界。
-                if (!enemy.EnteringIsland)
-                    enemy.Position = ResolvePosition(enemy.Position, catalog.Rule.EnemyContactRadius,
-                        catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
+                // 出现后即追踪当前目标；岸线只约束可走范围，不再设置固定登陆终点。
+                enemy.Position = ResolvePosition(enemy.Position, catalog.Rule.EnemyContactRadius,
+                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
             }
             ResolveEnemyCrowding(runtime);
         }
@@ -2152,7 +2133,7 @@ namespace Game
         {
             crowdingEnemies.Clear();
             foreach (var enemy in runtime.Enemies.Values)
-                if (!enemy.EnteringIsland) crowdingEnemies.Add(enemy);
+                crowdingEnemies.Add(enemy);
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();

@@ -118,17 +118,15 @@ namespace FirepowerLoop.Arcade
             return p;
         }
 
-        /// <summary>在当前轮廓内的北岸/南水侧交替生成；外缘留角色半径，水侧终点进入沙滩。</summary>
-        public void Entry(int sequence, float lane, float radius, out ArcadeRegionPoint start, out ArcadeRegionPoint target)
+        /// <summary>在当前轮廓内的北岸/南水侧交替生成；外缘留角色半径，不指定固定登陆终点。</summary>
+        public void Entry(int sequence, float lane, float radius, out ArcadeRegionPoint start)
         {
             bool water = (sequence & 1) == 0;
             double angle = (water ? Math.PI * 1.5 : Math.PI * .5) + (Math.Max(0, Math.Min(1, lane)) - .5) * 1.2;
             int i = ((int)Math.Round(angle / (Math.PI * 2) * Samples) + Samples) % Samples;
-            var o = outer[i]; var s = sand[i];
+            var o = outer[i];
             float len = (float)Math.Sqrt(o.X * o.X + o.Y * o.Y);
             start = Constrain(o.X * (1 - (radius + .1f) / len), o.Y * (1 - (radius + .1f) / len), radius);
-            float slen = (float)Math.Sqrt(s.X * s.X + s.Y * s.Y);
-            target = Constrain(s.X * (1 - radius * 2 / slen), s.Y * (1 - radius * 2 / slen), radius);
         }
     }
 }

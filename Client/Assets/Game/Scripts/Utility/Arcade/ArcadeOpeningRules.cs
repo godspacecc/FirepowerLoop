@@ -60,16 +60,6 @@ namespace FirepowerLoop.Arcade
     /// <summary>已确认的普通轮总量与应急资源规则；不决定敌种、同屏预算、Boss 或持久化。</summary>
     public static class ArcadeOpeningRules
     {
-        /// <summary>入场保持原移速，到达后恢复普通追击；此阶段不经过会瞬移到战斗边界的夹取与拥挤修正。</summary>
-        public static bool AdvanceEntry(ref float x, ref float y, float targetX, float targetY, float step)
-        {
-            float dx = targetX - x, dy = targetY - y;
-            float distance = (float)Math.Sqrt(dx * dx + dy * dy);
-            if (distance <= step) { x = targetX; y = targetY; return true; }
-            if (step > 0f && distance > 0f) { x += dx / distance * step; y += dy / distance * step; }
-            return false;
-        }
-
         /// <summary>伤害与显示共用的活动条件；第四波清场、离场和复活等待均熄灭，不拥有伤害计时。</summary>
         public static bool CampfireActive(ArcadeOpeningParameters p, int waveIndex, bool specialBattle,
             bool cleared, bool awaitingExit, bool inRoom, bool respawnWaiting) =>

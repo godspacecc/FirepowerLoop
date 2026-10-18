@@ -19,10 +19,6 @@ namespace Game
         public string ConfigId;
         public global::EnemyAttackKind AttackKind;
         public Vector2 Position;
-        /// <summary>海岛当前实体尚在入口通道；仅本次出生有效，不保存也不改变敌人计数。</summary>
-        public bool EnteringIsland;
-        /// <summary>入口在场内的终点（竞技场米）；到达后恢复已有追击和攻击。</summary>
-        public Vector2 IslandEntryTarget;
         public int Health;
         public int MaxHealth;
         /// <summary>当前轮独立护甲耐久，归还对象池时清零，不计入生命或存档。</summary>
@@ -64,8 +60,6 @@ namespace Game
             ConfigId = null;
             AttackKind = default;
             Position = default;
-            EnteringIsland = false;
-            IslandEntryTarget = default;
             Health = 0;
             MaxHealth = 0;
             ArmorHealth = 0;

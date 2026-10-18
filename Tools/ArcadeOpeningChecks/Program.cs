@@ -60,12 +60,12 @@ Check("All four island waves enter from both sides continuously and exhaust the 
         var player=battle.Players[1];player.PositionX=water.PositionX;player.PositionZ=water.PositionZ+.25f;
         int health=player.CurrentHealth;player.InvulnerabilitySeconds=0;water.AttackCooldownSeconds=0;
         Call("TickEnemies",actor,battle,.05f);
-        Require(water.EnteringIsland&&player.CurrentHealth<health,"entering enemy lost ordinary contact attack");
+        Require(player.CurrentHealth<health,"water-side enemy lost ordinary contact attack");
         player.InvulnerabilitySeconds=1000f;player.PositionX=0;player.PositionZ=0;
         foreach(var member in battle.Players.Values){member.PositionX=0;member.PositionZ=0;}
         for(int i=0;i<500;i++)Call("TickEnemies",actor,battle,.05f);
-        Require(!water.EnteringIsland && !region.IsShallow(water.PositionX,water.PositionZ) &&
-            region.Contains(shore.PositionX,shore.PositionZ),$"entry never reached sand wave={wave} water=({water.PositionX},{water.PositionZ}) entering={water.EnteringIsland} shallow={region.IsShallow(water.PositionX,water.PositionZ)} shore=({shore.PositionX},{shore.PositionZ}) room={player.InTreasureRoom}");
+        Require(!region.IsShallow(water.PositionX,water.PositionZ) &&
+            region.Contains(shore.PositionX,shore.PositionZ),$"chase never reached sand wave={wave} water=({water.PositionX},{water.PositionZ}) shallow={region.IsShallow(water.PositionX,water.PositionZ)} shore=({shore.PositionX},{shore.PositionZ}) room={player.InTreasureRoom}");
         int spawned=2;
         while(battle.SpawnQueueIndex<battle.SpawnQueue.Count){
             battle.Enemies.Clear();battle.NextSpawnAt=0;
@@ -94,7 +94,7 @@ Check("Water slows authoritative movement",()=>{
     var record=Record();var battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false);
     var actor=new OnlineArcadeRunActor{Record=record,Battle=battle};var player=battle.Players[1];
     var region=new ArcadeIslandRegion(config.ArcadeRule.ArenaHalfWidth,config.ArcadeRule.ArenaHalfHeight);
-    region.Entry(0,.5f,config.ArcadeRule.EnemyContactRadius,out var water,out _);
+    region.Entry(0,.5f,config.ArcadeRule.EnemyContactRadius,out var water);
     player.PositionX=water.X;player.PositionZ=water.Y;player.MoveX=1;player.LastInputAt=TimeInfo.Instance.ServerNow();
     Call("TickPlayers",actor,battle,1f,player.LastInputAt);
     Require(Math.Abs(player.PositionX-config.ArcadeRule.PlayerMoveSpeed*.55f)<.001f,"water authority mismatch");

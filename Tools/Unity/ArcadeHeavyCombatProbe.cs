@@ -87,7 +87,6 @@ public static class ArcadeHeavyCombatProbe
     }
     private static void Place(object enemy)
     {
-        Set(enemy, "EnteringIsland", false);
         Set(enemy, "Position", (Vector2)Get(Runtime, "PlayerPosition") + new Vector2(2.5f, .2f));
     }
     private static void Assert(bool value, string reason) { if (!value) throw new Exception(reason); }

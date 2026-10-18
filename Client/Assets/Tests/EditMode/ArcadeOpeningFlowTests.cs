@@ -39,6 +39,55 @@ namespace Game.Tests
             typeof(ArcadeCombatSystem).GetField("random",Flags).SetValue(system,new System.Random(37));
         }
         private object Call(string method,params object[] args) => typeof(ArcadeCombatSystem).GetMethod(method,Flags).Invoke(system,args);
+
+        [Test] public void IslandEnemyChasesCurrentPlayerFromFirstStepAndStaysInsideShore()
+        {
+            for (int wave = 0; wave < 4; wave++) CheckIslandEnemyChase(wave, true);
+            CheckIslandEnemyChase(0, false);
+        }
+
+        private void CheckIslandEnemyChase(int wave, bool casual)
+        {
+            runtime.Enemies.Clear();
+            var data = run.Current;
+            data.IsCasualRoute = casual;
+            run.CommitSafeNode(data); run.EnterArena();
+            Call("BeginWave", runtime, wave);
+            runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
+            runtime.IslandEntryWarningRemaining = 0;
+            Call("TickSpawning", runtime, 5f);
+            var enemy = runtime.Enemies.Values.Single();
+            var region = new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, casual ? wave + 1 : 0);
+            var tangent = new Vector2(-enemy.Position.y, enemy.Position.x).normalized;
+            runtime.PlayerInvulnerability = 1000;
+            if (wave == 0) Assert.That(region.IsShallow(enemy.Position.x, enemy.Position.y), Is.True);
+            foreach (var side in new[] { 1f, -1f })
+            {
+                var target = region.Constrain(enemy.Position.x + tangent.x * side * 4,
+                    enemy.Position.y + tangent.y * side * 4, catalog.Rule.PlayerRadius);
+                runtime.PlayerPosition = new Vector2(target.X, target.Y);
+                var before = enemy.Position;
+                var direction = (runtime.PlayerPosition - before).normalized;
+                Call("TickEnemies", runtime, .05f);
+                var motion = enemy.Position - before;
+                Assert.That(Vector2.Dot(motion.normalized, direction), Is.GreaterThan(.9f),
+                    "出生首帧及玩家换向后均须立即追踪当前玩家，不能先走固定登陆点");
+                Assert.That(motion.magnitude, Is.LessThanOrEqualTo(enemy.Speed * .05f + .001f));
+            }
+            // 沿岸追击多帧：保持圆形敌人半径留量，不进入外缘深水或跳到内陆。
+            var edge = region.Constrain(enemy.Position.x + tangent.x * 30, enemy.Position.y + tangent.y * 30, catalog.Rule.PlayerRadius);
+            runtime.PlayerPosition = new Vector2(edge.X, edge.Y);
+            for (int i = 0; i < 100; i++)
+            {
+                var before = enemy.Position;
+                Call("TickEnemies", runtime, .05f);
+                Assert.That(region.Contains(enemy.Position.x, enemy.Position.y), Is.True);
+                var legal = region.Constrain(enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius);
+                Assert.That(Vector2.Distance(enemy.Position, new Vector2(legal.X, legal.Y)), Is.LessThan(.01f));
+                Assert.That(Vector2.Distance(before, enemy.Position), Is.LessThanOrEqualTo(enemy.Speed * .05f + .01f));
+            }
+        }
+
         [Test]
         public void IslandEntry_FourMapsUseFixedBatchesAndMoveContinuouslyWithoutBorderSnap()
         {
@@ -62,11 +111,9 @@ namespace Game.Tests
                 runtime.PlayerPosition=water.Position+Vector2.up*.25f;
                 int health=runtime.PlayerHealth;runtime.PlayerInvulnerability=0;water.AttackCooldown=0;
                 Call("TickEnemies",runtime,.05f);
-                Assert.That(water.EnteringIsland,Is.True);
-                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"入场阶段仍按原接触规则攻击水侧玩家");
+                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"水侧敌人立即按原接触规则攻击附近玩家");
                 runtime.PlayerInvulnerability=1000f;runtime.PlayerPosition=Vector2.zero;
                 for(int i=0;i<500;i++)Call("TickEnemies",runtime,.05f);
-                Assert.That(water.EnteringIsland,Is.False);
                 Assert.That(region.IsShallow(water.Position.x,water.Position.y),Is.False);
                 Assert.That(Mathf.Abs(shore.Position.y),Is.LessThan(catalog.Rule.ArenaHalfHeight));
                 int spawned=runtime.Enemies.Count;

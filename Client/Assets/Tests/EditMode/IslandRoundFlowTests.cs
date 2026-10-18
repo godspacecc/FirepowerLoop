@@ -127,7 +127,6 @@ namespace Game.Tests
             Call("StartIslandRound", runtime, 0, null);
             Call("TickSpawning", runtime, 5f);
             var enemy = System.Linq.Enumerable.First(runtime.Enemies.Values);
-            enemy.EnteringIsland = false;
             enemy.Position = runtime.PlayerPosition + Vector2.up * 4f;
             var before = enemy.Position;
             while (runtime.SpawnQueue.Count > 55) runtime.SpawnQueue.Dequeue();
