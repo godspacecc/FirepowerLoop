@@ -74,7 +74,10 @@ Check("All four island waves enter from both sides continuously and exhaust the 
         }
         Require(spawned==total&&total==160+wave*10,"wave count changed");
         battle.Enemies.Clear();
-        if(wave==2){Call("TickTreasureRoom",actor,battle,0f);Require(battle.Players.Values.All(p=>p.InTreasureRoom),"guaranteed room missing");
+        if(wave==2){
+            // 与第三轮可见入口重合的可达地面；不把玩家直接放到岛外配置坐标。
+            foreach(var member in battle.Players.Values){member.PositionX=-12;member.PositionZ=-12;}
+            Call("TickTreasureRoom",actor,battle,0f);Require(battle.Players.Values.All(p=>p.InTreasureRoom),"入口接触后未进入宝藏房");
             Call("TickTreasureRoom",actor,battle,60f);Require(battle.WaveIndex==3,"room did not return to fourth wave");}
         else {Call("TryAdvanceWave",actor,battle,0f);Require(battle.WaveClearAwarded,"clear blocked");}
     }

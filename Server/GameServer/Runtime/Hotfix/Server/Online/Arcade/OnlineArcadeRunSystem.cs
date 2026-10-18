@@ -2621,7 +2621,9 @@ namespace ET.Server
             }
             if (battle.Players.Values.Any(p => p.Alive) && battle.Players.Values.Where(p => p.Alive).All(p => p.InTreasureRoom)) return false;
             if (battle.IsFinalBoss || battle.RoundBossEncounter || battle.AwaitingExit || battle.SpawnQueueIndex < battle.SpawnQueue.Count || battle.Enemies.Count > 0) return false;
-            if (battle.WaveIndex == 2 && battle.IsCasualRoute && battle.ArenaConfigNumber == 1 && !battle.TreasureCompleted) return false;
+            // 包含第二场军械库；队员尚未到入口时不能从普通出口提前推进。
+            if (battle.WaveIndex == 2 && battle.IsCasualRoute &&
+                (battle.ArenaConfigNumber == 1 || battle.TreasureRoom != null) && !battle.TreasureCompleted) return false;
             if (!battle.WaveClearAwarded)
             {
                 ArcadeArenaConfig arena = ResolveBattleArena(battle);

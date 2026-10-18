@@ -44,6 +44,18 @@ namespace Game.Tests
         }
         [TearDown] public void Cleanup(){architecture.GetModel<ArcadeCombatModel>().Clear();if(Directory.Exists(root))Directory.Delete(root,true);}
         private void Tick(float seconds=0)=>typeof(ArcadeCombatSystem).GetMethod("TickTreasureRoom",Flags).Invoke(system,new object[]{runtime,seconds});
+        /// <summary>按真实入口接触进入，不依赖清场后的自动传送。</summary>
+        private void EnterRoom()
+        {
+            var rules = catalog.TreasureRooms.Single(r => r.ArenaConfigNumber == runtime.ArenaNumber);
+            runtime.PlayerPosition = EntryPosition(rules);
+            Tick();
+            Assert.That(runtime.InTreasureRoom, Is.True);
+        }
+        private Vector2 EntryPosition(ArcadeTreasureRoomParameters rules) => runtime.ArenaNumber == 1
+            ? ArcadeIslandLayout.GetLandmarkPosition(new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,
+                catalog.Rule.ArenaHalfHeight, 3), new Vector2(rules.EntryX, rules.EntryY), rules.EntryRadius + catalog.Rule.PlayerRadius)
+            : new Vector2(rules.EntryX, rules.EntryY);
         private void Reward(int index)
         {runtime.PlayerPosition=new Vector2(runtime.TreasureRoom.Parameters.Rewards[index].X,runtime.TreasureRoom.Parameters.Rewards[index].Y);Tick();}
         [Test] public void FirstRoundExitConfirmsSecondRoundAndRejectsDuplicateConfirmation()
@@ -74,17 +86,56 @@ namespace Game.Tests
             runtime.SpawnQueue.Enqueue("pending");Tick();Assert.That(runtime.TreasureDiscovered,Is.True);
             Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.TreasureRoom.Started,Is.False);
         }
+        [TestCase(false)] [TestCase(true)]
+        public void ClearDoesNotDiscoverOrTeleport(bool armory)
+        {
+            if (armory) ConfigureArmory();
+            runtime.PlayerPosition = new Vector2(15, 15);
+            Tick();
+            Assert.That(runtime.TreasureCleared, Is.True);
+            Assert.That(runtime.TreasureDiscovered, Is.False);
+            Assert.That(runtime.InTreasureRoom, Is.False);
+            Assert.That(runtime.TreasureRoom.Started, Is.False);
+            Assert.That(runtime.PlayerPosition, Is.EqualTo(new Vector2(15, 15)));
+        }
+        [TestCase(false)] [TestCase(true)]
+        public void DiscoveredRoomWaitsForReturnToEntranceAfterClear(bool armory)
+        {
+            if (armory) ConfigureArmory();
+            var rules = catalog.TreasureRooms.Single(r => r.ArenaConfigNumber == runtime.ArenaNumber);
+            runtime.SpawnQueue.Enqueue("pending");
+            runtime.PlayerPosition = EntryPosition(rules); Tick();
+            Assert.That(runtime.TreasureDiscovered, Is.True);
+            Assert.That(runtime.InTreasureRoom, Is.False);
+            runtime.PlayerPosition = new Vector2(15, 15); runtime.SpawnQueue.Clear(); Tick(20);
+            Assert.That(runtime.InTreasureRoom, Is.False);
+            Assert.That(runtime.TreasureRoom.Started, Is.False);
+            Assert.That(runtime.TreasureRoom.RemainingSeconds, Is.EqualTo(rules.Duration));
+            typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition", Flags).Invoke(system, new object[] { runtime, 500f });
+            Assert.That(runtime.WaveIndex, Is.EqualTo(2));
+            Assert.That(runtime.IslandRoundAwaitingExit || runtime.AwaitingExit, Is.False, "等待奖励房入口时不能出现普通下一轮出口");
+            EnterRoom();
+        }
+        [TestCase(false)] [TestCase(true)]
+        public void EntranceCanStillBeDiscoveredAfterClear(bool armory)
+        {
+            if (armory) ConfigureArmory();
+            runtime.PlayerPosition = new Vector2(15, 15); Tick();
+            Assert.That(runtime.InTreasureRoom, Is.False);
+            EnterRoom();
+            Assert.That(runtime.TreasureDiscovered, Is.True);
+        }
         [Test] public void ClearAllowsEntryWithOneFixedSet()
-        {Tick();Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureRoom.RemainingRewards.Length,Is.EqualTo(18));Assert.That(runtime.PlayerPosition,Is.EqualTo(new Vector2(0,-4)));}
+        {EnterRoom();Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureRoom.RemainingRewards.Length,Is.EqualTo(18));Assert.That(runtime.PlayerPosition,Is.EqualTo(new Vector2(0,-4)));}
         [Test] public void GoldIsPersonalScore_NotShoppingCash()
-        {Tick();Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));Assert.That(run.Current.RunGold,Is.Zero);Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));}
+        {EnterRoom();Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));Assert.That(run.Current.RunGold,Is.Zero);Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));}
         [Test] public void FullBombDoesNotConsumeSharedPickup()
-        {Tick();runtime.Bombs=9;Reward(16);Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.True);runtime.Bombs=8;Reward(16);Assert.That(runtime.Bombs,Is.EqualTo(9));Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.False);}
+        {EnterRoom();runtime.Bombs=9;Reward(16);Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.True);runtime.Bombs=8;Reward(16);Assert.That(runtime.Bombs,Is.EqualTo(9));Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.False);}
         [Test] public void TimeoutReturnsPlayerWithoutReopening()
-        {Tick();Tick(60);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.PlayerPosition,Is.EqualTo(ArcadeIslandLayout.GetSpawn(4,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)));Assert.That(runtime.WaveIndex,Is.EqualTo(3));runtime.PlayerPosition=new Vector2(-15,-15);Tick();Assert.That(runtime.InTreasureRoom,Is.False);}
+        {EnterRoom();Tick(60);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.PlayerPosition,Is.EqualTo(ArcadeIslandLayout.GetSpawn(4,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)));Assert.That(runtime.WaveIndex,Is.EqualTo(3));runtime.PlayerPosition=new Vector2(-15,-15);Tick();Assert.That(runtime.InTreasureRoom,Is.False);}
         [Test] public void EarlyReturnContinuesFourthWave()
         {
-            Tick();typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition",Flags).Invoke(system,new object[]{runtime,2f});Assert.That(runtime.WaveIndex,Is.EqualTo(2));
+            EnterRoom();typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition",Flags).Invoke(system,new object[]{runtime,2f});Assert.That(runtime.WaveIndex,Is.EqualTo(2));
             runtime.PlayerPosition=new Vector2(0,-5.5f);Tick();Assert.That(runtime.InTreasureRoom,Is.False);
             typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition",Flags).Invoke(system,new object[]{runtime,2f});
             typeof(ArcadeCombatSystem).GetMethod("TickWaveTransition",Flags).Invoke(system,new object[]{runtime,.1f});
@@ -95,16 +146,16 @@ namespace Game.Tests
         public void ChallengesOldRunsAndOtherMapsDoNotCreateRoom(bool casual,int arenaNumber)
         {var data=run.Current;data.IsCasualRoute=casual;run.CommitSafeNode(data);run.EnterArena();runtime.IsChallenge=casual&&arenaNumber==1;typeof(ArcadeCombatSystem).GetField("arena",Flags).SetValue(system,catalog.Arenas[arenaNumber-1]);Tick();Assert.That(runtime.TreasureRoom,Is.Null);}
         [Test] public void TransientScoreDoesNotLeakToSavedNode()
-        {Tick();Reward(0);var saved=new ArcadeRunFileStore(root).Inspect();Assert.That(saved.Data.Score,Is.Zero);Assert.That(run.Current.Score,Is.EqualTo(100));}
+        {EnterRoom();Reward(0);var saved=new ArcadeRunFileStore(root).Inspect();Assert.That(saved.Data.Score,Is.Zero);Assert.That(run.Current.Score,Is.EqualTo(100));}
         [Test] public void RealCompletionCommitsScoreAndRejectsRepeat()
         {
-            Tick();Reward(0);var c=Completion();Assert.That(runs.TryCompleteArena(c,out var saved,out var error),Is.True,error);
+            EnterRoom();Reward(0);var c=Completion();Assert.That(runs.TryCompleteArena(c,out var saved,out var error),Is.True,error);
             Assert.That(saved.Score,Is.EqualTo(100));Assert.That(new ArcadeRunFileStore(root).Inspect().Data.Score,Is.EqualTo(100));
             Assert.That(runs.TryCompleteArena(c,out _,out _),Is.False);
         }
         [Test] public void FailedFileCommitKeepsScoreAndRetryCommitsOnce()
         {
-            Tick();Reward(0);var store=new ArcadeRunFileStore(root);using(var locked=new FileStream(store.RunPath,FileMode.Open,FileAccess.Read,FileShare.None))
+            EnterRoom();Reward(0);var store=new ArcadeRunFileStore(root);using(var locked=new FileStream(store.RunPath,FileMode.Open,FileAccess.Read,FileShare.None))
             {Assert.That(runs.TryCompleteArena(Completion(),out _,out _),Is.False);Assert.That(run.Phase,Is.EqualTo(ArcadeRunPhase.Arena));Assert.That(run.Current.Score,Is.EqualTo(100));}
             Assert.That(runs.TryCompleteArena(Completion(),out _,out var error),Is.True,error);Assert.That(store.Inspect().Data.Score,Is.EqualTo(100));
         }
@@ -131,7 +182,7 @@ namespace Game.Tests
         }
         [Test] public void ArmorySecondArenaThirdWaveContainsSixSharedWeapons()
         {
-            ConfigureArmory(); Tick();
+            ConfigureArmory(); EnterRoom();
             Assert.That(runtime.TreasureRoom, Is.Not.Null, "第二场军械库尚未创建");
             Assert.That(runtime.InTreasureRoom, Is.True);
             Assert.That(runtime.TreasureRoom.Parameters.Id, Is.EqualTo("arcade.armory.second"));
@@ -140,14 +191,14 @@ namespace Game.Tests
         }
         [Test] public void ArmoryWeaponClockWaitsInsideRoomAndBeforeBattle()
         {
-            ConfigureArmory(); Tick();
+            ConfigureArmory(); EnterRoom();
             runtime.TemporaryWeaponId = "arcade.weapon.rapid"; runtime.TemporaryWeaponRemaining = 25;
             typeof(ArcadeCombatSystem).GetMethod("TickTimers", Flags).Invoke(system, new object[] { runtime, 5f });
             Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25), "房内不得消耗武器时间");
         }
         [Test] public void ArmoryPickupReplacesWeaponWithoutChangingScoreOrEquipment()
         {
-            ConfigureArmory(); Tick(); Reward(0);
+            ConfigureArmory(); EnterRoom(); Reward(0);
             Assert.That(runtime.TemporaryWeaponId, Is.EqualTo("arcade.weapon.rapid"));
             Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(25));
             Assert.That(runtime.TreasureRoom.RemainingRewards.Length, Is.EqualTo(5));
@@ -163,7 +214,7 @@ namespace Game.Tests
         }
         [Test] public void ArmoryGroundWeaponsExpireAtThirtySecondsButExitRemainsUntilSixty()
         {
-            ConfigureArmory(); Tick(); Tick(29);
+            ConfigureArmory(); EnterRoom(); Tick(29);
             Assert.That(runtime.TreasureRoom.RemainingRewards.Length, Is.EqualTo(6));
             Tick(1); Assert.That(runtime.TreasureRoom.RemainingRewards, Is.Empty);
             Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.TreasureRoom.Expired, Is.False);
@@ -171,7 +222,7 @@ namespace Game.Tests
         }
         [Test] public void ArmoryReturnStartsFourthWaveAndWeaponCountdownResumes()
         {
-            ConfigureArmory(); Tick(); Reward(0);
+            ConfigureArmory(); EnterRoom(); Reward(0);
             runtime.PlayerPosition = new Vector2(0, -5.5f); Tick();
             Assert.That(runtime.InTreasureRoom, Is.False); Assert.That(runtime.WaveIndex, Is.EqualTo(3));
             Assert.That(runtime.SpawnQueue, Is.Not.Empty);
@@ -188,7 +239,7 @@ namespace Game.Tests
         }
         [Test] public void ArmoryFourthRoundRestoreKeepsFullWeaponUntilFirstEnemy()
         {
-            ConfigureArmory(); Tick(); Reward(0);
+            ConfigureArmory(); EnterRoom(); Reward(0);
             runtime.PlayerPosition = new Vector2(0, -5.5f); Tick();
             var checkpoint = run.Current.RoundCheckpoint;
             Assert.That(checkpoint, Is.Not.Null);
@@ -208,7 +259,7 @@ namespace Game.Tests
         {
             ConfigureArmory();
             typeof(ArcadeCombatSystem).GetField("arena", Flags).SetValue(system, catalog.Arenas.Single(a => a.ArenaNumber == 3));
-            Tick(); Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.TreasureRoom.Parameters.IsArmory, Is.True);
+            EnterRoom(); Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.TreasureRoom.Parameters.IsArmory, Is.True);
         }
         private ArcadeArenaCompletion Completion()=>new ArcadeArenaCompletion{ArenaNumber=1,NextArenaConfigNumber=2,NextCheckpoint=new ArcadeCheckpointSaveData{ArenaNumber=2},Score=run.Current.Score,ScoreMultiplier=run.Current.ScoreMultiplier,MultiplierProgress=run.Current.MultiplierProgress,EmergencyResources=run.Current.EmergencyResources,EquipmentBySlot=run.Current.EquipmentBySlot};
         private sealed class TestView : IArcadeCombatViewPort

@@ -219,7 +219,7 @@ namespace Game
             lastAppliedBattleRevision = battle.BattleRevision;
             // 沿用服务器已生成/待生成敌人及出口快照，不由 HUD 或动画推断清波。
             bool treasureWave = !string.IsNullOrEmpty(battle.TreasureRoomId) && battle.WaveNumber == roomRules?.WaveNumber;
-            // TreasureOpen 是服务器 TreasureCleared 的投影；自动进入宝藏房同帧也必须显示本波完成。
+            // TreasureOpen 是服务器 TreasureCleared 的投影；接触入口进入宝藏房同帧也必须显示本波完成。
             bool cleared = treasureWave ? battle.TreasureOpen || battle.TreasureExpired :
                 battle.TotalInWave > 0 && battle.SpawnedInWave >= battle.TotalInWave && battle.Enemies.Count == 0;
             if (!battle.IsChallenge && !battle.IsFinalBoss && (!inRoom || treasureWave && cleared))

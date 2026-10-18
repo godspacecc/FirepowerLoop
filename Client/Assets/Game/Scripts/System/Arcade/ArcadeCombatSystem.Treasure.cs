@@ -63,9 +63,10 @@ namespace Game
             {
                 if (near) runtime.TreasureDiscovered = true;
                 if (runtime.Enemies.Count == 0 && runtime.SpawnQueue.Count == 0)
-                { runtime.TreasureCleared = true; runtime.TreasureDiscovered = true; }
+                    runtime.TreasureCleared = true;
             }
-            if ((near || runtime.TreasureCleared) && room.TryEnter(room.InstanceId, 1, runtime.TreasureDiscovered, runtime.TreasureCleared, out _))
+            // 清场只解锁房间；发现入口后仍须本人接触入口，不能远程传送。
+            if (near && room.TryEnter(room.InstanceId, 1, runtime.TreasureDiscovered, runtime.TreasureCleared, out _))
             {
                 // 场外弹丸不能随领取者进入新区域继续命中，逐个归还现有运行对象池。
                 foreach (var projectile in runtime.Projectiles.Values.Where(p => !p.Hostile).ToArray())

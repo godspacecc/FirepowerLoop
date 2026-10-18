@@ -101,13 +101,17 @@ namespace Game.Tests
 
         private void AssertNoUnsolicitedSound(bool entryBatch)
         {
-            if (entryBatch) Call("StartIslandRound", runtime, 0, null);
+            if (entryBatch)
+            {
+                Call("StartIslandRound", runtime, 0, null);
+                Call("StartIslandRound", runtime, 1, null);
+            }
             using (var capture = new SoundCapture(architecture))
             {
                 if (entryBatch)
                 {
-                    // 第一轮110名敌人，已生成55名时切换下一入场方向。
-                    while (runtime.SpawnQueue.Count > 55) runtime.SpawnQueue.Dequeue();
+                    // 第二轮120名敌人在生成40名后切换入场方向。
+                    while (runtime.SpawnQueue.Count > 80) runtime.SpawnQueue.Dequeue();
                     Call("TickSpawning", runtime, .01f);
                     Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
                     Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
@@ -125,17 +129,20 @@ namespace Game.Tests
         [Test] public void EntryBatchWarningKeepsExistingEnemiesMovingWithoutFiring()
         {
             Call("StartIslandRound", runtime, 0, null);
+            Call("StartIslandRound", runtime, 1, null);
             Call("TickSpawning", runtime, 5f);
             var enemy = System.Linq.Enumerable.First(runtime.Enemies.Values);
             enemy.Position = runtime.PlayerPosition + Vector2.up * 4f;
             var before = enemy.Position;
-            while (runtime.SpawnQueue.Count > 55) runtime.SpawnQueue.Dequeue();
+            // 第二轮首批40名已生成；等待下一方向预警时，保留场内已有敌人。
+            while (runtime.SpawnQueue.Count > 80) runtime.SpawnQueue.Dequeue();
 
             combat.Tick(runtime, .01f);
 
             Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
             Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
             Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "预告只等待下一批生成");
+            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(80), "预告期间不能提前消耗下一批预算");
             Assert.That(enemy.Position, Is.Not.EqualTo(before), "预告期间现有敌人仍须正常推进");
             Assert.That(runtime.PlayerFireSequence, Is.Zero);
         }
@@ -226,6 +233,7 @@ namespace Game.Tests
             Call("StartIslandRound", runtime, 2, null); runtime.SpawnQueue.Clear();
             runtime.FirstPersonRemaining = 10; runtime.TemporaryWeaponRemaining = 12;
             runtime.TemporaryWeaponId = "arcade.weapon.rapid"; view.FirstPerson = true;
+            runtime.PlayerPosition = new Vector2(-12, -12); // 主动接触入口后才进入奖励区域。
             view.Ready = false; Call("TickTreasureRoom", runtime, 0f); Call("SyncView", runtime);
             Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(10));
             combat.Tick(runtime, 20); Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(12));
@@ -363,6 +371,7 @@ namespace Game.Tests
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null); runtime.SpawnQueue.Clear();
+            runtime.PlayerPosition = new Vector2(-12, -12);
             Call("TickTreasureRoom", runtime, 0f); Call("SyncView", runtime);
             Call("ReturnFromTreasure", runtime); Call("SyncView", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(3));

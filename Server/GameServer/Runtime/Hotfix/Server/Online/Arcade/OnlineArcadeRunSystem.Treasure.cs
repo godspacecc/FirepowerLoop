@@ -45,7 +45,16 @@ namespace ET.Server
                 return true;
             }
             if (battle.WaveIndex + 1 == p.WaveNumber && battle.SpawnQueueIndex >= battle.SpawnQueue.Count && battle.Enemies.Count == 0 && !battle.TreasureCleared)
-            { battle.TreasureCleared = true; battle.TreasureDiscovered = true; changed = true; }
+            { battle.TreasureCleared = true; changed = true; }
+            // 与客户端入口表现使用同一干陆地投影，不能拿岛外旧坐标判定接触。
+            var entry = new ArcadeRegionPoint(p.EntryX, p.EntryY);
+            var island = IslandFor(battle);
+            if (island != null)
+            {
+                float inset = p.EntryRadius + ServerConfig.Instance.ArcadeRule.PlayerRadius;
+                var land = island.LandPoint(entry.X, entry.Y, inset);
+                entry = island.Constrain(land.X, land.Y, inset);
+            }
             foreach (var player in battle.Players.Values.OrderBy(r => r.PlayerId))
             {
                 if (!player.Alive) continue;
@@ -63,10 +72,11 @@ namespace ET.Server
                                 r => ApplyTreasureReward(actor, player.PlayerId, r, p), out _);
                     continue;
                 }
-                bool near = DistanceSquared(player.PositionX, player.PositionZ, p.EntryX, p.EntryY) <= p.EntryRadius * p.EntryRadius;
+                bool near = DistanceSquared(player.PositionX, player.PositionZ, entry.X, entry.Y) <= p.EntryRadius * p.EntryRadius;
                 if (near && battle.WaveIndex + 1 == p.WaveNumber && !battle.TreasureDiscovered)
                 { battle.TreasureDiscovered = true; changed = true; }
-                if (!player.TreasureVisited && (near || battle.TreasureCleared) &&
+                // 发现状态由队伍共享，但清场后每位队员仍须自己接触入口。
+                if (!player.TreasureVisited && near &&
                     room.TryEnter(room.InstanceId, player.PlayerId, battle.TreasureDiscovered, battle.TreasureCleared, out _))
                 {
                     // 弹丸没有独立区域身份，进入时清除本人场外弹丸，禁止房内继续造成场外伤害。

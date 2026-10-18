@@ -130,6 +130,7 @@ namespace Game.Tests
                 runtime.Enemies.Clear();
                 if(wave==2)
                 {
+                    runtime.PlayerPosition=new Vector2(-12,-12); // 清场后主动走到已验证可达的入口。
                     Call("TickTreasureRoom",runtime,0f);Assert.That(runtime.InTreasureRoom,Is.True);
                     Call("ReturnFromTreasure",runtime);Assert.That(runtime.WaveIndex,Is.EqualTo(3));
                 }
@@ -265,13 +266,16 @@ namespace Game.Tests
             Call("TickPlayer",runtime,.35f);Assert.That(runtime.Enemies.ContainsKey(4),Is.True);
             Assert.That(region.Contains(runtime.PlayerPosition.x,runtime.PlayerPosition.y),Is.True);
         }
-        [Test] public void ThirdClearGuaranteesTreasureAndCannotRaceRestTimer()
+        [Test] public void ThirdClearWaitsForEntranceAndCannotRaceRestTimer()
         {
             Call("BeginWave",runtime,2);runtime.SpawnQueue.Clear();runtime.PlayerPosition=Vector2.zero;
             Call("PublishHud",runtime);
             var notices = architecture.GetModel<ArcadeCombatModel>().StageNotices;
             notices.TryConsume(Time.unscaledTimeAsDouble, out _);
             Call("TickTreasureRoom",runtime,0f);
+            Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.TreasureDiscovered,Is.False);
+            Call("TickWaveTransition",runtime,500f);Assert.That(runtime.WaveIndex,Is.EqualTo(2));
+            runtime.PlayerPosition=new Vector2(-12,-12);Call("TickTreasureRoom",runtime,0f);
             Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureDiscovered,Is.True);
             Call("PublishHud", runtime);
             Assert.That(notices.TryConsume(Time.unscaledTimeAsDouble, out var thirdClear), Is.True);
