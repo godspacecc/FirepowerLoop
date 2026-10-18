@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.5344231\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.ExceptionCleanupStillHoldsLockUntilItFinishes\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0610000\"},{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.LockFailureDoesNotRunWorkOrCleanup\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.LockPathLinkIsRejectedWithoutChangingItsTarget\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2930000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5344231"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.ExceptionCleanupStillHoldsLockUntilItFinishes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0610000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.LockFailureDoesNotRunWorkOrCleanup",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.LockPathLinkIsRejectedWithoutChangingItsTarget",
+          "Status": "Passed",
+          "Duration": "00:00:00.2930000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

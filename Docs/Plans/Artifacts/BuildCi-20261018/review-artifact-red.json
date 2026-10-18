@@ -1,0 +1,104 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":15,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.4228505\"},\"Results\":[{\"Name\":\"Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1530000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0090000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.ArtifactCannotReferencePathsOutsideItsDownloadedRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0270000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.DownloadedArtifactValidatesItsRelocatedCopy\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0210000\",\"Message\":\"  Expected: No Exception to be thrown\\r\\n  But was:  \\u003CSystem.InvalidOperationException: \\u4EA7\\u7269\\u8D44\\u6E90\\u7248\\u672C\\u4E0D\\u7B26\\r\\n  at Game.Tests.CiBuildAdapterTests.Call (System.String typeName, System.String method, System.Object[] args) [0x0003f] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\CiBuildAdapterTests.cs:25 \\r\\n  at Game.Tests.CiBuildAdapterTests.\\u003CDownloadedArtifactValidatesItsRelocatedCopy\\u003Eb__11_0 () [0x00000] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\CiBuildAdapterTests.cs:40 \\r\\n  at NUnit.Framework.Constraints.ThrowsConstraint\\u002BVoidInvocationDescriptor.Invoke () [0x00001] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at NUnit.Framework.Constraints.ThrowsConstraint\\u002BExceptionInterceptor.Intercept (System.Object invocation) [0x0000a] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\u003E\\r\\n\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022Android\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022Android\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1030000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 15,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4228505"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory",
+          "Status": "Passed",
+          "Duration": "00:00:00.1530000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.ArtifactCannotReferencePathsOutsideItsDownloadedRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0270000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.DownloadedArtifactValidatesItsRelocatedCopy",
+          "Status": "Failed",
+          "Duration": "00:00:00.0210000",
+          "Message": "  Expected: No Exception to be thrown\r\n  But was:  <System.InvalidOperationException: 产物资源版本不符\r\n  at Game.Tests.CiBuildAdapterTests.Call (System.String typeName, System.String method, System.Object[] args) [0x0003f] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\CiBuildAdapterTests.cs:25 \r\n  at Game.Tests.CiBuildAdapterTests.<DownloadedArtifactValidatesItsRelocatedCopy>b__11_0 () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\CiBuildAdapterTests.cs:40 \r\n  at NUnit.Framework.Constraints.ThrowsConstraint+VoidInvocationDescriptor.Invoke () [0x00001] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at NUnit.Framework.Constraints.ThrowsConstraint+ExceptionInterceptor.Intercept (System.Object invocation) [0x0000a] in <10b6135e63434fdba4fc6c109928ab3b>:0 >\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\"StandaloneWindows64\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"Android\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"Android\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"PC\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling",
+          "Status": "Passed",
+          "Duration": "00:00:00.1030000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

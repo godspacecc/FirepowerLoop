@@ -24,7 +24,9 @@ namespace Game.Editor
             WorkspaceBuildLock.EnsureNoLinks(marker);
             var value = JsonConvert.DeserializeObject<CiBuildArtifacts>(json) ?? throw new InvalidOperationException("产物为空");
             value.CheckIdentity();
-            value.Files = value.GetFiles().Select(path => new Item { Path = path, Size = new FileInfo(path).Length, Sha256 = Hash(path) }).ToList();
+            string root = Path.GetDirectoryName(Path.GetFullPath(marker));
+            value.Files = value.GetFiles().Select(path => new Item { Path = Relative(root, path), Size = new FileInfo(path).Length, Sha256 = Hash(path) }).ToList();
+            value.MapPaths(path => Relative(root, path));
             Directory.CreateDirectory(Path.GetDirectoryName(marker));
             File.WriteAllText(marker, JsonConvert.SerializeObject(value, Formatting.Indented));
             Validate(marker); return marker;
@@ -34,6 +36,9 @@ namespace Game.Editor
         {
             WorkspaceBuildLock.EnsureNoLinks(marker);
             var value = JsonConvert.DeserializeObject<CiBuildArtifacts>(File.ReadAllText(marker)) ?? throw new InvalidOperationException("产物清单为空");
+            string root = Path.GetDirectoryName(Path.GetFullPath(marker));
+            value.MapPaths(path => HostBaselineArchive.Resolve(root, path));
+            if (value.Files != null) foreach (var item in value.Files) item.Path = HostBaselineArchive.Resolve(root, item.Path);
             value.CheckIdentity();
             var actual = value.GetFiles().ToList();
             if (value.Files == null || value.Files.Count != actual.Count || value.Files.Select(item => item.Path).Distinct(StringComparer.OrdinalIgnoreCase).Count() != actual.Count)
@@ -56,6 +61,20 @@ namespace Game.Editor
                 if (Platform == "PC" && !Directory.Exists(InstallerDirectory)) throw new InvalidOperationException("PC首包安装器缺失");
                 if (Platform == "Android" && (string.IsNullOrWhiteSpace(AppVersion) || AndroidVersionCode <= 0)) throw new InvalidOperationException("APK版本身份缺失");
             }
+        }
+        /// <summary>磁盘清单只存受限相对路径，读取副本时从当前artifact.json重新定位。</summary>
+        private void MapPaths(Func<string, string> convert)
+        {
+            PackageDirectory = convert(PackageDirectory);
+            if (!string.IsNullOrEmpty(PlayerPath)) PlayerPath = convert(PlayerPath);
+            if (!string.IsNullOrEmpty(InstallerDirectory)) InstallerDirectory = convert(InstallerDirectory);
+            if (!string.IsNullOrEmpty(BaselineDirectory)) BaselineDirectory = convert(BaselineDirectory);
+        }
+        private static string Relative(string root, string path)
+        {
+            string full = Path.GetFullPath(path), prefix = root.TrimEnd('\\', '/') + Path.DirectorySeparatorChar;
+            if (!full.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)) throw new InvalidOperationException("产物必须位于本次归档根内");
+            return full.Substring(prefix.Length).Replace('\\', '/');
         }
         private IEnumerable<string> GetFiles()
         {

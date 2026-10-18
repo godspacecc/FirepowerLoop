@@ -352,6 +352,17 @@ namespace Game.Editor
             if (!BeginBuild())
                 return;
 
+            try
+            {
+                WorkspaceBuildLock.RunExclusive(Directory.GetParent(Application.dataPath).FullName,
+                    () => RunWorkflowLocked(workflowName, action, cleanupPrepPlayer));
+            }
+            finally { s_isBuilding = false; }
+        }
+
+        /// <summary>进入前已持有工作区锁，跨平台切换、异常清理及设置恢复全部在租约内。</summary>
+        private static void RunWorkflowLocked(string workflowName, Action<BuildStageTiming> action, bool cleanupPrepPlayer)
+        {
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.StandaloneWindows64)
             {
                 try
@@ -378,7 +389,6 @@ namespace Game.Editor
             var timing = new BuildStageTiming(workflowName);
             try
             {
-                using var workspaceLock = WorkspaceBuildLock.Acquire(Directory.GetParent(Application.dataPath).FullName);
                 timing.Run("EnsureWindowsBuildTarget", EnsureWindowsBuildTarget);
                 EditorUserBuildSettings.development = false;
                 action(timing);

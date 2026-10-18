@@ -16,6 +16,13 @@ namespace Game.Editor
         /// <summary>昂贵构建前检查设备本地编译器；交互选取仅记录 EditorPrefs，批处理缺配置直接失败。</summary>
         public static string EnsureCompiler()
         {
+            if (CiBuildSession.Current != null)
+            {
+                string configured = CiBuildSession.Current.InstallerCompiler;
+                if (string.IsNullOrEmpty(configured) || !File.Exists(configured) || !string.Equals(Path.GetFileName(configured), "ISCC.exe", StringComparison.OrdinalIgnoreCase))
+                    throw new InvalidOperationException("CI必须在请求中明确配置ISCC.exe");
+                return configured;
+            }
             string compiler = EditorPrefs.GetString(CompilerKey, "");
             if (!File.Exists(compiler))
                 compiler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

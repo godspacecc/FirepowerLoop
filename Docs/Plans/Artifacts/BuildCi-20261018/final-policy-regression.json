@@ -1,0 +1,98 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":15,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.1750612\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\\u0022Android \\u6700\\u65B0\\u4EE3\\u7801\\u8D44\\u6E90\\u5B8C\\u6574\\u6253\\u5305\\u0022,\\u0022BuildLatestCodeAndResourcesBatch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\\u0022Android Host \\u57FA\\u7840\\u5305\\u5B8C\\u6574\\u6253\\u5305\\u0022,\\u0022BuildHostBaseCodeAndResourcesBatch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\\u0022Android \\u9996\\u5305\\u5B8C\\u6574\\u6253\\u5305\\u0022,\\u0022BuildSmallHostBaseCodeAndResourcesBatch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\\u0022Android Host \\u4EE3\\u7801\\u002B\\u8D44\\u6E90\\u66F4\\u65B0\\u0022,\\u0022BuildHostCodeAndResourcesBatch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.AndroidUnknownPendingWorkflowIsRejected\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.FailureIncludesWorkflowFailedStageTimingAndRetainedArtifact\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResourceVersionsDistinguishSecondsWithinSameMinute\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,False,False,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,True,False,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,False,True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,True,True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,True,False,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,False,True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,True,True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,False,False,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 15,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1750612"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\"Android 最新代码资源完整打包\",\"BuildLatestCodeAndResourcesBatch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\"Android Host 基础包完整打包\",\"BuildHostBaseCodeAndResourcesBatch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\"Android 首包完整打包\",\"BuildSmallHostBaseCodeAndResourcesBatch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.AndroidPendingWorkflowResolvesOnlyKnownEntryWithoutExecutingIt(\"Android Host 代码+资源更新\",\"BuildHostCodeAndResourcesBatch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.AndroidUnknownPendingWorkflowIsRejected",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.FailureIncludesWorkflowFailedStageTimingAndRetainedArtifact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResourceVersionsDistinguishSecondsWithinSameMinute",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,False,False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,True,False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,False,True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(False,True,True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,True,False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,False,True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,True,True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkflowPolicyTests.ResumeRequiresRealReloadAndIdleEditor(True,False,False,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

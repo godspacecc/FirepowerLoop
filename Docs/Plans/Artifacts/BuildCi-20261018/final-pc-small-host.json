@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.0773893\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkflowTests.WindowsSmallHostBaseBuildCreatesManifestOnlyPlayerAndPublishesMatchingResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0773893"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkflowTests.WindowsSmallHostBaseBuildCreatesManifestOnlyPlayerAndPublishesMatchingResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

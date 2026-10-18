@@ -12,6 +12,7 @@ namespace Game.Editor
         internal static CiBuildSession Current { get; private set; }
         internal string StatePath => Path.Combine(root, "build-state.json");
         internal string ArtifactPath { get; private set; }
+        internal string InstallerCompiler => request.InstallerCompiler;
         private readonly CiBuildRequest request;
         private readonly string root, commit, boot;
 
@@ -38,11 +39,19 @@ namespace Game.Editor
             {
                 baseline = Path.Combine(root, "baseline");
                 HostBaselineArchive.Create(baseline, request.Platform, commit, Application.unityVersion, boot, File.ReadAllText(StatePath), Path.Combine(request.ProjectPath, "Assets/HybridCLRGenerate"));
+                player = Path.Combine(baseline, "Player", Path.GetFileName(player));
+                if (!string.IsNullOrEmpty(installer))
+                {
+                    string archivedInstaller = Path.Combine(root, "installer");
+                    HostBaselineArchive.CopyTree(installer, archivedInstaller); installer = archivedInstaller;
+                }
             }
+            string archivedPackage = Path.Combine(root, "resources", version);
+            HostBaselineArchive.CopyTree(package, archivedPackage);
             ArtifactPath = CiBuildArtifacts.Seal(Path.Combine(root, "artifact.json"), JsonConvert.SerializeObject(new CiBuildArtifacts
             {
                 SchemaVersion = 1, ProjectId = "FirepowerLoop", Platform = request.Platform, BuildType = request.BuildType,
-                Version = version, PackageDirectory = Path.GetFullPath(package), PlayerPath = player, InstallerDirectory = installer,
+                Version = version, PackageDirectory = archivedPackage, PlayerPath = player, InstallerDirectory = installer,
                 BaselineDirectory = baseline, AppVersion = appVersion, AndroidVersionCode = versionCode
             }));
         }

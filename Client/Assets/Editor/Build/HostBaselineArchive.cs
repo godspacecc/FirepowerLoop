@@ -133,7 +133,7 @@ namespace Game.Editor
             WorkspaceBuildLock.EnsureNoLinks(path);
             if (Directory.Exists(path) || File.Exists(path)) throw new IOException("拒绝覆盖已有基线或恢复目录：" + path);
         }
-        private static string Resolve(string root, string relative)
+        internal static string Resolve(string root, string relative)
         {
             if (string.IsNullOrWhiteSpace(relative) || relative.Contains('\\') || relative.Contains(':') || relative.StartsWith("/") || relative.Split('/').Any(part => part == "" || part == "." || part == ".." || part.EndsWith(".") || part.EndsWith(" ")))
                 throw new InvalidOperationException("基线相对路径无效");
@@ -147,7 +147,7 @@ namespace Game.Editor
             foreach (string file in Directory.GetFiles(root)) { WorkspaceBuildLock.EnsureNoLinks(file); yield return file; }
             foreach (string child in Directory.GetDirectories(root)) foreach (string file in TreeFiles(child)) yield return file;
         }
-        private static void CopyTree(string source, string destination)
+        internal static void CopyTree(string source, string destination)
         {
             if (!Directory.Exists(source)) throw new InvalidOperationException("基线来源目录缺失：" + source);
             string src = Path.GetFullPath(source).TrimEnd('\\', '/'), dst = Path.GetFullPath(destination);

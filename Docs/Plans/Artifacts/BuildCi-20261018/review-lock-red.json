@@ -1,0 +1,41 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":0,\"FailedTests\":3,\"SkippedTests\":0,\"Duration\":\"00:00:01.1174329\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.ExceptionCleanupStillHoldsLockUntilItFinishes\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0380000\",\"Message\":\"  Expected: \\u003CSystem.InvalidOperationException\\u003E\\r\\n  But was:  \\u003CNUnit.Framework.AssertionException:   Expected: not null\\r\\n  But was:  null\\r\\n\\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at Game.Tests.BuildWorkspaceSafetyTests.Run (System.Action action) [0x00017] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\BuildWorkspaceSafetyTests.cs:21 \\r\\n  at Game.Tests.BuildWorkspaceSafetyTests\\u002B\\u003C\\u003Ec__DisplayClass6_0.\\u003CExceptionCleanupStillHoldsLockUntilItFinishes\\u003Eb__0 () [0x00000] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\BuildWorkspaceSafetyTests.cs:34 \\r\\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\u003E\\r\\n\"},{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.LockFailureDoesNotRunWorkOrCleanup\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0040000\",\"Message\":\"  Expected: \\u003CSystem.IO.IOException\\u003E\\r\\n  But was:  \\u003CNUnit.Framework.AssertionException:   Expected: not null\\r\\n  But was:  null\\r\\n\\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at Game.Tests.BuildWorkspaceSafetyTests.Run (System.Action action) [0x00017] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\BuildWorkspaceSafetyTests.cs:21 \\r\\n  at Game.Tests.BuildWorkspaceSafetyTests\\u002B\\u003C\\u003Ec__DisplayClass5_0.\\u003CLockFailureDoesNotRunWorkOrCleanup\\u003Eb__0 () [0x00000] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\BuildWorkspaceSafetyTests.cs:28 \\r\\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\u003E\\r\\n\"},{\"Name\":\"Game.Tests.BuildWorkspaceSafetyTests.LockFileLinkIsRejectedWithoutChangingItsTarget\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0040000\",\"Message\":\"  \\u672C\\u673A\\u5FC5\\u987B\\u80FD\\u521B\\u5EFA\\u4E34\\u65F6\\u6587\\u4EF6\\u94FE\\u63A5\\u624D\\u80FD\\u5B9E\\u9645\\u8986\\u76D6\\u6B64\\u7F3A\\u9677\\r\\n  Expected: True\\r\\n  But was:  False\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 0,
+        "FailedTests": 3,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1174329"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.ExceptionCleanupStillHoldsLockUntilItFinishes",
+          "Status": "Failed",
+          "Duration": "00:00:00.0380000",
+          "Message": "  Expected: <System.InvalidOperationException>\r\n  But was:  <NUnit.Framework.AssertionException:   Expected: not null\r\n  But was:  null\r\n\r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at Game.Tests.BuildWorkspaceSafetyTests.Run (System.Action action) [0x00017] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\BuildWorkspaceSafetyTests.cs:21 \r\n  at Game.Tests.BuildWorkspaceSafetyTests+<>c__DisplayClass6_0.<ExceptionCleanupStillHoldsLockUntilItFinishes>b__0 () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\BuildWorkspaceSafetyTests.cs:34 \r\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in <10b6135e63434fdba4fc6c109928ab3b>:0 >\r\n"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.LockFailureDoesNotRunWorkOrCleanup",
+          "Status": "Failed",
+          "Duration": "00:00:00.0040000",
+          "Message": "  Expected: <System.IO.IOException>\r\n  But was:  <NUnit.Framework.AssertionException:   Expected: not null\r\n  But was:  null\r\n\r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at Game.Tests.BuildWorkspaceSafetyTests.Run (System.Action action) [0x00017] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\BuildWorkspaceSafetyTests.cs:21 \r\n  at Game.Tests.BuildWorkspaceSafetyTests+<>c__DisplayClass5_0.<LockFailureDoesNotRunWorkOrCleanup>b__0 () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\BuildWorkspaceSafetyTests.cs:28 \r\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in <10b6135e63434fdba4fc6c109928ab3b>:0 >\r\n"
+        },
+        {
+          "Name": "Game.Tests.BuildWorkspaceSafetyTests.LockFileLinkIsRejectedWithoutChangingItsTarget",
+          "Status": "Failed",
+          "Duration": "00:00:00.0040000",
+          "Message": "  本机必须能创建临时文件链接才能实际覆盖此缺陷\r\n  Expected: True\r\n  But was:  False\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

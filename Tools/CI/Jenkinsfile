@@ -1,0 +1,45 @@
+// 独立Windows节点的手动任务模板；保存本文件不会部署或触发任务。
+pipeline {
+    agent { label 'firepowerloop-windows' }
+    options { disableConcurrentBuilds(); skipDefaultCheckout(true); timestamps() }
+    parameters {
+        string(name: 'COMMIT', defaultValue: '', description: '固定的40位Commit；不接受动态分支名')
+        choice(name: 'PLATFORM', choices: ['PC', 'Android'], description: '构建平台')
+        choice(name: 'BUILD_TYPE', choices: ['FirstPackage', 'HostUpdate'], description: '首包或指定宿主增量')
+        booleanParam(name: 'VALIDATE_ONLY', defaultValue: true, description: '默认只校验，不构建')
+        booleanParam(name: 'PUBLISH', defaultValue: false, description: '显式发布本次固定产物到全新目标')
+        string(name: 'BASELINE_DIRECTORY', defaultValue: '', description: 'Host必选，节点可访问的独立基线归档')
+        string(name: 'PUBLISH_DIRECTORY', defaultValue: '', description: '发布目标必须是全新目录，与开发环境隔离')
+    }
+    stages {
+        stage('固定代码') {
+            steps {
+                script { if (!(params.COMMIT ==~ /[0-9a-fA-F]{40}/)) { error('COMMIT必须是固定40位SHA') } }
+                checkout scm
+                powershell '''
+                    $ErrorActionPreference = 'Stop'
+                    $dirty = git status --porcelain
+                    if ($LASTEXITCODE -ne 0 -or $dirty) { throw 'Dedicated CI checkout must be clean.' }
+                    git checkout --detach $env:COMMIT
+                    if ($LASTEXITCODE -ne 0) { throw 'Cannot checkout requested commit.' }
+                '''
+            }
+        }
+        stage('校验或构建') {
+            steps {
+                powershell '''
+                    $argsForCi = @{ Platform=$env:PLATFORM; BuildType=$env:BUILD_TYPE; ExpectedCommit=$env:COMMIT; Execute=$true }
+                    if ($env:VALIDATE_ONLY -eq 'false') { $argsForCi.Build = $true }
+                    if ($env:PUBLISH -eq 'true') { $argsForCi.Publish = $true; $argsForCi.PublishDirectory = $env:PUBLISH_DIRECTORY }
+                    if ($env:BUILD_TYPE -eq 'HostUpdate') { $argsForCi.BaselineDirectory = $env:BASELINE_DIRECTORY }
+                    & ./Tools/CI/Invoke-FirepowerBuild.ps1 @argsForCi
+                '''
+            }
+        }
+    }
+    post {
+        always {
+            archiveArtifacts artifacts: 'Release/CiRequests/**,Release/Ci/**', allowEmptyArchive: true, fingerprint: true
+        }
+    }
+}

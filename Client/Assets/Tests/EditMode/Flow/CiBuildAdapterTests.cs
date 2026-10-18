@@ -33,6 +33,19 @@ namespace Game.Tests
         [Test] public void SameLengthPackageChangeInvalidatesArtifact() { Seal(); File.WriteAllText(Path.Combine(package, "bundle"), "evil"); Assert.Throws<InvalidOperationException>(() => Call("CiBuildArtifacts", "Validate", marker)); }
         [Test] public void ArtifactCannotClaimAnotherResourceVersion() { Assert.Throws<InvalidOperationException>(() => Seal("v2")); Assert.That(File.Exists(marker), Is.False); }
         [Test] public void AddedResourceCannotBypassInventory() { Seal(); File.WriteAllText(Path.Combine(package, "extra"), "extra"); Assert.Throws<InvalidOperationException>(() => Call("CiBuildArtifacts", "Validate", marker)); }
+        [Test] public void DownloadedArtifactValidatesItsRelocatedCopy()
+        {
+            Seal(); string relocated = root + "-downloaded"; Directory.Move(root, relocated); root = relocated;
+            marker = Path.Combine(root, "artifact.json");
+            Assert.DoesNotThrow(() => Call("CiBuildArtifacts", "Validate", marker));
+            File.WriteAllText(Path.Combine(root, "packages/v1/bundle"), "evil");
+            Assert.Throws<InvalidOperationException>(() => Call("CiBuildArtifacts", "Validate", marker));
+        }
+        [Test] public void ArtifactCannotReferencePathsOutsideItsDownloadedRoot()
+        {
+            Seal(); var json = JObject.Parse(File.ReadAllText(marker)); json["PackageDirectory"] = "../outside"; File.WriteAllText(marker, json.ToString());
+            Assert.Throws<InvalidOperationException>(() => Call("CiBuildArtifacts", "Validate", marker));
+        }
         [Test] public void PublisherUsesSealedPackageInsteadOfNewerSibling()
         {
             File.WriteAllText(Path.Combine(package, "DefaultPackage_v1.bytes"), "manifest");

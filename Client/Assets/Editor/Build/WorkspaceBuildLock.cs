@@ -14,6 +14,12 @@ namespace Game.Editor
         private sealed class Owner { public FileStream Stream; public int Thread; public int Count; }
         private static readonly Dictionary<string, Owner> Owners = new Dictionary<string, Owner>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>锁覆盖完整动作及其异常清理；取锁失败时动作绝不开始。</summary>
+        public static void RunExclusive(string clientDirectory, Action action)
+        {
+            using (Acquire(clientDirectory)) action();
+        }
+
         public static IDisposable Acquire(string clientDirectory)
         {
             string key = Path.GetFullPath(clientDirectory).TrimEnd('\\', '/');
@@ -28,7 +34,8 @@ namespace Game.Editor
                     existing.Count++; return new Lease(key);
                 }
                 string directory = Path.Combine(key, "Temp"); EnsureNoLinks(directory); Directory.CreateDirectory(directory);
-                var stream = new FileStream(Path.Combine(directory, "FirepowerLoop.Build.lock"), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
+                string lockPath = Path.Combine(directory, "FirepowerLoop.Build.lock"); EnsureNoLinks(lockPath);
+                var stream = new FileStream(lockPath, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None);
                 try
                 {
                     byte[] bytes = Encoding.UTF8.GetBytes("pid=" + Process.GetCurrentProcess().Id + "\nutc=" + DateTime.UtcNow.ToString("O"));

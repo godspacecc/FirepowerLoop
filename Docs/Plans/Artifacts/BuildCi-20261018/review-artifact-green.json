@@ -1,0 +1,103 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":16,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.4642012\"},\"Results\":[{\"Name\":\"Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1330000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.ArtifactCannotReferencePathsOutsideItsDownloadedRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0330000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.DownloadedArtifactValidatesItsRelocatedCopy\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0300000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022Android\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022Android\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1290000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0250000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 16,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4642012"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory",
+          "Status": "Passed",
+          "Duration": "00:00:00.1330000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.ArtifactCannotReferencePathsOutsideItsDownloadedRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0330000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.DownloadedArtifactValidatesItsRelocatedCopy",
+          "Status": "Passed",
+          "Duration": "00:00:00.0300000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\"StandaloneWindows64\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"Android\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"Android\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"PC\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling",
+          "Status": "Passed",
+          "Duration": "00:00:00.1290000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

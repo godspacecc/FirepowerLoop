@@ -1,0 +1,108 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":17,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.0472960\"},\"Results\":[{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidBootstrapReadsStreamingAssetsAsynchronously\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0170000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidBuildIdentityMatchesFirepowerLoopProject\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidBuildStateIsSeparatedFromWindowsRecords\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidGameServerEndpointAcceptsEditableBootstrapAndRejectsInvalidSyntax\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidHostUrlRejectsLoopbackAndAcceptsReachableHttps\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidPlayerBuildsValidateGameServerAndCopyPlayerGuide\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidPublisherUsesPlatformSpecificBundleAndReleaseRoots\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidResourceServerMenuStartsLatestPublishedResourceFiles\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.AndroidWorkflowsAutomaticallySwitchTargetBeforeBuilding\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.BootDownloadsGameResourcesAndUsesSameScopeForCacheValidation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.FinalAndroidApkNameUsesEnglishGameNameAndAppVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.FinalAndroidPlayerBuildIncrementsOnlySemanticPatchVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.HostBaseBuildUsesHostPlayerAndKeepsFullBuiltinFallback\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.HostUpdateReusesAndroidAotAndDoesNotBuildPlayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.OfflineBuildStillForcesBuiltinModeDefine\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.SmallHostBaseBuildCreatesManifestOnlyApkAndPublishesMatchingResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.AndroidHostBuildTests.SmallHostPackageClearsOldBundlesAndKeepsOnlyManifestCatalog\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 17,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0472960"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBootstrapReadsStreamingAssetsAsynchronously",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildIdentityMatchesFirepowerLoopProject",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildStateIsSeparatedFromWindowsRecords",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidGameServerEndpointAcceptsEditableBootstrapAndRejectsInvalidSyntax",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidHostUrlRejectsLoopbackAndAcceptsReachableHttps",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidPlayerBuildsValidateGameServerAndCopyPlayerGuide",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidPublisherUsesPlatformSpecificBundleAndReleaseRoots",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidResourceServerMenuStartsLatestPublishedResourceFiles",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidWorkflowsAutomaticallySwitchTargetBeforeBuilding",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.BootDownloadsGameResourcesAndUsesSameScopeForCacheValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidApkNameUsesEnglishGameNameAndAppVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidPlayerBuildIncrementsOnlySemanticPatchVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.HostBaseBuildUsesHostPlayerAndKeepsFullBuiltinFallback",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.HostUpdateReusesAndroidAotAndDoesNotBuildPlayer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.OfflineBuildStillForcesBuiltinModeDefine",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.SmallHostBaseBuildCreatesManifestOnlyApkAndPublishesMatchingResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.SmallHostPackageClearsOldBundlesAndKeepsOnlyManifestCatalog",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

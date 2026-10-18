@@ -22,6 +22,8 @@ namespace Game.Editor
         public string ExpectedCommit;
         public string BaselineDirectory;
         public string PublishDirectory;
+        /// <summary>CI显式安装器编译器路径，避免读取开发者账户EditorPrefs。</summary>
+        public string InstallerCompiler;
         public bool Publish;
         public bool ValidateOnly = true;
 
@@ -58,7 +60,13 @@ namespace Game.Editor
             if (Publish)
             {
                 if (!Path.IsPathRooted(PublishDirectory ?? "")) throw new ArgumentException("发布必须明确目标目录");
+                CiBuildRunner.ValidateReportPath(actualClient, PublishDirectory);
                 WorkspaceBuildLock.EnsureNoLinks(PublishDirectory);
+            }
+            if (!string.IsNullOrEmpty(InstallerCompiler))
+            {
+                if (!Path.IsPathRooted(InstallerCompiler)) throw new ArgumentException("安装器编译器必须使用绝对路径");
+                WorkspaceBuildLock.EnsureNoLinks(InstallerCompiler);
             }
             return (Platform == "PC" ? "Pc" : "Android") + (BuildType == "FirstPackage" ? "First" : "Host");
         }
