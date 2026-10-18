@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "No tests found matching method 'Game.Tests.CiCancellationRecoveryTests.InternalJournalCannotBeUsedAsReportOrCancellationSignal'. Please check that the specified assembly, namespace, class, and method names are correct and that your Unity project contains tests."
+    }
+  ],
+  "isError": true
+}

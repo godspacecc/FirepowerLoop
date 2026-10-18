@@ -1,0 +1,33 @@
+{
+  "Scope": "RequestPreparationOnly",
+  "Passed": 6,
+  "Failed": 0,
+  "UnityLaunched": false,
+  "PlayerBuild": false,
+  "Results": [
+    {
+      "Name": "DefaultPrepareDoesNotLaunchUnityOrPublish",
+      "Passed": true
+    },
+    {
+      "Name": "CancellationCreatesRequestScopedSignalOnly",
+      "Passed": true
+    },
+    {
+      "Name": "BuildFlagPreparesButDoesNotExecute",
+      "Passed": true
+    },
+    {
+      "Name": "WrongCommitRejected",
+      "Passed": true
+    },
+    {
+      "Name": "HostNeedsExplicitArchive",
+      "Passed": true
+    },
+    {
+      "Name": "PublishCannotOverwriteExistingDirectory",
+      "Passed": true
+    }
+  ]
+}

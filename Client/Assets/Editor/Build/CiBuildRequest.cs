@@ -24,6 +24,8 @@ namespace Game.Editor
         public string PublishDirectory;
         /// <summary>CI显式安装器编译器路径，避免读取开发者账户EditorPrefs。</summary>
         public string InstallerCompiler;
+        /// <summary>外部仅写入取消信号；Unity只在安全阶段边界响应，不删除该信号。</summary>
+        public string CancellationFile;
         public bool Publish;
         public bool ValidateOnly = true;
 
@@ -50,6 +52,7 @@ namespace Game.Editor
             if (!Regex.IsMatch(ExpectedCommit ?? "", @"\A[0-9a-fA-F]{40}\z") || !string.Equals(ExpectedCommit, actualCommit, StringComparison.OrdinalIgnoreCase))
                 throw new ArgumentException("当前Commit与固定请求不符");
             WorkspaceBuildLock.EnsureNoLinks(ProjectPath);
+            if (!string.IsNullOrEmpty(CancellationFile)) CiBuildRunner.ValidateReportPath(actualClient, CancellationFile);
             if (Platform != "PC" && Platform != "Android") throw new ArgumentException("只支持PC或Android");
             if (BuildType != "FirstPackage" && BuildType != "HostUpdate") throw new ArgumentException("只支持首包或Host更新");
             if (BuildType == "HostUpdate")

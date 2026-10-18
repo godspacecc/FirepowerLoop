@@ -1,0 +1,83 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3510,\"PassedTests\":0,\"FailedTests\":10,\"SkippedTests\":0,\"Duration\":\"00:00:01.3981730\"},\"Results\":[{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.ActiveOwnerCannotBeRecovered\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0350000\",\"Message\":\"  CiWorkspaceRecovery\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.CancelAfterBuildPreservesArtifactAndSkipsPublishing\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.1220000\",\"Message\":\"  Expected string length 9 but was 6. Strings differ at index 0.\\r\\n  Expected: \\u0022Cancelled\\u0022\\r\\n  But was:  \\u0022Failed\\u0022\\r\\n  -----------^\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.CancelBeforeBuildDoesNotRunOrDirtyWorkspace\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0110000\",\"Message\":\"  Expected string length 9 but was 6. Strings differ at index 0.\\r\\n  Expected: \\u0022Cancelled\\u0022\\r\\n  But was:  \\u0022Failed\\u0022\\r\\n  -----------^\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.CancelDuringPublishPreparationNeverExposesTarget\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0120000\",\"Message\":\"  Expected string length 9 but was 6. Strings differ at index 0.\\r\\n  Expected: \\u0022Cancelled\\u0022\\r\\n  But was:  \\u0022Failed\\u0022\\r\\n  -----------^\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.CancellationAfterPublishCommitReportsActualSuccess\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0110000\",\"Message\":\"  Expected string length 9 but was 6. Strings differ at index 0.\\r\\n  Expected: \\u0022Succeeded\\u0022\\r\\n  But was:  \\u0022Failed\\u0022\\r\\n  -----------^\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.InterruptedWorkspaceRejectsNewValidationOrBuild\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"  CiWorkspaceRecovery\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.RestoreRevertsOnlyOwnedInputsAndPreservesConsumedVersion\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"  CiWorkspaceRecovery\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.StageBoundaryStopsBeforeNextLongAction\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0110000\",\"Message\":\"  Expected string length 9 but was 6. Strings differ at index 0.\\r\\n  Expected: \\u0022Cancelled\\u0022\\r\\n  But was:  \\u0022Failed\\u0022\\r\\n  -----------^\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.TamperedSnapshotCannotOverwriteCurrentFiles\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0070000\",\"Message\":\"  CiWorkspaceRecovery\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.WrongRequestCannotRestoreAnotherAttempt\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0070000\",\"Message\":\"  CiWorkspaceRecovery\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3510,
+        "PassedTests": 0,
+        "FailedTests": 10,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3981730"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.ActiveOwnerCannotBeRecovered",
+          "Status": "Failed",
+          "Duration": "00:00:00.0350000",
+          "Message": "  CiWorkspaceRecovery\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.CancelAfterBuildPreservesArtifactAndSkipsPublishing",
+          "Status": "Failed",
+          "Duration": "00:00:00.1220000",
+          "Message": "  Expected string length 9 but was 6. Strings differ at index 0.\r\n  Expected: \"Cancelled\"\r\n  But was:  \"Failed\"\r\n  -----------^\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.CancelBeforeBuildDoesNotRunOrDirtyWorkspace",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  Expected string length 9 but was 6. Strings differ at index 0.\r\n  Expected: \"Cancelled\"\r\n  But was:  \"Failed\"\r\n  -----------^\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.CancelDuringPublishPreparationNeverExposesTarget",
+          "Status": "Failed",
+          "Duration": "00:00:00.0120000",
+          "Message": "  Expected string length 9 but was 6. Strings differ at index 0.\r\n  Expected: \"Cancelled\"\r\n  But was:  \"Failed\"\r\n  -----------^\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.CancellationAfterPublishCommitReportsActualSuccess",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  Expected string length 9 but was 6. Strings differ at index 0.\r\n  Expected: \"Succeeded\"\r\n  But was:  \"Failed\"\r\n  -----------^\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.InterruptedWorkspaceRejectsNewValidationOrBuild",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "  CiWorkspaceRecovery\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.RestoreRevertsOnlyOwnedInputsAndPreservesConsumedVersion",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "  CiWorkspaceRecovery\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.StageBoundaryStopsBeforeNextLongAction",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  Expected string length 9 but was 6. Strings differ at index 0.\r\n  Expected: \"Cancelled\"\r\n  But was:  \"Failed\"\r\n  -----------^\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.TamperedSnapshotCannotOverwriteCurrentFiles",
+          "Status": "Failed",
+          "Duration": "00:00:00.0070000",
+          "Message": "  CiWorkspaceRecovery\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.WrongRequestCannotRestoreAnotherAttempt",
+          "Status": "Failed",
+          "Duration": "00:00:00.0070000",
+          "Message": "  CiWorkspaceRecovery\r\n  Expected: not null\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -27,13 +27,17 @@ pipeline {
         }
         stage('校验或构建') {
             steps {
-                powershell '''
+                script {
+                def result = powershell(returnStatus: true, script: '''
                     $argsForCi = @{ Platform=$env:PLATFORM; BuildType=$env:BUILD_TYPE; ExpectedCommit=$env:COMMIT; Execute=$true }
                     if ($env:VALIDATE_ONLY -eq 'false') { $argsForCi.Build = $true }
                     if ($env:PUBLISH -eq 'true') { $argsForCi.Publish = $true; $argsForCi.PublishDirectory = $env:PUBLISH_DIRECTORY }
                     if ($env:BUILD_TYPE -eq 'HostUpdate') { $argsForCi.BaselineDirectory = $env:BASELINE_DIRECTORY }
                     & ./Tools/CI/Invoke-FirepowerBuild.ps1 @argsForCi
-                '''
+                ''')
+                if (result == 2) { currentBuild.result = 'ABORTED'; error('CI已在安全检查点取消，查看归档报告的恢复要求') }
+                if (result != 0) { error('CI执行失败，查看归档报告') }
+                }
             }
         }
     }

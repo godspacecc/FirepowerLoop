@@ -12,6 +12,23 @@ namespace Game.Editor
     /// <summary>Jenkins四路由正式入口；只显式命令执行，不注册自动构建或平台切换回调。</summary>
     public static class CiBuildEntry
     {
+        /// <summary>只供独立批处理恢复上一失败请求；退出后由下次Unity启动重新导入恢复文件，不构建或发布。</summary>
+        public static void Recover()
+        {
+            int code = 1;
+            try
+            {
+                if (!Application.isBatchMode || EditorApplication.isPlayingOrWillChangePlaymode || EditorApplication.isCompiling)
+                    throw new InvalidOperationException("工作区恢复必须在独立空闲的批处理Unity执行");
+                string client = Directory.GetParent(Application.dataPath).FullName, report = Argument("-firepowerReport"), requestId = Argument("-firepowerRecoveryRequest");
+                CiBuildRunner.ValidateReportPath(client, report);
+                string result = CiWorkspaceRecovery.Restore(client, requestId, ReadCommit(Directory.GetParent(client).FullName));
+                Directory.CreateDirectory(Path.GetDirectoryName(report)); File.WriteAllText(report, result); code = 0;
+            }
+            catch (Exception error) { UnityEngine.Debug.LogError("[FirepowerLoop CI Recovery] " + error); }
+            finally { if (Application.isBatchMode) EditorApplication.Exit(code); }
+        }
+
         /// <summary>Unity -executeMethod Game.Editor.CiBuildEntry.Execute；必须提供请求和报告文件绝对路径。</summary>
         public static void Execute()
         {

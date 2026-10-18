@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3514,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.2803587\"},\"Results\":[{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.ChangedCheckoutCannotRestorePreviousCommitInputs\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3120000\",\"Message\":\"  Expected: \\u003CSystem.InvalidOperationException\\u003E\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3514,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2803587"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.ChangedCheckoutCannotRestorePreviousCommitInputs",
+          "Status": "Failed",
+          "Duration": "00:00:00.3120000",
+          "Message": "  Expected: <System.InvalidOperationException>\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

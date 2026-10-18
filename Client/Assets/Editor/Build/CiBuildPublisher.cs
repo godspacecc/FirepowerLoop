@@ -42,7 +42,9 @@ namespace Game.Editor
             try
             {
                 Directory.CreateDirectory(staging); prepare(staging);
+                CiBuildExecution.Checkpoint("PublishReadyBeforeCommit");
                 WorkspaceBuildLock.EnsureNoLinks(destination); Directory.Move(staging, destination);
+                CiBuildExecution.MarkPublishCommitted();
             }
             finally { if (Directory.Exists(staging)) Directory.Delete(staging, true); }
         }

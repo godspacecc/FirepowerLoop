@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3516,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.8235060\"},\"Results\":[{\"Name\":\"Game.Tests.CiBuildSessionTests.CaptureFailureStillRestoresNormalStateRoute\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2760000\"},{\"Name\":\"Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\\u0022PC\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2650000\"},{\"Name\":\"Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\\u0022Android\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2440000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3516,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.8235060"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiBuildSessionTests.CaptureFailureStillRestoresNormalStateRoute",
+          "Status": "Passed",
+          "Duration": "00:00:00.2760000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\"PC\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.2650000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildSessionTests.CompleteArtifactRemainsAfterOriginalBuildOutputsAreRemoved(\"Android\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.2440000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

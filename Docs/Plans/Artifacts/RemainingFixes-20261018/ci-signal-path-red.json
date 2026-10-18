@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3516,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:00.9857924\"},\"Results\":[{\"Name\":\"Game.Tests.CiCancellationRecoveryTests.InternalJournalCannotBeUsedAsCancellationSignal\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0950000\",\"Message\":\"  Expected: False\\r\\n  But was:  True\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3516,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9857924"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiCancellationRecoveryTests.InternalJournalCannotBeUsedAsCancellationSignal",
+          "Status": "Failed",
+          "Duration": "00:00:00.0950000",
+          "Message": "  Expected: False\r\n  But was:  True\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

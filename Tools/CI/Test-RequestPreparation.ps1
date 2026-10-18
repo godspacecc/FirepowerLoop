@@ -26,6 +26,9 @@ try {
     $value = Get-Content -LiteralPath $requests[0].FullName -Raw | ConvertFrom-Json
     Assert-Condition ($value.ValidateOnly -and -not $value.Publish -and $value.ExpectedCommit -eq $commit) 'Default request must validate only and never publish.'
     $results.Add([ordered]@{ Name='DefaultPrepareDoesNotLaunchUnityOrPublish'; Passed=$true })
+    & (Join-Path $PSScriptRoot 'Request-FirepowerCancel.ps1') -RequestFile $requests[0].FullName | Out-Null
+    Assert-Condition (Test-Path -LiteralPath $value.CancellationFile -PathType Leaf) 'Cancel request should create its own signal only.'
+    $results.Add([ordered]@{ Name='CancellationCreatesRequestScopedSignalOnly'; Passed=$true })
     & $scriptUnderTest -WorkspaceRoot $testRoot -Platform Android -BuildType FirstPackage -ExpectedCommit $commit -Build | Out-Null
     $requests = @(Get-ChildItem -LiteralPath (Join-Path $testRoot 'Release/CiRequests') -Filter request.json -Recurse)
     Assert-Condition ($requests.Count -eq 2) 'Explicit build preparation should retain the first request.'

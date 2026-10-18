@@ -36,7 +36,10 @@ $request = [ordered]@{ SchemaVersion=1; ProjectId='FirepowerLoop'; RequestId=$id
 if ($BuildType -eq 'HostUpdate') { $request.BaselineDirectory = [IO.Path]::GetFullPath($BaselineDirectory) }
 if ($Publish) { $request.PublishDirectory = [IO.Path]::GetFullPath($PublishDirectory) }
 if ($InstallerCompiler) { $request.InstallerCompiler = [IO.Path]::GetFullPath($InstallerCompiler) }
+$request.CancellationFile = Join-Path $output 'cancel.request'
 [IO.File]::WriteAllText($requestPath, ($request | ConvertTo-Json -Depth 6), (New-Object Text.UTF8Encoding($false)))
+Write-Output "Request: $requestPath"
+Write-Output "Graceful cancellation signal: $($request.CancellationFile)"
 if (-not $Execute) { Write-Output "Prepared only: $requestPath"; return }
 
 # 独立构建节点必须是干净的固定提交；不清理、重置或杀死任何开发者进程。
@@ -51,5 +54,6 @@ $unityArguments = @('-batchmode','-nographics','-projectPath',$client,'-buildTar
 $unityExitCode = $LASTEXITCODE
 if (-not (Test-Path -LiteralPath $reportPath -PathType Leaf)) { throw "Unity returned $unityExitCode without a report. Log: $logPath" }
 $report = Get-Content -LiteralPath $reportPath -Raw | ConvertFrom-Json
+if ($report.Status -eq 'Cancelled' -and $report.ExitCode -eq 2) { Write-Output "CI cancelled at $($report.Checkpoint). RecoveryRequired=$($report.RecoveryRequired). Report: $reportPath"; exit 2 }
 if ($unityExitCode -ne 0 -or $report.ExitCode -ne 0) { throw "CI failed at $($report.Stage): $($report.Error). Report: $reportPath" }
 Write-Output "CI $($report.Status): $reportPath"

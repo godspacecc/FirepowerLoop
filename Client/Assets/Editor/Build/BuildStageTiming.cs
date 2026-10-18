@@ -38,10 +38,12 @@ namespace Game.Editor
         public T Run<T>(string stageName, Func<T> action)
         {
             CurrentStage = stageName;
+            CiBuildExecution.Checkpoint("Before:" + stageName);
             var sw = Stopwatch.StartNew();
+            T result;
             try
             {
-                return action();
+                result = action();
             }
             finally
             {
@@ -54,6 +56,8 @@ namespace Game.Editor
                 _completedStages.Add(record);
                 Debug.Log($"[BuildTiming] 构建阶段耗时：{stageName}，{record.Seconds:F2}s");
             }
+            CiBuildExecution.Checkpoint("After:" + stageName);
+            return result;
         }
 
         public string BuildSummary()
