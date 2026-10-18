@@ -36,6 +36,72 @@ namespace Game.Tests
         [TearDown]
         public void Cleanup()
         { ArchitectureField.SetValue(null, previousArchitecture); ResourceLoader.Use(previousLoader); LanguageCache.SetValue(null, previousLanguageCache); }
+
+        [TestCase(false, false)]
+        [TestCase(false, true)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void InterruptedStick_ReopensAtCenter(bool hideHud, bool aim)
+        {
+            UIHelper.ResetForTests();
+            ResourceLoader.Use(new LocalizationAssetResourceLoader());
+            LocalizationLanguages.ResetForTests();
+            Game.Interface.RegisterSystem(new MobileInputSystem());
+            Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(true);
+            UIHelper.SetPrefabLoaderForTests(path => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/" + path + ".prefab"));
+            var canvas = new GameObject("UIRoot", typeof(RectTransform), typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+            foreach (var layer in new[] { "HUD", "Dialog", "Popup", "Tips", "Top" })
+                new GameObject(layer, typeof(RectTransform)).transform.SetParent(canvas.transform, false);
+            new GameObject("EventSystem", typeof(UnityEngine.EventSystems.EventSystem), typeof(UnityEngine.InputSystem.UI.InputSystemUIInputModule)).transform.SetParent(canvas.transform, false);
+            canvas.AddComponent<UIRoot>();
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            var ui = root.GetComponent<ArcadeHudUI>();
+            var ctrl = new ArcadeHudUICtrl();
+            typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+            var refresh = typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickVisibility", Private);
+            var stick = aim ? ui.AimJoystick : ui.MoveJoystick;
+            try
+            {
+                refresh.Invoke(ctrl, null);
+                // EditMode 不执行运行时 Start；沿用真实组件初始化和拖动入口，不伪造偏移。
+                stick.GetType().GetMethod("OnEnable", Private).Invoke(stick, null);
+                stick.GetType().GetMethod("Start", Private).Invoke(stick, null);
+                var rect = (RectTransform)stick.transform;
+                var center = rect.anchoredPosition;
+                var pointer = new UnityEngine.EventSystems.PointerEventData(null)
+                { position = RectTransformUtility.WorldToScreenPoint(null, rect.position) };
+                stick.OnPointerDown(pointer);
+                pointer.position += new Vector2(45, 30);
+                stick.OnDrag(pointer);
+                Assert.That(Vector2.Distance(rect.anchoredPosition, center), Is.GreaterThan(1));
+
+                if (hideHud)
+                    typeof(ArcadeHudUICtrl).GetMethod("OnHide", Private).Invoke(ctrl, null);
+                else
+                {
+                    UIHelper.ShowUI<MessageUICtrl>();
+                    Assert.That(UIHelper.HasUIOpen, Is.True);
+                    refresh.Invoke(ctrl, null);
+                    UIHelper.HideUI<MessageUICtrl>();
+                }
+                refresh.Invoke(ctrl, null);
+                Assert.That(rect.anchoredPosition, Is.EqualTo(center), "未松手时被界面中断，重开必须回到原中心");
+                // 新拖动结束后仍回原点，不能把中断位置当成下一次原点。
+                stick.OnPointerDown(pointer);
+                pointer.position += Vector2.right * 20;
+                stick.OnDrag(pointer);
+                stick.OnPointerUp(pointer);
+                Assert.That(rect.anchoredPosition, Is.EqualTo(center));
+            }
+            finally
+            {
+                stick.GetType().GetMethod("OnDisable", Private).Invoke(stick, null);
+                Object.DestroyImmediate(root);
+                UIHelper.ResetForTests();
+                if (canvas != null) Object.DestroyImmediate(canvas);
+            }
+        }
+
         [Test]
         public void FirstPersonTouchControls_ReleaseFireOnPauseAndRestoreAimOnExit()
         {

@@ -111,6 +111,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            ResetJoystickInteractions();
             UI.FirstPersonFirePress.ResetCapture();
             ClearStageBanner();
             ReleaseJoystickUpdate();
@@ -159,6 +160,7 @@ namespace Game
             if (IsShow() && hadFirstPerson != (combat.FirstPersonSeconds > 0))
             {
                 // 两种解释之间切换时释放虚拟轴；旧手指不能携带俯视世界方向进入第一人称。
+                ResetJoystickInteractions();
                 UI.MoveJoystickRoot.SetActive(false);
                 UI.AimJoystickRoot.SetActive(false);
                 RefreshJoystickVisibility();
@@ -259,17 +261,26 @@ namespace Game
                 ? "ui.arcade.first_person.exit" : "ui.arcade.first_person.exit_pc"));
         }
 
-        /// <summary>移动输入模式显示双摇杆；隐藏时 OnScreenStick 会自动清零对应虚拟轴。</summary>
+        /// <summary>移动输入模式显示双摇杆；阻断前主动松开，使虚拟轴和摇杆图形一起回中。</summary>
         private void RefreshJoystickVisibility()
         {
             if (UI == null) return;
             var mobile = this.GetSystem<MobileInputSystem>().IsMobileInputMode;
             ApplyInputLayout(mobile, onlineMode);
             var visible = mobile && !UIHelper.HasUIOpen;
+            if (!visible && (UI.MoveJoystickRoot.activeSelf || UI.AimJoystickRoot.activeSelf))
+                ResetJoystickInteractions();
             if (UI.MoveJoystickRoot.activeSelf != visible) UI.MoveJoystickRoot.SetActive(visible);
             RefreshFirstPersonMobileControls(mobile, visible);
             // 切回桌面或被阻断时也同步布局，避免跳过触屏自定义位置的桌面恢复。
             ApplyJoystickLayout();
+        }
+
+        /// <summary>官方摇杆禁用只清理输入设备，不恢复图形；沿用松手入口归位，避免下次显示残留拖动偏移。</summary>
+        private void ResetJoystickInteractions()
+        {
+            UI.MoveJoystick.OnPointerUp(null);
+            UI.AimJoystick.OnPointerUp(null);
         }
 
         /// <summary>第一人称用独立开火按钮替代右摇杆；失效、暂停、转场和重生时隐藏并释放原始触点。</summary>
@@ -277,7 +288,11 @@ namespace Game
         {
             bool firstPerson = !onlineMode && hasCombatSnapshot && combat.FirstPersonSeconds > 0;
             bool aimVisible = visible && !firstPerson;
-            if (UI.AimJoystickRoot.activeSelf != aimVisible) UI.AimJoystickRoot.SetActive(aimVisible);
+            if (UI.AimJoystickRoot.activeSelf != aimVisible)
+            {
+                if (!aimVisible) UI.AimJoystick.OnPointerUp(null);
+                UI.AimJoystickRoot.SetActive(aimVisible);
+            }
             bool fireVisible = mobile && visible && firstPerson && combat.PlayerHealth > 0 &&
                                combat.RespawnSeconds <= 0 && !combat.IslandTransitioning && !combat.InTreasureRoom;
             if (UI.FirstPersonFirePress.gameObject.activeSelf != fireVisible)
@@ -370,6 +385,8 @@ namespace Game
             RenderAbilityCounts(runPlayer.Bombs, runPlayer.Dashes);
             UI.BtnBomb.interactable = !snapshot.BattlePaused && runPlayer.Bombs > 0;
             UI.BtnDash.interactable = !snapshot.BattlePaused && runPlayer.Dashes > 0;
+            if (snapshot.BattlePaused && (UI.MoveJoystick.enabled || UI.AimJoystick.enabled))
+                ResetJoystickInteractions();
             UI.MoveJoystick.enabled = !snapshot.BattlePaused;
             UI.AimJoystick.enabled = !snapshot.BattlePaused;
             UI.BtnRetry.gameObject.SetActive(false);
