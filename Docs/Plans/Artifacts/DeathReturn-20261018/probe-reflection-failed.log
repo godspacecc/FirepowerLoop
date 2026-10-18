@@ -1,0 +1,7 @@
+正式Boot新局；3轮受控临时局最后一命，Profiler非Deep；不代表设备性能。
+2026-10-18T02:47:51.3254382Z FAILED System.NullReferenceException: Object reference not set to an instance of an object
+  at ArcadeDeathReturnProbe.Get (System.Object target, System.String name) [0x0000e] in <7798fe4432ca43b086d22d83e63e7fff>:0
+  at ArcadeDeathReturnProbe+<>c__DisplayClass20_1.<Run>b__2 () [0x00000] in <7798fe4432ca43b086d22d83e63e7fff>:0
+  at ArcadeDeathReturnProbe.Wait (System.Func`1[TResult] ready, System.String label, System.Double seconds) [0x000c1] in <7798fe4432ca43b086d22d83e63e7fff>:0
+  at Cysharp.Threading.Tasks.UniTask+ExceptionResultSource.GetResult (System.Int16 token) [0x00015] in .\Library\PackageCache\com.cysharp.unitask@2.5.11\Runtime\UniTask.Factory.cs:326
+  at ArcadeDeathReturnProbe.Run () [0x004b5] in <7798fe4432ca43b086d22d83e63e7fff>:0

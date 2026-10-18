@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QFramework;
+using Cysharp.Threading.Tasks;
 
 namespace Game
 {
@@ -13,6 +14,9 @@ namespace Game
         private ArcadeRunFileStore store;
         private ISaveClock clock = new UnitySaveClock();
         private string nextDeleteFailureForTests;
+        /// <summary>体系卸载使旧写盘完成回调失效；文件事务仍完成，但不能再发布到旧世界。</summary>
+        private int resultSaveGeneration;
+        public bool IsSavingResult => this.GetModel<ArcadeRunModel>().Phase == ArcadeRunPhase.SavingResult;
 
         protected override void OnInit()
         {
@@ -21,6 +25,7 @@ namespace Game
 
         public void ConfigureForTests(string rootDirectory, ISaveClock saveClock = null)
         {
+            if (IsSavingResult) throw new InvalidOperationException("结果保存尚未完成，不能替换存档端口");
             store = new ArcadeRunFileStore(rootDirectory);
             clock = saveClock ?? new UnitySaveClock();
             nextDeleteFailureForTests = null;
@@ -78,6 +83,7 @@ namespace Game
         public bool TryResume(out ArcadeRunSaveData snapshot, out string error)
         {
             snapshot = null;
+            if (IsSavingResult) { error = "正在保存本局结果"; return false; }
             var read = store.Inspect();
             if (!read.IsValid)
             {
@@ -313,15 +319,7 @@ namespace Game
                 return ArcadeDeathResult.Respawn;
             }
 
-            var candidate = current.Clone();
-            candidate.RemainingLives = 0;
-            candidate.Outcome = "failed";
-            candidate.SlayerMart=null;
-            candidate.RoundCheckpoint = null;
-            candidate.IslandRoundCheckpoint = null;
-            candidate.ArenaEntryState = null;
-            candidate.PendingRewards.Clear();
-            candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
+            var candidate = CreateFailedCandidate(current);
             if (!store.Save(candidate, out error))
             {
                 snapshot = current;
@@ -330,6 +328,40 @@ namespace Game
             CommitSafeNode(candidate);
             snapshot = candidate.Clone();
             return ArcadeDeathResult.RunFailed;
+        }
+
+        /// <summary>最后一命独占候选写盘；等待期所有阶段入口拒绝变更，成功后在主线程提交并通知。</summary>
+        public async UniTask<(ArcadeDeathResult Result, ArcadeRunSaveData Snapshot, string Error)> HandleLastDeathAsync()
+        {
+            var model = this.GetModel<ArcadeRunModel>(); var current = model.Current;
+            if (model.Phase != ArcadeRunPhase.Arena || current == null || current.RemainingLives != 1)
+                return (ArcadeDeathResult.Rejected, current, "当前不是可提交的最后一命");
+            var candidate = CreateFailedCandidate(current); var targetStore = store;
+            int generation = ++resultSaveGeneration; model.BeginSavingResult();
+            try
+            {
+                var saved = await targetStore.SaveAsync(candidate);
+                if (generation != resultSaveGeneration || model.Phase != ArcadeRunPhase.SavingResult || model.Current?.RunId != current.RunId)
+                    return (ArcadeDeathResult.Rejected, current, "结果保存所属的运行环境已失效");
+                if (!saved.Success) return (ArcadeDeathResult.Rejected, current, saved.Error);
+                CommitSafeNode(candidate);
+                return (ArcadeDeathResult.RunFailed, candidate.Clone(), null);
+            }
+            finally
+            {
+                if (generation == resultSaveGeneration && model.Phase == ArcadeRunPhase.SavingResult) model.EnterArena();
+            }
+        }
+
+        protected override void OnDeinit() => resultSaveGeneration++;
+
+        /// <summary>同步兼容入口与异步最后一命共用相同结果规则；不携带轮现场、支援或待发奖励。</summary>
+        private ArcadeRunSaveData CreateFailedCandidate(ArcadeRunSaveData current)
+        {
+            var candidate = current.Clone(); candidate.RemainingLives = 0; candidate.Outcome = "failed";
+            candidate.SlayerMart = null; candidate.RoundCheckpoint = null; candidate.IslandRoundCheckpoint = null;
+            candidate.ArenaEntryState = null; candidate.PendingRewards.Clear();
+            candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O"); return candidate;
         }
 
         /// <summary>竞技场全部轮次完成后一次提交稳定结果；保存失败时仍停留在原竞技场运行态。</summary>
@@ -440,6 +472,7 @@ namespace Game
 
         public bool TryAbandon(out string error)
         {
+            if (IsSavingResult) { error = "正在保存本局结果"; return false; }
             var current = this.GetModel<ArcadeRunModel>().Current;
             if (current == null) { error = "没有可放弃的街机局"; return false; }
             if (current.HasResult) { error = null; return true; }
@@ -464,6 +497,7 @@ namespace Game
 
         private bool EnsureNoPendingRun(out string error)
         {
+            if (IsSavingResult) { error = "正在保存本局结果"; return false; }
             var pending = store.Inspect();
             if (pending.Status == SaveFileStatus.Missing)
             {

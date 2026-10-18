@@ -1,0 +1,59 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3522,
+      "PassedTests": 9,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.2240759"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.BrokenRecoveryCannotOverwriteExistingFile",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.ConfirmedAbandonResultDeletesOnlyThisRunWithoutWallet",
+        "Status": "Passed",
+        "Duration": "00:00:00.4930000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.FailedAbandonSaveKeepsOriginalNodeAndRuntime",
+        "Status": "Passed",
+        "Duration": "00:00:00.3610000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.FailedResultAcknowledgementRemainsRetryable",
+        "Status": "Passed",
+        "Duration": "00:00:00.3390000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.InvalidOnlineResultCannotOverwriteSavedScores",
+        "Status": "Passed",
+        "Duration": "00:00:00.0250000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.LastDeathPersistsResultAndCannotResumeBattle",
+        "Status": "Passed",
+        "Duration": "00:00:00.3420000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.NewRunAndRecoveryNeedNoBaseAndKeepIdentity",
+        "Status": "Passed",
+        "Duration": "00:00:00.3470000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.OnlineResultReceiptIsIsolatedByPlayerAndRequiresAcknowledgement",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.FirepowerLoopRunTests.UnfinishedRunCannotBeAcknowledgedAsResult",
+        "Status": "Passed",
+        "Duration": "00:00:00.3300000"
+      }
+    ]
+  }
+}

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -11,6 +12,12 @@ namespace Game
     /// <summary>原子读写唯一街机安全节点文件；不参与基地或远征分区捕获。</summary>
     public sealed class ArcadeRunFileStore
     {
+        /// <summary>Profiler中区分原子落盘与结果事件／地图释放的主线程耗时。</summary>
+        private static readonly Unity.Profiling.ProfilerMarker SaveMarker = new("FirepowerLoop.ArcadeRun.Save");
+        private static readonly Unity.Profiling.ProfilerMarker SerializeMarker = new("FirepowerLoop.ArcadeRun.Serialize");
+        private static readonly Unity.Profiling.ProfilerMarker WriteMarker = new("FirepowerLoop.ArcadeRun.WriteTemp");
+        private static readonly Unity.Profiling.ProfilerMarker ReadMarker = new("FirepowerLoop.ArcadeRun.VerifyTemp");
+        private static readonly Unity.Profiling.ProfilerMarker ReplaceMarker = new("FirepowerLoop.ArcadeRun.Replace");
         private readonly string rootDirectory;
 
         public ArcadeRunFileStore() : this(Application.persistentDataPath)
@@ -62,13 +69,32 @@ namespace Game
 
         public bool Save(ArcadeRunSaveData data, out string error)
         {
+            using var sample = SaveMarker.Auto();
             error = null;
             try
             {
                 if (!TryValidate(data, out error)) return false;
                 Directory.CreateDirectory(SavesDirectory);
-                File.WriteAllText(TempPath, JsonConvert.SerializeObject(data, Formatting.Indented));
-                JObject.Parse(File.ReadAllText(TempPath));
+                string json;
+                using (SerializeMarker.Auto()) json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                // 临时文件只打开一次；同一独占句柄先写入再回读校验，避免关闭后立即重开引起文件系统停顿。
+                // 句柄关闭、完整JSON校验成功后才原子替换，失败时原节点及备份仍由既有路径保留。
+                using (var stream = new FileStream(TempPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                {
+                    using (WriteMarker.Auto())
+                    {
+                        byte[] bytes = Encoding.UTF8.GetBytes(json);
+                        stream.Write(bytes, 0, bytes.Length);
+                        stream.Flush();
+                    }
+                    using (ReadMarker.Auto())
+                    {
+                        stream.Position = 0;
+                        using var reader = new StreamReader(stream, Encoding.UTF8, true, 1024, true);
+                        JObject.Parse(reader.ReadToEnd());
+                    }
+                }
+                using var replace = ReplaceMarker.Auto();
                 if (File.Exists(RunPath))
                 {
                     TryDelete(BackupPath);
@@ -109,6 +135,14 @@ namespace Game
                 return false;
             }
         }
+
+        /// <summary>只处理调用方独占的候选值与本目录文件；完成原子写入后回主线程，不能取消一半替换。</summary>
+        internal Cysharp.Threading.Tasks.UniTask<(bool Success, string Error)> SaveAsync(ArcadeRunSaveData candidate)
+            => Cysharp.Threading.Tasks.UniTask.RunOnThreadPool(() =>
+            {
+                bool success = Save(candidate, out var error);
+                return (success, error);
+            });
 
         /// <summary>严格校验可恢复安全节点及海岛轮前稳定状态，不接受现场世界对象。</summary>
         public static bool TryValidate(ArcadeRunSaveData data, out string error)

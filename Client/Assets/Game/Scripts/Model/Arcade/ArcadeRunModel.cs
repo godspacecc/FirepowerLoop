@@ -30,6 +30,9 @@ namespace Game
             if (current != null) Phase = ArcadeRunPhase.Arena;
         }
 
+        /// <summary>仅冻结最后一命的领域入口，不提前公布未落盘结果；失败由原事务恢复竞技场阶段。</summary>
+        internal void BeginSavingResult() => Phase = ArcadeRunPhase.SavingResult;
+
         /// <summary>轮级落盘成功后提交完整快照，保持战斗阶段，不触发整场离场事件。</summary>
         internal void CommitIslandRound(ArcadeRunSaveData value)
         {

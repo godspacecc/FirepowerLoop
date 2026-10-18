@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3521,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.8025234"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.AsyncLastLifeBlocksCompetingMutationsAndCommitsOnMainThread",
+        "Status": "Failed",
+        "Duration": "00:00:00.7660000",
+        "Message": "  最后一命写盘必须可异步等待\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

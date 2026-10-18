@@ -7,6 +7,9 @@ using Luban;
 using NUnit.Framework;
 using QFramework;
 using UnityEditor;
+using System.Collections;
+using Cysharp.Threading.Tasks;
+using UnityEngine.TestTools;
 
 namespace Game.Tests
 {
@@ -102,9 +105,11 @@ namespace Game.Tests
             Assert.That(catalog.Bosses, Has.Count.EqualTo(2));
             Assert.That(catalog.Bosses[0].EnemyGroupId, Is.EqualTo("arcade.group.boss.brute"));
             Assert.That(catalog.Bosses[0].ChargeSpeedMultiplier, Is.EqualTo(3.2f));
-            Assert.That(catalog.Challenges, Has.Count.EqualTo(1));
-            Assert.That(catalog.Challenges[0].EnemyGroupId, Is.EqualTo("arcade.group.rush.1"));
-            Assert.That(catalog.Challenges[0].TimeLimitSeconds, Is.EqualTo(45f));
+            Assert.That(catalog.Challenges, Has.Count.EqualTo(2));
+            // 完整Slayer已加入正式目录，旧限时挑战按稳定ID验证，不再错误要求目录只有一项。
+            var timed = catalog.Challenges.Single(value => value.Id == "arcade.challenge.timed-clear");
+            Assert.That(timed.EnemyGroupId, Is.EqualTo("arcade.group.rush.1"));
+            Assert.That(timed.TimeLimitSeconds, Is.EqualTo(45f));
             Assert.That(catalog.Rule.MaxAliveEnemies, Is.EqualTo(24));
             Assert.That(catalog.Rule.MaxProjectiles, Is.EqualTo(80));
             Assert.That(catalog.Rule.MaxDrops, Is.EqualTo(18));
@@ -228,6 +233,64 @@ namespace Game.Tests
             Assert.That(snapshot.Outcome, Is.EqualTo("failed"));
             Assert.That(arcade.InspectPending().IsValid, Is.True);
             Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Current.HasResult, Is.True);
+        }
+
+        [Test]
+        public void LastLifeSaveFailurePreservesCheckpointAndCanRetry()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out var initial, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            var model = architecture.GetModel<ArcadeRunModel>(); model.SetTransientLives(1);
+            var store = new ArcadeRunFileStore(runtimeRoot); byte[] previous = File.ReadAllBytes(store.RunPath);
+            using (var locked = new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+                Assert.That(arcade.TryHandleDeath(out _, out _), Is.EqualTo(ArcadeDeathResult.Rejected));
+            Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+            Assert.That(model.Current.HasResult, Is.False); Assert.That(model.Current.RemainingLives, Is.EqualTo(1));
+            Assert.That(File.ReadAllBytes(store.RunPath), Is.EqualTo(previous)); Assert.That(File.Exists(store.TempPath), Is.False);
+            Assert.That(arcade.TryHandleDeath(out var failed, out error), Is.EqualTo(ArcadeDeathResult.RunFailed), error);
+            Assert.That(failed.RunId, Is.EqualTo(initial.RunId)); Assert.That(failed.RemainingLives, Is.Zero);
+            Assert.That(store.Inspect().Data.Outcome, Is.EqualTo("failed"));
+        }
+
+        [UnityTest]
+        public IEnumerator AsyncLastLifeBlocksCompetingMutationsAndCommitsOnMainThread()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out var initial, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            var model = architecture.GetModel<ArcadeRunModel>(); model.SetTransientLives(1);
+            var method = typeof(ArcadeRunSystem).GetMethod("HandleLastDeathAsync");
+            Assert.That(method, Is.Not.Null, "最后一命写盘必须可异步等待");
+            int main = System.Threading.Thread.CurrentThread.ManagedThreadId, committed = 0;
+            architecture.RegisterEvent<ArcadeRunChangedEvent>(evt => { if(evt.Phase == ArcadeRunPhase.Result) committed = System.Threading.Thread.CurrentThread.ManagedThreadId; });
+            var operation = (UniTask<(ArcadeDeathResult Result, ArcadeRunSaveData Snapshot, string Error)>)method.Invoke(arcade, null);
+            Assert.That(model.Phase.ToString(), Is.EqualTo("SavingResult")); Assert.That(model.Current.HasResult, Is.False);
+            Assert.That(arcade.TryResume(out _, out _), Is.False); Assert.That(arcade.TryAbandon(out _), Is.False);
+            Assert.That(arcade.TryHandleDeath(out _, out _), Is.EqualTo(ArcadeDeathResult.Rejected));
+            Assert.That(arcade.TryStartConfiguredRun(out _, out _), Is.False);
+            (ArcadeDeathResult Result, ArcadeRunSaveData Snapshot, string Error) value = default;
+            yield return operation.ToCoroutine(result => value = result);
+            Assert.That(value.Result, Is.EqualTo(ArcadeDeathResult.RunFailed), value.Error);
+            Assert.That(value.Snapshot.RunId, Is.EqualTo(initial.RunId)); Assert.That(value.Snapshot.RemainingLives, Is.Zero);
+            Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.Result)); Assert.That(committed, Is.EqualTo(main));
+            Assert.That(arcade.InspectPending().Data.Outcome, Is.EqualTo("failed"));
+        }
+
+        [UnityTest]
+        public IEnumerator AsyncLastLifeSaveFailureKeepsOriginalNodeAndAllowsRetry()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            var model = architecture.GetModel<ArcadeRunModel>(); model.SetTransientLives(1);
+            var store = new ArcadeRunFileStore(runtimeRoot); byte[] previous = File.ReadAllBytes(store.RunPath);
+            (ArcadeDeathResult Result, ArcadeRunSaveData Snapshot, string Error) value = default;
+            using (var locked = new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+                yield return arcade.HandleLastDeathAsync().ToCoroutine(result => value = result);
+            Assert.That(value.Result, Is.EqualTo(ArcadeDeathResult.Rejected)); Assert.That(value.Error, Is.Not.Empty);
+            Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.Arena)); Assert.That(model.Current.HasResult, Is.False);
+            Assert.That(model.Current.RemainingLives, Is.EqualTo(1)); Assert.That(File.ReadAllBytes(store.RunPath), Is.EqualTo(previous));
+            yield return arcade.HandleLastDeathAsync().ToCoroutine(result => value = result);
+            Assert.That(value.Result, Is.EqualTo(ArcadeDeathResult.RunFailed), value.Error);
+            Assert.That(store.Inspect().Data.Outcome, Is.EqualTo("failed"));
         }
 
         [Test]

@@ -5,7 +5,7 @@ using System.Linq;
 namespace Game
 {
     /// <summary>安全节点只承担恢复与准备，数值顺序兼容本项目旧局阶段。</summary>
-    public enum ArcadeRunPhase { None, SafeCheckpoint, Arena, Challenge, Victory, Result }
+    public enum ArcadeRunPhase { None, SafeCheckpoint, Arena, Challenge, Victory, Result, SavingResult }
     public enum ArcadeDeathResult { Rejected, Respawn, RunFailed }
     public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, ExitFirstPerson, FieldUpgrade, DonateLife }
 

@@ -1,0 +1,5 @@
+正式Boot新局；3轮受控临时局最后一命，Profiler非Deep；不代表设备性能。
+2026-10-18T02:48:01.1345271Z Round=0 EntryMs=33.098 ViewEnds=3.572,0.071 UnloadWallMs=28.979 MenuObservedWallMs=33.098 Result=failed
+2026-10-18T02:48:04.1024260Z Round=1 EntryMs=19.596 ViewEnds=2.138,0.080 UnloadWallMs=17.276 MenuObservedWallMs=19.596 Result=failed
+2026-10-18T02:48:07.1006695Z Round=2 EntryMs=29.639 ViewEnds=3.029,0.073 UnloadWallMs=27.906 MenuObservedWallMs=29.639 Result=failed
+2026-10-18T02:48:07.1742766Z PASS 3轮结果／菜单／原模型及端口恢复
