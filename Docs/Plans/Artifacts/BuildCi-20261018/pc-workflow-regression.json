@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3490,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.1235938\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkflowTests.PlayerWorkflowsPublishInstallerAfterPlayerValidation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0230000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3490,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1235938"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkflowTests.PlayerWorkflowsPublishInstallerAfterPlayerValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

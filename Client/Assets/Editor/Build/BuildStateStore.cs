@@ -97,6 +97,7 @@ namespace Game.Editor
         {
             get
             {
+                if (CiBuildSession.Current != null) return CiBuildSession.Current.StatePath;
                 string projectPath = Directory.GetParent(Application.dataPath).FullName;
                 return Path.Combine(projectPath, "Library", "FirepowerLoopBuild", "BuildState.json");
             }

@@ -1,0 +1,16 @@
+{
+  "SchemaVersion": 1,
+  "ProjectId": "FirepowerLoop",
+  "RequestId": "local-validation",
+  "Route": "PcFirst",
+  "Commit": "1fa7511eb651a5abfebdb27fa554c9f960c646fc",
+  "Error": null,
+  "ArtifactPath": null,
+  "Status": "Validated",
+  "Stage": "Validate",
+  "BuildStatus": "NotStarted",
+  "PublishStatus": "NotRequested",
+  "ExitCode": 0,
+  "StartedUtc": "2026-10-18T01:58:42.6029877Z",
+  "CompletedUtc": "2026-10-18T01:58:42.6347667Z"
+}

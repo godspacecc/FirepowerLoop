@@ -31,6 +31,21 @@ namespace Game.Editor
         /// <summary>独立批次保留失败产物；清单只在安装器哈希验证成功后发布，不重用发布序号。</summary>
         public static string GenerateAndPublish(string player, string resourceVersion, string compiler)
         {
+            string output = GenerateOnly(player, compiler);
+            try
+            {
+                var publish = ResourceServerPublishUtility.PublishOrUpdateLatestPackage();
+                if (!publish.Success || publish.Version != resourceVersion)
+                    throw new InvalidOperationException("资源服同步失败或资源版本不一致：" + publish.Error);
+                PublishGenerated(output, publish.BundleDirectory);
+                return Path.Combine(publish.BundleDirectory, "ResourceFiles");
+            }
+            catch (Exception e) { throw new InvalidOperationException("安装器已生成，发布失败，保留于：" + output + "\n" + e.Message, e); }
+        }
+
+        /// <summary>只生成并验证安装器，不复制资源服、不发布更新、不启动任何服务。</summary>
+        public static string GenerateOnly(string player, string compiler)
+        {
             string repo = Directory.GetParent(Application.dataPath).Parent.FullName;
             string output = Path.Combine(repo, "Release", "WindowsInstaller", "Installer_" +
                 DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8));
@@ -41,20 +56,24 @@ namespace Game.Editor
                     " -OutputDirectory " + Quote(output));
                 var identity = JsonUtility.FromJson<WindowsUpdateManifest>(File.ReadAllText(Path.Combine(
                     Path.GetDirectoryName(player), "FirepowerLoop_Data", "StreamingAssets", "windows-release.json")));
-                string installer = ValidateInstaller(output, identity.releaseNumber);
-                var publish = ResourceServerPublishUtility.PublishOrUpdateLatestPackage();
-                if (!publish.Success || publish.Version != resourceVersion)
-                    throw new InvalidOperationException("资源服同步失败或资源版本不一致：" + publish.Error);
-                RunScript(Path.Combine(repo, "Server", "ResourceServer", "publish_windows_update.ps1"),
-                    "-Installer " + Quote(installer) + " -Manifest " + Quote(Path.Combine(output, "app-update-windows.json")) +
-                    " -Bundle " + Quote(publish.BundleDirectory));
-                UnityEngine.Debug.Log($"[WindowsInstaller] 安装包与更新发布完成：{installer}\n资源服：{publish.BundleDirectory}");
-                return Path.Combine(publish.BundleDirectory, "ResourceFiles");
+                ValidateInstaller(output, identity.releaseNumber);
+                return output;
             }
             catch (Exception e)
             {
                 throw new InvalidOperationException("Player 已生成，安装器或发布步骤失败，产物保留于：" + output + "\n" + e.Message, e);
             }
+        }
+
+        /// <summary>消费已生成安装器，发布到明确的新资源服包；不生成Player或安装器。</summary>
+        public static void PublishGenerated(string output, string bundleDirectory)
+        {
+            var manifest = WindowsUpdateManifest.ParseAvailable(File.ReadAllText(Path.Combine(output, "app-update-windows.json")), 0);
+            if (manifest == null) throw new InvalidOperationException("安装器清单无效");
+            string installer = ValidateInstaller(output, manifest.releaseNumber);
+            string repo = Directory.GetParent(Application.dataPath).Parent.FullName;
+            RunScript(Path.Combine(repo, "Server", "ResourceServer", "publish_windows_update.ps1"),
+                "-Installer " + Quote(installer) + " -Manifest " + Quote(Path.Combine(output, "app-update-windows.json")) + " -Bundle " + Quote(bundleDirectory));
         }
 
         /// <summary>发布前再次验证生成清单身份、序号及字节，拒绝错包或损坏产物。</summary>

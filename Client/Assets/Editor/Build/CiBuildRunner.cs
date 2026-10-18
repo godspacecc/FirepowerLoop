@@ -21,6 +21,11 @@ namespace Game.Editor
     {
         public static string Run(string json, string clientRoot, string actualCommit, string reportPath,
             Func<string, string, string> build, Action<string, string> publish)
+            => RunWithPreflight(json, clientRoot, actualCommit, reportPath, null, build, publish);
+
+        /// <summary>生产入口在持锁期间补充Unity及基线检查；失败同样进入结构化报告。</summary>
+        public static string RunWithPreflight(string json, string clientRoot, string actualCommit, string reportPath,
+            Action<CiBuildRequest> preflight, Func<string, string, string> build, Action<string, string> publish)
         {
             ValidateReportPath(clientRoot, reportPath);
             var report = new CiBuildReport { Commit = actualCommit };
@@ -30,6 +35,7 @@ namespace Game.Editor
                 report.RequestId = request.RequestId; report.Route = request.Validate(clientRoot, actualCommit);
                 using (WorkspaceBuildLock.Acquire(clientRoot))
                 {
+                    preflight?.Invoke(request);
                     if (request.ValidateOnly) { report.Status = "Validated"; report.ExitCode = 0; }
                     else
                     {

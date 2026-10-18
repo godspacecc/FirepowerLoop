@@ -155,6 +155,12 @@ namespace Game.Editor
                     player,
                     updateAot: true,
                     updateHost: true);
+                if (CiBuildSession.Current != null)
+                {
+                    string installer = timing.Run("GenerateInstallerOnly", () => WindowsInstallerPublishUtility.GenerateOnly(player, compiler));
+                    CiBuildSession.Current.Capture(version, package.OutputPackageDirectory, player, installer);
+                    return;
+                }
                 string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
                 Debug.Log(
                     $"[BuildUtility] PC 首包完成：版本={version}，Player路径={player}，" +
@@ -175,9 +181,20 @@ namespace Game.Editor
                 ValidateProjectSettings();
                 BuildTarget target = BuildTarget.StandaloneWindows64;
 
-                timing.Run("ValidateExistingPlayerAot", ValidateExistingPlayerAot);
-                timing.Run("GenerateAll", HybridCLRBuildUtility.GenerateAll);
-                var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, true));
+                IReadOnlyList<string> copied;
+                if (CiBuildSession.Current != null)
+                {
+                    var baseline = LoadStateOrThrow();
+                    if (!BuildStateStore.TryValidateAotBaseline(baseline, target, out string error)) throw new InvalidOperationException(error);
+                    timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(target));
+                    copied = timing.Run("CopyGeneratedDllsFromBaseline", () => HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(target, baseline.LastAotBaseline.AotDirectory, baseline.LastAotBaseline.RuntimeListPath));
+                }
+                else
+                {
+                    timing.Run("ValidateExistingPlayerAot", ValidateExistingPlayerAot);
+                    timing.Run("GenerateAll", HybridCLRBuildUtility.GenerateAll);
+                    copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, true));
+                }
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
                 string builtinDir = YooAssetBuildUtility.GetStreamingAssetsDirectory();
@@ -189,7 +206,8 @@ namespace Game.Editor
                 var after = timing.Run("SnapshotBuiltinAfter", () => SnapshotDirectory(builtinDir));
                 timing.Run("CompareBuiltinSnapshot", () => EnsureSnapshotsEqual(before, after));
 
-                SaveSuccessfulState(version, "Host", package.OutputPackageDirectory, null, updateAot: true, updateHost: true);
+                SaveSuccessfulState(version, "Host", package.OutputPackageDirectory, null, updateAot: CiBuildSession.Current == null, updateHost: true);
+                if (CiBuildSession.Current != null) { CiBuildSession.Current.Capture(version, package.OutputPackageDirectory); return; }
                 var server = timing.Run("StartResourceServer", () => LocalResourceServerUtility.StartAndProbe(package.OutputPackageDirectory, version));
                 if (!server.Success)
                 {
@@ -360,6 +378,7 @@ namespace Game.Editor
             var timing = new BuildStageTiming(workflowName);
             try
             {
+                using var workspaceLock = WorkspaceBuildLock.Acquire(Directory.GetParent(Application.dataPath).FullName);
                 timing.Run("EnsureWindowsBuildTarget", EnsureWindowsBuildTarget);
                 EditorUserBuildSettings.development = false;
                 action(timing);

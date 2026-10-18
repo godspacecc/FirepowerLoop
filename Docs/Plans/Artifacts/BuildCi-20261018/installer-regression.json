@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3490,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:00.9779592\"},\"Results\":[{\"Name\":\"Game.Tests.BuildWorkflowTests.InstallerPublicationRejectsWrongReleaseAndCorruptedBytes\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0280000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3490,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9779592"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.BuildWorkflowTests.InstallerPublicationRejectsWrongReleaseAndCorruptedBytes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0280000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

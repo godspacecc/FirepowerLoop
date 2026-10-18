@@ -1,0 +1,94 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3486,\"PassedTests\":13,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.3405526\"},\"Results\":[{\"Name\":\"Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1390000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022Android\\u0022,\\u0022PC\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022Android\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\\u0022StandaloneWindows64\\u0022,\\u0022PC\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.1030000\",\"Message\":\"System.InvalidOperationException : \\u6307\\u5B9A\\u8D44\\u6E90\\u53D1\\u5E03\\u5931\\u8D25\\uFF1A\\u9636\\u6BB5\\uFF1A\\u53D1\\u5E03\\u4E8B\\u52A1\\uFF1B\\u6E90\\uFF1AC:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\\\packages\\\\v1\\uFF1B\\u76EE\\u6807\\uFF1AC:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\\\published.pending-3a56fb901ce84b32afcce23b6a04183a\\\\resource-stage\\\\ResourceServerBundle_20261018_095725\\uFF1B\\u539F\\u56E0\\uFF1ACould not find a part of the path \\u0022C:\\\\Users\\\\ADMINI~1\\\\AppData\\\\Local\\\\Temp\\\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\\\published.pending-3a56fb901ce84b32afcce23b6a04183a\\\\resource-stage\\\\.ResourceServerBundle_20261018_095725_38de925ccd3049bc99232d32e2f57509.tmp\\\\ResourceFiles\\\\DefaultPackage.version\\u0022\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"},{\"Name\":\"Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3486,
+        "PassedTests": 13,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3405526"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AddedResourceCannotBypassInventory",
+          "Status": "Passed",
+          "Duration": "00:00:00.1390000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.AllFourRoutesResolveToConcreteMenuEntrypoints",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.ArtifactCannotClaimAnotherResourceVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.FirstPackageCannotBeSealedWithoutPlayerOrBaseline",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(False,\"StandaloneWindows64\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"Android\",\"PC\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"Android\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.InvalidEditorStateFailsBeforeBuild(True,\"StandaloneWindows64\",\"PC\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublisherUsesSealedPackageInsteadOfNewerSibling",
+          "Status": "Failed",
+          "Duration": "00:00:00.1030000",
+          "Message": "System.InvalidOperationException : 指定资源发布失败：阶段：发布事务；源：C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\packages\\v1；目标：C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\published.pending-3a56fb901ce84b32afcce23b6a04183a\\resource-stage\\ResourceServerBundle_20261018_095725；原因：Could not find a part of the path \"C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\FirepowerAdapter-caaff5b3cb8b4f0f840524700a744fb6\\published.pending-3a56fb901ce84b32afcce23b6a04183a\\resource-stage\\.ResourceServerBundle_20261018_095725_38de925ccd3049bc99232d32e2f57509.tmp\\ResourceFiles\\DefaultPackage.version\""
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingCannotOverwriteExistingBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingFailureDoesNotExposePartialDestination",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.PublishingSuccessMovesOnlyCompletedBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SameLengthPackageChangeInvalidatesArtifact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.CiBuildAdapterTests.SealedHostArtifactSurvivesValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

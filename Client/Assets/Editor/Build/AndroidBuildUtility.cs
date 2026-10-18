@@ -194,7 +194,7 @@ namespace Game.Editor
             {
                 previous.Restore();
                 EditorUtility.ClearProgressBar();
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -274,7 +274,7 @@ namespace Game.Editor
             {
                 previous.Restore();
                 EditorUtility.ClearProgressBar();
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -339,7 +339,7 @@ namespace Game.Editor
             {
                 previous.Restore();
                 EditorUtility.ClearProgressBar();
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -384,6 +384,12 @@ namespace Game.Editor
                 timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
                 timing.Run("CleanupPreparatoryPlayer", context.CleanupPreparatoryDirectory);
 
+                if (CiBuildSession.Current != null)
+                {
+                    SaveAndroidHostState(version, "SmallHostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint);
+                    CiBuildSession.Current.Capture(version, package.OutputPackageDirectory, context.FinalApkPath, appVersion: appVersion, versionCode: PlayerSettings.Android.bundleVersionCode);
+                    return;
+                }
                 var publish = timing.Run("PublishAndroidResourceServer", ResourceServerPublishUtility.PublishOrUpdateLatestAndroidPackage);
                 if (!publish.Success)
                     throw new InvalidOperationException($"首包资源服同步失败：{publish.Error}");
@@ -421,7 +427,7 @@ namespace Game.Editor
             {
                 previous.Restore();
                 EditorUtility.ClearProgressBar();
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -464,6 +470,7 @@ namespace Game.Editor
                     state, Directory.GetParent(Application.dataPath).FullName));
                 timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "Host", package.OutputPackageDirectory, null, false));
 
+                if (CiBuildSession.Current != null) { CiBuildSession.Current.Capture(version, package.OutputPackageDirectory); return; }
                 var publish = timing.Run("PublishAndroidResourceServer", ResourceServerPublishUtility.PublishOrUpdateLatestAndroidPackage);
                 if (!publish.Success)
                 {
@@ -487,7 +494,7 @@ namespace Game.Editor
             finally
             {
                 EditorUtility.ClearProgressBar();
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -872,7 +879,7 @@ namespace Game.Editor
             catch (Exception exception)
             {
                 // 前置检查失败不得切平台或留下构建锁；此时尚未登记恢复请求。
-                s_isBuilding = false;
+                EndBuild();
                 ShowDialog(workflowName + "被阻止", exception.Message);
                 throw;
             }
@@ -895,7 +902,7 @@ namespace Game.Editor
             }
             finally
             {
-                s_isBuilding = false;
+                EndBuild();
             }
         }
 
@@ -987,6 +994,13 @@ namespace Game.Editor
             SessionState.EraseBool(ReloadCompletedKey);
         }
 
+        /// <summary>释放所有菜单共用的工作区锁；失败和平台切换路径同样收尾。</summary>
+        private static IDisposable s_workspaceBuildLease;
+        private static void EndBuild()
+        {
+            try { s_workspaceBuildLease?.Dispose(); } finally { s_workspaceBuildLease = null; s_isBuilding = false; }
+        }
+
         private static bool BeginBuild()
         {
             if (HasActiveWorkflow || BuildUtility.HasActiveWorkflow)
@@ -999,6 +1013,7 @@ namespace Game.Editor
             if (EditorApplication.isPlayingOrWillChangePlaymode)
                 throw new InvalidOperationException("Unity 正在进入或退出 PlayMode，请稍后再试。");
 
+            s_workspaceBuildLease = WorkspaceBuildLock.Acquire(Directory.GetParent(Application.dataPath).FullName);
             s_isBuilding = true;
             return true;
         }

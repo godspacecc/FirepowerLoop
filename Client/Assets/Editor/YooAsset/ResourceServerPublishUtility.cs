@@ -143,6 +143,16 @@ namespace Game.Editor
                 : PublishPackage(root, Path.Combine(workspace, "Server", "ResourceServer"), release, DateTime.Now, version);
         }
 
+        /// <summary>CI只复制明确版本到独立新发布根，不选择最新来源，不启动服务。</summary>
+        public static ResourceServerPublishResult PublishExactPackage(string packageDirectory, string version, string templateRoot, string releaseRoot)
+        {
+            string source = FullPath(packageDirectory);
+            if (string.IsNullOrWhiteSpace(version) || !string.Equals(Path.GetFileName(source), version, StringComparison.Ordinal) || version.IndexOfAny(new[] { '/', '\\', '.' }) >= 0)
+                throw new InvalidOperationException("指定资源目录与版本不符");
+            WorkspaceBuildLock.EnsureNoLinks(source); WorkspaceBuildLock.EnsureNoLinks(releaseRoot); WorkspaceBuildLock.EnsureNoLinks(templateRoot);
+            return PublishPackage(Directory.GetParent(source).FullName, templateRoot, releaseRoot, DateTime.Now, version);
+        }
+
         /// <summary>指定版本时只解析该目录；其他菜单继续使用原来的最新有效包策略。</summary>
         private static bool TryFindPackage(string root, string requiredVersion, out string directory, out string version, out string error)
         {
