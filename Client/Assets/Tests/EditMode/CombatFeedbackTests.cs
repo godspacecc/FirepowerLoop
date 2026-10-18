@@ -149,7 +149,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void FormalPlayerRangedWeaponStaysUprightWhenHandBoneRolls()
+        public void FormalPlayerSharedWeaponKeepsConfiguredPoseWhenHandBoneRolls()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
@@ -159,16 +159,26 @@ namespace Game.Tests
             try
             {
                 var view = instance.GetComponent<PlayerView>();
-                Assert.That(view.TryGetWeaponAttachRoot(global::PlayerWeaponAttachPoint.RangedWeapon,
-                    out var rangedRoot), Is.True);
+                var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.SetWeaponId("arcade.weapon.basic"), Is.True, presenter.LastError);
+                view.SetSharedWeaponAnimationActive(true);
+                view.Animator.Rebind(); view.Animator.Update(0f);
+                presenter.ApplyOffhandGrip();
+                var weapon = presenter.Visual.transform;
+                var localPosition = weapon.localPosition; var localRotation = weapon.localRotation;
+                var worldRotation = weapon.rotation;
                 var hand = view.Animator.GetBoneTransform(HumanBodyBones.RightHand);
                 hand.rotation *= Quaternion.Euler(35f, 20f, 75f);
 
                 view.TickCombatFeedback(0f);
+                presenter.ApplyOffhandGrip();
 
-                Assert.That(Vector3.Dot(rangedRoot.up, Vector3.up), Is.GreaterThan(0.999f));
-                Assert.That(Vector3.Dot(rangedRoot.forward, instance.transform.forward),
-                    Is.GreaterThan(0.999f));
+                Assert.That(weapon.parent, Is.EqualTo(hand), "正式目录枪体应跟随配置的主手骨");
+                Assert.That(Vector3.Distance(weapon.localPosition, localPosition), Is.LessThan(.0001f));
+                Assert.That(Quaternion.Angle(weapon.localRotation, localRotation), Is.LessThan(.01f));
+                Assert.That(Quaternion.Angle(weapon.rotation, hand.rotation * localRotation), Is.LessThan(.01f));
+                Assert.That(Quaternion.Angle(weapon.rotation, worldRotation), Is.GreaterThan(1f),
+                    "共享动作枪体应随手骨运动，旧世界直立约束不能覆盖配置姿态");
             }
             finally
             {
@@ -218,19 +228,21 @@ namespace Game.Tests
             try
             {
                 var view = instance.GetComponent<PlayerView>();
+                var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.SetWeaponId("arcade.weapon.basic"), Is.True, presenter.LastError);
+                view.SetSharedWeaponAnimationActive(true);
+                view.Animator.Rebind(); view.Animator.Update(0f);
                 var flash = instance.GetComponentsInChildren<ParticleSystem>(true)
                     .First(x => x.name == "PlayerMuzzleFlash");
-                PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, "ArcadePistol", true,
-                    new Vector3(0f, 0.04f, 0.43f));
 
-                Assert.That(flash.transform.position,
-                    Is.EqualTo(view.GetProjectileOrigin(Vector3.forward)));
                 view.PlayProjectileFireFeedback();
+                Assert.That(Vector3.Distance(flash.transform.position, view.GetProjectileOrigin(Vector3.forward)),
+                    Is.LessThan(.00001f), "世界坐标父子变换允许浮点舍入，枪口偏差仍必须小于0.01毫米");
                 Assert.That(flash.isPlaying, Is.True);
 
                 flash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, "ArcadeGrenade", false,
-                    new Vector3(0f, 0.02f, 0.32f));
+                Assert.That(presenter.SetWeaponId("arcade.weapon.grenade"), Is.True, presenter.LastError);
+                view.Animator.Rebind(); view.Animator.Update(0f);
                 view.PlayProjectileFireFeedback();
                 Assert.That(flash.isPlaying, Is.False);
             }

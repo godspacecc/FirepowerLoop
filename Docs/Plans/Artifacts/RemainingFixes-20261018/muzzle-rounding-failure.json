@@ -1,0 +1,74 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":9,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.4806518\"},\"Results\":[{\"Name\":\"Game.Tests.CombatFeedbackTests.EnemyHitFeedbackTemporarilyFlashesRedAndRestoresColor\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.EnemyMultimaterialFeedbackRestoresOverridesAfterRepeatedHitsAndReuse\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3750000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0630000\",\"Message\":\"  Expected: (0.91, 1.32, -0.28)\\r\\n  But was:  (0.91, 1.32, -0.28)\\r\\n\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidBindsWeaponsToRightHandAndKeepsDeathVisible\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidReceivesMovementSpeed\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerProjectileFeedbackRecoilsWeaponAndRestoresPosition\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerSharedWeaponKeepsConfiguredPoseWhenHandBoneRolls\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.PlayerAttackFeedbackTemporarilyExpandsAndRestoresScale\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.PlayerHurtFeedbackTemporarilyFlashesRedAndRestoresColor\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.CombatFeedbackTests.RepeatedHurtRestoresExistingOverridesWithoutTintingHiddenOrHudRenderers\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 9,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4806518"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.EnemyHitFeedbackTemporarilyFlashesRedAndRestoresColor",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.EnemyMultimaterialFeedbackRestoresOverridesAfterRepeatedHitsAndReuse",
+          "Status": "Passed",
+          "Duration": "00:00:00.3750000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin",
+          "Status": "Failed",
+          "Duration": "00:00:00.0630000",
+          "Message": "  Expected: (0.91, 1.32, -0.28)\r\n  But was:  (0.91, 1.32, -0.28)\r\n"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidBindsWeaponsToRightHandAndKeepsDeathVisible",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidReceivesMovementSpeed",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerProjectileFeedbackRecoilsWeaponAndRestoresPosition",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerSharedWeaponKeepsConfiguredPoseWhenHandBoneRolls",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.PlayerAttackFeedbackTemporarilyExpandsAndRestoresScale",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.PlayerHurtFeedbackTemporarilyFlashesRedAndRestoresColor",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.RepeatedHurtRestoresExistingOverridesWithoutTintingHiddenOrHudRenderers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,30 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.3337137\"},\"Results\":[{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerRangedWeaponStaysUprightWhenHandBoneRolls\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3330000\",\"Message\":\"  Expected: greater than 0.999000013f\\r\\n  But was:  -0.57357651f\\r\\n\",\"StackTrace\":\"at Game.Tests.CombatFeedbackTests.FormalPlayerRangedWeaponStaysUprightWhenHandBoneRolls () [0x0006b] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\CombatFeedbackTests.cs:169\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3337137"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerRangedWeaponStaysUprightWhenHandBoneRolls",
+          "Status": "Failed",
+          "Duration": "00:00:00.3330000",
+          "Message": "  Expected: greater than 0.999000013f\r\n  But was:  -0.57357651f\r\n",
+          "StackTrace": "at Game.Tests.CombatFeedbackTests.FormalPlayerRangedWeaponStaysUprightWhenHandBoneRolls () [0x0006b] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\CombatFeedbackTests.cs:169\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

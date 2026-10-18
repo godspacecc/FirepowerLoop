@@ -1,0 +1,30 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.5929093\"},\"Results\":[{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.5030000\",\"Message\":\"  Expected: less than 9.99999975E-05f\\r\\n  But was:  0.000972222479f\\r\\n\",\"StackTrace\":\"at Game.Tests.GunLocomotionAnimationTests\\u002B\\u003C\\u003Ec.\\u003CMovingPistolUsesFirePoseOverrideOnGunLayer\\u003Eb__2_0 (Game.CharacterWeaponPresenter presenter, Game.PlayerView view, UnityEngine.Animator animator, Game.OnlineRemotePlayerViewCtrl peer) [0x00091] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\GunLocomotionAnimationTests.cs:95\\r\\nat Game.Tests.GunLocomotionAnimationTests.WithPlayer (System.Action\\u00604[T1,T2,T3,T4] check) [0x000a5] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\GunLocomotionAnimationTests.cs:240\\r\\nat Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer () [0x00000] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\GunLocomotionAnimationTests.cs:83\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.5929093"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer",
+          "Status": "Failed",
+          "Duration": "00:00:01.5030000",
+          "Message": "  Expected: less than 9.99999975E-05f\r\n  But was:  0.000972222479f\r\n",
+          "StackTrace": "at Game.Tests.GunLocomotionAnimationTests+<>c.<MovingPistolUsesFirePoseOverrideOnGunLayer>b__2_0 (Game.CharacterWeaponPresenter presenter, Game.PlayerView view, UnityEngine.Animator animator, Game.OnlineRemotePlayerViewCtrl peer) [0x00091] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:95\r\nat Game.Tests.GunLocomotionAnimationTests.WithPlayer (System.Action`4[T1,T2,T3,T4] check) [0x000a5] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:240\r\nat Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:83\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

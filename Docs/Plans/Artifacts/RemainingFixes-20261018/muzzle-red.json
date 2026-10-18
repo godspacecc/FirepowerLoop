@@ -1,0 +1,30 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3499,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.3595618\"},\"Results\":[{\"Name\":\"Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3700000\",\"Message\":\"  Expected: (0.00, 1.10, 0.60)\\r\\n  But was:  (1.30, 1.00, 0.08)\\r\\n\",\"StackTrace\":\"at Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin () [0x00088] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\CombatFeedbackTests.cs:226\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3499,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3595618"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin",
+          "Status": "Failed",
+          "Duration": "00:00:00.3700000",
+          "Message": "  Expected: (0.00, 1.10, 0.60)\r\n  But was:  (1.30, 1.00, 0.08)\r\n",
+          "StackTrace": "at Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin () [0x00088] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\CombatFeedbackTests.cs:226\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

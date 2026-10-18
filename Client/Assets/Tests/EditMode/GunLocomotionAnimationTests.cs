@@ -92,10 +92,18 @@ namespace Game.Tests
                 view.PlayProjectileFireFeedback();
                 Step(animator, view, 6);
                 Assert.That(presenter.TryGetProjectileOrigin(out _), Is.True);
-                Assert.That(Vector3.Distance(presenter.Visual.transform.localPosition, position), Is.LessThan(.0001f));
+                // 当前手枪在射击姿态上叠加短后坐；第6帧仍有余量，不应要求静止位置。
+                var kick = presenter.Visual.transform.localPosition - position;
+                Assert.That(Vector3.Dot(kick, rotation * Vector3.back), Is.GreaterThan(0f));
+                Assert.That(kick.magnitude, Is.LessThanOrEqualTo(.0351f));
+                Assert.That(Vector3.Cross(kick, rotation * Vector3.back).magnitude, Is.LessThan(.0001f));
                 Assert.That(Quaternion.Angle(presenter.Visual.transform.localRotation, rotation), Is.LessThan(.01f),
                     "上身射击时挂点应使用射击动作覆盖值，而非腿部移动片段");
                 Assert.That(Vector3.Distance(presenter.Visual.transform.localScale, scale), Is.LessThan(.0001f));
+                Step(animator, view, 3);
+                Assert.That(presenter.TryGetProjectileOrigin(out _), Is.True);
+                Assert.That(Vector3.Distance(presenter.Visual.transform.localPosition, position), Is.LessThan(.0001f),
+                    "短后坐结束后应回到当前射击姿态，不能累积偏移或退回行走姿态");
             });
         }
 

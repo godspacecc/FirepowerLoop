@@ -1,0 +1,108 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3499,\"PassedTests\":17,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.8795384\"},\"Results\":[{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.4440000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0150000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.basic\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0310000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rapid\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.spread\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0140000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.piercing\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.raygun\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0140000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rocket\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.basic\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0170000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rapid\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0120000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022switch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022hurt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022death\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\\u0022weapon.knife\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\\u0022weapon.short-sword\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0090000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3499,
+        "PassedTests": 17,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.8795384"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody",
+          "Status": "Passed",
+          "Duration": "00:00:00.4440000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.spread\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0140000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.piercing\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.raygun\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0140000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rocket\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0120000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"switch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"hurt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"death\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.knife\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.short-sword\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
