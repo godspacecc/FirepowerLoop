@@ -153,7 +153,7 @@ namespace Game.Tests
                 "右摇杆应提供适合移动端拇指操作的触控区域");
             Assert.That(hud.MoveJoystick.movementRange, Is.EqualTo(75f).Within(0.001f));
             Assert.That(hud.AimJoystick.movementRange, Is.EqualTo(75f).Within(0.001f));
-            Assert.That(pauseRect.rect.width, Is.GreaterThanOrEqualTo(160f));
+            Assert.That(pauseRect.rect.width, Is.GreaterThanOrEqualTo(96f), "图标按钮仍保留足够的触控宽度");
             Assert.That(pauseRect.rect.height, Is.GreaterThanOrEqualTo(88f));
             Assert.That(dashRect.anchorMin, Is.EqualTo(Vector2.one), "能力集中于已确认的右上区域");
             Assert.That(bombRect.anchorMin, Is.EqualTo(Vector2.one));

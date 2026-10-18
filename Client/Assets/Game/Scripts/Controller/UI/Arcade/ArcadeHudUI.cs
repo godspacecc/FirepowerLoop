@@ -32,6 +32,7 @@ namespace Game
         public OnScreenStick MoveJoystick;
         public GameObject MoveJoystickRoot;
         public CanvasGroup MoveOpacity;
+        public GameObject PauseIconRoot;
         public Sprite PiercingIcon;
         public CustomListView PlayerStatusList;
         public Sprite RapidIcon;
@@ -46,6 +47,8 @@ namespace Game
         public TextMeshProUGUI TextBombCount;
         public TextMeshProUGUI TextDashCount;
         public TextMeshProUGUI TextFirstPerson;
+        public TextMeshProUGUI TextMobileBombCount;
+        public TextMeshProUGUI TextPauseOnlineExit;
         public TextMeshProUGUI TextRespawn;
         public TextMeshProUGUI TextStageBanner;
         public TextMeshProUGUI TextStormCharge;

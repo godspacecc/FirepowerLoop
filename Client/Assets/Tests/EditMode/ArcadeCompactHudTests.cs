@@ -92,6 +92,10 @@ namespace Game.Tests
                 Assert.That(ui.BtnBomb.gameObject.activeInHierarchy, Is.EqualTo(mobile));
                 Assert.That(ui.BtnDash.gameObject.activeInHierarchy, Is.EqualTo(mobile));
                 Assert.That(root.transform.Find("JoystickLayoutArea/DesktopAbilityRoot").gameObject.activeSelf, Is.EqualTo(!mobile));
+                // 单机图标不能被旧“暂停”文字覆盖；联机沿用明确的断线退出语义。
+                var labels = ui.BtnPause.GetComponentsInChildren<TMPro.TextMeshProUGUI>(false);
+                if (online) Assert.That(labels, Has.Some.Matches<TMPro.TextMeshProUGUI>(text => text.text == Loc.T("ui.arcade.hud.online_exit")));
+                else Assert.That(labels, Is.Empty, "单机暂停入口只显示双竖线图标");
             }
             finally { Object.DestroyImmediate(root); }
         }

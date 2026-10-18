@@ -1304,9 +1304,9 @@ namespace Game
         /// </summary>
         public static string ArcadeEstateRound4 => Loc.T("ui.arcade.estate.round.4");
         /// <summary>
-        /// 进入第 {0} 轮
+        /// 进入下一轮
         /// </summary>
-        public static string ArcadeExitEnterRound(object arg0) => Loc.T("ui.arcade.exit.enter_round", arg0);
+        public static string ArcadeExitEnterRound => Loc.T("ui.arcade.exit.enter_round");
         /// <summary>
         /// 胜利出口
         /// </summary>
@@ -4872,9 +4872,45 @@ namespace Game
         /// </summary>
         public static string SettingsNetworkApply => Loc.T("ui.settings.network.apply");
         /// <summary>
+        /// 下次联机时使用此地址。
+        /// </summary>
+        public static string SettingsNetworkGameHint => Loc.T("ui.settings.network.game_hint");
+        /// <summary>
+        /// 地址格式无效，请输入 IP 或域名:端口。
+        /// </summary>
+        public static string SettingsNetworkGameInvalid => Loc.T("ui.settings.network.game_invalid");
+        /// <summary>
+        /// 读取联机服务器地址失败。
+        /// </summary>
+        public static string SettingsNetworkGameLoadFailed => Loc.T("ui.settings.network.game_load_failed");
+        /// <summary>
+        /// 已保存，下次联机生效。
+        /// </summary>
+        public static string SettingsNetworkGameSaved => Loc.T("ui.settings.network.game_saved");
+        /// <summary>
         /// 联机服务器（IP:端口）
         /// </summary>
         public static string SettingsNetworkGameServer => Loc.T("ui.settings.network.game_server");
+        /// <summary>
+        /// 恢复默认失败。
+        /// </summary>
+        public static string SettingsNetworkResetFailed => Loc.T("ui.settings.network.reset_failed");
+        /// <summary>
+        /// 下次启动时用于资源更新。
+        /// </summary>
+        public static string SettingsNetworkResourceHint => Loc.T("ui.settings.network.resource_hint");
+        /// <summary>
+        /// 地址格式无效，请输入完整 HTTP/HTTPS 地址。
+        /// </summary>
+        public static string SettingsNetworkResourceInvalid => Loc.T("ui.settings.network.resource_invalid");
+        /// <summary>
+        /// 读取资源服务器地址失败。
+        /// </summary>
+        public static string SettingsNetworkResourceLoadFailed => Loc.T("ui.settings.network.resource_load_failed");
+        /// <summary>
+        /// 已保存，下次启动时生效。
+        /// </summary>
+        public static string SettingsNetworkResourceSaved => Loc.T("ui.settings.network.resource_saved");
         /// <summary>
         /// 资源服务器（HTTP/HTTPS）
         /// </summary>
@@ -4931,6 +4967,50 @@ namespace Game
         /// 试听
         /// </summary>
         public static string SettingsTestSound => Loc.T("ui.settings.test_sound");
+        /// <summary>
+        /// 调整游戏声音
+        /// </summary>
+        public static string SettingsVisualAudioSubtitle => Loc.T("ui.settings.visual.audio_subtitle");
+        /// <summary>
+        /// 音频设置
+        /// </summary>
+        public static string SettingsVisualAudioTitle => Loc.T("ui.settings.visual.audio_title");
+        /// <summary>
+        /// 更改后自动保存
+        /// </summary>
+        public static string SettingsVisualAutosave => Loc.T("ui.settings.visual.autosave");
+        /// <summary>
+        /// 选择按键以修改绑定
+        /// </summary>
+        public static string SettingsVisualControlsSubtitle => Loc.T("ui.settings.visual.controls_subtitle");
+        /// <summary>
+        /// 操作设置
+        /// </summary>
+        public static string SettingsVisualControlsTitle => Loc.T("ui.settings.visual.controls_title");
+        /// <summary>
+        /// 详细诊断
+        /// </summary>
+        public static string SettingsVisualDetails => Loc.T("ui.settings.visual.details");
+        /// <summary>
+        /// 语言与显示
+        /// </summary>
+        public static string SettingsVisualGeneralSubtitle => Loc.T("ui.settings.visual.general_subtitle");
+        /// <summary>
+        /// 通用设置
+        /// </summary>
+        public static string SettingsVisualGeneralTitle => Loc.T("ui.settings.visual.general_title");
+        /// <summary>
+        /// 网络设置
+        /// </summary>
+        public static string SettingsVisualNetworkTitle => Loc.T("ui.settings.visual.network_title");
+        /// <summary>
+        /// 恢复默认
+        /// </summary>
+        public static string SettingsVisualReset => Loc.T("ui.settings.visual.reset");
+        /// <summary>
+        /// 音效音量
+        /// </summary>
+        public static string SettingsVisualSoundVolume => Loc.T("ui.settings.visual.sound_volume");
         /// <summary>
         /// 窗口模式
         /// </summary>

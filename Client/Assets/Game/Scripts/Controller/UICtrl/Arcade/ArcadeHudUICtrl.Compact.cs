@@ -19,13 +19,16 @@ namespace Game
             UI.BtnBomb.gameObject.SetActive(mobile);
             UI.BtnDash.gameObject.SetActive(mobile);
             UI.BtnPause.gameObject.SetActive(mobile || online);
-            SetButton(UI.BtnPause, Loc.T(online ? "ui.arcade.hud.online_exit" : "ui.arcade.pause"));
+            // 联机入口原本用于退出，不能以单机暂停图标误示会冻结服务器时间。
+            UI.PauseIconRoot.SetActive(!online);
+            UI.TextPauseOnlineExit.gameObject.SetActive(online);
+            UI.TextPauseOnlineExit.text = Loc.T("ui.arcade.hud.online_exit");
         }
 
         /// <summary>能力次数只读取现有库存；触屏零次数禁用沿用原按钮裁决。</summary>
         private void RenderAbilityCounts(int bombs, int dashes)
         {
-            SetButton(UI.BtnBomb, bombs.ToString());
+            Set(UI.TextMobileBombCount, bombs.ToString());
             SetButton(UI.BtnDash, dashes.ToString());
             Set(UI.TextBombCount, bombs.ToString());
             Set(UI.TextDashCount, dashes.ToString());
