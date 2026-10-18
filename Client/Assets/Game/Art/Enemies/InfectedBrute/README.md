@@ -1,0 +1,7 @@
+# 重型感染敌人副本
+
+来源：本机已拥有的Meshtint Free Barbarian资源包，Barbarian Wyder.FBX及四张原调色板。原包只读；只复制必需FBX与TGA，副本使用项目独立GUID和URP材质。FBX SHA256：842fecdfe1ae363f76e4549d3dd9ed63ae1a1100b646d876f449070008430931。
+
+Avatar沿原有效Humanoid映射，复用本项目五动作与重型战斗身份；外观头盔／短壮比例用于重型辨识，并非轻型士兵造型的同比放大。主角、其他Boss、数值、NavMeshAgent与碰撞没有修改。只在ArcadeVisual下换视觉树，六配色沿原确定性变体机制；独立武器目录按两骨架手轴和缩放转换，避免影响主角与轻型。
+
+制作工具Tools/Unity/ArcadeInfectedBruteAuthoring.cs为一次原位转换，重复制作需先恢复旧Prefab，防止重复变换。验证见Docs/Plans/Artifacts/HeavyEnemy-20261018。画面来自真实Unity独立预览：五动作及俯视比例，不冒充自然生成／实际手机验收。
