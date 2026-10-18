@@ -221,7 +221,7 @@ namespace Game.Tests
             Assert.That(close.anchorMax, Is.EqualTo(Vector2.one));
             Assert.That(close.pivot, Is.EqualTo(Vector2.one));
             Assert.That(close.anchoredPosition, Is.EqualTo(Vector2.zero));
-            Assert.That(close.sizeDelta, Is.EqualTo(new Vector2(150f, 64f)));
+            Assert.That(close.sizeDelta, Is.EqualTo(new Vector2(64f, 64f)));
             Assert.That(WorldRect(close).Overlaps(WorldRect(title)), Is.False);
             Assert.That(WorldRect(close).Overlaps(WorldRect(ui.RoomButton.GetComponent<RectTransform>())), Is.False);
             Assert.That(WorldRect(close).Overlaps(WorldRect(ui.LogoutButton.GetComponent<RectTransform>())), Is.False);
