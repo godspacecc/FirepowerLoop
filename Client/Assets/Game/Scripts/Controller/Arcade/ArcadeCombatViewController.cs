@@ -555,6 +555,7 @@ namespace Game
 
         public void RemoveEnemy(int id, bool playDeath, Vector2 direction, bool explosive)
         {
+            islandWading?.Remove(id);
             RemoveRoundEnemyContent(id);
             RemoveArmor(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
@@ -820,6 +821,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);
             dashPresentation?.Tick(deltaTime);
             TickExitCues(deltaTime);

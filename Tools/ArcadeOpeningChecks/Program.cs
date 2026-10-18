@@ -79,6 +79,13 @@ Check("Island waves preserve continuous entries and exhaust the original queue",
             Require(entries[0].PositionZ < -10&&entries[1].PositionX > 10&&
                 entries[2].PositionZ > 10&&entries[3].PositionX < -10,"first round must use all four entrances");
             Require(region.IsShallow(water.PositionX,water.PositionZ),"first water-side spawn must retain shallow entry");
+            foreach(var entrant in entries)
+            {
+                float length=MathF.Sqrt(entrant.PositionX*entrant.PositionX+entrant.PositionZ*entrant.PositionZ);
+                for(float distance=0;distance<=3;distance+=.25f)
+                    Require(region.IsShallow(entrant.PositionX*(1-distance/length),entrant.PositionZ*(1-distance/length)),
+                        "all four authoritative entrances need three metres of wading");
+            }
         }
         float x=water.PositionX,z=water.PositionZ;
         Call("TickEnemies",actor,battle,.05f);

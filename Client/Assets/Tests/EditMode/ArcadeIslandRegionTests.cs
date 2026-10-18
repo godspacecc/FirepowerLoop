@@ -9,6 +9,22 @@ namespace Game.Tests
     /// <summary>保护规则轮廓与真实步进路径，避免画面曲线而运行时仍剪矩形。</summary>
     public sealed class ArcadeIslandRegionTests
     {
+        [Test] public void FirstRoundFourEntrancesHaveAtLeastThreeMetresOfVisibleWading()
+        {
+            var region = new ArcadeIslandRegion(19.5f, 19.5f, 1);
+            for (int side = 0; side < 4; side++)
+            for (int lane = 0; lane < 5; lane++)
+            {
+                region.EntryFromFourSides(side, lane * .25f, .95f, out var start);
+                var position = new Vector2(start.X, start.Y);
+                var inward = -position.normalized;
+                for (float distance = 0; distance <= 3f; distance += .25f)
+                {
+                    var sample = position + inward * distance;
+                    Assert.True(region.IsShallow(sample.x, sample.y), $"入口{side}车道{lane}在{distance}米前已上岸");
+                }
+            }
+        }
         [Test] public void ContourKeepsBroadContinuousAreaAndSlidesInsideOuterEdge()
         {
             var region=new ArcadeIslandRegion(19.5f,19.5f);double area=0;

@@ -26,6 +26,8 @@ namespace Game
         private Mesh islandWreckMesh;
         private GameObject islandWreck;
         private Material islandWarningMaterial;
+        /// <summary>只读敌人位置的地图级涉水槽池，由统一表现生命周期推进和释放。</summary>
+        private ArcadeIslandWadingPresentation islandWading;
         /// <summary>专用地标跟随同源碰撞根，生成网格由本岛岸句柄唯一释放。</summary>
         private readonly List<GameObject> islandLandmarks = new();
         private readonly List<Mesh> islandLandmarkMeshes = new();
@@ -141,6 +143,8 @@ namespace Game
                     islandWreck.GetComponent<MeshRenderer>().sharedMaterial = island.transform.Find("Campfire/Logs").GetComponentInChildren<Renderer>(true).sharedMaterial;
                 }
                 BuildIslandLandmarks(w, h);
+                islandWading = new ArcadeIslandWadingPresentation(root.transform, region,
+                    Shader.Find("FirepowerLoop/BombAdditive"), Application.isMobilePlatform, Camera.main);
             }
             // 专用地标遮盖通用栅栏；异步通用资源晚到时，下一份快照也不会保留栅栏外观。
             if (islandRound > 0)
@@ -196,6 +200,7 @@ namespace Game
 
         private void ReleaseIslandMeshes()
         {
+            islandWading?.Dispose(); islandWading = null;
             islandLandmarksReady = false;
             foreach (var landmark in islandLandmarks)
             {

@@ -401,6 +401,7 @@ namespace Game
         /// <summary>记录主表现刚接收的权威坐标；专用敌人不从场景搜索或积分位移。</summary>
         public void RecordRoundEnemyPosition(int id,Vector2 position)
         {
+            islandWading?.Set(id, position);
             roundEnemyPositions[id]=position;
             if(roundEnemies.TryGetValue(id,out var visual))
             {
