@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-18",
+  "scope": "降低单人子弹命中敌人的音量，按命中点到本机玩家的世界距离衰减",
+  "implementation": {
+    "file": "Client/Assets/Game/Scripts/System/Audio/CombatSoundSystem.cs",
+    "baseGain": 0.18,
+    "spatialMinDistance": 1,
+    "fullGainWithinMetres": 2,
+    "silentAtMetres": 18,
+    "falloff": "平方渐弱",
+    "missingPlayer": "静音",
+    "ownership": "沿用地图/暂停和迟到加载清理"
+  },
+  "tests": {
+    "mode": "EditMode",
+    "includePassingTests": true,
+    "maximumExecutedTests": 6,
+    "red": {
+      "passed": 1,
+      "failed": 3,
+      "results": [
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.BulletHitsBecomeQuieterWithPlayerDistanceAndFarHitsStaySilent",
+          "Status": "Failed",
+          "Duration": "00:00:00.3070000",
+          "Message": "  近距命中反馈也应降低基础音量\r\n  Expected: greater than 0.0f and less than 0.25f\r\n  But was:  0.349999994f\r\n"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.ExistingMeleeAndSwingFeedbackRemainAvailableWithoutBulletDistanceBinding",
+          "Status": "Passed",
+          "Duration": "00:00:00.0610000"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.MissingOrInactiveLocalPlayerDoesNotPlayFullVolumeBulletHits",
+          "Status": "Failed",
+          "Duration": "00:00:00.0140000",
+          "Message": "  Expected: null\r\n  But was:  <SoundSource-1 (UnityEngine.AudioSource)>\r\n"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.MovingPlayerCloserRaisesTheNextHitAtTheSameWorldPoint",
+          "Status": "Failed",
+          "Duration": "00:00:00.0130000",
+          "Message": "  应读取本机玩家的新位置，不能固定音量或按相机距离计算\r\n  Expected: greater than 0.699999988f\r\n  But was:  0.349999994f\r\n"
+        }
+      ]
+    },
+    "green": {
+      "passed": 4,
+      "failed": 0,
+      "results": [
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.BulletHitsBecomeQuieterWithPlayerDistanceAndFarHitsStaySilent",
+          "Status": "Passed",
+          "Duration": "00:00:00.2790000"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.ExistingMeleeAndSwingFeedbackRemainAvailableWithoutBulletDistanceBinding",
+          "Status": "Passed",
+          "Duration": "00:00:00.0440000"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.MissingOrInactiveLocalPlayerDoesNotPlayFullVolumeBulletHits",
+          "Status": "Passed",
+          "Duration": "00:00:00.0420000"
+        },
+        {
+          "Name": "Game.Tests.CombatImpactAudioTests.MovingPlayerCloserRaisesTheNextHitAtTheSameWorldPoint",
+          "Status": "Passed",
+          "Duration": "00:00:00.0470000"
+        }
+      ]
+    },
+    "existing": {
+      "passed": 2,
+      "failed": 0,
+      "results": [
+        {
+          "Name": "Game.Tests.ArcadeCombatAudioTests.FastWeapons_LimitRepeatedShotSounds",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCombatAudioTests.SevenWeapons_ResolveImportedFireClips",
+          "Status": "Passed",
+          "Duration": "00:00:00.1260000"
+        }
+      ]
+    }
+  },
+  "review": "只读独立审查未发现 Important/Critical；provider 和命中事件均为世界坐标，设置刷新保留增益。",
+  "limitations": [
+    "手机实际听感待更新后试玩确认",
+    "联机当前未发送此命中声音事件，本次未扩展"
+  ],
+  "playerBuildTriggered": false
+}
