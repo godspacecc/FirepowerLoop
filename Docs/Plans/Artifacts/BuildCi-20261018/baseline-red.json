@@ -1,0 +1,83 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3469,\"PassedTests\":0,\"FailedTests\":10,\"SkippedTests\":0,\"Duration\":\"00:00:01.5679061\"},\"Results\":[{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0540000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0060000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022PC\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u0022other\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0070000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:changed\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0060000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0060000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0090000\",\"Message\":\"  Expected: \\u003CSystem.InvalidOperationException\\u003E\\r\\n  But was:  \\u003CNUnit.Framework.AssertionException:   Expected: not null\\r\\n  But was:  null\\r\\n\\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\r\\n  at Game.Tests.HostBaselineArchiveTests.Call (System.String method, System.Object[] args) [0x0000b] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\HostBaselineArchiveTests.cs:27 \\r\\n  at Game.Tests.HostBaselineArchiveTests.Create () [0x001b9] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\HostBaselineArchiveTests.cs:40 \\r\\n  at Game.Tests.HostBaselineArchiveTests.\\u003CMissingRequiredAotCannotCreateSuccessfulArchive\\u003Eb__18_0 () [0x00000] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\HostBaselineArchiveTests.cs:78 \\r\\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in \\u003C10b6135e63434fdba4fc6c109928ab3b\\u003E:0 \\u003E\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0070000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0070000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3469,
+        "PassedTests": 0,
+        "FailedTests": 10,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5679061"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity",
+          "Status": "Failed",
+          "Duration": "00:00:00.0540000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected",
+          "Status": "Failed",
+          "Duration": "00:00:00.0060000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"PC\",\"2022.3.test\",\"boot-v1:test\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"other\",\"boot-v1:test\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0070000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"2022.3.test\",\"boot-v1:changed\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0060000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot",
+          "Status": "Failed",
+          "Duration": "00:00:00.0060000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive",
+          "Status": "Failed",
+          "Duration": "00:00:00.0090000",
+          "Message": "  Expected: <System.InvalidOperationException>\r\n  But was:  <NUnit.Framework.AssertionException:   Expected: not null\r\n  But was:  null\r\n\r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression, System.String message, System.Object[] args) [0x00044] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at NUnit.Framework.Assert.That[TActual] (TActual actual, NUnit.Framework.Constraints.IResolveConstraint expression) [0x00001] in <10b6135e63434fdba4fc6c109928ab3b>:0 \r\n  at Game.Tests.HostBaselineArchiveTests.Call (System.String method, System.Object[] args) [0x0000b] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\HostBaselineArchiveTests.cs:27 \r\n  at Game.Tests.HostBaselineArchiveTests.Create () [0x001b9] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\HostBaselineArchiveTests.cs:40 \r\n  at Game.Tests.HostBaselineArchiveTests.<MissingRequiredAotCannotCreateSuccessfulArchive>b__18_0 () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\HostBaselineArchiveTests.cs:78 \r\n  at NUnit.Framework.Assert.Throws (NUnit.Framework.Constraints.IResolveConstraint expression, NUnit.Framework.TestDelegate code, System.String message, System.Object[] args) [0x00004] in <10b6135e63434fdba4fc6c109928ab3b>:0 >\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory",
+          "Status": "Failed",
+          "Duration": "00:00:00.0070000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore",
+          "Status": "Failed",
+          "Duration": "00:00:00.0070000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

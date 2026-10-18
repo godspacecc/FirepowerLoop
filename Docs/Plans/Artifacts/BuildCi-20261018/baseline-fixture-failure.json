@@ -1,0 +1,82 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":3469,\"PassedTests\":1,\"FailedTests\":9,\"SkippedTests\":0,\"Duration\":\"00:00:01.7713514\"},\"Results\":[{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.1070000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0090000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022PC\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u0022other\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:changed\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0090000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0080000\",\"Message\":\"System.InvalidOperationException : \\u53EA\\u80FD\\u5F52\\u6863\\u540C\\u5E73\\u53F0\\u540C\\u7248\\u672C\\u7684\\u6210\\u529F\\u9996\\u5305\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 3469,
+        "PassedTests": 1,
+        "FailedTests": 9,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.7713514"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity",
+          "Status": "Failed",
+          "Duration": "00:00:00.1070000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved",
+          "Status": "Failed",
+          "Duration": "00:00:00.0090000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"PC\",\"2022.3.test\",\"boot-v1:test\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"other\",\"boot-v1:test\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"2022.3.test\",\"boot-v1:changed\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory",
+          "Status": "Failed",
+          "Duration": "00:00:00.0090000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore",
+          "Status": "Failed",
+          "Duration": "00:00:00.0080000",
+          "Message": "System.InvalidOperationException : 只能归档同平台同版本的成功首包"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

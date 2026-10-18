@@ -1,0 +1,78 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3470,\"PassedTests\":11,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:02.7025063\"},\"Results\":[{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2440000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved(\\u0022Android\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2120000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved(\\u0022PC\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2260000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0940000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022PC\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0750000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u0022other\\u0022,\\u0022boot-v1:test\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0750000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\\u0022Android\\u0022,\\u00222022.3.test\\u0022,\\u0022boot-v1:changed\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0710000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0780000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0090000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0740000\"},{\"Name\":\"Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0750000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3470,
+        "PassedTests": 11,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.7025063"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveCannotOverwritePreviousIdentity",
+          "Status": "Passed",
+          "Duration": "00:00:00.2440000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved(\"Android\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.2120000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved(\"PC\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.2260000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ExtraUnlistedFilesAreRejected",
+          "Status": "Passed",
+          "Duration": "00:00:00.0940000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"PC\",\"2022.3.test\",\"boot-v1:test\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0750000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"other\",\"boot-v1:test\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0750000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.IncompatibleIdentityCannotRestore(\"Android\",\"2022.3.test\",\"boot-v1:changed\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0710000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.ManifestCannotEscapeArchiveRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0780000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.MissingRequiredAotCannotCreateSuccessfulArchive",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.RestoreCannotOverwriteExistingDirectory",
+          "Status": "Passed",
+          "Duration": "00:00:00.0740000"
+        },
+        {
+          "Name": "Game.Tests.HostBaselineArchiveTests.SameLengthTamperingFailsHashBeforeRestore",
+          "Status": "Passed",
+          "Duration": "00:00:00.0750000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
