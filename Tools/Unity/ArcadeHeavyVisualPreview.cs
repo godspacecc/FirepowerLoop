@@ -17,12 +17,12 @@ public static class ArcadeHeavyVisualPreview
             throw new InvalidOperationException("仅本项目编辑态预览");
         var scene = EditorSceneManager.NewPreviewScene();
         var prior = RenderTexture.active;
-        RenderTexture rt = null; Texture2D texture = null;
+        RenderTexture rt = null; Texture2D texture = null; Camera camera = null;
         string directory = Path.GetFullPath("Temp/HeavyVisual-20261018"); Directory.CreateDirectory(directory);
         try
         {
             var cameraObject = new GameObject("PreviewCamera", typeof(Camera)); SceneManager.MoveGameObjectToScene(cameraObject, scene);
-            var camera = cameraObject.GetComponent<Camera>(); camera.scene = scene; camera.orthographic = true;
+            camera = cameraObject.GetComponent<Camera>(); camera.scene = scene; camera.orthographic = true;
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.13f, .18f, .22f); camera.cullingMask = 1 << 31;
             var lightObject = new GameObject("PreviewLight", typeof(Light)); SceneManager.MoveGameObjectToScene(lightObject, scene);
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.7f; light.cullingMask = 1 << 31;
@@ -53,6 +53,7 @@ public static class ArcadeHeavyVisualPreview
         finally
         {
             RenderTexture.active = prior;
+            if (camera != null) camera.targetTexture = null;
             if (texture != null) Object.DestroyImmediate(texture);
             if (rt != null) { rt.Release(); Object.DestroyImmediate(rt); }
             EditorSceneManager.ClosePreviewScene(scene);

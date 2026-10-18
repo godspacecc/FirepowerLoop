@@ -1,0 +1,6 @@
+正式Boot／新局按钮，隔离临时档；资源准备端口延迟1200ms仅为画面捕获，不代表自然加载耗时。
+LoadingVisible=True artwork=Assets/Game/Art/UI/Start/ArcadeIslandInfectedBackground.png
+EnteredPlaying=True LoadingHidden=True map=map.firepowerloop.arcade run=d59941eea082475497a778f58ea249c4
+SettledArena transitioning=False casual=True waveIndex=0
+RestoredStore=True mapHandle=null
+PASS 正式新局／真实背景／完成隐藏／放弃返回／恢复依赖
