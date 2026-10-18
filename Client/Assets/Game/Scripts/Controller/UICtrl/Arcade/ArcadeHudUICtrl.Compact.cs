@@ -29,12 +29,11 @@ namespace Game
         private void RenderAbilityCounts(int bombs, int dashes)
         {
             Set(UI.TextMobileBombCount, bombs.ToString());
-            SetButton(UI.BtnDash, dashes.ToString());
+            Set(UI.TextMobileDashCount, dashes.ToString());
             Set(UI.TextBombCount, bombs.ToString());
             Set(UI.TextDashCount, dashes.ToString());
             UI.DesktopBombIcon.color = bombs > 0 ? Color.white : new Color(.45f, .45f, .45f);
             UI.DesktopDashIcon.color = dashes > 0 ? Color.white : new Color(.45f, .45f, .45f);
-            UI.DesktopDashIcon.text = Loc.T("ui.arcade.hud.icon.dash");
         }
 
         /// <summary>剩余时间来自单人规则快照或联机服务器；分母读取双方共用的正式掉落持续时间，不另起 UI 计时器。</summary>

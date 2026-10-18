@@ -17,8 +17,8 @@ namespace Game
         private bool trial;
         private bool updateRegistered;
         private Vector2 lastAreaSize;
-        /// <summary>保存两个图标按钮的Prefab底色，结束选中后恢复与实战一致的显示。</summary>
-        private Color pauseButtonColor, bombButtonColor;
+        /// <summary>按暂停、炸弹、冲刺顺序保存Prefab底色，结束选中后恢复与实战一致的显示。</summary>
+        private Color[] iconButtonColors;
         private MobileStickLayoutData Selected => moveSelected ? draft.Move : draft.Aim;
         protected override string Path() => "Home/MobileControlLayout";
         public override UILayer Layer() => UILayer.Dialog;
@@ -34,8 +34,8 @@ namespace Game
             UI.ModeButton.onClick.AddListener(() =>
             { firstPersonPreview = !firstPersonPreview; buttonSelected = null; moveSelected = true; SetTrial(false); });
             var buttons = ButtonPreviews();
-            pauseButtonColor = UI.PausePreview.GetComponent<UnityEngine.UI.Image>().color;
-            bombButtonColor = UI.BombPreview.GetComponent<UnityEngine.UI.Image>().color;
+            iconButtonColors = new[] { UI.PausePreview, UI.BombPreview, UI.DashPreview }
+                .Select(handle => handle.GetComponent<UnityEngine.UI.Image>().color).ToArray();
             for (var i = 0; i < buttons.Length; i++) BindButton(buttons[i], (MobileLayoutButton)i);
             UI.SizeSlider.onValueChanged.AddListener(value =>
             { if (!trial && !buttonSelected.HasValue) { Selected.Scale = value; Render(); } });
@@ -139,8 +139,8 @@ namespace Game
                 buttons.Select(handle => (RectTransform)handle.transform).ToArray(), firstPersonPreview);
             for (var i = 0; i < buttons.Length; i++)
                 buttons[i].GetComponent<UnityEngine.UI.Image>().color = buttonSelected == (MobileLayoutButton)i
-                    ? new Color(.9f, .4f, .2f, .95f) : i == (int)MobileLayoutButton.Pause ? pauseButtonColor
-                    : i == (int)MobileLayoutButton.Bomb ? bombButtonColor : new Color(.2f, .4f, .5f, .85f);
+                    ? new Color(.9f, .4f, .2f, .95f) : i < iconButtonColors.Length
+                    ? iconButtonColors[i] : new Color(.2f, .4f, .5f, .85f);
             MobileControlLayoutGeometry.Render(UI.LayoutArea, (RectTransform)UI.MovePreview.transform, UI.MovePreviewOpacity, draft.Move, true, obstacles);
             MobileControlLayoutGeometry.Render(UI.LayoutArea, (RectTransform)UI.AimPreview.transform, UI.AimPreviewOpacity, draft.Aim, false, obstacles);
             UI.SizeSlider.SetValueWithoutNotify(Selected.Scale); UI.OpacitySlider.SetValueWithoutNotify(Selected.Opacity);

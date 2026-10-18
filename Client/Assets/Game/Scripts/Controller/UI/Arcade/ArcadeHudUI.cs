@@ -22,7 +22,7 @@ namespace Game
         public Button BtnSlayerMart;
         public GameObject DesktopAbilityRoot;
         public Image DesktopBombIcon;
-        public TextMeshProUGUI DesktopDashIcon;
+        public Image DesktopDashIcon;
         public CustomListView EffectList;
         public MobileCombatPressView FirstPersonFirePress;
         public GameObject FirstPersonRoot;
@@ -48,6 +48,7 @@ namespace Game
         public TextMeshProUGUI TextDashCount;
         public TextMeshProUGUI TextFirstPerson;
         public TextMeshProUGUI TextMobileBombCount;
+        public TextMeshProUGUI TextMobileDashCount;
         public TextMeshProUGUI TextPauseOnlineExit;
         public TextMeshProUGUI TextRespawn;
         public TextMeshProUGUI TextStageBanner;
