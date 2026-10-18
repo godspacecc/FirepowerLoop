@@ -17,11 +17,21 @@ namespace Game
         [SerializeField] private Vector3[] restPositions = new Vector3[0];
         [SerializeField] private Quaternion[] restRotations = new Quaternion[0];
         /// <summary>当前用途的物理阶段与上一帧叠加状态。</summary>
-        private bool dead, simulating, offsetApplied;
+        private bool dead, simulating, offsetApplied, staggering, hipsOffsetApplied;
         private float hitRemaining, deathAge, simulationSeconds;
         private Quaternion chestBeforeOffset;
         private Vector3 hitAxis;
         private const float HitSeconds = .18f;
+        private const float StaggerSeconds = .16f;
+        /// <summary>首次实例化时缓存骨盆及碰撞体；死亡与回池不再遍历查找组件或分配数组。</summary>
+        private Transform hips;
+        private Rigidbody hipsBody, chestBody;
+        private Collider[] bodyColliders;
+        private Vector3 hipsBeforeOffsetPosition, deathDirection;
+        private Quaternion hipsBeforeOffsetRotation;
+        private static readonly int AttackParameter = Animator.StringToHash("Attack");
+        private static readonly int HitParameter = Animator.StringToHash("Hit");
+        private static readonly int MoveParameter = Animator.StringToHash("MoveSpeed");
         public bool IsRagdoll => dead;
         public bool IsSimulating => simulating;
         public bool IsReady => animator != null && chest != null && bodies.Length == 11 &&
@@ -63,10 +73,23 @@ namespace Game
             if (simulating && deathAge >= simulationSeconds) Freeze();
         }
 
-        /// <summary>Animator求值后只叠加胸部旋转；不修改战斗根的位置与朝向。</summary>
+        /// <summary>Animator求值后叠加局部回弹或胸部／骨盆失衡，并在此刻交接物理，不修改战斗根。</summary>
         public void LateTick()
         {
-            if (!IsReady || dead || hitRemaining <= 0f || offsetApplied) return;
+            if (!IsReady || offsetApplied) return;
+            if (staggering)
+            {
+                ApplyStagger();
+                if (deathAge >= StaggerSeconds)
+                {
+                    // 最后一次动画求值和失衡叠加完成后，物理直接继承此刻姿态，不先还原站姿。
+                    offsetApplied = hipsOffsetApplied = false;
+                    ActivatePhysics(false);
+                    if (deathAge >= simulationSeconds) Freeze();
+                }
+                return;
+            }
+            if (dead || hitRemaining <= 0f) return;
             float progress = 1f - hitRemaining / HitSeconds;
             float angle = 16f * Mathf.Sin(progress * Mathf.PI) * Mathf.Exp(-progress * 1.5f);
             chestBeforeOffset = chest.localRotation;
@@ -78,22 +101,62 @@ namespace Game
         public bool BeginDeath(Vector3 worldDirection, bool explosive)
         {
             if (!IsReady || dead) return false;
-            RemoveOffset(); hitRemaining = 0f; deathAge = 0f; dead = simulating = true;
-            simulationSeconds = explosive ? 1.8f : 1.4f;
-            animator.enabled = false;
+            CacheRig(); RemoveOffset(); hitRemaining = 0f; deathAge = 0f; dead = true;
+            simulationSeconds = explosive ? 1.8f : StaggerSeconds + 1.4f;
             worldDirection.y = 0f;
             if (worldDirection.sqrMagnitude < .0001f) worldDirection = -transform.forward;
-            Vector3 velocity = worldDirection.normalized * (explosive ? 5f : 1.3f) + Vector3.up * (explosive ? 4f : .65f);
+            deathDirection = worldDirection.normalized;
+            if (explosive) ActivatePhysics(true);
+            else
+            {
+                staggering = true;
+                animator.ResetTrigger(AttackParameter); animator.SetFloat(MoveParameter, 0f); animator.SetTrigger(HitParameter);
+            }
+            return true;
+        }
+
+        /// <summary>短暂保留动画并叠加胸部前倾、骨盆下沉；只改骨骼，不改战斗根或生命状态。</summary>
+        private void ApplyStagger()
+        {
+            float progress = Mathf.Clamp01(deathAge / StaggerSeconds);
+            progress = progress * progress * (3f - 2f * progress);
+            var worldAxis = Vector3.Cross(Vector3.up, deathDirection);
+            hipsBeforeOffsetPosition = hips.localPosition; hipsBeforeOffsetRotation = hips.localRotation;
+            hips.localPosition += hips.parent.InverseTransformVector(Vector3.down * (.1f * progress));
+            hips.localRotation = Quaternion.AngleAxis(9f * progress, hips.parent.InverseTransformDirection(worldAxis)) * hipsBeforeOffsetRotation;
+            hipsOffsetApplied = true;
+            chestBeforeOffset = chest.localRotation;
+            chest.localRotation = Quaternion.AngleAxis(18f * progress, chest.parent.InverseTransformDirection(worldAxis)) * chestBeforeOffset;
+            offsetApplied = true;
+        }
+
+        /// <summary>仅向胸部与骨盆提供主要速度，四肢从静止由关节带动，形成非同步甩动。</summary>
+        private void ActivatePhysics(bool explosive)
+        {
+            staggering = false; simulating = true; animator.enabled = false;
             for (int i = 0; i < bodies.Length; i++)
             {
                 var body = bodies[i];
-                body.GetComponent<Collider>().enabled = true;
+                bodyColliders[i].enabled = true;
                 body.detectCollisions = true; body.isKinematic = false;
-                body.velocity = velocity;
-                body.angularVelocity = Vector3.Cross(Vector3.up, worldDirection.normalized) * (explosive ? 4f : 2.8f);
+                body.velocity = Vector3.zero; body.angularVelocity = Vector3.zero;
                 body.WakeUp();
             }
-            return true;
+            var axis = Vector3.Cross(Vector3.up, deathDirection);
+            hipsBody.velocity = deathDirection * (explosive ? 7f : .65f) + Vector3.up * (explosive ? 6.2f : -.1f);
+            chestBody.velocity = deathDirection * (explosive ? 8.5f : 1.4f) + Vector3.up * (explosive ? 8.2f : -.15f);
+            hipsBody.angularVelocity = axis * (explosive ? 1.2f : .45f);
+            chestBody.angularVelocity = axis * (explosive ? 4.5f : 1.5f) + Vector3.up * (explosive ? .65f : .15f);
+        }
+
+        /// <summary>四种正式骨架预制结构固定；每个实例只建立一次缓存，不在每次击杀时查找。</summary>
+        private void CacheRig()
+        {
+            if (bodyColliders != null) return;
+            hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+            hipsBody = hips.GetComponent<Rigidbody>(); chestBody = chest.GetComponent<Rigidbody>();
+            bodyColliders = new Collider[bodies.Length];
+            for (int i = 0; i < bodies.Length; i++) bodyColliders[i] = bodies[i].GetComponent<Collider>();
         }
 
         /// <summary>短时模拟后关闭求解和碰撞，爆炸多留落地时间，保留最后可见姿态直到回池。</summary>
@@ -104,7 +167,7 @@ namespace Game
                 var body = bodies[i];
                 if (!body.isKinematic) { body.velocity = Vector3.zero; body.angularVelocity = Vector3.zero; }
                 body.isKinematic = true; body.detectCollisions = false;
-                body.GetComponent<Collider>().enabled = false;
+                bodyColliders[i].enabled = false;
             }
             simulating = false;
         }
@@ -115,6 +178,7 @@ namespace Game
             RemoveOffset();
             if (IsReady)
             {
+                CacheRig();
                 Freeze();
                 for (int i = 0; i < bodies.Length; i++)
                 {
@@ -123,13 +187,16 @@ namespace Game
                 }
                 animator.enabled = true;
             }
-            dead = simulating = false; hitRemaining = deathAge = 0f;
+            dead = simulating = staggering = false; hitRemaining = deathAge = 0f;
+            deathDirection = Vector3.zero;
         }
 
         private void RemoveOffset()
         {
             if (offsetApplied && chest != null) chest.localRotation = chestBeforeOffset;
-            offsetApplied = false;
+            if (hipsOffsetApplied && hips != null)
+            { hips.localPosition = hipsBeforeOffsetPosition; hips.localRotation = hipsBeforeOffsetRotation; }
+            offsetApplied = hipsOffsetApplied = false;
         }
     }
 }

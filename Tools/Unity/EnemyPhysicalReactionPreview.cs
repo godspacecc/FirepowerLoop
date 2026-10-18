@@ -83,6 +83,8 @@ public static class EnemyPhysicalReactionPreview
             for (int step = 0; step < 100; step++)
             {
                 foreach (var reaction in reactions) reaction.Tick(.02f);
+                foreach (var view in views) if (view.Animator.enabled) view.Animator.Update(.02f);
+                foreach (var reaction in reactions) reaction.LateTick();
                 physics.Simulate(.02f);
                 for (int i = 0; i < views.Count; i++)
                 {

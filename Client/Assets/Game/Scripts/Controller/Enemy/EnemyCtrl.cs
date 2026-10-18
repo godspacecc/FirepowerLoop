@@ -637,6 +637,8 @@ namespace Game
         private void OnLateUpdate()
         {
             foreach (var entry in arcadeEnemies.Values) entry.View?.LateTickCombatFeedback();
+            // 死亡失衡阶段仍需在Animator后交接骨骼，即使此帧没有主相机也要完成。
+            foreach (var entry in dyingArcadeEnemies) entry.View?.LateTickCombatFeedback();
             var camera = Camera.main;
             if (camera == null)
             {

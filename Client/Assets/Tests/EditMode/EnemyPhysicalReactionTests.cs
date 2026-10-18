@@ -68,6 +68,7 @@ namespace Game.Tests
         {
             Spawn();
             Assert.That((bool)Call("BeginDeath", Vector3.forward, false), Is.True);
+            Call("Tick", .18f); Call("LateTick");
             var bodies = instance.GetComponentsInChildren<Rigidbody>(true);
             Assert.That(view.Animator.enabled, Is.False);
             Assert.That(bodies.All(body => !body.isKinematic && body.detectCollisions), Is.True);
@@ -157,6 +158,109 @@ namespace Game.Tests
         {
             Spawn(); Call("BeginDeath", Vector3.forward, true); Call("Tick", 1.05f);
             Assert.That(ReactionType.GetProperty("IsSimulating").GetValue(reaction), Is.True);
+        }
+
+        [TestCase("ArcadeEnemyBasic")] [TestCase("ArcadeEnemyArcher")]
+        [TestCase("ArcadeEnemyBrute")] [TestCase("ArcadeEnemyBossArcher")]
+        public void NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(string name)
+        {
+            Spawn(name); var bodies = instance.GetComponentsInChildren<Rigidbody>();
+            var chest = view.Animator.GetBoneTransform(HumanBodyBones.Chest);
+            var hips = view.Animator.GetBoneTransform(HumanBodyBones.Hips);
+            var pose = chest.localRotation; var hipPosition = hips.position; var root = instance.transform.position;
+            Assert.True(view.TryPlayPhysicalDeath(Vector3.forward, false, out var duration));
+            Assert.True(view.Animator.enabled, "普通死亡首帧应保留动画");
+            Assert.True(bodies.All(body => body.isKinematic && !body.detectCollisions));
+            Call("Tick", .08f); Call("LateTick");
+            Assert.Greater(Quaternion.Angle(pose, chest.localRotation), 1);
+            Assert.Less(hips.position.y, hipPosition.y);
+            Assert.AreEqual(root, instance.transform.position);
+            Call("Tick", .09f); Call("LateTick");
+            Assert.False(view.Animator.enabled); Assert.True(bodies.All(body => !body.isKinematic));
+            Assert.Greater(Quaternion.Angle(pose, chest.localRotation), 8, "交接时不能撤销刚形成的失衡姿态");
+            Assert.AreEqual(2.2f, duration);
+        }
+        [Test] public void PausedStaggerDoesNotAdvanceOrAccumulateAndRepeatedDeathCannotSkipIt()
+        {
+            Spawn(); Call("BeginDeath", Vector3.forward, false); Call("Tick", .08f); Call("LateTick");
+            var chest = view.Animator.GetBoneTransform(HumanBodyBones.Chest);
+            var hips = view.Animator.GetBoneTransform(HumanBodyBones.Hips);
+            var rotation = chest.localRotation; var position = hips.localPosition;
+            for (int i = 0; i < 10; i++) { Call("Tick", 0f); Call("LateTick"); }
+            Assert.Less(Quaternion.Angle(rotation, chest.localRotation), .01f);
+            Assert.Less(Vector3.Distance(position, hips.localPosition), .001f);
+            Assert.False((bool)Call("BeginDeath", Vector3.right, true));
+            Assert.True(view.Animator.enabled);
+            Assert.True(instance.GetComponentsInChildren<Rigidbody>().All(body => body.isKinematic));
+        }
+        [Test] public void RecycleDuringStaggerCancelsPendingPhysicsAndRestoresBones()
+        {
+            Spawn(); var chest = view.Animator.GetBoneTransform(HumanBodyBones.Chest);
+            var hips = view.Animator.GetBoneTransform(HumanBodyBones.Hips);
+            var rotation = chest.localRotation; var position = hips.localPosition;
+            view.TryPlayPhysicalDeath(Vector3.forward, false, out _); view.TickCombatFeedback(.08f); view.LateTickCombatFeedback();
+            instance.SetActive(false); view.BeginPresentationUse(); instance.SetActive(true);
+            view.TickCombatFeedback(.3f); view.LateTickCombatFeedback();
+            Assert.Less(Quaternion.Angle(rotation, chest.localRotation), .01f);
+            Assert.Less(Vector3.Distance(position, hips.localPosition), .001f);
+            Assert.True(view.Animator.enabled);
+            Assert.True(instance.GetComponentsInChildren<Rigidbody>().All(body => body.isKinematic && !body.detectCollisions));
+        }
+        [TestCase("ArcadeEnemyBasic")] [TestCase("ArcadeEnemyArcher")]
+        [TestCase("ArcadeEnemyBrute")] [TestCase("ArcadeEnemyBossArcher")]
+        public void ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(string name)
+        {
+            Spawn(name); Call("BeginDeath", Vector3.forward, true);
+            var hips = view.Animator.GetBoneTransform(HumanBodyBones.Hips).GetComponent<Rigidbody>();
+            var chest = view.Animator.GetBoneTransform(HumanBodyBones.Chest).GetComponent<Rigidbody>();
+            var arm = view.Animator.GetBoneTransform(HumanBodyBones.LeftLowerArm).GetComponent<Rigidbody>();
+            var leg = view.Animator.GetBoneTransform(HumanBodyBones.RightLowerLeg).GetComponent<Rigidbody>();
+            Assert.False(view.Animator.enabled);
+            Assert.Greater(chest.velocity.y, arm.velocity.y + 3);
+            Assert.Greater(hips.velocity.z, leg.velocity.z + 3);
+            Assert.Less(arm.velocity.magnitude, .1f); Assert.Less(leg.velocity.magnitude, .1f);
+            Assert.Greater((chest.angularVelocity - hips.angularVelocity).magnitude, 1);
+        }
+        [Test] public void ControllerLateUpdateHandsDyingEnemyOverToPhysics()
+        {
+            Spawn(); var architecture = new global::Game.Game();
+            architecture.RegisterUtility<IViewInstanceProvider>(new UnityViewInstanceProvider());
+            var controller = new EnemyCtrl(architecture); const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var type = typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry", BindingFlags.NonPublic);
+            var alive = (System.Collections.IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies", flags).GetValue(controller);
+            alive.Add(1, Activator.CreateInstance(type, 1, "enemy.arcade.basic", view, 20, instance.transform.position, 0, false));
+            instance = null;
+            try
+            {
+                controller.RemoveEnemy(1, true); view.TickCombatFeedback(.18f);
+                Assert.True(view.Animator.enabled, "交接应等动画后的LateUpdate");
+                typeof(EnemyCtrl).GetMethod("OnLateUpdate", flags).Invoke(controller, null);
+                Assert.False(view.Animator.enabled);
+            }
+            finally { controller.ReleaseAll(); }
+        }
+        [Test] public void LongFrameExpiresNormalPhysicsWithoutLeavingPendingImpulse()
+        {
+            Spawn(); Call("BeginDeath", Vector3.forward, false); Call("Tick", 2f); Call("LateTick");
+            Assert.True(instance.GetComponentsInChildren<Rigidbody>().All(body => body.isKinematic && !body.detectCollisions));
+            Assert.False((bool)ReactionType.GetProperty("IsSimulating").GetValue(reaction));
+            Assert.False((bool)Call("BeginDeath", Vector3.forward, true));
+        }
+        [Test] public void WarmStaggerExplosionAndReuseDoNotAllocateManagedMemory()
+        {
+            Spawn(); var feedback = (EnemyPhysicalReaction)reaction;
+            view.Animator.Rebind(); view.Animator.Update(0f);
+            void Cycle()
+            {
+                feedback.BeginDeath(Vector3.forward, false); feedback.Tick(.08f); feedback.LateTick();
+                feedback.Tick(.09f); feedback.LateTick(); feedback.ResetForReuse();
+                feedback.BeginDeath(Vector3.right, true); feedback.Tick(2f); feedback.ResetForReuse();
+            }
+            Cycle(); Cycle();
+            long before = GC.GetAllocatedBytesForCurrentThread();
+            for (int i = 0; i < 50; i++) Cycle();
+            long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+            Assert.That(allocated, Is.Zero, "预热后的过渡、躯干施力与回池不应分配托管数组或对象");
         }
     }
 }

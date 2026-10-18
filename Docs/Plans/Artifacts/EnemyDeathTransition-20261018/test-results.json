@@ -1,0 +1,468 @@
+{
+  "date": "2026-10-18",
+  "scope": "Filtered EditMode only, includePassingTests=true. Discovery Summary.TotalTests is not executed count.",
+  "red": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3637,
+      "PassedTests": 12,
+      "FailedTests": 10,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.3434617"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.7960000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(8)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0700000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerLateUpdateHandsDyingEnemyOverToPhysics",
+        "Status": "Failed",
+        "Duration": "00:00:00.0220000",
+        "Message": "  交接应等动画后的LateUpdate\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathActivatesPhysicsAndExplosionProducesStrongerLift",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathPhysicsFreezesThenDisableAndReuseRestoreAllBones",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionKeepsSimulatingPastFirstSecondInsteadOfFreezingInAir",
+        "Status": "Passed",
+        "Duration": "00:00:00.0380000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBasic\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0090000",
+        "Message": "  Expected: greater than 7.0f\r\n  But was:  4.0f\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyArcher\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0690000",
+        "Message": "  Expected: greater than 7.0f\r\n  But was:  4.0f\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBrute\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0530000",
+        "Message": "  Expected: greater than 7.0f\r\n  But was:  4.0f\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBossArcher\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0460000",
+        "Message": "  Expected: greater than 7.0f\r\n  But was:  4.0f\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.HitRecoilMovesOnlyChestAndReturnsWithoutAccumulating",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBasic\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  普通死亡首帧应保留动画\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyArcher\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  普通死亡首帧应保留动画\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBrute\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  普通死亡首帧应保留动画\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBossArcher\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0060000",
+        "Message": "  普通死亡首帧应保留动画\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.PausedStaggerDoesNotAdvanceOrAccumulateAndRepeatedDeathCannotSkipIt",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBasic\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyArcher\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBrute\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBossArcher\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.RecycleDuringStaggerCancelsPendingPhysicsAndRestoresBones",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.EnemyPhysicalReactionTests.RepeatedDeathDoesNotApplyImpulseAgainAndZeroDeltaPreservesRecoil",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      }
+    ]
+  },
+  "final": [
+    {
+      "name": "EnemyPhysicalReactionTests",
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3639,
+          "PassedTests": 24,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.3257457"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(4)",
+            "Status": "Passed",
+            "Duration": "00:00:00.2580000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerBoundsCorpsesAndClearsThemBackToSleepingPool(8)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0590000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ControllerLateUpdateHandsDyingEnemyOverToPhysics",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathActivatesPhysicsAndExplosionProducesStrongerLift",
+            "Status": "Passed",
+            "Duration": "00:00:00.0060000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.DeathPhysicsFreezesThenDisableAndReuseRestoreAllBones",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionKeepsSimulatingPastFirstSecondInsteadOfFreezingInAir",
+            "Status": "Passed",
+            "Duration": "00:00:00.0280000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBasic\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBrute\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.ExplosionPushesTorsoInsteadOfAssigningEveryBoneTheSameVelocity(\"ArcadeEnemyBossArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.HitRecoilMovesOnlyChestAndReturnsWithoutAccumulating",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.LongFrameExpiresNormalPhysicsWithoutLeavingPendingImpulse",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBasic\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0050000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBrute\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBossArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PausedStaggerDoesNotAdvanceOrAccumulateAndRepeatedDeathCannotSkipIt",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBasic\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBrute\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.PrefabHasPrebuiltSleepingElevenBodyRig(\"ArcadeEnemyBossArcher\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.RecycleDuringStaggerCancelsPendingPhysicsAndRestoresBones",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.RepeatedDeathDoesNotApplyImpulseAgainAndZeroDeltaPreservesRecoil",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.EnemyPhysicalReactionTests.WarmStaggerExplosionAndReuseDoNotAllocateManagedMemory",
+            "Status": "Passed",
+            "Duration": "00:00:00.0110000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ArcadeEnemyVisualTests",
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3639,
+          "PassedTests": 14,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:06.0957494"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.AllSharedWeaponsHaveUsableWorldDefinitions",
+            "Status": "Passed",
+            "Duration": "00:00:01.4700000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_ExposeSixDeterministicBodyVariants",
+            "Status": "Passed",
+            "Duration": "00:00:00.4500000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyPrefabs_PreserveRuntimeContractWithoutIgnoredDependencies",
+            "Status": "Passed",
+            "Duration": "00:00:01.1750000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeEnemyRuntime_ResetClearsAttackPresentationSequence",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeGunCatalogResolvesSharedVisualsAndTemporaryDrops",
+            "Status": "Passed",
+            "Duration": "00:00:00.7170000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcadeHealthBarRule_HidesNormalFullHealthAndExpiresAfterHitWindow",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.ArcherEnemy_HumanoidAnimatorUsesTwoHandedAttackAndLeftHandBow",
+            "Status": "Passed",
+            "Duration": "00:00:00.1560000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.BasicEnemy_HumanoidAnimatorUsesInPlaceFormalAssets",
+            "Status": "Passed",
+            "Duration": "00:00:00.1460000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.BossVisuals_AreLargerAndUseDedicatedMaterial",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedCatalog_UsesOnlyArcadeSpecificEnemyIds",
+            "Status": "Passed",
+            "Duration": "00:00:00.5580000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GeneratedEnemyWeaponIdsResolveToTheSharedCatalog",
+            "Status": "Passed",
+            "Duration": "00:00:00.3270000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.GrayboxPlayer_ArcadeMarkerReplacesRedundantWorldHealthBar",
+            "Status": "Passed",
+            "Duration": "00:00:00.3810000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.LightEnemies_UseRetargetableInfectedSoldierWithCompleteBodyVariants",
+            "Status": "Passed",
+            "Duration": "00:00:00.0280000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEnemyVisualTests.PooledEnemyPreparesWhileInactiveWithoutEvaluatingAnimator",
+            "Status": "Passed",
+            "Duration": "00:00:00.0050000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "HeavyEnemyVisualTests",
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3639,
+          "PassedTests": 4,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.0423183"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.BruteAnimatorReceivesRetargetedFootAndHitEvents",
+            "Status": "Passed",
+            "Duration": "00:00:00.2930000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.BruteUsesLocalHumanoidCandidateAndKeepsCombatRoot",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.FiveRetargetedActionsKeepFiniteBodyAndBoundedWeapon",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.HeavyEnemyVisualTests.HeavyVariantsRemainDistinctAndCompleteWhenReused",
+            "Status": "Passed",
+            "Duration": "00:00:00.0050000"
+          }
+        ]
+      }
+    },
+    {
+      "name": "EnemyDeathPresentationTests",
+      "scoped": true,
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3639,
+          "PassedTests": 8,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.7948571"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.ExplosiveCarrierTransfersRadialImpulseToNearbyVictim",
+            "Status": "Passed",
+            "Duration": "00:00:00.3910000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.GenericCircularDamageDoesNotTurnElectricOrbIntoExplosion",
+            "Status": "Passed",
+            "Duration": "00:00:00.4650000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.GroundBarrelDeathCarriesExplosionAndDoesNotReplayAfterRemoval",
+            "Status": "Passed",
+            "Duration": "00:00:00.3610000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.NetworkProjectionCopiesDeathValuesIndependentOfMessageMutation",
+            "Status": "Passed",
+            "Duration": "00:00:00.1120000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(7,True)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0130000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(6,False)",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.SoloBombCarriesExplosiveDeathWithoutChangingKillBudget",
+            "Status": "Passed",
+            "Duration": "00:00:00.3700000"
+          },
+          {
+            "Name": "Game.Tests.EnemyDeathPresentationTests.SoloExplosionCarriesRadialDirectionAndRepeatedKillDoesNotReplay",
+            "Status": "Passed",
+            "Duration": "00:00:00.3960000"
+          }
+        ]
+      }
+    }
+  ],
+  "editorPhysics": {
+    "rigs": 8,
+    "bodies": 88,
+    "finite": true,
+    "frozen": true,
+    "reusable": true,
+    "normalAnimatedStart": true,
+    "torsoOnlyImpulse": true,
+    "normalStaggerAngle": 9.404393196105957,
+    "normalMaxLift": 0,
+    "explosionMaxLift": 0.8268082141876221,
+    "finalHipHeight": 0.15745684504508972,
+    "scope": "Editor isolated PhysicsScene; 8 corpses, 120 fixed steps; not a phone or multiplayer session."
+  },
+  "phoneMeasured": false,
+  "liveTwoClientSession": false
+}

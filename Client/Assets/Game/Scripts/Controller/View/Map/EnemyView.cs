@@ -770,7 +770,7 @@ namespace Game
             return true;
         }
 
-        /// <summary>死亡后关闭战斗碰撞与动画，实体位置不再参与任何战斗结算。</summary>
+        /// <summary>死亡即关闭战斗碰撞；普通死亡保留短暂动画过渡，骨骼物理不参与战斗结算。</summary>
         public bool TryPlayPhysicalDeath(Vector3 direction, bool explosive, out float durationSeconds)
         {
             durationSeconds = 0f;
