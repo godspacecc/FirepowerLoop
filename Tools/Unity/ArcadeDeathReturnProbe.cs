@@ -18,6 +18,10 @@ public static class ArcadeDeathReturnProbe
     private const string Output="Temp/DeathReturn-20261018", Key="FirepowerLoop.DeathProbe.Assembly";
     private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic|BindingFlags.Public;
     private static bool running;
+    private static bool expectAsync;
+    private static bool injectSaveFailure;
+    private static bool injectUnloadFailure;
+    private static FileStream heldRunFile;
     private static object store,clock,failure,current,phase;
     private static string directory;
     private static IMapContentLoader loader;
@@ -29,11 +33,16 @@ public static class ArcadeDeathReturnProbe
     private static Type Owner()=>AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(a=>a.FullName==SessionState.GetString(Key,""))?.GetType("ArcadeDeathReturnProbe");
     private static object Get(object target,string name)=>target.GetType().GetField(name,Hidden).GetValue(target);
     private static void Set(object target,string name,object value)=>target.GetType().GetField(name,Hidden).SetValue(target,value);
-    public static string Main()
+    public static string Main() => Begin(false);
+    /// <summary>接线验收要求死亡入口返回时仍处于SavingResult，UI阻断输入且主线程未执行文件写入。</summary>
+    public static string VerifyAsync() => Begin(true);
+    public static string VerifyFailure() => Begin(true, true);
+    public static string VerifyUnloadFailure() => Begin(true, false, true);
+    private static string Begin(bool requireAsync, bool failSave = false, bool failUnload = false)
     {
         if(!EditorApplication.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("仅本项目Play");
         if(Owner() is Type owner&&(bool)owner.GetField("running",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null))throw new Exception("已有死亡观察事务");
-        SessionState.SetString(Key,typeof(ArcadeDeathReturnProbe).Assembly.FullName);running=true;Run().Forget();return "死亡／返菜单3轮定向采样已启动";
+        expectAsync=requireAsync;injectSaveFailure=failSave;injectUnloadFailure=failUnload;SessionState.SetString(Key,typeof(ArcadeDeathReturnProbe).Assembly.FullName);running=true;Run().Forget();return "死亡／返菜单3轮定向采样已启动";
     }
     public static string State()
     {
@@ -44,7 +53,7 @@ public static class ArcadeDeathReturnProbe
     private static async UniTask Wait(Func<bool> ready,string label,double seconds=100)
     {
         double end=EditorApplication.timeSinceStartup+seconds;
-        while(!ready()){if(EditorApplication.timeSinceStartup>end)throw new Exception(label+"超时，保持临时隔离");await UniTask.Delay(50,true);}
+        while(!ready()){if(EditorApplication.timeSinceStartup>end)throw new Exception(label+"超时，保持临时隔离");await UniTask.NextFrame();}
     }
     private static async UniTaskVoid Run()
     {
@@ -68,12 +77,34 @@ public static class ArcadeDeathReturnProbe
                 await Wait(()=> (float)Get(runtime,"PlayerInvulnerability")<=0 && (float)Get(runtime,"RespawnRemaining")<=0,"可受伤");
                 typeof(ArcadeRunModel).GetMethod("SetTransientLives",Hidden).Invoke(model,new object[]{1});
                 var view=new TimedView((IArcadeCombatViewPort)originalView);Set(combat,"view",view);
-                var timedLoader=new TimedLoader(loader);a.RegisterUtility<IMapContentLoader>(timedLoader);
+                var timedLoader=new TimedLoader(loader){FailNext=injectUnloadFailure&&round==0};a.RegisterUtility<IMapContentLoader>(timedLoader);
+                if(injectSaveFailure && round==0)
+                {
+                    heldRunFile=new FileStream(new ArcadeRunFileStore(directory).RunPath,FileMode.Open,FileAccess.Read,FileShare.None);
+                    combat.TryDamagePlayerForTests(100000,out _,out _);
+                    await Wait(()=>!runs.IsSavingResult&&!(bool)Get(combat,"lastDeathReturnPending"),"保存失败回退");
+                    heldRunFile.Dispose();heldRunFile=null;
+                    if(model.Phase!=ArcadeRunPhase.Arena||(int)Get(runtime,"PlayerHealth")!=1||UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow()==true||a.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||new ArcadeRunFileStore(directory).Inspect().Data.HasResult)
+                        throw new Exception("保存失败没有恢复原局／一血／输入／遮罩");
+                    Log("InjectedSaveFailure=True OriginalNodePreserved=True Health=1 LoadingHidden=True State=Playing");
+                    await Wait(()=>(float)Get(runtime,"PlayerInvulnerability")<=0,"失败后重试无敌窗口");
+                }
                 int first=ProfilerDriver.lastFrameIndex;var wall=System.Diagnostics.Stopwatch.StartNew();var watch=System.Diagnostics.Stopwatch.StartNew();
                 SampleBegin("DeathProbe.Fatal");bool ok;
                 try{ok=combat.TryDamagePlayerForTests(100000,out _,out var error);if(!ok)throw new Exception(error);}
                 finally{SampleEnd();}
                 watch.Stop();double entry=watch.Elapsed.TotalMilliseconds;
+                if(expectAsync && (model.Phase!=ArcadeRunPhase.SavingResult || !UIHelper.HasUIOpen || a.GetModel<AppStateModel>().CurrentState.Value!=AppState.Loading))
+                    throw new Exception("死亡入口仍同步落盘或未阻断在途操作，phase="+model.Phase);
+                if(injectUnloadFailure&&round==0)
+                {
+                    await Wait(()=>!runs.IsSavingResult&&!(bool)Get(combat,"lastDeathReturnPending")&&!(bool)Get(flow,"busy"),"卸载失败收敛");
+                    var message=UIHelper.GetUICtrl<MessageUICtrl>();
+                    if(model.Phase!=ArcadeRunPhase.Result||a.GetModel<MapSceneModel>().CurrentHandle==null||message?.IsShow()!=true)throw new Exception("卸载失败未保留结果与重试入口");
+                    var config=(MessageConfig)Get(message,"currentConfig");
+                    typeof(MessageUICtrl).GetMethod("OnMessageButtonClick",Hidden).Invoke(message,new object[]{new object[]{config.Buttons.Single(b=>b.Role==MessageButtonRole.Confirm)}});
+                    Log("InjectedUnloadFailure=True SavedResultRetained=True RetryInvoked=True");
+                }
                 await Wait(()=>!(bool)Get(flow,"busy")&&a.GetModel<MapSceneModel>().CurrentHandle==null&&UIHelper.GetUICtrl<StartUICtrl>()?.IsShow()==true,"返回菜单");
                 double total=wall.Elapsed.TotalMilliseconds;var saved=new ArcadeRunFileStore(directory).Inspect();
                 if(!saved.IsValid||saved.Data.Outcome!="failed"||saved.Data.RemainingLives!=0)throw new Exception("结果未正确保存");
@@ -84,7 +115,7 @@ public static class ArcadeDeathReturnProbe
             }
             await Cleanup();Log("PASS 3轮结果／菜单／原模型及端口恢复");
         }
-        catch(Exception error){Log("FAILED "+error);try{await Cleanup();}catch(Exception cleanup){Log("CLEANUP FAILED "+cleanup);}}
+        catch(Exception error){heldRunFile?.Dispose();heldRunFile=null;Log("FAILED "+error);try{await Cleanup();}catch(Exception cleanup){Log("CLEANUP FAILED "+cleanup);}}
         finally{running=store!=null;}
     }
     private static void CaptureFrames(int first,int last,int round)
@@ -102,7 +133,9 @@ public static class ArcadeDeathReturnProbe
                     var children=Enumerable.Range(i+1,Math.Max(0,end-i-1)).Select(index=>new {Name=data.GetSampleName(index),Ms=data.GetSampleTimeMs(index)}).OrderByDescending(x=>x.Ms).Take(20).ToArray();
                     selected.Add(new{Name=data.GetSampleName(i),Ms=data.GetSampleTimeMs(i),Children=children});
                 }
-            frames.Add(new{Frame=frame,Ms=data.frameTimeMs,Markers=selected});
+            var top=data.frameTimeMs>12?Enumerable.Range(1,Math.Max(0,data.sampleCount-1)).Select(i=>new{Name=data.GetSampleName(i),Ms=data.GetSampleTimeMs(i)})
+                .Where(s=>s.Name!="PlayerLoop"&&s.Name!="EditorLoop").OrderByDescending(s=>s.Ms).Take(18).ToArray():null;
+            frames.Add(new{Frame=frame,Ms=data.frameTimeMs,Markers=selected,Top=top});
         }
         File.WriteAllText(Output+"/round-"+round+"-frames.json",Newtonsoft.Json.JsonConvert.SerializeObject(frames,Newtonsoft.Json.Formatting.Indented));
     }
@@ -110,7 +143,7 @@ public static class ArcadeDeathReturnProbe
     {
         if(store==null)return;var a=global::Game.Game.Interface;var flow=a.GetSystem<ArcadeSceneFlowSystem>();
         UIHelper.HideUI<StartUICtrl>();await UniTask.NextFrame();
-        await Wait(()=>!(bool)Get(flow,"busy")&&!(bool)Get(a.GetSystem<MapSceneSystem>(),"busy"),"清理收敛",60);await UniTask.NextFrame();
+        await Wait(()=>!a.GetSystem<ArcadeRunSystem>().IsSavingResult&&!(bool)Get(a.GetSystem<ArcadeCombatSystem>(),"lastDeathReturnPending")&&!(bool)Get(flow,"busy")&&!(bool)Get(a.GetSystem<MapSceneSystem>(),"busy"),"清理收敛",60);await UniTask.NextFrame();
         if(a.GetModel<MapSceneModel>().CurrentHandle!=null){var result=await flow.ReturnToMainMenuAsync();if(!result.Success)throw new Exception(result.Error);}
         var runs=a.GetSystem<ArcadeRunSystem>();Set(runs,"store",store);Set(runs,"clock",clock);Set(runs,"nextDeleteFailureForTests",failure);
         var model=a.GetModel<ArcadeRunModel>();Set(model,"current",current);Set(model,"<Phase>k__BackingField",phase);
@@ -119,11 +152,11 @@ public static class ArcadeDeathReturnProbe
     }
     private sealed class TimedLoader:IMapContentLoader
     {
-        private readonly IMapContentLoader original;public double Elapsed;
+        private readonly IMapContentLoader original;public double Elapsed;public bool FailNext;
         public TimedLoader(IMapContentLoader original){this.original=original;}
         public UniTask<MapContentLoadResult> LoadAsync(string map,string address,Action<float> progress,CancellationToken token=default)=>original.LoadAsync(map,address,progress,token);
         public async UniTask<MapContentUnloadResult> UnloadAsync(IMapContentHandle handle,CancellationToken token=default)
-        {var w=System.Diagnostics.Stopwatch.StartNew();try{return await original.UnloadAsync(handle,token);}finally{Elapsed+=w.Elapsed.TotalMilliseconds;}}
+        {var w=System.Diagnostics.Stopwatch.StartNew();try{if(FailNext){FailNext=false;return MapContentUnloadResult.Fail("预期卸载失败：观察重试");}return await original.UnloadAsync(handle,token);}finally{Elapsed+=w.Elapsed.TotalMilliseconds;}}
     }
     private sealed class TimedView:IArcadeCombatViewPort
     {

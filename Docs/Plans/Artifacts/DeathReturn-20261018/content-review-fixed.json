@@ -1,0 +1,69 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3526,
+      "PassedTests": 11,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:04.7939393"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.BumperMovesToDifferentLegalLandingAndKeepsCooldown",
+        "Status": "Passed",
+        "Duration": "00:00:00.3020000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.BurrowWarningRejectsDamageThenExposes",
+        "Status": "Passed",
+        "Duration": "00:00:00.3480000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.ContentClockDoesNotAdvanceAfterClear",
+        "Status": "Passed",
+        "Duration": "00:00:00.5780000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.HomingProjectileTurnsAtSpeedAndPoolResetDropsContent",
+        "Status": "Passed",
+        "Duration": "00:00:00.3230000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.IceMomentumCannotCrossThinWallInOneFrame",
+        "Status": "Passed",
+        "Duration": "00:00:00.3340000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.LaserWarningIsSafeAndActiveCapsuleDamages",
+        "Status": "Passed",
+        "Duration": "00:00:00.3060000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.MannequinNeedsThreeSeparatedHitsAndFreezes",
+        "Status": "Passed",
+        "Duration": "00:00:00.3410000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.MegaReinforcementsUseOrdinaryGroupWhenBossGroupCapIsOne",
+        "Status": "Passed",
+        "Duration": "00:00:00.3040000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.ParasiteHitReducesMovementForRemainingDuration",
+        "Status": "Passed",
+        "Duration": "00:00:00.3400000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.SpecialSpawnSelectionDoesNotAddEnemyBudget",
+        "Status": "Passed",
+        "Duration": "00:00:00.3020000"
+      },
+      {
+        "Name": "Game.Tests.FullRouteContentFlowTests.ToxicDeathCreatesOwnedAreaWithoutResurrectingEnemy",
+        "Status": "Passed",
+        "Duration": "00:00:00.3420000"
+      }
+    ]
+  }
+}

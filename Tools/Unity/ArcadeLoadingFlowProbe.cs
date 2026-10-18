@@ -146,7 +146,8 @@ public static class ArcadeLoadingFlowProbe
             await UniTask.NextFrame();
             if (EditorApplication.timeSinceStartup > deadline) throw new Exception("清理未完成：地图仍在途，保留临时隔离与running状态");
         } while ((bool)typeof(ArcadeSceneFlowSystem).GetField("busy", Hidden).GetValue(flow) ||
-                 (bool)typeof(MapSceneSystem).GetField("busy", Hidden).GetValue(a.GetSystem<MapSceneSystem>()));
+                 (bool)typeof(MapSceneSystem).GetField("busy", Hidden).GetValue(a.GetSystem<MapSceneSystem>()) ||
+                 (bool)typeof(ArcadeCombatSystem).GetField("lastDeathReturnPending", Hidden).GetValue(a.GetSystem<ArcadeCombatSystem>()));
         // 让EnterNewRunAsync在地图结果后的同步续体先结束，不能提前恢复正式model。
         await UniTask.NextFrame();
         string saved = directory == null ? null : new ArcadeRunFileStore(directory).Inspect().Data?.RunId;

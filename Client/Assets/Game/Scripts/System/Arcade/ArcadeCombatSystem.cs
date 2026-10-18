@@ -35,6 +35,10 @@ namespace Game
 
         private PlayerInputCtrl input;
         private IArcadeCombatViewPort view;
+        /// <summary>最后一命从后台写盘到返菜单结束的单一事务；观察工具也须等待它完成。</summary>
+        private bool lastDeathReturnPending;
+        /// <summary>体系卸载后禁止旧死亡续体操作新界面或新地图。</summary>
+        private int deathReturnGeneration;
         private ArcadeConfigCatalogDefinition catalog;
         private ArcadeArenaDefinition arena;
         private ArcadeEnemyGroupDefinition group;
@@ -233,6 +237,7 @@ namespace Game
 
         protected override void OnDeinit()
         {
+            deathReturnGeneration++;
             LifeCycle.UnregisterUpdate(OnUpdate);
             EndCombat();
             runtimePool.Clear();
@@ -539,7 +544,7 @@ namespace Game
             TickSlayerMartSupports(runtime,deltaTime);
             if (runtime.InTreasureRoom) { SyncView(runtime); PublishHud(runtime); return; }
             TickOpeningFire(runtime, deltaTime);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             if (runtime.AwaitingExit)
             {
                 // 清场后仍可领取地面物资；先结算拾取，再处理出口或超时离场，避免漏存同帧奖励。
@@ -570,18 +575,18 @@ namespace Game
             }
             TickFinalBossReinforcements(runtime, deltaTime);
             TickRoundContent(runtime, deltaTime);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             TickSpawning(runtime, deltaTime);
             TickEnemies(runtime, deltaTime);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             TickHazards(runtime, deltaTime, hazardPreviousPlayer);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             TickProjectiles(runtime, deltaTime);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             TickDrops(runtime);
             TickPowerups(runtime, deltaTime);
             TickWaveTransition(runtime, deltaTime);
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             SyncView(runtime);
             PublishHud(runtime);
         }
@@ -796,10 +801,14 @@ namespace Game
                 }
                 if (TickSlayerGuardian(runtime,enemy,deltaTime)||TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
                 {
-                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
-                if (!entering && TickBoss(runtime, enemy, direction, targetIsDecoy, deltaTime, movementDelta)) continue;
+                if (!entering && TickBoss(runtime, enemy, direction, targetIsDecoy, deltaTime, movementDelta))
+                {
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    continue;
+                }
                 if (enemy.AttackKind == global::EnemyAttackKind.Projectile)
                 {
                     if (!entering && distance > enemy.AttackRange * 0.8f)
@@ -818,8 +827,8 @@ namespace Game
                     {
                         enemy.AttackSequence++;
                         if (!targetIsDecoy) DamagePlayer(runtime, enemy.Damage);
-                        // 最后一命会在死亡事件中同步结束战斗，过期帧不得继续读取已释放的配置。
-                        if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                        // 死亡会提交或挂起结果事务，本帧不得再推进敌人与已释放的配置。
+                        if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                         enemy.AttackCooldown = enemy.AttackInterval;
                     }
                 }
@@ -883,7 +892,7 @@ namespace Game
                 {
                     enemy.BossImpactConsumed = true;
                     DamagePlayer(runtime, Mathf.Max(1, Mathf.RoundToInt(enemy.Damage * boss.ImpactDamageMultiplier)));
-                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return true;
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return true;
                 }
                 enemy.BossPhaseRemaining = Mathf.Max(0f, enemy.BossPhaseRemaining - deltaTime);
                 if (enemy.BossPhaseRemaining <= 0f)
@@ -925,7 +934,7 @@ namespace Game
                 if (!expired && TryHitGroundBarrel(runtime, projectile, priorPosition, projectile.Position))
                 {
                     RemoveProjectile(runtime, projectile.Id);
-                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
                 var hitObstacle = IsInsideObstacle(projectile.Position, 0f, ObstaclesFor(runtime));
@@ -967,7 +976,7 @@ namespace Game
                     {
                         var healthBefore = runtime.PlayerHealth;
                         DamagePlayer(runtime, projectile.Damage);
-                        if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                        if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                         if (runtime.PlayerHealth < healthBefore) OnRoundProjectileHit(runtime, projectile);
                         remove = true;
                     }
@@ -1383,7 +1392,7 @@ namespace Game
                     DamageEnemy(enemy, damage);
                     view.PlayImpactSound(enemy.Position, true);
                     if (enemy.Health <= 0) KillEnemy(runtime, enemy);
-                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                 }
                 runtime.PlayerFireSequence++;
                 runtime.FireCooldown = weapon.FireIntervalSeconds / Mathf.Max(1f, 1f + fireRateBonus);
@@ -1473,7 +1482,7 @@ namespace Game
                 {
                     DamagePlayerCore(runtime, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
                         hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
-                    if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.RespawnRemaining > 0f) return;
+                    if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.RespawnRemaining > 0f) return;
                 }
                 enemyIterationIds.Clear();
                 foreach (var enemy in runtime.Enemies.Values) enemyIterationIds.Add(enemy.Id);
@@ -1496,6 +1505,7 @@ namespace Game
         /// <summary>正式挡伤入口；失命机关显式跳过新增护甲，旧保护与护盾优先级保留。</summary>
         private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind)
         {
+            if (lastDeathReturnPending) return;
             if(runtime.SlayerChallenge!=null&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Collecting&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Boss)return;
             if (runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f || runtime.RespawnRemaining > 0f) return;
             if (TryConsumeShield(runtime))
@@ -1527,6 +1537,13 @@ namespace Game
             }
 
             ResetTreasureMultiplierAfterDeath();
+            if (this.GetModel<ArcadeRunModel>().Current?.RemainingLives == 1)
+            {
+                runtime.PlayerHealth = 0; runtime.CompletionSubmitted = true;
+                ClearArcadeInput(runtime); lastDeathReturnPending = true;
+                FinishLastDeathAsync(runtime, deathReturnGeneration).Forget();
+                return;
+            }
             var result = this.GetSystem<ArcadeRunSystem>().TryHandleDeath(out _, out var error);
             if (result == ArcadeDeathResult.Respawn)
             {
@@ -1546,6 +1563,51 @@ namespace Game
                 runtime.PlayerHealth = 1;
                 this.SendEvent(new ArcadeCombatOperationFailedEvent(error));
             }
+        }
+
+        /// <summary>冻结原现场并等待后台原子写盘；成功才卸载，失败恢复一血及原竞技场供重试。</summary>
+        private async UniTaskVoid FinishLastDeathAsync(ArcadeCombatRuntime runtime, int generation)
+        {
+            var app = this.GetSystem<AppStateSystem>();
+            var previousState = this.GetModel<AppStateModel>().CurrentState.Value;
+            LoadingUICtrl loading = null; int loadingRequest = 0;
+            try
+            {
+                app.TryTransition(AppState.Loading);
+                loading = UIHelper.ShowUI<LoadingUICtrl>();
+                loadingRequest = loading.BeginEntryPreparation(MapIds.Arcade);
+                var result = await this.GetSystem<ArcadeRunSystem>().HandleLastDeathAsync();
+                if (generation != deathReturnGeneration) return;
+                if (result.Result != ArcadeDeathResult.RunFailed)
+                {
+                    RestoreFailedLastDeath(runtime, previousState, result.Error);
+                    return;
+                }
+                // 成功事件已结束战斗；先让遮罩完成一帧绘制，再启动场景卸载，不能把两段清理挤在死亡帧。
+                await UniTask.NextFrame();
+                if (generation != deathReturnGeneration) return;
+                await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
+            }
+            catch (Exception error)
+            {
+                if (generation == deathReturnGeneration) RestoreFailedLastDeath(runtime, previousState, error.Message);
+            }
+            finally
+            {
+                if (generation == deathReturnGeneration) loading?.EndEntryPreparation(loadingRequest);
+                lastDeathReturnPending = false;
+            }
+        }
+
+        /// <summary>仅未提交的原现场允许回退；已成功保存结果时不能恢复为可战斗状态。</summary>
+        private void RestoreFailedLastDeath(ArcadeCombatRuntime runtime, AppState previousState, string error)
+        {
+            if (this.GetModel<ArcadeCombatModel>().Runtime == runtime && this.GetModel<ArcadeRunModel>().Phase == ArcadeRunPhase.Arena)
+            {
+                runtime.PlayerHealth = 1; runtime.CompletionSubmitted = false;
+                this.GetSystem<AppStateSystem>().TryRestoreStableStateAfterLoading(previousState);
+            }
+            this.SendEvent(new ArcadeCombatOperationFailedEvent(error));
         }
 
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)

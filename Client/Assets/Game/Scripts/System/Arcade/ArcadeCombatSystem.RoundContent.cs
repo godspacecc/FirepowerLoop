@@ -19,7 +19,7 @@ namespace Game
         /// <summary>资源等待、清场、宝藏、死亡等待均停止活动；独立Boss只例外推进其自身技能。</summary>
         private bool RoundContentActive(ArcadeCombatRuntime r) => r!=null && catalog!=null && RoundLayout(r)!=null &&
             !r.IsChallenge && !r.InTreasureRoom && !r.AwaitingExit && !r.IslandRoundAwaitingExit &&
-            !r.IslandTransitionPending && !r.IslandRoomTransitionPending && !r.CompletionAwaitingRetry &&
+            !r.IslandTransitionPending && !r.IslandRoomTransitionPending && !r.CompletionAwaitingRetry && !r.CompletionSubmitted &&
             r.RespawnRemaining<=0 && (!r.WaveClearAwarded || r.ThemeBossStarted && !r.ThemeBossDefeated || r.IsFinalBoss && !r.FinalBossDefeated);
 
         /// <summary>每张地图创建独占时钟、接触冷却、领域与冰面速度，普通切轮不继承旧危险。</summary>
@@ -146,7 +146,7 @@ namespace Game
                     foreach(var e in r.Enemies.Values)
                         if(e!=source)e.ContentAllyBuff=Mathf.Max(e.ContentAllyBuff,ArcadeRoundContentRules.AllyBuff(source.ContentSpecialKind,Vector2.Distance(source.Position,e.Position),p));
             if(!r.ThemeBossStarted && !r.IsFinalBoss)TickContentEvent(r,p);
-            if(this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
+            if(r.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
             for(int i=r.ContentAreas.Count-1;i>=0;i--)
             {
                 if(i>=r.ContentAreas.Count)continue;var area=r.ContentAreas[i];
@@ -158,7 +158,7 @@ namespace Game
                 if(area.Kind==8 && touches)r.ContentSlowRemaining=Mathf.Max(r.ContentSlowRemaining,p.SkillWarning);
                 if(area.Kind!=8 && touches && r.ContentClock.TryHit(100000L+area.Id,p.SkillWarning))
                     DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,area.DamageRatio));
-                if(this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
+                if(r.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
                 if(area.EnemyDamage)DamageContentEnemies(r,area.Position,area.Radius,area.DamageRatio);
             }
         }
@@ -200,7 +200,7 @@ namespace Game
             bool harmful=kind==1 || kind==2 || kind==3 || kind==4 || kind==6 || kind==7;
             if(harmful && touching && (kind!=3 || firstActive) && r.ContentClock.TryHit(-100-kind,p.SkillWarning))
                 DamagePlayerCore(r,kind==2 ? r.PlayerMaxHealth : ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage),kind==2?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
-            if(kind==3 && firstActive && this.GetModel<ArcadeCombatModel>().Runtime==r && catalog!=null)
+            if(kind==3 && firstActive && !r.CompletionSubmitted && this.GetModel<ArcadeCombatModel>().Runtime==r && catalog!=null)
                 DamageContentEnemies(r,center,p.EventRadius,p.EventDamage);
         }
 

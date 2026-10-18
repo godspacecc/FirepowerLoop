@@ -293,6 +293,69 @@ namespace Game.Tests
             Assert.That(store.Inspect().Data.Outcome, Is.EqualTo("failed"));
         }
 
+        [UnityTest]
+        public IEnumerator NormalQuitWaitsForPendingLastLifeWrite()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            architecture.GetModel<ArcadeRunModel>().SetTransientLives(1);
+            var operation = arcade.HandleLastDeathAsync(); int quits = 0;
+            QuitGameCommand.SetQuitHandlerForTests(() => quits++);
+            try
+            {
+                architecture.SendCommand(new QuitGameCommand());
+                bool exitedBeforeWrite = quits != 0;
+                Assert.That(QuitGameCommand.TryPrepareQuit(architecture), Is.False, "窗口关闭与命令须共用同一退出等待");
+                yield return operation.ToCoroutine();
+                yield return null;
+                Assert.That(exitedBeforeWrite, Is.False, "正常退出不能早于最后一命原子写入");
+                Assert.That(quits, Is.EqualTo(1)); Assert.That(arcade.InspectPending().Data.Outcome, Is.EqualTo("failed"));
+            }
+            finally { QuitGameCommand.SetQuitHandlerForTests(null); }
+        }
+
+        [UnityTest]
+        public IEnumerator FailedResultSaveCancelsDeferredQuit()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            architecture.GetModel<ArcadeRunModel>().SetTransientLives(1);
+            var store = new ArcadeRunFileStore(runtimeRoot); int quits = 0;
+            QuitGameCommand.SetQuitHandlerForTests(() => quits++);
+            try
+            {
+                using (var locked = new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+                {
+                    var operation = arcade.HandleLastDeathAsync(); architecture.SendCommand(new QuitGameCommand());
+                    yield return operation.ToCoroutine();
+                }
+                yield return null;
+                Assert.That(quits, Is.Zero); Assert.That(architecture.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+                Assert.That(store.Inspect().Data.HasResult, Is.False);
+                architecture.SendCommand(new QuitGameCommand()); Assert.That(quits, Is.EqualTo(1), "保存失败后新的明确退出仍可执行");
+            }
+            finally { QuitGameCommand.SetQuitHandlerForTests(null); }
+        }
+
+        [UnityTest]
+        public IEnumerator LateResultCompletionAfterDeinitCannotPublishOrQuit()
+        {
+            Assert.That(arcade.TryStartConfiguredRun(out _, out var error), Is.True, error);
+            Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+            architecture.GetModel<ArcadeRunModel>().SetTransientLives(1);
+            int results = 0, quits = 0;
+            architecture.RegisterEvent<ArcadeRunChangedEvent>(evt => { if(evt.Phase == ArcadeRunPhase.Result) results++; });
+            QuitGameCommand.SetQuitHandlerForTests(() => quits++);
+            try
+            {
+                var operation = arcade.HandleLastDeathAsync(); architecture.SendCommand(new QuitGameCommand());
+                ((ISystem)arcade).Deinit();
+                yield return operation.ToCoroutine(); yield return null;
+                Assert.That(results, Is.Zero); Assert.That(quits, Is.Zero);
+            }
+            finally { QuitGameCommand.SetQuitHandlerForTests(null); }
+        }
+
         [Test]
         public void CheckpointContractContainsNoOffers()
         {

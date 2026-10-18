@@ -1,0 +1,49 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3522,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.5034651"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.AbandonAndFailureRemainValidResultFiles",
+        "Status": "Passed",
+        "Duration": "00:00:00.3600000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.FailedWriteKeepsNodeAndRetryCommitsOnce",
+        "Status": "Passed",
+        "Duration": "00:00:00.3710000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.LegacyNodeResumesWithoutInventingCheckpoint",
+        "Status": "Passed",
+        "Duration": "00:00:00.3390000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.RoundFourPersistsTreasureStateAndCompletionClearsCheckpoint",
+        "Status": "Passed",
+        "Duration": "00:00:00.3660000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.SavePreservesWholeWorkingRunWithoutLeavingArena",
+        "Status": "Passed",
+        "Duration": "00:00:00.3710000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.SkippedOrMutatedSameRoundCannotReplaceNode",
+        "Status": "Passed",
+        "Duration": "00:00:00.3300000"
+      },
+      {
+        "Name": "Game.Tests.IslandRoundSaveTests.TreasureInterruptionRestoresRoundThreeWholeState",
+        "Status": "Passed",
+        "Duration": "00:00:00.3790000"
+      }
+    ]
+  }
+}

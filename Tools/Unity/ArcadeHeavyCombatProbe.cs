@@ -177,7 +177,7 @@ public static class ArcadeHeavyCombatProbe
         UIHelper.HideUI<StartUICtrl>();
         var flow = a.GetSystem<ArcadeSceneFlowSystem>();
         await UniTask.NextFrame();
-        await Wait(() => !(bool)Get(flow, "busy") && !(bool)Get(a.GetSystem<MapSceneSystem>(), "busy"), 60, "地图收敛，超时保留临时隔离");
+        await Wait(() => !(bool)Get(flow, "busy") && !(bool)Get(a.GetSystem<MapSceneSystem>(), "busy") && !(bool)Get(a.GetSystem<ArcadeCombatSystem>(), "lastDeathReturnPending"), 60, "地图收敛，超时保留临时隔离");
         await UniTask.NextFrame();
         string saved = directory == null ? null : new ArcadeRunFileStore(directory).Inspect().Data?.RunId;
         if (saved != null)

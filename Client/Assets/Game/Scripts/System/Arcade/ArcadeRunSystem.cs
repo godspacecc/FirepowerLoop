@@ -16,7 +16,10 @@ namespace Game
         private string nextDeleteFailureForTests;
         /// <summary>体系卸载使旧写盘完成回调失效；文件事务仍完成，但不能再发布到旧世界。</summary>
         private int resultSaveGeneration;
-        public bool IsSavingResult => this.GetModel<ArcadeRunModel>().Phase == ArcadeRunPhase.SavingResult;
+        /// <summary>正常退出等待完整原子写入及主线程提交；支持命令与窗口关闭共同等待。</summary>
+        private UniTaskCompletionSource<bool> resultSaveCompletion;
+        /// <summary>未注册的测试初始化允许配置端口；已注册体系按权威阶段判断是否仍在写盘。</summary>
+        public bool IsSavingResult => ((IBelongToArchitecture)this).GetArchitecture()?.GetModel<ArcadeRunModel>()?.Phase == ArcadeRunPhase.SavingResult;
 
         protected override void OnInit()
         {
@@ -338,6 +341,7 @@ namespace Game
                 return (ArcadeDeathResult.Rejected, current, "当前不是可提交的最后一命");
             var candidate = CreateFailedCandidate(current); var targetStore = store;
             int generation = ++resultSaveGeneration; model.BeginSavingResult();
+            var completion = new UniTaskCompletionSource<bool>(); resultSaveCompletion = completion; bool committed = false;
             try
             {
                 var saved = await targetStore.SaveAsync(candidate);
@@ -345,15 +349,23 @@ namespace Game
                     return (ArcadeDeathResult.Rejected, current, "结果保存所属的运行环境已失效");
                 if (!saved.Success) return (ArcadeDeathResult.Rejected, current, saved.Error);
                 CommitSafeNode(candidate);
+                committed = true;
                 return (ArcadeDeathResult.RunFailed, candidate.Clone(), null);
             }
             finally
             {
                 if (generation == resultSaveGeneration && model.Phase == ArcadeRunPhase.SavingResult) model.EnterArena();
+                completion.TrySetResult(committed);
             }
         }
 
-        protected override void OnDeinit() => resultSaveGeneration++;
+        /// <summary>调用者只能异步等候，不能在主线程阻塞等待需要回主线程提交的任务。</summary>
+        public UniTask<bool> WaitForPendingResultSaveAsync() => resultSaveCompletion?.Task ?? UniTask.FromResult(true);
+
+        protected override void OnDeinit()
+        {
+            resultSaveGeneration++; resultSaveCompletion?.TrySetResult(false);
+        }
 
         /// <summary>同步兼容入口与异步最后一命共用相同结果规则；不携带轮现场、支援或待发奖励。</summary>
         private ArcadeRunSaveData CreateFailedCandidate(ArcadeRunSaveData current)

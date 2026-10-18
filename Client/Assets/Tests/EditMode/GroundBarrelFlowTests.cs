@@ -42,6 +42,16 @@ namespace Game.Tests
         private int Count=>((ICollection)runtime.GetType().GetField("GroundBarrels").GetValue(runtime)).Count;
         private Vector2 Point(int index)=>new Vector2(Layout.Barrels[index].X,Layout.Barrels[index].Y);
         private static ArcadeProjectileRuntime Shot()=>new ArcadeProjectileRuntime{Hostile=false,FromPlayerWeapon=true,Damage=10};
+        [Test] public void SubmittedResultStopsBarrelAndCarrierDamage()
+        {
+            Call("InitializeGroundBarrels",runtime);var point=Point(0);
+            var enemy=new ArcadeEnemyRuntime{Id=7,Position=point+Vector2.up*2.5f,Health=100,MaxHealth=100};runtime.Enemies.Add(7,enemy);
+            runtime.CompletionSubmitted=true;
+            var projectile=Shot();projectile.Damage=200;projectile.Behavior=global::ArcadeWeaponBehavior.Explosive;projectile.ExplosionRadius=4;
+            Assert.That((bool)Call("TryHitGroundBarrel",runtime,projectile,point-Vector2.right,point+Vector2.right*.1f),Is.False);
+            Assert.That(enemy.Health,Is.EqualTo(100));Assert.That(Count,Is.EqualTo(2));
+            Assert.That(architecture.GetModel<ArcadeRunModel>().Current.Score,Is.Zero);
+        }
         [Test] public void PlayerShotDetonatesNearestBarrelOnceWithoutChangingBudget()
         {
             Call("InitializeGroundBarrels",runtime);var first=Point(0);var second=Point(1);var direction=(second-first).normalized;

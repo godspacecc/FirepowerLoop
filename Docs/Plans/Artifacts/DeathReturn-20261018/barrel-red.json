@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3524,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.3014190"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.SubmittedResultStopsBarrelAndCarrierDamage",
+        "Status": "Failed",
+        "Duration": "00:00:00.3790000",
+        "Message": "  Expected: False\r\n  But was:  True\r\n"
+      }
+    ]
+  }
+}

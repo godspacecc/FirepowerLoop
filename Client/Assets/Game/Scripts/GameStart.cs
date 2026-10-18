@@ -20,6 +20,7 @@ namespace Game
             try
             {
                 _ = Game.Interface;
+                Application.wantsToQuit += OnWantsToQuit;
             }
             catch (System.Exception exception)
             {
@@ -105,6 +106,11 @@ namespace Game
             catch (System.Exception exception) { Log.Error("[GameStart] 退出清理失败：" + exception); }
             finally { LifeCycle.Quit(); }
         }
+
+        /// <summary>正常窗口关闭先等后台最后一命写盘，不让Deinit早于原子文件事务。</summary>
+        private bool OnWantsToQuit() => QuitGameCommand.TryPrepareQuit(Game.Interface);
+
+        private void OnDestroy() => Application.wantsToQuit -= OnWantsToQuit;
 
         private void OnApplicationPause(bool pauseStatus)
         {

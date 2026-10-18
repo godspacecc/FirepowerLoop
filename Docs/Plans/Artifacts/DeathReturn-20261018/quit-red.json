@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3524,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.1006855"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.NormalQuitWaitsForPendingLastLifeWrite",
+        "Status": "Failed",
+        "Duration": "00:00:01.1310000",
+        "Message": "  正常退出不能早于最后一命原子写入\r\n  Expected: False\r\n  But was:  True\r\n"
+      }
+    ]
+  }
+}

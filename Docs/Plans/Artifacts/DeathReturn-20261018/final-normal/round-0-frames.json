@@ -1,0 +1,674 @@
+[
+  {
+    "Frame": 16708,
+    "Ms": 7.109,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16709,
+    "Ms": 5.284,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16710,
+    "Ms": 10.3341,
+    "Markers": [
+      {
+        "Name": "DeathProbe.Fatal",
+        "Ms": 1.8756,
+        "Children": [
+          {
+            "Name": "GameObject.Activate",
+            "Ms": 0.351
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.3477
+          },
+          {
+            "Name": "GameObject.Activate",
+            "Ms": 0.1558
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.1553
+          },
+          {
+            "Name": "Mono.JIT",
+            "Ms": 0.115
+          },
+          {
+            "Name": "Mono.JIT",
+            "Ms": 0.0628
+          },
+          {
+            "Name": "Mono.JIT",
+            "Ms": 0.0618
+          },
+          {
+            "Name": "Unity.TextMeshPro.dll!TMPro::TextMeshProUGUI.Awake() [Invoke]",
+            "Ms": 0.0586
+          },
+          {
+            "Name": "Unity.TextMeshPro.dll!TMPro::TextMeshProUGUI.OnEnable() [Invoke]",
+            "Ms": 0.0414
+          },
+          {
+            "Name": "Unity.TextMeshPro.dll!TMPro::TextMeshProUGUI.OnEnable() [Invoke]",
+            "Ms": 0.0306
+          },
+          {
+            "Name": "GameObject.Activate",
+            "Ms": 0.0252
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.024
+          },
+          {
+            "Name": "UnityEngine.UI.dll!UnityEngine.UI::AspectRatioFitter.OnEnable() [Invoke]",
+            "Ms": 0.019
+          },
+          {
+            "Name": "Game.dll!Game::LocalizedText.OnEnable() [Invoke]",
+            "Ms": 0.0166
+          },
+          {
+            "Name": "UnityEngine.CoreModule.dll!UnityEngine::RectTransform.SendReapplyDrivenProperties() [Invoke]",
+            "Ms": 0.0139
+          },
+          {
+            "Name": "UnityEngine.UI.dll!UnityEngine.UI::Slider.OnEnable() [Invoke]",
+            "Ms": 0.0113
+          },
+          {
+            "Name": "UnityEngine.CoreModule.dll!UnityEngine::RectTransform.SendReapplyDrivenProperties() [Invoke]",
+            "Ms": 0.0106
+          },
+          {
+            "Name": "Game.dll!Game::SafeAreaFitter.OnEnable() [Invoke]",
+            "Ms": 0.0105
+          },
+          {
+            "Name": "UnityEngine.UI.dll!UnityEngine.UI::Image.OnEnable() [Invoke]",
+            "Ms": 0.0101
+          },
+          {
+            "Name": "Unity.TextMeshPro.dll!TMPro::TextMeshProUGUI.OnEnable() [Invoke]",
+            "Ms": 0.00849999953
+          }
+        ]
+      }
+    ],
+    "Top": null
+  },
+  {
+    "Frame": 16711,
+    "Ms": 5.1349,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16712,
+    "Ms": 9.3921,
+    "Markers": [
+      {
+        "Name": "DeathProbe.ViewEnd",
+        "Ms": 1.6814,
+        "Children": [
+          {
+            "Name": "Animator.Rebind",
+            "Ms": 0.4158
+          },
+          {
+            "Name": "Animator.Initialize",
+            "Ms": 0.3816
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.1556
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.1554
+          },
+          {
+            "Name": "Animator.SetupAvatarDataSet",
+            "Ms": 0.1187
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.1093
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.1073
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.1069
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.1067
+          },
+          {
+            "Name": "CheckAllowDestructionRecursive [Editor Only]",
+            "Ms": 0.0994
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.0825
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.0822
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.078
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.0779
+          },
+          {
+            "Name": "GameObject.Deactivate",
+            "Ms": 0.076
+          },
+          {
+            "Name": "GameObject.ActivateAwakeRecursively",
+            "Ms": 0.0758
+          },
+          {
+            "Name": "Game.dll!Game::EnemyView.OnDisable() [Invoke]",
+            "Ms": 0.058199998
+          },
+          {
+            "Name": "CheckAllowDestructionRecursive [Editor Only]",
+            "Ms": 0.0446
+          },
+          {
+            "Name": "CheckAllowDestructionRecursive [Editor Only]",
+            "Ms": 0.0443
+          },
+          {
+            "Name": "CheckAllowDestructionRecursive [Editor Only]",
+            "Ms": 0.0437
+          }
+        ]
+      }
+    ],
+    "Top": null
+  },
+  {
+    "Frame": 16713,
+    "Ms": 5.2448,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16714,
+    "Ms": 6.7801,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16715,
+    "Ms": 6.1046,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16716,
+    "Ms": 7.304,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16717,
+    "Ms": 4.0194,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16718,
+    "Ms": 4.2118,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16719,
+    "Ms": 3.838,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16720,
+    "Ms": 4.2125,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16721,
+    "Ms": 3.4407,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16722,
+    "Ms": 4.6792,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16723,
+    "Ms": 3.425,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16724,
+    "Ms": 3.7876,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16725,
+    "Ms": 3.4472,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16726,
+    "Ms": 4.6672,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16727,
+    "Ms": 3.6802,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16728,
+    "Ms": 3.1834,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16729,
+    "Ms": 3.1583,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16730,
+    "Ms": 3.0621,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16731,
+    "Ms": 3.9586,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16732,
+    "Ms": 3.1797,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16733,
+    "Ms": 3.4104,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16734,
+    "Ms": 3.2038,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16735,
+    "Ms": 3.2845,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16736,
+    "Ms": 4.7281,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16737,
+    "Ms": 3.3734,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16738,
+    "Ms": 3.4542,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16739,
+    "Ms": 3.3921,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16740,
+    "Ms": 4.8791,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16741,
+    "Ms": 3.8931,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16742,
+    "Ms": 4.0149,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16743,
+    "Ms": 3.7802,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16744,
+    "Ms": 4.0987,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16745,
+    "Ms": 4.5306,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16746,
+    "Ms": 3.1395,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16747,
+    "Ms": 3.9903,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16748,
+    "Ms": 3.8393,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16749,
+    "Ms": 4.0512,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16750,
+    "Ms": 3.4795,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16751,
+    "Ms": 3.6098,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16752,
+    "Ms": 4.4881,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16753,
+    "Ms": 4.9511,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16754,
+    "Ms": 2.7382,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16755,
+    "Ms": 2.6798,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16756,
+    "Ms": 3.0002,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16757,
+    "Ms": 2.749,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16758,
+    "Ms": 4.0741,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16759,
+    "Ms": 3.2548,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16760,
+    "Ms": 2.8331,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16761,
+    "Ms": 2.7754,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16762,
+    "Ms": 2.7609,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16763,
+    "Ms": 3.1191,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16764,
+    "Ms": 3.2125,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16765,
+    "Ms": 2.5555,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16766,
+    "Ms": 2.7541,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16767,
+    "Ms": 2.6988,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16768,
+    "Ms": 2.5471,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16769,
+    "Ms": 2.7913,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16770,
+    "Ms": 2.8963,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16771,
+    "Ms": 2.5118,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16772,
+    "Ms": 2.629,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16773,
+    "Ms": 2.4106,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16774,
+    "Ms": 2.4746,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16775,
+    "Ms": 2.3354,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16776,
+    "Ms": 3.0737,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16777,
+    "Ms": 3.1093,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16778,
+    "Ms": 2.5092,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16779,
+    "Ms": 2.5703,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16780,
+    "Ms": 2.4796,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16781,
+    "Ms": 2.2222,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16782,
+    "Ms": 2.7493,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16783,
+    "Ms": 2.4326,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16784,
+    "Ms": 2.3687,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16785,
+    "Ms": 2.3783,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16786,
+    "Ms": 2.3467,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16787,
+    "Ms": 2.1921,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16788,
+    "Ms": 2.2637,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16789,
+    "Ms": 2.7512,
+    "Markers": [],
+    "Top": null
+  },
+  {
+    "Frame": 16790,
+    "Ms": 2.7217,
+    "Markers": [],
+    "Top": null
+  }
+]

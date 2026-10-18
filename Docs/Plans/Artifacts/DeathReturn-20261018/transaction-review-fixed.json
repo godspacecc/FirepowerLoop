@@ -1,0 +1,114 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3526,
+      "PassedTests": 20,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:07.7354128"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.ArenaExitRestoresPreviousSafeNodeWithoutLifeCost",
+        "Status": "Passed",
+        "Duration": "00:00:00.2700000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.AsyncLastLifeBlocksCompetingMutationsAndCommitsOnMainThread",
+        "Status": "Passed",
+        "Duration": "00:00:00.6490000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.AsyncLastLifeSaveFailureKeepsOriginalNodeAndAllowsRetry",
+        "Status": "Passed",
+        "Duration": "00:00:00.7180000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.ChallengeAttemptPersistsAndCompletionDoesNotAdvanceArena",
+        "Status": "Passed",
+        "Duration": "00:00:00.3660000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.CheckpointContractContainsNoOffers",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.CompletedArenaCommitsOnlyStableResultsAndNextCheckpoint",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.CompletedCheckpointResumesWithoutTransactions",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredEntryFailureKeepsPersistedNodeForRetry",
+        "Status": "Passed",
+        "Duration": "00:00:00.3070000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredRunPersistsInitialSafeNodeBeforeSceneEntry",
+        "Status": "Passed",
+        "Duration": "00:00:00.3400000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.ConfiguredRunUsesOpeningLoadoutAndTransitNodeWithoutShopOffers",
+        "Status": "Passed",
+        "Duration": "00:00:00.2930000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.FailedChallengeReturnsPersistedShopWithoutLifeCost",
+        "Status": "Passed",
+        "Duration": "00:00:00.3970000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.FailedResultSaveCancelsDeferredQuit",
+        "Status": "Passed",
+        "Duration": "00:00:00.5250000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.GeneratedArcadeMap_ReusesTaskSceneWithOnePlayerSpawn",
+        "Status": "Passed",
+        "Duration": "00:00:00.3310000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.GeneratedCatalogHasTwentyFourWaveArenasAndMobileBudgets",
+        "Status": "Passed",
+        "Duration": "00:00:00.3740000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.LastLifeDeletesRunAndClearsAllSessionValue",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.LastLifeSaveFailurePreservesCheckpointAndCanRetry",
+        "Status": "Passed",
+        "Duration": "00:00:00.3350000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.LateResultCompletionAfterDeinitCannotPublishOrQuit",
+        "Status": "Passed",
+        "Duration": "00:00:00.6620000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.NewRunUsesFixedIsolatedLoadoutAndWritesSafeNode",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.NormalQuitWaitsForPendingLastLifeWrite",
+        "Status": "Passed",
+        "Duration": "00:00:00.7060000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRunSystemTests.TransitCompletionSaveFailureKeepsRouteAndRetryPreservesExactResourcesWithoutShop",
+        "Status": "Passed",
+        "Duration": "00:00:00.3990000"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 3526,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.0023282"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.RuntimeLoggingPolicyTests.GameStartExitDeinitializesBeforeQuittingSharedLifecycle",
+        "Status": "Failed",
+        "Duration": "00:00:00.0060000",
+        "Message": "  Expected: greater than or equal to 0\r\n  But was:  -1\r\n"
+      }
+    ]
+  }
+}

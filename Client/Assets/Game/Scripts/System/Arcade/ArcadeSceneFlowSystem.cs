@@ -65,6 +65,7 @@ namespace Game
             busy = true;
             try
             {
+                bool hadMap = this.GetModel<MapSceneModel>().CurrentHandle != null;
                 var result = await this.GetSystem<MapSceneSystem>().UnloadCurrentMapAsync(cancellationToken);
                 if (!result.Success)
                 {
@@ -79,6 +80,8 @@ namespace Game
                 UIHelper.HideUI<PauseUICtrl>();
                 UIHelper.HideUI<ArcadeHudUICtrl>();
                 UIHelper.HideUI<ArcadeResumeUICtrl>();
+                // 场景释放与菜单的存档读取／TMP重绘分帧，保持busy直到菜单真正就绪。
+                if (hadMap) await UniTask.NextFrame();
                 UIHelper.ShowUI<StartUICtrl>();
                 return ArcadeSceneFlowResult.Ok();
             }

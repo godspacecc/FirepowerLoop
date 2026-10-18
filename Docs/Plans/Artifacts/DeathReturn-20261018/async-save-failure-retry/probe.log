@@ -1,0 +1,6 @@
+正式Boot新局；3轮受控临时局最后一命，Profiler非Deep；不代表设备性能。
+2026-10-18T02:59:25.8209583Z InjectedSaveFailure=True OriginalNodePreserved=True Health=1 LoadingHidden=True State=Playing
+2026-10-18T02:59:26.7450741Z Round=0 EntryMs=0.963 ViewEnds=1.691 UnloadWallMs=9.321 MenuObservedWallMs=38.560 Result=failed
+2026-10-18T02:59:29.6693501Z Round=1 EntryMs=1.080 ViewEnds=1.709 UnloadWallMs=7.523 MenuObservedWallMs=51.890 Result=failed
+2026-10-18T02:59:32.5697464Z Round=2 EntryMs=1.030 ViewEnds=1.629 UnloadWallMs=7.673 MenuObservedWallMs=37.119 Result=failed
+2026-10-18T02:59:32.6777004Z PASS 3轮结果／菜单／原模型及端口恢复

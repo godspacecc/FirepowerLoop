@@ -1,0 +1,64 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3526,
+      "PassedTests": 10,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1098229"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.CancelConflictReplacementKeepsOldBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.CaptureModeShieldsNormalUpdateExecutionUntilAKeyIsCaptured",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.DefaultsDoNotBindLegacyRemovedUiActionToEscape",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.HotKeyActionsAreCreatedAsButtonActions",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.HotKeyItemPrefabExists",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.HotKeySystemCaptureCanCancelAndConfirmReplacement",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.ModelCanConfirmConflictReplacementBySwappingOldBinding",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.RegistryExecutesHighestPriorityExecutableCandidate",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.SanitizeDropsLegacyRemovedUiBinding",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.HotKeySettingsTests.SuccessfulCaptureRebuildsActionsAndMarksSettingsDirty",
+        "Status": "Passed",
+        "Duration": "00:00:00.0250000"
+      }
+    ]
+  }
+}

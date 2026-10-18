@@ -1,0 +1,34 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3522,
+      "PassedTests": 4,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.6492461"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArenaEntrySaveTests.EntryRejectsOldGoldAndUnrelatedArenaLineage",
+        "Status": "Passed",
+        "Duration": "00:00:00.5110000"
+      },
+      {
+        "Name": "Game.Tests.ArenaEntrySaveTests.FailedExitWriteKeepsSourceNodeAndRetryDoesNotDuplicateGold",
+        "Status": "Passed",
+        "Duration": "00:00:00.4500000"
+      },
+      {
+        "Name": "Game.Tests.ArenaEntrySaveTests.FollowingArenaPropagatesStateAndAbandonClearsIt",
+        "Status": "Passed",
+        "Duration": "00:00:00.3380000"
+      },
+      {
+        "Name": "Game.Tests.ArenaEntrySaveTests.IslandExitPersistsExactRoleAndEffectsWithoutOldArenaGold",
+        "Status": "Passed",
+        "Duration": "00:00:00.3400000"
+      }
+    ]
+  }
+}

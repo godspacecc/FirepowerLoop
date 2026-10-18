@@ -74,7 +74,7 @@ namespace Game
             if(blocked)return false;
             DetonateGroundBarrel(r,barrelId);
             // 与既有箱体命中保持一致：消费弹丸，但爆炸武器自身的半径和伤害不能丢失。
-            if(catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
+            if(!r.CompletionSubmitted && catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
             {
                 view?.PlayProjectileExplosion(projectile.Position,projectile.ExplosionRadius);
                 DamageEnemiesInRadius(r,projectile.Position,projectile.ExplosionRadius,projectile.Damage);

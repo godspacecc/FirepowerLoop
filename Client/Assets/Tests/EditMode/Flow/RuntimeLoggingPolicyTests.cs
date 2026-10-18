@@ -75,8 +75,10 @@ namespace Game.Tests
         {
             var source = ReadAsset("Assets/Game/Scripts/GameStart.cs");
             Assert.That(source, Does.Not.Contain("GetSystem<SaveSystem>"));
-            Assert.That(source.IndexOf("architecture.Deinit()", System.StringComparison.Ordinal), Is.GreaterThanOrEqualTo(0));
-            Assert.That(source.IndexOf("LifeCycle.Quit()", System.StringComparison.Ordinal), Is.GreaterThan(source.IndexOf("architecture.Deinit()", System.StringComparison.Ordinal)));
+            // 现役入口直接清理Game.Interface，不再依赖旧实现的局部变量名；保留清理先于生命周期退出的约束。
+            int deinit = source.IndexOf("Game.Interface.Deinit()", System.StringComparison.Ordinal);
+            Assert.That(deinit, Is.GreaterThanOrEqualTo(0));
+            Assert.That(source.IndexOf("LifeCycle.Quit()", System.StringComparison.Ordinal), Is.GreaterThan(deinit));
             var settings = ReadAsset("Assets/Game/Scripts/System/Settings/SettingsSystem.cs");
             Assert.That(settings, Does.Contain("Flush()"));
         }
