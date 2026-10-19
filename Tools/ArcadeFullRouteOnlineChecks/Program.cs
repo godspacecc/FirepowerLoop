@@ -2,6 +2,14 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="IslandProjectileBoundaryOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true" || !int.TryParse(opts.GetValueOrDefault("maxTests"),out int projectileMax) || projectileMax<1)
+        throw new ArgumentException("Explicit IslandProjectileBoundaryOnline limit required");
+    var projectileConfig=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
+    World.Instance.AddSingleton(projectileConfig);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=IslandProjectileBoundaryOnlineChecks.Run(projectileMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="SkullPowerOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int skullMax)||skullMax<1)

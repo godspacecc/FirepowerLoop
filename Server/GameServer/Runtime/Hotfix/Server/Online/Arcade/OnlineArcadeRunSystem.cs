@@ -2093,8 +2093,11 @@ namespace ET.Server
                 bool wallCrossed=ClipPlayerShotToWall(battle,projectile,priorX,priorZ);
                 bool expired = projectile.RemainingSeconds <= 0f;
                 bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
-                bool remove = expired || MathF.Abs(projectile.PositionX) > rule.ArenaHalfWidth ||
-                              MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight || hitObstacle;
+                // 海岛行走外缘不裁断朝深海的弹道；武器寿命及真实命中仍负责回收。
+                bool outsideArena = IslandFor(battle) == null &&
+                                    (MathF.Abs(projectile.PositionX) > rule.ArenaHalfWidth ||
+                                     MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight);
+                bool remove = expired || outsideArena || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
                     self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ,

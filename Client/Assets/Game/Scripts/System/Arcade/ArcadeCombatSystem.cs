@@ -963,9 +963,11 @@ namespace Game
                         { firstHit = entry; hitObstacle = true; }
                     if (hitObstacle) projectile.Position = Vector2.Lerp(priorPosition, projectile.Position, firstHit);
                 }
-                var remove = expired ||
-                             Mathf.Abs(projectile.Position.x) > catalog.Rule.ArenaHalfWidth ||
-                             Mathf.Abs(projectile.Position.y) > catalog.Rule.ArenaHalfHeight || hitObstacle;
+                // 海岛外围是连续海面，行走边界不裁断弹道；深海中的弹丸仍由武器寿命和真实命中回收。
+                var outsideArena = IslandFor(runtime) == null &&
+                                   (Mathf.Abs(projectile.Position.x) > catalog.Rule.ArenaHalfWidth ||
+                                    Mathf.Abs(projectile.Position.y) > catalog.Rule.ArenaHalfHeight);
+                var remove = expired || outsideArena || hitObstacle;
                 // 只补已确认的普通三枪墙面接触，不把过期、敌弹或爆炸弹移除误当成命中。
                 if (!expired && !projectile.Hostile && hitObstacle &&
                     (projectile.SourceWeaponId == "arcade.weapon.basic" ||
