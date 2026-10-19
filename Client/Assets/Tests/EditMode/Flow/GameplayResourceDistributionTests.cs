@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using Luban;
 using NUnit.Framework;
 using UnityEditor;
 
@@ -34,6 +37,33 @@ namespace Game.Tests
             Assert.That(Tags(asset), Does.Contain("arcade"));
         }
 
+        /// <summary>覆盖入场预载的全部正式掉落配置，包含不以 ArcadeDrop 命名的武器和支援资源。</summary>
+        [Test]
+        public void ConfiguredDropVisualsAreCollectedForArcadeEntry()
+        {
+            var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+                new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + name + ".bytes"))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
+            Assert.That(catalog.Drops, Is.Not.Empty);
+            var assets = CollectAssets().Cast<object>().ToDictionary(asset => (string)Read(asset, "Address"), StringComparer.Ordinal);
+
+            var addresses = catalog.Drops.Select(drop => drop.VisualPrefabAddress)
+                .Where(address => !string.IsNullOrWhiteSpace(address)).Distinct().ToArray();
+            Assert.That(addresses, Is.Not.Empty);
+            Assert.That(addresses.Where(address => !assets.ContainsKey(address)).ToArray(), Is.Empty,
+                "正式掉落配置的入场预载地址必须全部收集");
+            foreach (var address in addresses)
+            {
+                var asset = assets[address];
+                Assert.That(Tags(asset), Does.Contain("arcade"), address);
+                var assetInfo = Read(asset, "AssetInfo");
+                var path = (string)assetInfo.GetType().GetField("AssetPath").GetValue(assetInfo);
+                var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
+                Assert.That(prefab, Is.Not.Null, address);
+                Assert.That(prefab.GetComponentsInChildren<UnityEngine.Renderer>(true), Is.Not.Empty, address);
+            }
+        }
+
         [Test]
         public void ArcadeEnemiesAreNotStartupAndDoNotSharePlayerBundle()
         {
@@ -49,12 +79,18 @@ namespace Game.Tests
         private static IEnumerable Tags(object asset) => (IEnumerable)Read(asset, "AssetTags");
         private static object Find(string address)
         {
-            var setting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/AssetBundleCollectorSetting.asset");
-            var result = setting.GetType().GetMethod("BeginCollect").Invoke(setting, new object[] { "DefaultPackage", true, false });
-            foreach (var asset in (IEnumerable)Read(result, "CollectAssets"))
+            foreach (var asset in CollectAssets())
                 if ((string)Read(asset, "Address") == address) return asset;
             Assert.Fail("清单缺少地址：" + address);
             return null;
+        }
+
+        /// <summary>只查询正式收集器的寻址结果，不构建资源包。</summary>
+        private static IEnumerable CollectAssets()
+        {
+            var setting = AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/AssetBundleCollectorSetting.asset");
+            var result = setting.GetType().GetMethod("BeginCollect").Invoke(setting, new object[] { "DefaultPackage", true, false });
+            return (IEnumerable)Read(result, "CollectAssets");
         }
     }
 }

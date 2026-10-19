@@ -744,6 +744,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab
+        CollectorGUID: ab0b1882bc865b24eb5272797d823783
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGrenade.prefab
         CollectorGUID: dd8d9dd788d40014abbc43f402cd8eff
         CollectorType: 0
