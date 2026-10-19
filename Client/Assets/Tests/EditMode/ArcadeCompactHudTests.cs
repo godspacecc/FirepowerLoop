@@ -37,6 +37,165 @@ namespace Game.Tests
         public void Cleanup()
         { ArchitectureField.SetValue(null, previousArchitecture); ResourceLoader.Use(previousLoader); LanguageCache.SetValue(null, previousLanguageCache); }
 
+        /// <summary>同一权威玩家行切换手机/桌面展示；分数、生命与倍率不因布局切换丢失或重复累计。</summary>
+        [Test]
+        public void ConfirmedMobileInformationProjectsStateAndRestoresDesktop()
+        {
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui = root.GetComponent<ArcadeHudUI>();
+                var mobileField = typeof(ArcadeHudUI).GetField("MobileInformationRoot");
+                Assert.That(mobileField, Is.Not.Null, "确认图中的手机信息区尚未接入正式 HUD");
+                var mobileRoot = (GameObject)mobileField.GetValue(ui);
+                var list = (CustomListView)typeof(ArcadeHudUI).GetField("MobilePlayerStatusList").GetValue(ui);
+                var ctrl = new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit", Private).Invoke(ctrl, null);
+                typeof(ArcadeHudUICtrl).GetField("combat", Private).SetValue(ctrl,
+                    new ArcadeCombatHudSnapshot { PlayerHealth = 60, PlayerMaxHealth = 100, Bombs = 1, Dashes = 2 });
+                typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", Private).SetValue(ctrl, true);
+                var mode = typeof(ArcadeHudUICtrl).GetMethod("ApplyInputLayout", Private);
+                mode.Invoke(ctrl, new object[] { true, false });
+                typeof(ArcadeHudUICtrl).GetMethod("RefreshLocalPlayerStatuses", Private).Invoke(ctrl,
+                    new object[] { new ArcadeRunSaveData { RemainingLives = 3, Score = 42350, ScoreMultiplier = 3, MultiplierProgress = 500 } });
+                Assert.That(mobileRoot.activeSelf, Is.True);
+                Assert.That(ui.PlayerStatusList.gameObject.activeSelf, Is.False);
+                var box = list.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>();
+                T Field<T>(string name) where T : Object => (T)typeof(ArcadePlayerStatusBoxUI).GetField(name).GetValue(box);
+                Assert.That(Field<TMPro.TextMeshProUGUI>("MobileScore").text, Is.EqualTo("42,350"));
+                Assert.That(Field<TMPro.TextMeshProUGUI>("MobileLives").text, Is.EqualTo("3"));
+                Assert.That(Field<TMPro.TextMeshProUGUI>("MobileBombs").text, Is.EqualTo("1"));
+                Assert.That(Field<TMPro.TextMeshProUGUI>("MobileDashes").text, Is.EqualTo("2"));
+                Assert.That(Field<Image>("MobileHealthFill").fillAmount, Is.EqualTo(.6f).Within(.001f));
+                Assert.That(Field<Image>("MobileMultiplierFill").fillAmount, Is.EqualTo(.5f).Within(.001f));
+                var track = (RectTransform)Field<Image>("MobileMultiplierFill").transform.parent;
+                Assert.That(track.rect.height, Is.GreaterThan(track.rect.width * 3));
+                mode.Invoke(ctrl, new object[] { false, false });
+                Assert.That(mobileRoot.activeSelf, Is.False);
+                Assert.That(ui.PlayerStatusList.gameObject.activeSelf, Is.True);
+                Assert.That(ui.PlayerStatusList.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>().TextScore.text, Does.Contain("42350"));
+                mode.Invoke(ctrl, new object[] { true, false });
+                Assert.That(Field<TMPro.TextMeshProUGUI>("MobileScore").text, Is.EqualTo("42,350"));
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>能力沿右侧技能列排列；只迁移旧默认值，用户已经编辑的位置不被覆盖。</summary>
+        [Test]
+        public void MobileStormJoinsSkillColumnWithoutOverwritingCustomLayout()
+        {
+            var data = new MobileControlLayoutData();
+            Assert.That(data.FieldUpgrade.X, Is.EqualTo(data.Dash.X));
+            Assert.That(data.FieldUpgrade.Y, Is.LessThan(data.Dash.Y));
+            data.FieldUpgrade.X = .6875f;
+            data.FieldUpgrade.Y = 1000f / 1080f;
+            data.Sanitize();
+            Assert.That(data.FieldUpgrade.X, Is.EqualTo(data.Dash.X));
+            Assert.That(data.FieldUpgrade.Y, Is.LessThan(data.Dash.Y));
+            data.FieldUpgrade.X = .6f;
+            data.FieldUpgrade.Y = .8f;
+            data.Sanitize();
+            Assert.That(data.FieldUpgrade.X, Is.EqualTo(.6f));
+            Assert.That(data.FieldUpgrade.Y, Is.EqualTo(.8f));
+        }
+
+        /// <summary>手机能力显示权威充能和持续时间，未获得时隐藏入口，满充能才能提交技能意图。</summary>
+        [Test]
+        public void MobileStormProjectsChargeDurationAndOwnership()
+        {
+            Game.Interface.RegisterModel(new HotKeyModel());
+            Game.Interface.RegisterModel(new AppStateModel());
+            Game.Interface.GetModel<AppStateModel>().CurrentState.Value = AppState.Playing;
+            Game.Interface.RegisterSystem(new MobileInputSystem());
+            Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(true);
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui = root.GetComponent<ArcadeHudUI>(); var ctrl = new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit", Private).Invoke(ctrl, null);
+                typeof(ArcadeHudUICtrl).GetMethod("ApplyInputLayout", Private).Invoke(ctrl, new object[] { true, false });
+                var combat = new ArcadeCombatHudSnapshot { SlayerMartRulesVersion = 1, HasStorm = true, StormCharge = 42, PlayerHealth = 100 };
+                typeof(ArcadeHudUICtrl).GetField("combat", Private).SetValue(ctrl, combat);
+                var sync = typeof(ArcadeHudUICtrl).GetMethod("SyncFieldUpgradeUi", Private);
+                sync.Invoke(ctrl, null);
+                Assert.That(ui.TextStormCharge.gameObject.activeSelf, Is.False);
+                Assert.That(ui.MobileStormCharge.text, Is.EqualTo("42%"));
+                Assert.That(ui.MobileStormFill.fillAmount, Is.EqualTo(.42f).Within(.001f));
+                Assert.That(ui.BtnFieldUpgrade.interactable, Is.False);
+                combat.StormCharge = 100; sync.Invoke(ctrl, null);
+                Assert.That(ui.MobileStormCharge.text, Is.EqualTo("100%"));
+                Assert.That(ui.BtnFieldUpgrade.interactable, Is.True);
+                int intents = 0;
+                Game.Interface.RegisterEvent<ArcadeHudActionRequestedEvent>(evt => { if (evt.Action == ArcadeHudActionKind.FieldUpgrade) intents++; });
+                ui.BtnFieldUpgrade.onClick.Invoke();
+                Assert.That(intents, Is.EqualTo(1));
+                Assert.That(combat.StormCharge, Is.EqualTo(100), "HUD 不应自行扣除权威充能");
+                combat.StormSeconds = 2.2f; sync.Invoke(ctrl, null);
+                Assert.That(ui.MobileStormCharge.text, Is.EqualTo("3"));
+                Assert.That(ui.BtnFieldUpgrade.interactable, Is.False);
+                combat.HasStorm = false; sync.Invoke(ctrl, null);
+                Assert.That(ui.BtnFieldUpgrade.gameObject.activeSelf, Is.False);
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>真实双人玩家行和效果在横屏安全区内可读，信息区不侵入默认触控区域。</summary>
+        [TestCase(1920, 1080)]
+        [TestCase(2340, 1080)]
+        [TestCase(1440, 1080)]
+        public void MobileCoopInformationFitsTextAndAvoidsTouchAreas(int width, int height)
+        {
+            Game.Interface.RegisterSystem(new MobileInputSystem());
+            Game.Interface.GetSystem<MobileInputSystem>().TrySetEditorSimulation(true);
+            var canvas = new GameObject("MobileInformationTest", typeof(RectTransform), typeof(Canvas));
+            canvas.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+            ((RectTransform)canvas.transform).sizeDelta = new Vector2(width, height);
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), canvas.transform, false);
+            try
+            {
+                var ui = root.GetComponent<ArcadeHudUI>();
+                var ctrl = new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit", Private).Invoke(ctrl, null);
+                typeof(ArcadeHudUICtrl).GetMethod("ApplyInputLayout", Private).Invoke(ctrl, new object[] { true, false });
+                var players = new[] {
+                    new OnlineArcadePlayerSnapshot(1, "Self", 3, 0, 1, 2, "arcade.weapon.basic", false, null, score: 42350, scoreMultiplier: 3, multiplierProgress: 600),
+                    new OnlineArcadePlayerSnapshot(2, "Player 2", 0, 0, 0, 1, "arcade.weapon.basic", false, null, score: 16800, scoreMultiplier: 2, multiplierProgress: 300) };
+                var battle = new OnlineArcadeBattleSnapshot(1, 4, 4, 1, 1, 0, 1, 1000,
+                    new[] { new OnlineArcadeBattlePlayerSnapshot(1, 0, 0, 0, 1, 75, 100, true, false, 0),
+                        new OnlineArcadeBattlePlayerSnapshot(2, 0, 0, 0, 1, 0, 100, false, false, 0) },
+                    System.Array.Empty<OnlineArcadeEnemySnapshot>(), System.Array.Empty<OnlineArcadeProjectileSnapshot>(), System.Array.Empty<OnlineArcadeDropSnapshot>());
+                var snapshot = new OnlineArcadeRunClientSnapshot(true, 1, 2, 1, OnlineArcadeRunPhase.Arena,
+                    0, 1, "layout", players, OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success, battle);
+                typeof(ArcadeHudUICtrl).GetMethod("RefreshOnlinePlayerStatuses", Private).Invoke(ctrl, new object[] { snapshot, 1L });
+                typeof(ArcadeHudUICtrl).GetMethod("RenderTimedStatus", Private).Invoke(ctrl, new object[] {
+                    "ui.arcade.product.arcade.weapon.rapid.name", 12f,
+                    new[] { new ArcadePowerupHudEntry("ui.arcade.product.arcade.powerup.skull.small.name", 8f, 0),
+                        new ArcadePowerupHudEntry("ui.arcade.product.arcade.powerup.skull.large.name", 6f, 0) } });
+                var safe = root.AddComponent<SafeAreaFitter>(); safe.enabled = false;
+                typeof(SafeAreaFitter).GetMethod("ApplyAnchors", Private).Invoke(safe,
+                    new object[] { new Vector2(.03f, .02f), new Vector2(.97f, .98f) });
+                typeof(ArcadeHudUICtrl).GetMethod("ApplyJoystickLayout", Private).Invoke(ctrl, null);
+                for (int pass = 0; pass < 3; pass++)
+                { LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)root.transform); Canvas.ForceUpdateCanvases(); }
+                Assert.That(ui.MobilePlayerStatusList.GetDraggableItems().Count, Is.EqualTo(2));
+                foreach (var text in ui.MobilePlayerStatusList.GetComponentsInChildren<TMPro.TextMeshProUGUI>())
+                {
+                    text.ForceMeshUpdate();
+                    Assert.That(text.isTextOverflowing, Is.False, text.name + " 超出正式文本框：" + text.text);
+                }
+                var information = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.MobileInformationRoot.transform);
+                foreach (var touch in new[] { ui.MoveJoystickRoot.transform, ui.AimJoystickRoot.transform,
+                    ui.BtnBomb.transform, ui.BtnDash.transform, ui.BtnPause.transform, ui.BtnFieldUpgrade.transform })
+                    Assert.That(information.Overlaps(MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)touch)), Is.False, touch.name);
+                Assert.That(ui.MobileEffectList.GetDraggableItems().Count, Is.EqualTo(2));
+                Assert.That(ui.MobileWeaponEffectList.GetDraggableItems().Count, Is.EqualTo(1));
+            }
+            finally { Object.DestroyImmediate(canvas); }
+        }
+
         [TestCase(false, false)]
         [TestCase(false, true)]
         [TestCase(true, false)]

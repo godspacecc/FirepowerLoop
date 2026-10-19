@@ -31,6 +31,8 @@ namespace Game.Tests
             typeof(Architecture<Game>).GetField("mInited", Private).SetValue(architecture, true);
             architecture.RegisterModel(new LocalizationModel());
             architecture.RegisterModel(new ArcadeRunModel());
+            // 正式 HUD 渲染会查询设备模式，倍率夹具也需提供该只读输入上下文。
+            architecture.RegisterSystem(new MobileInputSystem());
             ResourceLoader.SetLoaderForTests(new LocalizationAssetResourceLoader());
             architecture.RegisterUtility(new LocalizationUtility());
             var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>

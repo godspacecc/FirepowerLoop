@@ -78,7 +78,9 @@ namespace Game.Tests
                 bounds = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnBomb.transform);
                 Assert.That(bounds.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.68f).Within(.001f));
                 var upgrade = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.BtnFieldUpgrade.transform);
-                Assert.That(upgrade.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(.6875f).Within(.001f));
+                var upgradeLayout = layout.FieldUpgrade;
+                Assert.That(upgrade.center.x / ui.JoystickLayoutArea.rect.width, Is.EqualTo(upgradeLayout.X).Within(.001f));
+                Assert.That(upgrade.center.y / ui.JoystickLayoutArea.rect.height, Is.EqualTo(upgradeLayout.Y).Within(.001f));
                 architecture.GetSystem<MobileInputSystem>().TrySetEditorSimulation(false);
                 typeof(ArcadeHudUICtrl).GetMethod("RefreshJoystickVisibility", flags).Invoke(ctrl, null);
                 Assert.That(((RectTransform)ui.BtnBomb.transform).anchorMin, Is.EqualTo(originalAnchor));

@@ -14,10 +14,15 @@ namespace Game
         private int weaponEffectCount;
         /// <summary>只缓存末三秒的图标引用，条目仍由 CustomListView 创建、复用和回收。</summary>
         private readonly List<Image> skullWarningIcons=new();
+        /// <summary>输入模式只切换 Prefab 内两组展示；权威快照与已保存触屏位置不随之改变。</summary>
+        private bool mobileHudLayout;
 
         /// <summary>仅切换 Prefab 内预制的两端能力区；联机保留原二次确认退出入口。</summary>
         private void ApplyInputLayout(bool mobile, bool online)
         {
+            mobileHudLayout = mobile;
+            UI.MobileInformationRoot.SetActive(mobile);
+            UI.PlayerStatusList.gameObject.SetActive(!mobile);
             UI.DesktopAbilityRoot.SetActive(!mobile);
             UI.BtnBomb.gameObject.SetActive(mobile);
             UI.BtnDash.gameObject.SetActive(mobile);
@@ -26,6 +31,20 @@ namespace Game
             UI.PauseIconRoot.SetActive(!online);
             UI.TextPauseOnlineExit.gameObject.SetActive(online);
             UI.TextPauseOnlineExit.text = Loc.T("ui.arcade.hud.online_exit");
+            ApplyFieldUpgradeLayout(mobile);
+            ApplyEffectGroupVisibility();
+        }
+
+        /// <summary>坐标避让前先切换能力按钮的正式尺寸，保证首次显示及布局编辑页使用相同触控几何。</summary>
+        private void ApplyFieldUpgradeLayout(bool mobile)
+        {
+            UI.MobileFieldUpgradeFace.gameObject.SetActive(mobile);
+            UI.DesktopFieldUpgradeFace.gameObject.SetActive(!mobile);
+            var fieldGraphic = UI.BtnFieldUpgrade.GetComponent<Image>();
+            fieldGraphic.enabled = !mobile;
+            UI.BtnFieldUpgrade.targetGraphic = mobile ? UI.MobileFieldUpgradeFace.GetComponent<Image>() : fieldGraphic;
+            ((RectTransform)UI.BtnFieldUpgrade.transform).sizeDelta = mobile
+                ? UI.MobileFieldUpgradeFace.rect.size : UI.DesktopFieldUpgradeFace.rect.size;
         }
 
         /// <summary>能力次数只读取现有库存；触屏零次数禁用沿用原按钮裁决。</summary>
@@ -51,11 +70,25 @@ namespace Game
                 foreach (var powerup in powerups) AddEffect(powerup.NameKey, powerup.Seconds, powerup.Charges, false);
             UI.WeaponEffectList.totalCount = weaponEffectCount;
             UI.WeaponEffectList.RefreshCells();
-            UI.WeaponEffectRoot.SetActive(weaponEffectCount > 0);
             UI.EffectList.totalCount = effects.Count - weaponEffectCount;
             UI.EffectList.RefreshCells();
-            UI.SupportEffectRoot.SetActive(UI.EffectList.totalCount > 0);
+            UI.MobileWeaponEffectList.totalCount = weaponEffectCount;
+            UI.MobileWeaponEffectList.RefreshCells();
+            UI.MobileEffectList.totalCount = effects.Count - weaponEffectCount;
+            UI.MobileEffectList.RefreshCells();
+            ApplyEffectGroupVisibility();
             UpdateSkullWarning(Time.unscaledTimeAsDouble);
+        }
+
+        /// <summary>手机效果在玩家列表后自动排版，空组不留洞；桌面保留原分类与位置。</summary>
+        private void ApplyEffectGroupVisibility()
+        {
+            UI.WeaponEffectRoot.SetActive(!mobileHudLayout && UI.WeaponEffectList.totalCount > 0);
+            UI.SupportEffectRoot.SetActive(!mobileHudLayout && UI.EffectList.totalCount > 0);
+            UI.MobileWeaponEffectList.gameObject.SetActive(UI.MobileWeaponEffectList.totalCount > 0);
+            UI.MobileEffectList.gameObject.SetActive(UI.MobileEffectList.totalCount > 0);
+            UI.MobileEffectsRoot.SetActive(mobileHudLayout &&
+                (UI.MobileWeaponEffectList.totalCount > 0 || UI.MobileEffectList.totalCount > 0));
         }
 
         private void AddEffect(string nameKey, float seconds, int charges, bool weapon)
@@ -136,6 +169,9 @@ namespace Game
             weaponEffectCount = 0;
             UI.WeaponEffectList.ClearCells();
             UI.EffectList.ClearCells();
+            UI.MobileWeaponEffectList.ClearCells();
+            UI.MobileEffectList.ClearCells();
+            UI.MobileEffectsRoot.SetActive(false);
             UI.WeaponEffectRoot.SetActive(false);
             UI.SupportEffectRoot.SetActive(false);
         }

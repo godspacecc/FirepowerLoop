@@ -55,9 +55,13 @@ namespace Game
             // 普通财宝计分也读取目录首份规则，HUD 与其共用同一配置来源。
             multiplierRules = catalog.TreasureRooms.FirstOrDefault();
             hudCatalog = catalog;
+            UI.ScoreFlightList.AddItemRefreshListener(RefreshScoreFlight);
             UI.EffectList.AddItemRefreshListener(RefreshEffect);
             UI.WeaponEffectList.AddItemRefreshListener(RefreshWeaponEffect);
             UI.PlayerStatusList.AddItemRefreshListener(RefreshPlayerStatus);
+            UI.MobilePlayerStatusList.AddItemRefreshListener(RefreshMobilePlayerStatus);
+            UI.MobileEffectList.AddItemRefreshListener(RefreshEffect);
+            UI.MobileWeaponEffectList.AddItemRefreshListener(RefreshWeaponEffect);
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
             UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
@@ -111,6 +115,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            ClearScorePickupFeedback();
             ResetJoystickInteractions();
             UI.FirstPersonFirePress.ResetCapture();
             ClearStageBanner();
@@ -122,7 +127,7 @@ namespace Game
         }
 
         protected override void OnUnload()
-        { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); skullWarningIcons.Clear(); desktopButtonPlacements = null; touchButtonsApplied = false; }
+        { ClearScorePickupFeedback(); ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); skullWarningIcons.Clear(); desktopButtonPlacements = null; touchButtonsApplied = false; }
 
         private void OnRunChanged(ArcadeRunChangedEvent evt)
         {
@@ -154,6 +159,7 @@ namespace Game
             var hadFirstPerson = combat.FirstPersonSeconds > 0;
             if (evt.Snapshot != null)
             {
+                if (evt.Snapshot.IslandTransitioning) ClearScorePickupFeedback();
                 combat = evt.Snapshot.Clone();
                 hasCombatSnapshot = true;
             }
@@ -322,6 +328,7 @@ namespace Game
                 (RectTransform)UI.FirstPersonFirePress.transform };
             desktopButtonPlacements ??= buttons.Select(rect => new ButtonPlacement(rect)).ToArray();
             var mobile = this.GetSystem<MobileInputSystem>()?.IsMobileInputMode == true;
+            ApplyFieldUpgradeLayout(mobile);
             if (!mobile && touchButtonsApplied)
             {
                 foreach (var placement in desktopButtonPlacements) placement.Restore();
@@ -344,6 +351,7 @@ namespace Game
         }
         private void RefreshJoystickArea()
         {
+            AdvanceScorePickups(Time.unscaledDeltaTime);
             UpdateSkullWarning(Time.unscaledTimeAsDouble);
             SyncSlayerMartUi();
             SyncCoopRescueUi();
@@ -404,9 +412,12 @@ namespace Game
                 ? Loc.T("ui.arcade.hud.respawn_short", Mathf.CeilToInt(combat.RespawnSeconds))
                 : string.Empty;
             playerStatuses.Clear();
+            snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.BombResourceId, out var bombs);
+            snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.DashResourceId, out var dashes);
             playerStatuses.Add(new PlayerStatusDisplay(Loc.T("ui.arcade.hud.self"), health, maxHealth,
                 snapshot.RemainingLives, snapshot.RunGold + (hasCombatSnapshot ? combat.ArenaGold : 0L), state, true,
-                snapshot.ScoreMultiplier, snapshot.MultiplierProgress, snapshot.Score));
+                snapshot.ScoreMultiplier, snapshot.MultiplierProgress, snapshot.Score,
+                hasCombatSnapshot ? combat.Bombs : bombs, hasCombatSnapshot ? combat.Dashes : dashes));
             RefreshPlayerStatusList();
         }
 
@@ -449,7 +460,7 @@ namespace Game
                     : player.DisplayName;
             playerStatuses.Add(new PlayerStatusDisplay(displayName, health, maxHealth,
                 player.Lives, player.RunGold, battle.InTreasureRoom && connected ? Loc.T(snapshot.Battle.ArenaNumber == 2 ? "ui.arcade.hud.armory_member" : "ui.arcade.hud.treasure_member") : state, isSelf,
-                player.ScoreMultiplier, player.MultiplierProgress, player.Score));
+                player.ScoreMultiplier, player.MultiplierProgress, player.Score, player.Bombs, player.Dashes));
         }
 
         /// <summary>列表数量先于刷新更新，确保复用行不会泄漏上一名玩家的文本、颜色或显隐状态。</summary>
@@ -457,23 +468,48 @@ namespace Game
         {
             UI.PlayerStatusList.totalCount = playerStatuses.Count;
             UI.PlayerStatusList.RefreshCells();
+            UI.MobilePlayerStatusList.totalCount = playerStatuses.Count;
+            UI.MobilePlayerStatusList.RefreshCells();
         }
 
         private void RefreshPlayerStatus(Transform transform, int index)
+            => RefreshPlayerStatusBox(transform, index, false);
+
+        private void RefreshMobilePlayerStatus(Transform transform, int index)
+            => RefreshPlayerStatusBox(transform, index, true);
+
+        /// <summary>两端共用同一 Box 的互斥内容和同一权威行；行高读取 Prefab，手机不创建第二份玩家状态。</summary>
+        private void RefreshPlayerStatusBox(Transform transform, int index, bool mobile)
         {
             if (index < 0 || index >= playerStatuses.Count) return;
             ArcadePlayerStatusBoxUI box = transform.GetComponent<ArcadePlayerStatusBoxUI>();
             if (box == null) return;
             PlayerStatusDisplay status = playerStatuses[index];
+            box.DesktopContentRoot.SetActive(!mobile);
+            box.MobileContentRoot.SetActive(mobile);
+            box.Background.enabled = !mobile;
+            var content = (RectTransform)(mobile ? box.MobileContentRoot.transform : box.DesktopContentRoot.transform);
+            box.GetComponent<UnityEngine.UI.LayoutElement>().preferredHeight = content.rect.height;
+            box.GetComponent<UnityEngine.UI.LayoutElement>().preferredWidth = content.rect.width;
             float ratio = status.MaxHealth > 0 ? Mathf.Clamp01((float)status.Health / status.MaxHealth) : 0f;
             Set(box.TextName, status.Name);
             Set(box.TextLives, Loc.T("ui.arcade.hud.life_count", status.Lives));
             Set(box.TextGold, Loc.T("ui.arcade.hud.gold_compact", status.Gold));
-            Set(box.TextScore, Loc.T("ui.arcade.hud.score", status.Score));
+            if (status.IsSelf) BindScoreTargets(box, status.Score);
+            long visibleScore = status.IsSelf ? VisibleSelfScore(status.Score) : status.Score;
+            Set(box.TextScore, Loc.T("ui.arcade.hud.score", visibleScore));
             Set(box.TextState, status.State);
             box.TextState.gameObject.SetActive(!string.IsNullOrEmpty(status.State));
             ApplyHealthFill(box.HealthFill, ratio);
             RenderMultiplier(box, status);
+            Set(box.MobileName, status.Name);
+            Set(box.MobileScore, visibleScore.ToString("N0", System.Globalization.CultureInfo.InvariantCulture));
+            Set(box.MobileLives, status.Lives.ToString());
+            Set(box.MobileBombs, status.Bombs.ToString());
+            Set(box.MobileDashes, status.Dashes.ToString());
+            Set(box.MobileState, status.State);
+            box.MobileState.gameObject.SetActive(!string.IsNullOrEmpty(status.State));
+            ApplyHealthFill(box.MobileHealthFill, ratio);
             box.Background.color = status.IsSelf
                 ? new Color(0.055f, 0.12f, 0.18f, 0.92f)
                 : new Color(0.055f, 0.075f, 0.09f, 0.88f);
@@ -491,12 +527,16 @@ namespace Game
             box.TextMultiplierState.color = new Color(.12f, .1f, .04f, 1f);
             HealthFillUtility.Apply(box.MultiplierFill, progress);
             box.MultiplierFill.color = maximum ? new Color(1f, .83f, .3f, 1f) : new Color(.95f, .69f, .21f, 1f);
+            box.MobileMultiplier.text = "×" + status.Multiplier;
+            box.MobileMultiplierFill.fillAmount = progress;
+            box.MobileMultiplierFill.color = maximum ? new Color(1f, .83f, .3f, 1f) : new Color(.25f, .9f, .35f, 1f);
         }
 
         private void ClearPlayerStatuses()
         {
             playerStatuses.Clear();
             if (UI?.PlayerStatusList != null) UI.PlayerStatusList.ClearCells();
+            if (UI?.MobilePlayerStatusList != null) UI.MobilePlayerStatusList.ClearCells();
         }
 
         private static Color HealthColor(float ratio)
@@ -517,10 +557,11 @@ namespace Game
         private static string ProductNameKey(string productId) =>
             string.IsNullOrWhiteSpace(productId) ? string.Empty : $"ui.arcade.product.{productId}.name";
 
+        /// <summary>玩家状态的只读显示投影，供桌面与手机行共用；不持有可修改的战斗模型。</summary>
         private readonly struct PlayerStatusDisplay
         {
             public PlayerStatusDisplay(string name, int health, int maxHealth, int lives, long gold,
-                string state, bool isSelf, int multiplier, int multiplierProgress, long score)
+                string state, bool isSelf, int multiplier, int multiplierProgress, long score, int bombs = 0, int dashes = 0)
             {
                 Name = name ?? string.Empty;
                 Health = health;
@@ -532,6 +573,7 @@ namespace Game
                 Multiplier = multiplier;
                 MultiplierProgress = multiplierProgress;
                 Score = score;
+                Bombs = bombs; Dashes = dashes;
             }
 
             public string Name { get; }
@@ -540,6 +582,10 @@ namespace Game
             public int Lives { get; }
             public long Gold { get; }
             public long Score { get; }
+            /// <summary>玩家权威快照中的剩余炸弹数。</summary>
+            public int Bombs { get; }
+            /// <summary>玩家权威快照中的剩余冲刺数。</summary>
+            public int Dashes { get; }
             public string State { get; }
             public bool IsSelf { get; }
             public int Multiplier { get; }

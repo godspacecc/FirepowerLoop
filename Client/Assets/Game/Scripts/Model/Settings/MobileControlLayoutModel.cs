@@ -105,7 +105,7 @@ namespace Game
             MobileLayoutButton.Pause => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 1016f / 1080f },
             MobileLayoutButton.Bomb => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 910f / 1080f },
             MobileLayoutButton.Dash => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 794f / 1080f },
-            MobileLayoutButton.FieldUpgrade => new MobileButtonLayoutData { X = .6875f, Y = 1000f / 1080f },
+            MobileLayoutButton.FieldUpgrade => new MobileButtonLayoutData { X = 1818f / 1920f, Y = 678f / 1080f },
             MobileLayoutButton.DonateLife => new MobileButtonLayoutData { X = .6875f, Y = .75f },
             MobileLayoutButton.ExitFirstPerson => new MobileButtonLayoutData { X = 1760f / 1920f, Y = 690f / 1080f },
             MobileLayoutButton.FirstPersonFire => new MobileButtonLayoutData { X = .82f, Y = .24f },
@@ -169,6 +169,7 @@ namespace Game
             // 仅迁移旧默认按钮位置；保留玩家主动拖动保存的位置。
             MigrateDefaultButton(Pause, .95f, .93f, MobileLayoutButton.Pause);
             MigrateDefaultButton(Pause, .05f, .93f, MobileLayoutButton.Pause);
+            MigrateDefaultButton(FieldUpgrade, .6875f, 1000f / 1080f, MobileLayoutButton.FieldUpgrade);
             foreach (MobileLayoutButton id in Enum.GetValues(typeof(MobileLayoutButton))) Button(id).Sanitize(DefaultButton(id));
             Status ??= DefaultHud(MobileLayoutHud.Status);
             Health ??= DefaultHud(MobileLayoutHud.Health);

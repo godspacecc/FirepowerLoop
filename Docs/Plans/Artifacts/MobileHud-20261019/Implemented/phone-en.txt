@@ -1,0 +1,14 @@
+TextArena overflow=False text=Arena 1
+TextWave overflow=False text=Wave 3 · 37 remaining
+Text overflow=False text=Move
+Text overflow=False text=Aim
+Count overflow=False text=1
+Count overflow=False text=2
+TextRespawn overflow=False text=
+MobileStormCharge overflow=False text=75%
+MobileName overflow=False text=You
+MobileScore overflow=False text=42,350
+MobileMultiplier overflow=False text=×3
+MobileLives overflow=False text=3
+MobileDashes overflow=False text=2
+MobileBombs overflow=False text=1

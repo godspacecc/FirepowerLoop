@@ -1,0 +1,14 @@
+TextArena overflow=False text=竞技场 1
+TextWave overflow=False text=第 3 波 · 剩余 37
+Text overflow=False text=移动
+Text overflow=False text=瞄准
+Count overflow=False text=1
+Count overflow=False text=2
+TextRespawn overflow=False text=
+MobileStormCharge overflow=False text=75%
+MobileName overflow=False text=我
+MobileScore overflow=False text=42,350
+MobileMultiplier overflow=False text=×3
+MobileLives overflow=False text=3
+MobileDashes overflow=False text=2
+MobileBombs overflow=False text=1
