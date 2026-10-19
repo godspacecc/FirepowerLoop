@@ -142,16 +142,20 @@ namespace Game
 
         private void OnUpdate()
         {
-            if (!active || latest.Battle == null || catalog == null || latest.BattlePaused) return;
+            // 单人与联机共用表现端口，非活动联机系统不能停止单人持有的循环声。
+            if (!active) return;
+            if (latest.Battle == null || catalog == null || latest.BattlePaused)
+            { view?.StopPlayerFireAudio(); return; }
             if(roundTransitionPending)
             {
                 ApplyAuthoritativeSnapshot(latest.Battle);
-                if(roundTransitionPending)return;
+                if(roundTransitionPending){view.StopPlayerFireAudio();return;}
             }
-            if(latest.Battle.SlayerMart?.Active==true){TickSlayerMartPresentation();return;}
+            if(latest.Battle.SlayerMart?.Active==true){view.StopPlayerFireAudio();TickSlayerMartPresentation();return;}
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)||!string.IsNullOrEmpty(view.IslandRoundLoadError))
-            {ShowRoundLoadRetry();return;}
-            if(!view.IsRoundLayoutReady||!view.IsIslandRoundReady||presentedInTreasureRoom&&!view.IsIslandTreasureReady||latest.Battle.RoundLoading)return;
+            {view.StopPlayerFireAudio();ShowRoundLoadRetry();return;}
+            if(!view.IsRoundLayoutReady||!view.IsIslandRoundReady||presentedInTreasureRoom&&!view.IsIslandTreasureReady||latest.Battle.RoundLoading)
+            {view.StopPlayerFireAudio();return;}
             view.EndRoundTransition();
             view.TickPlayerFeedback(Time.deltaTime);
             long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;

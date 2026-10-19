@@ -15,6 +15,23 @@ public static class ArcadeFlamethrowerAuthoring
     private const string Art = "Assets/Game/Art/Arcade/Weapons/";
     private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
 
+    /// <summary>只更新枪口与火焰载体，不重建模型、动作目录或玩家绑定。</summary>
+    public static string RefreshFlameVisuals()
+    {
+        if (EditorApplication.isPlaying || Application.dataPath.Replace('\\', '/') != "E:/GitHub/FirepowerLoop/Client/Assets")
+            throw new InvalidOperationException("仅本工程编辑态制作喷火器");
+        var gun = PrefabUtility.LoadPrefabContents(GunPath);
+        try
+        {
+            BuildMuzzleFlame(gun);
+            PrefabUtility.SaveAsPrefabAsset(gun, GunPath);
+        }
+        finally { PrefabUtility.UnloadPrefabContents(gun); }
+        BindFlameProjectile();
+        AssetDatabase.SaveAssets();
+        return "仅喷嘴和载体火焰已更新";
+    }
+
     public static string Run()
     {
         if (EditorApplication.isPlaying || Application.dataPath.Replace('\\', '/') != "E:/GitHub/FirepowerLoop/Client/Assets")
@@ -119,14 +136,15 @@ public static class ArcadeFlamethrowerAuthoring
         var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new Luban.ByteBuf(File.ReadAllBytes("Assets/Game/Config/"+n+".bytes"))));
         if(!provider.TryGetArcadeCatalog(out var catalog,out var error))throw new InvalidOperationException(error);
         var weapon=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.flamethrower");
-        var flame=new GameObject("FlamethrowerMuzzle",typeof(ParticleSystem));
+        var existing=gun.transform.Find("FlamethrowerMuzzle");
+        var flame=existing!=null?existing.gameObject:new GameObject("FlamethrowerMuzzle",typeof(ParticleSystem));
         flame.transform.SetParent(gun.transform,false);flame.transform.localPosition=new Vector3(0,.015f,.72f);
         var particles=flame.GetComponent<ParticleSystem>();particles.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
         var main=particles.main;main.loop=false;main.playOnAwake=false;main.duration=.14f;
-        main.startLifetime=new ParticleSystem.MinMaxCurve(.18f,.24f);main.startSpeed=new ParticleSystem.MinMaxCurve(4,6);
-        main.startSize=new ParticleSystem.MinMaxCurve(.2f,.35f);main.startColor=new Color(1.2f,1,.8f,.95f);
+        main.startLifetime=new ParticleSystem.MinMaxCurve(.18f,.24f);main.startSpeed=new ParticleSystem.MinMaxCurve(5,7);
+        main.startSize=new ParticleSystem.MinMaxCurve(.4f,.6f);main.startColor=new Color(1.1f,1,.8f,.8f);
         main.maxParticles=64;main.simulationSpace=ParticleSystemSimulationSpace.World;
-        var emission=particles.emission;emission.enabled=true;emission.rateOverTime=160;
+        var emission=particles.emission;emission.enabled=true;emission.rateOverTime=200;
         var shape=particles.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=weapon.SpreadDegrees*.5f;shape.radius=.012f;
         var size=particles.sizeOverLifetime;size.enabled=true;
         size.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.Linear(0,.12f,1,1));
@@ -175,9 +193,8 @@ public static class ArcadeFlamethrowerAuthoring
         var root = PrefabUtility.LoadPrefabContents(path);
         try
         {
-            var old = root.transform.Find("ArcadeFlameBurst");
-            if (old != null) Object.DestroyImmediate(old.gameObject);
-            var flame = new GameObject("ArcadeFlameBurst", typeof(ParticleSystem));
+            var existing = root.transform.Find("ArcadeFlameBurst");
+            var flame = existing != null ? existing.gameObject : new GameObject("ArcadeFlameBurst", typeof(ParticleSystem));
             flame.transform.SetParent(root.transform, false);
             var scale = root.transform.localScale;
             flame.transform.localScale = new Vector3(1 / scale.x, 1 / scale.y, 1 / scale.z);
@@ -187,11 +204,11 @@ public static class ArcadeFlamethrowerAuthoring
             main.loop = true; main.playOnAwake = true; main.duration = .45f;
             main.startLifetime = new ParticleSystem.MinMaxCurve(.25f, .35f);
             main.startSpeed = new ParticleSystem.MinMaxCurve(.1f, .3f);
-            main.startSize = new ParticleSystem.MinMaxCurve(1.2f, 1.5f);
-            main.startColor = new Color(1.2f, 1f, .8f, .9f);
+            main.startSize = new ParticleSystem.MinMaxCurve(1.1f, 1.25f);
+            main.startColor = new Color(1.1f, 1f, .8f, .65f);
             main.maxParticles = 32; main.simulationSpace = ParticleSystemSimulationSpace.Local;
             main.scalingMode = ParticleSystemScalingMode.Hierarchy;
-            var emission = particles.emission; emission.enabled=true;emission.rateOverTime = 90;
+            var emission = particles.emission; emission.enabled=true;emission.rateOverTime = 75;
             var shape = particles.shape; shape.shapeType = ParticleSystemShapeType.Cone; shape.angle = 0; shape.radius = .025f;
             var size=particles.sizeOverLifetime;size.enabled=true;
             size.size=new ParticleSystem.MinMaxCurve(1,new AnimationCurve(new Keyframe(0,.05f),new Keyframe(.3f,1),new Keyframe(1,1)));

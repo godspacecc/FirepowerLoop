@@ -1047,6 +1047,22 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireFlameLoop.wav
+        CollectorGUID: 8528513f3f494a5a83f7ed57d8a22b8f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeFireFlameStart.wav
+        CollectorGUID: 62e0d3ddcd2444c3b02793acb5d29b51
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Audio/Sound/ArcadeFireRapid.wav
         CollectorGUID: a33adc74b86dfbc49adc9b3c067e22fe
         CollectorType: 0

@@ -318,6 +318,9 @@ namespace Game
             if (sound.Source != null) sound.Source.transform.position = position;
         }
 
+        /// <summary>同时包含加载中和正在播放的句柄，供持续音效在失败或音源抢占后恢复。</summary>
+        public bool IsSoundActive(AudioPlaybackHandle handle) => handle.IsValid && sounds.ContainsKey(handle.Id);
+
         public void Stop(AudioPlaybackHandle handle)
         {
             if (!handle.IsValid || !sounds.TryGetValue(handle.Id, out var sound))

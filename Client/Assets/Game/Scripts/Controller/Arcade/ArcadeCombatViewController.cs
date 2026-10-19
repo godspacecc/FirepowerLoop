@@ -132,6 +132,8 @@ namespace Game
         /// <summary>同步远端武器和权威攻击序列；不裁决近战命中或投射物生成。</summary>
         void SetRemotePlayerCombat(long playerId, ArcadeWeaponDefinition weapon, int fireSequence) { }
         void RemoveRemotePlayer(long playerId);
+        /// <summary>表现暂停不能继续播放持枪循环声；无持续音效的替身可保持空实现。</summary>
+        void StopPlayerFireAudio() { }
         void TickPlayerFeedback(float deltaTime);
     }
 
@@ -285,6 +287,7 @@ namespace Game
 
         public void End()
         {
+            StopFlamethrowerAudio();
             ReleaseSlayerMartRegion();
             ReleaseRoundContent();
             ReleaseIslandEntryWarning();
@@ -427,6 +430,7 @@ namespace Game
 
         public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable)
         {
+            if (!visible) StopFlamethrowerAudio();
             dashPresentation?.Move(0,position,visible);
             SetExitGuidePlayer(position, visible);
             if (playerMotor == null || !playerMotor.IsValid || mapRoot == null) return;
@@ -476,6 +480,7 @@ namespace Game
         private void RememberWeaponForAudio(string weaponId)
         {
             if (string.Equals(currentWeaponId, weaponId, StringComparison.Ordinal)) return;
+            StopFlamethrowerAudio();
             currentWeaponId = weaponId;
             lastFireSoundTime = float.NegativeInfinity;
         }
@@ -508,6 +513,12 @@ namespace Game
         private void PlayFireSound()
         {
             if (root == null || mapRoot == null || playerMotor == null || !playerMotor.IsValid) return;
+            if (currentWeaponId == "arcade.weapon.flamethrower")
+            {
+                PlayFlamethrowerSound(Game.Interface.GetSystem<AudioSystem>(),
+                    hasLastShotMuzzle ? lastShotMuzzle : playerMotor.Position);
+                return;
+            }
             var soundName = ResolveFireSoundName(currentWeaponId);
             if (soundName == null) return;
             var now = Time.unscaledTime;
@@ -890,6 +901,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            TickFlamethrowerAudio(deltaTime);
             TickRoundFlameFeedback(deltaTime);
             islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);
