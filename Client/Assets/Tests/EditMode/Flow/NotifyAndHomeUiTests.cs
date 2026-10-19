@@ -1119,7 +1119,6 @@ namespace Game.Tests
             title.gameObject.AddComponent<LocalizedText>().Key = "ui.start.title";
             startUi.VersionText = (TextMeshProUGUI)CreateText(root.transform, "Version");
             startUi.UpdateStatusText = (TextMeshProUGUI)CreateText(root.transform, "UpdateStatus");
-            startUi.RunSummaryText = (TextMeshProUGUI)CreateText(panel.transform, "RunSummary");
             startUi.BtnNewGame = CreateButton(root.transform, "BtnNewGame", out _);
             startUi.BtnContinue = CreateButton(root.transform, "BtnContinue", out _);
             startUi.BtnOnline = CreateButton(root.transform, "BtnOnline", out _);

@@ -48,8 +48,6 @@ public static class UnifiedMainMenuPreview
                 bool saved=state!="new", result=state=="result";
                 start.BtnNewGame.gameObject.SetActive(!saved); start.BtnContinue.gameObject.SetActive(saved);
                 start.BtnContinue.GetComponentInChildren<TextMeshProUGUI>(true).text=strings[result?"ui.start.run_result":"ui.start.run_continue"];
-                start.RunSummaryText.gameObject.SetActive(saved);
-                start.RunSummaryText.text=result?string.Format(strings["ui.arcade.hud.score"],12750):string.Format(strings["ui.start.run_summary"],5,2,12750);
                 start.VersionText.gameObject.SetActive(true); start.VersionText.text="v0.0.1";
                 dialog.SetActive(saved); run.ResumeDetails.SetActive(true); run.BtnOnline.gameObject.SetActive(false);
                 run.DialogTitle.text=strings[result?"ui.arcade.dialog.result":"ui.arcade.dialog.progress"];

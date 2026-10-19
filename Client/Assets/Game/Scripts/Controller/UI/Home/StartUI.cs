@@ -13,7 +13,6 @@ namespace Game
         public Button BtnOnline;
         public Button BtnSetting;
         public RectTransform ButtonGroup;
-        public TextMeshProUGUI RunSummaryText;
         public RedPointView UpdateRedPoint;
         public TextMeshProUGUI UpdateStatusText;
         public TextMeshProUGUI VersionText;

@@ -518,7 +518,7 @@ namespace Game.Tests
             Assert.That(ui.ButtonGroup.anchorMin, Is.EqualTo(new Vector2(0f, 1f)));
             Assert.That(ui.ButtonGroup.anchorMax, Is.EqualTo(new Vector2(0f, 1f)));
             Assert.That(ui.ButtonGroup.pivot, Is.EqualTo(new Vector2(0f, 1f)));
-            Assert.That(ui.ButtonGroup.anchoredPosition, Is.EqualTo(new Vector2(0f, -270f)));
+            Assert.That(ui.ButtonGroup.anchoredPosition, Is.EqualTo(new Vector2(0f, -205f)));
             // 五个 64 高按钮，加四处 20 间距，总高 400；版本检查按钮独立于该主按钮组。
             Assert.That(ui.ButtonGroup.sizeDelta, Is.EqualTo(new Vector2(430f, 400f)));
 

@@ -44,19 +44,11 @@ public static class UnifiedMainMenuAuthoring
             label.text = "继续本局";
             var panel = view.ButtonGroup.parent;
             var summary = panel.Find("RunSummaryText");
-            if (summary == null)
-            {
-                var go = new GameObject("RunSummaryText", typeof(RectTransform));
-                go.transform.SetParent(panel, false);
-                summary = go.transform;
-            }
-            var text = summary.GetComponent<TextMeshProUGUI>() ?? summary.gameObject.AddComponent<TextMeshProUGUI>();
-            text.font = label.font; text.fontSize = 23; text.color = new Color(.82f, .77f, .65f);
-            text.alignment = TextAlignmentOptions.TopLeft; text.raycastTarget = false;
-            text.enableWordWrapping = true; text.text = "";
-            Rect((RectTransform)summary, new Vector2(0, 1), new Vector2(0, 1), new Vector2(0, -205), new Vector2(470, 60), new Vector2(0, 1));
-            collector.Add("RunSummaryText", text); collector.Sort();
-            summary.gameObject.SetActive(false);
+            // 本局信息统一由详情框展示，移除重复摘要并收回其占用的按钮上方空间。
+            collector.Remove("RunSummaryText");
+            if (summary != null) Object.DestroyImmediate(summary.gameObject);
+            collector.Sort();
+            view.ButtonGroup.anchoredPosition = new Vector2(0, -205);
             foreach (var fixedText in root.GetComponentsInChildren<LocalizedText>(true))
             {
                 if (fixedText.Key == "ui.start.new_game") fixedText.GetComponent<TMP_Text>().text = "单人开始";

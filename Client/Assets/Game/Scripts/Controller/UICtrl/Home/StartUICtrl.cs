@@ -112,7 +112,7 @@ namespace Game
             updatePresentationGeneration++;
         }
 
-        /// <summary>从正式存档快照决定单人入口及摘要；已有进度和结果都不能由新局按钮直接覆盖。</summary>
+        /// <summary>从正式存档快照决定单人入口并预备详情框；已有进度和结果都不能由新局按钮直接覆盖。</summary>
         private void RefreshSaveButtons()
         {
             var pending = this.GetSystem<ArcadeRunSystem>().PrepareMenuEntry();
@@ -126,11 +126,6 @@ namespace Game
             UI.BtnSetting.interactable = !startingRun;
             UI.BtnContinue.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text =
                 Loc.T(pending.IsValid && pending.Data.HasResult ? "ui.start.run_result" : "ui.start.run_continue");
-            UI.RunSummaryText.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
-            UI.RunSummaryText.text = pending.IsValid
-                ? pending.Data.HasResult ? Loc.T("ui.arcade.hud.score", pending.Data.Score)
-                    : Loc.T("ui.start.run_summary", pending.Data.NextArenaNumber, pending.Data.RemainingLives, pending.Data.Score)
-                : pending.Status == SaveFileStatus.Missing ? string.Empty : Loc.T("ui.arcade.save_corrupted");
         }
 
         private void RefreshUpdateText()

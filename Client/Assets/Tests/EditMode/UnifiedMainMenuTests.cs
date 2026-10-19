@@ -255,13 +255,11 @@ namespace Game.Tests
             Assert.That(view.BtnContinue.gameObject.activeSelf, Is.True);
             Assert.That(view.BtnContinue.GetComponentInChildren<TMPro.TMP_Text>(true).text,
                 Is.EqualTo(hasResult ? "查看本局结果" : "继续本局"));
-            Assert.That(view.RunSummaryText.gameObject.activeSelf, Is.True);
-            Assert.That(view.RunSummaryText.text, Does.Contain("12750"));
-            if (!hasResult)
-            {
-                Assert.That(view.RunSummaryText.text, Does.Contain("5"));
-                Assert.That(view.RunSummaryText.text, Does.Contain("2"));
-            }
+            Assert.That(view.ButtonGroup.parent.Find("RunSummaryText"), Is.Null, "主菜单不重复展示详情框中的本局摘要");
+            var details = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(details, Is.Not.Null);
+            Assert.That(details.TextSummary.text, Is.Not.Empty);
+            Assert.That(details.TextRewards.text, Does.Contain("12750"), "分数保留在详情框中");
             Assert.That(system.InspectPending().Data.RunId, Is.EqualTo(snapshot.RunId));
             Assert.That(preparation.Requests, Is.Empty);
         }
