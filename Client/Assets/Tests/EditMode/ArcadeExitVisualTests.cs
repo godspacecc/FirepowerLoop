@@ -105,6 +105,43 @@ namespace Game.Tests
             Assert.DoesNotThrow(() => view.TickPlayerFeedback(.25f));
         }
 
+        [Test] public void TreasureEntranceGuidesPlayerAcrossExitSyncAndCleansUpOnEntry()
+        {
+            Assert.That(Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
+            var room = catalog.TreasureRooms.First();
+            Set("islandRound", 3);
+            view.SetTreasureRoom(room, false, false, false, Array.Empty<int>());
+            Assert.That(root.transform.Find("RouteGate(Clone)"), Is.Null, "清场前未发现的入口保持隐藏");
+            view.SetTreasureRoom(room, false, true, true, Array.Empty<int>());
+            var gate = root.transform.Find("RouteGate(Clone)");
+            Assert.That(gate, Is.Not.Null);
+            var gatePosition = gate.localPosition;
+            var arrow = gate.Find("ExitCue/Arrow");
+            var before = arrow.localPosition;
+            // 普通出口同步不能抹掉奖励房指路，重复奖励房快照也不能复制箭头。
+            view.SetExits(Array.Empty<int>(), 19.5f, false);
+            view.SetTreasureRoom(room, false, true, true, Array.Empty<int>());
+            view.SetPlayer(Vector2.zero, Vector2.up, true, false);
+            var guide = gate.Find("ExitCue/ApproachArrow");
+            Assert.That(guide.gameObject.activeSelf, Is.True);
+            Assert.That(Vector3.Distance(guide.position, new Vector3(0, .28f, 0)), Is.EqualTo(2.3f).Within(.01f));
+            Assert.That(Vector3.Dot(guide.forward, new Vector3(gatePosition.x, 0, gatePosition.z).normalized), Is.GreaterThan(.99f));
+            view.TickPlayerFeedback(.25f);
+            Assert.That(arrow.localPosition, Is.Not.EqualTo(before));
+            Assert.That(gate.localPosition, Is.EqualTo(gatePosition), "引导动画不能移动权威入口落点");
+            view.SetPlayer(new Vector2(gatePosition.x, gatePosition.z), Vector2.up, true, false);
+            Assert.That(guide.gameObject.activeSelf, Is.False, "到达入口后收起近身箭头");
+            view.SetPlayer(Vector2.zero, Vector2.up, false, false);
+            Assert.That(guide.gameObject.activeSelf, Is.False, "玩家隐藏时不残留箭头");
+            Assert.That(root.GetComponentsInChildren<Transform>().Count(t => t.name == "RouteGate(Clone)"), Is.EqualTo(1));
+            view.SetTreasureRoom(room, true, true, true, Array.Empty<int>());
+            Assert.That(gate == null, Is.True, "入房时必须销毁外部入口");
+            Assert.DoesNotThrow(() => { view.SetPlayer(Vector2.zero, Vector2.up, true, false); view.TickPlayerFeedback(.25f); });
+            view.SetTreasureRoom(room, false, false, false, Array.Empty<int>());
+            Assert.That(root.transform.Find("RouteGate(Clone)"), Is.Null, "第四轮不能残留旧宝藏入口");
+            Assert.DoesNotThrow(() => view.TickPlayerFeedback(.25f));
+        }
+
         [Test] public void FourthRoundPresentsFourExitsWithOneDestination()
         {
             Set("islandRound", 4);

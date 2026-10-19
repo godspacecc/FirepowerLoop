@@ -7,6 +7,8 @@ namespace Game
     {
         /// <summary>缓存正式模板的提示节点；只动箭头和光圈，不移动出口权威落点。</summary>
         private readonly List<ExitCue> exitCues = new();
+        /// <summary>奖励房入口独立持有提示，普通出口刷新不能清除其方向引导。</summary>
+        private readonly List<ExitCue> treasureExitCues = new();
         /// <summary>本次出口显示周期的纯视觉秒数，重建和释放时归零。</summary>
         private float exitCueElapsed;
 
@@ -20,21 +22,28 @@ namespace Game
         }
 
         /// <summary>模板契约在导入和定向测试中校验，运行期不临时拼装替代控件。</summary>
-        private void BindExitCue(GameObject marker)
+        private void BindExitCue(GameObject marker, List<ExitCue> target = null)
         {
             var arrow = marker.transform.Find("ExitCue/Arrow");
             var ring = marker.transform.Find("ExitCue/GroundRing");
             var approach = marker.transform.Find("ExitCue/ApproachArrow");
             if (arrow == null || ring == null || approach == null)
                 throw new System.InvalidOperationException("正式出口缺少箭头或地面光圈");
-            exitCues.Add(new ExitCue { Gate = marker.transform, Arrow = arrow, Ring = ring, Approach = approach,
+            (target ?? exitCues).Add(new ExitCue { Gate = marker.transform, Arrow = arrow, Ring = ring, Approach = approach,
                 ArrowPosition = arrow.localPosition, RingScale = ring.localScale });
         }
 
         /// <summary>出口在镜头外时，角色前方仍有地面箭头指路；接近触发区后只保留门上标记。</summary>
         private void SetExitGuidePlayer(Vector2 position, bool visible)
         {
-            foreach (var cue in exitCues)
+            SetExitGuidePlayer(exitCues, position, visible);
+            SetExitGuidePlayer(treasureExitCues, position, visible);
+        }
+
+        /// <summary>普通出口和奖励房入口共用近身指路计算，不改变入口权威坐标。</summary>
+        private static void SetExitGuidePlayer(List<ExitCue> cues, Vector2 position, bool visible)
+        {
+            foreach (var cue in cues)
             {
                 var gate = new Vector2(cue.Gate.localPosition.x, cue.Gate.localPosition.z);
                 var direction = gate - position;
@@ -50,10 +59,17 @@ namespace Game
         /// <summary>沿用表现帧生命周期；浮动与呼吸无碰撞，不触发选路、保存或推进。</summary>
         private void TickExitCues(float deltaTime)
         {
-            if (exitCues.Count == 0) return;
+            if (exitCues.Count == 0 && treasureExitCues.Count == 0) return;
             exitCueElapsed += Mathf.Max(0, deltaTime);
             float phase = Mathf.Sin(exitCueElapsed * 3f);
-            foreach (var cue in exitCues)
+            TickExitCues(exitCues, phase);
+            TickExitCues(treasureExitCues, phase);
+        }
+
+        /// <summary>两类入口按同一表现时钟播放箭头浮动和光圈呼吸。</summary>
+        private static void TickExitCues(List<ExitCue> cues, float phase)
+        {
+            foreach (var cue in cues)
             {
                 cue.Arrow.localPosition = cue.ArrowPosition + Vector3.up * (.25f * phase);
                 cue.Ring.localScale = cue.RingScale * (1f + .045f * phase);

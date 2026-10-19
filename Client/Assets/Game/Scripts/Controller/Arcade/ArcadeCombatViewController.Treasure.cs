@@ -42,7 +42,13 @@ namespace Game
                     SetContentLabel(entrance, p.IsArmory ? (open ? "ui.arcade.armory.open" : "ui.arcade.armory.locked") : (open ? "ui.arcade.treasure.open" : "ui.arcade.treasure.locked"));
                     entrance.transform.Find("Chest").localRotation=Quaternion.Euler(0,open?35:0,0);
                     treasureVisuals.Add(entrance);
-                    if(open){var gate=CreateContent("RouteGate",new Vector3(entryPosition.x,0,entryPosition.y));SetContentLabel(gate,p.IsArmory ? "ui.arcade.armory.open" : "ui.arcade.treasure.open");treasureVisuals.Add(gate);}
+                    if (open)
+                    {
+                        var gate = CreateContent("RouteGate", new Vector3(entryPosition.x, 0, entryPosition.y));
+                        SetContentLabel(gate, p.IsArmory ? "ui.arcade.armory.open" : "ui.arcade.treasure.open");
+                        treasureVisuals.Add(gate);
+                        BindExitCue(gate, treasureExitCues);
+                    }
                 }
                 return;
             }
@@ -88,6 +94,8 @@ namespace Game
         /// <summary>区域重建及地图退出配对释放本 Controller 创建的对象和材质。</summary>
         private void ClearTreasureVisuals()
         {
+            // 在销毁入口前先释放提示引用，避免区域切换后继续访问旧 Transform。
+            treasureExitCues.Clear();
             foreach (var material in treasureRewardMaterials) material.Dispose();
             treasureRewardMaterials.Clear();
             foreach (int id in treasureDropVisualIds) lootPresentation?.RemoveDrop(id);

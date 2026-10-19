@@ -63,9 +63,13 @@ namespace Game
             {
                 if (near) runtime.TreasureDiscovered = true;
                 if (runtime.Enemies.Count == 0 && runtime.SpawnQueue.Count == 0)
+                {
                     runtime.TreasureCleared = true;
+                    // 奖励房是第三轮后的必经路径；清场后直接公开入口，避免隐藏入口阻断前进。
+                    runtime.TreasureDiscovered = true;
+                }
             }
-            // 清场只解锁房间；发现入口后仍须本人接触入口，不能远程传送。
+            // 清场显示并解锁房间；仍须本人接触入口，不能远程传送。
             if (near && room.TryEnter(room.InstanceId, 1, runtime.TreasureDiscovered, runtime.TreasureCleared, out _))
             {
                 // 场外弹丸不能随领取者进入新区域继续命中，逐个归还现有运行对象池。

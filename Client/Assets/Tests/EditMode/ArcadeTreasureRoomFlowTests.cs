@@ -122,13 +122,13 @@ namespace Game.Tests
             Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.TreasureRoom.Started,Is.False);
         }
         [TestCase(false)] [TestCase(true)]
-        public void ClearDoesNotDiscoverOrTeleport(bool armory)
+        public void ClearRevealsEntranceWithoutTeleporting(bool armory)
         {
             if (armory) ConfigureArmory();
             runtime.PlayerPosition = new Vector2(15, 15);
             Tick();
             Assert.That(runtime.TreasureCleared, Is.True);
-            Assert.That(runtime.TreasureDiscovered, Is.False);
+            Assert.That(runtime.TreasureDiscovered, Is.True, "第三轮清场后必须显示后续必经的奖励房入口");
             Assert.That(runtime.InTreasureRoom, Is.False);
             Assert.That(runtime.TreasureRoom.Started, Is.False);
             Assert.That(runtime.PlayerPosition, Is.EqualTo(new Vector2(15, 15)));
