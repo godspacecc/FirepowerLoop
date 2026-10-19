@@ -28,7 +28,7 @@ namespace Game.Tests
             {
                 var group = catalog.EnemyGroups.Single(g => g.Id == arena.WaveGroupIds[i]);
                 Assert.That(group.Members.Sum(m => m.Count), Is.EqualTo(totals[i]), "轮次 " + (i + 1));
-                Assert.That(group.Members.All(m => m.EnemyId == "enemy.arcade.basic"), Is.True);
+                Assert.That(group.Members.All(m => m.EnemyId == "enemy.arcade.zombie.shambler"), Is.True);
                 Assert.That(group.MaxAlive, Is.LessThanOrEqualTo(catalog.Rule.MaxAliveEnemies));
             }
         }

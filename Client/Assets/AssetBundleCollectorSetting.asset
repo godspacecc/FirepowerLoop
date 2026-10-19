@@ -260,6 +260,30 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab
+        CollectorGUID: 8332b259d783cb14884847e11bc1d168
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab
+        CollectorGUID: 277522346e4f78e4fb04f2af31d7543b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab
+        CollectorGUID: f53c4dff82a2dbd4d98d0f52e71e9c66
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab
         CollectorGUID: d9222defc7046c147a7de9ac30b621a4
         CollectorType: 0

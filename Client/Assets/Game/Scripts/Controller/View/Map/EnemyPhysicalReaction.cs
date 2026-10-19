@@ -12,6 +12,14 @@ namespace Game
         /// <summary>制作阶段固定的动画源与回弹骨骼，不在命中时遍历层级。</summary>
         [SerializeField] private Animator animator;
         [SerializeField] private Transform chest;
+        /// <summary>Generic僵尸显式绑定承重骨骼；旧Humanoid预制体仍自动使用Hips。</summary>
+        [SerializeField] private Transform hips;
+        /// <summary>带独立脚部控制骨的Generic资源：物理交接时挂到小腿，回池时还原动画层级。</summary>
+        [SerializeField] private Transform[] detachedEndBones = new Transform[0];
+        [SerializeField] private Transform[] endBonePhysicsParents = new Transform[0];
+        private Transform[] endBoneAnimationParents;
+        private Vector3[] endBoneRestPositions;
+        private Quaternion[] endBoneRestRotations;
         /// <summary>预制的简化刚体与对应局部静止姿态，用于每次归还时完整复位。</summary>
         [SerializeField] private Rigidbody[] bodies = new Rigidbody[0];
         [SerializeField] private Vector3[] restPositions = new Vector3[0];
@@ -24,7 +32,6 @@ namespace Game
         private const float HitSeconds = .18f;
         private const float StaggerSeconds = .16f;
         /// <summary>首次实例化时缓存骨盆及碰撞体；死亡与回池不再遍历查找组件或分配数组。</summary>
-        private Transform hips;
         private Rigidbody hipsBody, chestBody;
         private Collider[] bodyColliders;
         private Vector3 hipsBeforeOffsetPosition, deathDirection;
@@ -34,7 +41,7 @@ namespace Game
         private static readonly int MoveParameter = Animator.StringToHash("MoveSpeed");
         public bool IsRagdoll => dead;
         public bool IsSimulating => simulating;
-        public bool IsReady => animator != null && chest != null && bodies.Length == 11 &&
+        public bool IsReady => animator != null && chest != null && (hips != null || animator.isHuman) && bodies.Length == 11 &&
             restPositions.Length == bodies.Length && restRotations.Length == bodies.Length;
 
         // detectCollisions不随Prefab序列化，实例创建时显式恢复存活休眠态。
@@ -134,6 +141,8 @@ namespace Game
         private void ActivatePhysics(bool explosive)
         {
             staggering = false; simulating = true; animator.enabled = false;
+            for (int i = 0; i < detachedEndBones.Length; i++)
+                detachedEndBones[i].SetParent(endBonePhysicsParents[i], true);
             for (int i = 0; i < bodies.Length; i++)
             {
                 var body = bodies[i];
@@ -149,14 +158,23 @@ namespace Game
             chestBody.angularVelocity = axis * (explosive ? 4.5f : 1.5f) + Vector3.up * (explosive ? .65f : .15f);
         }
 
-        /// <summary>四种正式骨架预制结构固定；每个实例只建立一次缓存，不在每次击杀时查找。</summary>
+        /// <summary>每个实例只建立一次缓存；Generic使用预制引用，Humanoid兼容旧骨盆绑定。</summary>
         private void CacheRig()
         {
             if (bodyColliders != null) return;
-            hips = animator.GetBoneTransform(HumanBodyBones.Hips);
+            if (hips == null && animator.isHuman) hips = animator.GetBoneTransform(HumanBodyBones.Hips);
             hipsBody = hips.GetComponent<Rigidbody>(); chestBody = chest.GetComponent<Rigidbody>();
             bodyColliders = new Collider[bodies.Length];
             for (int i = 0; i < bodies.Length; i++) bodyColliders[i] = bodies[i].GetComponent<Collider>();
+            endBoneAnimationParents = new Transform[detachedEndBones.Length];
+            endBoneRestPositions = new Vector3[detachedEndBones.Length];
+            endBoneRestRotations = new Quaternion[detachedEndBones.Length];
+            for (int i = 0; i < detachedEndBones.Length; i++)
+            {
+                endBoneAnimationParents[i] = detachedEndBones[i].parent;
+                endBoneRestPositions[i] = detachedEndBones[i].localPosition;
+                endBoneRestRotations[i] = detachedEndBones[i].localRotation;
+            }
         }
 
         /// <summary>短时模拟后关闭求解和碰撞，爆炸多留落地时间，保留最后可见姿态直到回池。</summary>
@@ -180,6 +198,12 @@ namespace Game
             {
                 CacheRig();
                 Freeze();
+                for (int i = 0; i < detachedEndBones.Length; i++)
+                {
+                    detachedEndBones[i].SetParent(endBoneAnimationParents[i], false);
+                    detachedEndBones[i].localPosition = endBoneRestPositions[i];
+                    detachedEndBones[i].localRotation = endBoneRestRotations[i];
+                }
                 for (int i = 0; i < bodies.Length; i++)
                 {
                     bodies[i].transform.localPosition = restPositions[i];

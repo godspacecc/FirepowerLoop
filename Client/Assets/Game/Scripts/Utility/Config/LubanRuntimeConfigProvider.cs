@@ -928,7 +928,8 @@ namespace Game
         {
             if (string.IsNullOrWhiteSpace(row.GuaranteedWeaponLootConfigId))
             {
-                return $"TbEnemy[{row.Id}].GuaranteedWeaponLootConfigId 为空";
+                // 空手僵尸没有必掉武器；仅在配置了掉落时校验武器物品引用。
+                return null;
             }
 
             var loot = tables.TbLoot.GetOrDefault(row.GuaranteedWeaponLootConfigId);

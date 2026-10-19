@@ -15,3 +15,12 @@
 ,arcade.group.island.2,enemy.arcade.basic|120,0.42,14,1,1,0.85,0
 ,arcade.group.island.3,enemy.arcade.basic|130,0.4,16,1,1,1,0
 ,arcade.group.island.4,enemy.arcade.basic|140,0.38,18,1,1,1,0
+,arcade.group.zombie.rush.1,enemy.arcade.zombie.shambler|5;enemy.arcade.zombie.bloated|1,0.80,6,1.00,1.00,1.00,4
+,arcade.group.zombie.rush.2,enemy.arcade.zombie.shambler|8;enemy.arcade.zombie.bloated|2,0.70,8,1.00,1.00,1.00,7
+,arcade.group.zombie.mixed.1,enemy.arcade.zombie.shambler|6;enemy.arcade.zombie.bloated|2;enemy.arcade.zombie.gaunt|2,0.74,8,1.00,1.00,1.00,8
+,arcade.group.zombie.mixed.2,enemy.arcade.zombie.shambler|9;enemy.arcade.zombie.bloated|3;enemy.arcade.zombie.gaunt|4,0.62,12,1.05,1.00,1.02,13
+,arcade.group.zombie.ranged.1,enemy.arcade.zombie.shambler|5;enemy.arcade.zombie.bloated|1;enemy.arcade.zombie.gaunt|5,0.72,9,1.00,1.00,1.00,10
+,arcade.group.zombie.island.1,enemy.arcade.zombie.shambler|110,0.45,24,1,1,0.75,0
+,arcade.group.zombie.island.2,enemy.arcade.zombie.shambler|120,0.42,14,1,1,0.85,0
+,arcade.group.zombie.island.3,enemy.arcade.zombie.shambler|130,0.4,16,1,1,1,0
+,arcade.group.zombie.island.4,enemy.arcade.zombie.shambler|140,0.38,18,1,1,1,0

@@ -37,6 +37,27 @@ namespace Game.Tests
             typeof(ArcadeCombatSystem).GetField("catalog",Flags).SetValue(system,catalog);
             typeof(ArcadeCombatSystem).GetField("arena",Flags).SetValue(system,catalog.Arenas[0]);
             typeof(ArcadeCombatSystem).GetField("random",Flags).SetValue(system,new System.Random(37));
+            // 这里只验证规则推进，黑幕保持未遮挡，避免启动场景资源及存档事务。
+            typeof(ArcadeCombatSystem).GetField("view",Flags).SetValue(system,new TransitionView());
+        }
+        private sealed class TransitionView : IArcadeCombatViewPort
+        {
+            public bool IsActive => true;
+            public bool IsRoundTransitionCovered => false;
+            public void Begin(int n,float w,float h,System.Collections.Generic.IReadOnlyList<ArcadeObstacleDefinition> o) { }
+            public void End() { }
+            public bool TryScreenToArena(Vector2 s,out Vector2 p) { p=default;return false; }
+            public void SetPlayer(Vector2 p,Vector2 f,bool v,bool i) { }
+            public void SetPlayerHealth(int c,int m) { }
+            public void SetEnemy(int id,string c,Vector2 p,int hp,int max,bool t=false,int seq=0,bool bar=false) { }
+            public void RemoveEnemy(int id,bool death=false) { }
+            public void SetProjectile(int id,bool h,Vector2 p,Vector2 d) { }
+            public void RemoveProjectile(int id) { }
+            public void SetDrop(int id,ArcadeDropDefinition d,Vector2 p) { }
+            public void RemoveDrop(int id) { }
+            public void SetRemotePlayer(long id,Vector2 p,Vector2 f,bool v,bool i,int c,int m) { }
+            public void RemoveRemotePlayer(long id) { }
+            public void TickPlayerFeedback(float d) { }
         }
         private object Call(string method,params object[] args) => typeof(ArcadeCombatSystem).GetMethod(method,Flags).Invoke(system,args);
 
