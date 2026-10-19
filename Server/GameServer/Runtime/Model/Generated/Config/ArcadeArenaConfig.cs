@@ -39,6 +39,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
         ArmorWaveNumber = _buf.ReadInt();
         ArmorHealth = _buf.ReadInt();
         CrateTreasureWeightMultiplier = _buf.ReadInt();
+        EnemySeaApproachDistance = _buf.ReadFloat();
     }
 
     public static ArcadeArenaConfig DeserializeArcadeArenaConfig(ByteBuf _buf)
@@ -69,6 +70,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
     public readonly int ArmorWaveNumber;
     public readonly int ArmorHealth;
     public readonly int CrateTreasureWeightMultiplier;
+    public readonly float EnemySeaApproachDistance;
    
     public const int __ID__ = -1280955943;
     public override int GetTypeId() => __ID__;
@@ -106,6 +108,7 @@ public sealed partial class ArcadeArenaConfig : Luban.BeanBase
         + "ArmorWaveNumber:" + ArmorWaveNumber + ","
         + "ArmorHealth:" + ArmorHealth + ","
         + "CrateTreasureWeightMultiplier:" + CrateTreasureWeightMultiplier + ","
+        + "EnemySeaApproachDistance:" + EnemySeaApproachDistance + ","
         + "}";
     }
 }

@@ -33,7 +33,8 @@
 | 分支 | 20份场地配置、32条终局路线；每条恰好10场 | 配置／规则检查；不代表32条都已实玩 |
 | 逐轮地图 | 20主题×4布局，共80张；每轮的出生、障碍、入口、出口和内容参数由正式表提供 | 80图隔离预览；20主题第一图实际Play观察 |
 | 首关来敌 | 海岛第一轮按南、东、北、西四入口持续生成，取消半程分批停顿；间隔仍为0.45秒，场内上限12调至24，仅作内部限制；单人总量110、双人160，HUD仍显示本轮剩余 | 2026-10-18：[开场流程定向测试](../../Client/Assets/Tests/EditMode/ArcadeOpeningFlowTests.cs)24/24、[服务端开场检查](../../Tools/ArcadeOpeningChecks/Program.cs)13/13通过；配置经gen.bat双端生成，实际设备与双客户端手感待验 |
-| 海岛深海弹道 | 单人和双人海岛弹丸越过旧矩形行走边界后继续按武器寿命飞行；真实障碍、命中和寿命回收保留。外海为背景海面，敌人仍从浅水外缘生成 | 2026-10-19：[单机弹道定向测试](../../Client/Assets/Tests/EditMode/IslandProjectileBoundaryTests.cs)8/8、[服务端定向检查](../../Tools/ArcadeFullRouteOnlineChecks/IslandProjectileBoundaryOnlineChecks.cs)6/6通过；正式资源隔离渲染确认旧边界外弹丸可见，非自然整局或双客户端实玩 |
+| 海岛深海弹道 | 单人和双人海岛弹丸越过旧矩形行走边界后继续按武器寿命飞行；真实障碍、命中和寿命回收保留 | 2026-10-19：[单机弹道定向测试](../../Client/Assets/Tests/EditMode/IslandProjectileBoundaryTests.cs)8/8、[服务端定向检查](../../Tools/ArcadeFullRouteOnlineChecks/IslandProjectileBoundaryOnlineChecks.cs)6/6通过；正式资源隔离渲染确认旧边界外弹丸可见，非自然整局或双客户端实玩 |
+| 海岛深海来敌 | 海岛敌人从原浅水入口向外偏移6米生成，可见地从深海接近、穿过浅水并上岸。保留数量、间隔、玩家边界和距离攻击；拥挤及击退不强制吸回岸内，海中击杀掉落投影到玩家可达岸内 | 2026-10-19：[本地定向测试](../../Client/Assets/Tests/EditMode/IslandSeaApproachTests.cs)11/11、[服务端检查](../../Tools/ArcadeFullRouteOnlineChecks/IslandEnemyChaseOnlineChecks.cs)7/7通过，包含合法贴岸玩家伤害回归；[隔离预览工具](../../Tools/Unity/ArcadeIslandSeaApproachPreview.cs)以正式生成移动链路和资源确认深海、浅水、沙地三阶段可见，固定检查镜头，非自然整局或双客户端实玩 |
 | 推进 | 清场后通过正式出口确认；选择、轮节点与转场按事务推进 | 单人和服务器定向检查 |
 | 奖励区域 | 单人普通宝藏房及军械库清场后显示入口并提供方向引导，仍需本人接触进入；清场前可靠近发现，双人保留靠近发现规则；保留场内收集及返回 | 奖励房流程40/40、出口表现8/8定向测试通过；本次引导未做自然整局试玩，不声称原作全部奖励房已做 |
 | 最终Boss | 主线40轮后独立Papaback战；追击、预警冲锋、射线与增援，死亡后停止增援并开放胜利出口 | 定向检查；完整实际终局待验 |

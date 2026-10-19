@@ -763,6 +763,8 @@ namespace Game
                         region.Entry(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius, out start);
                     enemy.Position = new Vector2(start.X, start.Y);
                 }
+                var seaEntry = IslandFor(runtime).SeaEntry(enemy.Position.x, enemy.Position.y, arena.Opening.EnemySeaApproachDistance);
+                enemy.Position = new Vector2(seaEntry.X, seaEntry.Y);
             }
             enemy.MaxHealth = Mathf.Max(1, Mathf.RoundToInt(definition.MaxHP * group.HealthMultiplier * healthGrowth));
             enemy.Damage = Mathf.Max(1, Mathf.RoundToInt(definition.AttackDamage * group.DamageMultiplier * damageGrowth));
@@ -817,6 +819,9 @@ namespace Game
                 var direction = distance > 0.001f ? offset / distance : Vector2.up;
                 var movementDelta = deltaTime * EnemySpeedMultiplier(runtime);
                 movementDelta *= SlayerMartStormSpeed(runtime,enemy);
+                // 海敌持续接近岸线，攻击仍按原距离与冷却裁决，避免贴岸玩家免疫伤害。
+                bool seaApproaching = arena.Opening.EnemySeaApproachDistance > 0 && IslandFor(runtime) is { } seaRegion &&
+                    !seaRegion.ContainsCircle(enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius);
                 if (TickSlayerGuardian(runtime,enemy,deltaTime)||TickRoundEnemyContent(runtime, enemy, targetPosition, targetIsDecoy, deltaTime))
                 {
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
@@ -829,7 +834,7 @@ namespace Game
                 }
                 if (enemy.AttackKind == global::EnemyAttackKind.Projectile)
                 {
-                    if (distance > enemy.AttackRange * 0.8f)
+                    if (seaApproaching || distance > enemy.AttackRange * 0.8f)
                         MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
                     if (distance <= enemy.AttackRange && enemy.AttackCooldown <= 0f)
                     {
@@ -851,8 +856,8 @@ namespace Game
                     }
                 }
                 // 出现后即追踪当前目标；岸线只约束可走范围，不再设置固定登陆终点。
-                enemy.Position = ResolvePosition(enemy.Position, catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
+                enemy.Position = ResolveEnemyPosition(enemy.Position, enemy.Position, catalog.Rule.EnemyContactRadius,
+                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
             }
             ResolveEnemyCrowding(runtime);
         }
@@ -862,8 +867,8 @@ namespace Game
         {
             var direction = ResolveNavigationDirection(enemy.Position, target, catalog.Rule.EnemyContactRadius,
                 ObstaclesFor(runtime));
-            enemy.Position = ResolvePosition(enemy.Position + direction * enemy.Speed * deltaTime, catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
+            enemy.Position = ResolveEnemyPosition(enemy.Position, enemy.Position + direction * enemy.Speed * deltaTime, catalog.Rule.EnemyContactRadius,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
         }
 
         /// <summary>推进蓄力冲锋；蓄力期间锁定方向，冲锋命中同一玩家最多结算一次。</summary>
@@ -1066,8 +1071,8 @@ namespace Game
                 if (direction.sqrMagnitude < 0.001f) direction = Vector2.up;
                 var displaced = enemy.Position + direction.normalized * knockbackDistance;
                 // 未上岸的敌人仍可受击，但不能因通用击退夹取瞬间跳到岸内。
-                enemy.Position = ResolvePosition(displaced, catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
+                enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
+                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
                 DamageEnemy(enemy, damage);
                 if (enemy.Health <= 0) KillEnemy(runtime, enemy);
             }
@@ -2251,7 +2256,7 @@ namespace Game
             for (var index = 0; index < crowdingEnemies.Count; index++)
                 crowdingPositions.Add(crowdingEnemies[index].Position);
             ResolveCrowding(crowdingPositions, catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime));
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
             for (var index = 0; index < crowdingEnemies.Count; index++)
                 crowdingEnemies[index].Position = crowdingPositions[index];
         }
@@ -2286,6 +2291,15 @@ namespace Game
 
         internal static Vector2 ClampPosition(Vector2 value, float halfWidth, float halfHeight) =>
             new Vector2(Mathf.Clamp(value.x, -halfWidth, halfWidth), Mathf.Clamp(value.y, -halfHeight, halfHeight));
+
+        /// <summary>只有尚未完整上岸的敌人使用外海留量，已上岸敌人与玩家仍沿原岸线运动。</summary>
+        private static Vector2 ResolveEnemyPosition(Vector2 previous, Vector2 value, float radius, float arenaHalfWidth,
+            float arenaHalfHeight, IReadOnlyList<ArcadeObstacleDefinition> obstacles, ArcadeIslandRegion island, float seaDistance)
+        {
+            float margin = island != null && !island.ContainsCircle(previous.x, previous.y, radius) ? seaDistance : 0;
+            return ResolvePosition(value, radius, arenaHalfWidth + margin, arenaHalfHeight + margin,
+                obstacles, margin > 0 ? null : island);
+        }
 
         /// <summary>把圆形角色限制在竞技场内并推出配置障碍；输入与输出均为竞技场局部坐标。</summary>
         internal static Vector2 ResolvePosition(Vector2 value, float radius, float arenaHalfWidth, float arenaHalfHeight,
@@ -2432,7 +2446,8 @@ namespace Game
 
         /// <summary>以固定顺序做两轮成对分离，复杂度受同屏敌人上限约束。</summary>
         internal static void ResolveCrowding(IList<Vector2> positions, float radius,
-            float arenaHalfWidth, float arenaHalfHeight, IReadOnlyList<ArcadeObstacleDefinition> obstacles, ArcadeIslandRegion island = null)
+            float arenaHalfWidth, float arenaHalfHeight, IReadOnlyList<ArcadeObstacleDefinition> obstacles, ArcadeIslandRegion island = null,
+            float seaDistance = 0)
         {
             if (positions == null || positions.Count < 2 || radius <= 0f) return;
             var minimumDistance = radius * 1.7f;
@@ -2445,10 +2460,10 @@ namespace Game
                 if (distance >= minimumDistance) continue;
                 var direction = distance > 0.0001f ? delta / distance : ((first + second) & 1) == 0 ? Vector2.right : Vector2.up;
                 var correction = direction * ((minimumDistance - distance) * 0.5f);
-                positions[first] = ResolvePosition(positions[first] - correction, radius,
-                    arenaHalfWidth, arenaHalfHeight, obstacles, island);
-                positions[second] = ResolvePosition(positions[second] + correction, radius,
-                    arenaHalfWidth, arenaHalfHeight, obstacles, island);
+                positions[first] = ResolveEnemyPosition(positions[first], positions[first] - correction, radius,
+                    arenaHalfWidth, arenaHalfHeight, obstacles, island, seaDistance);
+                positions[second] = ResolveEnemyPosition(positions[second], positions[second] + correction, radius,
+                    arenaHalfWidth, arenaHalfHeight, obstacles, island, seaDistance);
             }
         }
 

@@ -74,18 +74,11 @@ Check("Island waves preserve continuous entries and exhaust the original queue",
         var region=new ArcadeIslandRegion(rule.ArenaHalfWidth,rule.ArenaHalfHeight,wave+1);
         var entries=battle.Enemies.Values.OrderBy(enemy=>enemy.RuntimeId).ToArray();
         var water=entries[0];var shore=entries[wave==0?2:1];
-        Require(entries.All(enemy=>region.Contains(enemy.PositionX,enemy.PositionZ)),"spawn outside current island");
+        Require(entries.All(enemy=>!region.Contains(enemy.PositionX,enemy.PositionZ)),"spawn must start in deep sea");
         if(wave==0){
             Require(entries[0].PositionZ < -10&&entries[1].PositionX > 10&&
                 entries[2].PositionZ > 10&&entries[3].PositionX < -10,"first round must use all four entrances");
-            Require(region.IsShallow(water.PositionX,water.PositionZ),"first water-side spawn must retain shallow entry");
-            foreach(var entrant in entries)
-            {
-                float length=MathF.Sqrt(entrant.PositionX*entrant.PositionX+entrant.PositionZ*entrant.PositionZ);
-                for(float distance=0;distance<=3;distance+=.25f)
-                    Require(region.IsShallow(entrant.PositionX*(1-distance/length),entrant.PositionZ*(1-distance/length)),
-                        "all four authoritative entrances need three metres of wading");
-            }
+            Require(p.EnemySeaApproachDistance==6,"first island must retain six metres of deep-sea approach");
         }
         float x=water.PositionX,z=water.PositionZ;
         Call("TickEnemies",actor,battle,.05f);

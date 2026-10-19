@@ -60,6 +60,29 @@ namespace FirepowerLoop.Arcade
         }
 
         public bool Contains(float x, float y) => Inside(outer, x, y);
+        /// <summary>圆形敌人完整进入原岛岸后才启用岸线夹取，跨岸首帧不向内瞬移。</summary>
+        public bool ContainsCircle(float x, float y, float radius)
+        {
+            if (!Contains(x, y)) return false;
+            for (int i = 0, j = outer.Length - 1; i < outer.Length; j = i++)
+            {
+                var a = outer[j]; var b = outer[i];
+                float dx = b.X - a.X, dy = b.Y - a.Y, length2 = dx * dx + dy * dy;
+                float t = Math.Max(0, Math.Min(1, ((x - a.X) * dx + (y - a.Y) * dy) / length2));
+                float ex = x - a.X - dx * t, ey = y - a.Y - dy * t;
+                if (ex * ex + ey * ey < radius * radius - .00001f) return false;
+            }
+            return true;
+        }
+
+        /// <summary>保留原入口方向与车道，按配置向深海外移，不改变玩家轮廓或浅水定义。</summary>
+        public ArcadeRegionPoint SeaEntry(float x, float y, float distance)
+        {
+            float length = (float)Math.Sqrt(x * x + y * y);
+            if (length < .001f || distance <= 0) return new ArcadeRegionPoint(x, y);
+            float scale = 1 + distance / length;
+            return new ArcadeRegionPoint(x * scale, y * scale);
+        }
         public bool IsShallow(float x, float y) => Contains(x, y) && !Inside(sand, x, y);
         public ArcadeRegionPoint LandPoint(float x, float y, float inset)
         {

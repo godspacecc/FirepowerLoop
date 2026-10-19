@@ -81,7 +81,15 @@ namespace Game.Tests
             var region = new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, casual ? wave + 1 : 0);
             var tangent = new Vector2(-enemy.Position.y, enemy.Position.x).normalized;
             runtime.PlayerInvulnerability = 1000;
-            if (wave == 0) Assert.That(region.IsShallow(enemy.Position.x, enemy.Position.y), Is.True);
+            Assert.That(region.Contains(enemy.Position.x, enemy.Position.y), Is.False, "先在深海出现");
+            runtime.PlayerPosition = Vector2.zero;
+            for (int step = 0; step < 800 && !region.ContainsCircle(enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius); step++)
+            {
+                var before = enemy.Position;
+                Call("TickEnemies", runtime, .05f);
+                Assert.That(Vector2.Distance(before, enemy.Position), Is.LessThanOrEqualTo(enemy.Speed * .05f + .01f));
+            }
+            Assert.That(region.ContainsCircle(enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius), Is.True);
             foreach (var side in new[] { 1f, -1f })
             {
                 var target = region.Constrain(enemy.Position.x + tangent.x * side * 4,
@@ -131,7 +139,7 @@ namespace Game.Tests
             Assert.That(positions.Any(position => position.y > 10), Is.True, "北侧入口缺失");
             Assert.That(positions.Any(position => position.x < -10), Is.True, "西侧入口缺失");
             var region = new ArcadeIslandRegion(19.5f, 19.5f, 1);
-            Assert.That(positions.All(position => region.Contains(position.x, position.y)), Is.True);
+            Assert.That(positions.All(position => !region.Contains(position.x, position.y)), Is.True, "四入口从深海接近");
         }
 
         /// <summary>完整首轮逐个消耗预算，跨越旧半程换向点时也不能插入额外等待。</summary>
@@ -189,19 +197,22 @@ namespace Game.Tests
                 var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,wave+1);
                 var water=runtime.Enemies.Values.First();
                 var shore=runtime.Enemies.Values.Last();
-                Assert.That(region.Contains(water.Position.x,water.Position.y),Is.True);
-                Assert.That(region.Contains(shore.Position.x,shore.Position.y),Is.True);
+                Assert.That(region.Contains(water.Position.x,water.Position.y),Is.False);
+                Assert.That(region.Contains(shore.Position.x,shore.Position.y),Is.False);
                 Assert.That(runtime.Enemies.Count+runtime.SpawnQueue.Count,Is.EqualTo(total));
                 Vector2 before=water.Position;Call("TickEnemies",runtime,.05f);
                 Assert.That(Vector2.Distance(before,water.Position),Is.LessThanOrEqualTo(water.Speed*.05f+.001f));
-                runtime.PlayerPosition=water.Position+Vector2.up*.25f;
-                int health=runtime.PlayerHealth;runtime.PlayerInvulnerability=0;water.AttackCooldown=0;
-                Call("TickEnemies",runtime,.05f);
-                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"水侧敌人立即按原接触规则攻击附近玩家");
                 runtime.PlayerInvulnerability=1000f;runtime.PlayerPosition=Vector2.zero;
                 for(int i=0;i<500;i++)Call("TickEnemies",runtime,.05f);
                 Assert.That(region.IsShallow(water.Position.x,water.Position.y),Is.False);
+                Assert.That(region.ContainsCircle(water.Position.x,water.Position.y,catalog.Rule.EnemyContactRadius),Is.True);
                 Assert.That(Mathf.Abs(shore.Position.y),Is.LessThan(catalog.Rule.ArenaHalfHeight));
+                runtime.PlayerPosition=water.Position+Vector2.up*.25f;
+                int health=runtime.PlayerHealth;
+                runtime.PlayerInvulnerability=0;water.AttackCooldown=0;
+                Call("TickEnemies",runtime,.05f);
+                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"上岸后恢复原接触攻击");
+                runtime.PlayerInvulnerability=1000f;runtime.PlayerPosition=Vector2.zero;
                 int spawned=runtime.Enemies.Count;
                 while(runtime.SpawnQueue.Count>0)
                 {
@@ -210,7 +221,7 @@ namespace Game.Tests
                     // 弹丸等共享实体序号不能改变固定批次方向或既定总预算。
                     runtime.NextEntityId++;
                     var e=runtime.Enemies.Values.Single();
-                    Assert.That(region.Contains(e.Position.x,e.Position.y),Is.True);
+                    Assert.That(region.Contains(e.Position.x,e.Position.y),Is.False);
                 }
                 Assert.That(spawned,Is.EqualTo(total));
                 runtime.Enemies.Clear();

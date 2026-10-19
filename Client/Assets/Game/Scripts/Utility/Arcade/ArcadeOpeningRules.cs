@@ -16,6 +16,7 @@ namespace FirepowerLoop.Arcade
             CampfireX = row.CampfireX; CampfireY = row.CampfireY; CampfireRadius = row.CampfireRadius;
             CampfireDamage = row.CampfireDamage; CampfireIntervalSeconds = row.CampfireIntervalSeconds;
             RoundRestSeconds = row.RoundRestSeconds; ExitRestSeconds = row.ExitRestSeconds;
+            EnemySeaApproachDistance = row.EnemySeaApproachDistance;
         }
         public bool Enabled => WaterSpeedRatio > 0;
         /// <summary>休整可独立于水岸启用；单位秒，零表示沿用旧短切轮。</summary>
@@ -30,19 +31,23 @@ namespace FirepowerLoop.Arcade
         public float CampfireIntervalSeconds { get; }
         public float RoundRestSeconds { get; }
         public float ExitRestSeconds { get; }
+        /// <summary>敌人出生点从原浅水入口向深海延伸的米数；不扩大玩家活动范围。</summary>
+        public float EnemySeaApproachDistance { get; }
 
         public static ArcadeOpeningParameters FromConfig(ArenaConfig row)
         {
             if (row == null) throw new ArgumentNullException(nameof(row));
             var p = new ArcadeOpeningParameters(row);
             var values = new[] { p.WaterMinY, p.WaterSpeedRatio, p.CampfireX, p.CampfireY,
-                p.CampfireRadius, p.CampfireIntervalSeconds, p.RoundRestSeconds, p.ExitRestSeconds };
+                p.CampfireRadius, p.CampfireIntervalSeconds, p.RoundRestSeconds, p.ExitRestSeconds, p.EnemySeaApproachDistance };
             foreach (var v in values)
                 if (float.IsNaN(v) || float.IsInfinity(v)) throw new ArgumentException("岛岸参数非有限值");
             if (p.Enabled && (row.ArenaNumber != 1 || p.WaterSpeedRatio > 1 || p.CampfireRadius <= 0 ||
                 p.CampfireDamage <= 0 || p.CampfireIntervalSeconds <= 0 || p.RoundRestSeconds <= 0 || p.ExitRestSeconds <= 0))
                 throw new ArgumentException("岛岸水火或休整参数无效");
             if (p.WaterSpeedRatio < 0) throw new ArgumentException("水域减速比例无效");
+            if (p.EnemySeaApproachDistance < 0 || (!p.Enabled && p.EnemySeaApproachDistance != 0))
+                throw new ArgumentException("深海来敌距离只能为海岛配置非负值");
             if (p.RoundRestSeconds < 0 || p.ExitRestSeconds < 0 ||
                 (p.RoundRestSeconds > 0) != (p.ExitRestSeconds > 0))
                 throw new ArgumentException("休整时限必须成对配置");

@@ -1487,7 +1487,8 @@ namespace ET.Server
                     region.EntryFromFourSides(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
                 else
                     region.Entry(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
-                x = start.X; z = start.Y;
+                var seaEntry = region.SeaEntry(start.X, start.Y, opening.EnemySeaApproachDistance);
+                x = seaEntry.X; z = seaEntry.Y;
             }
             OnlineArcadeBattlePlayerRuntime target = battle.Players.Values.Where(player => player.Alive && !player.InTreasureRoom)
                 .OrderBy(player => DistanceSquared(x, z, player.PositionX, player.PositionZ)).FirstOrDefault();
@@ -1674,6 +1675,10 @@ namespace ET.Server
                 float movementDelta = deltaSeconds * EnemySpeedMultiplier(battle);
                 movementDelta *= SlayerMartStormSpeed(battle,enemy);
                 movementDelta *= EnemyContentMotion(battle,enemy,deltaSeconds);
+                // 海敌持续接近岸线，同时保留原距离与冷却攻击，保证贴岸玩家仍可被命中。
+                var seaRegion = IslandFor(battle);
+                bool seaApproaching = arena.EnemySeaApproachDistance > 0 && seaRegion != null &&
+                    !seaRegion.ContainsCircle(enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius);
                 if (self.TickContentBoss(battle,enemy,target,deltaSeconds)) { changed=true;continue; }
                 if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
 
@@ -1687,8 +1692,8 @@ namespace ET.Server
 
                 if (enemy.AttackKind == EnemyAttackKind.Projectile)
                 {
-                    if (distance > enemy.AttackRange * 0.8f)
-                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
+                    if (seaApproaching || distance > enemy.AttackRange * 0.8f)
+                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance);
                     if (distance <= enemy.AttackRange && enemy.AttackCooldownSeconds <= 0f &&
                         battle.Projectiles.Count < rule.MaxProjectiles)
                     {
@@ -1698,7 +1703,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), IslandFor(battle));
+                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance);
                     if (distance <= rule.PlayerRadius + rule.EnemyContactRadius && enemy.AttackCooldownSeconds <= 0f)
                     {
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
@@ -1814,7 +1819,7 @@ namespace ET.Server
         /// <summary>普通敌人使用服务器权威的确定性矩形绕障；Boss 锁向冲锋保持直线技能语义。</summary>
         private static void MoveEnemy(OnlineArcadeEnemyRuntime enemy, float targetX, float targetZ,
             float deltaSeconds, ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles,
-            FirepowerLoop.Arcade.ArcadeIslandRegion island = null)
+            FirepowerLoop.Arcade.ArcadeIslandRegion island = null, float seaDistance = 0)
         {
             float previousX = enemy.PositionX;
             float previousZ = enemy.PositionZ;
@@ -1822,8 +1827,8 @@ namespace ET.Server
                 out float directionX, out float directionZ);
             float nextX = previousX + directionX * enemy.MoveSpeed * deltaSeconds;
             float nextZ = previousZ + directionZ * enemy.MoveSpeed * deltaSeconds;
-            ResolvePosition(ref nextX, ref nextZ, previousX, previousZ,
-                rule.EnemyContactRadius, rule, obstacles, island);
+            ResolveEnemyPosition(ref nextX, ref nextZ, previousX, previousZ,
+                rule.EnemyContactRadius, rule, obstacles, island, seaDistance);
             enemy.PositionX = nextX;
             enemy.PositionZ = nextZ;
         }
@@ -2197,9 +2202,9 @@ namespace ET.Server
                 if (length < 0.001f) { offsetX = 0f; offsetZ = 1f; length = 1f; }
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
-                // 浅水和陆地都按同一岸线约束击退，不投影到沙滩内部。
-                ResolvePosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
-                    rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle));
+                // 深海接近时保留原位置附近的击退，完整上岸后仍沿原岸线约束。
+                ResolveEnemyPosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
+                    rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
                 enemy.PositionX = nextX;
                 enemy.PositionZ = nextZ;
                 enemy.LastDamagePlayerId = ownerPlayerId;
@@ -2854,15 +2859,28 @@ namespace ET.Server
             return total;
         }
 
+        /// <summary>只有未完整上岸的敌人拥有深海留量；玩家及已上岸敌人使用原边界。</summary>
+        private static void ResolveEnemyPosition(ref float x, ref float z, float previousX, float previousZ, float radius,
+            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island, float seaDistance)
+        {
+            float margin = island != null && !island.ContainsCircle(previousX, previousZ, radius) ? seaDistance : 0;
+            ResolvePositionWithMargin(ref x, ref z, previousX, previousZ, radius, rule, obstacles, margin > 0 ? null : island, margin);
+        }
+
         private static void ResolvePosition(ref float x, ref float z, float previousX, float previousZ, float radius,
             ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island = null)
+            => ResolvePositionWithMargin(ref x, ref z, previousX, previousZ, radius, rule, obstacles, island, 0);
+
+        /// <summary>共享原位置碰撞裁决；额外矩形留量仅由深海敌人入口传入。</summary>
+        private static void ResolvePositionWithMargin(ref float x, ref float z, float previousX, float previousZ, float radius,
+            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island, float margin)
         {
             if (island != null)
             {
                 var p = island.Constrain(x, z, radius); x = p.X; z = p.Y;
             }
-            x = Math.Clamp(x, -rule.ArenaHalfWidth + radius, rule.ArenaHalfWidth - radius);
-            z = Math.Clamp(z, -rule.ArenaHalfHeight + radius, rule.ArenaHalfHeight - radius);
+            x = Math.Clamp(x, -rule.ArenaHalfWidth - margin + radius, rule.ArenaHalfWidth + margin - radius);
+            z = Math.Clamp(z, -rule.ArenaHalfHeight - margin + radius, rule.ArenaHalfHeight + margin - radius);
             if (InsideObstacle(x, previousZ, radius, obstacles)) x = previousX;
             if (InsideObstacle(x, z, radius, obstacles)) z = previousZ;
             if (InsideObstacle(x, z, radius, obstacles))
@@ -2877,6 +2895,7 @@ namespace ET.Server
             IReadOnlyList<ArcadeObstacleConfig> obstacles)
         {
             if (battle.EnemyIterationIds.Count < 2) return;
+            float seaDistance = ResolveBattleArena(battle).EnemySeaApproachDistance;
             float minimumDistance = rule.EnemyContactRadius * 2f;
             float minimumDistanceSquared = minimumDistance * minimumDistance;
             for (int pass = 0; pass < 2; pass++)
@@ -2897,10 +2916,10 @@ namespace ET.Server
                 float leftZ = left.PositionZ - directionZ * push;
                 float rightX = right.PositionX + directionX * push;
                 float rightZ = right.PositionZ + directionZ * push;
-                ResolvePosition(ref leftX, ref leftZ, left.PositionX, left.PositionZ,
-                    rule.EnemyContactRadius, rule, obstacles, IslandFor(battle));
-                ResolvePosition(ref rightX, ref rightZ, right.PositionX, right.PositionZ,
-                    rule.EnemyContactRadius, rule, obstacles, IslandFor(battle));
+                ResolveEnemyPosition(ref leftX, ref leftZ, left.PositionX, left.PositionZ,
+                    rule.EnemyContactRadius, rule, obstacles, IslandFor(battle), seaDistance);
+                ResolveEnemyPosition(ref rightX, ref rightZ, right.PositionX, right.PositionZ,
+                    rule.EnemyContactRadius, rule, obstacles, IslandFor(battle), seaDistance);
                 left.PositionX = leftX; left.PositionZ = leftZ;
                 right.PositionX = rightX; right.PositionZ = rightZ;
             }

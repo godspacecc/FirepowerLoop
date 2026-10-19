@@ -252,6 +252,7 @@
         <var name="ArmorWaveNumber" type="int"/>
         <var name="ArmorHealth" type="int"/>
         <var name="CrateTreasureWeightMultiplier" type="int"/>
+        <var name="EnemySeaApproachDistance" type="float"/>
 
     </bean>
     <bean name="ArcadeBossConfig" group="e">
