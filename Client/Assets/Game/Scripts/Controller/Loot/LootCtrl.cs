@@ -194,6 +194,12 @@ namespace Game
                 view.SetArcadeOpacity(opacity);
         }
 
+        /// <summary>把已裁决的空投进度交给对应掉落实例显示。</summary>
+        public void SetDropDelivery(int runtimeId,bool airdrop,float remaining,float duration)
+        {
+            if(arcadeDrops.TryGetValue(runtimeId,out var view)&&view!=null)view.SetWeaponDelivery(airdrop,remaining,duration);
+        }
+
         public void RemoveDrop(int runtimeId)
         {
             if (!arcadeDrops.TryGetValue(runtimeId, out var view))

@@ -508,7 +508,7 @@ namespace Game
             int playerMaxHealth, float playerMoveSpeed, float playerRadius, float enemyContactRadius,
             float contactInvulnerabilitySeconds, float respawnDelaySeconds, float arenaHalfWidth, float arenaHalfHeight,
             float dropChance, float supportFireIntervalSeconds, string configFingerprint = "",
-            float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0)
+            float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0,float weaponDeliverySeconds=0)
         {
             Id = id; InitialLives = initialLives; InitialBombs = initialBombs; InitialDashes = initialDashes;
             BaseWeaponId = baseWeaponId; MaxAliveEnemies = maxAliveEnemies;
@@ -521,6 +521,7 @@ namespace Game
             DropChance = dropChance; SupportFireIntervalSeconds = supportFireIntervalSeconds;
             ConfigFingerprint = configFingerprint ?? string.Empty;
             CoopDownedSeconds=coopDownedSeconds;CoopRescueRadius=coopRescueRadius;CoopRescueSpeed=coopRescueSpeed;CoopDonationMinLives=coopDonationMinLives;
+            WeaponDeliverySeconds=weaponDeliverySeconds;
         }
 
         public string Id { get; }
@@ -553,6 +554,8 @@ namespace Game
         public float CoopRescueRadius { get; }
         public float CoopRescueSpeed { get; }
         public int CoopDonationMinLives { get; }
+        /// <summary>地图武器空投从高空下降到完整开盖的权威等待秒数。</summary>
+        public float WeaponDeliverySeconds { get; }
     }
 
     /// <summary>街机武器的近战或投射规则及表现参数。</summary>

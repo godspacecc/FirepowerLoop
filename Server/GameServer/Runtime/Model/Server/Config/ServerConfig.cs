@@ -303,6 +303,7 @@ namespace ET
                 this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||
                 !float.IsFinite(this.arcadeRule.CoopDownedSeconds) || this.arcadeRule.CoopDownedSeconds<=0 ||
                 !float.IsFinite(this.arcadeRule.CoopRescueRadius) || this.arcadeRule.CoopRescueRadius<=0 ||
+                !float.IsFinite(this.arcadeRule.WeaponDeliverySeconds) || this.arcadeRule.WeaponDeliverySeconds<=0 ||
                 !float.IsFinite(this.arcadeRule.CoopRescueSpeed) || this.arcadeRule.CoopRescueSpeed<1 || this.arcadeRule.CoopDonationMinLives<2 ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.BaseWeaponId) ||
                 this.tables.TbArcadeWeapon.GetOrDefault(this.arcadeRule.BaseWeaponId) == null)
@@ -347,6 +348,7 @@ namespace ET
                     !Enum.IsDefined(powerup.Behavior) ||
                     !Finite(powerup.Magnitude, powerup.IntervalSeconds, powerup.Radius, powerup.ProjectileSpeed) ||
                     powerup.Magnitude < 0f || powerup.Damage < 0 || powerup.IntervalSeconds < 0f ||
+                    (powerup.Behavior==ArcadePowerupBehavior.WeaponSkull&&powerup.Magnitude!=2f&&powerup.Magnitude!=3f) ||
                     powerup.Radius < 0f || powerup.ProjectileSpeed < 0f || powerup.Charges < 0)
                     throw ConfigError(this.Profile, "TbArcadePowerup", powerup?.Id ?? "<null>",
                         "invalid powerup values.");

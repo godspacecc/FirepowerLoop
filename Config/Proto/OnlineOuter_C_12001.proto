@@ -433,6 +433,8 @@ message OnlineArcadeProjectileInfo
 	float VelocityZ = 6;
 	// 发射时的玩家武器身份；支援和敌方弹丸为空。
 	string SourceWeaponId = 7;
+	// 弹丸生成时固定的头骨强化层级，0原色、1红色、2紫色。
+	int32 WeaponPowerLevel = 8;
 }
 
 // Opcode 12083
@@ -449,6 +451,9 @@ message OnlineArcadeDropInfo
 	// 已成功应用的积分与金币变化，彼此独立；零值不产生提示。
 	int64 ScoreAdded = 7;
 	int32 GoldAdded = 8;
+	// 固定点武器空投，普通击杀掉落不使用；剩余时间涵盖下降和自动开箱。
+	bool WeaponAirdrop = 10;
+	float DeliveryRemainingSeconds = 11;
 	// 普通可见掉落的剩余寿命；成功领取收据不使用此值。
 	float RemainingSeconds = 9;
 }

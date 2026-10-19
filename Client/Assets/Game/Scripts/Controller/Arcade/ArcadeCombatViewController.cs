@@ -91,6 +91,8 @@ namespace Game
         void RemoveProjectile(int id);
         void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position);
         void RemoveDrop(int id);
+        /// <summary>空投开盖阶段只做显示，拾取资格由权威剩余量裁决。</summary>
+        void SetDropDelivery(int id,bool airdrop,float remaining,float duration) { }
         /// <summary>显示权威剩余寿命的透明度，不参与领取裁决。</summary>
         void SetDropOpacity(int id, float opacity) { }
         /// <summary>只淡出宝藏房地面物资，入口与返回出口保持可见。</summary>
@@ -668,6 +670,7 @@ namespace Game
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);
+        public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>lootPresentation?.SetDropDelivery(id,airdrop,remaining,duration);
         public void SetDropOpacity(int id, float opacity) => lootPresentation?.SetDropOpacity(id, opacity);
 
         public bool IsFirstPersonActive => firstPersonMapInstanceId != 0 &&

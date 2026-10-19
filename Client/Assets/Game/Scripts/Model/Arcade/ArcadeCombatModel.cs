@@ -140,6 +140,9 @@ namespace Game
 
     internal sealed class ArcadeDropRuntime
     {
+        /// <summary>只标记地图定点刷枪；投送完成前禁止拾取，不占用地面存留寿命。</summary>
+        public bool WeaponAirdrop;
+        public float DeliveryRemainingSeconds;
         public int Id;
         public ArcadeDropDefinition Definition;
         public Vector2 Position;
@@ -151,6 +154,7 @@ namespace Game
             Id = 0;
             Definition = default;
             Position = default;
+            WeaponAirdrop=false;DeliveryRemainingSeconds=0;
             RemainingSeconds = 30f;
         }
     }

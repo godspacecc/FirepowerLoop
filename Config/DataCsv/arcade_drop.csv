@@ -21,3 +21,5 @@
 ,arcade.drop.powerup.saw,8,0,4,Powerup,arcade.powerup.saw,ArcadeSawBlade,1,18,1
 ,arcade.drop.powerup.gloves,9,0,4,Powerup,arcade.powerup.gloves,ArcadeDropGloves,1,16,1
 ,arcade.drop.powerup.clock,10,0,3,Powerup,arcade.powerup.clock,ArcadeDropClock,1,8,1
+,arcade.drop.skull.small,1,0,5,Powerup,arcade.powerup.skull.small,ArcadeDropSkullRed,1,20,1
+,arcade.drop.skull.large,1,0,2,Powerup,arcade.powerup.skull.large,ArcadeDropSkullPurple,1,20,1

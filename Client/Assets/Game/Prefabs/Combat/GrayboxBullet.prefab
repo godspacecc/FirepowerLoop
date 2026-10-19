@@ -335,6 +335,8 @@ MonoBehaviour:
     visualRoot: {fileID: 1214200841458306726}
   - resourceName: ArcadeBulletSpread
     visualRoot: {fileID: 638141132892848870}
+  weaponPowerBeamTexture: {fileID: 2800000, guid: dbe02d588be6e674a964284746448081,
+    type: 2}
 --- !u!1 &4154101457348271561
 GameObject:
   m_ObjectHideFlags: 0

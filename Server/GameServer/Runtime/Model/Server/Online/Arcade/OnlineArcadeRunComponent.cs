@@ -291,6 +291,8 @@ namespace ET.Server
         public bool FromPlayerWeapon;
         /// <summary>创建弹丸时固定武器身份，供双端表现选择火焰等独立外观。</summary>
         public string SourceWeaponId;
+        /// <summary>发射时确定的头骨层级；仅同步该弹丸外观，不从玩家当前状态推断。</summary>
+        public int WeaponPowerLevel;
         public long OwnerPlayerId;
         public float PositionX;
         public float PositionZ;
@@ -309,6 +311,9 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeDropRuntime
     {
+        /// <summary>固定地图刷枪使用权威空投时钟，普通战利品保持即时拾取。</summary>
+        public bool WeaponAirdrop;
+        public float DeliveryRemainingSeconds;
         public long RuntimeId;
         public string DropConfigId;
         public float PositionX;

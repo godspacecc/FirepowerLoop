@@ -182,6 +182,7 @@
         <var name="CoopRescueRadius" type="float"/>
         <var name="CoopRescueSpeed" type="float"/>
         <var name="CoopDonationMinLives" type="int"/>
+        <var name="WeaponDeliverySeconds" type="float"/>
     </bean>
     <bean name="ArcadeWeaponConfig" group="e">
         <var name="Id" type="string"/>

@@ -22,6 +22,8 @@ namespace Game
         void SetDropOpacity(int runtimeId, float opacity) { }
 
         void RemoveDrop(int runtimeId);
+        /// <summary>地图空投只按已同步的阶段控制箱子、名称和武器显隐。</summary>
+        void SetDropDelivery(int runtimeId,bool airdrop,float remaining,float duration) { }
         void ClearArcadeDrops();
     }
 }

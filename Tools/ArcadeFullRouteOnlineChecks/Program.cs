@@ -2,6 +2,14 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="SkullPowerOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int skullMax)||skullMax<1)
+        throw new ArgumentException("Explicit SkullPowerOnline limit required");
+    var skullConfig=ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes")));
+    World.Instance.AddSingleton(skullConfig);World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=SkullPowerOnlineChecks.Run(skullMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="MapWeaponPickupsOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true" || !int.TryParse(opts.GetValueOrDefault("maxTests"),out int weaponMax) || weaponMax<1)

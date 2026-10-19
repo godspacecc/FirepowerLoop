@@ -208,11 +208,12 @@ namespace Game
     public readonly struct OnlineArcadeProjectileSnapshot
     {
         public OnlineArcadeProjectileSnapshot(long runtimeId, long ownerPlayerId, float positionX, float positionZ,
-            float velocityX, float velocityZ, string sourceWeaponId = null)
+            float velocityX, float velocityZ, string sourceWeaponId = null,int weaponPowerLevel=0)
         {
             RuntimeId = runtimeId; OwnerPlayerId = ownerPlayerId; PositionX = positionX; PositionZ = positionZ;
             VelocityX = velocityX; VelocityZ = velocityZ;
             SourceWeaponId = sourceWeaponId ?? string.Empty;
+            WeaponPowerLevel=weaponPowerLevel;
         }
         public long RuntimeId { get; }
         public long OwnerPlayerId { get; }
@@ -222,19 +223,22 @@ namespace Game
         public float VelocityZ { get; }
         /// <summary>保留发射时的武器外观，换枪或武器到期不回改已飞出的弹丸。</summary>
         public string SourceWeaponId { get; }
+        /// <summary>弹丸发射时的头骨层级，换枪后保留，敌弹忽略。</summary>
+        public int WeaponPowerLevel { get; }
     }
 
     public readonly struct OnlineArcadeDropSnapshot
     {
         public OnlineArcadeDropSnapshot(long runtimeId, string dropConfigId, float positionX, float positionZ,
             long collectedByPlayerId = 0, int addedAmount = 0, long scoreAdded = 0, int goldAdded = 0,
-            float remainingSeconds = 30f)
+            float remainingSeconds = 30f,bool weaponAirdrop=false,float deliveryRemainingSeconds=0)
         {
             RuntimeId = runtimeId; DropConfigId = dropConfigId ?? string.Empty;
             PositionX = positionX; PositionZ = positionZ;
             CollectedByPlayerId = collectedByPlayerId; AddedAmount = addedAmount;
             ScoreAdded = scoreAdded; GoldAdded = goldAdded;
             RemainingSeconds = remainingSeconds;
+            WeaponAirdrop=weaponAirdrop;DeliveryRemainingSeconds=deliveryRemainingSeconds;
         }
         public long RuntimeId { get; }
         public string DropConfigId { get; }
@@ -249,6 +253,9 @@ namespace Game
         public int GoldAdded { get; }
         /// <summary>服务器权威剩余地面寿命；重复快照或重连不能刷新为完整30秒。</summary>
         public float RemainingSeconds { get; }
+        /// <summary>权威空投阶段，客户端按剩余量定位箱体和箱盖，不自行决定可领取时机。</summary>
+        public bool WeaponAirdrop { get; }
+        public float DeliveryRemainingSeconds { get; }
     }
 
     /// <summary>服务器确认的原始成员连接状态与截止时间；客户端只用于提示和按钮可用性。</summary>

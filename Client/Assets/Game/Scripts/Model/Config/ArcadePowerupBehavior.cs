@@ -23,6 +23,7 @@
         Saw = 9,
         Gloves = 10,
         Clock = 11,
+        WeaponSkull = 12,
     }
 
  

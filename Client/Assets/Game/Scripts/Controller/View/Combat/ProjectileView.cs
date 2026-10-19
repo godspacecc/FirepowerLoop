@@ -27,9 +27,17 @@ namespace Game
 
         [SerializeField]
         private ArcadeVisualBinding[] arcadeVisuals = Array.Empty<ArcadeVisualBinding>();
+        /// <summary>中性亮度光束遮罩，让红紫强化覆盖完整弹尾，不与原黄色纹理相乘失色。</summary>
+        [SerializeField] private Texture2D weaponPowerBeamTexture;
 
         private int projectileRuntimeId;
         private Action<int, Collider> collisionHandler;
+        /// <summary>只缓存本实例的原始颜色块和粒子渐变；换色不创建材质，回池复用可完整恢复。</summary>
+        private Renderer[] powerRenderers;
+        private MaterialPropertyBlock[] originalPowerBlocks;
+        private ParticleSystem[] powerParticles;
+        private ParticleSystem.MinMaxGradient[] originalStartColors,originalLifeColors;
+        private int appliedPowerLevel=-1;
 
         public Collider TriggerCollider { get; private set; }
         public BoxCollider BoxCollider { get; private set; }
@@ -60,6 +68,8 @@ namespace Game
         /// <summary>按配置资源名切换纯视觉子物体；敌方弹和未配置资源保持原弹体。</summary>
         public void SetArcadePresentation(string visualResourceName, bool hostile)
         {
+            visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out var powerLevel);
+            ApplyPowerColor(hostile?0:powerLevel);
             var matched = false;
             for (var index = 0; index < arcadeVisuals.Length; index++)
             {
@@ -73,9 +83,49 @@ namespace Game
         }
 
         /// <summary>三种普通枪的视觉变体共用短弹载体；弓箭、敌弹和特殊模型仍使用既有载体。</summary>
-        internal static bool UsesOrdinaryArcadeBullet(string visualResourceName) =>
-            visualResourceName == "ArcadeBulletBasic" || visualResourceName == "ArcadeBulletRapid" ||
-            visualResourceName == "ArcadeBulletSpread";
+        internal static bool UsesOrdinaryArcadeBullet(string visualResourceName)
+        {
+            visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out _);
+            return visualResourceName == "ArcadeBulletBasic" || visualResourceName == "ArcadeBulletRapid" ||
+                   visualResourceName == "ArcadeBulletSpread";
+        }
+
+        /// <summary>保留原弹体形状，只改本实例的强化色；敌弹和普通弹恢复缓存，避免对象池串色。</summary>
+        private void ApplyPowerColor(int level)
+        {
+            if(level==appliedPowerLevel)return;
+            if(powerRenderers==null)
+            {
+                powerRenderers=GetComponentsInChildren<Renderer>(true);originalPowerBlocks=new MaterialPropertyBlock[powerRenderers.Length];
+                for(int i=0;i<powerRenderers.Length;i++){var block=new MaterialPropertyBlock();powerRenderers[i].GetPropertyBlock(block);originalPowerBlocks[i]=block;}
+                powerParticles=GetComponentsInChildren<ParticleSystem>(true);
+                originalStartColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];originalLifeColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];
+                for(int i=0;i<powerParticles.Length;i++){originalStartColors[i]=powerParticles[i].main.startColor;originalLifeColors[i]=powerParticles[i].colorOverLifetime.color;}
+            }
+            var color=level>=2?new Color(.8f,.12f,1f):new Color(1f,.07f,.04f);
+            for(int i=0;i<powerRenderers.Length;i++)
+            {
+                if(level==0){powerRenderers[i].SetPropertyBlock(originalPowerBlocks[i]);continue;}
+                var block=new MaterialPropertyBlock();powerRenderers[i].GetPropertyBlock(block);
+                block.SetColor("_BaseColor",color);block.SetColor("_Color",color);block.SetColor("_TintColor",color);block.SetColor("_EmissionColor",color*2);
+                if(weaponPowerBeamTexture!=null&&powerRenderers[i].sharedMaterial!=null&&powerRenderers[i].sharedMaterial.name.Contains("BulletStreak"))
+                    block.SetTexture("_BaseMap",weaponPowerBeamTexture);
+                powerRenderers[i].SetPropertyBlock(block);
+            }
+            for(int i=0;i<powerParticles.Length;i++)
+            {
+                var main=powerParticles[i].main;var life=powerParticles[i].colorOverLifetime;
+                main.startColor=level==0?originalStartColors[i]:new ParticleSystem.MinMaxGradient(color);
+                if(level==0)life.color=originalLifeColors[i];
+                else if(life.enabled)
+                {
+                    var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(Color.white,0),new GradientColorKey(Color.white,1)},
+                        originalLifeColors[i].gradient?.alphaKeys??new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(0,1)});
+                    life.color=new ParticleSystem.MinMaxGradient(gradient);
+                }
+            }
+            appliedPowerLevel=level;
+        }
 
         private static void SetActive(GameObject target, bool active)
         {

@@ -79,6 +79,7 @@
         <var name="Saw" value="9"/>
         <var name="Gloves" value="10"/>
         <var name="Clock" value="11"/>
+        <var name="WeaponSkull" value="12"/>
     </enum>
     <enum name="ArcadeWeaponBehavior" group="e">
         <var name="Direct" value="1"/>

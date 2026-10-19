@@ -676,7 +676,11 @@ namespace Game
                     DamageEnemiesInExplosionRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
                 runtime.Powerups.Remove(behavior);
             }
-            if (runtime.TemporaryWeaponRemaining <= 0f) runtime.TemporaryWeaponId = null;
+            if (runtime.TemporaryWeaponRemaining <= 0f)
+            {
+                if(!string.IsNullOrEmpty(runtime.TemporaryWeaponId))runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
+                runtime.TemporaryWeaponId = null;
+            }
             if (runtime.RespawnRemaining <= 0f) return;
             runtime.RespawnRemaining = Mathf.Max(0f, runtime.RespawnRemaining - deltaTime);
             if (runtime.RespawnRemaining <= 0f)
@@ -1091,7 +1095,9 @@ namespace Game
             foreach (var id in dropIterationIds)
             {
                 var drop = runtime.Drops[id];
-                drop.RemainingSeconds = Mathf.Max(0f, drop.RemainingSeconds - seconds);
+                float groundSeconds=Mathf.Max(0,seconds-drop.DeliveryRemainingSeconds);
+                drop.DeliveryRemainingSeconds=Mathf.Max(0,drop.DeliveryRemainingSeconds-seconds);
+                drop.RemainingSeconds = Mathf.Max(0f, drop.RemainingSeconds - groundSeconds);
                 if (drop.RemainingSeconds > 0f) continue;
                 runtime.Drops.Remove(id);
                 view?.RemoveDrop(id);
@@ -1114,6 +1120,7 @@ namespace Game
             for (var index = 0; index < dropIterationIds.Count; index++)
             {
                 if (!runtime.Drops.TryGetValue(dropIterationIds[index], out var drop)) continue;
+                if(drop.DeliveryRemainingSeconds>0)continue;
                 if (Vector2.Distance(drop.Position, runtime.PlayerPosition) > pickupRadius) continue;
                 var definition = drop.Definition;
                 bool supply = definition.Kind == global::ArcadeDropKind.Bomb || definition.Kind == global::ArcadeDropKind.Dash;
@@ -1418,6 +1425,7 @@ namespace Game
                 var drop=runtimePool.RentDrop();
                 drop.Id=runtime.NextEntityId++;drop.Definition=candidate;
                 drop.Position=new Vector2(point.X,point.Y);
+                drop.WeaponAirdrop=true;drop.DeliveryRemainingSeconds=catalog.Rule.WeaponDeliverySeconds;
                 runtime.Drops.Add(drop.Id,drop);
                 break;
             }
@@ -1434,6 +1442,9 @@ namespace Game
             var damageBonus = UpgradeTotal(run, global::ArcadeUpgradeKind.DamagePercent);
             var fireRateBonus = UpgradeTotal(run, global::ArcadeUpgradeKind.FireRatePercent);
             var damage = Mathf.Max(1, Mathf.RoundToInt(weapon.Damage * (1f + damageBonus)));
+            // 头骨只在发射时放大当前武器的伤害和射速，飞行弹丸不会被后续拾取改写。
+            float skullMultiplier=TryGetPowerup(runtime,global::ArcadePowerupBehavior.WeaponSkull,out var skull)?skull.Definition.Magnitude:1f;
+            damage=Mathf.Max(1,Mathf.RoundToInt(damage*skullMultiplier));
             damage=SlayerMartDamage(runtime,damage,SlayerMartDamageSource.Weapon);
             if (weapon.Behavior == global::ArcadeWeaponBehavior.Melee)
             {
@@ -1466,12 +1477,13 @@ namespace Game
                 var direction = Rotate(runtime.AimDirection.normalized, angle);
                 SpawnProjectile(runtime, false, runtime.PlayerPosition + direction * 0.65f,
                     direction * weapon.ProjectileSpeed, damage, weapon.ProjectileLifetimeSeconds,
-                    weapon.Behavior, weapon.MaxHits, weapon.ExplosionRadius, weapon.ProjectileVisualResourceName, true, weapon.Id);
+                    weapon.Behavior, weapon.MaxHits, weapon.ExplosionRadius,
+                    ArcadeWeaponPowerVisual.WithLevel(weapon.ProjectileVisualResourceName,Mathf.Clamp(Mathf.RoundToInt(skullMultiplier)-1,0,2)), true, weapon.Id);
                 spawned = true;
             }
             if (!spawned) return;
             runtime.PlayerFireSequence++;
-            runtime.FireCooldown = weapon.FireIntervalSeconds / Mathf.Max(1f, 1f + fireRateBonus);
+            runtime.FireCooldown = weapon.FireIntervalSeconds / (Mathf.Max(1f, 1f + fireRateBonus)*skullMultiplier);
         }
 
         /// <summary>每次攻击与表现同步时解析武器；旧局近战装备回退基础枪，不改写安全节点。</summary>
@@ -1782,6 +1794,7 @@ namespace Game
                     runtime.Dashes += SupplyAddedAmount(runtime.Dashes, drop);
                     break;
                 case global::ArcadeDropKind.TemporaryWeapon:
+                    if(!TryGetWeapon(runtime,out var previousWeapon)||previousWeapon.Id!=drop.ProductId)runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
                     runtime.TemporaryWeaponId = drop.ProductId;
                     runtime.TemporaryWeaponRemaining = drop.DurationSeconds;
                     break;
@@ -1814,6 +1827,9 @@ namespace Game
                 powerup = new ArcadePowerupRuntime();
                 runtime.Powerups.Add(definition.Behavior, powerup);
             }
+            // 已有紫级不能被小头骨降级；只刷新持续时间，不重复叠乘倍率。
+            if(definition.Behavior==global::ArcadePowerupBehavior.WeaponSkull&&powerup.RemainingSeconds>0&&powerup.Definition.Magnitude>definition.Magnitude)
+            {powerup.RemainingSeconds=Mathf.Max(powerup.RemainingSeconds,duration);return;}
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;
             powerup.RemainingSeconds = duration;
@@ -2086,6 +2102,7 @@ namespace Game
             foreach (var drop in runtime.Drops.Values)
             {
                 view.SetDrop(drop.Id, drop.Definition, drop.Position);
+                view.SetDropDelivery(drop.Id,drop.WeaponAirdrop,drop.DeliveryRemainingSeconds,catalog.Rule.WeaponDeliverySeconds);
                 view.SetDropOpacity(drop.Id, GroundDropOpacity(drop.RemainingSeconds));
             }
             view.BeginEffectSync();

@@ -463,11 +463,11 @@ namespace Game
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,
                     projectile.PositionX, projectile.PositionZ, projectile.VelocityX, projectile.VelocityZ,
-                    projectile.SourceWeaponId));
+                    projectile.SourceWeaponId,projectile.WeaponPowerLevel));
             List<OnlineArcadeDropSnapshot> drops = new(source.Drops.Count);
             foreach (OnlineArcadeDropInfo drop in source.Drops)
                 drops.Add(new OnlineArcadeDropSnapshot(drop.RuntimeId, drop.DropConfigId,
-                    drop.PositionX, drop.PositionZ, remainingSeconds: drop.RemainingSeconds));
+                    drop.PositionX, drop.PositionZ, remainingSeconds: drop.RemainingSeconds,weaponAirdrop:drop.WeaponAirdrop,deliveryRemainingSeconds:drop.DeliveryRemainingSeconds));
             List<OnlineArcadeDropSnapshot> supplyPickups = new(source.SupplyPickups.Count);
             foreach (var receipt in source.SupplyPickups)
                 supplyPickups.Add(new OnlineArcadeDropSnapshot(receipt.RuntimeId, receipt.DropConfigId,

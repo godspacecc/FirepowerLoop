@@ -15,6 +15,7 @@ internal static class MapWeaponPickupsOnlineChecks
             ("SharedSnapshotAndContactAwardEachPickupOnce", SharedSnapshotAndContactAwardEachPickupOnce),
             ("CapacityAndSpecialBattleGuards", CapacityAndSpecialBattleGuards),
             ("SpawnTimingStaggersAndFreezes", SpawnTimingStaggersAndFreezes),
+            ("AirdropWaitsForOpenAndPreservesGroundLifetime", AirdropWaitsForOpenAndPreservesGroundLifetime),
         };
         if(maximum<checks.Length)throw new ArgumentException("Declared maximum smaller than MapWeaponPickupsOnline scope");
         int failed=0;
@@ -86,10 +87,12 @@ internal static class MapWeaponPickupsOnlineChecks
         {
             var actual=battle.Drops[drop.RuntimeId];
             Require(drop.DropConfigId==actual.DropConfigId&&drop.PositionX==actual.PositionX&&drop.PositionZ==actual.PositionZ,"Shared pickup identity or position changed");
+            Require(drop.WeaponAirdrop&&drop.DeliveryRemainingSeconds==actual.DeliveryRemainingSeconds,"Snapshot/clone/codec lost airdrop phase");
         }
         var selected=battle.Drops.Values.First();
         var definition=ServerConfig.Instance.Tables.TbArcadeDrop.Get(selected.DropConfigId);
         foreach(var player in battle.Players.Values){player.PositionX=selected.PositionX;player.PositionZ=selected.PositionZ;}
+        Call("TickDropLifetimes",battle,ServerConfig.Instance.ArcadeRule.WeaponDeliverySeconds);
         Call("TickDrops",actor,battle);
         Require(!battle.Drops.ContainsKey(selected.RuntimeId)&&battle.Drops.Count==1,"Pickup did not disappear once");
         Require(battle.Players.Values.Count(p=>p.TemporaryWeaponId==definition.ProductId)==1,"Same pickup equipped both players");
@@ -97,6 +100,18 @@ internal static class MapWeaponPickupsOnlineChecks
         winner.TemporaryWeaponSeconds=1;
         Call("TickDrops",actor,battle);
         Require(winner.TemporaryWeaponSeconds==1&&battle.Drops.Count==1,"Consumed pickup awarded twice");
+    }
+
+    /// <summary>两人站在点位也不能空中领取；落地开箱后才开始30秒地面寿命。</summary>
+    private static void AirdropWaitsForOpenAndPreservesGroundLifetime()
+    {
+        var actor=Create();var battle=actor.Battle;var drop=battle.Drops.Values.First();
+        foreach(var player in battle.Players.Values){player.PositionX=drop.PositionX;player.PositionZ=drop.PositionZ;}
+        Call("TickDrops",actor,battle);Require(battle.Drops.ContainsKey(drop.RuntimeId),"Airdrop collected in air");
+        Call("TickDropLifetimes",battle,.5f);Require(drop.RemainingSeconds==30&&drop.DeliveryRemainingSeconds>0,"Flight consumed ground lifetime");
+        float left=drop.DeliveryRemainingSeconds;Call("TickDropLifetimes",battle,0f);Require(drop.DeliveryRemainingSeconds==left,"Zero step advanced delivery");
+        Call("TickDropLifetimes",battle,left);Require(drop.RemainingSeconds==30&&drop.DeliveryRemainingSeconds==0,"Landing lost ground lifetime");
+        Call("TickDrops",actor,battle);Require(!battle.Drops.ContainsKey(drop.RuntimeId),"Opened crate could not be collected");
     }
 
     /// <summary>已有物资不被替换，生成不越过总预算；挑战和独立Boss不混入普通地图武器。</summary>

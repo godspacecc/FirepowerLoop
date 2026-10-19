@@ -1236,7 +1236,7 @@ namespace Game
                 !IsPositiveFinite(rule.RespawnDelaySeconds) || !IsPositiveFinite(rule.ArenaHalfWidth) ||
                 !IsPositiveFinite(rule.ArenaHalfHeight) || !IsFinite(rule.DropChance) || rule.DropChance < 0f || rule.DropChance > 1f ||
                 !IsPositiveFinite(rule.SupportFireIntervalSeconds) || !IsPositiveFinite(rule.CoopDownedSeconds) ||
-                !IsPositiveFinite(rule.CoopRescueRadius) || !IsPositiveFinite(rule.CoopRescueSpeed) || rule.CoopRescueSpeed<1 || rule.CoopDonationMinLives<2)
+                !IsPositiveFinite(rule.WeaponDeliverySeconds) || !IsPositiveFinite(rule.CoopRescueRadius) || !IsPositiveFinite(rule.CoopRescueSpeed) || rule.CoopRescueSpeed<1 || rule.CoopDonationMinLives<2)
                 return "TbArcadeRule[arcade.default] 数值无效";
 
             var weaponIds = new HashSet<string>(StringComparer.Ordinal);
@@ -1421,6 +1421,7 @@ namespace Game
                 if (row == null || string.IsNullOrWhiteSpace(row.Id) || !powerupIds.Add(row.Id) ||
                     !Enum.IsDefined(typeof(global::ArcadePowerupBehavior), row.Behavior) ||
                     !IsNonNegativeFinite(row.Magnitude) || row.Damage < 0 ||
+                    (row.Behavior==global::ArcadePowerupBehavior.WeaponSkull&&row.Magnitude!=2f&&row.Magnitude!=3f) ||
                     !IsNonNegativeFinite(row.IntervalSeconds) || !IsNonNegativeFinite(row.Radius) ||
                     !IsNonNegativeFinite(row.ProjectileSpeed) || row.Charges < 0 ||
                     !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
@@ -1474,7 +1475,7 @@ namespace Game
                     rule.PlayerMaxHealth, rule.PlayerMoveSpeed, rule.PlayerRadius, rule.EnemyContactRadius,
                     rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
                     rule.DropChance, rule.SupportFireIntervalSeconds, rule.ConfigFingerprint,
-                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives),
+                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives,rule.WeaponDeliverySeconds),
                 tables.TbArcadeWeapon.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeWeaponDefinition(row.Id, row.HeldVisualResourceName,
                         row.ProjectileVisualResourceName, row.MuzzleFlash,

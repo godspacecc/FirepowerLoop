@@ -1313,7 +1313,8 @@ namespace ET.Server
             {
                 if(roll>=candidate.Weight){roll-=candidate.Weight;continue;}
                 long id=battle.NextDropRuntimeId++;
-                battle.Drops.Add(id,new OnlineArcadeDropRuntime {RuntimeId=id,DropConfigId=candidate.Id,PositionX=point.X,PositionZ=point.Y});
+                battle.Drops.Add(id,new OnlineArcadeDropRuntime {RuntimeId=id,DropConfigId=candidate.Id,PositionX=point.X,PositionZ=point.Y,
+                    WeaponAirdrop=true,DeliveryRemainingSeconds=ServerConfig.Instance.ArcadeRule.WeaponDeliverySeconds});
                 return true;
             }
             return false;
@@ -1535,6 +1536,13 @@ namespace ET.Server
                 player.InvulnerabilitySeconds = Math.Max(0f, player.InvulnerabilitySeconds - deltaSeconds);
                 changed |= MathF.Abs(previousInvulnerability - player.InvulnerabilitySeconds) > 0.0001f;
                 float previousTemporaryWeapon = player.TemporaryWeaponSeconds;
+                // 与单人一致：开火前推进头骨时钟，清场等出口时也计时，避免临界帧多发强化弹。
+                if(player.Powerups.TryGetValue(ArcadePowerupBehavior.WeaponSkull,out var skullTimer)&&deltaSeconds>0)
+                {
+                    skullTimer.RemainingSeconds=Math.Max(0,skullTimer.RemainingSeconds-deltaSeconds);
+                    if(skullTimer.RemainingSeconds<=0)player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+                    changed=true;
+                }
                 // 军械库内、队友未返回和开战前等待均不消耗所选武器。
                 // 轮级事务会销毁房间现场，首批敌人生成前仍须保留完整武器时间。
                 bool awaitingArmoryCombat = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss &&
@@ -1543,7 +1551,11 @@ namespace ET.Server
                     (player.InTreasureRoom || battle.RoundTransitionPending || battle.TreasureRoom.Members.Length > 0 || battle.WaveClearAwarded ||
                      battle.Enemies.Count == 0 && battle.SpawnQueueIndex >= battle.SpawnQueue.Count);
                 if (!holdArmoryWeapon) player.TemporaryWeaponSeconds = Math.Max(0f, player.TemporaryWeaponSeconds - deltaSeconds);
-                if (player.TemporaryWeaponSeconds <= 0f) player.TemporaryWeaponId = string.Empty;
+                if (player.TemporaryWeaponSeconds <= 0f)
+                {
+                    if(!string.IsNullOrEmpty(player.TemporaryWeaponId))player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+                    player.TemporaryWeaponId = string.Empty;
+                }
                 float previousDash = player.DashSeconds;
                 player.DashSeconds = Math.Max(0f, player.DashSeconds - deltaSeconds);
                 changed |= MathF.Abs(previousTemporaryWeapon - player.TemporaryWeaponSeconds) > 0.0001f ||
@@ -1977,6 +1989,9 @@ namespace ET.Server
             float aimZ = player.AimZ * inverseAimLength;
             int damage = Math.Max(1, (int)MathF.Round(weapon.Damage *
                 (1f + UpgradeTotal(record, ArcadeUpgradeKind.DamagePercent))));
+            // 伤害与射速只在发射时读取一次头骨状态，支援弹不继承此倍率。
+            float skullMultiplier=TryGetPowerup(player,ArcadePowerupBehavior.WeaponSkull,out var skull)?skull.Magnitude:1f;
+            damage=Math.Max(1,(int)MathF.Round(damage*skullMultiplier));
             damage=SlayerMartDamage(battle,player.PlayerId,damage,FirepowerLoop.Arcade.SlayerMartDamageSource.Weapon);
             if (weapon.Behavior == ArcadeWeaponBehavior.Melee)
             {
@@ -2014,6 +2029,7 @@ namespace ET.Server
                     OwnerPlayerId = player.PlayerId,
                     FromPlayerWeapon = true,
                     SourceWeaponId = weapon.Id,
+                    WeaponPowerLevel = Math.Clamp((int)MathF.Round(skullMultiplier)-1,0,2),
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     VelocityX = directionX * weapon.ProjectileSpeed,
@@ -2030,7 +2046,7 @@ namespace ET.Server
             {
                 player.FireSequence++;
                 player.FireCooldownSeconds = weapon.FireIntervalSeconds /
-                                             Math.Max(1f, 1f + UpgradeTotal(record, ArcadeUpgradeKind.FireRatePercent));
+                                             (Math.Max(1f, 1f + UpgradeTotal(record, ArcadeUpgradeKind.FireRatePercent))*skullMultiplier);
             }
             return created > 0;
         }
@@ -2355,7 +2371,9 @@ namespace ET.Server
             foreach (long dropId in battle.DropIterationIds)
             {
                 OnlineArcadeDropRuntime drop = battle.Drops[dropId];
-                drop.RemainingSeconds = Math.Max(0f, drop.RemainingSeconds - deltaSeconds);
+                float groundSeconds=Math.Max(0,deltaSeconds-drop.DeliveryRemainingSeconds);
+                drop.DeliveryRemainingSeconds=Math.Max(0,drop.DeliveryRemainingSeconds-deltaSeconds);
+                drop.RemainingSeconds = Math.Max(0f, drop.RemainingSeconds - groundSeconds);
                 if (drop.RemainingSeconds <= 0f) battle.Drops.Remove(dropId);
             }
             return true;
@@ -2371,6 +2389,7 @@ namespace ET.Server
             foreach (long dropId in battle.DropIterationIds)
             {
                 if (!battle.Drops.TryGetValue(dropId, out OnlineArcadeDropRuntime drop)) continue;
+                if(drop.DeliveryRemainingSeconds>0)continue;
                 ArcadeDropConfig definition = ServerConfig.Instance.Tables.TbArcadeDrop.Get(drop.DropConfigId);
                 bool supply = definition.Kind == ArcadeDropKind.Bomb || definition.Kind == ArcadeDropKind.Dash;
                 OnlineArcadeBattlePlayerRuntime winner = null;
@@ -2449,6 +2468,7 @@ namespace ET.Server
                     break;
                 case ArcadeDropKind.TemporaryWeapon:
                     if (drop.DurationSeconds <= 0 || ServerConfig.Instance.Tables.TbArcadeWeapon.GetOrDefault(drop.ProductId) == null) return false;
+                    if((player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)!=drop.ProductId)player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
                     player.TemporaryWeaponId = drop.ProductId;
                     player.TemporaryWeaponSeconds = drop.DurationSeconds;
                     break;
@@ -2459,6 +2479,8 @@ namespace ET.Server
                         !TryGetPowerup(player,ArcadePowerupBehavior.Chicken,out _)&&
                         (SlayerMartAbility(self.Battle,player.PlayerId)?.Supports.Count(p=>p.Kind==FirepowerLoop.Arcade.SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=ServerConfig.Instance.SlayerMart.Catalog.MaxChickens)return false;
                     float duration=FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(self.Battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
+                    if(definition.Behavior==ArcadePowerupBehavior.WeaponSkull&&TryGetPowerup(player,definition.Behavior,out var previousSkull)&&previousSkull.Magnitude>definition.Magnitude)
+                    {previousSkull.RemainingSeconds=Math.Max(previousSkull.RemainingSeconds,duration);break;}
                     if((definition.Behavior==ArcadePowerupBehavior.Saw||definition.Behavior==ArcadePowerupBehavior.Barrel)&&
                         FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.TryExtendOrdinaryDrop(SlayerMartAbility(self.Battle,player.PlayerId),definition.Behavior==ArcadePowerupBehavior.Saw?FirepowerLoop.Arcade.SlayerMartSupportKind.Saw:FirepowerLoop.Arcade.SlayerMartSupportKind.Barrel,duration,ServerConfig.Instance.SlayerMart))break;
                     player.Powerups[definition.Behavior] = new OnlineArcadePowerupRuntime
@@ -2494,6 +2516,7 @@ namespace ET.Server
                          player.Powerups.ToList())
                 {
                     OnlineArcadePowerupRuntime powerup = pair.Value;
+                    if(pair.Key==ArcadePowerupBehavior.WeaponSkull)continue;
                     powerup.RemainingSeconds = Math.Max(0f, powerup.RemainingSeconds - deltaSeconds);
                     powerup.CooldownSeconds = Math.Max(0f, powerup.CooldownSeconds - deltaSeconds);
                     changed = true;
@@ -3165,6 +3188,7 @@ namespace ET.Server
                 projectile.RuntimeId = sourceProjectile.RuntimeId;
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
                 projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
+                projectile.WeaponPowerLevel = sourceProjectile.WeaponPowerLevel;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;
@@ -3179,6 +3203,8 @@ namespace ET.Server
                 drop.PositionX = sourceDrop.PositionX;
                 drop.PositionZ = sourceDrop.PositionZ;
                 drop.RemainingSeconds = sourceDrop.RemainingSeconds;
+                drop.WeaponAirdrop = sourceDrop.WeaponAirdrop;
+                drop.DeliveryRemainingSeconds = sourceDrop.DeliveryRemainingSeconds;
                 battle.Drops.Add(drop);
             }
             return battle;
@@ -3366,6 +3392,7 @@ namespace ET.Server
                 projectile.RuntimeId = sourceProjectile.RuntimeId;
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
                 projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
+                projectile.WeaponPowerLevel = sourceProjectile.WeaponPowerLevel;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;
@@ -3380,6 +3407,8 @@ namespace ET.Server
                 drop.PositionX = sourceDrop.PositionX;
                 drop.PositionZ = sourceDrop.PositionZ;
                 drop.RemainingSeconds = sourceDrop.RemainingSeconds;
+                drop.WeaponAirdrop = sourceDrop.WeaponAirdrop;
+                drop.DeliveryRemainingSeconds = sourceDrop.DeliveryRemainingSeconds;
                 battle.Drops.Add(drop);
             }
             return battle;

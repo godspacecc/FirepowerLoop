@@ -66,6 +66,13 @@ namespace Game
         private int currentDisplayAmount = 1;
         private GameObject activeArcadeVisual;
         private GameObject activeArcadeLootBeam;
+        /// <summary>正式拾取模板持有箱体；所有实例、回池与地图释放继续归本 View 管理。</summary>
+        [SerializeField] private ArcadeWeaponDeliveryView weaponDelivery;
+        private bool deliveryActive;
+        private Vector3 deliveryWeaponPosition;
+        /// <summary>保存空投前的姿态，普通掉落复用时还原，避免沿用箱内展示尺寸。</summary>
+        private Vector3 deliveryOriginalWeaponPosition;
+        private Vector3 deliveryOriginalWeaponScale;
 
         /// <summary>模型与光柱各自持有渐隐材质管理器，统一随展示生命周期释放。</summary>
         private ArcadeDropOpacity visualOpacity;
@@ -130,9 +137,69 @@ namespace Game
             return true;
         }
 
+        /// <summary>按权威空投阶段隐藏武器、光柱和名称；开盖后在箱内抬起武器，不改变根位置。</summary>
+        public void SetWeaponDelivery(bool airdrop,float remaining,float duration)
+        {
+            if(airdrop&&weaponDelivery!=null)
+            {
+                if(!deliveryActive&&activeArcadeVisual!=null)
+                {
+                    deliveryOriginalWeaponPosition=activeArcadeVisual.transform.localPosition;
+                    deliveryOriginalWeaponScale=activeArcadeVisual.transform.localScale;
+                    FitArcadeVisual(1.05f);
+                    deliveryWeaponPosition=activeArcadeVisual.transform.localPosition;
+                }
+                deliveryActive=true;weaponDelivery.SetProgress(remaining,duration);
+                if(activeArcadeVisual!=null){activeArcadeVisual.SetActive(weaponDelivery.WeaponVisible);activeArcadeVisual.transform.localPosition=deliveryWeaponPosition+Vector3.up*(.65f/Mathf.Max(.001f,Mathf.Abs(transform.lossyScale.y)));}
+                if(activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(remaining<=0);
+                SetNameVisible(remaining<=0&&!string.IsNullOrWhiteSpace(currentDisplayName));
+                return;
+            }
+            if(deliveryActive&&activeArcadeVisual!=null)
+            {
+                activeArcadeVisual.SetActive(true);
+                activeArcadeVisual.transform.localPosition=deliveryOriginalWeaponPosition;
+                activeArcadeVisual.transform.localScale=deliveryOriginalWeaponScale;
+            }
+            if(deliveryActive&&activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(true);
+            deliveryActive=false;weaponDelivery?.ResetPresentation();
+        }
+
+        /// <summary>按展示请求校准模型实例：最长边统一、底面抬至掉落根；重复应用不会累积缩放。</summary>
+        public void FitArcadeVisual(float maxSize)
+        {
+            if (activeArcadeVisual == null || maxSize <= 0 || float.IsNaN(maxSize) || float.IsInfinity(maxSize)) return;
+            var bounds = new Bounds(); bool found = false;
+            foreach (var renderer in activeArcadeVisual.GetComponentsInChildren<Renderer>())
+            {
+                // 枪口粒子的动态包围盒不代表武器实体尺寸。
+                if (renderer is ParticleSystemRenderer) continue;
+                var local = renderer.localBounds;
+                var matrix = transform.worldToLocalMatrix * renderer.transform.localToWorldMatrix;
+                for (int i = 0; i < 8; i++)
+                {
+                    var corner = local.center + Vector3.Scale(local.extents,
+                        new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1));
+                    var point = matrix.MultiplyPoint3x4(corner);
+                    if (found) bounds.Encapsulate(point); else { bounds = new Bounds(point, Vector3.zero); found = true; }
+                }
+            }
+            float longest = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            if (!found || longest < .0001f) return;
+            var rootScale = transform.lossyScale;
+            float rootSize = Mathf.Max(Mathf.Abs(rootScale.x), Mathf.Abs(rootScale.y), Mathf.Abs(rootScale.z));
+            if (rootSize < .0001f) return;
+            float scale = maxSize / (longest * rootSize);
+            var visual = activeArcadeVisual.transform;
+            visual.localScale *= scale;
+            // 以整个包围盒底面定位，兼容源模型枢轴及已有俯视展示姿态。
+            visual.localPosition = visual.localPosition * scale - new Vector3(0, bounds.min.y * scale, 0);
+        }
+
         /// <summary>释放当前实例化视觉并恢复通用方块；可安全重复调用。</summary>
         public void ClearArcadePresentation()
         {
+            deliveryActive=false;weaponDelivery?.ResetPresentation();
             ReleaseOpacityMaterials();
             ActiveArcadeVisualPrefabAddress = null;
             if (activeArcadeLootBeam != null)

@@ -1708,6 +1708,12 @@ namespace ET
         [MemoryPackOrder(6)]
         public string SourceWeaponId { get; set; }
 
+        /// <summary>
+        /// 弹丸生成时固定的头骨强化层级，0原色、1红色、2紫色。
+        /// </summary>
+        [MemoryPackOrder(7)]
+        public int WeaponPowerLevel { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1722,6 +1728,7 @@ namespace ET
             this.VelocityX = default;
             this.VelocityZ = default;
             this.SourceWeaponId = default;
+            this.WeaponPowerLevel = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1770,6 +1777,15 @@ namespace ET
         public int GoldAdded { get; set; }
 
         /// <summary>
+        /// 固定点武器空投，普通击杀掉落不使用；剩余时间涵盖下降和自动开箱。
+        /// </summary>
+        [MemoryPackOrder(9)]
+        public bool WeaponAirdrop { get; set; }
+
+        [MemoryPackOrder(10)]
+        public float DeliveryRemainingSeconds { get; set; }
+
+        /// <summary>
         /// 普通可见掉落的剩余寿命；成功领取收据不使用此值。
         /// </summary>
         [MemoryPackOrder(8)]
@@ -1790,6 +1806,8 @@ namespace ET
             this.AddedAmount = default;
             this.ScoreAdded = default;
             this.GoldAdded = default;
+            this.WeaponAirdrop = default;
+            this.DeliveryRemainingSeconds = default;
             this.RemainingSeconds = default;
 
             ObjectPool.Instance.Recycle(this);

@@ -88,6 +88,36 @@ namespace Game.Tests
             Assert.That(runtime.Enemies,Is.Empty);Assert.That(port.FlameKill,Is.False,"检查实际死亡表现参数，不能只检查回池后已清空的敌人字段");
         }
 
+        /// <summary>地图空投在落地开箱前不能被接触或磁铁提前领取。</summary>
+        [Test]
+        public void MapWeaponDeliveryBlocksPickupUntilLandedAndOpened()
+        {
+            runtime.ArenaNumber=1;Set("arena",catalog.Arenas.First(a=>a.ArenaNumber==1));Set("random",new System.Random(5));
+            Call("BeginWave",runtime,0);Call("TickWeaponPickups",runtime,100f);
+            var drop=runtime.Drops.Values.Single();var product=drop.Definition.ProductId;runtime.PlayerPosition=drop.Position;Call("TickDrops",runtime);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(1),"空投未落地开箱就被领取");
+            Call("TickDropLifetimes",runtime,0f);Call("TickDrops",runtime);Assert.That(runtime.Drops.Count,Is.EqualTo(1));
+            Call("TickDropLifetimes",runtime,2f);Call("TickDrops",runtime);
+            Assert.That(runtime.Drops,Is.Empty);Assert.That(runtime.TemporaryWeaponId,Is.EqualTo(product));
+        }
+
+        [Test]
+        public void AirdropFlightDoesNotConsumeGroundLifetime()
+        {
+            runtime.ArenaNumber=1;Set("arena",catalog.Arenas.First(a=>a.ArenaNumber==1));Set("random",new System.Random(5));
+            Call("BeginWave",runtime,0);Call("TickWeaponPickups",runtime,100f);var drop=runtime.Drops.Values.Single();
+            Call("TickDropLifetimes",runtime,.5f);Assert.That(drop.RemainingSeconds,Is.EqualTo(30f));
+            Call("TickDropLifetimes",runtime,2f);Assert.That(drop.RemainingSeconds,Is.InRange(28.5f,29.5f));
+        }
+
+        [Test]
+        public void OrdinaryWeaponLootStillAllowsImmediateContact()
+        {
+            var definition=catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid");
+            runtime.Drops.Add(999,new ArcadeDropRuntime{Id=999,Definition=definition,Position=runtime.PlayerPosition});
+            Call("TickDrops",runtime);Assert.That(runtime.Drops,Is.Empty);Assert.That(runtime.TemporaryWeaponId,Is.EqualTo(definition.ProductId));
+        }
+
         /// <summary>固定点位逐把错峰生成，拾取才装备；不同随机源可改变位置和武器。</summary>
         [Test]
         public void WaveStart_RandomWeaponPickupsUseConfiguredPointsAndEquipOnContact()
@@ -121,6 +151,7 @@ namespace Game.Tests
                 layouts.Add(string.Join(";", drops.Select(d => d.Position.ToString()).OrderBy(p => p)));
                 var first = drops[0]; var definition = first.Definition;
                 runtime.PlayerPosition = first.Position;
+                Call("TickDropLifetimes",runtime,catalog.Rule.WeaponDeliverySeconds);
                 Call("TickDrops", runtime);
                 Assert.That(runtime.TemporaryWeaponId, Is.EqualTo(definition.ProductId));
                 Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(definition.DurationSeconds));

@@ -436,7 +436,7 @@ namespace Game
                     ? catalog.Weapons.FirstOrDefault(w => w.Id == value.SourceWeaponId) : default;
                 view.SetProjectile(MapId(projectileIds, value.RuntimeId), value.OwnerPlayerId <= 0,
                     new Vector2(value.PositionX, value.PositionZ), velocity.sqrMagnitude > .001f ? velocity.normalized : Vector2.up,
-                    weapon.ProjectileVisualResourceName);
+                    ArcadeWeaponPowerVisual.WithLevel(weapon.ProjectileVisualResourceName,value.OwnerPlayerId>0?value.WeaponPowerLevel:0));
             }
             RemoveMissing(projectileIds, seenIds, view.RemoveProjectile);
         }
@@ -450,6 +450,7 @@ namespace Game
                 if (string.IsNullOrEmpty(definition.Id)) continue;
                 seenIds.Add(value.RuntimeId);
                 view.SetDrop(MapId(dropIds, value.RuntimeId), definition, new Vector2(value.PositionX, value.PositionZ));
+                view.SetDropDelivery(MapId(dropIds,value.RuntimeId),value.WeaponAirdrop,value.DeliveryRemainingSeconds,catalog.Rule.WeaponDeliverySeconds);
                 view.SetDropOpacity(MapId(dropIds, value.RuntimeId), ArcadeCombatSystem.GroundDropOpacity(value.RemainingSeconds));
             }
             RemoveMissing(dropIds, seenIds, view.RemoveDrop);

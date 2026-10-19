@@ -45,6 +45,7 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         CoopRescueRadius = _buf.ReadFloat();
         CoopRescueSpeed = _buf.ReadFloat();
         CoopDonationMinLives = _buf.ReadInt();
+        WeaponDeliverySeconds = _buf.ReadFloat();
     }
 
     public static ArcadeRuleConfig DeserializeArcadeRuleConfig(ByteBuf _buf)
@@ -81,6 +82,7 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
     public readonly float CoopRescueRadius;
     public readonly float CoopRescueSpeed;
     public readonly int CoopDonationMinLives;
+    public readonly float WeaponDeliverySeconds;
    
     public const int __ID__ = -284300626;
     public override int GetTypeId() => __ID__;
@@ -121,6 +123,7 @@ public sealed partial class ArcadeRuleConfig : Luban.BeanBase
         + "CoopRescueRadius:" + CoopRescueRadius + ","
         + "CoopRescueSpeed:" + CoopRescueSpeed + ","
         + "CoopDonationMinLives:" + CoopDonationMinLives + ","
+        + "WeaponDeliverySeconds:" + WeaponDeliverySeconds + ","
         + "}";
     }
 }

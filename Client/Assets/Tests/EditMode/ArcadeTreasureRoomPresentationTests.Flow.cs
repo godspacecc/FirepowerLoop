@@ -203,9 +203,34 @@ namespace Game.Tests
             Assert.That(view.EnemyDeathKinds.Count,Is.EqualTo(2),"重复快照不能重播死亡火焰");
         }
 
+        [Test]
+        public void OnlineSkullShotUsesCapturedTierAndDoesNotTintEnemyShots()
+        {
+            var sync=typeof(OnlineArcadePresentationSystem).GetMethod("SyncProjectiles",Flags);
+            sync.Invoke(system,new object[]{new[]{
+                new OnlineArcadeProjectileSnapshot(100,1,0,0,0,1,"arcade.weapon.basic",1),
+                new OnlineArcadeProjectileSnapshot(101,2,0,0,0,1,"arcade.weapon.rocket",2),
+                new OnlineArcadeProjectileSnapshot(102,0,0,0,0,1,"arcade.weapon.basic",2)}});
+            Assert.That(view.ProjectileVisuals.Values,Does.Contain("ArcadeBulletBasic#Red"));
+            Assert.That(view.ProjectileVisuals.Values,Does.Contain("ArcadePanzerschreckRocket#Purple"));
+            Assert.That(view.ProjectileVisuals.Values.Count(string.IsNullOrEmpty),Is.EqualTo(1));
+        }
+
+        [Test]
+        public void OnlineAirdropPresentationUsesAuthorityWithoutRestartingInstance()
+        {
+            var sync=typeof(OnlineArcadePresentationSystem).GetMethod("SyncDrops",Flags);
+            sync.Invoke(system,new object[]{new[]{new OnlineArcadeDropSnapshot(88,"arcade.drop.weapon.rapid",1,2,weaponAirdrop:true,deliveryRemainingSeconds:1.2f)}});
+            int id=view.Drops.Single();Assert.That(view.DropDeliveries[id].Remaining,Is.EqualTo(1.2f));
+            sync.Invoke(system,new object[]{new[]{new OnlineArcadeDropSnapshot(88,"arcade.drop.weapon.rapid",1,2,weaponAirdrop:true,deliveryRemainingSeconds:0)}});
+            Assert.That(view.Drops.Single(),Is.EqualTo(id));Assert.That(view.DropDeliveries[id].Airdrop,Is.True);Assert.That(view.DropDeliveries[id].Remaining,Is.Zero);
+        }
+
         private sealed class TestView : IArcadeCombatViewPort
         {
             public readonly Dictionary<int, float> DropOpacities = new();
+            public readonly Dictionary<int,(bool Airdrop,float Remaining)> DropDeliveries=new();
+            public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>DropDeliveries[id]=(airdrop,remaining);
             public float RewardOpacity;
             public int[] ExitTargets;
             public void SetExits(IReadOnlyList<int> destinations, float halfHeight, bool victory) => ExitTargets = destinations.ToArray();
