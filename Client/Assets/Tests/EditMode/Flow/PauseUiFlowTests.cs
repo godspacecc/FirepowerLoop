@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using NUnit.Framework;
 using QFramework;
 using TMPro;
@@ -9,6 +12,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.TestTools;
 using Object = UnityEngine.Object;
 
 namespace Game.Tests
@@ -36,6 +40,8 @@ namespace Game.Tests
                 if (path == "Prefabs/UI/Home/Setting") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Setting.prefab");
                 if (path == "Prefabs/UI/Notify/Float") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Notify/Float.prefab");
                 if (path == "Prefabs/UI/Notify/Message") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Notify/Message.prefab");
+                if (path == "Prefabs/UI/Common/Loading") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Common/Loading.prefab");
+                if (path == "Prefabs/UI/Arcade/ArcadeResume") return AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeResume.prefab");
                 return path == "Prefabs/UI/Home/Start"
                     ? AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Start.prefab") : null;
             });
@@ -55,6 +61,108 @@ namespace Game.Tests
             if (leaveTestRoot != null && System.IO.Directory.Exists(leaveTestRoot))
                 System.IO.Directory.Delete(leaveTestRoot, true);
             leaveTestRoot = null;
+        }
+
+        [Test]
+        public void MapPreparationFailure_BackKeepsFailedSceneCoveredUntilSafeNodeIsRestored()
+        {
+            InstallArcadeLeaveDependencies();
+            var runs = Game.Interface.GetSystem<ArcadeRunSystem>();
+            Assert.That(runs.TryStartNewRun(null, out var saved, out var error), Is.True, error);
+            var runModel = Game.Interface.GetModel<ArcadeRunModel>();
+            runModel.EnterArena();
+            runModel.SetTransientLives(1);
+            var combat = new ArcadeCombatModel();
+            Game.Interface.RegisterModel(combat);
+            combat.Begin(new ArcadeCombatRuntime { IslandTransitionPending = true, CompletionAwaitingRetry = true });
+            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
+            var bytes = System.IO.File.ReadAllBytes(new ArcadeRunFileStore(leaveTestRoot).RunPath);
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            Game.Interface.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot
+            { IslandTransitioning = true, CanRetryCompletion = true, IslandPreparationError = "resource failure" }));
+            var view = GetBaseUI<LoadingUI>(loading);
+            var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
+            var busy = typeof(ArcadeSceneFlowSystem).GetField("busy", BindingFlags.Instance | BindingFlags.NonPublic);
+            busy.SetValue(flow, true);
+            view.BtnBack.onClick.Invoke();
+            Assert.That(loading.IsShow(), Is.True, "返回失败不能露出未完成战斗");
+            Assert.That(view.ErrorRoot.activeSelf, Is.True);
+            Assert.That(view.BtnBack.interactable, Is.True);
+            Assert.That(runModel.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.EqualTo(MapIds.Arcade));
+            busy.SetValue(flow, false);
+            view.BtnBack.onClick.Invoke();
+            Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
+            Assert.That(runModel.Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+            Assert.That(runModel.Current.RunId, Is.EqualTo(saved.RunId));
+            Assert.That(runModel.Current.RemainingLives, Is.EqualTo(saved.RemainingLives));
+            Assert.That(System.IO.File.ReadAllBytes(new ArcadeRunFileStore(leaveTestRoot).RunPath), Is.EqualTo(bytes));
+            Assert.That(loading.IsShow(), Is.False);
+            Assert.That(UIHelper.GetUICtrl<StartUICtrl>()?.IsShow(), Is.True);
+        }
+
+        [UnityTest]
+        public IEnumerator MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease()
+        {
+            InstallArcadeLeaveDependencies();
+            var runs = Game.Interface.GetSystem<ArcadeRunSystem>();
+            Assert.That(runs.TryStartNewRun(null, out _, out var error), Is.True, error);
+            var file = new ArcadeRunFileStore(leaveTestRoot).RunPath;
+            var bytes = System.IO.File.ReadAllBytes(file);
+            Game.Interface.GetModel<ArcadeRunModel>().EnterArena();
+            var combat = new ArcadeCombatModel();
+            Game.Interface.RegisterModel(combat);
+            combat.Begin(new ArcadeCombatRuntime { IslandTransitionPending = true, CompletionAwaitingRetry = true });
+            Game.Interface.RegisterModel(new UnitModel());
+            Game.Interface.RegisterSystem(new UnitSystem());
+            Game.Interface.RegisterSystem(new AudioSystem());
+            var loader = new DeferredMapRelease();
+            Game.Interface.RegisterUtility<IMapContentLoader>(loader);
+            using (var handle = new PreparationMapHandle())
+            {
+                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, handle, MapPreparationMode.ArcadePlayerOnly);
+                var loading = UIHelper.ShowUI<LoadingUICtrl>();
+                Game.Interface.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot
+                { IslandTransitioning = true, CanRetryCompletion = true, IslandPreparationError = "resource failure" }));
+                var view = GetBaseUI<LoadingUI>(loading);
+                view.BtnBack.onClick.Invoke();
+                Assert.That(view.BtnBack.interactable, Is.False);
+                Assert.That(loading.IsShow(), Is.True);
+                // 地图已开始释放后模拟安全节点文件损坏，不能用无句柄快速路径掩盖释放事件的顺序。
+                System.IO.File.WriteAllText(file, "broken save");
+                loader.Completion.TrySetResult(MapContentUnloadResult.Ok());
+                for (int frame = 0; frame < 10 && !view.BtnBack.interactable; frame++) yield return null;
+                Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
+                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+                Assert.That(loading.IsShow(), Is.True);
+                Assert.That(view.ErrorRoot.activeSelf, Is.True);
+                Assert.That(view.BtnRetry.gameObject.activeInHierarchy, Is.True, "释放后恢复失败仍须保留可重试入口");
+                loading.Hide();
+                Assert.That(loading.IsShow(), Is.True, "恢复失败不能仅关闭遮罩");
+                System.IO.File.WriteAllBytes(file, bytes);
+                view.BtnRetry.onClick.Invoke();
+                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+                Assert.That(loading.IsShow(), Is.False);
+            }
+        }
+
+        private sealed class DeferredMapRelease : IMapContentLoader
+        {
+            public readonly UniTaskCompletionSource<MapContentUnloadResult> Completion = new();
+            public UniTask<MapContentLoadResult> LoadAsync(string mapId, string address, Action<float> onProgress,
+                CancellationToken cancellationToken = default) => throw new NotSupportedException();
+            public UniTask<MapContentUnloadResult> UnloadAsync(IMapContentHandle handle,
+                CancellationToken cancellationToken = default) => Completion.Task;
+        }
+
+        private sealed class PreparationMapHandle : IMapContentHandle, IDisposable
+        {
+            private readonly GameObject root = new("PreparationMap");
+            public PreparationMapHandle() => Context = root.AddComponent<MapContext>();
+            public string MapId => MapIds.Arcade;
+            public MapContext Context { get; }
+            public bool IsValid => root != null;
+            public void Dispose() { if (root != null) Object.DestroyImmediate(root); }
         }
 
         [Test]

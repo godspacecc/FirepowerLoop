@@ -2127,6 +2127,7 @@ namespace Game
                 PlayerMaxHealth = runtime.PlayerMaxHealth,
                 RespawnSeconds = runtime.RespawnRemaining,
                 CanRetryCompletion = runtime.CompletionAwaitingRetry,
+                IslandPreparationError = runtime.IslandPreparationError,
                 IsChallenge = runtime.IsChallenge,
                 IsFinalBoss = runtime.IsFinalBoss,
                 AwaitingExit = runtime.AwaitingExit,

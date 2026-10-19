@@ -276,6 +276,8 @@ namespace Game
         public int IslandSpawnSequence;
         /// <summary>单人海岛转场期间冻结所有局内时钟；资源和轮级节点均成功后才解除。</summary>
         public bool IslandTransitionPending;
+        /// <summary>地图资源、相机或安全节点准备失败的原始原因；新请求及重试时清空。</summary>
+        public string IslandPreparationError;
         /// <summary>宝藏区域资源准备冻结，仅冻结加载，不冻结房间实际活动时间。</summary>
         public bool IslandRoomTransitionPending;
         /// <summary>转场失败保留同一候选；重试不能重新补给、发奖或重建敌群预算。</summary>

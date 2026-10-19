@@ -41,17 +41,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void LoadingBackOnlyClosesErrorUi()
-        {
-            var loading = ReadGameFile("Scripts/Controller/UICtrl/Common/LoadingUICtrl.cs");
-
-            Assert.That(loading, Does.Contain("UI.BtnBack.onClick.AddListener(Hide)"));
-            Assert.That(loading, Does.Not.Contain("UnloadCurrentMapAsync"));
-            Assert.That(loading, Does.Not.Contain("SaveSystem"));
-            Assert.That(loading, Does.Not.Contain("AppStateSystem"));
-        }
-
-        [Test]
         public void StartRoutesNewAndContinueToIndependentArcadeEntry()
         {
             var source = ReadGameFile("Scripts/Controller/UICtrl/Home/StartUICtrl.cs");

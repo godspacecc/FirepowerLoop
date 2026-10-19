@@ -28,6 +28,8 @@ namespace Game
         private Material islandWarningMaterial;
         /// <summary>只读敌人位置的地图级涉水槽池，由统一表现生命周期推进和释放。</summary>
         private ArcadeIslandWadingPresentation islandWading;
+        /// <summary>由岛岸资源句柄持有的材质直接提供，避免 Android 全局 Shader 查找尚未注册。</summary>
+        private Shader islandWadingShader;
         /// <summary>专用地标跟随同源碰撞根，生成网格由本岛岸句柄唯一释放。</summary>
         private readonly List<GameObject> islandLandmarks = new();
         private readonly List<Mesh> islandLandmarkMeshes = new();
@@ -98,6 +100,11 @@ namespace Game
                 islandFlameBaseRadius = mesh.bounds.extents.x * boundary.localScale.x;
                 islandDangerMeshRadius = mesh.bounds.extents.x;
                 if (islandFlameBaseRadius <= 0) throw new InvalidOperationException("营火范围网格尺寸无效");
+                // 同一集合已包含炸弹光晕材质；沿用其显式依赖，不新增地址或依赖宿主 Shader 缓存。
+                var wadingMaterial = prefab.transform.Find("Content/BombBlast/Glow")?.GetComponent<Renderer>()?.sharedMaterial;
+                if (wadingMaterial == null || wadingMaterial.shader == null)
+                    throw new InvalidOperationException("涉水效果缺少显式材质或 Shader 引用");
+                islandWadingShader = wadingMaterial.shader;
                 island = UnityEngine.Object.Instantiate(template.gameObject, root.transform, false);
                 island.SetActive(true);
                 ConfigureIsland();
@@ -111,6 +118,7 @@ namespace Game
                 RestoreIslandBaseArena();
                 DestroyObject(island); island = null;
                 ReleaseIslandMeshes();
+                islandWadingShader = null;
                 DestroyObject(islandWarningMaterial); islandWarningMaterial = null;
                 ReleaseObstacleVisualLoad(state);
                 if (ReferenceEquals(islandLoad, state)) islandLoad = null;
@@ -144,7 +152,7 @@ namespace Game
                 }
                 BuildIslandLandmarks(w, h);
                 islandWading = new ArcadeIslandWadingPresentation(root.transform, region,
-                    Shader.Find("FirepowerLoop/BombAdditive"), Application.isMobilePlatform, Camera.main);
+                    islandWadingShader, Application.isMobilePlatform, Camera.main);
             }
             // 专用地标遮盖通用栅栏；异步通用资源晚到时，下一份快照也不会保留栅栏外观。
             if (islandRound > 0)
@@ -193,6 +201,7 @@ namespace Game
             RestoreIslandBaseArena();
             DestroyObject(island); island = null;
             ReleaseIslandMeshes();
+            islandWadingShader = null;
             DestroyObject(islandWarningMaterial); islandWarningMaterial = null;
             ReleaseObstacleVisualLoad(islandLoad); islandLoad = null;
             if (root != null && root.activeSelf && contentEnvironment != null) HideIslandBaseArena();

@@ -13,7 +13,7 @@ using Object = UnityEngine.Object;
 
 namespace Game.Tests
 {
-    /// <summary>隔离实例验证真实海岛表现、异步就绪与离场回调；范围固定四项，不运行玩法或存档。</summary>
+    /// <summary>隔离实例验证真实海岛表现、资源引用、异步就绪与离场回调；不运行玩法或存档。</summary>
     public sealed class IslandRoundPresentationTests
     {
         private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -25,6 +25,8 @@ namespace Game.Tests
         private ArcadeCombatViewController view;
         private GameObject root;
         private AssetLoader loader;
+        private GameObject resourceCopy;
+        private Material wadingSourceMaterial;
 
         [SetUp] public void Setup()
         {
@@ -43,7 +45,12 @@ namespace Game.Tests
         }
         [TearDown] public void Cleanup()
         {
-            try { view?.End(); if(root!=null)Object.DestroyImmediate(root); }
+            try
+            {
+                view?.End(); if(root!=null)Object.DestroyImmediate(root);
+                if(resourceCopy!=null)Object.DestroyImmediate(resourceCopy);
+                if(wadingSourceMaterial!=null)Object.DestroyImmediate(wadingSourceMaterial);
+            }
             finally { ResourceLoader.Use(priorLoader); ArchitectureField.SetValue(null,priorArchitecture); LanguageCache.SetValue(null,priorLanguageCache); }
         }
         private void Prepare(int round,bool delayed=false)
@@ -150,15 +157,58 @@ namespace Game.Tests
             for(int i=0;i<legacy.Sand.Count;i++)
                 Assert.That(mesh.vertices[i+1],Is.EqualTo(new Vector3(legacy.Sand[i].X,0,legacy.Sand[i].Y)));
         }
+        [Test] public void WadingUsesLoadedMaterialShaderInsteadOfGlobalShaderLookup()
+        {
+            CopyVisualResource();
+            var source=resourceCopy.transform.Find("Content/BombBlast/Glow").GetComponent<Renderer>();
+            // 用另一份真实 Shader 识别来源，防止编辑器的全局缓存掩盖 Android 引用缺失。
+            var shader=Shader.Find("Universal Render Pipeline/Unlit");
+            Assert.That(shader,Is.Not.Null);
+            wadingSourceMaterial=new Material(shader);
+            source.sharedMaterial=wadingSourceMaterial;
+            Prepare(1,true); loader.CompleteAll();
+            Assert.That(view.IslandRoundLoadError,Is.Null);
+            Assert.That(view.IsIslandRoundReady,Is.True);
+            var wading=root.transform.Find("IslandWadingEffects");
+            Assert.That(wading,Is.Not.Null);
+            Assert.That(wading.GetComponent<Renderer>().sharedMaterial.shader,Is.SameAs(shader),
+                "涉水 Shader 必须来自本次资源句柄持有的材质，不能依赖 Shader.Find");
+        }
+        [Test] public void MissingWadingMaterialFailsBeforeCommittingIslandAndCanRetry()
+        {
+            CopyVisualResource();
+            var source=resourceCopy.transform.Find("Content/BombBlast/Glow").GetComponent<Renderer>();
+            var original=source.sharedMaterial; source.sharedMaterial=null;
+            UnityEngine.TestTools.LogAssert.Expect(LogType.Error,
+                "[ArcadeCombatViewController] 岛岸加载失败：涉水效果缺少显式材质或 Shader 引用");
+            Prepare(1,true); loader.CompleteAll();
+            Assert.That(view.IsIslandRoundReady,Is.False);
+            Assert.That(view.IslandRoundLoadError,Is.Not.Null);
+            Assert.That(root.transform.Find("IslandWadingEffects"),Is.Null);
+            Assert.That(typeof(ArcadeCombatViewController).GetField("island",Private).GetValue(view),Is.Null);
+            source.sharedMaterial=original;
+            view.RetryIslandRoundLoad(); loader.CompleteAll();
+            Assert.That(view.IslandRoundLoadError,Is.Null);
+            Assert.That(view.IsIslandRoundReady,Is.True);
+        }
+        private void CopyVisualResource()
+        {
+            resourceCopy=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+                "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab"));
+            resourceCopy.SetActive(false); loader.VisualResource=resourceCopy;
+        }
         private void Set(string field,object value)=>typeof(ArcadeCombatViewController).GetField(field,Private).SetValue(view,value);
         private Transform IslandRoot => ((GameObject)typeof(ArcadeCombatViewController).GetField("island",Private).GetValue(view)).transform;
         private void Call(string method,params object[] values)=>typeof(ArcadeCombatViewController).GetMethod(method,Private).Invoke(view,values);
         private sealed class AssetLoader:IResourceLoader
         {
             public bool Delayed;
+            public GameObject VisualResource;
             private readonly Queue<Action> callbacks=new();
             public T LoadAsset<T>(string path) where T:Object
             {
+                if(typeof(T)==typeof(GameObject) && VisualResource!=null &&
+                    path=="Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet")return VisualResource as T;
                 if(typeof(T)==typeof(TextAsset) && !path.Contains("/"))path="Config/Localization/"+path;
                 var extension=typeof(T)==typeof(TextAsset)?".json":".prefab";
                 return AssetDatabase.LoadAssetAtPath<T>("Assets/Game/"+path+(path.EndsWith(extension)?"":extension));

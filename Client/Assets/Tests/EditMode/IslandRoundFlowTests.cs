@@ -29,6 +29,8 @@ namespace Game.Tests
             architecture = new Game();
             var run = new ArcadeRunModel(); architecture.RegisterModel(run);
             architecture.RegisterModel(new ArcadeCombatModel());
+            var map = new MapSceneModel(); architecture.RegisterModel(map);
+            map.SetLoaded(MapIds.Arcade, null, MapPreparationMode.ArcadePlayerOnly);
             var provider = new LubanRuntimeConfigProvider(() => new Tables(name => new ByteBuf(
                 File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out catalog, out var error), Is.True, error);
@@ -162,6 +164,17 @@ namespace Game.Tests
             Assert.That(new ArcadeRunFileStore(directory).Inspect().Data.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(2));
         }
 
+        [Test] public void RoundStartPublishesPreparationWithoutWaitingForAnotherCombatTick()
+        {
+            ArcadeCombatHudSnapshot snapshot = null;
+            architecture.RegisterEvent<ArcadeCombatHudChangedEvent>(evt => snapshot = evt.Snapshot);
+            view.Ready = false;
+            Call("StartIslandRound", runtime, 0, null);
+            Assert.That(snapshot, Is.Not.Null, "出口确认发起异步切图后可能直接进入等待分支，必须当帧通知加载页");
+            Assert.That(snapshot.IslandTransitioning, Is.True);
+            Assert.That(snapshot.CanRetryCompletion, Is.False);
+        }
+
         [Test] public void ConfirmedExitKeepsEffectsChargesCooldownHealthAndClearsWorld()
         {
             Call("StartIslandRound", runtime, 0, null);
@@ -195,6 +208,40 @@ namespace Game.Tests
             Assert.That(runtime.IslandTransitionPending, Is.False);
             Assert.That(runtime.Bombs, Is.EqualTo(1)); Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(120));
             Assert.That(new ArcadeRunFileStore(directory).Inspect().Data.IslandRoundCheckpoint.TemporaryWeaponRemaining, Is.EqualTo(4));
+        }
+
+        [Test] public void LoadingRetryClearsResourceFailureAndRejectsDuplicateOrCompletionRetry()
+        {
+            ArcadeCombatHudSnapshot snapshot = null;
+            architecture.RegisterEvent<ArcadeCombatHudChangedEvent>(evt => snapshot = evt.Snapshot);
+            view.Ready = false;
+            Call("StartIslandRound", runtime, 0, null);
+            view.LoadError = "shader unavailable";
+            combat.Tick(runtime, 10);
+            Assert.That(snapshot.IslandPreparationError, Is.EqualTo("shader unavailable"));
+            Assert.That(snapshot.IslandTransitioning, Is.True);
+            Assert.That(snapshot.CanRetryCompletion, Is.True);
+            view.LoadError = null;
+            Assert.That(combat.TryRetryMapPreparation(), Is.True);
+            Assert.That(snapshot.IslandPreparationError, Is.Null);
+            Assert.That(snapshot.CanRetryCompletion, Is.False);
+            Assert.That(snapshot.IslandTransitioning, Is.True);
+            Assert.That(combat.TryRetryMapPreparation(), Is.False);
+            view.Ready = true;
+            combat.Tick(runtime, 1);
+            Assert.That(snapshot.IslandTransitioning, Is.False);
+            Assert.That(new ArcadeRunFileStore(directory).Inspect().Data.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(1));
+            runtime.CompletionAwaitingRetry = true;
+            Assert.That(combat.TryRetryMapPreparation(), Is.False, "加载页不能提交普通结算重试");
+        }
+
+        [Test] public void LoadingRetryRejectsMapAlreadyReleased()
+        {
+            architecture.RegisterModel(new MapSceneModel());
+            view.Ready = false;
+            Call("StartIslandRound", runtime, 0, null);
+            runtime.CompletionAwaitingRetry = true;
+            Assert.That(combat.TryRetryMapPreparation(), Is.False, "卸载后的重试必须恢复安全节点，不能装配已释放地图");
         }
 
         [Test] public void EntryChangesWaitForWarningAndPreserveExistingEnemiesAndBudget()
@@ -450,6 +497,8 @@ namespace Game.Tests
         private sealed class View : IArcadeCombatViewPort
         {
             public bool Ready = true;
+            public string LoadError;
+            public string IslandRoundLoadError => LoadError;
             public int SurfaceHits;
             public Vector2 SurfacePosition;
             public void PlayProjectileSurfaceImpact(Vector2 position, Vector2 direction) { SurfaceHits++; SurfacePosition = position; }

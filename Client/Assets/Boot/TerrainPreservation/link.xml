@@ -5,6 +5,8 @@
   <assembly fullname="UnityEngine.AIModule" preserve="all" />
   <!-- 基地天气由热更代码创建粒子并设置 EmitParams 与模块结构体属性；宿主完整保留，热更无法恢复已裁剪方法。 -->
   <assembly fullname="UnityEngine.ParticleSystemModule" preserve="all" />
+  <!-- 街机敌人布娃娃来自热更资源；完整保留关节及刚体 API，旧 APK 缺失的原生组件须重新安装宿主恢复。 -->
+  <assembly fullname="UnityEngine.PhysicsModule" preserve="all" />
   <!-- 河谷草灌由热更代码合并网格；宿主必须保留结构体属性和网格 API，资源更新无法补回已裁剪的方法。 -->
   <assembly fullname="UnityEngine.CoreModule">
     <type fullname="UnityEngine.CombineInstance" preserve="all" />

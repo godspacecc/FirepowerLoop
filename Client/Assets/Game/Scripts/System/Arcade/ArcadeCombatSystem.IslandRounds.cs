@@ -42,6 +42,7 @@ namespace Game
             if (waveIndex < 0 || waveIndex > 3) throw new ArgumentOutOfRangeException(nameof(waveIndex));
             var oldPosition = runtime.PlayerPosition;
             runtime.IslandTransitionPending = true;
+            runtime.IslandPreparationError = null;
             runtime.IslandTransitionViewPrepared = false;
             runtime.IslandRoundAwaitingExit = false;
             runtime.IslandExitPrompt = runtime.IslandExitContact = false;
@@ -73,6 +74,8 @@ namespace Game
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
             runtime.IslandEntryWarningRemaining = waveIndex == 0 ? 0f : IslandWarningSeconds;
             runtime.IslandCampfireWarningRemaining = waveIndex == 3 ? IslandWarningSeconds : 0;
+            // 出口确认不经过活动帧尾部，资源异步等待前必须先公布准备状态。
+            PublishHud(runtime);
             PrepareIslandRoundView(runtime);
         }
 
@@ -126,6 +129,7 @@ namespace Game
         private void FailIslandTransition(ArcadeCombatRuntime runtime, string error)
         {
             runtime.CompletionAwaitingRetry = true;
+            runtime.IslandPreparationError = string.IsNullOrWhiteSpace(error) ? "地图准备失败" : error;
             ClearArcadeInput(runtime);
             FailCombat(error);
             PublishHud(runtime);
@@ -135,16 +139,30 @@ namespace Game
         private void RetryIslandTransition(ArcadeCombatRuntime runtime)
         {
             runtime.CompletionAwaitingRetry = false;
+            runtime.IslandPreparationError = null;
             if (runtime.IslandRoomTransitionPending)
             {
                 runtime.PresentedRegion = 0;
                 SyncView(runtime);
+                PublishHud(runtime);
                 return;
             }
             SuspendIslandFirstPerson(runtime);
             if (UsesContentRounds(runtime)) PrepareContentRoundView(runtime);
             else PrepareIslandRoundView(runtime);
             PublishHud(runtime);
+        }
+
+        /// <summary>加载页只允许重试当前失败的地图准备，不绕过普通战斗或结算输入门禁。</summary>
+        public bool TryRetryMapPreparation()
+        {
+            var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
+            var map = this.GetModel<MapSceneModel>();
+            if (runtime == null || !runtime.CompletionAwaitingRetry ||
+                !(runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending) ||
+                map.CurrentMapId != MapIds.Arcade || map.CurrentMode != MapPreparationMode.ArcadePlayerOnly) return false;
+            RetryIslandTransition(runtime);
+            return true;
         }
 
         /// <summary>宝藏区域资源及相机准备成功才恢复房间实际活动计时。</summary>

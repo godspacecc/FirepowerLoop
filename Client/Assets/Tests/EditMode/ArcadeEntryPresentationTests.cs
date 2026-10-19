@@ -32,13 +32,18 @@ namespace Game.Tests
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic).SetValue(null, architecture);
             typeof(Architecture<Game>).GetField("mInited", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(architecture, true);
             architecture.RegisterModel(new ArcadeRunModel());
+            architecture.RegisterModel(new MapSceneModel());
+            architecture.RegisterModel(new OnlineArcadeRunModel());
             architecture.RegisterModel(new LocalizationModel());
             architecture.RegisterUtility(new LocalizationUtility());
+            // 只提供空联机快照供入口判定；未注册网络端口，不发起任何网络或存档操作。
+            architecture.RegisterSystem(new OnlineArcadeRunSystem());
         }
 
         [TearDown]
         public void TearDown()
         {
+            architecture.Deinit();
             ResetArchitecture();
             ResourceLoader.ResetForTests();
             LocalizationLanguages.ResetForTests();

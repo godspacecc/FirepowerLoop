@@ -58,6 +58,24 @@ namespace Game
             }
         }
 
+        /// <summary>地图准备失败后先释放候选现场，再恢复本局已有安全节点；异步完成须核验本局身份。</summary>
+        public async UniTask<ArcadeSceneFlowResult> ReturnFromMapPreparationAsync()
+        {
+            var combat = this.GetModel<ArcadeCombatModel>();
+            var runtime = combat.Runtime;
+            var runs = this.GetModel<ArcadeRunModel>();
+            string runId = runs.Current?.RunId;
+            if (runtime == null || !runtime.CompletionAwaitingRetry ||
+                !(runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending))
+                return ArcadeSceneFlowResult.Fail("当前没有可退出的地图准备失败现场");
+            var result = await ReturnToMainMenuAsync();
+            if (!result.Success) return result;
+            if (combat.Runtime != runtime || runs.Current?.RunId != runId)
+                return ArcadeSceneFlowResult.Fail("地图准备所属的本局已变更");
+            return this.GetSystem<ArcadeRunSystem>().TryReturnToSafeNode(out _, out var error)
+                ? ArcadeSceneFlowResult.Ok() : ArcadeSceneFlowResult.Fail(error);
+        }
+
         /// <summary>释放街机地图并回到主界面；本局文件由街机事务独立管理。</summary>
         public async UniTask<ArcadeSceneFlowResult> ReturnToMainMenuAsync(CancellationToken cancellationToken = default)
         {

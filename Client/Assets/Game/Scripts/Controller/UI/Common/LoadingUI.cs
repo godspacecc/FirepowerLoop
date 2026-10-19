@@ -24,5 +24,6 @@ namespace Game
         public Button BtnDownloadClose;
         public Button BtnCopyLog;
         public TextMeshProUGUI CopyStatusText;
+        public Button BtnRetry;
     }
 }

@@ -330,6 +330,8 @@ namespace Game
         public string IslandMapNameKey { get; set; }
         /// <summary>资源或轮级节点尚未准备完成，界面显示等待或重试。</summary>
         public bool IslandTransitioning { get; set; }
+        /// <summary>地图准备失败详情，由加载界面呈现；结算保存失败不使用此字段。</summary>
+        public string IslandPreparationError { get; set; }
         /// <summary>普通海岛轮已清场，允许拾取并等待单出口确认。</summary>
         public bool IslandAwaitingRoundExit { get; set; }
         public bool Resting { get; set; }

@@ -73,6 +73,83 @@ namespace Game.Tests
         }
 
         [Test]
+        public void Loading_IslandPreparationCoversHudUntilResourcesAndCheckpointAreReady()
+        {
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            loading.Hide();
+            architecture.SendEvent(new MapLoadingStartedEvent(global::Game.MapIds.Arcade));
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { IslandTransitioning = true }));
+            architecture.SendEvent(new MapLoadingCompletedEvent(global::Game.MapIds.Arcade));
+            Assert.That(loading.IsShow(), Is.True, "基础场景完成不能暴露尚未就绪的海岛");
+            loading.Hide();
+            Assert.That(loading.IsShow(), Is.True, "准备期间不能手动关闭遮罩");
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot()));
+            Assert.That(loading.IsShow(), Is.False, "资源及安全节点都准备完成才交还战斗");
+        }
+
+        [Test]
+        public void Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad()
+        {
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            loading.Hide();
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { IslandTransitioning = true }));
+            Assert.That(loading.IsShow(), Is.True, "轮间切图和宝藏房准备也需要加载遮罩");
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot()));
+            Assert.That(loading.IsShow(), Is.False);
+        }
+
+        [Test]
+        public void Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen()
+        {
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            int entry = loading.BeginEntryPreparation(global::Game.MapIds.Arcade);
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot
+            { IslandTransitioning = true, CanRetryCompletion = true, IslandPreparationError = "shader unavailable" }));
+            loading.EndEntryPreparation(entry);
+            var view = Object.FindObjectOfType<LoadingUI>();
+            Assert.That(loading.IsShow(), Is.True);
+            Assert.That(view.ErrorRoot.activeSelf, Is.True);
+            Assert.That(view.ErrorText.text, Does.Contain("shader unavailable"));
+            Assert.That(view.BtnRetry.gameObject.activeInHierarchy, Is.True);
+            Assert.That(view.BtnRetry.GetComponentInChildren<TMPro.TMP_Text>().text, Is.EqualTo("重试"));
+            Assert.That(view.BtnBack.interactable, Is.True);
+            Assert.That(view.BtnCopyLog.gameObject.activeInHierarchy, Is.True);
+            loading.Hide();
+            Assert.That(loading.IsShow(), Is.True, "失败现场不能仅关闭加载页");
+            architecture.SendEvent(new LanguageChangedEvent("zh-CN", "en-US"));
+            Assert.That(view.ErrorText.text, Does.Contain("shader unavailable"));
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { IslandTransitioning = true }));
+            Assert.That(view.ErrorRoot.activeSelf, Is.False);
+            Assert.That(view.BtnRetry.gameObject.activeSelf, Is.False);
+            Assert.That(view.BtnBack.interactable, Is.False);
+            Assert.That(loading.IsShow(), Is.True, "重试完成前继续遮挡地图");
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot()));
+            Assert.That(loading.IsShow(), Is.False);
+        }
+
+        [Test]
+        public void Loading_CompletionSaveFailureDoesNotBecomeMapPreparation()
+        {
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            loading.Hide();
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { CanRetryCompletion = true }));
+            Assert.That(loading.IsShow(), Is.False, "普通结算保存失败仍由原结算界面处理");
+        }
+
+        [Test]
+        public void Loading_DestroyedViewRebindsPreparationAndReleasesOnlyWhenReady()
+        {
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { IslandTransitioning = true }));
+            Object.DestroyImmediate(Object.FindObjectOfType<LoadingUI>().gameObject);
+            loading.Show();
+            loading.Hide();
+            Assert.That(loading.IsShow(), Is.True);
+            architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot()));
+            Assert.That(loading.IsShow(), Is.False);
+        }
+
+        [Test]
         public void SinglePlayerClick_ShowsLoadingBeforePreparationAndClosesOnFailure()
         {
             Invoke("OnNewGameClick");

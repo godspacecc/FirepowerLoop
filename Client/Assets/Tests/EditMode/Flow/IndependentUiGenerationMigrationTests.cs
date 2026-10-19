@@ -239,6 +239,7 @@ namespace Game.Tests
             F("BtnDownloadClose", typeof(Button), typeof(Button), "Loading/DownloadRoot/Panel/DownloadClose", "DownloadClose"),
             F("BtnCopyLog", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/CopyLogButton", "CopyLogButton"),
             F("CopyStatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/ErrorRoot/CopyStatusText", "CopyStatusText"),
+            F("BtnRetry", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/RetryButton", "RetryButton"),
         };
 
         private static readonly FieldExpectation[] PlayerConditionHudFields =

@@ -58,6 +58,7 @@ namespace Game
             if (restore != null) ValidateGroundBarrelCheckpoint(layout, restore);
             var oldPosition = runtime.PlayerPosition;
             runtime.IslandTransitionPending = true;
+            runtime.IslandPreparationError = null;
             runtime.IslandTransitionViewPrepared = false;
             runtime.IslandRoundAwaitingExit = runtime.IslandExitPrompt = runtime.IslandExitContact = false;
             runtime.AwaitingExit = runtime.CompletionAwaitingRetry = false;
@@ -101,6 +102,8 @@ namespace Game
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
             runtime.IslandEntryWarningRemaining = layout.SkillWarning;
             InitializeRoundContent(runtime);
+            // 先让加载页接管输入和画面，再启动候选地图的异步资源准备。
+            PublishHud(runtime);
             PrepareContentRoundView(runtime);
         }
 
