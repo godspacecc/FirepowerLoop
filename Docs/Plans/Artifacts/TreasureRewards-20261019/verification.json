@@ -1,0 +1,376 @@
+{
+  "date": "2026-10-19",
+  "project": "E:/GitHub/FirepowerLoop/Client",
+  "testMode": "EditMode",
+  "includePassingTests": true,
+  "totalExecuted": 79,
+  "suites": [
+    {
+      "testClass": "ArcadeTreasureRewardVisualTests",
+      "executed": 5,
+      "passed": 5,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Game.Tests.ArcadeTreasureRewardVisualTests.FlashIsBoundedAndReleasedOnRoomExit",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRewardVisualTests.MotionKeepsPickupCoordinatesAndFreezesWithZeroDelta",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRewardVisualTests.RepeatedSnapshotPreservesMotionAndAuthorityFade",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRewardVisualTests.RoomDropSizingKeepsRootAndDoesNotAccumulateAcrossRefreshes",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRewardVisualTests.ZeroRewardDoesNotEmitFlash",
+          "status": "Passed"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeTreasureRoomFlowTests",
+      "executed": 29,
+      "passed": 29,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryDoesNotOpenBeforeThirdWaveClear",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryFourthRoundRestoreKeepsFullWeaponUntilFirstEnemy",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryGroundWeaponsExpireAtThirtySecondsButExitRemainsUntilSixty",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryPickupReplacesWeaponWithoutChangingScoreOrEquipment",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryReturnStartsFourthWaveAndWeaponCountdownResumes",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmorySecondArenaThirdWaveContainsSixSharedWeapons",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmorySupportsForestAsSecondRouteDestination",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ArmoryWeaponClockWaitsInsideRoomAndBeforeBattle",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(True,1)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(False,1)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ChallengesOldRunsAndOtherMapsDoNotCreateRoom(True,2)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ClearAllowsEntryWithOneFixedSet",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ClearDoesNotDiscoverOrTeleport(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.ClearDoesNotDiscoverOrTeleport(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.DeathResetsMultiplierAndCloneKeepsScore",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.DiscoveredRoomWaitsForReturnToEntranceAfterClear(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.DiscoveredRoomWaitsForReturnToEntranceAfterClear(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.DiscoveryDoesNotEnterUnclearedWave",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.EarlyReturnContinuesFourthWave",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.EntranceCanStillBeDiscoveredAfterClear(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.EntranceCanStillBeDiscoveredAfterClear(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.FailedFileCommitKeepsScoreAndRetryCommitsOnce",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.FirstRoundExitConfirmsSecondRoundAndRejectsDuplicateConfirmation",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.FullBombDoesNotConsumeSharedPickup",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.GoldIsPersonalScore_NotShoppingCash",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.OldJsonMissingScoreFieldsDefaultsSafely",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.RealCompletionCommitsScoreAndRejectsRepeat",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.TimeoutReturnsPlayerWithoutReopening",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomFlowTests.TransientScoreDoesNotLeakToSavedNode",
+          "status": "Passed"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeTreasureRoomPresentationTests",
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.ArenaHidesRoomTeammate",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.EndResetsRevisionAndRegion",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.EnterChangesBoundsAndResetsPrediction",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.GroundOpacityUsesAuthorityAndRepeatedSnapshotDoesNotResetIt",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.HudKeysInBothLanguages",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.InsideHidesArenaEntitiesAndOutsideTeammate",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.OnlineClearedRoundsLabelNextRoundAndKeepFourthRoundRouteChoices",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.RegionProjectionRejectsStaleSnapshots",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.RegionSwitchHasExplicitMotorTeleport",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.RewardSnapshotCopiesSource",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.SecondArenaForestSnapshotUsesArmoryParametersAndAuthorityFade",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.StageNoticesUseAuthorityAndIgnoreRepeatedOrStaleSnapshots",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.StaleFrameCannotRestoreRewardOrRegion",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.TeammateVisibleThenReturnRebuildsArena",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.ThirdWaveClearIsAnnouncedWhilePlayerEntersTreasureRoom",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeTreasureRoomPresentationTests.ThirdWaveWithoutTreasureInstanceUsesNormalClearSnapshot",
+          "status": "Passed"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeSupplyPickupTests",
+      "executed": 16,
+      "passed": 16,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.AwaitingExit_FullSupplyRemainsThenAvailableSupplyIsCollectedOnce(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.AwaitingExit_FullSupplyRemainsThenAvailableSupplyIsCollectedOnce(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.AwaitingExit_RejectedSupplyDoesNotBlockGoldOrWeapon",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.CasualTreasure_ReportsActualMultipliedScoreWithoutGold",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.FullSupply_RemainsAcrossRepeatedRangeEntries_ThenConsumedOnceAfterUse(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.FullSupply_RemainsAcrossRepeatedRangeEntries_ThenConsumedOnceAfterUse(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.GoldAndProducts_OnlyReportSuccessfulApplications",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.GroundSupply_FadesDuringLastThreeSecondsThenExpiresWithoutReward",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.GroundSupply_FadingPickupStillAppliesExactlyOnce",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.GroundSupply_PauseFreezesLifetimeAndExpiryReleasesBudget",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.InvalidProductAndOverflowReward_RemainWithoutSuccessFeedback",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.OnlineReceipt_ReportsScoreAndGoldSeparatelyAndProductsOnce",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.OnlineReceipt_UsesActualAmountAndDoesNotReplayHistoryOrDuplicateNotifications",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.PartialSupply_FeedbackUsesActualIncrease(True)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.PartialSupply_FeedbackUsesActualIncrease(False)",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeSupplyPickupTests.RejectedSupply_DoesNotBlockGoldWeaponOrOtherSupply",
+          "status": "Passed"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeObstacleVisualTests",
+      "executed": 6,
+      "passed": 6,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.Content_OpeningReleaseKeepsThemeHiddenAndEndRestoresBaseVisibility",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.Island_HidesBaseStageRenderersWithoutDisablingCollisionOrOtherMaps",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.Island_OceanCoversAreaBeyondShoreWithoutColliders",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.Island_ReleaseRestoresOriginalVisibilityAfterRepeatedHide",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.VisualSet_DoesNotDependOnIgnoredArtSources",
+          "status": "Passed"
+        },
+        {
+          "name": "Game.Tests.ArcadeObstacleVisualTests.VisualSet_HasFourObstacleVariantsAndDormantContentTemplates",
+          "status": "Passed"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeLootEffectsTests",
+      "executed": 7,
+      "passed": 7,
+      "failed": 0,
+      "tests": [
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.DropOpacityFadesOwnedTransparentModelNameAndBeamWithoutChangingAssets",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.GoldWeaponAndPowerupUseDistinctBeamColors",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ImportedEffectsUseUrpMaterialsAndOnlyOwnedDependencies",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.LootBeamIsIdempotentAndReleasedWithDropVisual",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.MissingVisualDoesNotLeaveBeamOnRecycledPickup",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.RecycledDropRestoresOpacityAndFadingKeepsInteractionAvailable",
+          "status": "Passed"
+        },
+        {
+          "name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ShieldBlockFlashesOwnedInstanceAndRestoresItsMaterial",
+          "status": "Passed"
+        }
+      ]
+    }
+  ],
+  "additionalVerification": "FlashIsBoundedAndReleasedOnRoomExit 再次通过：Emit后Playing、寿命结束、闲置再次Emit恢复、离房释放。",
+  "previewOnly": true,
+  "playerBuildRun": false
+}

@@ -194,6 +194,12 @@ namespace Game
                 view.SetArcadeOpacity(opacity);
         }
 
+        /// <summary>仅奖励房请求模型校准；普通地面掉落仍保留资源原始展示大小。</summary>
+        public void FitDropVisual(int runtimeId, float maxSize)
+        {
+            if (arcadeDrops.TryGetValue(runtimeId, out var view) && view != null) view.FitArcadeVisual(maxSize);
+        }
+
         /// <summary>把已裁决的空投进度交给对应掉落实例显示。</summary>
         public void SetDropDelivery(int runtimeId,bool airdrop,float remaining,float duration)
         {

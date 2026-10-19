@@ -21,6 +21,9 @@ namespace Game
         /// <summary>同步掉落实例的剩余寿命透明度；旧表现端口可忽略视觉渐隐。</summary>
         void SetDropOpacity(int runtimeId, float opacity) { }
 
+        /// <summary>奖励房校准当前实例的视觉尺寸与底面；不改变掉落根、拾取范围或资源本体。</summary>
+        void FitDropVisual(int runtimeId, float maxSize) { }
+
         void RemoveDrop(int runtimeId);
         /// <summary>地图空投只按已同步的阶段控制箱子、名称和武器显隐。</summary>
         void SetDropDelivery(int runtimeId,bool airdrop,float remaining,float duration) { }

@@ -21,6 +21,11 @@ namespace Game
         /// <summary>只显示权威房间入口、出口及尚未领取物品；碰撞与奖励全部由领域处理。</summary>
         public void SetTreasureRoom(ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds)
         {
+            if (contentTreasure?.Id != p?.Id || contentInRoom != inRoom)
+            {
+                treasureVisualSeconds = 0f;
+                ClearTreasurePickupFlash();
+            }
             contentTreasure=p;contentInRoom=inRoom;contentDiscovered=discovered;contentOpen=open;
             contentRemaining=remainingIds?.ToArray()??Array.Empty<int>();
             if (root == null) return;
@@ -72,15 +77,21 @@ namespace Game
                     if (!lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(new Vector2(reward.X, reward.Y), .3f)),
                         ResolveDropDisplayName(definition), reward.Amount, definition.VisualPrefabAddress, out var error))
                         throw new InvalidOperationException(error);
+                    lootPresentation.FitDropVisual(id, 1.1f);
                     treasureDropVisualIds.Add(id);
                     continue;
                 }
                 if(!gold&&!gem)throw new InvalidOperationException("宝藏道具正式掉落端口不可用");
-                var item=CreateContent(gold?"GoldBar":"Gem",new Vector3(reward.X,.14f,reward.Y));
+                // 一堆只绑定一个权威奖励身份，子模型不会额外增加分数或领取次数。
+                var item=CreateContent(gold ? "GoldPile" + reward.Id % 3 : "GemPile" + reward.Id % 2,
+                    new Vector3(reward.X,.2f,reward.Y));
                 item.name="TreasureReward_"+reward.Id;treasureVisuals.Add(item);
+                treasureRewardPoses.Add(new TreasureRewardPose { Transform = item.transform,
+                    Position = item.transform.localPosition, Id = reward.Id });
                 treasureRewardMaterials.Add(new ArcadeDropOpacity(item));
             }
             SetTreasureRewardOpacity(treasureRewardOpacity);
+            ApplyTreasureRewardPoses();
         }
 
         /// <summary>模型与正式拾取端口同用权威透明度；异步模板就绪后的重绘保留已推进的淡出进度。</summary>
@@ -96,6 +107,7 @@ namespace Game
         {
             // 在销毁入口前先释放提示引用，避免区域切换后继续访问旧 Transform。
             treasureExitCues.Clear();
+            treasureRewardPoses.Clear();
             foreach (var material in treasureRewardMaterials) material.Dispose();
             treasureRewardMaterials.Clear();
             foreach (int id in treasureDropVisualIds) lootPresentation?.RemoveDrop(id);

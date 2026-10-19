@@ -13,6 +13,7 @@ namespace Game
         /// <summary>积分与金币分别呈现真实增量；零增量不占用提示或声音。</summary>
         public void PlayTreasurePickup(long score, long gold)
         {
+            if (score > 0 || gold > 0) PlayTreasurePickupFlash();
             if (score > 0) ShowPickup("score", score, total => Loc.T("ui.arcade.hud.score", "+" + total));
             if (gold > 0) ShowPickup("gold", gold, total => Loc.T("ui.arcade.hud.gold", "+" + total));
         }
@@ -21,6 +22,7 @@ namespace Game
         public void PlayProductPickup(string productId)
         {
             if (string.IsNullOrWhiteSpace(productId)) return;
+            PlayTreasurePickupFlash();
             ShowPickup("product:" + productId, 1,
                 total => Loc.T("tip.item_gained", Loc.T($"ui.arcade.product.{productId}.name"), total));
         }
@@ -41,6 +43,7 @@ namespace Game
         /// <summary>Begin、End、重试与离图统一取消可见及待显示提示、加载中和播放中的音效。</summary>
         private void ClearPickupFeedback()
         {
+            ClearTreasurePickupFlash();
             pickupFeedback.Clear();
             UIHelper.GetUICtrl<FloatUICtrl>()?.RemoveTipsByPrefix("arcade.pickup.");
             if (pickupSound.IsValid) Game.Interface.GetSystem<AudioSystem>()?.Stop(pickupSound);

@@ -743,6 +743,7 @@ namespace Game
         public void PlaySupplyPickup(ArcadeDropDefinition definition, int added)
         {
             if (added <= 0) return;
+            PlayTreasurePickupFlash();
             var key = definition.Kind == global::ArcadeDropKind.Bomb ? "ui.arcade.bomb" : "ui.arcade.dash";
             ShowPickup(key, added, total => $"{Loc.T(key)} +{total}");
         }
@@ -907,6 +908,7 @@ namespace Game
             bombBlasts?.Tick(deltaTime);
             dashPresentation?.Tick(deltaTime);
             TickExitCues(deltaTime);
+            TickTreasureVisuals(deltaTime);
             playerMotor?.TickCombatFeedback(deltaTime);
             foreach (RemotePlayerEntry entry in remotePlayers.Values)
             {

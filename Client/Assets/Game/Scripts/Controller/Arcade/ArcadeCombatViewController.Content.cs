@@ -40,7 +40,8 @@ namespace Game
                 var prefab = await completion.Task;
                 if(state.Released || generation != contentGeneration || root == null || root != expectedRoot) return;
                 var candidate = prefab != null ? prefab.transform.Find("Content") : null;
-                string[] required={"Babylon","Forest","TreasureRoom","RouteGate","TreasureEntrance","GoldBar","Gem","ElectricTower"};
+                string[] required={"Babylon","Forest","TreasureRoom","RouteGate","TreasureEntrance","GoldBar","Gem","ElectricTower","TreasurePickupFlash",
+                    "GoldPile0","GoldPile1","GoldPile2","GemPile0","GemPile1"};
                 if(candidate==null || required.Any(n=>candidate.Find(n)==null) || candidate.GetComponentsInChildren<Collider>(true).Length>0)
                     throw new InvalidOperationException("前两场 Content 模板缺失或携带碰撞体");
                 // 方向预告与旧出口复制该材质；发布就绪前确认资源包保留了直接 Shader 引用。
@@ -76,6 +77,7 @@ namespace Game
                     ClearDashVisuals();
                     exitCues.Clear(); exitCueElapsed = 0;
                     ClearTreasureVisuals(); foreach(var go in exitVisuals) DestroyObject(go); exitVisuals.Clear();
+                    ClearTreasurePickupFlash();
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;
                     bulletImpactTemplate=null;
                     projectileBlastTemplate=null;
