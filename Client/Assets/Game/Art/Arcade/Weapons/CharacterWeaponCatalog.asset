@@ -636,3 +636,105 @@ MonoBehaviour:
       - {fileID: 11400000, guid: 18b8a4addfe07ca4ea42cbf9ec7bbb1c, type: 2}
     meleeComboController: {fileID: 0}
     meleeCombo: []
+  - id: arcade.weapon.flamethrower
+    worldItemId: 0
+    displayName: "\u55B7\u706B\u5668"
+    visualSource: {fileID: 5794022618466802490, guid: ab0b1882bc865b24eb5272797d823783,
+      type: 3}
+    mesh: {fileID: 0}
+    material: {fileID: 0}
+    mainHand: 18
+    handLocalPosition: {x: -0.020155035, y: -0.049551584, z: -0.09572578}
+    handLocalEulerAngles: {x: 358.2263, y: 53.1816, z: 233.7962}
+    handLocalScale: {x: 1, y: 1, z: 1}
+    animationPoseOverrides:
+    - definition: {fileID: 11400000, guid: b0e62a79bc1cad04888c908b64f801a6, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.020155035, y: -0.049551584, z: -0.09572578}
+      overrideRotation: 1
+      localEulerAngles: {x: 358.2263, y: 53.1816, z: 233.7962}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 8119dba533b59a14187551df531db219, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.019251429, y: -0.049286474, z: -0.09604807}
+      overrideRotation: 1
+      localEulerAngles: {x: 358.2864, y: 52.66364, z: 233.96288}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 8b9b14e73087a914fb970a3784308523, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.040830866, y: 0.011361509, z: -0.10113733}
+      overrideRotation: 1
+      localEulerAngles: {x: 13.435741, y: 68.97631, z: 265.52945}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 46a5d2d6ba08b6a468ea9e0f4b3698d4, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.034506556, y: -0.010191735, z: -0.103587784}
+      overrideRotation: 1
+      localEulerAngles: {x: 7.257802, y: 63.646557, z: 255.65146}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: dc05559cf38259f4286bc2035d455cba, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.043601625, y: -0.014435018, z: -0.099576764}
+      overrideRotation: 1
+      localEulerAngles: {x: 3.047616, y: 69.381004, z: 256.66724}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 6a4d42e96ae44514ab70525a4c20f322, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.04633666, y: -0.022823473, z: -0.09673165}
+      overrideRotation: 1
+      localEulerAngles: {x: 2.2382724, y: 70.51452, z: 251.20683}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 6c05878b661c4824895f2bdc5e426d0d, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.08738634, y: -0.00058457506, z: 0.066244215}
+      overrideRotation: 1
+      localEulerAngles: {x: 16.782835, y: 171.44022, z: 253.11969}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 18b8a4addfe07ca4ea42cbf9ec7bbb1c, type: 2}
+      overridePosition: 1
+      localPosition: {x: 0.026103571, y: -0.10599197, z: 0.0104562165}
+      overrideRotation: 1
+      localEulerAngles: {x: 331.4818, y: 239.04883, z: 176.80556}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 772a7db56432ffe44b0f20f79903cd19, type: 2}
+      overridePosition: 1
+      localPosition: {x: 0.014606683, y: 0.053356923, z: -0.094682015}
+      overrideRotation: 1
+      localEulerAngles: {x: 27.620924, y: 44.921455, z: 285.20065}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    - definition: {fileID: 11400000, guid: 5093b1c8e2b499d48b3db11593d04cfe, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.040697813, y: 0.0091024535, z: -0.10141912}
+      overrideRotation: 1
+      localEulerAngles: {x: 11.116745, y: 68.78103, z: 266.08606}
+      overrideScale: 0
+      localScale: {x: 1, y: 1, z: 1}
+    projectileFirePointLocalPosition: {x: 0, y: 0.015, z: 0.72}
+    hasOffhandGrip: 1
+    offhandGripLocalPosition: {x: 0, y: -0.08, z: 0.48}
+    category: 32
+    isProjectile: 1
+    muzzleFlash: 0
+    animations:
+      idle: {fileID: 11400000, guid: b0e62a79bc1cad04888c908b64f801a6, type: 2}
+      moveForward: {fileID: 11400000, guid: 8b9b14e73087a914fb970a3784308523, type: 2}
+      moveBackward: {fileID: 11400000, guid: 46a5d2d6ba08b6a468ea9e0f4b3698d4, type: 2}
+      moveLeft: {fileID: 11400000, guid: dc05559cf38259f4286bc2035d455cba, type: 2}
+      moveRight: {fileID: 11400000, guid: 6a4d42e96ae44514ab70525a4c20f322, type: 2}
+      attack: {fileID: 11400000, guid: 8119dba533b59a14187551df531db219, type: 2}
+      extras:
+      - {fileID: 11400000, guid: 6c05878b661c4824895f2bdc5e426d0d, type: 2}
+      - {fileID: 11400000, guid: 18b8a4addfe07ca4ea42cbf9ec7bbb1c, type: 2}
+      - {fileID: 11400000, guid: 772a7db56432ffe44b0f20f79903cd19, type: 2}
+      - {fileID: 11400000, guid: 5093b1c8e2b499d48b3db11593d04cfe, type: 2}
+    meleeComboController: {fileID: 0}
+    meleeCombo: []

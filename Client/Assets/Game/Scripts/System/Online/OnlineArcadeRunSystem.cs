@@ -458,11 +458,12 @@ namespace Game
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)
                 enemies.Add(new OnlineArcadeEnemySnapshot(enemy.RuntimeId, enemy.EnemyConfigId, enemy.PositionX,
                     enemy.PositionZ, enemy.CurrentHealth, enemy.MaxHealth, enemy.TargetPlayerId, enemy.WaveNumber,
-                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning));
+                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds));
             List<OnlineArcadeProjectileSnapshot> projectiles = new(source.Projectiles.Count);
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,
-                    projectile.PositionX, projectile.PositionZ, projectile.VelocityX, projectile.VelocityZ));
+                    projectile.PositionX, projectile.PositionZ, projectile.VelocityX, projectile.VelocityZ,
+                    projectile.SourceWeaponId));
             List<OnlineArcadeDropSnapshot> drops = new(source.Drops.Count);
             foreach (OnlineArcadeDropInfo drop in source.Drops)
                 drops.Add(new OnlineArcadeDropSnapshot(drop.RuntimeId, drop.DropConfigId,
@@ -484,7 +485,7 @@ namespace Game
                 new OnlineSlayerMartRegionSnapshot(source.SlayerMartRulesVersion,source.SlayerMartActive,source.SlayerMartVisit,source.SlayerMartGeneration,source.SlayerMartRevision,
                     source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds),new OnlineSlayerChallengeSnapshot(source.SlayerPhase,source.SlayerDowns,source.SlayerDownLimit,source.SlayerCashCollected,source.SlayerOutcome,source.SlayerExitVotes,source.SlayerEnterReady,source.SlayerSkipReady),
                 source.BombBlasts.Select(b=>new OnlineArcadeBombBlastSnapshot(b.Sequence,b.PlayerId,b.PositionX,b.PositionZ,b.RoundGeneration)).ToArray(),
-                source.EnemyDeaths.Select(d=>new OnlineArcadeEnemyDeathSnapshot(d.RuntimeId,d.DirectionX,d.DirectionZ,d.Explosive,d.RoundGeneration)).ToArray());
+                source.EnemyDeaths.Select(d=>new OnlineArcadeEnemyDeathSnapshot(d.RuntimeId,d.DirectionX,d.DirectionZ,d.Explosive,d.RoundGeneration,d.FlameKill)).ToArray());
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

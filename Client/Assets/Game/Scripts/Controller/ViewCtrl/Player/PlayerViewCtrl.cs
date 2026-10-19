@@ -304,6 +304,7 @@ namespace Game
 
         internal static bool UsesRifleAimPose(string visualResourceName) =>
             visualResourceName == "ArcadeRifle" ||
+            visualResourceName == "ArcadeFlamethrower" ||
             visualResourceName == "ArcadePiercingGun" ||
             visualResourceName == "ArcadeScifiShotgun" ||
             visualResourceName == "ArcadeScifiPlasmaRifle";

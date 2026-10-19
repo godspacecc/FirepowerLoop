@@ -45,6 +45,8 @@ namespace Game
                 {
                     var a = islandMovementPath[i - 1]; var b = islandMovementPath[i];
                     if (DistanceToSegmentSquared(enemy.Position, new Vector2(a.X, a.Y), new Vector2(b.X, b.Y)) > radius * radius) continue;
+                    // 本次由冲刺确认击杀，不继承此前喷火伤害的死亡表现来源。
+                    enemy.LastDamageWasFlame = false;
                     KillEnemy(runtime, enemy); break;
                 }
             }

@@ -44,6 +44,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         EventDamage = _buf.ReadFloat();
         EventMoveSpeed = _buf.ReadFloat();
         {int __n0 = _buf.ReadSize(); Barrels = new ArcadeLayoutEntryConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeLayoutEntryConfig __e0;__e0 = global::ArcadeLayoutEntryConfig.DeserializeArcadeLayoutEntryConfig(_buf); Barrels[__index0] = __e0;}}
+        {int __n0 = _buf.ReadSize(); WeaponSpawnPoints = new ArcadeLayoutEntryConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeLayoutEntryConfig __e0;__e0 = global::ArcadeLayoutEntryConfig.DeserializeArcadeLayoutEntryConfig(_buf); WeaponSpawnPoints[__index0] = __e0;}}
+        WeaponSpawnCount = _buf.ReadInt();
+        WeaponSpawnDelayMin = _buf.ReadFloat();
+        WeaponSpawnDelayMax = _buf.ReadFloat();
     }
 
     public static ArcadeRoundLayoutConfig DeserializeArcadeRoundLayoutConfig(ByteBuf _buf)
@@ -80,6 +84,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
     public readonly float EventDamage;
     public readonly float EventMoveSpeed;
     public readonly ArcadeLayoutEntryConfig[] Barrels;
+    public readonly ArcadeLayoutEntryConfig[] WeaponSpawnPoints;
+    public readonly int WeaponSpawnCount;
+    public readonly float WeaponSpawnDelayMin;
+    public readonly float WeaponSpawnDelayMax;
    
     public const int __ID__ = -1832003478;
     public override int GetTypeId() => __ID__;
@@ -90,6 +98,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         foreach (var _e in Obstacles) { _e?.ResolveRef(tables); }
         foreach (var _e in Entries) { _e?.ResolveRef(tables); }
         foreach (var _e in Barrels) { _e?.ResolveRef(tables); }
+        foreach (var _e in WeaponSpawnPoints) { _e?.ResolveRef(tables); }
     }
 
     public override string ToString()
@@ -123,6 +132,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         + "EventDamage:" + EventDamage + ","
         + "EventMoveSpeed:" + EventMoveSpeed + ","
         + "Barrels:" + Luban.StringUtil.CollectionToString(Barrels) + ","
+        + "WeaponSpawnPoints:" + Luban.StringUtil.CollectionToString(WeaponSpawnPoints) + ","
+        + "WeaponSpawnCount:" + WeaponSpawnCount + ","
+        + "WeaponSpawnDelayMin:" + WeaponSpawnDelayMin + ","
+        + "WeaponSpawnDelayMax:" + WeaponSpawnDelayMax + ","
         + "}";
     }
 }

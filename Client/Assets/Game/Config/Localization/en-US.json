@@ -1360,5 +1360,7 @@
   "ui.settings.network.resource_saved": "Saved. Applies on the next launch.",
   "ui.settings.network.game_invalid": "Enter an IP address or hostname with a port.",
   "ui.settings.network.resource_invalid": "Enter a complete HTTP or HTTPS address.",
-  "ui.settings.network.reset_failed": "Could not restore defaults."
+  "ui.settings.network.reset_failed": "Could not restore defaults.",
+  "ui.arcade.product.arcade.weapon.flamethrower.name": "Flamethrower",
+  "ui.arcade.hud.icon.flamethrower": "FL"
 }

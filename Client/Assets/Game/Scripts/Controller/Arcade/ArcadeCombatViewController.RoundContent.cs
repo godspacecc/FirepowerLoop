@@ -15,6 +15,8 @@ namespace Game
         private readonly List<Mesh> roundOwnedMeshes = new();
         private readonly Dictionary<uint,Material> roundPalette = new();
         private readonly Dictionary<int,RoundEnemyVisual> roundEnemies = new();
+        /// <summary>专属敌人燃烧死亡沿当前地图根保留短时表现，预算有界，切图统一销毁。</summary>
+        private readonly List<RoundEnemyVisual> dyingRoundFlames=new();
         private readonly Dictionary<int,Vector2> roundEnemyPositions = new();
         private readonly Dictionary<int,GameObject> roundAreas = new();
         private readonly Dictionary<int,string> roundAreaIdentities = new();
@@ -31,6 +33,8 @@ namespace Game
             public int SpecialKind, BossKind;
             public GameObject Root, Warning, HealthFill;
             public Vector2 Position;
+            public EnemyFlameFeedback Flame;
+            public float DeathElapsed;
         }
         public bool IsRoundLayoutReady => roundLayoutReady && root != null;
         public string RoundLayoutLoadError => roundLayoutLoadError;
@@ -410,6 +414,44 @@ namespace Game
             }
         }
         public bool HasRoundEnemyContent(int id)=>roundEnemies.ContainsKey(id);
+        /// <summary>专属轮廓没有EnemyView，复用同一预载火焰模板且仍只消费真实命中状态。</summary>
+        private bool SetRoundEnemyBurning(int id,float seconds)
+        {
+            if(!roundEnemies.TryGetValue(id,out var visual))return false;
+            EnsureRoundFlame(visual,seconds>0);
+            visual.Flame?.SetRemaining(seconds);return true;
+        }
+        private void EnsureRoundFlame(RoundEnemyVisual visual,bool needed)
+        {
+            if(!needed||visual.Flame!=null||enemyPresentation==null)return;
+            if(!enemyPresentation.TryCreateFlameFeedback(visual.Root.transform,out var flame))return;
+            visual.Flame=flame;flame.transform.localPosition=new Vector3(0,visual.BossKind>0?2f:1f,0);
+            flame.transform.localScale=Vector3.one*(visual.BossKind>0?1.5f:1);
+        }
+        private bool TryPlayRoundFlameDeath(int id,bool flameKill)
+        {
+            if(!flameKill||!roundEnemies.TryGetValue(id,out var visual))return false;
+            EnsureRoundFlame(visual,true);if(visual.Flame==null)return false;
+            roundEnemies.Remove(id);roundEnemyPositions.Remove(id);
+            visual.Warning?.SetActive(false);visual.HealthFill?.SetActive(false);
+            foreach(Transform child in visual.Root.transform)if(child.name.StartsWith("Health",StringComparison.Ordinal))child.gameObject.SetActive(false);
+            visual.Flame.PlayDeath(true);visual.DeathElapsed=0;
+            while(dyingRoundFlames.Count>=16){DestroyRoundVisual(dyingRoundFlames[0].Root);dyingRoundFlames.RemoveAt(0);}
+            dyingRoundFlames.Add(visual);return true;
+        }
+        /// <summary>共用已有表现帧；只控制燃烧尸体的短暂倒地和回收，不执行战斗逻辑。</summary>
+        private void TickRoundFlameFeedback(float seconds)
+        {
+            if(seconds<=0)return;
+            foreach(var visual in roundEnemies.Values)visual.Flame?.Tick(seconds);
+            for(int index=dyingRoundFlames.Count-1;index>=0;index--)
+            {
+                var visual=dyingRoundFlames[index];visual.Flame?.Tick(seconds);visual.DeathElapsed+=seconds;
+                if(visual.Root==null||visual.DeathElapsed>=EnemyPhysicalReaction.CorpseSeconds)
+                {DestroyRoundVisual(visual.Root);dyingRoundFlames.RemoveAt(index);continue;}
+                visual.Root.transform.localRotation=Quaternion.Euler(0,0,-Mathf.Lerp(0,80,Mathf.Clamp01(visual.DeathElapsed/.35f)));
+            }
+        }
         /// <summary>只组合纯规则给出的专用轮廓；首帧撤下旧模型，后续由 SetEnemy hook 跳过旧资源请求。</summary>
         public void SetEnemyContent(int id,int specialKind,int bossKind,bool warning)
         {
@@ -476,7 +518,7 @@ namespace Game
             DestroyObject(roundContentRoot);roundContentRoot=roundEnvironmentRoot=roundAreaRoot=roundEnemyRoot=null;
             foreach(var mesh in roundOwnedMeshes)DestroyObject(mesh);roundOwnedMeshes.Clear();
             foreach(var material in roundOwnedMaterials)DestroyObject(material);roundOwnedMaterials.Clear();roundPalette.Clear();
-            roundEnemies.Clear();roundEnemyPositions.Clear();roundAreas.Clear();roundAreaIdentities.Clear();roundLayout=null;
+            roundEnemies.Clear();dyingRoundFlames.Clear();roundEnemyPositions.Clear();roundAreas.Clear();roundAreaIdentities.Clear();roundLayout=null;
             roundBarrelRoof=null;
         }
     }

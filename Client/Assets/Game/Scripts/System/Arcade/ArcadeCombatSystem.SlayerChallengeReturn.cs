@@ -26,7 +26,7 @@ namespace Game
                 var drop=runtimePool.RentDrop();drop.Id=runtime.NextEntityId++;drop.Position=enemy.Position;
                 drop.Definition=catalog.Drops.Single(p=>p.Id==slayerChallengeConfig.CoinDropId);runtime.Drops.Add(drop.Id,drop);
             }
-            view?.RemoveEnemy(enemy.Id,true);runtimePool.Return(enemy);return true;
+            view?.RemoveEnemy(enemy.Id,true,enemy.Position-runtime.PlayerPosition,false,!hazardKill&&enemy.LastDamageWasFlame);runtimePool.Return(enemy);return true;
         }
         /// <summary>返回写失败保留冻结现场，重试相同资源与已领取账本，不重进收币或购物。</summary>
         private void CompleteSlayerChallenge(ArcadeCombatRuntime runtime)

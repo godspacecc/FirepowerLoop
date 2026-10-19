@@ -1281,8 +1281,42 @@ namespace ET.Server
                 foreach (ArcadeHazardConfig definition in arena.Hazards)
                     battle.Hazards.Add(new FirepowerLoop.Arcade.ArcadeHazardState(ServerConfig.GetHazardParameters(definition)));
             InitializeSlayerChallenge(record,battle);
+            InitializeWeaponPickups(record,battle);
             battle.LastTickAt = TimeInfo.Instance.ServerNow();
             return battle;
+        }
+
+        /// <summary>普通轮候选现场只建立点位和随机时钟，不在开场同时创建可见武器。</summary>
+        private static void InitializeWeaponPickups(OnlineArcadeRunRecord record,OnlineArcadeBattleRuntime battle)
+        {
+            battle.WeaponSpawns=null;
+            if(battle.IsChallenge||battle.IsFinalBoss||record.RoundBossEncounter||battle.SlayerChallenge!=null||battle.SlayerMartReturnWave>0||battle.RoundLayout==null)return;
+            var random=new Random(unchecked((int)MixDropSeed((ulong)record.RunId,battle.ArenaNumber,battle.WaveIndex+1)));
+            battle.WeaponSpawns=battle.RoundLayout.CreateWeaponSpawnSchedule(random);
+        }
+
+        /// <summary>双人共用权威活动时钟；暂停、区域切换、清场及复活等待不推进计划。</summary>
+        private static bool TickWeaponPickups(OnlineArcadeBattleRuntime battle,float seconds)
+        {
+            if(battle.WeaponSpawns==null||battle.IsChallenge||battle.IsFinalBoss||battle.RoundBossEncounter||battle.SlayerChallenge!=null||
+                battle.SlayerMartReturnWave>0||battle.RoundTransitionPending||battle.WaveClearAwarded||battle.AwaitingExit||
+                battle.AllPlayersDefeated||battle.ArenaCompletionReady||battle.Players.Values.Any(p=>p.InTreasureRoom||p.RespawnSeconds>0))return false;
+            if(!battle.WeaponSpawns.TryAdvance(seconds,battle.Drops.Count<ServerConfig.Instance.ArcadeRule.MaxDrops,out var point))return false;
+            var tables=ServerConfig.Instance.Tables;
+            var candidates=tables.TbArcadeDrop.DataList.Where(d=>d.Kind==ArcadeDropKind.TemporaryWeapon&&d.Weight>0&&
+                d.MinArena<=battle.ArenaNumber&&(d.MaxArena<=0||d.MaxArena>=battle.ArenaNumber)&&d.DurationSeconds>0&&
+                tables.TbArcadeWeapon.GetOrDefault(d.ProductId)!=null).ToArray();
+            int total=candidates.Sum(d=>d.Weight);
+            if(total<=0)return false;
+            int roll=battle.WeaponSpawns.NextWeaponRoll(total);
+            foreach(var candidate in candidates)
+            {
+                if(roll>=candidate.Weight){roll-=candidate.Weight;continue;}
+                long id=battle.NextDropRuntimeId++;
+                battle.Drops.Add(id,new OnlineArcadeDropRuntime {RuntimeId=id,DropConfigId=candidate.Id,PositionX=point.X,PositionZ=point.Y});
+                return true;
+            }
+            return false;
         }
 
         /// <summary>发布已经校验完成的瞬时现场；调用前安全节点必须已经落盘。</summary>
@@ -1361,6 +1395,8 @@ namespace ET.Server
                 {if(changed)battle.BattleRevision++;return changed;}
             }
             changed |= TickDropLifetimes(battle, deltaSeconds);
+            foreach(var enemy in battle.Enemies.Values)
+            {if(enemy.FlameHitRemainingSeconds>0){enemy.FlameHitRemainingSeconds=Math.Max(0,enemy.FlameHitRemainingSeconds-deltaSeconds);changed=true;}}
             bool hazardRespawnWaiting = battle.Players.Values.Any(player => player.RespawnSeconds > 0f);
             foreach (var player in battle.Players.Values)
             {
@@ -1401,6 +1437,7 @@ namespace ET.Server
                 return changed;
             }
             changed |= TickFinalBossReinforcements(battle, deltaSeconds, now);
+            changed |= TickWeaponPickups(battle, deltaSeconds);
             changed |= TrySpawnEnemy(battle, now);
             changed |= self.TickEnemies(battle, deltaSeconds);
             if (!hazardRespawnWaiting && !battle.AllPlayersDefeated)
@@ -1976,6 +2013,7 @@ namespace ET.Server
                     RuntimeId = runtimeId,
                     OwnerPlayerId = player.PlayerId,
                     FromPlayerWeapon = true,
+                    SourceWeaponId = weapon.Id,
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     VelocityX = directionX * weapon.ProjectileSpeed,
@@ -2084,7 +2122,8 @@ namespace ET.Server
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.RuntimeId)) continue;
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
-                        DamageEnemy(battle, enemy, projectile.Damage);
+                        if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(battle,enemy,projectile.Damage);
+                        else DamageEnemy(battle, enemy, projectile.Damage);
                         if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
                         remove = projectile.Behavior != ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
                         if (remove) break;
@@ -2215,7 +2254,8 @@ namespace ET.Server
             if (length > .0001f) { dx /= length; dz /= length; } else { dx = 0; dz = -1; }
             if (battle.EnemyDeaths.Count == 24) battle.EnemyDeaths.RemoveAt(0);
             battle.EnemyDeaths.Add(new OnlineArcadeEnemyDeathRuntime { RuntimeId = enemy.RuntimeId,
-                DirectionX = dx, DirectionZ = dz, Explosive = explosive, RoundGeneration = battle.RoundGeneration });
+                DirectionX = dx, DirectionZ = dz, Explosive = explosive, RoundGeneration = battle.RoundGeneration,
+                FlameKill=!hazardKill&&!explosive&&enemy.LastDamageWasFlame });
             if(SlayerGuardianDefeated(battle,enemy))return;
 
             FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(battle,enemy.LastDamagePlayerId),
@@ -3034,7 +3074,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
-                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration; battle.EnemyDeaths.Add(copy);
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; battle.EnemyDeaths.Add(copy);
             }
             foreach (var receipt in source.BombBlasts)
             {
@@ -3116,7 +3156,7 @@ namespace ET.Server
                 enemy.BossPhase = (int)sourceEnemy.BossPhase;
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
-                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;
+                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileRuntime sourceProjectile in source.Projectiles.Values.OrderBy(x => x.RuntimeId))
@@ -3124,6 +3164,7 @@ namespace ET.Server
                 OnlineArcadeProjectileInfo projectile = OnlineArcadeProjectileInfo.Create();
                 projectile.RuntimeId = sourceProjectile.RuntimeId;
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
+                projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;
@@ -3239,7 +3280,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
-                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration; battle.EnemyDeaths.Add(copy);
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; battle.EnemyDeaths.Add(copy);
             }
             foreach (var receipt in source.BombBlasts)
             {
@@ -3316,7 +3357,7 @@ namespace ET.Server
                 enemy.BossPhase = sourceEnemy.BossPhase;
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
-                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;
+                enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileInfo sourceProjectile in source.Projectiles)
@@ -3324,6 +3365,7 @@ namespace ET.Server
                 OnlineArcadeProjectileInfo projectile = OnlineArcadeProjectileInfo.Create();
                 projectile.RuntimeId = sourceProjectile.RuntimeId;
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
+                projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;

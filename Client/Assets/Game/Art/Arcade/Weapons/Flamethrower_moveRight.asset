@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea411e143f4d9f646a78b75b997e266d, type: 3}
+  m_Name: Flamethrower_moveRight
+  m_EditorClassIdentifier: 
+  clip: {fileID: -203655887218126122, guid: d0c6ea3e5271e98438dfbce06e66a7e8, type: 3}
+  displayName: "\u6301\u8FDC\u7A0B\u6B66\u5668\u53F3\u79FB\uFF08RifleMoveRight\uFF09"
+  compatibleCategories: 112
+  requiredBones: 
+  allowOffhandGrip: 1
+  singleAttackDurationSeconds: 0

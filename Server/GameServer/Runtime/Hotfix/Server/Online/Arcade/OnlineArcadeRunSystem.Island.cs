@@ -33,6 +33,8 @@ namespace ET.Server
                     float x = a.X + dx * t, y = a.Y + dy * t;
                     if (DistanceSquared(enemy.PositionX, enemy.PositionZ, x, y) > radius * radius) continue;
                     enemy.LastDamagePlayerId = player.PlayerId;
+                    // 冲刺是此次致死来源，不继承此前喷火命中的视觉标记。
+                    enemy.LastDamageWasFlame = false;
                     actor.KillEnemy(battle, enemy); break;
                 }
             }

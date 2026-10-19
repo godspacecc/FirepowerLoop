@@ -226,12 +226,34 @@ namespace Game
             => RemoveEnemy(runtimeId, playDeath, Vector3.zero, false);
 
         public void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive)
+            => RemoveEnemy(runtimeId,playDeath,direction,explosive,false);
+
+        /// <summary>从已确认的命中状态刷新附着火焰，不依靠画面距离猜测碰撞。</summary>
+        public void SetEnemyBurning(int runtimeId,float remainingSeconds)
+        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetFlameRemaining(remainingSeconds);}
+
+        /// <summary>只克隆已有资源中的效果组，不创建额外敌人、单位或加载句柄。</summary>
+        public bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback)
+        {
+            feedback=null;if(parent==null)return false;
+            foreach(var entry in committedPrefabs.Values)
+            {
+                var template=entry.Prefab!=null?entry.Prefab.GetComponentInChildren<EnemyFlameFeedback>(true):null;
+                if(template==null)continue;
+                feedback=UnityEngine.Object.Instantiate(template,parent,false);
+                feedback.ResetForReuse();return true;
+            }
+            return false;
+        }
+
+        public void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)
         {
             if (!arcadeEnemies.TryGetValue(runtimeId, out var entry))
                 return;
             arcadeEnemies.Remove(runtimeId);
             if (playDeath && entry.View != null)
             {
+                entry.View.PlayFlameDeath(flameKill);
                 while (dyingArcadeEnemies.Count >= corpseBudget)
                 {
                     RecycleArcadeEnemy(dyingArcadeEnemies[0]);

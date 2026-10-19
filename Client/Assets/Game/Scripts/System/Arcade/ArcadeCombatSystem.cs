@@ -420,6 +420,7 @@ namespace Game
             runtime.Enemies.Clear();
             runtime.Projectiles.Clear();
             runtime.Drops.Clear();
+            runtime.WeaponSpawns = null;
             runtime.Powerups.Clear();
             runtime.Hazards.Clear();
             runtime.HazardPreviousEnemyPositions.Clear();
@@ -575,6 +576,7 @@ namespace Game
                 SyncView(runtime); PublishHud(runtime);
                 return;
             }
+            TickWeaponPickups(runtime, deltaTime);
             TickFinalBossReinforcements(runtime, deltaTime);
             TickRoundContent(runtime, deltaTime);
             if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
@@ -640,6 +642,7 @@ namespace Game
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
         {
             TickDropLifetimes(runtime, deltaTime);
+            foreach(var enemy in runtime.Enemies.Values)enemy.FlameHitRemainingSeconds=Mathf.Max(0,enemy.FlameHitRemainingSeconds-deltaTime);
             if (runtime.FirstPersonRemaining > 0)
             {
                 if (runtime.FirstPersonRemaining <= deltaTime ||
@@ -1007,7 +1010,8 @@ namespace Game
                             break;
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.Id)) continue;
-                        DamageEnemy(enemy, projectile.Damage);
+                        if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(enemy,projectile.Damage);
+                        else DamageEnemy(enemy, projectile.Damage);
                         if (projectile.SourceWeaponId == "arcade.weapon.basic" ||
                             projectile.SourceWeaponId == "arcade.weapon.rapid" ||
                             projectile.SourceWeaponId == "arcade.weapon.spread")
@@ -1339,6 +1343,7 @@ namespace Game
             runtime.IslandSpawnSequence = 0;
             InitializeCrates(runtime);
             runtime.WaveIndex = waveIndex;
+            InitializeWeaponPickups(runtime);
             runtime.SpawnQueue.Clear();
             runtime.SpawnCooldown = 0f;
             runtime.WaveTransitionRemaining = 0f;
@@ -1381,6 +1386,40 @@ namespace Game
                 var count = FirepowerLoop.Arcade.ArcadeOpeningRules.AllocateMember(total, previousWeight, member.Count, totalWeight);
                 for (var index = 0; index < count; index++) runtime.SpawnQueue.Enqueue(member.EnemyId);
                 previousWeight += member.Count;
+            }
+        }
+
+        /// <summary>普通地图开场只建立错峰刷新计划，切轮或特殊现场取消旧计划。</summary>
+        private void InitializeWeaponPickups(ArcadeCombatRuntime runtime)
+        {
+            runtime.WeaponSpawns=null;
+            if(runtime.IsChallenge||runtime.IsFinalBoss||runtime.ThemeBossStarted||runtime.SlayerChallenge!=null||runtime.SlayerMartReturnWave>0)return;
+            var layout=RoundLayout(runtime);
+            if(layout==null)return;
+            runtime.WeaponSpawns=layout.CreateWeaponSpawnSchedule(random);
+        }
+
+        /// <summary>仅活动战斗计时；每次最多创建一把武器，不在暂停、清场或房间内补刷。</summary>
+        private void TickWeaponPickups(ArcadeCombatRuntime runtime,float seconds)
+        {
+            if(runtime.WeaponSpawns==null||runtime.IsChallenge||runtime.IsFinalBoss||runtime.ThemeBossStarted||
+                runtime.SlayerChallenge!=null||runtime.SlayerMartReturnWave>0||runtime.PlayerHealth<=0||runtime.RespawnRemaining>0||
+                runtime.InTreasureRoom||runtime.IslandTransitionPending||runtime.IslandRoomTransitionPending||runtime.WaveClearAwarded||
+                runtime.IslandRoundAwaitingExit||runtime.AwaitingExit||runtime.CompletionSubmitted||runtime.CompletionAwaitingRetry)return;
+            if(!runtime.WeaponSpawns.TryAdvance(seconds,runtime.Drops.Count<catalog.Rule.MaxDrops,out var point))return;
+            var candidates=catalog.Drops.Where(d=>d.Kind==global::ArcadeDropKind.TemporaryWeapon&&d.Weight>0&&
+                IsDropEligible(d,runtime.ArenaNumber)&&CanApplyDrop(d)).ToArray();
+            int total=candidates.Sum(d=>d.Weight);
+            if(total<=0)return;
+            int roll=runtime.WeaponSpawns.NextWeaponRoll(total);
+            foreach(var candidate in candidates)
+            {
+                if(roll>=candidate.Weight){roll-=candidate.Weight;continue;}
+                var drop=runtimePool.RentDrop();
+                drop.Id=runtime.NextEntityId++;drop.Definition=candidate;
+                drop.Position=new Vector2(point.X,point.Y);
+                runtime.Drops.Add(drop.Id,drop);
+                break;
             }
         }
 
@@ -1641,6 +1680,7 @@ namespace Game
             bool explosive, Vector2 origin)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
+            if(hazardKill||explosive)enemy.LastDamageWasFlame=false;
             if(SlayerGuardianDefeated(runtime,enemy))return;
 
             if(slayerMartConfig!=null)ArcadeSlayerMartAbilityRules.RegisterKill(SlayerMartAbility(runtime),!hazardKill,runtime.SlayerMartStormDamage,slayerMartConfig.Parameter);
@@ -1665,7 +1705,7 @@ namespace Game
                 foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
             }
             foreach (var hazard in runtime.Hazards) hazard.ForgetTarget(enemy.Id);
-            view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive);
+            view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame);
             var deathPosition = IslandPosition(runtime, enemy.Position, catalog.Rule.PlayerRadius);
             if (!hazardKill && !runtime.IsChallenge && runtime.Drops.Count < catalog.Rule.MaxDrops &&
                 UnityRandom(0f, 1f) <= catalog.Rule.DropChance)
@@ -1684,8 +1724,7 @@ namespace Game
                         if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.Weight <= 0) continue;
                         if (roll < candidate.Weight)
                         {
-                            // 单机敌人抽中武器时留空，保留原权重且不重抽；箱子等独立来源不受影响。
-                            if (candidate.Kind == global::ArcadeDropKind.TemporaryWeapon) break;
+                            // 武器与其他物资共用击杀掉落规则，拾取后才替换当前武器。
                             var drop = runtimePool.RentDrop();
                             drop.Id = runtime.NextEntityId++;
                             drop.Definition = candidate;
@@ -2040,6 +2079,7 @@ namespace Game
                 view.SetEnemyArmor(enemy.Id, enemy.Position, enemy.ArmorHealth);
             }
             SyncRoundContent(runtime);
+            foreach(var enemy in runtime.Enemies.Values)view.SetEnemyBurning(enemy.Id,enemy.FlameHitRemainingSeconds);
             foreach (var projectile in runtime.Projectiles.Values)
                 view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
                     projectile.ProjectileVisualResourceName, projectile.FromPlayerWeapon);

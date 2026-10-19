@@ -454,6 +454,12 @@
         <var name="EventMoveSpeed" type="float"/>
         <!-- 地图预置可射桶；数组索引在本地图及版本内作为稳定身份。 -->
         <var name="Barrels" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
+        <!-- 每轮开场从固定点位中随机选择不重复位置，摆放临时武器。 -->
+        <var name="WeaponSpawnPoints" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
+        <var name="WeaponSpawnCount" type="int"/>
+        <!-- 每把武器出现前重新抽取等待时间，确保同轮错峰生成。 -->
+        <var name="WeaponSpawnDelayMin" type="float"/>
+        <var name="WeaponSpawnDelayMax" type="float"/>
     </bean>
     <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
     <bean name="ArcadeSlayerMartItemConfig">

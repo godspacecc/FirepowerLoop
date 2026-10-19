@@ -17,6 +17,23 @@ namespace ET.Server
         }
         private static void DamageEnemy(OnlineArcadeBattleRuntime battle, OnlineArcadeEnemyRuntime enemy, int damage)
         {
+            long before=(long)enemy.CurrentHealth+enemy.ArmorHealth;
+            DamageEnemyCore(battle,enemy,damage);
+            if((long)enemy.CurrentHealth+enemy.ArmorHealth<before)enemy.LastDamageWasFlame=false;
+        }
+
+        /// <summary>火焰来源只标记实际伤害和表现持续秒数，不产生额外扣血。</summary>
+        private static void DamageEnemyFromFlame(OnlineArcadeBattleRuntime battle,OnlineArcadeEnemyRuntime enemy,int damage)
+        {
+            long before=(long)enemy.CurrentHealth+enemy.ArmorHealth;
+            DamageEnemy(battle,enemy,damage);
+            if((long)enemy.CurrentHealth+enemy.ArmorHealth>=before)return;
+            enemy.FlameHitRemainingSeconds=.65f;enemy.LastDamageWasFlame=true;
+        }
+
+        /// <summary>原有护甲和特殊敌人减伤裁决保持集中，来源标记在外层统一处理。</summary>
+        private static void DamageEnemyCore(OnlineArcadeBattleRuntime battle, OnlineArcadeEnemyRuntime enemy, int damage)
+        {
             if(damage<=0)return;
             if(battle.RoundLayout!=null)
             {

@@ -15,6 +15,10 @@ namespace Game
 
     internal sealed class ArcadeEnemyRuntime
     {
+        /// <summary>真实火焰命中后的短暂表现计时，不造成持续伤害。</summary>
+        public float FlameHitRemainingSeconds;
+        /// <summary>最后一次有效伤害是否来自喷火器，仅用于死亡表现。</summary>
+        public bool LastDamageWasFlame;
         public int Id;
         public string ConfigId;
         public global::EnemyAttackKind AttackKind;
@@ -56,6 +60,7 @@ namespace Game
         /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
         public void Reset()
         {
+            FlameHitRemainingSeconds=0;LastDamageWasFlame=false;
             Id = 0;
             ConfigId = null;
             AttackKind = default;
@@ -312,6 +317,8 @@ namespace Game
         public readonly Dictionary<int, ArcadeEnemyRuntime> Enemies = new Dictionary<int, ArcadeEnemyRuntime>();
         public readonly Dictionary<int, ArcadeProjectileRuntime> Projectiles = new Dictionary<int, ArcadeProjectileRuntime>();
         public readonly Dictionary<int, ArcadeDropRuntime> Drops = new Dictionary<int, ArcadeDropRuntime>();
+        /// <summary>当前地图的武器错峰计划；不写存档，切轮替换，释放地图时丢弃。</summary>
+        public FirepowerLoop.Arcade.ArcadeWeaponSpawnSchedule WeaponSpawns;
     }
 
     /// <summary>街机战斗现场的唯一瞬时状态所有者；规则推进由 ArcadeCombatSystem 完成。</summary>

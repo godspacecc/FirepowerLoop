@@ -183,7 +183,7 @@ namespace Game
             view.transform.rotation = Quaternion.Euler(0f, (Time.realtimeSinceStartup * 90f + runtimeId * 17f) % 360f, 0f);
             view.SetArcadePresentation(visualPrefab, visualPrefabAddress);
             view.RefreshDisplay(displayName, Mathf.Max(1, amount));
-            view.SetNameVisible(true);
+            view.SetNameVisible(!string.IsNullOrWhiteSpace(displayName));
             return true;
         }
 

@@ -20,6 +20,8 @@
 
 `arcade_round_layout.Barrels` 复用入口点坐标格式 `x|y;x|y`，为空表示本图没有预置可射桶。当前仅 Barrage（配置 3）四图各有两个，数组零基索引与地图 ID、Version 共同确定桶身份；该主题布局版本为 2，其余主题仍为 1。桶位由共享参数校验有限数、地标和障碍重叠，并按实际场地尺寸验证可达性。
 
+`arcade_round_layout.WeaponSpawnPoints` 使用相同的 `x|y;x|y` 坐标格式；80 张正式轮地图各配置 6 个固定候选点，`WeaponSpawnCount=2`。普通轮开始时无放回抽取本轮点位，随后逐把生成；首次及每把出现后分别在 `WeaponSpawnDelayMin=3`、`WeaponSpawnDelayMax=8` 秒间重新随机等待，单次推进最多生成一把，大步长不追赶连发。按 `arcade_drop` 中当前进度可用的临时武器权重选枪，复用原拾取、地面寿命及总数量预算；预算满则保留待刷点位。暂停、切图、奖励房和清场冻结时钟。单人由战斗系统推进，双人由服务器统一推进并同步掉落，挑战及独立 Boss 不额外刷枪。点位参与地图连通性校验；每轮仍只计划两把，不无限补刷。
+
 `map.firepowerloop.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 与 `map_display` 保留空表以维持共用地图适配契约。历史地图图片及图标资源保留，不由 Luban 生成。旧地图资料生成工具已移除。
 
 `arcade_solo_drop` 仅面向客户端，保留第一场临时第一人称的权重 5、持续 20 秒配置；服务端不生成此表。街机宝藏、装备、强化道具、金币、挑战及单人/双人规则保留。商店及交易已移除：`arcade_shop_item` 由仅含支援视觉身份、地址与偏移的 `arcade_support_visual` 替代；`arcade_upgrade` 只用于本项目旧局已持有效果的恢复，不提供新获取入口。`arcade_reward` 为现有街机目录契约保留空表，已去除 scrap/core/token 局外奖励行，不提供成长钱包。

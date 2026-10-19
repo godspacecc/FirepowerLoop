@@ -723,8 +723,9 @@ namespace Game
 
         private void PlaySharedMuzzleFlash(bool enabled)
         {
-            if (!enabled || muzzleFlash == null) return;
             var presenter = GetComponent<CharacterWeaponPresenter>();
+            presenter?.PlayWeaponMuzzleEffect();
+            if (!enabled || muzzleFlash == null) return;
             if (presenter == null || !presenter.TryGetProjectileOrigin(out var origin)) return;
             muzzleFlash.transform.position = origin;
             muzzleFlash.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);

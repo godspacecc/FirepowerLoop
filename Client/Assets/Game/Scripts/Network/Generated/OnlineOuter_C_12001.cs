@@ -1641,6 +1641,12 @@ namespace ET
         [MemoryPackOrder(14)]
         public bool ContentWarning { get; set; }
 
+        /// <summary>
+        /// 最近一次有效喷火命中的表现剩余时间，不产生持续伤害。
+        /// </summary>
+        [MemoryPackOrder(15)]
+        public float FlameHitRemainingSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1663,6 +1669,7 @@ namespace ET
             this.SpecialKind = default;
             this.ContentBossKind = default;
             this.ContentWarning = default;
+            this.FlameHitRemainingSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1695,6 +1702,12 @@ namespace ET
         [MemoryPackOrder(5)]
         public float VelocityZ { get; set; }
 
+        /// <summary>
+        /// 发射时的玩家武器身份；支援和敌方弹丸为空。
+        /// </summary>
+        [MemoryPackOrder(6)]
+        public string SourceWeaponId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1708,6 +1721,7 @@ namespace ET
             this.PositionZ = default;
             this.VelocityX = default;
             this.VelocityZ = default;
+            this.SourceWeaponId = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3142,6 +3156,12 @@ namespace ET
         [MemoryPackOrder(4)]
         public int RoundGeneration { get; set; }
 
+        /// <summary>
+        /// 本次最终有效伤害来自喷火器。
+        /// </summary>
+        [MemoryPackOrder(5)]
+        public bool FlameKill { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3154,6 +3174,7 @@ namespace ET
             this.DirectionZ = default;
             this.Explosive = default;
             this.RoundGeneration = default;
+            this.FlameKill = default;
 
             ObjectPool.Instance.Recycle(this);
         }

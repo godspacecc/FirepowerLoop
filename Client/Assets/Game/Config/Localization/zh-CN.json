@@ -1360,5 +1360,7 @@
   "ui.settings.network.resource_saved": "已保存，下次启动时生效。",
   "ui.settings.network.game_invalid": "地址格式无效，请输入 IP 或域名:端口。",
   "ui.settings.network.resource_invalid": "地址格式无效，请输入完整 HTTP/HTTPS 地址。",
-  "ui.settings.network.reset_failed": "恢复默认失败。"
+  "ui.settings.network.reset_failed": "恢复默认失败。",
+  "ui.arcade.product.arcade.weapon.flamethrower.name": "喷火器",
+  "ui.arcade.hud.icon.flamethrower": "喷火"
 }

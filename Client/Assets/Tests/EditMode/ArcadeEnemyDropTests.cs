@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>SP-REQ-001：用正式配置和可控随机结果验证敌人禁掉武器，保留其他来源与权重。</summary>
+    /// <summary>用正式配置和可控随机结果验证敌人武器掉落、拾取、开火与到期恢复。</summary>
     public sealed class ArcadeEnemyDropTests
     {
         private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
@@ -48,15 +48,154 @@ namespace Game.Tests
             IsBossPresentation = boss, BossId = boss ? "drop-test-boss" : null
         };
 
-        /// <summary>逐个覆盖原权重区间；武器命中必须留空，所有非武器仍落到原区间且死亡不重复结算。</summary>
+        /// <summary>真实喷火命中产生短暂燃烧表现身份，计时不造成额外伤害，后续普通伤害清除火焰击杀归属。</summary>
+        [Test]
+        public void FlameImpactRecordsVisibleBurnWithoutAddingDamageOverTime()
+        {
+            var timer=typeof(ArcadeEnemyRuntime).GetField("FlameHitRemainingSeconds");
+            var source=typeof(ArcadeEnemyRuntime).GetField("LastDamageWasFlame");
+            Assert.That(timer,Is.Not.Null,"实际命中缺少燃烧表现状态");Assert.That(source,Is.Not.Null);
+            var enemy=Enemy();enemy.Health=100;enemy.Position=Vector2.zero;
+            runtime.Enemies.Add(enemy.Id,enemy);
+            runtime.Projectiles.Add(901,new ArcadeProjectileRuntime {Id=901,Position=Vector2.zero,Velocity=Vector2.zero,
+                Damage=5,RemainingSeconds=1,SourceWeaponId="arcade.weapon.flamethrower",FromPlayerWeapon=true,
+                Behavior=ArcadeWeaponBehavior.Piercing,RemainingHits=8});
+            Call("TickProjectiles",runtime,.01f);
+            Assert.That(enemy.Health,Is.EqualTo(95));Assert.That((float)timer.GetValue(enemy),Is.GreaterThan(0));
+            Assert.That((bool)source.GetValue(enemy),Is.True);
+            Call("TickTimers",runtime,1f);
+            Assert.That((float)timer.GetValue(enemy),Is.Zero);Assert.That(enemy.Health,Is.EqualTo(95),"视觉燃烧不得额外扣血");
+            Call("DamageEnemy",enemy,1);
+            Assert.That((bool)source.GetValue(enemy),Is.False,"普通枪最终击杀不能误播火焰死亡");
+            enemy.Reset();Assert.That((float)timer.GetValue(enemy),Is.Zero);Assert.That((bool)source.GetValue(enemy),Is.False);
+        }
+
+        /// <summary>喷火受伤后被海岛冲刺撞死，不能沿用已过期的火焰击杀来源。</summary>
+        [Test]
+        public void IslandDashKillDoesNotInheritEarlierFlameHit()
+        {
+            runtime.ArenaNumber=1;runtime.DashRemaining=1;
+            Set("arena",catalog.Arenas.Single(a=>a.ArenaNumber==1));
+            Set("random",new ControlledRandom(0,0,1d));
+            var port=new DeathKindPort();var view=new ArcadeCombatViewController();
+            typeof(ArcadeCombatViewController).GetField("enemyPresentation",Private).SetValue(view,port);Set("view",view);
+            var enemy=Enemy();enemy.Health=100;enemy.Position=Vector2.zero;
+            runtime.Enemies.Add(enemy.Id,enemy);Call("DamageEnemyFromFlame",enemy,1);
+            enemy.FlameHitRemainingSeconds=0;
+            var path=(System.Collections.Generic.List<FirepowerLoop.Arcade.ArcadeRegionPoint>)typeof(ArcadeCombatSystem).GetField("islandMovementPath",Private).GetValue(system);
+            path.Add(new FirepowerLoop.Arcade.ArcadeRegionPoint(-1,0));path.Add(new FirepowerLoop.Arcade.ArcadeRegionPoint(1,0));
+            Call("KillAlongIslandDash",runtime);
+            Assert.That(runtime.Enemies,Is.Empty);Assert.That(port.FlameKill,Is.False,"检查实际死亡表现参数，不能只检查回池后已清空的敌人字段");
+        }
+
+        /// <summary>固定点位逐把错峰生成，拾取才装备；不同随机源可改变位置和武器。</summary>
+        [Test]
+        public void WaveStart_RandomWeaponPickupsUseConfiguredPointsAndEquipOnContact()
+        {
+            runtime.ArenaNumber = 1;
+            Set("arena", catalog.Arenas.Single(a => a.ArenaNumber == 1));
+            var layouts = new System.Collections.Generic.HashSet<string>();
+            var weapons = new System.Collections.Generic.HashSet<string>();
+            for (int seed = 0; seed < 16; seed++)
+            {
+                runtime.Drops.Clear();
+                runtime.TemporaryWeaponId = null;
+                Set("random", new System.Random(seed));
+                Call("BeginWave", runtime, seed % 4);
+                Assert.That(runtime.Drops, Is.Empty, "不能在开场同时生成两把武器");
+                Call("TickWeaponPickups", runtime, 100f);
+                Assert.That(runtime.Drops.Count, Is.EqualTo(1), "大步长也只能生成一把");
+                Call("TickWeaponPickups", runtime, 0f);
+                Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+                Call("TickWeaponPickups", runtime, 100f);
+                Assert.That(runtime.Drops.Count, Is.EqualTo(2), "本轮计划应逐把提供两把地面武器");
+                var drops = runtime.Drops.Values.ToArray();
+                Assert.That(drops.Select(d => d.Position).Distinct().Count(), Is.EqualTo(2));
+                Assert.That(runtime.TemporaryWeaponId, Is.Null, "靠近前不得自动装备");
+                foreach (var drop in drops)
+                {
+                    Assert.That(drop.Definition.Kind, Is.EqualTo(ArcadeDropKind.TemporaryWeapon));
+                    Assert.That(drop.Definition.MinArena, Is.LessThanOrEqualTo(1));
+                    weapons.Add(drop.Definition.ProductId);
+                }
+                layouts.Add(string.Join(";", drops.Select(d => d.Position.ToString()).OrderBy(p => p)));
+                var first = drops[0]; var definition = first.Definition;
+                runtime.PlayerPosition = first.Position;
+                Call("TickDrops", runtime);
+                Assert.That(runtime.TemporaryWeaponId, Is.EqualTo(definition.ProductId));
+                Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(definition.DurationSeconds));
+                Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+            }
+            Assert.That(layouts.Count, Is.GreaterThan(4));
+            Assert.That(weapons, Does.Contain("arcade.weapon.flamethrower"));
+            Assert.That(weapons.Count, Is.GreaterThan(1));
+        }
+
+        /// <summary>普通开场生成受总预算限制；已有物品不被清理，挑战和独立Boss不额外刷枪。</summary>
+        [Test]
+        public void OpeningWeaponsRespectGroundBudgetAndSpecialBattleGuards()
+        {
+            runtime.ArenaNumber=1;
+            Set("arena",catalog.Arenas.Single(a=>a.ArenaNumber==1));
+            Set("random",new System.Random(0));
+            for(int i=0;i<catalog.Rule.MaxDrops-1;i++)
+                runtime.Drops.Add(1000+i,new ArcadeDropRuntime {Id=1000+i,Definition=catalog.Drops.First()});
+            Call("BeginWave",runtime,0);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(catalog.Rule.MaxDrops-1));
+            Call("TickWeaponPickups",runtime,100f);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(catalog.Rule.MaxDrops));
+            Assert.That(runtime.Drops.ContainsKey(1000),Is.True);
+            Call("TickWeaponPickups",runtime,100f);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(catalog.Rule.MaxDrops));
+            Assert.That(runtime.WeaponSpawns.RemainingCount,Is.EqualTo(1),"满预算不得丢失待刷武器");
+            runtime.Drops.Clear();runtime.IsChallenge=true;
+            Call("InitializeWeaponPickups",runtime);
+            Assert.That(runtime.Drops,Is.Empty);
+            runtime.IsChallenge=false;runtime.IsFinalBoss=true;
+            Call("InitializeWeaponPickups",runtime);
+            Assert.That(runtime.Drops,Is.Empty);
+        }
+
+        /// <summary>每把使用独立正间隔；房间、切图和清场冻结计时，切轮取消上轮计划。</summary>
+        [Test]
+        public void WeaponSpawnTimingStaggersAndFreezesOutsideActiveCombat()
+        {
+            runtime.ArenaNumber=1;Set("arena",catalog.Arenas.Single(a=>a.ArenaNumber==1));
+            Set("random",new System.Random(7));Call("BeginWave",runtime,0);
+            var schedule=runtime.WeaponSpawns;
+            Assert.That(schedule.RemainingSeconds,Is.InRange(3f,8f));
+            Call("TickWeaponPickups",runtime,schedule.RemainingSeconds-.01f);
+            Assert.That(runtime.Drops,Is.Empty);
+            Call("TickWeaponPickups",runtime,.02f);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(1));
+            float nextDelay=schedule.RemainingSeconds;
+            Assert.That(nextDelay,Is.InRange(3f,8f));
+            foreach(string gate in new[]{"room","transition","clear","zero"})
+            {
+                runtime.InTreasureRoom=gate=="room";runtime.IslandTransitionPending=gate=="transition";runtime.WaveClearAwarded=gate=="clear";
+                Call("TickWeaponPickups",runtime,gate=="zero"?0f:100f);
+                Assert.That(runtime.Drops.Count,Is.EqualTo(1));
+                Assert.That(schedule.RemainingSeconds,Is.EqualTo(nextDelay),gate);
+            }
+            runtime.WaveClearAwarded=false;
+            Call("TickWeaponPickups",runtime,nextDelay-.01f);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(1));
+            Call("TickWeaponPickups",runtime,.02f);
+            Assert.That(runtime.Drops.Count,Is.EqualTo(2));
+            Call("BeginWave",runtime,1);
+            Assert.That(runtime.WeaponSpawns,Is.Not.SameAs(schedule));
+            Assert.That(runtime.WeaponSpawns.RemainingCount,Is.EqualTo(2));
+        }
+
+        /// <summary>逐个覆盖权重区间；武器与其他物品按同一规则生成，死亡不重复结算。</summary>
         [TestCase(false, false)]
         [TestCase(true, false)]
         [TestCase(true, true)]
-        public void EnemyDeath_EveryOriginalWeightedResultSuppressesOnlyWeapons(bool boss, bool finalBoss)
+        public void EnemyDeath_EveryWeightedResultCreatesConfiguredDrop(bool boss, bool finalBoss)
         {
             var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 12 &&
                 (d.MaxArena <= 0 || d.MaxArena >= 12)).ToArray();
-            Assert.That(candidates.Count(d => d.Kind == ArcadeDropKind.TemporaryWeapon), Is.EqualTo(6));
+            Assert.That(candidates.Any(d => d.Kind == ArcadeDropKind.TemporaryWeapon), Is.True);
             int total = candidates.Sum(d => d.Weight), roll = 0;
             foreach (var candidate in candidates)
             for (int offset = 0; offset < candidate.Weight; offset++, roll++)
@@ -71,16 +210,9 @@ namespace Game.Tests
                 int nextId = runtime.NextEntityId;
                 Call("KillEnemy", runtime, enemy, false);
                 Assert.That(runtime.Enemies, Is.Empty);
-                if (candidate.Kind == ArcadeDropKind.TemporaryWeapon)
-                {
-                    Assert.That(runtime.Drops, Is.Empty, candidate.Id + " 不得生成或补发奖励");
-                    Assert.That(runtime.NextEntityId, Is.EqualTo(nextId));
-                }
-                else
-                {
-                    Assert.That(runtime.Drops.Count, Is.EqualTo(1), candidate.Id);
-                    Assert.That(runtime.Drops.Values.Single().Definition.Id, Is.EqualTo(candidate.Id));
-                }
+                Assert.That(runtime.Drops.Count, Is.EqualTo(1), candidate.Id);
+                Assert.That(runtime.Drops.Values.Single().Definition.Id, Is.EqualTo(candidate.Id));
+                Assert.That(runtime.NextEntityId, Is.EqualTo(nextId + 1));
                 if (finalBoss)
                     Assert.That(runtime.FinalBossDefeated && runtime.AwaitingExit, Is.True);
                 Call("KillEnemy", runtime, enemy, false);
@@ -89,9 +221,9 @@ namespace Game.Tests
             }
         }
 
-        /// <summary>禁掉敌人武器只约束本次生成，不清理旧地面武器，也不替换或重置已持有武器。</summary>
+        /// <summary>新武器掉落不清理旧地面武器，也不在拾取前替换或重置已持有武器。</summary>
         [Test]
-        public void SuppressedEnemyWeapon_PreservesExistingPickupAndHeldWeapon()
+        public void EnemyWeapon_PreservesExistingPickupAndHeldWeapon()
         {
             var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 12 &&
                 (d.MaxArena <= 0 || d.MaxArena >= 12)).ToArray();
@@ -106,7 +238,7 @@ namespace Game.Tests
             var enemy = Enemy();
             runtime.Enemies.Add(enemy.Id, enemy);
             Call("KillEnemy", runtime, enemy, false);
-            Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+            Assert.That(runtime.Drops.Count, Is.EqualTo(2));
             Assert.That(runtime.Drops[42], Is.SameAs(existing));
             Assert.That(existing.Definition.Id, Is.EqualTo(weapon.Id));
             Assert.That(runtime.TemporaryWeaponId, Is.EqualTo("arcade.weapon.rocket"));
@@ -171,7 +303,58 @@ namespace Game.Tests
             Assert.That(random.WeightCalls, Is.EqualTo(1));
         }
 
+        /// <summary>首场喷火器经击杀生成、拾取及开火；短程火流可穿过多个敌人，结束后恢复基础枪。</summary>
+        [Test]
+        public void OpeningFlamethrower_DropsFiresPiercingFlamesAndExpires()
+        {
+            runtime.ArenaNumber = 1;
+            var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 1 &&
+                (d.MaxArena <= 0 || d.MaxArena >= 1)).ToArray();
+            var drop = candidates.Single(d => d.Id == "arcade.drop.weapon.flamethrower");
+            var weapon = catalog.Weapons.Single(w => w.Id == drop.ProductId);
+            Assert.That(weapon.Behavior, Is.EqualTo(ArcadeWeaponBehavior.Piercing));
+            Assert.That(weapon.ProjectileSpeed * weapon.ProjectileLifetimeSeconds, Is.InRange(2f, 5f));
+            Assert.That(weapon.FireIntervalSeconds, Is.LessThanOrEqualTo(.12f));
+            Set("random", new ControlledRandom(candidates.Sum(d => d.Weight),
+                candidates.TakeWhile(d => d.Id != drop.Id).Sum(d => d.Weight)));
+            var enemy = Enemy();
+            runtime.Enemies.Add(enemy.Id, enemy);
+            Call("KillEnemy", runtime, enemy, false);
+            var pickup = runtime.Drops.Values.Single();
+            runtime.PlayerPosition = pickup.Position;
+            Call("TickDrops", runtime);
+            Assert.That(runtime.TemporaryWeaponId, Is.EqualTo(weapon.Id));
+            Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(drop.DurationSeconds));
+            runtime.AimDirection = Vector2.up;
+            Call("TryFire", runtime);
+            Assert.That(runtime.Projectiles.Count, Is.EqualTo(weapon.ProjectileCount));
+            foreach (var flame in runtime.Projectiles.Values)
+            {
+                Assert.That(flame.SourceWeaponId, Is.EqualTo(weapon.Id));
+                Assert.That(flame.ProjectileVisualResourceName, Is.EqualTo("ArcadeFlameBurst"));
+                Assert.That(ArcadeCombatSystem.TryRegisterProjectileHit(flame, 101), Is.True);
+                Assert.That(ArcadeCombatSystem.TryRegisterProjectileHit(flame, 101), Is.False);
+                Assert.That(ArcadeCombatSystem.TryRegisterProjectileHit(flame, 102), Is.True);
+            }
+            Call("TickTimers", runtime, drop.DurationSeconds + 1);
+            Assert.That(runtime.TemporaryWeaponId, Is.Null);
+            var args = new object[] { runtime, null };
+            Assert.That((bool)Call("TryGetWeapon", args), Is.True);
+            Assert.That(((ArcadeWeaponDefinition)args[1]).Id, Is.EqualTo(catalog.Rule.BaseWeaponId));
+        }
+
         /// <summary>只控制随机输入，实际死亡、掉落、拾取和对象池仍执行生产实现。</summary>
+        /// <summary>截获正式视图转发的死亡类别，避免对象回池重置掩盖来源错误。</summary>
+        private sealed class DeathKindPort:IArcadeEnemyPresentationPort
+        {
+            public bool? FlameKill;
+            public bool TrySetEnemy(int id,string config,Vector3 position,Vector3 facing,int health,int maximum,out string error,bool telegraph=false,int sequence=0,bool persistentHealthBar=false)
+            {error=null;return true;}
+            public void RemoveEnemy(int id,bool playDeath=false){}
+            public void RemoveEnemy(int id,bool playDeath,Vector3 direction,bool explosive,bool flameKill){FlameKill=flameKill;}
+            public void ClearArcadeEnemies(){}
+        }
+
         private sealed class ControlledRandom : System.Random
         {
             private readonly int total;

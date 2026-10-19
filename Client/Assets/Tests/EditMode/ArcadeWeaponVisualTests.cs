@@ -42,6 +42,7 @@ public sealed class ArcadeWeaponVisualTests
             AssertWeapon(view, instance.transform, "ArcadePiercingGun", "ArcadePiercingWeapon");
             AssertWeapon(view, instance.transform, "ArcadePanzerschreck", "ArcadeRocketWeapon");
             AssertWeapon(view, instance.transform, "ArcadeGrenade", "ArcadeGrenadeWeapon");
+            AssertWeapon(view, instance.transform, "ArcadeFlamethrower", "ArcadeFlamethrowerWeapon");
             AssertWeapon(view, instance.transform, string.Empty, null);
         }
         finally
@@ -86,6 +87,12 @@ public sealed class ArcadeWeaponVisualTests
             Assert.That(ray.gameObject.activeSelf, Is.False);
             Assert.That(grenade.gameObject.activeSelf, Is.False);
             Assert.That(rocket.gameObject.activeSelf, Is.False);
+
+            view.SetArcadePresentation("ArcadeFlameBurst", false);
+            Assert.That(defaultRenderer.enabled, Is.False);
+            Assert.That(Find(instance.transform, "ArcadeFlameBurst").gameObject.activeSelf, Is.True);
+            view.SetArcadePresentation(null, false);
+            Assert.That(Find(instance.transform, "ArcadeFlameBurst").gameObject.activeSelf, Is.False);
         }
         finally
         {
@@ -743,6 +750,7 @@ public sealed class ArcadeWeaponVisualTests
         {
             ["ArcadePistol"] = "ArcadeBasicWeapon",
             ["ArcadeRifle"] = "ArcadeRapidWeapon",
+            ["ArcadeFlamethrower"] = "ArcadeFlamethrowerWeapon",
             ["ArcadeScifiShotgun"] = "ArcadeSpreadWeapon",
             ["ArcadePiercingGun"] = "ArcadePiercingWeapon",
             ["ArcadePanzerschreck"] = "ArcadeRocketWeapon",
@@ -783,6 +791,139 @@ public sealed class ArcadeWeaponVisualTests
                 Object.DestroyImmediate(instance);
             }
         }
+    }
+
+    [Test]
+    public void FlamethrowerSharedPresentationUsesItsNozzleAndRestoresBasicWeapon()
+    {
+        var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+            new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{name}.bytes"))));
+        Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
+        var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
+            "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+        try
+        {
+            var view = instance.GetComponent<PlayerView>();
+            var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+            var weapon = catalog.Weapons.Single(w => w.Id == "arcade.weapon.flamethrower");
+            PlayerViewCtrl.ConfigureSharedArcadeWeaponPresentation(view, weapon);
+            Assert.That(presenter.Current.Id, Is.EqualTo(weapon.Id));
+            Assert.That(presenter.Current.MuzzleFlash, Is.False);
+            var nozzle = presenter.Visual.GetComponentsInChildren<Transform>().Single(t => t.name == "Nozzle");
+            Assert.That(presenter.TryGetProjectileOrigin(out var origin), Is.True);
+            var tip = nozzle.TransformPoint(Vector3.up);
+            Assert.That(Vector3.Distance(origin, tip), Is.LessThan(.01f));
+            Assert.That(presenter.Visual.GetComponentsInChildren<Collider>(), Is.Empty);
+            PlayerViewCtrl.ConfigureSharedArcadeWeaponPresentation(view,
+                catalog.Weapons.Single(w => w.Id == catalog.Rule.BaseWeaponId));
+            Assert.That(presenter.Current.Id, Is.EqualTo(catalog.Rule.BaseWeaponId));
+        }
+        finally { Object.DestroyImmediate(instance); }
+    }
+
+    /// <summary>实际动作采样后枪管仍沿角色射击方向，不能只验证枪口点落在模型上。</summary>
+    [Test]
+    public void FlamethrowerBarrelFacesFiringDirectionAcrossCombatPoses()
+    {
+        var instance=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+        try
+        {
+            var presenter=instance.GetComponent<CharacterWeaponPresenter>();
+            Assert.That(presenter.SetWeaponId("arcade.weapon.flamethrower"),Is.True);
+            presenter.SetManualPoseSampling(true);presenter.BodyAnimator.Rebind();presenter.BodyAnimator.Update(0);
+            var a=presenter.Current.Animations;
+            foreach(var definition in new[]{a.Idle,a.Attack,a.MoveForward,a.MoveBackward,a.MoveLeft,a.MoveRight})
+            foreach(float time in new[]{0f,.25f,.5f,.75f})
+            {
+                definition.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,definition.Clip.length*time);presenter.ApplyOffhandGrip(definition,time);
+                var nozzle=presenter.Visual.GetComponentsInChildren<Transform>().Single(t=>t.name=="Nozzle");
+                Assert.That(Vector3.Dot(nozzle.TransformDirection(Vector3.up),instance.transform.forward),Is.GreaterThan(.94f),definition.name+" "+time);
+            }
+        }
+        finally{Object.DestroyImmediate(instance);}
+    }
+
+    /// <summary>烘焙喷嘴火团网格检查发射平面，避免火焰向后盖住枪管和角色。</summary>
+    [Test]
+    public void FlameParticleGeometryStaysAheadOfEmissionPlane()
+    {
+        var instance=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab"));
+        var cameraObject=new GameObject("FlameGeometryCamera",typeof(Camera));var mesh=new Mesh();
+        try
+        {
+            var particles=instance.GetComponentsInChildren<ParticleSystem>().Single();
+            particles.useAutoRandomSeed=false;particles.randomSeed=42;particles.Play(false);particles.Simulate(.08f,false,false,false);particles.Pause();
+            var renderer=particles.GetComponent<ParticleSystemRenderer>();var camera=cameraObject.GetComponent<Camera>();
+            foreach(var offset in new[]{new Vector3(6,8,-6),new Vector3(-6,8,6)})
+            {
+                camera.transform.position=offset;camera.transform.LookAt(Vector3.forward);renderer.BakeMesh(mesh,camera,true);
+                Assert.That(mesh.vertexCount,Is.GreaterThan(0));
+                Assert.That(mesh.vertices.Select(v=>renderer.transform.TransformPoint(v).z-particles.transform.position.z).Min(),Is.GreaterThanOrEqualTo(-.03f));
+            }
+        }
+        finally{Object.DestroyImmediate(mesh);Object.DestroyImmediate(cameraObject);Object.DestroyImmediate(instance);}
+    }
+
+    /// <summary>世界火团采用软粒子重叠成云，不能拉成三股，也不能隐藏第一人称所依赖的世界表现。</summary>
+    [Test]
+    public void FlamethrowerUsesOneMuzzleCloudInsteadOfSeparateProjectileStreams()
+    {
+        var gun=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab"));
+        var projectile=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxArrow.prefab"));
+        try
+        {
+            projectile.GetComponent<ProjectileView>().SetArcadePresentation("ArcadeFlameBurst",false);
+            var separate=projectile.GetComponentsInChildren<ParticleSystem>().Single(p=>p.name=="ArcadeFlameBurst");
+            var renderer=separate.GetComponent<ParticleSystemRenderer>();
+            Assert.That(renderer.enabled,Is.True,"第一人称仍需要世界火团显示");
+            Assert.That(renderer.renderMode,Is.EqualTo(ParticleSystemRenderMode.Billboard),"不能将三个判定载体拉成长火束");
+            Assert.That(separate.emission.enabled,Is.True);
+            Assert.That(separate.main.startSize.constantMin,Is.GreaterThanOrEqualTo(.9f),"火团应覆盖相邻判定线而非形成分叉");
+            Assert.That(separate.main.simulationSpace,Is.EqualTo(ParticleSystemSimulationSpace.Local),"墙体销毁载体时不能残留独立世界火云");
+            var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{n}.bytes"))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
+            var weapon=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.flamethrower");
+            var systems=gun.GetComponentsInChildren<ParticleSystem>();
+            Assert.That(systems.Length,Is.EqualTo(1));
+            var cloud=systems.Single();
+            Assert.That(cloud.shape.angle,Is.EqualTo(weapon.SpreadDegrees*.5f).Within(.01f));
+            Assert.That(cloud.main.startSpeed.constantMax*cloud.main.startLifetime.constantMax,Is.LessThan(weapon.ProjectileSpeed*weapon.ProjectileLifetimeSeconds*.5f),"喷嘴效果只连接近端，不独立飞过墙体");
+            Assert.That(cloud.GetComponent<ParticleSystemRenderer>().renderMode,Is.EqualTo(ParticleSystemRenderMode.Billboard));
+        }
+        finally{Object.DestroyImmediate(gun);Object.DestroyImmediate(projectile);}
+    }
+
+    /// <summary>正式开火入口从喷嘴发射近端火焰，连续开火不清空旧粒子，停火和切枪不会残留。</summary>
+    [Test]
+    public void FlamethrowerMuzzleEmissionStartsAtNozzleAndEndsAfterFireOrWeaponChange()
+    {
+        var instance=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+        try
+        {
+            var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{n}.bytes"))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
+            var presenter=instance.GetComponent<CharacterWeaponPresenter>();var view=instance.GetComponent<PlayerView>();
+            PlayerViewCtrl.ConfigureSharedArcadeWeaponPresentation(view,catalog.Weapons.Single(w=>w.Id=="arcade.weapon.flamethrower"));
+            presenter.SetManualPoseSampling(true);presenter.BodyAnimator.Rebind();presenter.BodyAnimator.Update(0);
+            presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,0);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);
+            var flame=presenter.Visual.GetComponentInChildren<ParticleSystem>();
+            Assert.That(flame,Is.Not.Null);Assert.That(flame.particleCount,Is.Zero);
+            Assert.That(presenter.TryGetProjectileOrigin(out var muzzle),Is.True);
+            Assert.That(Vector3.Distance(flame.transform.position,muzzle),Is.LessThan(.001f));
+            view.PlayProjectileFireFeedback();
+            Assert.That(flame.particleCount,Is.GreaterThan(0));
+            var particles=new ParticleSystem.Particle[64];int count=flame.GetParticles(particles);
+            for(int index=0;index<count;index++)Assert.That(Vector3.Distance(particles[index].position,muzzle),Is.LessThan(.03f));
+            flame.Simulate(.05f,false,false,false);count=flame.particleCount;
+            Assert.That(count,Is.GreaterThan(2),"开火窗口应连续发射");
+            view.PlayProjectileFireFeedback();Assert.That(flame.particleCount,Is.GreaterThanOrEqualTo(count),"重复开火不能清掉已有火焰");
+            flame.Simulate(.6f,false,false,false);Assert.That(flame.particleCount,Is.Zero,"停止开火后应自动结束");
+            view.PlayProjectileFireFeedback();
+            PlayerViewCtrl.ConfigureSharedArcadeWeaponPresentation(view,catalog.Weapons.Single(w=>w.Id==catalog.Rule.BaseWeaponId));
+            Assert.That(flame==null,Is.True,"切枪必须销毁喷嘴火焰");
+            Assert.DoesNotThrow(()=>presenter.PlayWeaponMuzzleEffect());
+        }
+        finally{Object.DestroyImmediate(instance);}
     }
 
     [Test]

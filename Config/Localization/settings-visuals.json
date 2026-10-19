@@ -1,4 +1,6 @@
 {
+  "ui.arcade.product.arcade.weapon.flamethrower.name": { "zh-CN": "喷火器", "en-US": "Flamethrower" },
+  "ui.arcade.hud.icon.flamethrower": { "zh-CN": "喷火", "en-US": "FL" },
   "ui.settings.visual.general_title": { "zh-CN": "通用设置", "en-US": "General settings" },
   "ui.settings.visual.general_subtitle": { "zh-CN": "语言与显示", "en-US": "Language and display" },
   "ui.settings.visual.audio_title": { "zh-CN": "音频设置", "en-US": "Audio settings" },

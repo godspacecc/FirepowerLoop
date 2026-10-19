@@ -404,6 +404,7 @@ namespace Game
                     persistentHealthBar: bossWave || !string.IsNullOrEmpty(value.BossId));
                 view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
+                view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);
             }
             // 只消费已见实体的同轮移除；重复快照与重连没有旧映射，因此不会补播尸体。
             foreach (long runtimeId in enemyIds.Keys.Where(id => !seenIds.Contains(id)).ToArray())
@@ -415,7 +416,7 @@ namespace Game
                     {
                         var death = deaths[i];
                         if (death.RuntimeId != runtimeId || death.RoundGeneration != roundGeneration) continue;
-                        view.RemoveEnemy(id, true, new Vector2(death.DirectionX, death.DirectionZ), death.Explosive);
+                        view.RemoveEnemy(id, true, new Vector2(death.DirectionX, death.DirectionZ), death.Explosive,death.FlameKill);
                         played = true; break;
                     }
                 if (!played) view.RemoveEnemy(id);
@@ -430,8 +431,12 @@ namespace Game
             {
                 seenIds.Add(value.RuntimeId);
                 Vector2 velocity = new(value.VelocityX, value.VelocityZ);
+                // 快照携带发射时身份，不能用拥有者当前武器重染飞行中的火焰或子弹。
+                var weapon = value.OwnerPlayerId > 0
+                    ? catalog.Weapons.FirstOrDefault(w => w.Id == value.SourceWeaponId) : default;
                 view.SetProjectile(MapId(projectileIds, value.RuntimeId), value.OwnerPlayerId <= 0,
-                    new Vector2(value.PositionX, value.PositionZ), velocity.sqrMagnitude > .001f ? velocity.normalized : Vector2.up);
+                    new Vector2(value.PositionX, value.PositionZ), velocity.sqrMagnitude > .001f ? velocity.normalized : Vector2.up,
+                    weapon.ProjectileVisualResourceName);
             }
             RemoveMissing(projectileIds, seenIds, view.RemoveProjectile);
         }

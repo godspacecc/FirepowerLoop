@@ -233,6 +233,10 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeEnemyRuntime
     {
+        /// <summary>真实喷火命中后的纯表现时钟，不参与持续伤害或存档。</summary>
+        public float FlameHitRemainingSeconds;
+        /// <summary>最后一次实际伤害的火焰来源，用于本轮死亡事实。</summary>
+        public bool LastDamageWasFlame;
         /// <summary>最近一次实际玩家伤害归属，零为清理/无玩家；死亡后随瞬时敌人丢弃。</summary>
         /// <summary>主题身份及受击冻结时刻，只属于当前地图。</summary>
         public int SpecialKind, ContentBossKind;
@@ -285,6 +289,8 @@ namespace ET.Server
         public float TrackingTurnRate, ContentSlowSeconds;
         /// <summary>由玩家武器Fire实际创建，支援或敌弹不能借玩家归属引爆地图桶。</summary>
         public bool FromPlayerWeapon;
+        /// <summary>创建弹丸时固定武器身份，供双端表现选择火焰等独立外观。</summary>
+        public string SourceWeaponId;
         public long OwnerPlayerId;
         public float PositionX;
         public float PositionZ;
@@ -345,6 +351,8 @@ namespace ET.Server
         public bool SlayerMartStormDamage;
         /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters RoundLayout;
+        /// <summary>当前地图的权威武器刷新时钟；候选现场替换后旧计划随之释放，不同步给客户端计时。</summary>
+        public FirepowerLoop.Arcade.ArcadeWeaponSpawnSchedule WeaponSpawns;
         public int RoundGeneration;
         public bool RoundTransitionPending;
         public bool PendingBossEncounter;
@@ -452,6 +460,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeEnemyDeathRuntime
     {
+        /// <summary>这次死亡由喷火器的有效伤害造成，不从残留燃烧推断。</summary>
+        public bool FlameKill;
         /// <summary>本场已移除的权威敌人身份。</summary>
         public long RuntimeId;
         /// <summary>竞技场平面上的归一化受力方向。</summary>

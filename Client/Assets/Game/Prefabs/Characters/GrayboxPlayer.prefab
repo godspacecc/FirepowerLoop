@@ -505,6 +505,7 @@ Transform:
   - {fileID: 6319939405886805312}
   - {fileID: 7495685175436616849}
   - {fileID: 6631740583102355341}
+  - {fileID: 7373257965523987238}
   m_Father: {fileID: 6034609970752559658}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2111679342596771223
@@ -2537,6 +2538,11 @@ MonoBehaviour:
     hasLeftHandGrip: 1
     leftHandGripLocalPosition: {x: -0.03, y: -0.2, z: 0.23}
     aimLocalRotation: {x: 0.34666, y: 0.59299, z: -0.24679, w: 0.68358}
+  - resourceName: ArcadeFlamethrower
+    visualRoot: {fileID: 8439483101950181663}
+    hasLeftHandGrip: 1
+    leftHandGripLocalPosition: {x: 0, y: -0.08, z: 0.48}
+    aimLocalRotation: {x: 0.34666, y: 0.59299, z: -0.24679, w: 0.68358}
   flashlight: {fileID: 6529550542524021238}
   damageNumberEmitter: {fileID: 3782998820814227703}
   arcadePlayerMarker: {fileID: 1131477671112592730}
@@ -3631,6 +3637,91 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1001 &2699786983654152741
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2017669660684329657}
+    m_Modifications:
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0.04
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5794022618466802490, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_Name
+      value: ArcadeFlamethrowerWeapon
+      objectReference: {fileID: 0}
+    - target: {fileID: 5794022618466802490, guid: ab0b1882bc865b24eb5272797d823783,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: ab0b1882bc865b24eb5272797d823783, type: 3}
+--- !u!4 &7373257965523987238 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4838135904881979651, guid: ab0b1882bc865b24eb5272797d823783,
+    type: 3}
+  m_PrefabInstance: {fileID: 2699786983654152741}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &8439483101950181663 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5794022618466802490, guid: ab0b1882bc865b24eb5272797d823783,
+    type: 3}
+  m_PrefabInstance: {fileID: 2699786983654152741}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7224878360921601953
 PrefabInstance:
   m_ObjectHideFlags: 0

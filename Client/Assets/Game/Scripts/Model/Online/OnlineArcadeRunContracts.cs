@@ -162,8 +162,10 @@ namespace Game
     /// <summary>已经裁决的死亡表现事实，不持有对象、骨骼或资源句柄。</summary>
     public readonly struct OnlineArcadeEnemyDeathSnapshot
     {
-        public OnlineArcadeEnemyDeathSnapshot(long runtimeId, float directionX, float directionZ, bool explosive, int roundGeneration)
-        { RuntimeId = runtimeId; DirectionX = directionX; DirectionZ = directionZ; Explosive = explosive; RoundGeneration = roundGeneration; }
+        public OnlineArcadeEnemyDeathSnapshot(long runtimeId, float directionX, float directionZ, bool explosive, int roundGeneration,bool flameKill=false)
+        { RuntimeId = runtimeId; DirectionX = directionX; DirectionZ = directionZ; Explosive = explosive; RoundGeneration = roundGeneration;FlameKill=flameKill; }
+        /// <summary>本次最终有效伤害由喷火器造成，独立于仍残留的燃烧计时。</summary>
+        public bool FlameKill { get; }
         public long RuntimeId { get; }
         public float DirectionX { get; }
         public float DirectionZ { get; }
@@ -175,13 +177,14 @@ namespace Game
     {
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
             TargetPlayerId = targetPlayerId; WaveNumber = waveNumber;
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
+            FlameHitRemainingSeconds=flameHitRemainingSeconds;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }
@@ -191,6 +194,8 @@ namespace Game
         public int SpecialKind { get; }
         public int ContentBossKind { get; }
         public bool ContentWarning { get; }
+        /// <summary>最近一次有效喷火命中的可见剩余秒数。</summary>
+        public float FlameHitRemainingSeconds { get; }
         public int ArmorHealth { get; }
         public int MaxHealth { get; }
         public long TargetPlayerId { get; }
@@ -203,10 +208,11 @@ namespace Game
     public readonly struct OnlineArcadeProjectileSnapshot
     {
         public OnlineArcadeProjectileSnapshot(long runtimeId, long ownerPlayerId, float positionX, float positionZ,
-            float velocityX, float velocityZ)
+            float velocityX, float velocityZ, string sourceWeaponId = null)
         {
             RuntimeId = runtimeId; OwnerPlayerId = ownerPlayerId; PositionX = positionX; PositionZ = positionZ;
             VelocityX = velocityX; VelocityZ = velocityZ;
+            SourceWeaponId = sourceWeaponId ?? string.Empty;
         }
         public long RuntimeId { get; }
         public long OwnerPlayerId { get; }
@@ -214,6 +220,8 @@ namespace Game
         public float PositionZ { get; }
         public float VelocityX { get; }
         public float VelocityZ { get; }
+        /// <summary>保留发射时的武器外观，换枪或武器到期不回改已飞出的弹丸。</summary>
+        public string SourceWeaponId { get; }
     }
 
     public readonly struct OnlineArcadeDropSnapshot

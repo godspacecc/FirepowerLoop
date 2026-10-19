@@ -79,6 +79,9 @@ namespace Game
         void RemoveEnemy(int id, bool playDeath = false);
         /// <summary>只传递权威死亡的表现方向与爆炸类别，兼容既有动画端口。</summary>
         void RemoveEnemy(int id, bool playDeath, Vector2 direction, bool explosive) => RemoveEnemy(id, playDeath);
+        /// <summary>火焰命中只控制表现；旧实现可忽略，不回写生命。</summary>
+        void SetEnemyBurning(int id,float remainingSeconds) { }
+        void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill) => RemoveEnemy(id,playDeath,direction,explosive);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction, string visualResourceName) =>
             SetProjectile(id, hostile, position, direction);
@@ -592,13 +595,23 @@ namespace Game
             => RemoveEnemy(id, playDeath, Vector2.zero, false);
 
         public void RemoveEnemy(int id, bool playDeath, Vector2 direction, bool explosive)
+            => RemoveEnemy(id,playDeath,direction,explosive,false);
+
+        public void SetEnemyBurning(int id,float remainingSeconds)
+        {
+            if(SetRoundEnemyBurning(id,remainingSeconds))return;
+            enemyPresentation?.SetEnemyBurning(id,remainingSeconds);
+        }
+
+        /// <summary>燃烧击杀沿既有尸体预算和回收流程播放，不延长敌人的战斗生命周期。</summary>
+        public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill)
         {
             islandWading?.Remove(id);
-            RemoveRoundEnemyContent(id);
+            if(!TryPlayRoundFlameDeath(id,playDeath&&flameKill))RemoveRoundEnemyContent(id);
             RemoveArmor(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
             if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
-            enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive);
+            enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive,flameKill);
         }
 
         public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction)
@@ -859,6 +872,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            TickRoundFlameFeedback(deltaTime);
             islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);
             dashPresentation?.Tick(deltaTime);
@@ -1298,7 +1312,8 @@ namespace Game
         private static string ResolveDropDisplayName(ArcadeDropDefinition definition)
         {
             if (definition.Kind == global::ArcadeDropKind.RunGold)
-                return Loc.T("ui.arcade.hud.gold", string.Empty).Trim();
+                // 金币只显示地面模型，空名称通知掉落表现隐藏文字。
+                return string.Empty;
             return ArcadeUiFormatter.ProductName(definition.ProductId);
         }
 

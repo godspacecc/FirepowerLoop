@@ -97,6 +97,9 @@ namespace Game
         private float feedbackRemainingSeconds;
         /// <summary>预制的纯表现骨骼反馈，所有推进均复用EnemyCtrl生命周期。</summary>
         private EnemyPhysicalReaction physicalReaction;
+        /// <summary>附着火焰由预制资源持有，和骨骼反馈共用现有表现生命周期。</summary>
+        private EnemyFlameFeedback flameFeedback;
+        private EnemyFlameFeedback FlameFeedback=>flameFeedback!=null?flameFeedback:flameFeedback=GetComponentInChildren<EnemyFlameFeedback>(true);
         private EnemyPhysicalReaction PhysicalReaction => physicalReaction != null ? physicalReaction : physicalReaction = GetComponent<EnemyPhysicalReaction>();
         private Renderer[] feedbackRenderers = new Renderer[0];
         // 保存受击前的完整覆盖块；多材质身体恢复时不能把首个材质颜色写到全部槽位。
@@ -208,6 +211,7 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            FlameFeedback?.ResetForReuse();
             PhysicalReaction?.ResetForReuse();
             EnsureAgent();
             ResetWeaponSelection();
@@ -789,7 +793,12 @@ namespace Game
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
         public void LateTickCombatFeedback() => PhysicalReaction?.LateTick();
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback() => PhysicalReaction?.ResetForReuse();
+        public void ResetPhysicalFeedback(){PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+
+        /// <summary>只消费实际喷火命中后的剩余表现秒数。</summary>
+        public void SetFlameRemaining(float seconds)=>FlameFeedback?.SetRemaining(seconds);
+        /// <summary>死亡类型由战斗裁决传入，不根据画面相交或当前武器猜测。</summary>
+        public void PlayFlameDeath(bool flameKill)=>FlameFeedback?.PlayDeath(flameKill);
 
         public void PlayHitFeedback()
         {
@@ -824,6 +833,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            FlameFeedback?.Tick(deltaTime);
             PhysicalReaction?.Tick(deltaTime);
             SampleMovement(deltaTime);
             if (feedbackRemainingSeconds <= 0f)
@@ -865,7 +875,7 @@ namespace Game
         /// <summary>在一段受击开始时保存现有覆盖；材质本色继续由各槽位独立提供。</summary>
         private void CaptureFeedbackColors()
         {
-            feedbackRenderers = GetComponentsInChildren<Renderer>(true);
+            feedbackRenderers = Array.FindAll(GetComponentsInChildren<Renderer>(true),renderer=>!(renderer is ParticleSystemRenderer));
             if (feedbackOriginalBlocks.Length != feedbackRenderers.Length)
             {
                 feedbackOriginalBlocks = new MaterialPropertyBlock[feedbackRenderers.Length];

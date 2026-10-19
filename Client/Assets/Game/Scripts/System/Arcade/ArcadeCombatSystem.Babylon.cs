@@ -27,8 +27,19 @@ namespace Game
         /// <summary>先执行特殊受击状态，再读取生命扣除护甲后的伤害，避免复合赋值覆盖人偶阶段。</summary>
         private void DamageEnemy(ArcadeEnemyRuntime enemy, int damage)
         {
+            long before=(long)enemy.Health+enemy.ArmorHealth;
             int resolved = RoundIncomingDamage(enemy, damage);
             enemy.Health -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, resolved);
+            if((long)enemy.Health+enemy.ArmorHealth<before)enemy.LastDamageWasFlame=false;
+        }
+
+        /// <summary>只有实际扣除生命或护甲的喷火命中才标记燃烧，不补加伤害。</summary>
+        private void DamageEnemyFromFlame(ArcadeEnemyRuntime enemy,int damage)
+        {
+            long before=(long)enemy.Health+enemy.ArmorHealth;
+            DamageEnemy(enemy,damage);
+            if((long)enemy.Health+enemy.ArmorHealth>=before)return;
+            enemy.FlameHitRemainingSeconds=.65f;enemy.LastDamageWasFlame=true;
         }
 
         private ArcadeDropDefinition[] CrateDropPool() => catalog.Drops.Where(d => d.Weight > 0 &&

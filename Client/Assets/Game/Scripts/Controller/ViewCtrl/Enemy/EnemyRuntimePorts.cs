@@ -31,6 +31,10 @@ namespace Game
         void RemoveEnemy(int runtimeId, bool playDeath = false);
         /// <summary>只携带已经裁决的死亡方向与爆炸类别，旧端口保留动画降级。</summary>
         void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive) => RemoveEnemy(runtimeId, playDeath);
+        void SetEnemyBurning(int runtimeId,float remainingSeconds) { }
+        /// <summary>专属轮廓复用已预载敌人中的纯粒子模板，克隆由请求方地图根持有。</summary>
+        bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback){feedback=null;return false;}
+        void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)=>RemoveEnemy(runtimeId,playDeath,direction,explosive);
         void ClearArcadeEnemies();
     }
 }

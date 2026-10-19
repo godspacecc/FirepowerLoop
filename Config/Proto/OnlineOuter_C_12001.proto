@@ -418,6 +418,8 @@ message OnlineArcadeEnemyInfo
 	int32 SpecialKind = 13;
 	int32 ContentBossKind = 14;
 	bool ContentWarning = 15;
+	// 最近一次有效喷火命中的表现剩余时间，不产生持续伤害。
+	float FlameHitRemainingSeconds = 16;
 }
 
 // Opcode 12082
@@ -429,6 +431,8 @@ message OnlineArcadeProjectileInfo
 	float PositionZ = 4;
 	float VelocityX = 5;
 	float VelocityZ = 6;
+	// 发射时的玩家武器身份；支援和敌方弹丸为空。
+	string SourceWeaponId = 7;
 }
 
 // Opcode 12083
@@ -795,4 +799,6 @@ message OnlineArcadeEnemyDeathInfo
  float DirectionZ = 3;
  bool Explosive = 4;
  int32 RoundGeneration = 5;
+ // 本次最终有效伤害来自喷火器。
+ bool FlameKill = 6;
 }

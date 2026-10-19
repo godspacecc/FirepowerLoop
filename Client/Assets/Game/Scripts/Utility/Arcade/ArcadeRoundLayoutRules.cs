@@ -36,6 +36,9 @@ namespace FirepowerLoop.Arcade
             Obstacles=Array.AsReadOnly(row.Obstacles.Select(o=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight)).ToArray());
             Entries=Array.AsReadOnly(row.Entries.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
             Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new ArcadeRegionPoint(e.X,e.Y))).ToArray());
+            WeaponSpawnPoints=Array.AsReadOnly(row.WeaponSpawnPoints.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
+            WeaponSpawnCount=row.WeaponSpawnCount;
+            WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
             SpecialKind=row.SpecialKind;EventKind=row.EventKind;BossKind=row.BossKind;SpecialRatio=row.SpecialRatio;
             EnemyHealthScale=row.EnemyHealthScale;EnemySpeedScale=row.EnemySpeedScale;SkillPeriod=row.SkillPeriod;
             SkillWarning=row.SkillWarning;SkillMagnitude=row.SkillMagnitude;EventPeriod=row.EventPeriod;
@@ -79,6 +82,31 @@ namespace FirepowerLoop.Arcade
         public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
         /// <summary>预置可射桶坐标；数组索引是当前地图版本内的稳定身份。</summary>
         public IReadOnlyList<ArcadeRegionPoint> Barrels { get; }
+        /// <summary>本图固定武器候选点；只在轮开始时抽取，场景表现不决定生成位置。</summary>
+        public IReadOnlyList<ArcadeRegionPoint> WeaponSpawnPoints { get; }
+        /// <summary>每轮开场摆放数量，仍受地面物资总预算限制。</summary>
+        public int WeaponSpawnCount { get; }
+        /// <summary>每把武器出现前的活动战斗等待秒数范围。</summary>
+        public float WeaponSpawnDelayMin { get; }
+        public float WeaponSpawnDelayMax { get; }
+
+        /// <summary>轮开始时只准备点位和计时，不立即创建可见掉落。</summary>
+        public ArcadeWeaponSpawnSchedule CreateWeaponSpawnSchedule(Random random) => new ArcadeWeaponSpawnSchedule(
+            ChooseWeaponSpawnPoints(WeaponSpawnCount,random.Next),WeaponSpawnDelayMin,WeaponSpawnDelayMax,random);
+
+        /// <summary>使用调用方的权威随机源，无放回抽取候选点；不修改配置或持有对局状态。</summary>
+        public IReadOnlyList<ArcadeRegionPoint> ChooseWeaponSpawnPoints(int available,Func<int,int> next)
+        {
+            if(next==null)throw new ArgumentNullException(nameof(next));
+            int count=Math.Min(WeaponSpawnCount,Math.Max(0,available));
+            var points=WeaponSpawnPoints.ToArray();
+            for(int index=0;index<count;index++)
+            {
+                int selected=index+next(points.Length-index);
+                var point=points[index];points[index]=points[selected];points[selected]=point;
+            }
+            return Array.AsReadOnly(points.Take(count).ToArray());
+        }
         public int SpecialKind { get; }
         public int EventKind { get; }
         public int BossKind { get; }
@@ -109,8 +137,21 @@ namespace FirepowerLoop.Arcade
                 p.EventPeriod<=0 || p.EventWarning<=0 || p.EventWarning>=p.EventPeriod || p.EventRadius<=0 || p.EventDamage<0 || p.EventDamage>1 || p.EventMoveSpeed<0 ||
                 p.Obstacles.Any(o=>!Finite(o.X)||!Finite(o.Y)||!Finite(o.HalfWidth)||!Finite(o.HalfHeight)||o.HalfWidth<=0||o.HalfHeight<=0) ||
                 p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)) ||
+                p.WeaponSpawnCount<0 || p.WeaponSpawnCount>p.WeaponSpawnPoints.Count ||
+                !Finite(p.WeaponSpawnDelayMin)||!Finite(p.WeaponSpawnDelayMax)||p.WeaponSpawnDelayMin<=0||p.WeaponSpawnDelayMax<p.WeaponSpawnDelayMin ||
+                p.WeaponSpawnPoints.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsWeaponLandmark(e)) ||
                 p.Barrels.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsBarrelLandmark(e)))throw new ArgumentException("轮级布局参数无效："+p.Id);
             return p;
+        }
+        /// <summary>武器点位不能重叠或占用出生、入口、出口、预置桶和实体障碍。</summary>
+        private bool OverlapsWeaponLandmark(ArcadeRegionPoint point)
+        {
+            bool Near(ArcadeRegionPoint other,float distance)=>
+                (point.X-other.X)*(point.X-other.X)+(point.Y-other.Y)*(point.Y-other.Y)<distance*distance;
+            return Near(new ArcadeRegionPoint(SpawnX,SpawnY),3) || Entries.Any(e=>Near(e,2)) ||
+                Enumerable.Range(0,ExitDirectionCount).Any(i=>Near(DirectionalExit(i,ExitX,ExitY,1,1,0),2)) ||
+                Barrels.Any(e=>Near(e,1.5f)) || WeaponSpawnPoints.Count(e=>Near(e,2))>1 ||
+                Obstacles.Any(o=>Math.Abs(point.X-o.X)<o.HalfWidth+1.1f&&Math.Abs(point.Y-o.Y)<o.HalfHeight+1.1f);
         }
         /// <summary>桶保留半米占地，不能占用出生点、全部出口或地图阻挡。</summary>
         private bool OverlapsBarrelLandmark(ArcadeRegionPoint barrel)
@@ -144,6 +185,7 @@ namespace FirepowerLoop.Arcade
             var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY)};
             targets.AddRange(Enumerable.Range(0,ExitDirectionCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
             targets.AddRange(Barrels);
+            targets.AddRange(WeaponSpawnPoints);
             if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight,region)) ||
                 Obstacles.Any(o=>Math.Abs(o.X)+o.HalfWidth>=halfWidth||Math.Abs(o.Y)+o.HalfHeight>=halfHeight))return false;
             // 半米网格比最窄的并行通路更细；只用于装载校验，不参与每帧移动。
@@ -165,5 +207,45 @@ namespace FirepowerLoop.Arcade
             return targets.All(p=>seen.Contains(Index(p.X,p.Y)));
         }
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
+    }
+
+    /// <summary>双端共用的轮内武器刷新时钟；每次最多交付一个点位，卡顿不追赶连发。</summary>
+#if DOTNET
+    [ET.EnableClass]
+#endif
+    public sealed class ArcadeWeaponSpawnSchedule
+    {
+        /// <summary>本轮已抽取且不重复的候选点。</summary>
+        private readonly IReadOnlyList<ArcadeRegionPoint> points;
+        /// <summary>由对局权威提供的随机源，统一生成间隔和武器权重。</summary>
+        private readonly Random random;
+        /// <summary>每把武器出现前的等待秒数范围。</summary>
+        private readonly float delayMin,delayMax;
+        /// <summary>下一个尚未交付的点位索引。</summary>
+        private int next;
+        public int RemainingCount=>points.Count-next;
+        /// <summary>只由活动战斗步长推进；暂停和场景切换不调用推进。</summary>
+        public float RemainingSeconds { get; private set; }
+
+        internal ArcadeWeaponSpawnSchedule(IReadOnlyList<ArcadeRegionPoint> points,float delayMin,float delayMax,Random random)
+        {
+            this.points=points;this.delayMin=delayMin;this.delayMax=delayMax;this.random=random;
+            RemainingSeconds=NextDelay();
+        }
+        private float NextDelay()=>delayMin+(float)random.NextDouble()*(delayMax-delayMin);
+        /// <summary>沿用当前进度武器池的权重随机，不让表现端重新选择。</summary>
+        public int NextWeaponRoll(int totalWeight)=>random.Next(totalWeight);
+
+        /// <summary>预算不足保留待刷点位；恢复空间后只补一把，并为下一把重新计时。</summary>
+        public bool TryAdvance(float seconds,bool hasCapacity,out ArcadeRegionPoint point)
+        {
+            point=default;
+            if(RemainingCount<=0||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return false;
+            RemainingSeconds=Math.Max(0,RemainingSeconds-seconds);
+            if(RemainingSeconds>0||!hasCapacity)return false;
+            point=points[next++];
+            RemainingSeconds=RemainingCount>0?NextDelay():0;
+            return true;
+        }
     }
 }

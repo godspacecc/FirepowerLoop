@@ -23,6 +23,8 @@ namespace Game
         private GameObject visual;
         private BowVisualView bowVisual;
         private HandheldTorchView torchVisual;
+        /// <summary>当前喷火器喷嘴的短程火焰，随手持模型创建和销毁，不持有伤害状态。</summary>
+        private ParticleSystem flamethrowerMuzzle;
         /// <summary>最近一次有效的水平世界位移，单位为米；切换武器后用于立即选对方向。</summary>
         private Vector3 lastHorizontalMotion;
         /// <summary>由移动领域结算传入的实际加速状态；不判断输入或消耗体力。</summary>
@@ -241,6 +243,7 @@ namespace Game
                 visual = candidate;
                 bowVisual = visual.GetComponentInChildren<BowVisualView>(true);
                 torchVisual = visual.GetComponentInChildren<HandheldTorchView>(true);
+                flamethrowerMuzzle = entry.Id=="arcade.weapon.flamethrower" ? visual.GetComponentInChildren<ParticleSystem>(true) : null;
                 candidate = null;
                 visual.SetActive(true);
                 SetMovementDirection(lastHorizontalMotion);
@@ -286,6 +289,7 @@ namespace Game
             bowVisual?.Dispose();
             bowVisual = null;
             torchVisual = null;
+            flamethrowerMuzzle = null;
             if (visual == null) return;
             visual.SetActive(false);
             var old = visual;
@@ -298,6 +302,16 @@ namespace Game
             if (owned == null) return;
             if (Application.isPlaying) Destroy(owned);
             else DestroyImmediate(owned);
+        }
+
+        /// <summary>权威开火反馈触发喷嘴近端火焰；远端角色复用同一表现入口。</summary>
+        public void PlayWeaponMuzzleEffect()
+        {
+            if(flamethrowerMuzzle==null)return;
+            flamethrowerMuzzle.Play(false);
+            // 只重置发射窗口，保留已喷出的世界空间火焰；停火后窗口自动结束。
+            flamethrowerMuzzle.time=0;
+            flamethrowerMuzzle.Emit(2);
         }
 
         /// <summary>发布候选前检查模型、数值、Avatar、槽位和所有动作的显式兼容性。</summary>

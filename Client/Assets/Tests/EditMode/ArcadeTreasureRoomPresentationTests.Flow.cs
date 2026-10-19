@@ -164,6 +164,45 @@ namespace Game.Tests
                 Battle(1, false).Players, null, arenaConfigNumber: 1, awaitingExit: true));
             Assert.That(view.ExitTargets, Is.EqualTo(new[] { 2 }));
         }
+        /// <summary>外观随弹丸携带发射武器身份；不从玩家当前临时武器反推，敌弹与旧快照不借用火焰。</summary>
+        [Test]
+        public void OnlineProjectilePresentationUsesShotWeaponIdentity()
+        {
+            var sync = typeof(OnlineArcadePresentationSystem).GetMethod("SyncProjectiles", Flags);
+            sync.Invoke(system, new object[] { new[] {
+                new OnlineArcadeProjectileSnapshot(100, 1, 0, 0, 0, 8, "arcade.weapon.flamethrower"),
+                new OnlineArcadeProjectileSnapshot(101, 1, 0, 0, 0, 16, "arcade.weapon.basic"),
+                new OnlineArcadeProjectileSnapshot(102, 0, 0, 0, 0, 8, "arcade.weapon.flamethrower"),
+                new OnlineArcadeProjectileSnapshot(103, 1, 0, 0, 0, 8)
+            }});
+            Assert.That(view.ProjectileVisuals.Values.Count(v => v == "ArcadeFlameBurst"), Is.EqualTo(1));
+            Assert.That(view.ProjectileVisuals.Values.Count(v => v == "ArcadeBulletBasic"), Is.EqualTo(1));
+            Assert.That(view.ProjectileVisuals.Values.Count(string.IsNullOrEmpty), Is.EqualTo(2));
+            sync.Invoke(system, new object[] { new[] {
+                new OnlineArcadeProjectileSnapshot(100, 1, 0, 1, 0, 8, "arcade.weapon.flamethrower")
+            }});
+            Assert.That(view.Projectiles.Count, Is.EqualTo(1));
+            Assert.That(view.ProjectileVisuals[view.Projectiles.Single()], Is.EqualTo("ArcadeFlameBurst"));
+        }
+
+        [Test]
+        public void OnlineEnemyFlamesUseAuthorityAndDoNotReplayDeaths()
+        {
+            var sync=typeof(OnlineArcadePresentationSystem).GetMethod("SyncEnemies",Flags);
+            var enemies=new[]{new OnlineArcadeEnemySnapshot(10,"enemy.arcade.basic",0,0,10,20,1,1,flameHitRemainingSeconds:.65f),
+                new OnlineArcadeEnemySnapshot(11,"enemy.arcade.basic",1,0,10,20,1,1,flameHitRemainingSeconds:.5f),
+                new OnlineArcadeEnemySnapshot(12,"enemy.arcade.basic",2,0,10,20,1,1)};
+            sync.Invoke(system,new object[]{enemies,false,Array.Empty<OnlineArcadeEnemyDeathSnapshot>(),3,true});
+            Assert.That(view.EnemyFlames.Values,Does.Contain(.65f));
+            var deaths=new[]{new OnlineArcadeEnemyDeathSnapshot(10,0,1,false,3,true),
+                new OnlineArcadeEnemyDeathSnapshot(11,0,1,false,3,false),new OnlineArcadeEnemyDeathSnapshot(12,0,1,false,2,true)};
+            sync.Invoke(system,new object[]{Array.Empty<OnlineArcadeEnemySnapshot>(),false,deaths,3,true});
+            Assert.That(view.EnemyDeathKinds.Count,Is.EqualTo(2),"旧轮死亡不得补播");
+            Assert.That(view.EnemyDeathKinds.Count(v=>v),Is.EqualTo(1),"残留燃烧不能冒充火焰最终击杀");
+            sync.Invoke(system,new object[]{Array.Empty<OnlineArcadeEnemySnapshot>(),false,deaths,3,true});
+            Assert.That(view.EnemyDeathKinds.Count,Is.EqualTo(2),"重复快照不能重播死亡火焰");
+        }
+
         private sealed class TestView : IArcadeCombatViewPort
         {
             public readonly Dictionary<int, float> DropOpacities = new();
@@ -173,6 +212,9 @@ namespace Game.Tests
             public void SetDropOpacity(int id, float opacity) => DropOpacities[id] = opacity;
             public void SetTreasureRewardOpacity(float opacity) => RewardOpacity = opacity;
             public readonly HashSet<int> Enemies = new(), Projectiles = new(), Drops = new(); public readonly HashSet<long> RemotePlayers = new();
+            public readonly Dictionary<int, string> ProjectileVisuals = new();
+            public readonly Dictionary<int,float> EnemyFlames=new();
+            public readonly List<bool> EnemyDeathKinds=new();
             public int[] RoomRewards; public bool InRoom; public float Width; public int Begins; public Vector2 PlayerPosition;
             public bool IsActive => true;
             public void Begin(int number, float width, float height, IReadOnlyList<ArcadeObstacleDefinition> obstacles) { Begins++; Width = width; Enemies.Clear(); Projectiles.Clear(); Drops.Clear(); RemotePlayers.Clear(); }
@@ -184,7 +226,12 @@ namespace Game.Tests
             public void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> ids) { InRoom = inRoom; RoomId = p?.Id; RoomRewards = ids.ToArray(); }
             public void SetEnemy(int id, string config, Vector2 position, int current, int maximum, bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false) { Enemies.Add(id); }
             public void RemoveEnemy(int id, bool playDeath = false) { Enemies.Remove(id); }
+            public void SetEnemyBurning(int id,float seconds){EnemyFlames[id]=seconds;}
+            public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill)
+            {Enemies.Remove(id);if(playDeath)EnemyDeathKinds.Add(flameKill);}
             public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction) { Projectiles.Add(id); }
+            public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction, string visualResourceName)
+            { Projectiles.Add(id); ProjectileVisuals[id] = hostile ? null : visualResourceName; }
             public void RemoveProjectile(int id) { Projectiles.Remove(id); }
             public void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position) { Drops.Add(id); }
             public void RemoveDrop(int id) { Drops.Remove(id); }
