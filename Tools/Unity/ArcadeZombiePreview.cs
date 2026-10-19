@@ -26,18 +26,28 @@ public static class ArcadeZombiePreview
         {
             SceneManager.SetActiveScene(scene); RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat; RenderSettings.ambientLight = new Color(.65f,.67f,.7f);
             var camera = new GameObject("ZombiePreview", typeof(Camera)).GetComponent<Camera>();
-            camera.cullingMask = 1 << 30; camera.orthographic = true; camera.orthographicSize = 2.4f;
-            var focus = new Vector3(0,1.3f,0); camera.transform.position = focus + new Vector3(0,3.5f,-7f); camera.transform.LookAt(focus);
+            camera.cullingMask = 1 << 30; camera.orthographic = true; camera.orthographicSize = 1.8f;
+            var focus = new Vector3(0,.85f,0); camera.transform.position = focus + new Vector3(0,1.6f,-7f); camera.transform.LookAt(focus);
             camera.clearFlags = CameraClearFlags.SolidColor; camera.backgroundColor = new Color(.08f,.11f,.15f);
             var light = new GameObject("Key", typeof(Light)).GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.7f; light.transform.eulerAngles = new Vector3(50,-35,0); light.cullingMask = 1 << 30;
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube); floor.transform.position = new Vector3(0,-.08f,0); floor.transform.localScale = new Vector3(30,.1f,30);
             floor.GetComponent<Renderer>().sharedMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Art/Arcade/Environment/Content/Slate.mat");
+            // 正式主角与丧尸共用地面、相机和距离，不单独放大任意角色。
+            var player=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+            player.transform.position=new Vector3(-2.25f,0,0);player.transform.rotation=Quaternion.Euler(0,160,0);
+            var presenter=player.GetComponent<CharacterWeaponPresenter>();
+            if(!presenter.SetWeaponId("arcade.weapon.basic"))throw new Exception(presenter.LastError);
+            presenter.SetManualPoseSampling(true);presenter.BodyAnimator.Rebind();presenter.BodyAnimator.Update(0);
+            presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,0);
+            presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);
+            foreach(var a in player.GetComponentsInChildren<Animator>())a.enabled=false;
+            foreach(var canvas in player.GetComponentsInChildren<Canvas>(true))canvas.gameObject.SetActive(false);
             var enemies = new GameObject[3];
             for (int i=0;i<3;i++)
             {
                 string kind = new[] { "Shambler", "Gaunt", "Bloated" }[i];
                 var enemy = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombie"+kind+".prefab")); enemies[i]=enemy;
-                enemy.transform.position = new Vector3((i-1)*2.5f,0,0); enemy.transform.rotation = Quaternion.Euler(0,160,0);
+                enemy.transform.position = new Vector3(-.75f+i*1.5f,0,0); enemy.transform.rotation = Quaternion.Euler(0,160,0);
                 var view=enemy.GetComponent<EnemyView>(); view.SetNavigationEnabled(false); view.BeginPresentationUse(); view.SetPresentationVariant(i);
                 view.Animator.Rebind(); view.Animator.Update(0);
                 var clip=view.Animator.runtimeAnimatorController.animationClips.First(c=>c.name.EndsWith(phase=="lineup"?"|Idle":"|Idle_Attack"));
