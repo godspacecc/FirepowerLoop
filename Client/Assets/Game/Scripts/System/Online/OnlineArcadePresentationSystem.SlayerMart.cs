@@ -26,7 +26,7 @@ namespace Game
                 activeSlayerMartLayout=layout;activeRoundGeneration=battle.RoundGeneration;presentedSlayerMart=true;
                 activeRoundLayout=null;predictionIsland=null;predictedIceVelocity=Vector2.zero;
                 hasPrediction=hasLocalFireBaseline=false;presentedInTreasureRoom=false;presentedRoomId=null;
-                roundExitContact=roundExitPrompt=roundLoadPrompt=false;StageNotices.Clear();
+                roundLoadPrompt=false;StageNotices.Clear();
                 enemyIds.Clear();projectileIds.Clear();dropIds.Clear();shieldChargesByPlayer.Clear();nextPresentationId=1;
                 view.Begin(activeArena.ArenaNumber,layout.HalfWidth,layout.HalfHeight,Array.Empty<ArcadeObstacleDefinition>());
                 view.SetExits(Array.Empty<int>(),layout.HalfHeight,false);

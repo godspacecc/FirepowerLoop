@@ -104,9 +104,10 @@ namespace Game.Tests
             Call("StartContentRound", runtime, 0, null);
             runtime.TemporaryWeaponId = "arcade.weapon.rapid"; runtime.TemporaryWeaponRemaining = 6.5f;
             runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f);
-            runtime.IslandExitPrompt = true;
-            Call("ConfirmContentExit", runtime, 0, 0);
-            Call("ConfirmContentExit", runtime, 0, 0);
+            var layout = System.Linq.Enumerable.First(catalog.RoundLayouts, p => p.ArenaConfigNumber == 3 && p.RoundNumber == 1);
+            runtime.PlayerPosition = new Vector2(layout.ExitX, layout.ExitY);
+            Call("TickContentExit", runtime);
+            Call("TickContentExit", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(1));
             Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(6.5f));
             Assert.That(new ArcadeRunFileStore(directory).Inspect().Data.RoundCheckpoint.RoundNumber, Is.EqualTo(2));

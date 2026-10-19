@@ -29,14 +29,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EveryRoundExitFitsDryWalkableLandIncludingTwoChoices()
+        public void EveryRoundHasFourDryWalkableExitsInDifferentDirections()
         {
             foreach (int round in new[] { 1, 2, 3, 4 })
-            foreach (int count in new[] { 1, 2 })
+            foreach (int count in new[] { 4 })
             for (int index = 0; index < count; index++)
             {
                 var region = new ArcadeIslandRegion(19.5f, 19.5f, round);
                 var exit = ArcadeIslandLayout.GetExitPosition(round, index, count, 19.5f, 19.5f, .55f);
+                var direction = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left }[index];
+                Assert.That(Vector2.Dot(exit.normalized, direction), Is.GreaterThan(.95f), "出口必须分布在上下左右四边");
                 Assert.That(region.Contains(exit.x, exit.y), Is.True);
                 Assert.That(region.IsShallow(exit.x, exit.y), Is.False);
                 Assert.That(ArcadeCombatSystem.IsInsideObstacle(exit, .55f,

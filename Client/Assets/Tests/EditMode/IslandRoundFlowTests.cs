@@ -175,7 +175,7 @@ namespace Game.Tests
             Assert.That(snapshot.CanRetryCompletion, Is.False);
         }
 
-        [Test] public void ConfirmedExitKeepsEffectsChargesCooldownHealthAndClearsWorld()
+        [Test] public void ExitContactKeepsEffectsChargesCooldownHealthAndClearsWorld()
         {
             Call("StartIslandRound", runtime, 0, null);
             var shield = System.Linq.Enumerable.First(catalog.Powerups, p => p.Behavior == ArcadePowerupBehavior.Shield);
@@ -185,7 +185,9 @@ namespace Game.Tests
             runtime.Projectiles.Add(41, new ArcadeProjectileRuntime { Id = 41 });
             runtime.Drops.Add(42, new ArcadeDropRuntime { Id = 42 });
             runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f);
-            runtime.IslandExitPrompt = true; Call("ConfirmIslandExit", runtime, 0, 0);
+            runtime.PlayerPosition = ArcadeIslandLayout.GetExitPosition(1, 0, 1,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            Call("TickIslandExit", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(1)); Assert.That(view.Round, Is.EqualTo(2));
             Assert.That(runtime.PlayerHealth, Is.EqualTo(73));
             Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(6.5f));
@@ -347,12 +349,13 @@ namespace Game.Tests
             Assert.That(end.x, Is.LessThan(2));
         }
 
-        [Test] public void StaleExitConfirmationCannotAdvanceNewRound()
+        [Test] public void RepeatedExitContactCannotSkipNewRound()
         {
             Call("StartIslandRound", runtime, 0, null); runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f);
-            runtime.IslandExitPrompt = true; Call("ConfirmIslandExit", runtime, 0, 0);
-            runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f); runtime.IslandExitPrompt = true;
-            Call("ConfirmIslandExit", runtime, 0, 0);
+            runtime.PlayerPosition = ArcadeIslandLayout.GetExitPosition(1, 0, 1,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            Call("TickIslandExit", runtime);
+            Call("TickIslandExit", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(1));
         }
 

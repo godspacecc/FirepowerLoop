@@ -2022,7 +2022,7 @@ namespace Game
                 return;
             }
             view.SetExits(runtime.IslandRoundAwaitingExit ? new[] { -(runtime.WaveIndex + 2) } :
-                runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers : Array.Empty<int>(),
+                runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers.Take(1).ToArray() : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
             view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);

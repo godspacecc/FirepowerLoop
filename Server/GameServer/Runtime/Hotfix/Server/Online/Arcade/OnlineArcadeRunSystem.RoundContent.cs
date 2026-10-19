@@ -90,7 +90,7 @@ namespace ET.Server
         {ProductId=p.ProductId,Behavior=p.Behavior,Magnitude=p.Magnitude,Damage=p.Damage,IntervalSeconds=p.IntervalSeconds,
             Radius=p.Radius,ProjectileSpeed=p.ProjectileSpeed,RemainingSeconds=p.RemainingSeconds,Charges=p.Charges,
             CooldownSeconds=p.CooldownSeconds,PositionX=p.PositionX,PositionZ=p.PositionZ,ShotDirectionX=p.ShotDirectionX,ShotDirectionZ=p.ShotDirectionZ};
-        /// <summary>所有普通轮出口需显式确认，同 Tick 按稳定玩家 ID 仲裁一次。</summary>
+        /// <summary>四向通道共用同一去向；校验接触意图，同 Tick 按稳定玩家 ID 仲裁一次。</summary>
         private static bool TickRoundExit(OnlineArcadeBattleRuntime b)
         {
             if(b.RoundTransitionPending||b.ArenaCompletionReady||b.TreasureRoom?.Members.Length>0)return false;
@@ -98,14 +98,16 @@ namespace ET.Server
             bool nextRound=b.WaveIndex<3&&!b.RoundBossEncounter;
             bool nextBoss=!nextRound&&!b.RoundBossEncounter&&layout.BossKind>0;
             var targets=nextRound||nextBoss?new[]{arena.ArenaNumber}:b.FinalBossDefeated?new[]{0}:arena.NextArenaNumbers;
+            if(targets.Length==0)return false;
+            var rule=ServerConfig.Instance.ArcadeRule;
             foreach(var p in b.Players.Values.OrderBy(p=>p.PlayerId))
             {
                 if(!p.Alive||p.InTreasureRoom||p.ConfirmedExitTarget==int.MinValue)continue;
                 int intent=p.ConfirmedExitTarget;p.ConfirmedExitTarget=int.MinValue;
-                for(int i=0;i<targets.Length;i++)
+                for(int i=0;i<ArcadeRoundLayoutParameters.ExitDirectionCount;i++)
                 {
-                    float x=layout.ExitX+(i-(targets.Length-1)*.5f)*layout.ExitSpacing;
-                    if(intent!=targets[i]||DistanceSquared(p.PositionX,p.PositionZ,x,layout.ExitY)>2.25f)continue;
+                    var exit=layout.GetExitPosition(i,rule.ArenaHalfWidth,rule.ArenaHalfHeight,rule.PlayerRadius);
+                    if(intent!=targets[0]||DistanceSquared(p.PositionX,p.PositionZ,exit.X,exit.Y)>2.25f)continue;
                     if(nextRound||nextBoss){b.RoundTransitionPending=true;b.PendingBossEncounter=nextBoss;}
                     else {b.SelectedExitConfigNumber=intent;b.ArenaCompletionReady=true;}
                     return true;

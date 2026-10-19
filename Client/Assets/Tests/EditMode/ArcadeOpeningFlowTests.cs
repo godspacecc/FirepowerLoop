@@ -236,7 +236,7 @@ namespace Game.Tests
             Call("BeginWave",runtime,0);Call("TickWaveTransition",runtime,200f);
             Assert.That(runtime.WaveClearAwarded,Is.False);Assert.That(runtime.WaveIndex,Is.Zero);
         }
-        [Test] public void ClearedIslandRound_RequiresExitConfirmationRegardlessOfFireOrTimeout()
+        [Test] public void ClearedIslandRound_WaitsForExitContactRegardlessOfFireOrTimeout()
         {
             Call("BeginWave",runtime,0);runtime.SpawnQueue.Clear();runtime.Firing=true;
             Call("TickWaveTransition",runtime,0f);Call("TickWaveTransition",runtime,2f);
@@ -247,11 +247,11 @@ namespace Game.Tests
             Call("TickWaveTransition",runtime,600f);Assert.That(runtime.WaveIndex,Is.Zero);
             Assert.That(runtime.IslandRoundAwaitingExit,Is.True);
         }
-        [Test] public void FinalClear_ShowsTwoExitsWithoutStartingAnotherWave()
+        [Test] public void FinalClear_OpensExitsWithoutStartingAnotherWave()
         {
             Call("BeginWave",runtime,3);runtime.SpawnQueue.Clear();Call("TickWaveTransition",runtime,0f);
             Assert.That(runtime.AwaitingExit,Is.True);Assert.That(runtime.WaveTransitionRemaining,Is.Zero);
-            Assert.That(catalog.Arenas[0].NextArenaNumbers,Is.EquivalentTo(new[]{2,3}));
+            Assert.That(runtime.WaveIndex, Is.EqualTo(3));
         }
         [Test] public void StageNoticesFollowAuthorityWithoutChangingRestOrExit()
         {

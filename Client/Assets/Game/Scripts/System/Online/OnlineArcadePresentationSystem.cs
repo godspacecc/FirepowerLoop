@@ -31,7 +31,7 @@ namespace Game
         private ArcadeArenaDefinition activeArena;
         private FirepowerLoop.Arcade.ArcadeRoundLayoutParameters activeRoundLayout;
         private int activeRoundGeneration;
-        private bool roundExitContact, roundExitPrompt, roundLoadPrompt;
+        private bool roundLoadPrompt;
         private Vector2 predictedIceVelocity;
         private IReadOnlyList<ArcadeObstacleDefinition> RoundObstacles => activeRoundLayout==null?activeArena.Obstacles:
             activeRoundLayout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight)).ToArray();
@@ -144,7 +144,7 @@ namespace Game
             foreach (OnlineArcadeBattlePlayerSnapshot player in latest.Battle.Players)
                 if (player.PlayerId == selfId) { self = player; found = true; break; }
             if (!found || !self.Alive) return;
-            TickRoundExitPrompt(self);
+            TickRoundExitContact(self);
             OnlineArcadeInputFrame input = this.GetSystem<OnlineArcadeRunSystem>().LastSampledInput;
             var moveSpeed = CalculatePredictedMoveSpeed(catalog.Rule.PlayerMoveSpeed, self.DashSeconds > 0f,
                 catalog.Upgrades, FindLocalRunPlayer(selfId).UpgradeStacks);
@@ -203,7 +203,7 @@ namespace Game
                 activeRoundLayout=catalog.RoundLayouts.FirstOrDefault(p=>p.Id==battle.RoundLayoutId&&p.Version==battle.RoundLayoutVersion);
                 if(activeRoundLayout==null&&!battle.IsChallenge) {Log.Error("联机轮布局不可用："+battle.RoundLayoutId);return;}
                 activeRoundGeneration=battle.RoundGeneration;lastAppliedBattleRevision=-1;hasPrediction=false;predictionIsland=null;predictedIceVelocity=Vector2.zero;
-                roundExitContact=roundExitPrompt=roundLoadPrompt=false;
+                roundLoadPrompt=false;
                 enemyIds.Clear();projectileIds.Clear();dropIds.Clear();nextPresentationId=1;
                 view.Begin(activeArena.ArenaNumber,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,RoundObstacles);
                 view.SetIslandRound(activeArena.ArenaNumber==1?battle.WaveNumber:0);
@@ -247,8 +247,8 @@ namespace Game
             view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() :
                 activeArena.Hazards, battle.HazardElapsedSeconds);
             view.SetRoundContent(battle.ContentElapsed,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>():battle.ContentAreas);
-            // 负数仅表示下一轮标签；确认出口仍由独立入口提交服务器的正数场地身份。
-            var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.ToArray();
+            // 四向出口同去一关；负数仅表示下一轮标签，服务端仍接收正数场地身份。
+            var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
             view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? roundTargets : Array.Empty<int>(),
                 catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss);
@@ -552,30 +552,25 @@ namespace Game
                 new(){ButtonText=Loc.T("ui.common.cancel"),Role=MessageButtonRole.Cancel,OnClick=()=>roundLoadPrompt=false}});
         }
 
-        /// <summary>接触仅打开确认框，确认捕获代次；取消后必须离开出口再接触。</summary>
-        private void TickRoundExitPrompt(OnlineArcadeBattlePlayerSnapshot self)
+        /// <summary>接触通道即提交当前轮出口意图；停留期间允许重发，由服务器校验位置并推进一次。</summary>
+        private void TickRoundExitContact(OnlineArcadeBattlePlayerSnapshot self)
         {
-            var battle=latest.Battle;if(activeRoundLayout==null||battle==null||!battle.AwaitingExit||self.InTreasureRoom)return;
+            var battle=latest.Battle;if(activeRoundLayout==null||battle==null||!battle.AwaitingExit||!self.Alive||self.InTreasureRoom)return;
             int[] targets=battle.IsFinalBoss?new[]{0}:battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:
-                activeRoundLayout.BossKind>0&&!battle.RoundBossEncounter?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.ToArray();
-            int contact=-1;for(int i=0;i<targets.Length;i++)
-            {var p=new Vector2(activeRoundLayout.ExitX+(i-(targets.Length-1)*.5f)*activeRoundLayout.ExitSpacing,activeRoundLayout.ExitY);
+                activeRoundLayout.BossKind>0&&!battle.RoundBossEncounter?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.Take(1).ToArray();
+            if(targets.Length==0)return;
+            int contact=-1;for(int i=0;i<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount;i++)
+            {var point=activeRoundLayout.GetExitPosition(i,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
+                var p=new Vector2(point.X,point.Y);
                 if(Vector2.SqrMagnitude(new Vector2(self.PositionX,self.PositionZ)-p)<=2.25f){contact=i;break;}}
-            if(contact<0){roundExitContact=false;return;}if(roundExitContact||roundExitPrompt)return;
-            roundExitContact=roundExitPrompt=true;int generation=battle.RoundGeneration,target=targets[contact];
-            string destinationKey = battle.WaveNumber<4
-                ? catalog.RoundLayouts.FirstOrDefault(p=>p.ArenaConfigNumber==activeArena.ArenaNumber&&p.RoundNumber==battle.WaveNumber+1)?.NameKey
-                : "ui.arcade.theme."+target;
-            Notify.ShowMessage(Loc.T("ui.arcade.island.exit.title"),Loc.T("ui.arcade.island.exit.confirm",target==0?Loc.T("ui.arcade.result.victory"):Loc.T(destinationKey??activeRoundLayout.NameKey)),
-                new List<MessageButtonConfig>{new(){ButtonText=Loc.T("ui.common.confirm"),Role=MessageButtonRole.Confirm,OnClick=()=>{
-                    roundExitPrompt=false;if(latest.Battle?.RoundGeneration==generation)this.GetSystem<OnlineArcadeRunSystem>().ConfirmRoundExit(generation,target);}},
-                    new(){ButtonText=Loc.T("ui.common.cancel"),Role=MessageButtonRole.Cancel,OnClick=()=>roundExitPrompt=false}});
+            if(contact<0)return;
+            this.GetSystem<OnlineArcadeRunSystem>().ConfirmRoundExit(battle.RoundGeneration,targets[0]);
         }
 
         private void EndPresentation()
         {
             StageNotices.Clear();
-            presentedSlayerMart=false;activeSlayerMartLayout=null;activeRoundLayout=null;activeRoundGeneration=0;roundExitContact=roundExitPrompt=false;predictedIceVelocity=Vector2.zero;
+            presentedSlayerMart=false;activeSlayerMartLayout=null;activeRoundLayout=null;activeRoundGeneration=0;predictedIceVelocity=Vector2.zero;
             if (active) view?.End();
             active = false; activeBattleArenaNumber = 0; hasPrediction = false; predictionIsland = null; presentedInTreasureRoom = false; presentedRoomId = null; lastAppliedBattleRevision = -1; catalog = null; activeArena = null;
             enemyIds.Clear(); projectileIds.Clear(); dropIds.Clear(); seenIds.Clear(); nextPresentationId = 1;

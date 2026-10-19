@@ -284,10 +284,6 @@ namespace Game
         public bool IslandTransitionViewPrepared;
         /// <summary>普通清场的单出口状态；不与整场完成出口混用。</summary>
         public bool IslandRoundAwaitingExit;
-        /// <summary>离开触发区前不重复弹出取消的确认；旧回调还需校验现场身份。</summary>
-        public bool IslandExitContact;
-        /// <summary>当前出口确认正在显示；同轮取消后保留接触锁直到离开出口。</summary>
-        public bool IslandExitPrompt;
         /// <summary>固定入口批次及预告剩余秒数；换向停止旧入口生成，保留在场敌人。</summary>
         public int IslandEntryBatch;
         /// <summary>当前轮完整有限预算，按已出队数量划分固定入口批次。</summary>

@@ -45,7 +45,6 @@ namespace Game
             runtime.IslandPreparationError = null;
             runtime.IslandTransitionViewPrepared = false;
             runtime.IslandRoundAwaitingExit = false;
-            runtime.IslandExitPrompt = runtime.IslandExitContact = false;
             runtime.AwaitingExit = false;
             runtime.CompletionAwaitingRetry = false;
             SuspendIslandFirstPerson(runtime);
@@ -287,42 +286,23 @@ namespace Game
                 catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion);
         }
 
-        /// <summary>进入出口只提出确认；取消后可继续拾取，离开触发区再进入才再次提示。</summary>
+        /// <summary>清场后接触通道立即推进；转场与结算状态防止同帧重复进入。</summary>
         private void TickIslandExit(ArcadeCombatRuntime runtime)
         {
-            int count = runtime.IslandRoundAwaitingExit ? 1 : arena.NextArenaNumbers.Count;
+            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
+                runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry || !runtime.WaveClearAwarded ||
+                (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
+            int count = ArcadeRoundLayoutParameters.ExitDirectionCount;
+            if (!runtime.IslandRoundAwaitingExit && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;
             for (int i = 0; i < count; i++)
                 if ((runtime.PlayerPosition - ArcadeIslandLayout.GetExitPosition(runtime.WaveIndex + 1, i, count,
                     catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius)).sqrMagnitude <= 2.25f)
                 { contact = i; break; }
-            if (contact < 0) { runtime.IslandExitContact = false; return; }
-            if (runtime.IslandExitContact || runtime.IslandExitPrompt) return;
-            runtime.IslandExitContact = runtime.IslandExitPrompt = true;
-            int selected = contact;
-            int expectedWave = runtime.WaveIndex;
-            string destination = runtime.IslandRoundAwaitingExit
-                ? ArcadeIslandLayout.GetNameKey(runtime.WaveIndex + 2)
-                : runtime.WaveIndex == 3 && arena.NextArenaNumbers[selected] == 2 ? "ui.arcade.destination.babylon" : "ui.arcade.destination.forest";
-            Notify.ShowMessage(Loc.T("ui.arcade.island.exit.title"), Loc.T("ui.arcade.island.exit.confirm", Loc.T(destination)),
-                new List<MessageButtonConfig>
-                {
-                    new() { ButtonText = Loc.T("ui.common.confirm"), Role = MessageButtonRole.Confirm,
-                        OnClick = () => ConfirmIslandExit(runtime, selected, expectedWave) },
-                    new() { ButtonText = Loc.T("ui.common.cancel"), Role = MessageButtonRole.Cancel,
-                        OnClick = () => { if (this.GetModel<ArcadeCombatModel>().Runtime == runtime) runtime.IslandExitPrompt = false; } }
-                });
-        }
-
-        /// <summary>只接受当前轮有效确认；过期窗口或重复回调不能推动另一个轮次。</summary>
-        private void ConfirmIslandExit(ArcadeCombatRuntime runtime, int selected, int expectedWave)
-        {
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
-                runtime.CompletionSubmitted || !runtime.IslandExitPrompt || !runtime.WaveClearAwarded || runtime.WaveIndex != expectedWave) return;
-            runtime.IslandExitPrompt = false;
+            if (contact < 0) return;
             if (runtime.IslandRoundAwaitingExit) StartIslandRound(runtime, runtime.WaveIndex + 1);
-            else if (runtime.AwaitingExit && selected >= 0 && selected < arena.NextArenaNumbers.Count)
-            { runtime.SelectedExitConfigNumber = arena.NextArenaNumbers[selected]; CompleteArena(runtime); }
+            else
+            { runtime.SelectedExitConfigNumber = arena.NextArenaNumbers[0]; CompleteArena(runtime); }
         }
 
         /// <summary>把实际生成岸段投影到表现，不提前修改敌群预算或入口进度。</summary>

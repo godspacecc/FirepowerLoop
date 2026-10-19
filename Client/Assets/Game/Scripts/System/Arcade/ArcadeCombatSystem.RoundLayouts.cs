@@ -60,7 +60,7 @@ namespace Game
             runtime.IslandTransitionPending = true;
             runtime.IslandPreparationError = null;
             runtime.IslandTransitionViewPrepared = false;
-            runtime.IslandRoundAwaitingExit = runtime.IslandExitPrompt = runtime.IslandExitContact = false;
+            runtime.IslandRoundAwaitingExit = false;
             runtime.AwaitingExit = runtime.CompletionAwaitingRetry = false;
             runtime.ThemeBossStarted = runtime.ThemeBossDefeated = false;
             runtime.ContentBossEnemyId = 0;
@@ -171,42 +171,26 @@ namespace Game
         private Vector2 ContentExitPosition(ArcadeCombatRuntime runtime, int index, int count)
         {
             var layout = RoundLayout(runtime);
-            return new Vector2(layout.ExitX + (index - (count - 1) * .5f) * layout.ExitSpacing, layout.ExitY);
+            var point = layout.GetExitPosition(index, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            return new Vector2(point.X, point.Y);
         }
 
-        /// <summary>进入实体门只提示，回调绑定当前轮，取消或陈旧窗口不推进。</summary>
+        /// <summary>清场后接触实体门直接推进，沿用轮前保存、商店及结算事务。</summary>
         private void TickContentExit(ArcadeCombatRuntime runtime)
         {
-            int count = runtime.IslandRoundAwaitingExit ? 1 : runtime.FinalBossDefeated ? 1 : arena.NextArenaNumbers.Count;
+            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
+                runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry ||
+                (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
+            int count = ArcadeRoundLayoutParameters.ExitDirectionCount;
+            if (!runtime.IslandRoundAwaitingExit && !runtime.FinalBossDefeated && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;
             for (int i = 0; i < count; i++)
                 if ((runtime.PlayerPosition - ContentExitPosition(runtime, i, count)).sqrMagnitude <= 2.25f) { contact = i; break; }
-            if (contact < 0) { runtime.IslandExitContact = false; return; }
-            if (runtime.IslandExitContact || runtime.IslandExitPrompt) return;
-            runtime.IslandExitContact = runtime.IslandExitPrompt = true;
-            int selected = contact, expectedWave = runtime.WaveIndex;
-            string destination = runtime.IslandRoundAwaitingExit ? catalog.RoundLayouts.First(p =>
-                p.ArenaConfigNumber == arena.ArenaNumber && p.RoundNumber == expectedWave + 2).NameKey :
-                runtime.FinalBossDefeated ? "ui.arcade.exit.victory" : "ui.arcade.theme." + arena.NextArenaNumbers[selected];
-            Notify.ShowMessage(Loc.T("ui.arcade.island.exit.title"), Loc.T("ui.arcade.island.exit.confirm", Loc.T(destination)),
-                new List<MessageButtonConfig> {
-                    new() { ButtonText = Loc.T("ui.common.confirm"), Role = MessageButtonRole.Confirm,
-                        OnClick = () => ConfirmContentExit(runtime, selected, expectedWave) },
-                    new() { ButtonText = Loc.T("ui.common.cancel"), Role = MessageButtonRole.Cancel,
-                        OnClick = () => { if (this.GetModel<ArcadeCombatModel>().Runtime == runtime) runtime.IslandExitPrompt = false; } }
-                });
-        }
-
-        private void ConfirmContentExit(ArcadeCombatRuntime runtime, int selected, int expectedWave)
-        {
-            if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
-                runtime.CompletionSubmitted || !runtime.IslandExitPrompt || runtime.WaveIndex != expectedWave ||
-                (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
-            runtime.IslandExitPrompt = false;
+            if (contact < 0) return;
             if (runtime.IslandRoundAwaitingExit)
-            {if(!TryBeginSlayerMart(runtime,expectedWave+1))StartContentRound(runtime,expectedWave+1);}
-            else if (runtime.FinalBossDefeated || selected >= 0 && selected < arena.NextArenaNumbers.Count)
-            { runtime.SelectedExitConfigNumber = runtime.FinalBossDefeated ? 0 : arena.NextArenaNumbers[selected]; CompleteArena(runtime); }
+            {if(!TryBeginSlayerMart(runtime,runtime.WaveIndex+1))StartContentRound(runtime,runtime.WaveIndex+1);}
+            else
+            { runtime.SelectedExitConfigNumber = runtime.FinalBossDefeated ? 0 : arena.NextArenaNumbers[0]; CompleteArena(runtime); }
         }
 
         /// <summary>Slayer 节点在四轮之后进入单独 Boss 阶段，主线轮次与场序保持不变。</summary>

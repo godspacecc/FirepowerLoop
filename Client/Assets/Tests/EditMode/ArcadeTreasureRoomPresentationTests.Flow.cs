@@ -43,6 +43,45 @@ namespace Game.Tests
                 new[] { new OnlineArcadePlayerSnapshot(1, "one", 3, 0, 2, 2, "arcade.weapon.basic", false, null), new OnlineArcadePlayerSnapshot(2, "two", 3, 0, 2, 2, "arcade.weapon.basic", false, null) }, OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success, battle));
             typeof(OnlineArcadePresentationSystem).GetMethod("ApplyAuthoritativeSnapshot", Flags).Invoke(system, new object[] { battle });
         }
+        [TestCase(1, 0, true, false, true)]
+        [TestCase(1, 1, true, false, true)]
+        [TestCase(1, 2, true, false, true)]
+        [TestCase(1, 3, true, false, true)]
+        [TestCase(4, 0, true, false, true)]
+        [TestCase(4, 1, true, false, true)]
+        [TestCase(4, 2, true, false, true)]
+        [TestCase(4, 3, true, false, true)]
+        [TestCase(1, 0, false, false, true)]
+        [TestCase(1, 0, true, true, true)]
+        [TestCase(1, 0, true, false, false)]
+        public void OnlineExitContactSubmitsCurrentRouteWithoutConfirmation(int round, int exitIndex,
+            bool awaitingExit, bool inside, bool touching)
+        {
+            var runs = new OnlineArcadeRunSystem();
+            architecture.RegisterSystem(runs);
+            try
+            {
+                var arena = catalog.Arenas.First(a => a.ArenaNumber == 1);
+                var layout = catalog.RoundLayouts.Single(p => p.ArenaConfigNumber == 1 && p.RoundNumber == round);
+                var exit = layout.GetExitPosition(exitIndex, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+                var self = new OnlineArcadeBattlePlayerSnapshot(1,
+                    exit.X + (touching ? 0 : 30), exit.Y, 0, 1, 100, 100, true, false, 0, inTreasureRoom: inside);
+                var battle = new OnlineArcadeBattleSnapshot(1, round, 4, 1, 1, 2, 1, 0,
+                    new[] { self }, null, arenaConfigNumber: 1, awaitingExit: awaitingExit, roundGeneration: 7);
+                var snapshot = new OnlineArcadeRunClientSnapshot(true, 101, 202, 1, OnlineArcadeRunPhase.Arena,
+                    0, 1, "test", null, OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success, battle);
+                Set("latest", snapshot); Set("activeRoundLayout", layout);
+                typeof(OnlineArcadeRunSystem).GetField("lastSnapshot", Flags).SetValue(runs, snapshot);
+                typeof(OnlineArcadePresentationSystem).GetMethod("TickRoundExitContact", Flags).Invoke(system, new object[] { self });
+                int generation = (int)typeof(OnlineArcadeRunSystem).GetField("confirmedExitGeneration", Flags).GetValue(runs);
+                bool expected = awaitingExit && !inside && touching;
+                Assert.That(generation, Is.EqualTo(expected ? 7 : 0));
+                if (expected)
+                    Assert.That(typeof(OnlineArcadeRunSystem).GetField("confirmedExitTarget", Flags).GetValue(runs),
+                        Is.EqualTo(round < 4 ? 1 : arena.NextArenaNumbers[0]));
+            }
+            finally { runs.Deinit(); }
+        }
         [Test] public void SecondArenaForestSnapshotUsesArmoryParametersAndAuthorityFade()
         {
             Set("activeArena", catalog.Arenas.Single(a => a.ArenaNumber == 3));
@@ -113,7 +152,7 @@ namespace Game.Tests
         }
         [Test] public void HudKeysInBothLanguages()
         { foreach (var lang in new[] { "zh-CN", "en-US" }) { var text = File.ReadAllText(Path.Combine(Application.dataPath, "Game/Config/Localization", lang + ".json")); Assert.That(text, Does.Contain("ui.arcade.hud.score")); Assert.That(text, Does.Contain("ui.arcade.hud.treasure")); } }
-        [Test] public void OnlineClearedRoundsLabelNextRoundAndKeepFourthRoundRouteChoices()
+        [Test] public void OnlineClearedRoundsUseOneDestinationForAllFourDirections()
         {
             for (int round = 1; round <= 3; round++)
             {
@@ -123,7 +162,7 @@ namespace Game.Tests
             }
             Apply(new OnlineArcadeBattleSnapshot(1, 4, 4, 1, 1, 2, 4, 0,
                 Battle(1, false).Players, null, arenaConfigNumber: 1, awaitingExit: true));
-            Assert.That(view.ExitTargets, Is.EqualTo(new[] { 2, 3 }));
+            Assert.That(view.ExitTargets, Is.EqualTo(new[] { 2 }));
         }
         private sealed class TestView : IArcadeCombatViewPort
         {

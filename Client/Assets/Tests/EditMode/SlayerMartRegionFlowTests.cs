@@ -112,7 +112,8 @@ namespace Game.Tests
             {
                 Assert.That(runtime.IslandTransitionPending,Is.False,"基础地图准备尚未完成");runtime.SpawnQueue.Clear();runtime.TreasureCompleted=true;Call("TickWaveTransition",runtime,0f);
                 Assert.That(runtime.WaveClearAwarded,Is.True,"基础清场未完成");Assert.That(runtime.IslandRoundAwaitingExit,Is.True,"基础出口未建立");
-                runtime.IslandExitPrompt=true;Call("ConfirmContentExit",runtime,0,current);
+                var layout=System.Linq.Enumerable.First(catalog.RoundLayouts,p=>p.ArenaConfigNumber==runtime.ArenaNumber&&p.RoundNumber==current+1);
+                runtime.PlayerPosition=new Vector2(layout.ExitX,layout.ExitY);Call("TickContentExit",runtime);
             }
         }
         private void AtStore(){ExitRound(2);Assert.That(runtime.SlayerMart,Is.Not.Null,"正式第11轮出口尚未挂接商店");}

@@ -105,14 +105,16 @@ namespace Game.Tests
             Assert.DoesNotThrow(() => view.TickPlayerFeedback(.25f));
         }
 
-        [Test] public void FourthRoundStillPresentsBothRouteChoices()
+        [Test] public void FourthRoundPresentsFourExitsWithOneDestination()
         {
             Set("islandRound", 4);
             view.SetExits(new[] { 2, 3 }, 19.5f, false);
-            Assert.That(root.transform.childCount, Is.EqualTo(2));
-            foreach (int destination in new[] { 2, 3 })
+            Assert.That(root.transform.childCount, Is.EqualTo(4));
+            for (int direction = 0; direction < 4; direction++)
             {
-                var gate = root.transform.Find("ArcadeRouteExit_" + destination);
+                var gate = root.transform.Find("ArcadeRouteExit_2" + (direction == 0 ? "" : "_" + direction));
+                var position = ArcadeIslandLayout.GetExitPosition(4, direction, 4, 19.5f, 19.5f, .55f);
+                Assert.That(Vector2.Distance(new Vector2(gate.localPosition.x, gate.localPosition.z), position), Is.LessThan(.01f));
                 Assert.That(gate.Find("ExitCue/Arrow"), Is.Not.Null);
                 Assert.That(gate.GetComponentInChildren<TextMeshPro>(true).text, Is.Not.Empty);
             }

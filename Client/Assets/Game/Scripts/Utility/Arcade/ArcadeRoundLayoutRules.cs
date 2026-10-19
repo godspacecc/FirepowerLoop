@@ -26,6 +26,8 @@ namespace FirepowerLoop.Arcade
 #endif
     public sealed class ArcadeRoundLayoutParameters
     {
+        /// <summary>普通场地按北、东、南、西各提供一个同去向出口。</summary>
+        public const int ExitDirectionCount = 4;
         private ArcadeRoundLayoutParameters(LayoutConfig row,IEnumerable<ArcadeRegionPoint> barrels=null)
         {
             Id=row.Id;ThemeKey=row.ThemeKey;NameKey=row.NameKey;ArenaConfigNumber=row.ArenaConfigNumber;
@@ -50,6 +52,29 @@ namespace FirepowerLoop.Arcade
         public float ExitX { get; }
         public float ExitY { get; }
         public float ExitSpacing { get; }
+        /// <summary>规则与表现共用四向落点；海岛沿用干陆地内侧的留量。</summary>
+        public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
+            => DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
+                ArenaConfigNumber == 1 ? halfHeight - 3 : ExitY,
+                halfWidth, halfHeight, playerRadius, ArenaConfigNumber == 1 ? RoundNumber : 0);
+
+        /// <summary>把北侧出口依次旋转到四边；海岛中心落在干陆地，外缘保留完整触发半径。</summary>
+        public static ArcadeRegionPoint DirectionalExit(int direction, float northX, float northY,
+            float halfWidth, float halfHeight, float playerRadius, int islandRound = 0)
+        {
+            if (direction < 0 || direction >= ExitDirectionCount) throw new ArgumentOutOfRangeException(nameof(direction));
+            var point = direction switch
+            {
+                0 => new ArcadeRegionPoint(northX, northY),
+                1 => new ArcadeRegionPoint(northY * halfWidth / halfHeight, -northX * halfHeight / halfWidth),
+                2 => new ArcadeRegionPoint(-northX, -northY),
+                _ => new ArcadeRegionPoint(-northY * halfWidth / halfHeight, northX * halfHeight / halfWidth)
+            };
+            if (islandRound == 0) return point;
+            var region = new ArcadeIslandRegion(halfWidth, halfHeight, islandRound);
+            point = region.LandPoint(point.X, point.Y, playerRadius);
+            return region.Constrain(point.X, point.Y, playerRadius + 1.5f);
+        }
         public IReadOnlyList<ArcadeLayoutObstacle> Obstacles { get; }
         public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
         /// <summary>预置可射桶坐标；数组索引是当前地图版本内的稳定身份。</summary>
@@ -92,8 +117,8 @@ namespace FirepowerLoop.Arcade
         {
             const float radius=.5f;
             if(Obstacles.Any(o=>Math.Abs(barrel.X-o.X)<o.HalfWidth+radius&&Math.Abs(barrel.Y-o.Y)<o.HalfHeight+radius))return true;
-            var points=new[]{new ArcadeRegionPoint(SpawnX,SpawnY),new ArcadeRegionPoint(ExitX,ExitY),
-                new ArcadeRegionPoint(ExitX-ExitSpacing*1.5f,ExitY),new ArcadeRegionPoint(ExitX+ExitSpacing*1.5f,ExitY)};
+            var points=Enumerable.Range(0,ExitDirectionCount).Select(i=>DirectionalExit(i,ExitX,ExitY,1,1,0))
+                .Append(new ArcadeRegionPoint(SpawnX,SpawnY));
             return points.Any(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2) ||
                 Barrels.Count(p=>Math.Abs(barrel.X-p.X)<radius*2&&Math.Abs(barrel.Y-p.Y)<radius*2)>1;
         }
@@ -116,8 +141,8 @@ namespace FirepowerLoop.Arcade
             if(!Finite(halfWidth)||!Finite(halfHeight)||!Finite(playerRadius)||halfWidth<=5||halfHeight<=5||playerRadius<=0)return false;
             float clearance=playerRadius*2;
             var region=ArenaConfigNumber==1 ? new ArcadeIslandRegion(halfWidth,halfHeight,RoundNumber) : null;
-            var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY),new ArcadeRegionPoint(ExitX,ExitY),
-                new ArcadeRegionPoint(ExitX-ExitSpacing*1.5f,ExitY),new ArcadeRegionPoint(ExitX+ExitSpacing*1.5f,ExitY)};
+            var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY)};
+            targets.AddRange(Enumerable.Range(0,ExitDirectionCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
             targets.AddRange(Barrels);
             if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight,region)) ||
                 Obstacles.Any(o=>Math.Abs(o.X)+o.HalfWidth>=halfWidth||Math.Abs(o.Y)+o.HalfHeight>=halfHeight))return false;

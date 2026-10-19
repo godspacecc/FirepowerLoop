@@ -58,7 +58,8 @@ namespace Game.Tests
             : new Vector2(rules.EntryX, rules.EntryY);
         private void Reward(int index)
         {runtime.PlayerPosition=new Vector2(runtime.TreasureRoom.Parameters.Rewards[index].X,runtime.TreasureRoom.Parameters.Rewards[index].Y);Tick();}
-        [Test] public void FirstRoundExitConfirmsSecondRoundAndRejectsDuplicateConfirmation()
+        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void FirstRoundExitContactStartsSecondRoundOnlyOnce(int direction)
         {
             var type = typeof(ArcadeCombatSystem);
             type.GetMethod("StartIslandRound", Flags).Invoke(system, new object[] { runtime, 0, null });
@@ -66,17 +67,51 @@ namespace Game.Tests
             runtime.SpawnQueue.Clear();
             type.GetMethod("TickWaveTransition", Flags).Invoke(system, new object[] { runtime, 0f });
             Assert.That(runtime.IslandRoundAwaitingExit, Is.True);
-            // 取消及未确认状态不能推进；确认后保存下一轮并忽略同一旧弹窗的重复回调。
-            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
+            // 未接触通道保持原轮；接触后直接保存下一轮，连续检测不能跨过新一轮战斗。
+            runtime.PlayerPosition = Vector2.zero;
+            type.GetMethod("TickIslandExit", Flags).Invoke(system, new object[] { runtime });
             Assert.That(runtime.WaveIndex, Is.Zero);
-            runtime.IslandExitPrompt = true;
-            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
-            type.GetMethod("ConfirmIslandExit", Flags).Invoke(system, new object[] { runtime, 0, 0 });
+            runtime.PlayerPosition = ArcadeIslandLayout.GetExitPosition(1, direction, 4,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            type.GetMethod("TickIslandExit", Flags).Invoke(system, new object[] { runtime });
+            type.GetMethod("TickIslandExit", Flags).Invoke(system, new object[] { runtime });
             Assert.That(runtime.WaveIndex, Is.EqualTo(1));
             Assert.That(runtime.IslandRoundAwaitingExit, Is.False);
             Assert.That(runtime.CompletionAwaitingRetry, Is.False);
             Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(120));
             Assert.That(new ArcadeRunFileStore(root).Inspect().Data.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(2));
+        }
+        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void FinalIslandFourExitsShareNextArena(int direction)
+        {
+            var type = typeof(ArcadeCombatSystem);
+            for (int wave = 0; wave < 4; wave++)
+                type.GetMethod("StartIslandRound", Flags).Invoke(system, new object[] { runtime, wave, null });
+            Assert.That(runtime.CompletionAwaitingRetry, Is.False, runtime.IslandPreparationError);
+            runtime.SpawnQueue.Clear();
+            type.GetMethod("TickWaveTransition", Flags).Invoke(system, new object[] { runtime, 0f });
+            runtime.PlayerPosition = ArcadeIslandLayout.GetExitPosition(4, direction, 4,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            type.GetMethod("TickIslandExit", Flags).Invoke(system, new object[] { runtime });
+            Assert.That(run.Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+            Assert.That(run.Current.ArenaConfigNumber, Is.EqualTo(catalog.Arenas[0].NextArenaNumbers[0]));
+        }
+        [TestCase(0)] [TestCase(1)] [TestCase(2)] [TestCase(3)]
+        public void ContentExitContactStartsNextRoundWithoutConfirmation(int direction)
+        {
+            ConfigureArmory(0);
+            var type = typeof(ArcadeCombatSystem);
+            runtime.SpawnQueue.Clear();
+            type.GetMethod("TickWaveTransition", Flags).Invoke(system, new object[] { runtime, 0f });
+            var layout = catalog.RoundLayouts.Single(p => p.ArenaConfigNumber == 2 && p.RoundNumber == 1);
+            var exit = layout.GetExitPosition(direction, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            runtime.PlayerPosition = new Vector2(exit.X, exit.Y);
+            type.GetMethod("TickContentExit", Flags).Invoke(system, new object[] { runtime });
+            type.GetMethod("TickContentExit", Flags).Invoke(system, new object[] { runtime });
+            Assert.That(runtime.WaveIndex, Is.EqualTo(1));
+            Assert.That(runtime.IslandRoundAwaitingExit, Is.False);
+            Assert.That(runtime.CompletionAwaitingRetry, Is.False);
+            Assert.That(run.Current.RoundCheckpoint.RoundNumber, Is.EqualTo(2));
         }
         [Test] public void DiscoveryDoesNotEnterUnclearedWave()
         {
@@ -167,7 +202,7 @@ namespace Game.Tests
         [Test] public void DeathResetsMultiplierAndCloneKeepsScore()
         {run.SetTransientTreasureScore(new ArcadeTreasureScoreState(1000,3,500,3));typeof(ArcadeCombatSystem).GetMethod("ResetTreasureMultiplierAfterDeath",Flags).Invoke(system,null);Assert.That(run.Current.Score,Is.EqualTo(1000));Assert.That(run.Current.ScoreMultiplier,Is.EqualTo(1));Assert.That(run.Current.Clone().MultiplierProgress,Is.Zero);}
         /// <summary>第二场使用真实目录及既有奖励房入口，不替换第一场财宝。</summary>
-        private void ConfigureArmory()
+        private void ConfigureArmory(int lastRound = 2)
         {
             var data = run.Current; data.NextArenaNumber = 2; data.ArenaConfigNumber = 2; data.CompletedArenaCount = 1;
             data.Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 };
@@ -175,7 +210,7 @@ namespace Game.Tests
             runtime.ArenaNumber = 2;
             typeof(ArcadeCombatSystem).GetField("arena", Flags).SetValue(system, catalog.Arenas.Single(a => a.ArenaNumber == 2));
             // 通过正式连续轮前事务准备第三轮，避免用缺少前序节点的假现场测试恢复。
-            for (int round = 0; round < 3; round++)
+            for (int round = 0; round <= lastRound; round++)
                 typeof(ArcadeCombatSystem).GetMethod("StartContentRound", Flags).Invoke(system, new object[] { runtime, round, null });
             Assert.That(runtime.CompletionAwaitingRetry, Is.False, "真实第三轮节点准备失败");
             runtime.SpawnQueue.Clear();

@@ -358,8 +358,10 @@ namespace Game
             exitCueElapsed = 0;
             foreach (var marker in exitVisuals) DestroyObject(marker);
             exitVisuals.Clear();
-            var count = victory ? 1 : destinations.Count;
-            if (count == 0) return;
+            var destinationCount = victory ? 1 : destinations.Count;
+            if (destinationCount == 0) return;
+            bool fourDirections = roundLayout != null || islandRound > 0;
+            var count = fourDirections ? FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount : destinationCount;
             bool formalExit = roundLayout != null || contentArena <= 3 && !victory;
             if (contentTemplates == null) { exitVisualIdentity = null; return; }
             // 正式门自带材质；旧圆柱出口也从资源引用复制，Android Host 不依赖 Shader 名称查找。
@@ -370,8 +372,9 @@ namespace Game
             }
             for (var index = 0; index < count; index++)
             {
-                var position = roundLayout != null
-                    ? new Vector2(roundLayout.ExitX + (index - (count - 1) * .5f) * roundLayout.ExitSpacing, roundLayout.ExitY)
+                var point = roundLayout?.GetExitPosition(index, roundHalfWidth, roundHalfHeight, roundPlayerRadius);
+                var position = point.HasValue
+                    ? new Vector2(point.Value.X, point.Value.Y)
                     : islandRound > 0 && Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var exitCatalog, out _)
                     ? ArcadeIslandLayout.GetExitPosition(islandRound, index, count, exitCatalog.Rule.ArenaHalfWidth,
                         exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
@@ -380,9 +383,10 @@ namespace Game
                 if (formalExit)
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
-                    if (!victory && destinations[index] < 0)
+                    int destinationIndex = fourDirections ? 0 : index;
+                    if (!victory && destinations[destinationIndex] < 0)
                         marker.GetComponentInChildren<TMPro.TextMeshPro>(true).text = Loc.T("ui.arcade.exit.enter_round");
-                    else SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : DestinationKey(destinations[index]));
+                    else SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : DestinationKey(destinations[destinationIndex]));
                     BindExitCue(marker);
                 }
                 else
@@ -394,7 +398,8 @@ namespace Game
                     marker.GetComponent<Renderer>().sharedMaterial = exitMaterial;
                     DestroyObject(marker.GetComponent<Collider>());
                 }
-                marker.name = victory ? "ArcadeVictoryExit" : "ArcadeRouteExit_" + destinations[index];
+                marker.name = victory ? "ArcadeVictoryExit" : "ArcadeRouteExit_" + destinations[fourDirections ? 0 : index];
+                if (fourDirections && index > 0) marker.name += "_" + index;
                 // Collider 不参与选择，避免表现对象成为第二权威或阻挡角色进入出口。
                 exitVisuals.Add(marker);
             }

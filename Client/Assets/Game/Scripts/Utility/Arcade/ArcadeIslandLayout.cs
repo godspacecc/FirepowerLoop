@@ -36,9 +36,8 @@ namespace Game
             Validate(roundNumber);
             if (count < 1 || index < 0 || index >= count || playerRadius <= 0)
                 throw new ArgumentOutOfRangeException(nameof(index));
-            var region = new FirepowerLoop.Arcade.ArcadeIslandRegion(halfWidth, halfHeight, roundNumber);
-            var point = region.LandPoint((index - (count - 1) * .5f) * 5f, halfHeight - 3f, playerRadius + 1.5f);
-            point = region.Constrain(point.X, point.Y, playerRadius + 1.5f);
+            var point = FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.DirectionalExit(index, 0, halfHeight - 3f,
+                halfWidth, halfHeight, playerRadius, roundNumber);
             return new Vector2(point.X, point.Y);
         }
 
