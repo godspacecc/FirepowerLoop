@@ -307,6 +307,18 @@ namespace Game.Tests
             Assert.That(offAxis.Health, Is.EqualTo(100));
         }
 
+        [Test]
+        public void DashDirectionSamplingDoesNotApplyCameraLookTwice()
+        {
+            Add(1); Call("TickDrops", runtime);
+            runtime.Dashes = 1;
+            Call("OnHudAction", new ArcadeHudActionRequestedEvent(ArcadeHudActionKind.Dash));
+            Assert.That(view.LookCalls, Is.Zero, "冲刺回调只读取当前朝向，不能提前重复推进视角");
+            Call("ReadInput", runtime);
+            Assert.That(view.LookCalls, Is.EqualTo(1));
+            Assert.That(runtime.DashDirection, Is.EqualTo(Vector2.up));
+        }
+
         private sealed class CameraView : IArcadeCombatViewPort
         {
             public bool AllowEntry = true;
@@ -314,7 +326,8 @@ namespace Game.Tests
             public bool IsFirstPersonActive { get; private set; }
             public int Entries, Exits, Feedback;
             public Vector2 LastLook;
-            public void ApplyFirstPersonLook(Vector2 delta) => LastLook = delta;
+            public int LookCalls;
+            public void ApplyFirstPersonLook(Vector2 delta) { LastLook = delta; LookCalls++; }
             public readonly List<int> Removed = new();
             public bool TryBeginFirstPerson(out string error)
             { error = null; if (!AllowEntry) return false; Entries++; IsFirstPersonActive = true; return true; }

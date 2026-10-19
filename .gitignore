@@ -126,6 +126,10 @@ Client/UserSettings/
 # ArcadeCasualChecks 编译输出
 /Tools/ArcadeCasualChecks/bin/
 
+# 炸弹和冲刺定向检查的本地编译输出
+/Tools/ArcadeBombChecks/bin/
+/Tools/ArcadeDashChecks/bin/
+
 # 补给定向检查的本地编译缓存
 /Tools/ArcadeSupplyChecks/bin/
 /Tools/ArcadeSupplyChecks/obj/

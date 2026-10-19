@@ -1,0 +1,107 @@
+{
+  "date": "2026-10-18",
+  "approvedDesign": {
+    "overheadArrowScale": 0.6,
+    "groundGuideScale": 0.65,
+    "textScale": 0.7,
+    "text": {
+      "zh": "进入下一轮",
+      "en": "Next Round"
+    },
+    "plaque": "深蓝灰切角底板、细金边、短青色强调线"
+  },
+  "generation": {
+    "entry": "Config/gen.bat",
+    "status": "客户端31表、服务端25表生成和发布成功；未产生业务表差异；双语由Config/Localization/arcade-exit.json发布",
+    "texts": "通过LocalizationTextGenerator.GenerateTexts重生成；保留生成器对现有settings语言键补齐的访问器"
+  },
+  "red": [
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate",
+      "Status": "Passed",
+      "Duration": "00:00:00.5080000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FormalExitUsesOnlyLoadedTemplateMaterials",
+      "Status": "Passed",
+      "Duration": "00:00:00.5770000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FormalGateHasVisibleDirectionAndTriggerRingWithoutBlockingMovement",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FourthRoundStillPresentsBothRouteChoices",
+      "Status": "Passed",
+      "Duration": "00:00:00.4480000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.NextRoundPlaqueUsesGenericTextAndFitsBothLanguages",
+      "Status": "Failed",
+      "Duration": "00:00:00.3390000",
+      "Message": "  Expected string length 5 but was 9. Strings differ at index 2.\r\n  Expected: \"进入下一轮\"\r\n  But was:  \"进入第 {0} 轮\"\r\n  -------------^\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.RoundExitKeepsAuthorityPositionWhileCueAnimatesAndRepeatedSyncDoesNotDuplicate",
+      "Status": "Failed",
+      "Duration": "00:00:00.4060000",
+      "Message": "  Expected string length 5 but was 7. Strings differ at index 2.\r\n  Expected: \"进入下一轮\"\r\n  But was:  \"进入第 2 轮\"\r\n  -------------^\r\n"
+    }
+  ],
+  "green": [
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningPreservesLoadedShaderAndRenderSettingsWithoutMutatingTemplate",
+      "Status": "Passed",
+      "Duration": "00:00:00.2010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FormalExitUsesOnlyLoadedTemplateMaterials",
+      "Status": "Passed",
+      "Duration": "00:00:00.5800000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FormalGateHasVisibleDirectionAndTriggerRingWithoutBlockingMovement",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.FourthRoundStillPresentsBothRouteChoices",
+      "Status": "Passed",
+      "Duration": "00:00:00.5490000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.NextRoundPlaqueUsesGenericTextAndFitsBothLanguages",
+      "Status": "Passed",
+      "Duration": "00:00:00.4410000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeExitVisualTests.RoundExitKeepsAuthorityPositionWhileCueAnimatesAndRepeatedSyncDoesNotDuplicate",
+      "Status": "Passed",
+      "Duration": "00:00:00.5480000"
+    }
+  ],
+  "review": "独立只读审查未发现Critical/Important；资源GUID/fileID、Refine幂等性、直接Shader引用及文案生成边界通过",
+  "visual": {
+    "images": [
+      "compact-near.png",
+      "compact-far.png"
+    ],
+    "note": "正式Prefab和正式Controller隔离渲染，非手机截图；近景与远处指路箭头均已目视检查"
+  },
+  "limits": [
+    "仅EditMode短类ArcadeExitVisualTests，最多7项，includePassingTests=true；未运行完整套件",
+    "未打包发布；设备实际效果待更新后验收",
+    "保留其它会话及已有DLL、字体、TimeManager等改动"
+  ]
+}
