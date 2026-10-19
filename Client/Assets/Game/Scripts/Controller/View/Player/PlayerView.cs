@@ -6,7 +6,7 @@ namespace Game
 {
     /// <summary>执行玩家 Animator、挂点、骨骼和世界交互表现；生命由屏幕 HUD 展示，不持有战斗权威。</summary>
     [RequireComponent(typeof(CharacterController))]
-    public sealed class PlayerView : MonoBehaviour
+    public sealed partial class PlayerView : MonoBehaviour
     {
         [Serializable]
         private struct ArcadeWeaponVisualBinding
@@ -36,6 +36,8 @@ namespace Game
         private static readonly int ShotgunWeaponAnimatorParameter = Animator.StringToHash("ShotgunWeaponActive");
         private static readonly int ShotgunFireAnimatorParameter = Animator.StringToHash("ShotgunFire");
         private static readonly int IdleAnimatorState = Animator.StringToHash("Idle");
+        /// <summary>首次收到已倒地状态时采样终态，不重演加载前的死亡过程。</summary>
+        private static readonly int DeathAnimatorState = Animator.StringToHash("Death");
         // 步枪与手枪的遮罩不同：步枪保留根部覆盖，手枪仅覆盖上身以维持直立站姿。
         private const int RifleUpperBodyLayerIndex = 1;
         private const int PistolUpperBodyLayerIndex = 2;
@@ -289,6 +291,7 @@ namespace Game
 
         private void OnDestroy()
         {
+            arcadeDamage?.Dispose();arcadeDamage=null;
             arcadeProtection?.Dispose();
             arcadeProtection = null;
             swimmingPresenter?.Dispose();swimmingPresenter=null;
@@ -313,8 +316,16 @@ namespace Game
         /// 切换存活表现。死亡时保留 Humanoid 渲染以播放动画，只停用碰撞、武器、HUD 与手电筒。
         /// </summary>
         public void SetAlivePresentation(bool alive)
+            => SetAlivePresentation(alive,true);
+
+        /// <summary>联机首次加载可关闭历史死亡补播，后续状态变化沿用正式死亡动画。</summary>
+        public void SetAlivePresentation(bool alive,bool playTransition)
         {
             var changed = presentationAlive != alive;
+            if(arcadePresentationActive)
+            {
+                PrepareArcadeDamage();arcadeDamage?.SetAlive(alive,playTransition);
+            }
             presentationAlive = alive;
             if (animator != null && changed)
             {
@@ -334,6 +345,7 @@ namespace Game
                 else
                 {
                     UpdateWeaponAimAnimator(false);
+                    if(!playTransition)animator.Play(DeathAnimatorState,0,1f);
                 }
             }
 
@@ -495,6 +507,7 @@ namespace Game
             {
                 // 把对象和缓冲准备移到进场阶段，首次受击只切换既有表现。
                 PrepareFeedbackRenderers();
+                PrepareArcadeDamage();
                 PrepareArcadeProtection();
                 damageNumberEmitter?.Prepare();
             }
@@ -502,6 +515,7 @@ namespace Game
             {
                 RestoreFeedbackColors();
                 colorFeedbackRemainingSeconds = 0f;
+                arcadeDamage?.Dispose();arcadeDamage=null;
                 arcadeProtection?.Dispose();
                 arcadeProtection = null;
             }
@@ -770,6 +784,7 @@ namespace Game
                 groundContact.Apply(presentationAlive && !SwimmingPresentation);
             }
             if (animator == null || !animator.isActiveAndEnabled) return;
+            arcadeDamage?.ApplyHurtPose(animator);
             if(SwimmingPresentation){ApplySwimmingPresentation(Time.deltaTime);return;}
             if (GetComponent<CharacterWeaponPresenter>() != null && sharedWeaponAnimationActive) return;
             if (Time.time < projectileBodyRecoilEndTime)
@@ -948,6 +963,7 @@ namespace Game
 
         public void PlayHurtFeedback()
         {
+            if(arcadePresentationActive){if(!presentationAlive)return;PrepareArcadeDamage();arcadeDamage?.Hurt();}
             // 街机以闪红和飘字提示受伤，保持权威移动、瞄准与射击的连续表现。
             // 普通地图及独立角色预览仍沿用原有全身受击动作，死亡继续走存活切换入口。
             if (!arcadePresentationActive)
@@ -998,6 +1014,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            arcadeDamage?.Tick(deltaTime);
             GetComponent<CharacterWeaponPresenter>()?.TickUpperBodyGunFire(deltaTime);
             if (singleAttackSpeedResetRemainingSeconds > 0f)
             {
@@ -1099,6 +1116,7 @@ namespace Game
 
         private void OnDisable()
         {
+            arcadeDamage?.Reset();
             RestoreFeedbackColors();
             colorFeedbackRemainingSeconds = 0f;
             arcadeProtection?.SetActive(false);

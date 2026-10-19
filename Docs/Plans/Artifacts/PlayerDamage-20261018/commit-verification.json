@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-19",
+  "testClass": "ArcadePlayerDamageTests",
+  "testMode": "EditMode",
+  "maximum": 9,
+  "includePassingTests": true,
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 3685,
+    "PassedTests": 9,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:02.4871770"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.DeathLandsOnceAndRepeatedDeadStateDoesNotReplayDust",
+      "Status": "Passed",
+      "Duration": "00:00:01.2470000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.FormalEffectsHaveNoGameplayComponentsAndTwoActorsStayIndependent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.HurtChestRecoilDoesNotAccumulateAndRestoresWhenFeedbackEnds",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.HurtFlashExpiresWithoutMovingPlayerOrInterruptingCombat",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.JoiningDeadPlayerBuildsBaselineWithoutHistoricalLanding",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.LocalInitialDeadSnapshotDoesNotReplayAndLaterDeathStillPlays",
+      "Status": "Passed",
+      "Duration": "00:00:00.1030000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.PauseFreezesAndDisablingClearsOwnedEffects",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.RemoteDeathStaysAtRenderedLocationUntilRevive",
+      "Status": "Passed",
+      "Duration": "00:00:00.0090000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePlayerDamageTests.RescueOnlyAppearsForAuthoritativeDownedStateAndReviveClearsEverything",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    }
+  ]
+}

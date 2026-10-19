@@ -277,6 +277,7 @@ namespace Game
                         player.CurrentHealth, player.MaxHealth);
                 }
                 SyncPlayerCombat(player, selfId);
+                view.SetPlayerRescue(player.PlayerId==selfId?0:player.PlayerId,!player.Alive&&player.DownedSeconds>0);
                 view.SetPlayerDash(player.PlayerId==selfId?0:player.PlayerId,displayPosition,
                     PredictedMovementDirection(Vector2.zero,player),player.DashSeconds,player.Alive);
                 int shieldCharges = 0;

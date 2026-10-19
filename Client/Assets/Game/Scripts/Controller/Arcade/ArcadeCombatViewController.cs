@@ -55,6 +55,8 @@ namespace Game
         bool TryScreenToArena(Vector2 screenPosition, out Vector2 position);
         bool TryGetPlayerPosition(out Vector2 position) { position = default; return false; }
         void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable);
+        /// <summary>可救援标记只读取服务器状态，本机为零号，队友使用玩家 ID。</summary>
+        void SetPlayerRescue(long playerId,bool active) { }
         /// <summary>只读有效冲刺状态；零号为本机，正数为联机队友，不从无敌或移速推断。</summary>
         void SetPlayerDash(long playerId, Vector2 position, Vector2 direction, float remaining, bool visible) { }
         void SetPlayerWeapon(string weaponId) { }
@@ -149,6 +151,8 @@ namespace Game
         private int obstacleVisualGeneration;
         private ObstacleVisualLoadState obstacleVisualLoad;
         private bool hasPlayerHealthBaseline;
+        /// <summary>本机首帧仅建立存活基线，重连时不补播旧死亡。</summary>
+        private bool hasPlayerAliveBaseline;
         private int lastPlayerHealth;
         private bool hasPlayerFireSequence;
         private int lastPlayerFireSequence;
@@ -253,6 +257,7 @@ namespace Game
             ConfigureRoundBounds(arenaHalfWidth, arenaHalfHeight, boundsCatalog.Rule.PlayerRadius);
             playerMotor.SetArcadePresentationActive(true);
             hasPlayerHealthBaseline = false;
+            hasPlayerAliveBaseline = false;
             hasPlayerFireSequence = false;
             currentWeaponId = null;
             currentWeaponIsMelee = false;
@@ -309,6 +314,7 @@ namespace Game
             playerMotor?.SetArcadePresentationActive(false);
             playerMotor = null;
             hasPlayerHealthBaseline = false;
+            hasPlayerAliveBaseline = false;
             hasPlayerFireSequence = false;
             currentWeaponId = null;
             currentWeaponIsMelee = false;
@@ -410,10 +416,19 @@ namespace Game
             dashPresentation?.Move(0,position,visible);
             SetExitGuidePlayer(position, visible);
             if (playerMotor == null || !playerMotor.IsValid || mapRoot == null) return;
-            playerMotor.SetAlivePresentation(visible);
+            bool playTransition=hasPlayerAliveBaseline;
+            hasPlayerAliveBaseline=true;
+            playerMotor.SetAlivePresentation(visible,playTransition);
             playerMotor.SetArcadeProtectionActive(visible && invulnerable);
             if (!visible)
             {
+                if(!playTransition)
+                {
+                    // 重连已倒地时仍投影权威位置；后续死亡则留在最后实际显示地点。
+                    playerMotor.SetArcadeRegionPosition(mapRoot.TransformPoint(new Vector3(position.x,0,position.y)));
+                    if(facing.sqrMagnitude>.001f)playerMotor.FaceDirection(mapRoot.TransformDirection(new Vector3(facing.x,0,facing.y)));
+                    pendingRegionPosition=false;
+                }
                 hasPlayerHealthBaseline = false;
                 return;
             }
@@ -542,6 +557,15 @@ namespace Game
             }
             lastPlayerHealth = current;
             hasPlayerHealthBaseline = true;
+        }
+
+        /// <summary>把当前救援资格传到对应角色，异步队友实例就绪后再应用缓存。</summary>
+        public void SetPlayerRescue(long playerId,bool active)
+        {
+            if(playerId==0){playerMotor?.SetArcadeRescueActive(active);return;}
+            if(!remotePlayers.TryGetValue(playerId,out var entry))return;
+            entry.RescueActive=active;
+            entry.View?.Instance?.GetComponent<PlayerView>()?.SetArcadeRescueActive(active);
         }
 
         public void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
@@ -896,8 +920,16 @@ namespace Game
             float yaw = entry.Facing.sqrMagnitude > 0.001f
                 ? Mathf.Atan2(entry.Facing.x, entry.Facing.y) * Mathf.Rad2Deg : 0f;
             Vector3 local = new(entry.Position.x, 0f, entry.Position.y);
-            if (snap) entry.View.Snap(local, yaw); else entry.View.SetTarget(local, yaw);
-            entry.View.SetAlive(entry.Visible);
+            if (snap) entry.View.Snap(local, yaw);
+            else if(entry.Visible)entry.View.SetTarget(local,yaw);
+            else
+            {
+                // 规则可提前准备复活坐标，尸体仍留在最后显示地点并停止旧插值。
+                var displayed=entry.View.Instance.transform;
+                entry.View.Snap(displayed.localPosition,displayed.localEulerAngles.y);
+            }
+            entry.View.SetAlive(entry.Visible,!snap);
+            entry.View.Instance?.GetComponent<PlayerView>()?.SetArcadeRescueActive(entry.RescueActive&&!entry.Visible);
             entry.View.Instance?.GetComponent<PlayerView>()?.SetArcadeProtectionActive(entry.Visible && entry.Invulnerable);
             ApplyRemotePlayerCombat(entry);
         }
@@ -920,6 +952,8 @@ namespace Game
             public bool Visible;
             /// <summary>远端异步创建期间缓存最新合并保护状态，首次就绪不补播过期保护。</summary>
             public bool Invulnerable;
+            /// <summary>异步创建期间只缓存当前救援资格，不补播历史死亡特效。</summary>
+            public bool RescueActive;
             public int CurrentHealth;
             public int MaximumHealth;
             /// <summary>异步实例创建前也保留生命基线，防止首帧快照被误判为受击。</summary>

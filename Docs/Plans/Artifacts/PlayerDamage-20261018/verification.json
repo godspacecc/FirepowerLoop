@@ -1,0 +1,206 @@
+{
+  "date": "2026-10-18",
+  "project": "E:/GitHub/FirepowerLoop/Client",
+  "scope": "玩家受击、死亡落尘及双人可救援提示；保留现有战斗和复活规则",
+  "tests": [
+    {
+      "testClass": "ArcadePlayerDamageTests",
+      "testMode": "EditMode",
+      "maximum": 9,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3685,
+        "PassedTests": 9,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6071163"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.DeathLandsOnceAndRepeatedDeadStateDoesNotReplayDust",
+          "Status": "Passed",
+          "Duration": "00:00:00.3710000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.FormalEffectsHaveNoGameplayComponentsAndTwoActorsStayIndependent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.HurtChestRecoilDoesNotAccumulateAndRestoresWhenFeedbackEnds",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.HurtFlashExpiresWithoutMovingPlayerOrInterruptingCombat",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.JoiningDeadPlayerBuildsBaselineWithoutHistoricalLanding",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.LocalInitialDeadSnapshotDoesNotReplayAndLaterDeathStillPlays",
+          "Status": "Passed",
+          "Duration": "00:00:00.1340000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.PauseFreezesAndDisablingClearsOwnedEffects",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.RemoteDeathStaysAtRenderedLocationUntilRevive",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.ArcadePlayerDamageTests.RescueOnlyAppearsForAuthoritativeDownedStateAndReviveClearsEverything",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    },
+    {
+      "testClass": "CombatFeedbackTests",
+      "testMode": "EditMode",
+      "maximum": 10,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3683,
+        "PassedTests": 10,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4817227"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.EnemyHitFeedbackTemporarilyFlashesRedAndRestoresColor",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.EnemyMultimaterialFeedbackRestoresOverridesAfterRepeatedHitsAndReuse",
+          "Status": "Passed",
+          "Duration": "00:00:00.1320000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerFirearmUsesTrackedMuzzleFlashAtProjectileOrigin",
+          "Status": "Passed",
+          "Duration": "00:00:00.0550000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidBindsWeaponsToRightHandAndKeepsDeathVisible",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerHumanoidReceivesMovementSpeed",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerProjectileFeedbackRecoilsWeaponAndRestoresPosition",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.FormalPlayerSharedWeaponKeepsConfiguredPoseWhenHandBoneRolls",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.PlayerAttackFeedbackTemporarilyExpandsAndRestoresScale",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.PlayerHurtFeedbackTemporarilyFlashesRedAndRestoresColor",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.CombatFeedbackTests.RepeatedHurtRestoresExistingOverridesWithoutTintingHiddenOrHudRenderers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    },
+    {
+      "testClass": "ArcadeDashVisualTests",
+      "testMode": "EditMode",
+      "maximum": 7,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3683,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6228689"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.DirectionStaysLockedAndRepeatedSnapshotsDoNotRestartBurst",
+          "Status": "Passed",
+          "Duration": "00:00:00.1100000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.EndingLeavesDetachedFragmentsInsteadOfFullSpeedBands",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.FormalTemplateHasNoGameplayOrAutomaticUpdateComponents",
+          "Status": "Passed",
+          "Duration": "00:00:00.3970000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.NewDashReusesSlotAndRemovalDisposesOwnedObjects",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.PausedTimeFreezesAndMissingSnapshotsCannotLeavePermanentTrail",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.RemoteDashFollowsRenderedPlayerInsteadOfSnapshotTarget",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeDashVisualTests.TwoPlayersHaveIndependentEndAndHiddenPlayerClearsImmediately",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  ],
+  "executedPassingTests": 26,
+  "note": "Summary.TotalTests 为 Unity 发现总数，实际执行范围以 Results 和 PassedTests 为准。",
+  "preview": {
+    "file": "three-stages.png",
+    "type": "Unity PreviewScene 正式角色与正式 VFX 资源隔离渲染",
+    "stages": [
+      "受击 0.035 秒",
+      "死亡 0.42 秒（灰尘）",
+      "倒地 2 秒（仅双人可救援时显示标记）"
+    ],
+    "tool": "Tools/Unity/ArcadePlayerDamagePreview.cs"
+  },
+  "review": {
+    "initialFinding": "本机首次已倒地快照补播旧死亡反馈",
+    "resolution": "新增存活基线、首帧权威定位及死亡终态，并添加真实 PlayerViewCtrl 回归；复核无剩余运行时问题",
+    "assetCheck": "已重新生成 Prefab；Rescue z=0.45、cross y=1 与制作脚本一致"
+  },
+  "consoleErrors": [],
+  "limitations": [
+    "未运行真实双客户端联机实测",
+    "未触发 Player Build",
+    "最终死亡沿用现有场景切换时机，可能截断动画或落尘"
+  ],
+  "git": "未提交；工作区内其他任务修改保留"
+}

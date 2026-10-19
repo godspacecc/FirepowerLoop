@@ -117,17 +117,23 @@ namespace Game
         }
 
         public void SetAlivePresentation(bool alive)
+            => SetAlivePresentation(alive,true);
+
+        /// <summary>同步存活基线及后续转换，脚步仍由原有生命周期管理。</summary>
+        public void SetAlivePresentation(bool alive,bool playTransition)
         {
             if (footstepAlive != alive) ClearMovementPresentation();
             footstepAlive = alive;
             footsteps.SetAlive(alive);
-            ViewRef?.SetAlivePresentation(alive);
+            ViewRef?.SetAlivePresentation(alive,playTransition);
         }
 
         public void SetOnlineAlive(bool alive)
         {
             SetAlivePresentation(alive);
         }
+        /// <summary>转发服务器救援状态，控制器不推导救援资格。</summary>
+        public void SetArcadeRescueActive(bool active)=>ViewRef?.SetArcadeRescueActive(active);
 
         /// <summary>接收体力领域结果，同时刷新体力提示与跑步姿态；耗尽时清除加速表现。</summary>
         public void SetTiliRing(float current, float maximum, bool isSprinting, bool exhausted)

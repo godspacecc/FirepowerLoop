@@ -26,6 +26,10 @@ namespace Game
         void SetVisible(bool visible) { }
         /// <summary>切换玩家存活表现；死亡不会隐藏 Humanoid，以便播放死亡动画。</summary>
         void SetAlivePresentation(bool alive) { SetVisible(alive); }
+        /// <summary>首次同步只建立当前姿态，不补播加载前的死亡反馈。</summary>
+        void SetAlivePresentation(bool alive,bool playTransition) => SetAlivePresentation(alive);
+        /// <summary>街机只显示权威可救援状态，不决定救援资格。</summary>
+        void SetArcadeRescueActive(bool active) { }
         /// <summary>切换街机武器纯表现；空值或未知 ID 表示隐藏街机专用模型。</summary>
         void SetArcadeWeaponPresentation(string weaponId) { }
         /// <summary>使用配置资源名、枪口火光开关和发射点位置切换街机武器纯表现。</summary>

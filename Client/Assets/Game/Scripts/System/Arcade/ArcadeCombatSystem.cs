@@ -2011,10 +2011,11 @@ namespace Game
             view.SetIslandCampfireWarning(UsesIslandRounds(runtime) && runtime.WaveIndex == 3 &&
                 !runtime.WaveClearAwarded && !runtime.InTreasureRoom && runtime.IslandCampfireWarningRemaining > 0);
             SyncIslandEntryWarning(runtime);
+            view.SetPlayerRescue(0,false);
             view.SetPlayerDash(0,runtime.PlayerPosition,runtime.DashDirection,runtime.DashRemaining,runtime.RespawnRemaining<=0f);
             if (runtime.InTreasureRoom)
             {
-                view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, true, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
+                view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.PlayerHealth>0, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
                 view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth);
                 if (runtime.TreasureRoom.Parameters.IsArmory && TryGetWeapon(runtime, out var selectedWeapon))
                     view.SetPlayerWeapon(selectedWeapon);
@@ -2025,7 +2026,7 @@ namespace Game
                 catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
             view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);
-            view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f,
+            view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f&&runtime.PlayerHealth>0,
                 runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
             if (TryGetWeapon(runtime, out var currentWeapon)) view.SetPlayerWeapon(currentWeapon);
             // 新攻击的冷却在 TryFire 中刚写入，包含攻速强化；重复序列不会重新调整动作。

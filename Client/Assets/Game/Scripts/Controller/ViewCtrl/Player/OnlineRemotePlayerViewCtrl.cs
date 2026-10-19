@@ -27,11 +27,11 @@ namespace Game
         public GameObject Instance => instance;
 
         public void SetVisible(bool visible) { if (!visible) footsteps.Reset(); if (instance != null) instance.SetActive(visible); }
-        public void SetAlive(bool alive)
+        public void SetAlive(bool alive,bool playTransition=true)
         {
             footsteps.SetAlive(alive);
             var view = instance != null ? instance.GetComponent<PlayerView>() : null;
-            view?.SetAlivePresentation(alive);
+            view?.SetAlivePresentation(alive,playTransition);
             // 远端由快照插值定位，存活表现不能重新启用本机运动碰撞权威。
             if (view != null && view.CharacterController != null) view.CharacterController.enabled = false;
         }

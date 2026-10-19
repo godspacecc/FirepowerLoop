@@ -2467,6 +2467,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 95946e8d0472c3d4ca62ec0dfd17684a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  arcadeDamageTemplate: {fileID: 500576076670810439, guid: a69912b1077a6ff4c87afa35fd3bd827,
+    type: 3}
   characterController: {fileID: 973277866080726882}
   animator: {fileID: 7983353847472089973}
   clothingAppearance: {fileID: 1779836381199216599}
@@ -2538,8 +2540,9 @@ MonoBehaviour:
   flashlight: {fileID: 6529550542524021238}
   damageNumberEmitter: {fileID: 3782998820814227703}
   arcadePlayerMarker: {fileID: 1131477671112592730}
-  arcadeProtectionShader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025, type: 3}
   flashlightDownwardAngleDegrees: 18
+  arcadeProtectionShader: {fileID: 4800000, guid: 650dd9526735d5b46b79224bc6e94025,
+    type: 3}
   firstPersonArmsPrefab: {fileID: 5175474898869639852, guid: ef72c8c9798ddca4cb520bc01bd15b39,
     type: 3}
 --- !u!114 &3782998820814227703
