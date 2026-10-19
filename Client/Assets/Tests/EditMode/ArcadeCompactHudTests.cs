@@ -185,6 +185,48 @@ namespace Game.Tests
             Assert.That(pause.anchoredPosition.y + pause.rect.height * .5f, Is.LessThan(0));
         }
 
+        [TestCase("small","SkullRedIcon")]
+        [TestCase("large","SkullPurpleIcon")]
+        public void SkullStatusUsesColoredIconWithoutTextFrameOrProgress(string tier,string iconField)
+        {
+            var root=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui=root.GetComponent<ArcadeHudUI>();var ctrl=new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI",Private).SetValue(ctrl,ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit",Private).Invoke(ctrl,null);
+                typeof(ArcadeHudUICtrl).GetMethod("RenderTimedStatus",Private).Invoke(ctrl,new object[]{null,0f,new[]{new ArcadePowerupHudEntry("ui.arcade.product.arcade.powerup.skull."+tier+".name",10,0)}});
+                var box=ui.EffectList.GetDraggableItems()[0].GetComponent<ArcadeEffectBoxUI>();
+                Assert.That(box.Icon.gameObject.activeSelf,Is.True,"骷髅强化需要正式图标");
+                Assert.That(box.Icon.sprite,Is.SameAs(typeof(ArcadeHudUI).GetField(iconField).GetValue(ui)));
+                Assert.That(box.TextFallback.gameObject.activeSelf,Is.False);Assert.That(box.TextCharges.gameObject.activeSelf,Is.False);
+                Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.False);Assert.That(box.GetComponent<Image>().enabled,Is.False);
+            }
+            finally{Object.DestroyImmediate(root);}
+        }
+
+        [Test]
+        public void SkullOnlyPulsesInLastThreeSecondsAndReuseRestoresNormalEffect()
+        {
+            var root=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui=root.GetComponent<ArcadeHudUI>();var ctrl=new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI",Private).SetValue(ctrl,ui);typeof(ArcadeHudUICtrl).GetMethod("OnInit",Private).Invoke(ctrl,null);
+                var render=typeof(ArcadeHudUICtrl).GetMethod("RenderTimedStatus",Private);
+                var pulse=typeof(ArcadeHudUICtrl).GetMethod("UpdateSkullWarning",Private);Assert.That(pulse,Is.Not.Null);
+                void Render(string id,float seconds)=>render.Invoke(ctrl,new object[]{null,0f,new[]{new ArcadePowerupHudEntry("ui.arcade.product.arcade.powerup."+id+".name",seconds,0)}});
+                Render("skull.small",3);var box=ui.EffectList.GetDraggableItems()[0].GetComponent<ArcadeEffectBoxUI>();
+                pulse.Invoke(ctrl,new object[]{0d});Assert.That(box.Icon.color.a,Is.EqualTo(1).Within(.01f));
+                pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color.a,Is.InRange(.5f,.65f));
+                Render("skull.large",3.1f);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
+                Render("boots",8);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
+                Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.True);Assert.That(box.GetComponent<Image>().enabled,Is.True);
+                Render("skull.small",0);Assert.That(ui.EffectList.GetDraggableItems(),Is.Empty);
+            }
+            finally{Object.DestroyImmediate(root);}
+        }
+
         [Test]
         public void TimedEffects_UseExternalReusableBoxAndKeepAllActiveEffects()
         {

@@ -122,7 +122,7 @@ namespace Game
         }
 
         protected override void OnUnload()
-        { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); desktopButtonPlacements = null; touchButtonsApplied = false; }
+        { ClearStageBanner(); ReleaseJoystickUpdate(); ClearPlayerStatuses(); skullWarningIcons.Clear(); desktopButtonPlacements = null; touchButtonsApplied = false; }
 
         private void OnRunChanged(ArcadeRunChangedEvent evt)
         {
@@ -344,6 +344,7 @@ namespace Game
         }
         private void RefreshJoystickArea()
         {
+            UpdateSkullWarning(Time.unscaledTimeAsDouble);
             SyncSlayerMartUi();
             SyncCoopRescueUi();
             UpdateStageBanner(Time.unscaledTimeAsDouble);

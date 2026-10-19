@@ -38,6 +38,8 @@ namespace Game
         public Sprite RapidIcon;
         public Sprite RaygunIcon;
         public Sprite RocketIcon;
+        public Sprite SkullPurpleIcon;
+        public Sprite SkullRedIcon;
         public Sprite SpreadIcon;
         public CanvasGroup StageBannerOpacity;
         public GameObject StageBannerRoot;

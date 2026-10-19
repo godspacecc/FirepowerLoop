@@ -371,7 +371,7 @@ GameObject:
   m_Component:
   - component: {fileID: 452915787722178097}
   - component: {fileID: 3723799247734147978}
-  - component: {fileID: -5946739776965007772}
+  - component: {fileID: 6659935498654423922}
   m_Layer: 0
   m_Name: ArcadeHud
   m_TagString: Untagged
@@ -519,6 +519,12 @@ MonoBehaviour:
   - key: RocketIcon
     gameObject: {fileID: 21300000, guid: 49e4c920534c9b241b15a24952433bc6, type: 3}
     TypeName: UnityEngine.Sprite
+  - key: SkullPurpleIcon
+    gameObject: {fileID: 21300000, guid: ddddc038ef78c774384b45274d3d22f1, type: 3}
+    TypeName: UnityEngine.Sprite
+  - key: SkullRedIcon
+    gameObject: {fileID: 21300000, guid: e25c52a59f4ee2d4e9dd8fd10756f84d, type: 3}
+    TypeName: UnityEngine.Sprite
   - key: SpreadIcon
     gameObject: {fileID: 21300000, guid: de433b99855daa74cad5e538d94c5c79, type: 3}
     TypeName: UnityEngine.Sprite
@@ -573,7 +579,7 @@ MonoBehaviour:
   - key: WeaponEffectRoot
     gameObject: {fileID: 6619608956143337614}
     TypeName: UnityEngine.GameObject
---- !u!114 &-5946739776965007772
+--- !u!114 &6659935498654423922
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -616,6 +622,8 @@ MonoBehaviour:
   RapidIcon: {fileID: 21300000, guid: b94dfe2c610d30b498b3e25a8d0710af, type: 3}
   RaygunIcon: {fileID: 21300000, guid: 9487aa2b7a6d64f4db423f60760d1d61, type: 3}
   RocketIcon: {fileID: 21300000, guid: 49e4c920534c9b241b15a24952433bc6, type: 3}
+  SkullPurpleIcon: {fileID: 21300000, guid: ddddc038ef78c774384b45274d3d22f1, type: 3}
+  SkullRedIcon: {fileID: 21300000, guid: e25c52a59f4ee2d4e9dd8fd10756f84d, type: 3}
   SpreadIcon: {fileID: 21300000, guid: de433b99855daa74cad5e538d94c5c79, type: 3}
   StageBannerOpacity: {fileID: 1624893817596412244}
   StageBannerRoot: {fileID: 3590888523910499054}

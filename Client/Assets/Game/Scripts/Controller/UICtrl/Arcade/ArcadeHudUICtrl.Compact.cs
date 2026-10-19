@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Game
 {
@@ -11,6 +12,8 @@ namespace Game
         private readonly List<EffectDisplay> effects = new();
         /// <summary>本帧临时武器占据的条目数（零或一），辅助列表索引从其后开始。</summary>
         private int weaponEffectCount;
+        /// <summary>只缓存末三秒的图标引用，条目仍由 CustomListView 创建、复用和回收。</summary>
+        private readonly List<Image> skullWarningIcons=new();
 
         /// <summary>仅切换 Prefab 内预制的两端能力区；联机保留原二次确认退出入口。</summary>
         private void ApplyInputLayout(bool mobile, bool online)
@@ -41,6 +44,7 @@ namespace Game
             IReadOnlyList<ArcadePowerupHudEntry> powerups)
         {
             effects.Clear();
+            skullWarningIcons.Clear();
             AddEffect(temporaryNameKey, temporarySeconds, 0, true);
             weaponEffectCount = effects.Count;
             if (powerups != null)
@@ -51,6 +55,7 @@ namespace Game
             UI.EffectList.totalCount = effects.Count - weaponEffectCount;
             UI.EffectList.RefreshCells();
             UI.SupportEffectRoot.SetActive(UI.EffectList.totalCount > 0);
+            UpdateSkullWarning(Time.unscaledTimeAsDouble);
         }
 
         private void AddEffect(string nameKey, float seconds, int charges, bool weapon)
@@ -87,6 +92,8 @@ namespace Game
                 "arcade.weapon.raygun" => UI.RaygunIcon,
                 "arcade.powerup.boots" => UI.BootsIcon,
                 "arcade.powerup.gloves" => UI.GlovesIcon,
+                "arcade.powerup.skull.small" => UI.SkullRedIcon,
+                "arcade.powerup.skull.large" => UI.SkullPurpleIcon,
                 _ => null
             };
             box.Icon.sprite = icon;
@@ -102,15 +109,29 @@ namespace Game
             }
             box.TextCharges.text = effect.Charges > 0 ? effect.Charges.ToString() : string.Empty;
             box.TextCharges.gameObject.SetActive(effect.Charges > 0);
+            bool skull=effect.Id=="arcade.powerup.skull.small"||effect.Id=="arcade.powerup.skull.large";
+            // 骷髅只保留彩色本体，不显示卡片底板、文字、外圈或时间条；复用时完整还原普通道具。
+            box.ProgressRoot.SetActive(!skull);
+            box.Backdrop.enabled=!skull;
             HealthFillUtility.Apply(box.ProgressFill, effect.Duration > 0f ? Mathf.Clamp01(effect.Seconds / effect.Duration) : 1f);
             box.ProgressFill.color = effect.Seconds <= 3f ? new Color(1f, .36f, .22f) : effect.Weapon
                 ? new Color(1f, .78f, .28f) : new Color(.3f, .85f, .92f);
-            box.Icon.color = effect.Seconds <= 3f ? new Color(1f, .65f, .45f) : Color.white;
+            box.Icon.color = !skull&&effect.Seconds <= 3f ? new Color(1f, .65f, .45f) : Color.white;
             box.TextFallback.color = box.Icon.color;
+            if(skull&&effect.Seconds<=3f)skullWarningIcons.Add(box.Icon);
+        }
+
+        /// <summary>权威剩余量仅决定是否提醒；未缩放时间只驱动每秒两次的轻微明暗，不延长强化。</summary>
+        private void UpdateSkullWarning(double now)
+        {
+            float alpha=(float)(.775+.225*Math.Cos(now*Math.PI*4));
+            foreach(var icon in skullWarningIcons)
+                if(icon!=null)icon.color=new Color(1,1,1,alpha);
         }
 
         private void ClearTimedEffects()
         {
+            skullWarningIcons.Clear();
             effects.Clear();
             weaponEffectCount = 0;
             UI.WeaponEffectList.ClearCells();

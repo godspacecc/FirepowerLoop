@@ -508,7 +508,7 @@ GameObject:
   - component: {fileID: 719496254969369218}
   - component: {fileID: 3479923027812184943}
   - component: {fileID: 483777158767624917}
-  - component: {fileID: -5245854933201844276}
+  - component: {fileID: -5208457480808980581}
   m_Layer: 0
   m_Name: ArcadeEffectBox
   m_TagString: Untagged
@@ -552,12 +552,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   data:
+  - key: Backdrop
+    gameObject: {fileID: 483777158767624917}
+    TypeName: UnityEngine.UI.Image
   - key: Icon
     gameObject: {fileID: 6023891775877574226}
     TypeName: UnityEngine.UI.Image
   - key: ProgressFill
     gameObject: {fileID: 8485789937728142201}
     TypeName: UnityEngine.UI.Image
+  - key: ProgressRoot
+    gameObject: {fileID: 3661376865844379049}
+    TypeName: UnityEngine.GameObject
   - key: TextCharges
     gameObject: {fileID: 4475192221890755748}
     TypeName: TMPro.TextMeshProUGUI
@@ -602,7 +608,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &-5245854933201844276
+--- !u!114 &-5208457480808980581
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -614,7 +620,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99363cdd0620e8a47aeb1c2396a66ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Backdrop: {fileID: 483777158767624917}
   Icon: {fileID: 6023891775877574226}
   ProgressFill: {fileID: 8485789937728142201}
+  ProgressRoot: {fileID: 3661376865844379049}
   TextCharges: {fileID: 4475192221890755748}
   TextFallback: {fileID: 7560939656205036197}
