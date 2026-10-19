@@ -70,9 +70,6 @@ namespace Game
         private ClothingAppearanceView clothingAppearance;
         public ClothingAppearanceView ClothingAppearance => clothingAppearance;
 
-        [SerializeField, Tooltip("仅用于本机与远端脚步表现，不改变移动规则。")]
-        private FootstepProfile footstepProfile;
-        public FootstepProfile Footsteps => footstepProfile;
 
         [Header("Formal Bow Animation")]
         [SerializeField] private AnimationClip bowIdleClip;

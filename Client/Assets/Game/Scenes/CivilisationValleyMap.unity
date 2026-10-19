@@ -3431,8 +3431,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1348922817}
+  m_Children: []
   m_Father: {fileID: 1572752386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &234240337
@@ -4893,7 +4892,6 @@ GameObject:
   - component: {fileID: 372165567}
   - component: {fileID: 372165566}
   - component: {fileID: 372165565}
-  - component: {fileID: 372165568}
   m_Layer: 0
   m_Name: OldCampClearing
   m_TagString: Untagged
@@ -4987,29 +4985,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 372165563}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &372165568
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 372165563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 2
-  IsRegion: 0
-  Priority: 0
-  RegionId: 
-  SurfaceMesh: {fileID: 0}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
 --- !u!1001 &373254030
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6803,7 +6778,6 @@ GameObject:
   - component: {fileID: 502950742}
   - component: {fileID: 502950741}
   - component: {fileID: 502950740}
-  - component: {fileID: 502950743}
   m_Layer: 0
   m_Name: ValleyGround
   m_TagString: Untagged
@@ -6897,29 +6871,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 502950738}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &502950743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 502950738}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 2
-  IsRegion: 0
-  Priority: 0
-  RegionId: 
-  SurfaceMesh: {fileID: 0}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
 --- !u!1001 &508273217
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8257,83 +8208,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 3.8, y: 2.4, z: 3.8}
   m_Center: {x: 0, y: 1, z: 0}
---- !u!1 &677728771
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 677728772}
-  - component: {fileID: 677728774}
-  - component: {fileID: 677728773}
-  m_Layer: 0
-  m_Name: FootstepMudRegion
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &677728772
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 677728771}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1639853369}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &677728773
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 677728771}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 4
-  IsRegion: 1
-  Priority: 10
-  RegionId: legacy-valley/FootstepMudRegion
-  SurfaceMesh: {fileID: 1639853372}
-  SurfaceSubmesh: 1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
---- !u!65 &677728774
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 677728771}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 60.02, y: 4.45, z: 60.02}
-  m_Center: {x: 0.0000009536743, y: 0.77500004, z: 0.0000009536743}
 --- !u!1001 &683396652
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -16629,83 +16503,6 @@ MonoBehaviour:
   RoofRenderers: []
   InteriorCollider: {fileID: 0}
   TransparentMaterial: {fileID: 2100000, guid: 5cb4e01b960c93042a8ed16d163d9fcc, type: 2}
---- !u!1 &1348922816
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1348922817}
-  - component: {fileID: 1348922819}
-  - component: {fileID: 1348922818}
-  m_Layer: 0
-  m_Name: FootstepShallowWaterRegion
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1348922817
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1348922816}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 234240336}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1348922818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1348922816}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 5
-  IsRegion: 1
-  Priority: 20
-  RegionId: legacy-valley/FootstepShallowWaterRegion
-  SurfaceMesh: {fileID: 234240338}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 1
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
---- !u!65 &1348922819
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1348922816}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 8.242248, y: 3.2, z: 8.58296}
-  m_Center: {x: 0, y: -0.27999997, z: -1.9999999}
 --- !u!1001 &1373767452
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -20258,7 +20055,6 @@ GameObject:
   - component: {fileID: 1639853372}
   - component: {fileID: 1639853371}
   - component: {fileID: 1639853370}
-  - component: {fileID: 1639853373}
   m_Layer: 0
   m_Name: RiverbedAndValley
   m_TagString: Untagged
@@ -20278,8 +20074,7 @@ Transform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 677728772}
+  m_Children: []
   m_Father: {fileID: 1572752386}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!64 &1639853370
@@ -20355,29 +20150,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1639853368}
   m_Mesh: {fileID: 4300000, guid: 4f34c68af07ac6a41ade23b8be8c38b8, type: 2}
---- !u!114 &1639853373
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1639853368}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 2
-  IsRegion: 0
-  Priority: 0
-  RegionId: 
-  SurfaceMesh: {fileID: 0}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
 --- !u!1 &1682272609
 GameObject:
   m_ObjectHideFlags: 0
@@ -26714,7 +26486,6 @@ GameObject:
   - component: {fileID: 2144481420}
   - component: {fileID: 2144481419}
   - component: {fileID: 2144481418}
-  - component: {fileID: 2144481421}
   m_Layer: 0
   m_Name: ApproachPath
   m_TagString: Untagged
@@ -26808,29 +26579,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2144481416}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &2144481421
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2144481416}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 2
-  IsRegion: 0
-  Priority: 0
-  RegionId: 
-  SurfaceMesh: {fileID: 0}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
 --- !u!1001 &2144741812
 PrefabInstance:
   m_ObjectHideFlags: 0

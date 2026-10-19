@@ -15,8 +15,8 @@ namespace Game
     /// </summary>
     public sealed class PlayerViewCtrl : BaseEntityViewCtrl<PlayerView>, ICharacterMotorPort, IPlayerFlashlightPort
     {
-        private readonly FootstepPresenter footsteps;
-        private bool footstepAlive = true;
+        /// <summary>记录存活表现基线，只在状态变化时清空移动姿态。</summary>
+        private bool presentationAlive = true;
         /// <summary>接收领域快照映射后的外观身份，不修改装备。</summary>
         public void ApplyClothing(string torso,string legs) => View.ClothingAppearance?.Apply(torso,legs);
         public void ApplyClothingItems(IRuntimeConfigProvider config,params int[] items) => View.ClothingAppearance?.ApplyItems(config,items);
@@ -30,7 +30,6 @@ namespace Game
             IViewInstanceProvider instanceProvider)
             : base(view, unitId, mapInstanceId, registry, instanceProvider)
         {
-            footsteps = new FootstepPresenter(view, GetArchitecture());
         }
 
         public bool IsValid => !IsReleased && GameObject != null && ViewRef != null && ViewRef.CharacterController != null;
@@ -59,7 +58,7 @@ namespace Game
         // 只用于瞄准转身后的动画方向重算；移动权威仍在 PlayerMoveSystem。
         private Vector3 lastHorizontalMotion;
 
-        /// <summary>街机区域切换专用传送，临时禁用角色碰撞并恢复原启用状态，不产生脚步或位移攻击。</summary>
+        /// <summary>街机区域切换专用传送，临时禁用角色碰撞并恢复原启用状态，不产生位移攻击。</summary>
         public void SetArcadeRegionPosition(Vector3 position)
         {
             if (!IsValid) return;
@@ -82,15 +81,12 @@ namespace Game
                 var horizontalDistance = lastHorizontalMotion.magnitude;
                 ViewRef.SetMovementSpeed(Time.deltaTime > 0f ? horizontalDistance / Time.deltaTime : 0f);
                 ViewRef.SetMovementDirection(lastHorizontalMotion);
-                if(ViewRef.SwimmingPresentation)footsteps.Reset();
-                else footsteps.Tick(actual, Time.deltaTime, true, true);
             }
             else ClearMovementPresentation();
         }
 
         private void ClearMovementPresentation()
         {
-            footsteps?.Reset();
             lastHorizontalMotion = Vector3.zero;
             ViewRef?.SetSprinting(false);
             ViewRef?.SetMovementSpeed(0f);
@@ -119,12 +115,11 @@ namespace Game
         public void SetAlivePresentation(bool alive)
             => SetAlivePresentation(alive,true);
 
-        /// <summary>同步存活基线及后续转换，脚步仍由原有生命周期管理。</summary>
+        /// <summary>同步存活基线及后续转换，状态变化时清空上一段移动姿态。</summary>
         public void SetAlivePresentation(bool alive,bool playTransition)
         {
-            if (footstepAlive != alive) ClearMovementPresentation();
-            footstepAlive = alive;
-            footsteps.SetAlive(alive);
+            if (presentationAlive != alive) ClearMovementPresentation();
+            presentationAlive = alive;
             ViewRef?.SetAlivePresentation(alive,playTransition);
         }
 
@@ -392,17 +387,8 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
-            if (!IsEnabled) footsteps.Reset();
             ViewRef?.TickCombatFeedback(deltaTime);
         }
-
-        public override void SetVisible(bool visible)
-        {
-            if (!visible) footsteps.Reset();
-            base.SetVisible(visible);
-        }
-
-        protected override void OnDispose() { footsteps.Dispose(); base.OnDispose(); }
 
         public bool IsPlayerCollider(Collider collider)
         {

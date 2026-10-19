@@ -80,7 +80,7 @@ namespace Game.Tests
             var flags=BindingFlags.Instance|BindingFlags.NonPublic;
             typeof(ArcadeCombatViewController).GetField("dashPresentation",flags).SetValue(controller,effect);
             var actor=new GameObject("RemoteActor");actor.transform.SetParent(root.transform,false);
-            using var remote=new OnlineRemotePlayerViewCtrl(actor);
+            var remote=new OnlineRemotePlayerViewCtrl(actor);
             try
             {
                 var entryType=typeof(ArcadeCombatViewController).GetNestedType("RemotePlayerEntry",BindingFlags.NonPublic);

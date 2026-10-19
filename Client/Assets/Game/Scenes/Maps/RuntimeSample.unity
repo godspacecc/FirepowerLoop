@@ -308,7 +308,6 @@ GameObject:
   - component: {fileID: 1871240736}
   - component: {fileID: 1871240735}
   - component: {fileID: 1871240734}
-  - component: {fileID: 1871240737}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Untagged
@@ -403,29 +402,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1871240732}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1871240737
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1871240732}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 43234967d12f3224da6182fd1723f302, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Kind: 6
-  IsRegion: 0
-  Priority: 0
-  RegionId: 
-  SurfaceMesh: {fileID: 0}
-  SurfaceSubmesh: -1
-  CheckSurfaceHeight: 0
-  MaximumBelowSurface: 0.45
-  MaximumAboveSurface: 0.1
-  TerrainSource: {fileID: 0}
-  TerrainLayerKinds: 
 --- !u!1 &1957983478
 GameObject:
   m_ObjectHideFlags: 0

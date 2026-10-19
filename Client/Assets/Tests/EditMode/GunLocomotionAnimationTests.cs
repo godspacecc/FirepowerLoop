@@ -241,15 +241,11 @@ namespace Game.Tests
                 animator.enabled = true;
                 animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 holder.SetActive(true);
-                var architecture = new Game();
-                architecture.RegisterModel(new AppStateModel());
-                architecture.GetModel<AppStateModel>().CurrentState.Value = AppState.Playing;
-                remote = new OnlineRemotePlayerViewCtrl(player, architecture);
+                remote = new OnlineRemotePlayerViewCtrl(player);
                 check(presenter, player.GetComponent<PlayerView>(), animator, remote);
             }
             finally
             {
-                remote?.Dispose();
                 Object.DestroyImmediate(holder);
             }
         }

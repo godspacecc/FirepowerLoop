@@ -11,7 +11,7 @@ namespace Game
     {
         private const int Segments = 12, VerticesPerPulse = Segments * 2 + 9;
         private const float Lifetime = .7f, StepSeconds = .25f;
-        /// <summary>只读权威位置的短期采样；离场、缺失和传送不补播历史脚步。</summary>
+        /// <summary>只读权威位置的短期采样；离场、缺失和传送不补放历史水花。</summary>
         private struct Actor
         {
             public int Id, Step;

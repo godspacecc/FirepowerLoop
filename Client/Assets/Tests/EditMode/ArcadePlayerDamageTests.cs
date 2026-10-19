@@ -64,7 +64,7 @@ namespace Game.Tests
         {
             var controller=new ArcadeCombatViewController();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
             var map=new GameObject("RemoteTestMap");actor.transform.SetParent(map.transform,false);
-            using var remote=new OnlineRemotePlayerViewCtrl(actor);
+            var remote=new OnlineRemotePlayerViewCtrl(actor);
             try
             {
                 typeof(ArcadeCombatViewController).GetField("mapRoot",flags).SetValue(controller,map.transform);

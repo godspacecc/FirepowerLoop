@@ -9,7 +9,7 @@ namespace Game.Tests
     public sealed class CharacterAnimationEventReceiverTests
     {
         [Test]
-        public void GalleryCharacterAnimatorsReceiveSharedFootstepEvents()
+        public void GalleryCharacterAnimatorsReceiveSharedMovementEvents()
         {
             var prefabPaths = new[]
             {

@@ -973,8 +973,6 @@ namespace Game
 
         private void ReleaseRemotePlayer(RemotePlayerEntry entry)
         {
-            // 街机远端同样拥有脚步句柄和状态订阅，须先取消表现，再释放实例。
-            entry?.View?.Dispose();
             if (entry?.View?.Instance != null) Game.Interface.GetUtility<IViewInstanceProvider>()?.Release(entry.View.Instance);
             if (entry != null && entry.Handle.IsValid) ResourceLoader.Release(entry.Handle);
             if (entry != null) { entry.View = null; entry.Handle = ResourceLoadHandle.Empty; }
