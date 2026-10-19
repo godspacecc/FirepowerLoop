@@ -19,6 +19,14 @@ namespace Game
         private static readonly Unity.Profiling.ProfilerMarker ReadMarker = new("FirepowerLoop.ArcadeRun.VerifyTemp");
         private static readonly Unity.Profiling.ProfilerMarker ReplaceMarker = new("FirepowerLoop.ArcadeRun.Replace");
         private readonly string rootDirectory;
+        /// <summary>开始页与恢复入口共用已校验的私有快照；调用者只取得深拷贝。</summary>
+        private SaveReadResult<ArcadeRunSaveData> cachedInspection;
+        /// <summary>主文件和备份任意一方变化都重新校验，避免继续按钮使用旧结果。</summary>
+        private (long Length, long WriteTicks, long CreationTicks) cachedRunStamp, cachedBackupStamp;
+        /// <summary>本实例写入或删除前后使缓存失效；后台结果保存只更新原子版本，不操作展示快照。</summary>
+        private int mutationVersion;
+        /// <summary>建立缓存时的事务版本；失败写入与删除也不能继续复用此前的检查结果。</summary>
+        private int cachedMutationVersion;
 
         public ArcadeRunFileStore() : this(Application.persistentDataPath)
         {
@@ -35,6 +43,53 @@ namespace Game
         public string BackupPath => Path.Combine(SavesDirectory, "arcade-run.backup.json");
 
         public SaveReadResult<ArcadeRunSaveData> Inspect()
+        {
+            int version = System.Threading.Volatile.Read(ref mutationVersion);
+            bool hasRunStamp = TryReadStamp(RunPath, out var runStamp);
+            bool hasBackupStamp = TryReadStamp(BackupPath, out var backupStamp);
+            bool hasStamps = hasRunStamp && hasBackupStamp;
+            if (hasStamps && cachedInspection != null && cachedMutationVersion == version &&
+                cachedRunStamp == runStamp && cachedBackupStamp == backupStamp &&
+                version == System.Threading.Volatile.Read(ref mutationVersion))
+                return CloneInspection(cachedInspection);
+
+            cachedInspection = null;
+            var result = InspectFiles();
+            // 失败与备份回退不缓存；主文件临时不可读后恢复时必须优先读取最新主文件。
+            if (result.IsValid && !result.FromBackup && hasStamps && version == System.Threading.Volatile.Read(ref mutationVersion) &&
+                TryReadStamp(RunPath, out var afterRun) && afterRun == runStamp &&
+                TryReadStamp(BackupPath, out var afterBackup) && afterBackup == backupStamp)
+            {
+                cachedRunStamp = runStamp;
+                cachedBackupStamp = backupStamp;
+                cachedMutationVersion = version;
+                cachedInspection = CloneInspection(result);
+            }
+            return result;
+        }
+
+        /// <summary>只查询文件元数据；内容未变化时不再打开 JSON、反序列化和重复完整校验。</summary>
+        private static bool TryReadStamp(string path, out (long Length, long WriteTicks, long CreationTicks) stamp)
+        {
+            stamp = (-1, 0, 0);
+            try
+            {
+                var info = new FileInfo(path);
+                if (info.Exists) stamp = (info.Length, info.LastWriteTimeUtc.Ticks, info.CreationTimeUtc.Ticks);
+                return true;
+            }
+            catch (IOException) { return false; }
+            catch (UnauthorizedAccessException) { return false; }
+        }
+
+        /// <summary>防止界面和恢复流程修改缓存中的嵌套库存、安全节点或结果状态。</summary>
+        private static SaveReadResult<ArcadeRunSaveData> CloneInspection(SaveReadResult<ArcadeRunSaveData> source) => new()
+        {
+            Status = source.Status, Error = source.Error, FromBackup = source.FromBackup, Data = source.Data?.Clone()
+        };
+
+        /// <summary>缓存未命中时按既有主文件／备份顺序执行完整读取与校验。</summary>
+        private SaveReadResult<ArcadeRunSaveData> InspectFiles()
         {
             var result = new SaveReadResult<ArcadeRunSaveData>();
             if (!File.Exists(RunPath) && !File.Exists(BackupPath))
@@ -70,6 +125,7 @@ namespace Game
         public bool Save(ArcadeRunSaveData data, out string error)
         {
             using var sample = SaveMarker.Auto();
+            System.Threading.Interlocked.Increment(ref mutationVersion);
             error = null;
             try
             {
@@ -116,10 +172,12 @@ namespace Game
                 catch (UnauthorizedAccessException) { }
                 return false;
             }
+            finally { System.Threading.Interlocked.Increment(ref mutationVersion); }
         }
 
         public bool Delete(out string error)
         {
+            System.Threading.Interlocked.Increment(ref mutationVersion);
             error = null;
             try
             {
@@ -134,6 +192,7 @@ namespace Game
                 error = exception.Message;
                 return false;
             }
+            finally { System.Threading.Interlocked.Increment(ref mutationVersion); }
         }
 
         /// <summary>只处理调用方独占的候选值与本目录文件；完成原子写入后回主线程，不能取消一半替换。</summary>

@@ -59,6 +59,8 @@ namespace Game
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineAccountAttentionEvent>(OnOnlineAccountAttention)
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
+            // 开始页显示前完成存档读取与恢复窗口预建；点击时复用已准备的内容。
+            RefreshSaveButtons();
         }
 
         /// <summary>每个 View 初始化时绑定一次；先请求点击声，再执行业务，隐藏/重显不重复绑定。</summary>
@@ -113,7 +115,9 @@ namespace Game
         /// <summary>从正式存档快照决定单人入口及摘要；已有进度和结果都不能由新局按钮直接覆盖。</summary>
         private void RefreshSaveButtons()
         {
-            var pending = this.GetSystem<ArcadeRunSystem>().InspectPending();
+            var pending = this.GetSystem<ArcadeRunSystem>().PrepareMenuEntry();
+            if (pending.IsValid)
+                UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
             UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
             UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
             UI.BtnNewGame.interactable = !startingRun;

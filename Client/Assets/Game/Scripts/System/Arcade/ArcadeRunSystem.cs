@@ -36,6 +36,15 @@ namespace Game
 
         public SaveReadResult<ArcadeRunSaveData> InspectPending() => store.Inspect();
 
+        /// <summary>菜单显示前准备文件快照及恢复会读取的只读配置；不提交本局阶段，失败仍由正式恢复入口报告。</summary>
+        internal SaveReadResult<ArcadeRunSaveData> PrepareMenuEntry()
+        {
+            var pending = InspectPending();
+            if (pending.IsValid && pending.Data.IsCasualRoute)
+                this.GetUtility<IRuntimeConfigProvider>()?.TryGetArcadeCatalog(out _, out _);
+            return pending;
+        }
+
         /// <summary>从正式 Luban 目录建立可调数值的新局；随机种子与目的地一并写入安全节点。</summary>
         public bool TryStartConfiguredRun(out ArcadeRunSaveData snapshot, out string error)
         {

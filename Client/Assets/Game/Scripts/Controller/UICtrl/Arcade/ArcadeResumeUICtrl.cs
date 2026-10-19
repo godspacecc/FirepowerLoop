@@ -24,6 +24,15 @@ namespace Game
         public override UILayer Layer() => UILayer.Dialog;
         public override bool BlocksGame => true;
 
+        /// <summary>用已校验的存档预填隐藏窗口，不恢复领域状态；可见窗口仍由正式显示及领域事件刷新。</summary>
+        internal void PrepareMenuContent(ArcadeRunSaveData snapshot)
+        {
+            if (BaseUI == null || IsShow()) return;
+            onlineMode = false;
+            selectionMode = snapshot == null;
+            Render(snapshot);
+        }
+
         /// <summary>主菜单按需打开已有进度或结果；无存档时不再显示模式选择。</summary>
         public static bool TryOpenEntry(out string error)
         {

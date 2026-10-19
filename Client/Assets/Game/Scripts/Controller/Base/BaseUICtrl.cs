@@ -154,29 +154,11 @@ namespace Game
         public void Show()
         {
             if (Layer() == UILayer.Popup && IsTransientPopup && !UIHelper.CanShowPopup()) return;
-            if (BaseUI == null)
-            {
-                if (!ReferenceEquals(BaseUI, null))
-                {
-                    OnBaseUIDestroyed(BaseUI);
-                }
-                else
-                {
-                    ResetLoadedState();
-                }
-
-                Load();
-            }
+            EnsureLoaded(false);
 
             if (BaseUI == null)
             {
                 return;
-            }
-
-            if (!_initialized)
-            {
-                OnInit();
-                _initialized = true;
             }
 
             if (_isActive)
@@ -196,6 +178,46 @@ namespace Game
             _isActive = true;
             UIHelper.NotifyShown(this);
             OnShow();
+        }
+
+        /// <summary>提前装载并初始化隐藏窗口；不执行显示生命周期，也不改变输入阻断或窗口顺序。</summary>
+        internal void Preload() => EnsureLoaded(true);
+
+        /// <summary>显示和预加载共用实例及初始化路径；已有窗口的显隐状态不受预加载影响。</summary>
+        private void EnsureLoaded(bool hideOnLoad)
+        {
+            if (BaseUI == null)
+            {
+                if (!ReferenceEquals(BaseUI, null))
+                {
+                    OnBaseUIDestroyed(BaseUI);
+                }
+                else
+                {
+                    ResetLoadedState();
+                }
+
+                Load();
+            }
+
+            if (BaseUI == null)
+            {
+                return;
+            }
+
+            try
+            {
+                if (!_initialized)
+                {
+                    OnInit();
+                    _initialized = true;
+                }
+            }
+            finally
+            {
+                // 先让初始化新增的销毁注销组件完成激活，再于同一调用内隐藏，保证未显示就销毁也能注销。
+                if (hideOnLoad && BaseUI != null && !_isActive) BaseUI.gameObject.SetActive(false);
+            }
         }
 
         public void Hide()

@@ -61,6 +61,14 @@ namespace Game
             return ctrl;
         }
 
+        /// <summary>复用窗口所属控制器，提前创建隐藏实例；显示仍须经过正式 Show 流程。</summary>
+        internal static T PreloadUI<T>() where T : BaseUICtrl, new()
+        {
+            var ctrl = GetOrCreateUI<T>();
+            ctrl.Preload();
+            return ctrl;
+        }
+
         public static void HideUI<T>() where T : BaseUICtrl
         {
             if (UICtrlDict.TryGetValue(typeof(T).Name, out var ctrl))

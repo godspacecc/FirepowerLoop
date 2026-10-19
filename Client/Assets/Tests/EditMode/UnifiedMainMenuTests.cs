@@ -41,8 +41,11 @@ namespace Game.Tests
             ResourceLoader.SetLoaderForTests(new LocalizationLoader());
             LocalizationLanguages.ResetForTests();
             architecture.RegisterModel(new ArcadeRunModel());
+            architecture.RegisterModel(new MapSceneModel());
+            architecture.RegisterModel(new OnlineArcadeRunModel());
             architecture.RegisterModel(new LocalizationModel());
             architecture.RegisterUtility(new LocalizationUtility());
+            architecture.RegisterSystem(new OnlineArcadeRunSystem());
             var system = new ArcadeRunSystem();
             architecture.RegisterSystem(system);
             saveRoot = System.IO.Path.Combine(Application.temporaryCachePath, "UnifiedMenu-" + Guid.NewGuid().ToString("N"));
@@ -184,6 +187,216 @@ namespace Game.Tests
             }
             Assert.That(system.InspectPending().Data.RunId, Is.EqualTo(snapshot.RunId));
             Assert.That(preparation.Requests, Is.Empty);
+        }
+
+        [Test]
+        public void MenuInit_PreparesHiddenResumeContentWithoutChangingRunPhase()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            Assert.That(system.TryContinue(out _, out error), Is.True, error);
+            Invoke("OnInit");
+            var entry = UIHelper.GetUICtrl<ArcadeResumeUICtrl>();
+            Assert.That(entry, Is.Not.Null, "开始页初始化时应完成恢复窗口准备");
+            Assert.That(entry.IsShow(), Is.False);
+            Assert.That(UIHelper.HasUIOpen, Is.False, "预加载不能发布可见或输入阻断状态");
+            var view = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(view.gameObject.activeSelf, Is.False);
+            Assert.That(view.TextSummary.text, Is.Not.Empty);
+            Assert.That(view.BtnContinue.gameObject.activeSelf, Is.True);
+            Assert.That(architecture.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Arena));
+            Assert.That(preparation.Requests, Is.Empty, "预加载菜单不能开始准备战斗地图");
+        }
+
+        [Test]
+        public void ContinueClick_ReusesPreparedViewAndValidatedSave()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            Invoke("OnInit");
+            var view = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(view, Is.Not.Null);
+            UIHelper.SetPrefabLoaderForTests(_ => throw new InvalidOperationException("点击不应再加载 Prefab"));
+            var store = new ArcadeRunFileStore(saveRoot);
+            // 文件内容已在开始页校验；独占内容句柄可证明点击不再重复读取 JSON。
+            using (new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                Invoke("OnContinueClick");
+                Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.True);
+                Assert.That(Object.FindObjectOfType<ArcadeResumeUI>(), Is.SameAs(view));
+            }
+        }
+
+        [Test]
+        public void MenuRefresh_AfterHiddenViewDestroyedPreparesReplacement()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            Invoke("OnInit");
+            var original = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(original, Is.Not.Null);
+            Object.DestroyImmediate(original.gameObject);
+            Invoke("RefreshSaveButtons");
+            var replacement = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(replacement, Is.Not.Null);
+            Assert.That(replacement, Is.Not.SameAs(original));
+            Assert.That(replacement.gameObject.activeSelf, Is.False);
+            Invoke("OnContinueClick");
+            replacement.BtnClose.onClick.Invoke();
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.False);
+        }
+
+        [Test]
+        public void MenuInit_WithoutSaveDoesNotCreateResumeWindow()
+        {
+            Invoke("OnInit");
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>(), Is.Null);
+            Assert.That(architecture.GetModel<ArcadeRunModel>().HasRun, Is.False);
+        }
+
+        [Test]
+        public void MenuRunEvent_RefreshesPreparedResultWithoutOpeningWindow()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out var snapshot, out var error), Is.True, error);
+            Invoke("OnInit");
+            snapshot.Score = 97531;
+            snapshot.Outcome = "failed";
+            Assert.That(new ArcadeRunFileStore(saveRoot).Save(snapshot, out error), Is.True, error);
+            architecture.SendEvent(new ArcadeRunChangedEvent(ArcadeRunPhase.Result, snapshot));
+            var view = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(view, Is.Not.Null);
+            Assert.That(view.TextRewards.text, Does.Contain("97531"));
+            Assert.That(view.BtnSettle.gameObject.activeSelf, Is.True);
+            Assert.That(view.BtnContinue.gameObject.activeSelf, Is.False);
+            Assert.That(view.gameObject.activeSelf, Is.False);
+        }
+
+        [Test]
+        public void SaveInspection_UnchangedFileReusesDetachedValidatedSnapshot()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            var store = new ArcadeRunFileStore(saveRoot);
+            var inspected = store.Inspect();
+            Assert.That(inspected.IsValid, Is.True);
+            inspected.Data.Score = 99999;
+            inspected.Data.EmergencyResources[ArcadeRunDefaults.BombResourceId] = 99;
+            using (new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+            {
+                var cached = store.Inspect();
+                Assert.That(cached.IsValid, Is.True, "未变化的存档不应重复打开内容句柄");
+                Assert.That(cached.Data.Score, Is.Zero, "调用者不能修改缓存快照");
+                Assert.That(cached.Data.EmergencyResources.ContainsKey(ArcadeRunDefaults.BombResourceId), Is.False);
+            }
+        }
+
+        [Test]
+        public void SaveInspection_WriteDeleteAndBackupChangesInvalidateCache()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out var snapshot, out var error), Is.True, error);
+            var store = new ArcadeRunFileStore(saveRoot);
+            Assert.That(store.Inspect().Data.Score, Is.Zero);
+            snapshot.Score = 45678;
+            Assert.That(store.Save(snapshot, out error), Is.True, error);
+            Assert.That(store.Inspect().Data.Score, Is.EqualTo(45678));
+            File.WriteAllText(store.RunPath, "broken");
+            Assert.That(store.Inspect().FromBackup, Is.True);
+            File.WriteAllText(store.BackupPath, "also broken");
+            Assert.That(store.Inspect().Status, Is.EqualTo(SaveFileStatus.Corrupted));
+            Assert.That(store.Delete(out error), Is.True, error);
+            Assert.That(store.Inspect().Status, Is.EqualTo(SaveFileStatus.Missing));
+            Assert.That(store.Save(snapshot, out error), Is.True, error);
+            Assert.That(store.Inspect().Data.Score, Is.EqualTo(45678));
+        }
+
+        [Test]
+        public void ContinueClick_AfterExternalSaveChangeShowsLatestResult()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out var snapshot, out var error), Is.True, error);
+            Invoke("OnInit");
+            snapshot.Score = 56789;
+            snapshot.Outcome = "failed";
+            Assert.That(new ArcadeRunFileStore(saveRoot).Save(snapshot, out error), Is.True, error);
+            Invoke("OnContinueClick");
+            var view = Object.FindObjectOfType<ArcadeResumeUI>();
+            Assert.That(view, Is.Not.Null);
+            Assert.That(view.TextRewards.text, Does.Contain("56789"));
+            Assert.That(view.BtnSettle.gameObject.activeSelf, Is.True);
+            Assert.That(view.BtnContinue.gameObject.activeSelf, Is.False);
+        }
+
+        [Test]
+        public void SaveInspection_TemporaryPrimaryLockDoesNotKeepOlderBackupCached()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out var snapshot, out var error), Is.True, error);
+            var store = new ArcadeRunFileStore(saveRoot);
+            snapshot.Score = 12345;
+            Assert.That(store.Save(snapshot, out error), Is.True, error);
+            using (new FileStream(store.RunPath, FileMode.Open, FileAccess.Read, FileShare.None))
+                Assert.That(store.Inspect().FromBackup, Is.True);
+            var restored = store.Inspect();
+            Assert.That(restored.FromBackup, Is.False, "主文件恢复可读后不能一直返回较旧备份");
+            Assert.That(restored.Data.Score, Is.EqualTo(12345));
+        }
+
+        [Test]
+        public void MenuInit_PreparesColdCasualConfigurationBeforeContinueClick()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out var snapshot, out var error), Is.True, error);
+            snapshot.IsCasualRoute = true;
+            snapshot.ArenaConfigNumber = 1;
+            Assert.That(new ArcadeRunFileStore(saveRoot).Save(snapshot, out error), Is.True, error);
+            int tableLoads = 0;
+            architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() =>
+            {
+                tableLoads++;
+                return new global::Tables(name => new Luban.ByteBuf(
+                    AssetDatabase.LoadAssetAtPath<TextAsset>($"Assets/Game/Config/{name}.bytes").bytes));
+            }));
+            Invoke("OnInit");
+            Assert.That(tableLoads, Is.EqualTo(1), "普通路线的配置校验和只读目录也应在显示菜单前准备");
+            Assert.That(architecture.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+            Invoke("OnContinueClick");
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.True);
+            Assert.That(tableLoads, Is.EqualTo(1), "点击应复用正式提供者的配置快照");
+        }
+
+        [Test]
+        public void HiddenPreparedView_DestroyCallbacksRemoveArchitectureSubscriptions()
+        {
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            Invoke("OnInit");
+            var entry = UIHelper.GetUICtrl<ArcadeResumeUICtrl>();
+            var view = Object.FindObjectOfType<ArcadeResumeUI>(true);
+            Assert.That(EventCallbackCount<LanguageChangedEvent>(entry), Is.EqualTo(1));
+            Assert.That(EventCallbackCount<ArcadeRunChangedEvent>(entry), Is.EqualTo(1));
+            // EditMode 不自动执行普通运行时组件的全部生命周期，且隐藏对象不接收 SendMessage。
+            // 与基础 UI 生命周期测试一致，显式驱动真实销毁回调，再检查订阅及重建后的数量。
+            view.OnTriggerDestroyEvent.Trigger();
+            typeof(UnRegisterOnDestroyTrigger).GetMethod("OnDestroy", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(view.GetComponent<UnRegisterOnDestroyTrigger>(), null);
+            Object.DestroyImmediate(view.gameObject);
+            Assert.That(EventCallbackCount<LanguageChangedEvent>(entry), Is.Zero, "未显示就销毁也必须注销架构订阅");
+            Assert.That(EventCallbackCount<ArcadeRunChangedEvent>(entry), Is.Zero);
+            Invoke("RefreshSaveButtons");
+            Assert.That(EventCallbackCount<LanguageChangedEvent>(entry), Is.EqualTo(1));
+            Assert.That(EventCallbackCount<ArcadeRunChangedEvent>(entry), Is.EqualTo(1));
+        }
+
+        private int EventCallbackCount<T>(object target)
+        {
+            var eventSystem = typeof(Architecture<Game>).GetField("mTypeEventSystem", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(architecture);
+            var events = (EasyEvents)typeof(TypeEventSystem).GetField("mEvents", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(eventSystem);
+            var callbacks = (Delegate)typeof(EasyEvent<T>).GetField("mOnEvent", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(events.GetEvent<EasyEvent<T>>());
+            int count = 0;
+            foreach (var callback in callbacks.GetInvocationList()) if (ReferenceEquals(callback.Target, target)) count++;
+            return count;
         }
 
         private void Invoke(string method) => typeof(StartUICtrl).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(controller, null);
