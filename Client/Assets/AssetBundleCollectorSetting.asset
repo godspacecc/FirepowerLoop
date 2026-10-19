@@ -728,6 +728,22 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropSkullPurple.prefab
+        CollectorGUID: 2c4918128db3b7949afa9cc6b5107d2e
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropSkullRed.prefab
+        CollectorGUID: 81292161a15b4cc48a13d194933eaf10
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGrenade.prefab
         CollectorGUID: dd8d9dd788d40014abbc43f402cd8eff
         CollectorType: 0

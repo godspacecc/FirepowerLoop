@@ -23,6 +23,17 @@ namespace Game.Tests
             AssertTags("Scenes/TaskSampleMap", "arcade");
         }
 
+        /// <summary>两级骷髅必须以运行时请求的地址进入街机清单，否则入场预载会失败。</summary>
+        [TestCase("Prefabs/SceneObjects/ArcadeDropSkullRed")]
+        [TestCase("Prefabs/SceneObjects/ArcadeDropSkullPurple")]
+        public void SkullDropsAreCollectedForArcadeEntry(string address)
+        {
+            var asset = Find(address);
+            var assetInfo = Read(asset, "AssetInfo");
+            Assert.That(assetInfo.GetType().GetField("AssetPath").GetValue(assetInfo), Is.EqualTo("Assets/Game/" + address + ".prefab"));
+            Assert.That(Tags(asset), Does.Contain("arcade"));
+        }
+
         [Test]
         public void ArcadeEnemiesAreNotStartupAndDoNotSharePlayerBundle()
         {
