@@ -85,6 +85,33 @@ namespace Game.Tests
             Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(8));
         }
 
+        [Test] public void RoundWaitsForBlackBeforeReplacingMapAndRevealsOnlyWhenReady()
+        {
+            Call("StartIslandRound",runtime,0,null);view.Round=0;view.Reveals=0;
+            view.Covered=false; view.Ready=false;
+            Call("StartIslandRound",runtime,1,null);
+            Assert.That(view.Round,Is.Zero,"淡出完成前保留上一关画面");
+            int synchronized=view.PlayerUpdates;Call("SyncView",runtime);
+            Assert.That(view.PlayerUpdates,Is.EqualTo(synchronized),"出口帧的公共同步也不能提前移动玩家");
+            Assert.That(runtime.IslandTransitionPending,Is.True);
+            view.Covered=true;Call("TryFinishIslandTransition",runtime);
+            Assert.That(view.Round,Is.EqualTo(2));Assert.That(view.Reveals,Is.Zero);
+            view.Ready=true;Call("TryFinishIslandTransition",runtime);
+            Assert.That(runtime.IslandTransitionPending,Is.False,runtime.IslandPreparationError);Assert.That(view.Reveals,Is.EqualTo(1));
+        }
+
+        [Test] public void ContentThemeWaitsForBlackAndItsOwnResourcesBeforeReveal()
+        {
+            Set("arena",catalog.Arenas[1]);var run=architecture.GetModel<ArcadeRunModel>();var data=run.Current;
+            data.NextArenaNumber=2;data.CompletedArenaCount=1;data.ArenaConfigNumber=2;data.Checkpoint.ArenaNumber=2;
+            run.CommitSafeNode(data);run.EnterArena();runtime.ArenaNumber=2;
+            view.Covered=false;view.Ready=false;Call("StartContentRound",runtime,0,null);
+            Assert.That(view.Begins,Is.Zero);Assert.That(runtime.IslandTransitionPending,Is.True);
+            view.Covered=true;Call("TryFinishContentTransition",runtime);Assert.That(view.Begins,Is.EqualTo(1));Assert.That(view.Reveals,Is.Zero);
+            view.Ready=true;Call("TryFinishContentTransition",runtime);Assert.That(runtime.IslandTransitionPending,Is.False,runtime.IslandPreparationError);
+            Assert.That(view.Reveals,Is.EqualTo(1));
+        }
+
         [Test] public void StartPreparesMapAndSavesWholeRoundBeforeSpawning()
         {
             Call("StartIslandRound", runtime, 0, null);
@@ -499,6 +526,13 @@ namespace Game.Tests
 
         private sealed class View : IArcadeCombatViewPort
         {
+            public bool Covered=true;
+            public int Reveals;
+            public int PlayerUpdates;
+            public int Begins;
+            public bool IsRoundTransitionCovered=>Covered;
+            public void BeginRoundTransition() { }
+            public void EndRoundTransition()=>Reveals++;
             public bool Ready = true;
             public string LoadError;
             public string IslandRoundLoadError => LoadError;
@@ -518,10 +552,10 @@ namespace Game.Tests
             public void SetTreasureRoom(ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds)
                 { TreasureEntranceShown = !inRoom && discovered; }
             public bool IsActive => true;
-            public void Begin(int n, float w, float h, IReadOnlyList<ArcadeObstacleDefinition> o) { }
+            public void Begin(int n, float w, float h, IReadOnlyList<ArcadeObstacleDefinition> o) { Begins++; }
             public void End() { }
             public bool TryScreenToArena(Vector2 s, out Vector2 p) { p = default; return false; }
-            public void SetPlayer(Vector2 p, Vector2 f, bool v, bool i) { }
+            public void SetPlayer(Vector2 p, Vector2 f, bool v, bool i) { PlayerUpdates++; }
             public void SetPlayerHealth(int c, int m) { }
             public void SetEnemy(int id, string config, Vector2 p, int c, int m, bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false) { }
             public void RemoveEnemy(int id, bool playDeath = false) { }

@@ -74,6 +74,7 @@ namespace Game
             runtime.IslandEntryWarningRemaining = waveIndex == 0 ? 0f : IslandWarningSeconds;
             runtime.IslandCampfireWarningRemaining = waveIndex == 3 ? IslandWarningSeconds : 0;
             // 出口确认不经过活动帧尾部，资源异步等待前必须先公布准备状态。
+            view.BeginRoundTransition();
             PublishHud(runtime);
             PrepareIslandRoundView(runtime);
         }
@@ -81,6 +82,7 @@ namespace Game
         /// <summary>替换局部地图并启动资源准备，异常转为可重试冻结状态。</summary>
         private void PrepareIslandRoundView(ArcadeCombatRuntime runtime)
         {
+            if(!view.IsRoundTransitionCovered)return;
             try
             {
                 view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
@@ -105,6 +107,11 @@ namespace Game
         {
             if (UsesContentRounds(runtime)) return TryFinishContentTransition(runtime);
             if (!runtime.IslandTransitionPending || runtime.CompletionAwaitingRetry) return false;
+            if(!runtime.IslandTransitionViewPrepared)
+            {
+                if(view.IsRoundTransitionCovered)PrepareIslandRoundView(runtime);
+                return !runtime.IslandTransitionPending;
+            }
             if (!string.IsNullOrEmpty(view.IslandRoundLoadError))
             { FailIslandTransition(runtime, view.IslandRoundLoadError); return false; }
             if (!runtime.IslandTransitionViewPrepared || !view.IsIslandRoundReady) return false;
@@ -119,6 +126,7 @@ namespace Game
             { FailIslandTransition(runtime, error); return false; }
             runtime.IslandFirstPersonSuspended = false;
             runtime.IslandTransitionPending = false;
+            view.EndRoundTransition();
             // 开场只提交就绪状态；全局确认音会在未射击时产生突兀的枪响感。
             PublishHud(runtime);
             return true;

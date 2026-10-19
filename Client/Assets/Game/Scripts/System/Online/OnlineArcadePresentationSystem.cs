@@ -46,6 +46,10 @@ namespace Game
         private long lastAppliedBattleRevision = -1;
         private bool active;
         private bool transitionBusy;
+        /// <summary>新轮快照等待黑幕遮挡，期间保留旧世界且不投影新角色位置。</summary>
+        private bool roundTransitionPending;
+        /// <summary>只证明该代次已真正替换表现世界；输入泵仍须另外校验资源及相机就绪。</summary>
+        public bool IsRoundPresented(int generation)=>active&&!roundTransitionPending&&activeRoundGeneration==generation;
         /// <summary>本机本场已观察的权威攻击序列；首次进入只建立基线，不补播历史动作。</summary>
         private bool hasLocalFireBaseline;
         private int lastLocalFireSequence;
@@ -103,6 +107,12 @@ namespace Game
                 if (generation != transitionGeneration || latest.RunId != runId || latest.Battle?.ArenaNumber != arenaNumber) return;
                 if (!this.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out catalog, out string error))
                 { Log.Error($"[OnlineArcadePresentationSystem] 联机街机配置不可用：{error}"); return; }
+                view.BeginRoundTransition();
+                while(!view.IsRoundTransitionCovered)
+                {
+                    await UniTask.NextFrame();
+                    if(generation!=transitionGeneration||latest.RunId!=runId||latest.Battle?.ArenaNumber!=arenaNumber)return;
+                }
                 activeArena = ResolveArena(latest.Battle.ArenaConfigNumber > 0 ? latest.Battle.ArenaConfigNumber : arenaNumber);
                 view.Begin(activeArena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,
                     activeArena.Obstacles);
@@ -133,10 +143,16 @@ namespace Game
         private void OnUpdate()
         {
             if (!active || latest.Battle == null || catalog == null || latest.BattlePaused) return;
+            if(roundTransitionPending)
+            {
+                ApplyAuthoritativeSnapshot(latest.Battle);
+                if(roundTransitionPending)return;
+            }
             if(latest.Battle.SlayerMart?.Active==true){TickSlayerMartPresentation();return;}
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)||!string.IsNullOrEmpty(view.IslandRoundLoadError))
             {ShowRoundLoadRetry();return;}
             if(!view.IsRoundLayoutReady||!view.IsIslandRoundReady||presentedInTreasureRoom&&!view.IsIslandTreasureReady||latest.Battle.RoundLoading)return;
+            view.EndRoundTransition();
             view.TickPlayerFeedback(Time.deltaTime);
             long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
             OnlineArcadeBattlePlayerSnapshot self = default;
@@ -197,6 +213,12 @@ namespace Game
             if (!active || battle == null || battle.RoundGeneration<activeRoundGeneration ||
                 battle.RoundGeneration==activeRoundGeneration && battle.BattleRevision < lastAppliedBattleRevision) return;
             if(battle.SlayerMart?.Active==true){ApplySlayerMartPresentation(battle);return;}
+            if(activeRoundGeneration!=0&&(battle.RoundGeneration!=activeRoundGeneration||presentedSlayerMart))
+            {
+                view.BeginRoundTransition();
+                if(!view.IsRoundTransitionCovered){roundTransitionPending=true;return;}
+            }
+            roundTransitionPending=false;
             if(battle.RoundGeneration!=activeRoundGeneration||presentedSlayerMart)
             {
                 presentedSlayerMart=false;
@@ -550,6 +572,7 @@ namespace Game
         /// <summary>当前代次资源失败提供可重试入口，错误期间不向服务器发送就绪。</summary>
         private void ShowRoundLoadRetry()
         {
+            view.EndRoundTransition();
             if(roundLoadPrompt)return;roundLoadPrompt=true;int generation=activeRoundGeneration;
             string error=!string.IsNullOrEmpty(view.RoundLayoutLoadError)?view.RoundLayoutLoadError:view.IslandRoundLoadError;
             Notify.ShowMessage(Loc.T("ui.arcade.menu.failed"),error,new List<MessageButtonConfig>{
@@ -575,6 +598,8 @@ namespace Game
 
         private void EndPresentation()
         {
+            roundTransitionPending=false;
+            view?.EndRoundTransition();
             StageNotices.Clear();
             presentedSlayerMart=false;activeSlayerMartLayout=null;activeRoundLayout=null;activeRoundGeneration=0;predictedIceVelocity=Vector2.zero;
             if (active) view?.End();

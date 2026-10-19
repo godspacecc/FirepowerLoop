@@ -102,13 +102,15 @@ namespace Game
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
             runtime.IslandEntryWarningRemaining = layout.SkillWarning;
             InitializeRoundContent(runtime);
-            // 先让加载页接管输入和画面，再启动候选地图的异步资源准备。
+            // 黑幕完全遮挡后才替换地图，准备期间冻结玩法并保持黑屏。
+            view.BeginRoundTransition();
             PublishHud(runtime);
             PrepareContentRoundView(runtime);
         }
 
         private void PrepareContentRoundView(ArcadeCombatRuntime runtime)
         {
+            if(!view.IsRoundTransitionCovered)return;
             try
             {
                 view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
@@ -125,6 +127,11 @@ namespace Game
         private bool TryFinishContentTransition(ArcadeCombatRuntime runtime)
         {
             if (!runtime.IslandTransitionPending || runtime.CompletionAwaitingRetry) return false;
+            if(!runtime.IslandTransitionViewPrepared)
+            {
+                if(view.IsRoundTransitionCovered)PrepareContentRoundView(runtime);
+                return !runtime.IslandTransitionPending;
+            }
             var failure = view.RoundLayoutLoadError ?? view.IslandRoundLoadError;
             if (!string.IsNullOrEmpty(failure)) { FailIslandTransition(runtime, failure); return false; }
             if (!runtime.IslandTransitionViewPrepared || !view.IsRoundLayoutReady || !view.IsIslandRoundReady) return false;
@@ -139,6 +146,7 @@ namespace Game
             { FailIslandTransition(runtime, saveError); return false; }
             runtime.IslandFirstPersonSuspended = false;
             runtime.IslandTransitionPending = false;
+            view.EndRoundTransition();
             PublishHud(runtime);
             return true;
         }

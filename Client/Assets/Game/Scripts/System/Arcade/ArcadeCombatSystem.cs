@@ -2056,6 +2056,8 @@ namespace Game
 
         private void SyncView(ArcadeCombatRuntime runtime)
         {
+            // 出口帧仍会走公共同步；黑幕未遮挡前不能投影已切换的新轮逻辑位置。
+            if(runtime.IslandTransitionPending&&!runtime.IslandTransitionViewPrepared&&!view.IsRoundTransitionCovered)return;
             SyncTreasureView(runtime);
             if (runtime.IslandRoomTransitionPending && runtime.CompletionAwaitingRetry) return;
             view.SetBabylon(runtime.InTreasureRoom || !UsesBabylon(runtime) ? null : arena.Babylon, runtime.Crates.Keys.ToArray());

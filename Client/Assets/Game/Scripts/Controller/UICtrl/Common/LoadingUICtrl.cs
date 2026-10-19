@@ -115,6 +115,8 @@ namespace Game
             mapError = arcadePreparationFailed ? FormatMapFailure() : null;
             failureLogsCopied = false;
             displayMode = DisplayMode.Map;
+            // 普通局内切关由黑幕接管；首次进局和失败重试仍使用完整加载页。
+            if(!arcadePreparationFailed&&!mapLoadingActive&&!entryPreparing)return;
             Show();
             RefreshPresentation();
         }

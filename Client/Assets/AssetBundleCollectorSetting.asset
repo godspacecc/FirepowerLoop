@@ -159,6 +159,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeRoundTransition.prefab
+        CollectorGUID: 8fd4d83113e6701498ab1fc07a8d1dc0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
       - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeShop.prefab
         CollectorGUID: 43e180362c86df749bddcd61ccad2813
         CollectorType: 0

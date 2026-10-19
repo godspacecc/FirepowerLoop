@@ -226,8 +226,25 @@ namespace Game.Tests
             Assert.That(view.Drops.Single(),Is.EqualTo(id));Assert.That(view.DropDeliveries[id].Airdrop,Is.True);Assert.That(view.DropDeliveries[id].Remaining,Is.Zero);
         }
 
+        [Test] public void OnlineNewRoundKeepsOldWorldUntilBlackAndProjectsLatestSnapshot()
+        {
+            var layout=catalog.RoundLayouts.First(p=>p.ArenaConfigNumber==1&&p.RoundNumber==2);
+            Set("activeRoundGeneration",1);view.Covered=false;
+            var battle=new OnlineArcadeBattleSnapshot(1,2,4,0,0,2,3,0,Battle(1,false).Players,null,
+                arenaConfigNumber:1,roundLayoutId:layout.Id,roundLayoutVersion:layout.Version,roundGeneration:2,roundLoading:true);
+            Apply(battle);Assert.That(view.Begins,Is.Zero);Assert.That(Get<int>("activeRoundGeneration"),Is.EqualTo(1));
+            Apply(battle);Assert.That(view.Begins,Is.Zero);
+            view.Covered=true;Assert.That(system.IsRoundPresented(2),Is.False,"黑幕到位但尚未切图时不能发送新代次 Ready");
+            Apply(battle);Assert.That(view.Begins,Is.GreaterThan(0));Assert.That(Get<int>("activeRoundGeneration"),Is.EqualTo(2));
+            Assert.That(system.IsRoundPresented(2),Is.True);Assert.That(system.IsRoundPresented(1),Is.False);
+            Assert.That(Get<bool>("roundTransitionPending"),Is.False);
+        }
+
         private sealed class TestView : IArcadeCombatViewPort
         {
+            public bool Covered=true;
+            public bool IsRoundTransitionCovered=>Covered;
+            public void BeginRoundTransition() { }
             public readonly Dictionary<int, float> DropOpacities = new();
             public readonly Dictionary<int,(bool Airdrop,float Remaining)> DropDeliveries=new();
             public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>DropDeliveries[id]=(airdrop,remaining);

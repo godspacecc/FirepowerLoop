@@ -158,6 +158,7 @@ namespace Game
                 if(useFieldUpgrade||donateLifeTargetId!=0)request.UseBomb=request.UseDash=false;
                 request.RoundGeneration=lastSnapshot.Battle.RoundGeneration;
                 request.RoundReady=combatView?.IsRoundLayoutReady==true && combatView.IsIslandRoundReady &&
+                    this.GetSystem<OnlineArcadePresentationSystem>()?.IsRoundPresented(request.RoundGeneration)==true &&
                     string.IsNullOrEmpty(combatView.RoundLayoutLoadError) && string.IsNullOrEmpty(combatView.IslandRoundLoadError);
                 var shop=lastSnapshot.Battle.SlayerMart;
                 if(shop?.Active==true)

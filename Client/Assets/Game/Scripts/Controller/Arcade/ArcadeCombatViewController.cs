@@ -91,6 +91,10 @@ namespace Game
         void RemoveProjectile(int id);
         void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position);
         void RemoveDrop(int id);
+        /// <summary>切关黑幕只控制可见性；地图事务须等待遮挡后才替换世界。</summary>
+        void BeginRoundTransition() { }
+        bool IsRoundTransitionCovered => true;
+        void EndRoundTransition() { }
         /// <summary>空投开盖阶段只做显示，拾取资格由权威剩余量裁决。</summary>
         void SetDropDelivery(int id,bool airdrop,float remaining,float duration) { }
         /// <summary>显示权威剩余寿命的透明度，不参与领取裁决。</summary>
@@ -670,6 +674,17 @@ namespace Game
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);
+        /// <summary>初次进局仍由正式加载页遮挡，局内切关使用独立黑幕。</summary>
+        public void BeginRoundTransition()
+        {
+            if(UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow()==true)return;
+            var transition=UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()??UIHelper.ShowUI<ArcadeRoundTransitionUICtrl>();
+            transition.Begin();
+        }
+        public bool IsRoundTransitionCovered=>UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow()==true||
+            (UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()?.Covered??true);
+        /// <summary>候选地图、角色和相机全部就绪后才揭开黑幕。</summary>
+        public void EndRoundTransition()=>UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()?.Finish();
         public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>lootPresentation?.SetDropDelivery(id,airdrop,remaining,duration);
         public void SetDropOpacity(int id, float opacity) => lootPresentation?.SetDropOpacity(id, opacity);
 
