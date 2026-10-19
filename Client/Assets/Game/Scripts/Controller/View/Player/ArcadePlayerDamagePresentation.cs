@@ -91,7 +91,13 @@ namespace Game
         }
         /// <summary>禁用、离场与复活都撤销纯表现，模板资源由角色 Prefab 句柄持有。</summary>
         public void Reset(){UndoRecoil();hitAge=HitSeconds;deathAge=10;hit.gameObject.SetActive(false);landing.gameObject.SetActive(false);rescue.gameObject.SetActive(false);root.SetActive(false);}
-        /// <summary>角色销毁或退出街机模式时释放专属实例。</summary>
-        public void Dispose(){Reset();if(Application.isPlaying)UnityEngine.Object.Destroy(root);else UnityEngine.Object.DestroyImmediate(root);}
+        /// <summary>释放时立即移出角色子树，防止同帧重建复用等待帧尾销毁的旧实例；重复释放安全。</summary>
+        public void Dispose()
+        {
+            if(root==null)return;
+            Reset();
+            root.transform.SetParent(null,false);
+            if(Application.isPlaying)UnityEngine.Object.Destroy(root);else UnityEngine.Object.DestroyImmediate(root);
+        }
     }
 }
