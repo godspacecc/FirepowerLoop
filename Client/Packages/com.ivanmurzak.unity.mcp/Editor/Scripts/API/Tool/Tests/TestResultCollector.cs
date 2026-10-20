@@ -60,6 +60,9 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
         public static SessionStateInt IncludeLogsMinLevel = new("Unity_MCP_TestRunner_IncludeLogsMinLevel", (int)LogType.Warning);
         public static SessionStateBool IncludeLogsStacktrace = new("Unity_MCP_TestRunner_IncludeLogsStacktrace");
 
+        /// <summary>RQL stages applied to the results (tests-run 'result'); empty = the structured response.</summary>
+        public static SessionStateString ResultQuery = new("Unity_MCP_TestRunner_ResultQuery");
+
         public TestResultCollector()
         {
             int newCount = System.Threading.Interlocked.Increment(ref counter);
@@ -101,9 +104,15 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             Application.logMessageReceivedThreaded -= OnLogMessageReceived;
 
             var duration = DateTime.Now - startTime;
-            _summary.Duration = DateTime.Now - startTime;
-            _summary.TotalTests = CountTests(result.Test);
-            if (_summary.FailedTests > 0)
+            _summary.Duration = duration;
+            // result.Test is the whole unfiltered tree (and so is RunStarted's before com.unity.test-framework 1.4): take every
+            // count from the run's root result, so the summary adds up (inconclusive tests are reported as skipped, like their rows).
+            _summary.PassedTests = result.PassCount;
+            _summary.FailedTests = result.FailCount;
+            _summary.SkippedTests = result.SkipCount + result.InconclusiveCount;
+            _summary.TotalTests = _summary.PassedTests + _summary.FailedTests + _summary.SkippedTests;
+            // A suite-level failure (OneTimeTearDown error, cancelled run) fails the root without failing any test.
+            if (_summary.FailedTests > 0 || result.TestStatus == TestStatus.Failed)
             {
                 _summary.Status = TestRunStatus.Failed;
             }
@@ -126,27 +135,47 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             if (!EnvironmentUtils.IsCi())
                 UnityMcpPluginEditor.ConnectIfNeeded();
 
+            // The testResults RQL source: this run's results, also after the request is answered.
+            Rql.RqlTests.SetLastResults(_results.Select(r => new Rql.RqlTestResult
+            {
+                name = r.Name,
+                status = r.Status.ToString(),
+                durationMs = System.Math.Round(r.Duration.TotalMilliseconds, 1),
+                message = string.IsNullOrEmpty(r.Message) ? null : r.Message,
+                stackTrace = string.IsNullOrEmpty(r.StackTrace) ? null : r.StackTrace,
+            }));
+
             var requestId = TestCallRequestID.Value;
             Tool_Tests.ClearActiveTestRun(requestId);
+            var resultQuery = ResultQuery.Value;
             if (string.IsNullOrEmpty(requestId) == false)
             {
-                var structuredResponse = CreateStructuredResponse(
-                    includePassingTests: IncludePassingTests.Value,
-                    includeMessage: IncludeMessage.Value,
-                    includeLogs: IncludeLogs.Value,
-                    includeMessageStacktrace: IncludeMessageStacktrace.Value,
-                    includeLogsStacktrace: IncludeLogsStacktrace.Value);
-
-                var mcpPlugin = UnityMcpPluginEditor.Instance.McpPluginInstance ?? throw new InvalidOperationException("MCP Plugin instance is not available.");
-
-                var response = ResponseCallValueTool<TestRunResponse>
-                    .SuccessStructured(mcpPlugin.McpManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse))
-                    .SetRequestID(requestId);
+                var mcpPlugin = UnityMcpPluginEditor.Instance.McpPluginInstance;
+                ResponseCallTool response;
+                if (string.IsNullOrWhiteSpace(resultQuery) == false)
+                {
+                    // tests-run declares a TestRunResponse output schema: the summary stays structured, the text is the projection.
+                    var summaryOnly = new TestRunResponse { Summary = _summary };
+                    response = ProjectedResponse(_summary, resultQuery!,
+                        mcpPlugin?.McpManager.Reflector.JsonSerializer.SerializeToNode(summaryOnly));
+                }
+                else
+                {
+                    var structuredResponse = CreateStructuredResponse(
+                        includePassingTests: IncludePassingTests.Value,
+                        includeMessage: IncludeMessage.Value,
+                        includeLogs: IncludeLogs.Value,
+                        includeMessageStacktrace: IncludeMessageStacktrace.Value,
+                        includeLogsStacktrace: IncludeLogsStacktrace.Value);
+                    if (mcpPlugin == null) throw new InvalidOperationException("MCP Plugin instance is not available.");
+                    response = ResponseCallValueTool<TestRunResponse>
+                        .SuccessStructured(mcpPlugin.McpManager.Reflector.JsonSerializer.SerializeToNode(structuredResponse));
+                }
 
                 _ = UnityMcpPluginEditor.NotifyToolRequestCompleted(new RequestToolCompletedData
                 {
                     RequestId = requestId,
-                    Result = response
+                    Result = response.SetRequestID(requestId)
                 });
             }
             else
@@ -189,20 +218,6 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
                 UnityMcpPluginEditor.Instance.LogInfo("{emoji} Test finished ({counter}/{total}): {testName} - {testStatus}",
                     typeof(TestResultCollector), statusEmoji, _results.Count, _summary.TotalTests, result.Test.FullName, result.TestStatus);
 
-                // Update summary counts
-                switch (result.TestStatus)
-                {
-                    case TestStatus.Passed:
-                        _summary.PassedTests++;
-                        break;
-                    case TestStatus.Failed:
-                        _summary.FailedTests++;
-                        break;
-                    case TestStatus.Skipped:
-                        _summary.SkippedTests++;
-                        break;
-                }
-
                 // Update duration as tests complete
                 _summary.Duration = DateTime.Now - startTime;
 
@@ -222,6 +237,28 @@ namespace com.IvanMurzak.Unity.MCP.Editor.API.TestRunner
             {
                 _logs.Add(entry);
             }
+        }
+
+        /// <summary>
+        /// The answer for a tests-run 'result' query: one summary line, then the query over <c>testResults</c> as compact
+        /// RQL text. A query that fails still answers with the summary and the query's error. <paramref name="structured"/>
+        /// (the summary as a <see cref="TestRunResponse"/>) is attached as structured content: MCP clients reject a success
+        /// without it from a tool that declares an output schema.
+        /// </summary>
+        internal static ResponseCallTool ProjectedResponse(TestSummaryData summary, string resultQuery, System.Text.Json.Nodes.JsonNode? structured = null)
+        {
+            var stages = resultQuery.Trim();
+            var query = stages.StartsWith("testResults", System.StringComparison.Ordinal) ? stages : "testResults | " + stages;
+            var head = $"{summary.Status}: {summary.PassedTests} passed, {summary.FailedTests} failed, {summary.SkippedTests} skipped " +
+                $"of {summary.TotalTests} in {summary.Duration.TotalSeconds:0.0}s";
+            var r = Rql.RqlUnity.Engine.Execute(query);
+            var body = (r.Ok ? "" : "result query failed: ") + Rql.ToolFormat.RqlToolBinding.Instance.Show(r);
+            var text = ResponseCallTool.Success(head + "\n" + body);
+            if (structured == null)
+                return text;
+            var response = ResponseCallValueTool<TestRunResponse>.SuccessStructured(structured);
+            response.Content = text.Content;
+            return response;
         }
 
         TestRunResponse CreateStructuredResponse(bool includePassingTests, bool includeMessage, bool includeMessageStacktrace, bool includeLogs, bool includeLogsStacktrace)

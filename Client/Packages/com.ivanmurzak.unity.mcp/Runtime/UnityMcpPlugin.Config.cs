@@ -81,6 +81,13 @@ namespace com.IvanMurzak.Unity.MCP
             public static string CloudServerUrl => CloudServerBaseUrl + "/mcp";
 
             /// <summary>
+            /// The line McpPlugin logs after every SignalR connection error: how to silence it from the
+            /// AI Game Developer window. McpPlugin is engine-agnostic and ships no hint of its own (8.9.0+).
+            /// </summary>
+            public const string DefaultConnectionErrorHint =
+                "To stop seeing the error, please <b>Stop</b> the connection to MCP server in <b>AI Game Developer</b> window.";
+
+            /// <summary>
             /// Returns the active connection host based on <see cref="ConnectionMode"/>.
             /// In Cloud mode, returns <see cref="CloudServerUrl"/>.
             /// In Local mode, returns <see cref="LocalHost"/>.
@@ -131,30 +138,41 @@ namespace com.IvanMurzak.Unity.MCP
             /// <see cref="CloudCredentialProvider"/> (proactively refreshed — design 06 / D12), which is the
             /// ONLY Cloud-mode credential source (T9 — the legacy <c>cloudToken</c> mirror was removed); a
             /// null/empty result yields an anonymous connection. In Local/Custom mode it returns the local
-            /// <see cref="Token"/>. Runtime-only; never serialized (<see cref="JsonIgnoreAttribute"/>). The
+            /// <see cref="Token"/>, except Custom + <c>oauth</c>: the machine-store account credential for a
+            /// loopback host only; another host gets the local <see cref="Token"/> or the connection fails
+            /// (McpPlugin's <see cref="CustomOAuthCredentialPolicy"/>). Runtime-only; never serialized (<see cref="JsonIgnoreAttribute"/>). The
             /// setter is intentionally a no-op: Unity derives the credential from the machine store /
             /// <see cref="Token"/> rather than from a host-injected provider.
             /// </summary>
             [JsonIgnore]
             public override Func<Task<string?>>? CredentialProvider
             {
-                get => async () =>
+                // McpPlugin reads this once per HubConnection build: capture the host so a reconnect of an old
+                // link checks the host it actually dials, not one edited since.
+                get
                 {
-                    if (ConnectionMode == ConnectionMode.Cloud)
+                    var dialHost = Host;
+                    return async () =>
                     {
-                        // Cloud mode: the shared machine store is the ONLY credential source (T9 — the
-                        // legacy cloudToken UserSettings mirror was removed). A null/empty result yields an
-                        // anonymous connection; there is no persisted cloud-token fallback.
-                        var provider = CloudCredentialProvider;
-                        if (provider != null)
+                        if (ConnectionMode == ConnectionMode.Cloud)
                         {
-                            var token = await provider().ConfigureAwait(false);
-                            return string.IsNullOrEmpty(token) ? null : token;
+                            // Cloud mode: the shared machine store is the ONLY credential source (T9 — the
+                            // legacy cloudToken UserSettings mirror was removed). A null/empty result yields an
+                            // anonymous connection; there is no persisted cloud-token fallback.
+                            var provider = CloudCredentialProvider;
+                            if (provider != null)
+                            {
+                                var token = await provider().ConfigureAwait(false);
+                                return string.IsNullOrEmpty(token) ? null : token;
+                            }
+                            return null;
                         }
-                        return null;
-                    }
-                    return Token;
-                };
+                        if (AuthOption == AuthOption.oauth)
+                            return await CustomOAuthCredentialPolicy.ResolveAsync(dialHost, CloudCredentialProvider, Token, EnvironmentUtils.EnvToken)
+                                .ConfigureAwait(false);
+                        return Token;
+                    };
+                }
                 set { /* Unity derives the credential from the machine store / Token; a host-set provider is intentionally ignored. */ }
             }
 
@@ -167,6 +185,15 @@ namespace com.IvanMurzak.Unity.MCP
             public List<McpFeature> Prompts { get; set; } = new();
             public List<McpFeature> Resources { get; set; } = new();
             public Dictionary<string, bool> SkillAutoGenerate { get; set; } = new();
+
+            /// <summary>
+            /// EXPERIMENTAL: the tools' data layer (Rql = RQL instead of ReflectorNet for schemas, arguments and results;
+            /// Json = ReflectorNet's JSON schemas and results). Hosts such as the AI Game Dev app may write it.
+            /// </summary>
+            public ToolPresentationFormat ToolFormat { get; set; } = ToolPresentationFormat.Rql;
+
+            /// <summary>EXPERIMENTAL: escaping of quoted text in RQL tool results.</summary>
+            public com.IvanMurzak.McpPlugin.ToolTextEscaping ToolTextEscaping { get; set; } = com.IvanMurzak.McpPlugin.ToolTextEscaping.Minimal;
 
             /// <summary>
             /// When non-null, only the tools whose names appear in this list are enabled;
@@ -198,6 +225,9 @@ namespace com.IvanMurzak.Unity.MCP
                 Tools = DefaultTools;
                 Prompts = DefaultPrompts;
                 Resources = DefaultResources;
+                ToolFormat = ToolPresentationFormat.Rql;
+                ToolTextEscaping = com.IvanMurzak.McpPlugin.ToolTextEscaping.Minimal;
+                ConnectionErrorHint = DefaultConnectionErrorHint;
                 // Seed the LOCAL server token directly. `GenerateToken()` produces the local server secret;
                 // Cloud-mode credentials come from the shared machine store (T9), never from this config, so
                 // nothing cloud-related is seeded here. Seeding LocalToken up front keeps the generate-if-empty
@@ -246,5 +276,14 @@ namespace com.IvanMurzak.Unity.MCP
     {
         Custom,
         Cloud
+    }
+
+    /// <summary>EXPERIMENTAL tools' data layer, see <see cref="UnityMcpPlugin.UnityConnectionConfig.ToolFormat"/>.</summary>
+    public enum ToolPresentationFormat
+    {
+        /// <summary>ReflectorNet: JSON schemas, JSON arguments and structured results.</summary>
+        Json,
+        /// <summary>RQL is the data layer of every tool (schemas, arguments, results) in place of ReflectorNet.</summary>
+        Rql
     }
 }
