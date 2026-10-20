@@ -1,0 +1,5 @@
+# 保留本地采样帧与中间版本；提交最新预览和可复现脚本。
+frame-*.png
+spiral-frame-*.png
+dense-purple-vortex.gif
+capture.txt
