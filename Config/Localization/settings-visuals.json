@@ -1,4 +1,6 @@
 {
+  "ui.arcade.product.arcade.powerup.skull.small.name": { "zh-CN": "红骷髅强化", "en-US": "Red Skull Power" },
+  "ui.arcade.product.arcade.powerup.skull.large.name": { "zh-CN": "紫骷髅强化", "en-US": "Purple Skull Power" },
   "ui.arcade.product.arcade.weapon.flamethrower.name": { "zh-CN": "喷火器", "en-US": "Flamethrower" },
   "ui.arcade.hud.icon.flamethrower": { "zh-CN": "喷火", "en-US": "FL" },
   "ui.settings.visual.general_title": { "zh-CN": "通用设置", "en-US": "General settings" },

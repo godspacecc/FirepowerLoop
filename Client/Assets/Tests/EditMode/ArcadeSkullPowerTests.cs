@@ -124,6 +124,44 @@ namespace Game.Tests
             finally{UnityEngine.Object.DestroyImmediate(instance);}
         }
 
+        /// <summary>拾取提示与HUD共用正式语言表；两级骷髅在中英文中均不得回退为内部键。</summary>
+        [TestCase("zh-CN","arcade.powerup.skull.small","红骷髅强化")]
+        [TestCase("zh-CN","arcade.powerup.skull.large","紫骷髅强化")]
+        [TestCase("en-US","arcade.powerup.skull.small","Red Skull Power")]
+        [TestCase("en-US","arcade.powerup.skull.large","Purple Skull Power")]
+        public void SkullPickupAndHudNamesResolveFromPublishedLanguageAssets(string language,string productId,string expected)
+        {
+            var previousLoader=ResourceLoader.Current;
+            var cache=typeof(LocalizationLanguages).GetField("cachedConfig",BindingFlags.Static|BindingFlags.NonPublic);
+            var previousCache=cache.GetValue(null);
+            try
+            {
+                ResourceLoader.Use(new PublishedLanguageLoader());
+                LocalizationLanguages.ResetCache();
+                var localization=new LocalizationUtility();
+                string nameKey=(string)typeof(ArcadeCombatSystem).GetMethod("ProductNameKey",BindingFlags.Static|BindingFlags.NonPublic)
+                    .Invoke(null,new object[]{productId});
+                string hudKey=(string)typeof(ArcadeHudUICtrl).GetMethod("ProductNameKey",BindingFlags.Static|BindingFlags.NonPublic)
+                    .Invoke(null,new object[]{productId});
+                Assert.That(localization.Translate(language,nameKey),Is.EqualTo(expected));
+                Assert.That(localization.Translate(language,hudKey),Is.EqualTo(expected));
+                string pickup=localization.Translate(language,"tip.item_gained",localization.Translate(language,nameKey),1);
+                Assert.That(pickup,Does.Contain(expected));
+                Assert.That(pickup,Does.Not.Contain("ui."));
+            }
+            finally { ResourceLoader.Use(previousLoader);cache.SetValue(null,previousCache); }
+        }
+
+        /// <summary>只读取正式导入的语言资源，保留实际加载及缓存初始化，不注入测试翻译。</summary>
+        private sealed class PublishedLanguageLoader:IResourceLoader
+        {
+            public T LoadAsset<T>(string path) where T:UnityEngine.Object
+                =>AssetDatabase.LoadAssetAtPath<T>("Assets/Game/Config/Localization/"+path);
+            public ResourceLoadHandle LoadAssetAsync<T>(string path,Action<T> loaded) where T:UnityEngine.Object
+            { loaded?.Invoke(LoadAsset<T>(path));return ResourceLoadHandle.Empty; }
+            public void Release(ResourceLoadHandle handle) { }
+        }
+
         [Test] public void SkullDropsAndActiveMarkersUseValidColliderFreeResources()
         {
             foreach(bool large in new[]{false,true})

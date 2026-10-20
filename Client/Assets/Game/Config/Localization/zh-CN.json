@@ -1362,5 +1362,7 @@
   "ui.settings.network.resource_invalid": "地址格式无效，请输入完整 HTTP/HTTPS 地址。",
   "ui.settings.network.reset_failed": "恢复默认失败。",
   "ui.arcade.product.arcade.weapon.flamethrower.name": "喷火器",
-  "ui.arcade.hud.icon.flamethrower": "喷火"
+  "ui.arcade.hud.icon.flamethrower": "喷火",
+  "ui.arcade.product.arcade.powerup.skull.small.name": "红骷髅强化",
+  "ui.arcade.product.arcade.powerup.skull.large.name": "紫骷髅强化"
 }
