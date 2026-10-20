@@ -6,6 +6,7 @@ namespace Game
     [DisallowMultipleComponent]
     public sealed class EnemyPhysicalReaction : MonoBehaviour
     {
+        // 旧特殊轮火焰表现仍消费此短时常量；普通敌人的可见寿命由EnemyCorpseFade独立管理。
         public const float CorpseSeconds = 2.2f;
         public const string BodyLayerName = "EnemyRagdoll";
         public const string FloorLayerName = "EnemyRagdollFloor";
@@ -41,6 +42,8 @@ namespace Game
         private static readonly int MoveParameter = Animator.StringToHash("MoveSpeed");
         public bool IsRagdoll => dead;
         public bool IsSimulating => simulating;
+        /// <summary>将尚未交接物理的失衡阶段也计入预算，避免同帧批量死亡突破上限。</summary>
+        public bool HasPendingPhysics => simulating || staggering;
         public bool IsReady => animator != null && chest != null && (hips != null || animator.isHuman) && bodies.Length == 11 &&
             restPositions.Length == bodies.Length && restRotations.Length == bodies.Length;
 
@@ -188,6 +191,27 @@ namespace Game
                 bodyColliders[i].enabled = false;
             }
             simulating = false;
+        }
+
+        /// <summary>物理预算超额时保留当前可见姿态并立即停止求解，取消尚未执行的失衡交接。</summary>
+        public void StopDeathSimulation()
+        {
+            if (!dead) return;
+            // 密集击杀可能尚未倒下或仍在空中；仅骨骼回退到贴地姿态，不增加求解或移动战斗根。
+            if (staggering || hips.position.y - transform.position.y > .65f)
+            {
+                var direction = deathDirection;
+                ResetForReuse();
+                dead = true;
+                deathDirection = direction;
+                animator.enabled = false;
+                hips.rotation = Quaternion.AngleAxis(90f, Vector3.Cross(Vector3.up, direction)) * hips.rotation;
+                hips.position += Vector3.up * (transform.position.y + .25f - hips.position.y);
+                return;
+            }
+            offsetApplied = hipsOffsetApplied = staggering = false;
+            animator.enabled = false;
+            Freeze();
         }
 
         /// <summary>禁用、切图和新用途统一清除速度、回弹及骨骼位姿，下一次激活可立即播放动画。</summary>

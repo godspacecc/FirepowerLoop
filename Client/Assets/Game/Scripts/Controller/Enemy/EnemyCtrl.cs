@@ -28,8 +28,10 @@ namespace Game
         private bool stagedArcade;
         private bool released;
         private bool stagedPrepared;
-        /// <summary>手机最多44个、桌面最多88个尸体刚体；超额先回收最旧尸体。</summary>
+        /// <summary>手机最多44个、桌面最多88个活动尸体刚体；超额冻结最旧尸体但保留可见姿态。</summary>
         private readonly int corpseBudget = Application.isMobilePlatform ? 4 : 8;
+        /// <summary>独立限制可见尸体数；冻结后不再占用物理预算，避免密集击杀时立即消失。</summary>
+        private readonly int visibleCorpseBudget = Application.isMobilePlatform ? 12 : 24;
         private GameObject ragdollFloor;
         public EnemyCtrl(IArchitecture architecture)
         {
@@ -166,14 +168,14 @@ namespace Game
                     view.ConfigureRuntime(runtimeId, arcadeMapInstanceId);
                     if (!this.GetUtility<IRuntimeConfigProvider>().TryGetEnemy(configId, out var weaponConfig, out var weaponError))
                     {
-                        this.GetUtility<IViewInstanceProvider>().Release(view.gameObject);
+                        ReleaseArcadeView(view);
                         error = weaponError ?? $"街机敌人配置不可用：{configId}";
                         return false;
                     }
 
                     if (!ValidatePresentationWeaponKind(view, weaponConfig, out var presentationError) || view.GetComponent<CharacterWeaponPresenter>() != null && !view.SetCombatWeapon(weaponConfig.WeaponId))
                     {
-                        this.GetUtility<IViewInstanceProvider>().Release(view.gameObject);
+                        ReleaseArcadeView(view);
                         error = presentationError ?? $"街机敌人武器表现不可用：{configId}/{weaponConfig.WeaponId}";
                         return false;
                     }
@@ -187,7 +189,7 @@ namespace Game
                 }
                 catch (Exception exception)
                 {
-                    this.GetUtility<IViewInstanceProvider>().Release(view.gameObject);
+                    ReleaseArcadeView(view);
                     error = $"街机敌人表现初始化失败：{configId} / {exception.Message}";
                     return false;
                 }
@@ -254,10 +256,20 @@ namespace Game
             if (playDeath && entry.View != null)
             {
                 entry.View.PlayFlameDeath(flameKill);
-                while (dyingArcadeEnemies.Count >= corpseBudget)
+                while (dyingArcadeEnemies.Count >= visibleCorpseBudget)
                 {
                     RecycleArcadeEnemy(dyingArcadeEnemies[0]);
                     dyingArcadeEnemies.RemoveAt(0);
+                }
+                int activePhysics = 0;
+                foreach (var dying in dyingArcadeEnemies)
+                    if (dying.View != null && dying.View.HasPendingDeathPhysics) activePhysics++;
+                for (int i = 0; activePhysics >= corpseBudget && i < dyingArcadeEnemies.Count; i++)
+                {
+                    var dying = dyingArcadeEnemies[i].View;
+                    if (dying == null || !dying.HasPendingDeathPhysics) continue;
+                    dying.StopDeathSimulation();
+                    activePhysics--;
                 }
                 if (entry.View.TryPlayPhysicalDeath(direction, explosive, out var durationSeconds) ||
                     entry.View.TryPlayDeathAnimation(out durationSeconds))
@@ -368,24 +380,29 @@ namespace Game
                 ragdollFloor = null;
             }
             foreach (var entry in arcadeEnemies.Values)
-                if (entry.View != null)
-                    this.GetUtility<IViewInstanceProvider>().Release(entry.View.gameObject);
+                ReleaseArcadeView(entry.View);
             arcadeEnemies.Clear();
             for (var i = 0; i < dyingArcadeEnemies.Count; i++)
-                if (dyingArcadeEnemies[i].View != null)
-                    this.GetUtility<IViewInstanceProvider>().Release(dyingArcadeEnemies[i].View.gameObject);
+                ReleaseArcadeView(dyingArcadeEnemies[i].View);
             dyingArcadeEnemies.Clear();
             foreach (var pool in arcadeEnemyPool.Values)
                 while (pool.Count > 0)
                 {
                     var view = pool.Pop();
-                    if (view != null)
-                        this.GetUtility<IViewInstanceProvider>().Release(view.gameObject);
+                    ReleaseArcadeView(view);
                 }
 
             arcadeEnemyPool.Clear();
             arcadeRoot = null;
             arcadeMapInstanceId = 0;
+        }
+
+        /// <summary>先释放表现实例持有的临时材质，再交给既有实例提供器销毁；支持重复释放。</summary>
+        private void ReleaseArcadeView(EnemyView view)
+        {
+            if (view == null) return;
+            view.ReleasePresentationResources();
+            this.GetUtility<IViewInstanceProvider>().Release(view.gameObject);
         }
 
         private MapControllerResult FailPrepared(string error)
@@ -638,6 +655,7 @@ namespace Game
             {
                 var entry = dyingArcadeEnemies[i];
                 entry.View?.TickCombatFeedback(Time.deltaTime);
+                entry.View?.SetCorpseFade(entry.ReleaseTime - Time.time);
                 if (entry.View != null && Time.time < entry.ReleaseTime)
                     continue;
                 RecycleArcadeEnemy(entry);

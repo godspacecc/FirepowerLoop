@@ -1,0 +1,1 @@
+LifetimeSeconds=8; FrozenAt2.2Seconds=True; FullDifference=1.7275; HalfDifference=0.9660; GoneDifference=0.0000; Scope=Editor isolated preview; not device FPS or live multiplayer.

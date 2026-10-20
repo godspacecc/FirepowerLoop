@@ -104,7 +104,7 @@ namespace Game.Tests
         {
             Assert.That(DeathType, Is.Not.Null, "缺少权威死亡事实的不可变快照");
             var array = Array.CreateInstance(DeathType, 1);
-            array.SetValue(Activator.CreateInstance(DeathType, 41L, 1f, 0f, true, generation), 0); return array;
+            array.SetValue(new OnlineArcadeEnemyDeathSnapshot(41L, 1f, 0f, true, generation, false), 0); return array;
         }
 
         [TestCase(7, true)]

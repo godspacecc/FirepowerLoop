@@ -97,6 +97,9 @@ namespace Game
         private float feedbackRemainingSeconds;
         /// <summary>预制的纯表现骨骼反馈，所有推进均复用EnemyCtrl生命周期。</summary>
         private EnemyPhysicalReaction physicalReaction;
+        /// <summary>尸体淡出缓存属于表现实例，回池还原、最终销毁释放，不参与战斗状态。</summary>
+        private EnemyCorpseFade corpseFade;
+        public bool HasPendingDeathPhysics => PhysicalReaction != null && PhysicalReaction.HasPendingPhysics;
         /// <summary>附着火焰由预制资源持有，和骨骼反馈共用现有表现生命周期。</summary>
         private EnemyFlameFeedback flameFeedback;
         private EnemyFlameFeedback FlameFeedback=>flameFeedback!=null?flameFeedback:flameFeedback=GetComponentInChildren<EnemyFlameFeedback>(true);
@@ -211,6 +214,7 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            corpseFade?.Reset();
             FlameFeedback?.ResetForReuse();
             PhysicalReaction?.ResetForReuse();
             EnsureAgent();
@@ -433,6 +437,7 @@ namespace Game
 
         private void OnDisable()
         {
+            corpseFade?.Reset();
             PhysicalReaction?.ResetForReuse();
             if (feedbackRemainingSeconds > 0f) RestoreFeedbackColors();
             feedbackRemainingSeconds = 0f;
@@ -770,7 +775,7 @@ namespace Game
             animator.SetFloat(MoveSpeedAnimatorParameter, 0f);
             animator.SetBool(DeadAnimatorParameter, true);
             ResetMovementSampling();
-            durationSeconds = Mathf.Max(0f, deathAnimationDurationSeconds);
+            durationSeconds = Mathf.Max(EnemyCorpseFade.LifetimeSeconds, deathAnimationDurationSeconds);
             return true;
         }
 
@@ -786,14 +791,34 @@ namespace Game
             SetNavigationEnabled(false);
             if (combatCollider == null) combatCollider = GetComponent<Collider>();
             if (combatCollider != null) combatCollider.enabled = false;
-            durationSeconds = EnemyPhysicalReaction.CorpseSeconds;
+            durationSeconds = EnemyCorpseFade.LifetimeSeconds;
             return true;
         }
 
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
         public void LateTickCombatFeedback() => PhysicalReaction?.LateTick();
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+
+        /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>
+        public void StopDeathSimulation() => PhysicalReaction?.StopDeathSimulation();
+
+        /// <summary>控制器按回收剩余时间推进淡出；长时间静止阶段不分配材质。</summary>
+        public void SetCorpseFade(float remainingSeconds)
+        {
+            if (remainingSeconds >= EnemyCorpseFade.FadeSeconds) return;
+            if (corpseFade == null) corpseFade = new EnemyCorpseFade(animator != null ? animator.transform : transform);
+            corpseFade.Apply(remainingSeconds);
+        }
+
+        /// <summary>地图释放先归还实例持有的临时材质；编辑态隔离预览同样可显式释放。</summary>
+        public void ReleasePresentationResources()
+        {
+            corpseFade?.Dispose();
+            corpseFade = null;
+        }
+
+        private void OnDestroy() => ReleasePresentationResources();
 
         /// <summary>只消费实际喷火命中后的剩余表现秒数。</summary>
         public void SetFlameRemaining(float seconds)=>FlameFeedback?.SetRemaining(seconds);

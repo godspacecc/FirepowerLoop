@@ -30,7 +30,12 @@ namespace Game.Tests
         private object Call(string method, params object[] args) => ReactionType.GetMethod(method,
             BindingFlags.Public | BindingFlags.Instance).Invoke(reaction, args);
 
-        [TearDown] public void Cleanup() { if (instance != null) Object.DestroyImmediate(instance); }
+        [TearDown] public void Cleanup()
+        {
+            if (instance == null) return;
+            instance.GetComponent<EnemyView>()?.ReleasePresentationResources();
+            Object.DestroyImmediate(instance);
+        }
 
         [TestCase("ArcadeEnemyBasic")]
         [TestCase("ArcadeEnemyArcher")]
@@ -127,18 +132,21 @@ namespace Game.Tests
             var controller = new EnemyCtrl(architecture);
             const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
             typeof(EnemyCtrl).GetField("corpseBudget", flags).SetValue(controller, budget);
+            var visibleBudget = typeof(EnemyCtrl).GetField("visibleCorpseBudget", flags);
+            Assert.NotNull(visibleBudget);
+            visibleBudget.SetValue(controller, budget * 3);
             var type = typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry", BindingFlags.NonPublic);
             var alive = (System.Collections.IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies", flags).GetValue(controller);
             var dying = (System.Collections.IList)typeof(EnemyCtrl).GetField("dyingArcadeEnemies", flags).GetValue(controller);
             try
             {
-                for (int id = 1; id <= 20; id++)
+                for (int id = 1; id <= 40; id++)
                 {
                     Spawn();
                     alive.Add(id, Activator.CreateInstance(type, id, "enemy.arcade.basic", view, 20, instance.transform.position, 0, false));
                     instance = null; // 生命周期从此交给控制器。
                     controller.RemoveEnemy(id, true);
-                    Assert.That(dying.Count, Is.LessThanOrEqualTo(budget));
+                    Assert.That(dying.Count, Is.LessThanOrEqualTo(budget * 3));
                 }
                 controller.ClearArcadeEnemies();
                 Assert.That(dying.Count, Is.Zero);
@@ -178,7 +186,7 @@ namespace Game.Tests
             Call("Tick", .09f); Call("LateTick");
             Assert.False(view.Animator.enabled); Assert.True(bodies.All(body => !body.isKinematic));
             Assert.Greater(Quaternion.Angle(pose, chest.localRotation), 8, "交接时不能撤销刚形成的失衡姿态");
-            Assert.AreEqual(2.2f, duration);
+            Assert.GreaterOrEqual(duration, 6f, "物理冻结后仍应保留可见尸体");
         }
         [Test] public void PausedStaggerDoesNotAdvanceOrAccumulateAndRepeatedDeathCannotSkipIt()
         {
@@ -261,6 +269,131 @@ namespace Game.Tests
             for (int i = 0; i < 50; i++) Cycle();
             long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
             Assert.That(allocated, Is.Zero, "预热后的过渡、躯干施力与回池不应分配托管数组或对象");
+        }
+
+        [Test]
+        public void FrozenCorpseFadesWithoutChangingSharedMaterialsAndReuseRestoresOpacity()
+        {
+            Spawn("ArcadeZombieShambler");
+            var renderer = instance.GetComponentsInChildren<SkinnedMeshRenderer>().First(r => r.enabled);
+            var original = renderer.sharedMaterials;
+            Assert.True(view.TryPlayPhysicalDeath(Vector3.forward, true, out var duration));
+            view.TickCombatFeedback(2f);
+            Assert.False(((EnemyPhysicalReaction)reaction).IsSimulating);
+            Assert.Greater(duration, 6f);
+            var fade = typeof(EnemyView).GetMethod("SetCorpseFade");
+            Assert.NotNull(fade, "尸体应支持独立的回收前淡出");
+            fade.Invoke(view, new object[] { .6f });
+            Assert.AreNotSame(original[0], renderer.sharedMaterial);
+            Assert.That(renderer.sharedMaterial.GetFloat("_Surface"), Is.EqualTo(1));
+            var block = new MaterialPropertyBlock(); renderer.GetPropertyBlock(block, 0);
+            Assert.That(block.GetColor("_BaseColor").a, Is.EqualTo(.5f).Within(.01f));
+            Assert.That(original[0].GetColor("_BaseColor").a, Is.EqualTo(1f));
+            view.ResetPhysicalFeedback();
+            CollectionAssert.AreEqual(original, renderer.sharedMaterials);
+            renderer.GetPropertyBlock(block, 0);
+            Assert.True(block.isEmpty, "复用不得残留透明覆盖");
+        }
+
+        [TestCase(4)] [TestCase(8)]
+        public void PhysicsBudgetFreezesOldCorpseWhileKeepingItVisible(int budget)
+        {
+            var architecture = new global::Game.Game();
+            architecture.RegisterUtility<IViewInstanceProvider>(new UnityViewInstanceProvider());
+            var controller = new EnemyCtrl(architecture);
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(EnemyCtrl).GetField("corpseBudget", flags).SetValue(controller, budget);
+            var type = typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry", BindingFlags.NonPublic);
+            var alive = (System.Collections.IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies", flags).GetValue(controller);
+            var corpses = new System.Collections.Generic.List<EnemyView>();
+            try
+            {
+                for (int id = 1; id <= budget + 1; id++)
+                {
+                    Spawn(); corpses.Add(view);
+                    alive.Add(id, Activator.CreateInstance(type, id, "enemy.arcade.basic", view, 20, instance.transform.position, 0, false));
+                    instance = null;
+                    controller.RemoveEnemy(id, true, Vector3.forward, true);
+                }
+                Assert.True(corpses[0].gameObject.activeSelf, "物理预算不应立即移除可见尸体");
+                Assert.False(corpses[0].GetComponent<EnemyPhysicalReaction>().IsSimulating);
+                Assert.AreEqual(budget, corpses.Count(v => v.GetComponent<EnemyPhysicalReaction>().IsSimulating));
+            }
+            finally { controller.ReleaseAll(); }
+        }
+
+        [TestCase(false)] [TestCase(true)]
+        public void BudgetFreezeBeforeLandingUsesGroundedDeathPoseWithoutReactivatingPhysics(bool explosive)
+        {
+            Spawn("ArcadeZombieShambler");
+            var feedback = (EnemyPhysicalReaction)reaction;
+            var hips = instance.GetComponentsInChildren<Transform>().Single(t => t.name == "Abdomen");
+            var rootPosition = instance.transform.position; var standingRotation = hips.rotation;
+            feedback.BeginDeath(Vector3.forward, explosive);
+            if (explosive) hips.position += Vector3.up * 3f;
+            feedback.StopDeathSimulation();
+            feedback.Tick(.2f); feedback.LateTick();
+            Assert.Less(hips.position.y - instance.transform.position.y, .65f, "预算冻结不能留下站立或悬空8秒的尸体");
+            Assert.Greater(Quaternion.Angle(standingRotation, hips.rotation), 70f);
+            Assert.AreEqual(rootPosition, instance.transform.position);
+            Assert.False(feedback.HasPendingPhysics);
+            Assert.False(view.Animator.enabled);
+            Assert.True(instance.GetComponentsInChildren<Rigidbody>().All(b => b.isKinematic && !b.detectCollisions));
+        }
+
+        [Test]
+        public void FadePreservesSlotOverridesReusesMaterialsAndDestroysOwnedCopies()
+        {
+            Spawn("ArcadeZombieShambler");
+            var renderer = instance.GetComponentsInChildren<SkinnedMeshRenderer>().First(r => r.enabled);
+            var originals = renderer.sharedMaterials;
+            var block = new MaterialPropertyBlock(); block.SetColor("_BaseColor", new Color(.2f, .4f, .6f, .8f));
+            block.SetFloat("_Cutoff", .17f); renderer.SetPropertyBlock(block, 0);
+            Material fading = null;
+            for (int cycle = 0; cycle < 2; cycle++)
+            {
+                view.SetCorpseFade(.6f);
+                if (cycle == 0) fading = renderer.sharedMaterial;
+                else Assert.AreSame(fading, renderer.sharedMaterial, "复用同一实例时不得重复创建淡出材质");
+                renderer.GetPropertyBlock(block, 0);
+                Assert.That(block.GetColor("_BaseColor").a, Is.EqualTo(.4f).Within(.001f));
+                Assert.That(block.GetFloat("_Cutoff"), Is.EqualTo(.17f));
+                view.ResetPhysicalFeedback(); renderer.GetPropertyBlock(block, 0);
+                Assert.That(block.GetColor("_BaseColor").a, Is.EqualTo(.8f));
+                CollectionAssert.AreEqual(originals, renderer.sharedMaterials);
+            }
+            view.ReleasePresentationResources();
+            Object.DestroyImmediate(instance); instance = null;
+            Assert.True(fading == null, "最终销毁实例时必须释放淡出材质副本");
+        }
+
+        [Test]
+        public void ControllerTickFadesThenRecyclesAtExpiry()
+        {
+            Spawn("ArcadeZombieShambler");
+            var architecture = new global::Game.Game();
+            architecture.RegisterUtility<IViewInstanceProvider>(new UnityViewInstanceProvider());
+            var controller = new EnemyCtrl(architecture);
+            const BindingFlags flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            var type = typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry", BindingFlags.NonPublic);
+            var alive = (System.Collections.IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies", flags).GetValue(controller);
+            var entry = Activator.CreateInstance(type, 1, "enemy.arcade.basic", view, 20, instance.transform.position, 0, false);
+            var renderer = instance.GetComponentsInChildren<SkinnedMeshRenderer>().First(r => r.enabled);
+            var originals = renderer.sharedMaterials;
+            alive.Add(1, entry); instance = null;
+            try
+            {
+                controller.RemoveEnemy(1, true, Vector3.forward, true);
+                type.GetProperty("ReleaseTime").SetValue(entry, Time.time + .6f);
+                typeof(EnemyCtrl).GetMethod("OnUpdate", flags).Invoke(controller, null);
+                Assert.AreNotSame(originals[0], renderer.sharedMaterial);
+                Assert.True(view.gameObject.activeSelf);
+                type.GetProperty("ReleaseTime").SetValue(entry, Time.time - 1f);
+                typeof(EnemyCtrl).GetMethod("OnUpdate", flags).Invoke(controller, null);
+                Assert.False(view.gameObject.activeSelf);
+                CollectionAssert.AreEqual(originals, renderer.sharedMaterials);
+            }
+            finally { controller.ReleaseAll(); }
         }
     }
 }
