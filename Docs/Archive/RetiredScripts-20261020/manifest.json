@@ -1,0 +1,434 @@
+{
+  "Date": "2026-10-20",
+  "Scope": "清理退役空壳与无内容示例，不修改玩法，不删除仍有绑定的资源脚本",
+  "Archived": [
+    {
+      "OriginalPath": "Client/Assets/Game/Scripts/Controller/View/Map/CorpseSearchTriggerRelay.cs",
+      "ArchivePath": "Docs/Archive/RetiredScripts-20261020/Client/Assets/Game/Scripts/Controller/View/Map/CorpseSearchTriggerRelay.cs",
+      "SHA256": "4397C0E20EC2DF2BEDD660C8CE887AEED891F8595AF35ABD6BEB175C6DE18F56",
+      "RecoveredUnmodifiedMetaFromGit": false,
+      "Reason": "无代码与序列化资源引用；完整保留源码和meta，移出Unity编译导入范围"
+    },
+    {
+      "OriginalPath": "Client/Assets/Game/Scripts/Controller/View/Map/CorpseSearchTriggerRelay.cs.meta",
+      "ArchivePath": "Docs/Archive/RetiredScripts-20261020/Client/Assets/Game/Scripts/Controller/View/Map/CorpseSearchTriggerRelay.cs.meta",
+      "SHA256": "77BD8408D6FE21426A57566C6777F21070C33D8688502E063EF69B46FE7BF95A",
+      "RecoveredUnmodifiedMetaFromGit": true,
+      "Reason": "无代码与序列化资源引用；完整保留源码和meta，移出Unity编译导入范围"
+    },
+    {
+      "OriginalPath": "Client/Assets/Game/Scripts/Controller/View/Map/OnlineCorpseView.cs",
+      "ArchivePath": "Docs/Archive/RetiredScripts-20261020/Client/Assets/Game/Scripts/Controller/View/Map/OnlineCorpseView.cs",
+      "SHA256": "DCDE6164D2291F5C924FC472593F2D312337BC728D451AAC75326BED54937BB0",
+      "RecoveredUnmodifiedMetaFromGit": false,
+      "Reason": "无代码与序列化资源引用；完整保留源码和meta，移出Unity编译导入范围"
+    },
+    {
+      "OriginalPath": "Client/Assets/Game/Scripts/Controller/View/Map/OnlineCorpseView.cs.meta",
+      "ArchivePath": "Docs/Archive/RetiredScripts-20261020/Client/Assets/Game/Scripts/Controller/View/Map/OnlineCorpseView.cs.meta",
+      "SHA256": "ED86890B88EC34A5D671E1048F5306A0FD6A6B12ADC5220AD73BBA95B3B9F638",
+      "RecoveredUnmodifiedMetaFromGit": false,
+      "Reason": "无代码与序列化资源引用；完整保留源码和meta，移出Unity编译导入范围"
+    }
+  ],
+  "Deleted": [
+    {
+      "Path": "Server/GameServer/Runtime/Hotfix/Server/Plugins/Example/HotfixServer.cs",
+      "Bytes": 0,
+      "SHA256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "Reason": "无类型声明的空白示例；项目使用通配编译，无显式单文件引用"
+    },
+    {
+      "Path": "Server/GameServer/Runtime/Hotfix/Share/Plugins/Example/HotfixShare.cs",
+      "Bytes": 0,
+      "SHA256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855",
+      "Reason": "无类型声明的空白示例；项目使用通配编译，无显式单文件引用"
+    },
+    {
+      "Path": "Server/GameServer/Runtime/Model/Server/Plugins/Example/ModelServer.cs",
+      "Bytes": 2,
+      "SHA256": "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6",
+      "Reason": "无类型声明的空白示例；项目使用通配编译，无显式单文件引用"
+    },
+    {
+      "Path": "Server/GameServer/Runtime/Model/Share/Plugins/Example/ModelShare.cs",
+      "Bytes": 2,
+      "SHA256": "7EB70257593DA06F682A3DDDA54A9D260D4FC514F645237F5CA74B08F8DA61A6",
+      "Reason": "无类型声明的空白示例；项目使用通配编译，无显式单文件引用"
+    }
+  ],
+  "LegacyScriptAudit": [
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/MapSelectionUI.cs",
+      "Type": "MapSelectionUI",
+      "Guid": "65e8ac47d8734fd497c55f5dc8247761",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Expedition/MapSelection.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiPrefabCompatibilityTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/ExpeditionHudUI.cs",
+      "Type": "ExpeditionHudUI",
+      "Guid": "e4b1995f5c1b4ac458a761ae4a4e5bea",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\AndroidHudLayoutTests.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationWorkshopUI.cs",
+      "Type": "CivilisationWorkshopUI",
+      "Guid": "3f7b457ba447b1747aab661c077673e2",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationWorkshop.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationSettlementUI.cs",
+      "Type": "CivilisationSettlementUI",
+      "Guid": "3c15124a2e9a3ad41b2ec6f79d81c130",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationSettlement.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box/MapSelectionOptionBoxUI.cs",
+      "Type": "MapSelectionOptionBoxUI",
+      "Guid": "4e6b954bd2cc435db371858c622aaf72",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Expedition/Box/MapSelectionOptionBox.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiPrefabCompatibilityTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftCategoryBoxUI.cs",
+      "Type": "CraftCategoryBoxUI",
+      "Guid": "e9aefd447ee511949872749ca860eaf8",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftCategoryBox.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/DialogueUI.cs",
+      "Type": "DialogueUI",
+      "Guid": "2327419ea6f28854d915f34b7abb52fe",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Dialogue/Dialogue.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftRecipeBoxUI.cs",
+      "Type": "CraftRecipeBoxUI",
+      "Guid": "41adaa9d4b3b0d7439ed70668c17e47d",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftRecipeBox.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftMaterialBoxUI.cs",
+      "Type": "CraftMaterialBoxUI",
+      "Guid": "4f3f5e2a07cdea04182d912898cf1874",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftMaterialBox.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Craft/CraftUI.cs",
+      "Type": "CraftUI",
+      "Guid": "069f0d86620bd1743b151a67c4c50a68",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Craft/Craft.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemContextMenuUI.cs",
+      "Type": "ItemContextMenuUI",
+      "Guid": "f4e776efe0aa24145bdbad8b4288e0c4",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/ItemContextMenu.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/HeldItemPickerUI.cs",
+      "Type": "HeldItemPickerUI",
+      "Guid": "49ad665cde157cf42b50fb480e3687a1",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/HeldItemPicker.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/WarehouseUI.cs",
+      "Type": "WarehouseUI",
+      "Guid": "35593b7bf16cd2d4f9e236c3387468df",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/SearchContainerUI.cs",
+      "Type": "SearchContainerUI",
+      "Guid": "3aafc948e01fc2f479a84ee42a952842",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box/DialogueChoiceBoxUI.cs",
+      "Type": "DialogueChoiceBoxUI",
+      "Guid": "349d74c6c41c28a4aa1b841ca25ed08b",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Dialogue/Box/DialogueChoice.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/EquipmentManagementPageUI.cs",
+      "Type": "EquipmentManagementPageUI",
+      "Guid": "f36f0140712f88e43a16f7a98a2434e8",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+        "Client/Assets/Game/Prefabs/UI/Inventory/Page/EquipmentManagement.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Game/Scripts\\Controller\\UI\\Inventory\\BagUI.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemTooltipUI.cs",
+      "Type": "ItemTooltipUI",
+      "Guid": "c3615918dc1d7fb45a60a14959142ede",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/ItemTooltip.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/JournalManagementPageUI.cs",
+      "Type": "JournalManagementPageUI",
+      "Guid": "a2728c03ba853e546b77e82b083f9b69",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+        "Client/Assets/Game/Prefabs/UI/Inventory/Page/JournalManagement.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Game/Scripts\\Controller\\UI\\Inventory\\BagUI.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/EquipmentSlotBoxUI.cs",
+      "Type": "EquipmentSlotBoxUI",
+      "Guid": "f3348b03414082d4094e7b5a97300f71",
+      "AssetReferences": [],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs",
+      "Type": "BagUI",
+      "Guid": "d7de1ba7975e6e4499550053589372b8",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/InventorySlotBoxUI.cs",
+      "Type": "InventorySlotBoxUI",
+      "Guid": "f2694a9155d23b843b8a549c9b9423b1",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/InventorySlotBox.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\UiFunctionalDirectoryMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ItemContextActionBoxUI.cs",
+      "Type": "ItemContextActionBoxUI",
+      "Guid": "d1adc55d1020ab74fb536db52705561e",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/ItemContextActionBox.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/MapManagementPageUI.cs",
+      "Type": "MapManagementPageUI",
+      "Guid": "6fd42eb477909304dbc239a38ea5b4b6",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+        "Client/Assets/Game/Prefabs/UI/Inventory/Page/MapManagement.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Game/Scripts\\Controller\\UI\\Inventory\\BagUI.cs",
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ManagementTaskBoxUI.cs",
+      "Type": "ManagementTaskBoxUI",
+      "Guid": "dc03bdf97399e084cb70cb74c0a8275f",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementTask.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/StatusManagementPageUI.cs",
+      "Type": "StatusManagementPageUI",
+      "Guid": "fcfb2c886c1f08641b646771accbf6e5",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+        "Client/Assets/Game/Prefabs/UI/Inventory/Page/StatusManagement.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Game/Scripts\\Controller\\UI\\Inventory\\BagUI.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/TasksManagementPageUI.cs",
+      "Type": "TasksManagementPageUI",
+      "Guid": "b448a38fcf2c5ee49a0ba23fac49184f",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+        "Client/Assets/Game/Prefabs/UI/Inventory/Page/TasksManagement.prefab"
+      ],
+      "CodeReferences": [
+        "Client/Assets/Tests\\EditMode\\Flow\\IndependentUiGenerationMigrationTests.cs",
+        "Client/Assets/Game/Scripts\\Controller\\UI\\Inventory\\BagUI.cs"
+      ]
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/PreparationForbiddenItemBoxUI.cs",
+      "Type": "PreparationForbiddenItemBoxUI",
+      "Guid": "5c01a32f43551bb4fa4bae5e1bf3f427",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/PreparationForbiddenItem.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusAfflictionBoxUI.cs",
+      "Type": "StatusAfflictionBoxUI",
+      "Guid": "ba2c948c9d7a27b48b8f6f2d60d4e06f",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusAffliction.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusItemBoxUI.cs",
+      "Type": "StatusItemBoxUI",
+      "Guid": "7c1a5e36ca41acd488a376c289c92f43",
+      "AssetReferences": [
+        "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusItem.prefab"
+      ],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/View/Map/CorpseSearchTriggerRelay.cs",
+      "Type": "CorpseSearchTriggerRelay",
+      "Guid": "91d7be8726564dd3bc90267c76508f2a",
+      "AssetReferences": [],
+      "CodeReferences": []
+    },
+    {
+      "Path": "Client/Assets/Game/Scripts/Controller/View/Map/OnlineCorpseView.cs",
+      "Type": "OnlineCorpseView",
+      "Guid": "bc54ff1c9eff3ac48941c48282f7c164",
+      "AssetReferences": [],
+      "CodeReferences": []
+    }
+  ],
+  "RetainedEquipmentNote": "EquipmentSlotBoxUI同时声明WeaponSlot，PlayerCameraTests仍引用，且不属于空壳；保留",
+  "Verification": [
+    {
+      "Check": "Unity源码编译状态",
+      "Result": "刷新退役文件后isCompiling=false、scriptCompilationFailed=false"
+    },
+    {
+      "Check": "服务端C#编译",
+      "Command": "dotnet build Server/GameServer/DotNet/Hotfix/DotNet.Hotfix.csproj --no-restore -p:NuGetAudit=false -p:OutputPath=E:/GitHub/FirepowerLoop/Client/Temp/RetiredSourceCleanup-20261020/ServerBuild/ --verbosity quiet",
+      "ExitCode": 0,
+      "Warnings": 0,
+      "Errors": 0
+    },
+    {
+      "Check": "UiPrefabCompatibilityTests",
+      "Mode": "EditMode",
+      "Maximum": 8,
+      "IncludePassingTests": true,
+      "Passed": 7,
+      "Failed": 1,
+      "Failure": "Setting_FixedTexts_UseLocalizationKeys: ui.settings.sound_volume expected non-empty binding, actual empty",
+      "ScopeNote": "该测试与Assets/Game/Prefabs/UI/Home/Setting.prefab均未由本次修改，退役脚本与该设置绑定没有依赖"
+    },
+    {
+      "Check": "保留资源反序列化检查",
+      "Prefabs": 28,
+      "MissingScripts": 0
+    },
+    {
+      "Check": "归档文件SHA256",
+      "Checked": 4,
+      "Matched": 4
+    },
+    {
+      "Check": "退役GUID资源扫描",
+      "References": 0
+    },
+    {
+      "Check": "当前受版本控制的客户端业务与服务端运行源码",
+      "RemainingWhitespaceOnlyCs": 0
+    },
+    {
+      "Check": "只读独立审查",
+      "Result": "无阻断或重要问题；归档文件与HEAD原件及manifest一致；归档目录不在各项目编译范围"
+    },
+    {
+      "Check": "未执行范围",
+      "Result": "未打包、未运行完整测试套件、未启动服务、未修改已有Game.dll.bytes"
+    }
+  ]
+}
