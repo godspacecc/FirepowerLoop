@@ -13,7 +13,7 @@ namespace Game
         {
             var layout=RoundLayout(r);
             if(layout!=null && r.GroundBarrelMapId==layout.Id && r.GroundBarrelLayoutVersion==layout.Version)return;
-            r.GroundBarrels.Clear();r.DestroyedGroundBarrelIds.Clear();
+            r.GroundBarrels.Clear();r.GroundBarrelHealth.Clear();r.DestroyedGroundBarrelIds.Clear();r.NextGroundBarrelId=layout?.Barrels.Count??0;
             r.GroundBarrelMapId=layout?.Id;r.GroundBarrelLayoutVersion=layout?.Version ?? 0;
             if(layout==null)return;
             for(int index=0;index<layout.Barrels.Count;index++)
@@ -43,7 +43,30 @@ namespace Game
         {
             if(r.InTreasureRoom || r.IslandTransitionPending || r.IslandRoomTransitionPending || RoundLayout(r)?.Id!=r.GroundBarrelMapId)return;
             foreach(var pair in r.GroundBarrels.OrderBy(pair=>pair.Key))
-                r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(-10000-pair.Key,11,pair.Value.x,pair.Value.y,ProjectileHitRadius,false));
+                r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(-10000-pair.Key,pair.Key<RoundLayout(r).Barrels.Count?11:13,pair.Value.x,pair.Value.y,ProjectileHitRadius,false));
+        }
+
+        /// <summary>活动战斗中只放一次桶；桶与掉落实体均由本地图拥有，暂停和奖励房不推进。</summary>
+        private void TickVortexBarrels(ArcadeCombatRuntime r,float seconds)
+        {
+            if(!RoundContentActive(r)||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return;
+            var layout=RoundLayout(r);
+            foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
+                if(enemy.ContentSpecialKind==1&&enemy.Health>0&&r.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
+                {
+                    r.GroundBarrels.Add(r.NextGroundBarrelId++,ContentPosition(r,enemy.Position));
+                    enemy.ContentSpecialKind=0;enemy.ContentWarning=false;
+                }
+            foreach(var drop in r.Drops.Values.ToArray())
+            {
+                if(drop.DeliveryRemainingSeconds>0)continue;
+                var nearest=r.GroundBarrels.OrderBy(b=>(b.Value-drop.Position).sqrMagnitude).ThenBy(b=>b.Key).FirstOrDefault();
+                if(r.GroundBarrels.Count==0||(nearest.Value-drop.Position).sqrMagnitude>layout.BarrelPullRadius*layout.BarrelPullRadius)continue;
+                bool consumed=ArcadeRoundContentRules.PullToBarrel(drop.Position.x,drop.Position.y,nearest.Value.x,nearest.Value.y,
+                    layout.BarrelPullSpeed,seconds,ProjectileHitRadius,out float x,out float y);
+                drop.Position=new Vector2(x,y);
+                if(consumed){r.Drops.Remove(drop.Id);view?.RemoveDrop(drop.Id);runtimePool.Return(drop);}
+            }
         }
 
         /// <summary>玩家子弹按真实线段查找最近目标；墙、敌人与箱体先于远桶阻挡。</summary>
@@ -72,7 +95,8 @@ namespace Game
             // 更近的正式目标继续交给原命中入口；微小内移避免浮点端点落在接触边界之外。
             projectile.Position=Vector2.Lerp(from,to,Mathf.Min(1,first+.00001f));
             if(blocked)return false;
-            DetonateGroundBarrel(r,barrelId);
+            int remaining=(r.GroundBarrelHealth.TryGetValue(barrelId,out int health)?health:RoundLayout(r).BarrelHealth)-Math.Max(0,projectile.Damage);
+            if(remaining<=0)DetonateGroundBarrel(r,barrelId);else r.GroundBarrelHealth[barrelId]=remaining;
             // 与既有箱体命中保持一致：消费弹丸，但爆炸武器自身的半径和伤害不能丢失。
             if(!r.CompletionSubmitted && catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
             {
@@ -82,17 +106,16 @@ namespace Game
             return true;
         }
 
-        /// <summary>一发移除一个稳定桶，保留载体原死亡爆炸，并复用现有爆炸强度与危险区。</summary>
+        /// <summary>先移除桶身份再裁决范围伤害；只伤敌人，动态桶不污染预置桶恢复索引。</summary>
         private void DetonateGroundBarrel(ArcadeCombatRuntime r,int id)
         {
             if(!RoundContentActive(r) || !r.GroundBarrels.TryGetValue(id,out var position))return;
-            r.GroundBarrels.Remove(id);r.DestroyedGroundBarrelIds.Add(id);
+            r.GroundBarrels.Remove(id);r.GroundBarrelHealth.Remove(id);
+            if(id<RoundLayout(r).Barrels.Count)r.DestroyedGroundBarrelIds.Add(id);
             var p=ContentTuning(r);
             AddContentArea(r,3,position,position,p.EventRadius,0,p.SkillWarning,0,false,false);
             view?.PlayProjectileExplosion(position,p.EventRadius);
             DamageContentExplosionEnemies(r,position,p.EventRadius,p.EventDamage);
-            if(RoundContentActive(r) && Vector2.Distance(r.PlayerPosition,position)<=p.EventRadius+catalog.Rule.PlayerRadius)
-                DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,p.EventDamage));
         }
 
         /// <summary>线段圆的首次进入比例；端点跳过桶也能命中，起点在圆内视为立即接触。</summary>

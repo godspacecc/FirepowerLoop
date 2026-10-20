@@ -78,6 +78,16 @@ namespace FirepowerLoop.Arcade
     /// <summary>双端共用的纯确定性规则，不写血量、不生成实体、不拥有 Unity 生命周期。</summary>
     public static class ArcadeRoundContentRules
     {
+        /// <summary>吸物使用双端一致的限幅直线运动；返回是否到达桶口，长帧不会越过桶心。</summary>
+        public static bool PullToBarrel(float x,float y,float barrelX,float barrelY,float speed,float seconds,float mouthRadius,out float nextX,out float nextY)
+        {
+            nextX=x;nextY=y;
+            if(!Finite(x)||!Finite(y)||!Finite(barrelX)||!Finite(barrelY)||!Finite(speed)||!Finite(seconds)||speed<=0||seconds<=0)return false;
+            double dx=barrelX-x,dy=barrelY-y,distance=Math.Sqrt(dx*dx+dy*dy);
+            double travel=Math.Min(distance,(double)speed*seconds);
+            if(distance>0){nextX=x+(float)(dx/distance*travel);nextY=y+(float)(dy/distance*travel);}
+            return distance-travel<=mouthRadius;
+        }
         internal static bool Finite(float v) => !float.IsNaN(v) && !float.IsInfinity(v);
         private static bool Time(double v) => !double.IsNaN(v) && !double.IsInfinity(v) && v >= 0;
         /// <summary>只在配置接入边界调用；零内容允许零时长，已启用内容必须完整有效。</summary>

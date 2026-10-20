@@ -300,6 +300,7 @@ namespace Game.Tests
         private static void WithCombat(Action<ArcadeCombatSystem, ArcadeCombatRuntime> action)
         {
             var architecture = new Game();
+            architecture.RegisterModel(new ArcadeRunModel());
             architecture.RegisterModel(new ArcadeCombatModel());
             var system = new ArcadeCombatSystem();
             ((ICanSetArchitecture)system).SetArchitecture(architecture);
@@ -310,6 +311,7 @@ namespace Game.Tests
             var flags = BindingFlags.Instance | BindingFlags.NonPublic;
             typeof(ArcadeCombatSystem).GetField("catalog", flags).SetValue(system, catalog);
             typeof(ArcadeCombatSystem).GetField("view", flags).SetValue(system, new TestView());
+            typeof(ArcadeCombatSystem).GetField("arena", flags).SetValue(system, catalog.Arenas[1]);
             action(system, runtime);
         }
         private sealed class TestView : IArcadeCombatViewPort

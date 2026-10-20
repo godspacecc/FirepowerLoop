@@ -1338,7 +1338,11 @@ namespace ET.Server
             if (!battle.IsChallenge && battle.IsCasualRoute)
             {
                 var nextLayout=ResolveRoundLayout(arena.ArenaNumber,waveIndex+1);
-                if(battle.RoundLayout?.Id!=nextLayout.Id||battle.RoundLayout.Version!=nextLayout.Version)battle.DestroyedBarrelIds.Clear();
+                if(battle.RoundLayout?.Id!=nextLayout.Id||battle.RoundLayout.Version!=nextLayout.Version)
+                {
+                    battle.DestroyedBarrelIds.Clear();battle.DroppedBarrels.Clear();battle.GroundBarrelHealth.Clear();
+                    battle.NextGroundBarrelId=nextLayout.Barrels.Count;
+                }
                 battle.RoundLayout = nextLayout;
                 battle.IslandRegionResolved=false; battle.IslandRegion=null;
             }

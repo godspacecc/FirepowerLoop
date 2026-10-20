@@ -120,6 +120,20 @@ namespace Game.Tests
             view.SetRoundLayout(Layouts().First(p=>p.ArenaConfigNumber==14));
             Assert.That(replacement==null,Is.True,"切图释放桶体及所属根");
         }
+        [Test] public void DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot()
+        {
+            view.SetRoundLayout(Layouts().First(p=>p.ArenaConfigNumber==3));
+            var snapshot=new[]{new ArcadeContentAreaSnapshot(-10002,13,0,0,.45f,false)};
+            view.SetRoundContent(0,snapshot);
+            var barrel=root.GetComponentsInChildren<Transform>().SingleOrDefault(t=>t.name=="GroundBarrel_-10002");
+            Assert.That(barrel,Is.Not.Null,"动态桶必须显示桶体，不能显示为普通伤害圈");
+            var smoke=barrel.Find("VortexSmoke");Assert.That(smoke,Is.Not.Null);
+            view.SetRoundContent(1,snapshot);var sample=smoke.localPosition;
+            view.SetRoundContent(1,snapshot);Assert.That(smoke.localPosition,Is.EqualTo(sample),"暂停只采样同一权威时刻");
+            Assert.That(root.GetComponentsInChildren<Collider>(true),Is.Empty);
+            view.SetRoundContent(1,Array.Empty<ArcadeContentAreaSnapshot>());Assert.That(barrel==null,Is.True);
+        }
+
         [Test] public void GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings()
         {
             var layout=Layouts().First(p=>p.ArenaConfigNumber==3&&p.RoundNumber==1);

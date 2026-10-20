@@ -126,6 +126,7 @@ namespace ET.Server
         }
         private static void InitializeEnemyContent(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime enemy)
         {
+            enemy.ContentBornAt=b.ContentClock.Elapsed;
             if(b.RoundLayout==null||b.SlayerChallenge!=null)return;var p=ContentTuning(b);
             if(b.RoundBossEncounter&&b.SpawnedInWave==0)
             {
@@ -327,7 +328,7 @@ namespace ET.Server
                     if(target.CurrentHealth<=0)actor.KillEnemyWithImpact(b,target,false,true,e.PositionX,e.PositionZ);
                 }
             }
-            b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=e.SpecialKind==15?7:3,X=e.PositionX,Y=e.PositionZ,Remaining=e.SpecialKind==15?p.SkillPeriod:p.SkillWarning,DamageRatio=p.EventDamage});
+            b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=e.SpecialKind==15?7:3,X=e.PositionX,Y=e.PositionZ,Remaining=e.SpecialKind==15?p.SkillPeriod:p.SkillWarning,DamageRatio=e.SpecialKind==1?0:p.EventDamage});
         }
         /// <summary>冰面惯性与寄生/孢子减速仍走正式碰撞入口，暂停门禁在外层统一冻结。</summary>
         private static void ContentPlayerVelocity(OnlineArcadeBattleRuntime b,OnlineArcadeBattlePlayerRuntime player,float speed,float delta,out float vx,out float vy)
@@ -358,6 +359,7 @@ namespace ET.Server
         private static bool TickRoundContent(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float delta)
         {
             if(!RoundContentActive(b)||delta<=0||float.IsNaN(delta)||float.IsInfinity(delta))return false;var p=ContentTuning(b);b.ContentClock.Advance(delta,false);b.ContentAreas.Clear();
+            TickVortexBarrels(b,delta);
             foreach(var player in b.Players.Values){player.ContentSlowRemaining=Math.Max(0,player.ContentSlowRemaining-delta);player.ContentBumperCooldown=Math.Max(0,player.ContentBumperCooldown-delta);}
             if(p.EventKind>0&&!b.RoundBossEncounter)
             {

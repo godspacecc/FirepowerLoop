@@ -36,6 +36,8 @@ namespace FirepowerLoop.Arcade
             Obstacles=Array.AsReadOnly(row.Obstacles.Select(o=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight)).ToArray());
             Entries=Array.AsReadOnly(row.Entries.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
             Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new ArcadeRegionPoint(e.X,e.Y))).ToArray());
+            BarrelDropSeconds=row.BarrelDropSeconds;BarrelPullRadius=row.BarrelPullRadius;
+            BarrelPullSpeed=row.BarrelPullSpeed;BarrelHealth=row.BarrelHealth;
             WeaponSpawnPoints=Array.AsReadOnly(row.WeaponSpawnPoints.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
             WeaponSpawnCount=row.WeaponSpawnCount;
             WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
@@ -82,6 +84,11 @@ namespace FirepowerLoop.Arcade
         public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
         /// <summary>预置可射桶坐标；数组索引是当前地图版本内的稳定身份。</summary>
         public IReadOnlyList<ArcadeRegionPoint> Barrels { get; }
+        /// <summary>载体从出生到放桶的活动秒数；落地桶吸取半径、速度和独立耐久。</summary>
+        public float BarrelDropSeconds { get; }
+        public float BarrelPullRadius { get; }
+        public float BarrelPullSpeed { get; }
+        public int BarrelHealth { get; }
         /// <summary>本图固定武器候选点；只在轮开始时抽取，场景表现不决定生成位置。</summary>
         public IReadOnlyList<ArcadeRegionPoint> WeaponSpawnPoints { get; }
         /// <summary>每轮开场摆放数量，仍受地面物资总预算限制。</summary>
@@ -141,6 +148,9 @@ namespace FirepowerLoop.Arcade
                 !Finite(p.WeaponSpawnDelayMin)||!Finite(p.WeaponSpawnDelayMax)||p.WeaponSpawnDelayMin<=0||p.WeaponSpawnDelayMax<p.WeaponSpawnDelayMin ||
                 p.WeaponSpawnPoints.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsWeaponLandmark(e)) ||
                 p.Barrels.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsBarrelLandmark(e)))throw new ArgumentException("轮级布局参数无效："+p.Id);
+            if(!Finite(p.BarrelDropSeconds)||p.BarrelDropSeconds<=0||!Finite(p.BarrelPullRadius)||p.BarrelPullRadius<=0||
+                !Finite(p.BarrelPullSpeed)||p.BarrelPullSpeed<=0||p.BarrelHealth<=0)
+                throw new ArgumentException("漩涡桶参数无效："+p.Id);
             return p;
         }
         /// <summary>武器点位不能重叠或占用出生、入口、出口、预置桶和实体障碍。</summary>

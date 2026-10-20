@@ -323,12 +323,14 @@ namespace Game
                         RoundBox(go.transform,"RescueCrossHorizontal",0,.2f,0,1.1f,.12f,.28f,0xB8FFF0FFu);
                         RoundBox(go.transform,"RescueCrossVertical",0,.2f,0,.28f,.12f,1.1f,0xB8FFF0FFu);
                     }
-                    else if(area.Kind==11)
+                    else if(area.Kind==11||area.Kind==13)
                     {
                         var barrel=RoundGroup(go.transform,"GroundBarrel_"+area.Id).transform;
-                        RoundCylinder(barrel,"BarrelBody",0,.55f,0,.9f,1.1f,0x8E5135FFu);
+                        RoundCylinder(barrel,"BarrelBody",0,.55f,0,.9f,1.1f,0x7D429DFFu);
                         RoundCylinder(barrel,"UpperMetalHoop",0,.95f,0,.96f,.12f,0x3E4850FFu);
                         RoundCylinder(barrel,"LowerMetalHoop",0,.15f,0,.96f,.12f,0x3E4850FFu);
+                        RoundCylinder(barrel,"VortexSmoke",0,1.3f,0,.6f,.18f,0xB16AE2FFu);
+                        RoundRing(barrel,"VortexMouth",.32f,1.12f,0xDC9CFFFFu);
                     }
                     else if(area.Segment)
                     {
@@ -343,6 +345,14 @@ namespace Game
                 }
                 go.transform.localPosition=new Vector3(area.X+delta.x*.5f,.03f,area.Y+delta.y*.5f);
                 go.transform.localRotation=area.Segment&&length>.00001f ? Quaternion.LookRotation(new Vector3(delta.x,0,delta.y)) : Quaternion.identity;
+                if(area.Kind==11||area.Kind==13)
+                {
+                    // 漩涡仅采样权威活动时钟；冻结快照不继续飘动，也不新增碰撞体。
+                    var smoke=go.transform.Find("GroundBarrel_"+area.Id+"/VortexSmoke");
+                    float angle=(float)(elapsed*2);
+                    smoke.localPosition=new Vector3(Mathf.Sin(angle)*.14f,1.3f+Mathf.Sin(angle*.5f)*.12f,Mathf.Cos(angle)*.14f);
+                    smoke.localRotation=Quaternion.Euler(0,angle*Mathf.Rad2Deg,12);
+                }
                 ProjectRoofBarrel(go,area,elapsed);
             }
             foreach(int id in roundAreas.Keys.Where(id=>!active.Contains(id)).ToArray()){DestroyRoundVisual(roundAreas[id]);roundAreas.Remove(id);roundAreaIdentities.Remove(id);}

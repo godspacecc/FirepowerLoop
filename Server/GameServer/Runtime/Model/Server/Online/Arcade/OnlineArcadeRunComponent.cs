@@ -240,6 +240,8 @@ namespace ET.Server
         /// <summary>最近一次实际玩家伤害归属，零为清理/无玩家；死亡后随瞬时敌人丢弃。</summary>
         /// <summary>主题身份及受击冻结时刻，只属于当前地图。</summary>
         public int SpecialKind, ContentBossKind;
+        /// <summary>地图活动时钟上的出生时刻；受控停步不暂停携桶存活倒计时。</summary>
+        public double ContentBornAt;
         public double ContentElapsed, LastContentHitAt = -1, ContentStunUntil;
         public int ContentMannequinHits;
         public bool ContentEvolved;
@@ -371,6 +373,10 @@ namespace ET.Server
         public readonly List<OnlineArcadeContentZoneRuntime> DeathZones = new();
         public readonly HashSet<int> DestroyedCrateIds = new();
         public readonly HashSet<int> DestroyedBarrelIds = new();
+        /// <summary>载体放下的独立桶与所有桶的剩余耐久；仅属于本地图，不写入轮前节点。</summary>
+        public readonly Dictionary<int,FirepowerLoop.Arcade.ArcadeRegionPoint> DroppedBarrels = new();
+        public readonly Dictionary<int,int> GroundBarrelHealth = new();
+        public int NextGroundBarrelId;
         public bool CratesInitialized;
         public readonly Dictionary<int, FirepowerLoop.Arcade.ArcadeCrateState> Crates = new();
         /// <summary>只随活动战斗增长的机关秒数；不进入安全存档，快照供客户端显示。</summary>

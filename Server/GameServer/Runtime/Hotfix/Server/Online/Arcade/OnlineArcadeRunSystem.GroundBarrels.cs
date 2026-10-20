@@ -1,20 +1,52 @@
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using FirepowerLoop.Arcade;
 
 namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
+        /// <summary>预置桶与动态桶共用稳定身份；动态索引从预置数组之后开始且本地图内不复用。</summary>
+        private static IEnumerable<KeyValuePair<int,ArcadeRegionPoint>> GroundBarrelPoints(OnlineArcadeBattleRuntime b)
+        {
+            for(int index=0;index<b.RoundLayout.Barrels.Count;index++)
+                if(!b.DestroyedBarrelIds.Contains(index))yield return new KeyValuePair<int,ArcadeRegionPoint>(index,b.RoundLayout.Barrels[index]);
+            foreach(var pair in b.DroppedBarrels.OrderBy(p=>p.Key))yield return pair;
+        }
+
+        /// <summary>服务器唯一推进载体放桶和吸物；全队共享删除，不发放奖励或保留已吞物品。</summary>
+        private static void TickVortexBarrels(OnlineArcadeBattleRuntime b,float seconds)
+        {
+            if(!RoundContentActive(b)||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return;
+            var layout=b.RoundLayout;
+            b.NextGroundBarrelId=Math.Max(b.NextGroundBarrelId,layout.Barrels.Count);
+            foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
+                if(enemy.SpecialKind==1&&enemy.CurrentHealth>0&&b.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
+                {
+                    float x=enemy.PositionX,y=enemy.PositionZ;
+                    ResolvePosition(ref x,ref y,x,y,ServerConfig.Instance.ArcadeRule.PlayerRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));
+                    b.DroppedBarrels.Add(b.NextGroundBarrelId++,new ArcadeRegionPoint(x,y));enemy.SpecialKind=0;enemy.ContentWarning=false;
+                }
+            var barrels=GroundBarrelPoints(b).ToArray();if(barrels.Length==0)return;
+            foreach(var drop in b.Drops.Values.ToArray())
+            {
+                if(drop.DeliveryRemainingSeconds>0)continue;
+                var nearest=barrels.OrderBy(p=>DistanceSquared(p.Value.X,p.Value.Y,drop.PositionX,drop.PositionZ)).ThenBy(p=>p.Key).First();
+                if(DistanceSquared(nearest.Value.X,nearest.Value.Y,drop.PositionX,drop.PositionZ)>layout.BarrelPullRadius*layout.BarrelPullRadius)continue;
+                bool consumed=ArcadeRoundContentRules.PullToBarrel(drop.PositionX,drop.PositionZ,nearest.Value.X,nearest.Value.Y,
+                    layout.BarrelPullSpeed,seconds,ProjectileHitRadius,out float x,out float y);
+                drop.PositionX=x;drop.PositionZ=y;if(consumed)b.Drops.Remove(drop.RuntimeId);
+            }
+        }
         /// <summary>预置桶是地图对象，快照只投影仍存活索引，不进入敌人数量与自动事件时钟。</summary>
         private static void AppendGroundBarrelSnapshots(OnlineArcadeBattleRuntime b,OnlineArcadeBattleInfo snapshot)
         {
             if(b.RoundLayout==null||b.IsChallenge)return;
-            for(int index=0;index<b.RoundLayout.Barrels.Count;index++)
+            foreach(var pair in GroundBarrelPoints(b))
             {
-                if(b.DestroyedBarrelIds.Contains(index))continue;
-                var point=b.RoundLayout.Barrels[index];var area=OnlineArcadeContentAreaInfo.Create();
-                area.Id=-10000-index;area.Kind=11;area.X=point.X;area.Y=point.Y;area.Radius=ProjectileHitRadius;
+                var point=pair.Value;var area=OnlineArcadeContentAreaInfo.Create();
+                area.Id=-10000-pair.Key;area.Kind=pair.Key<b.RoundLayout.Barrels.Count?11:13;area.X=point.X;area.Y=point.Y;area.Radius=ProjectileHitRadius;
                 snapshot.ContentAreas.Add(area);
             }
         }
@@ -35,11 +67,11 @@ namespace ET.Server
             if(!shot.FromPlayerWeapon||!(shot.RemainingSeconds>0)||shot.OwnerPlayerId<=0||b.RoundLayout==null||b.IsChallenge||
                 !b.Players.TryGetValue(shot.OwnerPlayerId,out var owner)||owner.InTreasureRoom)return false;
             int selected=-1;float nearest=float.MaxValue;
-            for(int i=0;i<b.RoundLayout.Barrels.Count;i++)
+            foreach(var pair in GroundBarrelPoints(b))
             {
-                if(b.DestroyedBarrelIds.Contains(i))continue;var point=b.RoundLayout.Barrels[i];
+                var point=pair.Value;
                 if(GroundCircleEntry(ax,ay,bx,by,point.X,point.Y,ProjectileHitRadius,out float entry)&&entry<nearest)
-                {nearest=entry;selected=i;}
+                {nearest=entry;selected=pair.Key;}
             }
             if(selected<0)return false;
             float blockerEntry=nearest;bool blocked=false;
@@ -63,14 +95,14 @@ namespace ET.Server
                 shot.PositionX=ax+(bx-ax)*fraction;shot.PositionZ=ay+(by-ay)*fraction;
                 return false;
             }
-            // 稳定身份先注销，再执行范围后果；重复Tick、弹丸或快照不会重放爆炸。
-            if(!b.DestroyedBarrelIds.Add(selected))return false;
             shot.PositionX=ax+(bx-ax)*nearest;shot.PositionZ=ay+(by-ay)*nearest;
-            var center=b.RoundLayout.Barrels[selected];var p=ContentTuning(b);
+            int remaining=(b.GroundBarrelHealth.TryGetValue(selected,out int health)?health:b.RoundLayout.BarrelHealth)-Math.Max(0,shot.Damage);
+            if(remaining>0){b.GroundBarrelHealth[selected]=remaining;return true;}
+            var center=selected<b.RoundLayout.Barrels.Count?b.RoundLayout.Barrels[selected]:b.DroppedBarrels[selected];
+            // 身份先注销再执行范围后果；动态桶不会写入预置桶恢复索引。
+            if(selected<b.RoundLayout.Barrels.Count)b.DestroyedBarrelIds.Add(selected);else b.DroppedBarrels.Remove(selected);
+            b.GroundBarrelHealth.Remove(selected);var p=ContentTuning(b);
             DamageContentExplosionEnemies(actor,b,center.X,center.Y,p.EventRadius,p.EventDamage,shot.OwnerPlayerId);
-            foreach(var player in b.Players.Values.Where(v=>v.Alive&&!v.InTreasureRoom).ToArray())
-                if(ArcadeRoundContentRules.TouchesCircle(player.PositionX,player.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,center.X,center.Y,p.EventRadius))
-                    actor.ContentDamagePlayer(b,player,ArcadeRoundContentRules.Damage(player.MaxHealth,p.EventDamage));
             // 玩家与敌人已在命中时裁决；短领域只显示爆炸，不在宝藏返回或恢复后补伤。
             AddContentZone(b,3,center.X,center.Y,center.X,center.Y,p.EventRadius,0,p.SkillWarning,0,false,false);
             return true;

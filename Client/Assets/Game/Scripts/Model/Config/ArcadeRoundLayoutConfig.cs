@@ -44,6 +44,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         EventDamage = _buf.ReadFloat();
         EventMoveSpeed = _buf.ReadFloat();
         {int __n0 = _buf.ReadSize(); Barrels = new ArcadeLayoutEntryConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeLayoutEntryConfig __e0;__e0 = global::ArcadeLayoutEntryConfig.DeserializeArcadeLayoutEntryConfig(_buf); Barrels[__index0] = __e0;}}
+        BarrelDropSeconds = _buf.ReadFloat();
+        BarrelPullRadius = _buf.ReadFloat();
+        BarrelPullSpeed = _buf.ReadFloat();
+        BarrelHealth = _buf.ReadInt();
         {int __n0 = _buf.ReadSize(); WeaponSpawnPoints = new ArcadeLayoutEntryConfig[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { ArcadeLayoutEntryConfig __e0;__e0 = global::ArcadeLayoutEntryConfig.DeserializeArcadeLayoutEntryConfig(_buf); WeaponSpawnPoints[__index0] = __e0;}}
         WeaponSpawnCount = _buf.ReadInt();
         WeaponSpawnDelayMin = _buf.ReadFloat();
@@ -84,6 +88,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
     public readonly float EventDamage;
     public readonly float EventMoveSpeed;
     public readonly ArcadeLayoutEntryConfig[] Barrels;
+    public readonly float BarrelDropSeconds;
+    public readonly float BarrelPullRadius;
+    public readonly float BarrelPullSpeed;
+    public readonly int BarrelHealth;
     public readonly ArcadeLayoutEntryConfig[] WeaponSpawnPoints;
     public readonly int WeaponSpawnCount;
     public readonly float WeaponSpawnDelayMin;
@@ -132,6 +140,10 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         + "EventDamage:" + EventDamage + ","
         + "EventMoveSpeed:" + EventMoveSpeed + ","
         + "Barrels:" + Luban.StringUtil.CollectionToString(Barrels) + ","
+        + "BarrelDropSeconds:" + BarrelDropSeconds + ","
+        + "BarrelPullRadius:" + BarrelPullRadius + ","
+        + "BarrelPullSpeed:" + BarrelPullSpeed + ","
+        + "BarrelHealth:" + BarrelHealth + ","
         + "WeaponSpawnPoints:" + Luban.StringUtil.CollectionToString(WeaponSpawnPoints) + ","
         + "WeaponSpawnCount:" + WeaponSpawnCount + ","
         + "WeaponSpawnDelayMin:" + WeaponSpawnDelayMin + ","

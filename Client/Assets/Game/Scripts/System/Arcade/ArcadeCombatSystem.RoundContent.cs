@@ -138,6 +138,7 @@ namespace Game
         {
             if(!RoundContentActive(r) || dt<=0 || float.IsNaN(dt) || float.IsInfinity(dt))return;
             r.ContentClock.Advance(dt,false);r.ContentSlowRemaining=Mathf.Max(0,r.ContentSlowRemaining-dt);
+            TickVortexBarrels(r,dt);
             r.ContentBumperCooldown=Mathf.Max(0,r.ContentBumperCooldown-dt);
             var p=ContentTuning(r);r.ContentAreaSnapshots.Clear();
             foreach(var e in r.Enemies.Values)e.ContentAllyBuff=1;
@@ -233,7 +234,7 @@ namespace Game
             var p=ContentTuning(r);float radius=ArcadeRoundContentRules.DeathAreaRadius(e.ContentSpecialKind,p);if(radius<=0)return;
             if(e.ContentSpecialKind==1)
             {
-                AddContentArea(r,3,e.Position,e.Position,radius,0,p.SkillWarning,p.EventDamage,false,false);
+                AddContentArea(r,3,e.Position,e.Position,radius,0,p.SkillWarning,0,false,false);
                 DamageContentExplosionEnemies(r,e.Position,radius,p.EventDamage);
             }
             else AddContentArea(r,7,e.Position,e.Position,radius,0,p.SkillPeriod,p.EventDamage,false,false);

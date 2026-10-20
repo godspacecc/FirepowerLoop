@@ -41,7 +41,7 @@ namespace Game.Tests
         private object Call(string name,params object[] values){var method=typeof(ArcadeCombatSystem).GetMethod(name,Flags);Assert.That(method,Is.Not.Null,"地面桶规则尚未接入："+name);return method.Invoke(system,values);}
         private int Count=>((ICollection)runtime.GetType().GetField("GroundBarrels").GetValue(runtime)).Count;
         private Vector2 Point(int index)=>new Vector2(Layout.Barrels[index].X,Layout.Barrels[index].Y);
-        private static ArcadeProjectileRuntime Shot()=>new ArcadeProjectileRuntime{Hostile=false,FromPlayerWeapon=true,Damage=10};
+        private static ArcadeProjectileRuntime Shot()=>new ArcadeProjectileRuntime{Hostile=false,FromPlayerWeapon=true,Damage=100};
         [Test] public void SubmittedResultStopsBarrelAndCarrierDamage()
         {
             Call("InitializeGroundBarrels",runtime);var point=Point(0);
@@ -86,32 +86,80 @@ namespace Game.Tests
         {
             Call("InitializeGroundBarrels",runtime);var point=Point(0);runtime.PlayerPosition=point+Vector2.up*.5f;
             var enemy=new ArcadeEnemyRuntime{Id=7,Position=point+Vector2.right*.5f,Health=100,MaxHealth=100};runtime.Enemies.Add(7,enemy);
-            Call("DetonateGroundBarrel",runtime,0);Assert.That(runtime.PlayerHealth,Is.LessThan(100));Assert.That(enemy.Health,Is.LessThan(100));
+            Call("DetonateGroundBarrel",runtime,0);Assert.That(runtime.PlayerHealth,Is.EqualTo(100),"桶爆炸不能伤害玩家");Assert.That(enemy.Health,Is.LessThan(100));
             int playerHealth=runtime.PlayerHealth,enemyHealth=enemy.Health;runtime.PlayerInvulnerability=0;
             Call("TickRoundContent",runtime,.1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(playerHealth));Assert.That(enemy.Health,Is.EqualTo(enemyHealth),"同次爆炸不在危险区重复伤害");
             Call("OnRoundEnemyKilled",runtime,new ArcadeEnemyRuntime{Id=8,Position=point,ContentSpecialKind=1},false);
-            Assert.That(runtime.ContentAreas.Any(a=>a.Kind==3 && a.DamageRatio>0),Is.True,"载体原死亡爆炸仍保留");
+            Assert.That(runtime.ContentAreas.Any(a=>a.Kind==3),Is.True,"载体原死亡爆炸仍保留");
+            Call("TickRoundContent",runtime,.1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100),"载体爆炸区域也不能延迟伤害玩家");
         }
         [Test] public void ExplosiveWeaponKeepsItsOriginalBlastWhenItDetonatesBarrel()
         {
             Call("InitializeGroundBarrels",runtime);var point=Point(0);
             var enemy=new ArcadeEnemyRuntime{Id=7,Position=point+Vector2.up*2.5f,Health=100,MaxHealth=100};runtime.Enemies.Add(7,enemy);
-            var projectile=Shot();projectile.Damage=20;projectile.Behavior=global::ArcadeWeaponBehavior.Explosive;projectile.ExplosionRadius=4;
+            var projectile=Shot();projectile.Damage=100;projectile.Behavior=global::ArcadeWeaponBehavior.Explosive;projectile.ExplosionRadius=4;
             Assert.That((bool)Call("TryHitGroundBarrel",runtime,projectile,point-Vector2.right,point+Vector2.right*.1f),Is.True);
-            Assert.That(enemy.Health,Is.EqualTo(68),"当前正式桶比例伤害12点和原武器爆炸20点均需结算");
+            Assert.That(runtime.Enemies.ContainsKey(7),Is.False,"桶爆炸和原武器爆炸都必须结算");
             Assert.That(Count,Is.EqualTo(1));
         }
-        [Test] public void ExplosiveWeaponStillBlastsEnemiesWhenBarrelHitStartsRespawn()
+        [Test] public void ExplosiveWeaponBarrelHitPreservesNearbyPlayerLife()
         {
             var runs=new ArcadeRunSystem();architecture.RegisterSystem(runs);runs.ConfigureForTests(directory);
             Call("InitializeGroundBarrels",runtime);var point=Point(0);runtime.PlayerPosition=point+Vector2.up*.5f;runtime.PlayerHealth=10;
             var enemy=new ArcadeEnemyRuntime{Id=7,Position=point+Vector2.up*2.5f,Health=100,MaxHealth=100};runtime.Enemies.Add(7,enemy);
-            var projectile=Shot();projectile.Damage=20;projectile.Behavior=global::ArcadeWeaponBehavior.Explosive;projectile.ExplosionRadius=4;
+            var projectile=Shot();projectile.Damage=100;projectile.Behavior=global::ArcadeWeaponBehavior.Explosive;projectile.ExplosionRadius=4;
             Assert.That((bool)Call("TryHitGroundBarrel",runtime,projectile,point-Vector2.right,point+Vector2.right*.1f),Is.True);
-            Assert.That(runtime.RespawnRemaining,Is.GreaterThan(0),"桶伤害需真实进入复活等待");
+            Assert.That(runtime.RespawnRemaining,Is.Zero,"桶爆炸不能触发玩家复活等待");
             Assert.That(architecture.GetModel<ArcadeCombatModel>().Runtime,Is.SameAs(runtime));
-            Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RemainingLives,Is.EqualTo(2));
-            Assert.That(enemy.Health,Is.EqualTo(68),"已接受的武器爆炸不因当前玩家复活等待而丢失");
+            Assert.That(architecture.GetModel<ArcadeRunModel>().Current.RemainingLives,Is.EqualTo(3));
+            Assert.That(runtime.Enemies.ContainsKey(7),Is.False);
+        }
+
+        [Test] public void CarrierReleasesOneIndependentBarrelAndThenDiesNormally()
+        {
+            Call("InitializeGroundBarrels",runtime);
+            var carrier=new ArcadeEnemyRuntime{Id=8,Position=Vector2.zero,Health=100,MaxHealth=100,ContentSpecialKind=1};runtime.Enemies.Add(8,carrier);
+            runtime.ContentClock.Advance(20,false);Call("TickVortexBarrels",runtime,.1f);
+            Assert.That(Count,Is.EqualTo(3));Assert.That(carrier.ContentSpecialKind,Is.Zero);
+            Call("TickVortexBarrels",runtime,.1f);Assert.That(Count,Is.EqualTo(3),"同一载体只放一桶");
+            int areas=runtime.ContentAreas.Count;Call("OnRoundEnemyKilled",runtime,carrier,false);
+            Assert.That(runtime.ContentAreas.Count,Is.EqualTo(areas),"放桶后死亡不能再次爆炸");
+            Call("AppendGroundBarrelSnapshots",runtime);Assert.That(runtime.ContentPresentationSnapshots.Any(p=>p.Kind==13),Is.True);
+            Call("DetonateGroundBarrel",runtime,2);Assert.That(runtime.DestroyedGroundBarrelIds,Is.Empty,"动态桶不污染预置桶恢复索引");
+        }
+
+        [Test] public void AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing()
+        {
+            Call("InitializeGroundBarrels",runtime);
+            for(int id=1;id<=30;id++)runtime.Enemies.Add(id,new ArcadeEnemyRuntime{Id=id,Health=100,MaxHealth=100,ContentSpecialKind=1});
+            runtime.ContentClock.Advance(20,false);Call("TickVortexBarrels",runtime,.1f);
+            Assert.That(Count,Is.EqualTo(Layout.Barrels.Count+30));
+            Assert.That(runtime.Enemies.Values.All(e=>e.ContentSpecialKind==0),Is.True,"存量桶不能阻止到时卸桶");
+        }
+
+        [Test] public void VortexPullsDropsAndConsumesWithoutAwardOrRefund()
+        {
+            Call("InitializeGroundBarrels",runtime);var point=Point(0);var drop=new ArcadeDropRuntime{Id=90,Position=point+Vector2.up*2,Definition=catalog.Drops[0]};runtime.Drops.Add(90,drop);
+            long score=architecture.GetModel<ArcadeRunModel>().Current.Score;
+            Call("TickVortexBarrels",runtime,.1f);Assert.That(drop.Position.y,Is.LessThan(point.y+2));Assert.That(runtime.Drops.ContainsKey(90),Is.True);
+            Call("TickVortexBarrels",runtime,20f);Assert.That(runtime.Drops.ContainsKey(90),Is.False);Assert.That(architecture.GetModel<ArcadeRunModel>().Current.Score,Is.EqualTo(score));
+            Call("DetonateGroundBarrel",runtime,0);Assert.That(runtime.Drops,Is.Empty,"炸桶不返还吞掉的物品");
+        }
+
+        [Test] public void VortexFreezesInTreasureRoomAndIgnoresUndeliveredWeapons()
+        {
+            Call("InitializeGroundBarrels",runtime);var point=Point(0);var drop=new ArcadeDropRuntime{Id=90,Position=point+Vector2.up,DeliveryRemainingSeconds=1};runtime.Drops.Add(90,drop);
+            Call("TickVortexBarrels",runtime,1f);Assert.That(drop.Position,Is.EqualTo(point+Vector2.up));
+            drop.DeliveryRemainingSeconds=0;runtime.InTreasureRoom=true;Call("TickVortexBarrels",runtime,1f);Assert.That(drop.Position,Is.EqualTo(point+Vector2.up));
+            runtime.InTreasureRoom=false;runtime.WaveClearAwarded=true;Call("TickVortexBarrels",runtime,1f);Assert.That(drop.Position,Is.EqualTo(point+Vector2.up));
+        }
+
+        [Test] public void BarrelSurvivesWeakShotUntilAccumulatedDamageReachesHealth()
+        {
+            Call("InitializeGroundBarrels",runtime);var point=Point(0);var weak=Shot();weak.Damage=1;
+            Assert.That((bool)Call("TryHitGroundBarrel",runtime,weak,point-Vector2.right,point),Is.True);
+            Assert.That(Count,Is.EqualTo(2),"落地桶有独立耐久");
+            Assert.That((bool)Call("TryHitGroundBarrel",runtime,Shot(),point-Vector2.right,point),Is.True);Assert.That(Count,Is.EqualTo(1));
         }
     }
 }

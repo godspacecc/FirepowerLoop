@@ -221,6 +221,9 @@ namespace Game
         public string GroundBarrelMapId;
         public int GroundBarrelLayoutVersion;
         public readonly Dictionary<int, Vector2> GroundBarrels = new();
+        /// <summary>本地图内桶的剩余耐久与下一个动态索引；载体桶不写入预置桶已毁索引。</summary>
+        public readonly Dictionary<int,int> GroundBarrelHealth = new();
+        public int NextGroundBarrelId;
         /// <summary>仅当前地图内已毁索引，重复准备/宝藏返回不重新补发。</summary>
         public readonly HashSet<int> DestroyedGroundBarrelIds = new();
         /// <summary>危险与静态桶的只读表现缓存，避免逐帧分配集合。</summary>
