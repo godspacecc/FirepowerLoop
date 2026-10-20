@@ -11,7 +11,7 @@ namespace Game.Editor
     /// <summary>固定街机 APK 签名；本机凭据与仓库中的公开证书指纹分离，不回退到机器调试密钥。</summary>
     public static class AndroidSigningUtility
     {
-        /// <summary>凭据仅在本项目忽略目录保存；节点可通过环境变量指定同格式的独立凭据文件。</summary>
+        /// <summary>默认使用本项目固定签名目录中的凭据（经用户授权明文入库）；节点可通过环境变量指定独立配置。</summary>
         public static string LocalSettingsPath => Environment.GetEnvironmentVariable("FIREPOWER_ANDROID_SIGNING_CONFIG") ??
             Path.Combine(WorkspaceRoot, ".codex", "signing", "android-signing.local.json");
         /// <summary>和资源服手动发布共用的公开证书白名单。</summary>
@@ -102,7 +102,7 @@ namespace Game.Editor
             return "\"" + value + "\"";
         }
 
-        /// <summary>本机专用凭据，不参与序列化到项目 PlayerSettings 或发布包。</summary>
+        /// <summary>签名凭据配置，不参与序列化到项目 PlayerSettings 或发布包。</summary>
         [Serializable]
         private sealed class SigningSettings
         {

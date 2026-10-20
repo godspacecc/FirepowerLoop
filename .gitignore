@@ -95,10 +95,12 @@ Thumbs.db
 /.codex/config.toml
 Client/.codex/config.toml
 Client/.mcp.json
-# 本项目固定签名的私钥和本机凭据；仅公开证书指纹进入仓库。
-/.codex/signing/
+# 其他私钥仍忽略；本项目两份固定签名文件经用户明确授权明文入库。
 *.keystore
 *.jks
+/.codex/signing/*
+!/.codex/signing/FirepowerLoop.keystore
+!/.codex/signing/android-signing.local.json
 
 # HybridCLR generated data
 Client/HybridCLRData/hybridclr_repo/

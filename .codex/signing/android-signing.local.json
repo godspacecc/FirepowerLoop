@@ -1,0 +1,6 @@
+{
+  "keyAlias": "androiddebugkey",
+  "keystorePath": "FirepowerLoop.keystore",
+  "keystorePassword": "android",
+  "keyPassword": "android"
+}

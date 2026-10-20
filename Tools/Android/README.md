@@ -11,12 +11,12 @@ ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee
 
 ## 其他设备配置
 
-1. 同步本次代码修改。
-2. 从已配置的原设备，通过安全渠道复制整个 `.codex/signing/` 目录，放到另一台设备的 **FirepowerLoop 仓库根目录**。这是本项目私钥副本；不需要替换系统的 `.android/debug.keystore`。
-3. 保留目录中的 `FirepowerLoop.keystore` 和 `android-signing.local.json`，并在 Unity 菜单执行 `Tools/打包/Android/校验固定签名（不打包）`。
+1. 拉取包含固定签名文件的最新提交。
+2. 确认仓库根目录的 `.codex/signing/` 下已有 `FirepowerLoop.keystore` 和 `android-signing.local.json`。配置使用相对路径，仓库可以放在另一台设备的不同磁盘或目录；不需要替换系统的 `.android/debug.keystore`。
+3. 在 Unity 菜单执行 `Tools/打包/Android/校验固定签名（不打包）`。
 4. 只有校验成功后才使用项目已有打包入口。本次修改及验证不执行 Unity 打包。
 
-`.codex/signing/`、`*.keystore`、`*.jks` 已排除出 Git。私钥和密码不随普通 Git 同步，也不放入资源服或客户端资源。
+用户已明确接受风险并授权将 `.codex/signing/FirepowerLoop.keystore` 和 `.codex/signing/android-signing.local.json` 明文提交到仓库，因此普通 Git 拉取会同时取得私钥和密码。其他私钥和签名目录中的额外文件仍被忽略。签名文件不放入资源服或客户端资源。
 这份原调试密钥用于现有测试包兼容；此流程不代表商店正式签名配置。
 
 本机配置格式如下；相对密钥路径相对于本配置文件所在目录：
@@ -25,8 +25,8 @@ ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee
 {
   "keystorePath": "FirepowerLoop.keystore",
   "keyAlias": "androiddebugkey",
-  "keystorePassword": "由原设备提供",
-  "keyPassword": "由原设备提供"
+  "keystorePassword": "实际值已随仓库配置提供",
+  "keyPassword": "实际值已随仓库配置提供"
 }
 ```
 
