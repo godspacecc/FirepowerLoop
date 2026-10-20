@@ -119,7 +119,7 @@ namespace ET.Server
                     !actor.Battle.Players.TryGetValue(playerId, out var player)) return false;
                 player.TemporaryWeaponId = drop.ProductId;
                 player.TemporaryWeaponSeconds = drop.DurationSeconds;
-                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, 1, 0);
+                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, 1, 0, reward);
                 return true;
             }
             if (reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Bomb || reward.Kind == FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Dash)
@@ -131,19 +131,20 @@ namespace ET.Server
                 int added = Math.Min(reward.Amount, drop.MaxOwned - held);
                 if (added <= 0) return false;
                 if (bomb) record.Bombs += added; else record.Dashes += added;
-                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, added, 0);
+                if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, added, 0, reward);
                 return true;
             }
             if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(record.Score, record.ScoreMultiplier, record.MultiplierProgress, record.Lives), reward, rules, out var next)) return false;
             long scoreAdded = next.Score - record.Score;
             record.Score = next.Score; record.ScoreMultiplier = next.Multiplier; record.MultiplierProgress = next.Progress; record.Lives = next.Lives;
             NormalizeCoopLifeGain(actor,record);
-            if (recordFeedback && scoreAdded > 0) RecordTreasurePickup(actor, playerId, string.Empty, 0, scoreAdded);
+            if (recordFeedback && scoreAdded > 0) RecordTreasurePickup(actor, playerId, string.Empty, 0, scoreAdded, reward);
             return true;
         }
 
         /// <summary>宝藏房与普通掉落使用同一地图内递增身份，重连基线不会重放旧奖励。</summary>
-        private static void RecordTreasurePickup(OnlineArcadeRunActor actor, long playerId, string dropId, int added, long score)
+        private static void RecordTreasurePickup(OnlineArcadeRunActor actor, long playerId, string dropId, int added, long score,
+            ArcadeTreasureRewardParameters reward)
         {
             var battle = actor.Battle;
             if (battle == null) return;
@@ -151,6 +152,7 @@ namespace ET.Server
             {
                 RuntimeId = battle.NextDropRuntimeId++, DropConfigId = dropId,
                 CollectedByPlayerId = playerId, AddedAmount = added, ScoreAdded = score,
+                PositionX = reward.X, PositionZ = reward.Y,
             });
         }
     }

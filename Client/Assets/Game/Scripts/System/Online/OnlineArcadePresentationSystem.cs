@@ -345,7 +345,7 @@ namespace Game
             {
                 if (!observedSupplyPickupIds.Add(receipt.RuntimeId) || baseline ||
                     receipt.CollectedByPlayerId != selfId) continue;
-                view.PlayTreasurePickup(receipt.ScoreAdded, receipt.GoldAdded);
+                view.PlayTreasurePickup(receipt.ScoreAdded, receipt.GoldAdded, new Vector2(receipt.PositionX, receipt.PositionZ));
                 var definition = catalog.Drops.FirstOrDefault(d => d.Id == receipt.DropConfigId);
                 if ((definition.Kind == global::ArcadeDropKind.Bomb || definition.Kind == global::ArcadeDropKind.Dash) && receipt.AddedAmount > 0)
                     view.PlaySupplyPickup(definition, receipt.AddedAmount);

@@ -13,8 +13,24 @@ namespace Game
         /// <summary>积分与金币分别呈现真实增量；零增量不占用提示或声音。</summary>
         public void PlayTreasurePickup(long score, long gold)
         {
+            TryGetPlayerPosition(out var position);
+            PlayTreasurePickup(score, gold, position);
+        }
+
+        /// <summary>财宝从权威拾取坐标飞入本人积分栏，磁铁远程领取也保留原始起点。</summary>
+        public void PlayTreasurePickup(long score, long gold, Vector2 position)
+        {
             if (score > 0 || gold > 0) PlayTreasurePickupFlash();
-            if (score > 0) ShowPickup("score", score, total => Loc.T("ui.arcade.hud.score", "+" + total));
+            if (score > 0 && IsActive)
+            {
+                var camera = Camera.main;
+                if (camera != null && mapRoot != null)
+                {
+                    var screen = camera.WorldToScreenPoint(mapRoot.TransformPoint(new Vector3(position.x, .65f, position.y)));
+                    if (screen.z > 0) UIHelper.GetUICtrl<ArcadeHudUICtrl>()?.TryPlayScorePickup(score, screen);
+                }
+                PlayPickupSound();
+            }
             if (gold > 0) ShowPickup("gold", gold, total => Loc.T("ui.arcade.hud.gold", "+" + total));
         }
 
@@ -32,7 +48,13 @@ namespace Game
         {
             if (!IsActive || !pickupFeedback.TryAdd(key, amount, Time.unscaledTimeAsDouble, out var tipKey, out var total)) return;
             Notify.ShowFloatTips(format(total), ArcadePickupFeedbackBuffer.LifetimeSeconds, tipKey, true);
-            if (!pickupFeedback.TrySound(Time.unscaledTimeAsDouble)) return;
+            PlayPickupSound();
+        }
+
+        /// <summary>财宝飞入与普通道具共用原拾取音冷却，不因一帧多份奖励叠加声音。</summary>
+        private void PlayPickupSound()
+        {
+            if (!IsActive || !pickupFeedback.TrySound(Time.unscaledTimeAsDouble)) return;
             var audio = Game.Interface.GetSystem<AudioSystem>();
             if (audio == null || mapRoot == null || !TryGetPlayerPosition(out var position)) return;
             audio.Stop(pickupSound);
@@ -45,6 +67,7 @@ namespace Game
         {
             ClearTreasurePickupFlash();
             pickupFeedback.Clear();
+            UIHelper.GetUICtrl<ArcadeHudUICtrl>()?.ClearScorePickupFeedback();
             UIHelper.GetUICtrl<FloatUICtrl>()?.RemoveTipsByPrefix("arcade.pickup.");
             if (pickupSound.IsValid) Game.Interface.GetSystem<AudioSystem>()?.Stop(pickupSound);
             pickupSound = AudioPlaybackHandle.Empty;

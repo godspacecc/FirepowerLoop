@@ -258,10 +258,13 @@ namespace Game.Tests
             var data = run.Current; data.IsCasualRoute = true; data.ScoreMultiplier = 3;
             run.CommitSafeNode(data); run.EnterArena();
             Add(1, catalog.Drops.First(d => d.Kind == ArcadeDropKind.RunGold));
+            var pickupPosition = new Vector2(.7f, -.4f);
+            runtime.Drops[1].Position = pickupPosition;
             Call("TickDrops", runtime);
             Assert.That(run.Current.Score, Is.EqualTo(300));
             Assert.That(runtime.ArenaGold, Is.Zero);
             Assert.That(view.Treasure, Is.EqualTo(new[] { (300L, 0L) }));
+            Assert.That(view.TreasurePositions, Is.EqualTo(new[] { pickupPosition }), "归还运行对象池前须保留财宝坐标，不能用玩家脚下代替");
         }
 
         [Test]
@@ -300,13 +303,14 @@ namespace Game.Tests
             typeof(OnlineArcadePresentationSystem).GetField("catalog", Private).SetValue(presentation, catalog);
             var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
             var receipts = new[] {
-                new OnlineArcadeDropSnapshot(10, "", 0, 0, 1, 0, 600, 2),
+                new OnlineArcadeDropSnapshot(10, "", 7, -4, 1, 0, 600, 2),
                 new OnlineArcadeDropSnapshot(11, weapon.Id, 0, 0, 1),
                 new OnlineArcadeDropSnapshot(12, weapon.Id, 0, 0, 2) };
             var method = typeof(OnlineArcadePresentationSystem).GetMethod("SyncSupplyPickups", Private);
             method.Invoke(presentation, new object[] { receipts, 1L, false });
             method.Invoke(presentation, new object[] { receipts, 1L, false });
             Assert.That(view.Treasure.Where(x => x != (0L, 0L)), Is.EqualTo(new[] { (600L, 2L) }));
+            Assert.That(view.TreasurePositions, Is.EqualTo(new[] { new Vector2(7, -4) }), "联机回执必须保留远处财宝位置且只反馈一次");
             Assert.That(view.Products, Is.EqualTo(new[] { weapon.ProductId }));
         }
 
@@ -317,8 +321,11 @@ namespace Game.Tests
             public readonly List<int> Removed = new();
             public readonly List<int> Added = new();
             public readonly List<(long, long)> Treasure = new();
+            public readonly List<Vector2> TreasurePositions = new();
             public readonly List<string> Products = new();
             public void PlayTreasurePickup(long score, long gold) { if (score > 0 || gold > 0) Treasure.Add((score, gold)); }
+            public void PlayTreasurePickup(long score, long gold, Vector2 position)
+            { if (score > 0 || gold > 0) TreasurePositions.Add(position); PlayTreasurePickup(score, gold); }
             public void PlayProductPickup(string productId) => Products.Add(productId);
             public Action OnPickup;
             public bool IsActive => true;

@@ -3133,6 +3133,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeDropInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DropConfigId = receipt.DropConfigId;
+                copy.PositionX = receipt.PositionX; copy.PositionZ = receipt.PositionZ;
                 copy.CollectedByPlayerId = receipt.CollectedByPlayerId; copy.AddedAmount = receipt.AddedAmount;
                 copy.ScoreAdded = receipt.ScoreAdded; copy.GoldAdded = receipt.GoldAdded;
                 battle.SupplyPickups.Add(copy);
@@ -3342,6 +3343,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeDropInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DropConfigId = receipt.DropConfigId;
+                copy.PositionX = receipt.PositionX; copy.PositionZ = receipt.PositionZ;
                 copy.CollectedByPlayerId = receipt.CollectedByPlayerId; copy.AddedAmount = receipt.AddedAmount;
                 copy.ScoreAdded = receipt.ScoreAdded; copy.GoldAdded = receipt.GoldAdded;
                 battle.SupplyPickups.Add(copy);

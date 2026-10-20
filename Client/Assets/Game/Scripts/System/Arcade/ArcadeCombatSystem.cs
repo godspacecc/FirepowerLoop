@@ -1150,10 +1150,12 @@ namespace Game
                     continue;
                 }
                 view.RemoveDrop(drop.Id);
+                // 归还池会清理运行对象，先保存财宝飞入表现的真实起点。
+                var pickupPosition = drop.Position;
                 runtimePool.Return(drop);
                 if (definition.Kind == global::ArcadeDropKind.RunGold)
                     view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore,
-                        runtime.ArenaGold - goldBefore);
+                        runtime.ArenaGold - goldBefore, pickupPosition);
                 if (supply) view.PlaySupplyPickup(definition, added);
                 if (firstPerson) view.PlayFirstPersonPickup();
                 if (definition.Kind == global::ArcadeDropKind.TemporaryWeapon || definition.Kind == global::ArcadeDropKind.Powerup)

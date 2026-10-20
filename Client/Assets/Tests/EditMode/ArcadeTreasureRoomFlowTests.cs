@@ -164,6 +164,18 @@ namespace Game.Tests
         {EnterRoom();Assert.That(runtime.InTreasureRoom,Is.True);Assert.That(runtime.TreasureRoom.RemainingRewards.Length,Is.EqualTo(18));Assert.That(runtime.PlayerPosition,Is.EqualTo(new Vector2(0,-4)));}
         [Test] public void GoldIsPersonalScore_NotShoppingCash()
         {EnterRoom();Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));Assert.That(run.Current.RunGold,Is.Zero);Reward(0);Assert.That(run.Current.Score,Is.EqualTo(100));}
+        /// <summary>房间财宝沿用账本坐标发出表现，接触半径内的玩家偏移不能替代财宝位置。</summary>
+        [Test] public void TreasureScoreFeedbackPreservesRewardPosition()
+        {
+            EnterRoom();
+            var reward = runtime.TreasureRoom.Parameters.Rewards[0];
+            var position = new Vector2(reward.X, reward.Y);
+            runtime.PlayerPosition = position + new Vector2(.2f, .1f);
+            Tick(); Tick();
+            var feedback = (TestView)typeof(ArcadeCombatSystem).GetField("view", Flags).GetValue(system);
+            Assert.That(feedback.TreasurePositions, Is.EqualTo(new[] { position }));
+            Assert.That(run.Current.Score, Is.EqualTo(100));
+        }
         [Test] public void FullBombDoesNotConsumeSharedPickup()
         {EnterRoom();runtime.Bombs=9;Reward(16);Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.True);runtime.Bombs=8;Reward(16);Assert.That(runtime.Bombs,Is.EqualTo(9));Assert.That(runtime.TreasureRoom.RemainingRewards.Any(r=>r.Id==17),Is.False);}
         [Test] public void TimeoutReturnsPlayerWithoutReopening()
@@ -300,6 +312,9 @@ namespace Game.Tests
         private sealed class TestView : IArcadeCombatViewPort
         {
             public string WeaponId, ProductId;
+            public readonly List<Vector2> TreasurePositions = new();
+            public void PlayTreasurePickup(long score, long gold, Vector2 position)
+            { if (score > 0) TreasurePositions.Add(position); }
             public void SetPlayerWeapon(ArcadeWeaponDefinition weapon) { WeaponId = weapon.Id; }
             public void PlayProductPickup(string productId) { ProductId = productId; }
             public bool TreasureEntranceShown;

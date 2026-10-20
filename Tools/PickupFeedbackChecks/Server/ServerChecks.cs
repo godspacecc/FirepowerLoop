@@ -68,9 +68,12 @@ Check("TreasureRoomRecordsActualRewardsAndRejectsFullSupply", () => {
     Require((bool)Call("ApplyTreasureReward", a, 1L, bomb, rules, true));
     Require(!(bool)Call("ApplyTreasureReward", a, 1L, bomb, rules, true));
     Require(a.Battle.SupplyPickups.Count == 1 && a.Battle.SupplyPickups[0].AddedAmount == 1);
-    var gem = new FirepowerLoop.Arcade.ArcadeTreasureRewardParameters(2, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem, 0, 0, 200, 0, 1);
+    var gem = new FirepowerLoop.Arcade.ArcadeTreasureRewardParameters(2, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem, 7, -4, 200, 0, 1);
     Require((bool)Call("ApplyTreasureReward", a, 1L, gem, rules, true));
     Require(a.Battle.SupplyPickups.Count == 2 && a.Battle.SupplyPickups[1].ScoreAdded == 600 && a.Battle.SupplyPickups[1].GoldAdded == 0);
+    using var snapshot = (OnlineArcadeBattleInfo)Call("BuildBattleSnapshot", a.Battle);
+    using var clone = (OnlineArcadeBattleInfo)Call("CloneBattleSnapshot", snapshot);
+    Require(clone.SupplyPickups[1].PositionX == 7 && clone.SupplyPickups[1].PositionZ == -4);
 });
 Console.WriteLine($"PickupFeedbackServerChecks: {7 - failed}/7 passed");
 return failed == 0 ? 0 : 1;

@@ -105,6 +105,8 @@ namespace Game
         void PlaySupplyPickup(ArcadeDropDefinition definition, int added) { }
         /// <summary>权威提交后的实际积分与金币分别传入；不能从掉落面值推断。</summary>
         void PlayTreasurePickup(long score, long gold) { }
+        /// <summary>成功拾取时携带竞技场坐标；旧表现端仍可沿用数值反馈。</summary>
+        void PlayTreasurePickup(long score, long gold, Vector2 position) => PlayTreasurePickup(score, gold);
         /// <summary>仅接受产品定义中的稳定 ID，显示名称沿用现有本地化定义。</summary>
         void PlayProductPickup(string productId) { }
         void BeginEffectSync() { }

@@ -50,7 +50,8 @@ namespace Game
                         var drop = catalog.Drops.First(d => d.Kind == (bomb ? ArcadeDropKind.Bomb : ArcadeDropKind.Dash));
                         view.PlaySupplyPickup(drop, bomb ? runtime.Bombs - bombsBefore : runtime.Dashes - dashesBefore);
                     }
-                    view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore, 0);
+                    view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore,
+                        0, new Vector2(reward.X, reward.Y));
                 }
                 return;
             }

@@ -495,7 +495,7 @@ namespace Game
             Set(box.TextName, status.Name);
             Set(box.TextLives, Loc.T("ui.arcade.hud.life_count", status.Lives));
             Set(box.TextGold, Loc.T("ui.arcade.hud.gold_compact", status.Gold));
-            if (status.IsSelf) BindScoreTargets(box, status.Score);
+            if (status.IsSelf) BindScoreTargets(box, status.Score, mobile);
             long visibleScore = status.IsSelf ? VisibleSelfScore(status.Score) : status.Score;
             Set(box.TextScore, Loc.T("ui.arcade.hud.score", visibleScore));
             Set(box.TextState, status.State);
