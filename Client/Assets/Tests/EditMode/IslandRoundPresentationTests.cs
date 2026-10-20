@@ -120,7 +120,7 @@ namespace Game.Tests
             view.SetOpening(catalog.Arenas.Single(a=>a.ArenaNumber==1).Opening,false);
             Assert.That(danger.gameObject.activeInHierarchy,Is.False); Assert.That(flame.gameObject.activeInHierarchy,Is.False);
         }
-        [Test] public void ThirdRoundWreckCollisionAndExitUseTheSameLayout()
+        [Test] public void ThirdRoundWreckCollisionAndExitArrowsUseTheSameLayout()
         {
             Prepare(3); Assert.That(view.IsIslandRoundReady,Is.True);
             var ship=ArcadeIslandLayout.GetObstacles(3,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)[0];
@@ -131,8 +131,10 @@ namespace Game.Tests
             Assert.That(wreck.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x,Is.EqualTo(ship.HalfExtents.x).Within(.001f));
             view.SetExits(new[]{-4},catalog.Rule.ArenaHalfHeight,false);
             var exit=root.transform.Find("ArcadeRouteExit_-4");
-            var expected=ArcadeIslandLayout.GetExitPosition(3,0,1,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
+            var expected=ArcadeIslandLayout.GetExitPosition(3,0,4,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
             Assert.That(exit.localPosition,Is.EqualTo(new Vector3(expected.x,0,expected.y)));
+            Assert.That(exit.Find("ExitCue/ApproachArrow"),Is.Not.Null);
+            Assert.That(exit.GetComponentsInChildren<MeshRenderer>(true),Is.Empty);
         }
         [Test] public void LateResourceCallbacksCannotRepopulateReleasedMapRoot()
         {

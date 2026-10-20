@@ -363,25 +363,26 @@ namespace Game
             hazardPresentation?.Sync(hazards, elapsedSeconds);
         }
 
+        /// <summary>普通出口只保留指路箭头，场景通道后续逐图补充；最终胜利出口沿用现有显示。</summary>
         public void SetExits(IReadOnlyList<int> destinations, float halfHeight, bool victory)
         {
             contentDestinations = destinations.ToArray(); contentExitHeight = halfHeight; contentVictory = victory;
             if (root == null) return;
-            var identity = (victory ? "victory" : string.Join(",", destinations)) + ":" + Loc.T("ui.arcade.destination.next");
+            var identity = victory ? "victory:" + Loc.T("ui.arcade.exit.victory") : string.Join(",", destinations);
             if (string.Equals(identity, exitVisualIdentity, StringComparison.Ordinal)) return;
             exitVisualIdentity = identity;
             exitCues.Clear();
             exitCueElapsed = 0;
             foreach (var marker in exitVisuals) DestroyObject(marker);
             exitVisuals.Clear();
-            var destinationCount = victory ? 1 : destinations.Count;
+            int destinationCount = victory ? 1 : destinations.Count;
             if (destinationCount == 0) return;
             bool fourDirections = roundLayout != null || islandRound > 0;
             var count = fourDirections ? FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount : destinationCount;
-            bool formalExit = roundLayout != null || contentArena <= 3 && !victory;
+            bool formalExit = roundLayout != null;
             if (contentTemplates == null) { exitVisualIdentity = null; return; }
             // 正式门自带材质；旧圆柱出口也从资源引用复制，Android Host 不依赖 Shader 名称查找。
-            if (!formalExit && exitMaterial == null)
+            if (victory && !formalExit && exitMaterial == null)
             {
                 exitMaterial = new Material(contentTemplates.Find("RouteGate/ExitCue/GroundRing").GetComponent<LineRenderer>().sharedMaterial);
                 exitMaterial.SetColor("_BaseColor", new Color(.15f, .85f, .55f, 1f));
@@ -396,13 +397,14 @@ namespace Game
                         exitCatalog.Rule.ArenaHalfHeight, exitCatalog.Rule.PlayerRadius)
                     : ArcadeCombatSystem.ArcadeExitPosition(index, count, halfHeight);
                 GameObject marker;
-                if (formalExit)
+                if (!victory)
+                {
+                    marker = CreateRouteExitGuide(position);
+                }
+                else if (formalExit)
                 {
                     marker = CreateContent("RouteGate", new Vector3(position.x, 0, position.y));
-                    int destinationIndex = fourDirections ? 0 : index;
-                    if (!victory && destinations[destinationIndex] < 0)
-                        marker.GetComponentInChildren<TMPro.TextMeshPro>(true).text = Loc.T("ui.arcade.exit.enter_round");
-                    else SetContentLabel(marker, victory ? "ui.arcade.exit.victory" : DestinationKey(destinations[destinationIndex]));
+                    SetContentLabel(marker, "ui.arcade.exit.victory");
                     BindExitCue(marker);
                 }
                 else

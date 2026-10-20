@@ -5,7 +5,7 @@ namespace Game
 {
     public sealed partial class ArcadeCombatViewController
     {
-        /// <summary>缓存正式模板的提示节点；只动箭头和光圈，不移动出口权威落点。</summary>
+        /// <summary>缓存正式模板的提示节点；只动提示，不移动出口权威落点。</summary>
         private readonly List<ExitCue> exitCues = new();
         /// <summary>奖励房入口独立持有提示，普通出口刷新不能清除其方向引导。</summary>
         private readonly List<ExitCue> treasureExitCues = new();
@@ -15,10 +15,31 @@ namespace Game
         /// <summary>持有当前出口实例的节点和动画基线，不保存任何玩法数据。</summary>
         private sealed class ExitCue
         {
-            /// <summary>正式门根、门上箭头、触发光圈和角色附近指路箭头。</summary>
+            /// <summary>出口锚点、上方箭头、可选光圈和角色附近指路箭头；普通出口没有光圈。</summary>
             public Transform Gate, Arrow, Ring, Approach;
             /// <summary>从正式模板读取的原始位置和比例。</summary>
             public Vector3 ArrowPosition, RingScale;
+        }
+
+        /// <summary>只复制正式箭头节点，避免实例化门框、门牌、光圈和粒子；生命周期随出口列表释放。</summary>
+        private GameObject CreateRouteExitGuide(Vector2 position)
+        {
+            var source = contentTemplates.Find("RouteGate/ExitCue");
+            var arrowTemplate = source != null ? source.Find("Arrow") : null;
+            var approachTemplate = source != null ? source.Find("ApproachArrow") : null;
+            if (arrowTemplate == null || approachTemplate == null)
+                throw new System.InvalidOperationException("正式出口缺少指路箭头模板");
+            var marker = new GameObject("ArcadeRouteGuide");
+            marker.transform.SetParent(root.transform, false);
+            marker.transform.localPosition = new Vector3(position.x, 0, position.y);
+            var cue = new GameObject("ExitCue");
+            cue.transform.SetParent(marker.transform, false);
+            var arrow = UnityEngine.Object.Instantiate(arrowTemplate, cue.transform, false);
+            var approach = UnityEngine.Object.Instantiate(approachTemplate, cue.transform, false);
+            arrow.name = "Arrow"; approach.name = "ApproachArrow";
+            exitCues.Add(new ExitCue { Gate = marker.transform, Arrow = arrow, Approach = approach,
+                ArrowPosition = arrow.localPosition });
+            return marker;
         }
 
         /// <summary>模板契约在导入和定向测试中校验，运行期不临时拼装替代控件。</summary>
@@ -72,7 +93,7 @@ namespace Game
             foreach (var cue in cues)
             {
                 cue.Arrow.localPosition = cue.ArrowPosition + Vector3.up * (.25f * phase);
-                cue.Ring.localScale = cue.RingScale * (1f + .045f * phase);
+                if (cue.Ring != null) cue.Ring.localScale = cue.RingScale * (1f + .045f * phase);
             }
         }
     }

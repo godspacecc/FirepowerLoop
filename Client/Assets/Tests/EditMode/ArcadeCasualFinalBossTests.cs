@@ -164,18 +164,8 @@ namespace Game.Tests
             WithExitView(arenaNumber, true, (view, root) =>
             {
                 view.SetExits(new[] { 2, 3 }, 20f, false);
-                Assert.That(root.transform.childCount, Is.EqualTo(2));
-                var first = root.transform.GetChild(0).gameObject;
-                Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
-                if (arenaNumber <= 3)
-                {
-                    Assert.That(first.GetComponentInChildren<TextMeshPro>(true).text,
-                        Is.EqualTo(Loc.T("ui.arcade.theme.2")));
-                    Assert.That(root.transform.GetChild(1).GetComponentInChildren<TextMeshPro>(true).text,
-                        Is.EqualTo(Loc.T("ui.arcade.theme.3")));
-                }
-                view.SetExits(new[] { 2, 3 }, 20f, false);
-                Assert.That(root.transform.GetChild(0).gameObject, Is.SameAs(first));
+                Assert.That(root.transform.childCount, Is.EqualTo(2), "普通地图保留指路箭头");
+                Assert.That(root.GetComponentsInChildren<MeshRenderer>(true), Is.Empty, "箭头不附带旧门框和牌子");
                 view.SetExits(Array.Empty<int>(), 20f, true);
                 Assert.That(root.transform.childCount, Is.EqualTo(1));
                 Assert.That(root.transform.GetChild(0).name, Is.EqualTo("ArcadeVictoryExit"));
@@ -185,9 +175,9 @@ namespace Game.Tests
             });
         }
 
-        /// <summary>正式模板未就绪时暂缓生成；完成加载后必须重绘已收到的出口快照。</summary>
+        /// <summary>异步模板就绪后补上指路箭头；胜利出口仍可创建并被下一地图快照清除。</summary>
         [Test]
-        public void ExitVisuals_PendingSnapshotRendersAfterContentLoads()
+        public void ExitVisuals_OrdinarySnapshotRestoresOnlyArrowsAfterContentLoads()
         {
             WithExitView(1, false, (view, root) =>
             {
@@ -195,12 +185,15 @@ namespace Game.Tests
                 Assert.That(root.transform.childCount, Is.Zero);
                 Call(view, "LoadContentAsync", 1);
                 Assert.That(root.transform.childCount, Is.EqualTo(2));
-                Assert.That(root.transform.GetChild(0).name, Is.EqualTo("ArcadeRouteExit_2"));
-                Assert.That(root.transform.GetChild(1).name, Is.EqualTo("ArcadeRouteExit_3"));
-                Assert.That(root.GetComponentsInChildren<Collider>(true), Is.Empty);
-                var first = root.transform.GetChild(0);
+                Assert.That(root.GetComponentsInChildren<MeshRenderer>(true), Is.Empty);
+                view.SetExits(Array.Empty<int>(), 20f, true);
+                Assert.That(root.transform.childCount, Is.EqualTo(1));
+                var victory = root.transform.GetChild(0);
+                view.SetExits(Array.Empty<int>(), 20f, true);
+                Assert.That(root.transform.GetChild(0), Is.SameAs(victory));
                 view.SetExits(new[] { 2, 3 }, 20f, false);
-                Assert.That(root.transform.GetChild(0), Is.SameAs(first));
+                Assert.That(root.transform.Find("ArcadeVictoryExit"), Is.Null, "普通快照须清除前一张地图残留的胜利出口");
+                Assert.That(root.transform.childCount, Is.EqualTo(2));
             });
         }
 
@@ -290,7 +283,7 @@ namespace Game.Tests
                 var flags = BindingFlags.Instance | BindingFlags.NonPublic;
                 typeof(ArcadeCombatViewController).GetField("root", flags).SetValue(view, root);
                 typeof(ArcadeCombatViewController).GetField("contentArena", flags).SetValue(view, arenaNumber);
-                if (templatesReady && arenaNumber <= 3)
+                if (templatesReady)
                 {
                     var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                         "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");

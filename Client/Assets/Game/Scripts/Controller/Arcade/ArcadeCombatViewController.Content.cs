@@ -124,9 +124,6 @@ namespace Game
             if(text==null)throw new InvalidOperationException("出口缺少正式世界文字模板");
             text.text=Loc.T(key);
         }
-        /// <summary>名称由实际场地配置身份绑定；4/15 仅描述现有蛮兽 Boss 与混合敌群，不实现后续场地。</summary>
-        private static string DestinationKey(int number) => number >= 1 && number <= 20
-            ? "ui.arcade.theme." + number : "ui.arcade.destination.next";
         private void ReleaseContent()
         {
             contentGeneration++;

@@ -78,33 +78,36 @@ namespace Game.Tests
             Assert.That(gate.GetComponentsInChildren<Collider>(true), Is.Empty);
         }
 
-        [Test] public void RoundExitKeepsAuthorityPositionWhileCueAnimatesAndRepeatedSyncDoesNotDuplicate()
+        [Test] public void OrdinaryExitKeepsArrowsWithoutGateSceneEffects()
         {
             view.SetExits(new[] { -2 }, 19.5f, false);
             var marker = root.transform.Find("ArcadeRouteExit_-2");
-            var position = ArcadeIslandLayout.GetExitPosition(1, 0, 1, 19.5f, 19.5f, .55f);
-            Assert.That(Vector2.Distance(new Vector2(marker.localPosition.x, marker.localPosition.z), position), Is.LessThan(.01f));
-            Assert.That(marker.GetComponentInChildren<TextMeshPro>(true).text, Is.EqualTo("进入下一轮"));
+            Assert.That(marker, Is.Not.Null, "出口仍需要指路箭头");
+            var position = ArcadeIslandLayout.GetExitPosition(1, 0, 4, 19.5f, 19.5f, .55f);
+            Assert.That(marker.localPosition, Is.EqualTo(new Vector3(position.x, 0, position.y)));
+            Assert.That(marker.GetComponentsInChildren<MeshRenderer>(true), Is.Empty, "不能重新带回门框和牌子");
+            Assert.That(marker.GetComponentsInChildren<TextMeshPro>(true), Is.Empty);
+            Assert.That(marker.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
+            Assert.That(marker.Find("ExitCue/GroundRing"), Is.Null);
             var arrow = marker.Find("ExitCue/Arrow");
+            var approach = marker.Find("ExitCue/ApproachArrow");
             Assert.That(arrow, Is.Not.Null);
+            Assert.That(approach, Is.Not.Null);
             var before = arrow.localPosition;
-            var gatePosition = marker.localPosition;
             view.TickPlayerFeedback(.25f);
             Assert.That(arrow.localPosition, Is.Not.EqualTo(before));
-            Assert.That(marker.localPosition, Is.EqualTo(gatePosition), "动画不得移动实际入口位置");
             view.SetPlayer(new Vector2(-3, -8), Vector2.up, true, false);
-            var guide = marker.Find("ExitCue/ApproachArrow");
-            Assert.That(guide.gameObject.activeSelf, Is.True, "远离出口时角色附近仍须有指路箭头");
-            Assert.That(Vector3.Distance(guide.position, new Vector3(-3, .28f, -8)), Is.EqualTo(2.3f).Within(.01f));
+            Assert.That(approach.gameObject.activeSelf, Is.True);
+            Assert.That(Vector3.Distance(approach.position, new Vector3(-3, .28f, -8)), Is.EqualTo(2.3f).Within(.01f));
+            Assert.That(Vector3.Dot(approach.forward, new Vector3(position.x + 3, 0, position.y + 8).normalized), Is.GreaterThan(.99f));
             view.SetPlayer(position, Vector2.up, true, false);
-            Assert.That(guide.gameObject.activeSelf, Is.False, "到达门口后不遮挡地面光圈");
+            Assert.That(approach.gameObject.activeSelf, Is.False);
             view.SetExits(new[] { -2 }, 19.5f, false);
-            Assert.That(root.GetComponentsInChildren<Transform>().Count(t => t.name == "ArcadeRouteExit_-2"), Is.EqualTo(1));
+            Assert.That(root.transform.Find("ArcadeRouteExit_-2"), Is.SameAs(marker));
             view.SetExits(Array.Empty<int>(), 19.5f, false);
-            Assert.That(root.transform.childCount, Is.Zero, "下一轮必须清除旧出口及特效");
+            Assert.That(root.transform.childCount, Is.Zero, "下一轮清理箭头");
             Assert.DoesNotThrow(() => view.TickPlayerFeedback(.25f));
         }
-
         [Test] public void TreasureEntranceGuidesPlayerAcrossExitSyncAndCleansUpOnEntry()
         {
             Assert.That(Game.Interface.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
@@ -142,46 +145,19 @@ namespace Game.Tests
             Assert.DoesNotThrow(() => view.TickPlayerFeedback(.25f));
         }
 
-        [Test] public void FourthRoundPresentsFourExitsWithOneDestination()
+        [Test] public void EveryThemeKeepsOnlyOrdinaryExitArrows()
         {
-            Set("islandRound", 4);
-            view.SetExits(new[] { 2, 3 }, 19.5f, false);
-            Assert.That(root.transform.childCount, Is.EqualTo(4));
-            for (int direction = 0; direction < 4; direction++)
+            Set("islandRound", 0);
+            for (int arena = 1; arena <= 20; arena++)
             {
-                var gate = root.transform.Find("ArcadeRouteExit_2" + (direction == 0 ? "" : "_" + direction));
-                var position = ArcadeIslandLayout.GetExitPosition(4, direction, 4, 19.5f, 19.5f, .55f);
-                Assert.That(Vector2.Distance(new Vector2(gate.localPosition.x, gate.localPosition.z), position), Is.LessThan(.01f));
-                Assert.That(gate.Find("ExitCue/Arrow"), Is.Not.Null);
-                Assert.That(gate.GetComponentInChildren<TextMeshPro>(true).text, Is.Not.Empty);
+                Set("contentArena", arena);
+                view.SetExits(new[] { arena + 1 }, 19.5f, false);
+                Assert.That(root.transform.childCount, Is.EqualTo(1), "各主题都需要保留指路：" + arena);
+                Assert.That(root.GetComponentsInChildren<MeshRenderer>(true), Is.Empty);
+                Assert.That(root.GetComponentsInChildren<ParticleSystem>(true), Is.Empty);
+                view.SetExits(Array.Empty<int>(), 19.5f, false);
             }
         }
-
-        [Test] public void NextRoundPlaqueUsesGenericTextAndFitsBothLanguages()
-        {
-            view.SetExits(new[] { -2 }, 19.5f, false);
-            var label = root.transform.Find("ArcadeRouteExit_-2").GetComponentInChildren<TextMeshPro>(true);
-            foreach (var language in new[] { "zh-CN", "en-US" })
-            {
-                Assert.That(RuntimeJson.TryParseStringTable(File.ReadAllText(Path.Combine(Application.dataPath,
-                    "Game/Config/Localization/" + language + ".json")), out var table), Is.True);
-                label.text = table["ui.arcade.exit.enter_round"];
-                Assert.That(label.text, Is.EqualTo(language == "zh-CN" ? "进入下一轮" : "Next Round"));
-                label.ForceMeshUpdate(true, true);
-                Assert.That(label.isTextOverflowing, Is.False, "缩小后的文字不能溢出底板：" + language);
-                Assert.That(label.preferredWidth, Is.LessThanOrEqualTo(label.rectTransform.rect.width));
-                Assert.That(label.preferredHeight, Is.LessThanOrEqualTo(label.rectTransform.rect.height));
-            }
-        }
-
-        [Test] public void FormalExitUsesOnlyLoadedTemplateMaterials()
-        {
-            view.SetExits(new[] { -2 }, 19.5f, false);
-            Assert.That(root.transform.Find("ArcadeRouteExit_-2"), Is.Not.Null);
-            Assert.That(typeof(ArcadeCombatViewController).GetField("exitMaterial", Hidden).GetValue(view),
-                Is.Null, "正式门不需要备用圆柱材质，不能因按名称查找 Shader 失败而阻断创建");
-        }
-
         [Test] public void EntryWarningWaitsForLoadedMaterialsAndResumesOnNextSnapshot()
         {
             Set("contentTemplates", null);
