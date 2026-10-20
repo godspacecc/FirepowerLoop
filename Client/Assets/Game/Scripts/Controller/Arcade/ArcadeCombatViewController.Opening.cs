@@ -19,6 +19,9 @@ namespace Game
         private float islandFlameBaseRadius;
         private float islandDangerMeshRadius;
         private Mesh islandSandMesh, islandWaterMesh, islandShorelineMesh;
+        /// <summary>第一轮连续陆地的视觉延伸，和主地表同一加载代次创建及释放。</summary>
+        private Mesh islandInlandMesh;
+        private GameObject islandInland;
         private float islandMeshWidth, islandMeshHeight;
         /// <summary>零沿用联机原图，单机首场由权威传入一至四；等待资源期间不允许开战。</summary>
         private int islandRound, islandMeshRound = -1;
@@ -140,6 +143,15 @@ namespace Game
                 island.transform.Find("Sand").GetComponent<MeshFilter>().sharedMesh = islandSandMesh;
                 island.transform.Find("Water").GetComponent<MeshFilter>().sharedMesh = islandWaterMesh;
                 island.transform.Find("Shoreline").GetComponent<MeshFilter>().sharedMesh = islandShorelineMesh;
+                if(region.IsCoastal)
+                {
+                    islandInlandMesh=ArcadeIslandMesh.Inland(region);
+                    islandInland=new GameObject("InlandBackdrop",typeof(MeshFilter),typeof(MeshRenderer));
+                    islandInland.transform.SetParent(island.transform,false);
+                    islandInland.transform.localPosition=new Vector3(0,.02f,0);
+                    islandInland.GetComponent<MeshFilter>().sharedMesh=islandInlandMesh;
+                    islandInland.GetComponent<MeshRenderer>().sharedMaterial=island.transform.Find("Sand").GetComponent<Renderer>().sharedMaterial;
+                }
                 if (islandRound == 3)
                 {
                     var ship = ArcadeIslandLayout.GetObstacles(3, w, h)[0];
@@ -161,6 +173,12 @@ namespace Game
             if (islandRound == 3) root.transform.Find("Obstacle_1/Visual")?.gameObject.SetActive(false);
             // 旧岸边棕榈、岩石仅作原图装饰；新图使用带真实同源阻挡的地标，避免装饰穿行误导。
             island.transform.Find("ShoreDecor")?.gameObject.SetActive(islandRound == 0);
+            var coastDecor=island.transform.Find("CoastDecor");
+            if(coastDecor!=null)
+            {
+                coastDecor.gameObject.SetActive(islandRound==1);
+                coastDecor.localScale=new Vector3(w/19.5f,1,h/19.5f);
+            }
             foreach (var name in new[] { "Sand", "Water", "Shoreline" })
             {
                 var surface = island.transform.Find(name); surface.localScale = Vector3.one;
@@ -223,7 +241,8 @@ namespace Game
             if (islandWreckMesh != null && root != null)
                 root.transform.Find("Obstacle_1/Visual")?.gameObject.SetActive(true);
             DestroyObject(islandWreck); islandWreck = null;
-            foreach (var mesh in new[] { islandSandMesh, islandWaterMesh, islandShorelineMesh, islandWreckMesh })
+            DestroyObject(islandInland);islandInland=null;
+            foreach (var mesh in new[] { islandSandMesh, islandWaterMesh, islandShorelineMesh, islandWreckMesh, islandInlandMesh })
                 if (mesh != null)
                 {
                     if (Application.isPlaying) UnityEngine.Object.Destroy(mesh);
@@ -231,6 +250,7 @@ namespace Game
                 }
             islandSandMesh = islandWaterMesh = islandShorelineMesh = null;
             islandWreckMesh = null; islandMeshRound = -1;
+            islandInlandMesh=null;
         }
 
         /// <summary>礁石可见底缘严格覆盖阻挡矩形；岩块与棕榈均收在该范围内，不额外制造碰撞。</summary>

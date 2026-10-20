@@ -1,0 +1,6 @@
+Discovering ArcadeIslandRegionTests maximum=3 includePassingTests=true
+Selected=3
+Game.Tests.ArcadeIslandRegionTests.ContourKeepsBroadContinuousAreaAndSlidesInsideOuterEdge Passed
+Game.Tests.ArcadeIslandRegionTests.FirstRoundHasOneSeaEntranceAndThreeDryInlandEntrances Passed
+Game.Tests.ArcadeIslandRegionTests.MeshesUseTheRuleContoursAndKeepUpwardNormals Passed
+FINISHED executed=3 passed=3 failed=0 maximum=3

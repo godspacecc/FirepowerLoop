@@ -22,6 +22,8 @@ namespace FirepowerLoop.Arcade
         private readonly ArcadeRegionPoint[] sand = new ArcadeRegionPoint[Samples];
         public IReadOnlyList<ArcadeRegionPoint> Outer => outer;
         public IReadOnlyList<ArcadeRegionPoint> Sand => sand;
+        /// <summary>第一轮为大岛东岸的一片区域；其余三侧是岛内陆路，不是环岛水域。</summary>
+        public bool IsCoastal { get; }
 
         /// <summary>保留原场地尺度，浅凹岸线及宽主战斗区；制作工具与双方权威使用同一采样结果。</summary>
         public ArcadeIslandRegion(float halfWidth, float halfHeight)
@@ -30,6 +32,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>单机首场的固定四图；零保留既有联机轮廓，不改变服务端规则。</summary>
         public ArcadeIslandRegion(float halfWidth, float halfHeight, int roundNumber)
         {
+            IsCoastal = roundNumber == 1;
             if (roundNumber < 0 || roundNumber > 4) throw new ArgumentOutOfRangeException(nameof(roundNumber));
             if (halfWidth <= 5 || halfHeight <= 5 || float.IsNaN(halfWidth) || float.IsNaN(halfHeight) ||
                 float.IsInfinity(halfWidth) || float.IsInfinity(halfHeight)) throw new ArgumentException("海岛尺度无效");
@@ -49,8 +52,8 @@ namespace FirepowerLoop.Arcade
                 float radius = (float)Math.Sqrt(x * x + y * y);
                 // 北岸窄水带，南侧及两侧宽浅水；宽度随岸段连续变化，便于区分两类来敌。
                 float width = .5f + (float)(2.5 * Math.Pow(1 - Math.Max(0, s), 2)) + (float)(.25 * Math.Sin(2 * a));
-                // 首轮四侧均留出约三至四米实际涉水路段，外缘和生成频率保持原值。
-                if (roundNumber == 1) width = 4.6f + (float)(.2 * Math.Max(0, -s));
+                // 只有东岸保留浅水；三条陆路的沙地贴合实际可达外缘，不能仍按水域减速。
+                if (IsCoastal) width = (float)(5 * Math.Pow(Math.Max(0, (c - .6) / .4), 2));
                 if (roundNumber == 2) width = .8f + (float)(2.7 * Math.Pow(Math.Abs(c), 4));
                 if (roundNumber == 3) width = .7f + (float)(9 * Math.Pow(Math.Max(0, c), 8));
                 if (roundNumber == 4) width = 1.1f + (float)(.45 * (1 + Math.Sin(3 * a)));
@@ -78,6 +81,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>保留原入口方向与车道，按配置向深海外移，不改变玩家轮廓或浅水定义。</summary>
         public ArcadeRegionPoint SeaEntry(float x, float y, float distance)
         {
+            if (IsCoastal && !IsShallow(x, y)) return new ArcadeRegionPoint(x, y);
             float length = (float)Math.Sqrt(x * x + y * y);
             if (length < .001f || distance <= 0) return new ArcadeRegionPoint(x, y);
             float scale = 1 + distance / length;

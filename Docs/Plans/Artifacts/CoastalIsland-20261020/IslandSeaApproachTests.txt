@@ -1,0 +1,14 @@
+Discovering IslandSeaApproachTests maximum=14 includePassingTests=true
+Selected=11
+Game.Tests.IslandSeaApproachTests.FirstRoundInlandEnemySpawnsOnDryLand(0) Passed
+Game.Tests.IslandSeaApproachTests.FirstRoundInlandEnemySpawnsOnDryLand(2) Passed
+Game.Tests.IslandSeaApproachTests.FirstRoundInlandEnemySpawnsOnDryLand(3) Passed
+Game.Tests.IslandSeaApproachTests.PlayerMovement_RemainsInsideOriginalIsland Passed
+Game.Tests.IslandSeaApproachTests.SeaCrowdingAndKnockback_DoNotTeleportEnemiesToShore Passed
+Game.Tests.IslandSeaApproachTests.SeaEnemy_CanDamagePlayerStandingAtShore Passed
+Game.Tests.IslandSeaApproachTests.SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(0,1,True) Passed
+Game.Tests.IslandSeaApproachTests.SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(1,0,True) Passed
+Game.Tests.IslandSeaApproachTests.SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(2,0,True) Passed
+Game.Tests.IslandSeaApproachTests.SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(3,0,True) Passed
+Game.Tests.IslandSeaApproachTests.SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(0,0,False) Passed
+FINISHED executed=11 passed=11 failed=0 maximum=14

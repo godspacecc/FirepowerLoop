@@ -1,0 +1,6 @@
+Discovering ArcadeIslandLayoutTests maximum=15 includePassingTests=true
+Selected=3
+Game.Tests.ArcadeIslandLayoutTests.EveryRoundHasFourDryWalkableExitsInDifferentDirections Passed
+Game.Tests.ArcadeIslandLayoutTests.EverySpawnAndObstacleKeepsInsideMapWithDrySafeSpawn Passed
+Game.Tests.ArcadeIslandLayoutTests.WreckFootprintMatchesThirdMapObstacle Passed
+FINISHED executed=3 passed=3 failed=0 maximum=15

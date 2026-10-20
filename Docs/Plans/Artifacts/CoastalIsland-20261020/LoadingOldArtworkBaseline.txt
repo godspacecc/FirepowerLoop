@@ -1,0 +1,13 @@
+Exact 2 methods; maximum=2; includePassingTests=true; old artwork only in memory; no prefab save
+Game.Tests.UnifiedMainMenuTests.Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad Failed   轮间切图和宝藏房准备也需要加载遮罩
+  Expected: True
+  But was:  False
+
+at Game.Tests.UnifiedMainMenuTests.Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad () [0x00027] in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\UnifiedMainMenuTests.cs:96
+
+Game.Tests.UnifiedMainMenuTests.Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen Failed   Expected: False
+  But was:  True
+
+at Game.Tests.UnifiedMainMenuTests.Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen () [0x00163] in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\UnifiedMainMenuTests.cs:122
+
+FINISHED passed=0 failed=2; restored sprite=Assets/Game/Art/UI/Start/ArcadeCoastLoadingBackground.png

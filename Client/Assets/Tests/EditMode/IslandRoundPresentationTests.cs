@@ -107,6 +107,21 @@ namespace Game.Tests
                 }
             }
         }
+        [Test] public void FirstCoastalRoundExtendsInlandAndReleasesItsBackdropBeforeNextRound()
+        {
+            Prepare(1);
+            var inland=IslandRoot.Find("InlandBackdrop");
+            Assert.That(inland,Is.Not.Null);
+            Assert.That(inland.GetComponent<MeshFilter>().sharedMesh.bounds.min.x,Is.LessThan(-catalog.Rule.ArenaHalfWidth*2));
+            Assert.That(inland.GetComponentsInChildren<Collider>(),Is.Empty);
+            Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.True);
+            Assert.That(IslandRoot.Find("CoastDecor").GetComponentsInChildren<Collider>(true),Is.Empty);
+            Prepare(2);
+            Assert.That(inland==null,Is.True,"切图释放旧陆地延伸，不残留上一轮资源");
+            Assert.That(IslandRoot.Find("InlandBackdrop"),Is.Null);
+            Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.False);
+        }
+
         [Test] public void FourthRoundWarningPrecedesFlameAndClearTurnsBothOff()
         {
             Prepare(4); Assert.That(view.IsIslandRoundReady,Is.True);

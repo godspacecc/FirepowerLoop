@@ -9,7 +9,7 @@ namespace Game.Tests
     /// <summary>保护规则轮廓与真实步进路径，避免画面曲线而运行时仍剪矩形。</summary>
     public sealed class ArcadeIslandRegionTests
     {
-        [Test] public void FirstRoundFourEntrancesHaveAtLeastThreeMetresOfVisibleWading()
+        [Test] public void FirstRoundHasOneSeaEntranceAndThreeDryInlandEntrances()
         {
             var region = new ArcadeIslandRegion(19.5f, 19.5f, 1);
             for (int side = 0; side < 4; side++)
@@ -21,7 +21,8 @@ namespace Game.Tests
                 for (float distance = 0; distance <= 3f; distance += .25f)
                 {
                     var sample = position + inward * distance;
-                    Assert.True(region.IsShallow(sample.x, sample.y), $"入口{side}车道{lane}在{distance}米前已上岸");
+                    Assert.That(region.IsShallow(sample.x, sample.y), Is.EqualTo(side == 1),
+                        $"入口{side}车道{lane}在{distance}米处应仅东侧涉水，其他三侧连陆地");
                 }
             }
         }

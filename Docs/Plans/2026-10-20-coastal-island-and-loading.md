@@ -1,0 +1,44 @@
+# 首轮东岸场地与加载背景
+
+用户确认右侧海岸、码头、其余三侧连接岛内的布局预览后实施。另将用户提供的战斗概念图去除全部 HUD 和文字，保留角色与战斗内容，接入现有加载页。
+
+## 实施范围
+
+- 单机首场第一轮改为东侧浅海，另外三侧为陆地进场。共享轮廓保留原可行走外缘；陆地延伸网格仅补镜头背景。
+- 正式海岛模板新增码头、木箱、外围岩石与棕榈。三条陆路留空；新增装饰没有碰撞，并位于可行走区域外。
+- 第一轮的陆地敌人从原边界进入，不再向深海偏移；东侧仍保留涉水进场。其他轮次及 round=0 的联机原图维持原规则。
+- 四方向离场的既有去向规则保留。没有新增场景、改变加载事务或关卡数值。
+- 首次进局沿用完整加载页，局内普通切轮沿用淡入淡出。Loading.prefab 仅更换背景 Sprite，旧图及 .meta 保留。
+- 实际场景沿用项目现有低多边形资源；概念图用于布局参考和加载插画，不代表实际游戏画质。
+
+## 视觉核对
+
+- [正式控制器第一轮布局预览](Artifacts/CoastalIsland-20261020/island-round-1.png)：编辑器隔离渲染，无战斗、无存档写入。
+- [正式加载 Prefab 预览](Artifacts/CoastalIsland-20261020/loading-preview.png)：示例进度 55%，不是实际加载耗时或进度测量。
+- 原图的分数、倍率、波次、状态、技能栏、角落注释等已去除，加载文字由原有 UI 单独呈现。
+
+## 验证
+
+Unity 连接确认路径为 E:/GitHub/FirepowerLoop/Client/Assets。最终编辑态 Boot 场景干净，未编译或更新，Console 错误条目 0。没有运行 Player Build。
+
+本次连接仅注册 script-execute 等少量 MCP 工具，原 tests-run 工具不可用，因此通过 Unity 原生 TestRunnerApi 做限定 EditMode 测试。先发现真实类并核对数量，再按完整 fixture 名运行，includePassingTests=true，所有通过和失败结果均保存。未运行全套测试，未使用空过滤或失败回退。
+
+| 测试类 | 最大数量 | 实际通过/总数 |
+| --- | ---: | ---: |
+| ArcadeIslandRegionTests | 3 | 3/3 |
+| IslandSeaApproachTests | 14 | 11/11 |
+| IslandRoundPresentationTests | 14 | 8/8 |
+| ArcadeRoundTransitionTests | 5 | 5/5 |
+| ArcadeIslandLayoutTests | 15 | 3/3 |
+| UnifiedMainMenuTests | 25 | 22/24 |
+
+共 54 项，52 项通过。海岸轮廓和陆地进场的新断言先在旧实现下失败，再在本次实现下通过；新增陆地背景的创建、切轮释放及装饰显隐检查通过。
+
+加载类的两项失败不由新背景引起：仅在内存中将 Loading 的 Sprite 换回旧图，再按以下两个完整 testMethod 精确复测（最大 2，includePassingTests=true），失败位置相同，随后恢复新图，未保存临时旧图引用。
+
+- Game.Tests.UnifiedMainMenuTests.Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad：第 96 行仍要求普通切轮显示完整加载页，与既有淡入淡出逻辑冲突。
+- Game.Tests.UnifiedMainMenuTests.Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen：第 122 行，失败后进入重试准备时，既有提前返回未刷新错误区域。此加载控制器问题不在本次换图范围，未修改业务逻辑或绕过断言。
+
+完整结果位于 [验证附件目录](Artifacts/CoastalIsland-20261020/)，其中 LoadingOldArtworkBaseline.txt 保存旧图对照复测。独立只读审查未发现本次地图和背景改动的重要问题。
+
+制作工具：ArcadeCoastAuthoring、ArcadeCoastLoadingPreview、ArcadeCoastTestRunner。仅提交本任务文件，保留同工作区其他任务的修改。

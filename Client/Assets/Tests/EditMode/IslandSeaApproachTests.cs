@@ -40,10 +40,7 @@ namespace Game.Tests
             Set("random", new System.Random(37)); Set("view", new ArcadeCombatViewController());
         }
 
-        [TestCase(0, 0, true)]
         [TestCase(0, 1, true)]
-        [TestCase(0, 2, true)]
-        [TestCase(0, 3, true)]
         [TestCase(1, 0, true)]
         [TestCase(2, 0, true)]
         [TestCase(3, 0, true)]
@@ -69,9 +66,18 @@ namespace Game.Tests
             Assert.That(sawLand, Is.True, "必须持续向玩家接近并上岸");
         }
 
+        [TestCase(0)][TestCase(2)][TestCase(3)]
+        public void FirstRoundInlandEnemySpawnsOnDryLand(int side)
+        {
+            var enemy=Spawn(0,side);
+            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,1);
+            Assert.That(region.Contains(enemy.Position.x,enemy.Position.y),Is.True,"陆路入口不能按海面距离向外移");
+            Assert.That(region.IsShallow(enemy.Position.x,enemy.Position.y),Is.False,"三处岛内入口不应涉水");
+        }
+
         [Test] public void SeaCrowdingAndKnockback_DoNotTeleportEnemiesToShore()
         {
-            var enemy = Spawn(0, 0);
+            var enemy = Spawn(0, 1);
             var origin = enemy.Position;
             runtime.Enemies.Add(999, new ArcadeEnemyRuntime { Id = 999, Position = origin,
                 Speed = enemy.Speed, Health = 100, MaxHealth = 100 });
@@ -85,7 +91,7 @@ namespace Game.Tests
 
         [Test] public void SeaEnemy_CanDamagePlayerStandingAtShore()
         {
-            var enemy = Spawn(0, 0);
+            var enemy = Spawn(0, 1);
             var region = new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, 1);
             var shore = region.Constrain(enemy.Position.x, enemy.Position.y, catalog.Rule.PlayerRadius);
             runtime.PlayerPosition = new Vector2(shore.X, shore.Y);

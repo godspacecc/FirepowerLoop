@@ -19,6 +19,19 @@ namespace FirepowerLoop.Arcade
 
         public static Mesh Water(ArcadeIslandRegion region) => Band("IslandShallowWater", region.Sand, region.Outer);
 
+        /// <summary>三侧陆地延伸至镜头之外；只补视觉地表，不扩大玩家规则边界或新增碰撞。</summary>
+        public static Mesh Inland(ArcadeIslandRegion region)
+        {
+            var extended=new ArcadeRegionPoint[region.Outer.Count];
+            for(int i=0;i<extended.Length;i++)
+            {
+                var p=region.Outer[i];float cosine=Mathf.Cos(i*Mathf.PI*2/extended.Length);
+                float scale=1+2*Mathf.Clamp01((.6f-cosine)/.15f);
+                extended[i]=new ArcadeRegionPoint(p.X*scale,p.Y*scale);
+            }
+            return Band("CoastInlandBackdrop",region.Outer,extended);
+        }
+
         /// <summary>沉船的矩形船底与破损舷板；底板覆盖同源阻挡范围，避免可见洞口却不可通行。</summary>
         public static Mesh Wreck(float width, float length)
         {
