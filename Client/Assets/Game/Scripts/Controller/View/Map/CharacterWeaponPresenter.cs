@@ -653,6 +653,7 @@ namespace Game
                 return;
             }
             SetVisualPose(positionSum / weightSum, rotation, scaleSum / weightSum);
+            AlignFlamethrowerMainHand();
 
             void Accumulate(AnimatorClipInfo[] infos)
             {
@@ -667,6 +668,17 @@ namespace Game
                     weightSum += info.weight;
                 }
             }
+        }
+
+        /// <summary>喷火器按实际Animator姿态校正主手水平朝向，避免手动采样挂点在运行时向左偏；俯仰和翻滚沿用动画。</summary>
+        private void AlignFlamethrowerMainHand()
+        {
+            if (current.Id != "arcade.weapon.flamethrower" || manualPoseSampling || !CanGripCurrentAnimation()) return;
+            var forward = Vector3.ProjectOnPlane(visual.transform.forward, transform.up);
+            if (forward.sqrMagnitude <= .000001f) return;
+            var hand = animator.GetBoneTransform(current.MainHand);
+            // 围绕手腕旋转会一并带动挂点和枪口，保持主手握点，不改战斗根或只转枪模。
+            hand.rotation = Quaternion.AngleAxis(Vector3.SignedAngle(forward, transform.forward, transform.up), transform.up) * hand.rotation;
         }
 
         private void SetVisualPose(Vector3 position, Quaternion rotation, Vector3 scale)

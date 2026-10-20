@@ -1,0 +1,232 @@
+{
+  "mode": "EditMode",
+  "includePassingTests": true,
+  "red": {
+    "testClass": "FlamethrowerAimTests",
+    "maxTests": 14,
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 12,
+      "PassedTests": 1,
+      "FailedTests": 11,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.4035131"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(0,False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0470000",
+        "Message": "  movement=0, fire=False, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.710929453f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(0,True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  movement=0, fire=True, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.715309799f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(1,False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  movement=1, fire=False, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.710929453f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(1,True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  movement=1, fire=True, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.715309799f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(2,False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  movement=2, fire=False, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.710929453f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(2,True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  movement=2, fire=True, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.715309799f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(3,False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  movement=3, fire=False, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.710929453f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(3,True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  movement=3, fire=True, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.715309799f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(4,False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0080000",
+        "Message": "  movement=4, fire=False, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.710929453f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(4,True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0060000",
+        "Message": "  movement=4, fire=True, frame=0\r\n  Expected: greater than 0.99000001f\r\n  But was:  0.715309799f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.RepeatedOriginQueriesDoNotAccumulateAimOrMoveTheActor",
+        "Status": "Failed",
+        "Duration": "00:00:00.0120000",
+        "Message": "  Expected: greater than 0.99000001f\r\n  But was:  0.710838377f\r\n"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.SwitchingBackToRifleKeepsItsAnimatorDrivenHandRotation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      }
+    ]
+  },
+  "green": {
+    "testClass": "FlamethrowerAimTests",
+    "maxTests": 14,
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 14,
+      "PassedTests": 14,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.9677518"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(0,False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.3840000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(0,True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(1,False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(1,True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(2,False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(2,True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(3,False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(3,True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(4,False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ActualAnimatorKeepsNozzleFacingAimWhileHoldingMovingAndFiring(4,True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.HitAnimationKeepsItsAnimatorDrivenHandRotation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.ReloadKeepsItsAnimatorDrivenHandRotation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.RepeatedOriginQueriesDoNotAccumulateAimOrMoveTheActor",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.FlamethrowerAimTests.SwitchingBackToRifleKeepsItsAnimatorDrivenHandRotation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      }
+    ]
+  },
+  "regressions": [
+    {
+      "maxTests": 1,
+      "testMethod": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerBarrelFacesFiringDirectionAcrossCombatPoses",
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9615656"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerBarrelFacesFiringDirectionAcrossCombatPoses",
+          "Status": "Passed",
+          "Duration": "00:00:00.0400000"
+        }
+      ]
+    },
+    {
+      "maxTests": 1,
+      "testMethod": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerSharedPresentationUsesItsNozzleAndRestoresBasicWeapon",
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6390134"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerSharedPresentationUsesItsNozzleAndRestoresBasicWeapon",
+          "Status": "Passed",
+          "Duration": "00:00:00.7480000"
+        }
+      ]
+    },
+    {
+      "maxTests": 1,
+      "testMethod": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerMuzzleEmissionStartsAtNozzleAndEndsAfterFireOrWeaponChange",
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5228990"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeWeaponVisualTests.FlamethrowerMuzzleEmissionStartsAtNozzleAndEndsAfterFireOrWeaponChange",
+          "Status": "Passed",
+          "Duration": "00:00:00.6110000"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+Before-equivalent: horizontal angle=-44.69683
+After: horizontal angle=0
