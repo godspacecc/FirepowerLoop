@@ -1,0 +1,12 @@
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeFullRouteOnlineChecks.csproj : warning NU1900: 获取包漏洞数据时出错: 无法加载源 https://api.nuget.org/v3/index.json 的服务索引。
+PASS WeaponDeathImpactOnline.RaygunKeepsEnergyStyleAfterWeaponChange
+PASS WeaponDeathImpactOnline.RocketKeepsHeavyExplosion
+PASS WeaponDeathImpactOnline.GrenadeKeepsHeavyExplosion
+PASS WeaponDeathImpactOnline.CloseShotgunUsesOriginalFiringPosition
+PASS WeaponDeathImpactOnline.DistantShotgunKeepsOrdinaryDeath
+PASS WeaponDeathImpactOnline.ShotgunThreeMeterBoundary
+PASS WeaponDeathImpactOnline.LivingShotgunVictimDoesNotMoveOrProduceDeath
+PASS WeaponDeathImpactOnline.DeathStyleSurvivesSnapshotCloneAndCodec
+PASS WeaponDeathImpactOnline.OtherPlayerWeaponDoesNotChangeProjectileSource
+9/9 passed

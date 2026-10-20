@@ -254,6 +254,10 @@ namespace Game
         }
 
         public void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)
+            => RemoveEnemy(runtimeId,playDeath,direction,explosive,flameKill,0);
+
+        /// <summary>力度只影响已裁决死亡的骨骼，不改变尸体与特效预算。</summary>
+        public void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill,int impactKind)
         {
             if (!arcadeEnemies.TryGetValue(runtimeId, out var entry))
                 return;
@@ -282,7 +286,7 @@ namespace Game
                     dying.StopDeathSimulation();
                     activePhysics--;
                 }
-                if (entry.View.TryPlayPhysicalDeath(direction, explosive, out var durationSeconds) ||
+                if (entry.View.TryPlayPhysicalDeathWithImpact(direction, explosive, impactKind, out var durationSeconds) ||
                     entry.View.TryPlayDeathAnimation(out durationSeconds))
                 {
                     entry.View.SetHealthBarVisible(false);

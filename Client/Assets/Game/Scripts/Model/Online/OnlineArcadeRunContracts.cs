@@ -162,8 +162,10 @@ namespace Game
     /// <summary>已经裁决的死亡表现事实，不持有对象、骨骼或资源句柄。</summary>
     public readonly struct OnlineArcadeEnemyDeathSnapshot
     {
-        public OnlineArcadeEnemyDeathSnapshot(long runtimeId, float directionX, float directionZ, bool explosive, int roundGeneration,bool flameKill=false)
-        { RuntimeId = runtimeId; DirectionX = directionX; DirectionZ = directionZ; Explosive = explosive; RoundGeneration = roundGeneration;FlameKill=flameKill; }
+        public OnlineArcadeEnemyDeathSnapshot(long runtimeId, float directionX, float directionZ, bool explosive, int roundGeneration,bool flameKill=false,int impactKind=0)
+        { RuntimeId = runtimeId; DirectionX = directionX; DirectionZ = directionZ; Explosive = explosive; RoundGeneration = roundGeneration;FlameKill=flameKill;ImpactKind=impactKind; }
+        /// <summary>最终伤害确定的尸体力度类别；0兼容既有普通/爆炸死亡。</summary>
+        public int ImpactKind { get; }
         /// <summary>本次最终有效伤害由喷火器造成，独立于仍残留的燃烧计时。</summary>
         public bool FlameKill { get; }
         public long RuntimeId { get; }

@@ -11,13 +11,13 @@ using UnityEngine;
 namespace Game.Tests
 {
     /// <summary>真实死亡结算到表现端口及联机快照的定向检查；不把爆炸视觉误当伤害事实。</summary>
-    public sealed class EnemyDeathPresentationTests
+    public sealed partial class EnemyDeathPresentationTests
     {
         private const BindingFlags Flags = BindingFlags.Instance | BindingFlags.NonPublic;
         private readonly Recorder recorder = new();
         private ArcadeCombatSystem system;
         private ArcadeCombatRuntime runtime;
-        [SetUp] public void ResetRecorder() => recorder.Deaths.Clear();
+        [SetUp] public void ResetRecorder() { recorder.Deaths.Clear(); recorder.Impacts.Clear(); }
 
         private void PrepareSolo(int arenaNumber = 1)
         {
@@ -144,9 +144,12 @@ namespace Game.Tests
         private sealed class Recorder : IArcadeCombatViewPort
         {
             public readonly List<(Vector2 direction, bool explosive)> Deaths = new();
+            public readonly List<int> Impacts = new();
             public bool IsActive => true;
             public void RemoveEnemy(int id, bool death = false) { if (death) Deaths.Add((Vector2.zero, false)); }
-            public void RemoveEnemy(int id, bool death, Vector2 direction, bool explosive) { if (death) Deaths.Add((direction, explosive)); }
+            public void RemoveEnemy(int id, bool death, Vector2 direction, bool explosive) { if (death) { Deaths.Add((direction, explosive)); Impacts.Add(0); } }
+            public void RemoveEnemy(int id, bool death, Vector2 direction, bool explosive, bool flameKill, int impactKind)
+            { if (death) { Deaths.Add((direction, explosive)); Impacts.Add(impactKind); } }
             public void Begin(int n, float w, float h, IReadOnlyList<ArcadeObstacleDefinition> obstacles) { }
             public void End() { }
             public bool TryScreenToArena(Vector2 screen, out Vector2 position) { position = default; return false; }

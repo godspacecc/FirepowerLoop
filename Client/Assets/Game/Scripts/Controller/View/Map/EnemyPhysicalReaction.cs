@@ -1,4 +1,5 @@
 using UnityEngine;
+using FirepowerLoop.Arcade;
 
 namespace Game
 {
@@ -28,6 +29,8 @@ namespace Game
         /// <summary>当前用途的物理阶段与上一帧叠加状态。</summary>
         private bool dead, simulating, offsetApplied, staggering, hipsOffsetApplied;
         private float hitRemaining, deathAge, simulationSeconds;
+        /// <summary>本次死亡使用的力度分层；不在存活阶段施加物理。</summary>
+        private int deathImpactKind;
         private Quaternion chestBeforeOffset;
         private Vector3 hitAxis;
         private const float HitSeconds = .18f;
@@ -109,14 +112,20 @@ namespace Game
 
         /// <summary>只接受一次死亡；速度按表现设置，伤害和击退仍由战斗权威决定。</summary>
         public bool BeginDeath(Vector3 worldDirection, bool explosive)
+            => BeginDeathWithImpact(worldDirection, explosive, ArcadeDeathImpactRules.Default);
+
+        /// <summary>最终伤害已裁决，能量爆炸降低抛升，近距霰弹只做低幅后倒。</summary>
+        public bool BeginDeathWithImpact(Vector3 worldDirection, bool explosive, int impactKind)
         {
             if (!IsReady || dead) return false;
             CacheRig(); RemoveOffset(); hitRemaining = 0f; deathAge = 0f; dead = true;
-            simulationSeconds = explosive ? 1.8f : StaggerSeconds + 1.4f;
+            deathImpactKind = ArcadeDeathImpactRules.Normalize(explosive, impactKind);
+            bool shotgun = deathImpactKind == ArcadeDeathImpactRules.CloseShotgun;
+            simulationSeconds = explosive ? 1.8f : shotgun ? 1.4f : StaggerSeconds + 1.4f;
             worldDirection.y = 0f;
             if (worldDirection.sqrMagnitude < .0001f) worldDirection = -transform.forward;
             deathDirection = worldDirection.normalized;
-            if (explosive) ActivatePhysics(true);
+            if (explosive || shotgun) ActivatePhysics(explosive);
             else
             {
                 staggering = true;
@@ -159,6 +168,20 @@ namespace Game
             chestBody.velocity = deathDirection * (explosive ? 8.5f : 1.4f) + Vector3.up * (explosive ? 8.2f : -.15f);
             hipsBody.angularVelocity = axis * (explosive ? 1.2f : .45f);
             chestBody.angularVelocity = axis * (explosive ? 4.5f : 1.5f) + Vector3.up * (explosive ? .65f : .15f);
+            if (deathImpactKind == ArcadeDeathImpactRules.EnergyBlast)
+            {
+                hipsBody.velocity = deathDirection * 3.2f + Vector3.up * 1.6f;
+                chestBody.velocity = deathDirection * 4f + Vector3.up * 2.2f;
+                hipsBody.angularVelocity = axis * .6f;
+                chestBody.angularVelocity = axis * 1.6f + Vector3.up * .2f;
+            }
+            else if (deathImpactKind == ArcadeDeathImpactRules.CloseShotgun)
+            {
+                hipsBody.velocity = deathDirection * 2.8f + Vector3.up * .25f;
+                chestBody.velocity = deathDirection * 3.8f + Vector3.up * .65f;
+                hipsBody.angularVelocity = axis * .35f;
+                chestBody.angularVelocity = axis * .9f;
+            }
         }
 
         /// <summary>每个实例只建立一次缓存；Generic使用预制引用，Humanoid兼容旧骨盆绑定。</summary>
@@ -237,6 +260,7 @@ namespace Game
             }
             dead = simulating = staggering = false; hitRemaining = deathAge = 0f;
             deathDirection = Vector3.zero;
+            deathImpactKind = ArcadeDeathImpactRules.Default;
         }
 
         private void RemoveOffset()

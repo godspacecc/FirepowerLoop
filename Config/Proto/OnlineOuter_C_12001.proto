@@ -806,4 +806,6 @@ message OnlineArcadeEnemyDeathInfo
  int32 RoundGeneration = 5;
  // 本次最终有效伤害来自喷火器。
  bool FlameKill = 6;
+ // 0沿用普通/爆炸，1能量爆炸，2近距霰弹；只影响死亡表现。
+ int32 ImpactKind = 7;
 }

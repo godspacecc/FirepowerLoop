@@ -983,14 +983,14 @@ namespace Game
                 {
                     // 只在规则确认引爆时发出表现通知，普通移除和火箭寿命耗尽都保持静音。
                     view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                    DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
+                    DamageEnemiesInProjectileExplosion(runtime, projectile);
                 }
                 if (!remove && !projectile.Hostile && HitCrate(runtime, priorPosition, projectile.Position, projectile.Damage))
                 {
                     if (IsExplosiveBehavior(projectile.Behavior))
                     {
                         view?.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                        DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage);
+                        DamageEnemiesInProjectileExplosion(runtime, projectile);
                     }
                     remove = true;
                 }
@@ -1015,8 +1015,7 @@ namespace Game
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
                             view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
-                            DamageEnemiesInExplosionRadius(runtime, projectile.Position, projectile.ExplosionRadius,
-                                projectile.Damage);
+                            DamageEnemiesInProjectileExplosion(runtime, projectile);
                             remove = true;
                             break;
                         }
@@ -1027,7 +1026,14 @@ namespace Game
                             projectile.SourceWeaponId == "arcade.weapon.rapid" ||
                             projectile.SourceWeaponId == "arcade.weapon.spread")
                             view.PlayImpactSound(enemy.Position, false);
-                        if (enemy.Health <= 0) KillEnemy(runtime, enemy);
+                        if (enemy.Health <= 0)
+                        {
+                            int impactKind = ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon,
+                                false, (enemy.Position - projectile.SourcePosition).sqrMagnitude);
+                            if (impactKind == ArcadeDeathImpactRules.CloseShotgun)
+                                KillEnemyWithReaction(runtime, enemy, false, false, enemy.Position - projectile.Velocity, impactKind);
+                            else KillEnemy(runtime, enemy);
+                        }
                         remove = projectile.Behavior != global::ArcadeWeaponBehavior.Piercing ||
                                  projectile.RemainingHits <= 0;
                         if (remove) break;
@@ -1045,7 +1051,12 @@ namespace Game
         private void DamageEnemiesInExplosionRadius(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage)
             => DamageEnemiesInArea(runtime, center, radius, damage, true);
 
-        private void DamageEnemiesInArea(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage, bool explosive)
+        /// <summary>使用弹丸生成时的武器身份选择爆炸力度，墙面、箱体和桶命中沿用同一入口。</summary>
+        private void DamageEnemiesInProjectileExplosion(ArcadeCombatRuntime runtime, ArcadeProjectileRuntime projectile)
+            => DamageEnemiesInArea(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage, true,
+                ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon, true, 0));
+
+        private void DamageEnemiesInArea(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage, bool explosive, int impactKind = 0)
         {
             if (radius <= 0f) return;
             DamageCratesInRadius(runtime, center, radius, damage);
@@ -1055,7 +1066,7 @@ namespace Game
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
                     !IsWithinExplosion(center, enemy.Position, radius)) continue;
                 DamageEnemy(enemy, damage);
-                if (enemy.Health <= 0) KillEnemyWithImpact(runtime, enemy, false, explosive, center);
+                if (enemy.Health <= 0) KillEnemyWithReaction(runtime, enemy, false, explosive, center, impactKind);
             }
         }
 
@@ -1699,6 +1710,11 @@ namespace Game
         /// <summary>伤害已裁决后传递死亡方向；爆炸来源只影响骨骼表现，不改变奖励或场内预算。</summary>
         private void KillEnemyWithImpact(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
             bool explosive, Vector2 origin)
+            => KillEnemyWithReaction(runtime, enemy, hazardKill, explosive, origin, 0);
+
+        /// <summary>死亡来源一次性提交，不能由角色当前武器推断在途弹丸的类型。</summary>
+        private void KillEnemyWithReaction(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
+            bool explosive, Vector2 origin, int impactKind)
         {
             if (!runtime.Enemies.Remove(enemy.Id)) return;
             if(hazardKill||explosive)enemy.LastDamageWasFlame=false;
@@ -1726,7 +1742,7 @@ namespace Game
                 foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
             }
             foreach (var hazard in runtime.Hazards) hazard.ForgetTarget(enemy.Id);
-            view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame);
+            view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame, impactKind);
             var deathPosition = IslandPosition(runtime, enemy.Position, catalog.Rule.PlayerRadius);
             if (!hazardKill && !runtime.IsChallenge && runtime.Drops.Count < catalog.Rule.MaxDrops &&
                 UnityRandom(0f, 1f) <= catalog.Rule.DropChance)
@@ -2029,6 +2045,7 @@ namespace Game
             projectile.ProjectileVisualResourceName = hostile ? null : projectileVisualResourceName;
             projectile.FromPlayerWeapon = !hostile && fromPlayerWeapon;
             projectile.SourceWeaponId = hostile ? null : sourceWeaponId;
+            projectile.SourcePosition = fromPlayerWeapon ? runtime.PlayerPosition : position;
             projectile.RemainingHits = Mathf.Max(1, maxHits);
             projectile.ExplosionRadius = Mathf.Max(0f, explosionRadius);
             runtime.Projectiles.Add(projectile.Id, projectile);

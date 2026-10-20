@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using FirepowerLoop.Arcade;
 
 namespace ET.Server
 {
@@ -2038,6 +2039,7 @@ namespace ET.Server
                     OwnerPlayerId = player.PlayerId,
                     FromPlayerWeapon = true,
                     SourceWeaponId = weapon.Id,
+                    SourcePositionX = player.PositionX, SourcePositionZ = player.PositionZ,
                     WeaponPowerLevel = Math.Clamp((int)MathF.Round(skullMultiplier)-1,0,2),
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
@@ -2095,8 +2097,7 @@ namespace ET.Server
                 if(self.TryHitGroundBarrel(battle,projectile,priorX,priorZ,projectile.PositionX,projectile.PositionZ))
                 {
                     // 与射中箱体一致，桶爆炸不能吞掉火箭/榴弹原有武器伤害与半径。
-                    if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInExplosionRadius(battle,projectile.PositionX,projectile.PositionZ,
-                        projectile.ExplosionRadius,projectile.Damage,projectile.OwnerPlayerId);
+                    if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInProjectileExplosion(battle, projectile);
                     battle.Projectiles.Remove(projectileId);changed=true;continue;
                 }
                 bool wallCrossed=ClipPlayerShotToWall(battle,projectile,priorX,priorZ);
@@ -2109,13 +2110,12 @@ namespace ET.Server
                 bool remove = expired || outsideArena || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
-                    self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ,
-                        projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
+                    self.DamageEnemiesInProjectileExplosion(battle, projectile);
                 if (!remove && projectile.OwnerPlayerId != 0 && self.HitCrate(battle, priorX, priorZ,
                     projectile.PositionX, projectile.PositionZ, projectile.Damage))
                 {
                     if (IsExplosiveBehavior(projectile.Behavior))
-                        self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
+                        self.DamageEnemiesInProjectileExplosion(battle, projectile);
                     remove = true;
                 }
                 if (!remove && projectile.OwnerPlayerId == 0)
@@ -2143,8 +2143,7 @@ namespace ET.Server
                             continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
-                            self.DamageEnemiesInExplosionRadius(battle, projectile.PositionX, projectile.PositionZ,
-                                projectile.ExplosionRadius, projectile.Damage, projectile.OwnerPlayerId);
+                            self.DamageEnemiesInProjectileExplosion(battle, projectile);
                             remove = true;
                             break;
                         }
@@ -2152,7 +2151,15 @@ namespace ET.Server
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(battle,enemy,projectile.Damage);
                         else DamageEnemy(battle, enemy, projectile.Damage);
-                        if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
+                        if (enemy.CurrentHealth <= 0)
+                        {
+                            int impactKind = ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon,
+                                false, DistanceSquared(enemy.PositionX, enemy.PositionZ, projectile.SourcePositionX, projectile.SourcePositionZ));
+                            if (impactKind == ArcadeDeathImpactRules.CloseShotgun)
+                                self.KillEnemyWithReaction(battle, enemy, false, false,
+                                    enemy.PositionX-projectile.VelocityX, enemy.PositionZ-projectile.VelocityZ, impactKind);
+                            else self.KillEnemy(battle, enemy);
+                        }
                         remove = projectile.Behavior != ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
                         if (remove) break;
                     }
@@ -2173,8 +2180,15 @@ namespace ET.Server
             float centerX, float centerZ, float radius, int damage, long ownerPlayerId = 0)
             => self.DamageEnemiesInArea(battle, centerX, centerZ, radius, damage, ownerPlayerId, true);
 
+        /// <summary>墙面、箱体、桶和敌人命中的爆炸都使用弹丸生成时的来源身份。</summary>
+        private static void DamageEnemiesInProjectileExplosion(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            OnlineArcadeProjectileRuntime projectile)
+            => self.DamageEnemiesInArea(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius,
+                projectile.Damage, projectile.OwnerPlayerId, true,
+                ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon, true, 0));
+
         private static void DamageEnemiesInArea(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
-            float centerX, float centerZ, float radius, int damage, long ownerPlayerId, bool explosive)
+            float centerX, float centerZ, float radius, int damage, long ownerPlayerId, bool explosive, int impactKind = 0)
         {
             if (radius <= 0f) return;
             self.DamageCratesInRadius(battle, centerX, centerZ, radius, damage);
@@ -2185,7 +2199,7 @@ namespace ET.Server
                     DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
                 enemy.LastDamagePlayerId = ownerPlayerId;
                 DamageEnemy(battle, enemy, damage);
-                if (enemy.CurrentHealth <= 0) self.KillEnemyWithImpact(battle, enemy, false, explosive, centerX, centerZ);
+                if (enemy.CurrentHealth <= 0) self.KillEnemyWithReaction(battle, enemy, false, explosive, centerX, centerZ, impactKind);
             }
         }
 
@@ -2275,6 +2289,11 @@ namespace ET.Server
         /// <summary>死亡表现有界记录，只在首次移除成功后写入，不参与积分、掉落或骨骼模拟。</summary>
         private static void KillEnemyWithImpact(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeEnemyRuntime enemy, bool hazardKill, bool explosive, float originX, float originZ)
+            => self.KillEnemyWithReaction(battle, enemy, hazardKill, explosive, originX, originZ, 0);
+
+        /// <summary>首次死亡时写入力度分层，后续投影和重连只复制，不重新推断当前武器。</summary>
+        private static void KillEnemyWithReaction(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            OnlineArcadeEnemyRuntime enemy, bool hazardKill, bool explosive, float originX, float originZ, int impactKind)
         {
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
             float dx = enemy.PositionX - originX, dz = enemy.PositionZ - originZ;
@@ -2282,7 +2301,7 @@ namespace ET.Server
             if (length > .0001f) { dx /= length; dz /= length; } else { dx = 0; dz = -1; }
             if (battle.EnemyDeaths.Count == 24) battle.EnemyDeaths.RemoveAt(0);
             battle.EnemyDeaths.Add(new OnlineArcadeEnemyDeathRuntime { RuntimeId = enemy.RuntimeId,
-                DirectionX = dx, DirectionZ = dz, Explosive = explosive, RoundGeneration = battle.RoundGeneration,
+                DirectionX = dx, DirectionZ = dz, Explosive = explosive, RoundGeneration = battle.RoundGeneration, ImpactKind = impactKind,
                 FlameKill=!hazardKill&&!explosive&&enemy.LastDamageWasFlame });
             if(SlayerGuardianDefeated(battle,enemy))return;
 
@@ -3123,7 +3142,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
-                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; battle.EnemyDeaths.Add(copy);
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; copy.ImpactKind=receipt.ImpactKind; battle.EnemyDeaths.Add(copy);
             }
             foreach (var receipt in source.BombBlasts)
             {
@@ -3333,7 +3352,7 @@ namespace ET.Server
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();
                 copy.RuntimeId = receipt.RuntimeId; copy.DirectionX = receipt.DirectionX; copy.DirectionZ = receipt.DirectionZ;
-                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; battle.EnemyDeaths.Add(copy);
+                copy.Explosive = receipt.Explosive; copy.RoundGeneration = receipt.RoundGeneration;copy.FlameKill=receipt.FlameKill; copy.ImpactKind=receipt.ImpactKind; battle.EnemyDeaths.Add(copy);
             }
             foreach (var receipt in source.BombBlasts)
             {

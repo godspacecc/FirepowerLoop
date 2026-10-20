@@ -1,0 +1,1 @@
+Actual EnemyCtrl.RemoveEnemy + formal prefab dependency + pooled death effect. Left heavy / center energy / right close shotgun. Peak particles including existing flame feedback=84; 64frames at20fps; no Player Build. Frames=E:\GitHub\FirepowerLoop\Client\Temp\WeaponDeathImpact\frames

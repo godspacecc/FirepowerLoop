@@ -101,7 +101,7 @@ namespace Game
             if(!r.CompletionSubmitted && catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
             {
                 view?.PlayProjectileExplosion(projectile.Position,projectile.ExplosionRadius);
-                DamageEnemiesInExplosionRadius(r,projectile.Position,projectile.ExplosionRadius,projectile.Damage);
+                DamageEnemiesInProjectileExplosion(r,projectile);
             }
             return true;
         }

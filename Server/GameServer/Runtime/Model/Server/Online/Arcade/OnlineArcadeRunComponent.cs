@@ -293,6 +293,8 @@ namespace ET.Server
         public bool FromPlayerWeapon;
         /// <summary>创建弹丸时固定武器身份，供双端表现选择火焰等独立外观。</summary>
         public string SourceWeaponId;
+        /// <summary>开枪时的玩家位置；仅用于服务端近距死亡分类，不需要下发弹丸快照。</summary>
+        public float SourcePositionX, SourcePositionZ;
         /// <summary>发射时确定的头骨层级；仅同步该弹丸外观，不从玩家当前状态推断。</summary>
         public int WeaponPowerLevel;
         public long OwnerPlayerId;
@@ -471,6 +473,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeEnemyDeathRuntime
     {
+        /// <summary>0沿用原死亡表现，1能量爆炸，2近距霰弹；不参与伤害计算。</summary>
+        public int ImpactKind;
         /// <summary>这次死亡由喷火器的有效伤害造成，不从残留燃烧推断。</summary>
         public bool FlameKill;
         /// <summary>本场已移除的权威敌人身份。</summary>

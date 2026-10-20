@@ -785,9 +785,13 @@ namespace Game
 
         /// <summary>死亡即关闭战斗碰撞；普通死亡保留短暂动画过渡，骨骼物理不参与战斗结算。</summary>
         public bool TryPlayPhysicalDeath(Vector3 direction, bool explosive, out float durationSeconds)
+            => TryPlayPhysicalDeathWithImpact(direction, explosive, 0, out durationSeconds);
+
+        /// <summary>消费最终伤害的力度类别，沿用尸体寿命、碰撞关闭与统一物理预算。</summary>
+        public bool TryPlayPhysicalDeathWithImpact(Vector3 direction, bool explosive, int impactKind, out float durationSeconds)
         {
             durationSeconds = 0f;
-            if (PhysicalReaction == null || !PhysicalReaction.BeginDeath(direction, explosive)) return false;
+            if (PhysicalReaction == null || !PhysicalReaction.BeginDeathWithImpact(direction, explosive, impactKind)) return false;
             animationDead = true;
             // 独立挂载的武器不是物理骨架，死亡后收起，避免留在原位悬空。
             GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);

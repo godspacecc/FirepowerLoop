@@ -82,6 +82,8 @@ namespace Game
         /// <summary>火焰命中只控制表现；旧实现可忽略，不回写生命。</summary>
         void SetEnemyBurning(int id,float remainingSeconds) { }
         void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill) => RemoveEnemy(id,playDeath,direction,explosive);
+        /// <summary>接收权威死亡力度类别，普通端口可沿用旧表现。</summary>
+        void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind) => RemoveEnemy(id,playDeath,direction,explosive,flameKill);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction, string visualResourceName) =>
             SetProjectile(id, hostile, position, direction);
@@ -624,13 +626,17 @@ namespace Game
 
         /// <summary>燃烧击杀沿既有尸体预算和回收流程播放，不延长敌人的战斗生命周期。</summary>
         public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill)
+            => RemoveEnemy(id,playDeath,direction,explosive,flameKill,0);
+
+        /// <summary>将权威力度类别和地图转换后的方向一起交给敌人表现端口。</summary>
+        public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind)
         {
             islandWading?.Remove(id);
             if(!TryPlayRoundFlameDeath(id,playDeath&&flameKill))RemoveRoundEnemyContent(id);
             RemoveArmor(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
             if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
-            enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive,flameKill);
+            enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive,flameKill,impactKind);
         }
 
         public void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction)

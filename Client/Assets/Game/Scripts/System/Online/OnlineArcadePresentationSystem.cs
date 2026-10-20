@@ -442,7 +442,7 @@ namespace Game
                     {
                         var death = deaths[i];
                         if (death.RuntimeId != runtimeId || death.RoundGeneration != roundGeneration) continue;
-                        view.RemoveEnemy(id, true, new Vector2(death.DirectionX, death.DirectionZ), death.Explosive,death.FlameKill);
+                        view.RemoveEnemy(id, true, new Vector2(death.DirectionX, death.DirectionZ), death.Explosive,death.FlameKill,death.ImpactKind);
                         played = true; break;
                     }
                 if (!played) view.RemoveEnemy(id);

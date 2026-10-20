@@ -3180,6 +3180,12 @@ namespace ET
         [MemoryPackOrder(5)]
         public bool FlameKill { get; set; }
 
+        /// <summary>
+        /// 0沿用普通/爆炸，1能量爆炸，2近距霰弹；只影响死亡表现。
+        /// </summary>
+        [MemoryPackOrder(6)]
+        public int ImpactKind { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -3193,6 +3199,7 @@ namespace ET
             this.Explosive = default;
             this.RoundGeneration = default;
             this.FlameKill = default;
+            this.ImpactKind = default;
 
             ObjectPool.Instance.Recycle(this);
         }

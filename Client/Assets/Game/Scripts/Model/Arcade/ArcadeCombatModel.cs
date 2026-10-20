@@ -110,6 +110,8 @@ namespace Game
         public bool FromPlayerWeapon;
         /// <summary>生成时固定的武器配置身份，仅用于命中音色；换武器后在途弹丸仍保留原身份。</summary>
         public string SourceWeaponId;
+        /// <summary>生成时固定的开枪位置，只用于死亡表现距离，回池清零。</summary>
+        public Vector2 SourcePosition;
         /// <summary>购买支援的稳定来源，普通武器和普通掉落为空。</summary>
         public string SupportInstanceId;
         /// <summary>本弹丸尚可命中的不同敌人数；只存在于当前竞技场。</summary>
@@ -131,6 +133,7 @@ namespace Game
             ProjectileVisualResourceName = null;
             FromPlayerWeapon = false;
             SourceWeaponId = null;
+            SourcePosition = default;
             SupportInstanceId = null;
             RemainingHits = 0;
             ExplosionRadius = 0f;
