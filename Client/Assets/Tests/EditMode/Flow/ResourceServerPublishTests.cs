@@ -823,6 +823,8 @@ namespace Game.Tests
             File.WriteAllText(Path.Combine(templateRoot, "validate_resource_update_notices.ps1"), "validate");
             File.WriteAllText(Path.Combine(templateRoot, "validate_resource_update_notices.bat"), "validate-bat");
             File.WriteAllText(Path.Combine(templateRoot, "publish_app_update.ps1"), "publish-apk");
+            File.WriteAllText(Path.Combine(templateRoot, "validate_android_signature.ps1"), "validate-signing");
+            File.WriteAllText(Path.Combine(templateRoot, "android-signing.json"), "signing-policy");
             File.WriteAllText(Path.Combine(templateRoot, "publish_windows_update.ps1"), "publish-pc");
             Directory.CreateDirectory(Path.Combine(templateRoot, "Notices"));
             File.WriteAllText(Path.Combine(templateRoot, "Notices", "resource-update-notices.json"),
@@ -1072,6 +1074,8 @@ namespace Game.Tests
             Assert.That(File.Exists(Path.Combine(bundleRoot, "validate_resource_update_notices.ps1")), Is.True);
             Assert.That(File.Exists(Path.Combine(bundleRoot, "validate_resource_update_notices.bat")), Is.True);
             Assert.That(File.Exists(Path.Combine(bundleRoot, "publish_app_update.ps1")), Is.True);
+            Assert.That(File.Exists(Path.Combine(bundleRoot, "validate_android_signature.ps1")), Is.True);
+            Assert.That(File.Exists(Path.Combine(bundleRoot, "android-signing.json")), Is.True);
             Assert.That(File.Exists(Path.Combine(bundleRoot, "publish_windows_update.ps1")), Is.True);
             Assert.That(File.Exists(Path.Combine(bundleRoot, "Notices", "resource-update-notices.json")), Is.True);
         }

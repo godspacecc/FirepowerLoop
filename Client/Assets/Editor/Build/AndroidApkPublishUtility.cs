@@ -14,14 +14,26 @@ namespace Game.Editor
         /// <summary>完整包验证成功后选择最近 Android 资源服，仅发布 APK，不切换已上线的热更资源。</summary>
         public static string PublishToLatestBundle(string apkPath, string releaseRoot, string versionName, int versionCode)
         {
+            return PublishToLatestBundleWithPolicy(apkPath, releaseRoot, versionName, versionCode, AndroidSigningUtility.PolicyPath);
+        }
+
+        /// <summary>显式传递同一公开签名策略，最近资源服选择不改变证书门禁。</summary>
+        internal static string PublishToLatestBundleWithPolicy(string apkPath, string releaseRoot, string versionName, int versionCode, string signingPolicy)
+        {
             if (!ResourceServerPublishUtility.TryFindLatestBundle(releaseRoot, out string bundle, out string error))
                 throw new InvalidOperationException(error);
-            return Publish(apkPath, bundle, versionName, versionCode);
+            return PublishWithPolicy(apkPath, bundle, versionName, versionCode, signingPolicy);
         }
 
         /// <summary>整包验证成功后调用；同版本内容不可变，失败不会替换已有版本描述或删除源 APK。</summary>
         /// <returns>资源服内版本描述的绝对路径。</returns>
         public static string Publish(string apkPath, string bundleDirectory, string versionName, int versionCode)
+        {
+            return PublishWithPolicy(apkPath, bundleDirectory, versionName, versionCode, AndroidSigningUtility.PolicyPath);
+        }
+
+        /// <summary>按明确的公开证书策略验证签名再发布；文件事务与校验失败均保留上一版描述。</summary>
+        internal static string PublishWithPolicy(string apkPath, string bundleDirectory, string versionName, int versionCode, string signingPolicy)
         {
             if (!Regex.IsMatch(versionName ?? "", @"\A[0-9]+\.[0-9]+\.[0-9]+\z") ||
                 !Version.TryParse(versionName, out _) || versionName.Length > 60 || versionCode <= 0)
@@ -32,6 +44,7 @@ namespace Game.Editor
                 throw new InvalidOperationException("APK 大小无效。");
             if (!File.Exists(Path.Combine(bundleDirectory, "ResourceFiles", "DefaultPackage.version")))
                 throw new InvalidOperationException("资源服尚未发布有效资源版本。");
+            AndroidSigningUtility.ValidateApk(apkPath, signingPolicy);
 
             var manifest = new ApkUpdateManifest
             {
@@ -56,12 +69,14 @@ namespace Game.Editor
                 {
                     if (!manifest.VerifyFile(destination))
                         throw new InvalidOperationException("该版本 APK 已发布且内容不同，请使用新版本号。");
+                    AndroidSigningUtility.ValidateApk(destination, signingPolicy);
                 }
                 else
                 {
                     File.Copy(apkPath, pendingApk);
                     if (!manifest.VerifyFile(pendingApk))
                         throw new IOException("APK 复制后完整性校验失败。");
+                    AndroidSigningUtility.ValidateApk(pendingApk, signingPolicy);
                     File.Move(pendingApk, destination);
                 }
                 // 先保证 APK 可下载，再原子切换描述；正在下载旧版的玩家仍可访问旧文件。

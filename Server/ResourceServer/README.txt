@@ -90,11 +90,15 @@ The built-in complete APK retains its offline startup behavior.
 The APK is retained if resource or APK publication fails after APK validation.
 
 For an APK built outside those menus, run in PowerShell:
-  .\publish_app_update.ps1 -Apk 'D:\Packages\FirepowerLoop-0.1.12.apk' -VersionName '0.1.12' -VersionCode 2
+  .\publish_app_update.ps1 -Apk 'D:\Packages\FirepowerLoop-0.1.12.apk' -VersionName '0.1.12' -VersionCode 2 -UnityExe 'D:\Unity\2022.3.55f1c1\Editor\Unity.exe'
 Run this script inside the published resource server bundle, or pass -Bundle
 with that bundle's directory. VersionName and VersionCode MUST match the APK's
 Android metadata. Keep the same application id and signing key. This script
-does not build or sign APKs; the Android installer validates the actual package.
+does not build or sign APKs. It requires Unity's OpenJDK and Android SDK build-tools
+(set FIREPOWER_UNITY_EXE or pass -UnityExe), verifies the actual APK signature and
+the pinned certificate in android-signing.json before publication, and verifies
+the copied APK again before exposing it. Private signing keys are not required.
+Keep validate_android_signature.ps1 and android-signing.json beside this script.
 
 Publication computes size and SHA-256, copies an immutable versioned APK, then
 atomically replaces app-update.json. Older APKs remain available for active

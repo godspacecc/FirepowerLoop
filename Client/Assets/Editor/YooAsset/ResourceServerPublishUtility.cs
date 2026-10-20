@@ -47,6 +47,8 @@ namespace Game.Editor
             "validate_resource_update_notices.ps1",
             "validate_resource_update_notices.bat",
             "publish_app_update.ps1",
+            "validate_android_signature.ps1",
+            "android-signing.json",
             "publish_windows_update.ps1"
         };
 

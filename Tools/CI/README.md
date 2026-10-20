@@ -14,6 +14,8 @@
 
 独立checkout拥有自己的Client/Library、Temp和状态，不使用开发者打开的Client，不共享另一项目配置或发布目录。Unity版本固定为`2022.3.55f1c1`。节点环境变量`FIREPOWER_UNITY_EXE`指向该版本Unity.exe，`FIREPOWER_ISCC`指向ISCC.exe；CI不读取或写入个人EditorPrefs选择编译器。
 
+Android APK 使用固定签名，节点必须单独配置原密钥及本机凭据；通过 `FIREPOWER_ANDROID_SIGNING_CONFIG` 指向本机 JSON 配置，或放入本项目忽略目录 `.codex/signing/`。详见 `Tools/Android/README.md`。私钥和密码不进入 Git 或发布包，缺少配置不会回退到节点的调试签名。ValidateOnly 仍只做原有请求校验；实际私钥/证书校验可用 Unity 的“校验固定签名（不打包）”菜单单独执行。
+
 请求示例（只校验，不构建；路径及SHA必须替换为节点真实值）：
 
 ```json

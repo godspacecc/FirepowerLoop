@@ -14,7 +14,7 @@ namespace Game.Editor
 {
     /// <summary>
     /// Android 个人真机测试包与 Host 热更新的构建入口。
-    /// 负责 Android HybridCLR、离线完整包、Host 基础包及后续代码资源更新；不负责正式签名和商店发布。
+    /// 负责 Android HybridCLR、离线完整包、Host 基础包及后续代码资源更新；固定测试签名，不负责商店发布。
     /// </summary>
     public static class AndroidBuildUtility
     {
@@ -541,8 +541,7 @@ namespace Game.Editor
                 throw new InvalidOperationException($"Android CPU 必须仅为 ARM64，当前为 {PlayerSettings.Android.targetArchitectures}。");
             if (!string.Equals(PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android), ApplicationIdentifier, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Android 包名必须是 {ApplicationIdentifier}。");
-            if (PlayerSettings.Android.useCustomKeystore)
-                throw new InvalidOperationException("Android 测试包必须使用 Unity 自动调试签名，不能启用自定义 keystore。");
+            AndroidSigningUtility.ValidateLocalKey();
             if (PlayerSettings.defaultInterfaceOrientation != UIOrientation.AutoRotation ||
                 PlayerSettings.allowedAutorotateToPortrait ||
                 PlayerSettings.allowedAutorotateToPortraitUpsideDown ||
@@ -558,7 +557,7 @@ namespace Game.Editor
 
             RequireDirectory("Assets/Game/Config");
             RequireDirectory("Assets/Game/Dlls");
-            Debug.Log("[AndroidBuildUtility] Android 构建环境校验通过：Build Support、SDK、NDK、OpenJDK、IL2CPP、ARM64、包名、横屏、调试签名和 Boot 场景均符合要求。");
+            Debug.Log("[AndroidBuildUtility] Android 构建环境校验通过：Build Support、SDK、NDK、OpenJDK、IL2CPP、ARM64、包名、横屏、固定签名和 Boot 场景均符合要求。");
         }
 
         /// <summary>
@@ -769,13 +768,16 @@ namespace Game.Editor
                     ? new[] { BuiltinResourcesScriptingDefine }
                     : Array.Empty<string>()
             };
-            BuildReport report = BuildPipeline.BuildPlayer(options);
+            BuildReport report;
+            using (AndroidSigningUtility.UseFixedSigning())
+                report = BuildPipeline.BuildPlayer(options);
             if (report == null)
                 throw new InvalidOperationException($"Android Player 构建未返回 BuildReport: {apkPath}");
             if (report.summary.result != BuildResult.Succeeded)
                 throw new InvalidOperationException($"Android Player 构建失败: {report.summary.result}");
             if (!File.Exists(apkPath) || new FileInfo(apkPath).Length <= 0)
                 throw new InvalidOperationException($"Android Player 报告成功但 APK 不存在或为空: {apkPath}");
+            AndroidSigningUtility.ValidateApk(apkPath);
             Debug.Log($"[AndroidBuildUtility] Android Player 构建成功：{apkPath}，报告大小={report.summary.totalSize}，文件大小={new FileInfo(apkPath).Length}");
         }
 
