@@ -1437,7 +1437,7 @@ namespace Game
             foreach (var row in tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList))
             {
                 if (row == null || string.IsNullOrWhiteSpace(row.Id) || !dropIds.Add(row.Id) || row.MinArena <= 0 || row.MaxArena < 0 ||
-                    row.MaxArena != 0 && row.MaxArena < row.MinArena || row.Weight <= 0 || !Enum.IsDefined(typeof(global::ArcadeDropKind), row.Kind) ||
+                    row.MaxArena != 0 && row.MaxArena < row.MinArena || row.EnemyMinArena < 0 || row.Weight <= 0 || !Enum.IsDefined(typeof(global::ArcadeDropKind), row.Kind) ||
                     string.IsNullOrWhiteSpace(row.ProductId) || row.Amount <= 0 || !IsNonNegativeFinite(row.DurationSeconds) || row.MaxOwned < 0)
                     return $"TbArcadeDrop[{row?.Id ?? "<null>"}] 无效";
                 var timed = row.Kind == global::ArcadeDropKind.TemporaryWeapon ||
@@ -1507,7 +1507,7 @@ namespace Game
                     .OrderBy(row => row.MinArena).ThenBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeDropDefinition(row.Id, row.MinArena, row.MaxArena, row.Weight, row.Kind,
                         row.ProductId, ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.VisualPrefabName, true),
-                        row.Amount, row.DurationSeconds, row.MaxOwned)),
+                        row.Amount, row.DurationSeconds, row.MaxOwned, row.EnemyMinArena)),
                 tables.TbArcadePowerup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadePowerupDefinition(row.Id, row.Behavior,
                         ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName),

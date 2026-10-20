@@ -200,7 +200,7 @@ namespace Game.Tests
             Call("TickWeaponPickups",runtime,.02f);
             Assert.That(runtime.Drops.Count,Is.EqualTo(1));
             float nextDelay=schedule.RemainingSeconds;
-            Assert.That(nextDelay,Is.InRange(3f,8f));
+            Assert.That(nextDelay,Is.InRange(20f,30f),"第二把应延后到战斗中段，不能继续使用开场短间隔");
             foreach(string gate in new[]{"room","transition","clear","zero"})
             {
                 runtime.InTreasureRoom=gate=="room";runtime.IslandTransitionPending=gate=="transition";runtime.WaveClearAwarded=gate=="clear";
@@ -218,15 +218,39 @@ namespace Game.Tests
             Assert.That(runtime.WeaponSpawns.RemainingCount,Is.EqualTo(2));
         }
 
-        /// <summary>逐个覆盖权重区间；武器与其他物品按同一规则生成，死亡不重复结算。</summary>
+        /// <summary>前中后期逐个覆盖全部击杀权重，只发金条和两级头骨；地图空投保持独立。</summary>
+        [TestCase(1)] [TestCase(2)] [TestCase(6)] [TestCase(12)] [TestCase(20)]
+        public void EveryArenaEnemyKillsOnlyDropGoldAndWeaponSkulls(int arenaNumber)
+        {
+            runtime.ArenaNumber = arenaNumber;
+            Set("arena", catalog.Arenas.Single(a => a.ArenaNumber == arenaNumber));
+            var counts = new System.Collections.Generic.Dictionary<string, int>();
+            for (int roll = 0; roll < 45; roll++)
+            {
+                runtime.Drops.Clear();
+                Set("random", new ControlledRandom(45, roll));
+                var enemy = Enemy();
+                runtime.Enemies.Add(enemy.Id, enemy);
+                Call("KillEnemy", runtime, enemy, false);
+                Assert.That(runtime.Drops.Count, Is.EqualTo(1));
+                string id = runtime.Drops.Values.Single().Definition.Id;
+                counts[id] = counts.TryGetValue(id, out int count) ? count + 1 : 1;
+            }
+            CollectionAssert.AreEquivalent(new[] { "arcade.drop.gold.small", "arcade.drop.skull.small", "arcade.drop.skull.large" }, counts.Keys);
+            Assert.That(counts["arcade.drop.gold.small"], Is.EqualTo(38));
+            Assert.That(counts["arcade.drop.skull.small"], Is.EqualTo(5));
+            Assert.That(counts["arcade.drop.skull.large"], Is.EqualTo(2));
+        }
+
+        /// <summary>逐个覆盖已开放的击杀权重区间，普通敌人与首领死亡均不得重复结算。</summary>
         [TestCase(false, false)]
         [TestCase(true, false)]
         [TestCase(true, true)]
         public void EnemyDeath_EveryWeightedResultCreatesConfiguredDrop(bool boss, bool finalBoss)
         {
-            var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 12 &&
+            var candidates = catalog.Drops.Where(d => d.EnemyMinArena > 0 && d.EnemyMinArena <= 12 && d.Weight > 0 && d.MinArena <= 12 &&
                 (d.MaxArena <= 0 || d.MaxArena >= 12)).ToArray();
-            Assert.That(candidates.Any(d => d.Kind == ArcadeDropKind.TemporaryWeapon), Is.True);
+            CollectionAssert.AreEquivalent(new[] { "arcade.drop.gold.small", "arcade.drop.skull.small", "arcade.drop.skull.large" }, candidates.Select(d => d.Id));
             int total = candidates.Sum(d => d.Weight), roll = 0;
             foreach (var candidate in candidates)
             for (int offset = 0; offset < candidate.Weight; offset++, roll++)
@@ -252,19 +276,18 @@ namespace Game.Tests
             }
         }
 
-        /// <summary>新武器掉落不清理旧地面武器，也不在拾取前替换或重置已持有武器。</summary>
+        /// <summary>杀敌奖励不清理旧地面武器，也不在拾取前替换或重置已持有武器。</summary>
         [Test]
         public void EnemyWeapon_PreservesExistingPickupAndHeldWeapon()
         {
-            var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 12 &&
+            var candidates = catalog.Drops.Where(d => d.EnemyMinArena > 0 && d.EnemyMinArena <= 12 && d.Weight > 0 && d.MinArena <= 12 &&
                 (d.MaxArena <= 0 || d.MaxArena >= 12)).ToArray();
-            var weapon = candidates.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
+            var weapon = catalog.Drops.First(d => d.Kind == ArcadeDropKind.TemporaryWeapon);
             var existing = new ArcadeDropRuntime { Id = 42, Definition = weapon, Position = Vector2.one };
             runtime.Drops.Add(existing.Id, existing);
             runtime.TemporaryWeaponId = "arcade.weapon.rocket";
             runtime.TemporaryWeaponRemaining = 7f;
-            var random = new ControlledRandom(candidates.Sum(d => d.Weight),
-                candidates.TakeWhile(d => d.Id != weapon.Id).Sum(d => d.Weight));
+            var random = new ControlledRandom(candidates.Sum(d => d.Weight), 0);
             Set("random", random);
             var enemy = Enemy();
             runtime.Enemies.Add(enemy.Id, enemy);
@@ -334,23 +357,23 @@ namespace Game.Tests
             Assert.That(random.WeightCalls, Is.EqualTo(1));
         }
 
-        /// <summary>首场喷火器经击杀生成、拾取及开火；短程火流可穿过多个敌人，结束后恢复基础枪。</summary>
+        /// <summary>禁止击杀掉枪后，宝箱仍能生成喷火器，领取后的短程火流与到期恢复保持正常。</summary>
         [Test]
-        public void OpeningFlamethrower_DropsFiresPiercingFlamesAndExpires()
+        public void LaterArenaFlamethrower_CratePickupFiresPiercingFlamesAndExpires()
         {
-            runtime.ArenaNumber = 1;
-            var candidates = catalog.Drops.Where(d => d.Weight > 0 && d.MinArena <= 1 &&
-                (d.MaxArena <= 0 || d.MaxArena >= 1)).ToArray();
+            runtime.ArenaNumber = 2;
+            var candidates = (ArcadeDropDefinition[])Call("CrateDropPool");
             var drop = candidates.Single(d => d.Id == "arcade.drop.weapon.flamethrower");
             var weapon = catalog.Weapons.Single(w => w.Id == drop.ProductId);
             Assert.That(weapon.Behavior, Is.EqualTo(ArcadeWeaponBehavior.Piercing));
             Assert.That(weapon.ProjectileSpeed * weapon.ProjectileLifetimeSeconds, Is.InRange(2f, 5f));
             Assert.That(weapon.FireIntervalSeconds, Is.LessThanOrEqualTo(.12f));
-            Set("random", new ControlledRandom(candidates.Sum(d => d.Weight),
-                candidates.TakeWhile(d => d.Id != drop.Id).Sum(d => d.Weight)));
-            var enemy = Enemy();
-            runtime.Enemies.Add(enemy.Id, enemy);
-            Call("KillEnemy", runtime, enemy, false);
+            var arena = catalog.Arenas.Single(a => a.ArenaNumber == 2);
+            int Weight(ArcadeDropDefinition d) => d.Weight *
+                (d.Kind == ArcadeDropKind.RunGold ? arena.Babylon.CrateTreasureWeightMultiplier : 1);
+            Set("random", new ControlledRandom(candidates.Sum(Weight), candidates.TakeWhile(d => d.Id != drop.Id).Sum(Weight)));
+            Call("InitializeCrates", runtime);
+            Call("DamageCrate", runtime, runtime.Crates.Keys.First(), 10000);
             var pickup = runtime.Drops.Values.Single();
             runtime.PlayerPosition = pickup.Position;
             Call("TickDrops", runtime);
@@ -399,7 +422,7 @@ namespace Game.Tests
             public override int Next(int maxValue)
             {
                 WeightCalls++;
-                Assert.That(maxValue, Is.EqualTo(total), "原武器权重必须保留在总权重中");
+                Assert.That(maxValue, Is.EqualTo(total), "应仅按当前来源实际开放的权重抽取");
                 return roll;
             }
         }

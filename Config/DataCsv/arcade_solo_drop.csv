@@ -1,3 +1,3 @@
-##var,Id,MinArena,MaxArena,Weight,Kind,ProductId,VisualPrefabName,Amount,DurationSeconds,MaxOwned
-##type,string,int,int,int,ArcadeDropKind,string,string,int,float,int
-,arcade.drop.first_person,1,1,5,FirstPerson,arcade.camera.first_person,ArcadeDropFirstPerson,1,20,1
+##var,Id,MinArena,MaxArena,Weight,Kind,ProductId,VisualPrefabName,Amount,DurationSeconds,MaxOwned,EnemyMinArena
+##type,string,int,int,int,ArcadeDropKind,string,string,int,float,int,int
+,arcade.drop.first_person,1,1,5,FirstPerson,arcade.camera.first_person,ArcadeDropFirstPerson,1,20,1,0

@@ -25,6 +25,7 @@ public sealed partial class ArcadeDropConfig : Luban.BeanBase
         Amount = _buf.ReadInt();
         DurationSeconds = _buf.ReadFloat();
         MaxOwned = _buf.ReadInt();
+        EnemyMinArena = _buf.ReadInt();
     }
 
     public static ArcadeDropConfig DeserializeArcadeDropConfig(ByteBuf _buf)
@@ -42,6 +43,10 @@ public sealed partial class ArcadeDropConfig : Luban.BeanBase
     public readonly int Amount;
     public readonly float DurationSeconds;
     public readonly int MaxOwned;
+    /// <summary>
+    /// 杀敌掉落起始关卡；0禁用击杀来源，与物品解锁范围共同生效，不限制地图空投或宝箱
+    /// </summary>
+    public readonly int EnemyMinArena;
    
     public const int __ID__ = 1405386849;
     public override int GetTypeId() => __ID__;
@@ -63,6 +68,7 @@ public sealed partial class ArcadeDropConfig : Luban.BeanBase
         + "Amount:" + Amount + ","
         + "DurationSeconds:" + DurationSeconds + ","
         + "MaxOwned:" + MaxOwned + ","
+        + "EnemyMinArena:" + EnemyMinArena + ","
         + "}";
     }
 }

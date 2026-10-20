@@ -2331,7 +2331,7 @@ namespace ET.Server
             float chanceRoll = (seed & 0x00ffffffu) / 16777216f;
             if (chanceRoll >= ServerConfig.Instance.ArcadeRule.DropChance) return;
             List<ArcadeDropConfig> candidates = ServerConfig.Instance.Tables.TbArcadeDrop.DataList
-                .Where(x => x.Weight > 0 && x.MinArena <= battle.ArenaNumber &&
+                .Where(x => x.Weight > 0 && x.MinArena <= battle.ArenaNumber && x.EnemyMinArena > 0 && x.EnemyMinArena <= battle.ArenaNumber &&
                             (x.MaxArena <= 0 || x.MaxArena >= battle.ArenaNumber))
                 .OrderBy(x => x.Id, StringComparer.Ordinal).ToList();
             int totalWeight = candidates.Sum(x => x.Weight);

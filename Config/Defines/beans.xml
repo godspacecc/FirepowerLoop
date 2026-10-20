@@ -334,6 +334,7 @@
         <var name="Amount" type="int"/>
         <var name="DurationSeconds" type="float"/>
         <var name="MaxOwned" type="int"/>
+        <var name="EnemyMinArena" type="int" comment="杀敌掉落起始关卡；0禁用击杀来源，与物品解锁范围共同生效，不限制地图空投或宝箱"/>
     </bean>
     <bean name="ArcadePowerupConfig" group="e">
         <var name="Id" type="string"/>
@@ -463,9 +464,11 @@
         <var name="BarrelHealth" type="int"/>
         <var name="WeaponSpawnPoints" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
         <var name="WeaponSpawnCount" type="int"/>
-        <!-- 每把武器出现前重新抽取等待时间，确保同轮错峰生成。 -->
+        <!-- 首次保持开战短等待，后续投放使用独立长间隔，避免集中在开场。 -->
         <var name="WeaponSpawnDelayMin" type="float"/>
         <var name="WeaponSpawnDelayMax" type="float"/>
+        <var name="WeaponSpawnFirstDelayMin" type="float"/>
+        <var name="WeaponSpawnFirstDelayMax" type="float"/>
     </bean>
     <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
     <bean name="ArcadeSlayerMartItemConfig">

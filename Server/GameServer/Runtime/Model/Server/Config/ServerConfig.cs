@@ -361,7 +361,7 @@ namespace ET
                     ArcadeDropKind.Powerup;
                 if (drop == null || string.IsNullOrWhiteSpace(drop.Id) || !dropIds.Add(drop.Id) ||
                     drop.MinArena <= 0 || drop.MaxArena < 0 || drop.MaxArena != 0 && drop.MaxArena < drop.MinArena ||
-                    drop.Weight <= 0 || string.IsNullOrWhiteSpace(drop.ProductId) || drop.Amount <= 0 ||
+                    drop.EnemyMinArena < 0 || drop.Weight <= 0 || string.IsNullOrWhiteSpace(drop.ProductId) || drop.Amount <= 0 ||
                     !Finite(drop.DurationSeconds, 1f, 1f, 1f) || drop.DurationSeconds < 0f ||
                     timed != (drop.DurationSeconds > 0f) ||
                     drop.Kind == ArcadeDropKind.TemporaryWeapon && !weaponIds.Contains(drop.ProductId) ||

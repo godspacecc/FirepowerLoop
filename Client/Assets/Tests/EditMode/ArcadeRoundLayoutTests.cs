@@ -46,8 +46,10 @@ namespace Game.Tests
                 Assert.That(points.Count,Is.EqualTo(6),p.Id);
                 Assert.That(points.Select(v=>(v.X,v.Y)).Distinct().Count(),Is.EqualTo(6),p.Id);
                 Assert.That(p.WeaponSpawnCount,Is.EqualTo(2),p.Id);
-                Assert.That(p.WeaponSpawnDelayMin,Is.EqualTo(3f),p.Id);
-                Assert.That(p.WeaponSpawnDelayMax,Is.EqualTo(8f),p.Id);
+                Assert.That(p.WeaponSpawnFirstDelayMin,Is.EqualTo(3f),p.Id);
+                Assert.That(p.WeaponSpawnFirstDelayMax,Is.EqualTo(8f),p.Id);
+                Assert.That(p.WeaponSpawnDelayMin,Is.EqualTo(20f),p.Id);
+                Assert.That(p.WeaponSpawnDelayMax,Is.EqualTo(30f),p.Id);
                 Assert.That(p.FitsArena(19.5f,19.5f,.55f),Is.True,p.Id);
                 foreach(var point in points)
                 {

@@ -6,7 +6,7 @@ using MemoryPack;
 /// <summary>地图武器点位的双人权威回归：全地图生成、共同快照、单次领取及预算。</summary>
 internal static class MapWeaponPickupsOnlineChecks
 {
-    /// <summary>执行明确声明的四项检查，失败不扩大测试范围。</summary>
+    /// <summary>执行明确声明的空投与击杀来源隔离检查，失败不扩大测试范围。</summary>
     public static int Run(int maximum)
     {
         var checks = new (string Name, Action Check)[]
@@ -16,6 +16,8 @@ internal static class MapWeaponPickupsOnlineChecks
             ("CapacityAndSpecialBattleGuards", CapacityAndSpecialBattleGuards),
             ("SpawnTimingStaggersAndFreezes", SpawnTimingStaggersAndFreezes),
             ("AirdropWaitsForOpenAndPreservesGroundLifetime", AirdropWaitsForOpenAndPreservesGroundLifetime),
+            ("EveryArenaEnemyKillsOnlyDropGoldAndWeaponSkulls", EveryArenaEnemyKillsOnlyDropGoldAndWeaponSkulls),
+            ("NegativeEnemyDropGateIsRejectedByServerValidation", NegativeEnemyDropGateIsRejectedByServerValidation),
         };
         if(maximum<checks.Length)throw new ArgumentException("Declared maximum smaller than MapWeaponPickupsOnline scope");
         int failed=0;
@@ -142,7 +144,7 @@ internal static class MapWeaponPickupsOnlineChecks
         Call("TickWeaponPickups",battle,schedule.RemainingSeconds-.01f);
         Require(battle.Drops.Count==0,"First weapon appeared early");
         Call("TickWeaponPickups",battle,.02f);
-        Require(battle.Drops.Count==1&&schedule.RemainingSeconds>=3&&schedule.RemainingSeconds<=8,"Second weapon has no separate delay");
+        Require(battle.Drops.Count==1&&schedule.RemainingSeconds>=20&&schedule.RemainingSeconds<=30,"Second weapon should wait 20-30 active seconds after the first");
         float delay=schedule.RemainingSeconds;
         foreach(string gate in new[]{"transition","room","clear","zero"})
         {
@@ -155,6 +157,50 @@ internal static class MapWeaponPickupsOnlineChecks
         Require(battle.Drops.Count==1,"Second weapon appeared early");
         Call("TickWeaponPickups",battle,.02f);
         Require(battle.Drops.Count==2,"Second weapon failed to appear after its delay");
+    }
+
+    /// <summary>经过真实服务端死亡入口覆盖前中后期，禁止武器及补给混入击杀来源。</summary>
+    private static void EveryArenaEnemyKillsOnlyDropGoldAndWeaponSkulls()
+    {
+        var allowed = new HashSet<string> { "arcade.drop.gold.small", "arcade.drop.skull.small", "arcade.drop.skull.large" };
+        foreach (int arena in new[] { 1, 2, 6, 12, 20 })
+        {
+            var actor = Create(arena, advance: false);
+            var battle = actor.Battle;
+            var seen = new HashSet<string>();
+            for (int id = 1; id <= 1024; id++)
+            {
+                battle.Drops.Clear();
+                var enemy = new OnlineArcadeEnemyRuntime { RuntimeId = id, EnemyConfigId = "enemy.arcade.basic", MaxHealth = 100 };
+                battle.Enemies.Add(id, enemy);
+                Call("KillEnemy", actor, battle, enemy, false);
+                foreach (var drop in battle.Drops.Values)
+                {
+                    Require(allowed.Contains(drop.DropConfigId), $"Arena {arena} received forbidden kill loot: {drop.DropConfigId}");
+                    seen.Add(drop.DropConfigId);
+                }
+            }
+            Require(seen.SetEquals(allowed), $"Arena {arena} did not exercise all three allowed loot kinds");
+        }
+    }
+
+    /// <summary>模拟损坏表行经过真实服务端校验，负数须报错，结束后恢复共用内存配置。</summary>
+    private static void NegativeEnemyDropGateIsRejectedByServerValidation()
+    {
+        var config = ServerConfig.Instance;
+        var drop = config.Tables.TbArcadeDrop.DataList.First();
+        var field = typeof(ArcadeDropConfig).GetField("EnemyMinArena")!;
+        int previous = drop.EnemyMinArena;
+        bool rejected = false;
+        try
+        {
+            field.SetValue(drop, -1);
+            try { typeof(ServerConfig).GetMethod("ValidateArcadeConfig", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(config, null); }
+            catch (TargetInvocationException error) when (error.InnerException?.Message.Contains("TbArcadeDrop") == true)
+            { rejected = true; }
+        }
+        finally { field.SetValue(drop, previous); }
+        Require(rejected, "Server accepted a negative EnemyMinArena instead of rejecting the malformed table");
     }
 
     private static object Call(string name,params object[] values)=>typeof(OnlineArcadeRunActorSystem)

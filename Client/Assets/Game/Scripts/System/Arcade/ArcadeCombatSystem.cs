@@ -1750,7 +1750,7 @@ namespace Game
                 var totalWeight = 0;
                 foreach (var candidate in catalog.Drops)
                 {
-                    if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.Weight <= 0) continue;
+                    if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.EnemyMinArena <= 0 || candidate.EnemyMinArena > runtime.ArenaNumber || candidate.Weight <= 0) continue;
                     totalWeight += candidate.Weight;
                 }
                 if (totalWeight > 0)
@@ -1758,10 +1758,10 @@ namespace Game
                     var roll = random.Next(totalWeight);
                     foreach (var candidate in catalog.Drops)
                     {
-                        if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.Weight <= 0) continue;
+                        if (!IsDropEligible(candidate, runtime.ArenaNumber) || candidate.EnemyMinArena <= 0 || candidate.EnemyMinArena > runtime.ArenaNumber || candidate.Weight <= 0) continue;
                         if (roll < candidate.Weight)
                         {
-                            // 武器与其他物资共用击杀掉落规则，拾取后才替换当前武器。
+                            // 击杀掉落遵守独立解锁条件；地图空投不受该条件限制。
                             var drop = runtimePool.RentDrop();
                             drop.Id = runtime.NextEntityId++;
                             drop.Definition = candidate;

@@ -41,6 +41,7 @@ namespace FirepowerLoop.Arcade
             WeaponSpawnPoints=Array.AsReadOnly(row.WeaponSpawnPoints.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
             WeaponSpawnCount=row.WeaponSpawnCount;
             WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
+            WeaponSpawnFirstDelayMin=row.WeaponSpawnFirstDelayMin;WeaponSpawnFirstDelayMax=row.WeaponSpawnFirstDelayMax;
             SpecialKind=row.SpecialKind;EventKind=row.EventKind;BossKind=row.BossKind;SpecialRatio=row.SpecialRatio;
             EnemyHealthScale=row.EnemyHealthScale;EnemySpeedScale=row.EnemySpeedScale;SkillPeriod=row.SkillPeriod;
             SkillWarning=row.SkillWarning;SkillMagnitude=row.SkillMagnitude;EventPeriod=row.EventPeriod;
@@ -91,15 +92,19 @@ namespace FirepowerLoop.Arcade
         public int BarrelHealth { get; }
         /// <summary>本图固定武器候选点；只在轮开始时抽取，场景表现不决定生成位置。</summary>
         public IReadOnlyList<ArcadeRegionPoint> WeaponSpawnPoints { get; }
-        /// <summary>每轮开场摆放数量，仍受地面物资总预算限制。</summary>
+        /// <summary>每轮分批投放数量，仍受地面物资总预算限制。</summary>
         public int WeaponSpawnCount { get; }
-        /// <summary>每把武器出现前的活动战斗等待秒数范围。</summary>
+        /// <summary>首把投放之后，下一把出现前的活动战斗等待秒数范围。</summary>
         public float WeaponSpawnDelayMin { get; }
         public float WeaponSpawnDelayMax { get; }
+        /// <summary>开战到首把空投的独立短等待范围，不随后续间隔延长。</summary>
+        public float WeaponSpawnFirstDelayMin { get; }
+        public float WeaponSpawnFirstDelayMax { get; }
 
         /// <summary>轮开始时只准备点位和计时，不立即创建可见掉落。</summary>
         public ArcadeWeaponSpawnSchedule CreateWeaponSpawnSchedule(Random random) => new ArcadeWeaponSpawnSchedule(
-            ChooseWeaponSpawnPoints(WeaponSpawnCount,random.Next),WeaponSpawnDelayMin,WeaponSpawnDelayMax,random);
+            ChooseWeaponSpawnPoints(WeaponSpawnCount,random.Next),WeaponSpawnFirstDelayMin,WeaponSpawnFirstDelayMax,
+            WeaponSpawnDelayMin,WeaponSpawnDelayMax,random);
 
         /// <summary>使用调用方的权威随机源，无放回抽取候选点；不修改配置或持有对局状态。</summary>
         public IReadOnlyList<ArcadeRegionPoint> ChooseWeaponSpawnPoints(int available,Func<int,int> next)
@@ -146,6 +151,7 @@ namespace FirepowerLoop.Arcade
                 p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)) ||
                 p.WeaponSpawnCount<0 || p.WeaponSpawnCount>p.WeaponSpawnPoints.Count ||
                 !Finite(p.WeaponSpawnDelayMin)||!Finite(p.WeaponSpawnDelayMax)||p.WeaponSpawnDelayMin<=0||p.WeaponSpawnDelayMax<p.WeaponSpawnDelayMin ||
+                !Finite(p.WeaponSpawnFirstDelayMin)||!Finite(p.WeaponSpawnFirstDelayMax)||p.WeaponSpawnFirstDelayMin<=0||p.WeaponSpawnFirstDelayMax<p.WeaponSpawnFirstDelayMin ||
                 p.WeaponSpawnPoints.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsWeaponLandmark(e)) ||
                 p.Barrels.Any(e=>!Finite(e.X)||!Finite(e.Y)||p.OverlapsBarrelLandmark(e)))throw new ArgumentException("轮级布局参数无效："+p.Id);
             if(!Finite(p.BarrelDropSeconds)||p.BarrelDropSeconds<=0||!Finite(p.BarrelPullRadius)||p.BarrelPullRadius<=0||
@@ -229,7 +235,7 @@ namespace FirepowerLoop.Arcade
         private readonly IReadOnlyList<ArcadeRegionPoint> points;
         /// <summary>由对局权威提供的随机源，统一生成间隔和武器权重。</summary>
         private readonly Random random;
-        /// <summary>每把武器出现前的等待秒数范围。</summary>
+        /// <summary>首把之后的投放间隔范围，避免两把都集中在开场。</summary>
         private readonly float delayMin,delayMax;
         /// <summary>下一个尚未交付的点位索引。</summary>
         private int next;
@@ -237,12 +243,15 @@ namespace FirepowerLoop.Arcade
         /// <summary>只由活动战斗步长推进；暂停和场景切换不调用推进。</summary>
         public float RemainingSeconds { get; private set; }
 
-        internal ArcadeWeaponSpawnSchedule(IReadOnlyList<ArcadeRegionPoint> points,float delayMin,float delayMax,Random random)
+        /// <summary>首次与后续间隔分别取配置范围，随机源和计时仍由原战斗权威持有。</summary>
+        internal ArcadeWeaponSpawnSchedule(IReadOnlyList<ArcadeRegionPoint> points,float firstDelayMin,float firstDelayMax,
+            float delayMin,float delayMax,Random random)
         {
             this.points=points;this.delayMin=delayMin;this.delayMax=delayMax;this.random=random;
-            RemainingSeconds=NextDelay();
+            RemainingSeconds=NextDelay(firstDelayMin,firstDelayMax);
         }
-        private float NextDelay()=>delayMin+(float)random.NextDouble()*(delayMax-delayMin);
+        /// <summary>在指定活动秒数范围内取一次随机等待，不追赶已错过的投放。</summary>
+        private float NextDelay(float minimum,float maximum)=>minimum+(float)random.NextDouble()*(maximum-minimum);
         /// <summary>沿用当前进度武器池的权重随机，不让表现端重新选择。</summary>
         public int NextWeaponRoll(int totalWeight)=>random.Next(totalWeight);
 
@@ -254,7 +263,7 @@ namespace FirepowerLoop.Arcade
             RemainingSeconds=Math.Max(0,RemainingSeconds-seconds);
             if(RemainingSeconds>0||!hasCapacity)return false;
             point=points[next++];
-            RemainingSeconds=RemainingCount>0?NextDelay():0;
+            RemainingSeconds=RemainingCount>0?NextDelay(delayMin,delayMax):0;
             return true;
         }
     }

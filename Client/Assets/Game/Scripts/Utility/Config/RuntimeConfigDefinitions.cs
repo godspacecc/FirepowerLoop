@@ -744,11 +744,12 @@ namespace Game
     public readonly struct ArcadeDropDefinition
     {
         public ArcadeDropDefinition(string id, int minArena, int maxArena, int weight, global::ArcadeDropKind kind,
-            string productId, string visualPrefabAddress, int amount, float durationSeconds, int maxOwned)
+            string productId, string visualPrefabAddress, int amount, float durationSeconds, int maxOwned, int enemyMinArena = 1)
         {
             Id = id; MinArena = minArena; MaxArena = maxArena; Weight = weight; Kind = kind;
             ProductId = productId; VisualPrefabAddress = visualPrefabAddress ?? string.Empty;
             Amount = amount; DurationSeconds = durationSeconds; MaxOwned = maxOwned;
+            EnemyMinArena = enemyMinArena;
         }
         public string Id { get; }
         public int MinArena { get; }
@@ -761,6 +762,8 @@ namespace Game
         public int Amount { get; }
         public float DurationSeconds { get; }
         public int MaxOwned { get; }
+        /// <summary>击杀掉落起始关卡；0表示禁用击杀来源，地图空投和宝箱仍按原解锁范围选物品。</summary>
+        public int EnemyMinArena { get; }
     }
 
     /// <summary>战斗强化道具的只读规则；同时提供可替换的生效视觉，不持有 Unity 实例。</summary>

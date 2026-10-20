@@ -53,6 +53,8 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         WeaponSpawnCount = _buf.ReadInt();
         WeaponSpawnDelayMin = _buf.ReadFloat();
         WeaponSpawnDelayMax = _buf.ReadFloat();
+        WeaponSpawnFirstDelayMin = _buf.ReadFloat();
+        WeaponSpawnFirstDelayMax = _buf.ReadFloat();
     }
 
     public static ArcadeRoundLayoutConfig DeserializeArcadeRoundLayoutConfig(ByteBuf _buf)
@@ -97,6 +99,8 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
     public readonly int WeaponSpawnCount;
     public readonly float WeaponSpawnDelayMin;
     public readonly float WeaponSpawnDelayMax;
+    public readonly float WeaponSpawnFirstDelayMin;
+    public readonly float WeaponSpawnFirstDelayMax;
    
     public const int __ID__ = -1832003478;
     public override int GetTypeId() => __ID__;
@@ -149,6 +153,8 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         + "WeaponSpawnCount:" + WeaponSpawnCount + ","
         + "WeaponSpawnDelayMin:" + WeaponSpawnDelayMin + ","
         + "WeaponSpawnDelayMax:" + WeaponSpawnDelayMax + ","
+        + "WeaponSpawnFirstDelayMin:" + WeaponSpawnFirstDelayMin + ","
+        + "WeaponSpawnFirstDelayMax:" + WeaponSpawnFirstDelayMax + ","
         + "}";
     }
 }
