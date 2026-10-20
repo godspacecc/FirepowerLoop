@@ -6571,6 +6571,8 @@ MonoBehaviour:
   animator: {fileID: 1301906566693303243}
   defaultWeaponId: weapon.zombie-claw
   deathAnimationDurationSeconds: 0.9
+  explosionDeathTemplate: {fileID: 3458851685536799054, guid: c71a364b6fd5b834d8ebec7c25eeff26,
+    type: 3}
   healthBarRoot: {fileID: 1557640656875830810}
   healthBarFill: {fileID: 4221075741265321459}
   projectileFirePoint: {fileID: 0}

@@ -10328,6 +10328,8 @@ MonoBehaviour:
   animator: {fileID: 1515064574907556963}
   defaultWeaponId: weapon.bow
   deathAnimationDurationSeconds: 0.9
+  explosionDeathTemplate: {fileID: 3458851685536799054, guid: c71a364b6fd5b834d8ebec7c25eeff26,
+    type: 3}
   healthBarRoot: {fileID: 1712646264211666247}
   healthBarFill: {fileID: 3865830980109401940}
   projectileFirePoint: {fileID: 7446147268359103497}

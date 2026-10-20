@@ -1,0 +1,1 @@
+Unity isolated visual probe; two directions, existing enemy model/ragdoll; 6 particle systems; peak live particles combined=84; 64frames at20fps; no physics debris, no Prefab/asset changes, no Player Build. Frames=E:\GitHub\FirepowerLoop\Client\Temp\EnemyExplosionDeathPreview\frames

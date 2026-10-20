@@ -18329,6 +18329,8 @@ MonoBehaviour:
   animator: {fileID: 2471184172704019381}
   defaultWeaponId: weapon.greatsword
   deathAnimationDurationSeconds: 0.9
+  explosionDeathTemplate: {fileID: 3458851685536799054, guid: c71a364b6fd5b834d8ebec7c25eeff26,
+    type: 3}
   healthBarRoot: {fileID: 7753196333612843211}
   healthBarFill: {fileID: 7489723978154232797}
   projectileFirePoint: {fileID: 0}

@@ -33,6 +33,10 @@ namespace Game
         /// <summary>独立限制可见尸体数；冻结后不再占用物理预算，避免密集击杀时立即消失。</summary>
         private readonly int visibleCorpseBudget = Application.isMobilePlatform ? 12 : 24;
         private GameObject ragdollFloor;
+        /// <summary>独立于尸体预算限制短时血雾；手机最多252粒，桌面504粒。</summary>
+        private readonly int explosionDeathBudget = Application.isMobilePlatform ? 6 : 12;
+        /// <summary>跟随当前地图创建、隐藏清空和释放，资源依赖借用预载敌人Prefab。</summary>
+        private EnemyExplosionDeathPresentation explosionDeaths;
         public EnemyCtrl(IArchitecture architecture)
         {
             this.architecture = architecture;
@@ -103,6 +107,7 @@ namespace Game
         {
             if (!activeState)
             {
+                explosionDeaths?.Clear();
                 foreach (var entry in dyingArcadeEnemies) RecycleArcadeEnemy(entry);
                 dyingArcadeEnemies.Clear();
             }
@@ -255,6 +260,12 @@ namespace Game
             arcadeEnemies.Remove(runtimeId);
             if (playDeath && entry.View != null)
             {
+                if (explosive && arcadeRoot != null && entry.View.ExplosionDeathTemplate != null)
+                {
+                    if (explosionDeaths == null)
+                        explosionDeaths = new EnemyExplosionDeathPresentation(arcadeRoot, entry.View.ExplosionDeathTemplate, explosionDeathBudget);
+                    explosionDeaths.Play(entry.View.transform.position, direction);
+                }
                 entry.View.PlayFlameDeath(flameKill);
                 while (dyingArcadeEnemies.Count >= visibleCorpseBudget)
                 {
@@ -287,6 +298,7 @@ namespace Game
 
         public void ClearArcadeEnemies()
         {
+            explosionDeaths?.Clear();
             var values = new List<ArcadeEnemyPresentationEntry>(arcadeEnemies.Values);
             arcadeEnemies.Clear();
             for (var i = 0; i < values.Count; i++)
@@ -373,6 +385,8 @@ namespace Game
 
         private void ReleaseArcadePresentation()
         {
+            explosionDeaths?.Dispose();
+            explosionDeaths = null;
             if (ragdollFloor != null)
             {
                 if (Application.isPlaying) UnityEngine.Object.Destroy(ragdollFloor);
@@ -651,6 +665,7 @@ namespace Game
 
         private void OnUpdate()
         {
+            explosionDeaths?.Tick(Time.deltaTime);
             for (var i = dyingArcadeEnemies.Count - 1; i >= 0; i--)
             {
                 var entry = dyingArcadeEnemies[i];

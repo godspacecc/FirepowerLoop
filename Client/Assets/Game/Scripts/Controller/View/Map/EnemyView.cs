@@ -50,6 +50,10 @@ namespace Game
         [SerializeField, Min(0f)]
         private float deathAnimationDurationSeconds = DefaultDeathAnimationDurationSeconds;
 
+        /// <summary>只声明共享特效资源依赖，活敌人不实例化死亡粒子；由EnemyCtrl地图池持有实例。</summary>
+        [SerializeField] private GameObject explosionDeathTemplate;
+        public GameObject ExplosionDeathTemplate => explosionDeathTemplate;
+
         [SerializeField]
         private Transform healthBarRoot;
 

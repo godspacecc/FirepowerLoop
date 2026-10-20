@@ -1,0 +1,1 @@
+Actual EnemyCtrl.RemoveEnemy + formal prefab dependency + pooled death effect. Ordinary left / explosive right. Peak particles including existing flame feedback=42; 64frames at20fps; no Player Build. Frames=E:\GitHub\FirepowerLoop\Client\Temp\EnemyExplosionImplementation\frames
