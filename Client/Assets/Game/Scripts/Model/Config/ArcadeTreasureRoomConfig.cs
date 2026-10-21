@@ -37,6 +37,7 @@ public sealed partial class ArcadeTreasureRoomConfig : Luban.BeanBase
         LifeThreshold = _buf.ReadLong();
         MaxLives = _buf.ReadInt();
         {int n0 = _buf.ReadSize(); Rewards = new System.Collections.Generic.List<ArcadeTreasureRewardConfig>(n0);for(var i0 = 0 ; i0 < n0 ; i0++) { ArcadeTreasureRewardConfig _e0;  _e0 = global::ArcadeTreasureRewardConfig.DeserializeArcadeTreasureRewardConfig(_buf); Rewards.Add(_e0);}}
+        Enabled = _buf.ReadBool();
     }
 
     public static ArcadeTreasureRoomConfig DeserializeArcadeTreasureRoomConfig(ByteBuf _buf)
@@ -66,6 +67,7 @@ public sealed partial class ArcadeTreasureRoomConfig : Luban.BeanBase
     public readonly long LifeThreshold;
     public readonly int MaxLives;
     public readonly System.Collections.Generic.List<ArcadeTreasureRewardConfig> Rewards;
+    public readonly bool Enabled;
    
     public const int __ID__ = 505745756;
     public override int GetTypeId() => __ID__;
@@ -100,6 +102,7 @@ public sealed partial class ArcadeTreasureRoomConfig : Luban.BeanBase
         + "LifeThreshold:" + LifeThreshold + ","
         + "MaxLives:" + MaxLives + ","
         + "Rewards:" + Luban.StringUtil.CollectionToString(Rewards) + ","
+        + "Enabled:" + Enabled + ","
         + "}";
     }
 }

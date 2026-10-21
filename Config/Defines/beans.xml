@@ -322,6 +322,7 @@
         <var name="LifeThreshold" type="long"/>
         <var name="MaxLives" type="int"/>
         <var name="Rewards" type="(list#sep=;),ArcadeTreasureRewardConfig"/>
+        <var name="Enabled" type="bool"/>
     </bean>
     <bean name="ArcadeDropConfig" group="e">
         <var name="Id" type="string"/>

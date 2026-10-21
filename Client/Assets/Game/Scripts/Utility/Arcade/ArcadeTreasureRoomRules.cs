@@ -36,7 +36,7 @@ namespace FirepowerLoop.Arcade
     {
         private ArcadeTreasureRoomParameters(RoomConfig row)
         {
-            Id = row.Id; ArenaConfigNumber = row.ArenaConfigNumber; WaveNumber = row.WaveNumber;
+            Id = row.Id; ArenaConfigNumber = row.ArenaConfigNumber; WaveNumber = row.WaveNumber; Enabled = row.Enabled;
             Duration = row.Duration; EntryX = row.EntryX; EntryY = row.EntryY; EntryRadius = row.EntryRadius;
             ReturnX = row.ReturnX; ReturnY = row.ReturnY; HalfWidth = row.HalfWidth; HalfHeight = row.HalfHeight;
             SpawnX = row.SpawnX; SpawnY = row.SpawnY; ExitX = row.ExitX; ExitY = row.ExitY;
@@ -48,6 +48,8 @@ namespace FirepowerLoop.Arcade
         }
         /// <summary>房间身份由奖励种类决定，军械库不参与火力分级。</summary>
         public bool IsArmory => Rewards.Any(r => r.Kind == ArcadeTreasureRewardKind.Weapon);
+        /// <summary>只控制房间入口与进入流程；关闭后保留普通财宝使用的计分和加命参数。</summary>
+        public bool Enabled { get; }
         public string Id { get; }
         public int ArenaConfigNumber { get; }
         public int WaveNumber { get; }

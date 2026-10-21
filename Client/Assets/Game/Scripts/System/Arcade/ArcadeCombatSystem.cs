@@ -1251,8 +1251,8 @@ namespace Game
             if (runtime.IsFinalBoss || runtime.AwaitingExit || runtime.InTreasureRoom ||
                 runtime.ThemeBossStarted && !runtime.ThemeBossDefeated) return;
             if (runtime.SpawnQueue.Count > 0 || runtime.Enemies.Count > 0) return;
-            // 等待已配置奖励房的入口接触及返回，不能提前显示普通下一轮出口。
-            if (runtime.WaveIndex == 2 && (arena.Opening.Enabled || runtime.TreasureRoom != null) &&
+            // 仅等待实际启用的奖励房；关闭海岛奖励房后照常开放普通下一轮出口。
+            if (runtime.WaveIndex + 1 == runtime.TreasureRoom?.Parameters.WaveNumber &&
                 this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute == true && !runtime.TreasureCompleted) return;
             if (!runtime.WaveClearAwarded)
             {

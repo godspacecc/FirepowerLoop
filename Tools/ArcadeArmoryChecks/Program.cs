@@ -41,7 +41,7 @@ void Leave(OnlineArcadeRunActor a, long id)
 { var p = a.Battle.Players[id]; p.PositionX = 0; p.PositionZ = -5.5f; Tick(a); }
 var tests = new (string Name, Action Test)[] {
  ("ClearDoesNotDiscoverOrTeleport", () => {
-    foreach(int map in new[]{1,2,3}) {
+    foreach(int map in new[]{2,3}) {
         var a=Actor(map, map==1?1:2);
         foreach(var p in a.Battle.Players.Values) p.PositionX=p.PositionZ=15;
         Tick(a);
@@ -51,7 +51,7 @@ var tests = new (string Name, Action Test)[] {
     }
  }),
  ("DiscoveryWaitsForClearAndEachPlayersOwnContact", () => {
-    foreach(int map in new[]{1,2,3}) {
+    foreach(int map in new[]{2,3}) {
         var a=Actor(map, map==1?1:2);
         foreach(var p in a.Battle.Players.Values) p.PositionX=p.PositionZ=15;
         a.Battle.SpawnQueue.Add("pending"); MoveToEntry(a,1); Tick(a);
@@ -69,7 +69,7 @@ var tests = new (string Name, Action Test)[] {
     }
  }),
  ("EntranceCanStillBeDiscoveredAfterClear", () => {
-    foreach(int map in new[]{1,2,3}) {
+    foreach(int map in new[]{2,3}) {
         var a=Actor(map, map==1?1:2);
         foreach(var p in a.Battle.Players.Values) p.PositionX=p.PositionZ=15;
         Tick(a); Require(!a.Battle.TreasureDiscovered,"清场自动发现");
@@ -85,7 +85,13 @@ var tests = new (string Name, Action Test)[] {
  ("WeaponClockWaitsForRoomAndLastTeammate", () => { var a=Actor(); EnterBoth(a); Collect(a,1,1); Call("TickPlayers",a,a.Battle,5f,0L); Require(a.Battle.Players[1].TemporaryWeaponSeconds==25,"房内消耗武器"); Leave(a,1); Call("TickPlayers",a,a.Battle,5f,0L); Require(a.Battle.Players[1].TemporaryWeaponSeconds==25 && !a.Battle.RoundTransitionPending,"未等队友"); Leave(a,2); Require(a.Battle.RoundTransitionPending,"未接入轮级加载事务"); }),
  ("GroundExpiresThirtyRoomExpiresSixty", () => { var a=Actor(); EnterBoth(a); Tick(a,29); Require(a.Battle.TreasureRoom.RemainingRewards.Length==6,"过早消失"); Tick(a,1); Require(a.Battle.TreasureRoom.RemainingRewards.Length==0 && !a.Battle.TreasureRoom.Expired,"物资和房间时限混淆"); Tick(a,30); Require(a.Battle.Players.Values.All(p=>!p.InTreasureRoom) && a.Battle.RoundTransitionPending,"超时未返回"); }),
  ("FourthRoundRestoreKeepsWeaponAndDoesNotReopenArmory", () => { var a=Actor(); EnterBoth(a); Collect(a,1,1); typeof(OnlineArcadeRunManagerSystem).GetMethod("CaptureRoundCheckpoint",BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,new object[]{a.Record,a.Battle}); a.Record.RoundNumber=4; var layout=OnlineArcadeRunActorSystem.ResolveRoundLayout(a.Battle.ArenaConfigNumber,4); a.Record.RoundLayoutId=layout.Id; a.Record.RoundLayoutVersion=layout.Version; a.Battle=OnlineArcadeRunActorSystem.PrepareBattle(a.Record,false); Tick(a); Require(a.Battle.TreasureRoom==null && a.Battle.Players[1].TemporaryWeaponSeconds==25,"下一轮重发奖励或丢失武器"); Call("TickPlayers",a,a.Battle,1f,0L); Require(a.Battle.Players[1].TemporaryWeaponSeconds==25,"首敌生成前提前消耗"); Call("TrySpawnEnemy",a.Battle,TimeInfo.Instance.ServerNow()+100000L); Require(a.Battle.SpawnedInWave>0,"正式敌人生成失败"); Call("TickPlayers",a,a.Battle,1f,0L); Require(a.Battle.Players[1].TemporaryWeaponSeconds==24,"开战后未恢复消耗"); }),
- ("FirstArenaTreasureRemainsUnchanged", () => { var a=Actor(1,1); Tick(a); Require(!a.Battle.TreasureRoom.Parameters.IsArmory && a.Battle.TreasureRoom.RemainingRewards.Length==18,"第一场宝藏被覆盖"); }),
+ // 第一关关闭奖励房后不创建入口，也不能继续等待不存在的奖励房。
+ ("FirstArenaRewardRoomDisabledWithoutBlockingExit", () => {
+    var a=Actor(1,1); Tick(a);
+    Require(a.Battle.TreasureRoom==null && !a.Battle.TreasureDiscovered && !a.Battle.TreasureCleared && a.Battle.Players.Values.All(p=>!p.InTreasureRoom),"第一场仍创建奖励房或入口");
+    Call("TryAdvanceWave",a,a.Battle,0f);
+    Require(a.Battle.WaveClearAwarded && a.Battle.AwaitingExit && a.Battle.WaveIndex==2,"关闭奖励房后第三轮无法出现普通出口");
+ }),
  ("OldSequentialRunDoesNotGainArmory", () => { var a=Actor(2,2,false); Tick(a); Require(a.Battle.TreasureRoom==null,"旧局规则扩大"); })
 };
 if(tests.Length>13)throw new InvalidOperationException("超出范围");

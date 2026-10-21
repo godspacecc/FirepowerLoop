@@ -14,7 +14,7 @@ namespace ET.Server
             {
                 battle.TreasureInitialized = true;
                 var config = !battle.IsChallenge && !battle.IsFinalBoss && battle.IsCasualRoute && battle.ArenaNumber <= 2
-                    ? ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.FirstOrDefault(r => r.ArenaConfigNumber == battle.ArenaNumber &&
+                    ? ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.FirstOrDefault(r => r.Enabled && r.ArenaConfigNumber == battle.ArenaNumber &&
                         (battle.ArenaNumber == 2 || r.ArenaConfigNumber == battle.ArenaConfigNumber) && r.WaveNumber >= battle.WaveIndex + 1) : null;
                 if (config != null)
                 {

@@ -26,7 +26,13 @@ namespace Game.Tests
             root=Path.Combine(Path.GetTempPath(),"ArcadeTreasureFlow-"+Guid.NewGuid().ToString("N"));
             architecture=new Game();run=new ArcadeRunModel();architecture.RegisterModel(run);
             architecture.RegisterModel(new ArcadeCombatModel());
-            var provider=new LubanRuntimeConfigProvider(()=>new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes")))));
+            // 本夹具显式启用保留房间，验证启用后的通用流程；正式关闭规则由 ArcadeRewardRoomGateTests 覆盖。
+            var provider=new LubanRuntimeConfigProvider(()=>
+            {
+                var tables=new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes"))));
+                typeof(ArcadeTreasureRoomConfig).GetField("Enabled").SetValue(tables.TbArcadeTreasureRoom.Get("arcade.treasure.first"),true);
+                return tables;
+            });
             Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);
             architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             runs=new ArcadeRunSystem();architecture.RegisterSystem(runs);runs.ConfigureForTests(root);

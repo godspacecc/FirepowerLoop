@@ -41,3 +41,5 @@
 新商店的权威源为 arcade_slayermart_item（24项）、arcade_slayermart_region（第11/31轮后区域）和 arcade_slayermart_ability（能力参数）。release.enabled=0 保持正式入口关闭，只有全部能力与接线就绪才开启；不恢复旧商品表。
 
 `arcade_slayer_challenge` 是首批完整Slayer挑战及Guardian参数权威表，引用独立挑战身份与现有金币表现；规则1主线第12轮后才提供一次机会，不改变商店 release.enabled 门禁。
+
+`arcade_treasure_room.Enabled` 控制奖励房入口和进入流程。第一关 `arcade.treasure.first=false`，第二场军械库 `arcade.armory.second=true`；关闭的房间仍保留普通财宝计分、倍率和加命所需参数。单人和双人均只等待实际启用的房间，第一关第三轮清场后直接开放普通出口。
