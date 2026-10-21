@@ -1,0 +1,1 @@
+Formal PlayProjectileBlast radius=3; systems=4; peak=71; final=0; 64 frames at20fps; explosion at0.8s. Purple residual smoke and barrel fragment motion are preview-only.
