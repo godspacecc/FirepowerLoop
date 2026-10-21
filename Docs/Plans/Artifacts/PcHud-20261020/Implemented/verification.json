@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-20",
+  "preCommitCheck": { "date": "2026-10-21", "testClass": "ArcadeCompactHudTests", "passed": 27, "failed": 0, "includePassingTests": true },
+  "project": "E:/GitHub/FirepowerLoop/Client",
+  "kind": "Formal prefab editor render using illustrative snapshots; not a gameplay capture",
+  "tests": {
+    "mode": "EditMode",
+    "includePassingTests": true,
+    "declaredMaximum": 100,
+    "uniqueExecuted": 59,
+    "passed": 59,
+    "failed": 0,
+    "classes": [
+      {
+        "testClass": "ArcadeCompactHudTests",
+        "passed": 27,
+        "failed": 0
+      },
+      {
+        "testClass": "ArcadeMultiplierHudTests",
+        "passed": 4,
+        "failed": 0
+      },
+      {
+        "testClass": "ArcadeScoreFlightTests",
+        "passed": 6,
+        "failed": 0
+      },
+      {
+        "testClass": "SlayerMartFieldHudTests",
+        "passed": 10,
+        "failed": 0
+      },
+      {
+        "testClass": "ArcadeUiTests",
+        "passed": 12,
+        "failed": 0
+      }
+    ]
+  },
+  "redGreen": [
+    "DesktopInformationUsesStockAndVerticalMultiplierWithoutGold: missing stock fields -> passed",
+    "DesktopAuthoringPreservesPhoneArmorAndMouseTarget: phone armor moved -> passed",
+    "InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch: desktop exit missing and old mobile button visible -> 4 cases passed"
+  ],
+  "initialRegressionFailure": "ArcadeUiTests.ArcadePlayerStatusHealthFill_UpdatesWithoutSprite assumed the formal fill had no Sprite. Updated the cloned test instance to explicitly remove its Sprite; re-ran ArcadeUiTests, 12/12 passed.",
+  "review": {
+    "agent": "pc_hud_review",
+    "critical": 0,
+    "importantRemaining": 0,
+    "resolved": [
+      "Independent phone/desktop armor",
+      "Repeatable authoring preserves TextStormCharge",
+      "Desktop storm remains a raycast target"
+    ]
+  },
+  "previewFiles": [
+    "pc-opening.png",
+    "pc-acquired.png",
+    "pc-coop.png",
+    "pc-coop-narrow.png",
+    "pc-en.png",
+    "phone-regression.png"
+  ],
+  "limits": [
+    "No full suite",
+    "No Player Build",
+    "No live gameplay keyboard/mouse acceptance",
+    "No physical mobile device or real two-client session"
+  ],
+  "rulesUnchanged": true,
+  "skullPreview": "Only purple active; the existing shared WeaponSkull rule remains authoritative",
+  "scene": "Boot; clean before verification; previews use additive disposable scene",
+  "generation": "UICodeSpawner and BoxUICodeSpawner, then post-compilation Bind"
+}

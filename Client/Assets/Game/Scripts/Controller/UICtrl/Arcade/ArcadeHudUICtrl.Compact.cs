@@ -22,11 +22,16 @@ namespace Game
         {
             mobileHudLayout = mobile;
             UI.MobileInformationRoot.SetActive(mobile);
+            UI.DesktopInformationRoot.SetActive(!mobile);
             UI.PlayerStatusList.gameObject.SetActive(!mobile);
-            UI.DesktopAbilityRoot.SetActive(!mobile);
+            UI.DesktopAbilityRoot.SetActive(false);
+            UI.DesktopWaveStatus.SetActive(!mobile);
+            UI.MobileWaveStatus.SetActive(mobile);
+            SyncDesktopStage();
             UI.BtnBomb.gameObject.SetActive(mobile);
             UI.BtnDash.gameObject.SetActive(mobile);
-            UI.BtnPause.gameObject.SetActive(mobile || online);
+            UI.BtnPause.gameObject.SetActive(mobile);
+            UI.BtnDesktopOnlineExit.gameObject.SetActive(!mobile && online);
             // 联机入口原本用于退出，不能以单机暂停图标误示会冻结服务器时间。
             UI.PauseIconRoot.SetActive(!online);
             UI.TextPauseOnlineExit.gameObject.SetActive(online);
@@ -41,10 +46,17 @@ namespace Game
             UI.MobileFieldUpgradeFace.gameObject.SetActive(mobile);
             UI.DesktopFieldUpgradeFace.gameObject.SetActive(!mobile);
             var fieldGraphic = UI.BtnFieldUpgrade.GetComponent<Image>();
-            fieldGraphic.enabled = !mobile;
-            UI.BtnFieldUpgrade.targetGraphic = mobile ? UI.MobileFieldUpgradeFace.GetComponent<Image>() : fieldGraphic;
+            fieldGraphic.enabled = false;
+            UI.BtnFieldUpgrade.targetGraphic = (mobile ? UI.MobileFieldUpgradeFace : UI.DesktopFieldUpgradeFace).GetComponent<Image>();
             ((RectTransform)UI.BtnFieldUpgrade.transform).sizeDelta = mobile
                 ? UI.MobileFieldUpgradeFace.rect.size : UI.DesktopFieldUpgradeFace.rect.size;
+        }
+
+        /// <summary>两端舞台标签共享已经本地化的权威状态文本，不复制休息、过图或 Boss 判断。</summary>
+        private void SyncDesktopStage()
+        {
+            UI.DesktopTextArena.text = UI.TextArena.text;
+            UI.DesktopTextWave.text = UI.TextWave.text;
         }
 
         /// <summary>能力次数只读取现有库存；触屏零次数禁用沿用原按钮裁决。</summary>
@@ -85,6 +97,8 @@ namespace Game
         {
             UI.WeaponEffectRoot.SetActive(!mobileHudLayout && UI.WeaponEffectList.totalCount > 0);
             UI.SupportEffectRoot.SetActive(!mobileHudLayout && UI.EffectList.totalCount > 0);
+            UI.DesktopEffectsRoot.SetActive(!mobileHudLayout &&
+                (UI.WeaponEffectList.totalCount > 0 || UI.EffectList.totalCount > 0));
             UI.MobileWeaponEffectList.gameObject.SetActive(UI.MobileWeaponEffectList.totalCount > 0);
             UI.MobileEffectList.gameObject.SetActive(UI.MobileEffectList.totalCount > 0);
             UI.MobileEffectsRoot.SetActive(mobileHudLayout &&
@@ -107,11 +121,14 @@ namespace Game
 
         /// <summary>复用条目时完整覆盖图像、占位、次数、颜色与进度，避免刷新或替换后残留旧类型。</summary>
         private void RefreshEffect(Transform transform, int index)
-            => RefreshEffectBox(transform, index + weaponEffectCount);
+            => RefreshEffectBox(transform, index + weaponEffectCount, true);
 
-        private void RefreshWeaponEffect(Transform transform, int index) => RefreshEffectBox(transform, index);
+        private void RefreshWeaponEffect(Transform transform, int index) => RefreshEffectBox(transform, index, true);
 
-        private void RefreshEffectBox(Transform transform, int index)
+        private void RefreshMobileEffect(Transform transform, int index) => RefreshEffectBox(transform, index + weaponEffectCount, false);
+        private void RefreshMobileWeaponEffect(Transform transform, int index) => RefreshEffectBox(transform, index, false);
+
+        private void RefreshEffectBox(Transform transform, int index, bool desktop)
         {
             var box = transform.GetComponent<ArcadeEffectBoxUI>();
             var effect = effects[index];
@@ -143,9 +160,16 @@ namespace Game
             box.TextCharges.text = effect.Charges > 0 ? effect.Charges.ToString() : string.Empty;
             box.TextCharges.gameObject.SetActive(effect.Charges > 0);
             bool skull=effect.Id=="arcade.powerup.skull.small"||effect.Id=="arcade.powerup.skull.large";
+            // 秒数与环只投影效果余量；手机继续使用原表现，不增加自己的计时或强化槽。
+            box.DesktopDuration.gameObject.SetActive(desktop);
+            box.DesktopDuration.text = Mathf.CeilToInt(effect.Seconds) + "s";
+            box.DesktopSkullRing.gameObject.SetActive(desktop && skull);
+            box.DesktopSkullRing.fillAmount = effect.Duration > 0 ? Mathf.Clamp01(effect.Seconds / effect.Duration) : 1;
+            box.DesktopSkullRing.color = effect.Id == "arcade.powerup.skull.large"
+                ? new Color(.65f,.22f,1) : new Color(1,.2f,.22f);
             // 骷髅只保留彩色本体，不显示卡片底板、文字、外圈或时间条；复用时完整还原普通道具。
             box.ProgressRoot.SetActive(!skull);
-            box.Backdrop.enabled=!skull;
+            box.Backdrop.enabled=!skull&&!desktop;
             HealthFillUtility.Apply(box.ProgressFill, effect.Duration > 0f ? Mathf.Clamp01(effect.Seconds / effect.Duration) : 1f);
             box.ProgressFill.color = effect.Seconds <= 3f ? new Color(1f, .36f, .22f) : effect.Weapon
                 ? new Color(1f, .78f, .28f) : new Color(.3f, .85f, .92f);

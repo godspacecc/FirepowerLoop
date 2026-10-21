@@ -140,7 +140,7 @@ namespace Game.Tests
         }
         private ArcadePlayerStatusBoxUI SelfBox(bool mobile) => (mobile ? hud.MobilePlayerStatusList : hud.PlayerStatusList).GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>();
         private void AssertScore(long value, bool mobile) => Assert.That(mobile ? SelfBox(true).MobileScore.text : SelfBox(false).TextScore.text,
-            Is.EqualTo(mobile ? value.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : Loc.T("ui.arcade.hud.score", value)));
+            Is.EqualTo(value.ToString("N0", System.Globalization.CultureInfo.InvariantCulture)));
         private void InstallScore(long score)
         {
             var model = architecture.GetModel<ArcadeRunModel>();

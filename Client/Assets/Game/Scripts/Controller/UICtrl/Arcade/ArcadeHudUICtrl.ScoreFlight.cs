@@ -126,7 +126,7 @@ namespace Game
         private void RefreshScoreNumbers()
         {
             long score = VisibleSelfScore(authoritativeSelfScore);
-            if (desktopScoreTarget != null) Set(desktopScoreTarget, Loc.T("ui.arcade.hud.score", score));
+            if (desktopScoreTarget != null) Set(desktopScoreTarget, score.ToString("N0", System.Globalization.CultureInfo.InvariantCulture));
             if (mobileScoreTarget != null) Set(mobileScoreTarget, score.ToString("N0", System.Globalization.CultureInfo.InvariantCulture));
         }
 

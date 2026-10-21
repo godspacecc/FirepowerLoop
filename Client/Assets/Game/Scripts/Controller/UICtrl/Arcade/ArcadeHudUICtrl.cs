@@ -60,8 +60,8 @@ namespace Game
             UI.WeaponEffectList.AddItemRefreshListener(RefreshWeaponEffect);
             UI.PlayerStatusList.AddItemRefreshListener(RefreshPlayerStatus);
             UI.MobilePlayerStatusList.AddItemRefreshListener(RefreshMobilePlayerStatus);
-            UI.MobileEffectList.AddItemRefreshListener(RefreshEffect);
-            UI.MobileWeaponEffectList.AddItemRefreshListener(RefreshWeaponEffect);
+            UI.MobileEffectList.AddItemRefreshListener(RefreshMobileEffect);
+            UI.MobileWeaponEffectList.AddItemRefreshListener(RefreshMobileWeaponEffect);
             UI.BtnBomb.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Bomb));
             UI.BtnDash.onClick.AddListener(() => SendAction(ArcadeHudActionKind.Dash));
             UI.BtnSlayerMart.onClick.AddListener(OpenSlayerMart);
@@ -69,6 +69,7 @@ namespace Game
             UI.BtnFieldUpgrade.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.FieldUpgrade));
             UI.BtnDonateLife.onClick.AddListener(()=>SendAction(ArcadeHudActionKind.DonateLife));
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);
+            UI.BtnDesktopOnlineExit.onClick.AddListener(PauseOrExitOnline);
             UI.BtnRetry.onClick.AddListener(() => SendAction(ArcadeHudActionKind.RetryCompletion));
             UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
             UI.FirstPersonFirePress.Pressed += OnFirstPersonFirePressed;
@@ -196,6 +197,7 @@ namespace Game
             if (combat.IslandAwaitingRoundExit) Set(UI.TextWave, Loc.T("ui.arcade.island.pickup"));
             if (combat.IslandTransitioning) Set(UI.TextWave, Loc.T("ui.arcade.island.loading"));
             RenderTimedStatus(combat.TemporaryWeaponNameKey, combat.TemporaryWeaponSeconds, combat.Powerups);
+            SyncDesktopStage();
             RenderFirstPersonStatus();
             snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.BombResourceId, out var bombs);
             snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.DashResourceId, out var dashes);
@@ -391,6 +393,7 @@ namespace Game
             var powerups = battlePlayer.Powerups.Select(value => new ArcadePowerupHudEntry(
                 ProductNameKey(value.ProductId), value.RemainingSeconds, value.Charges)).ToArray();
             RenderTimedStatus(ProductNameKey(battlePlayer.TemporaryWeaponId), battlePlayer.TemporaryWeaponSeconds, powerups);
+            SyncDesktopStage();
             RenderAbilityCounts(runPlayer.Bombs, runPlayer.Dashes);
             UI.BtnBomb.interactable = !snapshot.BattlePaused && runPlayer.Bombs > 0;
             UI.BtnDash.interactable = !snapshot.BattlePaused && runPlayer.Dashes > 0;
@@ -487,17 +490,21 @@ namespace Game
             PlayerStatusDisplay status = playerStatuses[index];
             box.DesktopContentRoot.SetActive(!mobile);
             box.MobileContentRoot.SetActive(mobile);
-            box.Background.enabled = !mobile;
+            box.Background.enabled = false;
             var content = (RectTransform)(mobile ? box.MobileContentRoot.transform : box.DesktopContentRoot.transform);
             box.GetComponent<UnityEngine.UI.LayoutElement>().preferredHeight = content.rect.height;
             box.GetComponent<UnityEngine.UI.LayoutElement>().preferredWidth = content.rect.width;
             float ratio = status.MaxHealth > 0 ? Mathf.Clamp01((float)status.Health / status.MaxHealth) : 0f;
             Set(box.TextName, status.Name);
-            Set(box.TextLives, Loc.T("ui.arcade.hud.life_count", status.Lives));
-            Set(box.TextGold, Loc.T("ui.arcade.hud.gold_compact", status.Gold));
+            Set(box.TextLives, status.Lives.ToString());
+            Set(box.TextBombs, status.Bombs.ToString());
+            Set(box.TextDashes, status.Dashes.ToString());
+            // 炸弹与冲刺沿用战斗输入固定绑定；队友行只显示库存，不误示可以替队友操作。
+            Set(box.TextBombKey, status.IsSelf ? HotKeyDisplayFormatter.FormatPath("<Keyboard>/q") : string.Empty);
+            Set(box.TextDashKey, status.IsSelf ? HotKeyDisplayFormatter.FormatPath("<Keyboard>/space") : string.Empty);
             if (status.IsSelf) BindScoreTargets(box, status.Score, mobile);
             long visibleScore = status.IsSelf ? VisibleSelfScore(status.Score) : status.Score;
-            Set(box.TextScore, Loc.T("ui.arcade.hud.score", visibleScore));
+            Set(box.TextScore, visibleScore.ToString("N0", System.Globalization.CultureInfo.InvariantCulture));
             Set(box.TextState, status.State);
             box.TextState.gameObject.SetActive(!string.IsNullOrEmpty(status.State));
             ApplyHealthFill(box.HealthFill, ratio);
@@ -521,7 +528,7 @@ namespace Game
             var maximum = multiplierRules != null && status.Multiplier >= multiplierRules.MaxMultiplier;
             var progress = maximum ? 1f : multiplierRules?.ProgressPerLevel > 0
                 ? Mathf.Clamp01((float)status.MultiplierProgress / multiplierRules.ProgressPerLevel) : 0f;
-            box.TextMultiplier.text = Loc.T("ui.arcade.hud.multiplier", status.Multiplier);
+            box.TextMultiplier.text = "×" + status.Multiplier;
             box.TextMultiplierState.text = maximum ? Loc.T("ui.arcade.hud.multiplier_max") : string.Empty;
             box.TextMultiplierState.gameObject.SetActive(maximum);
             box.TextMultiplierState.color = new Color(.12f, .1f, .04f, 1f);

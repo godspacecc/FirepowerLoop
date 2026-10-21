@@ -13,6 +13,7 @@ namespace Game
         public Sprite BootsIcon;
         public Button BtnBomb;
         public Button BtnDash;
+        public Button BtnDesktopOnlineExit;
         public Button BtnDonateLife;
         public Button BtnExitFirstPerson;
         public Button BtnFieldUpgrade;
@@ -21,9 +22,16 @@ namespace Game
         public Button BtnSlayerChallenge;
         public Button BtnSlayerMart;
         public GameObject DesktopAbilityRoot;
+        public TextMeshProUGUI DesktopArmor;
         public Image DesktopBombIcon;
         public Image DesktopDashIcon;
+        public GameObject DesktopEffectsRoot;
         public RectTransform DesktopFieldUpgradeFace;
+        public GameObject DesktopInformationRoot;
+        public Image DesktopStormFill;
+        public TextMeshProUGUI DesktopTextArena;
+        public TextMeshProUGUI DesktopTextWave;
+        public GameObject DesktopWaveStatus;
         public CustomListView EffectList;
         public MobileCombatPressView FirstPersonFirePress;
         public GameObject FirstPersonRoot;
@@ -37,6 +45,7 @@ namespace Game
         public CustomListView MobilePlayerStatusList;
         public TextMeshProUGUI MobileStormCharge;
         public Image MobileStormFill;
+        public GameObject MobileWaveStatus;
         public CustomListView MobileWeaponEffectList;
         public OnScreenStick MoveJoystick;
         public GameObject MoveJoystickRoot;

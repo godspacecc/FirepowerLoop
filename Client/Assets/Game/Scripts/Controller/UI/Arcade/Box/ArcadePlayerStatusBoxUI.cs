@@ -20,7 +20,10 @@ namespace Game
         public TextMeshProUGUI MobileScore;
         public TextMeshProUGUI MobileState;
         public Image MultiplierFill;
-        public TextMeshProUGUI TextGold;
+        public TextMeshProUGUI TextBombKey;
+        public TextMeshProUGUI TextBombs;
+        public TextMeshProUGUI TextDashKey;
+        public TextMeshProUGUI TextDashes;
         public TextMeshProUGUI TextLives;
         public TextMeshProUGUI TextMultiplier;
         public TextMeshProUGUI TextMultiplierState;

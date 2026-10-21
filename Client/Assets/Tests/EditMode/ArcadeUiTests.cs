@@ -108,17 +108,18 @@ namespace Game.Tests
                 "多人状态列表必须复用独立 Box Prefab");
             Assert.That(hud.PlayerStatusList.transform.childCount, Is.Zero,
                 "玩家状态列表不应在 HUD Prefab 内嵌固定人数条目");
-            Assert.That(statusBox.TextGold, Is.Not.Null, "每名玩家的列表行都必须显示个人金币");
+            Assert.That(statusBox.TextBombs, Is.Not.Null, "每名玩家的列表行显示个人炸弹库存");
+            Assert.That(statusBox.TextDashes, Is.Not.Null, "每名玩家的列表行显示个人冲刺库存");
             Assert.That(statusBox.HealthFill.type, Is.EqualTo(Image.Type.Filled));
-            Assert.That(statusBox.TextName.fontSize, Is.GreaterThanOrEqualTo(28f));
-            Assert.That(statusBox.TextLives.fontSize, Is.GreaterThanOrEqualTo(28f));
-            Assert.That(statusBox.TextGold.fontSize, Is.GreaterThanOrEqualTo(28f));
+            Assert.That(statusBox.TextName.fontSize, Is.GreaterThanOrEqualTo(20f));
+            Assert.That(statusBox.TextLives.fontSize, Is.GreaterThanOrEqualTo(23f));
+            Assert.That(statusBox.TextScore.fontSize, Is.GreaterThanOrEqualTo(40f));
             Assert.That(statusBox.TextName.enableAutoSizing, Is.True);
             Assert.That(statusBox.TextName.rectTransform.rect.width, Is.GreaterThanOrEqualTo(80f));
             Assert.That(statusBox.TextState.enableAutoSizing, Is.True);
             Assert.That(statusBox.TextLives.enableAutoSizing, Is.True);
-            Assert.That(statusBox.TextGold.enableAutoSizing, Is.True);
-            Assert.That(statusBox.TextGold.rectTransform.rect.width, Is.GreaterThanOrEqualTo(100f));
+            Assert.That(statusBox.TextBombs.enableAutoSizing, Is.True);
+            Assert.That(statusBox.DesktopContentRoot.transform.Find("TextGold"), Is.Null);
             Assert.That(((RectTransform)statusBox.transform).sizeDelta,
                 Is.EqualTo(new Vector2(500f, 124f)), "玩家行需容纳原信息及独立倍率进度行");
             Assert.That(hud.EffectList.itemPrefab, Is.Not.Null);
@@ -169,7 +170,8 @@ namespace Game.Tests
             try
             {
                 var fill = instance.GetComponent<ArcadePlayerStatusBoxUI>().HealthFill;
-                Assert.That(fill.sprite, Is.Null, "该回归覆盖正式 Box 当前使用的无 Sprite 血条路径");
+                // 正式 PC 已有清晰填充 Sprite；在副本上继续覆盖资源缺失时的锚点降级路径。
+                fill.sprite = null;
 
                 ArcadeHudUICtrl.ApplyHealthFill(fill, 0.5f);
                 Assert.That(fill.fillAmount, Is.EqualTo(0.5f).Within(0.001f));

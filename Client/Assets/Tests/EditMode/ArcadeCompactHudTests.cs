@@ -37,6 +37,54 @@ namespace Game.Tests
         public void Cleanup()
         { ArchitectureField.SetValue(null, previousArchitecture); ResourceLoader.Use(previousLoader); LanguageCache.SetValue(null, previousLanguageCache); }
 
+        /// <summary>桌面库存必须读取本人权威行；不能继续显示黄金钱包或把倍率画成横条。</summary>
+        [Test]
+        public void DesktopInformationUsesStockAndVerticalMultiplierWithoutGold()
+        {
+            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui = root.GetComponent<ArcadeHudUI>();
+                var ctrl = new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit", Private).Invoke(ctrl, null);
+                typeof(ArcadeHudUICtrl).GetField("combat", Private).SetValue(ctrl,
+                    new ArcadeCombatHudSnapshot { PlayerHealth = 60, PlayerMaxHealth = 100, Bombs = 1, Dashes = 2 });
+                typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", Private).SetValue(ctrl, true);
+                typeof(ArcadeHudUICtrl).GetMethod("ApplyInputLayout", Private).Invoke(ctrl, new object[] { false, false });
+                typeof(ArcadeHudUICtrl).GetMethod("RefreshLocalPlayerStatuses", Private).Invoke(ctrl,
+                    new object[] { new ArcadeRunSaveData { RemainingLives = 3, Score = 42350, ScoreMultiplier = 3, MultiplierProgress = 600 } });
+                var box = ui.PlayerStatusList.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>();
+                foreach (var pair in new[] { ("TextBombs", "1"), ("TextDashes", "2") })
+                {
+                    var field = typeof(ArcadePlayerStatusBoxUI).GetField(pair.Item1);
+                    Assert.That(field, Is.Not.Null, "常驻技能尚未接入玩家行");
+                    Assert.That(((TMPro.TextMeshProUGUI)field.GetValue(box)).text, Is.EqualTo(pair.Item2));
+                }
+                Assert.That(box.TextLives.text, Is.EqualTo("3"));
+                Assert.That(box.TextScore.text, Is.EqualTo("42,350"));
+                Assert.That(box.TextMultiplier.text, Is.EqualTo("×3"));
+                Assert.That(box.HealthFill.fillAmount, Is.EqualTo(.6f).Within(.001f));
+                Assert.That(box.MultiplierFill.fillAmount, Is.EqualTo(.6f).Within(.001f));
+                Assert.That(box.MultiplierFill.fillMethod, Is.EqualTo(Image.FillMethod.Vertical));
+                Assert.That(box.MultiplierFill.rectTransform.rect.height, Is.GreaterThan(box.MultiplierFill.rectTransform.rect.width * 3));
+                Assert.That(box.DesktopContentRoot.transform.Find("TextGold"), Is.Null);
+                Assert.That(ui.DesktopAbilityRoot.activeSelf, Is.False, "桌面不得另放一份炸弹冲刺库存");
+            }
+            finally { Object.DestroyImmediate(root); }
+        }
+
+        /// <summary>PC 制作不能搬动手机护甲，也不能移除现有风暴的鼠标点击入口。</summary>
+        [Test]
+        public void DesktopAuthoringPreservesPhoneArmorAndMouseTarget()
+        {
+            var ui = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab").GetComponent<ArcadeHudUI>();
+            Assert.That(ui.TextArmor.rectTransform.anchorMin, Is.EqualTo(new Vector2(.5f, 1)));
+            Assert.That(ui.TextArmor.rectTransform.anchoredPosition, Is.EqualTo(new Vector2(170, -205)));
+            Assert.That(ui.TextArmor.rectTransform.sizeDelta, Is.EqualTo(new Vector2(380, 42)));
+            Assert.That(ui.DesktopFieldUpgradeFace.GetComponent<Image>().raycastTarget, Is.True);
+        }
+
         /// <summary>同一权威玩家行切换手机/桌面展示；分数、生命与倍率不因布局切换丢失或重复累计。</summary>
         [Test]
         public void ConfirmedMobileInformationProjectsStateAndRestoresDesktop()
@@ -74,7 +122,7 @@ namespace Game.Tests
                 mode.Invoke(ctrl, new object[] { false, false });
                 Assert.That(mobileRoot.activeSelf, Is.False);
                 Assert.That(ui.PlayerStatusList.gameObject.activeSelf, Is.True);
-                Assert.That(ui.PlayerStatusList.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>().TextScore.text, Does.Contain("42350"));
+                Assert.That(ui.PlayerStatusList.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>().TextScore.text, Is.EqualTo("42,350"));
                 mode.Invoke(ctrl, new object[] { true, false });
                 Assert.That(Field<TMPro.TextMeshProUGUI>("MobileScore").text, Is.EqualTo("42,350"));
             }
@@ -313,10 +361,15 @@ namespace Game.Tests
                 var method = typeof(ArcadeHudUICtrl).GetMethod("ApplyInputLayout", Private);
                 Assert.That(method, Is.Not.Null, "HUD 尚未按输入模式切换能力区与暂停入口");
                 method.Invoke(ctrl, new object[] { mobile, online });
-                Assert.That(ui.BtnPause.gameObject.activeSelf, Is.EqualTo(mobile || online));
+                Assert.That(ui.BtnPause.gameObject.activeSelf, Is.EqualTo(mobile));
+                var exitField = typeof(ArcadeHudUI).GetField("BtnDesktopOnlineExit");
+                Assert.That(exitField, Is.Not.Null, "桌面联机退出入口不能挤占能力区");
+                var desktopExit = (Button)exitField.GetValue(ui);
+                Assert.That(desktopExit.gameObject.activeSelf, Is.EqualTo(!mobile && online));
+                Assert.That(((RectTransform)desktopExit.transform).anchorMax.y, Is.EqualTo(0), "退出入口放底部，不遮挡右上能力");
                 Assert.That(ui.BtnBomb.gameObject.activeInHierarchy, Is.EqualTo(mobile));
                 Assert.That(ui.BtnDash.gameObject.activeInHierarchy, Is.EqualTo(mobile));
-                Assert.That(root.transform.Find("JoystickLayoutArea/DesktopAbilityRoot").gameObject.activeSelf, Is.EqualTo(!mobile));
+                Assert.That(root.transform.Find("JoystickLayoutArea/DesktopAbilityRoot").gameObject.activeSelf, Is.False);
                 // 单机图标不能被旧“暂停”文字覆盖；联机沿用明确的断线退出语义。
                 var labels = ui.BtnPause.GetComponentsInChildren<TMPro.TextMeshProUGUI>(false);
                 if (online) Assert.That(labels, Has.Some.Matches<TMPro.TextMeshProUGUI>(text => text.text == Loc.T("ui.arcade.hud.online_exit")));
@@ -380,7 +433,7 @@ namespace Game.Tests
                 pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color.a,Is.InRange(.5f,.65f));
                 Render("skull.large",3.1f);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
                 Render("boots",8);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
-                Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.True);Assert.That(box.GetComponent<Image>().enabled,Is.True);
+                Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.True);Assert.That(box.GetComponent<Image>().enabled,Is.False);
                 Render("skull.small",0);Assert.That(ui.EffectList.GetDraggableItems(),Is.Empty);
             }
             finally{Object.DestroyImmediate(root);}

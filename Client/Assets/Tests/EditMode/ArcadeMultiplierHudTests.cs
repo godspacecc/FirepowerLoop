@@ -123,7 +123,7 @@ namespace Game.Tests
                 new object[] { snapshot, 1L });
             AssertRow(3, .35f, false);
             var teammate = hud.PlayerStatusList.GetDraggableItems()[1].GetComponent<ArcadePlayerStatusBoxUI>();
-            Assert.That(Field<TextMeshProUGUI>(teammate, "TextMultiplier").text, Is.EqualTo("倍率 ×9"));
+            Assert.That(Field<TextMeshProUGUI>(teammate, "TextMultiplier").text, Is.EqualTo("×9"));
             Assert.That(Field<TextMeshProUGUI>(teammate, "TextMultiplierState").text, Is.EqualTo("最高倍率"));
             Assert.That(Field<Image>(teammate, "MultiplierFill").fillAmount, Is.EqualTo(1f));
         }
@@ -143,11 +143,11 @@ namespace Game.Tests
         private void AssertRow(int multiplier, float progress, bool maximum)
         {
             var box = hud.PlayerStatusList.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>();
-            Assert.That(Field<TextMeshProUGUI>(box, "TextMultiplier").text, Is.EqualTo("倍率 ×" + multiplier));
+            Assert.That(Field<TextMeshProUGUI>(box, "TextMultiplier").text, Is.EqualTo("×" + multiplier));
             Assert.That(Field<TextMeshProUGUI>(box, "TextMultiplierState").text, Is.EqualTo(maximum ? "最高倍率" : string.Empty));
             var fill = Field<Image>(box, "MultiplierFill");
             Assert.That(fill.fillAmount, Is.EqualTo(progress).Within(.00001f));
-            Assert.That(fill.rectTransform.anchorMax.x, Is.EqualTo(progress).Within(.00001f), "无 Sprite 时画面也应实际改变宽度");
+            Assert.That(fill.fillMethod, Is.EqualTo(Image.FillMethod.Vertical));
         }
 
         private static T Field<T>(ArcadePlayerStatusBoxUI box, string name) where T : class

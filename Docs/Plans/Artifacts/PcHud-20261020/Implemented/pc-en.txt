@@ -1,0 +1,16 @@
+TextRespawn overflow=False text=
+Label overflow=False text=Storm [F]
+TextStormCharge overflow=False text=75%
+TextName overflow=False text=You
+TextScore overflow=False text=42,350
+TextMultiplier overflow=False text=×3
+TextLives overflow=False text=3
+TextBombs overflow=False text=1
+TextBombKey overflow=False text=Q
+TextDashes overflow=False text=2
+TextDashKey overflow=False text=Space
+DesktopDuration overflow=False text=13s
+DesktopDuration overflow=False text=8s
+TextArena overflow=False text=Arena 4
+TextWave overflow=False text=Wave 3 · 37 remaining
+DesktopArmor overflow=False text=Armor 1/2

@@ -7,6 +7,8 @@ namespace Game
     public class ArcadeEffectBoxUI : BaseBoxUI
     {
         public Image Backdrop;
+        public TextMeshProUGUI DesktopDuration;
+        public Image DesktopSkullRing;
         public Image Icon;
         public Image ProgressFill;
         public GameObject ProgressRoot;
