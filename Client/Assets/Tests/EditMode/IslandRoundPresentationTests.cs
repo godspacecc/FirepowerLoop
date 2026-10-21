@@ -58,7 +58,8 @@ namespace Game.Tests
             view?.End(); view=new ArcadeCombatViewController(); root=new GameObject("IslandPresentationTestOwner");
             Set("root",root); loader.Delayed=delayed;
             Call("CreateArenaCollision",1,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,
-                ArcadeIslandLayout.GetObstacles(round,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight));
+                catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1 && p.RoundNumber==round).Obstacles
+                    .Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight)).ToArray());
             Call("LoadContentAsync",1);
             view.SetIslandRound(round);
             view.SetOpening(catalog.Arenas.Single(a=>a.ArenaNumber==1).Opening,false);
@@ -120,6 +121,41 @@ namespace Game.Tests
             Assert.That(inland==null,Is.True,"切图释放旧陆地延伸，不残留上一轮资源");
             Assert.That(IslandRoot.Find("InlandBackdrop"),Is.Null);
             Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.False);
+        }
+
+        /// <summary>正式资源占地、配置与场景碰撞一致；已有模型替代通用栅栏，释放后恢复。</summary>
+        [Test] public void CoastSolidsMatchVisibleFootprintsAndRestoreGenericVisuals()
+        {
+            Prepare(1);
+            var layout=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1 && p.RoundNumber==1);
+            Assert.That(layout.Obstacles.Count,Is.EqualTo(5),"两处礁石之外还应有码头和两只木箱阻挡");
+            var decor=IslandRoot.Find("CoastDecor");
+            for(int solid=0;solid<3;solid++)
+            {
+                var renderers=decor.GetComponentsInChildren<Renderer>(true).Where(r=>solid==0
+                    ? r.name.StartsWith("Pier",StringComparison.Ordinal)
+                    : (r.name=="CoastCrate" || r.name=="CrateBand") &&
+                      Mathf.Abs(r.transform.localPosition.z-(solid==1?8.4f:-6.5f))<.1f).ToArray();
+                Assert.That(renderers,Is.Not.Empty);
+                var bounds=renderers[0].bounds;
+                foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
+                var definition=layout.Obstacles[solid+2];
+                Assert.That(definition.X,Is.EqualTo(bounds.center.x).Within(.01f));
+                Assert.That(definition.Y,Is.EqualTo(bounds.center.z).Within(.01f));
+                Assert.That(definition.HalfWidth,Is.EqualTo(bounds.extents.x).Within(.01f));
+                Assert.That(definition.HalfHeight,Is.EqualTo(bounds.extents.z).Within(.01f));
+                var owner=root.transform.Find("Obstacle_"+(solid+3));
+                var collision=owner.GetComponent<BoxCollider>();
+                Assert.That(collision.enabled,Is.True);
+                Assert.That(collision.bounds.center.x,Is.EqualTo(bounds.center.x).Within(.01f));
+                Assert.That(collision.bounds.center.z,Is.EqualTo(bounds.center.z).Within(.01f));
+                Assert.That(collision.bounds.size.x,Is.EqualTo(bounds.size.x).Within(.02f));
+                Assert.That(collision.bounds.size.z,Is.EqualTo(bounds.size.z).Within(.02f));
+                Assert.That(owner.Find("Visual").gameObject.activeSelf,Is.False,"不能在码头或木箱上叠加通用栅栏");
+            }
+            view.SetOpening(default,false);
+            for(int index=3;index<=5;index++)
+                Assert.That(root.transform.Find("Obstacle_"+index+"/Visual").gameObject.activeSelf,Is.True);
         }
 
         [Test] public void FourthRoundWarningPrecedesFlameAndClearTurnsBothOff()

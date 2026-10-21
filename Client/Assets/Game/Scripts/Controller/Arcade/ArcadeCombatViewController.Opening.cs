@@ -36,6 +36,8 @@ namespace Game
         /// <summary>专用地标跟随同源碰撞根，生成网格由本岛岸句柄唯一释放。</summary>
         private readonly List<GameObject> islandLandmarks = new();
         private readonly List<Mesh> islandLandmarkMeshes = new();
+        /// <summary>首轮码头和木箱已有专用模型；隐藏其碰撞根的通用外观，并在释放时恢复原状态。</summary>
+        private readonly Dictionary<GameObject, bool> islandCoastVisualVisibility = new();
         private bool islandLandmarksReady;
         public bool IsIslandRoundReady => islandRound == 0
             ? root != null && obstacleVisualReady && !contentLoadFailed && (contentArena > 3 || contentTemplates != null)
@@ -179,6 +181,21 @@ namespace Game
                 coastDecor.gameObject.SetActive(islandRound==1);
                 coastDecor.localScale=new Vector3(w/19.5f,1,h/19.5f);
             }
+            if (islandRound == 1)
+            {
+                // 前段仍是礁石地标，追加的配置阻挡由 CoastDecor 显示，不再叠放通用栅栏。
+                int landmarkCount = ArcadeIslandLayout.GetObstacles(1, w, h).Length;
+                for (int index = landmarkCount + 1; ; index++)
+                {
+                    var obstacle = root.transform.Find("Obstacle_" + index);
+                    if (obstacle == null) break;
+                    var visual = obstacle.Find("Visual")?.gameObject;
+                    if (visual == null) continue;
+                    if (!islandCoastVisualVisibility.ContainsKey(visual))
+                        islandCoastVisualVisibility.Add(visual, visual.activeSelf);
+                    visual.SetActive(false);
+                }
+            }
             foreach (var name in new[] { "Sand", "Water", "Shoreline" })
             {
                 var surface = island.transform.Find(name); surface.localScale = Vector3.one;
@@ -229,6 +246,9 @@ namespace Game
         {
             islandWading?.Dispose(); islandWading = null;
             islandLandmarksReady = false;
+            foreach (var pair in islandCoastVisualVisibility)
+                if (pair.Key != null) pair.Key.SetActive(pair.Value);
+            islandCoastVisualVisibility.Clear();
             foreach (var landmark in islandLandmarks)
             {
                 if (landmark != null) landmark.transform.parent.Find("Visual")?.gameObject.SetActive(true);

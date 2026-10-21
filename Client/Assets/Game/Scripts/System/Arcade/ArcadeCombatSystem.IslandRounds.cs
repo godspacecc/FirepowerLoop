@@ -25,7 +25,8 @@ namespace Game
         private IReadOnlyList<ArcadeObstacleDefinition> ObstaclesFor(ArcadeCombatRuntime runtime)
         {
             if (runtime.InTreasureRoom) return Array.Empty<ArcadeObstacleDefinition>();
-            if (UsesContentRounds(runtime)) return ContentObstacles(runtime);
+            // 正式海岛也读取权威轮级表，避免新增码头等实体只在表现或联机端有阻挡。
+            if (UsesRoundLayouts(runtime)) return ContentObstacles(runtime);
             if (!UsesIslandRounds(runtime)) return arena.Obstacles;
             int round = runtime.WaveIndex + 1;
             if (islandObstacleRound != round || islandRoundObstacles == null)

@@ -71,6 +71,73 @@ namespace Game.Tests
                 new ArcadeIslandRegion(20, 17));
             Assert.That(ArcadeCombatSystem.IsInsideObstacle(result, .5f, obstacles), Is.False);
         }
+
+        /// <summary>码头与靠岸木箱必须阻挡普通小步和单帧长距离冲刺，不能只依靠模型 Collider。</summary>
+        [TestCase(10f, 5f, 11.7f, false)]
+        [TestCase(10f, 5f, 11.7f, true)]
+        [TestCase(9f, 8.4f, 10.675f, false)]
+        [TestCase(9f, 8.4f, 10.675f, true)]
+        [TestCase(10f, -6.5f, 12.175f, false)]
+        [TestCase(10f, -6.5f, 12.175f, true)]
+        public void CoastSolidsBlockWalkingAndLongDash(float x, float y, float stopX, bool dash)
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            runtime.PlayerPosition = new Vector2(x, y);
+            int steps = dash ? 1 : 100;
+            for (int i = 0; i < steps; i++)
+                runtime.PlayerPosition = (Vector2)Call("MoveOnIsland", runtime,
+                    Vector2.right * (dash ? 15f : .15f), catalog.Rule.PlayerRadius);
+            Assert.That(runtime.PlayerPosition.x, Is.EqualTo(stopX).Within(.015f),
+                "应停在可见实体近侧，并保留玩家半径");
+            var path = (List<ArcadeRegionPoint>)typeof(ArcadeCombatSystem)
+                .GetField("islandMovementPath", Flags).GetValue(combat);
+            foreach (var point in path)
+                Assert.That(point.X, Is.LessThanOrEqualTo(stopX + .015f), "冲刺路径也不能穿过实体");
+        }
+
+        /// <summary>首轮海岸装饰的阻挡不能遗留到其他三图或共享海岛。</summary>
+        [Test] public void CoastSolidsBelongOnlyToFirstLocalRound()
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            var first = (IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(15, 5), 0, first), Is.True);
+            Call("StartIslandRound", runtime, 1, null);
+            var second = (IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(15, 5), 0, second), Is.False);
+        }
+
+        /// <summary>旧节点的玩家或强化锚点落在码头靠海侧时，岸线夹取不能把它重新压回实体。</summary>
+        [TestCase(18f, 5f)]
+        [TestCase(17.5f, 5f)]
+        [TestCase(17.8f, 5f)]
+        [TestCase(18f, 6f)]
+        [TestCase(18f, 4f)]
+        public void CoastBoundaryProjectionNeverReturnsInsidePier(float x, float y)
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            var obstacles=(IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
+            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,1);
+            var resolved=ArcadeCombatSystem.ResolvePosition(new Vector2(x,y),catalog.Rule.PlayerRadius,
+                catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,obstacles,region);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(resolved,catalog.Rule.PlayerRadius,obstacles),Is.False,
+                "障碍推出与岸线投影应同时满足，不能返回码头内部");
+            Assert.That(region.ContainsCircle(resolved.x,resolved.y,catalog.Rule.PlayerRadius),Is.True);
+        }
+
+        /// <summary>通过正式旧节点恢复入口验证强化锚点脱离新增码头，且剩余时长不被刷新。</summary>
+        [Test] public void RestoredCoastPowerupAnchorCannotRemainInsidePier()
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            var saved=new ArcadeRunFileStore(directory).Inspect().Data.IslandRoundCheckpoint;
+            var definition=catalog.Powerups[0];
+            saved.Powerups.Add(new ArcadeIslandPowerupCheckpoint { ProductId=definition.Id,
+                RemainingSeconds=7, Charges=1, PositionX=17.5f, PositionY=5 });
+            Call("StartIslandRound", runtime, 0, saved);
+            var restored=runtime.Powerups[definition.Behavior];
+            var obstacles=(IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(restored.Position,catalog.Rule.PlayerRadius,obstacles),Is.False);
+            Assert.That(restored.RemainingSeconds,Is.EqualTo(7));
+        }
         [Test] public void TreasureActivityKeepsFirstPersonIdentityAndConsumesActualTime()
         {
             runtime.InTreasureRoom = true; runtime.FirstPersonRemaining = 10;

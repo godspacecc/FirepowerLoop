@@ -42,3 +42,21 @@ Unity 连接确认路径为 E:/GitHub/FirepowerLoop/Client/Assets。最终编辑
 完整结果位于 [验证附件目录](Artifacts/CoastalIsland-20261020/)，其中 LoadingOldArtworkBaseline.txt 保存旧图对照复测。独立只读审查未发现本次地图和背景改动的重要问题。
 
 制作工具：ArcadeCoastAuthoring、ArcadeCoastLoadingPreview、ArcadeCoastTestRunner。仅提交本任务文件，保留同工作区其他任务的修改。
+
+## 2026-10-21：码头与靠岸木箱阻挡修复
+
+初版码头与两只靠岸木箱只有装饰模型，实际移动未阻挡。现已在 `Config/DataCsv/arcade_round_layout.csv` 的首轮追加与正式模型占地一致的矩形阻挡，并通过 `Config/gen.bat` 生成双端数据；两端轮布局 bytes 的 SHA256 一致。单人海岛改为读取正式轮级表，移动、绕障、弹丸遮挡与场景 BoxCollider 共用配置。原模型不新增独立碰撞规则，碰撞根的通用栅栏外观在本轮隐藏，释放时恢复。
+
+码头按不可穿越实体处理，玩家从旁边绕行。另修正旧节点强化锚点的靠海侧投影：原最近推出方向若被岸线压回实体，改选同时满足岸线和全部障碍约束的候选落点，保留效果剩余时长。其他三轮及旧顺序局的配置不变。
+
+通过 Unity MCP 确认本次工程路径为 `F:/GitHub/FirepowerLoop/Client/Assets`。先观察到旧实现的 6 个移动／冲刺用例和 1 个资源占地用例失败；追加投影检查中 2/4 失败，正式旧节点锚点恢复用例 1/1 失败，再实施相应修复。最终限定 EditMode 结果如下，均 `includePassingTests=true`，没有运行完整套件或无效过滤回退。
+
+| 测试类 | 最大数量 | 最终通过／总数 |
+| --- | ---: | ---: |
+| IslandRoundFlowTests | 46 | 43/43 |
+| IslandRoundPresentationTests | 12 | 9/9 |
+| ArcadeRoundLayoutTests | 5 | 5/5 |
+| ArcadeCombatSystemTests | 32 | 28/28 |
+| 合计 | | 85/85 |
+
+证据见 [PierCollision-20261021](Artifacts/PierCollision-20261021/)。测试覆盖模型与碰撞占地一致、普通移动与长距离冲刺阻挡、靠海侧位置修正、真实节点锚点恢复、切轮释放和出口／武器点连通性。独立审查发现的靠海侧投影问题已修正并复审。以上为定向规则与正式资源隔离检查，不代表真机或真实双客户端实玩验收；未执行 Player Build。

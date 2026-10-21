@@ -2348,6 +2348,35 @@ namespace Game
                 if (island != null)
                 { var p = island.Constrain(result.x, result.y, radius); result = new Vector2(p.X, p.Y); }
             }
+            if (island != null && IsInsideObstacle(result, radius, obstacles))
+            {
+                // 靠岸实体可能封住最近的推出方向；旧节点恢复时另选同时满足岸线和全部障碍的边。
+                var best = result;
+                float bestDistance = float.PositiveInfinity;
+                foreach (var obstacle in obstacles)
+                {
+                    var half = obstacle.HalfExtents + Vector2.one * (radius + .002f);
+                    var candidates = new[]
+                    {
+                        new Vector2(obstacle.Center.x - half.x, result.y),
+                        new Vector2(obstacle.Center.x + half.x, result.y),
+                        new Vector2(result.x, obstacle.Center.y - half.y),
+                        new Vector2(result.x, obstacle.Center.y + half.y)
+                    };
+                    foreach (var candidate in candidates)
+                    {
+                        var clamped = ClampPosition(candidate, arenaHalfWidth - radius, arenaHalfHeight - radius);
+                        var point = island.Constrain(clamped.x, clamped.y, radius);
+                        var resolved = new Vector2(point.X, point.Y);
+                        if (IsInsideObstacle(resolved, radius, obstacles)) continue;
+                        float distance = (resolved - value).sqrMagnitude;
+                        if (distance >= bestDistance) continue;
+                        bestDistance = distance;
+                        best = resolved;
+                    }
+                }
+                result = best;
+            }
             return result;
         }
 
