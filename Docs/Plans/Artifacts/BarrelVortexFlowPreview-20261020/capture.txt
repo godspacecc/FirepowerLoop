@@ -1,0 +1,3 @@
+Source: CURRENT official civilian zombie and player prefabs; existing purple barrel cloned onto zombie back; existing electric tower template; preview-only straps; isolated scene; NO resource edits.
+Hero: Base_Feet; bounds=(0.70, 0.26, 0.83)
+Times: 0,4.1,5.6
