@@ -117,6 +117,7 @@ namespace ET.Server
                 var drop = ServerConfig.Instance.Tables.TbArcadeDrop.GetOrDefault(reward.DropId);
                 if (drop == null || drop.Kind != ArcadeDropKind.TemporaryWeapon ||
                     !actor.Battle.Players.TryGetValue(playerId, out var player)) return false;
+                if((player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)!=drop.ProductId)player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
                 player.TemporaryWeaponId = drop.ProductId;
                 player.TemporaryWeaponSeconds = drop.DurationSeconds;
                 if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, 1, 0, reward);
