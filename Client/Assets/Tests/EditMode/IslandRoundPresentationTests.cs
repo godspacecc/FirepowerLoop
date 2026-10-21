@@ -68,94 +68,82 @@ namespace Game.Tests
         {
             for(int round=1;round<=4;round++)
             {
-                Prepare(round,true);
-                Assert.That(view.IsIslandRoundReady,Is.False,"等待正式资源时不能开战 round="+round);
-                loader.CompleteAll();
-                Assert.That(view.IslandRoundLoadError,Is.Null);
-                Assert.That(view.IsIslandRoundReady,Is.True,"正式资源与网格准备完成 round="+round);
-                var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,round);
-                var sand=IslandRoot.Find("Sand");
-                Assert.That(sand,Is.Not.Null);
-                var mesh=sand.GetComponent<MeshFilter>().sharedMesh;
-                for(int i=0;i<region.Sand.Count;i++)
-                    Assert.That(mesh.vertices[i+1],Is.EqualTo(new Vector3(region.Sand[i].X,0,region.Sand[i].Y)));
-                var obstacles=ArcadeIslandLayout.GetObstacles(round,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);
-                for(int index=0;index<obstacles.Length;index++)
+                Prepare(round,true); Assert.That(view.IsIslandRoundReady,Is.False);
+                loader.CompleteAll(); Assert.That(view.IslandRoundLoadError,Is.Null); Assert.That(view.IsIslandRoundReady,Is.True);
+                var fixedRounds=IslandRoot.Find("FixedRounds");
+                Assert.That(fixedRounds.Cast<Transform>().Count(t=>t.gameObject.activeSelf),Is.EqualTo(1));
+                var actual=fixedRounds.Find("Round"+round); Assert.That(actual.gameObject.activeInHierarchy,Is.True);
+                Assert.That(actual.Find("ContinuousMountain").GetComponent<MeshFilter>().sharedMesh.bounds.size.x,Is.GreaterThan(100));
+                Assert.That(actual.GetComponentsInChildren<Collider>(true),Is.Empty,"实体阻挡归属权威配置根，资源不携带第二套碰撞");
+                var layout=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1&&p.RoundNumber==round);
+                var feet=actual.Cast<Transform>().Where(t=>t.name=="SolidRockFoot").ToArray();
+                Assert.That(feet.Length,Is.EqualTo(layout.Obstacles.Count));
+                for(int i=0;i<feet.Length;i++)
                 {
-                    if(round==3 && index==0)continue;
-                    var obstacle=root.transform.Find("Obstacle_"+(index+1));
-                    var landmark=obstacle.Find("IslandLandmark");
-                    Assert.That(landmark,Is.Not.Null,"海岛阻挡必须用同源礁石地标 round="+round+" index="+index);
-                    var renderers=landmark.GetComponentsInChildren<Renderer>();
-                    Assert.That(renderers,Is.Not.Empty);
-                    var bounds=renderers[0].bounds;
-                    foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
-                    Assert.That(bounds.size.x,Is.EqualTo(obstacles[index].HalfExtents.x*2).Within(.015f));
-                    Assert.That(bounds.size.z,Is.EqualTo(obstacles[index].HalfExtents.y*2).Within(.015f));
-                    Assert.That(bounds.center.x,Is.EqualTo(obstacles[index].Center.x).Within(.015f));
-                    Assert.That(bounds.center.z,Is.EqualTo(obstacles[index].Center.y).Within(.015f));
-                    Assert.That(obstacle.GetComponent<BoxCollider>().enabled,Is.True);
-                    Assert.That(landmark.GetComponentsInChildren<Collider>(true),Is.Empty);
-                    Assert.That(obstacle.Find("Visual").gameObject.activeSelf,Is.False);
+                    var owner=root.transform.Find("Obstacle_"+(i+1));var collider=owner.GetComponent<BoxCollider>();
+                    var bounds=feet[i].GetComponent<Renderer>().bounds;
+                    Assert.That(collider.enabled,Is.True); Assert.That(bounds.center.x,Is.EqualTo(collider.bounds.center.x).Within(.02f));
+                    Assert.That(bounds.center.z,Is.EqualTo(collider.bounds.center.z).Within(.02f));
+                    Assert.That(bounds.size.x,Is.EqualTo(collider.bounds.size.x).Within(.02f));
+                    Assert.That(bounds.size.z,Is.EqualTo(collider.bounds.size.z).Within(.02f));
+                    Assert.That(owner.Find("Visual").gameObject.activeSelf,Is.False);
                 }
                 view.SetOpening(default,false);
-                for(int index=0;index<obstacles.Length;index++)
-                {
-                    var obstacle=root.transform.Find("Obstacle_"+(index+1));
-                    Assert.That(obstacle.Find("IslandLandmark"),Is.Null,"岛岸释放时清理外挂专用地标");
-                    Assert.That(obstacle.GetComponent<BoxCollider>().enabled,Is.True);
-                    Assert.That(obstacle.Find("Visual").gameObject.activeSelf,Is.True,"恢复原通用表现 round="+round+" index="+index);
-                }
+                for(int i=0;i<feet.Length;i++) Assert.That(root.transform.Find("Obstacle_"+(i+1)+"/Visual").gameObject.activeSelf,Is.True);
             }
         }
-        [Test] public void FirstCoastalRoundExtendsInlandAndReleasesItsBackdropBeforeNextRound()
+        [Test] public void LateObstacleCallbacksCannotExposeGenericVisualsOnAnyFixedMap()
         {
-            Prepare(1);
-            var inland=IslandRoot.Find("InlandBackdrop");
-            Assert.That(inland,Is.Not.Null);
-            Assert.That(inland.GetComponent<MeshFilter>().sharedMesh.bounds.min.x,Is.LessThan(-catalog.Rule.ArenaHalfWidth*2));
-            Assert.That(inland.GetComponentsInChildren<Collider>(),Is.Empty);
-            Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.True);
-            Assert.That(IslandRoot.Find("CoastDecor").GetComponentsInChildren<Collider>(true),Is.Empty);
-            Prepare(2);
-            Assert.That(inland==null,Is.True,"切图释放旧陆地延伸，不残留上一轮资源");
-            Assert.That(IslandRoot.Find("InlandBackdrop"),Is.Null);
-            Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.False);
+            for(int round=1;round<=4;round++)
+            {
+                Prepare(round,true); loader.CompleteAll(true);
+                Assert.That(view.IsIslandRoundReady,Is.True,view.IslandRoundLoadError);
+                int count=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1&&p.RoundNumber==round).Obstacles.Count;
+                for(int i=1;i<=count;i++) Assert.That(root.transform.Find("Obstacle_"+i+"/Visual").gameObject.activeSelf,Is.False,
+                    "岛岸先完成时也不能露出晚到的通用障碍：round="+round+" obstacle="+i);
+                view.SetOpening(default,false);
+                for(int i=1;i<=count;i++) Assert.That(root.transform.Find("Obstacle_"+i+"/Visual").gameObject.activeSelf,Is.True);
+            }
         }
 
-        /// <summary>正式资源占地、配置与场景碰撞一致；已有模型替代通用栅栏，释放后恢复。</summary>
-        [Test] public void CoastSolidsMatchVisibleFootprintsAndRestoreGenericVisuals()
+        [Test] public void EachObstacleInstantiatesOnlyItsChosenVariantWithoutAnyMapTemplate()
         {
             Prepare(1);
-            var layout=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1 && p.RoundNumber==1);
-            Assert.That(layout.Obstacles.Count,Is.EqualTo(5),"两处礁石之外还应有码头和两只木箱阻挡");
-            var decor=IslandRoot.Find("CoastDecor");
-            for(int solid=0;solid<3;solid++)
+            var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab");
+            int count=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1&&p.RoundNumber==1).Obstacles.Count;
+            for(int i=0;i<count;i++)
             {
-                var renderers=decor.GetComponentsInChildren<Renderer>(true).Where(r=>solid==0
-                    ? r.name.StartsWith("Pier",StringComparison.Ordinal)
-                    : (r.name=="CoastCrate" || r.name=="CrateBand") &&
-                      Mathf.Abs(r.transform.localPosition.z-(solid==1?8.4f:-6.5f))<.1f).ToArray();
-                Assert.That(renderers,Is.Not.Empty);
-                var bounds=renderers[0].bounds;
-                foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
-                var definition=layout.Obstacles[solid+2];
-                Assert.That(definition.X,Is.EqualTo(bounds.center.x).Within(.01f));
-                Assert.That(definition.Y,Is.EqualTo(bounds.center.z).Within(.01f));
-                Assert.That(definition.HalfWidth,Is.EqualTo(bounds.extents.x).Within(.01f));
-                Assert.That(definition.HalfHeight,Is.EqualTo(bounds.extents.z).Within(.01f));
-                var owner=root.transform.Find("Obstacle_"+(solid+3));
-                var collision=owner.GetComponent<BoxCollider>();
-                Assert.That(collision.enabled,Is.True);
-                Assert.That(collision.bounds.center.x,Is.EqualTo(bounds.center.x).Within(.01f));
-                Assert.That(collision.bounds.center.z,Is.EqualTo(bounds.center.z).Within(.01f));
-                Assert.That(collision.bounds.size.x,Is.EqualTo(bounds.size.x).Within(.02f));
-                Assert.That(collision.bounds.size.z,Is.EqualTo(bounds.size.z).Within(.02f));
-                Assert.That(owner.Find("Visual").gameObject.activeSelf,Is.False,"不能在码头或木箱上叠加通用栅栏");
+                var visual=root.transform.Find("Obstacle_"+(i+1)+"/Visual");
+                Assert.That(visual.Find("Island"),Is.Null,"每个障碍不能重复创建整套海岛");
+                Assert.That(visual.Find("Content"),Is.Null,"每个障碍不能携带场景模板");
+                Assert.That(visual.childCount,Is.EqualTo(1));
+                var expected=prefab.transform.GetChild(i*2%4);
+                Assert.That(visual.GetComponentsInChildren<MeshRenderer>(true).Length,
+                    Is.EqualTo(expected.GetComponentsInChildren<MeshRenderer>(true).Length));
+                Assert.That(visual.GetChild(0).gameObject.activeSelf,Is.True);
             }
+        }
+
+        [Test] public void FixedForestsReleaseTheirOldMapBeforeShowingNextRound()
+        {
+            Prepare(1);var old=IslandRoot.Find("FixedRounds");
+            Assert.That(IslandRoot.Find("CoastDecor").gameObject.activeSelf,Is.False);
+            Assert.That(old.Find("Round1").gameObject.activeInHierarchy,Is.True);
+            Prepare(2);Assert.That(old==null,Is.True);
+            Assert.That(IslandRoot.Find("FixedRounds/Round2").gameObject.activeInHierarchy,Is.True);
+            Assert.That(IslandRoot.Find("FixedRounds/Round1").gameObject.activeInHierarchy,Is.False);
+        }
+        [Test] public void OnlyPassagesKeepInvisibleWallsAndMountainsUseAuthoritativeSolidRoots()
+        {
+            Prepare(1);
+            foreach(string name in new[]{"NorthBoundary","EastBoundary","SouthBoundary","WestBoundary"})
+                Assert.That(root.transform.Find(name).GetComponent<Collider>().enabled,Is.False);
+            var gates=root.transform.Cast<Transform>().Where(t=>t.name=="IslandPassageBoundary").ToArray();
+            Assert.That(gates.Length,Is.EqualTo(3));
+            Assert.That(gates.All(t=>t.GetComponentsInChildren<Renderer>().Length==0&&t.GetComponent<BoxCollider>().enabled),Is.True);
             view.SetOpening(default,false);
-            for(int index=3;index<=5;index++)
-                Assert.That(root.transform.Find("Obstacle_"+index+"/Visual").gameObject.activeSelf,Is.True);
+            foreach(var gate in gates) Assert.That(gate==null,Is.True);
+            Assert.That(root.transform.Find("NorthBoundary").GetComponent<Collider>().enabled,Is.True,"释放后恢复原地图合同");
         }
 
         [Test] public void FourthRoundWarningPrecedesFlameAndClearTurnsBothOff()
@@ -171,21 +159,21 @@ namespace Game.Tests
             view.SetOpening(catalog.Arenas.Single(a=>a.ArenaNumber==1).Opening,false);
             Assert.That(danger.gameObject.activeInHierarchy,Is.False); Assert.That(flame.gameObject.activeInHierarchy,Is.False);
         }
-        [Test] public void ThirdRoundWreckCollisionAndExitArrowsUseTheSameLayout()
+        [Test] public void ThreeExitGuidesSharePassagesAndBoatAppearsOnlyInSecondRound()
         {
-            Prepare(3); Assert.That(view.IsIslandRoundReady,Is.True);
-            var ship=ArcadeIslandLayout.GetObstacles(3,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)[0];
-            var collision=root.transform.Find("Obstacle_1").GetComponent<BoxCollider>();
-            var wreck=IslandRoot.Find("WreckLandmark");
-            Assert.That(wreck.localPosition.x,Is.EqualTo(ship.Center.x)); Assert.That(wreck.localPosition.z,Is.EqualTo(ship.Center.y));
-            Assert.That(collision.size.x,Is.EqualTo(ship.HalfExtents.x*2)); Assert.That(collision.size.z,Is.EqualTo(ship.HalfExtents.y*2));
-            Assert.That(wreck.GetComponent<MeshFilter>().sharedMesh.bounds.extents.x,Is.EqualTo(ship.HalfExtents.x).Within(.001f));
-            view.SetExits(new[]{-4},catalog.Rule.ArenaHalfHeight,false);
-            var exit=root.transform.Find("ArcadeRouteExit_-4");
-            var expected=ArcadeIslandLayout.GetExitPosition(3,0,4,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
-            Assert.That(exit.localPosition,Is.EqualTo(new Vector3(expected.x,0,expected.y)));
-            Assert.That(exit.Find("ExitCue/ApproachArrow"),Is.Not.Null);
-            Assert.That(exit.GetComponentsInChildren<MeshRenderer>(true),Is.Empty);
+            for(int round=1;round<=4;round++)
+            {
+                Prepare(round);view.SetExits(new[]{-4},catalog.Rule.ArenaHalfHeight,false);
+                var exits=(List<GameObject>)typeof(ArcadeCombatViewController).GetField("exitVisuals",Private).GetValue(view);
+                Assert.That(exits.Count,Is.EqualTo(3));
+                for(int i=0;i<3;i++)
+                {
+                    var p=ArcadeIslandLayout.GetExitPosition(round,i,3,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
+                    Assert.That(exits[i].transform.localPosition,Is.EqualTo(new Vector3(p.x,0,p.y)));
+                }
+                var boat=IslandRoot.Find("FixedRounds/Round2/DockedBoatPassage");
+                Assert.That(boat.gameObject.activeInHierarchy,Is.EqualTo(round==2));
+            }
         }
         [Test] public void LateResourceCallbacksCannotRepopulateReleasedMapRoot()
         {
@@ -257,7 +245,7 @@ namespace Game.Tests
         {
             public bool Delayed;
             public GameObject VisualResource;
-            private readonly Queue<Action> callbacks=new();
+            private readonly List<Action> callbacks=new();
             public T LoadAsset<T>(string path) where T:Object
             {
                 if(typeof(T)==typeof(GameObject) && VisualResource!=null &&
@@ -267,8 +255,9 @@ namespace Game.Tests
                 return AssetDatabase.LoadAssetAtPath<T>("Assets/Game/"+path+(path.EndsWith(extension)?"":extension));
             }
             public ResourceLoadHandle LoadAssetAsync<T>(string path,Action<T> callback) where T:Object
-            { if(Delayed)callbacks.Enqueue(()=>callback(LoadAsset<T>(path)));else callback(LoadAsset<T>(path));return ResourceLoadHandle.Empty; }
-            public void CompleteAll(){while(callbacks.Count>0)callbacks.Dequeue()();}
+            { if(Delayed)callbacks.Add(()=>callback(LoadAsset<T>(path)));else callback(LoadAsset<T>(path));return ResourceLoadHandle.Empty; }
+            public void CompleteAll(bool reverse=false)
+            {while(callbacks.Count>0){int index=reverse?callbacks.Count-1:0;var callback=callbacks[index];callbacks.RemoveAt(index);callback();}}
             public void Release(ResourceLoadHandle handle){}
         }
     }

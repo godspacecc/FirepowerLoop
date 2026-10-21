@@ -29,16 +29,16 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EveryRoundHasFourDryWalkableExitsInDifferentDirections()
+        public void EveryRoundHasThreeDryWalkablePassageExits()
         {
             foreach (int round in new[] { 1, 2, 3, 4 })
-            foreach (int count in new[] { 4 })
+            foreach (int count in new[] { 3 })
             for (int index = 0; index < count; index++)
             {
                 var region = new ArcadeIslandRegion(19.5f, 19.5f, round);
                 var exit = ArcadeIslandLayout.GetExitPosition(round, index, count, 19.5f, 19.5f, .55f);
-                var direction = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left }[index];
-                Assert.That(Vector2.Dot(exit.normalized, direction), Is.GreaterThan(.95f), "出口必须分布在上下左右四边");
+                var direction = new[] { Vector2.up, Vector2.right, Vector2.down, Vector2.left }[ArcadeIslandRegion.PassageSide(round, index)];
+                Assert.That(Vector2.Dot(exit.normalized, direction), Is.GreaterThan(.95f), "出口必须朝向本图的三个真实通道");
                 Assert.That(region.Contains(exit.x, exit.y), Is.True);
                 Assert.That(region.IsShallow(exit.x, exit.y), Is.False);
                 Assert.That(ArcadeCombatSystem.IsInsideObstacle(exit, .55f,
@@ -49,7 +49,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void WreckFootprintMatchesThirdMapObstacle()
+        public void BoatHullRetainsRequestedDimensions()
         {
             var obstacle=ArcadeIslandLayout.GetObstacles(3,19.5f,19.5f)[0];
             var mesh=ArcadeIslandMesh.Wreck(obstacle.HalfExtents.x*2,obstacle.HalfExtents.y*2);
@@ -58,8 +58,6 @@ namespace Game.Tests
                 Assert.That(mesh.bounds.extents.x,Is.EqualTo(obstacle.HalfExtents.x).Within(.001f));
                 Assert.That(mesh.bounds.extents.z,Is.EqualTo(obstacle.HalfExtents.y).Within(.001f));
                 Assert.That(mesh.bounds.size.y,Is.GreaterThan(2));
-                Assert.That(new ArcadeIslandRegion(19.5f,19.5f,3).IsShallow(11,0),Is.True);
-                Assert.That(new ArcadeIslandRegion(19.5f,19.5f,3).IsShallow(-11,0),Is.False);
             }
             finally { Object.DestroyImmediate(mesh); }
         }

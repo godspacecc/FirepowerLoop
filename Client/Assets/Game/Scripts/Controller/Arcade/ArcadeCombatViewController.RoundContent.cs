@@ -67,7 +67,7 @@ namespace Game
                 roundAreaRoot=RoundGroup(roundContentRoot.transform,"AuthoritativeAreas");
                 roundEnemyRoot=RoundGroup(roundContentRoot.transform,"DedicatedEnemies");
                 if(layout.ArenaConfigNumber!=1)BuildRoundEnvironment(layout);
-                BuildRoundEntryMarkers(layout);
+                if (layout.ArenaConfigNumber != 1) BuildRoundEntryMarkers(layout);
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();
             }
             catch(Exception e)

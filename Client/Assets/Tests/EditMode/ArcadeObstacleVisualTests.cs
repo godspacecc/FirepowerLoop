@@ -39,9 +39,19 @@ namespace Game.Tests
         public void VisualSet_DoesNotDependOnIgnoredArtSources()
         {
             string[] dependencies = AssetDatabase.GetDependencies(PrefabPath, true);
-
+            // 本批复用的样板资源已随仓库发布；只允许这份经过Git追踪核对的清单，不开放整个美术缓存目录。
+            var publishedCoast = new[] {
+                "Generated/DetailedPalm0.asset", "Generated/DetailedPalm1.asset", "Generated/DetailedPalm2.asset",
+                "Generated/PalmGreen.mat", "Generated/PalmBark.mat", "Generated/PalmDry.mat", "Generated/PalmSunlit.mat",
+                "Generated/Sea.mat", "Generated/WeatheredWood.mat", "Generated/CoastalRock.mat",
+                "CoastStudyFoliage.shader", "CoastStudyWater.shader", "PolyHaven/boulder_01.fbx",
+                "PolyHaven/boulder_01_nor_gl_1k.jpg", "PolyHaven/boulder_01_diff_1k.jpg", "PolyHaven/boulder_01_ao_1k.jpg",
+                "PolyHaven/weathered_brown_planks_nor_gl_1k.jpg", "PolyHaven/weathered_brown_planks_diff_1k.jpg",
+                "PolyHaven/weathered_brown_planks_ao_1k.jpg", "PolyHaven/coast_sand_01_nor_gl_1k.jpg",
+                "PolyHaven/coast_sand_01_diff_1k.jpg", "PolyHaven/coast_sand_01_ao_1k.jpg"
+            }.Select(p=>"Assets/Art/CoastStudy/"+p).ToArray();
             Assert.That(dependencies.Any(path =>
-                path.StartsWith("Assets/Art/", StringComparison.Ordinal)), Is.False);
+                path.StartsWith("Assets/Art/", StringComparison.Ordinal) && !publishedCoast.Contains(path)), Is.False);
         }
 
         [Test]

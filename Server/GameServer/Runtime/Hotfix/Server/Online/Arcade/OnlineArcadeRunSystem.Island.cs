@@ -12,7 +12,7 @@ namespace ET.Server
             battle.IslandRegionResolved = true;
             if (!battle.IsChallenge && ArcadeOpeningParameters.FromConfig(ResolveBattleArena(battle)).Enabled)
                 battle.IslandRegion = new ArcadeIslandRegion(ServerConfig.Instance.ArcadeRule.ArenaHalfWidth,
-                    ServerConfig.Instance.ArcadeRule.ArenaHalfHeight, battle.WaveIndex+1);
+                    ServerConfig.Instance.ArcadeRule.ArenaHalfHeight, battle.RoundLayout?.ArenaConfigNumber == 1 ? battle.WaveIndex + 1 : 0);
             return battle.IslandRegion;
         }
 

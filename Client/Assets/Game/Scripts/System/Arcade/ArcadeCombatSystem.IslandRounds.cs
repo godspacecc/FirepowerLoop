@@ -63,7 +63,10 @@ namespace Game
             islandRegionRound = waveIndex + 1;
             random = new System.Random(BuildCombatSeed(this.GetModel<ArcadeRunModel>().Current.RunId, runtime.ArenaNumber) ^ (waveIndex + 1) * 7919);
             BeginWave(runtime, waveIndex);
-            runtime.PlayerPosition = ArcadeIslandLayout.GetSpawn(waveIndex + 1, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
+            var layout = RoundLayout(runtime);
+            runtime.PlayerPosition = layout != null
+                ? new Vector2(layout.SpawnX, layout.SpawnY)
+                : ArcadeIslandLayout.GetSpawn(waveIndex + 1, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
             // 锚点随玩家起点平移再投影到新图合法位置；次数、耐久与冷却保持原值。
             foreach (var powerup in runtime.Powerups.Values)
                 powerup.Position = ResolvePosition(powerup.Position - oldPosition + runtime.PlayerPosition,
@@ -72,7 +75,7 @@ namespace Game
             if (restore != null) RestoreIslandCheckpoint(runtime, restore);
             runtime.IslandEntryBatch = 0;
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
-            runtime.IslandEntryWarningRemaining = waveIndex == 0 ? 0f : IslandWarningSeconds;
+            runtime.IslandEntryWarningRemaining = 0f;
             runtime.IslandCampfireWarningRemaining = waveIndex == 3 ? IslandWarningSeconds : 0;
             // 出口确认不经过活动帧尾部，资源异步等待前必须先公布准备状态。
             view.BeginRoundTransition();
@@ -246,53 +249,24 @@ namespace Game
             view.EndFirstPerson();
         }
 
-        /// <summary>首关四入口持续生成；后续海岛轮保留按预算换向的方向预告。</summary>
+        /// <summary>仅按活动时间随机换向，保留原敌群数量和生成间隔，不插入方向预告。</summary>
         private bool IslandEntryIsReady(ArcadeCombatRuntime runtime, float seconds)
         {
-            if (runtime.WaveIndex == 0)
-            {
-                runtime.IslandEntryWarningRemaining = 0f;
-                return true;
-            }
-            int batchCount = runtime.WaveIndex == 1 ? 3 : 2;
-            int spawned = runtime.IslandWaveBudget - runtime.SpawnQueue.Count;
-            int desiredBatch = Mathf.Min(batchCount - 1, spawned * batchCount / Mathf.Max(1, runtime.IslandWaveBudget));
-            if (desiredBatch != runtime.IslandEntryBatch)
-            {
-                runtime.IslandEntryBatch = desiredBatch;
-                runtime.IslandEntryWarningRemaining = IslandWarningSeconds;
-                // 换向沿用可见预告，不在活动战斗中额外请求全局确认音。
-            }
-            if (runtime.IslandEntryWarningRemaining <= 0) return true;
-            runtime.IslandEntryWarningRemaining = Mathf.Max(0, runtime.IslandEntryWarningRemaining - seconds);
-            return runtime.IslandEntryWarningRemaining <= 0;
+            var layout = RoundLayout(runtime);
+            runtime.IslandPassages ??= new ArcadePassageSchedule(layout.EntrySegmentSeconds, layout.Entries.Count, random);
+            runtime.IslandEntryBatch = runtime.IslandPassages.Advance(seconds);
+            runtime.IslandEntryWarningRemaining = 0;
+            return true;
         }
 
-        /// <summary>固定岸段与车道只决定出生位置；预告查询不消耗序号，出生后立即普通追击。</summary>
+        /// <summary>从当前通道外沿车道生成；进入后仍正常追击，不把敌人投影到场内。</summary>
         private void IslandRoundEntry(ArcadeCombatRuntime runtime, out Vector2 start, bool consume = true)
         {
-            var region = IslandFor(runtime);
-            if (runtime.WaveIndex == 0)
-            {
-                // 四入口逐个轮换，同一个入口内部的车道也轮换，预览不消耗出生序号。
-                float entryLane = (runtime.IslandSpawnSequence / 4 % 5) * .25f;
-                region.EntryFromFourSides(runtime.IslandSpawnSequence, entryLane, catalog.Rule.EnemyContactRadius, out var entry);
-                if (consume) runtime.IslandSpawnSequence++;
-                start = ResolvePosition(new Vector2(entry.X, entry.Y), catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion);
-                return;
-            }
-            // 第2图左右接替，其余图先水侧再陆侧；车道按序循环，重试时一致。
-            float direction = runtime.WaveIndex == 1
-                ? (runtime.IslandEntryBatch % 2 == 0 ? Mathf.PI : 0)
-                : (runtime.IslandEntryBatch == 0 ? -Mathf.PI * .5f : Mathf.PI * .5f);
-            float lane = ((runtime.IslandSpawnSequence % 5) - 2) * .12f;
+            var layout = RoundLayout(runtime);
+            var entry = layout.GetPassageSpawn(runtime.IslandEntryBatch, runtime.IslandSpawnSequence,
+                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, arena.Opening.EnemySeaApproachDistance);
             if (consume) runtime.IslandSpawnSequence++;
-            int index = (Mathf.RoundToInt((direction + lane) / (Mathf.PI * 2) * ArcadeIslandRegion.Samples) + ArcadeIslandRegion.Samples) % ArcadeIslandRegion.Samples;
-            var outer = region.Outer[index];
-            var p = region.Constrain(outer.X * .95f, outer.Y * .95f, catalog.Rule.EnemyContactRadius);
-            start = ResolvePosition(new Vector2(p.X, p.Y), catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion);
+            start = new Vector2(entry.X, entry.Y);
         }
 
         /// <summary>清场后接触通道立即推进；转场与结算状态防止同帧重复进入。</summary>
@@ -301,7 +275,7 @@ namespace Game
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
                 runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry || !runtime.WaveClearAwarded ||
                 (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
-            int count = ArcadeRoundLayoutParameters.ExitDirectionCount;
+            int count = ArcadeIslandRegion.PassageCount;
             if (!runtime.IslandRoundAwaitingExit && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;
             for (int i = 0; i < count; i++)
@@ -314,15 +288,8 @@ namespace Game
             { runtime.SelectedExitConfigNumber = arena.NextArenaNumbers[0]; CompleteArena(runtime); }
         }
 
-        /// <summary>把实际生成岸段投影到表现，不提前修改敌群预算或入口进度。</summary>
-        private void SyncIslandEntryWarning(ArcadeCombatRuntime runtime)
-        {
-            bool visible = UsesIslandRounds(runtime) && runtime.WaveIndex != 0 && !runtime.InTreasureRoom && !runtime.IslandTransitionPending &&
-                !runtime.WaveClearAwarded && !runtime.AwaitingExit && runtime.SpawnQueue.Count > 0 && runtime.IslandEntryWarningRemaining > 0;
-            var position = Vector2.zero;
-            if (visible) IslandRoundEntry(runtime, out position, false);
-            view.SetIslandEntryWarning(position, visible);
-        }
+        /// <summary>用户明确不需要来敌方向提示，持续清除旧预告表现。</summary>
+        private void SyncIslandEntryWarning(ArcadeCombatRuntime runtime) => view.SetIslandEntryWarning(Vector2.zero, false);
 
         /// <summary>短步同时解析岛岸和障碍，真实路径用于冲刺连续击杀，不能横穿沉船。</summary>
         private Vector2 MoveOnIsland(ArcadeCombatRuntime runtime, Vector2 delta, float radius)

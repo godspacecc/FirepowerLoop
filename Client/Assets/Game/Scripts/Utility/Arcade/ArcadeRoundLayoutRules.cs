@@ -42,6 +42,7 @@ namespace FirepowerLoop.Arcade
             WeaponSpawnCount=row.WeaponSpawnCount;
             WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
             WeaponSpawnFirstDelayMin=row.WeaponSpawnFirstDelayMin;WeaponSpawnFirstDelayMax=row.WeaponSpawnFirstDelayMax;
+            EntrySegmentSeconds=row.EntrySegmentSeconds;
             SpecialKind=row.SpecialKind;EventKind=row.EventKind;BossKind=row.BossKind;SpecialRatio=row.SpecialRatio;
             EnemyHealthScale=row.EnemyHealthScale;EnemySpeedScale=row.EnemySpeedScale;SkillPeriod=row.SkillPeriod;
             SkillWarning=row.SkillWarning;SkillMagnitude=row.SkillMagnitude;EventPeriod=row.EventPeriod;
@@ -58,6 +59,20 @@ namespace FirepowerLoop.Arcade
         public float ExitX { get; }
         public float ExitY { get; }
         public float ExitSpacing { get; }
+        /// <summary>海岛只显示真实存在的三条通道，其余主题保留原四向出口。</summary>
+        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ExitDirectionCount;
+        /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
+        public float EntrySegmentSeconds { get; }
+        /// <summary>在真实通道外生成，保留横向车道；不把入口投影到战斗区内。</summary>
+        public ArcadeRegionPoint GetPassageSpawn(int index, int sequence, float halfWidth, float halfHeight, float approachDistance)
+        {
+            var entry = Entries[index];
+            float lane = (sequence % 5 - 2) * .45f;
+            float distance = Math.Min(4f, approachDistance * .67f);
+            return Math.Abs(entry.X) > Math.Abs(entry.Y)
+                ? new ArcadeRegionPoint(Math.Sign(entry.X) * (halfWidth + distance), entry.Y + lane)
+                : new ArcadeRegionPoint(entry.X + lane, Math.Sign(entry.Y) * (halfHeight + distance));
+        }
         /// <summary>规则与表现共用四向落点；海岛沿用干陆地内侧的留量。</summary>
         public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
             => DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
@@ -68,6 +83,7 @@ namespace FirepowerLoop.Arcade
         public static ArcadeRegionPoint DirectionalExit(int direction, float northX, float northY,
             float halfWidth, float halfHeight, float playerRadius, int islandRound = 0)
         {
+            if (islandRound > 0) return ArcadeIslandRegion.PassageExit(islandRound, direction, halfWidth, halfHeight);
             if (direction < 0 || direction >= ExitDirectionCount) throw new ArgumentOutOfRangeException(nameof(direction));
             var point = direction switch
             {
@@ -76,10 +92,7 @@ namespace FirepowerLoop.Arcade
                 2 => new ArcadeRegionPoint(-northX, -northY),
                 _ => new ArcadeRegionPoint(-northY * halfWidth / halfHeight, northX * halfHeight / halfWidth)
             };
-            if (islandRound == 0) return point;
-            var region = new ArcadeIslandRegion(halfWidth, halfHeight, islandRound);
-            point = region.LandPoint(point.X, point.Y, playerRadius);
-            return region.Constrain(point.X, point.Y, playerRadius + 1.5f);
+            return point;
         }
         public IReadOnlyList<ArcadeLayoutObstacle> Obstacles { get; }
         public IReadOnlyList<ArcadeRegionPoint> Entries { get; }
@@ -149,6 +162,7 @@ namespace FirepowerLoop.Arcade
                 p.EventPeriod<=0 || p.EventWarning<=0 || p.EventWarning>=p.EventPeriod || p.EventRadius<=0 || p.EventDamage<0 || p.EventDamage>1 || p.EventMoveSpeed<0 ||
                 p.Obstacles.Any(o=>!Finite(o.X)||!Finite(o.Y)||!Finite(o.HalfWidth)||!Finite(o.HalfHeight)||o.HalfWidth<=0||o.HalfHeight<=0) ||
                 p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)) ||
+                !Finite(p.EntrySegmentSeconds)||p.EntrySegmentSeconds<=0 ||
                 p.WeaponSpawnCount<0 || p.WeaponSpawnCount>p.WeaponSpawnPoints.Count ||
                 !Finite(p.WeaponSpawnDelayMin)||!Finite(p.WeaponSpawnDelayMax)||p.WeaponSpawnDelayMin<=0||p.WeaponSpawnDelayMax<p.WeaponSpawnDelayMin ||
                 !Finite(p.WeaponSpawnFirstDelayMin)||!Finite(p.WeaponSpawnFirstDelayMax)||p.WeaponSpawnFirstDelayMin<=0||p.WeaponSpawnFirstDelayMax<p.WeaponSpawnFirstDelayMin ||
@@ -199,7 +213,7 @@ namespace FirepowerLoop.Arcade
             float clearance=playerRadius*2;
             var region=ArenaConfigNumber==1 ? new ArcadeIslandRegion(halfWidth,halfHeight,RoundNumber) : null;
             var targets=new List<ArcadeRegionPoint>(Entries){new ArcadeRegionPoint(SpawnX,SpawnY)};
-            targets.AddRange(Enumerable.Range(0,ExitDirectionCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
+            targets.AddRange(Enumerable.Range(0,ExitCount).Select(i=>GetExitPosition(i,halfWidth,halfHeight,playerRadius)));
             targets.AddRange(Barrels);
             targets.AddRange(WeaponSpawnPoints);
             if(targets.Any(p=>!IsWalkable(p.X,p.Y,clearance,halfWidth,halfHeight,region)) ||
@@ -223,6 +237,34 @@ namespace FirepowerLoop.Arcade
             return targets.All(p=>seen.Contains(Index(p.X,p.Y)));
         }
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
+    }
+
+    /// <summary>海岛入场时钟；调用方仅在活动战斗推进，独立随机允许相邻时段抽中同一通道。</summary>
+#if DOTNET
+    [ET.EnableClass]
+#endif
+    public sealed class ArcadePassageSchedule
+    {
+        private readonly float period;
+        private readonly int count;
+        private readonly Random random;
+        private double remaining;
+        public int Current { get; private set; } = -1;
+        public ArcadePassageSchedule(float period, int count, Random random)
+        {
+            if (period <= 0 || float.IsNaN(period) || float.IsInfinity(period) || count <= 0 || random == null)
+                throw new ArgumentException("通道时钟参数无效");
+            this.period = period; this.count = count; this.random = random;
+        }
+        /// <summary>暂停等冻结阶段不调用；首次先选入口，计时到边界后再选下一段。</summary>
+        public int Advance(float seconds)
+        {
+            if (seconds < 0 || float.IsNaN(seconds) || float.IsInfinity(seconds)) throw new ArgumentOutOfRangeException(nameof(seconds));
+            if (Current < 0) { Current = random.Next(count); remaining = period; }
+            remaining -= seconds;
+            while (remaining <= 0) { Current = random.Next(count); remaining += period; }
+            return Current;
+        }
     }
 
     /// <summary>双端共用的轮内武器刷新时钟；每次最多交付一个点位，卡顿不追赶连发。</summary>

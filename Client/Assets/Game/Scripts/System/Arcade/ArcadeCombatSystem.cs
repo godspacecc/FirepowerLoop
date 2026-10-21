@@ -763,8 +763,11 @@ namespace Game
                         region.Entry(runtime.IslandSpawnSequence++, UnityRandom(0f, 1f), catalog.Rule.EnemyContactRadius, out start);
                     enemy.Position = new Vector2(start.X, start.Y);
                 }
-                var seaEntry = IslandFor(runtime).SeaEntry(enemy.Position.x, enemy.Position.y, arena.Opening.EnemySeaApproachDistance);
-                enemy.Position = new Vector2(seaEntry.X, seaEntry.Y);
+                if (!UsesIslandRounds(runtime))
+                {
+                    var seaEntry = IslandFor(runtime).SeaEntry(enemy.Position.x, enemy.Position.y, arena.Opening.EnemySeaApproachDistance);
+                    enemy.Position = new Vector2(seaEntry.X, seaEntry.Y);
+                }
             }
             enemy.MaxHealth = Mathf.Max(1, Mathf.RoundToInt(definition.MaxHP * group.HealthMultiplier * healthGrowth));
             enemy.Damage = Mathf.Max(1, Mathf.RoundToInt(definition.AttackDamage * group.DamageMultiplier * damageGrowth));
@@ -1368,6 +1371,7 @@ namespace Game
         private void BeginWave(ArcadeCombatRuntime runtime, int waveIndex)
         {
             runtime.IslandSpawnSequence = 0;
+            runtime.IslandPassages = null;
             InitializeCrates(runtime);
             runtime.WaveIndex = waveIndex;
             InitializeWeaponPickups(runtime);

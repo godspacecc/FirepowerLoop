@@ -43,7 +43,7 @@ internal static class IslandEnemyChaseOnlineChecks
         battle.NextSpawnAt = 0;
         Require((bool)Call("TrySpawnEnemy", battle, 10000L), "Enemy was not spawned");
         var enemy = battle.Enemies.Values.Single();
-        var region = new ArcadeIslandRegion(rule.ArenaHalfWidth, rule.ArenaHalfHeight, wave + 1);
+        var region = new ArcadeIslandRegion(rule.ArenaHalfWidth, rule.ArenaHalfHeight, casual ? wave + 1 : 0);
         Require(!region.Contains(enemy.PositionX, enemy.PositionZ), "Enemy must spawn in deep sea instead of shallow water");
         foreach (var p in battle.Players.Values) { p.InvulnerabilitySeconds = 1000; p.PositionX = p.PositionZ = 0; }
         bool sawWater = false;
@@ -55,7 +55,11 @@ internal static class IslandEnemyChaseOnlineChecks
             Require(MathF.Sqrt(dx * dx + dz * dz) <= enemy.MoveSpeed * .05f + .01f, "Sea approach snapped to shore");
             sawWater |= region.IsShallow(enemy.PositionX, enemy.PositionZ);
         }
-        Require(sawWater && region.ContainsCircle(enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius), "Enemy did not pass through water into original island");
+        Require((casual || sawWater) && region.ContainsCircle(enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius), "Enemy failed continuous entry (legacy route must still cross water)");
+        // 新通道两旁是实体山脚，横向追击样本须先进入中央活动区，不能把目标放进山内。
+        if (casual)
+            for (int i = 0; i < 800 && Math.Max(Math.Abs(enemy.PositionX), Math.Abs(enemy.PositionZ)) > 15; i++)
+                Call("TickEnemies", actor, battle, .05f);
         float length = MathF.Sqrt(enemy.PositionX * enemy.PositionX + enemy.PositionZ * enemy.PositionZ);
         float tangentX = -enemy.PositionZ / length, tangentZ = enemy.PositionX / length;
         foreach (var p in battle.Players.Values) p.InvulnerabilitySeconds = 1000;

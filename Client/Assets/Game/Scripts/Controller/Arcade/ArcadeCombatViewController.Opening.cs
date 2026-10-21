@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using FirepowerLoop.Arcade;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -38,6 +39,9 @@ namespace Game
         private readonly List<Mesh> islandLandmarkMeshes = new();
         /// <summary>首轮码头和木箱已有专用模型；隐藏其碰撞根的通用外观，并在释放时恢复原状态。</summary>
         private readonly Dictionary<GameObject, bool> islandCoastVisualVisibility = new();
+        /// <summary>固定海岛只在真实通道设置无形边界，离开岛岸表现后还原原场地碰撞。</summary>
+        private readonly Dictionary<Collider, bool> islandBoundaryVisibility = new();
+        private readonly List<GameObject> islandPassageBoundaries = new();
         private bool islandLandmarksReady;
         public bool IsIslandRoundReady => islandRound == 0
             ? root != null && obstacleVisualReady && !contentLoadFailed && (contentArena > 3 || contentTemplates != null)
@@ -145,7 +149,8 @@ namespace Game
                 island.transform.Find("Sand").GetComponent<MeshFilter>().sharedMesh = islandSandMesh;
                 island.transform.Find("Water").GetComponent<MeshFilter>().sharedMesh = islandWaterMesh;
                 island.transform.Find("Shoreline").GetComponent<MeshFilter>().sharedMesh = islandShorelineMesh;
-                if(region.IsCoastal)
+                bool fixedLandscape = islandRound > 0 && island.transform.Find("FixedRounds") != null;
+                if(region.IsCoastal && !fixedLandscape)
                 {
                     islandInlandMesh=ArcadeIslandMesh.Inland(region);
                     islandInland=new GameObject("InlandBackdrop",typeof(MeshFilter),typeof(MeshRenderer));
@@ -154,7 +159,7 @@ namespace Game
                     islandInland.GetComponent<MeshFilter>().sharedMesh=islandInlandMesh;
                     islandInland.GetComponent<MeshRenderer>().sharedMaterial=island.transform.Find("Sand").GetComponent<Renderer>().sharedMaterial;
                 }
-                if (islandRound == 3)
+                if (islandRound == 3 && !fixedLandscape)
                 {
                     var ship = ArcadeIslandLayout.GetObstacles(3, w, h)[0];
                     islandWreckMesh = ArcadeIslandMesh.Wreck(ship.HalfExtents.x * 2, ship.HalfExtents.y * 2);
@@ -164,21 +169,25 @@ namespace Game
                     islandWreck.GetComponent<MeshFilter>().sharedMesh = islandWreckMesh;
                     islandWreck.GetComponent<MeshRenderer>().sharedMaterial = island.transform.Find("Campfire/Logs").GetComponentInChildren<Renderer>(true).sharedMaterial;
                 }
-                BuildIslandLandmarks(w, h);
+                if (fixedLandscape) ConfigureFixedIslandLandscape(w, h, catalog);
+                else BuildIslandLandmarks(w, h);
                 islandWading = new ArcadeIslandWadingPresentation(root.transform, region,
                     islandWadingShader, Application.isMobilePlatform, Camera.main);
             }
+            // 岛岸和障碍可按任意顺序完成；每次配置都覆盖晚到的通用外观，不重复生成地形或碰撞。
+            if (islandRound > 0 && island.transform.Find("FixedRounds") != null)
+                SyncFixedIslandObstacleVisuals();
             // 专用地标遮盖通用栅栏；异步通用资源晚到时，下一份快照也不会保留栅栏外观。
             if (islandRound > 0)
                 foreach (var landmark in islandLandmarks)
                     if (landmark != null) landmark.transform.parent.Find("Visual")?.gameObject.SetActive(false);
-            if (islandRound == 3) root.transform.Find("Obstacle_1/Visual")?.gameObject.SetActive(false);
+            if (islandRound == 3 && island.transform.Find("FixedRounds") == null) root.transform.Find("Obstacle_1/Visual")?.gameObject.SetActive(false);
             // 旧岸边棕榈、岩石仅作原图装饰；新图使用带真实同源阻挡的地标，避免装饰穿行误导。
             island.transform.Find("ShoreDecor")?.gameObject.SetActive(islandRound == 0);
             var coastDecor=island.transform.Find("CoastDecor");
             if(coastDecor!=null)
             {
-                coastDecor.gameObject.SetActive(islandRound==1);
+                coastDecor.gameObject.SetActive(islandRound==1 && island.transform.Find("FixedRounds")==null);
                 coastDecor.localScale=new Vector3(w/19.5f,1,h/19.5f);
             }
             if (islandRound == 1)
@@ -202,7 +211,7 @@ namespace Game
                 surface.localPosition = new Vector3(0, name == "Shoreline" ? .024f : .02f, 0);
             }
             // 海面延伸到不可见边界之外，避免露出旧测试地板；不扩大实际可行走区域。
-            island.transform.Find("Ocean").localScale = new Vector3(w * 4, .05f, h * 4);
+            island.transform.Find("Ocean").localScale = new Vector3(w * 8, .05f, h * 8);
             var fire = island.transform.Find("Campfire");
             fire.gameObject.SetActive(islandRound == 0 || islandRound == 4);
             fire.localPosition = new Vector3(islandParameters.CampfireX, .12f, islandParameters.CampfireY);
@@ -245,6 +254,10 @@ namespace Game
         private void ReleaseIslandMeshes()
         {
             islandWading?.Dispose(); islandWading = null;
+            foreach (var boundary in islandBoundaryVisibility) if (boundary.Key != null) boundary.Key.enabled = boundary.Value;
+            islandBoundaryVisibility.Clear();
+            foreach (var boundary in islandPassageBoundaries) DestroyObject(boundary);
+            islandPassageBoundaries.Clear();
             islandLandmarksReady = false;
             foreach (var pair in islandCoastVisualVisibility)
                 if (pair.Key != null) pair.Key.SetActive(pair.Value);
@@ -271,6 +284,59 @@ namespace Game
             islandSandMesh = islandWaterMesh = islandShorelineMesh = null;
             islandWreckMesh = null; islandMeshRound = -1;
             islandInlandMesh=null;
+        }
+
+        /// <summary>显示已确认固定地形，山脚与权威碰撞根逐项对应；旧通用栅栏仅临时隐藏。</summary>
+        private void ConfigureFixedIslandLandscape(float width, float height, ArcadeConfigCatalogDefinition catalog)
+        {
+            var rounds = island.transform.Find("FixedRounds");
+            rounds.localScale = new Vector3(width / 19.5f, 1, height / 19.5f);
+            for (int i = 0; i < rounds.childCount; i++)
+                rounds.GetChild(i).gameObject.SetActive(rounds.GetChild(i).name == "Round" + islandRound);
+            var sea = rounds.Find("Round" + islandRound + "/WaterPalette").GetComponent<Renderer>().sharedMaterial;
+            island.transform.Find("Ocean").GetComponent<Renderer>().sharedMaterial = sea;
+            island.transform.Find("Water").GetComponent<Renderer>().sharedMaterial = sea;
+            var layout = catalog.RoundLayouts.Single(p => p.ArenaConfigNumber == 1 && p.RoundNumber == islandRound);
+            foreach (string name in new[] { "NorthBoundary", "EastBoundary", "SouthBoundary", "WestBoundary" })
+            {
+                var collision = root.transform.Find(name)?.GetComponent<Collider>();
+                if (collision == null) continue;
+                if (!islandBoundaryVisibility.ContainsKey(collision)) islandBoundaryVisibility.Add(collision, collision.enabled);
+                collision.enabled = false;
+            }
+            foreach (var entry in layout.Entries)
+            {
+                bool horizontal = Mathf.Abs(entry.X) > Mathf.Abs(entry.Y);
+                var boundary = new GameObject("IslandPassageBoundary", typeof(BoxCollider));
+                boundary.transform.SetParent(root.transform, false);
+                boundary.transform.localPosition = horizontal ? new Vector3(Mathf.Sign(entry.X) * width, 1, entry.Y) :
+                    new Vector3(entry.X, 1, Mathf.Sign(entry.Y) * height);
+                boundary.GetComponent<BoxCollider>().size = horizontal ? new Vector3(.3f, 2, 7) : new Vector3(7, 2, .3f);
+                islandPassageBoundaries.Add(boundary);
+            }
+            for (int i = 0; i < layout.Obstacles.Count; i++)
+            {
+                var owner = root.transform.Find("Obstacle_" + (i + 1));
+                if (owner == null || owner.GetComponent<BoxCollider>()?.enabled != true)
+                    throw new InvalidOperationException("海岛山脚缺少同源实体阻挡");
+            }
+            islandLandmarksReady = true;
+        }
+
+        /// <summary>固定山脚替代通用障碍外观，延迟资源回调也记录并恢复原始可见性。</summary>
+        private void SyncFixedIslandObstacleVisuals()
+        {
+            for (int index = 1; ; index++)
+            {
+                var owner = root.transform.Find("Obstacle_" + index);
+                if (owner == null) break;
+                var visual = owner.Find("Visual")?.gameObject;
+                if (visual != null)
+                {
+                    if (!islandCoastVisualVisibility.ContainsKey(visual)) islandCoastVisualVisibility.Add(visual, visual.activeSelf);
+                    visual.SetActive(false);
+                }
+            }
         }
 
         /// <summary>礁石可见底缘严格覆盖阻挡矩形；岩块与棕榈均收在该范围内，不额外制造碰撞。</summary>

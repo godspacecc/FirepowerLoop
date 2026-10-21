@@ -1293,6 +1293,9 @@ namespace ET.Server
             battle.WeaponSpawns=null;
             if(battle.IsChallenge||battle.IsFinalBoss||record.RoundBossEncounter||battle.SlayerChallenge!=null||battle.SlayerMartReturnWave>0||battle.RoundLayout==null)return;
             var random=new Random(unchecked((int)MixDropSeed((ulong)record.RunId,battle.ArenaNumber,battle.WaveIndex+1)));
+            if (battle.RoundLayout?.ArenaConfigNumber == 1)
+                battle.IslandPassages = new FirepowerLoop.Arcade.ArcadePassageSchedule(
+                    battle.RoundLayout.EntrySegmentSeconds, battle.RoundLayout.Entries.Count, random);
             battle.WeaponSpawns=battle.RoundLayout.CreateWeaponSpawnSchedule(random);
         }
 
@@ -1444,6 +1447,9 @@ namespace ET.Server
             }
             changed |= TickFinalBossReinforcements(battle, deltaSeconds, now);
             changed |= TickWeaponPickups(battle, deltaSeconds);
+            if (battle.RoundLayout?.ArenaConfigNumber == 1 && !battle.IsChallenge && !battle.IsFinalBoss &&
+                IslandPassageActive(battle) && battle.SpawnQueueIndex < battle.SpawnQueue.Count)
+                battle.IslandPassages?.Advance(deltaSeconds);
             changed |= TrySpawnEnemy(battle, now);
             changed |= self.TickEnemies(battle, deltaSeconds);
             if (!hazardRespawnWaiting && !battle.AllPlayersDefeated)
@@ -1459,8 +1465,15 @@ namespace ET.Server
             return changed;
         }
 
+        /// <summary>海岛只在双方活动战斗时推进通道；复活、奖励区域和清场等待不消耗时段或入场预算。</summary>
+        private static bool IslandPassageActive(OnlineArcadeBattleRuntime battle)
+            => !battle.WaveClearAwarded && !battle.AwaitingExit && !battle.AllPlayersDefeated &&
+                !battle.ArenaCompletionReady && !battle.RoundTransitionPending &&
+                !battle.Players.Values.Any(p => p.InTreasureRoom || p.RespawnSeconds > 0);
+
         private static bool TrySpawnEnemy(OnlineArcadeBattleRuntime battle, long now)
         {
+            if (battle.RoundLayout?.ArenaConfigNumber == 1 && !IslandPassageActive(battle)) return false;
             if (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || now < battle.NextSpawnAt)
                 return false;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
@@ -1483,17 +1496,22 @@ namespace ET.Server
             }
             if (islandSpawn)
             {
-                // 岸段只决定合法出生位置，生成后直接使用当前玩家追击路径。
-                var region = IslandFor(battle);
-                FirepowerLoop.Arcade.ArcadeRegionPoint start;
-                float lane = ((runtimeId * 37) % 101) / 100f;
-                // 首轮四入口持续来敌；后续海岛轮沿用原来的两侧入口。
-                if (battle.WaveIndex == 0)
-                    region.EntryFromFourSides(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
+                if (battle.RoundLayout != null)
+                {
+                    int entryIndex = battle.IslandPassages.Advance(0);
+                    var entry = battle.RoundLayout.GetPassageSpawn(entryIndex, battle.SpawnedInWave,
+                        ServerConfig.Instance.ArcadeRule.ArenaHalfWidth, ServerConfig.Instance.ArcadeRule.ArenaHalfHeight,
+                        opening.EnemySeaApproachDistance);
+                    x = entry.X; z = entry.Y;
+                }
                 else
-                    region.Entry(battle.SpawnedInWave, lane, ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out start);
-                var seaEntry = region.SeaEntry(start.X, start.Y, opening.EnemySeaApproachDistance);
-                x = seaEntry.X; z = seaEntry.Y;
+                {
+                    var region = IslandFor(battle);
+                    region.Entry(battle.SpawnedInWave, ((runtimeId * 37) % 101) / 100f,
+                        ServerConfig.Instance.ArcadeRule.EnemyContactRadius, out var start);
+                    var seaEntry = region.SeaEntry(start.X, start.Y, opening.EnemySeaApproachDistance);
+                    x = seaEntry.X; z = seaEntry.Y;
+                }
             }
             OnlineArcadeBattlePlayerRuntime target = battle.Players.Values.Where(player => player.Alive && !player.InTreasureRoom)
                 .OrderBy(player => DistanceSquared(x, z, player.PositionX, player.PositionZ)).FirstOrDefault();

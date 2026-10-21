@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Luban;
 using NUnit.Framework;
@@ -72,38 +73,33 @@ namespace Game.Tests
             Assert.That(ArcadeCombatSystem.IsInsideObstacle(result, .5f, obstacles), Is.False);
         }
 
-        /// <summary>码头与靠岸木箱必须阻挡普通小步和单帧长距离冲刺，不能只依靠模型 Collider。</summary>
-        [TestCase(10f, 5f, 11.7f, false)]
-        [TestCase(10f, 5f, 11.7f, true)]
-        [TestCase(9f, 8.4f, 10.675f, false)]
-        [TestCase(9f, 8.4f, 10.675f, true)]
-        [TestCase(10f, -6.5f, 12.175f, false)]
-        [TestCase(10f, -6.5f, 12.175f, true)]
-        public void CoastSolidsBlockWalkingAndLongDash(float x, float y, float stopX, bool dash)
+        /// <summary>山脚实体阻挡小步和长冲刺，中央场地保持畅通。</summary>
+        [TestCase(1, -16f, 10f, -1f, 0f, false)]
+        [TestCase(1, -16f, 10f, -1f, 0f, true)]
+        [TestCase(3, 16f, 10f, 1f, 0f, false)]
+        [TestCase(3, 16f, 10f, 1f, 0f, true)]
+        [TestCase(4, 10f, 16f, 0f, 1f, false)]
+        [TestCase(4, 10f, 16f, 0f, 1f, true)]
+        public void MountainFeetBlockWalkingAndLongDash(int round, float x, float y, float dx, float dy, bool dash)
         {
-            Call("StartIslandRound", runtime, 0, null);
-            runtime.PlayerPosition = new Vector2(x, y);
-            int steps = dash ? 1 : 100;
-            for (int i = 0; i < steps; i++)
+            Call("StartIslandRound", runtime, round - 1, null);
+            var direction = new Vector2(dx, dy); runtime.PlayerPosition = new Vector2(x, y);
+            for (int i = 0; i < (dash ? 1 : 100); i++)
                 runtime.PlayerPosition = (Vector2)Call("MoveOnIsland", runtime,
-                    Vector2.right * (dash ? 15f : .15f), catalog.Rule.PlayerRadius);
-            Assert.That(runtime.PlayerPosition.x, Is.EqualTo(stopX).Within(.015f),
-                "应停在可见实体近侧，并保留玩家半径");
-            var path = (List<ArcadeRegionPoint>)typeof(ArcadeCombatSystem)
-                .GetField("islandMovementPath", Flags).GetValue(combat);
-            foreach (var point in path)
-                Assert.That(point.X, Is.LessThanOrEqualTo(stopX + .015f), "冲刺路径也不能穿过实体");
+                    direction * (dash ? 15f : .15f), catalog.Rule.PlayerRadius);
+            Assert.That(Vector2.Dot(runtime.PlayerPosition, direction), Is.EqualTo(17.35f).Within(.02f),
+                "山脚近侧必须按角色半径实体阻挡");
         }
 
-        /// <summary>首轮海岸装饰的阻挡不能遗留到其他三图或共享海岛。</summary>
-        [Test] public void CoastSolidsBelongOnlyToFirstLocalRound()
+        /// <summary>切图更新实体布局，原西侧山脚在第三轮成为海岸。</summary>
+        [Test] public void MountainSolidsFollowCurrentRound()
         {
             Call("StartIslandRound", runtime, 0, null);
             var first = (IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
-            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(15, 5), 0, first), Is.True);
-            Call("StartIslandRound", runtime, 1, null);
-            var second = (IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
-            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(15, 5), 0, second), Is.False);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(-18.6f, 10), 0, first), Is.True);
+            Call("StartIslandRound", runtime, 2, null);
+            var third = (IReadOnlyList<ArcadeObstacleDefinition>)Call("ObstaclesFor", runtime);
+            Assert.That(ArcadeCombatSystem.IsInsideObstacle(new Vector2(-18.6f, 10), 0, third), Is.False);
         }
 
         /// <summary>旧节点的玩家或强化锚点落在码头靠海侧时，岸线夹取不能把它重新压回实体。</summary>
@@ -193,6 +189,39 @@ namespace Game.Tests
         }
 
         [Test] public void RoundStartDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(false);
+
+        /// <summary>相同活动时段只使用一个真实通道，敌人从边界外连续入场，不按出生序轮换方向。</summary>
+        [Test] public void OneActiveSegmentSpawnsOnlyOutsideItsVisiblePassageWithoutWarnings()
+        {
+            Call("StartIslandRound", runtime, 1, null);
+            Vector2? direction = null;
+            for (int i = 0; i < 8; i++)
+            {
+                runtime.Enemies.Clear(); runtime.SpawnCooldown = 0;
+                Call("TickSpawning", runtime, .1f);
+                Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "换向不能等待额外预警");
+                var position = runtime.Enemies.Values.Single().Position;
+                Assert.That(Mathf.Max(Mathf.Abs(position.x), Mathf.Abs(position.y)), Is.GreaterThan(19.5f), "不能在战斗区凭空出现");
+                if (direction.HasValue) Assert.That(Vector2.Dot(position.normalized, direction.Value), Is.GreaterThan(.995f));
+                direction = position.normalized;
+                Assert.That(runtime.IslandEntryWarningRemaining, Is.Zero, "不增加方向预警");
+            }
+        }
+
+        /// <summary>每段从权威随机源独立抽取，允许重复；等待或过轮不靠击杀预算切换。</summary>
+        [Test] public void PassageSegmentsUseRandomDirectionsRatherThanFixedSpawnBudgets()
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            var expected = new System.Random(37); Set("random", new System.Random(37));
+            for (int segment = 0; segment < 10; segment++)
+            {
+                Call("IslandEntryIsReady", runtime, segment == 0 ? 0f : 12f);
+                Assert.That(runtime.IslandEntryBatch, Is.EqualTo(expected.Next(3)), "每个时段应独立随机选通道");
+                int selected = runtime.IslandEntryBatch;
+                Call("IslandEntryIsReady", runtime, .01f);
+                Assert.That(runtime.IslandEntryBatch, Is.EqualTo(selected), "同段不应换向");
+            }
+        }
         [Test] public void EntryBatchDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(true);
 
         private void AssertNoUnsolicitedSound(bool entryBatch)
@@ -206,11 +235,10 @@ namespace Game.Tests
             {
                 if (entryBatch)
                 {
-                    // 第二轮120名敌人在生成40名后切换入场方向。
-                    while (runtime.SpawnQueue.Count > 80) runtime.SpawnQueue.Dequeue();
                     Call("TickSpawning", runtime, .01f);
-                    Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
-                    Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
+                    runtime.SpawnCooldown = 0;
+                    Call("TickSpawning", runtime, 12f);
+                    Assert.That(runtime.IslandEntryWarningRemaining, Is.Zero);
                 }
                 else
                 {
@@ -222,24 +250,17 @@ namespace Game.Tests
             }
         }
 
-        [Test] public void EntryBatchWarningKeepsExistingEnemiesMovingWithoutFiring()
+        [Test] public void PassageChangeKeepsExistingEnemiesMovingWithoutFiring()
         {
             Call("StartIslandRound", runtime, 0, null);
-            Call("StartIslandRound", runtime, 1, null);
-            Call("TickSpawning", runtime, 5f);
-            var enemy = System.Linq.Enumerable.First(runtime.Enemies.Values);
-            enemy.Position = runtime.PlayerPosition + Vector2.up * 4f;
-            var before = enemy.Position;
-            // 第二轮首批40名已生成；等待下一方向预警时，保留场内已有敌人。
-            while (runtime.SpawnQueue.Count > 80) runtime.SpawnQueue.Dequeue();
-
+            Call("TickSpawning", runtime, .01f);
+            var enemy = runtime.Enemies.Values.First(); enemy.Position = runtime.PlayerPosition + Vector2.up * 4;
+            var before = enemy.Position; runtime.SpawnCooldown = 0;
+            Call("IslandEntryIsReady", runtime, 12f);
             combat.Tick(runtime, .01f);
-
-            Assert.That(runtime.IslandEntryBatch, Is.EqualTo(1));
-            Assert.That(runtime.IslandEntryWarningRemaining, Is.GreaterThan(0));
-            Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "预告只等待下一批生成");
-            Assert.That(runtime.SpawnQueue.Count, Is.EqualTo(80), "预告期间不能提前消耗下一批预算");
-            Assert.That(enemy.Position, Is.Not.EqualTo(before), "预告期间现有敌人仍须正常推进");
+            Assert.That(runtime.IslandEntryWarningRemaining, Is.Zero);
+            Assert.That(runtime.Enemies.ContainsKey(enemy.Id), Is.True);
+            Assert.That(enemy.Position, Is.Not.EqualTo(before));
             Assert.That(runtime.PlayerFireSequence, Is.Zero);
         }
 
@@ -340,21 +361,30 @@ namespace Game.Tests
             Assert.That(combat.TryRetryMapPreparation(), Is.False, "卸载后的重试必须恢复安全节点，不能装配已释放地图");
         }
 
-        [Test] public void EntryChangesWaitForWarningAndPreserveExistingEnemiesAndBudget()
+        [Test] public void PassageChangesPreserveExistingEnemiesAndBudgetWithoutWarningWait()
         {
-            Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
-            Call("TickSpawning", runtime, .01f); Assert.That(runtime.Enemies, Is.Empty);
-            Call("TickSpawning", runtime, 5f); Assert.That(runtime.Enemies.Count, Is.EqualTo(1));
-            var first = System.Linq.Enumerable.First(runtime.Enemies.Values);
-            Assert.That(first.Position.x, Is.LessThan(0));
-            // 40/120预算已进场后固定转到右侧；旧敌人仍在。
-            for (int i = 0; i < 39; i++) runtime.SpawnQueue.Dequeue();
-            runtime.SpawnCooldown = 0;
+            Call("StartIslandRound", runtime, 1, null);
             Call("TickSpawning", runtime, .01f); Assert.That(runtime.Enemies.Count, Is.EqualTo(1));
-            Call("TickSpawning", runtime, 5f); Assert.That(runtime.Enemies.Count, Is.EqualTo(2));
+            var first = runtime.Enemies.Values.First();
+            runtime.SpawnCooldown = 0;
+            Call("TickSpawning", runtime, 12f);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(2));
             Assert.That(runtime.Enemies.ContainsKey(first.Id), Is.True);
-            Assert.That(System.Linq.Enumerable.Any(runtime.Enemies.Values, e => e.Position.x > 0), Is.True);
-            Assert.That(runtime.SpawnQueue.Count + runtime.Enemies.Count + 39, Is.EqualTo(120));
+            Assert.That(runtime.SpawnQueue.Count + runtime.Enemies.Count, Is.EqualTo(120));
+            Assert.That(runtime.IslandEntryWarningRemaining, Is.Zero);
+        }
+
+        [Test] public void RespawnAndClearWaitDoNotConsumePassageTime()
+        {
+            Call("StartIslandRound", runtime, 0, null);
+            Set("random", new System.Random(37));
+            Call("IslandEntryIsReady", runtime, 0f);
+            runtime.RespawnRemaining = 100; combat.Tick(runtime, 30);
+            runtime.RespawnRemaining = 0;
+            runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f); combat.Tick(runtime, 30);
+            var expected = new System.Random(37); expected.Next(3);
+            Call("IslandEntryIsReady", runtime, 12f);
+            Assert.That(runtime.IslandEntryBatch, Is.EqualTo(expected.Next(3)));
         }
 
         [Test] public void CampfireWarningAndClearDoNotDamagePlayer()
@@ -400,14 +430,14 @@ namespace Game.Tests
             Assert.That(runtime.FirstPersonRemaining, Is.Zero);
         }
 
-        [Test] public void FastProjectileCannotCrossShipBetweenFrames()
+        [Test] public void FastProjectileCannotCrossMountainFootBetweenFrames()
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null);
-            runtime.Projectiles.Add(50, new ArcadeProjectileRuntime { Id = 50, Position = new Vector2(-2, 3),
+            runtime.Projectiles.Add(50, new ArcadeProjectileRuntime { Id = 50, Position = new Vector2(16, 10),
                 Velocity = new Vector2(30, 0), RemainingSeconds = 10 });
             Call("TickProjectiles", runtime, .5f);
-            Assert.That(runtime.Projectiles.ContainsKey(50), Is.False, "弹丸两端都在船外也必须被中间船壳阻挡");
+            Assert.That(runtime.Projectiles.ContainsKey(50), Is.False, "弹丸不能穿过山脚实体");
         }
 
         [Test]
@@ -421,26 +451,26 @@ namespace Game.Tests
             view.SurfaceHits = 0;
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null);
-            runtime.Projectiles.Add(50, new ArcadeProjectileRuntime { Id = 50, Position = new Vector2(-2, 3),
+            runtime.Projectiles.Add(50, new ArcadeProjectileRuntime { Id = 50, Position = new Vector2(16, 10),
                 Velocity = new Vector2(30, 0), RemainingSeconds = life, SourceWeaponId = source, Hostile = hostile });
             var recorder = view;
             Call("TickProjectiles", runtime, .5f); Call("TickProjectiles", runtime, .5f);
             Assert.That(recorder.SurfaceHits, Is.EqualTo(expected ? 1 : 0), source + " hostile=" + hostile + " life=" + life);
             if (expected)
             {
-                Assert.That(recorder.SurfacePosition.x, Is.InRange(-2f, 13f));
-                Assert.That(recorder.SurfacePosition.y, Is.EqualTo(3f));
+                Assert.That(recorder.SurfacePosition.x, Is.InRange(16f, 19.5f));
+                Assert.That(recorder.SurfacePosition.y, Is.EqualTo(10f));
             }
             }
         }
 
-        [Test] public void DashCannotPassThroughShipAndPathRemainsOutsideObstacle()
+        [Test] public void DashCannotPassThroughMountainFootAndPathRemainsOutsideObstacle()
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null);
-            runtime.PlayerPosition = new Vector2(-2, 3);
+            runtime.PlayerPosition = new Vector2(16, 10);
             var end = (Vector2)Call("MoveOnIsland", runtime, new Vector2(16, 0), .55f);
-            Assert.That(end.x, Is.LessThan(2));
+            Assert.That(end.x, Is.EqualTo(17.35f).Within(.02f));
         }
 
         [Test] public void RepeatedExitContactCannotSkipNewRound()

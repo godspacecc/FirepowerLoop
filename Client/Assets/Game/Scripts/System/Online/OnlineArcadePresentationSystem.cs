@@ -592,7 +592,7 @@ namespace Game
             int[] targets=battle.IsFinalBoss?new[]{0}:battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:
                 activeRoundLayout.BossKind>0&&!battle.RoundBossEncounter?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(targets.Length==0)return;
-            int contact=-1;for(int i=0;i<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount;i++)
+            int contact=-1;for(int i=0;i<activeRoundLayout.ExitCount;i++)
             {var point=activeRoundLayout.GetExitPosition(i,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 var p=new Vector2(point.X,point.Y);
                 if(Vector2.SqrMagnitude(new Vector2(self.PositionX,self.PositionZ)-p)<=2.25f){contact=i;break;}}

@@ -25,7 +25,7 @@ namespace Game
         public static Vector2 GetSpawn(int roundNumber, float halfWidth, float halfHeight)
         {
             Validate(roundNumber);
-            // 第二图南侧礁石向两侧膨胀角色半径后覆盖旧起点，改从左侧陆路落脚。
+            // 无轮级配置时保留旧布局起点，正式四图读取权威表中的宽阔中央起点。
             return new Vector2((roundNumber == 2 ? -5 : -3) * halfWidth / 19.5f, -8 * halfHeight / 19.5f);
         }
 

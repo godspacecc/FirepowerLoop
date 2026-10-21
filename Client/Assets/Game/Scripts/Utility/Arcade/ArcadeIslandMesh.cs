@@ -25,8 +25,10 @@ namespace FirepowerLoop.Arcade
             var extended=new ArcadeRegionPoint[region.Outer.Count];
             for(int i=0;i<extended.Length;i++)
             {
-                var p=region.Outer[i];float cosine=Mathf.Cos(i*Mathf.PI*2/extended.Length);
-                float scale=1+2*Mathf.Clamp01((.6f-cosine)/.15f);
+                var p=region.Outer[i];
+                float angle=i*Mathf.PI*2/extended.Length, cosine=Mathf.Cos(angle), sine=Mathf.Sin(angle);
+                int side=Mathf.Abs(cosine)>Mathf.Abs(sine) ? (cosine>0 ? 1 : 3) : (sine>0 ? 0 : 2);
+                float scale=ArcadeIslandRegion.SeaSide(region.RoundNumber,side) ? 1 : 3;
                 extended[i]=new ArcadeRegionPoint(p.X*scale,p.Y*scale);
             }
             return Band("CoastInlandBackdrop",region.Outer,extended);

@@ -301,6 +301,8 @@ namespace Game
         public bool IslandRoundAwaitingExit;
         /// <summary>固定入口批次及预告剩余秒数；换向停止旧入口生成，保留在场敌人。</summary>
         public int IslandEntryBatch;
+        /// <summary>本地图活动时钟；随轮现场重建，不保存临时入场进度。</summary>
+        public FirepowerLoop.Arcade.ArcadePassageSchedule IslandPassages;
         /// <summary>当前轮完整有限预算，按已出队数量划分固定入口批次。</summary>
         public int IslandWaveBudget;
         /// <summary>当前入口批次生成前的剩余预告秒数。</summary>

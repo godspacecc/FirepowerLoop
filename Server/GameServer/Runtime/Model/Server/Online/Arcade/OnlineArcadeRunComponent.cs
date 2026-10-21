@@ -362,6 +362,8 @@ namespace ET.Server
         public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters RoundLayout;
         /// <summary>当前地图的权威武器刷新时钟；候选现场替换后旧计划随之释放，不同步给客户端计时。</summary>
         public FirepowerLoop.Arcade.ArcadeWeaponSpawnSchedule WeaponSpawns;
+        /// <summary>服务器唯一推进的随机通道时钟，客户端只显示实际出生结果。</summary>
+        public FirepowerLoop.Arcade.ArcadePassageSchedule IslandPassages;
         public int RoundGeneration;
         public bool RoundTransitionPending;
         public bool PendingBossEncounter;

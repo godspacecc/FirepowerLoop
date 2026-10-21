@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>正式海岛生成与移动链路：深海接近、连续上岸及玩家边界。</summary>
+    /// <summary>正式海岛生成与移动链路：三通道连续入场、旧海岸接近及玩家边界。</summary>
     public sealed class IslandSeaApproachTests
     {
         private ArcadeCombatSystem system;
@@ -40,39 +40,44 @@ namespace Game.Tests
             Set("random", new System.Random(37)); Set("view", new ArcadeCombatViewController());
         }
 
+        // 十二个实际通道全部覆盖，另保留旧顺序局的连续涉水回归。
+        [TestCase(0, 0, true)]
         [TestCase(0, 1, true)]
+        [TestCase(0, 2, true)]
         [TestCase(1, 0, true)]
+        [TestCase(1, 1, true)]
+        [TestCase(1, 2, true)]
         [TestCase(2, 0, true)]
+        [TestCase(2, 1, true)]
+        [TestCase(2, 2, true)]
         [TestCase(3, 0, true)]
+        [TestCase(3, 1, true)]
+        [TestCase(3, 2, true)]
         [TestCase(0, 0, false)]
-        public void SpawnedEnemy_TravelsFromDeepSeaThroughWaterOntoLand(int wave, int side, bool casual)
+        public void SpawnedEnemy_ApproachesContinuouslyThroughItsPassage(int wave, int side, bool casual)
         {
             var data = run.Current; data.IsCasualRoute = casual; run.CommitSafeNode(data); run.EnterArena();
             var enemy = Spawn(wave, side);
             var region = new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, casual ? wave + 1 : 0);
-            Assert.That(region.Contains(enemy.Position.x, enemy.Position.y), Is.False, "必须在深海生成，不能仍在浅水边缘直接出现");
-            var legal = region.Constrain(enemy.Position.x, enemy.Position.y, 0);
-            Assert.That(Vector2.Distance(enemy.Position, new Vector2(legal.X, legal.Y)), Is.GreaterThan(4f));
+            Assert.That(region.Contains(enemy.Position.x, enemy.Position.y), Is.False, "必须从战斗边界外进入");
+            if (casual)
+            {
+                var entry = catalog.RoundLayouts.Single(p => p.ArenaConfigNumber == 1 && p.RoundNumber == wave + 1).Entries[side];
+                Assert.That(Vector2.Dot(enemy.Position.normalized, new Vector2(entry.X, entry.Y).normalized), Is.GreaterThan(.995f));
+                Assert.That(region.IsShallow(entry.X, entry.Y), Is.False, "陆路和船梯不能错当涉水入口");
+            }
             bool sawShallow = false, sawLand = false;
             for (int step = 0; step < 800 && !sawLand; step++)
             {
                 var before = enemy.Position;
                 Call("TickEnemies", runtime, .05f);
-                Assert.That(Vector2.Distance(enemy.Position, before), Is.LessThanOrEqualTo(enemy.Speed * .05f + .01f), "接近与跨岸不能瞬移");
+                Assert.That(Vector2.Distance(enemy.Position, before), Is.LessThanOrEqualTo(enemy.Speed * .05f + .01f), "入场不能瞬移");
                 sawShallow |= region.IsShallow(enemy.Position.x, enemy.Position.y);
-                sawLand = region.Contains(enemy.Position.x, enemy.Position.y) && !region.IsShallow(enemy.Position.x, enemy.Position.y);
+                sawLand = region.ContainsCircle(enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius) &&
+                    !region.IsShallow(enemy.Position.x, enemy.Position.y);
             }
-            Assert.That(sawShallow, Is.True, "必须经过可见的浅水路段");
-            Assert.That(sawLand, Is.True, "必须持续向玩家接近并上岸");
-        }
-
-        [TestCase(0)][TestCase(2)][TestCase(3)]
-        public void FirstRoundInlandEnemySpawnsOnDryLand(int side)
-        {
-            var enemy=Spawn(0,side);
-            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,1);
-            Assert.That(region.Contains(enemy.Position.x,enemy.Position.y),Is.True,"陆路入口不能按海面距离向外移");
-            Assert.That(region.IsShallow(enemy.Position.x,enemy.Position.y),Is.False,"三处岛内入口不应涉水");
+            if (!casual) Assert.That(sawShallow, Is.True, "旧顺序局仍经过浅水");
+            Assert.That(sawLand, Is.True, "必须连续移动至干燥战斗区");
         }
 
         [Test] public void SeaCrowdingAndKnockback_DoNotTeleportEnemiesToShore()
@@ -111,12 +116,17 @@ namespace Game.Tests
             Assert.That(resolved.x, Is.LessThan(catalog.Rule.ArenaHalfWidth));
         }
 
-        private ArcadeEnemyRuntime Spawn(int wave, int sequence)
+        private ArcadeEnemyRuntime Spawn(int wave, int passage)
         {
             Call("BeginWave", runtime, wave);
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
-            runtime.IslandEntryWarningRemaining = 0; runtime.IslandSpawnSequence = sequence;
-            Call("TickSpawning", runtime, 5f);
+            runtime.IslandEntryWarningRemaining = 0; runtime.IslandSpawnSequence = 0;
+            if (run.Current.IsCasualRoute)
+            {
+                int seed = 0; while (new System.Random(seed).Next(3) != passage) seed++;
+                Set("random", new System.Random(seed)); runtime.IslandPassages = null;
+            }
+            Call("TickSpawning", runtime, .01f);
             return runtime.Enemies.Values.Single();
         }
         private void Set(string name, object value) => typeof(ArcadeCombatSystem).GetField(name, Flags).SetValue(system, value);

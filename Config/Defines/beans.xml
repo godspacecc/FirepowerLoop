@@ -470,6 +470,8 @@
         <var name="WeaponSpawnDelayMax" type="float"/>
         <var name="WeaponSpawnFirstDelayMin" type="float"/>
         <var name="WeaponSpawnFirstDelayMax" type="float"/>
+        <!-- 海岛分段入场的活动秒数；不是方向预警时间。 -->
+        <var name="EntrySegmentSeconds" type="float"/>
     </bean>
     <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
     <bean name="ArcadeSlayerMartItemConfig">

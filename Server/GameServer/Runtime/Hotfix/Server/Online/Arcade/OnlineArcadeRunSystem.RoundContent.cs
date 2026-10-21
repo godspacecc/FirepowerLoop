@@ -104,7 +104,7 @@ namespace ET.Server
             {
                 if(!p.Alive||p.InTreasureRoom||p.ConfirmedExitTarget==int.MinValue)continue;
                 int intent=p.ConfirmedExitTarget;p.ConfirmedExitTarget=int.MinValue;
-                for(int i=0;i<ArcadeRoundLayoutParameters.ExitDirectionCount;i++)
+                for(int i=0;i<layout.ExitCount;i++)
                 {
                     var exit=layout.GetExitPosition(i,rule.ArenaHalfWidth,rule.ArenaHalfHeight,rule.PlayerRadius);
                     if(intent!=targets[0]||DistanceSquared(p.PositionX,p.PositionZ,exit.X,exit.Y)>2.25f)continue;

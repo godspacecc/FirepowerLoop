@@ -22,8 +22,39 @@ namespace FirepowerLoop.Arcade
         private readonly ArcadeRegionPoint[] sand = new ArcadeRegionPoint[Samples];
         public IReadOnlyList<ArcadeRegionPoint> Outer => outer;
         public IReadOnlyList<ArcadeRegionPoint> Sand => sand;
-        /// <summary>第一轮为大岛东岸的一片区域；其余三侧是岛内陆路，不是环岛水域。</summary>
+        /// <summary>四轮均为海岸局部；零保留旧环岛轮廓。</summary>
         public bool IsCoastal { get; }
+        /// <summary>固定海岸的轮次，仅控制同源地形，不持有刷怪随机状态。</summary>
+        public int RoundNumber { get; }
+        public const int PassageCount = 3;
+
+        /// <summary>北东南西编号；三条真实通道避开本轮海岸，第二轮东侧为停船码头。</summary>
+        public static int PassageSide(int round, int index)
+        {
+            if (round < 1 || round > 4 || index < 0 || index >= PassageCount)
+                throw new ArgumentOutOfRangeException(nameof(index));
+            return round switch
+            {
+                1 => index == 0 ? 0 : index == 1 ? 3 : 2,
+                2 => index == 0 ? 0 : index == 1 ? 3 : 1,
+                3 => index == 0 ? 0 : index == 1 ? 1 : 2,
+                _ => index == 0 ? 0 : index == 1 ? 3 : 1
+            };
+        }
+
+        /// <summary>山林和礁岸依据相同朝向制作；第二轮同时露出东、南海面。</summary>
+        public static bool SeaSide(int round, int side) => round switch
+        { 1 => side == 1, 2 => side == 1 || side == 2, 3 => side == 3, 4 => side == 2, _ => true };
+
+        /// <summary>出口位于通道内侧，和配置入口轴线重合，触发圆不侵入山体。</summary>
+        public static ArcadeRegionPoint PassageExit(int round, int index, float halfWidth, float halfHeight)
+            => PassageSide(round, index) switch
+            {
+                0 => new ArcadeRegionPoint(0, halfHeight - 3),
+                1 => new ArcadeRegionPoint(halfWidth - 3, 0),
+                2 => new ArcadeRegionPoint(0, -halfHeight + 3),
+                _ => new ArcadeRegionPoint(-halfWidth + 3, 0)
+            };
 
         /// <summary>保留原场地尺度，浅凹岸线及宽主战斗区；制作工具与双方权威使用同一采样结果。</summary>
         public ArcadeIslandRegion(float halfWidth, float halfHeight)
@@ -32,13 +63,36 @@ namespace FirepowerLoop.Arcade
         /// <summary>单机首场的固定四图；零保留既有联机轮廓，不改变服务端规则。</summary>
         public ArcadeIslandRegion(float halfWidth, float halfHeight, int roundNumber)
         {
-            IsCoastal = roundNumber == 1;
+            IsCoastal = roundNumber > 0;
+            RoundNumber = roundNumber;
             if (roundNumber < 0 || roundNumber > 4) throw new ArgumentOutOfRangeException(nameof(roundNumber));
             if (halfWidth <= 5 || halfHeight <= 5 || float.IsNaN(halfWidth) || float.IsNaN(halfHeight) ||
                 float.IsInfinity(halfWidth) || float.IsInfinity(halfHeight)) throw new ArgumentException("海岛尺度无效");
             for (int i = 0; i < Samples; i++)
             {
                 double a = i * Math.PI * 2 / Samples, c = Math.Cos(a), s = Math.Sin(a);
+                if (IsCoastal)
+                {
+                    // 山体退到外围，保留约30米见方的中央干地；海岸有轻微固定起伏。
+                    double edge = 1 / Math.Max(Math.Abs(c), Math.Abs(s));
+                    float px = (float)(c * edge * halfWidth), py = (float)(s * edge * halfHeight);
+                    float sea = 0;
+                    if (roundNumber == 1 || roundNumber == 2)
+                        sea = Math.Max(sea, (float)Math.Pow(Math.Max(0, c), 8));
+                    if (roundNumber == 2 || roundNumber == 4)
+                        sea = Math.Max(sea, (float)Math.Pow(Math.Max(0, -s), 8));
+                    if (roundNumber == 3) sea = (float)Math.Pow(Math.Max(0, -c), 8);
+                    float inset = sea * (.035f + .006f * (float)Math.Sin(a * 5 + roundNumber));
+                    px *= 1 - inset; py *= 1 - inset;
+                    outer[i] = new ArcadeRegionPoint(px, py);
+                    float length = (float)Math.Sqrt(px * px + py * py);
+                    float waterWidth = 1.7f * sea;
+                    // 第二轮东侧中央是码头通道，木板覆盖处不按涉水减速。
+                    if (roundNumber == 2 && c > .9 && Math.Abs(py) < 2.5f) waterWidth = 0;
+                    float dryScale = 1 - waterWidth / length;
+                    sand[i] = new ArcadeRegionPoint(px * dryScale, py * dryScale);
+                    continue;
+                }
                 double outline = Math.Pow(Math.Pow(Math.Abs(c), 4) + Math.Pow(Math.Abs(s), 4), -.25);
                 double variation = (.975 + .018 * Math.Sin(3 * a + .6) + .012 * Math.Cos(5 * a)) / 1.005;
                 // 四图分别形成宽滩、双湾、东侧深水湾及紧凑高地，均保持星形连续可达地面。

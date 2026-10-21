@@ -378,7 +378,8 @@ namespace Game
             int destinationCount = victory ? 1 : destinations.Count;
             if (destinationCount == 0) return;
             bool fourDirections = roundLayout != null || islandRound > 0;
-            var count = fourDirections ? FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount : destinationCount;
+            var count = islandRound > 0 ? FirepowerLoop.Arcade.ArcadeIslandRegion.PassageCount :
+                roundLayout != null ? roundLayout.ExitCount : fourDirections ? FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.ExitDirectionCount : destinationCount;
             bool formalExit = roundLayout != null;
             if (contentTemplates == null) { exitVisualIdentity = null; return; }
             // 正式门自带材质；旧圆柱出口也从资源引用复制，Android Host 不依赖 Shader 名称查找。
@@ -1255,11 +1256,13 @@ namespace Game
             {
                 ObstacleVisualPlacement placement = placements[index];
                 if (placement.Parent == null) continue;
-                GameObject instance = UnityEngine.Object.Instantiate(prefab, placement.Parent, false);
-                instance.name = "Visual";
                 int variantIndex = PositiveModulo(arenaNumber - 1 + placement.Index * 2, 4);
-                for (var childIndex = 0; childIndex < instance.transform.childCount; childIndex++)
-                    instance.transform.GetChild(childIndex).gameObject.SetActive(childIndex == variantIndex);
+                // 只创建选中的障碍组合，集合中的休眠整图模板继续由各自资源句柄拥有。
+                var instance = new GameObject("Visual");
+                instance.transform.SetParent(placement.Parent, false);
+                var variant = UnityEngine.Object.Instantiate(prefab.transform.GetChild(variantIndex).gameObject,
+                    instance.transform, false);
+                variant.SetActive(true);
                 FitObstacleVisual(instance.transform, placement.Width, placement.Length);
             }
             obstacleVisualReady = true;
