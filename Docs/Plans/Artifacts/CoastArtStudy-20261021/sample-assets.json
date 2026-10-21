@@ -1,0 +1,392 @@
+[
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastArtStudy.unity",
+    "bytes": 5938177,
+    "sha256": "147e0ebb19a3977f98a79fa871fab9fbc892381d1788afb47606caece6bfb794"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastArtStudy.unity.meta",
+    "bytes": 155,
+    "sha256": "13876afdf4b5b8b67fedc060161d70846e9fbee0ae00addca92ec5ebf2e496a7"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastStudyFoliage.shader",
+    "bytes": 2080,
+    "sha256": "2918693b5b9e160b01f1b800fa5a2282189fc839dff35581d148967b46e4ba3e"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastStudyFoliage.shader.meta",
+    "bytes": 204,
+    "sha256": "9fd8c29cb3596114a68120c01b940aff95abaf05c6156fa47c1afffc8328772a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastStudyWater.shader",
+    "bytes": 2605,
+    "sha256": "7cca1ae2d8b41182d58473917dbca6cffe0ddc74e6f0db6b26d7339ab210d5d5"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/CoastStudyWater.shader.meta",
+    "bytes": 204,
+    "sha256": "b8ad4f61d1fcbdb478fdacfab8ed48a9eac6e126c0435491908c2fbfb630679f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Forest/diffuseGrassPlant02.png",
+    "bytes": 1453528,
+    "sha256": "09c8240a50069f50a70577d7408fff0661f1c740ed583893ebd0a90d90afed73"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Forest/diffuseGrassPlant02.png.meta",
+    "bytes": 2948,
+    "sha256": "736564855eaf72a9ba7c8040890e3238622099ce6569abd07bd946a0a52005d2"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Forest/GrassPlant02.fbx",
+    "bytes": 4633935,
+    "sha256": "82673619bb22f6f5b7a16e22d9d8383155fd22b1af75a048f1d0f1312cda17f4"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Forest/GrassPlant02.fbx.meta",
+    "bytes": 2874,
+    "sha256": "86e3f0076872751fd39bbc51cdaaff91dc04bd82500987ae517c9dcc95ffcfbc"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Forest.meta",
+    "bytes": 172,
+    "sha256": "2598dd4347e60944b16bff97c78065ab7e94e3b06b5187f8ca77dac513f50644"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/CoastalRock.mat",
+    "bytes": 3902,
+    "sha256": "9fdcf0c6979bcf5c2ec65278eec4f364d1add73db53d7675504eac4a3c735dbe"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/CoastalRock.mat.meta",
+    "bytes": 188,
+    "sha256": "721333c1d0157b358543040361574d95bf7e901380e30d1118fb5c25f667d001"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/CoastColorGrade.asset",
+    "bytes": 451,
+    "sha256": "a62de0924f1465190c6c01e346cfb7fc1a20a9fd2b6e6d1d0b2b78848d0ac25c"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/CoastColorGrade.asset.meta",
+    "bytes": 189,
+    "sha256": "ffac7e55a731a2c7c9f765623bdc81773f1433ade30283b9a327354e9c59462a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm0.asset",
+    "bytes": 280929,
+    "sha256": "8dec1c03f898c371f5526cf45509933bc618ca281ea276818156af541bf0821f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm0.asset.meta",
+    "bytes": 188,
+    "sha256": "85e6f1c1c171cc3f88abd2424be2ba27316561435f1291de28d5f62f803eb739"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm1.asset",
+    "bytes": 280930,
+    "sha256": "ebd741261d07f8c4bb6f841000ab5d21bee5a997c6440da7943495fc37498a33"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm1.asset.meta",
+    "bytes": 188,
+    "sha256": "e45876229de01e0ec11e5e2e1c5b388fbc5731802100ee586a464f136333e2c9"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm2.asset",
+    "bytes": 280933,
+    "sha256": "9fb55fb213168037f1f27277e7c14c9e7cfbd39621cd59ce438103d39de8564f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/DetailedPalm2.asset.meta",
+    "bytes": 188,
+    "sha256": "d463fccb29311c098cbf8658aef5aef7220391375b617273f8b7c8afdf9f51f4"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Fern.mat",
+    "bytes": 3824,
+    "sha256": "3998a4abc824f7a310deec2644cb31ae306767ec0eb2a25f03fbc5e1767c9d44"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Fern.mat.meta",
+    "bytes": 188,
+    "sha256": "d0b801a57c64492ca2ffa1b6f9b00456e4f55d7c68e436a7ce9d63b32893c74d"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Grass.mat",
+    "bytes": 3679,
+    "sha256": "47ba00d75d736f829e32159d05c1dae9109caba410372b819f60906d680dfb65"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Grass.mat.meta",
+    "bytes": 188,
+    "sha256": "96cdc8c168545301f540203ba59b97b7c7390112352ee35cd94c6d0fce8de480"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmBark.mat",
+    "bytes": 3902,
+    "sha256": "0a94ffc8a67039f4bdbba3d24fb8326b76318b0b5b50593b9eba099613471b47"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmBark.mat.meta",
+    "bytes": 188,
+    "sha256": "4862881456006e08a1f9f764bacd3bb246d138337a715837ceef78375ce4010f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmDry.mat",
+    "bytes": 3607,
+    "sha256": "1b0388d5525287036805311782653f1f8084df1dff1f9065775db07216f12c23"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmDry.mat.meta",
+    "bytes": 188,
+    "sha256": "1d24f4aaaf27da9947fea6af6793e94ad3ecd3e802df8ff264c270a7c246ce90"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmGreen.mat",
+    "bytes": 3610,
+    "sha256": "7fe2e041fdf5aa1c7d980d36083c7ec57d817556e1af6f27b5222ee18073fcab"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmGreen.mat.meta",
+    "bytes": 188,
+    "sha256": "fc86ac4fe68426a86945b51a8684dfe5b191602827e5467c480dce63f5ab640e"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmSunlit.mat",
+    "bytes": 3612,
+    "sha256": "38b5bb0362e85d8f05e64af5a32fa6b8472b4a9b09f1e4eaef846083bdbca2ef"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/PalmSunlit.mat.meta",
+    "bytes": 188,
+    "sha256": "4b70250870d2a4a433d0d00d4e16046561234d7f445eb8da84b980464069bd0a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/RustIron.mat",
+    "bytes": 3654,
+    "sha256": "aaa2c37a02adc79f75ea6681d610d0e29e4740a564d109a3e87ab8a967c129b5"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/RustIron.mat.meta",
+    "bytes": 188,
+    "sha256": "a4c13a185421e47c2ddfade9829c2481f4d2a131a6a7a4120376c6323a68d6bb"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Sand.mat",
+    "bytes": 3878,
+    "sha256": "0b3cf1f82f47d8001552f22141e7b2b6a78b7734f15019fcdd47b2af9fb2fa5f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Sand.mat.meta",
+    "bytes": 188,
+    "sha256": "04465d7fb9c6e05100eb70e4fdba002f98e786894f5e5d98d3455af4df7b67d3"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/SandTerrain.asset",
+    "bytes": 2531259,
+    "sha256": "9a0f94e2bfeb6558ea2d636b2b4e3d13e0df584c47f61a9183b0ad55509c18eb"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/SandTerrain.asset.meta",
+    "bytes": 188,
+    "sha256": "2a86253aa11dead8863d1abaaf4f638341b67d0097f2a35ab5b566177ebeb3b9"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Sea.mat",
+    "bytes": 802,
+    "sha256": "e0c0846c9a655f1d034c95fda795664b5578ddf56f6ddc267345370fb0301429"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/Sea.mat.meta",
+    "bytes": 188,
+    "sha256": "6b39d1f3ea8d359f53f57ce8fa4eabdf7be41effd9fac6896be23f27a7ff9054"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WeatheredWood.mat",
+    "bytes": 3899,
+    "sha256": "5a44b7a453c8aadb03d83033635161ef6c0d7ee8339b6f5eb4a4304a0ddd1cd4"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WeatheredWood.mat.meta",
+    "bytes": 188,
+    "sha256": "891f439170eeaa9ec04bec9209aca853d430ce24c3a04284f552f5bebc58fef9"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WetSand.mat",
+    "bytes": 3898,
+    "sha256": "ae22c8ee5998067d2bb8f41077c2f118bf58fbc8b37a5a2239c0cee721f01900"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WetSand.mat.meta",
+    "bytes": 188,
+    "sha256": "be19aba8f6ee4cd67b316a068d6e09a84e436cfb3a5547a485c8fbded28c86c9"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WetSandEdge.asset",
+    "bytes": 27942,
+    "sha256": "3bc9c9b70b442d8c16e9d902f7a3a1f621ecc683e5b21509a7326c4ee584994f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated/WetSandEdge.asset.meta",
+    "bytes": 188,
+    "sha256": "7e942cfe4fffffb543eb7ad4873eb7240d10e1398c55c06c16587e92b7415a5a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/Generated.meta",
+    "bytes": 172,
+    "sha256": "4b7166610ec5ba5ad1ab9db26436c8f2734e1a8dbc3c3dcf623decbc496bcbd8"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01.fbx",
+    "bytes": 6482860,
+    "sha256": "aa0613a9df686e9252df1e9d34c356d25c4ab135d9754af66b4794438957d94f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01.fbx.meta",
+    "bytes": 2874,
+    "sha256": "ae7e7f0bfc3f85184fc915d8598ad8d8a67c9494c62cf64eba689c2039ce6401"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_ao_1k.jpg",
+    "bytes": 491469,
+    "sha256": "1071f2db5ce5fa88ef12d6e8d62ad0043003978c5ff8d010153a0497b439a342"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_ao_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "92ffede308e01e75089f5c006efcec8f1c11627eb066fd0703f1fcb7dc64f8c0"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_diff_1k.jpg",
+    "bytes": 987467,
+    "sha256": "c38f0e918f6dc16b8d386ba3cdd89805c78320c119a1ceec85856f82b09a65b8"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_diff_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "66711254300b7f01ce2705389f07b759cec3523d2420b16821ba7f51bf304ec8"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_nor_gl_1k.jpg",
+    "bytes": 1183552,
+    "sha256": "0810cf6e89d89bb6eb065b4d2e2855288f5dcbd2c15c6e40ab90d462021b50aa"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/boulder_01_nor_gl_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "39e7682fa616c3acdb265a321ef5b1f79f28f95400e008fa6410c0e9bcfe734f"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_ao_1k.jpg",
+    "bytes": 701579,
+    "sha256": "8876cf6f88179996efaaf3bda9a072b8c571530ee5797e850c7a730448c588c6"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_ao_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "b655cc1efd9405b9ac0e674871ff9e6725e28245f773581940c662971493423d"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_diff_1k.jpg",
+    "bytes": 960614,
+    "sha256": "58af2e40100f7f405703a86d593af64379f822c4786850def23ecfc921450d54"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_diff_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "329a8a7ceb8b4e6b3a5256b008ddc3f6add7b16d775c02ce41e4b3584f69043a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_nor_gl_1k.jpg",
+    "bytes": 1146826,
+    "sha256": "fe4d045aec99e71e80f682fcf0ad958d2dff1fe614b73178b304d1bac047b54a"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/coast_sand_01_nor_gl_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "5c4645c801db6fc40882d4ba09cef52f17c66cccafec515f9e88e0a0dc2fd1dd"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02.fbx",
+    "bytes": 223596,
+    "sha256": "6d8238b9cc1bbb5f5766396c2db26f2219c0d0e5ca226fb81dcc44bdb35045e8"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02.fbx.meta",
+    "bytes": 2830,
+    "sha256": "b9bdea8f350aa20e42b7d5f9828b1cb46746a50f9712aa2717d2084313059047"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_ao_1k.jpg",
+    "bytes": 143666,
+    "sha256": "33e9d3cd0693208352c8ab6d482128484fa120a476147467c4359fd9c01316a2"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_ao_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "d830c263cf1d3cb441010d0880748faa378b239f93b18e9fa48ecff511e527aa"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_diff_1k.png",
+    "bytes": 1986120,
+    "sha256": "f8f504bce117647f1df386cd7bc99a79c664bb49f82d1dd6412c83a700c48e94"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_diff_1k.png.meta",
+    "bytes": 2948,
+    "sha256": "2022a81b8e3f4884a36aad8a0be7254160f88e31f72a0d05e3208a2ed51ba6d4"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_nor_gl_1k.jpg",
+    "bytes": 367222,
+    "sha256": "45bce132c6e96a0864bc89ab5da51361ab3f4afa83a6669ae499ab5ca811f621"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/fern_02_nor_gl_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "3f884c1b4f55a0b2f010cd3627120df0a1169b682dc4da0c3cf2d765f52652a7"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_ao_1k.jpg",
+    "bytes": 137846,
+    "sha256": "c7bb635f609726d19f180cfb2c9bc149b490847ac2823ffa59718cbdfc4779b7"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_ao_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "500aa3eaa93606c9638b2b18eb78151541e023f8ccc73d36f5834214af6a2d5b"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_diff_1k.jpg",
+    "bytes": 226049,
+    "sha256": "94833feda44e025a9139f7b5723ea84e4f0258d3b54939a79e1013c133085e29"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_diff_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "bce4e583a04ec2d1cb5cefb3ecf8d9cf92e83bf2b40eb843842612fd9cd8d097"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_nor_gl_1k.jpg",
+    "bytes": 223250,
+    "sha256": "8d38f02f121c0e58eaedc19cd668faea21381ae3ff4d5332cd90de75e6683393"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven/weathered_brown_planks_nor_gl_1k.jpg.meta",
+    "bytes": 2948,
+    "sha256": "932fd89b45d7e52c7e79ca9297f302997334295a284aaf3269a7a469937f9fa5"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy/PolyHaven.meta",
+    "bytes": 172,
+    "sha256": "3ee5557825c5c15fea8c984d338a1a040e451d4fac410939586c1d91b31b01cd"
+  },
+  {
+    "path": "Client/Assets/Art/CoastStudy.meta",
+    "bytes": 172,
+    "sha256": "655a9d46e035a6d0c69ead65435444103fd379fd34c6af23c9c57cd0d1485205"
+  }
+]
