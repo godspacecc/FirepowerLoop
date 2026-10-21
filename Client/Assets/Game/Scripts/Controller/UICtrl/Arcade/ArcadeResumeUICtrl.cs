@@ -13,6 +13,7 @@ namespace Game
         private ArcadeRunSaveData current;
         // 无进行中存档时隐藏所有本局操作；不再提供新局或联机分流。
         private bool selectionMode;
+        /// <summary>仅联机沿用再次点击提交放弃意图，单人使用独立确认框。</summary>
         private bool awaitingAbandonConfirmation;
         private bool operationPending;
         /// <summary>双人准备与结果由服务器快照驱动，不读取单人存档。</summary>
@@ -89,7 +90,7 @@ namespace Game
             UI.BtnClose.onClick.AddListener(CloseFromMenu);
             UI.BtnContinue.onClick.AddListener(ChooseContinue);
             UI.BtnSettle.onClick.AddListener(() => SettleAsync().Forget());
-            UI.BtnAbandon.onClick.AddListener(() => AbandonAsync().Forget());
+            UI.BtnAbandon.onClick.AddListener(RequestAbandon);
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(_ => RefreshOnline()).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ => { if (onlineMode) RefreshOnline(); else Render(current); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -310,7 +311,60 @@ namespace Game
             finally { FinishOperation(generation); }
         }
 
-        /// <summary>保留明确的二次放弃确认；双人仍需双方权威确认。</summary>
+        /// <summary>单人使用明确的确认框；确认只对当前窗口与原本局有效，取消不修改存档。</summary>
+        private void RequestAbandon()
+        {
+            if (operationPending) return;
+            if (onlineMode) { AbandonAsync().Forget(); return; }
+            var snapshot = this.GetModel<ArcadeRunModel>().Current;
+            if (snapshot == null || snapshot.HasResult) return;
+            var owner = BaseUI;
+            int generation = operationGeneration;
+            Notify.ShowMessage(Loc.T("ui.arcade.abandon"), Loc.T("ui.arcade.abandon.body"),
+                new System.Collections.Generic.List<MessageButtonConfig> {
+                    new MessageButtonConfig { ButtonText = Loc.T("ui.arcade.abandon.confirm"), Role = MessageButtonRole.Confirm,
+                        OnClick = () => {
+                            var currentRun = this.GetModel<ArcadeRunModel>().Current;
+                            if (IsShow() && ReferenceEquals(owner, BaseUI) && generation == operationGeneration &&
+                                !onlineMode && !operationPending && currentRun?.RunId == snapshot.RunId && !currentRun.HasResult)
+                                AbandonSinglePlayerAsync(snapshot.RunId).Forget();
+                        } },
+                    new MessageButtonConfig { ButtonText = Texts.CommonCancel, Role = MessageButtonRole.Cancel }
+                });
+        }
+
+        /// <summary>先释放地图，成功后才清除已确认放弃的单人局；失败保留原进度与放弃重试入口。</summary>
+        private async UniTask AbandonSinglePlayerAsync(string runId)
+        {
+            if (operationPending) return;
+            operationPending = true;
+            int generation = operationGeneration;
+            UI.BtnContinue.interactable = false;
+            UI.BtnSettle.interactable = false;
+            UI.BtnAbandon.interactable = false;
+            RefreshCloseButton();
+            try
+            {
+                var menu = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
+                if (!menu.Success)
+                {
+                    if (IsShow() && generation == operationGeneration) Set(UI.TextMessage, menu.Error);
+                    return;
+                }
+                // 场景事务会主动隐藏本窗口；此后只核验本局身份，不把旧确认应用到新存档。
+                if (this.GetModel<ArcadeRunModel>().Current?.RunId != runId) return;
+                if (!this.GetSystem<ArcadeRunSystem>().TryAbandonAndClear(out var error))
+                {
+                    UIHelper.ShowUI<ArcadeResumeUICtrl>();
+                    Set(UI.TextMessage, error);
+                    return;
+                }
+                Notify.ShowFloatTips(Loc.T("ui.arcade.result.abandoned"));
+            }
+            finally { FinishOperation(generation); }
+        }
+
+        /// <summary>双人仍沿用二次点击及双方权威确认，不调用单人清档事务。</summary>
         private async UniTask AbandonAsync()
         {
             if (operationPending) return;
@@ -330,14 +384,6 @@ namespace Game
                     if (!result.Success && IsShow() && generation == operationGeneration) Set(UI.TextMessage, ArcadeUiFormatter.OnlineResult(result.Code));
                     return;
                 }
-                if (!this.GetSystem<ArcadeRunSystem>().TryAbandon(out var error))
-                {
-                    Set(UI.TextMessage, error);
-                    return;
-                }
-                var menu = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync();
-                if (!menu.Success) { Set(UI.TextMessage, menu.Error); return; }
-                UIHelper.ShowUI<ArcadeResumeUICtrl>();
             }
             finally { FinishOperation(generation); }
         }

@@ -1375,5 +1375,7 @@
   "ui.arcade.details.coop": "CO-OP",
   "ui.arcade.details.coop_hint": "Both players must be ready to continue",
   "ui.arcade.details.confirmed": "CONFIRMED",
-  "ui.arcade.details.pending_confirmation": "PENDING"
+  "ui.arcade.details.pending_confirmation": "PENDING",
+  "ui.arcade.abandon.body": "Abandon this run? Your progress for this run will be deleted.",
+  "ui.arcade.abandon.confirm": "Confirm Abandon"
 }

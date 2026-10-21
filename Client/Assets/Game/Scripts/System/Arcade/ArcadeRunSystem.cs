@@ -491,6 +491,19 @@ namespace Game
             return true;
         }
 
+        /// <summary>用于已确认且地图已释放的单人放弃；删除成功才清除模型，失败保留原进度供重试。</summary>
+        public bool TryAbandonAndClear(out string error)
+        {
+            if (IsSavingResult) { error = "正在保存本局结果"; return false; }
+            var model = this.GetModel<ArcadeRunModel>();
+            if (model.Current == null) { error = "没有可放弃的街机局"; return false; }
+            if (model.Current.HasResult) { error = "当前本局已有结果，请确认结果"; return false; }
+            if (!TryDeleteRunFiles(out error)) return false;
+            model.Clear();
+            Publish();
+            return true;
+        }
+
         public bool TryAbandon(out string error)
         {
             if (IsSavingResult) { error = "正在保存本局结果"; return false; }

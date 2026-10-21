@@ -1375,5 +1375,7 @@
   "ui.arcade.details.coop": "双人准备",
   "ui.arcade.details.coop_hint": "双方准备后继续",
   "ui.arcade.details.confirmed": "已确认",
-  "ui.arcade.details.pending_confirmation": "待确认"
+  "ui.arcade.details.pending_confirmation": "待确认",
+  "ui.arcade.abandon.body": "确定放弃本局？本局进度将被清除。",
+  "ui.arcade.abandon.confirm": "确定放弃"
 }

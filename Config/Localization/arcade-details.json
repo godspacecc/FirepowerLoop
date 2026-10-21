@@ -9,5 +9,7 @@
   "ui.arcade.details.coop": { "zh-CN": "双人准备", "en-US": "CO-OP" },
   "ui.arcade.details.coop_hint": { "zh-CN": "双方准备后继续", "en-US": "Both players must be ready to continue" },
   "ui.arcade.details.confirmed": { "zh-CN": "已确认", "en-US": "CONFIRMED" },
-  "ui.arcade.details.pending_confirmation": { "zh-CN": "待确认", "en-US": "PENDING" }
+  "ui.arcade.details.pending_confirmation": { "zh-CN": "待确认", "en-US": "PENDING" },
+  "ui.arcade.abandon.body": { "zh-CN": "确定放弃本局？本局进度将被清除。", "en-US": "Abandon this run? Your progress for this run will be deleted." },
+  "ui.arcade.abandon.confirm": { "zh-CN": "确定放弃", "en-US": "Confirm Abandon" }
 }
