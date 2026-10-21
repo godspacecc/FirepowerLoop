@@ -38,7 +38,7 @@ namespace Boot
         private bool _resourceServerRestartRequested;
         private UniTaskCompletionSource _resourceServerEditGate;
 
-        public bool CanEditResourceServer => _resourceServerAvailable && !_resourceServerRestartRequested &&
+        public bool CanEditResourceServer => !ClientReleasePolicy.OfflineSinglePlayer && _resourceServerAvailable && !_resourceServerRestartRequested &&
             (!_resourceBoot || !_resourceBoot.IsApkUpdateActive);
         public event Action<bool> ResourceServerAvailabilityChanged;
         private StartupTerminalState _terminalState = StartupTerminalState.Running;

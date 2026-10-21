@@ -44,6 +44,7 @@ namespace Game
         /// <summary>手机只在通用页提供布局按钮；模式切换时重绘当前页，避免保留桌面列表或空白内容。</summary>
         private void RefreshNavigation()
         {
+            ApplyReleaseVisibility(UI);
             var mobile = this.GetSystem<MobileInputSystem>().IsMobileInputMode;
             UI.ControlsTabButton.gameObject.SetActive(!mobile);
             current?.Hide();
@@ -65,6 +66,7 @@ namespace Game
 
         private void ShowPage(Page page)
         {
+            if (Boot.ClientReleasePolicy.OfflineSinglePlayer && page == Page.Network) page = Page.General;
             // 重复选择当前页不重新进入，保留未完成的按键录入或地址编辑。
             if (current != null && lastPage == page) return;
             current?.Hide();
@@ -81,6 +83,14 @@ namespace Game
             SetTabState(UI.AudioTabButton, page == Page.Audio);
             SetTabState(UI.ControlsTabButton, page == Page.Controls);
             SetTabState(UI.NetworkTabButton, page == Page.Network);
+        }
+
+        /// <summary>离线首发不展示服务器和诊断页；旧的静态分页选择由 ShowPage 回到通用页。</summary>
+        internal static void ApplyReleaseVisibility(SettingUI view)
+        {
+            bool online = !Boot.ClientReleasePolicy.OfflineSinglePlayer;
+            view.NetworkTabButton.gameObject.SetActive(online);
+            if (!online) view.SettingNetworkRoot.SetActive(false);
         }
 
         /// <summary>选中分页保持可操作，以Prefab配置的强调色显示，避免把当前页表现成禁用项。</summary>

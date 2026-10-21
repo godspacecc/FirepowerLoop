@@ -123,6 +123,8 @@ namespace Game.Network
 
         public async Task ConnectAsync(NetworkEndpoint endpoint, int timeoutMilliseconds, CancellationToken cancellationToken)
         {
+            if (Boot.ClientReleasePolicy.OfflineSinglePlayer)
+                throw new InvalidOperationException("纯离线发布模式不允许建立联机连接。");
             EnsureInitialized();
             int generation = ++connectionGeneration;
             var pending = new PendingConnect(generation, cancellationToken);

@@ -100,6 +100,7 @@ namespace Boot
         /// <returns>是否已启动连续批次发送；失败原因由 Status 提供，原队列保持不变。</returns>
         public static bool RequestUpload()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return false;
             if (sending) return false;
             DrainSnapshots(MaxSnapshots);
             if (Store.PendingGroups == 0) { SetStatus(DiagnosticUploadStatus.Empty); return false; }
@@ -113,6 +114,7 @@ namespace Boot
         /// <summary>Boot 入口先持有驱动；主场景未宣告就绪时仍可在失败页重试发送。</summary>
         public static void BeginBoot()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             bootOwned = true;
             gameOwned = false;
             lease++;
@@ -121,6 +123,7 @@ namespace Boot
 
         public static void RegisterGame()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             gameCandidate = true;
             if (!bootOwned) { gameOwned = true; lease++; LoadConfigAsync().Forget(); }
         }
@@ -151,6 +154,7 @@ namespace Boot
 
         public static void RecordBoot(BootFailure failure)
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             if (failure == null) return;
             try
             {
@@ -165,6 +169,7 @@ namespace Boot
         /// <summary>线程日志回调只保留有限调用栈快照；不访问 Unity 主线程 API、磁盘和网络。</summary>
         public static void CaptureRuntime(string stack, LogType type)
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             string kind = type switch
             {
                 LogType.Error => "Error", LogType.Exception => "Exception", LogType.Assert => "Assert", _ => null
@@ -182,6 +187,7 @@ namespace Boot
 
         private static void Tick()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             DrainSnapshots(32);
             if (configLoaded && !sending && !string.IsNullOrEmpty(reportUrl) && DateTime.UtcNow >= nextAttemptUtc && Store.PendingGroups > 0)
                 SendAsync().Forget();

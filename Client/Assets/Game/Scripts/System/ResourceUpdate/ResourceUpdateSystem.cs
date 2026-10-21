@@ -70,6 +70,7 @@ namespace Game
         /// </summary>
         public UniTask<ResourceUpdateSnapshot> CheckAsync(bool userInitiated)
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return UniTask.FromResult(Snapshot);
             if (currentCheck != null && !currentCheck.IsCompleted)
             {
                 return currentCheck.AsUniTask();
@@ -82,6 +83,7 @@ namespace Game
         /// <summary>自动与手动共用版本查询；只有手动入口读取公告，下载与安装仍由 Boot 负责。</summary>
         public UniTask<ResourceUpdateCheckWithNoticeResult> CheckWithNoticeAsync(bool userInitiated)
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return UniTask.FromResult(new ResourceUpdateCheckWithNoticeResult(Snapshot, ResourceUpdateNoticeResult.NoNotice));
             if (!userInitiated) return CheckVersionsAsync(false).AsUniTask();
             if (currentManualCheck == null || currentManualCheck.IsCompleted)
                 currentManualCheck = CheckWithNoticeInternal(true);

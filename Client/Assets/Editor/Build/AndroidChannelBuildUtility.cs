@@ -30,7 +30,14 @@ namespace Game.Editor
             (channel ? BuildOptions.None : BuildOptions.Development);
 
         /// <summary>依据已读取的 APK 事实生成逐项报告，供真实包检查和限定策略测试共同使用。</summary>
-        public static string Evaluate(string factsJson, bool channel, string expectedCertificate)
+        public static string Evaluate(string factsJson, bool channel, string expectedCertificate) =>
+            EvaluateProfile(factsJson, channel, false, expectedCertificate);
+
+        /// <summary>离线候选包不要求公网地址，必须同时证明正式身份、离线标记和无联网权限。</summary>
+        public static string EvaluateOffline(string factsJson, string expectedCertificate) =>
+            EvaluateProfile(factsJson, true, true, expectedCertificate);
+
+        private static string EvaluateProfile(string factsJson, bool channel, bool offline, string expectedCertificate)
         {
             JObject facts = JObject.Parse(factsJson);
             var checks = new JArray();
@@ -53,26 +60,43 @@ namespace Game.Editor
                 string subject = facts.Value<string>("certificateSubject") ?? "";
                 Check("releaseCertificate", subject.Length > 0 && !Regex.IsMatch(subject,
                     @"(?:^|,)\s*CN\s*=\s*Android Debug\s*(?:,|$)", RegexOptions.IgnoreCase), "渠道候选包不能使用 Android 调试证书。");
-                Check("resourceServer", IsPublicHttps(facts.Value<string>("resourceServer")), "资源地址必须是无凭据、无片段的公网 HTTPS 地址。");
-                Check("gameGateEndpoint", IsPublicGate(facts.Value<string>("gameGateEndpoint")), "联机网关必须是公网主机及显式端口。");
-                Check("diagnostics", facts.Value<string>("diagnosticMode") == "Fixed" && IsPublicHttps(facts.Value<string>("diagnosticUrl")),
-                    "渠道诊断必须显式指定公网 HTTPS 地址，LocalGameServer 与空地址不表示禁用。");
+                if (offline)
+                {
+                    var permissions = facts["permissions"] as JArray;
+                    Check("offlineProfile", facts.Value<string>("releaseProfile") == "OfflineSinglePlayer", "实际 APK 必须包含纯离线首发标记。");
+                    Check("offlinePermissions", permissions != null && !permissions.Values<string>().Contains("android.permission.INTERNET") &&
+                        !permissions.Values<string>().Contains("android.permission.REQUEST_INSTALL_PACKAGES"), "离线包不得包含联网或自有安装更新权限。");
+                }
+                else
+                {
+                    Check("resourceServer", IsPublicHttps(facts.Value<string>("resourceServer")), "资源地址必须是无凭据、无片段的公网 HTTPS 地址。");
+                    Check("gameGateEndpoint", IsPublicGate(facts.Value<string>("gameGateEndpoint")), "联机网关必须是公网主机及显式端口。");
+                    Check("diagnostics", facts.Value<string>("diagnosticMode") == "Fixed" && IsPublicHttps(facts.Value<string>("diagnosticUrl")),
+                        "渠道诊断必须显式指定公网 HTTPS 地址，LocalGameServer 与空地址不表示禁用。");
+                }
             }
-            if ((facts["permissions"] as JArray)?.Values<string>().Contains("android.permission.REQUEST_INSTALL_PACKAGES") == true)
+            if (!offline && (facts["permissions"] as JArray)?.Values<string>().Contains("android.permission.REQUEST_INSTALL_PACKAGES") == true)
                 checks.Add(new JObject { ["id"] = "installerPermission", ["status"] = "Warning",
                     ["message"] = "包含自有 APK 安装权限；提交前需按目标渠道确定更新方案，此检查不代表平台接受该权限。" });
-            return new JObject { ["schemaVersion"] = 1, ["profile"] = channel ? "ChannelCandidate" : "InternalTest",
+            return new JObject { ["schemaVersion"] = 1, ["profile"] = offline ? "OfflineSinglePlayerCandidate" : channel ? "ChannelCandidate" : "InternalTest",
                 ["passed"] = checks.All(check => (string)check["status"] != "Failed"), ["deviceVerified"] = false,
                 ["storeApproved"] = false, ["checkedUtc"] = DateTime.UtcNow.ToString("O"), ["facts"] = facts, ["checks"] = checks }.ToString(Formatting.Indented);
         }
 
         /// <summary>只调用 SDK 读取并验签已有 APK，不提取执行包内代码，不修改安装包。</summary>
-        public static string Inspect(string apkPath, bool channel, string expectedCertificate)
+        public static string Inspect(string apkPath, bool channel, string expectedCertificate) =>
+            InspectProfile(apkPath, channel, false, expectedCertificate);
+
+        /// <summary>读取真实已签名 APK；离线结论必须依据包内清单，不能只依赖编辑器配置。</summary>
+        public static string InspectOffline(string apkPath, string expectedCertificate) =>
+            InspectProfile(apkPath, true, true, expectedCertificate);
+
+        private static string InspectProfile(string apkPath, bool channel, bool offline, string expectedCertificate)
         {
             apkPath = Path.GetFullPath(apkPath);
             if (!File.Exists(apkPath) || new FileInfo(apkPath).Length == 0) throw new FileNotFoundException("待检查 APK 不存在或为空。", apkPath);
             using (FileStream input = OpenInspectionInput(apkPath))
-                return InspectLocked(input, apkPath, channel, expectedCertificate);
+                return InspectLocked(input, apkPath, channel, offline, expectedCertificate);
         }
 
         /// <summary>整个检查期间只共享读取，阻止其他进程写入或替换，确保所有工具观察同一份 APK。</summary>
@@ -80,7 +104,7 @@ namespace Game.Editor
             new FileStream(apkPath, FileMode.Open, FileAccess.Read, FileShare.Read);
 
         /// <summary>调用者持续持有 APK 读取锁；SDK、哈希及 ZIP 配置使用同一份文件内容。</summary>
-        private static string InspectLocked(FileStream input, string apkPath, bool channel, string expectedCertificate)
+        private static string InspectLocked(FileStream input, string apkPath, bool channel, bool offline, string expectedCertificate)
         {
             string tools = Path.Combine(Path.GetDirectoryName(EditorApplication.applicationPath), "Data/PlaybackEngines/AndroidPlayer");
             string buildTools = Directory.GetDirectories(Path.Combine(tools, "SDK/build-tools"))
@@ -107,7 +131,8 @@ namespace Game.Editor
                 ["certificateSha256"] = fingerprints.Count == 1 ? fingerprints[0].Groups[1].Value.ToLowerInvariant() : "",
                 ["certificateSubject"] = Regex.Match(signature, @"(?m)^Signer #1 certificate DN: (.+)$").Groups[1].Value.Trim(),
                 ["architectures"] = new JArray(Regex.Matches(Regex.Match(badging, @"(?m)^native-code: (.+)$").Groups[1].Value, "'([^']+)'").Cast<Match>().Select(match => match.Groups[1].Value)),
-                ["permissions"] = new JArray(Regex.Matches(badging, @"(?m)^uses-permission: name='([^']+)'").Cast<Match>().Select(match => match.Groups[1].Value))
+                ["releaseProfile"] = AndroidOfflineReleaseBuildUtility.ReadManifestProfile(manifest),
+                ["permissions"] = new JArray(Regex.Matches(badging, @"(?m)^uses-permission(?:-sdk-\d+)?: name='([^']+)'").Cast<Match>().Select(match => match.Groups[1].Value))
             };
             using (var hash = SHA256.Create()) facts["sha256"] = BitConverter.ToString(hash.ComputeHash(input)).Replace("-", "").ToLowerInvariant();
             input.Position = 0;
@@ -119,16 +144,13 @@ namespace Game.Editor
                 facts["diagnosticMode"] = diagnostics.Value<string>("mode") ?? "";
                 facts["diagnosticUrl"] = diagnostics.Value<string>("reportUrl") ?? "";
             }
-            return Evaluate(facts.ToString(), channel, expectedCertificate);
+            return offline ? EvaluateOffline(facts.ToString(), expectedCertificate) : Evaluate(facts.ToString(), channel, expectedCertificate);
         }
 
         /// <summary>构建前验证外部正式签名与包内服务配置；不切平台、不创建产物或分配版本。</summary>
         internal static void ValidateChannelConfiguration()
         {
-            string settings = RequireEnvironmentFile(SigningConfigVariable);
-            string policy = RequireEnvironmentFile(SigningPolicyVariable);
-            string fingerprint = ReadFingerprint(policy);
-            if (fingerprint == ReadFingerprint(AndroidSigningUtility.PolicyPath)) throw new InvalidOperationException("渠道证书不能复用项目内部测试证书。");
+            ValidateOfflineChannelConfiguration();
             var facts = new JObject
             {
                 ["resourceServer"] = JObject.Parse(File.ReadAllText("Assets/StreamingAssets/hostConfig.json")).Value<string>("resourceServer"),
@@ -138,6 +160,15 @@ namespace Game.Editor
             if (!IsPublicHttps((string)facts["resourceServer"]) || !IsPublicGate((string)facts["gameGateEndpoint"]) ||
                 diagnostic.Value<string>("mode") != "Fixed" || !IsPublicHttps(diagnostic.Value<string>("reportUrl")))
                 throw new InvalidOperationException("渠道资源、联机及诊断配置仍含内网、占位或不安全地址；请先完成正式环境配置。");
+        }
+
+        /// <summary>离线候选只验证独立正式签名，不要求并不会被使用的公网服务配置。</summary>
+        internal static void ValidateOfflineChannelConfiguration()
+        {
+            string settings = RequireEnvironmentFile(SigningConfigVariable);
+            string policy = RequireEnvironmentFile(SigningPolicyVariable);
+            string fingerprint = ReadFingerprint(policy);
+            if (fingerprint == ReadFingerprint(AndroidSigningUtility.PolicyPath)) throw new InvalidOperationException("渠道证书不能复用项目内部测试证书。");
             AndroidSigningUtility.ValidateLocalKey(settings, policy);
         }
 
@@ -150,11 +181,18 @@ namespace Game.Editor
             apkPath, RequireEnvironmentFile(SigningPolicyVariable));
 
         /// <summary>已有包检查和构建后门禁共用报告；失败也保存原因，报告路径不得覆盖 APK 或已有文件。</summary>
-        public static string InspectAndSave(string apkPath, string outputPath, bool channel)
+        public static string InspectAndSave(string apkPath, string outputPath, bool channel) =>
+            SaveInspection(apkPath, outputPath, channel, false);
+
+        /// <summary>保存离线候选实际包检查报告；使用独立正式证书策略。</summary>
+        public static string InspectOfflineAndSave(string apkPath, string outputPath) =>
+            SaveInspection(apkPath, outputPath, true, true);
+
+        private static string SaveInspection(string apkPath, string outputPath, bool channel, bool offline)
         {
             string policy = channel ? Environment.GetEnvironmentVariable(SigningPolicyVariable) : AndroidSigningUtility.PolicyPath;
             string fingerprint = string.IsNullOrWhiteSpace(policy) ? "" : ReadFingerprint(policy);
-            string json = Inspect(apkPath, channel, fingerprint);
+            string json = offline ? InspectOffline(apkPath, fingerprint) : Inspect(apkPath, channel, fingerprint);
             string output = Path.GetFullPath(outputPath);
             if (File.Exists(output) || string.Equals(output, Path.GetFullPath(apkPath), StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("检查报告路径已存在或与 APK 相同，拒绝覆盖。");
@@ -169,7 +207,10 @@ namespace Game.Editor
         [MenuItem("Tools/打包/Android/检查现有APK（渠道候选，不打包）", false, 157)]
         private static void InspectChannelMenu() => InspectMenu(true);
 
-        private static void InspectMenu(bool channel)
+        [MenuItem("Tools/打包/Android/检查现有APK（纯离线单机，不打包）", false, 159)]
+        private static void InspectOfflineMenu() => InspectMenu(true, true);
+
+        private static void InspectMenu(bool channel, bool offline = false)
         {
             string apk = EditorUtility.OpenFilePanel("选择已有 APK", "", "apk");
             if (string.IsNullOrEmpty(apk)) return;
@@ -177,7 +218,7 @@ namespace Game.Editor
             if (string.IsNullOrEmpty(output)) return;
             try
             {
-                var result = JObject.Parse(InspectAndSave(apk, output, channel));
+                var result = JObject.Parse(offline ? InspectOfflineAndSave(apk, output) : InspectAndSave(apk, output, channel));
                 UnityEngine.Debug.Log("[AndroidChannelBuildUtility] APK 技术检查 " + ((bool)result["passed"] ? "通过" : "未通过") + "，报告：" + output + "；未执行打包或发布。");
             }
             catch (Exception exception) { UnityEngine.Debug.LogError("[AndroidChannelBuildUtility] APK 检查失败：" + exception.Message); }

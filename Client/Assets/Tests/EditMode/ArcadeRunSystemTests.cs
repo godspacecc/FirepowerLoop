@@ -23,6 +23,12 @@ namespace Game.Tests
         public void SetUp()
         {
             runtimeRoot = Path.Combine(Path.GetTempPath(), "FirepowerLoopArcade", Guid.NewGuid().ToString("N"));
+            ReloadArchitecture();
+        }
+
+        /// <summary>重新创建模型与系统，从同一隔离目录读取，避免把内存态误当作落盘恢复。</summary>
+        private void ReloadArchitecture()
+        {
             TestReset.ResetArchitecture();
             architecture = new Game();
             typeof(Architecture<Game>).GetField("mArchitecture", BindingFlags.Static | BindingFlags.NonPublic)?.SetValue(null, architecture);
@@ -39,6 +45,53 @@ namespace Game.Tests
         {
             TestReset.ResetArchitecture();
             if (Directory.Exists(runtimeRoot)) Directory.Delete(runtimeRoot, true);
+        }
+
+        [Test]
+        public void OfflineScoreCheckpointSurvivesFreshArchitecture()
+        {
+            var policy = Type.GetType("Boot.ClientReleasePolicy, Boot").GetProperty("OfflineOverrideForTests");
+            policy.SetValue(null, true);
+            try
+            {
+                Assert.That(arcade.TryStartNewRun(Checkpoint(1), out var initial, out var error), Is.True, error);
+                Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+                var completion = Completion(1, 0, 2); completion.Score = 12345;
+                Assert.That(arcade.TryCompleteArena(completion, out _, out error), Is.True, error);
+                ReloadArchitecture();
+                Assert.That(arcade.TryResume(out var restored, out error), Is.True, error);
+                Assert.That(restored.RunId, Is.EqualTo(initial.RunId));
+                Assert.That(restored.Score, Is.EqualTo(12345));
+                Assert.That(restored.Checkpoint.ArenaNumber, Is.EqualTo(2));
+                Assert.That(restored.EquipmentBySlot, Is.EquivalentTo(initial.EquipmentBySlot));
+                Assert.That(restored.PendingRewards, Is.Empty);
+            }
+            finally { policy.SetValue(null, null); }
+        }
+
+        [Test]
+        public void OfflineFailedResultSurvivesFreshArchitecture()
+        {
+            var policy = Type.GetType("Boot.ClientReleasePolicy, Boot").GetProperty("OfflineOverrideForTests");
+            policy.SetValue(null, true);
+            try
+            {
+                Assert.That(arcade.TryStartNewRun(Checkpoint(1), out var initial, out var error), Is.True, error);
+                Assert.That(arcade.TryContinue(out _, out error), Is.True, error);
+                architecture.GetModel<ArcadeRunModel>().SetTransientTreasureScore(new FirepowerLoop.Arcade.ArcadeTreasureScoreState(54321, 1, 0, 3));
+                Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
+                Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.Respawn), error);
+                Assert.That(arcade.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.RunFailed), error);
+                ReloadArchitecture();
+                Assert.That(arcade.TryResume(out var restored, out error), Is.True, error);
+                Assert.That(restored.RunId, Is.EqualTo(initial.RunId));
+                Assert.That(restored.HasResult, Is.True);
+                Assert.That(restored.Outcome, Is.EqualTo("failed"));
+                Assert.That(restored.RemainingLives, Is.Zero);
+                Assert.That(restored.Score, Is.EqualTo(54321));
+                Assert.That(architecture.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Result));
+            }
+            finally { policy.SetValue(null, null); }
         }
 
         [Test]

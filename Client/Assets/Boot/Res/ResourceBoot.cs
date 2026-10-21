@@ -209,6 +209,11 @@ namespace Boot
 
         private void DeterminePlayMode()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer)
+            {
+                _actualPlayMode = ResourcePlayMode.OfflinePlayMode;
+                return;
+            }
 #if UNITY_EDITOR
             _actualPlayMode = _editorPlayMode;
 #elif FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES

@@ -1,0 +1,770 @@
+{
+  "date": "2026-10-21",
+  "scope": "Pure offline first release, no Player Build",
+  "totalPassed": 59,
+  "failed": 0,
+  "skipped": 0,
+  "tests": [
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "testClass": "OfflineReleasePolicyTests",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "maximumTests": 8,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9006044"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.ActualSettingsPrefabHidesNetworkTabAndRestoresInternalMode",
+          "Status": "Passed",
+          "Duration": "00:00:00.5900000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.ActualStartPrefabHidesOnlineAndUpdateEntriesAndRestoresInternalMode",
+          "Status": "Passed",
+          "Duration": "00:00:00.0360000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.InternalProfileRemainsAvailable",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.InternalProfileStillCollectsLocalDiagnosticSummaries",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineBootAlwaysChoosesBuiltinResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineBootDoesNotOwnOrUploadDiagnostics",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineNetworkConnectFailsBeforeTransportIsTouched",
+          "Status": "Passed",
+          "Duration": "00:00:00.0300000"
+        },
+        {
+          "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineUpdateChecksNeverInvokeRemotePorts",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "testClass": "OfflineAndroidBuildTests",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "maximumTests": 9,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 9,
+        "PassedTests": 9,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:05.7198576"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.ActualGradleCallbackTouchesOnlyOfflineLauncherManifest",
+          "Status": "Passed",
+          "Duration": "00:00:01.7150000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.ExistingSignedFixtureCannotClaimOfflineProfile",
+          "Status": "Passed",
+          "Duration": "00:00:00.9850000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues",
+          "Status": "Passed",
+          "Duration": "00:00:01.2040000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineDefinesAreExplicitAndRequireBuiltinResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsPassWithoutAnyPublicServerConfiguration",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsRejectMissingProfileAndNetworkOrInstallerPermission",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsStillRequireReleaseIdentityAndSignature",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineManifestExplicitlyRemovesNetworkAndInstallerPermissions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineProfileIsReadOnlyFromItsOwnManifestMetadataBlock",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testMethod": "Game.Tests.ArcadeRunSystemTests.OfflineScoreCheckpointSurvivesFreshArchitecture"
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2875173"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.OfflineScoreCheckpointSurvivesFreshArchitecture",
+          "Status": "Passed",
+          "Duration": "00:00:00.2150000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testMethod": "Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture"
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1851305"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture",
+          "Status": "Passed",
+          "Duration": "00:00:00.1850000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testClass": "AndroidChannelBuildTests"
+      },
+      "maximumTests": 19,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 19,
+        "PassedTests": 19,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.2117989"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.ChannelEditorOptionsRestoreOriginalValues",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.Ipv6DocumentationAddressCannotPassPublicServerCheck",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.MissingChannelCredentialsFailBeforeEditorSettingsChange",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.PlatformReloadResolvesChannelEntryWithoutInvokingBuild",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.PublicIpv4OutsideDocumentationSubnetIsNotRejected",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode",
+          "Status": "Passed",
+          "Duration": "00:00:00.5320000"
+        },
+        {
+          "Name": "Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testClass": "AndroidHostBuildTests"
+      },
+      "maximumTests": 17,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 17,
+        "PassedTests": 17,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1815114"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBootstrapReadsStreamingAssetsAsynchronously",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildIdentityMatchesFirepowerLoopProject",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildStateIsSeparatedFromWindowsRecords",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidGameServerEndpointAcceptsEditableBootstrapAndRejectsInvalidSyntax",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidHostUrlRejectsLoopbackAndAcceptsReachableHttps",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidPlayerBuildsValidateGameServerAndCopyPlayerGuide",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidPublisherUsesPlatformSpecificBundleAndReleaseRoots",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidResourceServerMenuStartsLatestPublishedResourceFiles",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.AndroidWorkflowsAutomaticallySwitchTargetBeforeBuilding",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.BootDownloadsGameResourcesAndUsesSameScopeForCacheValidation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidApkNameUsesEnglishGameNameAndAppVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidPlayerBuildIncrementsOnlySemanticPatchVersion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.HostBaseBuildUsesHostPlayerAndKeepsFullBuiltinFallback",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.HostUpdateReusesAndroidAotAndDoesNotBuildPlayer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.OfflineBuildStillForcesBuiltinModeDefine",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.SmallHostBaseBuildCreatesManifestOnlyApkAndPublishesMatchingResources",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.AndroidHostBuildTests.SmallHostPackageClearsOldBundlesAndKeepsOnlyManifestCatalog",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testMethod": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport"
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.7433502"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport",
+          "Status": "Passed",
+          "Duration": "00:00:00.6690000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "testMethod": "Game.Tests.Flow.DiagnosticReportTests.Driver_TransfersOnlyAfterMainReady",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2616146"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.Flow.DiagnosticReportTests.Driver_TransfersOnlyAfterMainReady",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "testMethod": "Game.Tests.Flow.DiagnosticReportTests.RuntimeCapture_OnlyErrorsReachAnonymousQueue",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1878205"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.Flow.DiagnosticReportTests.RuntimeCapture_OnlyErrorsReachAnonymousQueue",
+          "Status": "Passed",
+          "Duration": "00:00:00.0390000"
+        }
+      ]
+    },
+    {
+      "arguments": {
+        "testMode": "EditMode",
+        "testMethod": "Game.Tests.Flow.DiagnosticReportTests.BootFailure_RecordsCodeAndStageWithoutDetails",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "maximumTests": 1,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1791385"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.Flow.DiagnosticReportTests.BootFailure_RecordsCodeAndStageWithoutDetails",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        }
+      ]
+    }
+  ],
+  "sourceSha256": {
+    "Client/Assets/Boot/Runtime/ClientReleasePolicy.cs": "de0417d894d9e5662c3195b8ac1b128f2d76d4a552d6b5bba98700b715c93356",
+    "Client/Assets/Boot/Runtime/DiagnosticReportSender.cs": "a01cd09d34c09c481b9d538b0a21984e7c423e93359112378c1a3c4493e7ada7",
+    "Client/Assets/Boot/Res/ResourceBoot.cs": "c535383a3797ede85590fd4211277f5997a95cce429cb1a66cc4518397039fdc",
+    "Client/Assets/Boot/Launcher.cs": "95bf0a34a253a566fa3435905b881b3a1840031ab8a59d554bcf1faa978b7a23",
+    "Client/Assets/Boot/UI/HotUpdate/BootResourceServerView.cs": "06b8d06e3fadd2cff1919eaedbb4a6b9b79f4a8c95ed6354764d3d905d588339",
+    "Client/Assets/Editor/Build/AndroidOfflineReleaseBuildUtility.cs": "e880ab0a9439456b8685048c346f63f04cf49eef101c86877d95ecc92d921547",
+    "Client/Assets/Editor/Build/AndroidBuildUtility.cs": "bf422dc6898c05c381e9c2886be18911f75b715138d702c8ac34ee3b3d73b5af",
+    "Client/Assets/Editor/Build/AndroidChannelBuildUtility.cs": "d806f8c70951a01038d56f4c34d3b3e456e9dc8732b1b6c44c4bcf08de9fe3d5",
+    "Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkRuntime.cs": "c10708ae99507590051f82956e16c9f7a96dc26627ac29a83e136d018d754bb5",
+    "Client/Assets/Game/Scripts/System/ResourceUpdate/ResourceUpdateSystem.cs": "7eccfe8ae323c73a67112d77540d0cc7d4740d376984cb5fddb3bbd60bf2d647",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Home/StartUICtrl.cs": "7cd7b3e6e3df87e416ce5b4efeaef0b24f7a652765f97ed1bd18c49f80e0e979",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Home/SettingUICtrl.cs": "91aefc1fd52143de5402c803aafd4c25ef1692e40e1462fa0cbbc5d8315fa86f",
+    "Client/Assets/Tests/EditMode/ArcadeRunSystemTests.cs": "8ca1552c8076f99f3dc92186e841de1fc8885c05932b4a9b3fb882d207b61fd1",
+    "Client/Assets/Tests/EditMode/Flow/OfflineReleasePolicyTests.cs": "4deff8350de6b1c4f04afc34eb48d8874cc41ba9aca410842caea5b438f86c7a",
+    "Client/Assets/Tests/EditMode/Flow/OfflineAndroidBuildTests.cs": "b60c069182e18f3863729b9be5cf4e2ab54802bcf1649c2486d864f3e9527064"
+  },
+  "developmentHistory": [
+    {
+      "note": "新增运行时模式实施前8项失败",
+      "response": {
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":8,\"PassedTests\":0,\"FailedTests\":8,\"SkippedTests\":0,\"Duration\":\"00:00:02.3124274\"},\"Results\":[{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.ActualSettingsPrefabHidesNetworkTabAndRestoresInternalMode\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0410000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.ActualSettingsPrefabHidesNetworkTabAndRestoresInternalMode () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:127\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.ActualStartPrefabHidesOnlineAndUpdateEntriesAndRestoresInternalMode\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0020000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.ActualStartPrefabHidesOnlineAndUpdateEntriesAndRestoresInternalMode () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:111\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.InternalProfileRemainsAvailable\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.InternalProfileRemainsAvailable () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:47\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.InternalProfileStillCollectsLocalDiagnosticSummaries\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0020000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.InternalProfileStillCollectsLocalDiagnosticSummaries () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:65\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.OfflineBootAlwaysChoosesBuiltinResources\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.OfflineBootAlwaysChoosesBuiltinResources () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:100\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.OfflineBootDoesNotOwnOrUploadDiagnostics\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.OfflineBootDoesNotOwnOrUploadDiagnostics () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:52\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.OfflineNetworkConnectFailsBeforeTransportIsTouched\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0030000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.OfflineNetworkConnectFailsBeforeTransportIsTouched () [0x00006] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:84\\r\\n\"},{\"Name\":\"Game.Tests.OfflineReleasePolicyTests.OfflineUpdateChecksNeverInvokeRemotePorts\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0020000\",\"Message\":\"  \\u7F3A\\u5C11\\u7A33\\u5B9A Boot \\u53D1\\u5E03\\u6A21\\u5F0F\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:37\\r\\nat Game.Tests.OfflineReleasePolicyTests.OfflineUpdateChecksNeverInvokeRemotePorts () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineReleasePolicyTests.cs:71\\r\\n\"}]}}"
+            }
+          ],
+          "structuredContent": {
+            "result": {
+              "Summary": {
+                "Status": "Failed",
+                "TotalTests": 8,
+                "PassedTests": 0,
+                "FailedTests": 8,
+                "SkippedTests": 0,
+                "Duration": "00:00:02.3124274"
+              },
+              "Results": [
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.ActualSettingsPrefabHidesNetworkTabAndRestoresInternalMode",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0410000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.ActualSettingsPrefabHidesNetworkTabAndRestoresInternalMode () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:127\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.ActualStartPrefabHidesOnlineAndUpdateEntriesAndRestoresInternalMode",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0020000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.ActualStartPrefabHidesOnlineAndUpdateEntriesAndRestoresInternalMode () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:111\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.InternalProfileRemainsAvailable",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.InternalProfileRemainsAvailable () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:47\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.InternalProfileStillCollectsLocalDiagnosticSummaries",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0020000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.InternalProfileStillCollectsLocalDiagnosticSummaries () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:65\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineBootAlwaysChoosesBuiltinResources",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.OfflineBootAlwaysChoosesBuiltinResources () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:100\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineBootDoesNotOwnOrUploadDiagnostics",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.OfflineBootDoesNotOwnOrUploadDiagnostics () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:52\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineNetworkConnectFailsBeforeTransportIsTouched",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0030000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.OfflineNetworkConnectFailsBeforeTransportIsTouched () [0x00006] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:84\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineReleasePolicyTests.OfflineUpdateChecksNeverInvokeRemotePorts",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0020000",
+                  "Message": "  缺少稳定 Boot 发布模式入口\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineReleasePolicyTests.Profile (System.Boolean offline) [0x0000a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:37\r\nat Game.Tests.OfflineReleasePolicyTests.OfflineUpdateChecksNeverInvokeRemotePorts () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineReleasePolicyTests.cs:71\r\n"
+                }
+              ]
+            }
+          },
+          "isError": false
+        },
+        "id": 2,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "note": "新增构建策略实施前8项失败",
+      "response": {
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":8,\"PassedTests\":0,\"FailedTests\":8,\"SkippedTests\":0,\"Duration\":\"00:00:01.4383472\"},\"Results\":[{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.ActualGradleCallbackTouchesOnlyOfflineLauncherManifest\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0170000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.ActualGradleCallbackTouchesOnlyOfflineLauncherManifest () [0x00067] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:70\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.ExistingSignedFixtureCannotClaimOfflineProfile\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.ExistingSignedFixtureCannotClaimOfflineProfile () [0x00014] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:100\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u72EC\\u7ACB\\u79BB\\u7EBF\\u5019\\u9009\\u6784\\u5EFA\\u7B56\\u7565\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:19\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues () [0x00012] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:42\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineDefinesAreExplicitAndRequireBuiltinResources\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u72EC\\u7ACB\\u79BB\\u7EBF\\u5019\\u9009\\u6784\\u5EFA\\u7B56\\u7565\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:19\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineDefinesAreExplicitAndRequireBuiltinResources () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:34\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineFactsPassWithoutAnyPublicServerConfiguration\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0260000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:29\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsPassWithoutAnyPublicServerConfiguration () [0x00000] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:81\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineFactsRejectMissingProfileAndNetworkOrInstallerPermission\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0020000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:29\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsRejectMissingProfileAndNetworkOrInstallerPermission () [0x00035] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:89\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineFactsStillRequireReleaseIdentityAndSignature\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0040000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:29\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsStillRequireReleaseIdentityAndSignature () [0x0003c] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:95\\r\\n\"},{\"Name\":\"Game.Tests.OfflineAndroidBuildTests.OfflineManifestExplicitlyRemovesNetworkAndInstallerPermissions\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0020000\",\"Message\":\"  \\u7F3A\\u5C11\\u72EC\\u7ACB\\u79BB\\u7EBF\\u5019\\u9009\\u6784\\u5EFA\\u7B56\\u7565\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\",\"StackTrace\":\"at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:19\\r\\nat Game.Tests.OfflineAndroidBuildTests.OfflineManifestExplicitlyRemovesNetworkAndInstallerPermissions () [0x00006] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\Flow\\\\OfflineAndroidBuildTests.cs:53\\r\\n\"}]}}"
+            }
+          ],
+          "structuredContent": {
+            "result": {
+              "Summary": {
+                "Status": "Failed",
+                "TotalTests": 8,
+                "PassedTests": 0,
+                "FailedTests": 8,
+                "SkippedTests": 0,
+                "Duration": "00:00:01.4383472"
+              },
+              "Results": [
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.ActualGradleCallbackTouchesOnlyOfflineLauncherManifest",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0170000",
+                  "Message": "  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.ActualGradleCallbackTouchesOnlyOfflineLauncherManifest () [0x00067] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:70\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.ExistingSignedFixtureCannotClaimOfflineProfile",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.ExistingSignedFixtureCannotClaimOfflineProfile () [0x00014] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:100\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  缺少独立离线候选构建策略\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:19\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues () [0x00012] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:42\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineDefinesAreExplicitAndRequireBuiltinResources",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0010000",
+                  "Message": "  缺少独立离线候选构建策略\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:19\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineDefinesAreExplicitAndRequireBuiltinResources () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:34\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsPassWithoutAnyPublicServerConfiguration",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0260000",
+                  "Message": "  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:29\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsPassWithoutAnyPublicServerConfiguration () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:81\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsRejectMissingProfileAndNetworkOrInstallerPermission",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0020000",
+                  "Message": "  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:29\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsRejectMissingProfileAndNetworkOrInstallerPermission () [0x00035] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:89\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineFactsStillRequireReleaseIdentityAndSignature",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0040000",
+                  "Message": "  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts) [0x00014] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:29\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineFactsStillRequireReleaseIdentityAndSignature () [0x0003c] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:95\r\n"
+                },
+                {
+                  "Name": "Game.Tests.OfflineAndroidBuildTests.OfflineManifestExplicitlyRemovesNetworkAndInstallerPermissions",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0020000",
+                  "Message": "  缺少独立离线候选构建策略\r\n  Expected: not null\r\n  But was:  null\r\n",
+                  "StackTrace": "at Game.Tests.OfflineAndroidBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:19\r\nat Game.Tests.OfflineAndroidBuildTests.OfflineManifestExplicitlyRemovesNetworkAndInstallerPermissions () [0x00006] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\OfflineAndroidBuildTests.cs:53\r\n"
+                }
+              ]
+            }
+          },
+          "isError": false
+        },
+        "id": 2,
+        "jsonrpc": "2.0"
+      }
+    },
+    {
+      "note": "结果测试误将生命数设为0；仅修正夹具，最终result-fixed通过",
+      "response": {
+        "result": {
+          "content": [
+            {
+              "type": "text",
+              "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.1639123\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0560000\",\"Message\":\"  Expected: Respawn\\r\\n  But was:  RunFailed\\r\\n\",\"StackTrace\":\"at Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture () [0x00084] in F:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\ArcadeRunSystemTests.cs:82\\r\\n\"}]}}"
+            }
+          ],
+          "structuredContent": {
+            "result": {
+              "Summary": {
+                "Status": "Failed",
+                "TotalTests": 1,
+                "PassedTests": 0,
+                "FailedTests": 1,
+                "SkippedTests": 0,
+                "Duration": "00:00:01.1639123"
+              },
+              "Results": [
+                {
+                  "Name": "Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture",
+                  "Status": "Failed",
+                  "Duration": "00:00:00.0560000",
+                  "Message": "  Expected: Respawn\r\n  But was:  RunFailed\r\n",
+                  "StackTrace": "at Game.Tests.ArcadeRunSystemTests.OfflineFailedResultSurvivesFreshArchitecture () [0x00084] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\ArcadeRunSystemTests.cs:82\r\n"
+                }
+              ]
+            }
+          },
+          "isError": false
+        },
+        "id": 2,
+        "jsonrpc": "2.0"
+      }
+    }
+  ],
+  "nonExecutedAttempts": [
+    "DiagnosticReportTests class scope rejected before Unity execution: file contains 30 cases above MaxTests=19; narrowed to 3 real methods.",
+    "Three exact-method lookups initially omitted namespace segment Flow; MCP returned no matches. No fallback. Corrected from source and each method passed."
+  ],
+  "formalSigningPreflight": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "System.String: preflight=passed; actualOldApkOffline=False; version=0.1.27; versionCode=17"
+        }
+      ],
+      "isError": false
+    },
+    "id": 2,
+    "jsonrpc": "2.0"
+  },
+  "actualApkIndependentSha256": "4e34d688476cd9a88fb7280e44e234114026cc0173fa17e81e4ab9824e1d2733",
+  "review": {
+    "result": "No confirmed issues",
+    "unverified": [
+      "actual Gradle manifest merge",
+      "final Boot define in APK",
+      "device offline gameplay and traffic",
+      "save upgrade"
+    ]
+  },
+  "notExecuted": [
+    "Player Build",
+    "APK repackaging or signing",
+    "phone tests",
+    "store submission",
+    "git commit"
+  ],
+  "finalEditorContext": {
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "System.String: \"F:/GitHub/FirepowerLoop/Client/Assets | Assets/Game/Scenes/Boot.unity | playing=False | compiling=False\""
+        }
+      ],
+      "isError": false
+    },
+    "id": 2,
+    "jsonrpc": "2.0"
+  },
+  "consoleSnapshotNote": "Console retains historical errors, including initial test compilation mistakes already corrected before final passing runs; console was not cleared. No claim of empty console."
+}

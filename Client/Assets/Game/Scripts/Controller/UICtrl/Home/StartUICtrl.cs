@@ -42,6 +42,7 @@ namespace Game
 
         protected override void OnInit()
         {
+            ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OnNewGameClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -63,6 +64,16 @@ namespace Game
             RefreshSaveButtons();
         }
 
+        /// <summary>只按发布策略切换已有入口，布局继续由正式 Prefab 的布局组处理。</summary>
+        internal static void ApplyReleaseVisibility(StartUI view)
+        {
+            bool online = !ClientReleasePolicy.OfflineSinglePlayer;
+            if (view.BtnOnline != null) view.BtnOnline.gameObject.SetActive(online);
+            view.BtnCheckUpdate.gameObject.SetActive(online);
+            if (!online) view.UpdateStatusText.gameObject.SetActive(false);
+            if (view.ButtonGroup != null) LayoutRebuilder.ForceRebuildLayoutImmediate(view.ButtonGroup);
+        }
+
         /// <summary>每个 View 初始化时绑定一次；先请求点击声，再执行业务，隐藏/重显不重复绑定。</summary>
         private void BindMenuButton(Button button, UnityAction action)
         {
@@ -78,6 +89,7 @@ namespace Game
 
         protected override void OnShow()
         {
+            ApplyReleaseVisibility(UI);
             startGeneration++;
             startingRun = false;
             var appState = this.GetModel<AppStateModel>().CurrentState.Value;
@@ -136,9 +148,9 @@ namespace Game
             }
 
             var snapshot = this.GetSystem<ResourceUpdateSystem>().Snapshot;
-            var showUpdateStatus = manualChecking || snapshot.Status == ResourceUpdateStatus.Checking ||
+            var showUpdateStatus = !ClientReleasePolicy.OfflineSinglePlayer && (manualChecking || snapshot.Status == ResourceUpdateStatus.Checking ||
                                    snapshot.Status == ResourceUpdateStatus.UpdateAvailable ||
-                                   snapshot.Status == ResourceUpdateStatus.CheckFailed;
+                                   snapshot.Status == ResourceUpdateStatus.CheckFailed);
             UI.UpdateStatusText.gameObject.SetActive(showUpdateStatus);
             UI.UpdateStatusText.text = manualChecking ? Loc.T("ui.start.update.game_checking") :
                 showUpdateStatus ? FormatUpdateStatus(snapshot) : string.Empty;
@@ -230,6 +242,7 @@ namespace Game
 
         private void OnOnlineClick()
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             if (startingRun) return;
             OnlineLoginUICtrl.ShowForArcadeLobby();
         }
@@ -264,6 +277,7 @@ namespace Game
         /// <summary>主动检查优先展示 APK 候选；隐藏后丢弃展示结果，检查期间拒绝重复点击。</summary>
         private async UniTask CheckUpdate(bool userInitiated)
         {
+            if (ClientReleasePolicy.OfflineSinglePlayer) return;
             if (userInitiated && manualChecking) return;
             var requestView = UI;
             int requestGeneration = updatePresentationGeneration;

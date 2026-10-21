@@ -98,6 +98,18 @@ namespace Game.Editor
                 BuildChannelCandidateBatch();
         }
 
+        [MenuItem("Tools/打包/Android/单机首发候选包完整打包", false, 160)]
+        private static void BuildOfflineSinglePlayerCandidateMenu()
+        {
+            if (Application.isBatchMode || EditorUtility.DisplayDialog("纯离线单机首发",
+                    "使用独立正式签名和完整内置资源；关闭联机、诊断上传与在线更新，移除联网及自有安装更新权限。不会发布服务器或提交商店。",
+                    "开始单机候选包打包", "取消"))
+                BuildOfflineSinglePlayerCandidateBatch();
+        }
+
+        /// <summary>首发单机入口；保留已有内部包及联网候选入口，模式只作用于本次构建。</summary>
+        public static void BuildOfflineSinglePlayerCandidateBatch() => BuildLatestCodeAndResources(true, true);
+
         /// <summary>显式渠道入口；没有正式签名及外部服务配置时，在切平台或分配版本之前失败。</summary>
         public static void BuildChannelCandidateBatch() => BuildLatestCodeAndResources(true);
 
@@ -233,27 +245,30 @@ namespace Game.Editor
         }
 
         /// <summary>两种完整包共享构建事务；渠道模式仅归档候选 APK 和检查报告。</summary>
-        private static void BuildLatestCodeAndResources(bool channel)
+        private static void BuildLatestCodeAndResources(bool channel, bool offlineSinglePlayer = false)
         {
-            if (!BeginWorkflow(channel ? "Android 渠道候选包完整打包" : "Android 最新代码资源完整打包",
-                    channel ? (Action)AndroidChannelBuildUtility.ValidateChannelConfiguration : null))
+            string workflow = offlineSinglePlayer ? "Android 单机首发候选包完整打包" :
+                channel ? "Android 渠道候选包完整打包" : "Android 最新代码资源完整打包";
+            Action preflight = offlineSinglePlayer ? (Action)AndroidChannelBuildUtility.ValidateOfflineChannelConfiguration :
+                channel ? AndroidChannelBuildUtility.ValidateChannelConfiguration : null;
+            if (!BeginWorkflow(workflow, preflight))
                 return;
 
-            var timing = new BuildStageTiming("Android 最新代码资源完整打包");
+            var timing = new BuildStageTiming(workflow);
             var context = new AndroidBuildContext(DateTime.Now, Guid.NewGuid().ToString("N"));
             var previous = AndroidEditorOptions.Capture();
             bool finalApkValidated = false;
             try
             {
                 timing.Run("EnsureAndroidBuildTarget", EnsureAndroidBuildTarget);
-                timing.Run("ValidateAndroidEnvironment", () => ValidateAndroidEnvironmentFor(channel));
-                timing.Run("ValidateAndroidNetworkConfig", ValidateAndroidNetworkConfig);
+                timing.Run("ValidateAndroidEnvironment", () => ValidateAndroidEnvironmentFor(channel, offlineSinglePlayer));
+                if (!offlineSinglePlayer) timing.Run("ValidateAndroidNetworkConfig", ValidateAndroidNetworkConfig);
                 if (channel) previous.ApplyChannelBuildOptions();
                 else previous.ApplyTestBuildOptions();
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel));
+                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel, offlineSinglePlayer));
                 timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
@@ -263,14 +278,15 @@ namespace Game.Editor
                 var package = timing.Run("BuildAndroidBuiltinPackage", () => BuildPackageOrThrow(version));
                 timing.Run("ValidateAndroidBuiltinPackage", () => ValidateBuiltinPackage(package.OutputPackageDirectory, version));
                 string appVersion = timing.Run("BuildFinalApk", () =>
-                    channel ? BuildFinalPlayerWithIncrementedPatchVersion(context, true, true) :
+                    channel ? BuildFinalPlayerWithIncrementedPatchVersion(context, true, true, offlineSinglePlayer) :
                     BuildFinalPlayerWithIncrementedPatchVersion(context, true));
                 timing.Run("ValidateFinalApk", context.ValidateFinalApk);
                 finalApkValidated = true;
                 if (channel)
                 {
-                    string reportPath = Path.Combine(context.BatchDirectory, "channel-apk-check.json");
-                    string report = timing.Run("InspectChannelApk", () => AndroidChannelBuildUtility.InspectAndSave(context.FinalApkPath, reportPath, true));
+                    string reportPath = Path.Combine(context.BatchDirectory, offlineSinglePlayer ? "offline-apk-check.json" : "channel-apk-check.json");
+                    string report = timing.Run("InspectChannelApk", () => offlineSinglePlayer ? AndroidChannelBuildUtility.InspectOfflineAndSave(context.FinalApkPath, reportPath) :
+                        AndroidChannelBuildUtility.InspectAndSave(context.FinalApkPath, reportPath, true));
                     if (!Newtonsoft.Json.Linq.JObject.Parse(report).Value<bool>("passed"))
                         throw new InvalidOperationException("渠道 APK 技术检查未通过，安装包和逐项原因已保留：" + reportPath);
                     context.CleanupPreparatoryDirectory();
@@ -560,7 +576,7 @@ namespace Game.Editor
         }
 
         /// <summary>共享工具链与应用检查；渠道模式不读取内部测试私钥。</summary>
-        private static void ValidateAndroidEnvironmentFor(bool channel)
+        private static void ValidateAndroidEnvironmentFor(bool channel, bool offlineSinglePlayer = false)
         {
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
                 throw new InvalidOperationException("当前 Unity 未安装可用的 Android Build Support。");
@@ -578,7 +594,8 @@ namespace Game.Editor
                 throw new InvalidOperationException($"Android CPU 必须仅为 ARM64，当前为 {PlayerSettings.Android.targetArchitectures}。");
             if (!string.Equals(PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android), ApplicationIdentifier, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Android 包名必须是 {ApplicationIdentifier}。");
-            if (channel) AndroidChannelBuildUtility.ValidateChannelConfiguration();
+            if (offlineSinglePlayer) AndroidChannelBuildUtility.ValidateOfflineChannelConfiguration();
+            else if (channel) AndroidChannelBuildUtility.ValidateChannelConfiguration();
             else AndroidSigningUtility.ValidateLocalKey();
             if (PlayerSettings.defaultInterfaceOrientation != UIOrientation.AutoRotation ||
                 PlayerSettings.allowedAutorotateToPortrait ||
@@ -794,7 +811,7 @@ namespace Game.Editor
         /// <summary>
         /// 构建临时或最终 Android Player；报告失败、产物缺失或空文件均视为失败。
         /// </summary>
-        private static void BuildPlayer(string apkPath, bool forceBuiltinResources, bool channel = false)
+        private static void BuildPlayer(string apkPath, bool forceBuiltinResources, bool channel = false, bool offlineSinglePlayer = false)
         {
             var options = new BuildPlayerOptions
             {
@@ -802,11 +819,10 @@ namespace Game.Editor
                 locationPathName = apkPath,
                 target = BuildTarget.Android,
                 options = AndroidChannelBuildUtility.BuildOptionsFor(channel),
-                extraScriptingDefines = forceBuiltinResources
-                    ? new[] { BuiltinResourcesScriptingDefine }
-                    : Array.Empty<string>()
+                extraScriptingDefines = AndroidOfflineReleaseBuildUtility.PlayerDefines(forceBuiltinResources, offlineSinglePlayer)
             };
             BuildReport report;
+            using (AndroidOfflineReleaseBuildUtility.UseBuildScope(offlineSinglePlayer))
             using (channel ? AndroidChannelBuildUtility.UseChannelSigning() : AndroidSigningUtility.UseFixedSigning())
                 report = BuildPipeline.BuildPlayer(options);
             if (report == null)
@@ -823,7 +839,7 @@ namespace Game.Editor
         /// <summary>
         /// 最终 APK 构建前预留高于项目及发布记录的身份；失败恢复编辑器版本但保留预留记录。
         /// </summary>
-        private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources, bool channel = false)
+        private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources, bool channel = false, bool offlineSinglePlayer = false)
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string bootFingerprint = AndroidBootBuildGuard.ComputeFingerprint(projectRoot);
@@ -841,7 +857,7 @@ namespace Game.Editor
 
             try
             {
-                BuildPlayer(context.FinalApkPath, forceBuiltinResources, channel);
+                BuildPlayer(context.FinalApkPath, forceBuiltinResources, channel, offlineSinglePlayer);
                 // 打包中途修改 Boot 时不能把新源码错误记录为已生成 APK 的基线。
                 if (!string.Equals(bootFingerprint, AndroidBootBuildGuard.ComputeFingerprint(projectRoot), StringComparison.Ordinal))
                     throw new InvalidOperationException("打包期间 Boot 发生变化，请重新执行 Android 首包完整打包。");
@@ -1010,6 +1026,7 @@ namespace Game.Editor
             {
                 case "Android 最新代码资源完整打包": return BuildLatestCodeAndResourcesBatch;
                 case "Android 渠道候选包完整打包": return BuildChannelCandidateBatch;
+                case "Android 单机首发候选包完整打包": return BuildOfflineSinglePlayerCandidateBatch;
                 case "Android Host 基础包完整打包": return BuildHostBaseCodeAndResourcesBatch;
                 case "Android 首包完整打包": return BuildSmallHostBaseCodeAndResourcesBatch;
                 case "Android Host 代码+资源更新": return BuildHostCodeAndResourcesBatch;
