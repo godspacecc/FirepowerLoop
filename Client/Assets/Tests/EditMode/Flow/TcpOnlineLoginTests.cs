@@ -151,7 +151,7 @@ namespace Game.Tests
         }
 
         [UnityTest]
-        public IEnumerator NetworkRuntimeProtocolDiagnosticsLogFullJsonRespectSwitchAndDoNotBreakTransport()
+        public IEnumerator NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport()
         {
             var logs = new List<CapturedLog>();
             Application.LogCallback logCallback = (condition, stackTrace, type) => logs.Add(new CapturedLog(condition, type));
@@ -183,7 +183,11 @@ namespace Game.Tests
                 JObject sendJson = JObject.Parse(sendLog.Condition.Substring(sendLog.Condition.IndexOf('=') + 1));
                 Assert.That((int)sendJson[nameof(C2G_Login.RpcId)], Is.GreaterThan(0));
                 Assert.That((string)sendJson[nameof(C2G_Login.UserName)], Is.EqualTo(request.UserName));
-                Assert.That((string)sendJson[nameof(C2G_Login.Password)], Is.EqualTo(request.Password));
+                Assert.That((string)sendJson[nameof(C2G_Login.Password)], Is.EqualTo("***"));
+                Assert.That(sendLog.Condition, Does.Not.Contain(request.Password));
+                var sentRequest = (C2G_Login)codec.Decode(transport.SentPackets[0]).Message;
+                Assert.That(sentRequest.Password, Is.EqualTo("protocol-log-password"));
+                Assert.That(request.Password, Is.EqualTo("protocol-log-password"));
 
                 response.RpcId = request.RpcId;
                 response.Error = 37;

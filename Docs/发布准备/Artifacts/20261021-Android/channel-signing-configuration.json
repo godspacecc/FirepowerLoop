@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-21",
+  "certificateSha256": "d57daed4451758869a74b439cfe8d926a6447b342efaa55cd94a891a0f7f26e3",
+  "certificateSubject": "CN=FirepowerLoop Release",
+  "algorithm": "RSA-3072 / SHA256withRSA",
+  "notBefore": "Oct 21 03:29:57 2026 GMT",
+  "notAfter": "Mar  8 03:29:57 2054 GMT",
+  "privateSettings": "Tools/Android/PrivateSigning.local/channel-signing.local.json",
+  "publicPolicy": "Tools/Android/channel-signing-policy.json",
+  "privatePathsIgnoredAndUntracked": true,
+  "externalBackupCreated": false,
+  "gameBuildInvoked": false,
+  "gameApkResigned": false,
+  "playerVersion": "0.1.27",
+  "androidVersionCode": 17,
+  "storeApproved": false,
+  "deviceVerified": false,
+  "unityChecks": {
+    "configure-signing-unity": [
+      "System.String: Release and existing internal signing verified independently; current Unity channel environment configured. No build. Version=0.1.27/17"
+    ],
+    "persist-signing-unity": [
+      "System.String: Current Unity and Windows user 78176 signing paths match; private passwords are stored only in the ignored local configuration. No build."
+    ],
+    "signing-preflight": [
+      "System.String: Signing configuration passed its checks; channel preflight correctly rejects existing local service configuration before a build. Version remains 0.1.27/17"
+    ]
+  }
+}

@@ -1,0 +1,454 @@
+{
+  "date": "2026-10-21",
+  "scope": "Protocol Password fields in new send/receive diagnostics only. No Player Build, server deployment, privacy flow changes or historical log cleanup.",
+  "gameBuildInvoked": false,
+  "deviceVerified": false,
+  "totalPassed": 11,
+  "runs": {
+    "red-unit-final": {
+      "maximum": 10,
+      "arguments": {
+        "testMode": "EditMode",
+        "testClass": "NetworkDiagnosticsTests",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 10,
+          "PassedTests": 7,
+          "FailedTests": 3,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.5309034"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.DisabledProtocolLoggingDoesNotEvaluatePayload",
+            "Status": "Passed",
+            "Duration": "00:00:00.0340000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.LoginLogRedactsPasswordWithoutChangingWirePayload",
+            "Status": "Failed",
+            "Duration": "00:00:00.2180000",
+            "Message": "  Expected string length 3 but was 36. Strings differ at index 0.\r\n  Expected: \"***\"\r\n  But was:  \"AUDIT_ONLY_NOT_A_REAL_LOGIN_PASSWORD\"\r\n  -----------^\r\n",
+            "StackTrace": "at Game.Tests.NetworkDiagnosticsTests.LoginLogRedactsPasswordWithoutChangingWirePayload () [0x00068] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\NetworkDiagnosticsTests.cs:101\r\n"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsCommandTogglesRuntimeLogging",
+            "Status": "Passed",
+            "Duration": "00:00:00.0550000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsDefaultsToEnabledInEditor",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsSetEnabledLogsChineseState",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NullMessageRetainsJsonNullWithoutWarning",
+            "Status": "Passed",
+            "Duration": "00:00:00.0050000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.OrdinaryProtocolFieldsAndPasswordWordInTextRemainReadable",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.ReceivedNestedPasswordsAreMaskedIgnoringCaseWithoutChangingSource",
+            "Status": "Failed",
+            "Duration": "00:00:00.0320000",
+            "Message": "  Expected string length 3 but was 36. Strings differ at index 0.\r\n  Expected: \"***\"\r\n  But was:  \"AUDIT_ONLY_NOT_A_REAL_LOGIN_PASSWORD\"\r\n  -----------^\r\n",
+            "StackTrace": "at Game.Tests.NetworkDiagnosticsTests.ReceivedNestedPasswordsAreMaskedIgnoringCaseWithoutChangingSource () [0x00083] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\NetworkDiagnosticsTests.cs:137\r\n"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.RegisterLogMasksPresentEmptyAndNullPasswords",
+            "Status": "Failed",
+            "Duration": "00:00:00.0070000",
+            "Message": "  Expected string length 3 but was 36. Strings differ at index 0.\r\n  Expected: \"***\"\r\n  But was:  \"AUDIT_ONLY_NOT_A_REAL_LOGIN_PASSWORD\"\r\n  -----------^\r\n",
+            "StackTrace": "at Game.Tests.NetworkDiagnosticsTests.RegisterLogMasksPresentEmptyAndNullPasswords () [0x00063] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\NetworkDiagnosticsTests.cs:119\r\n"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.SerializationFailureDoesNotLogExceptionMessageOrFallbackPayload",
+            "Status": "Passed",
+            "Duration": "00:00:00.0090000"
+          }
+        ]
+      }
+    },
+    "red-integration": {
+      "maximum": 1,
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testMethod": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport"
+      },
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.0223262"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport",
+            "Status": "Failed",
+            "Duration": "00:00:00.2740000",
+            "Message": "  Expected string length 3 but was 21. Strings differ at index 0.\r\n  Expected: \"***\"\r\n  But was:  \"protocol-log-password\"\r\n  -----------^\r\n",
+            "StackTrace": "at Game.Tests.TcpOnlineLoginTests+<NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport>d__7.MoveNext () [0x00271] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\TcpOnlineLoginTests.cs:186\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46\r\n"
+          }
+        ]
+      }
+    },
+    "green-unit": {
+      "maximum": 10,
+      "arguments": {
+        "testMode": "EditMode",
+        "testClass": "NetworkDiagnosticsTests",
+        "includePassingTests": true,
+        "includeStacktrace": true
+      },
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 10,
+          "PassedTests": 10,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.4764612"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.DisabledProtocolLoggingDoesNotEvaluatePayload",
+            "Status": "Passed",
+            "Duration": "00:00:00.0340000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.LoginLogRedactsPasswordWithoutChangingWirePayload",
+            "Status": "Passed",
+            "Duration": "00:00:00.2150000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsCommandTogglesRuntimeLogging",
+            "Status": "Passed",
+            "Duration": "00:00:00.0410000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsDefaultsToEnabledInEditor",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsSetEnabledLogsChineseState",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.NullMessageRetainsJsonNullWithoutWarning",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.OrdinaryProtocolFieldsAndPasswordWordInTextRemainReadable",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.ReceivedNestedPasswordsAreMaskedIgnoringCaseWithoutChangingSource",
+            "Status": "Passed",
+            "Duration": "00:00:00.0280000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.RegisterLogMasksPresentEmptyAndNullPasswords",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.NetworkDiagnosticsTests.SerializationFailureDoesNotLogExceptionMessageOrFallbackPayload",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          }
+        ]
+      }
+    },
+    "green-integration": {
+      "maximum": 1,
+      "arguments": {
+        "testMode": "EditMode",
+        "includePassingTests": true,
+        "includeStacktrace": true,
+        "testMethod": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport"
+      },
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 1,
+          "PassedTests": 1,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.6295478"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport",
+            "Status": "Passed",
+            "Duration": "00:00:00.4810000"
+          }
+        ]
+      }
+    }
+  },
+  "files": [
+    {
+      "path": "Client/Assets/Game/Scripts/Utility/Network/Diagnostics/NetworkDiagnostics.cs",
+      "sha256": "34191b8a64d50b6b8e1b5837f859c021e53afc47fc3b4b97675ccdc8a7999b69"
+    },
+    {
+      "path": "Client/Assets/Tests/EditMode/Flow/NetworkDiagnosticsTests.cs",
+      "sha256": "76b5b4f8c19ef8ec07c25a5746d50e8d63953bfc7d49286257fc47718baf7439"
+    },
+    {
+      "path": "Client/Assets/Tests/EditMode/Flow/TcpOnlineLoginTests.cs",
+      "sha256": "cb230a420993b0ddfbb8232ba54891de5b942b5fa335b3f6204b766bacfa679a"
+    }
+  ],
+  "review": {
+    "readOnly": true,
+    "scope": [
+      "Client/Assets/Game/Scripts/Utility/Network/Diagnostics/NetworkDiagnostics.cs",
+      "Client/Assets/Tests/EditMode/Flow/NetworkDiagnosticsTests.cs",
+      "Client/Assets/Tests/EditMode/Flow/TcpOnlineLoginTests.cs"
+    ],
+    "findings": [],
+    "result": "No actionable findings in bounded review; Unity tests executed by implementer."
+  },
+  "preCommitAfterFastForward": {
+    "baseCommit": "7eae4f5ad339a24c20007f0300515b42293fa455",
+    "totalPassed": 30,
+    "scopes": [
+      {
+        "maximum": 10,
+        "arguments": {
+          "testMode": "EditMode",
+          "testClass": "NetworkDiagnosticsTests",
+          "includePassingTests": true,
+          "includeStacktrace": true
+        },
+        "result": {
+          "Summary": {
+            "Status": "Passed",
+            "TotalTests": 10,
+            "PassedTests": 10,
+            "FailedTests": 0,
+            "SkippedTests": 0,
+            "Duration": "00:00:02.7610016"
+          },
+          "Results": [
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.DisabledProtocolLoggingDoesNotEvaluatePayload",
+              "Status": "Passed",
+              "Duration": "00:00:00.0360000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.LoginLogRedactsPasswordWithoutChangingWirePayload",
+              "Status": "Passed",
+              "Duration": "00:00:00.3410000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsCommandTogglesRuntimeLogging",
+              "Status": "Passed",
+              "Duration": "00:00:00.1240000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsDefaultsToEnabledInEditor",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.NetworkDiagnosticsSetEnabledLogsChineseState",
+              "Status": "Passed",
+              "Duration": "00:00:00.0040000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.NullMessageRetainsJsonNullWithoutWarning",
+              "Status": "Passed",
+              "Duration": "00:00:00.0030000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.OrdinaryProtocolFieldsAndPasswordWordInTextRemainReadable",
+              "Status": "Passed",
+              "Duration": "00:00:00.0050000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.ReceivedNestedPasswordsAreMaskedIgnoringCaseWithoutChangingSource",
+              "Status": "Passed",
+              "Duration": "00:00:00.0280000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.RegisterLogMasksPresentEmptyAndNullPasswords",
+              "Status": "Passed",
+              "Duration": "00:00:00.0090000"
+            },
+            {
+              "Name": "Game.Tests.NetworkDiagnosticsTests.SerializationFailureDoesNotLogExceptionMessageOrFallbackPayload",
+              "Status": "Passed",
+              "Duration": "00:00:00.0100000"
+            }
+          ]
+        }
+      },
+      {
+        "maximum": 1,
+        "arguments": {
+          "testMode": "EditMode",
+          "includePassingTests": true,
+          "includeStacktrace": true,
+          "testMethod": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport"
+        },
+        "result": {
+          "Summary": {
+            "Status": "Passed",
+            "TotalTests": 1,
+            "PassedTests": 1,
+            "FailedTests": 0,
+            "SkippedTests": 0,
+            "Duration": "00:00:01.7407568"
+          },
+          "Results": [
+            {
+              "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport",
+              "Status": "Passed",
+              "Duration": "00:00:00.4930000"
+            }
+          ]
+        }
+      },
+      {
+        "maximum": 19,
+        "arguments": {
+          "includePassingTests": true,
+          "testMode": "EditMode",
+          "includeStacktrace": true,
+          "testClass": "AndroidChannelBuildTests"
+        },
+        "result": {
+          "Summary": {
+            "Status": "Passed",
+            "TotalTests": 19,
+            "PassedTests": 19,
+            "FailedTests": 0,
+            "SkippedTests": 0,
+            "Duration": "00:00:03.8400180"
+          },
+          "Results": [
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.ChannelEditorOptionsRestoreOriginalValues",
+              "Status": "Passed",
+              "Duration": "00:00:00.0050000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags",
+              "Status": "Passed",
+              "Duration": "00:00:00.0020000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected",
+              "Status": "Passed",
+              "Duration": "00:00:00.0150000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether",
+              "Status": "Passed",
+              "Duration": "00:00:00.0020000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite",
+              "Status": "Passed",
+              "Duration": "00:00:00.0050000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices",
+              "Status": "Passed",
+              "Duration": "00:00:00.0020000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.Ipv6DocumentationAddressCannotPassPublicServerCheck",
+              "Status": "Passed",
+              "Duration": "00:00:00.0040000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel",
+              "Status": "Passed",
+              "Duration": "00:00:00.0070000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.MissingChannelCredentialsFailBeforeEditorSettingsChange",
+              "Status": "Passed",
+              "Duration": "00:00:00.0040000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass",
+              "Status": "Passed",
+              "Duration": "00:00:00.0020000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.PlatformReloadResolvesChannelEntryWithoutInvokingBuild",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.PublicIpv4OutsideDocumentationSubnetIsNotRejected",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode",
+              "Status": "Passed",
+              "Duration": "00:00:01.9840000"
+            },
+            {
+              "Name": "Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly",
+              "Status": "Passed",
+              "Duration": "00:00:00.0010000"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

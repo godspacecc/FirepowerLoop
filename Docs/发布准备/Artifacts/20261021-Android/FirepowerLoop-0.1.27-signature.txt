@@ -1,0 +1,22 @@
+COMMAND: F:\2022.3.55f1c1\Editor\Data\PlaybackEngines\AndroidPlayer\OpenJDK\bin\java.exe -jar F:\2022.3.55f1c1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\build-tools\34.0.0\lib\apksigner.jar verify --verbose --print-certs F:\GitHub\FirepowerLoop\Client\Build\Android\20261020_215056\FirepowerLoop-0.1.27.apk
+EXIT_CODE: 0
+
+Verifies
+Verified using v1 scheme (JAR signing): true
+Verified using v2 scheme (APK Signature Scheme v2): true
+Verified using v3 scheme (APK Signature Scheme v3): false
+Verified using v3.1 scheme (APK Signature Scheme v3.1): false
+Verified using v4 scheme (APK Signature Scheme v4): false
+Verified for SourceStamp: false
+Number of signers: 1
+Signer #1 certificate DN: C=US, O=Android, CN=Android Debug
+Signer #1 certificate SHA-256 digest: ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee
+Signer #1 certificate SHA-1 digest: 8bcb455f218a6b929c60e3a5722af6c8ca665565
+Signer #1 certificate MD5 digest: 35bce274df026957ab475d76f1e05b01
+Signer #1 key algorithm: RSA
+Signer #1 key size (bits): 2048
+Signer #1 public key SHA-256 digest: e2dd7e3699622ad1393c7bb3f129998899f663049c609b525050ca052555dd4f
+Signer #1 public key SHA-1 digest: 34db61b4fbe1ee2a08c86351770b7536bfd838c7
+Signer #1 public key MD5 digest: 990f5e2990c9292920d8a0c7ce9fabb4
+WARNING: META-INF/com/android/build/gradle/app-metadata.properties not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.
+WARNING: META-INF/com.android.games.engine.build_fingerprint not protected by signature. Unauthorized modifications to this JAR entry will not be detected. Delete or move the entry outside of META-INF/.

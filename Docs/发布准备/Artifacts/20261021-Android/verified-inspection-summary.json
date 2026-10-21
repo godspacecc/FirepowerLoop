@@ -1,0 +1,158 @@
+[
+  {
+    "file": "verified-internal-0.1.27.json",
+    "passed": true,
+    "sha256": "4e34d688476cd9a88fb7280e44e234114026cc0173fa17e81e4ab9824e1d2733",
+    "checks": [
+      {
+        "id": "metadata",
+        "status": "Passed",
+        "message": "Android SDK 元数据必须读取成功。"
+      },
+      {
+        "id": "package",
+        "status": "Passed",
+        "message": "包名必须为本项目独立身份。"
+      },
+      {
+        "id": "version",
+        "status": "Passed",
+        "message": "实际 APK 必须包含有效版本名和正版本码。"
+      },
+      {
+        "id": "signature",
+        "status": "Passed",
+        "message": "APK 签名完整性必须验证成功。"
+      },
+      {
+        "id": "certificate",
+        "status": "Passed",
+        "message": "实际签名必须符合显式公开证书策略。"
+      },
+      {
+        "id": "architecture",
+        "status": "Passed",
+        "message": "本项目 APK 必须仅包含 ARM64 架构。"
+      },
+      {
+        "id": "installerPermission",
+        "status": "Warning",
+        "message": "包含自有 APK 安装权限；提交前需按目标渠道确定更新方案，此检查不代表平台接受该权限。"
+      }
+    ]
+  },
+  {
+    "file": "verified-channel-0.1.27.json",
+    "passed": false,
+    "sha256": "4e34d688476cd9a88fb7280e44e234114026cc0173fa17e81e4ab9824e1d2733",
+    "checks": [
+      {
+        "id": "metadata",
+        "status": "Passed",
+        "message": "Android SDK 元数据必须读取成功。"
+      },
+      {
+        "id": "package",
+        "status": "Passed",
+        "message": "包名必须为本项目独立身份。"
+      },
+      {
+        "id": "version",
+        "status": "Passed",
+        "message": "实际 APK 必须包含有效版本名和正版本码。"
+      },
+      {
+        "id": "signature",
+        "status": "Passed",
+        "message": "APK 签名完整性必须验证成功。"
+      },
+      {
+        "id": "certificate",
+        "status": "Failed",
+        "message": "实际签名必须符合显式公开证书策略。"
+      },
+      {
+        "id": "architecture",
+        "status": "Passed",
+        "message": "本项目 APK 必须仅包含 ARM64 架构。"
+      },
+      {
+        "id": "debuggable",
+        "status": "Failed",
+        "message": "渠道候选包不能启用 debuggable。"
+      },
+      {
+        "id": "testOnly",
+        "status": "Passed",
+        "message": "渠道候选包不能标记为 testOnly。"
+      },
+      {
+        "id": "releaseCertificate",
+        "status": "Failed",
+        "message": "渠道候选包不能使用 Android 调试证书。"
+      },
+      {
+        "id": "resourceServer",
+        "status": "Failed",
+        "message": "资源地址必须是无凭据、无片段的公网 HTTPS 地址。"
+      },
+      {
+        "id": "gameGateEndpoint",
+        "status": "Failed",
+        "message": "联机网关必须是公网主机及显式端口。"
+      },
+      {
+        "id": "diagnostics",
+        "status": "Failed",
+        "message": "渠道诊断必须显式指定公网 HTTPS 地址，LocalGameServer 与空地址不表示禁用。"
+      },
+      {
+        "id": "installerPermission",
+        "status": "Warning",
+        "message": "包含自有 APK 安装权限；提交前需按目标渠道确定更新方案，此检查不代表平台接受该权限。"
+      }
+    ]
+  },
+  {
+    "file": "verified-internal-0.1.26.json",
+    "passed": false,
+    "sha256": "bff27601f9d072dd35aaa55bd89d8598b20b78eb59f89d11ffaad2da7b6f5d17",
+    "checks": [
+      {
+        "id": "metadata",
+        "status": "Passed",
+        "message": "Android SDK 元数据必须读取成功。"
+      },
+      {
+        "id": "package",
+        "status": "Passed",
+        "message": "包名必须为本项目独立身份。"
+      },
+      {
+        "id": "version",
+        "status": "Passed",
+        "message": "实际 APK 必须包含有效版本名和正版本码。"
+      },
+      {
+        "id": "signature",
+        "status": "Passed",
+        "message": "APK 签名完整性必须验证成功。"
+      },
+      {
+        "id": "certificate",
+        "status": "Failed",
+        "message": "实际签名必须符合显式公开证书策略。"
+      },
+      {
+        "id": "architecture",
+        "status": "Passed",
+        "message": "本项目 APK 必须仅包含 ARM64 架构。"
+      },
+      {
+        "id": "installerPermission",
+        "status": "Warning",
+        "message": "包含自有 APK 安装权限；提交前需按目标渠道确定更新方案，此检查不代表平台接受该权限。"
+      }
+    ]
+  }
+]

@@ -1,0 +1,6 @@
+COMMAND: F:\2022.3.55f1c1\Editor\Data\PlaybackEngines\AndroidPlayer\SDK\build-tools\34.0.0\aapt.exe dump permissions F:\GitHub\FirepowerLoop\Client\Build\Android\20261020_215056\FirepowerLoop-0.1.27.apk
+EXIT_CODE: 0
+
+package: com.firepowerloop.game
+uses-permission: name='android.permission.INTERNET'
+uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'

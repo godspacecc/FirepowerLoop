@@ -13,8 +13,8 @@ using Debug = UnityEngine.Debug;
 namespace Game.Editor
 {
     /// <summary>
-    /// Android 个人真机测试包与 Host 热更新的构建入口。
-    /// 负责 Android HybridCLR、离线完整包、Host 基础包及后续代码资源更新；固定测试签名，不负责商店发布。
+    /// Android 测试包、渠道候选包与 Host 热更新的构建入口。
+    /// 渠道候选包复用完整内置资源链路并单独检查，不自动发布资源服或提交商店。
     /// </summary>
     public static class AndroidBuildUtility
     {
@@ -88,6 +88,18 @@ namespace Game.Editor
                     "开始快速打包", "取消"))
                 BuildQuickReuseApkBatch();
         }
+
+        [MenuItem("Tools/打包/Android/渠道候选包完整打包", false, 158)]
+        private static void BuildChannelCandidateMenu()
+        {
+            if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 渠道候选包",
+                    "使用显式正式签名和公网配置，生成非 Development 的完整内置 APK，并检查实际产物。不会发布资源服或提交商店。",
+                    "开始候选包打包", "取消"))
+                BuildChannelCandidateBatch();
+        }
+
+        /// <summary>显式渠道入口；没有正式签名及外部服务配置时，在切平台或分配版本之前失败。</summary>
+        public static void BuildChannelCandidateBatch() => BuildLatestCodeAndResources(true);
 
         [MenuItem("Tools/服务器/Android/发布资源服", false, 210)]
         private static void PublishAndroidResourceServerMenu()
@@ -217,7 +229,14 @@ namespace Game.Editor
         /// </summary>
         public static void BuildLatestCodeAndResourcesBatch()
         {
-            if (!BeginWorkflow("Android 最新代码资源完整打包"))
+            BuildLatestCodeAndResources(false);
+        }
+
+        /// <summary>两种完整包共享构建事务；渠道模式仅归档候选 APK 和检查报告。</summary>
+        private static void BuildLatestCodeAndResources(bool channel)
+        {
+            if (!BeginWorkflow(channel ? "Android 渠道候选包完整打包" : "Android 最新代码资源完整打包",
+                    channel ? (Action)AndroidChannelBuildUtility.ValidateChannelConfiguration : null))
                 return;
 
             var timing = new BuildStageTiming("Android 最新代码资源完整打包");
@@ -227,13 +246,14 @@ namespace Game.Editor
             try
             {
                 timing.Run("EnsureAndroidBuildTarget", EnsureAndroidBuildTarget);
-                timing.Run("ValidateAndroidEnvironment", ValidateAndroidEnvironment);
+                timing.Run("ValidateAndroidEnvironment", () => ValidateAndroidEnvironmentFor(channel));
                 timing.Run("ValidateAndroidNetworkConfig", ValidateAndroidNetworkConfig);
-                previous.ApplyTestBuildOptions();
+                if (channel) previous.ApplyChannelBuildOptions();
+                else previous.ApplyTestBuildOptions();
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true));
+                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel));
                 timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
@@ -243,9 +263,20 @@ namespace Game.Editor
                 var package = timing.Run("BuildAndroidBuiltinPackage", () => BuildPackageOrThrow(version));
                 timing.Run("ValidateAndroidBuiltinPackage", () => ValidateBuiltinPackage(package.OutputPackageDirectory, version));
                 string appVersion = timing.Run("BuildFinalApk", () =>
+                    channel ? BuildFinalPlayerWithIncrementedPatchVersion(context, true, true) :
                     BuildFinalPlayerWithIncrementedPatchVersion(context, true));
                 timing.Run("ValidateFinalApk", context.ValidateFinalApk);
                 finalApkValidated = true;
+                if (channel)
+                {
+                    string reportPath = Path.Combine(context.BatchDirectory, "channel-apk-check.json");
+                    string report = timing.Run("InspectChannelApk", () => AndroidChannelBuildUtility.InspectAndSave(context.FinalApkPath, reportPath, true));
+                    if (!Newtonsoft.Json.Linq.JObject.Parse(report).Value<bool>("passed"))
+                        throw new InvalidOperationException("渠道 APK 技术检查未通过，安装包和逐项原因已保留：" + reportPath);
+                    context.CleanupPreparatoryDirectory();
+                    Debug.Log($"[AndroidBuildUtility] 渠道候选包技术检查通过：APK={context.FinalApkPath}，报告={reportPath}；未发布、未完成真机或商店审核。\n{timing.BuildSummary()}");
+                    return;
+                }
                 timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
                 timing.Run("CleanupPreparatoryPlayer", context.CleanupPreparatoryDirectory);
 
@@ -525,6 +556,12 @@ namespace Game.Editor
         /// </summary>
         internal static void ValidateAndroidEnvironment()
         {
+            ValidateAndroidEnvironmentFor(false);
+        }
+
+        /// <summary>共享工具链与应用检查；渠道模式不读取内部测试私钥。</summary>
+        private static void ValidateAndroidEnvironmentFor(bool channel)
+        {
             if (!BuildPipeline.IsBuildTargetSupported(BuildTargetGroup.Android, BuildTarget.Android))
                 throw new InvalidOperationException("当前 Unity 未安装可用的 Android Build Support。");
             if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
@@ -541,7 +578,8 @@ namespace Game.Editor
                 throw new InvalidOperationException($"Android CPU 必须仅为 ARM64，当前为 {PlayerSettings.Android.targetArchitectures}。");
             if (!string.Equals(PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.Android), ApplicationIdentifier, StringComparison.Ordinal))
                 throw new InvalidOperationException($"Android 包名必须是 {ApplicationIdentifier}。");
-            AndroidSigningUtility.ValidateLocalKey();
+            if (channel) AndroidChannelBuildUtility.ValidateChannelConfiguration();
+            else AndroidSigningUtility.ValidateLocalKey();
             if (PlayerSettings.defaultInterfaceOrientation != UIOrientation.AutoRotation ||
                 PlayerSettings.allowedAutorotateToPortrait ||
                 PlayerSettings.allowedAutorotateToPortraitUpsideDown ||
@@ -756,20 +794,20 @@ namespace Game.Editor
         /// <summary>
         /// 构建临时或最终 Android Player；报告失败、产物缺失或空文件均视为失败。
         /// </summary>
-        private static void BuildPlayer(string apkPath, bool forceBuiltinResources)
+        private static void BuildPlayer(string apkPath, bool forceBuiltinResources, bool channel = false)
         {
             var options = new BuildPlayerOptions
             {
                 scenes = new[] { BootScene },
                 locationPathName = apkPath,
                 target = BuildTarget.Android,
-                options = BuildOptions.Development | BuildOptions.CompressWithLz4,
+                options = AndroidChannelBuildUtility.BuildOptionsFor(channel),
                 extraScriptingDefines = forceBuiltinResources
                     ? new[] { BuiltinResourcesScriptingDefine }
                     : Array.Empty<string>()
             };
             BuildReport report;
-            using (AndroidSigningUtility.UseFixedSigning())
+            using (channel ? AndroidChannelBuildUtility.UseChannelSigning() : AndroidSigningUtility.UseFixedSigning())
                 report = BuildPipeline.BuildPlayer(options);
             if (report == null)
                 throw new InvalidOperationException($"Android Player 构建未返回 BuildReport: {apkPath}");
@@ -777,14 +815,15 @@ namespace Game.Editor
                 throw new InvalidOperationException($"Android Player 构建失败: {report.summary.result}");
             if (!File.Exists(apkPath) || new FileInfo(apkPath).Length <= 0)
                 throw new InvalidOperationException($"Android Player 报告成功但 APK 不存在或为空: {apkPath}");
-            AndroidSigningUtility.ValidateApk(apkPath);
+            if (channel) AndroidChannelBuildUtility.ValidateChannelSignature(apkPath);
+            else AndroidSigningUtility.ValidateApk(apkPath);
             Debug.Log($"[AndroidBuildUtility] Android Player 构建成功：{apkPath}，报告大小={report.summary.totalSize}，文件大小={new FileInfo(apkPath).Length}");
         }
 
         /// <summary>
         /// 最终 APK 构建前预留高于项目及发布记录的身份；失败恢复编辑器版本但保留预留记录。
         /// </summary>
-        private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources)
+        private static string BuildFinalPlayerWithIncrementedPatchVersion(AndroidBuildContext context, bool forceBuiltinResources, bool channel = false)
         {
             string projectRoot = Directory.GetParent(Application.dataPath).FullName;
             string bootFingerprint = AndroidBootBuildGuard.ComputeFingerprint(projectRoot);
@@ -802,7 +841,7 @@ namespace Game.Editor
 
             try
             {
-                BuildPlayer(context.FinalApkPath, forceBuiltinResources);
+                BuildPlayer(context.FinalApkPath, forceBuiltinResources, channel);
                 // 打包中途修改 Boot 时不能把新源码错误记录为已生成 APK 的基线。
                 if (!string.Equals(bootFingerprint, AndroidBootBuildGuard.ComputeFingerprint(projectRoot), StringComparison.Ordinal))
                     throw new InvalidOperationException("打包期间 Boot 发生变化，请重新执行 Android 首包完整打包。");
@@ -970,6 +1009,7 @@ namespace Game.Editor
             switch (workflow)
             {
                 case "Android 最新代码资源完整打包": return BuildLatestCodeAndResourcesBatch;
+                case "Android 渠道候选包完整打包": return BuildChannelCandidateBatch;
                 case "Android Host 基础包完整打包": return BuildHostBaseCodeAndResourcesBatch;
                 case "Android 首包完整打包": return BuildSmallHostBaseCodeAndResourcesBatch;
                 case "Android Host 代码+资源更新": return BuildHostCodeAndResourcesBatch;
@@ -1102,6 +1142,15 @@ namespace Game.Editor
             public void ApplyTestBuildOptions()
             {
                 EditorUserBuildSettings.development = true;
+                EditorUserBuildSettings.allowDebugging = false;
+                EditorUserBuildSettings.connectProfiler = false;
+                EditorUserBuildSettings.buildAppBundle = false;
+            }
+
+            /// <summary>渠道构建仅在当前事务关闭开发、调试和 Profiler，finally 恢复用户原设置。</summary>
+            public void ApplyChannelBuildOptions()
+            {
+                EditorUserBuildSettings.development = false;
                 EditorUserBuildSettings.allowDebugging = false;
                 EditorUserBuildSettings.connectProfiler = false;
                 EditorUserBuildSettings.buildAppBundle = false;

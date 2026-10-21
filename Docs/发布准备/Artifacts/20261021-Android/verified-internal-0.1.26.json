@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "profile": "InternalTest",
+  "passed": false,
+  "deviceVerified": false,
+  "storeApproved": false,
+  "checkedUtc": "2026-10-21T02:18:44.8707905Z",
+  "facts": {
+    "apkPath": "F:\\GitHub\\FirepowerLoop\\Client\\Build\\Android\\20261020_140034\\FirepowerLoop-0.1.26.apk",
+    "bytes": 67066066,
+    "metadataRead": true,
+    "packageName": "com.firepowerloop.game",
+    "versionName": "0.1.26",
+    "versionCode": 16,
+    "minSdk": "22",
+    "targetSdk": "35",
+    "debuggable": true,
+    "testOnly": false,
+    "signatureValid": true,
+    "toolExitCodes": {
+      "badging": 0,
+      "manifest": 0,
+      "signature": 0
+    },
+    "certificateSha256": "e541a940cc47b0f7af3f263d533f586843052102f883ea3debfe72e377811b17",
+    "certificateSubject": "C=US, O=Android, CN=Android Debug",
+    "architectures": [
+      "arm64-v8a"
+    ],
+    "permissions": [
+      "android.permission.INTERNET",
+      "android.permission.REQUEST_INSTALL_PACKAGES"
+    ],
+    "sha256": "bff27601f9d072dd35aaa55bd89d8598b20b78eb59f89d11ffaad2da7b6f5d17",
+    "resourceServer": "http://192.168.31.94:8001",
+    "gameGateEndpoint": "192.168.31.94:31011",
+    "diagnosticMode": "LocalGameServer",
+    "diagnosticUrl": ""
+  },
+  "checks": [
+    {
+      "id": "metadata",
+      "status": "Passed",
+      "message": "Android SDK 元数据必须读取成功。"
+    },
+    {
+      "id": "package",
+      "status": "Passed",
+      "message": "包名必须为本项目独立身份。"
+    },
+    {
+      "id": "version",
+      "status": "Passed",
+      "message": "实际 APK 必须包含有效版本名和正版本码。"
+    },
+    {
+      "id": "signature",
+      "status": "Passed",
+      "message": "APK 签名完整性必须验证成功。"
+    },
+    {
+      "id": "certificate",
+      "status": "Failed",
+      "message": "实际签名必须符合显式公开证书策略。"
+    },
+    {
+      "id": "architecture",
+      "status": "Passed",
+      "message": "本项目 APK 必须仅包含 ARM64 架构。"
+    },
+    {
+      "id": "installerPermission",
+      "status": "Warning",
+      "message": "包含自有 APK 安装权限；提交前需按目标渠道确定更新方案，此检查不代表平台接受该权限。"
+    }
+  ]
+}

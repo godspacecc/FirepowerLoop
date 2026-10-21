@@ -1,0 +1,907 @@
+{
+  "date": "2026-10-21",
+  "scope": "Static source and configuration audit of current working tree; no runtime traffic capture or game execution.",
+  "gameBuildInvoked": false,
+  "runtimeCodeChanged": false,
+  "testSuiteRun": false,
+  "sources": {
+    "boot": {
+      "file": "Client/Assets/Boot/Launcher.cs",
+      "sha256": "224b833c12915e9b731bf6b60ae9636189633911ef074a99f6644323ac22c825",
+      "matches": [
+        {
+          "needle": "private void Awake()",
+          "line": 141,
+          "source": "private void Awake()"
+        },
+        {
+          "needle": "DiagnosticReportSender.BeginBoot();",
+          "line": 177,
+          "source": "DiagnosticReportSender.BeginBoot();"
+        },
+        {
+          "needle": "DiagnosticReportSender.TickBoot();",
+          "line": 200,
+          "source": "DiagnosticReportSender.TickBoot();"
+        },
+        {
+          "needle": "DiagnosticReportSender.MainReady();",
+          "line": 113,
+          "source": "DiagnosticReportSender.MainReady();"
+        }
+      ]
+    },
+    "resource": {
+      "file": "Client/Assets/Boot/Res/ResourceBoot.cs",
+      "sha256": "2ea87041c650fbeaa744f37dc52fc798743f9808fceb51e16313e2c9467d5158",
+      "matches": [
+        {
+          "needle": "FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES",
+          "line": 214,
+          "source": "#elif FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES"
+        },
+        {
+          "needle": "private async UniTask<BootOperationResult> InitializeOfflineMode()",
+          "line": 315,
+          "source": "private async UniTask<BootOperationResult> InitializeOfflineMode()"
+        },
+        {
+          "needle": "_resourceServer = \"http://127.0.0.1:8000\";",
+          "line": 229,
+          "source": "_resourceServer = \"http://127.0.0.1:8000\";",
+          "allOccurrences": [
+            {
+              "line": 229,
+              "source": "_resourceServer = \"http://127.0.0.1:8000\";"
+            },
+            {
+              "line": 318,
+              "source": "_resourceServer = \"http://127.0.0.1:8000\";"
+            }
+          ]
+        },
+        {
+          "needle": "private async UniTask<BootOperationResult> InitializeHostMode()",
+          "line": 383,
+          "source": "private async UniTask<BootOperationResult> InitializeHostMode()"
+        }
+      ]
+    },
+    "game_start": {
+      "file": "Client/Assets/Game/Scripts/GameStart.cs",
+      "sha256": "964d1cf44717c14608129b4a2c488cfa614ef9ee8fc91cb07293db2405588010",
+      "matches": [
+        {
+          "needle": "_ = Game.Interface;",
+          "line": 22,
+          "source": "_ = Game.Interface;"
+        },
+        {
+          "needle": "UIHelper.ShowUI<StartUICtrl>()",
+          "line": 72,
+          "source": "StartUICtrl startCtrl = UIHelper.ShowUI<StartUICtrl>();"
+        }
+      ]
+    },
+    "composition": {
+      "file": "Client/Assets/Game/Scripts/Game.cs",
+      "sha256": "e1355f9d59a0bb7781c18fb9aad84c538d646d00eb7589d9ef833fcd8ef70cbd",
+      "matches": [
+        {
+          "needle": "networkRuntime.Initialize();",
+          "line": 80,
+          "source": "networkRuntime.Initialize();"
+        },
+        {
+          "needle": "RegisterSystem(new RuntimeLogSystem());",
+          "line": 114,
+          "source": "RegisterSystem(new RuntimeLogSystem());"
+        },
+        {
+          "needle": "RegisterSystem(new ResourceUpdateSystem());",
+          "line": 123,
+          "source": "RegisterSystem(new ResourceUpdateSystem());"
+        }
+      ]
+    },
+    "menu": {
+      "file": "Client/Assets/Game/Scripts/Controller/UICtrl/Home/StartUICtrl.cs",
+      "sha256": "31fb7f26d48e44e435ddc3225d4e25ef4085ad1f735515d4a85997606a66efe7",
+      "matches": [
+        {
+          "needle": "CheckUpdate(false).Forget();",
+          "line": 94,
+          "source": "CheckUpdate(false).Forget();"
+        },
+        {
+          "needle": "CheckWithNoticeAsync(userInitiated)",
+          "line": 273,
+          "source": "var result = await this.GetSystem<ResourceUpdateSystem>().CheckWithNoticeAsync(userInitiated);"
+        }
+      ]
+    },
+    "update": {
+      "file": "Client/Assets/Game/Scripts/System/ResourceUpdate/ResourceUpdateSystem.cs",
+      "sha256": "dce6a71e1bbf5dbaf23b093c9e12753dc2ca43b4a374db0f0e5470dde7b91ff1",
+      "matches": [
+        {
+          "needle": "info.ResourceServer",
+          "line": 63,
+          "source": "info.ResourceServer,"
+        },
+        {
+          "needle": "BootResourceSource.BuiltinFallback",
+          "line": 163,
+          "source": "if (Snapshot.ResourceSource == BootResourceSource.BuiltinFallback)"
+        },
+        {
+          "needle": "probe.ProbeAsync(Snapshot.ResourceServer",
+          "line": 265,
+          "source": "var result = await probe.ProbeAsync(Snapshot.ResourceServer, DefaultTimeoutSeconds);"
+        }
+      ]
+    },
+    "login": {
+      "file": "Client/Assets/Game/Scripts/System/Online/OnlineAccountSystem.cs",
+      "sha256": "46f4350e3be98c1f2c8967be6d1227cb8c11ec6f65d4b65374dfaef9062e1e82",
+      "matches": [
+        {
+          "needle": "preferences?.LoadLastUserName()",
+          "line": 52,
+          "source": "string lastUserName = preferences?.LoadLastUserName() ?? string.Empty;"
+        },
+        {
+          "needle": "login.Password = password;",
+          "line": 280,
+          "source": "login.Password = password;"
+        },
+        {
+          "needle": "preferences.SaveLastUserName(userName",
+          "line": 294,
+          "source": "bool preferenceSaved = preferences == null || preferences.SaveLastUserName(userName, out _);"
+        },
+        {
+          "needle": "HeartbeatIntervalMilliseconds = 2500",
+          "line": 20,
+          "source": "private const int HeartbeatIntervalMilliseconds = 2500;"
+        },
+        {
+          "needle": "ConnectTimeoutMilliseconds = 8000",
+          "line": 18,
+          "source": "private const int ConnectTimeoutMilliseconds = 8000;"
+        }
+      ]
+    },
+    "login_ui": {
+      "file": "Client/Assets/Game/Scripts/Controller/UICtrl/Online/OnlineLoginUICtrl.cs",
+      "sha256": "36973387beab959ceac979ffb81cf60cba446d69f6af6c3a78d4e60be274a8c3",
+      "matches": [
+        {
+          "needle": "system.LoginAsync(user, password)",
+          "line": 109,
+          "source": "return RunOperation((system, user, password) => system.LoginAsync(user, password));"
+        },
+        {
+          "needle": "ClearPasswordAndFocus();",
+          "line": 90,
+          "source": "ClearPasswordAndFocus();",
+          "allOccurrences": [
+            {
+              "line": 90,
+              "source": "ClearPasswordAndFocus();"
+            },
+            {
+              "line": 121,
+              "source": "ClearPasswordAndFocus();"
+            },
+            {
+              "line": 146,
+              "source": "ClearPasswordAndFocus();"
+            },
+            {
+              "line": 168,
+              "source": "ClearPasswordAndFocus();"
+            }
+          ]
+        }
+      ]
+    },
+    "preferences": {
+      "file": "Client/Assets/Game/Scripts/Utility/Online/OnlineAccountPreferenceStore.cs",
+      "sha256": "b0e8e9188b58b45c0e055813cbb3e65c7c38de7a34c2a75656eb0b41d4aa63f6",
+      "matches": [
+        {
+          "needle": "online-account-preferences.json",
+          "line": 29,
+          "source": "public string FilePath => Path.Combine(DirectoryPath, \"online-account-preferences.json\");"
+        },
+        {
+          "needle": "public string lastUserName;",
+          "line": 91,
+          "source": "public string lastUserName;"
+        }
+      ]
+    },
+    "network_config": {
+      "file": "Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkConfigProvider.cs",
+      "sha256": "6e4d067457ef79c6bcb181b1951b1d1f9c5db43a1f0ce4e8471ec8c76548cc06",
+      "matches": [
+        {
+          "needle": "network-endpoint.json",
+          "line": 65,
+          "source": "public const string OverrideFileName = \"network-endpoint.json\";"
+        }
+      ]
+    },
+    "network": {
+      "file": "Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkRuntime.cs",
+      "sha256": "eeec7c4a4b43314c5fcd400d35cd8ddb702bef511b6e6006a318131208207c4e",
+      "matches": [
+        {
+          "needle": "() => new TcpClientTransport()",
+          "line": 33,
+          "source": "() => new TcpClientTransport(),"
+        },
+        {
+          "needle": "ConnectionState = NetworkConnectionState.Disconnected;",
+          "line": 97,
+          "source": "ConnectionState = NetworkConnectionState.Disconnected;",
+          "allOccurrences": [
+            {
+              "line": 97,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            },
+            {
+              "line": 145,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            },
+            {
+              "line": 156,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            },
+            {
+              "line": 167,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            },
+            {
+              "line": 273,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            },
+            {
+              "line": 384,
+              "source": "ConnectionState = NetworkConnectionState.Disconnected;"
+            }
+          ]
+        },
+        {
+          "needle": "NetworkDiagnostics.LogSend(request);",
+          "line": 201,
+          "source": "NetworkDiagnostics.LogSend(request);"
+        }
+      ]
+    },
+    "codec": {
+      "file": "Client/Assets/Game/Scripts/Utility/Network/Serialization/MemoryPackMessageCodec.cs",
+      "sha256": "b8782853a4ad189d64c24e525ed2ac292a3437d34cc96746f479c8de681b5cc0",
+      "matches": [
+        {
+          "needle": "MemoryPackSerializer.Serialize(type, message)",
+          "line": 43,
+          "source": "byte[] payload = MemoryPackSerializer.Serialize(type, message);"
+        }
+      ]
+    },
+    "tcp": {
+      "file": "Client/Assets/Game/Scripts/Utility/Network/Transport/TcpClientTransport.cs",
+      "sha256": "a26995750e75428d8c05110eb2afd4015e7a7557c3b8a22b3dfc86b3a50e6871",
+      "matches": [
+        {
+          "needle": "private NetworkStream stream;",
+          "line": 68,
+          "source": "private NetworkStream stream;"
+        },
+        {
+          "needle": "var newClient = new TcpClient();",
+          "line": 96,
+          "source": "var newClient = new TcpClient();"
+        },
+        {
+          "needle": "stream.Write(frame, 0, frame.Length);",
+          "line": 159,
+          "source": "stream.Write(frame, 0, frame.Length);"
+        }
+      ]
+    },
+    "protocol_log": {
+      "file": "Client/Assets/Game/Scripts/Utility/Network/Diagnostics/NetworkDiagnostics.cs",
+      "sha256": "797930bc151c00f43ae992856ab6b1fe8639f2cb0e4fe882aa3545f8f0780e55",
+      "matches": [
+        {
+          "needle": "public static bool Enabled { get; private set; } = true;",
+          "line": 10,
+          "source": "public static bool Enabled { get; private set; } = true;"
+        },
+        {
+          "needle": "JsonConvert.SerializeObject(message)",
+          "line": 51,
+          "source": "string json = JsonConvert.SerializeObject(message);"
+        }
+      ]
+    },
+    "diagnostic_sender": {
+      "file": "Client/Assets/Boot/Runtime/DiagnosticReportSender.cs",
+      "sha256": "2e4a80a1242d5ed937316428b66552d072186bf4fe9a2cef7d19e161930493f4",
+      "matches": [
+        {
+          "needle": "Path.Combine(Application.persistentDataPath, \"Diagnostics\", \"queue.json\")",
+          "line": 71,
+          "source": "Path.Combine(Application.persistentDataPath, \"Diagnostics\", \"queue.json\")));"
+        },
+        {
+          "needle": "Store.PendingGroups > 0",
+          "line": 186,
+          "source": "if (configLoaded && !sending && !string.IsNullOrEmpty(reportUrl) && DateTime.UtcNow >= nextAttemptUtc && Store.PendingGroups > 0)"
+        },
+        {
+          "needle": "\":31012/diagnostics/errors\"",
+          "line": 283,
+          "source": "return local ? \"http://\" + ip + \":31012/diagnostics/errors\" : null;"
+        },
+        {
+          "needle": "new UnityWebRequest(reportUrl, \"POST\")",
+          "line": 354,
+          "source": "using (var request = new UnityWebRequest(reportUrl, \"POST\"))"
+        },
+        {
+          "needle": "request.timeout = 5;",
+          "line": 325,
+          "source": "request.timeout = 5;",
+          "allOccurrences": [
+            {
+              "line": 325,
+              "source": "request.timeout = 5;"
+            },
+            {
+              "line": 360,
+              "source": "request.timeout = 5;"
+            }
+          ]
+        },
+        {
+          "needle": "Math.Min(failures + 1, 6)",
+          "line": 394,
+          "source": "failures = Math.Min(failures + 1, 6);"
+        }
+      ]
+    },
+    "diagnostic_queue": {
+      "file": "Client/Assets/Boot/Runtime/DiagnosticReportStore.cs",
+      "sha256": "552f73945bdd800f20cedcd7aa036b99377fe75a0f60efe4e40e093e5098fd65",
+      "matches": [
+        {
+          "needle": "public string fingerprint;",
+          "line": 16,
+          "source": "public string fingerprint;"
+        },
+        {
+          "needle": "public string batchId;",
+          "line": 31,
+          "source": "public string batchId;"
+        },
+        {
+          "needle": "MaxGroups = 128",
+          "line": 48,
+          "source": "private const int MaxGroups = 128;"
+        },
+        {
+          "needle": "MaxBytes = 256 * 1024",
+          "line": 49,
+          "source": "private const int MaxBytes = 256 * 1024;"
+        },
+        {
+          "needle": "AddDays(-6)",
+          "line": 182,
+          "source": "string oldestDay = now.Date.AddDays(-6).ToString(\"yyyy-MM-dd\", System.Globalization.CultureInfo.InvariantCulture);"
+        },
+        {
+          "needle": "Take(20)",
+          "line": 125,
+          "source": "foreach (DiagnosticReport item in next.reports.OrderBy(r => r.firstUtc).Take(20))"
+        }
+      ]
+    },
+    "diagnostic_ui": {
+      "file": "Client/Assets/Game/Scripts/Controller/UICtrl/Home/Page/SettingNetworkPageCtrl.cs",
+      "sha256": "7932a678b70ff25ce9c1a6bb540c8055b6447f44866a30112f12e0abffd074ce",
+      "matches": [
+        {
+          "needle": "DiagnosticReportSender.RequestUpload();",
+          "line": 138,
+          "source": "DiagnosticReportSender.RequestUpload();"
+        },
+        {
+          "needle": "DiagnosticReportSender.Clear();",
+          "line": 180,
+          "source": "bool success = DiagnosticReportSender.Clear();"
+        }
+      ]
+    },
+    "runtime_logs": {
+      "file": "Client/Assets/Game/Scripts/System/RuntimeLog/RuntimeLogSystem.cs",
+      "sha256": "2cda3c3421d0998a7bbd1007be8a4d087420c433e79f997e738ff8d4c1ab7888",
+      "matches": [
+        {
+          "needle": "DiagnosticReportSender.RegisterGame();",
+          "line": 34,
+          "source": "DiagnosticReportSender.RegisterGame();"
+        },
+        {
+          "needle": "DiagnosticReportSender.CaptureRuntime(stackTrace, type);",
+          "line": 86,
+          "source": "DiagnosticReportSender.CaptureRuntime(stackTrace, type);"
+        },
+        {
+          "needle": "pending.Enqueue(entry);",
+          "line": 56,
+          "source": "pending.Enqueue(entry);",
+          "allOccurrences": [
+            {
+              "line": 56,
+              "source": "pending.Enqueue(entry);"
+            },
+            {
+              "line": 88,
+              "source": "pending.Enqueue(entry);"
+            },
+            {
+              "line": 154,
+              "source": "pending.Enqueue(entry);"
+            }
+          ]
+        }
+      ]
+    },
+    "log_export": {
+      "file": "Client/Assets/Game/Scripts/Utility/Logging/RuntimeLogExportUtility.cs",
+      "sha256": "b293429fd92c610e0e3801a69774e546b369e875c4891b088620608bcade64e3",
+      "matches": [
+        {
+          "needle": "RuntimeLog-{timestamp}.txt",
+          "line": 18,
+          "source": "var path = Path.Combine(directory, $\"RuntimeLog-{timestamp}.txt\");"
+        }
+      ]
+    },
+    "log_format": {
+      "file": "Client/Assets/Game/Scripts/Utility/Logging/RuntimeLogTextFormatter.cs",
+      "sha256": "37225d2294c548d136fc7ed5138fd6f43e5eb91206434be10c0fbacc902eedba",
+      "matches": [
+        {
+          "needle": "entry.Message",
+          "line": 23,
+          "source": "builder.AppendLine($\"[{entry.Timestamp:yyyy-MM-dd HH:mm:ss.fff}] {entry.Type}: {entry.Message}\");"
+        },
+        {
+          "needle": "entry.StackTrace",
+          "line": 24,
+          "source": "if (!string.IsNullOrWhiteSpace(entry.StackTrace))",
+          "allOccurrences": [
+            {
+              "line": 24,
+              "source": "if (!string.IsNullOrWhiteSpace(entry.StackTrace))"
+            },
+            {
+              "line": 26,
+              "source": "builder.AppendLine(entry.StackTrace);"
+            }
+          ]
+        }
+      ]
+    },
+    "boot_log": {
+      "file": "Client/Assets/Boot/Runtime/BootStartupLogStore.cs",
+      "sha256": "0259d8cf74ac195c4282226f464e4166367f80a7bb658d3874d9e5a3a584a5b1",
+      "matches": [
+        {
+          "needle": "boot-startup.log",
+          "line": 14,
+          "source": "public const string FileName = \"boot-startup.log\";"
+        },
+        {
+          "needle": "DefaultMaxBytes = 256 * 1024",
+          "line": 16,
+          "source": "public const int DefaultMaxBytes = 256 * 1024;"
+        }
+      ]
+    },
+    "boot_failure_log": {
+      "file": "Client/Assets/Boot/Runtime/BootErrorLogStore.cs",
+      "sha256": "4f5b204bed51ed01ed808f96df4f425e6c908dc09172f9f8a9938e12e2388cc9",
+      "matches": [
+        {
+          "needle": "boot-error.log",
+          "line": 13,
+          "source": "public const string FileName = \"boot-error.log\";"
+        },
+        {
+          "needle": "failure.CopyDetails",
+          "line": 87,
+          "source": "builder.Append(failure.CopyDetails);"
+        }
+      ]
+    },
+    "error_log": {
+      "file": "Client/Assets/Game/Scripts/Utility/Logging/RuntimeErrorLogStore.cs",
+      "sha256": "222dd5a5ca8479b51d6b168d1511c0e6dcb931a98b92a7142547427524802c35",
+      "matches": [
+        {
+          "needle": "runtime-error.log",
+          "line": 12,
+          "source": "public const string CurrentFileName = \"runtime-error.log\";"
+        },
+        {
+          "needle": "runtime-error.previous.log",
+          "line": 13,
+          "source": "public const string PreviousFileName = \"runtime-error.previous.log\";"
+        },
+        {
+          "needle": "DefaultMaxBytes = 1024 * 1024",
+          "line": 14,
+          "source": "public const int DefaultMaxBytes = 1024 * 1024;"
+        }
+      ]
+    },
+    "room_chat": {
+      "file": "Client/Assets/Game/Scripts/System/Online/OnlineRoomChatSystem.cs",
+      "sha256": "f8e18a307e4a819eec762a8d279afe0a0a7bb6896a739d7fc842b51f6e451747",
+      "matches": [
+        {
+          "needle": "request.Content = normalized;",
+          "line": 100,
+          "source": "request.Content = normalized;"
+        },
+        {
+          "needle": "request.ClientMessageId = pendingClientMessageId;",
+          "line": 99,
+          "source": "request.ClientMessageId = pendingClientMessageId;"
+        }
+      ]
+    },
+    "coop_result": {
+      "file": "Client/Assets/Game/Scripts/Utility/Save/OnlineArcadeResultFileStore.cs",
+      "sha256": "dfc491822bc116b40b22a2588fc979c82eeab6c566c9b2a3631d66253ab248fb",
+      "matches": [
+        {
+          "needle": "public long RunId;",
+          "line": 13,
+          "source": "public long RunId;"
+        },
+        {
+          "needle": "public string Outcome;",
+          "line": 14,
+          "source": "public string Outcome;"
+        },
+        {
+          "needle": "\"online-result-\" + playerId",
+          "line": 25,
+          "source": "path = Path.Combine(root ?? Application.persistentDataPath, \"Saves\", \"online-result-\" + playerId + \".json\");"
+        }
+      ]
+    },
+    "arcade_save": {
+      "file": "Client/Assets/Game/Scripts/Utility/Save/ArcadeRunFileStore.cs",
+      "sha256": "02c274dd1bb64eec69beafe216be9a40e55c62331b8dec8331cb9e5c8b01ec21",
+      "matches": [
+        {
+          "needle": "\"arcade-run.json\"",
+          "line": 41,
+          "source": "public string RunPath => Path.Combine(SavesDirectory, \"arcade-run.json\");"
+        },
+        {
+          "needle": "\"arcade-run.backup.json\"",
+          "line": 43,
+          "source": "public string BackupPath => Path.Combine(SavesDirectory, \"arcade-run.backup.json\");"
+        }
+      ]
+    },
+    "account_store": {
+      "file": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/OnlineAccountComponentSystem.cs",
+      "sha256": "d4e56a66b72cefdaf1af7c09a516d36952bf06488e8e5a9a1e44c7e6e83eaf0d",
+      "matches": [
+        {
+          "needle": "PasswordIterations = 600000",
+          "line": 17,
+          "source": "private const int PasswordIterations = 600000;"
+        },
+        {
+          "needle": "if (existing == null)",
+          "line": 116,
+          "source": "if (existing == null)"
+        },
+        {
+          "needle": "Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, HashBytes)",
+          "line": 241,
+          "source": "return Rfc2898DeriveBytes.Pbkdf2(password, salt, iterations, HashAlgorithmName.SHA256, HashBytes);"
+        }
+      ]
+    },
+    "account_fields": {
+      "file": "Server/GameServer/Runtime/Model/Server/Online/Account/OnlineAccountComponent.cs",
+      "sha256": "3f5bf87df1f6e6f873842af468a6fd3ecd29fcd64c17317bc1876f79f31ebe3c",
+      "matches": [
+        {
+          "needle": "public string SaltBase64",
+          "line": 30,
+          "source": "public string SaltBase64 { get; set; }"
+        },
+        {
+          "needle": "public string HashBase64",
+          "line": 31,
+          "source": "public string HashBase64 { get; set; }"
+        },
+        {
+          "needle": "public string CreatedAtUtc",
+          "line": 33,
+          "source": "public string CreatedAtUtc { get; set; }",
+          "allOccurrences": [
+            {
+              "line": 33,
+              "source": "public string CreatedAtUtc { get; set; }"
+            },
+            {
+              "line": 43,
+              "source": "public string CreatedAtUtc { get; set; }"
+            }
+          ]
+        }
+      ]
+    },
+    "account_path": {
+      "file": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/FiberInit_Account.cs",
+      "sha256": "7fc30673175918efb184a21327e627ce81acc411eb24159f4e1f0d647461ce08",
+      "matches": [
+        {
+          "needle": "accountComponent.LoadStore(Options.Instance.OnlineStore)",
+          "line": 20,
+          "source": "accountComponent.LoadStore(Options.Instance.OnlineStore);"
+        }
+      ]
+    },
+    "diagnostic_receiver": {
+      "file": "Server/GameServer/Runtime/Hotfix/Server/Online/Diagnostics/DiagnosticReportHandler.cs",
+      "sha256": "ca317c5f0a4e59c4331a70438047b99c1de7ed69a87785936e4772b1460b898d",
+      "matches": [
+        {
+          "needle": "\"/diagnostics/errors\"",
+          "line": 12,
+          "source": "[HttpHandler(SceneType.RouterManager, \"/diagnostics/errors\")]"
+        },
+        {
+          "needle": "ServerConfig.Instance.Profile, \"OnlineLocal\"",
+          "line": 33,
+          "source": "if (!string.Equals(ServerConfig.Instance.Profile, \"OnlineLocal\", StringComparison.Ordinal))"
+        },
+        {
+          "needle": "context.Request.RemoteEndPoint?.Address",
+          "line": 46,
+          "source": "else status = DiagnosticReportStore.Shared.Accept(batch, context.Request.RemoteEndPoint?.Address,"
+        }
+      ]
+    },
+    "diagnostic_backend": {
+      "file": "Server/GameServer/Runtime/Model/Server/Online/Diagnostics/DiagnosticReportStore.cs",
+      "sha256": "5e1858003805af34e56981ba901b39702afdc5afcd0d63b4cb69fb635d5cad13",
+      "matches": [
+        {
+          "needle": "\"Store\", \"Diagnostics\"",
+          "line": 85,
+          "source": "? Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, \"..\", \"Store\", \"Diagnostics\"))"
+        },
+        {
+          "needle": "AddDays(-29)",
+          "line": 149,
+          "source": "DateTime firstRetained = now.UtcDateTime.Date.AddDays(-29);",
+          "allOccurrences": [
+            {
+              "line": 149,
+              "source": "DateTime firstRetained = now.UtcDateTime.Date.AddDays(-29);"
+            },
+            {
+              "line": 175,
+              "source": "string oldest = now.UtcDateTime.Date.AddDays(-29).ToString(\"yyyyMMdd\", CultureInfo.InvariantCulture);"
+            }
+          ]
+        },
+        {
+          "needle": "TrySourceIp(remoteIp",
+          "line": 104,
+          "source": "if (!TrySourceIp(remoteIp, realIpHeader, trustedProxyIp, out string sourceIp)) return 400;"
+        },
+        {
+          "needle": "ReceivedUtc = now.ToUniversalTime()",
+          "line": 115,
+          "source": "ReceivedUtc = now.ToUniversalTime(),"
+        }
+      ]
+    },
+    "apk_update": {
+      "file": "Client/Assets/Boot/Runtime/ApkUpdateFlow.cs",
+      "sha256": "aa93c4e5857a89b62e132578a09e956ed22095eb9aaee90b2eec14c5ffb55615",
+      "matches": [
+        {
+          "needle": "\"/app-update.json\"",
+          "line": 88,
+          "source": "using (var request = new UnityWebRequest(server.TrimEnd('/') + \"/app-update.json\", \"GET\", handler, null))"
+        },
+        {
+          "needle": "\"/app-updates/android/\"",
+          "line": 182,
+          "source": "using (var request = new UnityWebRequest(server.TrimEnd('/') + \"/app-updates/android/\" +"
+        }
+      ]
+    },
+    "version_probe": {
+      "file": "Client/Assets/Game/Scripts/Utility/ResourceUpdate/UnityWebRequestResourceVersionProbe.cs",
+      "sha256": "46ad1a55a6db172fd999b4b562851f5430e6f9497b4a03ae1c842e0a2d9882e8",
+      "matches": [
+        {
+          "needle": "/DefaultPackage.version",
+          "line": 26,
+          "source": "$\"{resourceServer.TrimEnd('/')}/DefaultPackage.version\";"
+        }
+      ]
+    },
+    "notice": {
+      "file": "Client/Assets/Game/Scripts/Utility/ResourceUpdate/UnityWebRequestResourceUpdateNoticeClient.cs",
+      "sha256": "bdf3fd45b3cac6487c363f17affbc8f6c73c2a31085fc588a6eccef17185f6b5",
+      "matches": [
+        {
+          "needle": "/resource-update-notices.json?t=",
+          "line": 26,
+          "source": "var url = $\"{request.ResourceServer.TrimEnd('/')}/resource-update-notices.json?t={DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}\";"
+        }
+      ]
+    },
+    "analytics_settings": {
+      "file": "Client/ProjectSettings/UnityConnectSettings.asset",
+      "sha256": "cf26b09aeff1625cd00966839e1577818c5609fb959952e9821e2245028b7ee0",
+      "matches": [
+        {
+          "needle": "UnityAnalyticsSettings:",
+          "line": 24,
+          "source": "UnityAnalyticsSettings:"
+        },
+        {
+          "needle": "m_InitializeOnStartup: 1",
+          "line": 27,
+          "source": "m_InitializeOnStartup: 1",
+          "allOccurrences": [
+            {
+              "line": 27,
+              "source": "m_InitializeOnStartup: 1"
+            },
+            {
+              "line": 31,
+              "source": "m_InitializeOnStartup: 1"
+            }
+          ]
+        }
+      ]
+    },
+    "packages": {
+      "file": "Client/Packages/manifest.json",
+      "sha256": "a3f40b8b066113634894bbe56176568b058255997084655bdec7d12fcd71d38d",
+      "matches": [
+        {
+          "needle": "com.unity.modules.unityanalytics",
+          "line": 46,
+          "source": "\"com.unity.modules.unityanalytics\": \"1.0.0\","
+        }
+      ]
+    },
+    "installer_permission": {
+      "file": "Client/Assets/Plugins/Android/FirepowerLoopUpdate.androidlib/AndroidManifest.xml",
+      "sha256": "de3fe26af85865e4b4933fd20c52ea4cc15edd3bf8720be0123ba567583286fd",
+      "matches": [
+        {
+          "needle": "android.permission.REQUEST_INSTALL_PACKAGES",
+          "line": 3,
+          "source": "<uses-permission android:name=\"android.permission.REQUEST_INSTALL_PACKAGES\" />"
+        }
+      ]
+    },
+    "diagnostic_config": {
+      "file": "Client/Assets/StreamingAssets/diagnosticConfig.json",
+      "sha256": "8596cf8d9bbfd5eddd18cf5032f964be30f588fdc8e598c5fe5c87cfd23294f7",
+      "matches": [
+        {
+          "needle": "LocalGameServer",
+          "line": 1,
+          "source": "{ \"mode\": \"LocalGameServer\", \"reportUrl\": \"\" }"
+        }
+      ]
+    },
+    "host_config": {
+      "file": "Client/Assets/StreamingAssets/hostConfig.json",
+      "sha256": "6b86221fede70a39d7be70343132fa04ccee88f8454d6bb9c8e1163ae121b2f4",
+      "matches": [
+        {
+          "needle": "http://192.168.31.94:8001",
+          "line": 2,
+          "source": "\"resourceServer\": \"http://192.168.31.94:8001\""
+        }
+      ]
+    },
+    "gate_config": {
+      "file": "Client/Assets/StreamingAssets/networkConfig.json",
+      "sha256": "d46fe6c970f491b580a6b92cbf63cd6cf6e9093d19cbf901db2a1df365bdcd2e",
+      "matches": [
+        {
+          "needle": "192.168.31.94:31011",
+          "line": 2,
+          "source": "\"gameGateEndpoint\": \"192.168.31.94:31011\""
+        }
+      ]
+    },
+    "login_protocol": {
+      "file": "Client/Assets/Game/Scripts/Network/Generated/OnlineOuter_C_12001.cs",
+      "sha256": "aad4ae2ac36686bd9d10cd91eba8d9477bf9460089d5b654c106505b8f7d3dd0",
+      "matches": [
+        {
+          "needle": "public partial class C2G_Login",
+          "line": 80,
+          "source": "public partial class C2G_Login : MessageObject, ISessionRequest"
+        },
+        {
+          "needle": "public string Password { get; set; }",
+          "line": 23,
+          "source": "public string Password { get; set; }",
+          "allOccurrences": [
+            {
+              "line": 23,
+              "source": "public string Password { get; set; }"
+            },
+            {
+              "line": 94,
+              "source": "public string Password { get; set; }"
+            }
+          ]
+        }
+      ]
+    },
+    "protocol_log_command": {
+      "file": "Client/Assets/Game/Scripts/System/TestCmd/TestCmdSystem.cs",
+      "sha256": "7cb3a2c966eeef9057c68ae4021adff906b41a17df9be09ac0e17fc6c1923fa6",
+      "matches": [
+        {
+          "needle": "NetworkDiagnostics.SetEnabled(enabled);",
+          "line": 271,
+          "source": "NetworkDiagnostics.SetEnabled(enabled);"
+        }
+      ]
+    }
+  },
+  "privacyAndKnownSdkSearch": {
+    "scope": [
+      "Client/Assets/Boot",
+      "Client/Assets/Game"
+    ],
+    "fileTypes": [
+      "cs",
+      "prefab",
+      "json"
+    ],
+    "exitCode": 1,
+    "matches": [],
+    "limitation": "No matches does not establish absence of engine or third-party data collection."
+  },
+  "verifiedSourceCount": 42,
+  "validation": {
+    "sourceHashesUnchanged": true,
+    "allReferencedSourceLinesVerified": true,
+    "analyticsEnabledAndStartupConfigured": true,
+    "offlineInitializationHasLoopbackAndNoBootstrapConfigLoad": true,
+    "runtimeTrafficObserved": false,
+    "runtimeTestsExecuted": false
+  }
+}

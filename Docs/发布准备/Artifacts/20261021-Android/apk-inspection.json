@@ -1,0 +1,203 @@
+{
+  "inspectionDate": "2026-10-21",
+  "scope": "Offline inspection of existing APKs only; no Unity operations, APK modifications, signing, builds, device tests, network requests or publication.",
+  "expectedCertificateSha256": "ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee",
+  "packages": [
+    {
+      "path": "F:\\GitHub\\FirepowerLoop\\Client\\Build\\Android\\20261020_215056\\FirepowerLoop-0.1.27.apk",
+      "bytes": 190458627,
+      "sha256": "4e34d688476cd9a88fb7280e44e234114026cc0173fa17e81e4ab9824e1d2733",
+      "commands": {
+        "badging": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.27-badging.txt"
+        },
+        "permissions": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.27-permissions.txt"
+        },
+        "manifest": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.27-manifest.txt"
+        },
+        "signature": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.27-signature.txt"
+        }
+      },
+      "badgingHighlights": [
+        "package: name='com.firepowerloop.game' versionCode='17' versionName='0.1.27' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+        "sdkVersion:'22'",
+        "targetSdkVersion:'35'",
+        "application: label='FirepowerLoop' icon='res/mipmap-anydpi-v26/app_icon.xml'",
+        "application-debuggable",
+        "launchable-activity: name='com.unity3d.player.UnityPlayerActivity'  label='' icon=''",
+        "native-code: 'arm64-v8a'"
+      ],
+      "permissions": [
+        "package: com.firepowerloop.game",
+        "uses-permission: name='android.permission.INTERNET'",
+        "uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'"
+      ],
+      "signatureHighlights": [
+        "Verifies",
+        "Verified using v1 scheme (JAR signing): true",
+        "Verified using v2 scheme (APK Signature Scheme v2): true",
+        "Verified using v3 scheme (APK Signature Scheme v3): false",
+        "Verified using v3.1 scheme (APK Signature Scheme v3.1): false",
+        "Verified using v4 scheme (APK Signature Scheme v4): false",
+        "Verified for SourceStamp: false",
+        "Number of signers: 1",
+        "Signer #1 certificate DN: C=US, O=Android, CN=Android Debug",
+        "Signer #1 certificate SHA-256 digest: ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee"
+      ],
+      "matchesExistingSigningPolicy": true,
+      "embeddedConfig": {
+        "assets/diagnosticConfig.json": {
+          "mode": "LocalGameServer",
+          "reportUrl": ""
+        },
+        "assets/hostConfig.json": {
+          "resourceServer": "http://192.168.31.94:8001"
+        },
+        "assets/networkConfig.json": {
+          "gameGateEndpoint": "192.168.31.94:31011"
+        }
+      },
+      "nativeLibraries": [
+        "lib/arm64-v8a/lib_burst_generated.so",
+        "lib/arm64-v8a/libil2cpp.so",
+        "lib/arm64-v8a/libmain.so",
+        "lib/arm64-v8a/libunity.so"
+      ],
+      "signingCredentialFilenames": [],
+      "dexFiles": [
+        "classes.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex"
+      ]
+    },
+    {
+      "path": "F:\\GitHub\\FirepowerLoop\\Client\\Build\\Android\\20261020_140034\\FirepowerLoop-0.1.26.apk",
+      "bytes": 67066066,
+      "sha256": "bff27601f9d072dd35aaa55bd89d8598b20b78eb59f89d11ffaad2da7b6f5d17",
+      "commands": {
+        "badging": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.26-badging.txt"
+        },
+        "permissions": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.26-permissions.txt"
+        },
+        "manifest": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.26-manifest.txt"
+        },
+        "signature": {
+          "exitCode": 0,
+          "evidence": "Docs\\发布准备\\Artifacts\\20261021-Android\\FirepowerLoop-0.1.26-signature.txt"
+        }
+      },
+      "badgingHighlights": [
+        "package: name='com.firepowerloop.game' versionCode='16' versionName='0.1.26' platformBuildVersionName='15' platformBuildVersionCode='35' compileSdkVersion='35' compileSdkVersionCodename='15'",
+        "sdkVersion:'22'",
+        "targetSdkVersion:'35'",
+        "application: label='FirepowerLoop' icon='res/mipmap-anydpi-v26/app_icon.xml'",
+        "application-debuggable",
+        "launchable-activity: name='com.unity3d.player.UnityPlayerActivity'  label='' icon=''",
+        "native-code: 'arm64-v8a'"
+      ],
+      "permissions": [
+        "package: com.firepowerloop.game",
+        "uses-permission: name='android.permission.INTERNET'",
+        "uses-permission: name='android.permission.REQUEST_INSTALL_PACKAGES'"
+      ],
+      "signatureHighlights": [
+        "Verifies",
+        "Verified using v1 scheme (JAR signing): true",
+        "Verified using v2 scheme (APK Signature Scheme v2): true",
+        "Verified using v3 scheme (APK Signature Scheme v3): false",
+        "Verified using v3.1 scheme (APK Signature Scheme v3.1): false",
+        "Verified using v4 scheme (APK Signature Scheme v4): false",
+        "Verified for SourceStamp: false",
+        "Number of signers: 1",
+        "Signer #1 certificate DN: C=US, O=Android, CN=Android Debug",
+        "Signer #1 certificate SHA-256 digest: e541a940cc47b0f7af3f263d533f586843052102f883ea3debfe72e377811b17"
+      ],
+      "matchesExistingSigningPolicy": false,
+      "embeddedConfig": {
+        "assets/diagnosticConfig.json": {
+          "mode": "LocalGameServer",
+          "reportUrl": ""
+        },
+        "assets/hostConfig.json": {
+          "resourceServer": "http://192.168.31.94:8001"
+        },
+        "assets/networkConfig.json": {
+          "gameGateEndpoint": "192.168.31.94:31011"
+        }
+      },
+      "nativeLibraries": [
+        "lib/arm64-v8a/lib_burst_generated.so",
+        "lib/arm64-v8a/libil2cpp.so",
+        "lib/arm64-v8a/libmain.so",
+        "lib/arm64-v8a/libunity.so"
+      ],
+      "signingCredentialFilenames": [],
+      "dexFiles": [
+        "classes.dex",
+        "classes2.dex",
+        "classes3.dex",
+        "classes4.dex"
+      ]
+    }
+  ],
+  "textCaptureNormalization": {
+    "rule": "SDK text captures normalized from mixed CRCRLF/CRLF to LF; trailing horizontal whitespace and extra trailing blank lines removed. Command text, tool results and APK facts unchanged.",
+    "originalCopies": "Preserved in local ignored Client/Temp/ProtocolLogRedaction/raw-sdk-evidence-before-normalization",
+    "files": [
+      {
+        "file": "FirepowerLoop-0.1.26-badging.txt",
+        "originalSha256": "8800fcc8efcb91dfb30bcdcea3fbe8275c793b45d7bf784430e0e070b84e90f4",
+        "normalizedSha256": "806ab99b414d22715f6256779a350d027b00b93b2271c70c05b8d302489abe09"
+      },
+      {
+        "file": "FirepowerLoop-0.1.26-manifest.txt",
+        "originalSha256": "82ec4c4b7c73c24414b792e8137ccd2f10bb24155b9133da5694d546d8ff2dc9",
+        "normalizedSha256": "29b3bdb68f095f1be892afb29b19ad900ce02d1021c3477a594c90b9af2cdcb3"
+      },
+      {
+        "file": "FirepowerLoop-0.1.26-permissions.txt",
+        "originalSha256": "dae9e6086aec784214e1036134ab935d976a29cc8ed84ed568161ac22f22f3d4",
+        "normalizedSha256": "83afb2967d4695a2f2e3d300931e2703cb3e47ad1375677a47607daccda218f7"
+      },
+      {
+        "file": "FirepowerLoop-0.1.26-signature.txt",
+        "originalSha256": "0a8ae0d187abc8e71e76b5c2af2bce2d61d07854ea8ec2ebaeac840a5487d87d",
+        "normalizedSha256": "f0d2f1412f124c3b82ba9fec14f2498d48c41cc10f941c3df62bcfa1d9ea1927"
+      },
+      {
+        "file": "FirepowerLoop-0.1.27-badging.txt",
+        "originalSha256": "ce9abb97d164d337a9b761bae317a0734b5d4ae5279a7c5edd9a39989c564297",
+        "normalizedSha256": "e7782c763794fff520dd75474bfa1b5e76bc09b84ca48da9305b0f8b6791061d"
+      },
+      {
+        "file": "FirepowerLoop-0.1.27-manifest.txt",
+        "originalSha256": "afbf4e77e356ed5449f36d9a8eb80107b1e13614179c1c27e15639c7f5409733",
+        "normalizedSha256": "bea302292823861cf412913b680476b6cebd386bc93563e89f733f12e6076ed5"
+      },
+      {
+        "file": "FirepowerLoop-0.1.27-permissions.txt",
+        "originalSha256": "eee703e453e7c1545d565fc1add5d9da822143eaad56a4e5ca7092cdcf37ad38",
+        "normalizedSha256": "b4227efa94277388b8a4bd3d71fa27bc234d8f21c988e91c756bee870bfecf9c"
+      },
+      {
+        "file": "FirepowerLoop-0.1.27-signature.txt",
+        "originalSha256": "2e7767db44165fa34791325ad0ccd3037f7db36f61e2e99ffb72c968a25131b7",
+        "normalizedSha256": "a22d5fb5da2435a6f65e7fc1ff04b049f3038baa92dd658ab03d472f1cbef919"
+      }
+    ]
+  }
+}

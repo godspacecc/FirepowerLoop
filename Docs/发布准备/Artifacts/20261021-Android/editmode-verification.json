@@ -1,0 +1,537 @@
+{
+  "date": "2026-10-21",
+  "scope": "Bounded EditMode only; includePassingTests=true. No Player Build or publication.",
+  "totalPassed": 46,
+  "scopes": [
+    {
+      "testClass": "AndroidChannelBuildTests",
+      "maximum": 19,
+      "arguments": {
+        "includePassingTests": true,
+        "testMode": "EditMode",
+        "includeStacktrace": true,
+        "testClass": "AndroidChannelBuildTests"
+      },
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 19,
+          "PassedTests": 19,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:03.9266055"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.ChannelEditorOptionsRestoreOriginalValues",
+            "Status": "Passed",
+            "Duration": "00:00:00.0250000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected",
+            "Status": "Passed",
+            "Duration": "00:00:00.0610000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite",
+            "Status": "Passed",
+            "Duration": "00:00:00.0110000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.Ipv6DocumentationAddressCannotPassPublicServerCheck",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.MissingChannelCredentialsFailBeforeEditorSettingsChange",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.PlatformReloadResolvesChannelEntryWithoutInvokingBuild",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.PublicIpv4OutsideDocumentationSubnetIsNotRejected",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode",
+            "Status": "Passed",
+            "Duration": "00:00:02.2940000"
+          },
+          {
+            "Name": "Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          }
+        ]
+      }
+    },
+    {
+      "testClass": "AndroidHostBuildTests",
+      "maximum": 17,
+      "arguments": {
+        "includePassingTests": true,
+        "testMode": "EditMode",
+        "includeStacktrace": true,
+        "testClass": "AndroidHostBuildTests"
+      },
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 17,
+          "PassedTests": 17,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.2261782"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidBootstrapReadsStreamingAssetsAsynchronously",
+            "Status": "Passed",
+            "Duration": "00:00:00.1040000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildIdentityMatchesFirepowerLoopProject",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidBuildStateIsSeparatedFromWindowsRecords",
+            "Status": "Passed",
+            "Duration": "00:00:00.0470000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidGameServerEndpointAcceptsEditableBootstrapAndRejectsInvalidSyntax",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidHostUrlRejectsLoopbackAndAcceptsReachableHttps",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidPlayerBuildsValidateGameServerAndCopyPlayerGuide",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidPublisherUsesPlatformSpecificBundleAndReleaseRoots",
+            "Status": "Passed",
+            "Duration": "00:00:00.0190000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidResourceServerMenuStartsLatestPublishedResourceFiles",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.AndroidWorkflowsAutomaticallySwitchTargetBeforeBuilding",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.BootDownloadsGameResourcesAndUsesSameScopeForCacheValidation",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidApkNameUsesEnglishGameNameAndAppVersion",
+            "Status": "Passed",
+            "Duration": "00:00:00.0060000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.FinalAndroidPlayerBuildIncrementsOnlySemanticPatchVersion",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.HostBaseBuildUsesHostPlayerAndKeepsFullBuiltinFallback",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.HostUpdateReusesAndroidAotAndDoesNotBuildPlayer",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.OfflineBuildStillForcesBuiltinModeDefine",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.SmallHostBaseBuildCreatesManifestOnlyApkAndPublishesMatchingResources",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.AndroidHostBuildTests.SmallHostPackageClearsOldBundlesAndKeepsOnlyManifestCatalog",
+            "Status": "Passed",
+            "Duration": "00:00:00.0470000"
+          }
+        ]
+      }
+    },
+    {
+      "testClass": "AndroidSigningTests",
+      "maximum": 10,
+      "arguments": {
+        "includePassingTests": true,
+        "testMode": "EditMode",
+        "includeStacktrace": true,
+        "testClass": "AndroidSigningTests"
+      },
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 10,
+          "PassedTests": 10,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:12.5288637"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.AndroidSigningTests.CertificateMismatchRejectsCryptographicallyValidApk",
+            "Status": "Passed",
+            "Duration": "00:00:02.5480000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.IncompleteCredentialsFailWithoutChangingPlayerSettings",
+            "Status": "Passed",
+            "Duration": "00:00:00.0120000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.InvalidCredentialsDoNotLeakPasswordsInExceptions",
+            "Status": "Passed",
+            "Duration": "00:00:00.5450000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.InvalidPolicyCannotDisableSignatureValidation",
+            "Status": "Passed",
+            "Duration": "00:00:00.5120000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.MatchingSignedApkPassesWithoutAnyPrivateKey",
+            "Status": "Passed",
+            "Duration": "00:00:00.9290000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.MissingLocalCredentialsCannotFallBackToMachineDebugKey",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.TamperedApkIsRejectedEvenWithMatchingCertificatePolicy",
+            "Status": "Passed",
+            "Duration": "00:00:00.8140000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.ValidatedSigningScopeRestoresEverySettingWhenCallerThrows",
+            "Status": "Passed",
+            "Duration": "00:00:01.4230000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.ValidPrivateKeyWithUnexpectedCertificateCannotBeApplied",
+            "Status": "Passed",
+            "Duration": "00:00:01.4120000"
+          },
+          {
+            "Name": "Game.Tests.AndroidSigningTests.WrongPrivateKeyPasswordIsRejectedBeforeChangingSettings",
+            "Status": "Passed",
+            "Duration": "00:00:01.1890000"
+          }
+        ]
+      }
+    }
+  ],
+  "initialRed": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 13,
+      "PassedTests": 0,
+      "FailedTests": 13,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.2484091"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags",
+        "Status": "Failed",
+        "Duration": "00:00:00.0180000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:45\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected",
+        "Status": "Failed",
+        "Duration": "00:00:00.0320000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected () [0x0003d] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:100\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches () [0x0001a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:73\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks () [0x00016] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:67\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload",
+        "Status": "Failed",
+        "Duration": "00:00:00",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload () [0x0002f] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:107\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether () [0x00040] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:124\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning () [0x0002c] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:130\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices",
+        "Status": "Failed",
+        "Duration": "00:00:00",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices () [0x0007f] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:117\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior",
+        "Status": "Failed",
+        "Duration": "00:00:00",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:52\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel () [0x00098] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:89\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass",
+        "Status": "Failed",
+        "Duration": "00:00:00",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:78\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode () [0x00010] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:137\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly",
+        "Status": "Failed",
+        "Duration": "00:00:00",
+        "Message": "  缺少渠道候选包工具\r\n  Expected: not null\r\n  But was:  null\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x0000b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:21\r\nat Game.Tests.AndroidChannelBuildTests.Evaluate (Newtonsoft.Json.Linq.JObject facts, System.Boolean channel, System.String expected) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:38\r\nat Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly () [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:58\r\n"
+      }
+    ]
+  },
+  "reviewRed": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 19,
+      "PassedTests": 16,
+      "FailedTests": 3,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.1571314"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.ChannelEditorOptionsRestoreOriginalValues",
+        "Status": "Passed",
+        "Duration": "00:00:00.0230000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.ChannelOptionsRemoveDevelopmentAndDebuggerFlags",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.CleartextAndCredentialBearingUrlsAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.0500000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DebugCertificateIsRejectedEvenWhenFingerprintMatches",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DebuggablePackageCannotPassChannelChecks",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.DiagnosticLocalModeCannotMasqueradeAsDisabledUpload",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.IdentityAndArchitectureErrorsAreReportedTogether",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite",
+        "Status": "Failed",
+        "Duration": "00:00:00.0070000",
+        "Message": "System.NullReferenceException : Object reference not set to an instance of an object",
+        "StackTrace": "  at Game.Tests.AndroidChannelBuildTests.Call (System.String method, System.Object[] args) [0x00025] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:22 \r\n  at Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite () [0x00053] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:208 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <de920293e401402ab375ad8a2e1b19da>:0 "
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InstallerPermissionRemainsVisibleAsReviewWarning",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InternalInspectionAllowsDebugAndLocalServices",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InternalOptionsKeepExistingDevelopmentBehavior",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.Ipv6DocumentationAddressCannotPassPublicServerCheck",
+        "Status": "Failed",
+        "Duration": "00:00:00.0080000",
+        "Message": "  Expected: collection containing \"resourceServer\"\r\n  But was:  <empty>\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.Ipv6DocumentationAddressCannotPassPublicServerCheck () [0x0001a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:191\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.LocalAndPlaceholderServersAreRejectedForChannel",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.MissingChannelCredentialsFailBeforeEditorSettingsChange",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.MissingOrDifferentExpectedCertificateCannotPass",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.PlatformReloadResolvesChannelEntryWithoutInvokingBuild",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.PublicIpv4OutsideDocumentationSubnetIsNotRejected",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  Expected: True\r\n  But was:  False\r\n",
+        "StackTrace": "at Game.Tests.AndroidChannelBuildTests.PublicIpv4OutsideDocumentationSubnetIsNotRejected () [0x0001a] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\AndroidChannelBuildTests.cs:197\r\n"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.SignedFixtureCanBeInspectedWithoutRunningItsCode",
+        "Status": "Passed",
+        "Duration": "00:00:00.4730000"
+      },
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.ValidChannelFactsPassTechnicalChecksOnly",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      }
+    ]
+  },
+  "lockRed": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:00.6032602"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.AndroidChannelBuildTests.InspectionInputPreventsConcurrentOverwrite",
+        "Status": "Failed",
+        "Duration": "00:00:00.0200000",
+        "Message": "  缺少渠道检查方法：OpenInspectionInput\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

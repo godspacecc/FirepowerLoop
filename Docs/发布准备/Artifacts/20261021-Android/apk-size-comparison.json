@@ -1,0 +1,80 @@
+{
+  "currentBytes": 190458627,
+  "previousBytes": 67066066,
+  "increaseBytes": 123392561,
+  "largestCompressedEntryIncreases": [
+    {
+      "name": "assets/yoo/DefaultPackage/fe6fd6eb57dc7605e6ffc82a335e1c5f.bundle",
+      "currentCompressedBytes": 15149773,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 15149773
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/d54b0ca762fc0424663169bbb22ff543.bundle",
+      "currentCompressedBytes": 15149389,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 15149389
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/ac866f2be2596c2874e2413c84760c57.bundle",
+      "currentCompressedBytes": 11249641,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 11249641
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/b8e0e50fcf9818d8666f2426391361e6.bundle",
+      "currentCompressedBytes": 10768670,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 10768670
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/71b9f03dd2d85faaec1715dd54c102ea.bundle",
+      "currentCompressedBytes": 7114747,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 7114747
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/7dc8eea38e0ca28ec7f091d3bd55e751.bundle",
+      "currentCompressedBytes": 5866427,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 5866427
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/4c339e410674f9f74e4a4bf85e46ed53.bundle",
+      "currentCompressedBytes": 5866366,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 5866366
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/fad0cfd4095dc44735a5ac045af41490.bundle",
+      "currentCompressedBytes": 4371736,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 4371736
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/84837abab292cd74b2eaccffd1407b38.bundle",
+      "currentCompressedBytes": 3517753,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 3517753
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/0403ab02e2a7277f8d0448cd0cca9627.bundle",
+      "currentCompressedBytes": 3312877,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 3312877
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/9422e4c6fe1d4c4f0883c28f533e10a3.bundle",
+      "currentCompressedBytes": 3280455,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 3280455
+    },
+    {
+      "name": "assets/yoo/DefaultPackage/21df368fec194682867367a84f15313a.bundle",
+      "currentCompressedBytes": 3263373,
+      "previousCompressedBytes": 0,
+      "increaseBytes": 3263373
+    }
+  ],
+  "scope": "ZIP compressed entry differences only; no attribution to a code change or build mode."
+}
