@@ -328,7 +328,7 @@ namespace ET.Server
                     if(target.CurrentHealth<=0)actor.KillEnemyWithImpact(b,target,false,true,e.PositionX,e.PositionZ);
                 }
             }
-            b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=e.SpecialKind==15?7:3,X=e.PositionX,Y=e.PositionZ,Remaining=e.SpecialKind==15?p.SkillPeriod:p.SkillWarning,DamageRatio=e.SpecialKind==1?0:p.EventDamage});
+            b.DeathZones.Add(new OnlineArcadeContentZoneRuntime{Id=(int)b.NextProjectileRuntimeId++,Kind=e.SpecialKind==15?7:ArcadeRoundContentRules.BarrelExplosionKind,X=e.PositionX,Y=e.PositionZ,Remaining=e.SpecialKind==15?p.SkillPeriod:p.SkillWarning,DamageRatio=e.SpecialKind==1?0:p.EventDamage});
         }
         /// <summary>冰面惯性与寄生/孢子减速仍走正式碰撞入口，暂停门禁在外层统一冻结。</summary>
         private static void ContentPlayerVelocity(OnlineArcadeBattleRuntime b,OnlineArcadeBattlePlayerRuntime player,float speed,float delta,out float vx,out float vy)

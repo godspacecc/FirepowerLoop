@@ -20,6 +20,8 @@ namespace Game
         private readonly Dictionary<int,Vector2> roundEnemyPositions = new();
         private readonly Dictionary<int,GameObject> roundAreas = new();
         private readonly Dictionary<int,string> roundAreaIdentities = new();
+        /// <summary>本地图已播放的桶爆炸身份，防止重复快照或短暂隐藏后重播声音。</summary>
+        private readonly HashSet<int> roundSeenBarrelBlasts=new();
         private readonly Dictionary<Renderer,bool> roundBaseRendererVisibility = new();
         private string roundLayoutLoadError;
         private bool roundLayoutReady;
@@ -308,6 +310,13 @@ namespace Game
             {
                 if(float.IsNaN(area.X)||float.IsNaN(area.Y)||float.IsNaN(area.Radius)||float.IsInfinity(area.X)||float.IsInfinity(area.Y)||float.IsInfinity(area.Radius)||area.Radius<=0 ||
                     (area.Segment&&(float.IsNaN(area.EndX)||float.IsInfinity(area.EndX)||float.IsNaN(area.EndY)||float.IsInfinity(area.EndY))))continue;
+                if(area.Kind==ArcadeRoundContentRules.BarrelExplosionKind)
+                {
+                    // 模板晚到时保留待播身份；爆炸只显示一次，不伪造持续伤害圈。
+                    if(!area.Warning&&barrelBlastTemplate!=null&&roundSeenBarrelBlasts.Add(area.Id))
+                        PlayBarrelExplosion(new Vector2(area.X,area.Y),area.Radius);
+                    continue;
+                }
                 var delta=area.Segment ? new Vector2(area.EndX-area.X,area.EndY-area.Y) : Vector2.zero;
                 float length=delta.magnitude;
                 active.Add(area.Id);string identity=area.Kind+":"+area.Warning+":"+area.Radius+":"+area.Segment+":"+length;
@@ -521,6 +530,7 @@ namespace Game
         /// <summary>根先失活，再释放所有自有网格和材质；共享 Primitive 网格不在释放列表中。</summary>
         private void ReleaseRoundContent()
         {
+            ClearBarrelBlasts();roundSeenBarrelBlasts.Clear();
             roundLayoutReady=false;roundLayoutLoadError=null;
             foreach(var entry in roundBaseRendererVisibility)if(entry.Key!=null)entry.Key.enabled=entry.Value;
             roundBaseRendererVisibility.Clear();

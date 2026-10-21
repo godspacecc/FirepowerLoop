@@ -1,0 +1,2 @@
+PASS A: existing energy explosion: purple-explosion-energy.mp4; source=ArcadeExplosionSciFi.wav; source duration=3.000s; video=4.2s; explosion and sound onset=0.8s; video+audio decode OK; copied WAV identical.
+PASS B: existing ordinary explosion: purple-explosion-ordinary.mp4; source=ArcadeExplosion.wav; source duration=2.043s; video=4.2s; explosion and sound onset=0.8s; video+audio decode OK; copied WAV identical.

@@ -1725,7 +1725,8 @@ namespace Game
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {
                 runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;
-                runtime.ContentAreas.Clear(); runtime.ContentAreaSnapshots.Clear();
+                // 停止危险时保留本帧已经裁决的桶爆炸，避免 Boss 死亡吞掉视觉与声音。
+                runtime.ContentAreas.RemoveAll(a=>a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind); runtime.ContentAreaSnapshots.Clear();
                 runtime.SpawnQueue.Clear();
                 foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
                 foreach (int id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);

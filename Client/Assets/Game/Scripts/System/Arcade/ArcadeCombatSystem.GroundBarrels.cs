@@ -113,8 +113,7 @@ namespace Game
             r.GroundBarrels.Remove(id);r.GroundBarrelHealth.Remove(id);
             if(id<RoundLayout(r).Barrels.Count)r.DestroyedGroundBarrelIds.Add(id);
             var p=ContentTuning(r);
-            AddContentArea(r,3,position,position,p.EventRadius,0,p.SkillWarning,0,false,false);
-            view?.PlayProjectileExplosion(position,p.EventRadius);
+            AddContentArea(r,ArcadeRoundContentRules.BarrelExplosionKind,position,position,p.EventRadius,0,p.SkillWarning,0,false,false);
             DamageContentExplosionEnemies(r,position,p.EventRadius,p.EventDamage);
         }
 

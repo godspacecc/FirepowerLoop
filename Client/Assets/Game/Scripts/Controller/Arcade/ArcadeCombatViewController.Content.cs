@@ -53,6 +53,8 @@ namespace Game
                 if (bulletImpactTemplate == null) throw new InvalidOperationException("公共枪弹命中模板缺失");
                 projectileBlastTemplate = candidate.Find("ProjectileBlast");
                 if (projectileBlastTemplate == null) throw new InvalidOperationException("公共投射物爆炸模板缺失");
+                barrelBlastTemplate=candidate.Find("VortexBarrelBlast");
+                if(barrelBlastTemplate==null)throw new InvalidOperationException("桶专属紫色爆炸模板缺失");
                 contentTemplates=candidate;
                 var bombTemplate=candidate.Find("BombBlast");
                 if(bombTemplate==null)throw new InvalidOperationException("公共炸弹三阶段模板缺失");
@@ -81,6 +83,7 @@ namespace Game
                     DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;
                     bulletImpactTemplate=null;
                     projectileBlastTemplate=null;
+                    barrelBlastTemplate=null;ClearBarrelBlasts();
                     hazardPresentation?.Dispose();hazardPresentation=null;
                     contentEnvironmentIdentity=null; RestoreIslandBaseArena();
                 }
@@ -129,6 +132,7 @@ namespace Game
             contentGeneration++;
             bulletImpactTemplate=null;
             projectileBlastTemplate=null;
+            barrelBlastTemplate=null;ClearBarrelBlasts();
             DestroyObject(contentEnvironment);contentEnvironment=null;contentTemplates=null;contentEnvironmentIdentity=null;
             ReleaseObstacleVisualLoad(contentLoad);contentLoad=null;
             RestoreIslandBaseArena();

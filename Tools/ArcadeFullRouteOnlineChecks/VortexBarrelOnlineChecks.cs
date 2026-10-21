@@ -14,8 +14,9 @@ internal static class VortexBarrelOnlineChecks
             ("ShotAccumulatesDamageAndExplosionProtectsBothPlayers",ShotAccumulatesDamageAndExplosionProtectsBothPlayers),
             ("CarrierExplosionProtectsBothPlayers",CarrierExplosionProtectsBothPlayers),
             ("AccumulatedBarrelsNeverBlockRelease",AccumulatedBarrelsNeverBlockRelease),
-            ("ControlledCarrierUsesActiveLifetimeFromBirth",ControlledCarrierUsesActiveLifetimeFromBirth)};
-        if(maximum<checks.Length)throw new ArgumentException("VortexBarrelOnline requires maximum >= 6");
+            ("ControlledCarrierUsesActiveLifetimeFromBirth",ControlledCarrierUsesActiveLifetimeFromBirth),
+            ("PurpleExplosionSurvivesClearAndSnapshotCodec",PurpleExplosionSurvivesClearAndSnapshotCodec)};
+        if(maximum<checks.Length)throw new ArgumentException("VortexBarrelOnline requires maximum >= 7");
         int failures=0;
         foreach(var check in checks)try{check.Check();Console.WriteLine("PASS VortexBarrelOnline."+check.Name);}
             catch(Exception e){failures++;Console.WriteLine("FAIL VortexBarrelOnline."+check.Name+": "+(e.InnerException??e));}
@@ -83,6 +84,7 @@ internal static class VortexBarrelOnlineChecks
         var shot=new OnlineArcadeProjectileRuntime{FromPlayerWeapon=true,OwnerPlayerId=1,RemainingSeconds=1,Damage=1};
         Require((bool)Call("TryHitGroundBarrel",actor,b,shot,point.X-1,point.Y,point.X,point.Y),"Weak shot did not hit");Require(b.DestroyedBarrelIds.Count==0,"Weak shot exploded barrel");
         shot.Damage=100;Require((bool)Call("TryHitGroundBarrel",actor,b,shot,point.X-1,point.Y,point.X,point.Y),"Strong shot missed");
+        Require(b.DeathZones.Any(z=>z.Kind==14),"Missing purple barrel authority event");
         Require(b.DestroyedBarrelIds.Count==1&&enemy.CurrentHealth<100,"Barrel did not damage enemy");
         Require(b.Players.Values.All(p=>p.CurrentHealth==p.MaxHealth&&p.Alive),"Barrel hurt players");
     }
@@ -91,7 +93,17 @@ internal static class VortexBarrelOnlineChecks
         var actor=Create();var b=actor.Battle;
         foreach(var player in b.Players.Values){player.PositionX=0;player.PositionZ=0;}
         Call("SpawnContentDeathZone",actor,b,new OnlineArcadeEnemyRuntime{SpecialKind=1,PositionX=0,PositionZ=0});
+        Require(b.DeathZones.Any(z=>z.Kind==14),"Carrier did not publish purple explosion");
         Call("TickRoundContent",actor,b,.1f);
         Require(b.Players.Values.All(p=>p.CurrentHealth==p.MaxHealth),"Carrier blast hurt a player");
+    }
+    private static void PurpleExplosionSurvivesClearAndSnapshotCodec()
+    {
+        var actor=Create();var b=actor.Battle;var point=b.RoundLayout.Barrels[0];
+        Call("TryHitGroundBarrel",actor,b,new OnlineArcadeProjectileRuntime{FromPlayerWeapon=true,OwnerPlayerId=1,RemainingSeconds=1,Damage=100},point.X-1,point.Y,point.X,point.Y);
+        b.WaveClearAwarded=true;b.AwaitingExit=true;
+        using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",b);
+        using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(snapshot));
+        Require(decoded.ContentAreas.Count(a=>a.Kind==14)==1,"Last kill explosion missing or duplicated in frozen clear snapshot");
     }
 }

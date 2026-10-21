@@ -1,0 +1,6 @@
+# 本地逐帧采样与重复拍摄输出，保留关键帧和带声视频。
+purple-frame-*.png
+capture.txt
+ratios.txt
+gameplay-lens.png
+ratio-side-comparison.png

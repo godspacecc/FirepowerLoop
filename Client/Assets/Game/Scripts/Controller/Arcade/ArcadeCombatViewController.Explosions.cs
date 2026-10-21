@@ -13,6 +13,45 @@ namespace Game
         private int projectileBlastCursor;
         /// <summary>与枪弹命中共用当前Content租约，离场后不接受晚到表现。</summary>
         private Transform projectileBlastTemplate;
+        /// <summary>桶专属紫色爆炸复用当前Content租约，独立于普通武器的十二组缓存。</summary>
+        private Transform barrelBlastTemplate;
+        /// <summary>当前地图拥有的桶爆炸实例，普通武器不占用这些槽位。</summary>
+        private readonly List<ProjectileBlastEntry> barrelBlastPool=new();
+        /// <summary>满容量后顺序复用桶爆炸的槽位。</summary>
+        private int barrelBlastCursor;
+        /// <summary>桶爆炸独立的短声音限流时刻，不抑制粒子播放。</summary>
+        private float lastBarrelExplosionSoundTime=float.NegativeInfinity;
+
+        /// <summary>只接收已结算的桶爆炸；密集爆炸限音但不抑制视觉，使用已确认的能量音效。</summary>
+        public void PlayBarrelExplosion(Vector2 position,float radius)
+        {
+            if(root==null||barrelBlastTemplate==null||radius<=0||float.IsNaN(radius)||float.IsInfinity(radius)||
+                float.IsNaN(position.x)||float.IsNaN(position.y)||float.IsInfinity(position.x)||float.IsInfinity(position.y))return;
+            ProjectileBlastEntry entry;
+            if(barrelBlastPool.Count<ProjectileBlastCapacity)
+            {
+                var instance=UnityEngine.Object.Instantiate(barrelBlastTemplate.gameObject,root.transform,false);
+                entry=new ProjectileBlastEntry{Root=instance,Particles=instance.GetComponentsInChildren<ParticleSystem>(true)};
+                barrelBlastPool.Add(entry);instance.SetActive(true);
+            }
+            else entry=barrelBlastPool[barrelBlastCursor];
+            barrelBlastCursor=(barrelBlastCursor+1)%ProjectileBlastCapacity;
+            foreach(var particles in entry.Particles)particles.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);
+            entry.Root.transform.localPosition=new Vector3(position.x,.75f,position.y);
+            entry.Root.transform.localScale=Vector3.one*Mathf.Clamp(radius/2.8f,.35f,2f);
+            foreach(var particles in entry.Particles)particles.Play(false);
+            if(mapRoot==null)return;
+            float now=Time.unscaledTime;if(now-lastBarrelExplosionSoundTime<.15f)return;
+            lastBarrelExplosionSoundTime=now;
+            Game.Interface.GetSystem<AudioSystem>()?.PlaySoundAt("ArcadeExplosionSciFi",mapRoot.TransformPoint(new Vector3(position.x,.75f,position.y)),18f,20);
+        }
+
+        /// <summary>切轮／离场同步回收桶专属粒子；共享模板与材质由Content句柄持有。</summary>
+        private void ClearBarrelBlasts()
+        {
+            foreach(var entry in barrelBlastPool)if(entry.Root!=null)DestroyObject(entry.Root);
+            barrelBlastPool.Clear();barrelBlastCursor=0;lastBarrelExplosionSoundTime=float.NegativeInfinity;
+        }
 
         /// <summary>缓存原配色和粒子引用，避免每次爆炸分配数组或修改共享材质。</summary>
         private sealed class ProjectileBlastEntry

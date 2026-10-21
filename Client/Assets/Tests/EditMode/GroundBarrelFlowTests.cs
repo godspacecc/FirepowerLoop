@@ -90,7 +90,7 @@ namespace Game.Tests
             int playerHealth=runtime.PlayerHealth,enemyHealth=enemy.Health;runtime.PlayerInvulnerability=0;
             Call("TickRoundContent",runtime,.1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(playerHealth));Assert.That(enemy.Health,Is.EqualTo(enemyHealth),"同次爆炸不在危险区重复伤害");
             Call("OnRoundEnemyKilled",runtime,new ArcadeEnemyRuntime{Id=8,Position=point,ContentSpecialKind=1},false);
-            Assert.That(runtime.ContentAreas.Any(a=>a.Kind==3),Is.True,"载体原死亡爆炸仍保留");
+            Assert.That(runtime.ContentAreas.Any(a=>a.Kind==14),Is.True,"载体原死亡爆炸仍保留");
             Call("TickRoundContent",runtime,.1f);Assert.That(runtime.PlayerHealth,Is.EqualTo(100),"载体爆炸区域也不能延迟伤害玩家");
         }
         [Test] public void ExplosiveWeaponKeepsItsOriginalBlastWhenItDetonatesBarrel()
@@ -126,6 +126,42 @@ namespace Game.Tests
             Assert.That(runtime.ContentAreas.Count,Is.EqualTo(areas),"放桶后死亡不能再次爆炸");
             Call("AppendGroundBarrelSnapshots",runtime);Assert.That(runtime.ContentPresentationSnapshots.Any(p=>p.Kind==13),Is.True);
             Call("DetonateGroundBarrel",runtime,2);Assert.That(runtime.DestroyedGroundBarrelIds,Is.Empty,"动态桶不污染预置桶恢复索引");
+        }
+
+        [Test] public void PurpleExplosionStillProjectsWhenBarrelEndsTheWave()
+        {
+            Call("InitializeRoundContent",runtime);Call("TickRoundContent",runtime,.01f);
+            Call("DetonateGroundBarrel",runtime,0);runtime.WaveClearAwarded=true;runtime.AwaitingExit=true;
+            Call("SyncRoundContent",runtime);
+            Assert.That(runtime.ContentPresentationSnapshots.Any(a=>a.Kind==14),Is.True,"清场帧也必须收到已结算的桶爆炸");
+        }
+        [Test] public void SameMapContentRestartNeverReusesBarrelExplosionIdentity()
+        {
+            Call("InitializeRoundContent",runtime);Call("DetonateGroundBarrel",runtime,0);int first=runtime.ContentAreas.Single(a=>a.Kind==14).Id;
+            Call("InitializeRoundContent",runtime);Call("DetonateGroundBarrel",runtime,1);
+            Assert.That(runtime.ContentAreas.Where(a=>a.Kind==14).Max(a=>a.Id),Is.GreaterThan(first),"同地图Boss准备不能复用旧爆炸身份");
+        }
+
+        [TestCase(1)] [TestCase(4)] public void LastExplosionSurvivesActualBossEntry(int bossKind)
+        {
+            var layout=catalog.RoundLayouts.First(p=>p.RoundNumber==4&&p.BossKind==bossKind);
+            architecture.GetModel<ArcadeRunModel>().Current.ArenaConfigNumber=layout.ArenaConfigNumber;runtime.WaveIndex=3;
+            Set("arena",catalog.Arenas.First(a=>a.ArenaNumber==layout.ArenaConfigNumber));
+            Call("InitializeRoundContent",runtime);runtime.ContentClock.Advance(10,false);
+            Call("OnRoundEnemyKilled",runtime,new ArcadeEnemyRuntime{Id=300,Position=Vector2.zero,ContentSpecialKind=1},false);
+            Call("TickWaveTransition",runtime,.01f);Call("SyncRoundContent",runtime);
+            Assert.That(runtime.IsFinalBoss||runtime.ThemeBossStarted,Is.True);
+            Assert.That(runtime.ContentPresentationSnapshots.Count(a=>a.Kind==14),Is.EqualTo(1),"实际Boss入场不能清掉最后一击表现");
+        }
+
+        [Test] public void BarrelKillingThemeBossKeepsAlreadySettledExplosion()
+        {
+            Call("InitializeRoundContent",runtime);var point=Point(0);
+            runtime.ThemeBossStarted=true;runtime.ContentBossEnemyId=300;
+            runtime.Enemies.Add(300,new ArcadeEnemyRuntime{Id=300,Position=point,Health=1,MaxHealth=100,ContentBossKind=1});
+            Call("DetonateGroundBarrel",runtime,0);Call("SyncRoundContent",runtime);
+            Assert.That(runtime.ThemeBossDefeated,Is.True);
+            Assert.That(runtime.ContentPresentationSnapshots.Count(a=>a.Kind==14),Is.EqualTo(1),"Boss死亡清理只能停危险，不能吞掉已结算爆炸");
         }
 
         [Test] public void AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing()

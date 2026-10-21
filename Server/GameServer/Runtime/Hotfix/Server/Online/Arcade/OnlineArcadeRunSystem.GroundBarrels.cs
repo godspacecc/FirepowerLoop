@@ -104,7 +104,7 @@ namespace ET.Server
             b.GroundBarrelHealth.Remove(selected);var p=ContentTuning(b);
             DamageContentExplosionEnemies(actor,b,center.X,center.Y,p.EventRadius,p.EventDamage,shot.OwnerPlayerId);
             // 玩家与敌人已在命中时裁决；短领域只显示爆炸，不在宝藏返回或恢复后补伤。
-            AddContentZone(b,3,center.X,center.Y,center.X,center.Y,p.EventRadius,0,p.SkillWarning,0,false,false);
+            AddContentZone(b,ArcadeRoundContentRules.BarrelExplosionKind,center.X,center.Y,center.X,center.Y,p.EventRadius,0,p.SkillWarning,0,false,false);
             return true;
         }
         /// <summary>玩家武器长帧也截在首面墙，不能本帧越墙后下一帧从墙后射桶。</summary>

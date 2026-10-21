@@ -25,10 +25,16 @@ namespace Game
         /// <summary>每张地图创建独占时钟、接触冷却、领域与冰面速度，普通切轮不继承旧危险。</summary>
         private void InitializeRoundContent(ArcadeCombatRuntime r)
         {
-            r.ContentClock=new ArcadeContentClock();r.ContentAreas.Clear();r.ContentAreaSnapshots.Clear();
+            var layout=RoundLayout(r);double previousElapsed=r.ContentClock.Elapsed;
+            bool sameMap=layout!=null&&r.GroundBarrelMapId==layout.Id&&r.GroundBarrelLayoutVersion==layout.Version;
+            // 同地图切入 Boss 只停止危险；已结算爆炸保留剩余寿命，并换算到重置后的活动时钟。
+            r.ContentAreas.RemoveAll(a=>!sameMap||a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind||a.ExpiresAt<=previousElapsed);
+            foreach(var area in r.ContentAreas){area.WarningUntil=0;area.ExpiresAt-=previousElapsed;}
+            r.ContentClock=new ArcadeContentClock();r.ContentAreaSnapshots.Clear();
             InitializeGroundBarrels(r);
             r.ContentVelocity=Vector2.zero;r.ContentSlowRemaining=r.ContentBumperCooldown=0;
-            r.ContentSpawnSequence=0;r.ContentNextAreaId=1;r.ContentEventCycle=r.ContentEventTargetCycle=-1;
+            // 同地图进入主题 Boss 时表现仍保留去重记录，事件身份不能重用。
+            r.ContentSpawnSequence=0;r.ContentNextAreaId=Math.Max(1,r.ContentNextAreaId);r.ContentEventCycle=r.ContentEventTargetCycle=-1;
             r.ContentEventAnchor=ContentPosition(r,Vector2.zero);r.ContentEventTarget=r.ContentEventAnchor;
         }
 
@@ -234,7 +240,7 @@ namespace Game
             var p=ContentTuning(r);float radius=ArcadeRoundContentRules.DeathAreaRadius(e.ContentSpecialKind,p);if(radius<=0)return;
             if(e.ContentSpecialKind==1)
             {
-                AddContentArea(r,3,e.Position,e.Position,radius,0,p.SkillWarning,0,false,false);
+                AddContentArea(r,ArcadeRoundContentRules.BarrelExplosionKind,e.Position,e.Position,radius,0,p.SkillWarning,0,false,false);
                 DamageContentExplosionEnemies(r,e.Position,radius,p.EventDamage);
             }
             else AddContentArea(r,7,e.Position,e.Position,radius,0,p.SkillPeriod,p.EventDamage,false,false);
@@ -371,7 +377,14 @@ namespace Game
         private void SyncRoundContent(ArcadeCombatRuntime r)
         {
             bool active=RoundContentActive(r);r.ContentPresentationSnapshots.Clear();
-            if(active||r.SlayerGuardian!=null)r.ContentPresentationSnapshots.AddRange(r.ContentAreaSnapshots);
+            if(active||r.SlayerGuardian!=null)
+                foreach(var area in r.ContentAreaSnapshots)
+                    if(area.Kind!=ArcadeRoundContentRules.BarrelExplosionKind)r.ContentPresentationSnapshots.Add(area);
+            // 弹丸命中晚于领域更新；直接投影本帧爆炸，清场暂停危险也不能吞掉最后一击。
+            if(!r.InTreasureRoom&&!r.IslandTransitionPending&&!r.IslandRoomTransitionPending)
+                foreach(var area in r.ContentAreas)
+                    if(area.Kind==ArcadeRoundContentRules.BarrelExplosionKind&&area.ExpiresAt>r.ContentClock.Elapsed)
+                        r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(area.Id,area.Kind,area.Position.x,area.Position.y,area.Radius,false));
             AppendGroundBarrelSnapshots(r);
             view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
             foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);

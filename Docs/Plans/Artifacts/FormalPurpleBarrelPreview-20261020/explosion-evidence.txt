@@ -1,0 +1,1 @@
+Formal VortexBarrelBlast through authoritative snapshot Kind14; no temporary explosion color overrides; radius=3; systems=6; peak=125; final=0; 84 frames at20fps; explosion at0.8s. Purple residual smoke and barrel fragments both from formal prefab; surrounding vortex/back-mounted barrel remains a preview.

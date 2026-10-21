@@ -3126,7 +3126,19 @@ namespace ET.Server
             battle.ContentElapsed=(float)source.ContentClock.Elapsed;
             AppendGroundBarrelSnapshots(source,battle);
             AppendCoopRescueMarkers(source,battle);
-            foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
+            foreach(var a in source.ContentAreas)
+            {
+                if(a.Kind==ArcadeRoundContentRules.BarrelExplosionKind)continue;
+                var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);
+            }
+            // 命中可在领域采样后清场；从权威事件取本帧桶爆炸，暂停危险不丢失表现。
+            foreach(var zone in source.DeathZones)
+            {
+                if(zone.Kind!=ArcadeRoundContentRules.BarrelExplosionKind||zone.Remaining<=0)continue;
+                var item=OnlineArcadeContentAreaInfo.Create();item.Id=zone.Id;item.Kind=zone.Kind;item.X=zone.X;item.Y=zone.Y;
+                item.Radius=zone.Radius>0?zone.Radius:source.RoundLayout?.EventRadius??0;
+                item.Warning=false;battle.ContentAreas.Add(item);
+            }
 
             battle.ArenaConfigNumber = source.ArenaConfigNumber;
             battle.IsFinalBoss = source.IsFinalBoss;

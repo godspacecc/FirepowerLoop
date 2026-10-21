@@ -78,6 +78,8 @@ namespace FirepowerLoop.Arcade
     /// <summary>双端共用的纯确定性规则，不写血量、不生成实体、不拥有 Unity 生命周期。</summary>
     public static class ArcadeRoundContentRules
     {
+        /// <summary>已结算桶爆炸的独立快照类型；与屋顶落桶危险区和普通武器爆炸分开投影。</summary>
+        public const int BarrelExplosionKind=14;
         /// <summary>吸物使用双端一致的限幅直线运动；返回是否到达桶口，长帧不会越过桶心。</summary>
         public static bool PullToBarrel(float x,float y,float barrelX,float barrelY,float speed,float seconds,float mouthRadius,out float nextX,out float nextY)
         {
