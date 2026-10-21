@@ -1,0 +1,51 @@
+    /// <summary>临时预览的手动采样漏斗气流，不新增产品 Update 或物资裁决。</summary>
+    private sealed class Funnel : IDisposable
+    {
+        private readonly ParticleSystem smoke;
+        private readonly ParticleSystem.Particle[] particles=new ParticleSystem.Particle[100];
+        private readonly LineRenderer[] ribbons=new LineRenderer[3];
+        private readonly Material soft,flow,core;
+        public Funnel(Transform barrel)
+        {
+            barrel.Find("VortexSmoke").gameObject.SetActive(false);
+            soft=new Material(AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Art/Arcade/VFX/FirstBatch/Materials/EnemyFlameSmoke.mat"));
+            soft.name="Preview_VioletExistingSmoke";
+            soft.SetColor("_BaseColor",Color.white);soft.SetColor("_Color",Color.white);
+            flow=new Material(soft);flow.SetTexture("_BaseMap",null);
+            core=new Material(Shader.Find("Universal Render Pipeline/Unlit"));core.color=new Color(.035f,.01f,.075f);
+            var mouth=GameObject.CreatePrimitive(PrimitiveType.Cylinder);mouth.name="Preview_DarkMouth";mouth.transform.SetParent(barrel,false);
+            mouth.transform.localPosition=new Vector3(0,1.107f,0);mouth.transform.localScale=new Vector3(.62f,.006f,.62f);
+            Object.DestroyImmediate(mouth.GetComponent<Collider>());mouth.GetComponent<Renderer>().sharedMaterial=core;
+            smoke=new GameObject("Preview_SwirlingVapor",typeof(ParticleSystem)).GetComponent<ParticleSystem>();smoke.transform.SetParent(barrel,false);
+            var main=smoke.main;main.playOnAwake=false;main.maxParticles=120;main.simulationSpace=ParticleSystemSimulationSpace.Local;main.startSpeed=0;main.startLifetime=10;
+            var emission=smoke.emission;emission.enabled=false;var shape=smoke.shape;shape.enabled=false;
+            var renderer=smoke.GetComponent<ParticleSystemRenderer>();renderer.sharedMaterial=soft;renderer.renderMode=ParticleSystemRenderMode.Billboard;renderer.sortingFudge=.1f;
+            smoke.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);
+            for(int arm=0;arm<ribbons.Length;arm++)
+            {
+                var line=new GameObject("Preview_ConvergingRibbon",typeof(LineRenderer)).GetComponent<LineRenderer>();line.transform.SetParent(barrel,false);
+                line.useWorldSpace=false;line.positionCount=72;line.sharedMaterial=flow;line.numCapVertices=4;line.widthMultiplier=1;
+                line.widthCurve=new AnimationCurve(new Keyframe(0,0),new Keyframe(.15f,.055f),new Keyframe(.65f,.085f),new Keyframe(1,0));
+                var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(new Color(.73f,.26f,1),0),new GradientColorKey(new Color(.6f,.12f,.95f),1)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(.64f,.15f),new GradientAlphaKey(.30f,.7f),new GradientAlphaKey(0,1)});
+                line.colorGradient=gradient;ribbons[arm]=line;
+            }
+        }
+        public void Tick(float time)
+        {
+            for(int arm=0;arm<ribbons.Length;arm++)for(int step=0;step<72;step++)
+            {
+                float u=step/71f,r=.09f+.49f*u,angle=u*Mathf.PI*2.5f-time*3.5f+arm*Mathf.PI*2/3;
+                ribbons[arm].SetPosition(step,new Vector3(Mathf.Cos(angle)*r,1.15f+u*1.03f,Mathf.Sin(angle)*r));
+            }
+            for(int i=0;i<particles.Length;i++)
+            {
+                float age=Mathf.Repeat(time*.40f+i/(float)particles.Length,1),u=1-age;
+                float r=(.08f+.48f*u)*(.6f+.4f*Mathf.Sin(i*4.1f)),angle=i*2.39996f-time*3.5f+u*7.85f;
+                particles[i].position=new Vector3(Mathf.Cos(angle)*r,1.16f+u*1.08f,Mathf.Sin(angle)*r);
+                particles[i].startSize=.12f+.26f*u;particles[i].startColor=new Color(.62f,.22f,.88f,.16f*Mathf.Sin(age*Mathf.PI));
+                particles[i].startLifetime=10;particles[i].remainingLifetime=10;particles[i].rotation=i*41+time*30;
+            }
+            smoke.SetParticles(particles,particles.Length);smoke.Pause();
+        }
+        public void Dispose(){Object.DestroyImmediate(soft);Object.DestroyImmediate(flow);Object.DestroyImmediate(core);}
+    }

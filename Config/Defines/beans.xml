@@ -457,11 +457,11 @@
         <var name="EventMoveSpeed" type="float"/>
         <!-- 地图预置可射桶；数组索引在本地图及版本内作为稳定身份。 -->
         <var name="Barrels" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
-        <!-- 每轮开场从固定点位中随机选择不重复位置，摆放临时武器。 -->
         <var name="BarrelDropSeconds" type="float"/>
         <var name="BarrelPullRadius" type="float"/>
         <var name="BarrelPullSpeed" type="float"/>
         <var name="BarrelHealth" type="int"/>
+        <!-- 每轮开场从固定点位中随机选择不重复位置，摆放临时武器。 -->
         <var name="WeaponSpawnPoints" type="(array#sep=;),(ArcadeLayoutEntryConfig#sep=|)"/>
         <var name="WeaponSpawnCount" type="int"/>
         <!-- 首次保持开战短等待，后续投放使用独立长间隔，避免集中在开场。 -->

@@ -212,7 +212,7 @@ namespace Boot
 #if UNITY_EDITOR
             _actualPlayMode = _editorPlayMode;
 #elif FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES
-            // Android 完整测试包自带完整 YooAsset 资源，不读取 Host 配置，也不访问资源服务器。
+            // Android 完整测试包只从内置资源启动；服务器地址供进入游戏后的主动更新检查使用。
             _actualPlayMode = ResourcePlayMode.OfflinePlayMode;
 #else
             _actualPlayMode = ResourcePlayMode.HostPlayMode;
@@ -220,16 +220,10 @@ namespace Boot
         }
 
         /// <summary>
-        /// Host 模式启动前加载资源地址；Android 从 APK StreamingAssets 异步读取，失败直接终止本轮启动。
+        /// 读取包内默认地址及玩家覆盖地址；Host 配置失败阻断启动，完整内置模式仅停用远端检查。
         /// </summary>
         private async UniTask<BootOperationResult> LoadBootstrapConfigAsync()
         {
-            if (_actualPlayMode != ResourcePlayMode.HostPlayMode)
-            {
-                _resourceServer = "http://127.0.0.1:8000";
-                return null;
-            }
-
             try
             {
                 var config = await BootstrapConfig.LoadAsync();
@@ -238,6 +232,14 @@ namespace Boot
             }
             catch (Exception e)
             {
+                if (_actualPlayMode == ResourcePlayMode.OfflinePlayMode)
+                {
+                    // 地址读取失败不影响内置资源启动，也不能沿用上轮地址或手机自身的回环地址。
+                    _resourceServer = string.Empty;
+                    Debug.LogWarning($"[ResourceBoot] 内置模式资源更新地址读取失败：{e.GetType().Name}；继续使用内置资源。");
+                    return null;
+                }
+
                 Debug.LogException(e);
                 return Fail(
                     BootFailureCode.BootstrapConfigInvalid,
@@ -314,8 +316,8 @@ namespace Boot
 
         private async UniTask<BootOperationResult> InitializeOfflineMode()
         {
-            if (string.IsNullOrWhiteSpace(_resourceServer))
-                _resourceServer = "http://127.0.0.1:8000";
+            // 只读取本地配置，不联网、不切换资源来源；更新检查沿用设置页保存的服务器地址。
+            await LoadBootstrapConfigAsync();
             SetStatus("离线模式...");
 
             var parameters = new OfflinePlayModeParameters();

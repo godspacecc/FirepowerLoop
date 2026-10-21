@@ -1,0 +1,894 @@
+[
+  {
+    "guid": "01d740a0f81fe384298232d9834a67f0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground01_N.png"
+  },
+  {
+    "guid": "03a7d9197705a7943916be1c852fdf34",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_001_mask.png"
+  },
+  {
+    "guid": "0442ef41cd8417f479720b84b7ef3a1d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse07.tif"
+  },
+  {
+    "guid": "047c41307fc06fb42b530e3b8ba40081",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation"
+  },
+  {
+    "guid": "0778e6dd6c30c2f4ea313483de520e73",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse06_Trans.png"
+  },
+  {
+    "guid": "07e4e5b34daac5a44a3832e4ff902b20",
+    "path": "Assets/ALP_Assets/Core/Scripts/Global Lighting/Editor/ALP_GlobalLightingWindow.cs"
+  },
+  {
+    "guid": "09e0ec49915b1c94cabe1c5747809661",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/ForestSticks01.tif"
+  },
+  {
+    "guid": "0c14dbca19692a440a729edc1f135058",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree04_Optimized.fbx"
+  },
+  {
+    "guid": "0e8eb0dabefc77c4e9707f12818ea36a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/FlowerGrass01.fbx"
+  },
+  {
+    "guid": "0fe645f338adae342b085012c1688ef1",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD02_N.png"
+  },
+  {
+    "guid": "10414ca28aee3eb41b87a0133b46dda3",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest02.tif"
+  },
+  {
+    "guid": "1041ea1487cc8a24da1f4076efb2715f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass01_Dry.tga"
+  },
+  {
+    "guid": "10930d529ad3e3249ae1e9e994dbc204",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass02Dry.tga"
+  },
+  {
+    "guid": "11412e5b3e91d864da3289ebb279fc36",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/GrassForest03.tga"
+  },
+  {
+    "guid": "1229be6f163eaf24e8eb2f9093501823",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/GrassPlant04.fbx"
+  },
+  {
+    "guid": "13195df61a2fd8d4db7294f886393040",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestStickGroup01.fbx"
+  },
+  {
+    "guid": "13e9ed28f4cffa241860b9fede3b7b46",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes02.fbx"
+  },
+  {
+    "guid": "1421842f1a429d84796a825afc51e9f0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryCaneMUD02_Layer.terrainlayer"
+  },
+  {
+    "guid": "17eb0325ae10f6d449b0db1914e38b45",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundGrass01_Layer.terrainlayer"
+  },
+  {
+    "guid": "18cb50a63ade4574ca3320c8680b9175",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/ALP_ControllerStyle.cs"
+  },
+  {
+    "guid": "1b1a0b91e8ad60f4dba9bbe487c4d035",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest01_N.png"
+  },
+  {
+    "guid": "1bbf5a279219c564699c6b9d9119ad00",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree05_Optimized.fbx"
+  },
+  {
+    "guid": "1cd0b3ad52f285540b68851c42e50702",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryLeavesYellow02.terrainlayer"
+  },
+  {
+    "guid": "1d807c679adfe8742b50d53e7603443c",
+    "path": "Assets/ALP_Assets/Core/Scripts/Global Lighting/ReadMe.md"
+  },
+  {
+    "guid": "1ec0199934445b4479ee631ec5940a38",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryGreenGrass01_N.png"
+  },
+  {
+    "guid": "207fca6c38023b842a7f1495d59271bd",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD02.tif"
+  },
+  {
+    "guid": "22c5c536f921810418f3517fdd1a4326",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/DryLeaves01.png"
+  },
+  {
+    "guid": "2337a9c17eea39747b9557cca3e6208d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/GrassPlant05.fbx"
+  },
+  {
+    "guid": "24f306655c58e8149b3f4c9388744ba9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryGreenGrass01.tif"
+  },
+  {
+    "guid": "274f557a2a7f23c47bd3d8cc1b905fe9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/ForestSticks01_N2.png"
+  },
+  {
+    "guid": "27c0ed6d14319d4478ce5bc2419b3b56",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree02_Optimized.fbx"
+  },
+  {
+    "guid": "281158010bd658749a2fe6fcda10d5ad",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/Ground02_Layer.terrainlayer"
+  },
+  {
+    "guid": "28c641f04080ae046a0568fc9a712f3b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundPatchCracked01.tif"
+  },
+  {
+    "guid": "2b3c88c6b4c1e964f8ebdcf2edb0b65c",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse03.tif"
+  },
+  {
+    "guid": "2be2370d6746d024ea6b1e3cc0359a6e",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_"
+  },
+  {
+    "guid": "2de8351d56d3a4f4680ce1c1d2156772",
+    "path": "Assets/ALP_Assets/Core/Scripts/Global Lighting/Editor/ALP_LightsSettings.cs"
+  },
+  {
+    "guid": "2e29b905fb438af43bbf7752783a2a0e",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse04_N.png"
+  },
+  {
+    "guid": "2ebc6c503be6b9a4a9d4ceb829653e8a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes01.fbx"
+  },
+  {
+    "guid": "30bd46be528eca54e907b2dea00ae74b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree03_1_Optimized.fbx"
+  },
+  {
+    "guid": "30c90c3f17585a948ab3cb07939e8781",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundPatchCracked01_Layer.terrainlayer"
+  },
+  {
+    "guid": "30de4efd36fb0f64ebfe957dc3ecd669",
+    "path": "Assets/ALP_Assets/URP Manual.rtf"
+  },
+  {
+    "guid": "3103679943f17654ba4ea168d94a5d90",
+    "path": "Assets/ALP_Assets/_Guide URP,HDRP.rtf"
+  },
+  {
+    "guid": "326c5a2cf5542824b969aa2d065bf2f0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD03.tif"
+  },
+  {
+    "guid": "35c00128ac9ae7943be636c3d9a38b9e",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestStick01Group.fbx"
+  },
+  {
+    "guid": "36ddb091b467c7d47abfa2b3d8d6244b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/DrySwampGrass.tif"
+  },
+  {
+    "guid": "36f134f332fcb71438aafca1e1673ead",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/ALP_ControllerGlobal.asmdef"
+  },
+  {
+    "guid": "37e585646becac343994b8b1b26f88ae",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryGreenGrass01_mask.png"
+  },
+  {
+    "guid": "3820beced1ace7a4e905036496e26b5b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundPatchCracked01_N.png"
+  },
+  {
+    "guid": "3883f532efd9f3a4fb0e4e21862f409f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryGreenGrass01.terrainlayer"
+  },
+  {
+    "guid": "3936c17f931244b4799af9670d461979",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground02_N.png"
+  },
+  {
+    "guid": "3980147ad6b649146a7e42b906210978",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/ForestSticks01N.png"
+  },
+  {
+    "guid": "3b16dabd93820df4585ae30a5012c42e",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_001.tif"
+  },
+  {
+    "guid": "3be84bf8189c6cd458ae0ece3d1a0ce7",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree03_Optimized.fbx"
+  },
+  {
+    "guid": "3c09e5c39f58d7b4e90438dbe7ff7e20",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/CustomBrush/CustomBrushPach01.brush"
+  },
+  {
+    "guid": "3c2430da5d092d6438cd4df08227f941",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround01_mask.png"
+  },
+  {
+    "guid": "3c79dddcbbbd25743bde216bb9702a41",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes"
+  },
+  {
+    "guid": "3e69b631f9d66cb4e9147235a7cc4fe3",
+    "path": "Assets/ALP_Assets/Core/Shaders/Shaders HDRP 12x.unitypackage"
+  },
+  {
+    "guid": "3ec058a79cad3be448e3f47b8e31f08f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCane01.tif"
+  },
+  {
+    "guid": "3f28b43274ace03479cf9b2602af8dc0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Flowers01.tga"
+  },
+  {
+    "guid": "3f66d33bac708ba43b3b1e203c269d81",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround01_N.png"
+  },
+  {
+    "guid": "3f7c8a4c8c21ba2418140d8a9ff062f5",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD01_mask.png"
+  },
+  {
+    "guid": "41120ae43a6a8014980766720e88f4e8",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse07_Trans.png"
+  },
+  {
+    "guid": "41c704c189d170c4db5e19b15b81fa12",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest01_mask.png"
+  },
+  {
+    "guid": "428c5d19a625e914d9e38355739f40c9",
+    "path": "Assets/ALP_Assets"
+  },
+  {
+    "guid": "44a6378d5f6fea54ea44a4da7186dc70",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/DrySwampGrass_mask.png"
+  },
+  {
+    "guid": "452f2b72e6d08ca4a90b98c715646270",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse05_Trans.png"
+  },
+  {
+    "guid": "46092338356a79344be440a5cf1741d3",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/Grass_001_Layer.terrainlayer"
+  },
+  {
+    "guid": "4712c9889ba2eaf4a99f8a9f894a579f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForestLeaves01_mask.png"
+  },
+  {
+    "guid": "4a9b8b3c20b427b47b0123e5c4c6db6d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass03.tga"
+  },
+  {
+    "guid": "4aafbe58e859eea40918416a04594f43",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_001_N.png"
+  },
+  {
+    "guid": "4b83b38f087e4ed47afc44ee79aa16f9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCane01_mask.png"
+  },
+  {
+    "guid": "4bc2c13c15a979e40957ce651917f9df",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant02.png"
+  },
+  {
+    "guid": "4d2a505b5e4c61b4f88105a5312cf1e0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant02_N.png"
+  },
+  {
+    "guid": "4d351e781971501449eac4bace845d85",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree02Group_Optimized.fbx"
+  },
+  {
+    "guid": "4dfbd6f794ad93041a5b606929b5b77f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundGrass01_N.png"
+  },
+  {
+    "guid": "4e128383758dec34383af166e8266876",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse01_Trans.png"
+  },
+  {
+    "guid": "4e76fcb916d65b84b84b2fce712348bf",
+    "path": "Assets/ALP_Assets/Core/Shaders/Shaders HDRP 17x.unitypackage"
+  },
+  {
+    "guid": "4f22a68ccdafd614faa966ecbc5bcc20",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundGrass01_mask.png"
+  },
+  {
+    "guid": "4fd24405dee864c4db7a47b44935f0ba",
+    "path": "Assets/ALP_Assets/Core/Scripts/GUI"
+  },
+  {
+    "guid": "50348c2b2e4e749448bf600ac0fa883d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround02_N.png"
+  },
+  {
+    "guid": "50706c8e457a2144c9435b760c8585e6",
+    "path": "Assets/ALP_Assets/HDRP.unitypackage"
+  },
+  {
+    "guid": "516d2a40c64cd704a9ff6eb4b2d887b0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers"
+  },
+  {
+    "guid": "52d01ad019ded164f818b83335fc568b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/GrassPlant03.fbx"
+  },
+  {
+    "guid": "53deac3f582d2b148a009da05f7d0151",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/GrassForest01_Dry.tga"
+  },
+  {
+    "guid": "545c19f3958e0f343961df7a0054a987",
+    "path": "Assets/ALP_Assets/Core/Scripts/Global Lighting"
+  },
+  {
+    "guid": "5482b58da69246745b02215c4f418b23",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCane01_N.png"
+  },
+  {
+    "guid": "55482c2b6df400c44a8d4b5224db4e95",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Flowers02.tga"
+  },
+  {
+    "guid": "556392b48b01fb54297b78b7628331ee",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryCaneMUD01_Layer.terrainlayer"
+  },
+  {
+    "guid": "56200da27340560419499f9464c41c47",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow02_mask.png"
+  },
+  {
+    "guid": "5728b4d6868f059498705c9f104d34fe",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant05.png"
+  },
+  {
+    "guid": "5806eb48870f168408e0405e7805beec",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow01.tif"
+  },
+  {
+    "guid": "584cede5f90988248978a90740d35520",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree05_Optimized.fbx"
+  },
+  {
+    "guid": "58ff593425fd2b64b8f269cfabc96b31",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/GrassPlant02.fbx"
+  },
+  {
+    "guid": "593e35cbf5b7041418b90da873b4d520",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse03_1_N.png"
+  },
+  {
+    "guid": "59bcfc58b7de85c43bdf4a70e8fac11a",
+    "path": "Assets/ALP_Assets/Core/Shaders"
+  },
+  {
+    "guid": "5ba959e906f6796448f1ce711d17dec2",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass04.tga"
+  },
+  {
+    "guid": "5cbf96c8002391143a81f31b7928116a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse01.tif"
+  },
+  {
+    "guid": "5e3e84c892431154e847443ebdcbbab3",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/GrassForest01.tga"
+  },
+  {
+    "guid": "5f6411104c2847c46a56a175ab6ef00d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant05_Trans.png"
+  },
+  {
+    "guid": "5fdb15840fdae204d8c15cedf573b8a0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround01.tif"
+  },
+  {
+    "guid": "605dd9296d81a71498637e92394cbc66",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree04_Optimized.fbx"
+  },
+  {
+    "guid": "60bc5f3d16a5ecd45b1350b99c4a0b1d",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/ALP_ControllerGlobal.cs"
+  },
+  {
+    "guid": "61863b6d80c04de4999c5931c35eb493",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/Editor"
+  },
+  {
+    "guid": "6758280f79f9cfc40a99347525c210b0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundPatchCracked01_mask.png"
+  },
+  {
+    "guid": "693e46435afc1a84ba99d58bf4370450",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse02_N.png"
+  },
+  {
+    "guid": "6a3a3a3fef77136499ede8d422720687",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_002_mask.png"
+  },
+  {
+    "guid": "6ba54b80920f7d941908ac57198b5075",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryLeavesYellow01.terrainlayer"
+  },
+  {
+    "guid": "6e9733dd5fdb26c45b728c0f37dc241b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_002.tif"
+  },
+  {
+    "guid": "6f81774edabc7ff418722779a0e82cab",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes07.fbx"
+  },
+  {
+    "guid": "6fa934209925cd747854ea9d2727cda4",
+    "path": "Assets/ALP_Assets/Core/Scripts/GUI/Editor"
+  },
+  {
+    "guid": "6fc4d89bcdc9c2c4789f6af14d436702",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Flowers03.tga"
+  },
+  {
+    "guid": "6fd3ffa5eef92cd4986fe0117d0dd35c",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/LeafDry01Group.fbx"
+  },
+  {
+    "guid": "701e28679e7673645a9a0f6f652c4113",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/CustomBrush/CustomBrushPach01.png"
+  },
+  {
+    "guid": "702da826e054d504ca40048802f7eb5a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundForest01_Layer.terrainlayer"
+  },
+  {
+    "guid": "70a2ae2aed702f041b7a044902f178d6",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/FlowerGrass03.fbx"
+  },
+  {
+    "guid": "71d1fd79b037e5640b9fd1d9b363faff",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassforest01.png"
+  },
+  {
+    "guid": "73a4a0a13d6dbe847af58a99d3a6bb5b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree01_Optimized.fbx"
+  },
+  {
+    "guid": "73b47bf4bddad4c40bb759f7d0668905",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundRoots01_Layer.terrainlayer"
+  },
+  {
+    "guid": "7606377bcdf462b4582b2307dc6ea74c",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround02_mask.png"
+  },
+  {
+    "guid": "77eca1e256aedad4daa096f74f203aa2",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree03_Optimized.fbx"
+  },
+  {
+    "guid": "787dc612ea3394043b69ee212cd03b61",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground01_mask.png"
+  },
+  {
+    "guid": "7a8ad42235dce594698b973efc3db20f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow02.tif"
+  },
+  {
+    "guid": "7afe3a3ce750b15499a135728ad5160b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree06_1_Optimized.fbx"
+  },
+  {
+    "guid": "7b811b08ce31b7948822b17b2b301caf",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestStickS01.fbx"
+  },
+  {
+    "guid": "7d2f926ed37fcdf44afac1b6d29dfdd9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundRoots01_NRM.png"
+  },
+  {
+    "guid": "7d37611e35de10546be6e6d2d5d5010b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse06.tif"
+  },
+  {
+    "guid": "7e754fe118b389b4f8108bdded531866",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse08_N.png"
+  },
+  {
+    "guid": "83382ba490980b848a292dbfac2c8438",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryCane01_Layer.terrainlayer"
+  },
+  {
+    "guid": "833a76ce83d446b48aca0544f731e2c6",
+    "path": "Assets/ALP_Assets/Core/Scripts"
+  },
+  {
+    "guid": "86f14d78ee4ed7c4f90525f6cc5bb6c8",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller"
+  },
+  {
+    "guid": "871f479c43a4c2f4983e48791ecb563b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundForest02_Layer.terrainlayer"
+  },
+  {
+    "guid": "89381d9b6464e19419a92091de6058a2",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/Editor/ALP_ControllerGlobalEditor.cs"
+  },
+  {
+    "guid": "89405a2c3dc87364885a26047acc7b10",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundRoots01.tif"
+  },
+  {
+    "guid": "8b7091c168757114c98e83feef6069bb",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/CustomBrush"
+  },
+  {
+    "guid": "8c310cfe07e08a44583f3d95c4c01111",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures"
+  },
+  {
+    "guid": "8c6cb887a9cbbb84cb941286910f9b9d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree06_Optimized.fbx"
+  },
+  {
+    "guid": "8d1c5f8b0c802974082ea3c2095f40a5",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/Sand02_Layer.terrainlayer"
+  },
+  {
+    "guid": "8db9d4fa4f1f8294bbb132f997afc6d2",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassforest01_Trans.png"
+  },
+  {
+    "guid": "903a7742e3d14ee4495e7633ad04f423",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/Grass_002_Layer.terrainlayer"
+  },
+  {
+    "guid": "90957e1fdafc70343a1fb777c7659424",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/GrassForest02.tga"
+  },
+  {
+    "guid": "9233f5def0a2f0f468dd8aa51e253c94",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse04_Trans.png"
+  },
+  {
+    "guid": "93ef24e38f9792b47af164170da6820f",
+    "path": "Assets/ALP_Assets/Core/Scripts/GUI/Editor/ALP8310_ShaderDrawers.cs"
+  },
+  {
+    "guid": "96a3dac6b803ad04aa6ad4a46ae85562",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse_FlowerGrass01_Trans.png"
+  },
+  {
+    "guid": "982321b04042112469b3920a84712a88",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseFlowerGrass02.tif"
+  },
+  {
+    "guid": "986c4ff9cc7752640985a572195e45ca",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse02.tif"
+  },
+  {
+    "guid": "9910d5aaedbd37a429f295824ec8446f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse01_N.png"
+  },
+  {
+    "guid": "9b5f095b26217774fb554408deddb914",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant04_N.png"
+  },
+  {
+    "guid": "a0b913ce141439345b41e5758922742b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/PathGround02_Layer.terrainlayer"
+  },
+  {
+    "guid": "a42583685a291044da3b9872bef73dae",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground02.tif"
+  },
+  {
+    "guid": "a668bad11d983e04d93c68238b8e413d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest02_mask.png"
+  },
+  {
+    "guid": "a8441f6153a55be40b21bcd5a3a53283",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse_FlowerGrass01.tif"
+  },
+  {
+    "guid": "a8ad79b84a37151499bf85dd5b9b1c1f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest01.tif"
+  },
+  {
+    "guid": "a92d74b49989b654dbdae48c137e7d0b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass02.tga"
+  },
+  {
+    "guid": "a9e3f2baee7db3942942e2b990dbcf97",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree04Group_Optimized.fbx"
+  },
+  {
+    "guid": "ac1a9673398f44b4bb23e8cc0653170a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/PathGround02.tif"
+  },
+  {
+    "guid": "ac2cabce90949a641b6a476bebee10dd",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse08.tif"
+  },
+  {
+    "guid": "adc0e17296d04ec48b25647779bf9244",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse04.tif"
+  },
+  {
+    "guid": "b1774a3e31ce8254f860c3a3724de5d1",
+    "path": "Assets/ALP_Assets/Core"
+  },
+  {
+    "guid": "b1d370c0a98baa5498ef02bbb6d84dd0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse07_N.png"
+  },
+  {
+    "guid": "b1eeefbc1c9961340ab09064cb32a237",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes04.fbx"
+  },
+  {
+    "guid": "b3398d04766485948a616b2e72e254ba",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree02_Optimized.fbx"
+  },
+  {
+    "guid": "b374cce8a0ddf77408dd1e727226eab4",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground02_mask.png"
+  },
+  {
+    "guid": "b4d99160d8879224ba2e86d63a91c651",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/LeafDry01.fbx"
+  },
+  {
+    "guid": "b6bd896778dd51941b760b7006e497e7",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForestLeaves01_N.png"
+  },
+  {
+    "guid": "b6edf62bae6b17543bf1e868508dbe5a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseFlowerGrass04.png"
+  },
+  {
+    "guid": "b799570f1d290394792b20b16cc7b6c3",
+    "path": "Assets/ALP_Assets/Core/Scripts/Controller/Editor/ALP_ControllerGlobal.Editor.asmdef"
+  },
+  {
+    "guid": "b9b036b14ddff3f47bc82fac05c24217",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant05_N.png"
+  },
+  {
+    "guid": "ba8c6e6469426874fbb52deb67e95c83",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass01.tga"
+  },
+  {
+    "guid": "bac88d85982c539468a74dfa83e71991",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow02_N.png"
+  },
+  {
+    "guid": "bc90a6748508f4541b1e4e3c3bba2fb1",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse05.tif"
+  },
+  {
+    "guid": "bcf3f4d8dab230a41a7643aff422f806",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundRoots01_mask.png"
+  },
+  {
+    "guid": "bd9f3d1f1b68cab4d8f8bd2f8fcb6736",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse03_N.png"
+  },
+  {
+    "guid": "be909243a0aea164e8dd16baf6630327",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD01.tif"
+  },
+  {
+    "guid": "bf92c766307591749b4b0a81652858dc",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures"
+  },
+  {
+    "guid": "bfbdfd46f6bef1248b11b02592aea7fb",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundGrass01.tif"
+  },
+  {
+    "guid": "c05186026f06b064e8f841145a086a2a",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/Ground01_Layer.terrainlayer"
+  },
+  {
+    "guid": "c2f9895e51207c9428b70aa97f0cb399",
+    "path": "Assets/ALP_Assets/URP.unitypackage"
+  },
+  {
+    "guid": "c3d470418b4601e4d84f649f1950f6f6",
+    "path": "Assets/ALP_Assets/Core/Shaders/ReadMe.md"
+  },
+  {
+    "guid": "c44d8bbaff6ed9045884d9d39d231216",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/PathGround01_Layer.terrainlayer"
+  },
+  {
+    "guid": "c8c9319be19491d4f9dc30eb5affdb1d",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/billboards_.fbx"
+  },
+  {
+    "guid": "ceb66b702988aa94d9f8f3affaf21454",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD02_mask.png"
+  },
+  {
+    "guid": "ced970bed4e118940af8cbc7e68c3678",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree03Group_Optimized.fbx"
+  },
+  {
+    "guid": "d1222890a83fcb743b57619436fce79b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes03.fbx"
+  },
+  {
+    "guid": "d1abdff092893e7458603b3d3857c445",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassPlant04.png"
+  },
+  {
+    "guid": "d317bd5be5bb29d48b18ac5e58cfaf9e",
+    "path": "Assets/ALP_Assets/Core/Scripts/Global Lighting/Editor"
+  },
+  {
+    "guid": "d4002a1fcfdf20e44a472781201fc401",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse06_N.png"
+  },
+  {
+    "guid": "d5f5785e8134e5149875ce63bc6971a7",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Ground01.tif"
+  },
+  {
+    "guid": "d65281f8861d39c4baa98ec85db42311",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse05_N.png"
+  },
+  {
+    "guid": "d6a02a0905533f046a876a90a45efffb",
+    "path": "Assets/ALP_Assets/Core/Shaders/Shaders HDRP 14x.unitypackage"
+  },
+  {
+    "guid": "d706739a567ddea4ca9255a65121f5d4",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassforest01_N.png"
+  },
+  {
+    "guid": "d96dbcab0c65fed40bc8f5cb1cfc8db2",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures"
+  },
+  {
+    "guid": "d989b9ab360fa0640a2d22ea36aeb4d5",
+    "path": "Assets/ALP_Assets/Core/Scripts/GUI/Editor/ALP8310_ShaderGUI.cs"
+  },
+  {
+    "guid": "daf69b2b067237040af1cc5154241347",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow01_mask.png"
+  },
+  {
+    "guid": "dbbef0e886136854d872278b165733cf",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Grass_002_N.png"
+  },
+  {
+    "guid": "dc157e88c1f5eb3448837bcd05f419e9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse02_trans.png"
+  },
+  {
+    "guid": "dc860673a9a7edd4eb3f66cb11fbb6c0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/DrySwampGrass_N.png"
+  },
+  {
+    "guid": "dcf2e9c39c37cc5448e60ca31a26f87b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundDryCaneMUD03_Layer.terrainlayer"
+  },
+  {
+    "guid": "ddef24cebabeb6a448abfcb28d204550",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/billboards_.tga"
+  },
+  {
+    "guid": "df3a3ff186a50b64fab4df64c6ef4828",
+    "path": "Assets/ALP_Assets/Core/Shaders/Shaders URP 14x-17x.unitypackage"
+  },
+  {
+    "guid": "e01ffa3f81ea9a04f96d2d276fcc7edd",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseGrassforest01_S.png"
+  },
+  {
+    "guid": "e16c9a701b625474bb5fd131612b6524",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/DryLeaves01_N.png"
+  },
+  {
+    "guid": "e225f312f23338547bff099dac1c4be9",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree01_Optimized.fbx"
+  },
+  {
+    "guid": "e2719ddba153115409ee0dade5a1139f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/FlowerGrass02.fbx"
+  },
+  {
+    "guid": "e4fb864aff69c914b8fa3171251d8d88",
+    "path": "Assets/ALP_Assets/Tree Creator for HDRP,URP.rtf"
+  },
+  {
+    "guid": "e628d8d97adceda4e9ba2901909b46a3",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/ForestTree01Group_Optimized.fbx"
+  },
+  {
+    "guid": "e66fc14890a079a498d043c92e39e6fc",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/DrySwampGrass_Layer.terrainlayer"
+  },
+  {
+    "guid": "e76fcd5dd65b99542919c20b5cd67316",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryLeavesYellow01_N.png"
+  },
+  {
+    "guid": "e86e2389368f13740b40236021457483",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/MapleSpringTree06_2_Optimized.fbx"
+  },
+  {
+    "guid": "ea5b7c42b16cb5346b4c7751f32b398b",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse08_Trans.png"
+  },
+  {
+    "guid": "edff85ebeae62ec4f8b14b3609d2dc76",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/Layers/GroundForestLeaves01_Layer.terrainlayer"
+  },
+  {
+    "guid": "ee068e907ab0018499b6df926d90938c",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuseFlowerGrass03.png"
+  },
+  {
+    "guid": "eec1633fad31a1e42a33bcbe9c7d2dab",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GrassTextures/Grass02Dry_02.tga"
+  },
+  {
+    "guid": "f046c6ff360047642a704ae3a293298f",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundDryCaneMUD01_N.png"
+  },
+  {
+    "guid": "f127c17830b50364c8c6749d30e45d60",
+    "path": "Assets/ALP_Assets/HDRP Manual.rtf"
+  },
+  {
+    "guid": "f439d919cf08e9a4f853a86d8ca4b1ca",
+    "path": "Assets/ALP_Assets/Built-in Old Version TreeCreator.unitypackage"
+  },
+  {
+    "guid": "f5ba551c0a3d06e4cb6678c05b28f263",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/FlowerGrass04.fbx"
+  },
+  {
+    "guid": "f7d00b4a23f917a4f8a60fca0945cdc3",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Bushes05.fbx"
+  },
+  {
+    "guid": "f84d3420540f4b04c97ea8ae6a89fc1e",
+    "path": "Assets/ALP_Assets/Core/Shaders/Shaders URP 12x.unitypackage"
+  },
+  {
+    "guid": "f8c7360ed8aa69f4cb6808c718abf9d4",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse03_Trans.png"
+  },
+  {
+    "guid": "f95673fa163a9a14f927071925cd4a9e",
+    "path": "Assets/ALP_Assets/Core/Shaders/Change Log.md"
+  },
+  {
+    "guid": "fa87120ff2e4af844a27da57d5fbb143",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForestLeaves01.tif"
+  },
+  {
+    "guid": "fd0f8695ec003f745b69d80d35840776",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/_Vegetation/_Meshes/Textures/diffuse03_1.tif"
+  },
+  {
+    "guid": "fe943e264af532e429cb433497e03ca0",
+    "path": "Assets/ALP_Assets/Nature Package - Forest Environment_/GroundTextures/GroundForest02_N.png"
+  }
+]

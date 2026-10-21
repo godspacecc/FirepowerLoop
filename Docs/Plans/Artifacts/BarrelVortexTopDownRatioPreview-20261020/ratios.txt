@@ -1,0 +1,6 @@
+Player measured height=1.761965m
+Barrel body height=0.8809823m (0.5 x player height)
+Vortex core outer diameter=3.523929m (2 x player height)
+Purple fog coverage approximately 1.5 x core diameter; saturated violet with clear barrel mouth.
+Pitch=72 degrees
+Preview only; no gameplay/config edits.

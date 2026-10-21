@@ -1,0 +1,8 @@
+# 本地采样帧与重复辅助片段；保留最新动画、关键帧与完整脚本。
+spiral-frame-*.png
+burst-frame-*.png
+Burst.cs.txt
+capture.txt
+gameplay-lens.png
+ratio-side-comparison.png
+ratios.txt
