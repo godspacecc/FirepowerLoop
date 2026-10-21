@@ -1364,5 +1364,16 @@
   "ui.arcade.product.arcade.weapon.flamethrower.name": "Flamethrower",
   "ui.arcade.hud.icon.flamethrower": "FL",
   "ui.arcade.product.arcade.powerup.skull.small.name": "Red Skull Power",
-  "ui.arcade.product.arcade.powerup.skull.large.name": "Purple Skull Power"
+  "ui.arcade.product.arcade.powerup.skull.large.name": "Purple Skull Power",
+  "ui.arcade.details.brand": "FIREPOWERLOOP",
+  "ui.arcade.details.score": "RUN SCORE",
+  "ui.arcade.details.arenas": "ARENAS CLEARED",
+  "ui.arcade.details.lives": "LIVES LEFT",
+  "ui.arcade.details.gold": "RUN GOLD",
+  "ui.arcade.details.continuable": "CONTINUE",
+  "ui.arcade.details.resume_hint": "Continue from your saved progress",
+  "ui.arcade.details.coop": "CO-OP",
+  "ui.arcade.details.coop_hint": "Both players must be ready to continue",
+  "ui.arcade.details.confirmed": "CONFIRMED",
+  "ui.arcade.details.pending_confirmation": "PENDING"
 }

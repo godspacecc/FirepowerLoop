@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using QFramework;
@@ -16,6 +17,8 @@ namespace Game
         private bool operationPending;
         /// <summary>双人准备与结果由服务器快照驱动，不读取单人存档。</summary>
         private bool onlineMode;
+        /// <summary>上一次默认联机说明；语言切换只替换默认文案，不覆盖操作错误或放弃确认。</summary>
+        private string shownOnlineHint;
         /// <summary>入口请求版本；显示、隐藏或卸载使上一轮资源准备失效，同一 View 重开也不复用旧请求。</summary>
         private int operationGeneration;
         private ArcadeResumeUI UI => BaseUI as ArcadeResumeUI;
@@ -103,7 +106,13 @@ namespace Game
             // 场内安全节点没有后方菜单，不能只关闭唯一的恢复入口。
             RefreshCloseButton();
             onlineMode = this.GetSystem<OnlineArcadeRunSystem>().Snapshot.HasRun;
-            if (onlineMode) { RefreshOnline(); return; }
+            if (onlineMode)
+            {
+                shownOnlineHint = null;
+                Set(UI.TextMessage, string.Empty);
+                RefreshOnline();
+                return;
+            }
             ArcadeRunSaveData snapshot = this.GetModel<ArcadeRunModel>().Current;
             selectionMode = snapshot == null;
             Render(snapshot);
@@ -136,6 +145,11 @@ namespace Game
             if (UI == null) return;
             RefreshCloseButton();
             UI.ResumeDetails.SetActive(!selectionMode);
+            UI.SoloStats.SetActive(!selectionMode);
+            UI.OnlinePlayers.SetActive(false);
+            Set(UI.TextPlayerNames, string.Empty);
+            Set(UI.TextPlayerScores, string.Empty);
+            Set(UI.TextPlayerStates, string.Empty);
             UI.BtnOnline.gameObject.SetActive(false);
             UI.BtnSettle.interactable = !operationPending;
             UI.BtnAbandon.interactable = !operationPending;
@@ -149,19 +163,26 @@ namespace Game
                 Set(UI.TextSummary, string.Empty);
                 Set(UI.TextRewards, string.Empty);
                 Set(UI.TextMessage, string.Empty);
+                Set(UI.TextArenaCount, string.Empty);
+                Set(UI.TextLives, string.Empty);
+                Set(UI.TextGold, string.Empty);
                 SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
                 return;
             }
             if (snapshot == null) return;
             current = snapshot.Clone();
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
-            Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome)) : Loc.T("ui.arcade.resume.summary", current.CompletedArenaCount, current.RemainingLives, current.RunGold));
-            Set(UI.TextRewards, Loc.T("ui.arcade.hud.score", current.Score));
-            Set(UI.TextMessage, current.RoundCheckpoint is { } round
+            Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome))
+                : Loc.T("ui.arcade.details.continuable"));
+            Set(UI.TextRewards, FormatDetailScore(current.Score));
+            Set(UI.TextArenaCount, current.CompletedArenaCount.ToString("D2", CultureInfo.InvariantCulture));
+            Set(UI.TextLives, current.RemainingLives.ToString("D2", CultureInfo.InvariantCulture));
+            Set(UI.TextGold, FormatDetailScore(current.RunGold));
+            Set(UI.TextMessage, current.HasResult ? string.Empty : current.RoundCheckpoint is { } round
                 ? Loc.T("ui.arcade.island.resume", round.RoundNumber, Loc.T("ui.arcade.theme." + round.ArenaConfigNumber))
                 : current.IslandRoundCheckpoint is { } checkpoint
                 ? Loc.T("ui.arcade.island.resume", checkpoint.RoundNumber, Loc.T(ArcadeIslandLayout.GetNameKey(checkpoint.RoundNumber)))
-                : string.Empty);
+                : Loc.T("ui.arcade.details.resume_hint"));
         }
 
         /// <summary>点击开始/继续时检查已由 Boot 准备的资源并提交街机流程；旧请求不得影响新窗口。</summary>
@@ -380,9 +401,32 @@ namespace Game
             UI.BtnAbandon.gameObject.SetActive(!victory);
             UI.BtnAbandon.interactable = idle;
             UI.BtnOnline.gameObject.SetActive(false);
-            Set(UI.TextSummary, string.Join("\n", snapshot.Players.Select(p => p.DisplayName + "  " + Loc.T(p.Ready || p.ChallengeReady ? "ui.arcade.online.ready" : "ui.arcade.online.not_ready"))));
-            Set(UI.TextRewards, string.Join("\n", snapshot.Players.Select(p => p.DisplayName + "  " + Loc.T("ui.arcade.hud.score", p.Score))));
+            RenderOnlineDetails(snapshot, victory);
         }
+
+        /// <summary>复用详情框展示双方权威分数与准备/结果确认状态；与单人指标互斥，不改变联机规则。</summary>
+        private void RenderOnlineDetails(OnlineArcadeRunClientSnapshot snapshot, bool victory)
+        {
+            UI.SoloStats.SetActive(false);
+            UI.OnlinePlayers.SetActive(true);
+            Set(UI.TextArenaCount, string.Empty);
+            Set(UI.TextLives, string.Empty);
+            Set(UI.TextGold, string.Empty);
+            Set(UI.TextSummary, Loc.T(victory ? "ui.arcade.result.victory" : "ui.arcade.details.coop"));
+            Set(UI.TextRewards, FormatDetailScore(snapshot.Players.Sum(p => p.Score)));
+            Set(UI.TextPlayerNames, string.Join("\n", snapshot.Players.Select(p => p.DisplayName.Replace("\r", " ").Replace("\n", " "))));
+            Set(UI.TextPlayerScores, string.Join("\n", snapshot.Players.Select(p => FormatDetailScore(p.Score))));
+            Set(UI.TextPlayerStates, string.Join("\n", snapshot.Players.Select(p => Loc.T(victory
+                ? p.SettlementConfirmed ? "ui.arcade.details.confirmed" : "ui.arcade.details.pending_confirmation"
+                : p.Ready || p.ChallengeReady ? "ui.arcade.online.ready" : "ui.arcade.online.not_ready"))));
+            var hint = victory ? string.Empty : Loc.T("ui.arcade.details.coop_hint");
+            if (string.IsNullOrEmpty(UI.TextMessage.text) || UI.TextMessage.text == shownOnlineHint)
+                Set(UI.TextMessage, hint);
+            shownOnlineHint = hint;
+        }
+
+        /// <summary>详情分数使用稳定的千位分组；完整数值始终来自当前快照。</summary>
+        private static string FormatDetailScore(long score) => score.ToString("N0", CultureInfo.InvariantCulture);
 
         /// <summary>资源与地图准备成功后才提交准备意图；取消准备不重复加载。</summary>
         private async UniTask SetOnlineReadyAsync(bool challenge)

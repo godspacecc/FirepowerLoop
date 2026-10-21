@@ -61,73 +61,12 @@ public static class UnifiedMainMenuAuthoring
         return "Start 主菜单引用已生成";
     }
 
+    /// <summary>复用已确认的详情制作入口，避免旧工具重新覆盖正式样式。</summary>
     public static string ApplyDialog()
     {
-        if (EditorApplication.isPlaying) throw new InvalidOperationException("请先退出运行模式");
-        var root = PrefabUtility.LoadPrefabContents(DialogPath);
-        try
-        {
-            var view = root.GetComponent<ArcadeResumeUI>();
-            var board = root.transform.Find("SafeContent/ArtworkBoard");
-            var fit = board.GetComponent<AspectRatioFitter>();
-            if (fit != null) Object.DestroyImmediate(fit);
-            Rect((RectTransform)board, new Vector2(.5f,.5f), new Vector2(.5f,.5f), Vector2.zero, new Vector2(760,580), new Vector2(.5f,.5f));
-            var plate = board.GetComponent<Image>(); plate.sprite = null; plate.color = new Color(.055f,.065f,.075f,1);
-            root.GetComponent<Image>().color = new Color(0,0,0,.72f);
-            foreach (var name in new[] { "Brand", "Subtitle", "SoloTitle", "SoloCaption", "OnlineTitle", "OnlineCaption", "IsolationHint" })
-                board.Find(name).gameObject.SetActive(false);
-            // 保留旧双人按钮与图集引用，但弹窗不再显示或绑定第二个模式入口。
-            view.BtnOnline.gameObject.SetActive(false);
-            var title = board.Find("Title").GetComponent<TextMeshProUGUI>();
-            var localization = title.GetComponent<LocalizedText>();
-            if (localization != null) Object.DestroyImmediate(localization);
-            title.fontSharedMaterial = title.font.material;
-            title.fontSize = 42; title.fontSizeMax = 42; title.text = "本局进度";
-            title.alignment = TextAlignmentOptions.Left;
-            Place(title.transform, 42, 28, 600, 60);
-            root.GetComponent<ReferenceCollector>().Add("DialogTitle", title);
-            Place(view.BtnClose.transform, 674, 26, 48, 48);
-            var closeImage = (Image)view.BtnClose.targetGraphic;
-            closeImage.sprite = null; closeImage.color = new Color(.22f,.23f,.24f);
-            Place(view.ResumeDetails.transform, 42, 110, 676, 320);
-            view.ResumeDetails.GetComponent<Image>().color = Color.clear;
-            view.ResumeDetails.transform.Find("SavedTitle").gameObject.SetActive(false);
-            Place(view.TextSummary.transform, 10, 0, 656, 170, 676, 320);
-            view.TextSummary.fontSize = 30; view.TextSummary.fontSizeMax = 30; view.TextSummary.enableWordWrapping = true;
-            Place(view.TextRewards.transform, 10, 176, 656, 52, 676, 320);
-            view.TextRewards.fontSize = 28; view.TextRewards.fontSizeMax = 28;
-            Place(view.TextMessage.transform, 42, 356, 676, 70);
-            view.TextMessage.fontSize = 23; view.TextMessage.fontSizeMax = 23; view.TextMessage.enableWordWrapping = true;
-            view.BtnContinue.transform.SetParent(board, false);
-            view.BtnAbandon.transform.SetParent(board, false);
-            view.BtnSettle.transform.SetParent(board, false);
-            Place(view.BtnContinue.transform, 394, 470, 324, 66);
-            Place(view.BtnAbandon.transform, 42, 470, 324, 66);
-            Place(view.BtnSettle.transform, 218, 470, 324, 66);
-            foreach (var button in new[] { view.BtnContinue, view.BtnAbandon, view.BtnSettle })
-            {
-                var image = (Image)button.targetGraphic;
-                image.sprite = null;
-                image.color = button == view.BtnAbandon ? new Color(.33f,.14f,.12f) : new Color(.63f,.40f,.16f);
-                var label = button.GetComponentInChildren<TextMeshProUGUI>(true);
-                Rect(label.rectTransform, Vector2.zero, Vector2.one, Vector2.zero, Vector2.zero, new Vector2(.5f,.5f));
-                label.fontSize = 28; label.fontSizeMax = 28; label.color = new Color(.98f,.93f,.82f);
-            }
-            root.GetComponent<ReferenceCollector>().Sort();
-            PrefabUtility.SaveAsPrefabAsset(root, DialogPath);
-        }
-        finally { PrefabUtility.UnloadPrefabContents(root); }
-        UICodeSpawner.AutoUpdateUI(AssetDatabase.LoadAssetAtPath<GameObject>(DialogPath));
-        return "进度和结果弹窗引用已生成";
+        var author = typeof(UICodeSpawner).Assembly.GetType("ArcadeResumeDesignAuthoring", true);
+        return (string)author.GetMethod("Apply").Invoke(null, null);
     }
-
-    // 静态布局只在 Prefab 制作阶段保存，运行时 Controller 不复制这些坐标。
-    private static void Place(Transform transform, float x, float y, float width, float height, float parentWidth=760, float parentHeight=580)
-    {
-        Rect((RectTransform)transform, new Vector2(x/parentWidth,1-(y+height)/parentHeight),
-            new Vector2((x+width)/parentWidth,1-y/parentHeight), Vector2.zero, Vector2.zero, new Vector2(.5f,.5f));
-    }
-
     private static void Rect(RectTransform rect, Vector2 min, Vector2 max, Vector2 position, Vector2 size, Vector2 pivot)
     { rect.anchorMin=min; rect.anchorMax=max; rect.pivot=pivot; rect.anchoredPosition=position; rect.sizeDelta=size; }
 }

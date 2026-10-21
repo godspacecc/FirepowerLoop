@@ -1,0 +1,7 @@
+正式 ArcadeResume.prefab 的 Unity 编辑器渲染，使用示例数据；不是 AI 概念图，也不代表真实对局截帧。
+已检查单人进度、单人结果、双人准备、双人结果的中文与英文，1920x1080、2400x1080，共 16 张详情渲染，文字溢出 0。
+ArcadeEntryPresentationTests：14/14 通过。
+UnifiedMainMenuTests：22/24 通过；两项失败为 Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad、Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen。
+LoadingUICtrl 已有普通轮间切换交给黑幕的逻辑，本次详情改动未修改该文件。
+正式生成字段 18 个全部解析；新增固定本地化标签 5 个均与中文默认预览一致，英文键齐全；动态字段不挂 LocalizedText。
+只运行限定范围 EditMode 测试；未执行 Player Build，未提交。

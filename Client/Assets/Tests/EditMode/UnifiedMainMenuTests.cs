@@ -259,7 +259,7 @@ namespace Game.Tests
             var details = Object.FindObjectOfType<ArcadeResumeUI>(true);
             Assert.That(details, Is.Not.Null);
             Assert.That(details.TextSummary.text, Is.Not.Empty);
-            Assert.That(details.TextRewards.text, Does.Contain("12750"), "分数保留在详情框中");
+            Assert.That(details.TextRewards.text, Is.EqualTo("12,750"), "分数保留在详情框中");
             Assert.That(system.InspectPending().Data.RunId, Is.EqualTo(snapshot.RunId));
             Assert.That(preparation.Requests, Is.Empty);
         }
@@ -341,7 +341,7 @@ namespace Game.Tests
             architecture.SendEvent(new ArcadeRunChangedEvent(ArcadeRunPhase.Result, snapshot));
             var view = Object.FindObjectOfType<ArcadeResumeUI>(true);
             Assert.That(view, Is.Not.Null);
-            Assert.That(view.TextRewards.text, Does.Contain("97531"));
+            Assert.That(view.TextRewards.text, Is.EqualTo("97,531"));
             Assert.That(view.BtnSettle.gameObject.activeSelf, Is.True);
             Assert.That(view.BtnContinue.gameObject.activeSelf, Is.False);
             Assert.That(view.gameObject.activeSelf, Is.False);
@@ -398,7 +398,7 @@ namespace Game.Tests
             Invoke("OnContinueClick");
             var view = Object.FindObjectOfType<ArcadeResumeUI>();
             Assert.That(view, Is.Not.Null);
-            Assert.That(view.TextRewards.text, Does.Contain("56789"));
+            Assert.That(view.TextRewards.text, Is.EqualTo("56,789"));
             Assert.That(view.BtnSettle.gameObject.activeSelf, Is.True);
             Assert.That(view.BtnContinue.gameObject.activeSelf, Is.False);
         }

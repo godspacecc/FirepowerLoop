@@ -265,6 +265,92 @@ namespace Game.Tests
             Assert.That(typeof(ArcadeResumeUI).GetField("ResumeDetails"), Is.Not.Null);
         }
 
+        [Test]
+        public void DetailsRender_SeparatesScoreAndAllCheckpointStats()
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Path));
+            try
+            {
+                var view = instance.GetComponent<ArcadeResumeUI>();
+                var ctrl = new ArcadeResumeUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, view);
+                var saved = new ArcadeRunSaveData { Score = 12750, CompletedArenaCount = 4, RemainingLives = 2, RunGold = 280 };
+                typeof(ArcadeResumeUICtrl).GetMethod("Render", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, new object[] { saved });
+                var collector = instance.GetComponent<ReferenceCollector>();
+                foreach (var expected in new[] { ("TextArenaCount", "04"), ("TextLives", "02"), ("TextGold", "280") })
+                {
+                    var entry = collector.data.SingleOrDefault(item => item.key == expected.Item1);
+                    Assert.That(entry, Is.Not.Null, "详情数据必须独立显示：" + expected.Item1);
+                    Assert.That(((TMP_Text)entry.gameObject).text, Is.EqualTo(expected.Item2));
+                }
+                Assert.That(view.TextRewards.text, Is.EqualTo("12,750"));
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+
+        [Test]
+        public void DetailsPrefab_DecorationsHaveRenderersAndPrimaryActionKeepsItsButton()
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Path);
+            var view = prefab.GetComponent<ArcadeResumeUI>();
+            foreach (var graphic in prefab.GetComponentsInChildren<ArcadeResumeDecoration>(true))
+            {
+                Assert.That(graphic.GetComponent<CanvasRenderer>(), Is.Not.Null, graphic.name);
+                Assert.That(graphic.raycastTarget, Is.False, "装饰不能抢占按钮输入：" + graphic.name);
+            }
+            Assert.That(view.BtnContinue.targetGraphic.transform.IsChildOf(view.BtnContinue.transform), Is.True);
+            Assert.That(view.TextRewards.fontSizeMax, Is.GreaterThan(view.TextSummary.fontSizeMax));
+            Assert.That(view.BtnAbandon.GetComponent<Image>().color.a, Is.Zero, "放弃入口不能与继续入口同等醒目");
+            foreach (var button in new[] { view.BtnClose, view.BtnAbandon })
+            {
+                Assert.That(button.targetGraphic, Is.InstanceOf<TMP_Text>(), "透明按钮必须使用可见文字提供焦点反馈");
+                Assert.That(button.colors.selectedColor, Is.Not.EqualTo(button.colors.normalColor));
+            }
+        }
+
+        [Test]
+        public void DetailsOnlineToSoloResult_ResetsPlayerColumnsAndKeepsAuthoritativeStats()
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(Path));
+            try
+            {
+                var view = instance.GetComponent<ArcadeResumeUI>();
+                var ctrl = new ArcadeResumeUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, view);
+                var players = new[] {
+                    new OnlineArcadePlayerSnapshot(1, "玩家一\n名称", 2, 280, 0, 0, "", true, settlementConfirmed: true, score: 12750),
+                    new OnlineArcadePlayerSnapshot(2, "玩家二", 1, 50, 0, 0, "", false, score: 8340) };
+                var online = new OnlineArcadeRunClientSnapshot(true, 1, 1, 1, OnlineArcadeRunPhase.SafeCheckpoint,
+                    4, 5, "", players, OnlineArcadeOperationState.Idle, OnlineArcadeResultCode.Success);
+                var renderOnline = typeof(ArcadeResumeUICtrl).GetMethod("RenderOnlineDetails", BindingFlags.Instance | BindingFlags.NonPublic);
+                renderOnline.Invoke(ctrl, new object[] { online, false });
+                Assert.That(view.SoloStats.activeSelf, Is.False);
+                Assert.That(view.OnlinePlayers.activeSelf, Is.True);
+                Assert.That(view.TextRewards.text, Is.EqualTo("21,090"));
+                Assert.That(view.TextPlayerNames.text, Is.EqualTo("玩家一 名称\n玩家二"));
+                Assert.That(view.TextPlayerScores.text, Is.EqualTo("12,750\n8,340"));
+                Assert.That(view.TextPlayerStates.text, Is.EqualTo(Loc.T("ui.arcade.online.ready") + "\n" + Loc.T("ui.arcade.online.not_ready")));
+                view.TextMessage.text = "模拟操作错误";
+                renderOnline.Invoke(ctrl, new object[] { online, false });
+                Assert.That(view.TextMessage.text, Is.EqualTo("模拟操作错误"), "刷新准备状态不能覆盖操作失败信息");
+                renderOnline.Invoke(ctrl, new object[] { online, true });
+                Assert.That(view.TextPlayerStates.text, Is.EqualTo(Loc.T("ui.arcade.details.confirmed") + "\n" + Loc.T("ui.arcade.details.pending_confirmation")),
+                    "结果页显示结算确认状态，不能继续使用战斗准备状态");
+                var saved = new ArcadeRunSaveData { Score = 5000, CompletedArenaCount = 3, RemainingLives = 0, RunGold = 75, Outcome = "failed" };
+                typeof(ArcadeResumeUICtrl).GetMethod("Render", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, new object[] { saved });
+                Assert.That(view.SoloStats.activeSelf, Is.True);
+                Assert.That(view.OnlinePlayers.activeSelf, Is.False);
+                Assert.That(view.TextPlayerNames.text, Is.Empty);
+                Assert.That(view.TextRewards.text, Is.EqualTo("5,000"));
+                Assert.That(view.TextArenaCount.text, Is.EqualTo("03"));
+                Assert.That(view.TextLives.text, Is.EqualTo("00"));
+                Assert.That(view.TextGold.text, Is.EqualTo("75"));
+                Assert.That(view.TextSummary.text, Is.EqualTo(Loc.T("ui.arcade.result.failed")));
+                Assert.That(view.BtnSettle.gameObject.activeSelf, Is.True);
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+
         [TestCase(false, false)]
         [TestCase(true, false)]
         [TestCase(true, true)]

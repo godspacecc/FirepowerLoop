@@ -39,22 +39,30 @@ public static class UnifiedMainMenuPreview
             var start=menu.GetComponent<StartUI>(); var run=dialog.GetComponent<ArcadeResumeUI>();
             var report=new List<string>();
             foreach(var width in new[]{1920,2400})
-            foreach(var state in new[]{"new","progress","result"})
+            foreach(var state in new[]{"new","progress","result","coop","coop-result"})
             foreach(var language in new[]{"zh-CN","en-US"})
             {
                 var strings=JsonConvert.DeserializeObject<Dictionary<string,string>>(File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"));
                 foreach(var loc in canvasRoot.GetComponentsInChildren<LocalizedText>(true))
                 { loc.enabled=false; loc.GetComponent<TextMeshProUGUI>().text=strings[loc.Key]; }
-                bool saved=state!="new", result=state=="result";
+                bool saved=state!="new", result=state=="result" || state=="coop-result", coop=state.StartsWith("coop");
                 start.BtnNewGame.gameObject.SetActive(!saved); start.BtnContinue.gameObject.SetActive(saved);
                 start.BtnContinue.GetComponentInChildren<TextMeshProUGUI>(true).text=strings[result?"ui.start.run_result":"ui.start.run_continue"];
                 start.VersionText.gameObject.SetActive(true); start.VersionText.text="v0.0.1";
                 dialog.SetActive(saved); run.ResumeDetails.SetActive(true); run.BtnOnline.gameObject.SetActive(false);
                 run.DialogTitle.text=strings[result?"ui.arcade.dialog.result":"ui.arcade.dialog.progress"];
-                run.TextSummary.text=result?strings["ui.arcade.result.failed"]:string.Format(strings["ui.arcade.resume.summary"],4,2,280);
-                run.TextRewards.text=string.Format(strings["ui.arcade.hud.score"],12750);
-                run.TextMessage.text=""; run.BtnContinue.gameObject.SetActive(!result); run.BtnAbandon.gameObject.SetActive(!result); run.BtnSettle.gameObject.SetActive(result);
-                run.BtnContinue.GetComponentInChildren<TextMeshProUGUI>(true).text=strings["ui.arcade.resume"];
+                run.TextSummary.text=strings[result ? coop ? "ui.arcade.result.victory" : "ui.arcade.result.failed"
+                    : coop ? "ui.arcade.details.coop" : "ui.arcade.details.continuable"];
+                run.TextRewards.text=coop?"21,090":"12,750";
+                run.SoloStats.SetActive(!coop); run.OnlinePlayers.SetActive(coop);
+                run.TextArenaCount.text="04"; run.TextLives.text=result?"00":"02"; run.TextGold.text="280";
+                run.TextPlayerNames.text=language=="zh-CN"?"玩家一\n玩家二":"PLAYER ONE\nPLAYER TWO";
+                run.TextPlayerScores.text="12,750\n8,340";
+                run.TextPlayerStates.text=strings[result?"ui.arcade.details.confirmed":"ui.arcade.online.ready"]+"\n"+
+                    strings[result?"ui.arcade.details.pending_confirmation":"ui.arcade.online.not_ready"];
+                run.TextMessage.text=result?"":strings[coop?"ui.arcade.details.coop_hint":"ui.arcade.details.resume_hint"];
+                run.BtnContinue.gameObject.SetActive(!result); run.BtnAbandon.gameObject.SetActive(!result); run.BtnSettle.gameObject.SetActive(result);
+                run.BtnContinue.GetComponentInChildren<TextMeshProUGUI>(true).text=strings[coop?"ui.arcade.online.cancel_ready":"ui.arcade.resume"];
                 var target=new RenderTexture(width,1080,24); var texture=new Texture2D(width,1080,TextureFormat.RGBA32,false);
                 try
                 {

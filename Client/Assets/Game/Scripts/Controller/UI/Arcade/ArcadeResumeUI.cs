@@ -12,8 +12,16 @@ namespace Game
         public Button BtnOnline;
         public Button BtnSettle;
         public TextMeshProUGUI DialogTitle;
+        public GameObject OnlinePlayers;
         public GameObject ResumeDetails;
+        public GameObject SoloStats;
+        public TextMeshProUGUI TextArenaCount;
+        public TextMeshProUGUI TextGold;
+        public TextMeshProUGUI TextLives;
         public TextMeshProUGUI TextMessage;
+        public TextMeshProUGUI TextPlayerNames;
+        public TextMeshProUGUI TextPlayerScores;
+        public TextMeshProUGUI TextPlayerStates;
         public TextMeshProUGUI TextRewards;
         public TextMeshProUGUI TextSummary;
     }

@@ -1364,5 +1364,16 @@
   "ui.arcade.product.arcade.weapon.flamethrower.name": "喷火器",
   "ui.arcade.hud.icon.flamethrower": "喷火",
   "ui.arcade.product.arcade.powerup.skull.small.name": "红骷髅强化",
-  "ui.arcade.product.arcade.powerup.skull.large.name": "紫骷髅强化"
+  "ui.arcade.product.arcade.powerup.skull.large.name": "紫骷髅强化",
+  "ui.arcade.details.brand": "FIREPOWERLOOP",
+  "ui.arcade.details.score": "本局积分",
+  "ui.arcade.details.arenas": "已完成竞技场",
+  "ui.arcade.details.lives": "剩余生命",
+  "ui.arcade.details.gold": "本局金币",
+  "ui.arcade.details.continuable": "可继续",
+  "ui.arcade.details.resume_hint": "从已保存的进度继续",
+  "ui.arcade.details.coop": "双人准备",
+  "ui.arcade.details.coop_hint": "双方准备后继续",
+  "ui.arcade.details.confirmed": "已确认",
+  "ui.arcade.details.pending_confirmation": "待确认"
 }
