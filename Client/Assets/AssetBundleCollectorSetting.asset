@@ -888,6 +888,62 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeTimedDroneVisual.prefab
+        CollectorGUID: 58b6c08cb7e52894cb08132c2e51772c
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDroneExplosion.prefab
+        CollectorGUID: e46369f8d2c2e9247a1d64536c7fd728
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeRoundRewardVisual.prefab
+        CollectorGUID: bf9a53612c95e764cb835bbc2c5288f6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeStagePortalVisual.prefab
+        CollectorGUID: 5331395e53052ad4797abd82e2604e50
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab
+        CollectorGUID: d9d388a735fd02d4fb1c34f91e5a7705
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab
+        CollectorGUID: 5ae5ce788f3929740847320102627fc2
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeHerdVisual.prefab
+        CollectorGUID: 823611006318ba0468d778f774441e2b
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab
         CollectorGUID: c02be9431e684604b94cfff8a6bde919
         CollectorType: 0

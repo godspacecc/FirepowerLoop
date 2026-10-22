@@ -74,6 +74,34 @@ namespace Game.Tests
             Assert.That(Read(enemy, "BundleName"), Is.Not.EqualTo(Read(player, "BundleName")));
         }
 
+        /// <summary>激活后的强化、前三关环境与代码寻址特效也必须进入真实收集清单，不能只检查地面掉落。</summary>
+        [Test]
+        public void ActiveAndStageVisualsAreCollectedForArcadeEntry()
+        {
+            var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+                new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + name + ".bytes"))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
+            var addresses = catalog.Powerups.Select(p => p.ActiveVisualPrefabAddress)
+                .Concat(catalog.SupportVisuals.Select(p => p.ActiveVisualPrefabAddress))
+                .Concat(catalog.EarlyStages.Select(p => p.EnvironmentAddress))
+                .Concat(catalog.EarlyStages.Where(p => p.HerdCount > 0).Select(p => p.HerdAddress))
+                .Concat(new[] { "Prefabs/SceneObjects/ArcadeDroneExplosion", "Prefabs/SceneObjects/ArcadeRoundRewardVisual", "Prefabs/SceneObjects/ArcadeStagePortalVisual" })
+                .Where(address => !string.IsNullOrWhiteSpace(address)).Distinct().ToArray();
+            var assets = CollectAssets().Cast<object>().ToDictionary(asset => (string)Read(asset, "Address"), StringComparer.Ordinal);
+            Assert.That(addresses.Where(address => !assets.ContainsKey(address)).ToArray(), Is.Empty,
+                "激活效果与关卡资源缺少正式动态地址，AssetDatabase替身无法发现此遗漏");
+            foreach(var address in addresses)
+            {
+                var asset = assets[address];
+                Assert.That(Tags(asset), Does.Contain("arcade"), address);
+                var path = (string)Read(asset, "AssetInfo").GetType().GetField("AssetPath").GetValue(Read(asset, "AssetInfo"));
+                Assert.That(path, Is.EqualTo("Assets/Game/" + address + ".prefab"));
+                var prefab = AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
+                Assert.That(prefab, Is.Not.Null, address);
+                Assert.That(prefab.GetComponentsInChildren<UnityEngine.Renderer>(true), Is.Not.Empty, address);
+            }
+        }
+
         private static void AssertTags(string address, string tag) => Assert.That(Tags(Find(address)), Does.Contain(tag), address);
         private static object Read(object asset, string name) => asset.GetType().GetProperty(name).GetValue(asset);
         private static IEnumerable Tags(object asset) => (IEnumerable)Read(asset, "AssetTags");
