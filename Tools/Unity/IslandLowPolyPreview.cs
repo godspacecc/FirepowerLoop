@@ -18,12 +18,12 @@ public static class IslandLowPolyPreview
 {
     private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
     private static readonly List<Object> Owned=new();
-    private static Material sand,rock,rockLight,grass,grassLight,bark,leaf,leafLight,wood,sea,shallows,foam;
+    private static Material sand,rock,rockLight,grass,grassLight,bark,leaf,leafLight,wood,sea,shallows,foam,sandLight,sandShade,wetSand,pathSand;
     private static Mesh palm,boulder;
     public static string Run()
     {
         if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态临时预览");
-        string folder=Path.GetFullPath("../Docs/Plans/Artifacts/IslandLowPoly-v1-20261022");Directory.CreateDirectory(folder);
+        string folder=Path.GetFullPath("../Docs/Plans/Artifacts/IslandLowPoly-v2-20261022");Directory.CreateDirectory(folder);
         var prior=SceneManager.GetActiveScene();var priorRT=RenderTexture.active;var priorPipeline=QualitySettings.renderPipeline;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type type=null;
         var sheet=new RenderTexture(2400,1500,24);sheet.Create();
@@ -53,7 +53,7 @@ public static class IslandLowPolyPreview
                 }
                 camera.orthographicSize=30;camera.transform.position=new Vector3(0,60,-46);camera.transform.LookAt(new Vector3(0,0,2));
                 if(round==1)Capture("before-overview.png",1600,1000);
-                ApplyCandidate(candidate,round);Capture("candidate-round-"+round+".png",1600,1000);
+                ApplyCandidate(candidate,round);AddRichness(candidate,round);Capture("candidate-round-"+round+".png",1600,1000);
                 // 四个正式同机位候选直接渲染到各自视口，不后期改图或生成概念图。
                 camera.targetTexture=sheet;camera.rect=new Rect((round-1)%2*.5f,round<=2?.5f:0,.5f,.5f);camera.Render();camera.rect=new Rect(0,0,1,1);camera.targetTexture=null;
                 if(round==1)
@@ -80,6 +80,7 @@ public static class IslandLowPolyPreview
         grass=Mat("MountainGreen",new Color(.31f,.43f,.22f));grassLight=Mat("MountainGreenLight",new Color(.38f,.49f,.25f));
         bark=Mat("PalmBark",new Color(.43f,.28f,.14f));leaf=Mat("PalmGreen",new Color(.17f,.40f,.24f));leafLight=Mat("PalmGreenLight",new Color(.29f,.50f,.26f));
         wood=Mat("Wood",new Color(.44f,.30f,.17f));sea=Mat("DeepSea",new Color(.055f,.37f,.49f));shallows=Mat("ShallowSea",new Color(.10f,.60f,.61f));foam=Mat("Foam",new Color(.70f,.88f,.82f));
+        sandLight=Mat("LightSand",new Color(.77f,.65f,.42f));sandShade=Mat("SandPatches",new Color(.72f,.60f,.38f));wetSand=Mat("WetSand",new Color(.57f,.49f,.32f));pathSand=Mat("PathSand",new Color(.73f,.60f,.37f));
         leaf.SetFloat("_Cull",0);leafLight.SetFloat("_Cull",0);
     }
     private static void ApplyCandidate(GameObject root,int round)
@@ -112,7 +113,9 @@ public static class IslandLowPolyPreview
         float seaFade=1;
         for(int edge=0;edge<4;edge++)if(ArcadeIslandRegion.SeaSide(round,edge))
         {float outward=edge==0?z:edge==1?x:edge==2?-z:-x;float transverse=edge==0||edge==2?Math.Abs(x):Math.Abs(z);seaFade=Mathf.Min(seaFade,Mathf.Clamp01((transverse-outward)/4f));}
-        return seaFade*Mathf.Clamp01(outside/3.8f)*(3.2f+2.8f*Mathf.PerlinNoise(x*.14f+round*13,z*.14f+29));
+        float near=3.2f+2.8f*Mathf.PerlinNoise(x*.14f+round*13,z*.14f+29);
+        float ridge=(2+4*Mathf.PerlinNoise(x*.065f+round*5,z*.065f+17))*Mathf.Clamp01((outside-3)/12);
+        return seaFade*Mathf.Clamp01(outside/3.8f)*(near+ridge);
     }
     private static Mesh Mountain(int round)
     {
@@ -129,9 +132,79 @@ public static class IslandLowPolyPreview
     private static int Surface(Vector3 a,Vector3 b,Vector3 c,int seed)=>Vector3.Cross(b-a,c-a).normalized.y>.65f&&(a.y+b.y+c.y)/3>1.4f?2+(seed&1):(seed&1);
     private static Mesh Foot(Mesh original)
     {
-        var v=original.vertices;var t=original.triangles;var b=new Builder(4);
-        for(int i=0;i<v.Length;i++)if(v[i].y>.1f)v[i].y=.9f+.5f*Mathf.PerlinNoise(v[i].x*.23f+12,v[i].z*.23f+29);
-        for(int i=0;i<t.Length;i+=3)b.Tri(v[t[i]],v[t[i+1]],v[t[i+2]],Surface(v[t[i]],v[t[i+1]],v[t[i+2]],i));return b.Build("TEMP_LowPolyFoot");
+        var bounds=original.bounds;bool wide=bounds.size.x>=bounds.size.z;float length=wide?bounds.extents.x:bounds.extents.z,depth=wide?bounds.extents.z:bounds.extents.x;
+        Vector3 P(float along,float y,float across)=>wide?new Vector3(along,y,across):new Vector3(across,y,along);
+        float H(float along,bool back)=>.8f+(back?.9f:0)+.8f*Mathf.PerlinNoise(along*.26f+8,back?11:29);
+        var b=new Builder(4);int segments=Mathf.Max(3,Mathf.CeilToInt(length*2/2.7f));
+        for(int i=0;i<segments;i++)
+        {
+            float a=Mathf.Lerp(-length,length,i/(float)segments),c=Mathf.Lerp(-length,length,(i+1f)/segments);
+            var af=P(a,-.02f,-depth);var ab=P(a,-.02f,depth);var cf=P(c,-.02f,-depth);var cb=P(c,-.02f,depth);
+            var at=P(a*.98f,H(a,false),-depth*.84f);var az=P(a*.98f,H(a,true),depth*.84f);var ct=P(c*.98f,H(c,false),-depth*.84f);var cz=P(c*.98f,H(c,true),depth*.84f);
+            if(wide){b.Quad(af,at,ct,cf,i%2);b.Quad(ab,cb,cz,az,(i+1)%2);b.Quad(at,az,cz,ct,2+i%2);}
+            else{b.Quad(af,cf,ct,at,i%2);b.Quad(ab,az,cz,cb,(i+1)%2);b.Quad(at,ct,cz,az,2+i%2);}
+            if(i==0)b.Quad(af,ab,az,at,0);if(i==segments-1)b.Quad(cf,ct,cz,cb,1);
+        }
+        return b.Build("TEMP_LowPolyFoot");
+    }
+    /// <summary>第二版只丰富临时视觉：地表色差、通道边缘、山地疏密，不增碰撞/交互/提示。</summary>
+    private static void AddRichness(GameObject root,int round)
+    {
+        var group=new GameObject("TEMP_Richness").transform;group.SetParent(root.transform,false);
+        GameObject MeshGo(string name,Mesh mesh,Material[] materials,Vector3 position,Vector3 scale)
+        {var go=new GameObject(name,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(group,false);go.transform.localPosition=position;go.transform.localScale=scale;go.GetComponent<MeshFilter>().sharedMesh=mesh;go.GetComponent<MeshRenderer>().sharedMaterials=materials;return go;}
+        void Patch(string name,float x,float z,float rx,float rz,Material mat,int seed,float y)
+        {
+            var b=new Builder(1);const int count=12;Vector3 Edge(int i){float angle=i*Mathf.PI*2/count;float radius=.78f+.22f*Mathf.PerlinNoise(i*.7f+seed,round*2);return new Vector3(x+Mathf.Cos(angle)*rx*radius,y,z+Mathf.Sin(angle)*rz*radius);}
+            var center=new Vector3(x,y,z);for(int i=0;i<count;i++)b.Tri(center,Edge(i+1),Edge(i),0);MeshGo(name,b.Build("TEMP_"+name),new[]{mat},Vector3.zero,Vector3.one);
+        }
+        // 大块浅色沙带与少量深色沙斑保持中央可自由穿行，不做物理起伏或新障碍。
+        var patches=new[]{new Vector4(-8,-7,7,3),new Vector4(7,6,7,3.8f),new Vector4(-6,10,7,3),new Vector4(8,-9,5,3),new Vector4(0,0,7.5f,4.5f),new Vector4(-10,2,3,5)};
+        for(int i=0;i<patches.Length;i++){var p=patches[(i+round)%patches.Length];Patch("SandTone_"+i,p.x,p.y,p.z,p.w,i%3==0?sandShade:sandLight,round*17+i,.035f+i*.002f);}
+        var region=new ArcadeIslandRegion(19.5f,19.5f,round);var wet=new Builder(1);
+        for(int i=0;i<region.Sand.Count;i++)
+        {
+            var a=region.Sand[i];var c=region.Sand[(i+1)%region.Sand.Count];int side=Math.Abs(a.X)>Math.Abs(a.Y)?(a.X>0?1:3):(a.Y>0?0:2);
+            if(!ArcadeIslandRegion.SeaSide(round,side)||Corridor(round,a.X,a.Y))continue;
+            wet.Quad(new Vector3(a.X*.94f,.050f,a.Y*.94f),new Vector3(c.X*.94f,.050f,c.Y*.94f),new Vector3(c.X,.050f,c.Y),new Vector3(a.X,.050f,a.Y),0);
+        }
+        MeshGo("WetSandEdge",wet.Build("TEMP_WetSand"),new[]{wetSand},Vector3.zero,Vector3.one);
+        for(int passage=0;passage<3;passage++)
+        {
+            int side=ArcadeIslandRegion.PassageSide(round,passage);if(ArcadeIslandRegion.SeaSide(round,side))continue;
+            var direction=side==0?Vector3.forward:side==1?Vector3.right:side==2?Vector3.back:Vector3.left;var normal=new Vector3(direction.z,0,-direction.x);var b=new Builder(1);
+            Vector3 At(float t,bool right){float bend=1.1f*Mathf.Sin(t*.13f+round+side);float width=(1.7f+.4f*Mathf.Sin(t*.18f+side))*Mathf.Clamp01((t-6)/5);return direction*t+normal*(bend+(right?width:-width))+Vector3.up*.052f;}
+            for(int i=0;i<25;i++){float a=6+i*2,c=a+2;b.Quad(At(a,false),At(c,false),At(c,true),At(a,true),0);}MeshGo("SandyPassage_"+passage,b.Build("TEMP_Path"),new[]{pathSand},Vector3.zero,Vector3.one);
+        }
+        // 只调整山上装饰的疏密/高矮；所有新大体积岩石仍在旧阻挡范围内。
+        int treeIndex=0;
+        foreach(var tree in root.GetComponentsInChildren<Transform>().Where(t=>t.name=="FixedPalm").ToArray())
+        {
+            int index=treeIndex++;var at=tree.localPosition;float cluster=Mathf.PerlinNoise(at.x*.085f+round,at.z*.085f+14);
+            if(cluster<.32f&&index%2==0){tree.gameObject.SetActive(false);continue;}
+            tree.localPosition=new Vector3(at.x,Height(round,at.x,at.z)-.12f,at.z);tree.localScale*=.65f+cluster*.8f;tree.localRotation*=Quaternion.Euler(0,index*47,0);
+            if(index%3!=0)continue;
+            float h=Height(round,at.x+1.1f,at.z+1.4f);if(h<=0||Corridor(round,at.x+1.1f,at.z+1.4f))continue;
+            MeshGo("MountainShrub",boulder,new[]{grass,grassLight},new Vector3(at.x+1.1f,h+.38f,at.z+1.4f),new Vector3(1.5f,.8f,1.2f));
+        }
+        foreach(var foot in root.GetComponentsInChildren<MeshFilter>().Where(f=>f.name=="SolidRockFoot").ToArray())
+        {
+            var size=foot.sharedMesh.bounds.size;bool wide=size.x>size.z;int count=wide?4:3;
+            for(int i=0;i<count;i++)
+            {
+                float along=((i+.5f)/count-.5f)*(wide?size.x:size.z)*.83f;float radius=.55f+.70f*Mathf.PerlinNoise(i*2+round,foot.transform.localPosition.x+24);
+                var at=foot.transform.localPosition+(wide?new Vector3(along,0,0):new Vector3(0,0,along));float h=Height(round,at.x,at.z);
+                var go=MeshGo("LayeredMountainRock",boulder,new[]{rock,rockLight},new Vector3(at.x,Mathf.Max(.55f,h*.35f),at.z),new Vector3(radius,.7f+radius*(i%2==0?1.5f:.7f),radius));go.transform.localRotation=Quaternion.Euler(i*11, i*67+round*31,i%2==0?12:-8);
+            }
+        }
+        // 地面装饰最高仅十余厘米，可辨为沙滩碎石/枯叶，不冒充玩家需要绕行的新障碍。
+        for(int i=0;i<14;i++)
+        {
+            float angle=(i*137+round*31)*Mathf.Deg2Rad;float radius=9+(i%4)*1.5f;float x=Mathf.Cos(angle)*radius,z=Mathf.Sin(angle)*radius;
+            MeshGo("BeachPebble",boulder,new[]{rock,rockLight},new Vector3(x,.065f,z),new Vector3(.16f,.065f,.12f));
+            if(i%3==0)Patch("DryLeaf_"+i,x+.25f,z-.12f,.5f,.12f,wood,i,.060f);
+        }
+        // 用户确认中央完全开阔，仅保留上方沙地色差和低矮装饰。
     }
     private static Mesh Palm()
     {
