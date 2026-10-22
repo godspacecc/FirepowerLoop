@@ -189,6 +189,8 @@ namespace Game
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
                 runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry ||
                 (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
+            if(UsesStagePortal(runtime))
+            {if(StagePortalContact(runtime)){runtime.SelectedExitConfigNumber=runtime.FinalBossDefeated?0:arena.NextArenaNumbers.FirstOrDefault();CompleteArena(runtime);}return;}
             int count = ArcadeRoundLayoutParameters.ExitDirectionCount;
             if (!runtime.IslandRoundAwaitingExit && !runtime.FinalBossDefeated && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;

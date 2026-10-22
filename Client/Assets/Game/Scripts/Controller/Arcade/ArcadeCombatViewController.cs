@@ -120,6 +120,8 @@ namespace Game
         void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
             Vector2 bodyPosition,Vector2 shotDirection) { }
         /// <summary>只投影无人机权威阶段与强度；不参与选敌、计时或伤害。</summary>
+        void SetRoundReward(FirepowerLoop.Arcade.ArcadeRoundRewardState state,FirepowerLoop.Arcade.ArcadeRoundRewardTuning tuning) { }
+        void SetStagePortal(bool visible,Vector2 position,float seconds,float appearSeconds) { }
         void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
@@ -1097,6 +1099,7 @@ namespace Game
                 entry.Instance.transform.localPosition = entry.LocalPosition;
                 if (entry.HasShotDirection) entry.Instance.transform.localRotation = entry.LocalRotation;
                 if(entry.IsDrone)ApplyDroneAppearance(entry);
+                ApplyRewardPortalAppearance(entry);
                 if (entry.ShieldFlashRemaining > 0f) ApplyShieldFlash(entry);
             }
             catch (Exception exception)
@@ -1177,6 +1180,10 @@ namespace Game
             /// <summary>挡伤脉冲剩余秒数；大于零时允许已耗尽护盾的视觉延迟回收。</summary>
             public float ShieldFlashRemaining;
             /// <summary>异步资源到达前也缓存无人机的最新强度。</summary>
+            public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
+            public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RewardTuning;
+            public bool IsStagePortal;
+            public float PortalSeconds,PortalAppearSeconds;
             public bool IsDrone;
             public int DronePowerTier=1;
             public bool Released;

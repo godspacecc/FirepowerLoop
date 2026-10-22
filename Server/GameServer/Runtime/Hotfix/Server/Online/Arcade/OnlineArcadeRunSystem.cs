@@ -1336,6 +1336,7 @@ namespace ET.Server
         /// <summary>休闲普通轮按累计轮数建立整轮队列；独立Boss和挑战保持各自预算。</summary>
         private static void PrepareWave(OnlineArcadeBattleRuntime battle, ArcadeArenaConfig arena, int waveIndex)
         {
+            battle.RoundReward=null;battle.StagePortal=null;
             InitializeCrates(battle);
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, waveIndex);
             ArcadeBossConfig boss = battle.IsChallenge ? null : ResolveBoss(arena, group);
@@ -1434,6 +1435,7 @@ namespace ET.Server
             changed |= self.TickTreasureRoom(battle, deltaSeconds);
             changed |= self.TickRoundContent(battle, deltaSeconds);
             changed |= self.TickPlayers(battle, deltaSeconds, now);
+            changed |= self.TickRoundReward(battle,deltaSeconds);
             changed |= self.TickTreasureRoom(battle, 0f);
             changed |= self.TickOpeningFire(battle, deltaSeconds);
             changed |= self.TickSlayerMartStorm(battle,deltaSeconds);
@@ -2333,13 +2335,13 @@ namespace ET.Server
             if (!hazardKill) self.SpawnContentDeathZone(battle,enemy);
             if (enemy.ContentBossKind>0)
             {
-                battle.RoundBossDefeated=true; battle.AwaitingExit=true;
+                battle.RoundBossDefeated=true; battle.AwaitingExit=true;StartRoundReward(battle);
                 if(battle.ArenaConfigNumber==20)battle.FinalBossDefeated=true;
                 battle.SpawnQueue.Clear();battle.SpawnQueueIndex=0; battle.Projectiles.Clear();
             }
             if (battle.IsFinalBoss && enemy.RuntimeId == battle.FinalBossEnemyId)
             {
-                battle.FinalBossDefeated = true;
+                battle.FinalBossDefeated = true;StartRoundReward(battle);
                 battle.AwaitingExit = true;
                 battle.SpawnQueue.Clear();
                 battle.SpawnQueueIndex = 0;
@@ -2435,11 +2437,12 @@ namespace ET.Server
 
         private static bool TickDrops(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle)
         {
-            if (battle.Drops.Count == 0) return false;
+            bool rewardChanged=CollectRoundReward(self,battle);
+            if (battle.Drops.Count == 0) return rewardChanged;
             battle.DropIterationIds.Clear();
             battle.DropIterationIds.AddRange(battle.Drops.Keys);
             battle.DropIterationIds.Sort();
-            bool changed = false;
+            bool changed = rewardChanged;
             foreach (long dropId in battle.DropIterationIds)
             {
                 if (!battle.Drops.TryGetValue(dropId, out OnlineArcadeDropRuntime drop)) continue;
@@ -2790,6 +2793,7 @@ namespace ET.Server
                         player.RunGold = checked(player.RunGold + gold);
                 }
                 battle.WaveClearAwarded = true;
+                if(!(battle.WaveIndex==3&&battle.RoundLayout?.BossKind>0))StartRoundReward(battle);
                 battle.WaveTransitionSeconds = 0f;
                 foreach (var player in battle.Players.Values) player.RestAttackReleased = false;
                 if (!battle.IsChallenge && battle.RoundLayout != null) battle.AwaitingExit = true;
@@ -3141,7 +3145,7 @@ namespace ET.Server
         private static OnlineArcadeBattleInfo BuildBattleSnapshot(OnlineArcadeBattleRuntime source)
         {
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
-            AppendSlayerMartBattleSnapshot(source,battle);AppendSlayerChallengeBattleSnapshot(source,battle);
+            AppendSlayerMartBattleSnapshot(source,battle);AppendSlayerChallengeBattleSnapshot(source,battle);AppendRoundRewardSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;
@@ -3367,7 +3371,7 @@ namespace ET.Server
         {
             if (source == null) return null;
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
-            CloneSlayerMartBattleSnapshot(source,battle);CloneSlayerChallengeBattleSnapshot(source,battle);
+            CloneSlayerMartBattleSnapshot(source,battle);CloneSlayerChallengeBattleSnapshot(source,battle);CloneRoundRewardSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;battle.RoundLayoutId=source.RoundLayoutId;battle.RoundLayoutVersion=source.RoundLayoutVersion;

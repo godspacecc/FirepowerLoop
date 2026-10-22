@@ -400,13 +400,22 @@ namespace Game.Tests
             Call("TickOpeningFire", runtime, 10f); Assert.That(runtime.PlayerHealth, Is.EqualTo(hp));
         }
 
+        /// <summary>正式首关奖励房已关闭；兼容性用例显式构建旧房间，不改变Config开关。</summary>
+        private void EnableLegacyTreasureFixture()
+        {
+            var rules=catalog.TreasureRooms.Single(p=>p.ArenaConfigNumber==1);
+            runtime.TreasureInitialized=true;runtime.TreasureRoom=new ArcadeTreasureRoomState("legacy-room-test",rules);
+            var region=new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,3);
+            runtime.PlayerPosition=ArcadeIslandLayout.GetLandmarkPosition(region,new Vector2(rules.EntryX,rules.EntryY),rules.EntryRadius+catalog.Rule.PlayerRadius);
+        }
+
         [Test] public void TreasureWaitFreezesThenActivitiesConsumeTimeAndExitCommitsFourthMap()
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null); runtime.SpawnQueue.Clear();
             runtime.FirstPersonRemaining = 10; runtime.TemporaryWeaponRemaining = 12;
             runtime.TemporaryWeaponId = "arcade.weapon.rapid"; view.FirstPerson = true;
-            runtime.PlayerPosition = new Vector2(-12, -12); // 主动接触入口后才进入奖励区域。
+            EnableLegacyTreasureFixture(); // 主动接触入口后才进入奖励区域。
             view.Ready = false; Call("TickTreasureRoom", runtime, 0f); Call("SyncView", runtime);
             Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(10));
             combat.Tick(runtime, 20); Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(12));
@@ -530,12 +539,19 @@ namespace Game.Tests
             Assert.That(runtime.PlayerHealth, Is.EqualTo(51));
         }
 
+        [Test] public void DefaultThirdMapUsesChestAndPassageWithoutLegacyRoom()
+        {
+            Call("StartIslandRound",runtime,0,null);Call("StartIslandRound",runtime,1,null);Call("StartIslandRound",runtime,2,null);
+            runtime.SpawnQueue.Clear();Call("TickTreasureRoom",runtime,0f);Call("TickWaveTransition",runtime,0f);
+            Assert.That(runtime.TreasureRoom,Is.Null);Assert.That(runtime.InTreasureRoom,Is.False);Assert.That(runtime.IslandRoundAwaitingExit,Is.True);Assert.That(runtime.RoundReward,Is.Not.Null);
+        }
+
         [Test] public void ThirdMapTreasureEntranceCanBeDiscoveredFromReachableLand()
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null);
-            runtime.PlayerPosition = new Vector2(-12, -12);
-            Assert.That(new ArcadeIslandRegion(19.5f, 19.5f, 3).Contains(-12, -12), Is.True);
+            EnableLegacyTreasureFixture();
+            Assert.That(new ArcadeIslandRegion(19.5f,19.5f,3).Contains(runtime.PlayerPosition.x,runtime.PlayerPosition.y),Is.True);
             Call("TickTreasureRoom", runtime, 0f);
             Assert.That(runtime.TreasureDiscovered, Is.True);
             Assert.That(runtime.InTreasureRoom, Is.False, "发现入口不能绕过有限敌群清场");
@@ -545,7 +561,7 @@ namespace Game.Tests
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null); runtime.SpawnQueue.Clear();
-            runtime.PlayerPosition = new Vector2(-12, -12);
+            EnableLegacyTreasureFixture();
             Call("TickTreasureRoom", runtime, 0f); Call("SyncView", runtime);
             Call("ReturnFromTreasure", runtime); Call("SyncView", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(3));

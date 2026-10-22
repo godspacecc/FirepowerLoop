@@ -351,6 +351,12 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeBattleRuntime
     {
+        /// <summary>仅当前轮拥有的奖励现场，不进入轮前存档。</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
+        /// <summary>整关清场后中央出口的活动时钟和接触状态。</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public FirepowerLoop.Arcade.ArcadeStagePortalState StagePortal;
         /// <summary>本局新商店版本和全员内存事务，成功轮前保存后才公开提交。</summary>
         public int SlayerMartRulesVersion;
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;

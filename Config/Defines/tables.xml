@@ -39,4 +39,5 @@
     <table name="TbArcadeSlayerMartRegion" value="ArcadeSlayerMartRegionConfig" input="arcade_slayermart_region.csv" group="e"/>
     <table name="TbArcadeSlayerMartAbility" value="ArcadeSlayerMartAbilityConfig" input="arcade_slayermart_ability.csv" group="e"/>
     <table name="TbArcadeSlayerChallenge" value="ArcadeSlayerChallengeConfig" input="arcade_slayer_challenge.csv" group="e"/>
+    <table name="TbArcadeRoundReward" value="ArcadeRoundRewardConfig" input="arcade_round_reward.csv" group="e"/>
 </tables>

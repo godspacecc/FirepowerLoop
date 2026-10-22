@@ -276,10 +276,12 @@ namespace Game
             // 四向出口同去一关；负数仅表示下一轮标签，服务端仍接收正数场地身份。
             var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
-            view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss ? roundTargets : Array.Empty<int>(),
-                catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss);
+            view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss && !StagePortalVisible(battle) ? roundTargets : Array.Empty<int>(),
+                catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss && !StagePortalVisible(battle));
             seenIds.Clear();
             view.BeginEffectSync();
+            view.SetRoundReward(inRoom?null:battle.RoundReward?.ToPresentation(),catalog.Rule.RoundReward);
+            view.SetStagePortal(!inRoom&&StagePortalVisible(battle),new Vector2(battle.StagePortalX,battle.StagePortalZ),battle.StagePortalSeconds,catalog.Rule.RoundReward?.PortalAppearSeconds??0);
             foreach (OnlineArcadeBattlePlayerSnapshot player in battle.Players)
             {
                 if (player.InTreasureRoom != inRoom) continue;
@@ -596,12 +598,19 @@ namespace Game
         }
 
         /// <summary>接触通道即提交当前轮出口意图；停留期间允许重发，由服务器校验位置并推进一次。</summary>
+        private bool StagePortalVisible(OnlineArcadeBattleSnapshot b)=>b.AwaitingExit&&!b.IsChallenge&&b.WaveNumber>=4&&b.RoundReward!=null;
         private void TickRoundExitContact(OnlineArcadeBattlePlayerSnapshot self)
         {
             var battle=latest.Battle;if(activeRoundLayout==null||battle==null||!battle.AwaitingExit||!self.Alive||self.InTreasureRoom)return;
             int[] targets=battle.IsFinalBoss?new[]{0}:battle.WaveNumber<4?new[]{activeArena.ArenaNumber}:
                 activeRoundLayout.BossKind>0&&!battle.RoundBossEncounter?new[]{activeArena.ArenaNumber}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(targets.Length==0)return;
+            if(StagePortalVisible(battle))
+            {
+                if(battle.StagePortalSeconds>=catalog.Rule.RoundReward.PortalAppearSeconds&&Vector2.SqrMagnitude(new Vector2(self.PositionX-battle.StagePortalX,self.PositionZ-battle.StagePortalZ))<=catalog.Rule.RoundReward.PortalRadius*catalog.Rule.RoundReward.PortalRadius)
+                    this.GetSystem<OnlineArcadeRunSystem>().ConfirmRoundExit(battle.RoundGeneration,targets[0]);
+                return;
+            }
             int contact=-1;for(int i=0;i<activeRoundLayout.ExitCount;i++)
             {var point=activeRoundLayout.GetExitPosition(i,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 var p=new Vector2(point.X,point.Y);

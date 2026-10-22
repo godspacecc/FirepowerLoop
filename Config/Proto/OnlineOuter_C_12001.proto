@@ -531,6 +531,11 @@ message OnlineArcadeBattleInfo
 	repeated OnlineArcadeBombBlastInfo BombBlasts = 57;
 	// 只读死亡表现事实；客户端不据此裁决伤害或同步骨骼。
 	repeated OnlineArcadeEnemyDeathInfo EnemyDeaths = 58;
+    // 每轮金币现场只读投影；领取由服务器裁决。
+    OnlineArcadeRoundRewardInfo RoundReward = 59;
+    float StagePortalSeconds = 60;
+    float StagePortalX = 61;
+    float StagePortalZ = 62;
 }
 
 // Opcode 12085
@@ -811,4 +816,25 @@ message OnlineArcadeEnemyDeathInfo
  bool FlameKill = 6;
  // 0沿用普通/爆炸，1能量爆炸，2近距霰弹；只影响死亡表现。
  int32 ImpactKind = 7;
+}
+
+// Opcode 12107
+message OnlineArcadeRoundRewardInfo
+{
+ int32 RoundIdentity = 1;
+ float X = 2;
+ float Z = 3;
+ float ElapsedSeconds = 4;
+ int32 Phase = 5;
+ repeated OnlineArcadeRoundRewardItemInfo Items = 6;
+}
+
+// Opcode 12108
+message OnlineArcadeRoundRewardItemInfo
+{
+ int32 Id = 1;
+ float X = 2;
+ float Z = 3;
+ bool GoldBar = 4;
+ bool Collected = 5;
 }

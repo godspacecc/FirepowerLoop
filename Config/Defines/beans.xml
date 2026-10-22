@@ -554,4 +554,24 @@
         <var name="ExplosionRadius" type="float"/>
         <var name="ExplosionVisualSeconds" type="float"/>
     </bean>
+    <!-- 每轮金币宝箱及整关传送门，双方共用活动时钟和领取门禁。 -->
+    <bean name="ArcadeRoundRewardConfig">
+        <var name="Id" type="string"/>
+        <var name="FallSeconds" type="float"/>
+        <var name="ImpactSeconds" type="float"/>
+        <var name="ScatterSeconds" type="float"/>
+        <var name="GroundSeconds" type="float"/>
+        <var name="PickupRadius" type="float"/>
+        <var name="CoinCount" type="int"/>
+        <var name="BarCount" type="int"/>
+        <var name="CoinValue" type="int"/>
+        <var name="BarValue" type="int"/>
+        <var name="ScatterBaseRadius" type="float"/>
+        <var name="ScatterRadiusStep" type="float"/>
+        <var name="ScatterRadiusLevels" type="int"/>
+        <var name="PortalAppearSeconds" type="float"/>
+        <var name="PortalRadius" type="float"/>
+        <var name="PortalX" type="float"/>
+        <var name="PortalZ" type="float"/>
+    </bean>
 </beans>

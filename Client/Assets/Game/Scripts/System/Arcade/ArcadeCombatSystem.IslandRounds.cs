@@ -275,6 +275,8 @@ namespace Game
             if (this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.IslandTransitionPending ||
                 runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry || !runtime.WaveClearAwarded ||
                 (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
+            if(UsesStagePortal(runtime))
+            {if(StagePortalContact(runtime)){runtime.SelectedExitConfigNumber=arena.NextArenaNumbers.FirstOrDefault();CompleteArena(runtime);}return;}
             int count = ArcadeIslandRegion.PassageCount;
             if (!runtime.IslandRoundAwaitingExit && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;

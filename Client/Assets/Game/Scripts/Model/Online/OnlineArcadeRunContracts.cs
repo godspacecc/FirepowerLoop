@@ -281,6 +281,18 @@ namespace Game
     }
 
     /// <summary>客户端只读的服务器战斗现场；当前只包含进入信息与权威敌人生成状态。</summary>
+    public sealed class OnlineArcadeRoundRewardSnapshot
+    {
+        public int RoundIdentity {get;} public float X {get;} public float Z {get;} public float ElapsedSeconds {get;}
+        public FirepowerLoop.Arcade.ArcadeRoundRewardPhase Phase {get;}
+        public IReadOnlyList<FirepowerLoop.Arcade.ArcadeRoundRewardItem> Items {get;} public IReadOnlyList<int> Collected {get;}
+        public OnlineArcadeRoundRewardSnapshot(int round,float x,float z,float elapsed,int phase,IEnumerable<FirepowerLoop.Arcade.ArcadeRoundRewardItem> items,IEnumerable<int> collected)
+        {RoundIdentity=round;X=x;Z=z;ElapsedSeconds=elapsed;Phase=(FirepowerLoop.Arcade.ArcadeRoundRewardPhase)phase;Items=Array.AsReadOnly(items.ToArray());Collected=Array.AsReadOnly(collected.ToArray());}
+        /// <summary>只为显示创建独立副本，永不交给本地领取规则。</summary>
+        public FirepowerLoop.Arcade.ArcadeRoundRewardState ToPresentation()
+        {var state=new FirepowerLoop.Arcade.ArcadeRoundRewardState{RoundIdentity=RoundIdentity,X=X,Z=Z,ElapsedSeconds=ElapsedSeconds,Phase=Phase};state.Items.AddRange(Items);state.Collected.UnionWith(Collected);return state;}
+    }
+
     public sealed class OnlineArcadeBattleSnapshot
     {
         public OnlineArcadeBattleSnapshot(int arenaNumber, int waveNumber, int waveCount, int spawnedInWave,
@@ -296,9 +308,9 @@ namespace Game
             float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
             float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
-            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null)
+            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null, OnlineArcadeRoundRewardSnapshot roundReward=null,float stagePortalSeconds=0,float stagePortalX=0,float stagePortalZ=0)
         {
-            SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;
+            SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;RoundReward=roundReward;StagePortalSeconds=stagePortalSeconds;StagePortalX=stagePortalX;StagePortalZ=stagePortalZ;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
             HazardElapsedSeconds = hazardElapsedSeconds;
             ArenaConfigNumber = arenaConfigNumber;
@@ -328,6 +340,9 @@ namespace Game
         public OnlineSlayerMartRegionSnapshot SlayerMart { get; }
         /// <summary>独立Slayer公共状态，不以旧限时清怪倒计时推断阶段。</summary>
         public OnlineSlayerChallengeSnapshot SlayerChallenge {get;}
+        /// <summary>每轮宝箱的只读显示事实，客户端不得据此发奖。</summary>
+        public OnlineArcadeRoundRewardSnapshot RoundReward {get;}
+        public float StagePortalSeconds {get;} public float StagePortalX {get;} public float StagePortalZ {get;}
         public bool RoundBossEncounter { get; }
         public bool RoundBossDefeated { get; }
         public string RoundLayoutId { get; }

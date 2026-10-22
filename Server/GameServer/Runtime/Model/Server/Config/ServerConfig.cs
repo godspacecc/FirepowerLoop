@@ -54,6 +54,8 @@ namespace ET
         public ArcadeRuleConfig ArcadeRule => this.arcadeRule;
         /// <summary>双端同源临时无人机规则，启动时校验。</summary>
         public FirepowerLoop.Arcade.ArcadeDroneTuning Drone {get;private set;}
+        /// <summary>每轮奖励及中央传送门的配置参数。</summary>
+        public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RoundReward {get;private set;}
 
         public void Awake(string profile)
         {
@@ -297,12 +299,16 @@ namespace ET
                     !room.FitsArena(arenaRule.ArenaHalfWidth, arenaRule.ArenaHalfHeight, arenaRule.PlayerRadius))
                     throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid arena or wave");
             }
+            this.RoundReward=FirepowerLoop.Arcade.ArcadeRoundRewardTuning.FromConfig(this.tables.TbArcadeRoundReward.DataList.FirstOrDefault());
+            if(this.tables.TbArcadeRoundReward.DataList.Count!=1||this.tables.TbArcadeRoundReward.DataList[0].Id!="arcade.round.reward"||!FirepowerLoop.Arcade.ArcadeRoundRewardRules.IsValid(this.RoundReward)||!float.IsFinite(this.RoundReward.PortalRadius)||this.RoundReward.PortalRadius<=0||!float.IsFinite(this.RoundReward.PortalAppearSeconds)||this.RoundReward.PortalAppearSeconds<=0)
+                throw ConfigError(this.Profile,"TbArcadeRoundReward","arcade.round.reward","invalid round reward tuning");
             this.Drone=FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(this.tables.TbArcadeDrone.DataList.FirstOrDefault());
             if(this.tables.TbArcadeDrone.DataList.Count!=1||this.tables.TbArcadeDrone.DataList[0].Id!="arcade.support.drone"||!FirepowerLoop.Arcade.ArcadeDroneRules.IsValid(this.Drone))
                 throw ConfigError(this.Profile,"TbArcadeDrone","arcade.support.drone","invalid drone tuning");
             if (this.tables.TbArcadeRule.DataList.Count != 1)
                 throw ConfigError(this.Profile, "TbArcadeRule", "arcade.default", "expected exactly one row.");
             this.arcadeRule = this.tables.TbArcadeRule.DataList[0];
+            if(Math.Abs(this.RoundReward.PortalX)+this.RoundReward.PortalRadius>=this.arcadeRule.ArenaHalfWidth||Math.Abs(this.RoundReward.PortalZ)+this.RoundReward.PortalRadius>=this.arcadeRule.ArenaHalfHeight)throw ConfigError(this.Profile,"TbArcadeRoundReward","arcade.round.reward","portal outside arena");
             if (!string.Equals(this.arcadeRule.Id, "arcade.default", StringComparison.Ordinal) ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.ConfigFingerprint) || this.arcadeRule.ConfigFingerprint.Length > 128 ||
                 this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||

@@ -104,6 +104,12 @@ namespace ET.Server
             {
                 if(!p.Alive||p.InTreasureRoom||p.ConfirmedExitTarget==int.MinValue)continue;
                 int intent=p.ConfirmedExitTarget;p.ConfirmedExitTarget=int.MinValue;
+                if(UsesStagePortal(b))
+                {
+                    if(intent==targets[0]&&ArcadeStagePortalRules.TryContact(b.StagePortal,ServerConfig.Instance.RoundReward,p.PlayerId,p.PositionX,p.PositionZ,p.Alive&&p.RespawnSeconds<=0))
+                    {b.SelectedExitConfigNumber=intent;b.ArenaCompletionReady=true;return true;}
+                    continue;
+                }
                 for(int i=0;i<layout.ExitCount;i++)
                 {
                     var exit=layout.GetExitPosition(i,rule.ArenaHalfWidth,rule.ArenaHalfHeight,rule.PlayerRadius);

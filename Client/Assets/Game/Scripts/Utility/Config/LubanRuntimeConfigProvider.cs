@@ -1224,6 +1224,11 @@ namespace Game
                 }
             }
             catch (System.ArgumentException error) { return error.Message; }
+            if(tables.TbArcadeRoundReward.DataList.Count!=1||tables.TbArcadeRoundReward.DataList[0].Id!="arcade.round.reward"||
+                !FirepowerLoop.Arcade.ArcadeRoundRewardRules.IsValid(FirepowerLoop.Arcade.ArcadeRoundRewardTuning.FromConfig(tables.TbArcadeRoundReward.DataList[0]))||
+                tables.TbArcadeRoundReward.DataList[0].PortalRadius<=0||float.IsInfinity(tables.TbArcadeRoundReward.DataList[0].PortalRadius)||float.IsNaN(tables.TbArcadeRoundReward.DataList[0].PortalRadius)||tables.TbArcadeRoundReward.DataList[0].PortalAppearSeconds<=0||float.IsInfinity(tables.TbArcadeRoundReward.DataList[0].PortalAppearSeconds)||float.IsNaN(tables.TbArcadeRoundReward.DataList[0].PortalAppearSeconds))return "TbArcadeRoundReward 数值无效";
+            var portal=tables.TbArcadeRoundReward.DataList[0];var portalRule=tables.TbArcadeRule.DataList.FirstOrDefault();
+            if(portalRule==null||Math.Abs(portal.PortalX)+portal.PortalRadius>=portalRule.ArenaHalfWidth||Math.Abs(portal.PortalZ)+portal.PortalRadius>=portalRule.ArenaHalfHeight)return "TbArcadeRoundReward 传送门超出场地";
             if(tables.TbArcadeDrone.DataList.Count!=1||tables.TbArcadeDrone.DataList[0].Id!="arcade.support.drone"||
                 !FirepowerLoop.Arcade.ArcadeDroneRules.IsValid(FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(tables.TbArcadeDrone.DataList[0])))
                 return "TbArcadeDrone 数值无效";
@@ -1484,7 +1489,7 @@ namespace Game
                     rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
                     rule.DropChance, rule.SupportFireIntervalSeconds, rule.EnemyDropHealthUnit,
                     rule.EnemyDropDamageUnit, rule.EnemyDropMaxChance, rule.ConfigFingerprint,
-                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives,rule.WeaponDeliverySeconds, FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(tables.TbArcadeDrone.DataList[0])),
+                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives,rule.WeaponDeliverySeconds, FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(tables.TbArcadeDrone.DataList[0]), FirepowerLoop.Arcade.ArcadeRoundRewardTuning.FromConfig(tables.TbArcadeRoundReward.DataList[0])),
                 tables.TbArcadeWeapon.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeWeaponDefinition(row.Id, row.HeldVisualResourceName,
                         row.ProjectileVisualResourceName, row.MuzzleFlash,

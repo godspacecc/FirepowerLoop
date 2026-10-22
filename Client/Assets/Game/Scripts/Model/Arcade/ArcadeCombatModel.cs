@@ -199,6 +199,10 @@ namespace Game
     /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
     internal sealed class ArcadeCombatRuntime
     {
+        /// <summary>当前轮金币现场，离开不补发也不写入安全节点。</summary>
+        public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
+        /// <summary>整关清场后拥有的中央传送门。</summary>
+        public FirepowerLoop.Arcade.ArcadeStagePortalState StagePortal;
         /// <summary>本局新商店版本与独占工作态，外部保存只能使用捕获的深拷贝。</summary>
         public int SlayerMartRulesVersion;
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart;

@@ -2035,6 +2035,21 @@ namespace ET
         [MemoryPackOrder(57)]
         public List<OnlineArcadeEnemyDeathInfo> EnemyDeaths { get; set; } = new();
 
+        /// <summary>
+        /// 每轮金币现场只读投影；领取由服务器裁决。
+        /// </summary>
+        [MemoryPackOrder(58)]
+        public OnlineArcadeRoundRewardInfo RoundReward { get; set; }
+
+        [MemoryPackOrder(59)]
+        public float StagePortalSeconds { get; set; }
+
+        [MemoryPackOrder(60)]
+        public float StagePortalX { get; set; }
+
+        [MemoryPackOrder(61)]
+        public float StagePortalZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2100,6 +2115,10 @@ namespace ET
             this.SlayerOutcome = default;
             this.BombBlasts.Clear();
             this.EnemyDeaths.Clear();
+            this.RoundReward = default;
+            this.StagePortalSeconds = default;
+            this.StagePortalX = default;
+            this.StagePortalZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3216,6 +3235,92 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeRoundRewardInfo)]
+    public partial class OnlineArcadeRoundRewardInfo : MessageObject
+    {
+        public static OnlineArcadeRoundRewardInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeRoundRewardInfo), isFromPool) as OnlineArcadeRoundRewardInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RoundIdentity { get; set; }
+
+        [MemoryPackOrder(1)]
+        public float X { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float Z { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float ElapsedSeconds { get; set; }
+
+        [MemoryPackOrder(4)]
+        public int Phase { get; set; }
+
+        [MemoryPackOrder(5)]
+        public List<OnlineArcadeRoundRewardItemInfo> Items { get; set; } = new();
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RoundIdentity = default;
+            this.X = default;
+            this.Z = default;
+            this.ElapsedSeconds = default;
+            this.Phase = default;
+            this.Items.Clear();
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeRoundRewardItemInfo)]
+    public partial class OnlineArcadeRoundRewardItemInfo : MessageObject
+    {
+        public static OnlineArcadeRoundRewardItemInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeRoundRewardItemInfo), isFromPool) as OnlineArcadeRoundRewardItemInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public int Id { get; set; }
+
+        [MemoryPackOrder(1)]
+        public float X { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float Z { get; set; }
+
+        [MemoryPackOrder(3)]
+        public bool GoldBar { get; set; }
+
+        [MemoryPackOrder(4)]
+        public bool Collected { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Id = default;
+            this.X = default;
+            this.Z = default;
+            this.GoldBar = default;
+            this.Collected = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3282,5 +3387,7 @@ namespace ET
         public const ushort G2C_OperateOnlineSlayerMart = 12104;
         public const ushort OnlineArcadeBombBlastInfo = 12105;
         public const ushort OnlineArcadeEnemyDeathInfo = 12106;
+        public const ushort OnlineArcadeRoundRewardInfo = 12107;
+        public const ushort OnlineArcadeRoundRewardItemInfo = 12108;
     }
 }

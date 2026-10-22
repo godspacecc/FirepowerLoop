@@ -642,6 +642,7 @@ namespace Game
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
         {
             TickDropLifetimes(runtime, deltaTime);
+            TickRoundReward(runtime,deltaTime);
             foreach(var enemy in runtime.Enemies.Values)enemy.FlameHitRemainingSeconds=Mathf.Max(0,enemy.FlameHitRemainingSeconds-deltaTime);
             if (runtime.FirstPersonRemaining > 0)
             {
@@ -1134,6 +1135,7 @@ namespace Game
         /// <summary>逐件裁决范围内掉落；满额只拒绝对应补给，成功实例先注销再发奖和反馈。</summary>
         private void TickDrops(ArcadeCombatRuntime runtime)
         {
+            CollectRoundReward(runtime);
             var pickupBonus = UpgradeTotal(this.GetModel<ArcadeRunModel>().Current, global::ArcadeUpgradeKind.PickupRadiusPercent);
             var magnetRadius = TryGetPowerup(runtime, global::ArcadePowerupBehavior.Magnet, out var magnet)
                 ? SlayerMartRadius(runtime,magnet)
@@ -1265,6 +1267,7 @@ namespace Game
                     // 清轮奖励仍来自原轮配置，不能随实际生成组回退而改价。
                     runtime.ArenaGold += ScaleGold(FindGroup(arena.WaveGroupIds[runtime.WaveIndex]).ClearGold, runtime.ArenaNumber, catalog.Rule.GoldGrowthPerArena);
                 runtime.WaveClearAwarded = true;
+                if(!(runtime.WaveIndex==3&&RoundLayout(runtime)?.BossKind>0))StartRoundReward(runtime);
                 if (UsesContentRounds(runtime))
                 {
                     runtime.WaveTransitionRemaining = 0;
@@ -1372,6 +1375,7 @@ namespace Game
         /// <summary>普通轮开始时补空库存并建立完整待生成队列；总量按本局累计轮，分支不重置难度。</summary>
         private void BeginWave(ArcadeCombatRuntime runtime, int waveIndex)
         {
+            runtime.RoundReward=null;runtime.StagePortal=null;
             runtime.IslandSpawnSequence = 0;
             runtime.IslandPassages = null;
             InitializeCrates(runtime);
@@ -1730,7 +1734,7 @@ namespace Game
             if(SpawnSlayerCoin(runtime,enemy,hazardKill))return;
             if (runtime.ThemeBossStarted && enemy.Id == runtime.ContentBossEnemyId)
             {
-                runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;
+                runtime.ThemeBossDefeated = true; runtime.AwaitingExit = true;StartRoundReward(runtime);
                 // 停止危险时保留本帧已经裁决的桶爆炸，避免 Boss 死亡吞掉视觉与声音。
                 runtime.ContentAreas.RemoveAll(a=>a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind); runtime.ContentAreaSnapshots.Clear();
                 runtime.SpawnQueue.Clear();
@@ -1741,7 +1745,7 @@ namespace Game
             if (!hazardKill) AwardIslandKill(runtime, enemy);
             if (runtime.IsFinalBoss && enemy.Id == runtime.FinalBossEnemyId)
             {
-                runtime.FinalBossDefeated = true;
+                runtime.FinalBossDefeated = true;StartRoundReward(runtime);
                 runtime.AwaitingExit = true;
                 runtime.SpawnQueue.Clear();
                 // 最终 Boss 死亡后停止所有危险，不等待普通敌人清空才开放胜利出口。
@@ -2110,6 +2114,7 @@ namespace Game
             view.SetPlayerDash(0,runtime.PlayerPosition,runtime.DashDirection,runtime.DashRemaining,runtime.RespawnRemaining<=0f);
             if (runtime.InTreasureRoom)
             {
+                view.SetRoundReward(null,catalog.Rule.RoundReward);view.SetStagePortal(false,Vector2.zero,0,0);
                 view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.PlayerHealth>0, runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f);
                 view.SetPlayerHealth(runtime.PlayerHealth, runtime.PlayerMaxHealth);
                 if (runtime.TreasureRoom.Parameters.IsArmory && TryGetWeapon(runtime, out var selectedWeapon))
@@ -2117,8 +2122,8 @@ namespace Game
                 return;
             }
             view.SetExits(runtime.IslandRoundAwaitingExit ? new[] { -(runtime.WaveIndex + 2) } :
-                runtime.AwaitingExit && !runtime.FinalBossDefeated ? arena.NextArenaNumbers.Take(1).ToArray() : Array.Empty<int>(),
-                catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated);
+                runtime.AwaitingExit && !runtime.FinalBossDefeated && !UsesStagePortal(runtime) ? arena.NextArenaNumbers.Take(1).ToArray() : Array.Empty<int>(),
+                catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated && !UsesStagePortal(runtime));
             view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);
             view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f&&runtime.PlayerHealth>0,
@@ -2148,6 +2153,8 @@ namespace Game
                 view.SetDropOpacity(drop.Id, GroundDropOpacity(drop.RemainingSeconds));
             }
             view.BeginEffectSync();
+            view.SetRoundReward(runtime.RoundReward,catalog.Rule.RoundReward);
+            view.SetStagePortal(UsesStagePortal(runtime)&&runtime.StagePortal!=null,runtime.StagePortal==null?Vector2.zero:new Vector2(runtime.StagePortal.X,runtime.StagePortal.Z),runtime.StagePortal?.ElapsedSeconds??0,catalog.Rule.RoundReward?.PortalAppearSeconds??0);
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
             {
                 if(powerup.Definition.Behavior==global::ArcadePowerupBehavior.Drone)
