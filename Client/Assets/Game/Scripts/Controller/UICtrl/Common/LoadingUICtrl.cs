@@ -116,7 +116,12 @@ namespace Game
             failureLogsCopied = false;
             displayMode = DisplayMode.Map;
             // 普通局内切关由黑幕接管；首次进局和失败重试仍使用完整加载页。
-            if(!arcadePreparationFailed&&!mapLoadingActive&&!entryPreparing)return;
+            if(!arcadePreparationFailed&&!mapLoadingActive&&!entryPreparing)
+            {
+                // 失败页已显示时，重试仍须清除旧错误；普通切轮继续只使用黑幕。
+                if(IsShow())RefreshPresentation();
+                return;
+            }
             Show();
             RefreshPresentation();
         }

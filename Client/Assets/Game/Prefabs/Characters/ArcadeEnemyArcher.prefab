@@ -12145,6 +12145,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2223078572698272438}
   - component: {fileID: 5113153217288108258}
+  - component: {fileID: 7643229962082119819}
   m_Layer: 0
   m_Name: InfectedSoldierBody
   m_TagString: Untagged
@@ -12195,6 +12196,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7643229962082119819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4917755328469378712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd511799c2673494fb384b019031729f, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
 --- !u!1 &4955890779644251449
 GameObject:
   m_ObjectHideFlags: 0
@@ -12786,6 +12799,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animator: {fileID: 5113153217288108258}
   chest: {fileID: 5269697948109485017}
+  hips: {fileID: 0}
+  detachedEndBones: []
+  endBonePhysicsParents: []
   bodies:
   - {fileID: 1385313152158078188}
   - {fileID: 7373064857603777342}

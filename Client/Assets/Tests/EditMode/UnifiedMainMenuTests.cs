@@ -88,14 +88,25 @@ namespace Game.Tests
         }
 
         [Test]
-        public void Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad()
+        public void Loading_LaterIslandTransitionUsesCurtainWithoutFullLoadingPage()
         {
             var loading = UIHelper.ShowUI<LoadingUICtrl>();
             loading.Hide();
             architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot { IslandTransitioning = true }));
-            Assert.That(loading.IsShow(), Is.True, "轮间切图和宝藏房准备也需要加载遮罩");
+            Assert.That(loading.IsShow(), Is.False, "普通切轮由既有黑幕遮挡，不再打开完整加载页");
+            var presentation = new ArcadeCombatViewController();
+            presentation.BeginRoundTransition();
+            var curtain = UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>();
+            Assert.That(curtain?.IsShow(), Is.True);
+            typeof(ArcadeRoundTransitionUICtrl).GetMethod("TickFade", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(curtain, new object[] { .2f });
+            Assert.That(presentation.IsRoundTransitionCovered, Is.True);
             architecture.SendEvent(new ArcadeCombatHudChangedEvent(new ArcadeCombatHudSnapshot()));
             Assert.That(loading.IsShow(), Is.False);
+            presentation.EndRoundTransition();
+            typeof(ArcadeRoundTransitionUICtrl).GetMethod("TickFade", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(curtain, new object[] { .2f });
+            Assert.That(curtain.IsShow(), Is.False);
         }
 
         [Test]
