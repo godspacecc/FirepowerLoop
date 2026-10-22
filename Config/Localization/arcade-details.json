@@ -1,4 +1,5 @@
 {
+  "ui.arcade.product.arcade.weapon.basic.name": { "zh-CN": "基础步枪", "en-US": "Basic Rifle" },
   "ui.arcade.details.brand": { "zh-CN": "FIREPOWERLOOP", "en-US": "FIREPOWERLOOP" },
   "ui.arcade.details.score": { "zh-CN": "本局积分", "en-US": "RUN SCORE" },
   "ui.arcade.details.arenas": { "zh-CN": "已完成竞技场", "en-US": "ARENAS CLEARED" },

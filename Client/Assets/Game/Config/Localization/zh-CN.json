@@ -764,7 +764,7 @@
   "ui.arcade.effect.life": "额外生命 +{0}",
   "ui.arcade.effect.consumable": "本局数量 +{0}",
   "ui.arcade.effect.equipment": "装备到本局栏位",
-  "ui.arcade.product.arcade.weapon.basic.name": "手枪",
+  "ui.arcade.product.arcade.weapon.basic.name": "基础步枪",
   "ui.arcade.product.arcade.weapon.rapid.name": "速射武器",
   "ui.arcade.product.arcade.weapon.spread.name": "散射武器",
   "ui.arcade.product.arcade.weapon.piercing.name": "穿透射线",

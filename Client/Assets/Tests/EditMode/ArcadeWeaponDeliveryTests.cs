@@ -33,7 +33,7 @@ namespace Game.Tests
             Assert.That(instance.transform.Find("ArcadeDropVisual").gameObject.activeSelf,Is.True);
             var renderers=instance.transform.Find("ArcadeDropVisual").GetComponentsInChildren<MeshRenderer>();
             var bounds=renderers[0].bounds;foreach(var renderer in renderers.Skip(1))bounds.Encapsulate(renderer.bounds);
-            Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z),Is.InRange(.85f,1.2f),"开箱后武器应清晰可辨");
+            Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z),Is.EqualTo(1.7f).Within(.01f),"开箱后空投物接近玩家体量；击杀掉落不放大");
             Assert.That(crate.GetComponentsInChildren<Collider>(true),Is.Empty);
         }
         [Test] public void OrdinaryReuseClearsCrateAndRestoresWeaponPose()

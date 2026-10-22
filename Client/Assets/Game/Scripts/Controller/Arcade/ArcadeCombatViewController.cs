@@ -1352,13 +1352,8 @@ namespace Game
             boundary.GetComponent<BoxCollider>().size = size;
         }
 
-        private static string ResolveDropDisplayName(ArcadeDropDefinition definition)
-        {
-            if (definition.Kind == global::ArcadeDropKind.RunGold)
-                // 金币只显示地面模型，空名称通知掉落表现隐藏文字。
-                return string.Empty;
-            return ArcadeUiFormatter.ProductName(definition.ProductId);
-        }
+        /// <summary>街机地面物资由模型和颜色辨认；空名称隐藏掉落文字，不影响已拾取状态栏。</summary>
+        private static string ResolveDropDisplayName(ArcadeDropDefinition definition) => string.Empty;
 
         private static Vector3 World(Vector2 position, float y) => new Vector3(position.x, y, position.y);
 

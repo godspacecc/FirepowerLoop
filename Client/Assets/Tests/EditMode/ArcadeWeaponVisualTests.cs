@@ -721,10 +721,10 @@ public sealed class ArcadeWeaponVisualTests
             new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{name}.bytes"))));
         Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
         var basic = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.basic");
-        Assert.That(basic.HeldVisualResourceName, Is.EqualTo("ArcadePistol"));
+        Assert.That(basic.HeldVisualResourceName, Is.EqualTo("ArcadeBasicRifle"));
         Assert.That(basic.ProjectileVisualResourceName, Is.EqualTo("ArcadeBulletBasic"));
         Assert.That(basic.MuzzleFlash, Is.True);
-        Assert.That(basic.ProjectileFirePointLocalPosition, Is.EqualTo(new Vector3(0f, 0.05f, 0.23f)));
+        Assert.That(basic.ProjectileFirePointLocalPosition, Is.EqualTo(new Vector3(0f, 0f, 0.575f)));
         var grenade = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.grenade");
         Assert.That(grenade.ProjectileVisualResourceName, Is.EqualTo("ArcadeGrenade"));
         Assert.That(grenade.MuzzleFlash, Is.False);
@@ -757,12 +757,26 @@ public sealed class ArcadeWeaponVisualTests
             ["ArcadeGrenade"] = "ArcadeGrenadeWeapon",
             ["ArcadeScifiPlasmaRifle"] = "ArcadeRaygunWeapon"
         };
-        foreach (var weapon in catalog.Weapons)
+        foreach (var weapon in catalog.Weapons.Where(w=>w.Id.StartsWith("arcade.weapon.")))
         {
             var instance = Object.Instantiate(prefab);
             try
             {
                 var view = instance.GetComponent<PlayerView>();
+                if(weapon.Id=="arcade.weapon.basic")
+                {
+                    var presenter=instance.GetComponent<CharacterWeaponPresenter>();
+                    PlayerViewCtrl.ConfigureSharedArcadeWeaponPresentation(view,weapon);
+                    presenter.SetManualPoseSampling(true);presenter.BodyAnimator.Rebind();presenter.BodyAnimator.Update(0);
+                    presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,0);
+                    presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);
+                    var mesh=presenter.Visual.GetComponentsInChildren<MeshFilter>(true).First(m=>m.sharedMesh.name=="SM_Prop_Rifle_01");
+                    var akTip=mesh.transform.TransformPoint(new Vector3(0,0,mesh.sharedMesh.bounds.max.z));
+                    Assert.That(presenter.TryGetProjectileOrigin(out var origin),Is.True);
+                    Assert.That(Vector3.Distance(origin,akTip),Is.LessThan(.1f),weapon.Id);
+                    continue;
+                }
+                Object.DestroyImmediate(instance.GetComponent<CharacterWeaponPresenter>());
                 PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, weapon.HeldVisualResourceName,
                     weapon.MuzzleFlash, weapon.ProjectileFirePointLocalPosition);
                 var animator = view.Animator;
@@ -971,6 +985,7 @@ public sealed class ArcadeWeaponVisualTests
             {
                 var view = instance.GetComponent<PlayerView>();
                 var weapon = catalog.Weapons.Single(item => item.HeldVisualResourceName == visualName);
+                Object.DestroyImmediate(instance.GetComponent<CharacterWeaponPresenter>());
                 PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, visualName, weapon.MuzzleFlash,
                     weapon.ProjectileFirePointLocalPosition);
                 var animator = view.Animator;
@@ -1006,17 +1021,16 @@ public sealed class ArcadeWeaponVisualTests
     [Test]
     public void PistolMuzzleFollowsVisibleBarrelThroughAimAndFire()
     {
-        var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
-            new ByteBuf(File.ReadAllBytes($"Assets/Game/Config/{name}.bytes"))));
-        Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
-        var definition = catalog.Weapons.Single(weapon => weapon.Id == "arcade.weapon.basic");
+        // 保留旧手枪资源的独立回归；当前基础枪已是AK，不能再用它驱动手枪动画。
+        const string legacyVisual="ArcadePistol";
+        var legacyMuzzle=new Vector3(0,.05f,.23f);
         var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
         var instance = Object.Instantiate(prefab);
         try
         {
             var view = instance.GetComponent<PlayerView>();
-            PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, definition.HeldVisualResourceName,
-                definition.MuzzleFlash, definition.ProjectileFirePointLocalPosition);
+            Object.DestroyImmediate(instance.GetComponent<CharacterWeaponPresenter>());
+            PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, legacyVisual,true,legacyMuzzle);
             var animator = view.Animator;
             animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
             var visual = Find(instance.transform, "ArcadeBasicWeapon");
@@ -1028,8 +1042,7 @@ public sealed class ArcadeWeaponVisualTests
                 animator.Update(0.001f);
                 view.ApplyWeaponGripPose();
                 // 战斗同步会先刷新当前武器，再在同一帧读取开火枪口。
-                PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, definition.HeldVisualResourceName,
-                    definition.MuzzleFlash, definition.ProjectileFirePointLocalPosition);
+                PlayerViewCtrl.ConfigureArcadeWeaponPresentation(view, legacyVisual,true,legacyMuzzle);
                 Assert.That(Vector3.Angle(view.transform.forward, visual.forward), Is.LessThan(8f),
                     $"{state} {time} after refresh");
                 var vertices = visual.GetComponentsInChildren<MeshFilter>(true)

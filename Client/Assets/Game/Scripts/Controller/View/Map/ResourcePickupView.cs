@@ -68,11 +68,16 @@ namespace Game
         private GameObject activeArcadeLootBeam;
         /// <summary>正式拾取模板持有箱体；所有实例、回池与地图释放继续归本 View 管理。</summary>
         [SerializeField] private ArcadeWeaponDeliveryView weaponDelivery;
+        /// <summary>已确认空投展示最长边；普通击杀物资不使用此尺寸。</summary>
+        [SerializeField] private float deliveredWeaponMaxSize = 1.7f;
+        /// <summary>仅在开箱期间应用的展示姿态，回到普通掉落时恢复原姿态。</summary>
+        [SerializeField] private ArcadeDropVisualPose[] weaponDeliveryPoses = Array.Empty<ArcadeDropVisualPose>();
         private bool deliveryActive;
         private Vector3 deliveryWeaponPosition;
         /// <summary>保存空投前的姿态，普通掉落复用时还原，避免沿用箱内展示尺寸。</summary>
         private Vector3 deliveryOriginalWeaponPosition;
         private Vector3 deliveryOriginalWeaponScale;
+        private Quaternion deliveryOriginalWeaponRotation;
 
         /// <summary>模型与光柱各自持有渐隐材质管理器，统一随展示生命周期释放。</summary>
         private ArcadeDropOpacity visualOpacity;
@@ -146,7 +151,9 @@ namespace Game
                 {
                     deliveryOriginalWeaponPosition=activeArcadeVisual.transform.localPosition;
                     deliveryOriginalWeaponScale=activeArcadeVisual.transform.localScale;
-                    FitArcadeVisual(1.05f);
+                    deliveryOriginalWeaponRotation=activeArcadeVisual.transform.localRotation;
+                    ApplyVisualPose(weaponDeliveryPoses,activeArcadeVisual.transform,ActiveArcadeVisualPrefabAddress);
+                    FitArcadeVisual(deliveredWeaponMaxSize);
                     deliveryWeaponPosition=activeArcadeVisual.transform.localPosition;
                 }
                 deliveryActive=true;weaponDelivery.SetProgress(remaining,duration);
@@ -160,6 +167,7 @@ namespace Game
                 activeArcadeVisual.SetActive(true);
                 activeArcadeVisual.transform.localPosition=deliveryOriginalWeaponPosition;
                 activeArcadeVisual.transform.localScale=deliveryOriginalWeaponScale;
+                activeArcadeVisual.transform.localRotation=deliveryOriginalWeaponRotation;
             }
             if(deliveryActive&&activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(true);
             deliveryActive=false;weaponDelivery?.ResetPresentation();
@@ -326,8 +334,12 @@ namespace Game
 
         /// <summary>按资源地址应用俯视角展示姿态；未配置的资源保持原始朝向。</summary>
         private void ApplyArcadeVisualPose(Transform visualTransform, string visualPrefabAddress)
+            => ApplyVisualPose(arcadeVisualPoses, visualTransform, visualPrefabAddress);
+
+        /// <summary>按显式配置应用实例姿态，不从物品名字猜测展示方式。</summary>
+        private static void ApplyVisualPose(ArcadeDropVisualPose[] poses,Transform visualTransform,string visualPrefabAddress)
         {
-            foreach (var pose in arcadeVisualPoses)
+            foreach (var pose in poses)
             {
                 if (pose == null ||
                     !string.Equals(pose.PrefabAddress, visualPrefabAddress, StringComparison.Ordinal))

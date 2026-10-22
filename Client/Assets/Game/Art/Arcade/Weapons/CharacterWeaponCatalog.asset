@@ -195,46 +195,48 @@ MonoBehaviour:
     meleeCombo: []
   - id: arcade.weapon.basic
     worldItemId: 19
-    displayName: "\u624B\u67AA"
-    visualSource: {fileID: 5525398166648842421, guid: 2231aa87f77d13d408729f75c1f1de23,
+    displayName: "\u57FA\u7840\u6B65\u67AA"
+    visualSource: {fileID: 6103659143649028898, guid: 27151b4083b1e1c4785f07e90568486c,
       type: 3}
     mesh: {fileID: 0}
     material: {fileID: 0}
     mainHand: 18
-    handLocalPosition: {x: 0, y: 0, z: 0}
-    handLocalEulerAngles: {x: 0.5156589, y: 31.574476, z: 195.22424}
-    handLocalScale: {x: 1.5760868, y: 1.5760868, z: 1.5760868}
+    handLocalPosition: {x: 0.06639759, y: -0.078456685, z: -0.08493297}
+    handLocalEulerAngles: {x: 33.142822, y: 23.611135, z: 225.35135}
+    handLocalScale: {x: 0.9782607, y: 0.9782607, z: 0.9782607}
     animationPoseOverrides:
-    - definition: {fileID: 11400000, guid: 1ace08ccec8ea1f478b637d0ba307973, type: 2}
-      overridePosition: 0
-      localPosition: {x: 0, y: 0, z: 0}
+    - definition: {fileID: 11400000, guid: 772a7db56432ffe44b0f20f79903cd19, type: 2}
+      overridePosition: 1
+      localPosition: {x: -0.0015793606, y: 0.029556345, z: -0.13000628}
       overrideRotation: 1
-      localEulerAngles: {x: 355.8835, y: 66.2673, z: 180.277}
+      localEulerAngles: {x: 40.38053, y: 101.84374, z: 286.91794}
       overrideScale: 0
-      localScale: {x: 1, y: 1, z: 1}
-    - definition: {fileID: 11400000, guid: d7c4ce49acc245c4eb2530a26262395a, type: 2}
-      overridePosition: 0
-      localPosition: {x: 0, y: 0, z: 0}
+      localScale: {x: 0, y: 0, z: 0}
+    - definition: {fileID: 11400000, guid: 5093b1c8e2b499d48b3db11593d04cfe, type: 2}
+      overridePosition: 1
+      localPosition: {x: 0.009814921, y: 0.017079433, z: -0.1318699}
       overrideRotation: 1
-      localEulerAngles: {x: 355.8835, y: 66.2673, z: 180.277}
+      localEulerAngles: {x: 41.5509, y: 92.316795, z: 279.85568}
       overrideScale: 0
-      localScale: {x: 1, y: 1, z: 1}
-    projectileFirePointLocalPosition: {x: 0, y: 0.05, z: 0.23}
+      localScale: {x: 0, y: 0, z: 0}
+    projectileFirePointLocalPosition: {x: 0, y: 0, z: 0.575}
     hasOffhandGrip: 1
-    offhandGripLocalPosition: {x: -0.02, y: -0.01, z: 0.04}
-    category: 16
+    offhandGripLocalPosition: {x: -0.04, y: -0.08, z: 0.29}
+    category: 32
     isProjectile: 1
     muzzleFlash: 1
     animations:
-      idle: {fileID: 11400000, guid: 1ace08ccec8ea1f478b637d0ba307973, type: 2}
+      idle: {fileID: 11400000, guid: 716301c511edf614d959c7fe047ceb4b, type: 2}
       moveForward: {fileID: 11400000, guid: feced01edfefb01499028e38ba85839e, type: 2}
       moveBackward: {fileID: 11400000, guid: 2d74e7a80ce43d44694ee1b65f35fc34, type: 2}
       moveLeft: {fileID: 11400000, guid: 253e16ae688aeb648996239d030fa43e, type: 2}
       moveRight: {fileID: 11400000, guid: cc01aacad3c592049ae326ed233802d8, type: 2}
-      attack: {fileID: 11400000, guid: d7c4ce49acc245c4eb2530a26262395a, type: 2}
+      attack: {fileID: 11400000, guid: cc1e7ed0779c0c544a1ffc2ef8093e68, type: 2}
       extras:
       - {fileID: 11400000, guid: 6c05878b661c4824895f2bdc5e426d0d, type: 2}
       - {fileID: 11400000, guid: 18b8a4addfe07ca4ea42cbf9ec7bbb1c, type: 2}
+      - {fileID: 11400000, guid: 772a7db56432ffe44b0f20f79903cd19, type: 2}
+      - {fileID: 11400000, guid: 5093b1c8e2b499d48b3db11593d04cfe, type: 2}
     meleeComboController: {fileID: 0}
     meleeCombo: []
   - id: arcade.weapon.rapid

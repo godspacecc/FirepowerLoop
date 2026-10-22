@@ -8,6 +8,8 @@ namespace Game
         [SerializeField] private Transform lid;
         [SerializeField] private ParticleSystem landingDust;
         [SerializeField] private float dropHeight=8f;
+        /// <summary>已确认的箱体缩小比例，使用世界尺寸，避免遮挡放大的空投武器。</summary>
+        [SerializeField] private float crateScale=.6f;
         /// <summary>仅用于落地尘土去重，首次收到已落地快照不补播。</summary>
         private float lastProgress=-1;
         public bool WeaponVisible=>lastProgress>=.9f;
@@ -20,7 +22,7 @@ namespace Game
             float fall=Mathf.Clamp01(progress/.75f);
             // 通用掉落根自带0.45缩放；空投高度与箱体尺寸使用场景米，不能继承成悬空小箱子。
             var parentScale=transform.parent.lossyScale;
-            transform.localScale=new Vector3(1/Mathf.Max(.001f,Mathf.Abs(parentScale.x)),1/Mathf.Max(.001f,Mathf.Abs(parentScale.y)),1/Mathf.Max(.001f,Mathf.Abs(parentScale.z)));
+            transform.localScale=new Vector3(crateScale/Mathf.Max(.001f,Mathf.Abs(parentScale.x)),crateScale/Mathf.Max(.001f,Mathf.Abs(parentScale.y)),crateScale/Mathf.Max(.001f,Mathf.Abs(parentScale.z)));
             transform.position=transform.parent.position+Vector3.up*(-.3f+dropHeight*(1-fall*fall));
             // 掉落根仍负责武器慢转，箱体保持固定朝向，不随武器绕地旋转。
             transform.rotation=Quaternion.identity;

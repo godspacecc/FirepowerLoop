@@ -764,7 +764,7 @@
   "ui.arcade.effect.life": "Extra Lives +{0}",
   "ui.arcade.effect.consumable": "Run Quantity +{0}",
   "ui.arcade.effect.equipment": "Equip for this run",
-  "ui.arcade.product.arcade.weapon.basic.name": "Pistol",
+  "ui.arcade.product.arcade.weapon.basic.name": "Basic Rifle",
   "ui.arcade.product.arcade.weapon.rapid.name": "Rapid Weapon",
   "ui.arcade.product.arcade.weapon.spread.name": "Spread Weapon",
   "ui.arcade.product.arcade.weapon.piercing.name": "Piercing Ray",

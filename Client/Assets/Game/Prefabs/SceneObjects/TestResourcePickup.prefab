@@ -226,6 +226,7 @@ MonoBehaviour:
   lid: {fileID: 7124905870969082860}
   landingDust: {fileID: 5314142880752755167}
   dropHeight: 8
+  crateScale: 0.6
 --- !u!1 &1369664239477883486
 GameObject:
   m_ObjectHideFlags: 0
@@ -984,6 +985,11 @@ MonoBehaviour:
     beamPrefab: {fileID: 3596700165989758538, guid: b2efd8792f9e576418db52ba57404fce,
       type: 3}
   weaponDelivery: {fileID: 8574441126901303198}
+  deliveredWeaponMaxSize: 1.7
+  weaponDeliveryPoses:
+  - prefabAddress: Prefabs/SceneObjects/ArcadeFlamethrower
+    localPosition: {x: 0, y: 0, z: 0}
+    localEulerAngles: {x: 0, y: 110, z: 90}
 --- !u!1 &4683302406865300606
 GameObject:
   m_ObjectHideFlags: 0
