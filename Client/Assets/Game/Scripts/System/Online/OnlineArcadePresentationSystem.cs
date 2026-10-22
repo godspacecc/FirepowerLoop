@@ -12,6 +12,10 @@ namespace Game
     /// </summary>
     public sealed partial class OnlineArcadePresentationSystem : AbstractSystem
     {
+        /// <summary>预测、边界与镜头使用当前地图的独立尺寸，旧主题回退原规则。</summary>
+        private FirepowerLoop.Arcade.ArcadeEarlyStageParameters EarlyStage=>catalog?.EarlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==activeArena?.ArenaNumber);
+        private float ArenaHalfWidth=>EarlyStage?.HalfWidth??catalog.Rule.ArenaHalfWidth;
+        private float ArenaHalfHeight=>EarlyStage?.HalfHeight??catalog.Rule.ArenaHalfHeight;
         private const float SnapDistance = 2.5f;
         private const float DashSpeedMultiplier = 2.4f;
         private readonly Dictionary<long, int> enemyIds = new();
@@ -114,7 +118,7 @@ namespace Game
                     if(generation!=transitionGeneration||latest.RunId!=runId||latest.Battle?.ArenaNumber!=arenaNumber)return;
                 }
                 activeArena = ResolveArena(latest.Battle.ArenaConfigNumber > 0 ? latest.Battle.ArenaConfigNumber : arenaNumber);
-                view.Begin(activeArena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,
+                view.Begin(activeArena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight,
                     activeArena.Obstacles);
                 active = true;
                 activeBattleArenaNumber = arenaNumber;
@@ -169,12 +173,12 @@ namespace Game
             var moveSpeed = CalculatePredictedMoveSpeed(catalog.Rule.PlayerMoveSpeed, self.DashSeconds > 0f,
                 catalog.Upgrades, FindLocalRunPlayer(selfId).UpgradeStacks);
             var island = !self.InTreasureRoom && !latest.Battle.IsChallenge && activeArena?.Opening.Enabled == true
-                ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,latest.Battle.WaveNumber) : null;
+                ? predictionIsland ??= new FirepowerLoop.Arcade.ArcadeIslandRegion(ArenaHalfWidth, ArenaHalfHeight,latest.Battle.WaveNumber) : null;
             if (island != null && island.IsShallow(predictedLocalPosition.x, predictedLocalPosition.y))
                 moveSpeed *= activeArena.Opening.WaterSpeedRatio;
             predictedLocalPosition = PredictLocalPosition(predictedLocalPosition, PredictContentMove(PredictedMovementDirection(input.Move,self),moveSpeed,self), moveSpeed,
-                Mathf.Min(Time.deltaTime, .05f), catalog.Rule.PlayerRadius, self.InTreasureRoom ? TreasureParameters()?.HalfWidth ?? catalog.Rule.ArenaHalfWidth : catalog.Rule.ArenaHalfWidth,
-                self.InTreasureRoom ? TreasureParameters()?.HalfHeight ?? catalog.Rule.ArenaHalfHeight : catalog.Rule.ArenaHalfHeight,
+                Mathf.Min(Time.deltaTime, .05f), catalog.Rule.PlayerRadius, self.InTreasureRoom ? TreasureParameters()?.HalfWidth ?? ArenaHalfWidth : ArenaHalfWidth,
+                self.InTreasureRoom ? TreasureParameters()?.HalfHeight ?? ArenaHalfHeight : ArenaHalfHeight,
                 self.InTreasureRoom ? Array.Empty<ArcadeObstacleDefinition>() : RoundObstacles, island);
             Vector2 authoritative = new(self.PositionX, self.PositionZ);
             if (Vector2.Distance(predictedLocalPosition, authoritative) > SnapDistance) predictedLocalPosition = authoritative;
@@ -231,7 +235,7 @@ namespace Game
                 activeRoundGeneration=battle.RoundGeneration;lastAppliedBattleRevision=-1;hasPrediction=false;predictionIsland=null;predictedIceVelocity=Vector2.zero;
                 roundLoadPrompt=false;
                 enemyIds.Clear();projectileIds.Clear();dropIds.Clear();nextPresentationId=1;
-                view.Begin(activeArena.ArenaNumber,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,RoundObstacles);
+                view.Begin(activeArena.ArenaNumber,ArenaHalfWidth,ArenaHalfHeight,RoundObstacles);
                 view.SetIslandRound(activeArena.ArenaNumber==1?battle.WaveNumber:0);
                 view.SetRoundLayout(activeRoundLayout);
             }
@@ -241,8 +245,8 @@ namespace Game
             var roomRules = TreasureParameters();
             if (inRoom != presentedInTreasureRoom || !string.Equals(presentedRoomId, battle.TreasureRoomId, StringComparison.Ordinal))
             {
-                view.Begin(activeArena.ArenaNumber, inRoom ? roomRules.HalfWidth : catalog.Rule.ArenaHalfWidth,
-                    inRoom ? roomRules.HalfHeight : catalog.Rule.ArenaHalfHeight,
+                view.Begin(activeArena.ArenaNumber, inRoom ? roomRules.HalfWidth : ArenaHalfWidth,
+                    inRoom ? roomRules.HalfHeight : ArenaHalfHeight,
                     inRoom ? Array.Empty<ArcadeObstacleDefinition>() : RoundObstacles);
                 view.SetIslandRound(!inRoom&&activeArena.ArenaNumber==1?battle.WaveNumber:0);
                 if(!inRoom)view.SetRoundLayout(activeRoundLayout);
@@ -277,7 +281,7 @@ namespace Game
             var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
             view.SetExits(!inRoom && battle.AwaitingExit && !battle.IsFinalBoss && !StagePortalVisible(battle) ? roundTargets : Array.Empty<int>(),
-                catalog.Rule.ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss && !StagePortalVisible(battle));
+                ArenaHalfHeight, !inRoom && battle.AwaitingExit && battle.IsFinalBoss && !StagePortalVisible(battle));
             seenIds.Clear();
             view.BeginEffectSync();
             view.SetRoundReward(inRoom?null:battle.RoundReward?.ToPresentation(),catalog.Rule.RoundReward);
@@ -612,7 +616,7 @@ namespace Game
                 return;
             }
             int contact=-1;for(int i=0;i<activeRoundLayout.ExitCount;i++)
-            {var point=activeRoundLayout.GetExitPosition(i,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
+            {var point=activeRoundLayout.GetExitPosition(i,ArenaHalfWidth,ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 var p=new Vector2(point.X,point.Y);
                 if(Vector2.SqrMagnitude(new Vector2(self.PositionX,self.PositionZ)-p)<=2.25f){contact=i;break;}}
             if(contact<0)return;

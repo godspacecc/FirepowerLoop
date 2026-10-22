@@ -25,7 +25,7 @@ namespace Game
             if(!UsesStagePortal(r))return;
             if(r.StagePortal==null)
             {
-                var t=catalog.Rule.RoundReward;var position=RewardGround(r,t.PortalX,t.PortalZ,t.PortalRadius);
+                var t=catalog.Rule.RoundReward;var position=RewardGround(r,EarlyStage?.PortalX??t.PortalX,EarlyStage?.PortalY??t.PortalZ,t.PortalRadius);
                 r.StagePortal=new ArcadeStagePortalState{X=position.x,Z=position.y};
             }
             ArcadeStagePortalRules.Advance(r.StagePortal,seconds);
@@ -52,7 +52,7 @@ namespace Game
         private Vector2 RewardGround(ArcadeCombatRuntime r,float x,float z,float radius)
         {
             var obstacles=ObstaclesFor(r);var island=IslandFor(r);
-            var p=ArcadeRoundRewardRules.FindGround(x,z,radius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,
+            var p=ArcadeRoundRewardRules.FindGround(x,z,radius,ArenaHalfWidth,ArenaHalfHeight,
                 (px,pz)=>IsInsideObstacle(new Vector2(px,pz),radius,obstacles)||island!=null&&!island.ContainsCircle(px,pz,radius));
             return new Vector2(p.X,p.Y);
         }

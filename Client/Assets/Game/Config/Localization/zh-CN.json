@@ -1377,5 +1377,13 @@
   "ui.arcade.details.confirmed": "已确认",
   "ui.arcade.details.pending_confirmation": "待确认",
   "ui.arcade.abandon.body": "确定放弃本局？本局进度将被清除。",
-  "ui.arcade.abandon.confirm": "确定放弃"
+  "ui.arcade.abandon.confirm": "确定放弃",
+  "ui.arcade.docks.round.1": "码头 · 第1轮",
+  "ui.arcade.docks.round.2": "码头 · 第2轮",
+  "ui.arcade.docks.round.3": "码头 · 第3轮",
+  "ui.arcade.docks.round.4": "码头 · 第4轮",
+  "ui.arcade.snowfarm.round.1": "雪地农场 · 第1轮",
+  "ui.arcade.snowfarm.round.2": "雪地农场 · 第2轮",
+  "ui.arcade.snowfarm.round.3": "雪地农场 · 第3轮",
+  "ui.arcade.snowfarm.round.4": "雪地农场 · 第4轮"
 }

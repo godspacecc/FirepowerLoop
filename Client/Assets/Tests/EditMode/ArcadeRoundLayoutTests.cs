@@ -15,20 +15,22 @@ namespace Game.Tests
         {
             var provider=new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
-            Assert.That(catalog.RoundLayouts.Count,Is.EqualTo(80));
+            Assert.That(catalog.RoundLayouts.Count,Is.EqualTo(88));
             foreach(var arena in catalog.Arenas)
             {
                 var group=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();
                 Assert.That(group.Select(p=>p.RoundNumber),Is.EquivalentTo(new[]{1,2,3,4}));
-                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(4));
+                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(arena.ArenaNumber==21||arena.ArenaNumber==22?1:4));
             }
         }
         [Test] public void AllGeneratedEntrancesSpawnAndExitsHaveMultiplayerRoutes()
         {
-            foreach(var row in Load().TbArcadeRoundLayout.DataList)
+            var tables=Load();var stages=tables.TbArcadeEarlyStage.DataList.Select(ArcadeEarlyStageParameters.FromConfig).ToArray();
+            foreach(var row in tables.TbArcadeRoundLayout.DataList)
             {
+                var stage=stages.FirstOrDefault(p=>p.ArenaConfigNumber==row.ArenaConfigNumber);float w=stage?.HalfWidth??19.5f,h=stage?.HalfHeight??19.5f;
                 var p=ArcadeRoundLayoutParameters.FromConfig(row);
-                Assert.That(p.FitsArena(19.5f,19.5f,.55f),Is.True,p.Id);
+                Assert.That(p.FitsArena(w,h,.55f),Is.True,p.Id);
             }
         }
         [Test] public void MissingConfigIsRejectedBeforeCreatingLayout()
@@ -39,8 +41,10 @@ namespace Game.Tests
         /// <summary>所有正式地图均有六个可达、不同位置的武器候选点，每轮生成两把。</summary>
         [Test] public void AllMapsProvideSixReachableWeaponPointsAndTwoPickups()
         {
-            foreach(var row in Load().TbArcadeRoundLayout.DataList)
+            var tables=Load();var stages=tables.TbArcadeEarlyStage.DataList.Select(ArcadeEarlyStageParameters.FromConfig).ToArray();
+            foreach(var row in tables.TbArcadeRoundLayout.DataList)
             {
+                var stage=stages.FirstOrDefault(p=>p.ArenaConfigNumber==row.ArenaConfigNumber);float w=stage?.HalfWidth??19.5f,h=stage?.HalfHeight??19.5f;
                 var p=ArcadeRoundLayoutParameters.FromConfig(row);
                 var points=p.WeaponSpawnPoints;
                 Assert.That(points.Count,Is.EqualTo(6),p.Id);
@@ -50,10 +54,10 @@ namespace Game.Tests
                 Assert.That(p.WeaponSpawnFirstDelayMax,Is.EqualTo(8f),p.Id);
                 Assert.That(p.WeaponSpawnDelayMin,Is.EqualTo(20f),p.Id);
                 Assert.That(p.WeaponSpawnDelayMax,Is.EqualTo(30f),p.Id);
-                Assert.That(p.FitsArena(19.5f,19.5f,.55f),Is.True,p.Id);
+                Assert.That(p.FitsArena(w,h,.55f),Is.True,p.Id);
                 foreach(var point in points)
                 {
-                    Assert.That(p.IsWalkable(point.X,point.Y,1.1f),Is.True,p.Id);
+                    Assert.That(p.IsWalkable(point.X,point.Y,1.1f,w,h),Is.True,p.Id);
                     Assert.That(Vector2.Distance(new Vector2(point.X,point.Y),new Vector2(p.SpawnX,p.SpawnY)),Is.GreaterThan(3),p.Id);
                 }
             }

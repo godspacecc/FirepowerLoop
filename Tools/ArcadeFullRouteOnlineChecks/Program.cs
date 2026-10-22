@@ -13,6 +13,12 @@ if(opts.GetValueOrDefault("testClass")=="WeaponUpgradeOnline")
     World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
     World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=WeaponUpgradeOnlineChecks.Run(upgradeMax);return;
 }
+if(opts.GetValueOrDefault("testClass")=="EarlyStageOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int stageMax)||stageMax<1)throw new ArgumentException("Explicit EarlyStageOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=EarlyStageOnlineChecks.Run(stageMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="PurpleRayOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int rayMax)||rayMax<1)throw new ArgumentException("Explicit PurpleRayOnline limit required");

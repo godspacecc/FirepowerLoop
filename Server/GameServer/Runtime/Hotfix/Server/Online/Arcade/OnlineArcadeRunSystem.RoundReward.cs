@@ -23,7 +23,7 @@ namespace ET.Server
             if(UsesStagePortal(b))
             {
                 var t=ServerConfig.Instance.RoundReward;
-                if(b.StagePortal==null){var ground=RewardGround(b,t.PortalX,t.PortalZ,t.PortalRadius);b.StagePortal=new ArcadeStagePortalState{X=ground.X,Z=ground.Y};}
+                if(b.StagePortal==null){var ground=RewardGround(b,EarlyStage(b)?.PortalX??t.PortalX,EarlyStage(b)?.PortalY??t.PortalZ,t.PortalRadius);b.StagePortal=new ArcadeStagePortalState{X=ground.X,Z=ground.Y};}
                 ArcadeStagePortalRules.Advance(b.StagePortal,seconds);
                 foreach(var p in b.Players.Values)ArcadeStagePortalRules.TryContact(b.StagePortal,t,p.PlayerId,p.PositionX,p.PositionZ,p.Alive&&!p.InTreasureRoom&&p.RespawnSeconds<=0);
                 changed=true;
@@ -69,7 +69,7 @@ namespace ET.Server
         private static ArcadeRegionPoint RewardGround(OnlineArcadeBattleRuntime b,float x,float z,float radius)
         {
             var rule=ServerConfig.Instance.ArcadeRule;var obstacles=EffectiveObstacles(b);var island=IslandFor(b);
-            return ArcadeRoundRewardRules.FindGround(x,z,radius,rule.ArenaHalfWidth,rule.ArenaHalfHeight,
+            return ArcadeRoundRewardRules.FindGround(x,z,radius,ArenaHalfWidth(b),ArenaHalfHeight(b),
                 (px,pz)=>InsideObstacle(px,pz,radius,obstacles)||island!=null&&!island.ContainsCircle(px,pz,radius));
         }
     }

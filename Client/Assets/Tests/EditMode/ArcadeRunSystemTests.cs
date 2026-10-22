@@ -148,7 +148,7 @@ namespace Game.Tests
             var provider = Game.Interface.GetUtility<IRuntimeConfigProvider>();
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
 
-            Assert.That(catalog.Arenas, Has.Count.EqualTo(20));
+            Assert.That(catalog.Arenas, Has.Count.EqualTo(22));
             Assert.That(catalog.Arenas, Has.All.Property("WaveGroupIds").Count.EqualTo(4));
             Assert.That(catalog.Arenas.Where(value => value.IsBoss).Select(value => value.ArenaNumber),
                 Is.EqualTo(new[] { 4, 8, 12, 16, 20 }));
@@ -171,7 +171,7 @@ namespace Game.Tests
             Assert.That(catalog.Rule.ArenaHalfHeight, Is.EqualTo(19.5f));
             Assert.That(catalog.Weapons.Where(value => value.Id.StartsWith("arcade.weapon.")).Select(value => value.Id), Is.EquivalentTo(new[]
             {
-                "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.spread",
+                "arcade.weapon.basic", "arcade.weapon.rapid", "arcade.weapon.spread", "arcade.weapon.flamethrower",
                 "arcade.weapon.piercing", "arcade.weapon.rocket", "arcade.weapon.grenade",
                 "arcade.weapon.raygun"
             }));

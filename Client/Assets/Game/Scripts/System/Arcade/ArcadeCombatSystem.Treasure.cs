@@ -154,8 +154,8 @@ namespace Game
             if (runtime.PresentedRegion != region)
             {
                 var p = runtime.TreasureRoom.Parameters;
-                view.Begin(arena.ArenaNumber, region == 1 ? p.HalfWidth : catalog.Rule.ArenaHalfWidth,
-                    region == 1 ? p.HalfHeight : catalog.Rule.ArenaHalfHeight,
+                view.Begin(arena.ArenaNumber, region == 1 ? p.HalfWidth : ArenaHalfWidth,
+                    region == 1 ? p.HalfHeight : ArenaHalfHeight,
                     region == 1 ? Array.Empty<ArcadeObstacleDefinition>() : ObstaclesFor(runtime));
                 view.SetIslandRound(UsesIslandRounds(runtime) && region == 0 ? runtime.WaveIndex + 1 : 0);
                 if (UsesContentRounds(runtime) && region == 0) view.SetRoundLayout(RoundLayout(runtime));

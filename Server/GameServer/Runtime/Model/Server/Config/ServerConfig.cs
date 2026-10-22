@@ -58,6 +58,8 @@ namespace ET
         public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RoundReward {get;private set;}
         /// <summary>同枪与头骨的共用强化参数。</summary>
         public FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning WeaponUpgrade {get;private set;}
+        /// <summary>新场地独立尺寸与牛群参数，只读目录不改写生成表。</summary>
+        public IReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters> EarlyStages {get;private set;}
 
         public void Awake(string profile)
         {
@@ -284,6 +286,9 @@ namespace ET
         /// <summary>服务启动时拒绝不能创建权威安全节点的街机配置。</summary>
         private void ValidateArcadeConfig()
         {
+            var early=this.tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
+            if(early.Length!=2||early.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=2)throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected dock and farm");
+            this.EarlyStages=new System.Collections.ObjectModel.ReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters>(early.ToDictionary(p=>p.ArenaConfigNumber));
             this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
             this.SlayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(this.tables);
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
@@ -482,6 +487,13 @@ namespace ET
                     !string.Equals(arena.WaveGroupIds[^1], boss.EnemyGroupId, StringComparison.Ordinal))
                     throw ConfigError(this.Profile, "TbArcadeArena", arena.ArenaNumber.ToString(),
                         "BossId must match the final wave enemy group.");
+            }
+            var roundLayouts=this.tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
+            if(roundLayouts.Length!=this.tables.TbArcadeArena.DataList.Count*4)throw ConfigError(this.Profile,"TbArcadeRoundLayout","count","incomplete directory");
+            foreach(var arena in this.tables.TbArcadeArena.DataList)
+            {
+                this.EarlyStages.TryGetValue(arena.ArenaNumber,out var stage);var rounds=roundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();
+                if(rounds.Length!=4||rounds.Select(p=>p.RoundNumber).Distinct().Count()!=4||rounds.Select(p=>p.ThemeKey).Distinct().Count()!=1||rounds.Any(p=>!p.FitsArena(stage?.HalfWidth??this.arcadeRule.ArenaHalfWidth,stage?.HalfHeight??this.arcadeRule.ArenaHalfHeight,this.arcadeRule.PlayerRadius)))throw ConfigError(this.Profile,"TbArcadeRoundLayout",arena.ArenaNumber.ToString(),"invalid connected layout");
             }
             bool ValidateRoute(int id, int depth)
             {

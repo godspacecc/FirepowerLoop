@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FirepowerLoop.Arcade;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 
 namespace Game
 {
@@ -47,7 +48,7 @@ namespace Game
             if(float.IsNaN(halfWidth)||float.IsInfinity(halfWidth)||float.IsNaN(halfHeight)||float.IsInfinity(halfHeight)||
                 float.IsNaN(radius)||float.IsInfinity(radius)||halfWidth<=0||halfHeight<=0||radius<=0)
                 throw new ArgumentException("轮级表现边界必须为正有限值");
-            if(roundHalfWidth!=halfWidth||roundHalfHeight!=halfHeight||roundPlayerRadius!=radius)roundLayoutReady=false;
+            if(roundHalfWidth!=halfWidth||roundHalfHeight!=halfHeight||roundPlayerRadius!=radius){roundLayoutReady=false;ReleaseEarlyStageLoad();}
             roundHalfWidth=halfWidth;roundHalfHeight=halfHeight;roundPlayerRadius=radius;roundBoundsConfigured=true;
         }
 
@@ -56,6 +57,7 @@ namespace Game
         {
             if(layout==null){roundLayoutLoadError="轮级布局配置缺失";roundLayoutReady=false;return;}
             if(roundLayout?.Id==layout.Id && roundContentRoot!=null && roundContentRoot.transform.parent==root?.transform && roundLayoutReady)return;
+            if(roundLayout?.Id==layout.Id&&earlyStageLoad!=null&&!earlyStageLoad.Released&&roundContentRoot!=null&&roundContentRoot.transform.parent==root?.transform)return;
             ReleaseRoundContent();roundLayout=layout;
             if(root==null){roundLayoutLoadError="战斗动态根未准备";return;}
             try
@@ -66,6 +68,8 @@ namespace Game
                 roundEnvironmentRoot=RoundGroup(roundContentRoot.transform,"Environment_"+layout.ThemeKey);
                 roundAreaRoot=RoundGroup(roundContentRoot.transform,"AuthoritativeAreas");
                 roundEnemyRoot=RoundGroup(roundContentRoot.transform,"DedicatedEnemies");
+                if(earlyStage!=null&&earlyStage.ArenaConfigNumber==layout.ArenaConfigNumber)
+                {LoadConfirmedEarlyStage(layout).Forget();return;}
                 if(layout.ArenaConfigNumber!=1)BuildRoundEnvironment(layout);
                 if (layout.ArenaConfigNumber != 1) BuildRoundEntryMarkers(layout);
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();
@@ -289,6 +293,7 @@ namespace Game
             roundContentRoot.SetActive(!contentInRoom);
             if(roundLayout?.ArenaConfigNumber!=1 && !contentInRoom && roundLayoutReady)
             {
+                HideEarlyStageBaseWalls();
                 HideIslandBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);
                 foreach(Transform child in root.transform)
                 {
@@ -532,6 +537,8 @@ namespace Game
         /// <summary>根先失活，再释放所有自有网格和材质；共享 Primitive 网格不在释放列表中。</summary>
         private void ReleaseRoundContent()
         {
+            RestoreEarlyStageBaseWalls();
+            ReleaseEarlyStageLoad();
             ClearPurpleRayArcs();
             ClearBarrelBlasts();roundSeenBarrelBlasts.Clear();
             roundLayoutReady=false;roundLayoutLoadError=null;

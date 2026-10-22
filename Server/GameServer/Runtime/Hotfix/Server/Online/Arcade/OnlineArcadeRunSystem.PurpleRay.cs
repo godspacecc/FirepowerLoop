@@ -27,12 +27,12 @@ namespace ET.Server
             {
                 float ax=p.PositionX,az=p.PositionZ,bx=ax+p.VelocityX*remaining,bz=az+p.VelocityZ*remaining,first=1;
                 int kind=0,crateId=-1;OnlineArcadeEnemyRuntime target=null;
-                float cx=0,cz=0,hx=rule.ArenaHalfWidth,hz=rule.ArenaHalfHeight;
+                float cx=0,cz=0,hx=ArenaHalfWidth(b),hz=ArenaHalfHeight(b);
                 foreach(var wall in EffectiveObstacles(b))
                     if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first)
                     {first=entry;kind=1;cx=wall.CenterX;cz=wall.CenterY;hx=wall.HalfWidth;hz=wall.HalfHeight;}
-                if(IslandFor(b)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(ax,az,bx,bz,rule.ArenaHalfWidth,rule.ArenaHalfHeight,out float edge)&&edge<=first)
-                {first=edge;kind=1;cx=cz=0;hx=rule.ArenaHalfWidth;hz=rule.ArenaHalfHeight;}
+                if(IslandFor(b)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(ax,az,bx,bz,ArenaHalfWidth(b),ArenaHalfHeight(b),out float edge)&&edge<=first)
+                {first=edge;kind=1;cx=cz=0;hx=ArenaHalfWidth(b);hz=ArenaHalfHeight(b);}
                 foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
                     if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
                     {first=entry;kind=2;target=enemy;}

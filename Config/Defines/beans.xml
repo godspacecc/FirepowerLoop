@@ -589,4 +589,24 @@
         <var name="RedPowerupId" type="string#ref=TbArcadePowerup"/>
         <var name="PurplePowerupId" type="string#ref=TbArcadePowerup"/>
     </bean>
+    <!-- 已采用二代码头/四区农场的独立边界与牛群参数，旧地图不套用。 -->
+    <bean name="ArcadeEarlyStageConfig" group="e">
+        <var name="ArenaConfigNumber" type="int#ref=TbArcadeArena"/>
+        <var name="HalfWidth" type="float"/>
+        <var name="HalfHeight" type="float"/>
+        <var name="EnvironmentPrefabName" type="string"/>
+        <var name="PortalX" type="float"/>
+        <var name="PortalY" type="float"/>
+        <var name="HerdPrefabName" type="string"/>
+        <var name="HerdCount" type="int"/>
+        <var name="HerdSpacing" type="float"/>
+        <var name="HerdWindup" type="float"/>
+        <var name="HerdSpeed" type="float"/>
+        <var name="HerdDistance" type="float"/>
+        <var name="HerdRadius" type="float"/>
+        <var name="HerdFirstDelay" type="float"/>
+        <var name="HerdPeriod" type="float"/>
+        <var name="HerdPlayerDamage" type="float"/>
+        <var name="HerdEnemyDamage" type="float"/>
+    </bean>
 </beans>

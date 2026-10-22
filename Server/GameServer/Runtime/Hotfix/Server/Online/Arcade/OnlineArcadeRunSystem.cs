@@ -522,7 +522,8 @@ namespace ET.Server
         {
             OnlineArcadeRunRecord candidate = Clone(actor.Record);
             EnsureCollections(candidate);
-            ArcadeArenaConfig arena = ResolveArenaConfig(candidate.IsCasualRoute ? candidate.ArenaConfigNumber : candidate.NextArena);
+            // 结算读取实际已战斗的配置身份，旧顺序累计场数不能误命中新21/22。
+            ArcadeArenaConfig arena = ServerConfig.Instance.Tables.TbArcadeArena.Get(actor.Battle.ArenaConfigNumber);
             try
             {
                 // 新休闲前两场只有个人积分，清场不凭旧配置额外复制购物现金。
@@ -659,14 +660,6 @@ namespace ET.Server
 
         private static int ScaleGold(int baseGold, int arenaNumber, float growth) =>
             Math.Max(0, (int)MathF.Round(baseGold * (1f + Math.Max(0, arenaNumber - 1) * growth)));
-
-        private static ArcadeArenaConfig ResolveArenaConfig(int arenaNumber)
-        {
-            List<ArcadeArenaConfig> arenas = ServerConfig.Instance.Tables.TbArcadeArena.DataList;
-            if (arenas.Count == 0) throw new InvalidOperationException("Arcade arena config is empty.");
-            ArcadeArenaConfig exact = ServerConfig.Instance.Tables.TbArcadeArena.GetOrDefault(arenaNumber);
-            return exact ?? arenas.OrderBy(x => x.ArenaNumber).ElementAt((arenaNumber - 1) % arenas.Count);
-        }
 
         /// <summary>普通恢复点先保有提交节点，再以双方准备后的工作态构造下一场。</summary>
         private static bool TryStartTransitBattle(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor)
@@ -1190,7 +1183,7 @@ namespace ET.Server
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             if (!string.Equals(record.ConfigFingerprint, rule.ConfigFingerprint, StringComparison.Ordinal))
                 throw new RpcException(ErrorCode.ERR_OnlineRoomVersionMismatch, "街机配置版本与服务器不一致");
-            ArcadeArenaConfig arena = ResolveArena(record.IsCasualRoute ? record.ArenaConfigNumber : record.NextArena);
+            ArcadeArenaConfig arena = record.IsCasualRoute?ResolveArena(record.ArenaConfigNumber):ResolveSequentialArena(record.NextArena);
             ArcadeChallengeConfig challengeConfig = challenge
                 ? ServerConfig.Instance.Tables.TbArcadeChallenge.GetOrDefault(record.ChallengeId)
                 : null;
@@ -1293,7 +1286,7 @@ namespace ET.Server
             battle.WeaponSpawns=null;
             if(battle.IsChallenge||battle.IsFinalBoss||record.RoundBossEncounter||battle.SlayerChallenge!=null||battle.SlayerMartReturnWave>0||battle.RoundLayout==null)return;
             var random=new Random(unchecked((int)MixDropSeed((ulong)record.RunId,battle.ArenaNumber,battle.WaveIndex+1)));
-            if (battle.RoundLayout?.ArenaConfigNumber == 1)
+            if (battle.RoundLayout?.ArenaConfigNumber == 1||EarlyStage(battle)!=null)
                 battle.IslandPassages = new FirepowerLoop.Arcade.ArcadePassageSchedule(
                     battle.RoundLayout.EntrySegmentSeconds, battle.RoundLayout.Entries.Count, random);
             battle.WeaponSpawns=battle.RoundLayout.CreateWeaponSpawnSchedule(random);
@@ -1451,7 +1444,7 @@ namespace ET.Server
             }
             changed |= TickFinalBossReinforcements(battle, deltaSeconds, now);
             changed |= TickWeaponPickups(battle, deltaSeconds);
-            if (battle.RoundLayout?.ArenaConfigNumber == 1 && !battle.IsChallenge && !battle.IsFinalBoss &&
+            if ((battle.RoundLayout?.ArenaConfigNumber == 1||EarlyStage(battle)!=null) && !battle.IsChallenge && !battle.IsFinalBoss &&
                 IslandPassageActive(battle) && battle.SpawnQueueIndex < battle.SpawnQueue.Count)
                 battle.IslandPassages?.Advance(deltaSeconds);
             changed |= TrySpawnEnemy(battle, now);
@@ -1491,12 +1484,13 @@ namespace ET.Server
             float damageGrowth = 1f + ServerConfig.Instance.ArcadeRule.DamageGrowthPerArena * Math.Max(0, battle.ArenaNumber - 1);
             float speedGrowth = 1f + ServerConfig.Instance.ArcadeRule.SpeedGrowthPerArena * Math.Max(0, battle.ArenaNumber - 1);
             int maxHealth = Math.Max(1, (int)MathF.Round(enemyConfig.MaxHP * group.HealthMultiplier * arenaGrowth));
-            (float x, float z) = SpawnPosition(runtimeId, ServerConfig.Instance.ArcadeRule);
+            (float x, float z) = SpawnPosition(runtimeId, ServerConfig.Instance.ArcadeRule,battle);
             var opening = FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena);
             bool islandSpawn = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
             if (battle.RoundLayout != null && !islandSpawn)
             {
-                var entry=battle.RoundLayout.Entries[battle.SpawnedInWave % battle.RoundLayout.Entries.Count];x=entry.X;z=entry.Y;
+                int index=EarlyStage(battle)!=null?battle.IslandPassages.Advance(0):battle.SpawnedInWave%battle.RoundLayout.Entries.Count;
+                var entry=battle.RoundLayout.Entries[index];x=entry.X;z=entry.Y;
             }
             if (islandSpawn)
             {
@@ -1639,8 +1633,8 @@ namespace ET.Server
                             nextZ - player.PositionZ, rule.PlayerRadius, battle.IslandMovementPath);
                         nextX = position.X; nextZ = position.Y;
                     }
-                    ResolvePosition(ref nextX, ref nextZ, player.PositionX, player.PositionZ,
-                        rule.PlayerRadius, rule, player.InTreasureRoom ? Array.Empty<ArcadeObstacleConfig>() : EffectiveObstacles(battle), region);
+                    ResolveBattlePosition(player.InTreasureRoom?null:battle,ref nextX, ref nextZ, player.PositionX, player.PositionZ,
+                        rule.PlayerRadius, player.InTreasureRoom ? Array.Empty<ArcadeObstacleConfig>() : EffectiveObstacles(battle), region);
                     if (player.InTreasureRoom)
                     {
                         nextX = Math.Clamp(nextX, -battle.TreasureRoom.Parameters.HalfWidth + rule.PlayerRadius, battle.TreasureRoom.Parameters.HalfWidth - rule.PlayerRadius);
@@ -1723,7 +1717,7 @@ namespace ET.Server
                 if (enemy.AttackKind == EnemyAttackKind.Projectile)
                 {
                     if (seaApproaching || distance > enemy.AttackRange * 0.8f)
-                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance);
+                        MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance,battle);
                     if (distance <= enemy.AttackRange && enemy.AttackCooldownSeconds <= 0f &&
                         battle.Projectiles.Count < rule.MaxProjectiles)
                     {
@@ -1733,7 +1727,7 @@ namespace ET.Server
                 }
                 else
                 {
-                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance);
+                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance,battle);
                     if (distance <= rule.PlayerRadius + rule.EnemyContactRadius && enemy.AttackCooldownSeconds <= 0f)
                     {
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
@@ -1796,8 +1790,8 @@ namespace ET.Server
                     boss.ChargeSpeedMultiplier;
                 float nextZ = previousZ + enemy.BossChargeDirectionZ * enemy.MoveSpeed * movementDelta *
                     boss.ChargeSpeedMultiplier;
-                ResolvePosition(ref nextX, ref nextZ, previousX, previousZ,
-                    rule.EnemyContactRadius, rule, obstacles);
+                ResolveBattlePosition(battle,ref nextX, ref nextZ, previousX, previousZ,
+                    rule.EnemyContactRadius, obstacles);
                 enemy.PositionX = nextX;
                 enemy.PositionZ = nextZ;
                 float hitRadius = boss.ImpactRadius + rule.PlayerRadius;
@@ -1849,7 +1843,7 @@ namespace ET.Server
         /// <summary>普通敌人使用服务器权威的确定性矩形绕障；Boss 锁向冲锋保持直线技能语义。</summary>
         private static void MoveEnemy(OnlineArcadeEnemyRuntime enemy, float targetX, float targetZ,
             float deltaSeconds, ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles,
-            FirepowerLoop.Arcade.ArcadeIslandRegion island = null, float seaDistance = 0)
+            FirepowerLoop.Arcade.ArcadeIslandRegion island = null, float seaDistance = 0,OnlineArcadeBattleRuntime battle=null)
         {
             float previousX = enemy.PositionX;
             float previousZ = enemy.PositionZ;
@@ -1857,7 +1851,7 @@ namespace ET.Server
                 out float directionX, out float directionZ);
             float nextX = previousX + directionX * enemy.MoveSpeed * deltaSeconds;
             float nextZ = previousZ + directionZ * enemy.MoveSpeed * deltaSeconds;
-            ResolveEnemyPosition(ref nextX, ref nextZ, previousX, previousZ,
+            ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, previousX, previousZ,
                 rule.EnemyContactRadius, rule, obstacles, island, seaDistance);
             enemy.PositionX = nextX;
             enemy.PositionZ = nextZ;
@@ -2140,8 +2134,8 @@ namespace ET.Server
                 bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
                 // 海岛行走外缘不裁断朝深海的弹道；武器寿命及真实命中仍负责回收。
                 bool outsideArena = IslandFor(battle) == null &&
-                                    (MathF.Abs(projectile.PositionX) > rule.ArenaHalfWidth ||
-                                     MathF.Abs(projectile.PositionZ) > rule.ArenaHalfHeight);
+                                    (MathF.Abs(projectile.PositionX) > ArenaHalfWidth(battle) ||
+                                     MathF.Abs(projectile.PositionZ) > ArenaHalfHeight(battle));
                 bool remove = expired || outsideArena || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
@@ -2256,7 +2250,7 @@ namespace ET.Server
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
                 // 深海接近时保留原位置附近的击退，完整上岸后仍沿原岸线约束。
-                ResolveEnemyPosition(ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
+                ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
                     rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
                 enemy.PositionX = nextX;
                 enemy.PositionZ = nextZ;
@@ -2959,14 +2953,15 @@ namespace ET.Server
 
         /// <summary>共享原位置碰撞裁决；额外矩形留量仅由深海敌人入口传入。</summary>
         private static void ResolvePositionWithMargin(ref float x, ref float z, float previousX, float previousZ, float radius,
-            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island, float margin)
+            ArcadeRuleConfig rule, IReadOnlyList<ArcadeObstacleConfig> obstacles, FirepowerLoop.Arcade.ArcadeIslandRegion island, float margin, float halfWidth=0,float halfHeight=0)
         {
             if (island != null)
             {
                 var p = island.Constrain(x, z, radius); x = p.X; z = p.Y;
             }
-            x = Math.Clamp(x, -rule.ArenaHalfWidth - margin + radius, rule.ArenaHalfWidth + margin - radius);
-            z = Math.Clamp(z, -rule.ArenaHalfHeight - margin + radius, rule.ArenaHalfHeight + margin - radius);
+            if(halfWidth<=0)halfWidth=rule.ArenaHalfWidth;if(halfHeight<=0)halfHeight=rule.ArenaHalfHeight;
+            x = Math.Clamp(x, -halfWidth - margin + radius, halfWidth + margin - radius);
+            z = Math.Clamp(z, -halfHeight - margin + radius, halfHeight + margin - radius);
             if (InsideObstacle(x, previousZ, radius, obstacles)) x = previousX;
             if (InsideObstacle(x, z, radius, obstacles)) z = previousZ;
             if (InsideObstacle(x, z, radius, obstacles))
@@ -3002,9 +2997,9 @@ namespace ET.Server
                 float leftZ = left.PositionZ - directionZ * push;
                 float rightX = right.PositionX + directionX * push;
                 float rightZ = right.PositionZ + directionZ * push;
-                ResolveEnemyPosition(ref leftX, ref leftZ, left.PositionX, left.PositionZ,
+                ResolveBattleEnemyPosition(battle,ref leftX, ref leftZ, left.PositionX, left.PositionZ,
                     rule.EnemyContactRadius, rule, obstacles, IslandFor(battle), seaDistance);
-                ResolveEnemyPosition(ref rightX, ref rightZ, right.PositionX, right.PositionZ,
+                ResolveBattleEnemyPosition(battle,ref rightX, ref rightZ, right.PositionX, right.PositionZ,
                     rule.EnemyContactRadius, rule, obstacles, IslandFor(battle), seaDistance);
                 left.PositionX = leftX; left.PositionZ = leftZ;
                 right.PositionX = rightX; right.PositionZ = rightZ;
@@ -3049,6 +3044,13 @@ namespace ET.Server
             ArcadeArenaConfig exact = ServerConfig.Instance.Tables.TbArcadeArena.GetOrDefault(arenaNumber);
             return exact ?? arenas.OrderBy(x => x.ArenaNumber).ElementAt((arenaNumber - 1) % arenas.Count);
         }
+        /// <summary>旧顺序局不进入新休闲地图21/22；保留原主题循环与旧安全节点语义。</summary>
+        private static ArcadeArenaConfig ResolveSequentialArena(int arenaNumber)
+        {
+            var arenas=ServerConfig.Instance.Tables.TbArcadeArena.DataList.Where(p=>!ServerConfig.Instance.EarlyStages.ContainsKey(p.ArenaNumber)).OrderBy(p=>p.ArenaNumber).ToArray();
+            if(arenas.Length==0)throw new InvalidOperationException("旧顺序主题目录为空");
+            return arenas[(Math.Max(1,arenaNumber)-1)%arenas.Length];
+        }
 
         private static ArcadeEnemyGroupConfig ResolveBattleGroup(OnlineArcadeBattleRuntime battle,
             ArcadeArenaConfig arena, int waveIndex)
@@ -3085,16 +3087,16 @@ namespace ET.Server
             return boss != null && string.Equals(boss.EnemyGroupId, group.Id, StringComparison.Ordinal) ? boss : null;
         }
 
-        private static (float X, float Z) SpawnPosition(long runtimeId, ArcadeRuleConfig rule)
+        private static (float X, float Z) SpawnPosition(long runtimeId, ArcadeRuleConfig rule,OnlineArcadeBattleRuntime battle=null)
         {
             float lane = ((runtimeId * 37) % 101) / 50f - 1f;
             float inset = Math.Max(rule.EnemyContactRadius * 2f, 0.5f);
             return (runtimeId % 4) switch
             {
-                0 => (-rule.ArenaHalfWidth + inset, lane * (rule.ArenaHalfHeight - inset)),
-                1 => (rule.ArenaHalfWidth - inset, lane * (rule.ArenaHalfHeight - inset)),
-                2 => (lane * (rule.ArenaHalfWidth - inset), -rule.ArenaHalfHeight + inset),
-                _ => (lane * (rule.ArenaHalfWidth - inset), rule.ArenaHalfHeight - inset),
+                0 => (-ArenaHalfWidth(battle) + inset, lane * (ArenaHalfHeight(battle) - inset)),
+                1 => (ArenaHalfWidth(battle) - inset, lane * (ArenaHalfHeight(battle) - inset)),
+                2 => (lane * (ArenaHalfWidth(battle) - inset), -ArenaHalfHeight(battle) + inset),
+                _ => (lane * (ArenaHalfWidth(battle) - inset), ArenaHalfHeight(battle) - inset),
             };
         }
 

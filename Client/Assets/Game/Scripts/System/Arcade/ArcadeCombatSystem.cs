@@ -371,7 +371,7 @@ namespace Game
                 }
                 else
                 {
-                    view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, arena.Obstacles);
+                    view.Begin(arena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight, arena.Obstacles);
                     view.SetIslandRound(0);
                     if (!isChallenge && run.ArenaEntryState != null) BeginArenaEntry(runtime, run.ArenaEntryState);
                     else BeginWave(runtime, 0);
@@ -514,8 +514,8 @@ namespace Game
             // 正式 CharacterController 负责地图碰撞；下一帧把实际落点写回街机运行态，避免规则位置穿过场景障碍。
             if (runtime.RespawnRemaining <= 0f && view.TryGetPlayerPosition(out var actualPlayerPosition))
                 runtime.PlayerPosition = ResolvePosition(actualPlayerPosition, catalog.Rule.PlayerRadius,
-                    runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : catalog.Rule.ArenaHalfWidth,
-                    runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : catalog.Rule.ArenaHalfHeight,
+                    runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : ArenaHalfWidth,
+                    runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : ArenaHalfHeight,
                     ObstaclesFor(runtime), IslandFor(runtime));
             ReadInput(runtime);
             TickTimers(runtime, deltaTime);
@@ -690,7 +690,7 @@ namespace Game
             if (runtime.RespawnRemaining <= 0f)
             {
                 runtime.PlayerHealth = runtime.PlayerMaxHealth;
-                runtime.PlayerPosition = runtime.SlayerChallenge==null?Vector2.zero:new Vector2(RoundLayout(runtime).SpawnX,RoundLayout(runtime).SpawnY);
+                runtime.PlayerPosition = runtime.SlayerChallenge==null&&EarlyStage==null?Vector2.zero:new Vector2(RoundLayout(runtime).SpawnX,RoundLayout(runtime).SpawnY);
                 runtime.PlayerInvulnerability = slayerMartConfig==null?catalog.Rule.ContactInvulnerabilitySeconds*2f:
                     ArcadeSlayerMartAbilityRules.RespawnProtection(catalog.Rule.ContactInvulnerabilitySeconds,SlayerMartAbility(runtime),slayerMartConfig.Parameter);
             }
@@ -710,16 +710,16 @@ namespace Game
                     ? arena.Opening.WaterSpeedRatio : 1f;
             var island = IslandFor(runtime);
             var move = runtime.DashRemaining > 0f ? runtime.DashDirection : runtime.MoveDirection;
-            if (island != null)
+            if (island != null||EarlyStage!=null&&!runtime.InTreasureRoom)
             {
                 runtime.PlayerPosition = MoveOnIsland(runtime, RoundMovementDelta(runtime, move, speed, deltaTime), catalog.Rule.PlayerRadius);
-                KillAlongIslandDash(runtime);
+                if(island!=null)KillAlongIslandDash(runtime);
             }
             else
             runtime.PlayerPosition = ResolvePosition(runtime.PlayerPosition + RoundMovementDelta(runtime, move, speed, deltaTime),
                 catalog.Rule.PlayerRadius,
-                runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : catalog.Rule.ArenaHalfWidth,
-                runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : catalog.Rule.ArenaHalfHeight,
+                runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfWidth : ArenaHalfWidth,
+                runtime.InTreasureRoom ? runtime.TreasureRoom.Parameters.HalfHeight : ArenaHalfHeight,
                 ObstaclesFor(runtime));
             if (!runtime.InTreasureRoom && runtime.Firing) TryFire(runtime);
         }
@@ -752,7 +752,7 @@ namespace Game
                 var layout = RoundLayout(runtime);
                 var entry = layout.Entries[runtime.IslandEntryBatch % layout.Entries.Count];
                 enemy.Position = ResolvePosition(new Vector2(entry.X, entry.Y), catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
             }
             if (arena.Opening.Enabled && !runtime.IsChallenge && !runtime.IsFinalBoss)
             {
@@ -865,7 +865,7 @@ namespace Game
                 }
                 // 出现后即追踪当前目标；岸线只约束可走范围，不再设置固定登陆终点。
                 enemy.Position = ResolveEnemyPosition(enemy.Position, enemy.Position, catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
             }
             ResolveEnemyCrowding(runtime);
         }
@@ -876,7 +876,7 @@ namespace Game
             var direction = ResolveNavigationDirection(enemy.Position, target, catalog.Rule.EnemyContactRadius,
                 ObstaclesFor(runtime));
             enemy.Position = ResolveEnemyPosition(enemy.Position, enemy.Position + direction * enemy.Speed * deltaTime, catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
         }
 
         /// <summary>推进蓄力冲锋；蓄力期间锁定方向，冲锋命中同一玩家最多结算一次。</summary>
@@ -915,7 +915,7 @@ namespace Game
                 var previousPosition = enemy.Position;
                 enemy.Position = ResolvePosition(enemy.Position + enemy.BossChargeDirection * enemy.Speed *
                     boss.ChargeSpeedMultiplier * movementDelta, catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
                 var hitRadius = boss.ImpactRadius + catalog.Rule.PlayerRadius;
                 if (!targetIsDecoy && !enemy.BossImpactConsumed && DistanceToSegmentSquared(runtime.PlayerPosition,
                         previousPosition, enemy.Position) <= hitRadius * hitRadius)
@@ -980,8 +980,8 @@ namespace Game
                 }
                 // 海岛外围是连续海面，行走边界不裁断弹道；深海中的弹丸仍由武器寿命和真实命中回收。
                 var outsideArena = IslandFor(runtime) == null &&
-                                   (Mathf.Abs(projectile.Position.x) > catalog.Rule.ArenaHalfWidth ||
-                                    Mathf.Abs(projectile.Position.y) > catalog.Rule.ArenaHalfHeight);
+                                   (Mathf.Abs(projectile.Position.x) > ArenaHalfWidth ||
+                                    Mathf.Abs(projectile.Position.y) > ArenaHalfHeight);
                 var remove = expired || outsideArena || hitObstacle;
                 // 只补已确认的普通三枪墙面接触，不把过期、敌弹或爆炸弹移除误当成命中。
                 if (!expired && !projectile.Hostile && hitObstacle &&
@@ -1093,7 +1093,7 @@ namespace Game
                 var displaced = enemy.Position + direction.normalized * knockbackDistance;
                 // 未上岸的敌人仍可受击，但不能因通用击退夹取瞬间跳到岸内。
                 enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
                 DamageEnemy(enemy, damage);
                 if (enemy.Health <= 0) KillEnemy(runtime, enemy);
             }
@@ -1365,7 +1365,7 @@ namespace Game
             var count = runtime.FinalBossDefeated ? 1 : arena.NextArenaNumbers.Count;
             for (var index = 0; index < count; index++)
             {
-                var position = ArcadeExitPosition(index, count, catalog.Rule.ArenaHalfHeight);
+                var position = ArcadeExitPosition(index, count, ArenaHalfHeight);
                 if ((runtime.PlayerPosition - position).sqrMagnitude > 1.5f * 1.5f) continue;
                 runtime.SelectedExitConfigNumber = runtime.FinalBossDefeated ? 0 : arena.NextArenaNumbers[index];
                 CompleteArena(runtime);
@@ -2152,7 +2152,7 @@ namespace Game
             }
             view.SetExits(runtime.IslandRoundAwaitingExit ? new[] { -(runtime.WaveIndex + 2) } :
                 runtime.AwaitingExit && !runtime.FinalBossDefeated && !UsesStagePortal(runtime) ? arena.NextArenaNumbers.Take(1).ToArray() : Array.Empty<int>(),
-                catalog.Rule.ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated && !UsesStagePortal(runtime));
+                ArenaHalfHeight, runtime.AwaitingExit && runtime.FinalBossDefeated && !UsesStagePortal(runtime));
             view.SetHazards(runtime.IsChallenge || runtime.IsFinalBoss || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() : arena.Hazards,
                 runtime.HazardElapsedSeconds);
             view.SetPlayer(runtime.PlayerPosition, runtime.AimDirection, runtime.RespawnRemaining <= 0f&&runtime.PlayerHealth>0,
@@ -2309,8 +2309,8 @@ namespace Game
             var horizontal = random.Next(2) == 0;
             var sign = random.Next(2) == 0 ? -1f : 1f;
             return horizontal
-                ? new Vector2(UnityRandom(-catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfWidth), sign * (catalog.Rule.ArenaHalfHeight - 0.5f))
-                : new Vector2(sign * (catalog.Rule.ArenaHalfWidth - 0.5f), UnityRandom(-catalog.Rule.ArenaHalfHeight, catalog.Rule.ArenaHalfHeight));
+                ? new Vector2(UnityRandom(-ArenaHalfWidth, ArenaHalfWidth), sign * (ArenaHalfHeight - 0.5f))
+                : new Vector2(sign * (ArenaHalfWidth - 0.5f), UnityRandom(-ArenaHalfHeight, ArenaHalfHeight));
         }
 
         private float UnityRandom(float min, float max) => Mathf.Lerp(min, max, (float)random.NextDouble());
@@ -2327,7 +2327,7 @@ namespace Game
             for (var index = 0; index < crowdingEnemies.Count; index++)
                 crowdingPositions.Add(crowdingEnemies[index].Position);
             ResolveCrowding(crowdingPositions, catalog.Rule.EnemyContactRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
             for (var index = 0; index < crowdingEnemies.Count; index++)
                 crowdingEnemies[index].Position = crowdingPositions[index];
         }
@@ -2341,8 +2341,9 @@ namespace Game
             foreach (var pair in source) destination.Add(pair.Key);
         }
 
+        /// <summary>旧顺序局仅在原1—20主题内循环；新21/22只由已确认休闲路线选择。</summary>
         internal static int ResolveConfiguredArenaIndex(int arenaNumber, int configuredCount) =>
-            configuredCount <= 0 ? -1 : (Mathf.Max(1, arenaNumber) - 1) % configuredCount;
+            configuredCount <= 0 ? -1 : (Mathf.Max(1, arenaNumber) - 1) % Mathf.Min(20,configuredCount);
 
         internal static int ScalePlayerHealth(int baseHealth, float percent) =>
             Mathf.Max(1, Mathf.RoundToInt(baseHealth * (1f + Mathf.Max(0f, percent))));

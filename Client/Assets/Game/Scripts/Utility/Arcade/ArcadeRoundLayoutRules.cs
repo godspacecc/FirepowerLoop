@@ -60,7 +60,7 @@ namespace FirepowerLoop.Arcade
         public float ExitY { get; }
         public float ExitSpacing { get; }
         /// <summary>海岛只显示真实存在的三条通道，其余主题保留原四向出口。</summary>
-        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ExitDirectionCount;
+        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ArenaConfigNumber==21||ArenaConfigNumber==22 ? Entries.Count : ExitDirectionCount;
         /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
         public float EntrySegmentSeconds { get; }
         /// <summary>在真实通道外生成，保留横向车道；不把入口投影到战斗区内。</summary>
@@ -75,7 +75,7 @@ namespace FirepowerLoop.Arcade
         }
         /// <summary>规则与表现共用四向落点；海岛沿用干陆地内侧的留量。</summary>
         public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
-            => DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
+            => ArenaConfigNumber==21||ArenaConfigNumber==22 ? Entries[direction] : DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
                 ArenaConfigNumber == 1 ? halfHeight - 3 : ExitY,
                 halfWidth, halfHeight, playerRadius, ArenaConfigNumber == 1 ? RoundNumber : 0);
 

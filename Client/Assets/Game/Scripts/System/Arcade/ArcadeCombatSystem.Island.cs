@@ -19,8 +19,8 @@ namespace Game
             if (islandRegion == null || islandRegionRound != round)
             {
                 islandRegionRound = round;
-                islandRegion = round > 0 ? new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, round)
-                    : new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
+                islandRegion = round > 0 ? new ArcadeIslandRegion(ArenaHalfWidth, ArenaHalfHeight, round)
+                    : new ArcadeIslandRegion(ArenaHalfWidth, ArenaHalfHeight);
             }
             return islandRegion;
         }

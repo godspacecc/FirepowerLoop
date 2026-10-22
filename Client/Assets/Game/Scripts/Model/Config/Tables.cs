@@ -46,6 +46,7 @@ public partial class Tables
     public TbArcadeSlayerChallenge TbArcadeSlayerChallenge {get; }
     public TbArcadeRoundReward TbArcadeRoundReward {get; }
     public TbArcadeWeaponUpgrade TbArcadeWeaponUpgrade {get; }
+    public TbArcadeEarlyStage TbArcadeEarlyStage {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -83,6 +84,7 @@ public partial class Tables
         TbArcadeSlayerChallenge = new TbArcadeSlayerChallenge(loader("tbarcadeslayerchallenge"));
         TbArcadeRoundReward = new TbArcadeRoundReward(loader("tbarcaderoundreward"));
         TbArcadeWeaponUpgrade = new TbArcadeWeaponUpgrade(loader("tbarcadeweaponupgrade"));
+        TbArcadeEarlyStage = new TbArcadeEarlyStage(loader("tbarcadeearlystage"));
         ResolveRef();
     }
     
@@ -122,6 +124,7 @@ public partial class Tables
         TbArcadeSlayerChallenge.ResolveRef(this);
         TbArcadeRoundReward.ResolveRef(this);
         TbArcadeWeaponUpgrade.ResolveRef(this);
+        TbArcadeEarlyStage.ResolveRef(this);
     }
 }
 

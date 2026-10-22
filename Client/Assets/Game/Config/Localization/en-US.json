@@ -1377,5 +1377,13 @@
   "ui.arcade.details.confirmed": "CONFIRMED",
   "ui.arcade.details.pending_confirmation": "PENDING",
   "ui.arcade.abandon.body": "Abandon this run? Your progress for this run will be deleted.",
-  "ui.arcade.abandon.confirm": "Confirm Abandon"
+  "ui.arcade.abandon.confirm": "Confirm Abandon",
+  "ui.arcade.docks.round.1": "Docks · Round 1",
+  "ui.arcade.docks.round.2": "Docks · Round 2",
+  "ui.arcade.docks.round.3": "Docks · Round 3",
+  "ui.arcade.docks.round.4": "Docks · Round 4",
+  "ui.arcade.snowfarm.round.1": "Snow Farm · Round 1",
+  "ui.arcade.snowfarm.round.2": "Snow Farm · Round 2",
+  "ui.arcade.snowfarm.round.3": "Snow Farm · Round 3",
+  "ui.arcade.snowfarm.round.4": "Snow Farm · Round 4"
 }

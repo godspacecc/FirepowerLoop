@@ -864,9 +864,10 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
             System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null,
-            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null,
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeEarlyStageParameters> earlyStages = null)
             : this(rule, weapons, arenas, enemyGroups, bosses, challenges, drops,
-                System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms, roundLayouts)
+                System.Array.Empty<ArcadePowerupDefinition>(), supportVisuals, upgrades, rewards, treasureRooms, roundLayouts, earlyStages)
         {
         }
 
@@ -882,8 +883,10 @@ namespace Game
             System.Collections.Generic.IEnumerable<ArcadeUpgradeDefinition> upgrades,
             System.Collections.Generic.IEnumerable<ArcadeRewardDefinition> rewards,
             System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeTreasureRoomParameters> treasureRooms = null,
-            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null)
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters> roundLayouts = null,
+            System.Collections.Generic.IEnumerable<FirepowerLoop.Arcade.ArcadeEarlyStageParameters> earlyStages = null)
         {
+            EarlyStages = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(earlyStages ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeEarlyStageParameters>()));
             Rule = rule;
             Weapons = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(weapons));
             Arenas = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(arenas));
@@ -899,6 +902,8 @@ namespace Game
             RoundLayouts = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(roundLayouts ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters>()));
         }
 
+        /// <summary>仅新码头/农场使用的边界、资源与牛群参数。</summary>
+        public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeEarlyStageParameters> EarlyStages { get; }
         public ArcadeRuleDefinition Rule { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeWeaponDefinition> Weapons { get; }
         public System.Collections.Generic.IReadOnlyList<ArcadeArenaDefinition> Arenas { get; }

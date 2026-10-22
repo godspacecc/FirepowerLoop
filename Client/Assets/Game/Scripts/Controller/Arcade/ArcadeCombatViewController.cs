@@ -275,6 +275,7 @@ namespace Game
             root.transform.SetParent(mapRoot, false);
             if (!architecture.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var boundsCatalog, out var boundsError))
                 throw new InvalidOperationException(boundsError);
+            earlyStage=boundsCatalog.EarlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==arenaNumber);
             ConfigureRoundBounds(arenaHalfWidth, arenaHalfHeight, boundsCatalog.Rule.PlayerRadius);
             playerMotor.SetArcadePresentationActive(true);
             hasPlayerHealthBaseline = false;
@@ -297,6 +298,7 @@ namespace Game
 
         public void End()
         {
+            earlyStage=null;
             StopFlamethrowerAudio();
             ReleaseSlayerMartRegion();
             ReleaseRoundContent();
@@ -1201,6 +1203,7 @@ namespace Game
             obstacleVisualError = null;
             const float wallThickness = 0.5f;
             const float wallHeight = 2f;
+            if(earlyStage!=null)CreateBoundary("EarlyStageGround",new Vector3(0,-.15f,0),new Vector3(halfWidth*2,.3f,halfHeight*2));
             CreateBoundary("NorthBoundary", new Vector3(0f, wallHeight * 0.5f, halfHeight + wallThickness * 0.5f),
                 new Vector3(halfWidth * 2f + wallThickness * 2f, wallHeight, wallThickness));
             CreateBoundary("SouthBoundary", new Vector3(0f, wallHeight * 0.5f, -halfHeight - wallThickness * 0.5f),
@@ -1226,6 +1229,7 @@ namespace Game
                 placements.Add(new ObstacleVisualPlacement(obstacle.transform, size.x, size.z, index));
             }
 
+            if(earlyStage!=null){obstacleVisualReady=true;return;}
             if (placements.Count > 0)
                 LoadObstacleVisualsAsync(arenaNumber, placements, obstacleVisualGeneration).Forget();
             else obstacleVisualReady = true;

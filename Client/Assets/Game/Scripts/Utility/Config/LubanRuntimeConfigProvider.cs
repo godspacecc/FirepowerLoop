@@ -1197,16 +1197,19 @@ namespace Game
             try
             {
                 var layouts = tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
+                var earlyStages=tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
+                if(earlyStages.Length!=2||earlyStages.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=2)return "新前三关场地目录缺失或重复";
                 var layoutRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (layoutRule == null || layouts.Length != tables.TbArcadeArena.DataList.Count * 4 ||
                     layouts.Select(p => p.Id).Distinct(StringComparer.Ordinal).Count() != layouts.Length)
                     return "轮级布局目录不完整或重复";
                 foreach (var arena in tables.TbArcadeArena.DataList)
                 {
+                    var early=earlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==arena.ArenaNumber);
                     var rounds = layouts.Where(p => p.ArenaConfigNumber == arena.ArenaNumber).ToArray();
                     if (rounds.Length != 4 || rounds.Select(p => p.RoundNumber).Distinct().Count() != 4 ||
                         rounds.Select(p => p.ThemeKey).Distinct(StringComparer.Ordinal).Count() != 1 ||
-                        rounds.Any(p => !p.FitsArena(layoutRule.ArenaHalfWidth, layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius)))
+                        rounds.Any(p => !p.FitsArena(early?.HalfWidth??layoutRule.ArenaHalfWidth, early?.HalfHeight??layoutRule.ArenaHalfHeight, layoutRule.PlayerRadius)))
                         return "轮级地图引用、通路或轮次无效：" + arena.ArenaNumber;
                 }
                 foreach (var row in tables.TbArcadeTreasureRoom.DataList)
@@ -1541,7 +1544,8 @@ namespace Game
                     .Select(row => new ArcadeRewardDefinition(row.Id, row.Trigger, row.StartArena, row.Interval, row.RewardId, row.Amount, row.AmountPerTrigger)),
                 tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig),
                 tables.TbArcadeRoundLayout.DataList.OrderBy(row => row.ArenaConfigNumber).ThenBy(row => row.RoundNumber)
-                    .Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig));
+                    .Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig),
+                tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig));
         }
 
         private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;

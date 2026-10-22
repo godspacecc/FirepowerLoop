@@ -112,7 +112,7 @@ namespace ET.Server
                 }
                 for(int i=0;i<layout.ExitCount;i++)
                 {
-                    var exit=layout.GetExitPosition(i,rule.ArenaHalfWidth,rule.ArenaHalfHeight,rule.PlayerRadius);
+                    var exit=layout.GetExitPosition(i,ArenaHalfWidth(b),ArenaHalfHeight(b),rule.PlayerRadius);
                     if(intent!=targets[0]||DistanceSquared(p.PositionX,p.PositionZ,exit.X,exit.Y)>2.25f)continue;
                     if(nextRound||nextBoss){b.RoundTransitionPending=true;b.PendingBossEncounter=nextBoss;}
                     else {b.SelectedExitConfigNumber=intent;b.ArenaCompletionReady=true;}
@@ -146,7 +146,7 @@ namespace ET.Server
             {enemy.SpecialKind=p.SpecialKind;enemy.MaxHealth=Math.Max(1,(int)Math.Round(enemy.MaxHealth*p.EnemyHealthScale));enemy.MoveSpeed*=p.EnemySpeedScale;}
             if(enemy.SpecialKind==2||enemy.SpecialKind==6)enemy.MoveSpeed*=MathF.Sqrt(p.SkillMagnitude);
             if(enemy.SpecialKind==13)
-            {var target=b.Players.Values.Where(v=>v.Alive).OrderBy(v=>v.PlayerId).FirstOrDefault();if(target!=null){float x=target.PositionX,y=target.PositionZ+p.EventRadius;ResolvePosition(ref x,ref y,target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));enemy.PositionX=x;enemy.PositionZ=y;}}
+            {var target=b.Players.Values.Where(v=>v.Alive).OrderBy(v=>v.PlayerId).FirstOrDefault();if(target!=null){float x=target.PositionX,y=target.PositionZ+p.EventRadius;ResolveBattlePosition(b,ref x,ref y,target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,EffectiveObstacles(b),IslandFor(b));enemy.PositionX=x;enemy.PositionZ=y;}}
             enemy.CurrentHealth=enemy.MaxHealth;
         }
         private static float EnemyContentMotion(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime enemy,float delta)
@@ -273,7 +273,7 @@ namespace ET.Server
             {
                 float beforeX=e.PositionX,beforeY=e.PositionZ;
                 float x=e.PositionX+e.ContentLockedX*e.MoveSpeed*p.SkillMagnitude*delta,y=e.PositionZ+e.ContentLockedZ*e.MoveSpeed*p.SkillMagnitude*delta;
-                ResolvePosition(ref x,ref y,beforeX,beforeY,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));e.PositionX=x;e.PositionZ=y;
+                ResolveBattlePosition(b,ref x,ref y,beforeX,beforeY,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,EffectiveObstacles(b),IslandFor(b));e.PositionX=x;e.PositionZ=y;
                 if(e.AttackCooldownSeconds<=0&&ArcadeRoundContentRules.TouchesSegment(target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,beforeX,beforeY,x,y,ServerConfig.Instance.ArcadeRule.EnemyContactRadius))
                 {actor.ContentDamagePlayer(b,target,Math.Max(1,(int)Math.Round(e.Damage*p.SkillMagnitude)));e.AttackCooldownSeconds=e.AttackIntervalSeconds;}
             }
@@ -377,7 +377,7 @@ namespace ET.Server
                 bool firstActive=!warning&&b.ContentEventCycle!=cycle;if(firstActive)b.ContentEventCycle=cycle;
                 if(p.EventKind==3){x=b.ContentEventTargetX;y=b.ContentEventTargetY;}
                 bool segment=p.EventKind==4;float ex=x,ey=y,radius=p.EventRadius;
-                if(segment){x=cycle%2==0?-ServerConfig.Instance.ArcadeRule.ArenaHalfWidth:0;y=cycle%2==0?0:-ServerConfig.Instance.ArcadeRule.ArenaHalfHeight;ex=-x;ey=-y;radius*=.12f;}
+                if(segment){x=cycle%2==0?-ArenaHalfWidth(b):0;y=cycle%2==0?0:-ArenaHalfHeight(b);ex=-x;ey=-y;radius*=.12f;}
                 if(p.EventKind!=3||warning||now%p.EventPeriod<p.EventWarning*2)
                     b.ContentAreas.Add(new ArcadeContentAreaSnapshot(-100,p.EventKind,x,y,radius,warning,ex,ey,segment));
                 if(p.EventKind==6&&!warning)
@@ -407,7 +407,7 @@ namespace ET.Server
                         if(player.ContentBumperCooldown>0)continue;
                         float nx=-player.PositionX,ny=-player.PositionZ;
                         if(DistanceSquared(nx,ny,player.PositionX,player.PositionZ)<p.EventRadius*p.EventRadius*4){nx=0;ny=p.EventRadius*p.SkillMagnitude;}
-                        ResolvePosition(ref nx,ref ny,player.PositionX,player.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));
+                        ResolveBattlePosition(b,ref nx,ref ny,player.PositionX,player.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,EffectiveObstacles(b),IslandFor(b));
                         player.PositionX=nx;player.PositionZ=ny;player.IceVelocityX=player.IceVelocityZ=0;player.ContentBumperCooldown=p.EventPeriod;
                     }
                     else if((p.EventKind!=3||firstActive)&&b.ContentClock.TryHit(player.PlayerId,p.EventWarning))

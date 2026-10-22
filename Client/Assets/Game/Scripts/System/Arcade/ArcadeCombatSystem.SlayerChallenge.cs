@@ -37,7 +37,7 @@ namespace Game
             runtime.WaveIndex=0;runtime.ChallengeSeconds=c.PreparationSeconds;runtime.SpawnQueue.Clear();
             var layout=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==c.ArenaConfigNumber&&p.RoundNumber==c.LayoutRound);
             runtime.PlayerPosition=new Vector2(layout.SpawnX,layout.SpawnY);runtime.MoveDirection=Vector2.zero;runtime.Firing=false;
-            view.Begin(arena.ArenaNumber,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,
+            view.Begin(arena.ArenaNumber,ArenaHalfWidth,ArenaHalfHeight,
                 layout.Obstacles.Select(p=>new ArcadeObstacleDefinition(p.X,p.Y,p.HalfWidth,p.HalfHeight)).ToArray());
             view.SetIslandRound(0);view.SetRoundLayout(layout);return true;
         }

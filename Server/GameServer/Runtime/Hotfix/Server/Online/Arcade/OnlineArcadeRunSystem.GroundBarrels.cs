@@ -25,7 +25,7 @@ namespace ET.Server
                 if(enemy.SpecialKind==1&&enemy.CurrentHealth>0&&b.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
                 {
                     float x=enemy.PositionX,y=enemy.PositionZ;
-                    ResolvePosition(ref x,ref y,x,y,ServerConfig.Instance.ArcadeRule.PlayerRadius,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));
+                    ResolveBattlePosition(b,ref x,ref y,x,y,ServerConfig.Instance.ArcadeRule.PlayerRadius,EffectiveObstacles(b),IslandFor(b));
                     b.DroppedBarrels.Add(b.NextGroundBarrelId++,new ArcadeRegionPoint(x,y));enemy.SpecialKind=0;enemy.ContentWarning=false;
                 }
             var barrels=GroundBarrelPoints(b).ToArray();if(barrels.Length==0)return;

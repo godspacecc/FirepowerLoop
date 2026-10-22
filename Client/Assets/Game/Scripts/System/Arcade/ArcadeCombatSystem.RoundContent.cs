@@ -137,7 +137,7 @@ namespace Game
             bool charging=e.ContentSpecialKind==5 || e.ContentSpecialKind==10 || e.ContentSpecialKind==14 || e.ContentBossKind>0;
             var move=charging ? direction : ResolveNavigationDirection(e.Position,target,radius,ObstaclesFor(r));
             e.Position=ResolvePosition(e.Position+move*e.Speed*motion*EnemySpeedMultiplier(r)*SlayerMartStormSpeed(r,e)*dt,radius,
-                catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
+                ArenaHalfWidth,ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
         }
 
         /// <summary>活动帧推进环境相位与独占领域；Boss阶段保留技能领域但停止主题环境。</summary>
@@ -181,7 +181,7 @@ namespace Game
             ArcadeRoundContentRules.EventCenter(kind,now,r.ContentEventAnchor.x,r.ContentEventAnchor.y,p.EventRadius*2,p.EventMoveSpeed,out var x,out var y);
             var center=new Vector2(x,y);var end=center;bool line=kind==4;
             if(kind==3)center=r.ContentEventTarget;
-            if(line){center=(cycle%2==0 ? Vector2.left : Vector2.down)*catalog.Rule.ArenaHalfWidth;end=-center;}
+            if(line){center=(cycle%2==0 ? Vector2.left : Vector2.down)*ArenaHalfWidth;end=-center;}
             if(kind==5)return;
             if(kind!=3 || warning || now%p.EventPeriod<p.EventWarning*2)
                 SnapshotContentArea(r,-100,kind,center,end,line ? p.EventRadius*.12f : p.EventRadius,warning,line);
@@ -269,7 +269,7 @@ namespace Game
             int steps=Mathf.Max(1,Mathf.CeilToInt(requested.magnitude/Mathf.Max(.05f,catalog.Rule.PlayerRadius*.5f)));
             for(int i=0;i<steps;i++)
             {
-                var next=ResolvePosition(position+requested/steps,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
+                var next=ResolvePosition(position+requested/steps,catalog.Rule.PlayerRadius,ArenaHalfWidth,ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
                 if(Mathf.Abs(next.x-position.x-requested.x/steps)>.001f)r.ContentVelocity.x=0;
                 if(Mathf.Abs(next.y-position.y-requested.y/steps)>.001f)r.ContentVelocity.y=0;
                 position=next;
@@ -360,13 +360,13 @@ namespace Game
         private Vector2 ContentPosition(ArcadeCombatRuntime r,Vector2 candidate)
         {
             if(catalog==null)return candidate;
-            var position=ResolvePosition(candidate,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
+            var position=ResolvePosition(candidate,catalog.Rule.PlayerRadius,ArenaHalfWidth,ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
             var layout=RoundLayout(r);
-            if(layout==null || layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight))return position;
+            if(layout==null || layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,ArenaHalfWidth,ArenaHalfHeight))return position;
             // 加减障碍中心会产生浮点接触误差；仅失败时留一毫米余量重投影，避免合法墙边跳回出生点。
             const float placementClearance=.001f;
-            position=ResolvePosition(position,catalog.Rule.PlayerRadius+placementClearance,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
-            return layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight)
+            position=ResolvePosition(position,catalog.Rule.PlayerRadius+placementClearance,ArenaHalfWidth,ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
+            return layout.IsWalkable(position.x,position.y,catalog.Rule.PlayerRadius,ArenaHalfWidth,ArenaHalfHeight)
                 ? position : new Vector2(layout.SpawnX,layout.SpawnY);
         }
         /// <summary>单条快照保留真实端点，长射线不创建大量替代圆。</summary>

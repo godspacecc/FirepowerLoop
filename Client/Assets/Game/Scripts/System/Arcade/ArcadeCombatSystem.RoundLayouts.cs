@@ -80,10 +80,10 @@ namespace Game
                 runtime.ArenaNumber) ^ (waveIndex + 1) * 7919);
             BeginWave(runtime, waveIndex);
             runtime.PlayerPosition = ResolvePosition(new Vector2(layout.SpawnX, layout.SpawnY), catalog.Rule.PlayerRadius,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
             foreach (var effect in runtime.Powerups.Values)
                 effect.Position = ResolvePosition(effect.Position - oldPosition + runtime.PlayerPosition, catalog.Rule.PlayerRadius,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
             if (restore != null)
             {
                 RestoreIslandCheckpoint(runtime, restore.PlayerState);
@@ -101,6 +101,7 @@ namespace Game
             runtime.IslandEntryBatch = 0;
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
             runtime.IslandEntryWarningRemaining = layout.SkillWarning;
+            runtime.IslandPassages=EarlyStage!=null?new ArcadePassageSchedule(layout.EntrySegmentSeconds,layout.Entries.Count,random):null;
             InitializeRoundContent(runtime);
             // 黑幕完全遮挡后才替换地图，准备期间冻结玩法并保持黑屏。
             view.BeginRoundTransition();
@@ -113,7 +114,7 @@ namespace Game
             if(!view.IsRoundTransitionCovered)return;
             try
             {
-                view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                view.Begin(arena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
                 view.SetIslandRound(0);
                 view.SetRoundLayout(RoundLayout(runtime));
                 runtime.IslandTransitionViewPrepared = true;
@@ -168,6 +169,11 @@ namespace Game
         private bool ContentEntryReady(ArcadeCombatRuntime runtime, float seconds)
         {
             var layout = RoundLayout(runtime);
+            if(EarlyStage!=null)
+            {
+                runtime.IslandPassages??=new ArcadePassageSchedule(layout.EntrySegmentSeconds,layout.Entries.Count,random);
+                runtime.IslandEntryBatch=runtime.IslandPassages.Advance(seconds);runtime.IslandEntryWarningRemaining=0;return true;
+            }
             int spawned = runtime.IslandWaveBudget - runtime.SpawnQueue.Count;
             int batch = Mathf.Min(layout.Entries.Count - 1, spawned * layout.Entries.Count / Mathf.Max(1, runtime.IslandWaveBudget));
             if (batch != runtime.IslandEntryBatch)
@@ -179,7 +185,7 @@ namespace Game
         private Vector2 ContentExitPosition(ArcadeCombatRuntime runtime, int index, int count)
         {
             var layout = RoundLayout(runtime);
-            var point = layout.GetExitPosition(index, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius);
+            var point = layout.GetExitPosition(index, ArenaHalfWidth, ArenaHalfHeight, catalog.Rule.PlayerRadius);
             return new Vector2(point.X, point.Y);
         }
 
@@ -191,7 +197,7 @@ namespace Game
                 (!runtime.IslandRoundAwaitingExit && !runtime.AwaitingExit)) return;
             if(UsesStagePortal(runtime))
             {if(StagePortalContact(runtime)){runtime.SelectedExitConfigNumber=runtime.FinalBossDefeated?0:arena.NextArenaNumbers.FirstOrDefault();CompleteArena(runtime);}return;}
-            int count = ArcadeRoundLayoutParameters.ExitDirectionCount;
+            int count = RoundLayout(runtime).ExitCount;
             if (!runtime.IslandRoundAwaitingExit && !runtime.FinalBossDefeated && arena.NextArenaNumbers.Count == 0) return;
             int contact = -1;
             for (int i = 0; i < count; i++)

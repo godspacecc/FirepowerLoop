@@ -44,7 +44,7 @@ namespace Game
         private readonly List<GameObject> islandPassageBoundaries = new();
         private bool islandLandmarksReady;
         public bool IsIslandRoundReady => islandRound == 0
-            ? root != null && obstacleVisualReady && !contentLoadFailed && (contentArena > 3 || contentTemplates != null)
+            ? root != null && obstacleVisualReady && !contentLoadFailed && (contentArena > 3 && earlyStage==null || contentTemplates != null)
             :
             (island != null && islandSandMesh != null && islandMeshRound == islandRound && !islandLoadFailed &&
                 obstacleVisualReady && contentTemplates != null && !contentLoadFailed && islandLandmarksReady);

@@ -32,7 +32,7 @@ namespace Game
             if (islandObstacleRound != round || islandRoundObstacles == null)
             {
                 islandObstacleRound = round;
-                islandRoundObstacles = ArcadeIslandLayout.GetObstacles(round, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
+                islandRoundObstacles = ArcadeIslandLayout.GetObstacles(round, ArenaHalfWidth, ArenaHalfHeight);
             }
             return islandRoundObstacles;
         }
@@ -59,18 +59,18 @@ namespace Game
             runtime.InTreasureRoom = false;
             runtime.IslandRoomTransitionPending = false;
             runtime.PresentedRegion = 0;
-            islandRegion = new ArcadeIslandRegion(catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, waveIndex + 1);
+            islandRegion = new ArcadeIslandRegion(ArenaHalfWidth, ArenaHalfHeight, waveIndex + 1);
             islandRegionRound = waveIndex + 1;
             random = new System.Random(BuildCombatSeed(this.GetModel<ArcadeRunModel>().Current.RunId, runtime.ArenaNumber) ^ (waveIndex + 1) * 7919);
             BeginWave(runtime, waveIndex);
             var layout = RoundLayout(runtime);
             runtime.PlayerPosition = layout != null
                 ? new Vector2(layout.SpawnX, layout.SpawnY)
-                : ArcadeIslandLayout.GetSpawn(waveIndex + 1, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight);
+                : ArcadeIslandLayout.GetSpawn(waveIndex + 1, ArenaHalfWidth, ArenaHalfHeight);
             // 锚点随玩家起点平移再投影到新图合法位置；次数、耐久与冷却保持原值。
             foreach (var powerup in runtime.Powerups.Values)
                 powerup.Position = ResolvePosition(powerup.Position - oldPosition + runtime.PlayerPosition,
-                    catalog.Rule.PlayerRadius, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight,
+                    catalog.Rule.PlayerRadius, ArenaHalfWidth, ArenaHalfHeight,
                     ObstaclesFor(runtime), islandRegion);
             if (restore != null) RestoreIslandCheckpoint(runtime, restore);
             runtime.IslandEntryBatch = 0;
@@ -89,7 +89,7 @@ namespace Game
             if(!view.IsRoundTransitionCovered)return;
             try
             {
-                view.Begin(arena.ArenaNumber, catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime));
+                view.Begin(arena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime));
                 view.SetIslandRound(UsesIslandRounds(runtime) ? runtime.WaveIndex + 1 : 0);
                 runtime.IslandTransitionViewPrepared = true;
                 SyncView(runtime);
@@ -235,7 +235,7 @@ namespace Game
                     ProductId = effect.ProductId, Definition = definition, RemainingSeconds = effect.RemainingSeconds,
                     Charges = effect.Charges, CooldownSeconds = effect.CooldownSeconds,
                     Position = ResolvePosition(new Vector2(effect.PositionX, effect.PositionY), catalog.Rule.PlayerRadius,
-                        catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), islandRegion)
+                        ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), islandRegion)
                 });
             }
             runtime.TreasureCompleted = saved.RoundNumber == 4;
@@ -264,7 +264,7 @@ namespace Game
         {
             var layout = RoundLayout(runtime);
             var entry = layout.GetPassageSpawn(runtime.IslandEntryBatch, runtime.IslandSpawnSequence,
-                catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, arena.Opening.EnemySeaApproachDistance);
+                ArenaHalfWidth, ArenaHalfHeight, arena.Opening.EnemySeaApproachDistance);
             if (consume) runtime.IslandSpawnSequence++;
             start = new Vector2(entry.X, entry.Y);
         }
@@ -282,7 +282,7 @@ namespace Game
             int contact = -1;
             for (int i = 0; i < count; i++)
                 if ((runtime.PlayerPosition - ArcadeIslandLayout.GetExitPosition(runtime.WaveIndex + 1, i, count,
-                    catalog.Rule.ArenaHalfWidth, catalog.Rule.ArenaHalfHeight, catalog.Rule.PlayerRadius)).sqrMagnitude <= 2.25f)
+                    ArenaHalfWidth, ArenaHalfHeight, catalog.Rule.PlayerRadius)).sqrMagnitude <= 2.25f)
                 { contact = i; break; }
             if (contact < 0) return;
             if (runtime.IslandRoundAwaitingExit) StartIslandRound(runtime, runtime.WaveIndex + 1);
@@ -303,8 +303,8 @@ namespace Game
             int steps = Mathf.Max(1, Mathf.CeilToInt(delta.magnitude / .2f));
             for (int i = 0; i < steps; i++)
             {
-                position = ResolvePosition(position + delta / steps, radius, catalog.Rule.ArenaHalfWidth,
-                    catalog.Rule.ArenaHalfHeight, ObstaclesFor(runtime), region);
+                position = ResolvePosition(position + delta / steps, radius, ArenaHalfWidth,
+                    ArenaHalfHeight, ObstaclesFor(runtime), region);
                 islandMovementPath.Add(new ArcadeRegionPoint(position.x, position.y));
             }
             return position;

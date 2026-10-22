@@ -1,16 +1,90 @@
 {
-  "ui.arcade.product.arcade.weapon.basic.name": { "zh-CN": "基础步枪", "en-US": "Basic Rifle" },
-  "ui.arcade.details.brand": { "zh-CN": "FIREPOWERLOOP", "en-US": "FIREPOWERLOOP" },
-  "ui.arcade.details.score": { "zh-CN": "本局积分", "en-US": "RUN SCORE" },
-  "ui.arcade.details.arenas": { "zh-CN": "已完成竞技场", "en-US": "ARENAS CLEARED" },
-  "ui.arcade.details.lives": { "zh-CN": "剩余生命", "en-US": "LIVES LEFT" },
-  "ui.arcade.details.gold": { "zh-CN": "本局金币", "en-US": "RUN GOLD" },
-  "ui.arcade.details.continuable": { "zh-CN": "可继续", "en-US": "CONTINUE" },
-  "ui.arcade.details.resume_hint": { "zh-CN": "从已保存的进度继续", "en-US": "Continue from your saved progress" },
-  "ui.arcade.details.coop": { "zh-CN": "双人准备", "en-US": "CO-OP" },
-  "ui.arcade.details.coop_hint": { "zh-CN": "双方准备后继续", "en-US": "Both players must be ready to continue" },
-  "ui.arcade.details.confirmed": { "zh-CN": "已确认", "en-US": "CONFIRMED" },
-  "ui.arcade.details.pending_confirmation": { "zh-CN": "待确认", "en-US": "PENDING" },
-  "ui.arcade.abandon.body": { "zh-CN": "确定放弃本局？本局进度将被清除。", "en-US": "Abandon this run? Your progress for this run will be deleted." },
-  "ui.arcade.abandon.confirm": { "zh-CN": "确定放弃", "en-US": "Confirm Abandon" }
+  "ui.arcade.product.arcade.weapon.basic.name": {
+    "zh-CN": "基础步枪",
+    "en-US": "Basic Rifle"
+  },
+  "ui.arcade.details.brand": {
+    "zh-CN": "FIREPOWERLOOP",
+    "en-US": "FIREPOWERLOOP"
+  },
+  "ui.arcade.details.score": {
+    "zh-CN": "本局积分",
+    "en-US": "RUN SCORE"
+  },
+  "ui.arcade.details.arenas": {
+    "zh-CN": "已完成竞技场",
+    "en-US": "ARENAS CLEARED"
+  },
+  "ui.arcade.details.lives": {
+    "zh-CN": "剩余生命",
+    "en-US": "LIVES LEFT"
+  },
+  "ui.arcade.details.gold": {
+    "zh-CN": "本局金币",
+    "en-US": "RUN GOLD"
+  },
+  "ui.arcade.details.continuable": {
+    "zh-CN": "可继续",
+    "en-US": "CONTINUE"
+  },
+  "ui.arcade.details.resume_hint": {
+    "zh-CN": "从已保存的进度继续",
+    "en-US": "Continue from your saved progress"
+  },
+  "ui.arcade.details.coop": {
+    "zh-CN": "双人准备",
+    "en-US": "CO-OP"
+  },
+  "ui.arcade.details.coop_hint": {
+    "zh-CN": "双方准备后继续",
+    "en-US": "Both players must be ready to continue"
+  },
+  "ui.arcade.details.confirmed": {
+    "zh-CN": "已确认",
+    "en-US": "CONFIRMED"
+  },
+  "ui.arcade.details.pending_confirmation": {
+    "zh-CN": "待确认",
+    "en-US": "PENDING"
+  },
+  "ui.arcade.abandon.body": {
+    "zh-CN": "确定放弃本局？本局进度将被清除。",
+    "en-US": "Abandon this run? Your progress for this run will be deleted."
+  },
+  "ui.arcade.abandon.confirm": {
+    "zh-CN": "确定放弃",
+    "en-US": "Confirm Abandon"
+  },
+  "ui.arcade.docks.round.1": {
+    "zh-CN": "码头 · 第1轮",
+    "en-US": "Docks · Round 1"
+  },
+  "ui.arcade.docks.round.2": {
+    "zh-CN": "码头 · 第2轮",
+    "en-US": "Docks · Round 2"
+  },
+  "ui.arcade.docks.round.3": {
+    "zh-CN": "码头 · 第3轮",
+    "en-US": "Docks · Round 3"
+  },
+  "ui.arcade.docks.round.4": {
+    "zh-CN": "码头 · 第4轮",
+    "en-US": "Docks · Round 4"
+  },
+  "ui.arcade.snowfarm.round.1": {
+    "zh-CN": "雪地农场 · 第1轮",
+    "en-US": "Snow Farm · Round 1"
+  },
+  "ui.arcade.snowfarm.round.2": {
+    "zh-CN": "雪地农场 · 第2轮",
+    "en-US": "Snow Farm · Round 2"
+  },
+  "ui.arcade.snowfarm.round.3": {
+    "zh-CN": "雪地农场 · 第3轮",
+    "en-US": "Snow Farm · Round 3"
+  },
+  "ui.arcade.snowfarm.round.4": {
+    "zh-CN": "雪地农场 · 第4轮",
+    "en-US": "Snow Farm · Round 4"
+  }
 }

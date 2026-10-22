@@ -26,12 +26,12 @@ namespace Game
             for(int step=0;step<=catalog.Rule.WeaponUpgrade.PurpleRayReflections&&remaining>0;step++)
             {
                 var from=p.Position;var to=from+p.Velocity*remaining;float first=1;int kind=0,crateId=-1;ArcadeEnemyRuntime target=null;
-                Vector2 wallCenter=Vector2.zero,wallHalf=new Vector2(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);
+                Vector2 wallCenter=Vector2.zero,wallHalf=new Vector2(ArenaHalfWidth,ArenaHalfHeight);
                 foreach(var wall in ObstaclesFor(r))
                     if(TryGetSegmentObstacleEntry(from,to,0,wall,out float entry)&&entry<=first)
                     {first=entry;kind=1;wallCenter=wall.Center;wallHalf=wall.HalfExtents;}
-                if(IslandFor(r)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(from.x,from.y,to.x,to.y,catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,out float edge)&&edge<=first)
-                {first=edge;kind=1;wallCenter=Vector2.zero;wallHalf=new Vector2(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight);}
+                if(IslandFor(r)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(from.x,from.y,to.x,to.y,ArenaHalfWidth,ArenaHalfHeight,out float edge)&&edge<=first)
+                {first=edge;kind=1;wallCenter=Vector2.zero;wallHalf=new Vector2(ArenaHalfWidth,ArenaHalfHeight);}
                 foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
                     if(enemy.Health>0&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
                     {first=entry;kind=2;target=enemy;}
