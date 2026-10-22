@@ -446,7 +446,7 @@ namespace Game
                 foreach (OnlineArcadePowerupInfo powerup in player.Powerups)
                     powerups.Add(new OnlineArcadePowerupSnapshot(powerup.ProductId,
                         powerup.RemainingSeconds, powerup.Charges, powerup.PositionX, powerup.PositionZ,
-                        powerup.ShotDirectionX, powerup.ShotDirectionZ));
+                        powerup.ShotDirectionX, powerup.ShotDirectionZ,powerup.DronePhase,powerup.DronePowerTier));
                 players.Add(new OnlineArcadeBattlePlayerSnapshot(player.PlayerId, player.PositionX, player.PositionZ,
                     player.AimX, player.AimZ, player.CurrentHealth, player.MaxHealth, player.Alive,
                     player.Invulnerable, player.RespawnSeconds, player.TemporaryWeaponId,

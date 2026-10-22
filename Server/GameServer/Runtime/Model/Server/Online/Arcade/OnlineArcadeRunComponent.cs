@@ -171,6 +171,10 @@ namespace ET.Server
         /// <summary>最后一次成功发射的竞技场单位方向；未开火时为零，不写入安全节点。</summary>
         public float ShotDirectionX;
         public float ShotDirectionZ;
+        /// <summary>仅当前场次的无人机状态，不序列化目标；恢复轮前节点后按剩余时长重新跟随。</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public FirepowerLoop.Arcade.ArcadeDroneState Drone;
+        public int DronePowerTier=1;
     }
 
     [EnableClass]

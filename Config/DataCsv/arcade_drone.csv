@@ -1,0 +1,3 @@
+##var,Id,DurationSeconds,Range,OffsetX,OffsetZ,Damage,FireIntervalSeconds,ProjectileSpeed,ProjectileLifetimeSeconds,RamWindowSeconds,RamSpeed,ExplosionDamage,ExplosionRadius,ExplosionVisualSeconds
+##type,string,float,float,float,float,int,float,float,float,float,float,int,float,float
+,arcade.support.drone,25,10,0.85,0.35,12,0.45,19,1.5,1.2,16,60,2.5,0.7

@@ -13,3 +13,4 @@
 ,arcade.powerup.clock,Clock,ArcadeDropClock,true,0,1.8,0,0.45,0,0,0,0,0
 ,arcade.powerup.skull.small,WeaponSkull,ArcadeDropSkullRed,true,0,1.8,0,2,0,0,0,0,0
 ,arcade.powerup.skull.large,WeaponSkull,ArcadeDropSkullPurple,true,0,1.8,0,3,0,0,0,0,0
+,arcade.support.drone,Drone,ArcadeTimedDroneVisual,false,0,1.35,0,0,0,0,0,0,0

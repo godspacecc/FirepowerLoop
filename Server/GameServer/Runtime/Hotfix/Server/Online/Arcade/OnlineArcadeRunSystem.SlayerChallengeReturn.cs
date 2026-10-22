@@ -52,7 +52,7 @@ namespace ET.Server
             {
                 var live=actor.Record.Players.Single(p=>p.PlayerId==target.PlayerId);var player=battle.Players[target.PlayerId];
                 target.Bombs=live.Bombs;target.Dashes=live.Dashes;target.Score=live.Score;target.ScoreMultiplier=live.ScoreMultiplier;target.MultiplierProgress=live.MultiplierProgress;
-                target.RoundPowerups=player.Powerups.Values.Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
+                target.RoundPowerups=player.Powerups.Values.Where(p=>p.RemainingSeconds>0).Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
                 target.RoundTemporaryWeaponId=player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:string.Empty;
                 target.RoundTemporaryWeaponSeconds=Math.Max(0,player.TemporaryWeaponSeconds);
                 var owner=shop.Players.Single(p=>p.PlayerId==target.PlayerId);owner.Bombs=target.Bombs;owner.Dashes=target.Dashes;owner.Lives=target.Lives;

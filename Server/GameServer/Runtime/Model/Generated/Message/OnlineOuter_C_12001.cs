@@ -1426,6 +1426,15 @@ namespace ET
         [MemoryPackOrder(6)]
         public float ShotDirectionZ { get; set; }
 
+        /// <summary>
+        /// 无人机权威阶段和当前红紫强度；重连只投影当前阶段。
+        /// </summary>
+        [MemoryPackOrder(7)]
+        public int DronePhase { get; set; }
+
+        [MemoryPackOrder(8)]
+        public int DronePowerTier { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1440,6 +1449,8 @@ namespace ET
             this.PositionZ = default;
             this.ShotDirectionX = default;
             this.ShotDirectionZ = default;
+            this.DronePhase = default;
+            this.DronePowerTier = default;
 
             ObjectPool.Instance.Recycle(this);
         }

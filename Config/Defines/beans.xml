@@ -537,4 +537,21 @@
         <var name="FlameRadius" type="float"/>
         <var name="BossContactDamage" type="int"/>
     </bean>
+    <!-- 首关限时无人机；双端共用，不读旧局支援装备。 -->
+    <bean name="ArcadeDroneConfig">
+        <var name="Id" type="string"/>
+        <var name="DurationSeconds" type="float"/>
+        <var name="Range" type="float"/>
+        <var name="OffsetX" type="float"/>
+        <var name="OffsetZ" type="float"/>
+        <var name="Damage" type="int"/>
+        <var name="FireIntervalSeconds" type="float"/>
+        <var name="ProjectileSpeed" type="float"/>
+        <var name="ProjectileLifetimeSeconds" type="float"/>
+        <var name="RamWindowSeconds" type="float"/>
+        <var name="RamSpeed" type="float"/>
+        <var name="ExplosionDamage" type="int"/>
+        <var name="ExplosionRadius" type="float"/>
+        <var name="ExplosionVisualSeconds" type="float"/>
+    </bean>
 </beans>

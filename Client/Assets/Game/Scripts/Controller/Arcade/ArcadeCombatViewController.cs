@@ -84,6 +84,8 @@ namespace Game
         void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill) => RemoveEnemy(id,playDeath,direction,explosive);
         /// <summary>接收权威死亡力度类别，普通端口可沿用旧表现。</summary>
         void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind) => RemoveEnemy(id,playDeath,direction,explosive,flameKill);
+        /// <summary>无人机弹体只投影权威弹道，使用支援高度，避免从角色枪口出现。</summary>
+        void SetDroneProjectile(int id,Vector2 position,Vector2 direction,string resource,float height)=>SetProjectile(id,false,position,direction,resource);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction);
         void SetProjectile(int id, bool hostile, Vector2 position, Vector2 direction, string visualResourceName) =>
             SetProjectile(id, hostile, position, direction);
@@ -117,6 +119,8 @@ namespace Game
         /// <summary>稳定实例与接触体身份只用于表现，位置由战斗权威给定。</summary>
         void SetSlayerMartSupport(long ownerPlayerId,string instanceId,int bodyIndex,ArcadePowerupDefinition definition,
             Vector2 bodyPosition,Vector2 shotDirection) { }
+        /// <summary>只投影无人机权威阶段与强度；不参与选敌、计时或伤害。</summary>
+        void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
             SetPowerup(definition, anchorPosition);
@@ -1092,6 +1096,7 @@ namespace Game
                 entry.Instance.name = $"Effect_{entry.DisplayName}";
                 entry.Instance.transform.localPosition = entry.LocalPosition;
                 if (entry.HasShotDirection) entry.Instance.transform.localRotation = entry.LocalRotation;
+                if(entry.IsDrone)ApplyDroneAppearance(entry);
                 if (entry.ShieldFlashRemaining > 0f) ApplyShieldFlash(entry);
             }
             catch (Exception exception)
@@ -1171,6 +1176,9 @@ namespace Game
             public bool HasShotDirection;
             /// <summary>挡伤脉冲剩余秒数；大于零时允许已耗尽护盾的视觉延迟回收。</summary>
             public float ShieldFlashRemaining;
+            /// <summary>异步资源到达前也缓存无人机的最新强度。</summary>
+            public bool IsDrone;
+            public int DronePowerTier=1;
             public bool Released;
             public ResourceLoadHandle Handle;
             public GameObject Instance;
@@ -1324,6 +1332,9 @@ namespace Game
 
         private sealed class ObstacleVisualLoadState
         {
+            /// <summary>异步资源到达前也缓存无人机的最新强度。</summary>
+            public bool IsDrone;
+            public int DronePowerTier=1;
             public bool Released;
             public ResourceLoadHandle Handle;
         }

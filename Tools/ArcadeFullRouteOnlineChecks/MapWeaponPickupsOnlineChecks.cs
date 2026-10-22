@@ -61,7 +61,7 @@ internal static class MapWeaponPickupsOnlineChecks
             foreach(var drop in drops)
             {
                 var definition=tables.TbArcadeDrop.Get(drop.DropConfigId);
-                Require(definition.Kind==ArcadeDropKind.TemporaryWeapon&&definition.MinArena<=actor.Battle.ArenaNumber&&
+                Require((definition.Kind==ArcadeDropKind.TemporaryWeapon||definition.Kind==ArcadeDropKind.Support)&&definition.MinArena<=actor.Battle.ArenaNumber&&
                     (definition.MaxArena<=0||definition.MaxArena>=actor.Battle.ArenaNumber),"Wrong kind or progression gate");
                 Require(layout.WeaponSpawnPoints.Any(p=>p.X==drop.PositionX&&p.Y==drop.PositionZ),"Point is not configured");
                 Require(drop.RemainingSeconds>0,"Opening pickup has no ground lifetime");
@@ -97,11 +97,14 @@ internal static class MapWeaponPickupsOnlineChecks
         Call("TickDropLifetimes",battle,ServerConfig.Instance.ArcadeRule.WeaponDeliverySeconds);
         Call("TickDrops",actor,battle);
         Require(!battle.Drops.ContainsKey(selected.RuntimeId)&&battle.Drops.Count==1,"Pickup did not disappear once");
-        Require(battle.Players.Values.Count(p=>p.TemporaryWeaponId==definition.ProductId)==1,"Same pickup equipped both players");
-        var winner=battle.Players.Values.Single(p=>p.TemporaryWeaponId==definition.ProductId);
-        winner.TemporaryWeaponSeconds=1;
+        bool Received(OnlineArcadeBattlePlayerRuntime p)=>definition.Kind==ArcadeDropKind.Support?
+            p.Powerups.TryGetValue(ArcadePowerupBehavior.Drone,out var drone)&&drone.ProductId==definition.ProductId:p.TemporaryWeaponId==definition.ProductId;
+        Require(battle.Players.Values.Count(Received)==1,"Same pickup equipped both players");
+        var winner=battle.Players.Values.Single(Received);
+        if(definition.Kind==ArcadeDropKind.Support)winner.Powerups[ArcadePowerupBehavior.Drone].RemainingSeconds=1;
+        else winner.TemporaryWeaponSeconds=1;
         Call("TickDrops",actor,battle);
-        Require(winner.TemporaryWeaponSeconds==1&&battle.Drops.Count==1,"Consumed pickup awarded twice");
+        Require((definition.Kind==ArcadeDropKind.Support?winner.Powerups[ArcadePowerupBehavior.Drone].RemainingSeconds:winner.TemporaryWeaponSeconds)==1&&battle.Drops.Count==1,"Consumed pickup awarded twice");
     }
 
     /// <summary>两人站在点位也不能空中领取；落地开箱后才开始30秒地面寿命。</summary>

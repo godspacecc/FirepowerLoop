@@ -405,6 +405,8 @@ namespace Game
                 Vector2 anchor = definition.VisualFollowPlayer
                     ? displayPosition
                     : new Vector2(value.PositionX, value.PositionZ);
+                if(definition.Behavior==global::ArcadePowerupBehavior.Drone)
+                {view.SetDrone(player.PlayerId,definition,anchor,new Vector2(value.ShotDirectionX,value.ShotDirectionZ),value.DronePhase,value.DronePowerTier);continue;}
                 view.SetPowerup(player.PlayerId, definition, anchor,
                     new Vector2(value.ShotDirectionX, value.ShotDirectionZ));
             }
@@ -457,6 +459,14 @@ namespace Game
             {
                 seenIds.Add(value.RuntimeId);
                 Vector2 velocity = new(value.VelocityX, value.VelocityZ);
+                if(value.SourceWeaponId=="arcade.support.drone")
+                {
+                    var source=catalog.Weapons.First(w=>w.Id==catalog.Rule.BaseWeaponId);
+                    var drone=catalog.Powerups.First(p=>p.Behavior==global::ArcadePowerupBehavior.Drone);
+                    view.SetDroneProjectile(MapId(projectileIds,value.RuntimeId),new Vector2(value.PositionX,value.PositionZ),velocity,
+                        ArcadeWeaponPowerVisual.WithLevel(source.ProjectileVisualResourceName,value.WeaponPowerLevel),drone.VisualOffset.y);
+                    continue;
+                }
                 // 快照携带发射时身份，不能用拥有者当前武器重染飞行中的火焰或子弹。
                 var weapon = value.OwnerPlayerId > 0
                     ? catalog.Weapons.FirstOrDefault(w => w.Id == value.SourceWeaponId) : default;

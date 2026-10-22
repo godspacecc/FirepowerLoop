@@ -132,11 +132,11 @@ namespace Game.Tests
         {
             runtime.ArenaNumber=1;Set("arena",catalog.Arenas.First(a=>a.ArenaNumber==1));Set("random",new System.Random(5));
             Call("BeginWave",runtime,0);Call("TickWeaponPickups",runtime,100f);
-            var drop=runtime.Drops.Values.Single();var product=drop.Definition.ProductId;runtime.PlayerPosition=drop.Position;Call("TickDrops",runtime);
+            var drop=runtime.Drops.Values.Single();var received=drop.Definition;runtime.PlayerPosition=drop.Position;Call("TickDrops",runtime);
             Assert.That(runtime.Drops.Count,Is.EqualTo(1),"空投未落地开箱就被领取");
             Call("TickDropLifetimes",runtime,0f);Call("TickDrops",runtime);Assert.That(runtime.Drops.Count,Is.EqualTo(1));
             Call("TickDropLifetimes",runtime,2f);Call("TickDrops",runtime);
-            Assert.That(runtime.Drops,Is.Empty);Assert.That(runtime.TemporaryWeaponId,Is.EqualTo(product));
+            Assert.That(runtime.Drops,Is.Empty);AssertReceived(received);
         }
 
         [Test]
@@ -167,7 +167,7 @@ namespace Game.Tests
             for (int seed = 0; seed < 16; seed++)
             {
                 runtime.Drops.Clear();
-                runtime.TemporaryWeaponId = null;
+                runtime.TemporaryWeaponId = null;runtime.Powerups.Clear();
                 Set("random", new System.Random(seed));
                 Call("BeginWave", runtime, seed % 4);
                 Assert.That(runtime.Drops, Is.Empty, "不能在开场同时生成两把武器");
@@ -182,7 +182,7 @@ namespace Game.Tests
                 Assert.That(runtime.TemporaryWeaponId, Is.Null, "靠近前不得自动装备");
                 foreach (var drop in drops)
                 {
-                    Assert.That(drop.Definition.Kind, Is.EqualTo(ArcadeDropKind.TemporaryWeapon));
+                    Assert.That(drop.Definition.Kind, Is.EqualTo(ArcadeDropKind.TemporaryWeapon).Or.EqualTo(ArcadeDropKind.Support));
                     Assert.That(drop.Definition.MinArena, Is.LessThanOrEqualTo(1));
                     weapons.Add(drop.Definition.ProductId);
                 }
@@ -191,13 +191,25 @@ namespace Game.Tests
                 runtime.PlayerPosition = first.Position;
                 Call("TickDropLifetimes",runtime,catalog.Rule.WeaponDeliverySeconds);
                 Call("TickDrops", runtime);
-                Assert.That(runtime.TemporaryWeaponId, Is.EqualTo(definition.ProductId));
-                Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(definition.DurationSeconds));
+                AssertReceived(definition);
                 Assert.That(runtime.Drops.Count, Is.EqualTo(1));
             }
             Assert.That(layouts.Count, Is.GreaterThan(4));
             Assert.That(weapons, Does.Contain("arcade.weapon.flamethrower"));
             Assert.That(weapons.Count, Is.GreaterThan(1));
+        }
+
+        /// <summary>地图空投可能授予手持枪或独立无人机，两者必须写入各自状态。</summary>
+        private void AssertReceived(ArcadeDropDefinition definition)
+        {
+            if(definition.Kind==ArcadeDropKind.Support)
+            {
+                Assert.That(runtime.TemporaryWeaponId,Is.Null,"无人机不得替换手持枪");
+                Assert.That(runtime.Powerups[ArcadePowerupBehavior.Drone].ProductId,Is.EqualTo(definition.ProductId));
+                Assert.That(runtime.Powerups[ArcadePowerupBehavior.Drone].RemainingSeconds,Is.EqualTo(definition.DurationSeconds));
+            }
+            else
+            {Assert.That(runtime.TemporaryWeaponId,Is.EqualTo(definition.ProductId));Assert.That(runtime.TemporaryWeaponRemaining,Is.EqualTo(definition.DurationSeconds));}
         }
 
         /// <summary>普通开场生成受总预算限制；已有物品不被清理，挑战和独立Boss不额外刷枪。</summary>

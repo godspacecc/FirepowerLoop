@@ -72,7 +72,7 @@ namespace Game
     public readonly struct OnlineArcadePowerupSnapshot
     {
         public OnlineArcadePowerupSnapshot(string productId, float remainingSeconds, int charges,
-            float positionX = 0f, float positionZ = 0f, float shotDirectionX = 0f, float shotDirectionZ = 0f)
+            float positionX = 0f, float positionZ = 0f, float shotDirectionX = 0f, float shotDirectionZ = 0f,int dronePhase=0,int dronePowerTier=1)
         {
             ProductId = productId ?? string.Empty;
             RemainingSeconds = remainingSeconds;
@@ -80,7 +80,7 @@ namespace Game
             PositionX = positionX;
             PositionZ = positionZ;
             ShotDirectionX = shotDirectionX;
-            ShotDirectionZ = shotDirectionZ;
+            ShotDirectionZ = shotDirectionZ; DronePhase=dronePhase;DronePowerTier=dronePowerTier;
         }
 
         public string ProductId { get; }
@@ -92,6 +92,9 @@ namespace Game
         /// <summary>服务器最后一次实际发射方向；零表示尚未发射，不参与客户端战斗裁决。</summary>
         public float ShotDirectionX { get; }
         public float ShotDirectionZ { get; }
+        /// <summary>无人机当前权威阶段与玩家强化等级。</summary>
+        public int DronePhase { get; }
+        public int DronePowerTier { get; }
     }
 
     public readonly struct OnlineArcadeBattlePlayerSnapshot

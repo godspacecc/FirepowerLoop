@@ -24,6 +24,7 @@ public partial class Tables
     public TbArcadeTreasureRoom TbArcadeTreasureRoom {get; }
     public TbArcadeDrop TbArcadeDrop {get; }
     public TbArcadePowerup TbArcadePowerup {get; }
+    public TbArcadeDrone TbArcadeDrone {get; }
     public TbArcadeSupportVisual TbArcadeSupportVisual {get; }
     public TbArcadeUpgrade TbArcadeUpgrade {get; }
     public TbArcadeReward TbArcadeReward {get; }
@@ -52,6 +53,7 @@ public partial class Tables
         TbArcadeTreasureRoom = new TbArcadeTreasureRoom(loader("tbarcadetreasureroom"));
         TbArcadeDrop = new TbArcadeDrop(loader("tbarcadedrop"));
         TbArcadePowerup = new TbArcadePowerup(loader("tbarcadepowerup"));
+        TbArcadeDrone = new TbArcadeDrone(loader("tbarcadedrone"));
         TbArcadeSupportVisual = new TbArcadeSupportVisual(loader("tbarcadesupportvisual"));
         TbArcadeUpgrade = new TbArcadeUpgrade(loader("tbarcadeupgrade"));
         TbArcadeReward = new TbArcadeReward(loader("tbarcadereward"));
@@ -82,6 +84,7 @@ public partial class Tables
         TbArcadeTreasureRoom.ResolveRef(this);
         TbArcadeDrop.ResolveRef(this);
         TbArcadePowerup.ResolveRef(this);
+        TbArcadeDrone.ResolveRef(this);
         TbArcadeSupportVisual.ResolveRef(this);
         TbArcadeUpgrade.ResolveRef(this);
         TbArcadeReward.ResolveRef(this);

@@ -25,6 +25,7 @@ namespace ET
         Gloves = 10,
         Clock = 11,
         WeaponSkull = 12,
+        Drone = 13,
     }
 
 } 

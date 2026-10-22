@@ -1307,9 +1307,10 @@ namespace ET.Server
                 battle.AllPlayersDefeated||battle.ArenaCompletionReady||battle.Players.Values.Any(p=>p.InTreasureRoom||p.RespawnSeconds>0))return false;
             if(!battle.WeaponSpawns.TryAdvance(seconds,battle.Drops.Count<ServerConfig.Instance.ArcadeRule.MaxDrops,out var point))return false;
             var tables=ServerConfig.Instance.Tables;
-            var candidates=tables.TbArcadeDrop.DataList.Where(d=>d.Kind==ArcadeDropKind.TemporaryWeapon&&d.Weight>0&&
+            var candidates=tables.TbArcadeDrop.DataList.Where(d=>(d.Kind==ArcadeDropKind.TemporaryWeapon||d.Kind==ArcadeDropKind.Support)&&d.Weight>0&&
                 d.MinArena<=battle.ArenaNumber&&(d.MaxArena<=0||d.MaxArena>=battle.ArenaNumber)&&d.DurationSeconds>0&&
-                tables.TbArcadeWeapon.GetOrDefault(d.ProductId)!=null).ToArray();
+                (d.Kind==ArcadeDropKind.TemporaryWeapon?tables.TbArcadeWeapon.GetOrDefault(d.ProductId)!=null:
+                tables.TbArcadePowerup.GetOrDefault(d.ProductId)?.Behavior==ArcadePowerupBehavior.Drone)).ToArray();
             int total=candidates.Sum(d=>d.Weight);
             if(total<=0)return false;
             int roll=battle.WeaponSpawns.NextWeaponRoll(total);
@@ -1458,7 +1459,7 @@ namespace ET.Server
             {
                 changed |= self.TickProjectiles(battle, deltaSeconds);
                 changed |= self.TickDrops(battle);
-                changed |= self.TickPowerups(battle, deltaSeconds);
+                changed |= self.TickPowerups(battle,deltaSeconds);
                 changed |= self.TryAdvanceWave(battle, deltaSeconds);
             }
             if (changed) battle.BattleRevision++;
@@ -1580,6 +1581,8 @@ namespace ET.Server
                     if(!string.IsNullOrEmpty(player.TemporaryWeaponId))player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
                     player.TemporaryWeaponId = string.Empty;
                 }
+                if(player.Powerups.TryGetValue(ArcadePowerupBehavior.Drone,out var drone))
+                    changed|=self.TickDrone(battle,player,drone,deltaSeconds);
                 float previousDash = player.DashSeconds;
                 player.DashSeconds = Math.Max(0f, player.DashSeconds - deltaSeconds);
                 changed |= MathF.Abs(previousTemporaryWeapon - player.TemporaryWeaponSeconds) > 0.0001f ||
@@ -2523,9 +2526,10 @@ namespace ET.Server
                     player.TemporaryWeaponId = drop.ProductId;
                     player.TemporaryWeaponSeconds = drop.DurationSeconds;
                     break;
+                case ArcadeDropKind.Support:
                 case ArcadeDropKind.Powerup:
                     ArcadePowerupConfig definition = ServerConfig.Instance.Tables.TbArcadePowerup.GetOrDefault(drop.ProductId);
-                    if (definition == null || drop.DurationSeconds <= 0) return false;
+                    if (definition == null || drop.DurationSeconds <= 0||drop.Kind==ArcadeDropKind.Support&&definition.Behavior!=ArcadePowerupBehavior.Drone) return false;
                     if(definition.Behavior==ArcadePowerupBehavior.Chicken&&self.Battle?.SlayerMartRulesVersion==1&&
                         !TryGetPowerup(player,ArcadePowerupBehavior.Chicken,out _)&&
                         (SlayerMartAbility(self.Battle,player.PlayerId)?.Supports.Count(p=>p.Kind==FirepowerLoop.Arcade.SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=ServerConfig.Instance.SlayerMart.Catalog.MaxChickens)return false;
@@ -2568,6 +2572,7 @@ namespace ET.Server
                 {
                     OnlineArcadePowerupRuntime powerup = pair.Value;
                     if(pair.Key==ArcadePowerupBehavior.WeaponSkull)continue;
+                    if(pair.Key==ArcadePowerupBehavior.Drone)continue;
                     powerup.RemainingSeconds = Math.Max(0f, powerup.RemainingSeconds - deltaSeconds);
                     powerup.CooldownSeconds = Math.Max(0f, powerup.CooldownSeconds - deltaSeconds);
                     changed = true;
@@ -3237,6 +3242,8 @@ namespace ET.Server
                     powerup.PositionZ = sourcePowerup.PositionZ;
                     powerup.ShotDirectionX = sourcePowerup.ShotDirectionX;
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
+                    powerup.DronePhase=(int)(sourcePowerup.Drone?.Phase??FirepowerLoop.Arcade.ArcadeDronePhase.Following);
+                    powerup.DronePowerTier=sourcePowerup.DronePowerTier;
                     player.Powerups.Add(powerup);
                 }
                 AppendSlayerMartPlayerSnapshot(source,sourcePlayer,player);
@@ -3442,6 +3449,8 @@ namespace ET.Server
                     powerup.PositionZ = sourcePowerup.PositionZ;
                     powerup.ShotDirectionX = sourcePowerup.ShotDirectionX;
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
+                    powerup.DronePhase=sourcePowerup.DronePhase;
+                    powerup.DronePowerTier=sourcePowerup.DronePowerTier;
                     player.Powerups.Add(powerup);
                 }
                 CloneSlayerMartPlayerSnapshot(sourcePlayer,player);

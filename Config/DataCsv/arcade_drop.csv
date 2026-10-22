@@ -3,8 +3,8 @@
 ,arcade.drop.gold.small,1,0,38,RunGold,arcade.gold,ArcadeDropCoin,100,0,0,1
 ,arcade.drop.bomb,1,0,8,Bomb,arcade.resource.bomb,ArcadeDropBomb,1,0,9,0
 ,arcade.drop.dash,1,0,12,Dash,arcade.resource.dash,ArcadeDropDash,1,0,9,0
-,arcade.drop.weapon.rapid,1,0,12,TemporaryWeapon,arcade.weapon.rapid,ArcadeRifle,1,25,1,0
-,arcade.drop.weapon.spread,1,0,8,TemporaryWeapon,arcade.weapon.spread,ArcadeScifiShotgun,1,20,1,0
+,arcade.drop.weapon.rapid,2,0,12,TemporaryWeapon,arcade.weapon.rapid,ArcadeRifle,1,25,1,0
+,arcade.drop.weapon.spread,2,0,8,TemporaryWeapon,arcade.weapon.spread,ArcadeScifiShotgun,1,20,1,0
 ,arcade.drop.weapon.flamethrower,1,0,8,TemporaryWeapon,arcade.weapon.flamethrower,ArcadeFlamethrower,1,20,1,0
 ,arcade.drop.weapon.piercing,6,0,6,TemporaryWeapon,arcade.weapon.piercing,ArcadePiercingGun,1,18,1,0
 ,arcade.drop.weapon.rocket,8,0,5,TemporaryWeapon,arcade.weapon.rocket,ArcadePanzerschreck,1,16,1,0
@@ -23,3 +23,4 @@
 ,arcade.drop.powerup.clock,10,0,3,Powerup,arcade.powerup.clock,ArcadeDropClock,1,8,1,0
 ,arcade.drop.skull.small,1,0,5,Powerup,arcade.powerup.skull.small,ArcadeDropSkullRed,1,20,1,1
 ,arcade.drop.skull.large,1,0,2,Powerup,arcade.powerup.skull.large,ArcadeDropSkullPurple,1,20,1,1
+,arcade.drop.support.drone,1,0,8,Support,arcade.support.drone,ArcadeSupportDroneVisual,1,25,1,0

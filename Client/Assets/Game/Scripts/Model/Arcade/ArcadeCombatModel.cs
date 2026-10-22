@@ -177,6 +177,9 @@ namespace Game
         public Vector2 Position;
         /// <summary>强化最后一次实际发射的竞技场方向；零表示尚未开火，只用于视觉朝向。</summary>
         public Vector2 ShotDirection;
+        /// <summary>无人机当前场内阶段；不写轮前节点中的目标身份。</summary>
+        public FirepowerLoop.Arcade.ArcadeDroneState Drone;
+        public int DronePowerTier=1;
     }
 
     /// <summary>战斗系统拥有的临时圆形或线段领域，包含预警、寿命与伤害窗口。</summary>

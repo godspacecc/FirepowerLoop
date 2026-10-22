@@ -440,6 +440,24 @@ namespace Game.Tests
         }
 
         [Test]
+        public void DroneTimedStatusShowsRemainingFractionOnDesktopAndMobile()
+        {
+            var root=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
+            try
+            {
+                var ui=root.GetComponent<ArcadeHudUI>();var ctrl=new ArcadeHudUICtrl();
+                typeof(BaseUICtrl).GetField("BaseUI",Private).SetValue(ctrl,ui);
+                typeof(ArcadeHudUICtrl).GetMethod("OnInit",Private).Invoke(ctrl,null);
+                typeof(ArcadeHudUICtrl).GetMethod("RenderTimedStatus",Private).Invoke(ctrl,new object[]{null,0f,new[]{
+                    new ArcadePowerupHudEntry("ui.arcade.product.arcade.support.drone.name",5f,0)}});
+                foreach(var list in new[]{ui.EffectList,ui.MobileEffectList})
+                    Assert.That(list.GetDraggableItems()[0].GetComponent<ArcadeEffectBoxUI>().ProgressFill.fillAmount,
+                        Is.EqualTo(.2f).Within(.001f),"无人机剩余5/25秒时应显示20%，而不是满条");
+            }
+            finally{Object.DestroyImmediate(root);}
+        }
+
+        [Test]
         public void TimedEffects_UseExternalReusableBoxAndKeepAllActiveEffects()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");

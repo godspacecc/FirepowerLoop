@@ -1224,6 +1224,9 @@ namespace Game
                 }
             }
             catch (System.ArgumentException error) { return error.Message; }
+            if(tables.TbArcadeDrone.DataList.Count!=1||tables.TbArcadeDrone.DataList[0].Id!="arcade.support.drone"||
+                !FirepowerLoop.Arcade.ArcadeDroneRules.IsValid(FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(tables.TbArcadeDrone.DataList[0])))
+                return "TbArcadeDrone 数值无效";
             if (tables.TbArcadeRule.DataList.Count != 1) return "TbArcadeRule 必须恰好包含一行";
             var rule = tables.TbArcadeRule.DataList[0];
             if (rule == null || !string.Equals(rule.Id, "arcade.default", StringComparison.Ordinal)) return "TbArcadeRule[arcade.default] 缺失";
@@ -1442,6 +1445,8 @@ namespace Game
                     row.MaxArena != 0 && row.MaxArena < row.MinArena || row.EnemyMinArena < 0 || row.Weight <= 0 || !Enum.IsDefined(typeof(global::ArcadeDropKind), row.Kind) ||
                     string.IsNullOrWhiteSpace(row.ProductId) || row.Amount <= 0 || !IsNonNegativeFinite(row.DurationSeconds) || row.MaxOwned < 0)
                     return $"TbArcadeDrop[{row?.Id ?? "<null>"}] 无效";
+                if(row.Kind==global::ArcadeDropKind.Support&&(row.ProductId!="arcade.support.drone"||!powerupIds.Contains(row.ProductId)||row.DurationSeconds!=tables.TbArcadeDrone.DataList[0].DurationSeconds))
+                    return "TbArcadeDrop 无人机时长或引用无效";
                 var timed = row.Kind == global::ArcadeDropKind.TemporaryWeapon ||
                             row.Kind == global::ArcadeDropKind.Support || row.Kind == global::ArcadeDropKind.Powerup ||
                             row.Kind == global::ArcadeDropKind.FirstPerson;
@@ -1479,7 +1484,7 @@ namespace Game
                     rule.ContactInvulnerabilitySeconds, rule.RespawnDelaySeconds, rule.ArenaHalfWidth, rule.ArenaHalfHeight,
                     rule.DropChance, rule.SupportFireIntervalSeconds, rule.EnemyDropHealthUnit,
                     rule.EnemyDropDamageUnit, rule.EnemyDropMaxChance, rule.ConfigFingerprint,
-                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives,rule.WeaponDeliverySeconds),
+                    rule.CoopDownedSeconds,rule.CoopRescueRadius,rule.CoopRescueSpeed,rule.CoopDonationMinLives,rule.WeaponDeliverySeconds, FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(tables.TbArcadeDrone.DataList[0])),
                 tables.TbArcadeWeapon.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeWeaponDefinition(row.Id, row.HeldVisualResourceName,
                         row.ProjectileVisualResourceName, row.MuzzleFlash,

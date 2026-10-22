@@ -362,6 +362,9 @@ message OnlineArcadePowerupInfo
 	// 强化最后一次实际发射方向；未开火时为零，仅用于哨塔和战斗鸡表现。
 	float ShotDirectionX = 6;
 	float ShotDirectionZ = 7;
+	// 无人机权威阶段和当前红紫强度；重连只投影当前阶段。
+	int32 DronePhase = 8;
+	int32 DronePowerTier = 9;
 }
 
 // Opcode 12080

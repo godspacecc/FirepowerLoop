@@ -26,7 +26,7 @@ namespace ET.Server
                 target.RoundDashDirectionX=source.DashDirectionX;target.RoundDashDirectionZ=source.DashDirectionZ;
                 target.RoundTemporaryWeaponId=source.TemporaryWeaponId;
                 target.RoundTemporaryWeaponSeconds=source.TemporaryWeaponSeconds;
-                target.RoundPowerups=source.Powerups.Values.Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
+                target.RoundPowerups=source.Powerups.Values.Where(p=>p.RemainingSeconds>0).Select(OnlineArcadeRunActorSystem.ClonePowerup).ToList();
             }
         }
         /// <summary>候选验证与全员写盘在公开新轮之前完成；失败保留旧现场冻结，可重试同一候选。</summary>

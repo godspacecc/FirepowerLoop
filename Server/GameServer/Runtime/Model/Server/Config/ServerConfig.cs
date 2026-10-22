@@ -52,6 +52,8 @@ namespace ET
         public StartSceneConfig Match { get; private set; }
         public StartSceneConfig Benchmark { get; private set; }
         public ArcadeRuleConfig ArcadeRule => this.arcadeRule;
+        /// <summary>双端同源临时无人机规则，启动时校验。</summary>
+        public FirepowerLoop.Arcade.ArcadeDroneTuning Drone {get;private set;}
 
         public void Awake(string profile)
         {
@@ -295,6 +297,9 @@ namespace ET
                     !room.FitsArena(arenaRule.ArenaHalfWidth, arenaRule.ArenaHalfHeight, arenaRule.PlayerRadius))
                     throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid arena or wave");
             }
+            this.Drone=FirepowerLoop.Arcade.ArcadeDroneTuning.FromConfig(this.tables.TbArcadeDrone.DataList.FirstOrDefault());
+            if(this.tables.TbArcadeDrone.DataList.Count!=1||this.tables.TbArcadeDrone.DataList[0].Id!="arcade.support.drone"||!FirepowerLoop.Arcade.ArcadeDroneRules.IsValid(this.Drone))
+                throw ConfigError(this.Profile,"TbArcadeDrone","arcade.support.drone","invalid drone tuning");
             if (this.tables.TbArcadeRule.DataList.Count != 1)
                 throw ConfigError(this.Profile, "TbArcadeRule", "arcade.default", "expected exactly one row.");
             this.arcadeRule = this.tables.TbArcadeRule.DataList[0];
@@ -369,7 +374,8 @@ namespace ET
                     !Finite(drop.DurationSeconds, 1f, 1f, 1f) || drop.DurationSeconds < 0f ||
                     timed != (drop.DurationSeconds > 0f) ||
                     drop.Kind == ArcadeDropKind.TemporaryWeapon && !weaponIds.Contains(drop.ProductId) ||
-                    drop.Kind == ArcadeDropKind.Powerup && !powerupIds.Contains(drop.ProductId))
+                    drop.Kind == ArcadeDropKind.Powerup && !powerupIds.Contains(drop.ProductId)||
+                    drop.Kind==ArcadeDropKind.Support&&(drop.ProductId!="arcade.support.drone"||!powerupIds.Contains(drop.ProductId)||drop.DurationSeconds!=this.Drone.DurationSeconds))
                     throw ConfigError(this.Profile, "TbArcadeDrop", drop?.Id ?? "<null>",
                         "invalid drop values or product reference.");
             }

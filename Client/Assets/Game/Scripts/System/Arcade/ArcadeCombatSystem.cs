@@ -665,6 +665,7 @@ namespace Game
             foreach (var pair in runtime.Powerups)
             {
                 var powerup = pair.Value;
+                if(pair.Key==global::ArcadePowerupBehavior.Drone)continue;
                 powerup.RemainingSeconds = Mathf.Max(0f, powerup.RemainingSeconds - deltaTime);
                 powerup.CooldownSeconds = Mathf.Max(0f, powerup.CooldownSeconds - deltaTime);
                 if (powerup.RemainingSeconds <= 0f) expiredPowerups.Add(pair.Key);
@@ -681,6 +682,7 @@ namespace Game
                 if(!string.IsNullOrEmpty(runtime.TemporaryWeaponId))runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
                 runtime.TemporaryWeaponId = null;
             }
+            TickDrone(runtime,deltaTime);
             if (runtime.RespawnRemaining <= 0f) return;
             runtime.RespawnRemaining = Mathf.Max(0f, runtime.RespawnRemaining - deltaTime);
             if (runtime.RespawnRemaining <= 0f)
@@ -1438,7 +1440,7 @@ namespace Game
                 runtime.InTreasureRoom||runtime.IslandTransitionPending||runtime.IslandRoomTransitionPending||runtime.WaveClearAwarded||
                 runtime.IslandRoundAwaitingExit||runtime.AwaitingExit||runtime.CompletionSubmitted||runtime.CompletionAwaitingRetry)return;
             if(!runtime.WeaponSpawns.TryAdvance(seconds,runtime.Drops.Count<catalog.Rule.MaxDrops,out var point))return;
-            var candidates=catalog.Drops.Where(d=>d.Kind==global::ArcadeDropKind.TemporaryWeapon&&d.Weight>0&&
+            var candidates=catalog.Drops.Where(d=>(d.Kind==global::ArcadeDropKind.TemporaryWeapon||d.Kind==global::ArcadeDropKind.Support)&&d.Weight>0&&
                 IsDropEligible(d,runtime.ArenaNumber)&&CanApplyDrop(d)).ToArray();
             int total=candidates.Sum(d=>d.Weight);
             if(total<=0)return;
@@ -1796,6 +1798,8 @@ namespace Game
                 case global::ArcadeDropKind.Dash: return drop.Amount > 0;
                 case global::ArcadeDropKind.TemporaryWeapon:
                     return drop.DurationSeconds > 0 && catalog.Weapons.Any(w => w.Id == drop.ProductId);
+                case global::ArcadeDropKind.Support:
+                    return drop.DurationSeconds>0&&catalog.Powerups.Any(p=>p.Id==drop.ProductId&&p.Behavior==global::ArcadePowerupBehavior.Drone);
                 case global::ArcadeDropKind.Powerup:
                     return drop.DurationSeconds > 0 && catalog.Powerups.Any(p => p.Id == drop.ProductId);
                 case global::ArcadeDropKind.FirstPerson: return drop.DurationSeconds > 0;
@@ -1829,6 +1833,7 @@ namespace Game
                     runtime.TemporaryWeaponId = drop.ProductId;
                     runtime.TemporaryWeaponRemaining = drop.DurationSeconds;
                     break;
+                case global::ArcadeDropKind.Support:
                 case global::ArcadeDropKind.Powerup:
                     ApplyPowerup(runtime, drop);
                     SyncSlayerMartCapacity(runtime);
@@ -1861,6 +1866,7 @@ namespace Game
             // 已有紫级不能被小头骨降级；只刷新持续时间，不重复叠乘倍率。
             if(definition.Behavior==global::ArcadePowerupBehavior.WeaponSkull&&powerup.RemainingSeconds>0&&powerup.Definition.Magnitude>definition.Magnitude)
             {powerup.RemainingSeconds=Mathf.Max(powerup.RemainingSeconds,duration);return;}
+            powerup.Drone=null;
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;
             powerup.RemainingSeconds = duration;
@@ -2131,7 +2137,9 @@ namespace Game
             SyncRoundContent(runtime);
             foreach(var enemy in runtime.Enemies.Values)view.SetEnemyBurning(enemy.Id,enemy.FlameHitRemainingSeconds);
             foreach (var projectile in runtime.Projectiles.Values)
-                view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
+                if(projectile.SourceWeaponId=="arcade.support.drone")
+                    view.SetDroneProjectile(projectile.Id,projectile.Position,projectile.Velocity,projectile.ProjectileVisualResourceName,catalog.Powerups.First(p=>p.Behavior==global::ArcadePowerupBehavior.Drone).VisualOffset.y);
+                else view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
                     projectile.ProjectileVisualResourceName, projectile.FromPlayerWeapon);
             foreach (var drop in runtime.Drops.Values)
             {
@@ -2142,6 +2150,8 @@ namespace Game
             view.BeginEffectSync();
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
             {
+                if(powerup.Definition.Behavior==global::ArcadePowerupBehavior.Drone)
+                {view.SetDrone(0,powerup.Definition,powerup.Position,powerup.ShotDirection,(int)(powerup.Drone?.Phase??FirepowerLoop.Arcade.ArcadeDronePhase.Following),powerup.DronePowerTier);continue;}
                 if(SyncSlayerMartOrdinaryOrbitVisual(runtime,powerup))continue;
                 view.SetPowerup(powerup.Definition,
                     powerup.Definition.VisualFollowPlayer ? runtime.PlayerPosition : powerup.Position,

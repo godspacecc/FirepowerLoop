@@ -113,7 +113,8 @@ namespace Game
             string id = nameKey.StartsWith(prefix, StringComparison.Ordinal) && nameKey.EndsWith(suffix, StringComparison.Ordinal)
                 ? nameKey.Substring(prefix.Length, nameKey.Length - prefix.Length - suffix.Length) : nameKey;
             var drop = hudCatalog.Drops.FirstOrDefault(value => value.ProductId == id &&
-                value.Kind == (weapon ? global::ArcadeDropKind.TemporaryWeapon : global::ArcadeDropKind.Powerup));
+                (weapon ? value.Kind == global::ArcadeDropKind.TemporaryWeapon :
+                    value.Kind == global::ArcadeDropKind.Powerup || value.Kind == global::ArcadeDropKind.Support));
             float duration = drop.DurationSeconds;
             // 缺配置时仍显示有效效果的可辨识占位；不猜造总时长或隐藏状态。
             effects.Add(new EffectDisplay(id, seconds, duration, charges, weapon));

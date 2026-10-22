@@ -24,6 +24,7 @@
     <!-- 单人客户端专用掉落；服务器不生成此表，保持现有联机池。 -->
     <table name="TbArcadeSoloDrop" value="ArcadeDropConfig" input="arcade_solo_drop.csv" group="c"/>
     <table name="TbArcadePowerup" value="ArcadePowerupConfig" input="arcade_powerup.csv" group="e"/>
+    <table name="TbArcadeDrone" value="ArcadeDroneConfig" input="arcade_drone.csv" group="e"/>
     <table name="TbArcadeSupportVisual" value="ArcadeSupportVisualConfig" input="arcade_support_visual.csv" group="e"/>
     <table name="TbArcadeUpgrade" value="ArcadeUpgradeConfig" input="arcade_upgrade.csv" group="e"/>
     <table name="TbArcadeReward" value="ArcadeRewardConfig" input="arcade_reward.csv" group="e"/>
