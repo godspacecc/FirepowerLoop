@@ -574,4 +574,12 @@
         <var name="PortalX" type="float"/>
         <var name="PortalZ" type="float"/>
     </bean>
+    <!-- 同枪升级与现有红紫头骨共用的强化规则；武器时钟独立。 -->
+    <bean name="ArcadeWeaponUpgradeConfig">
+        <var name="Id" type="string"/>
+        <var name="MinimumPowerSeconds" type="float"/>
+        <var name="PurpleMoveSpeedPercent" type="float"/>
+        <var name="RedPowerupId" type="string#ref=TbArcadePowerup"/>
+        <var name="PurplePowerupId" type="string#ref=TbArcadePowerup"/>
+    </bean>
 </beans>

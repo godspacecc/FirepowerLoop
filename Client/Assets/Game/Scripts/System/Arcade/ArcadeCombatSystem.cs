@@ -703,6 +703,7 @@ namespace Game
                 : 0f;
             var speed = CalculatePlayerSpeed(catalog.Rule.PlayerMoveSpeed, speedBonus,
                 runtime.DashRemaining > 0f, bootsBonus);
+            speed*=ArcadeWeaponUpgradeRules.MovementMultiplier(CurrentWeaponPowerLevel(runtime),catalog.Rule.WeaponUpgrade);
             if (!runtime.InTreasureRoom && !runtime.IsChallenge)
                 speed *= IslandFor(runtime) is { } region && region.IsShallow(runtime.PlayerPosition.x, runtime.PlayerPosition.y)
                     ? arena.Opening.WaterSpeedRatio : 1f;
@@ -1833,9 +1834,11 @@ namespace Game
                     runtime.Dashes += SupplyAddedAmount(runtime.Dashes, drop);
                     break;
                 case global::ArcadeDropKind.TemporaryWeapon:
-                    if(!TryGetWeapon(runtime,out var previousWeapon)||previousWeapon.Id!=drop.ProductId)runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
+                    bool sameWeapon=TryGetWeapon(runtime,out var previousWeapon)&&previousWeapon.Id==drop.ProductId;
+                    if(sameWeapon)GrantWeaponPower(runtime,ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(runtime)),0);
+                    else runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
                     runtime.TemporaryWeaponId = drop.ProductId;
-                    runtime.TemporaryWeaponRemaining = drop.DurationSeconds;
+                    runtime.TemporaryWeaponRemaining = sameWeapon?ArcadeWeaponUpgradeRules.Refill(runtime.TemporaryWeaponRemaining,drop.DurationSeconds):drop.DurationSeconds;
                     break;
                 case global::ArcadeDropKind.Support:
                 case global::ArcadeDropKind.Powerup:
@@ -1844,6 +1847,20 @@ namespace Game
                     break;
             }
             return true;
+        }
+
+        /// <summary>当前有效强化等级；过期或残留对象不能继续升档。</summary>
+        private static int CurrentWeaponPowerLevel(ArcadeCombatRuntime runtime)=>runtime.Powerups.TryGetValue(global::ArcadePowerupBehavior.WeaponSkull,out var p)?ArcadeWeaponUpgradeRules.Level(p.Definition.Magnitude,p.RemainingSeconds):0;
+        /// <summary>唯一强化写入入口；沿用既有红紫身份，安全节点恢复不经过领取入口。</summary>
+        private void GrantWeaponPower(ArcadeCombatRuntime runtime,int level,float duration)
+        {
+            var tuning=catalog.Rule.WeaponUpgrade;
+            var id=level>=2?tuning.PurplePowerupId:tuning.RedPowerupId;
+            var definition=catalog.Powerups.First(p=>p.Id==id);
+            if(!runtime.Powerups.TryGetValue(global::ArcadePowerupBehavior.WeaponSkull,out var p))
+                runtime.Powerups[global::ArcadePowerupBehavior.WeaponSkull]=p=new ArcadePowerupRuntime();
+            p.RemainingSeconds=ArcadeWeaponUpgradeRules.PowerSeconds(p.RemainingSeconds,duration,tuning);
+            p.ProductId=id;p.Definition=definition;p.Charges=definition.Charges;p.CooldownSeconds=0;p.Position=runtime.PlayerPosition;
         }
 
         /// <summary>同类强化只刷新时长、次数和锚点；不同类型可并存，避免掉落顺序互相覆盖。</summary>
@@ -1867,9 +1884,9 @@ namespace Game
                 powerup = new ArcadePowerupRuntime();
                 runtime.Powerups.Add(definition.Behavior, powerup);
             }
-            // 已有紫级不能被小头骨降级；只刷新持续时间，不重复叠乘倍率。
-            if(definition.Behavior==global::ArcadePowerupBehavior.WeaponSkull&&powerup.RemainingSeconds>0&&powerup.Definition.Magnitude>definition.Magnitude)
-            {powerup.RemainingSeconds=Mathf.Max(powerup.RemainingSeconds,duration);return;}
+            // 骷髅与同枪升档共用身份和时钟，低级不降档，所有领取均不缩短余量。
+            if(definition.Behavior==global::ArcadePowerupBehavior.WeaponSkull)
+            {GrantWeaponPower(runtime,Mathf.Max(CurrentWeaponPowerLevel(runtime),Mathf.RoundToInt(definition.Magnitude)-1),duration);return;}
             powerup.Drone=null;
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;

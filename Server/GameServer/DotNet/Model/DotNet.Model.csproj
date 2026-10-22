@@ -29,6 +29,8 @@
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeDashRules.cs" Link="Share\ArcadeDashRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeEnemyDropRules.cs" Link="Share\ArcadeEnemyDropRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeDroneRules.cs" Link="Share\ArcadeDroneRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHerdRules.cs" Link="Share\ArcadeHerdRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeWeaponUpgradeRules.cs" Link="Share\ArcadeWeaponUpgradeRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeRoundRewardRules.cs" Link="Share\ArcadeRoundRewardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHazardRules.cs" Link="Share\ArcadeHazardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeTreasureRoomRules.cs" Link="Share\ArcadeTreasureRoomRules.cs" />

@@ -13,10 +13,10 @@
 
 | 目标 | 生成 C# | 生成 bytes | 表数 |
 | --- | --- | --- | --- |
-| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 33 |
-| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 27 |
+| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 34 |
+| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 28 |
 
-共 39 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 19 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
+共 40 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 20 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
 
 `arcade_round_layout.Barrels` 复用入口点坐标格式 `x|y;x|y`，为空表示本图没有预置可射桶。当前仅 Barrage（配置 3）四图各有两个，数组零基索引与地图 ID、Version 共同确定桶身份；该主题布局版本为 2，其余主题仍为 1。桶位由共享参数校验有限数、地标和障碍重叠，并按实际场地尺寸验证可达性。
 
@@ -28,7 +28,7 @@
 
 `arcade_round_layout.WeaponSpawnPoints` 使用相同的 `x|y;x|y` 坐标格式；80 张正式轮地图各配置 6 个固定候选点，`WeaponSpawnCount=2`。普通轮开始时无放回抽取本轮点位，随后逐把生成：首把按 `WeaponSpawnFirstDelayMin=3`、`WeaponSpawnFirstDelayMax=8` 秒等待，后续每把在上一把实际投放后按 `WeaponSpawnDelayMin=20`、`WeaponSpawnDelayMax=30` 活动秒重新等待，正常第二把约在开战后23～38秒投放。单次推进最多生成一把，大步长不追赶连发。按 `arcade_drop` 中当前进度可用的临时武器权重选枪，复用原拾取、地面寿命及总数量预算；预算满则保留待刷点位，解除阻塞后投放一把，再为下一把完整计时。暂停、切图、奖励房和清场冻结时钟。单人由战斗系统推进，双人由服务器通过相同的共享规则统一推进并同步掉落，挑战及独立 Boss 不额外刷枪。点位参与地图连通性校验；每轮仍只计划两把，不无限补刷。
 
-头骨强化复用 `arcade_powerup` 的 `WeaponSkull`：小头骨倍率 2（红弹），大头骨倍率 3（紫弹），伤害和射速同时增强；两者均为本项目首版 20 秒，进入普通击杀掉落池，不是原作精确持续时间。紫级拾取小头骨只刷新时长，重复拾取不叠乘；换成其他武器或临时武器到期清除，同枪补时保留。时钟在单双人开火前推进，暂停不扣、清场等待仍扣。弹丸保留发射时层级，敌弹和原有支援不继承；限时无人机按当前玩家强化同步；轮级恢复保留原剩余量，不重新领取。
+头骨强化复用 `arcade_powerup` 的 `WeaponSkull`：小头骨倍率 2（红弹），大头骨倍率 3（紫弹），伤害和射速同时增强；两者均为本项目首版 20 秒，进入普通击杀掉落池，不是原作精确持续时间。所有头骨与同枪领取按arcade_weapon_upgrade至少补到20秒且不缩短，低级不降紫，重复拾取不叠乘；换成其他武器或临时武器到期清除，同枪再次领取普通→红→紫、紫封顶，并保留更长武器余量。紫级额外移速+10%，与靴子、冲刺及浅水倍率相乘；时钟在单双人开火前推进，暂停不扣、清场等待仍扣。弹丸保留发射时层级，敌弹和原有支援不继承；限时无人机按当前玩家强化同步；轮级恢复保留原剩余量，不重新领取。
 
 `arcade_drop.EnemyMinArena` 和客户端专用 `arcade_solo_drop.EnemyMinArena` 仅约束杀敌掉落：0 表示完全禁用击杀来源，正数与 `MinArena/MaxArena` 共同限制开放关卡，负数非法。所有关卡杀敌仅掉金条、红头骨和紫头骨，权重为 38:5:2。2026-10-22 起总概率按敌人实际最大生命和伤害计算：`min(EnemyDropMaxChance, DropChance * sqrt(MaxHealth / EnemyDropHealthUnit * max(1, Damage) / EnemyDropDamageUnit))`。当前基准生命20、伤害10、基础概率10%、上限50%；不输入关卡编号。零生命或负伤害不掉落，零伤害使用1作为计算下限。数值为本项目调参值。炸弹、冲刺、临时武器、其他强化及第一人称道具的击杀来源均关闭，配置身份、资源和原权重保留供独立来源使用。地图空投和宝箱不检查该字段，继续按原解锁范围生成。配置由 `Config/gen.bat` 双端生成。定向验证：`ArcadeEnemyDropTests` 37项、`EnemyStrengthDropOnline` 6项、`MapWeaponPickupsOnline` 7项通过；未进行真实两客户端联机验收。
 

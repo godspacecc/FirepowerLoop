@@ -2,6 +2,17 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="HerdRulesDotNet")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int herdMax)||herdMax<1)throw new ArgumentException("Explicit HerdRulesDotNet limit required");
+    Environment.ExitCode=HerdRulesDotNetChecks.Run(herdMax);return;
+}
+if(opts.GetValueOrDefault("testClass")=="WeaponUpgradeOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int upgradeMax)||upgradeMax<1)throw new ArgumentException("Explicit WeaponUpgradeOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=WeaponUpgradeOnlineChecks.Run(upgradeMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="RoundRewardOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int rewardMax)||rewardMax<1)throw new ArgumentException("Explicit RoundRewardOnline limit required");

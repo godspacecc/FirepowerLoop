@@ -56,8 +56,8 @@ internal static class SkullPowerOnlineChecks
     private static void SameWeaponRefreshAndDifferentWeaponClear()
     {
         var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,"skull.small");Apply(actor,"weapon.rapid");var old=Shot(actor);
-        Require(old.WeaponPowerLevel==1,"Same gun cleared power");Apply(actor,"weapon.spread");
-        Require(Shot(actor).WeaponPowerLevel==0&&old.WeaponPowerLevel==1,"Gun change rewrote in-flight shot or kept power");
+        Require(old.WeaponPowerLevel==2,"Same gun failed to upgrade red to purple");Apply(actor,"weapon.spread");
+        Require(Shot(actor).WeaponPowerLevel==0&&old.WeaponPowerLevel==2,"Gun change rewrote in-flight shot or kept power");
     }
     private static void ExpiryAndZeroDeltaRespectClocks()
     {

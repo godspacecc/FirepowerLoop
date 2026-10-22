@@ -69,10 +69,10 @@ namespace Game.Tests
             Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo("ArcadeBulletBasic"));
         }
 
-        [Test] public void SameWeaponRefreshKeepsSkullAndItsOwnTimerExpires()
+        [Test] public void SameWeaponRefreshUpgradesSkullAndItsOwnTimerExpires()
         {
             var weapon=catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid");Pickup(weapon);Pickup(Skull(false));Pickup(weapon);
-            Call("TryFire",runtime);Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Does.EndWith("#Red"));
+            Call("TryFire",runtime);Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Does.EndWith("#Purple"));
             Call("TickTimers",runtime,21f);runtime.FireCooldown=0;Call("TryFire",runtime);
             Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo("ArcadeBulletRapid"));
         }

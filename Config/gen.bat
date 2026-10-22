@@ -45,8 +45,8 @@ dir /b "%CLIENT_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: client code generat
 dir /b "%CLIENT_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: client data generation is empty & exit /b 1)
 set /a CLIENT_TABLE_COUNT=0
 for %%F in ("%CLIENT_DATA_STAGE%\*.bytes") do set /a CLIENT_TABLE_COUNT+=1
-if not "!CLIENT_TABLE_COUNT!"=="33" (
-    echo Error: client table count expected 33 but got !CLIENT_TABLE_COUNT!
+if not "!CLIENT_TABLE_COUNT!"=="34" (
+    echo Error: client table count expected 34 but got !CLIENT_TABLE_COUNT!
     exit /b 1
 )
 dir /b "%CLIENT_CODE_STAGE%\*Start*.cs" >nul 2>nul && (echo Error: client stage contains server StartConfig code & exit /b 1)
@@ -70,12 +70,12 @@ dir /b "%SERVER_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: server code generat
 dir /b "%SERVER_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: server data generation is empty & exit /b 1)
 set /a SERVER_TABLE_COUNT=0
 for %%F in ("%SERVER_DATA_STAGE%\*.bytes") do set /a SERVER_TABLE_COUNT+=1
-if not "!SERVER_TABLE_COUNT!"=="27" (
-    echo Error: server table count expected 27 but got !SERVER_TABLE_COUNT!
+if not "!SERVER_TABLE_COUNT!"=="28" (
+    echo Error: server table count expected 28 but got !SERVER_TABLE_COUNT!
     exit /b 1
 )
-for %%F in (ArcadeRoundRewardConfig TbArcadeRoundReward ArcadeDroneConfig TbArcadeDrone ArcadeSlayerChallengeConfig TbArcadeSlayerChallenge ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeSupportVisualConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeSupportVisual TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
-for %%F in (tbarcaderoundreward tbarcadedrone tbarcadeslayerchallenge tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadesupportvisual tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
+for %%F in (ArcadeWeaponUpgradeConfig TbArcadeWeaponUpgrade ArcadeRoundRewardConfig TbArcadeRoundReward ArcadeDroneConfig TbArcadeDrone ArcadeSlayerChallengeConfig TbArcadeSlayerChallenge ArcadeRuleConfig ArcadeWeaponConfig ArcadeArenaConfig ArcadeEnemyGroupConfig ArcadeBossConfig ArcadeChallengeConfig ArcadeDropConfig ArcadePowerupConfig ArcadeSupportVisualConfig ArcadeUpgradeConfig ArcadeRewardConfig TbArcadeRule TbArcadeWeapon TbArcadeArena TbArcadeEnemyGroup TbArcadeBoss TbArcadeChallenge TbArcadeDrop TbArcadePowerup TbArcadeSupportVisual TbArcadeUpgrade TbArcadeReward ArcadeTreasureRewardConfig ArcadeTreasureRewardKind ArcadeTreasureRoomConfig TbArcadeTreasureRoom) do if not exist "%SERVER_CODE_STAGE%\%%F.cs" (echo Error: server stage missing %%F.cs & exit /b 1)
+for %%F in (tbarcadeweaponupgrade tbarcaderoundreward tbarcadedrone tbarcadeslayerchallenge tbarcaderule tbarcadeweapon tbarcadearena tbarcadeenemygroup tbarcadeboss tbarcadechallenge tbarcadedrop tbarcadepowerup tbarcadesupportvisual tbarcadeupgrade tbarcadereward tbarcadetreasureroom) do if not exist "%SERVER_DATA_STAGE%\%%F.bytes" (echo Error: server stage missing %%F.bytes & exit /b 1)
 
 echo.
 echo === Publish generated files ===

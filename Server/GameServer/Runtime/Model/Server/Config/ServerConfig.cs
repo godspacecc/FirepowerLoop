@@ -56,6 +56,8 @@ namespace ET
         public FirepowerLoop.Arcade.ArcadeDroneTuning Drone {get;private set;}
         /// <summary>每轮奖励及中央传送门的配置参数。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RoundReward {get;private set;}
+        /// <summary>同枪与头骨的共用强化参数。</summary>
+        public FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning WeaponUpgrade {get;private set;}
 
         public void Awake(string profile)
         {
@@ -299,6 +301,12 @@ namespace ET
                     !room.FitsArena(arenaRule.ArenaHalfWidth, arenaRule.ArenaHalfHeight, arenaRule.PlayerRadius))
                     throw ConfigError(this.Profile, "TbArcadeTreasureRoom", room.Id, "invalid arena or wave");
             }
+            if(this.tables.TbArcadeWeaponUpgrade.DataList.Count!=1)throw ConfigError(this.Profile,"TbArcadeWeaponUpgrade","arcade.weapon.upgrade","expected one row");
+            var upgrade=this.tables.TbArcadeWeaponUpgrade.DataList[0];
+            this.WeaponUpgrade=FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning.FromConfig(upgrade);
+            if(upgrade.Id!="arcade.weapon.upgrade"||!FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.Valid(this.WeaponUpgrade)||
+                upgrade.RedPowerupId_Ref.Behavior!=ArcadePowerupBehavior.WeaponSkull||upgrade.RedPowerupId_Ref.Magnitude!=2||
+                upgrade.PurplePowerupId_Ref.Behavior!=ArcadePowerupBehavior.WeaponSkull||upgrade.PurplePowerupId_Ref.Magnitude!=3)throw ConfigError(this.Profile,"TbArcadeWeaponUpgrade",upgrade.Id,"invalid tuning or skull reference");
             this.RoundReward=FirepowerLoop.Arcade.ArcadeRoundRewardTuning.FromConfig(this.tables.TbArcadeRoundReward.DataList.FirstOrDefault());
             if(this.tables.TbArcadeRoundReward.DataList.Count!=1||this.tables.TbArcadeRoundReward.DataList[0].Id!="arcade.round.reward"||!FirepowerLoop.Arcade.ArcadeRoundRewardRules.IsValid(this.RoundReward)||!float.IsFinite(this.RoundReward.PortalRadius)||this.RoundReward.PortalRadius<=0||!float.IsFinite(this.RoundReward.PortalAppearSeconds)||this.RoundReward.PortalAppearSeconds<=0)
                 throw ConfigError(this.Profile,"TbArcadeRoundReward","arcade.round.reward","invalid round reward tuning");

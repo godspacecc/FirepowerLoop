@@ -1,0 +1,3 @@
+##var,Id,MinimumPowerSeconds,PurpleMoveSpeedPercent,RedPowerupId,PurplePowerupId
+##type,string,float,float,string,string
+,arcade.weapon.upgrade,20,0.1,arcade.powerup.skull.small,arcade.powerup.skull.large

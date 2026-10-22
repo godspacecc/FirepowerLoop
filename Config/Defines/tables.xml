@@ -40,4 +40,5 @@
     <table name="TbArcadeSlayerMartAbility" value="ArcadeSlayerMartAbilityConfig" input="arcade_slayermart_ability.csv" group="e"/>
     <table name="TbArcadeSlayerChallenge" value="ArcadeSlayerChallengeConfig" input="arcade_slayer_challenge.csv" group="e"/>
     <table name="TbArcadeRoundReward" value="ArcadeRoundRewardConfig" input="arcade_round_reward.csv" group="e"/>
+    <table name="TbArcadeWeaponUpgrade" value="ArcadeWeaponUpgradeConfig" input="arcade_weapon_upgrade.csv" group="e"/>
 </tables>

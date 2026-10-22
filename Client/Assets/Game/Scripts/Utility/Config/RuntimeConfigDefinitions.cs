@@ -509,7 +509,7 @@ namespace Game
             float contactInvulnerabilitySeconds, float respawnDelaySeconds, float arenaHalfWidth, float arenaHalfHeight,
             float dropChance, float supportFireIntervalSeconds, float enemyDropHealthUnit,
             float enemyDropDamageUnit, float enemyDropMaxChance, string configFingerprint = "",
-            float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0,float weaponDeliverySeconds=0, FirepowerLoop.Arcade.ArcadeDroneTuning drone=null, FirepowerLoop.Arcade.ArcadeRoundRewardTuning roundReward=null)
+            float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0,float weaponDeliverySeconds=0, FirepowerLoop.Arcade.ArcadeDroneTuning drone=null, FirepowerLoop.Arcade.ArcadeRoundRewardTuning roundReward=null, FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning weaponUpgrade=null)
         {
             Id = id; InitialLives = initialLives; InitialBombs = initialBombs; InitialDashes = initialDashes;
             BaseWeaponId = baseWeaponId; MaxAliveEnemies = maxAliveEnemies;
@@ -524,7 +524,7 @@ namespace Game
             EnemyDropMaxChance = enemyDropMaxChance;
             ConfigFingerprint = configFingerprint ?? string.Empty;
             CoopDownedSeconds=coopDownedSeconds;CoopRescueRadius=coopRescueRadius;CoopRescueSpeed=coopRescueSpeed;CoopDonationMinLives=coopDonationMinLives;
-            WeaponDeliverySeconds=weaponDeliverySeconds; Drone=drone;RoundReward=roundReward;
+            WeaponDeliverySeconds=weaponDeliverySeconds; Drone=drone;RoundReward=roundReward;WeaponUpgrade=weaponUpgrade;
         }
 
         public string Id { get; }
@@ -568,6 +568,8 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeDroneTuning Drone { get; }
         /// <summary>每轮金币宝箱和整关传送门的权威参数。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RoundReward { get; }
+        /// <summary>同枪与头骨共用的升档及补时规则。</summary>
+        public FirepowerLoop.Arcade.ArcadeWeaponUpgradeTuning WeaponUpgrade { get; }
     }
 
     /// <summary>街机武器的近战或投射规则及表现参数。</summary>

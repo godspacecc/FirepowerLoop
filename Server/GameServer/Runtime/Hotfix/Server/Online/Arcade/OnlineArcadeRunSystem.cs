@@ -1622,6 +1622,7 @@ namespace ET.Server
                 if (TryGetPowerup(player, ArcadePowerupBehavior.Boots, out OnlineArcadePowerupRuntime boots))
                     moveSpeed *= 1f + boots.Magnitude;
                 if (player.DashSeconds > 0f) moveSpeed *= DashSpeedMultiplier;
+                moveSpeed*=FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.MovementMultiplier(CurrentWeaponPowerLevel(player),ServerConfig.Instance.WeaponUpgrade);
                 if (!player.InTreasureRoom && !battle.IsChallenge)
                     moveSpeed *= IslandFor(battle) is { } island && island.IsShallow(player.PositionX, player.PositionZ)
                         ? FirepowerLoop.Arcade.ArcadeOpeningParameters.FromConfig(arena).WaterSpeedRatio : 1f;
@@ -2525,9 +2526,7 @@ namespace ET.Server
                     break;
                 case ArcadeDropKind.TemporaryWeapon:
                     if (drop.DurationSeconds <= 0 || ServerConfig.Instance.Tables.TbArcadeWeapon.GetOrDefault(drop.ProductId) == null) return false;
-                    if((player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)!=drop.ProductId)player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
-                    player.TemporaryWeaponId = drop.ProductId;
-                    player.TemporaryWeaponSeconds = drop.DurationSeconds;
+                    ApplyWeaponDrop(player,record,drop);
                     break;
                 case ArcadeDropKind.Support:
                 case ArcadeDropKind.Powerup:
@@ -2537,8 +2536,8 @@ namespace ET.Server
                         !TryGetPowerup(player,ArcadePowerupBehavior.Chicken,out _)&&
                         (SlayerMartAbility(self.Battle,player.PlayerId)?.Supports.Count(p=>p.Kind==FirepowerLoop.Arcade.SlayerMartSupportKind.Chicken&&p.RemainingSeconds>0)??0)>=ServerConfig.Instance.SlayerMart.Catalog.MaxChickens)return false;
                     float duration=FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.MasteryDuration(drop.DurationSeconds,SlayerMartMastery(definition.Behavior),SlayerMartAbility(self.Battle,player.PlayerId),ServerConfig.Instance.SlayerMart.Parameter);
-                    if(definition.Behavior==ArcadePowerupBehavior.WeaponSkull&&TryGetPowerup(player,definition.Behavior,out var previousSkull)&&previousSkull.Magnitude>definition.Magnitude)
-                    {previousSkull.RemainingSeconds=Math.Max(previousSkull.RemainingSeconds,duration);break;}
+                    if(definition.Behavior==ArcadePowerupBehavior.WeaponSkull)
+                    {GrantWeaponPower(player,Math.Max(CurrentWeaponPowerLevel(player),(int)MathF.Round(definition.Magnitude)-1),duration);break;}
                     if((definition.Behavior==ArcadePowerupBehavior.Saw||definition.Behavior==ArcadePowerupBehavior.Barrel)&&
                         FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.TryExtendOrdinaryDrop(SlayerMartAbility(self.Battle,player.PlayerId),definition.Behavior==ArcadePowerupBehavior.Saw?FirepowerLoop.Arcade.SlayerMartSupportKind.Saw:FirepowerLoop.Arcade.SlayerMartSupportKind.Barrel,duration,ServerConfig.Instance.SlayerMart))break;
                     player.Powerups[definition.Behavior] = new OnlineArcadePowerupRuntime
@@ -2560,6 +2559,30 @@ namespace ET.Server
                 default: return false;
             }
             return true;
+        }
+
+        /// <summary>失效强化对象不参与同枪升档。</summary>
+        private static int CurrentWeaponPowerLevel(OnlineArcadeBattlePlayerRuntime player)=>player.Powerups.TryGetValue(ArcadePowerupBehavior.WeaponSkull,out var p)?FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.Level(p.Magnitude,p.RemainingSeconds):0;
+        /// <summary>普通拾取与奖励房共用，武器和强化时钟分别补足。</summary>
+        private static void ApplyWeaponDrop(OnlineArcadeBattlePlayerRuntime player,OnlineArcadePlayerRecord record,ArcadeDropConfig drop)
+        {
+            bool same=(player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)==drop.ProductId;
+            if(same)GrantWeaponPower(player,FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(player)),0);
+            else player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+            player.TemporaryWeaponId=drop.ProductId;
+            player.TemporaryWeaponSeconds=same?FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.Refill(player.TemporaryWeaponSeconds,drop.DurationSeconds):drop.DurationSeconds;
+        }
+        /// <summary>保留既有红紫配置身份；恢复节点不经过此领取入口，不重新发放20秒。</summary>
+        private static void GrantWeaponPower(OnlineArcadeBattlePlayerRuntime player,int level,float duration)
+        {
+            var tuning=ServerConfig.Instance.WeaponUpgrade;string id=level>=2?tuning.PurplePowerupId:tuning.RedPowerupId;
+            var definition=ServerConfig.Instance.Tables.TbArcadePowerup.Get(id);
+            if(!player.Powerups.TryGetValue(ArcadePowerupBehavior.WeaponSkull,out var p))
+                player.Powerups[ArcadePowerupBehavior.WeaponSkull]=p=new OnlineArcadePowerupRuntime();
+            p.RemainingSeconds=FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.PowerSeconds(p.RemainingSeconds,duration,tuning);
+            p.ProductId=id;p.Behavior=definition.Behavior;p.Magnitude=definition.Magnitude;p.Damage=definition.Damage;
+            p.IntervalSeconds=definition.IntervalSeconds;p.Radius=definition.Radius;p.ProjectileSpeed=definition.ProjectileSpeed;
+            p.Charges=definition.Charges;p.CooldownSeconds=0;p.PositionX=player.PositionX;p.PositionZ=player.PositionZ;
         }
 
         /// <summary>推进并结算每名玩家的全部并存强化；状态只属于当前竞技场，永不进入安全节点。</summary>
