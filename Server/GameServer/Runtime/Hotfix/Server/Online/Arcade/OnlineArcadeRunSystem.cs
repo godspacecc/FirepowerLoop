@@ -872,7 +872,7 @@ namespace ET.Server
             }
         }
 
-        /// <summary>仅兼容本项目移除商店前的配置版本；不接受另一项目或任意未知版本。</summary>
+        /// <summary>只接受已审查的本项目相邻版本；原主题身份和布局版本保留，未知版本不迁移。</summary>
         private static void NormalizeLoadedCheckpoint(OnlineArcadeRunRecord run)
         {
             const string previousVersion = "firepowerloop-20261014-v1";
@@ -880,6 +880,10 @@ namespace ET.Server
             if (run.ConfigFingerprint == previousVersion &&
                 ServerConfig.Instance.ArcadeRule.ConfigFingerprint == checkpointVersion)
                 run.ConfigFingerprint = checkpointVersion;
+            const string earlyStageVersion="firepowerloop-20261022-v22-early-stage-herd";
+            if(ServerConfig.Instance.ArcadeRule.ConfigFingerprint==earlyStageVersion&&
+                (run.ConfigFingerprint=="firepowerloop-20261022-v20-purple-ray"||run.ConfigFingerprint=="firepowerloop-20261022-v21-early-stage-data"))
+                run.ConfigFingerprint=earlyStageVersion;
         }
 
         private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready) => $"{playerId}|{expectedRevision}|{actionKind}|{ready}";
@@ -1567,7 +1571,7 @@ namespace ET.Server
                 }
                 // 军械库内、队友未返回和开战前等待均不消耗所选武器。
                 // 轮级事务会销毁房间现场，首批敌人生成前仍须保留完整武器时间。
-                bool awaitingArmoryCombat = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss &&
+                bool awaitingArmoryCombat = EarlyStage(battle)==null && battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss &&
                     battle.ArenaNumber == 2 && battle.WaveIndex == 3 && battle.SpawnedInWave == 0;
                 bool holdArmoryWeapon = awaitingArmoryCombat || battle.TreasureRoom?.Parameters.IsArmory == true &&
                     (player.InTreasureRoom || battle.RoundTransitionPending || battle.TreasureRoom.Members.Length > 0 || battle.WaveClearAwarded ||
@@ -3181,6 +3185,7 @@ namespace ET.Server
         private static OnlineArcadeBattleInfo BuildBattleSnapshot(OnlineArcadeBattleRuntime source)
         {
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
+            AppendHerdSnapshot(source,battle);
             AppendSlayerMartBattleSnapshot(source,battle);AppendSlayerChallengeBattleSnapshot(source,battle);AppendRoundRewardSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;
@@ -3411,6 +3416,7 @@ namespace ET.Server
         {
             if (source == null) return null;
             OnlineArcadeBattleInfo battle = OnlineArcadeBattleInfo.Create();
+            CloneHerdSnapshot(source,battle);
             CloneSlayerMartBattleSnapshot(source,battle);CloneSlayerChallengeBattleSnapshot(source,battle);CloneRoundRewardSnapshot(source,battle);
             battle.ArenaNumber = source.ArenaNumber;
             battle.RoundGeneration=source.RoundGeneration;

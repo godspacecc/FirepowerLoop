@@ -49,7 +49,7 @@ namespace Game
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
                 if(stage.HerdCount>0&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
                 var instance=UnityEngine.Object.Instantiate(prefab,roundEnvironmentRoot.transform,false);instance.name="ConfirmedEarlyEnvironment";earlyHerdTemplate=cow;
-                roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();
+                roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();
             }
             catch(Exception e)
             {
@@ -62,6 +62,7 @@ namespace Game
         /// <summary>实例随轮根释放，模板句柄只由本状态归还一次，旧回调不影响新状态。</summary>
         private void ReleaseEarlyStageLoad()
         {
+            ClearHerdViews();
             var state=earlyStageLoad;earlyStageLoad=null;earlyHerdTemplate=null;
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);

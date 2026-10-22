@@ -271,7 +271,7 @@ namespace Game
                 var round = data.RoundCheckpoint;
                 if (!data.IsCasualRoute || data.HasResult || data.IslandRoundCheckpoint != null || data.ArenaEntryState != null ||
                     round.ArenaNumber != data.NextArenaNumber || round.ArenaConfigNumber != data.ArenaConfigNumber ||
-                    round.ArenaConfigNumber < 1 || round.ArenaConfigNumber > 20 || round.RoundNumber < 1 || round.RoundNumber > 4 ||
+                    round.ArenaConfigNumber < 1 || round.ArenaConfigNumber > 22 || round.RoundNumber < 1 || round.RoundNumber > 4 ||
                     round.LayoutVersion <= 0 || round.MapId != $"arena.{round.ArenaConfigNumber}.round.{round.RoundNumber}" ||
                     round.PlayerState == null || round.PlayerState.MapId != round.MapId || round.PlayerState.RoundNumber != round.RoundNumber ||
                     !TryValidatePlayerState(round.PlayerState) || round.RemainingCrateIds == null ||

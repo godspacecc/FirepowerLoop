@@ -536,6 +536,8 @@ message OnlineArcadeBattleInfo
     float StagePortalSeconds = 60;
     float StagePortalX = 61;
     float StagePortalZ = 62;
+    // 地图独占牛群姿态；仅权威端推进与结算伤害。
+    repeated OnlineArcadeHerdInfo Herds = 63;
 }
 
 // Opcode 12085
@@ -837,4 +839,17 @@ message OnlineArcadeRoundRewardItemInfo
  float Z = 3;
  bool GoldBar = 4;
  bool Collected = 5;
+}
+
+// Opcode 12109
+message OnlineArcadeHerdInfo
+{
+ int64 MapInstanceId = 1;
+ int64 Id = 2;
+ int32 Phase = 3;
+ float X = 4;
+ float Z = 5;
+ float DirectionX = 6;
+ float DirectionZ = 7;
+ double PhaseSeconds = 8;
 }

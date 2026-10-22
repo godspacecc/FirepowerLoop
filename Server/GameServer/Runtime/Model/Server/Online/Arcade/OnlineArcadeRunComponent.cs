@@ -390,6 +390,11 @@ namespace ET.Server
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas = new();
         /// <summary>不参与伤害判定的瞬时电弧，权威活动帧扣除余量。</summary>
         public readonly List<FirepowerLoop.Arcade.ArcadeRayArcState> PurpleRayArcs=new();
+        /// <summary>地图现场拥有的牛群与活动倒计时，轮前保存不包含半次冲撞。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeHerdState> HerdCows=new();
+        public bool HerdInitialized;
+        public float HerdUntilNext;
+        public int HerdBatch;
         public readonly List<OnlineArcadeContentZoneRuntime> DeathZones = new();
         public readonly HashSet<int> DestroyedCrateIds = new();
         public readonly HashSet<int> DestroyedBarrelIds = new();

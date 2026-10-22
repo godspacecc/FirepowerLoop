@@ -226,6 +226,11 @@ namespace Game
         public readonly List<ArcadeContentAreaRuntime> ContentAreas = new();
         /// <summary>只在本地图存在的紫射线电弧，不进入危险区域集合。</summary>
         public readonly List<FirepowerLoop.Arcade.ArcadeRayArcState> PurpleRayArcs=new();
+        /// <summary>当前农场独占牛群及活动倒计时；不写轮前存档。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeHerdState> HerdCows=new();
+        public long HerdMapId;
+        public float HerdUntilNext;
+        public int HerdBatch;
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreaSnapshots = new();
         /// <summary>冰面速度、寄生/孢子减速及事件锚点均只属于本次地图。</summary>
         public Vector2 ContentVelocity, ContentEventAnchor, ContentEventTarget;

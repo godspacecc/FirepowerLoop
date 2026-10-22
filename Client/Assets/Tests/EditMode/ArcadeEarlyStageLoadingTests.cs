@@ -73,6 +73,24 @@ namespace Game.Tests
             }
             finally{root.transform.SetParent(null);UnityEngine.Object.DestroyImmediate(map);}
         }
+        [Test] public void HerdSnapshotWaitsForTemplateAndRebindsAfterHiddenMap()
+        {
+            Start(22);var method=typeof(ArcadeCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null,"牛群只读投影入口尚未接入");
+            var cows=new[]{new ArcadeHerdSnapshot(7,1,ArcadeHerdPhase.Charging,-20,-14,1,0,.2)};
+            method.Invoke(view,new object[]{7L,cows});Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);
+            loader.Finish(0);loader.Finish(1);var visual=root.GetComponentsInChildren<ArcadeHerdVisual>(true).Single();Assert.That(visual.transform.localPosition.x,Is.EqualTo(-20));
+            root.SetActive(false);root.SetActive(true);method.Invoke(view,new object[]{7L,new[]{new ArcadeHerdSnapshot(7,1,ArcadeHerdPhase.Charging,-18,-14,1,0,.4)}});
+            Assert.That(visual.transform.localPosition.x,Is.EqualTo(-18));Assert.That(visual.gameObject.activeSelf,Is.True);
+            method.Invoke(view,new object[]{7L,System.Array.Empty<ArcadeHerdSnapshot>()});Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);
+        }
+        [Test] public void OldMapHerdSnapshotCannotReplaceCurrentCows()
+        {
+            Start(22);loader.Finish(0);loader.Finish(1);var method=typeof(ArcadeCombatViewController).GetMethod("SetHerds");Assert.That(method,Is.Not.Null);
+            method.Invoke(view,new object[]{7L,new[]{new ArcadeHerdSnapshot(7,1,ArcadeHerdPhase.Windup,-33,-14,1,0,0)}});
+            method.Invoke(view,new object[]{6L,new[]{new ArcadeHerdSnapshot(6,2,ArcadeHerdPhase.Windup,33,-14,-1,0,0)}});
+            Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true).Single().transform.localPosition.x,Is.EqualTo(-33));
+            Release();Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);
+        }
         private sealed class Loader:IResourceLoader
         {
             public readonly List<Action<bool>> Pending=new();public readonly HashSet<object> Released=new();

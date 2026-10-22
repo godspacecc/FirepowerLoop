@@ -277,6 +277,7 @@ namespace Game
             view.SetHazards(inRoom || battle.IsChallenge || battle.IsFinalBoss || battle.AwaitingExit ? Array.Empty<FirepowerLoop.Arcade.ArcadeHazardParameters>() :
                 activeArena.Hazards, battle.HazardElapsedSeconds);
             view.SetRoundContent(battle.ContentElapsed,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>():battle.ContentAreas);
+            view.SetHerds(battle.RoundGeneration,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeHerdSnapshot>():battle.Herds);
             // 四向出口同去一关；负数仅表示下一轮标签，服务端仍接收正数场地身份。
             var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
@@ -585,9 +586,9 @@ namespace Game
         private static bool IsPositiveFinite(float value) =>
             value > 0f && !float.IsNaN(value) && !float.IsInfinity(value);
 
+        /// <summary>权威房间是“局:代次:配置”的实例身份；不能按累计场序猜测，也不能当作裸配置ID。</summary>
         private FirepowerLoop.Arcade.ArcadeTreasureRoomParameters TreasureParameters() =>
-            catalog == null ? null : catalog.TreasureRooms.FirstOrDefault(r => latest.Battle != null && latest.Battle.ArenaNumber == 2
-                ? r.IsArmory : !r.IsArmory && activeArena != null && r.ArenaConfigNumber == activeArena.ArenaNumber);
+            catalog == null ? null : catalog.TreasureRooms.FirstOrDefault(r => latest.Battle?.TreasureRoomId?.EndsWith(":"+r.Id,StringComparison.Ordinal)==true);
 
         /// <summary>当前代次资源失败提供可重试入口，错误期间不向服务器发送就绪。</summary>
         private void ShowRoundLoadRetry()

@@ -15,7 +15,7 @@ namespace Game
             {
                 runtime.TreasureInitialized = true;
                 var run = this.GetModel<ArcadeRunModel>().Current;
-                var p = !runtime.IsChallenge && !runtime.IsFinalBoss && run?.IsCasualRoute == true && run.NextArenaNumber <= 2
+                var p = EarlyStage==null && !runtime.IsChallenge && !runtime.IsFinalBoss && run?.IsCasualRoute == true && run.NextArenaNumber <= 2
                     ? catalog.TreasureRooms.FirstOrDefault(r => r.Enabled && r.ArenaConfigNumber == run.NextArenaNumber &&
                         (r.IsArmory || r.ArenaConfigNumber == arena.ArenaNumber) && r.WaveNumber >= runtime.WaveIndex + 1) : null;
                 if (p != null) runtime.TreasureRoom = new ArcadeTreasureRoomState(

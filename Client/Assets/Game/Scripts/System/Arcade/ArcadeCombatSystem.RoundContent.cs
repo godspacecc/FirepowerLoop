@@ -28,6 +28,7 @@ namespace Game
             var layout=RoundLayout(r);double previousElapsed=r.ContentClock.Elapsed;
             bool sameMap=layout!=null&&r.GroundBarrelMapId==layout.Id&&r.GroundBarrelLayoutVersion==layout.Version;
             if(!sameMap)r.PurpleRayArcs.Clear();
+            if(!sameMap||r.HerdMapId<=0)InitializeHerd(r);
             // 同地图切入 Boss 只停止危险；已结算爆炸保留剩余寿命，并换算到重置后的活动时钟。
             r.ContentAreas.RemoveAll(a=>!sameMap||a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind||a.ExpiresAt<=previousElapsed);
             foreach(var area in r.ContentAreas){area.WarningUntil=0;area.ExpiresAt-=previousElapsed;}
@@ -145,6 +146,8 @@ namespace Game
         {
             if(!RoundContentActive(r) || dt<=0 || float.IsNaN(dt) || float.IsInfinity(dt))return;
             r.ContentClock.Advance(dt,false);r.ContentSlowRemaining=Mathf.Max(0,r.ContentSlowRemaining-dt);
+            TickHerd(r,dt);
+            if(this.GetModel<ArcadeCombatModel>().Runtime!=r||catalog==null||!RoundContentActive(r))return;
             TickVortexBarrels(r,dt);
             r.ContentBumperCooldown=Mathf.Max(0,r.ContentBumperCooldown-dt);
             var p=ContentTuning(r);r.ContentAreaSnapshots.Clear();
@@ -389,6 +392,7 @@ namespace Game
             foreach(var arc in r.PurpleRayArcs)r.ContentPresentationSnapshots.Add(arc.Snapshot);
             AppendGroundBarrelSnapshots(r);
             view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
+            view?.SetHerds(r.HerdMapId,r.HerdCows.Select(c=>ArcadeHerdRules.Snapshot(c,EarlyStage?.Herd??default)).ToArray());
             foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);
         }
     }

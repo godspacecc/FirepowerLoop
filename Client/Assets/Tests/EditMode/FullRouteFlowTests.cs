@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Luban;
 using NUnit.Framework;
@@ -147,6 +148,30 @@ namespace Game.Tests
             Call("StartContentRound", runtime, 1, saved);
             Assert.That(runtime.Crates[1].Health, Is.EqualTo(17));
         }
+        [TestCase(21)] [TestCase(22)] public void NewStageFourRoundsSaveClearAndRestoreAtRealPassages(int map)
+        {
+            var run=architecture.GetModel<ArcadeRunModel>();var node=run.Current.Clone();node.ArenaConfigNumber=map;run.CommitSafeNode(node);run.EnterArena();
+            Set("arena",catalog.Arenas.First(a=>a.ArenaNumber==map));Call("StartContentRound",runtime,0,null);
+            Call("TickTreasureRoom",runtime,0f);Assert.That(runtime.TreasureRoom,Is.Null,"新码头/农场不得继承旧第二场固定军械库");
+            for(int round=0;round<4;round++)
+            {
+                Assert.That(runtime.WaveIndex,Is.EqualTo(round));var saved=new ArcadeRunFileStore(directory).Inspect();Assert.That(saved.IsValid,Is.True,saved.Error);
+                Assert.That(saved.Data.RoundCheckpoint.MapId,Is.EqualTo($"arena.{map}.round.{round+1}"));
+                runtime.SpawnQueue.Clear();runtime.Enemies.Clear();Call("TickWaveTransition",runtime,0f);Call("TickRoundReward",runtime,0f);
+                Assert.That(runtime.RoundReward,Is.Not.Null,"每轮清场必须有一次金币宝箱");
+                Assert.That(runtime.ArenaGold,Is.Zero,"新前三关延续实际捡取，不凭旧主题清轮额外自动发钱");
+                if(round<3)
+                {
+                    Assert.That(runtime.StagePortal,Is.Null,"普通轮不能出现整关传送门");
+                    var layout=catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==map&&p.RoundNumber==round+1);var exit=layout.Entries[0];runtime.PlayerPosition=new Vector2(exit.X,exit.Y);Call("TickContentExit",runtime);
+                }
+                else{Assert.That(runtime.AwaitingExit,Is.True);Assert.That(runtime.StagePortal,Is.Not.Null,"整关第四轮才出现传送门");}
+            }
+            var checkpoint=new ArcadeRunFileStore(directory).Inspect().Data.RoundCheckpoint;Call("StartContentRound",runtime,3,checkpoint);
+            Assert.That(runtime.PlayerHealth,Is.EqualTo(73));Assert.That(runtime.HerdCows,Is.Empty,"恢复不保存半次冲撞");Assert.That(runtime.SpawnQueue.Count,Is.GreaterThan(0));
+        }
+        [Test] public void LegacySecondStageStillKeepsItsArmory()
+        {Call("StartContentRound",runtime,0,null);Call("TickTreasureRoom",runtime,0f);Assert.That(runtime.TreasureRoom,Is.Not.Null);Assert.That(runtime.TreasureRoom.Parameters.IsArmory,Is.True);}
         private sealed class View : IArcadeCombatViewPort
         {
             public bool Ready = true;

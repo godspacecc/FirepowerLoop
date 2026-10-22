@@ -488,7 +488,8 @@ namespace Game
                 source.BombBlasts.Select(b=>new OnlineArcadeBombBlastSnapshot(b.Sequence,b.PlayerId,b.PositionX,b.PositionZ,b.RoundGeneration)).ToArray(),
                 source.EnemyDeaths.Select(d=>new OnlineArcadeEnemyDeathSnapshot(d.RuntimeId,d.DirectionX,d.DirectionZ,d.Explosive,d.RoundGeneration,d.FlameKill,d.ImpactKind)).ToArray(),
                 source.RoundReward==null?null:new OnlineArcadeRoundRewardSnapshot(source.RoundReward.RoundIdentity,source.RoundReward.X,source.RoundReward.Z,source.RoundReward.ElapsedSeconds,source.RoundReward.Phase,
-                    source.RoundReward.Items.Select(i=>new FirepowerLoop.Arcade.ArcadeRoundRewardItem(i.Id,i.GoldBar,0,i.X,i.Z)),source.RoundReward.Items.Where(i=>i.Collected).Select(i=>i.Id)),source.StagePortalSeconds,source.StagePortalX,source.StagePortalZ);
+                    source.RoundReward.Items.Select(i=>new FirepowerLoop.Arcade.ArcadeRoundRewardItem(i.Id,i.GoldBar,0,i.X,i.Z)),source.RoundReward.Items.Where(i=>i.Collected).Select(i=>i.Id)),source.StagePortalSeconds,source.StagePortalX,source.StagePortalZ,
+                source.Herds.Select(c=>new FirepowerLoop.Arcade.ArcadeHerdSnapshot(c.MapInstanceId,c.Id,(FirepowerLoop.Arcade.ArcadeHerdPhase)c.Phase,c.X,c.Z,c.DirectionX,c.DirectionZ,c.PhaseSeconds)).ToArray());
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

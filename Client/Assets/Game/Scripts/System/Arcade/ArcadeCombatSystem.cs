@@ -419,6 +419,7 @@ namespace Game
             foreach (var drop in runtime.Drops.Values) runtimePool.Return(drop);
             runtime.Enemies.Clear();
             runtime.Projectiles.Clear();runtime.PurpleRayArcs.Clear();
+            ClearHerd(runtime);
             runtime.Drops.Clear();
             runtime.WeaponSpawns = null;
             runtime.Powerups.Clear();
@@ -656,7 +657,7 @@ namespace Game
             runtime.FireCooldown = Mathf.Max(0f, runtime.FireCooldown - deltaTime);
             runtime.DashRemaining = Mathf.Max(0f, runtime.DashRemaining - deltaTime);
             // 军械库及返回后的开战等待保留完整火力；第一场财宝规则不变。
-            bool awaitingArmoryCombat = UsesContentRounds(runtime) && runtime.ArenaNumber == 2 &&
+            bool awaitingArmoryCombat = EarlyStage==null && UsesContentRounds(runtime) && runtime.ArenaNumber == 2 &&
                 runtime.WaveIndex == 3 && runtime.IslandWaveBudget > 0 &&
                 runtime.SpawnQueue.Count == runtime.IslandWaveBudget && runtime.Enemies.Count == 0;
             bool holdArmoryWeapon = awaitingArmoryCombat || runtime.TreasureRoom?.Parameters.IsArmory == true &&

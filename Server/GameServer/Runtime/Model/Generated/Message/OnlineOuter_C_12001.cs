@@ -2050,6 +2050,12 @@ namespace ET
         [MemoryPackOrder(61)]
         public float StagePortalZ { get; set; }
 
+        /// <summary>
+        /// 地图独占牛群姿态；仅权威端推进与结算伤害。
+        /// </summary>
+        [MemoryPackOrder(62)]
+        public List<OnlineArcadeHerdInfo> Herds { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2119,6 +2125,7 @@ namespace ET
             this.StagePortalSeconds = default;
             this.StagePortalX = default;
             this.StagePortalZ = default;
+            this.Herds.Clear();
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3321,6 +3328,59 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeHerdInfo)]
+    public partial class OnlineArcadeHerdInfo : MessageObject
+    {
+        public static OnlineArcadeHerdInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeHerdInfo), isFromPool) as OnlineArcadeHerdInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public long MapInstanceId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long Id { get; set; }
+
+        [MemoryPackOrder(2)]
+        public int Phase { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float X { get; set; }
+
+        [MemoryPackOrder(4)]
+        public float Z { get; set; }
+
+        [MemoryPackOrder(5)]
+        public float DirectionX { get; set; }
+
+        [MemoryPackOrder(6)]
+        public float DirectionZ { get; set; }
+
+        [MemoryPackOrder(7)]
+        public double PhaseSeconds { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.MapInstanceId = default;
+            this.Id = default;
+            this.Phase = default;
+            this.X = default;
+            this.Z = default;
+            this.DirectionX = default;
+            this.DirectionZ = default;
+            this.PhaseSeconds = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3389,5 +3449,6 @@ namespace ET
         public const ushort OnlineArcadeEnemyDeathInfo = 12106;
         public const ushort OnlineArcadeRoundRewardInfo = 12107;
         public const ushort OnlineArcadeRoundRewardItemInfo = 12108;
+        public const ushort OnlineArcadeHerdInfo = 12109;
     }
 }

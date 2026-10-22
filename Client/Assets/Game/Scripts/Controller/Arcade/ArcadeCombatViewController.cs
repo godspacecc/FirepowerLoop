@@ -36,6 +36,7 @@ namespace Game
         string RoundLayoutLoadError => null;
         /// <summary>投影环境活动时钟及区域，伤害仍由单人或服务器裁决。</summary>
         void SetRoundContent(double elapsed, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> areas) { }
+        void SetHerds(long mapId,IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> cows) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
         void SetIslandRound(int roundNumber) { }

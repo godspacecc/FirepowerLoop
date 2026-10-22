@@ -325,13 +325,13 @@ namespace Game.Tests
             {
                 var store = (ArcadeRunFileStore)typeof(ArcadeRunSystem).GetField("store", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(system);
                 Directory.CreateDirectory(store.TempPath);
-                Assert.That(system.TryCompleteArena(Completion(1, 3, false), out _, out _), Is.False);
+                Assert.That(system.TryCompleteArena(Completion(1, 21, false), out _, out _), Is.False);
                 Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.Arena));
                 Assert.That(model.Current.ArenaConfigNumber, Is.EqualTo(1));
                 Directory.Delete(store.TempPath);
-                Assert.That(system.TryCompleteArena(Completion(1, 3, false), out var saved, out var error), Is.True, error);
+                Assert.That(system.TryCompleteArena(Completion(1, 21, false), out var saved, out var error), Is.True, error);
                 Assert.That(saved.NextArenaNumber, Is.EqualTo(2));
-                Assert.That(saved.ArenaConfigNumber, Is.EqualTo(3));
+                Assert.That(saved.ArenaConfigNumber, Is.EqualTo(21));
             });
         }
 
@@ -347,12 +347,12 @@ namespace Game.Tests
         {
             WithRun(1, 1, (system, model) =>
             {
-                var completion = Completion(1, 3, false);
+                var completion = Completion(1, 21, false);
                 Assert.That(system.TryCompleteArena(completion, out var saved, out var error), Is.True, error);
                 Assert.That(saved.NextArenaNumber, Is.EqualTo(2));
-                Assert.That(saved.ArenaConfigNumber, Is.EqualTo(3));
+                Assert.That(saved.ArenaConfigNumber, Is.EqualTo(21));
                 Assert.That(system.TryResume(out var resumed, out error), Is.True, error);
-                Assert.That(resumed.ArenaConfigNumber, Is.EqualTo(3));
+                Assert.That(resumed.ArenaConfigNumber, Is.EqualTo(21));
             });
         }
 

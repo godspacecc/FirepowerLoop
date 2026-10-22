@@ -70,8 +70,8 @@ namespace FirepowerLoop.Arcade
             bool cleared, bool awaitingExit, bool inRoom, bool respawnWaiting) =>
             p.Enabled && waveIndex == 3 && !specialBattle && !cleared && !awaitingExit && !inRoom && !respawnWaiting;
 
-        /// <summary>本批仅迁移新休闲局前两场的三个地图候选；旧局、挑战和后期不在范围内。</summary>
-        public static bool UsesEarlyRounds(bool casual, int mapNumber) => casual && mapNumber >= 1 && mapNumber <= 3;
+        /// <summary>休闲前三关只结算实际拾取；旧前三主题与新增码头/农场保留同一奖励边界。</summary>
+        public static bool UsesEarlyRounds(bool casual, int mapNumber) => casual && (mapNumber >= 1 && mapNumber <= 3 || mapNumber==21 || mapNumber==22);
 
         /// <summary>按累计权重整数分配已确认总量，差分确保和精确；不规定原作敌种组成。</summary>
         public static int AllocateMember(int total, int previousWeight, int weight, int totalWeight)

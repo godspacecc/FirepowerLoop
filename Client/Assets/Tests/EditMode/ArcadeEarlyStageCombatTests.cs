@@ -64,5 +64,10 @@ namespace Game.Tests
             Assert.That(ArcadeCombatSystem.ResolveConfiguredArenaIndex(21,catalog.Arenas.Count),Is.Zero);
             Assert.That(ArcadeCombatSystem.ResolveConfiguredArenaIndex(22,catalog.Arenas.Count),Is.EqualTo(1));
         }
+        [TestCase(21,9.9f)] [TestCase(2,10f)] public void DockDoesNotInheritLegacyArmoryWeaponTimerHold(int map,float expected)
+        {
+            Stage(map);runtime.ArenaNumber=2;runtime.WaveIndex=3;runtime.IslandWaveBudget=1;runtime.SpawnQueue.Enqueue("not-spawned");runtime.TemporaryWeaponId="arcade.weapon.rapid";runtime.TemporaryWeaponRemaining=10;
+            Call("TickTimers",runtime,.1f);Assert.That(runtime.TemporaryWeaponRemaining,Is.EqualTo(expected).Within(.001));
+        }
     }
 }

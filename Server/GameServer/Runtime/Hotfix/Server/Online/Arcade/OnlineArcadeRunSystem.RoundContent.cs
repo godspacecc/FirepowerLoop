@@ -364,7 +364,8 @@ namespace ET.Server
         /// <summary>权威事件与死亡领域只随活动时间推进，每目标每间隔至多结算一次；快照只读投影。</summary>
         private static bool TickRoundContent(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float delta)
         {
-            if(!RoundContentActive(b)||delta<=0||float.IsNaN(delta)||float.IsInfinity(delta))return false;var p=ContentTuning(b);b.ContentClock.Advance(delta,false);b.ContentAreas.Clear();
+            if(!RoundContentActive(b)||!RoundPlayersReady(b)||delta<=0||float.IsNaN(delta)||float.IsInfinity(delta))return false;var p=ContentTuning(b);b.ContentClock.Advance(delta,false);b.ContentAreas.Clear();
+            actor.TickHerd(b,delta);if(!RoundContentActive(b))return true;
             TickVortexBarrels(b,delta);
             foreach(var player in b.Players.Values){player.ContentSlowRemaining=Math.Max(0,player.ContentSlowRemaining-delta);player.ContentBumperCooldown=Math.Max(0,player.ContentBumperCooldown-delta);}
             if(p.EventKind>0&&!b.RoundBossEncounter)

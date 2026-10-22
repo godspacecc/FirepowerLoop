@@ -27,7 +27,9 @@ namespace Game.Tests
             var catalog = LoadCatalog();
             Assert.That(catalog.Arenas[1].Hazards.Count, Is.EqualTo(2));
             Assert.That(catalog.Arenas[7].Hazards.Count, Is.EqualTo(1));
-            Assert.That(catalog.Arenas.Where((arena, index) => index != 1 && index != 7).All(arena => arena.Hazards.Count == 0), Is.True);
+            Assert.That(catalog.Arenas.Where(arena => arena.ArenaNumber!=2&&arena.ArenaNumber!=8&&arena.ArenaNumber!=21).All(arena => arena.Hazards.Count == 0), Is.True);
+            var dock=catalog.Arenas.Single(arena=>arena.ArenaNumber==21);Assert.That(dock.Hazards.Count,Is.EqualTo(1));Assert.That(dock.Hazards[0].Kind,Is.EqualTo(1));
+            foreach(var layout in catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==21))Assert.That(layout.IsWalkable(dock.Hazards[0].X,dock.Hazards[0].Y,.55f,20.5f,19.5f),Is.True,"码头电塔必须位于真实平台");
             var tower = catalog.Arenas[1].Hazards[0];
             Assert.That(tower.Kind, Is.EqualTo(1));
             Assert.That(tower.PlayerDamageRatio, Is.EqualTo(1f));
@@ -55,6 +57,8 @@ namespace Game.Tests
                 Assert.That(run.Current.RemainingLives, Is.EqualTo(2), "复活等待期间不能继续扣命");
             });
         }
+        [Test] public void DockElectricTowerContactUsesExistingLifeLossAndRespawn()
+            => ConfiguredHazard_UnprotectedContactLosesExactlyOneLife(21,0,100);
 
         [TestCase(2, 0)]
         [TestCase(8, 0)]

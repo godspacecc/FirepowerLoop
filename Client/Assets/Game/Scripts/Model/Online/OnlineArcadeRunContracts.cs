@@ -308,7 +308,8 @@ namespace Game
             float treasureRewardSeconds = 30f, string roundLayoutId = null, int roundLayoutVersion = 0,
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
             float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
-            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null, OnlineArcadeRoundRewardSnapshot roundReward=null,float stagePortalSeconds=0,float stagePortalX=0,float stagePortalZ=0)
+            IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null, OnlineArcadeRoundRewardSnapshot roundReward=null,float stagePortalSeconds=0,float stagePortalX=0,float stagePortalZ=0,
+            IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> herds=null)
         {
             SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;RoundReward=roundReward;StagePortalSeconds=stagePortalSeconds;StagePortalX=stagePortalX;StagePortalZ=stagePortalZ;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
@@ -322,6 +323,7 @@ namespace Game
             RoundLayoutId=roundLayoutId??string.Empty;RoundLayoutVersion=roundLayoutVersion;RoundGeneration=roundGeneration;
             RoundLoading=roundLoading;RoundLoadError=roundLoadError??string.Empty;ContentElapsed=contentElapsed;
             ContentAreas=Array.AsReadOnly(Copy(contentAreas));RoundBossEncounter=roundBossEncounter;RoundBossDefeated=roundBossDefeated;
+            Herds=Array.AsReadOnly(Copy(herds));
             TreasureRewardIds = Array.AsReadOnly(Copy(treasureRewardIds));
             CrateIds = Array.AsReadOnly(Copy(crateIds));
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
@@ -352,6 +354,8 @@ namespace Game
         public string RoundLoadError { get; }
         public float ContentElapsed { get; }
         public IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas { get; }
+        /// <summary>权威牛群只读副本，不能用于客户端伤害或保存半次冲撞。</summary>
+        public IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> Herds {get;}
         public int ArenaNumber { get; }
         public int WaveNumber { get; }
         /// <summary>服务器选定的实际地图；旧协议为零时回退到序号。</summary>
