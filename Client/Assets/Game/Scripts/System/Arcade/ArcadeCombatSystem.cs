@@ -1750,7 +1750,8 @@ namespace Game
             view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame, impactKind);
             var deathPosition = IslandPosition(runtime, enemy.Position, catalog.Rule.PlayerRadius);
             if (!hazardKill && !runtime.IsChallenge && runtime.Drops.Count < catalog.Rule.MaxDrops &&
-                UnityRandom(0f, 1f) <= catalog.Rule.DropChance)
+                UnityRandom(0f, 1f) < ArcadeEnemyDropRules.Chance(catalog.Rule.DropChance, enemy.MaxHealth, enemy.Damage,
+                    catalog.Rule.EnemyDropHealthUnit, catalog.Rule.EnemyDropDamageUnit, catalog.Rule.EnemyDropMaxChance))
             {
                 var totalWeight = 0;
                 foreach (var candidate in catalog.Drops)

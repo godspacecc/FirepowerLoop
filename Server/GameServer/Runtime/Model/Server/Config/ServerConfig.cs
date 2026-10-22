@@ -301,6 +301,10 @@ namespace ET
             if (!string.Equals(this.arcadeRule.Id, "arcade.default", StringComparison.Ordinal) ||
                 string.IsNullOrWhiteSpace(this.arcadeRule.ConfigFingerprint) || this.arcadeRule.ConfigFingerprint.Length > 128 ||
                 this.arcadeRule.InitialLives <= 0 || this.arcadeRule.InitialBombs < 0 || this.arcadeRule.InitialDashes < 0 ||
+                !float.IsFinite(this.arcadeRule.DropChance) || this.arcadeRule.DropChance < 0 || this.arcadeRule.DropChance > 1 ||
+                !float.IsFinite(this.arcadeRule.EnemyDropHealthUnit) || this.arcadeRule.EnemyDropHealthUnit <= 0 ||
+                !float.IsFinite(this.arcadeRule.EnemyDropDamageUnit) || this.arcadeRule.EnemyDropDamageUnit <= 0 ||
+                !float.IsFinite(this.arcadeRule.EnemyDropMaxChance) || this.arcadeRule.EnemyDropMaxChance < this.arcadeRule.DropChance || this.arcadeRule.EnemyDropMaxChance > 1 ||
                 !float.IsFinite(this.arcadeRule.CoopDownedSeconds) || this.arcadeRule.CoopDownedSeconds<=0 ||
                 !float.IsFinite(this.arcadeRule.CoopRescueRadius) || this.arcadeRule.CoopRescueRadius<=0 ||
                 !float.IsFinite(this.arcadeRule.WeaponDeliverySeconds) || this.arcadeRule.WeaponDeliverySeconds<=0 ||

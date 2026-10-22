@@ -183,6 +183,9 @@
         <var name="CoopRescueSpeed" type="float"/>
         <var name="CoopDonationMinLives" type="int"/>
         <var name="WeaponDeliverySeconds" type="float"/>
+        <var name="EnemyDropHealthUnit" type="float"/>
+        <var name="EnemyDropDamageUnit" type="float"/>
+        <var name="EnemyDropMaxChance" type="float"/>
     </bean>
     <bean name="ArcadeWeaponConfig" group="e">
         <var name="Id" type="string"/>

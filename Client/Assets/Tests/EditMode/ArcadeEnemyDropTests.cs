@@ -48,6 +48,44 @@ namespace Game.Tests
             IsBossPresentation = boss, BossId = boss ? "drop-test-boss" : null
         };
 
+        /// <summary>损坏的强度掉率表必须由客户端加载入口明确拒绝，避免战斗中才抛错。</summary>
+        [TestCase("EnemyDropHealthUnit", 0f)]
+        [TestCase("EnemyDropDamageUnit", float.NaN)]
+        [TestCase("EnemyDropMaxChance", .01f)]
+        [TestCase("EnemyDropMaxChance", 1.1f)]
+        [TestCase("DropChance", float.PositiveInfinity)]
+        public void InvalidEnemyStrengthRuleIsRejectedByClient(string field, float value)
+        {
+            var tables = new Tables(name => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes"))));
+            typeof(ArcadeRuleConfig).GetField(field).SetValue(tables.TbArcadeRule.DataList.Single(), value);
+            var provider = new LubanRuntimeConfigProvider(() => tables);
+            Assert.That(provider.TryGetArcadeCatalog(out _, out var error), Is.False);
+            Assert.That(error, Does.Contain("TbArcadeRule"));
+        }
+
+        /// <summary>使用同一随机输入比较强弱敌人，并确认关卡编号不直接改变击杀掉率。</summary>
+        [TestCase(1, 20, 10, .2d, false)]
+        [TestCase(20, 20, 10, .2d, false)]
+        [TestCase(1, 100, 20, .2d, true)]
+        [TestCase(20, 100, 20, .2d, true)]
+        [TestCase(1, 20, 10, .099d, true)]
+        [TestCase(1, 20, 10, .1d, false)]
+        [TestCase(1, int.MaxValue, int.MaxValue, .49d, true)]
+        [TestCase(1, int.MaxValue, int.MaxValue, .5d, false)]
+        public void EnemyStrengthControlsDropChanceWithoutArenaMultiplier(int arenaNumber, int health, int damage, double roll, bool expected)
+        {
+            runtime.ArenaNumber = arenaNumber;
+            Set("arena", catalog.Arenas.Single(a => a.ArenaNumber == arenaNumber));
+            var controlled = new ControlledRandom(45, 0, roll);
+            Set("random", controlled);
+            var enemy = Enemy(); enemy.MaxHealth = health; enemy.Damage = damage;
+            runtime.Enemies.Add(enemy.Id, enemy);
+            Call("KillEnemy", runtime, enemy, false);
+            Assert.That(runtime.Drops.Count, Is.EqualTo(expected ? 1 : 0));
+            Assert.That(controlled.ChanceCalls, Is.EqualTo(1));
+            Assert.That(controlled.WeightCalls, Is.EqualTo(expected ? 1 : 0));
+        }
+
         /// <summary>真实喷火命中产生短暂燃烧表现身份，计时不造成额外伤害，后续普通伤害清除火焰击杀归属。</summary>
         [Test]
         public void FlameImpactRecordsVisibleBurnWithoutAddingDamageOverTime()

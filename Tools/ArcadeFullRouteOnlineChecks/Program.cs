@@ -2,6 +2,14 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="EnemyStrengthDropOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int strengthMax)||strengthMax<1)
+        throw new ArgumentException("Explicit EnemyStrengthDropOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=EnemyStrengthDropOnlineChecks.Run(strengthMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="IslandPassageOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int passageMax)||passageMax<1)

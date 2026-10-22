@@ -507,7 +507,8 @@ namespace Game
             float damageGrowthPerArena, float speedGrowthPerArena, float goldGrowthPerArena, int bossEveryArenas,
             int playerMaxHealth, float playerMoveSpeed, float playerRadius, float enemyContactRadius,
             float contactInvulnerabilitySeconds, float respawnDelaySeconds, float arenaHalfWidth, float arenaHalfHeight,
-            float dropChance, float supportFireIntervalSeconds, string configFingerprint = "",
+            float dropChance, float supportFireIntervalSeconds, float enemyDropHealthUnit,
+            float enemyDropDamageUnit, float enemyDropMaxChance, string configFingerprint = "",
             float coopDownedSeconds=0, float coopRescueRadius=0, float coopRescueSpeed=0, int coopDonationMinLives=0,float weaponDeliverySeconds=0)
         {
             Id = id; InitialLives = initialLives; InitialBombs = initialBombs; InitialDashes = initialDashes;
@@ -519,6 +520,8 @@ namespace Game
             EnemyContactRadius = enemyContactRadius; ContactInvulnerabilitySeconds = contactInvulnerabilitySeconds;
             RespawnDelaySeconds = respawnDelaySeconds; ArenaHalfWidth = arenaHalfWidth; ArenaHalfHeight = arenaHalfHeight;
             DropChance = dropChance; SupportFireIntervalSeconds = supportFireIntervalSeconds;
+            EnemyDropHealthUnit = enemyDropHealthUnit; EnemyDropDamageUnit = enemyDropDamageUnit;
+            EnemyDropMaxChance = enemyDropMaxChance;
             ConfigFingerprint = configFingerprint ?? string.Empty;
             CoopDownedSeconds=coopDownedSeconds;CoopRescueRadius=coopRescueRadius;CoopRescueSpeed=coopRescueSpeed;CoopDonationMinLives=coopDonationMinLives;
             WeaponDeliverySeconds=weaponDeliverySeconds;
@@ -548,6 +551,11 @@ namespace Game
         public float ArenaHalfWidth { get; }
         public float ArenaHalfHeight { get; }
         public float DropChance { get; }
+        /// <summary>击杀掉率对应的一单位生命与攻击强度，由 Config 提供。</summary>
+        public float EnemyDropHealthUnit { get; }
+        public float EnemyDropDamageUnit { get; }
+        /// <summary>强敌击杀概率上限，限制强化供给，不改变独立来源的权重。</summary>
+        public float EnemyDropMaxChance { get; }
         public float SupportFireIntervalSeconds { get; }
         /// <summary>合作倒地与救援规则，由双端 Config 提供。</summary>
         public float CoopDownedSeconds { get; }

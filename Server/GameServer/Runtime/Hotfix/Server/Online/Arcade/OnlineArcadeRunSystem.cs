@@ -2347,7 +2347,9 @@ namespace ET.Server
             if (hazardKill || battle.Drops.Count >= ServerConfig.Instance.ArcadeRule.MaxDrops) return;
             uint seed = MixDropSeed(unchecked((ulong)self.Record.RunId), battle.ArenaNumber, enemy.RuntimeId);
             float chanceRoll = (seed & 0x00ffffffu) / 16777216f;
-            if (chanceRoll >= ServerConfig.Instance.ArcadeRule.DropChance) return;
+            var dropRule = ServerConfig.Instance.ArcadeRule;
+            if (chanceRoll >= ArcadeEnemyDropRules.Chance(dropRule.DropChance, enemy.MaxHealth, enemy.Damage,
+                dropRule.EnemyDropHealthUnit, dropRule.EnemyDropDamageUnit, dropRule.EnemyDropMaxChance)) return;
             List<ArcadeDropConfig> candidates = ServerConfig.Instance.Tables.TbArcadeDrop.DataList
                 .Where(x => x.Weight > 0 && x.MinArena <= battle.ArenaNumber && x.EnemyMinArena > 0 && x.EnemyMinArena <= battle.ArenaNumber &&
                             (x.MaxArena <= 0 || x.MaxArena >= battle.ArenaNumber))
