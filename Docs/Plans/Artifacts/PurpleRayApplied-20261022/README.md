@@ -1,0 +1,1 @@
+已采用紫级射线正式弹体、短尾及实际ArcadeCombatViewController电弧投影的隔离实拍。弹道与命中快照人工提供，不代表正式对局；两次反射/首敌加最多两名/四米范围与生命结算由ArcadePurpleRayTests和PurpleRayOnline定向验证。没有新增HUD、危险圈或声音。

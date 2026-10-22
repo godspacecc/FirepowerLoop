@@ -418,7 +418,7 @@ namespace Game
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
             foreach (var drop in runtime.Drops.Values) runtimePool.Return(drop);
             runtime.Enemies.Clear();
-            runtime.Projectiles.Clear();
+            runtime.Projectiles.Clear();runtime.PurpleRayArcs.Clear();
             runtime.Drops.Clear();
             runtime.WeaponSpawns = null;
             runtime.Powerups.Clear();
@@ -550,6 +550,7 @@ namespace Game
             if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             if (runtime.AwaitingExit)
             {
+                TickPurpleRayArcs(runtime,deltaTime);
                 // 清场后仍可领取地面物资；先结算拾取，再处理出口或超时离场，避免漏存同帧奖励。
                 TickDrops(runtime);
                 if (!UsesRoundLayouts(runtime) && UsesEarlyRest(runtime) && !runtime.CompletionAwaitingRetry)
@@ -951,11 +952,12 @@ namespace Game
 
         private void TickProjectiles(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            TickPurpleRayArcs(runtime,deltaTime);
             CopyKeys(runtime.Projectiles, projectileIterationIds);
             for (var projectileIndex = 0; projectileIndex < projectileIterationIds.Count; projectileIndex++)
             {
                 if (!runtime.Projectiles.TryGetValue(projectileIterationIds[projectileIndex], out var projectile)) continue;
-                if(TickPurpleRocket(runtime,projectile,deltaTime))continue;
+                if(TickPurpleRocket(runtime,projectile,deltaTime)||TickPurpleRay(runtime,projectile,deltaTime))continue;
                 SteerRoundProjectile(runtime, projectile, deltaTime);
                 var priorPosition = projectile.Position;
                 projectile.Position += projectile.Velocity * deltaTime;
@@ -2078,6 +2080,7 @@ namespace Game
             projectile.Id = runtime.NextEntityId++;
             projectile.Hostile = hostile;
             projectile.WeaponPowerLevel=!hostile&&fromPlayerWeapon?weaponPowerLevel:0;
+            projectile.RemainingReflections=projectile.WeaponPowerLevel>=2&&sourceWeaponId=="arcade.weapon.raygun"?catalog.Rule.WeaponUpgrade.PurpleRayReflections:0;
             projectile.Position = position;
             projectile.Velocity = velocity;
             projectile.Damage = Mathf.Max(1, damage);

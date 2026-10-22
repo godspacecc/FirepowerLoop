@@ -21,6 +21,9 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
         PurpleRocketSpreadDegrees = _buf.ReadFloat();
         PurpleRocketTurnRadians = _buf.ReadFloat();
         PurpleRocketRange = _buf.ReadFloat();
+        PurpleRayReflections = _buf.ReadInt();
+        PurpleRayChainCount = _buf.ReadInt();
+        PurpleRayChainRange = _buf.ReadFloat();
         PurpleMoveSpeedPercent = _buf.ReadFloat();
         RedPowerupId = _buf.ReadString();
         RedPowerupId_Ref = null;
@@ -39,6 +42,9 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
     public readonly float PurpleRocketSpreadDegrees;
     public readonly float PurpleRocketTurnRadians;
     public readonly float PurpleRocketRange;
+    public readonly int PurpleRayReflections;
+    public readonly int PurpleRayChainCount;
+    public readonly float PurpleRayChainRange;
     public readonly float PurpleMoveSpeedPercent;
     public readonly string RedPowerupId;
     public ArcadePowerupConfig RedPowerupId_Ref;
@@ -63,6 +69,9 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
         + "PurpleRocketSpreadDegrees:" + PurpleRocketSpreadDegrees + ","
         + "PurpleRocketTurnRadians:" + PurpleRocketTurnRadians + ","
         + "PurpleRocketRange:" + PurpleRocketRange + ","
+        + "PurpleRayReflections:" + PurpleRayReflections + ","
+        + "PurpleRayChainCount:" + PurpleRayChainCount + ","
+        + "PurpleRayChainRange:" + PurpleRayChainRange + ","
         + "PurpleMoveSpeedPercent:" + PurpleMoveSpeedPercent + ","
         + "RedPowerupId:" + RedPowerupId + ","
         + "PurplePowerupId:" + PurplePowerupId + ","

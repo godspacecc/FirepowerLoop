@@ -11,8 +11,10 @@ using Object=UnityEngine.Object;
 /// <summary>后两关与竞速的独立项目方案预览；仅临时几何，不保存正式资源，不推断原作方向。</summary>
 public static class RemainingStagesPreview
 {
-    static bool RaceOnly,DockArtOnly,DockApplied;
-    static string Folder=>Path.GetFullPath(DockApplied?"Temp/DockApplied-v1":DockArtOnly?"Temp/DockArtPreview-v1":RaceOnly?"Temp/RaceCurvesPreview-v4":"Temp/RemainingStagesPreview-v3");
+    static bool RaceOnly,DockArtOnly,DockApplied,FarmArtOnly,FarmApplied;
+    static string Folder=>Path.GetFullPath(FarmApplied?"Temp/FarmApplied-v1":FarmArtOnly?"Temp/FarmArtPreview-v1":DockApplied?"Temp/DockApplied-v1":DockArtOnly?"Temp/DockArtPreview-v1":RaceOnly?"Temp/RaceCurvesPreview-v4":"Temp/RemainingStagesPreview-v3");
+    public static string RunFarmArt(){FarmArtOnly=true;try{return Run();}finally{FarmArtOnly=false;}}
+    public static string RunFarmApplied(){FarmApplied=FarmArtOnly=true;try{return Run();}finally{FarmApplied=FarmArtOnly=false;}}
     public static string RunRace(){RaceOnly=true;try{return Run();}finally{RaceOnly=false;}}
     public static string RunDockArt(){DockArtOnly=true;try{return Run();}finally{DockArtOnly=false;}}
     public static string RunDockApplied(){DockApplied=DockArtOnly=true;try{return Run();}finally{DockApplied=DockArtOnly=false;}}
@@ -34,7 +36,20 @@ public static class RemainingStagesPreview
             camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.cullingMask=1<<Layer;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.06f,.09f,.11f);camera.farClipPlane=250;
             var light=new GameObject("PreviewSun",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.15f;light.cullingMask=1<<Layer;light.transform.rotation=Quaternion.Euler(48,-30,0);
-            if(DockArtOnly)
+            if(FarmArtOnly)
+            {
+                if(FarmApplied)
+                {
+                    Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab"),root);
+                    Hero(-13,-16);Zombie(-9,14);Zombie(14,-5);Zombie(12,17);FarmCows();
+                    camera.orthographicSize=36;camera.transform.position=new Vector3(0,68,-44);camera.transform.LookAt(Vector3.zero);
+                }
+                else FarmArt();
+                foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=Layer;
+                Capture("farm-art-overview.png",1500,1100);
+                camera.orthographicSize=11;camera.transform.position=new Vector3(-7,15,-31);camera.transform.LookAt(new Vector3(-5,.5f,-13));Capture("farm-art-detail.png",1400,1000);
+            }
+            else if(DockArtOnly)
             {
                 Reset();
                 if(DockApplied){var environment=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab"),root);Hero(0,-4);Zombie(-6,4);Zombie(6,1);foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=Layer;}
@@ -59,6 +74,47 @@ public static class RemainingStagesPreview
             grass=Mat("Trees",.30f,.37f,.31f);soil=Mat("Dirt",.45f,.34f,.24f);wood=Mat("Wood",.45f,.31f,.18f);
             iron=Mat("Metal",.18f,.24f,.27f);water=Mat("Water",.13f,.35f,.46f);cream=Mat("Cream",.87f,.83f,.69f);
             purple=Mat("Vortex",.55f,.27f,.78f);dark=Mat("Dark",.10f,.12f,.13f);green=Mat("Truck",.28f,.44f,.34f);
+    }
+    /// <summary>FarmArt-v1明确采用后保存同源静态环境；正式主角和牛仍归业务独立拥有。</summary>
+    public static string ApplyConfirmedFarm()
+    {
+        if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态正式制作");
+        const string folder="Assets/Game/Art/Arcade/Farm/Environment";Directory.CreateDirectory(folder);AssetDatabase.Refresh();
+        var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+        try
+        {
+            SceneManager.SetActiveScene(scene);InitializeMaterials();root=new GameObject("ArcadeFarmVisual").transform;
+            camera=new GameObject("TemporaryFraming",typeof(Camera)).GetComponent<Camera>();FarmArt();Object.DestroyImmediate(camera.gameObject);camera=null;
+            foreach(var t in root.Cast<Transform>().Where(t=>t.GetComponentsInChildren<MonoBehaviour>(true).Length>0||t.GetComponentsInChildren<Animator>(true).Length>0).ToArray())Object.DestroyImmediate(t.gameObject);
+            var groups=new Dictionary<Material,List<CombineInstance>>();
+            foreach(var filter in root.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var renderer=filter.GetComponent<MeshRenderer>();if(renderer==null||filter.sharedMesh==null)throw new InvalidOperationException("农场网格缺少Renderer");
+                for(int sub=0;sub<filter.sharedMesh.subMeshCount;sub++)
+                {
+                    var mat=renderer.sharedMaterials[Mathf.Min(sub,renderer.sharedMaterials.Length-1)];if(!groups.TryGetValue(mat,out var items))groups[mat]=items=new List<CombineInstance>();
+                    items.Add(new CombineInstance{mesh=filter.sharedMesh,subMeshIndex=sub,transform=root.worldToLocalMatrix*filter.transform.localToWorldMatrix});
+                }
+            }
+            var output=new GameObject("CombinedEnvironment").transform;output.SetParent(root,false);int index=0;
+            foreach(var pair in groups)
+            {
+                var mesh=new Mesh{name="FarmMesh"+index,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};Meshes.Add(mesh);mesh.CombineMeshes(pair.Value.ToArray(),true,true);mesh.RecalculateBounds();
+                string meshPath=folder+"/FarmMesh"+index+".asset";var savedMesh=AssetDatabase.LoadAssetAtPath<Mesh>(meshPath);
+                if(savedMesh==null){AssetDatabase.CreateAsset(mesh,meshPath);savedMesh=mesh;}else{EditorUtility.CopySerialized(mesh,savedMesh);AssetDatabase.SaveAssetIfDirty(savedMesh);}
+                string materialPath=folder+"/Material"+index+".mat";var savedMaterial=AssetDatabase.LoadAssetAtPath<Material>(materialPath);
+                if(savedMaterial==null){savedMaterial=new Material(pair.Key);AssetDatabase.CreateAsset(savedMaterial,materialPath);}else EditorUtility.CopySerialized(pair.Key,savedMaterial);
+                savedMaterial.name="FarmMaterial"+index;EditorUtility.SetDirty(savedMaterial);AssetDatabase.SaveAssetIfDirty(savedMaterial);
+                var go=new GameObject("EnvironmentPart"+index++,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(output,false);go.GetComponent<MeshFilter>().sharedMesh=savedMesh;go.GetComponent<MeshRenderer>().sharedMaterial=savedMaterial;
+            }
+            foreach(var t in root.Cast<Transform>().Where(t=>t!=output).ToArray())Object.DestroyImmediate(t.gameObject);
+            PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab");return "已保存确认农场，绘制组="+index;
+        }
+        finally
+        {
+            SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);foreach(var material in Materials)if(material!=null&&!EditorUtility.IsPersistent(material))Object.DestroyImmediate(material);Materials.Clear();
+            foreach(var mesh in Meshes)if(mesh!=null&&!EditorUtility.IsPersistent(mesh))Object.DestroyImmediate(mesh);Meshes.Clear();
+        }
     }
     /// <summary>DockArt-v1已获明确采用后，制作独立低批次环境，不携带战斗单位。</summary>
     public static string ApplyConfirmedDock()
@@ -376,6 +432,55 @@ public static class RemainingStagesPreview
         Hero(-13,-16);Zombie(-9,14);Zombie(14,-5);Zombie(12,17);
         for(int i=0;i<5;i++)Bull(new Vector3(-18,0,-14+(i-2)*1.65f),90);
         camera.orthographicSize=36;camera.transform.position=new Vector3(0,68,-44);camera.transform.LookAt(Vector3.zero);
+    }
+    // 保持已采用v3布局，仅展示雪地/石墙/棚屋的独立临时外观候选。
+    static void FarmArt()
+    {
+        Farm();var stone=Mat("FarmStone",.30f,.34f,.36f);var snow=Mat("FreshSnow",.80f,.85f,.87f);var bale=Mat("DryHay",.65f,.49f,.24f);
+        var shedFinish=AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Art/Arcade/Docks/Material0.mat")??wood;
+        foreach(var child in root.Cast<Transform>().ToArray())
+        {
+            var renderer=child.GetComponent<Renderer>();if(renderer==null)continue;
+            string n=child.name;
+            if(n=="SnowGround"||n=="YardSnow"||n=="SnowRoof"||n=="CrownSnow")renderer.sharedMaterial=snow;
+            if(n=="WestEastDivider"||n=="NorthSouthDivider"||n=="OuterWall")
+            {
+                renderer.sharedMaterial=stone;var s=child.localScale;var p=child.position;bool alongZ=s.z>s.x;float length=alongZ?s.z:s.x;
+                Box("WallSnowCap",p.x,2.17f,p.z,s.x+.16f,.20f,s.z+.16f,snow);
+                for(int i=0;i<Mathf.FloorToInt(length/1.6f);i++)
+                {
+                    float offset=-length*.5f+.8f+i*1.6f;
+                    Box("StoneCourse",p.x+(alongZ?0:offset),.64f+(i%2)*.10f,p.z+(alongZ?offset:0),alongZ?.76f:1.43f,.73f,alongZ?1.43f:.76f,stone);
+                }
+            }
+            if(n=="Shed")
+            {
+                renderer.sharedMaterial=shedFinish;var p=child.position;
+                Box("ShedDoor",p.x,.95f,p.z-3.02f,1.5f,1.9f,.09f,dark);
+                Box("DoorFrame",p.x-1.0f,1.15f,p.z-3.12f,.16f,2.3f,.16f,wood);Box("DoorFrame",p.x+1.0f,1.15f,p.z-3.12f,.16f,2.3f,.16f,wood);
+                Box("DoorFrame",p.x,2.24f,p.z-3.12f,2.2f,.17f,.16f,wood);
+            }
+            if(n=="HayBale")
+            {
+                renderer.sharedMaterial=bale;var p=child.position;
+                for(int i=-1;i<=1;i+=2)Box("HayTie",p.x+i*.62f,p.y,p.z, .06f,1.14f,1.45f,wood);
+                Box("HaySnow",p.x,p.y+.58f,p.z,2.24f,.11f,1.43f,snow);
+            }
+            if(n=="BrokenWallRubble")renderer.sharedMaterial=stone;
+            if(n=="OpenDoorPost")renderer.sharedMaterial=wood;
+        }
+        foreach(var cow in root.Cast<Transform>().Where(t=>t.name=="TEMP_BULL_GEOMETRY").ToArray())Object.DestroyImmediate(cow.gameObject);
+        FarmCows();
+        foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=Layer;
+    }
+    static void FarmCows()
+    {
+        for(int i=0;i<5;i++)
+        {
+            var cow=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeHerdVisual.prefab"),root);
+            cow.GetComponent<Game.ArcadeHerdVisual>().Bind(22,i+1);
+            cow.GetComponent<Game.ArcadeHerdVisual>().Project(new FirepowerLoop.Arcade.ArcadeHerdSnapshot(22,i+1,FirepowerLoop.Arcade.ArcadeHerdPhase.Charging,-18,-14+(i-2)*1.65f,1,0,.4f));
+        }
     }
     static void Wall(string name,bool alongZ,float fixedCoordinate,float from,float to,Material mat)
     {

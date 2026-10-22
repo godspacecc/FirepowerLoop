@@ -98,6 +98,8 @@ namespace Game
         public int Id;
         /// <summary>玩家弹生成时的强化层级与追踪身份，换枪不改变；回池清零。</summary>
         public int WeaponPowerLevel,TrackingEnemyId;
+        /// <summary>紫射线发射时固定的反射余量，回池清零。</summary>
+        public int RemainingReflections;
         /// <summary>追踪弹转速和寄生弹剩余减速秒数，由本弹的生成方固定。</summary>
         public float ContentTurnRate, ContentSlowSeconds;
         public bool Hostile;
@@ -125,7 +127,7 @@ namespace Game
         public void Reset()
         {
             Id = 0;
-            WeaponPowerLevel=TrackingEnemyId=0;
+            WeaponPowerLevel=TrackingEnemyId=RemainingReflections=0;
             ContentTurnRate = ContentSlowSeconds = 0;
             Hostile = false;
             Position = default;
@@ -222,6 +224,8 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
         /// <summary>本地图独占领域，离场整体释放，不写入存档。</summary>
         public readonly List<ArcadeContentAreaRuntime> ContentAreas = new();
+        /// <summary>只在本地图存在的紫射线电弧，不进入危险区域集合。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeRayArcState> PurpleRayArcs=new();
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreaSnapshots = new();
         /// <summary>冰面速度、寄生/孢子减速及事件锚点均只属于本次地图。</summary>
         public Vector2 ContentVelocity, ContentEventAnchor, ContentEventTarget;

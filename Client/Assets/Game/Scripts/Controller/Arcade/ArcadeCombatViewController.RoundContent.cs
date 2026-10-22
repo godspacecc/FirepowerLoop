@@ -304,10 +304,12 @@ namespace Game
         /// <summary>用权威快照替换危险标记；无快照时立刻移除，不自行推进计时或伤害。</summary>
         public void SetRoundContent(double elapsed,IReadOnlyList<ArcadeContentAreaSnapshot> areas)
         {
+            SetPurpleRayArcs(elapsed,areas);
             if(!IsRoundLayoutReady||roundAreaRoot==null)return;
             var active=new HashSet<int>();
             foreach(var area in areas??Array.Empty<ArcadeContentAreaSnapshot>())
             {
+                if(area.Kind==ArcadeRayArcState.Kind)continue;
                 if(float.IsNaN(area.X)||float.IsNaN(area.Y)||float.IsNaN(area.Radius)||float.IsInfinity(area.X)||float.IsInfinity(area.Y)||float.IsInfinity(area.Radius)||area.Radius<=0 ||
                     (area.Segment&&(float.IsNaN(area.EndX)||float.IsInfinity(area.EndX)||float.IsNaN(area.EndY)||float.IsInfinity(area.EndY))))continue;
                 if(area.Kind==ArcadeRoundContentRules.BarrelExplosionKind)
@@ -530,6 +532,7 @@ namespace Game
         /// <summary>根先失活，再释放所有自有网格和材质；共享 Primitive 网格不在释放列表中。</summary>
         private void ReleaseRoundContent()
         {
+            ClearPurpleRayArcs();
             ClearBarrelBlasts();roundSeenBarrelBlasts.Clear();
             roundLayoutReady=false;roundLayoutLoadError=null;
             foreach(var entry in roundBaseRendererVisibility)if(entry.Key!=null)entry.Key.enabled=entry.Value;

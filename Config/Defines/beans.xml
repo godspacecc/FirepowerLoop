@@ -582,6 +582,9 @@
         <var name="PurpleRocketSpreadDegrees" type="float"/>
         <var name="PurpleRocketTurnRadians" type="float"/>
         <var name="PurpleRocketRange" type="float"/>
+        <var name="PurpleRayReflections" type="int"/>
+        <var name="PurpleRayChainCount" type="int"/>
+        <var name="PurpleRayChainRange" type="float"/>
         <var name="PurpleMoveSpeedPercent" type="float"/>
         <var name="RedPowerupId" type="string#ref=TbArcadePowerup"/>
         <var name="PurplePowerupId" type="string#ref=TbArcadePowerup"/>

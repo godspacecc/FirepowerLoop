@@ -1442,6 +1442,7 @@ namespace ET.Server
             changed |= self.TickSlayerMartSupports(battle,deltaSeconds);
             if (battle.AwaitingExit)
             {
+                changed |= TickPurpleRayArcs(battle,deltaSeconds);
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
                 changed |= self.TickDrops(battle);
                 changed |= TickExit(battle);
@@ -2072,6 +2073,7 @@ namespace ET.Server
                     SourcePositionX = player.PositionX, SourcePositionZ = player.PositionZ,
                     WeaponPowerLevel = Math.Clamp((int)MathF.Round(skullMultiplier)-1,0,2),
                     TrackingEnemyId=purpleRocket&&targets.Length>0?targets[index%targets.Length].RuntimeId:0,
+                    RemainingReflections=skullMultiplier>=3&&weapon.Id=="arcade.weapon.raygun"?tuning.PurpleRayReflections:0,
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     VelocityX = directionX * weapon.ProjectileSpeed,
@@ -2111,16 +2113,17 @@ namespace ET.Server
         private static bool TickProjectiles(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float deltaSeconds)
         {
-            if (battle.Projectiles.Count == 0) return false;
+            bool arcsChanged=TickPurpleRayArcs(battle,deltaSeconds);
+            if (battle.Projectiles.Count == 0) return arcsChanged;
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             battle.ProjectileIterationIds.Clear();
             battle.ProjectileIterationIds.AddRange(battle.Projectiles.Keys);
-            bool changed = false;
+            bool changed = arcsChanged;
             foreach (long projectileId in battle.ProjectileIterationIds)
             {
                 if (!battle.Projectiles.TryGetValue(projectileId, out OnlineArcadeProjectileRuntime projectile)) continue;
-                if(self.TickPurpleRocket(battle,projectile,deltaSeconds)){changed=true;continue;}
+                if(self.TickPurpleRocket(battle,projectile,deltaSeconds)||self.TickPurpleRay(battle,projectile,deltaSeconds)){changed=true;continue;}
                 TickTrackingProjectile(battle,projectile,deltaSeconds);
                 float priorX = projectile.PositionX, priorZ = projectile.PositionZ;
                 projectile.PositionX += projectile.VelocityX * deltaSeconds;
@@ -3186,6 +3189,10 @@ namespace ET.Server
             battle.ContentElapsed=(float)source.ContentClock.Elapsed;
             AppendGroundBarrelSnapshots(source,battle);
             AppendCoopRescueMarkers(source,battle);
+            foreach(var arc in source.PurpleRayArcs)
+            {
+                var a=arc.Snapshot;var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=true;battle.ContentAreas.Add(item);
+            }
             foreach(var a in source.ContentAreas)
             {
                 if(a.Kind==ArcadeRoundContentRules.BarrelExplosionKind)continue;

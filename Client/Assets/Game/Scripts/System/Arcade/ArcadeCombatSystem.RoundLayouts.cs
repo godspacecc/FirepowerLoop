@@ -69,7 +69,7 @@ namespace Game
             foreach (var enemy in runtime.Enemies.Values) runtimePool.Return(enemy);
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
             foreach (var drop in runtime.Drops.Values) runtimePool.Return(drop);
-            runtime.Enemies.Clear(); runtime.Projectiles.Clear(); runtime.Drops.Clear();
+            runtime.Enemies.Clear(); runtime.Projectiles.Clear();runtime.PurpleRayArcs.Clear(); runtime.Drops.Clear();
             runtime.Hazards.Clear(); runtime.HazardPreviousEnemyPositions.Clear();
             foreach (var hazard in arena.Hazards) runtime.Hazards.Add(new ArcadeHazardState(hazard));
             runtime.HazardElapsedSeconds = 0;

@@ -27,6 +27,7 @@ namespace Game
         {
             var layout=RoundLayout(r);double previousElapsed=r.ContentClock.Elapsed;
             bool sameMap=layout!=null&&r.GroundBarrelMapId==layout.Id&&r.GroundBarrelLayoutVersion==layout.Version;
+            if(!sameMap)r.PurpleRayArcs.Clear();
             // 同地图切入 Boss 只停止危险；已结算爆炸保留剩余寿命，并换算到重置后的活动时钟。
             r.ContentAreas.RemoveAll(a=>!sameMap||a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind||a.ExpiresAt<=previousElapsed);
             foreach(var area in r.ContentAreas){area.WarningUntil=0;area.ExpiresAt-=previousElapsed;}
@@ -385,6 +386,7 @@ namespace Game
                 foreach(var area in r.ContentAreas)
                     if(area.Kind==ArcadeRoundContentRules.BarrelExplosionKind&&area.ExpiresAt>r.ContentClock.Elapsed)
                         r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(area.Id,area.Kind,area.Position.x,area.Position.y,area.Radius,false));
+            foreach(var arc in r.PurpleRayArcs)r.ContentPresentationSnapshots.Add(arc.Snapshot);
             AppendGroundBarrelSnapshots(r);
             view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
             foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);

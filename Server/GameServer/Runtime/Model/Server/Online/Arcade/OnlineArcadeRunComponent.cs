@@ -301,6 +301,8 @@ namespace ET.Server
         public float SourcePositionX, SourcePositionZ;
         /// <summary>发射时确定的头骨层级；仅同步该弹丸外观，不从玩家当前状态推断。</summary>
         public int WeaponPowerLevel;
+        /// <summary>发射时固定的紫射线反射余量，仅当前地图。</summary>
+        public int RemainingReflections;
         /// <summary>紫火箭锁定的敌人身份，仅权威现场持有，不写安全节点。</summary>
         public long TrackingEnemyId;
         public long OwnerPlayerId;
@@ -386,6 +388,8 @@ namespace ET.Server
         public float ContentEventTargetX, ContentEventTargetY;
         public readonly FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas = new();
+        /// <summary>不参与伤害判定的瞬时电弧，权威活动帧扣除余量。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeRayArcState> PurpleRayArcs=new();
         public readonly List<OnlineArcadeContentZoneRuntime> DeathZones = new();
         public readonly HashSet<int> DestroyedCrateIds = new();
         public readonly HashSet<int> DestroyedBarrelIds = new();
