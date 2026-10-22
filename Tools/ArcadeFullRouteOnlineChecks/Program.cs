@@ -13,6 +13,12 @@ if(opts.GetValueOrDefault("testClass")=="WeaponUpgradeOnline")
     World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
     World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=WeaponUpgradeOnlineChecks.Run(upgradeMax);return;
 }
+if(opts.GetValueOrDefault("testClass")=="PurpleRocketOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int rocketMax)||rocketMax<1)throw new ArgumentException("Explicit PurpleRocketOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=PurpleRocketOnlineChecks.Run(rocketMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="RoundRewardOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int rewardMax)||rewardMax<1)throw new ArgumentException("Explicit RoundRewardOnline limit required");

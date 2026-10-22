@@ -2049,12 +2049,18 @@ namespace ET.Server
                     Math.Max(1f, 1f + UpgradeTotal(record, ArcadeUpgradeKind.FireRatePercent));
                 return true;
             }
+            bool purpleRocket=weapon.Id=="arcade.weapon.rocket"&&CurrentWeaponPowerLevel(player)>=2;
+            var tuning=ServerConfig.Instance.WeaponUpgrade;
+            int projectileCount=purpleRocket?tuning.PurpleRocketCount:weapon.ProjectileCount;
+            if(purpleRocket&&ServerConfig.Instance.ArcadeRule.MaxProjectiles-battle.Projectiles.Count<projectileCount)return false;
+            var targets=purpleRocket?RocketTargets(battle,player.PositionX,player.PositionZ):Array.Empty<OnlineArcadeEnemyRuntime>();
+            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:weapon.SpreadDegrees;
             int created = 0;
-            for (int index = 0; index < weapon.ProjectileCount &&
+            for (int index = 0; index < projectileCount &&
                  battle.Projectiles.Count < ServerConfig.Instance.ArcadeRule.MaxProjectiles; index++)
             {
-                float angle = weapon.ProjectileCount == 1 ? 0f :
-                    -weapon.SpreadDegrees * 0.5f + weapon.SpreadDegrees * index / (weapon.ProjectileCount - 1);
+                float angle = projectileCount == 1 ? 0f :
+                    -spread * 0.5f + spread * index / (projectileCount - 1);
                 Rotate(aimX, aimZ, angle, out float directionX, out float directionZ);
                 long runtimeId = battle.NextProjectileRuntimeId++;
                 battle.Projectiles.Add(runtimeId, new OnlineArcadeProjectileRuntime
@@ -2065,11 +2071,12 @@ namespace ET.Server
                     SourceWeaponId = weapon.Id,
                     SourcePositionX = player.PositionX, SourcePositionZ = player.PositionZ,
                     WeaponPowerLevel = Math.Clamp((int)MathF.Round(skullMultiplier)-1,0,2),
+                    TrackingEnemyId=purpleRocket&&targets.Length>0?targets[index%targets.Length].RuntimeId:0,
                     PositionX = player.PositionX + directionX * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     PositionZ = player.PositionZ + directionZ * ServerConfig.Instance.ArcadeRule.PlayerRadius,
                     VelocityX = directionX * weapon.ProjectileSpeed,
                     VelocityZ = directionZ * weapon.ProjectileSpeed,
-                    Damage = damage,
+                    Damage = purpleRocket?FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.SplitVolleyDamage(damage,projectileCount,index):damage,
                     RemainingSeconds = weapon.ProjectileLifetimeSeconds,
                     Behavior = weapon.Behavior,
                     RemainingHits = Math.Max(1, weapon.MaxHits),
@@ -2113,6 +2120,7 @@ namespace ET.Server
             foreach (long projectileId in battle.ProjectileIterationIds)
             {
                 if (!battle.Projectiles.TryGetValue(projectileId, out OnlineArcadeProjectileRuntime projectile)) continue;
+                if(self.TickPurpleRocket(battle,projectile,deltaSeconds)){changed=true;continue;}
                 TickTrackingProjectile(battle,projectile,deltaSeconds);
                 float priorX = projectile.PositionX, priorZ = projectile.PositionZ;
                 projectile.PositionX += projectile.VelocityX * deltaSeconds;

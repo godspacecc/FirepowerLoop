@@ -955,6 +955,7 @@ namespace Game
             for (var projectileIndex = 0; projectileIndex < projectileIterationIds.Count; projectileIndex++)
             {
                 if (!runtime.Projectiles.TryGetValue(projectileIterationIds[projectileIndex], out var projectile)) continue;
+                if(TickPurpleRocket(runtime,projectile,deltaTime))continue;
                 SteerRoundProjectile(runtime, projectile, deltaTime);
                 var priorPosition = projectile.Position;
                 projectile.Position += projectile.Velocity * deltaTime;
@@ -1497,19 +1498,25 @@ namespace Game
                 runtime.FireCooldown = weapon.FireIntervalSeconds / Mathf.Max(1f, 1f + fireRateBonus);
                 return;
             }
-            var projectileCount = Mathf.Max(1, weapon.ProjectileCount);
+            bool purpleRocket=weapon.Id=="arcade.weapon.rocket"&&CurrentWeaponPowerLevel(runtime)>=2;
+            var tuning=catalog.Rule.WeaponUpgrade;
+            var projectileCount = purpleRocket?tuning.PurpleRocketCount:Mathf.Max(1, weapon.ProjectileCount);
+            if(purpleRocket&&catalog.Rule.MaxProjectiles-runtime.Projectiles.Count<projectileCount)return;
+            var rocketTargets=purpleRocket?RocketTargets(runtime,runtime.PlayerPosition):Array.Empty<ArcadeEnemyRuntime>();
+            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:weapon.SpreadDegrees;
             var spawned = false;
             for (var index = 0; index < projectileCount; index++)
             {
                 if (runtime.Projectiles.Count >= catalog.Rule.MaxProjectiles) break;
                 var angle = projectileCount == 1
                     ? 0f
-                    : -weapon.SpreadDegrees * 0.5f + weapon.SpreadDegrees * index / (projectileCount - 1);
+                    : -spread * 0.5f + spread * index / (projectileCount - 1);
                 var direction = Rotate(runtime.AimDirection.normalized, angle);
-                SpawnProjectile(runtime, false, runtime.PlayerPosition + direction * 0.65f,
-                    direction * weapon.ProjectileSpeed, damage, weapon.ProjectileLifetimeSeconds,
+                var shot=SpawnProjectile(runtime, false, runtime.PlayerPosition + direction * 0.65f,
+                    direction * weapon.ProjectileSpeed, purpleRocket?ArcadeWeaponUpgradeRules.SplitVolleyDamage(damage,projectileCount,index):damage, weapon.ProjectileLifetimeSeconds,
                     weapon.Behavior, weapon.MaxHits, weapon.ExplosionRadius,
-                    ArcadeWeaponPowerVisual.WithLevel(weapon.ProjectileVisualResourceName,Mathf.Clamp(Mathf.RoundToInt(skullMultiplier)-1,0,2)), true, weapon.Id);
+                    ArcadeWeaponPowerVisual.WithLevel(weapon.ProjectileVisualResourceName,Mathf.Clamp(Mathf.RoundToInt(skullMultiplier)-1,0,2)), true, weapon.Id, CurrentWeaponPowerLevel(runtime));
+                if(purpleRocket&&shot!=null&&rocketTargets.Length>0)shot.TrackingEnemyId=rocketTargets[index%rocketTargets.Length].Id;
                 spawned = true;
             }
             if (!spawned) return;
@@ -2061,15 +2068,16 @@ namespace Game
             this.SendEvent(new ArcadeCombatOperationFailedEvent(string.IsNullOrWhiteSpace(error) ? "街机战斗操作失败" : error));
         }
 
-        private void SpawnProjectile(ArcadeCombatRuntime runtime, bool hostile, Vector2 position, Vector2 velocity,
+        private ArcadeProjectileRuntime SpawnProjectile(ArcadeCombatRuntime runtime, bool hostile, Vector2 position, Vector2 velocity,
             int damage, float lifetime, global::ArcadeWeaponBehavior behavior = global::ArcadeWeaponBehavior.Direct,
             int maxHits = 1, float explosionRadius = 0f, string projectileVisualResourceName = null,
-            bool fromPlayerWeapon = false, string sourceWeaponId = null)
+            bool fromPlayerWeapon = false, string sourceWeaponId = null,int weaponPowerLevel=0)
         {
-            if (runtime.Projectiles.Count >= catalog.Rule.MaxProjectiles) return;
+            if (runtime.Projectiles.Count >= catalog.Rule.MaxProjectiles) return null;
             var projectile = runtimePool.RentProjectile();
             projectile.Id = runtime.NextEntityId++;
             projectile.Hostile = hostile;
+            projectile.WeaponPowerLevel=!hostile&&fromPlayerWeapon?weaponPowerLevel:0;
             projectile.Position = position;
             projectile.Velocity = velocity;
             projectile.Damage = Mathf.Max(1, damage);
@@ -2082,6 +2090,7 @@ namespace Game
             projectile.RemainingHits = Mathf.Max(1, maxHits);
             projectile.ExplosionRadius = Mathf.Max(0f, explosionRadius);
             runtime.Projectiles.Add(projectile.Id, projectile);
+            return projectile;
         }
 
         /// <summary>贯穿弹只对每个稳定敌人 ID 结算一次，并在达到配置命中数后耗尽。</summary>

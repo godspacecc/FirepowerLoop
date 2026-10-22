@@ -11,7 +11,9 @@ using Object=UnityEngine.Object;
 /// <summary>后两关与竞速的独立项目方案预览；仅临时几何，不保存正式资源，不推断原作方向。</summary>
 public static class RemainingStagesPreview
 {
-    static readonly string Folder=Path.GetFullPath("Temp/RemainingStagesPreview-v2");
+    static bool RaceOnly;
+    static string Folder=>Path.GetFullPath(RaceOnly?"Temp/RaceCurvesPreview-v4":"Temp/RemainingStagesPreview-v3");
+    public static string RunRace(){RaceOnly=true;try{return Run();}finally{RaceOnly=false;}}
     static readonly List<Material> Materials=new List<Material>();
     static Transform root;static Camera camera;static int Layer=30;
     static Material grass,soil,wood,iron,water,cream,purple,dark,green;
@@ -23,15 +25,16 @@ public static class RemainingStagesPreview
         try
         {
             SceneManager.SetActiveScene(scene);Directory.CreateDirectory(Folder);Directory.CreateDirectory(Folder+"/frames");
-            root=new GameObject("TEMP_PROJECT_LAYOUT_V2").transform;
+            root=new GameObject("TEMP_PROJECT_LAYOUT_V3").transform;
             grass=Mat("Trees",.30f,.37f,.31f);soil=Mat("Dirt",.45f,.34f,.24f);wood=Mat("Wood",.45f,.31f,.18f);
             iron=Mat("Metal",.18f,.24f,.27f);water=Mat("Water",.13f,.35f,.46f);cream=Mat("Cream",.87f,.83f,.69f);
             purple=Mat("Vortex",.55f,.27f,.78f);dark=Mat("Dark",.10f,.12f,.13f);green=Mat("Truck",.28f,.44f,.34f);
             camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.cullingMask=1<<Layer;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.06f,.09f,.11f);camera.farClipPlane=250;
             var light=new GameObject("PreviewSun",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.15f;light.cullingMask=1<<Layer;light.transform.rotation=Quaternion.Euler(48,-30,0);
-            Reset();Dock();Capture("docks.png",1440,900);Reset();Farm();Capture("farm.png",1440,900);
-            Reset();Scale();Capture("scale.png",1280,720);Reset();BullMotion();Reset();RaceMotion();Reset();
+            if(RaceOnly){Reset();RaceMotion();Reset();}
+            else{Reset();Dock();Capture("docks.png",1440,900);Reset();Farm();Capture("farm.png",1440,900);
+            Reset();Scale();Capture("scale.png",1280,720);Reset();BullMotion();Reset();RaceMotion();Reset();}
             return Folder;
         }
         finally
@@ -148,30 +151,57 @@ public static class RemainingStagesPreview
         }
         Hero(0,-4);Zombie(-6,4);Zombie(6,1);
     }
+    // 四个约28米区域组成大农场，破墙缺口和门洞始终通行，不演示额外破坏/开门功能。
     static void Farm()
     {
         var snow=Mat("Snow",.48f,.54f,.57f);var hay=Mat("Hay",.63f,.51f,.29f);
-        Box("SnowGround",0,-.22f,0,70,.4f,62,snow);
+        Box("SnowGround",0,-.22f,0,86,.4f,80,snow);
+        for(int sx=-1;sx<=1;sx+=2)for(int sz=-1;sz<=1;sz+=2)
+        {
+            float cx=sx*15,cz=sz*15;
+            Box("YardSnow",cx,-.025f,cz,28,.10f,28,snow);
+            for(int i=0;i<3;i++)
+            {
+                float hx=cx+sx*8, hz=sz<0?cz+9+(i-1)*2:cz+(i-1)*3.5f;
+                Box("HayPatch",hx,.015f,hz,3,.10f,2.8f,soil);
+                Box("HayBale",hx,.55f,hz,2.2f,1.1f,1.4f,hay);
+            }
+            if(sz>0){Box("Shed",cx+sx*8,1.4f,cz+8,4,2.8f,6,wood);Box("SnowRoof",cx+sx*8,2.9f,cz+8,4.5f,.3f,6.5f,snow);}
+            else Fence(cx,cz-11,12);
+            for(int i=0;i<4;i++)
+            {
+                float x=cx-9+i*5,z=cz+sz*11;
+                Box("Trunk",x,1.5f,z,.4f,3,.4f,wood);Shape("Crown",PrimitiveType.Sphere,new Vector3(x,3,z),new Vector3(3,2.8f,3),grass);
+                Shape("CrownSnow",PrimitiveType.Sphere,new Vector3(x,3.8f,z),new Vector3(2.7f,1.4f,2.7f),snow);
+            }
+        }
+        // 中间十字隔墙：下方横穿缺口供一排牛通过，其余相邻区也有门洞或破口。
+        Wall("WestEastDivider",true,0,-30,-19,iron);Wall("WestEastDivider",true,0,-9,11,iron);Wall("WestEastDivider",true,0,17,30,iron);
+        Wall("NorthSouthDivider",false,0,-30,-18,iron);Wall("NorthSouthDivider",false,0,-10,10,iron);Wall("NorthSouthDivider",false,0,18,30,iron);
+        Gate(0,14,true,cream);Gate(-14,0,false,cream);
+        Rubble(0,-19);Rubble(0,-9);Rubble(10,0);Rubble(18,0);
         for(int side=-1;side<=1;side+=2)
         {
-            Fence(side*8.3f,13,10);Fence(side*8.3f,-13,10);Fence(side*15,8.2f,7,true);Fence(side*15,-8.2f,7,true);
-            for(int i=0;i<10;i++)for(int row=0;row<2;row++)Rock(side*(18+row*2.4f),-15+i*3.3f);
+            Wall("OuterWall",true,side*30,-30,-19,iron);Wall("OuterWall",true,side*30,-9,30,iron);
+            Wall("OuterWall",false,side*30,-30,-4,iron);Wall("OuterWall",false,side*30,4,30,iron);
+            for(int i=0;i<20;i++){float edge=-32+i*3.5f;if(Mathf.Abs(edge+14)>6)Rock(side*35,edge,4.8f);if(Mathf.Abs(edge)>5)Rock(edge,side*35,4.8f);}
         }
-        foreach(var p in new[]{new Vector2(-9,6),new Vector2(8,7),new Vector2(-9,-8)})
-        {
-            Box("HayPatch",p.x,-.005f,p.y,3.5f,.10f,2.8f,soil);
-            for(int i=0;i<3;i++)Box("HayBale",p.x+(i-1)*.9f,.45f,p.y,.8f,.9f,1.4f,hay);
-        }
-        Box("Shed",12,1.3f,8,3,2.6f,5,wood);Box("SnowRoof",12,2.7f,8,3.4f,.3f,5.4f,snow);
-        for(int i=0;i<9;i++)
-        {
-            float x=-15+i*3.8f,z=16+i%2*1.1f;
-            Box("Trunk",x,1.5f,z,.4f,3,.4f,wood);Shape("Crown",PrimitiveType.Sphere,new Vector3(x,3,z),new Vector3(3,2.8f,3),grass);
-            Shape("CrownSnow",PrimitiveType.Sphere,new Vector3(x,3.8f,z),new Vector3(2.7f,1.4f,2.7f),snow);
-        }
-        Hero(0,-6);for(int i=0;i<9;i++)Bull(new Vector3(-10+i%5*4.6f,0,-1+i/5*3.2f),80+i%3*10);
-        Zombie(-4,-5);Zombie(6,-3);
+        Hero(-13,-16);Zombie(-9,14);Zombie(14,-5);Zombie(12,17);
+        for(int i=0;i<5;i++)Bull(new Vector3(-18,0,-14+(i-2)*1.65f),90);
+        camera.orthographicSize=36;camera.transform.position=new Vector3(0,68,-44);camera.transform.LookAt(Vector3.zero);
     }
+    static void Wall(string name,bool alongZ,float fixedCoordinate,float from,float to,Material mat)
+    {
+        float mid=(from+to)*.5f,length=to-from;
+        Box(name,alongZ?fixedCoordinate:mid,1.05f,alongZ?mid:fixedCoordinate,alongZ?.7f:length,2.1f,alongZ?length:.7f,mat);
+    }
+    static void Gate(float x,float z,bool alongZ,Material mat)
+    {
+        for(int side=-1;side<=1;side+=2)Box("OpenDoorPost",x+(alongZ?0:side*3),1.5f,z+(alongZ?side*3:0),.75f,3,.75f,mat);
+        Box("OpenDoorLintel",x,3.05f,z,alongZ?.9f:6.7f,.3f,alongZ?6.7f:.9f,wood);
+    }
+    static void Rubble(float x,float z)
+    {for(int i=0;i<3;i++)Box("BrokenWallRubble",x+(i-1)*.45f,.2f,z+(i%2)*.6f,.65f,.4f,.75f,iron);}
     static void Scale()
     {
         Box("Snow",0,-.15f,0,20,.2f,15,Mat("SnowScale",.48f,.54f,.57f));Hero(-3,0);Bull(new Vector3(0,0,0),15);Truck(new Vector3(3.7f,0,0));
@@ -179,45 +209,70 @@ public static class RemainingStagesPreview
     }
     static void BullMotion()
     {
-        Farm();var hero=root.GetComponentsInChildren<Game.CharacterWeaponPresenter>(true).First(p=>p.gameObject.name.Contains("GrayboxPlayer")).gameObject;
-        foreach(var t in root.Cast<Transform>().Where(t=>t.name=="TEMP_BULL_GEOMETRY").ToArray())Object.DestroyImmediate(t.gameObject);
-        var bulls=new List<Transform>();for(int i=0;i<12;i++)bulls.Add(Bull(Vector3.zero,90));
-        camera.orthographicSize=12.7f;camera.transform.position=new Vector3(0,27,-21);camera.transform.LookAt(Vector3.zero);
-        for(int frame=0;frame<90;frame++)
+        Farm();var hero=root.GetComponentsInChildren<Game.CharacterWeaponPresenter>(true).First().gameObject;
+        var bulls=root.Cast<Transform>().Where(t=>t.name=="TEMP_BULL_GEOMETRY").ToArray();
+        camera.orthographicSize=20;camera.transform.position=new Vector3(0,40,-46);camera.transform.LookAt(new Vector3(0,0,-14));
+        for(int frame=0;frame<150;frame++)
         {
-            float t=frame/15f;
-            for(int i=0;i<bulls.Count;i++)
+            float t=frame/15f,progress=Mathf.Clamp01((t-.8f)/7f),x=Mathf.Lerp(-33,34,progress);
+            for(int i=0;i<bulls.Length;i++)
             {
-                float progress=Mathf.Clamp01((t-.8f)/3.5f),x=Mathf.Lerp(-19-i%4*2.9f,24-i%4*2.9f,progress);
-                bulls[i].position=new Vector3(x,0,(i/4-1)*2.5f);bulls[i].localEulerAngles=new Vector3(t<.8f?Mathf.Sin(t*8)*3:0,90,0);
-                foreach(Transform leg in bulls[i])if(leg.name=="Leg")leg.localRotation=Quaternion.Euler(t>.8f&&t<4.3f?Mathf.Sin(t*24+leg.localPosition.x*4+i)*22:0,0,0);
+                bulls[i].position=new Vector3(x,0,-14+(i-2)*1.65f);bulls[i].localEulerAngles=new Vector3(t<.8f?Mathf.Sin(t*8)*3:0,90,0);
+                foreach(Transform leg in bulls[i])if(leg.name=="Leg")leg.localRotation=Quaternion.Euler(t>.8f&&t<7.8f?Mathf.Sin(t*24+leg.localPosition.x*4+i)*22:0,0,0);
             }
-            hero.transform.position=new Vector3(0,0,Mathf.Lerp(-1,-7,Mathf.Clamp01((t-.65f)/1.1f)));
+            hero.transform.position=new Vector3(-7,0,Mathf.Lerp(-14,-23,Mathf.Clamp01((t-1.4f)/1.3f)));
             Capture("frames/herd-"+frame.ToString("D3")+".png",960,600);
         }
     }
+    // 多弯道路先用样条路线和连续轮胎界定真实通路，预览不包含输入或伤害裁决。
     static void RaceMotion()
     {
-        Box("CanyonFloor",0,-.25f,0,38,.4f,27,soil);
-        for(int i=0;i<15;i++)for(int side=-1;side<=1;side+=2)Rock(-17+i*2.4f,side*11,3.8f);
-        for(int side=-1;side<=1;side+=2)for(int i=0;i<8;i++)Rock(side*18,-8+i*2.3f,3.5f);
-        for(int i=0;i<12;i++)
+        Box("CanyonFloor",0,-.25f,0,110,.4f,90,soil);
+        for(int side=-1;side<=1;side+=2)
         {
-            Shape("TireBarrier",PrimitiveType.Cylinder,new Vector3(-11+i*1.25f,.3f,2.6f),new Vector3(1,.30f,1),dark);
-            Shape("TireBarrier",PrimitiveType.Cylinder,new Vector3(-2+i*1.25f,.3f,-2.6f),new Vector3(1,.30f,1),dark);
+            for(int i=0;i<40;i++)Rock(-48+i*2.5f,side*40,4.5f);
+            for(int i=0;i<31;i++)Rock(side*49,-37+i*2.5f,4.5f);
         }
-        var ramp=Box("JumpRamp",-6,.40f,-6.5f,3,.6f,3.6f,wood);ramp.transform.localRotation=Quaternion.Euler(0,0,13);
-        var truck=Truck(new Vector3(-13,0,-6.5f));Hero(-14,-2);Zombie(-1,-6.5f);Zombie(7,6.5f);
-        var path=new[]{new Vector3(-13,0,-6.5f),new Vector3(10,0,-6.5f),new Vector3(13,0,-4),new Vector3(10,0,0),new Vector3(-11,0,0),new Vector3(-14,0,4),new Vector3(-10,0,6.5f),new Vector3(13,0,6.5f)};
-        camera.orthographicSize=15;camera.transform.position=new Vector3(0,33,-26);camera.transform.LookAt(Vector3.zero);
-        Capture("race.png",1440,900);
-        for(int frame=0;frame<105;frame++)
+        var anchors=new[]{new Vector3(-42,0,-26),new Vector3(-21,0,-26),new Vector3(-9,0,-16),new Vector3(5,0,-19),
+            new Vector3(16,0,-29),new Vector3(31,0,-25),new Vector3(37,0,-13),new Vector3(25,0,-5),new Vector3(11,0,0),
+            new Vector3(16,0,12),new Vector3(32,0,15),new Vector3(37,0,27),new Vector3(24,0,32),new Vector3(5,0,31),
+            new Vector3(-7,0,20),new Vector3(-24,0,22),new Vector3(-35,0,12),new Vector3(-37,0,-1),new Vector3(-25,0,-8),
+            new Vector3(-15,0,-1),new Vector3(-15,0,9),new Vector3(-4,0,10)};
+        var path=new List<Vector3>();
+        for(int i=0;i<anchors.Length-1;i++)for(int j=0;j<16;j++)
         {
-            float p=frame/104f*(path.Length-1);int segment=Mathf.Min((int)p,path.Length-2);var at=Vector3.Lerp(path[segment],path[segment+1],p-segment);
-            if(segment==0&&at.x>-8&&at.x<-3)at.y=Mathf.Sin((at.x+8)/5*Mathf.PI)*1.35f;
-            truck.position=at;truck.rotation=Quaternion.LookRotation(path[segment+1]-path[segment]);
-            if(segment==0&&at.y>.05f)truck.rotation*=Quaternion.Euler((at.x<-5.5f?-1:1)*12,0,0);
+            float t=j/16f;var p0=anchors[Mathf.Max(0,i-1)];var p1=anchors[i];var p2=anchors[i+1];var p3=anchors[Mathf.Min(anchors.Length-1,i+2)];
+            path.Add(.5f*((2*p1)+(-p0+p2)*t+(2*p0-5*p1+4*p2-p3)*t*t+(-p0+3*p1-3*p2+p3)*t*t*t));
+        }
+        path.Add(anchors[anchors.Length-1]);
+        var road=Mat("PackedSnowDirt",.36f,.29f,.22f);var railPoints=new List<Vector3>();float railDistance=0,total=0;
+        var lengths=new float[path.Count];
+        for(int i=1;i<path.Count;i++)
+        {
+            var delta=path[i]-path[i-1];float length=delta.magnitude;total+=length;lengths[i]=total;
+            var mid=(path[i]+path[i-1])*.5f;var strip=Box("Road",mid.x,-.01f,mid.z,6.8f,.10f,length+.15f,road);strip.transform.rotation=Quaternion.LookRotation(delta);
+            Shape("RoadCurveJoin",PrimitiveType.Cylinder,path[i]+Vector3.up*.04f,new Vector3(6.8f,.01f,6.8f),road);
+            railDistance+=length;if(railDistance<1.35f)continue;railDistance=0;
+            var normal=new Vector3(delta.z,0,-delta.x).normalized;
+            foreach(int side in new[]{-1,1})
+            {
+                var point=path[i]+normal*side*3.9f;railPoints.Add(point);
+                Shape("CurveTireBarrier",PrimitiveType.Cylinder,point+Vector3.up*.34f,new Vector3(.95f,.34f,.95f),dark);
+            }
+        }
+        // 独立坡台置于起跑后的长直段，不放在弯心或挡住车辆落地点。
+        var ramp=Box("JumpRamp",-30,.4f,-26.5f,4.4f,.6f,5,wood);ramp.transform.rotation=Quaternion.Euler(0,90,8);
+        var truck=Truck(path[0]);Hero(-44,-20);for(int i=4;i<anchors.Length-1;i+=4)Zombie(anchors[i].x,anchors[i].z);
+        camera.orthographicSize=43;camera.transform.position=new Vector3(0,90,-62);camera.transform.LookAt(Vector3.zero);Capture("race.png",1440,1100);
+        for(int frame=0;frame<330;frame++)
+        {
+            float distance=frame/329f*total;int i=1;while(i<lengths.Length-1&&lengths[i]<distance)i++;
+            var at=Vector3.Lerp(path[i-1],path[i],Mathf.InverseLerp(lengths[i-1],lengths[i],distance));var direction=(path[i]-path[i-1]).normalized;
+            if(at.x>-32.5f&&at.x<-25.5f&&at.z<-24&&distance<30)at.y=Mathf.Sin((at.x+32.5f)/7*Mathf.PI)*1.35f;
+            truck.position=at;truck.rotation=Quaternion.LookRotation(direction);
+            if(at.y>.05f)truck.rotation*=Quaternion.Euler(at.x<-29?-12:12,0,0);
             foreach(Transform wheel in truck)if(wheel.name=="Wheel")wheel.localRotation=Quaternion.Euler(frame*26,0,90);
+            camera.orthographicSize=14.5f;camera.transform.position=at+new Vector3(0,30,-24);camera.transform.LookAt(at+Vector3.forward*2);
             Capture("frames/race-"+frame.ToString("D3")+".png",960,600);
         }
     }

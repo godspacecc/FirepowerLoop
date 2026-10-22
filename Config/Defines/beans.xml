@@ -578,6 +578,10 @@
     <bean name="ArcadeWeaponUpgradeConfig">
         <var name="Id" type="string"/>
         <var name="MinimumPowerSeconds" type="float"/>
+        <var name="PurpleRocketCount" type="int"/>
+        <var name="PurpleRocketSpreadDegrees" type="float"/>
+        <var name="PurpleRocketTurnRadians" type="float"/>
+        <var name="PurpleRocketRange" type="float"/>
         <var name="PurpleMoveSpeedPercent" type="float"/>
         <var name="RedPowerupId" type="string#ref=TbArcadePowerup"/>
         <var name="PurplePowerupId" type="string#ref=TbArcadePowerup"/>

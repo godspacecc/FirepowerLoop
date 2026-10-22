@@ -301,6 +301,8 @@ namespace ET.Server
         public float SourcePositionX, SourcePositionZ;
         /// <summary>发射时确定的头骨层级；仅同步该弹丸外观，不从玩家当前状态推断。</summary>
         public int WeaponPowerLevel;
+        /// <summary>紫火箭锁定的敌人身份，仅权威现场持有，不写安全节点。</summary>
+        public long TrackingEnemyId;
         public long OwnerPlayerId;
         public float PositionX;
         public float PositionZ;

@@ -96,6 +96,8 @@ namespace Game
     internal sealed class ArcadeProjectileRuntime
     {
         public int Id;
+        /// <summary>玩家弹生成时的强化层级与追踪身份，换枪不改变；回池清零。</summary>
+        public int WeaponPowerLevel,TrackingEnemyId;
         /// <summary>追踪弹转速和寄生弹剩余减速秒数，由本弹的生成方固定。</summary>
         public float ContentTurnRate, ContentSlowSeconds;
         public bool Hostile;
@@ -123,6 +125,7 @@ namespace Game
         public void Reset()
         {
             Id = 0;
+            WeaponPowerLevel=TrackingEnemyId=0;
             ContentTurnRate = ContentSlowSeconds = 0;
             Hostile = false;
             Position = default;

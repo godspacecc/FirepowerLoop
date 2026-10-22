@@ -29,6 +29,9 @@ namespace Game
         private ArcadeVisualBinding[] arcadeVisuals = Array.Empty<ArcadeVisualBinding>();
         /// <summary>中性亮度光束遮罩，让红紫强化覆盖完整弹尾，不与原黄色纹理相乘失色。</summary>
         [SerializeField] private Texture2D weaponPowerBeamTexture;
+        /// <summary>已确认的紫火箭/射线短尾，使用显式材质；只从本次权威姿态采样。</summary>
+        [SerializeField] private LineRenderer purpleWeaponTail;
+        private float purpleTailLength;
 
         private int projectileRuntimeId;
         private Action<int, Collider> collisionHandler;
@@ -59,6 +62,8 @@ namespace Game
         public void ApplyPose(Vector3 position, Vector3 direction)
         {
             transform.position = position;
+            if(purpleWeaponTail!=null&&purpleWeaponTail.enabled&&direction.sqrMagnitude>.0001f)
+            {purpleWeaponTail.SetPosition(0,position);purpleWeaponTail.SetPosition(1,position-direction.normalized*purpleTailLength);}
             if (direction.sqrMagnitude > 0.0001f)
             {
                 transform.rotation = Quaternion.LookRotation(direction.normalized, Mathf.Abs(direction.normalized.y)>.999f?Vector3.forward:Vector3.up);
@@ -70,6 +75,9 @@ namespace Game
         {
             visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out var powerLevel);
             ApplyPowerColor(hostile?0:powerLevel);
+            bool rocket=visualResourceName=="ArcadePanzerschreckRocket",ray=visualResourceName=="ArcadeRaygunBolt";
+            purpleTailLength=rocket?.8f:.45f;
+            if(purpleWeaponTail!=null){purpleWeaponTail.enabled=!hostile&&powerLevel>=2&&(rocket||ray);purpleWeaponTail.startWidth=rocket?.07f:.05f;}
             var matched = false;
             for (var index = 0; index < arcadeVisuals.Length; index++)
             {
