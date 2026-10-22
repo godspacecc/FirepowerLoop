@@ -22,4 +22,4 @@ Boot 场景脏状态可按测试需要从磁盘重载，丢弃临时未保存变
 - 用户确认后的改动，完成实现、必要检查及验证且未发现未解决问题后，自动使用中文提交信息提交，并推送到当前分支对应的远端，不再另行询问是否提交或推送。本项目已授权的远端为 `origin`（`https://github.com/godspacecc/FirepowerLoop.git`）。仅提交本次任务相关改动，不夹带其它未完成工作。
 - 若改动或验证出现问题，先修复并重新验证；问题尚未解决时不提交、不推送，向用户说明当前情况。提交或推送本身失败时，如实说明完成到哪一步，不将本地提交说成已推送。
 
-- 执行多项已确认任务（含继续、会话恢复及收尾）时，必须使用 [continuing-confirmed-work](.agents/skills/continuing-confirmed-work/SKILL.md)；本项目进度入口为 [执行总清单](Docs/Plans/执行总清单.md)。
+- 收到任务方案／预览的确认或修正，或执行多项已确认任务（含继续、会话恢复及收尾）时，必须使用 [continuing-confirmed-work](.agents/skills/continuing-confirmed-work/SKILL.md)；本项目进度入口为 [执行总清单](Docs/Plans/执行总清单.md)。
