@@ -293,9 +293,20 @@ namespace Game
             rounds.localScale = new Vector3(width / 19.5f, 1, height / 19.5f);
             for (int i = 0; i < rounds.childCount; i++)
                 rounds.GetChild(i).gameObject.SetActive(rounds.GetChild(i).name == "Round" + islandRound);
-            var sea = rounds.Find("Round" + islandRound + "/WaterPalette").GetComponent<Renderer>().sharedMaterial;
+            var currentRound = rounds.Find("Round" + islandRound);
+            var sea = currentRound.Find("WaterPalette").GetComponent<Renderer>().sharedMaterial;
             island.transform.Find("Ocean").GetComponent<Renderer>().sharedMaterial = sea;
             island.transform.Find("Water").GetComponent<Renderer>().sharedMaterial = sea;
+            // 已确认低多边形资源显式携带沙地、浅海和岸线配色；旧资源缺少该节点时沿用原合同。
+            var palette = currentRound.Find("SurfacePalette")?.GetComponent<Renderer>()?.sharedMaterials;
+            if (palette != null)
+            {
+                if (palette.Length != 3 || palette.Any(material => material == null))
+                    throw new InvalidOperationException("海岛地表配色资源不完整");
+                island.transform.Find("Sand").GetComponent<Renderer>().sharedMaterial = palette[0];
+                island.transform.Find("Water").GetComponent<Renderer>().sharedMaterial = palette[1];
+                island.transform.Find("Shoreline").GetComponent<Renderer>().sharedMaterial = palette[2];
+            }
             var layout = catalog.RoundLayouts.Single(p => p.ArenaConfigNumber == 1 && p.RoundNumber == islandRound);
             foreach (string name in new[] { "NorthBoundary", "EastBoundary", "SouthBoundary", "WestBoundary" })
             {

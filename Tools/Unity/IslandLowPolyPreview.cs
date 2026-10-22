@@ -13,17 +13,20 @@ using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
 using Object=UnityEngine.Object;
 
-/// <summary>海岛low poly待确认候选；只修改隔离实例/临时网格和材质，不写正式资源或配置。</summary>
-public static class IslandLowPolyPreview
+/// <summary>海岛 low poly v2 的隔离渲染与已采用几何生成器；Run/RunApplied 不写正式资源，正式接入由独立 Bake 入口执行。</summary>
+public static partial class IslandLowPolyPreview
 {
     private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
     private static readonly List<Object> Owned=new();
     private static Material sand,rock,rockLight,grass,grassLight,bark,leaf,leafLight,wood,sea,shallows,foam,sandLight,sandShade,wetSand,pathSand;
     private static Mesh palm,boulder;
-    public static string Run()
+    public static string Run()=>Render(false);
+    /// <summary>按相同机位拍摄正式加载结果，不再应用候选替换。</summary>
+    public static string RunApplied()=>Render(true);
+    private static string Render(bool applied)
     {
         if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态临时预览");
-        string folder=Path.GetFullPath("../Docs/Plans/Artifacts/IslandLowPoly-v2-20261022");Directory.CreateDirectory(folder);
+        string folder=Path.GetFullPath(applied?"../Docs/Plans/Artifacts/IslandLowPolyApplied-20261022":"../Docs/Plans/Artifacts/IslandLowPoly-v2-20261022");Directory.CreateDirectory(folder);
         var prior=SceneManager.GetActiveScene();var priorRT=RenderTexture.active;var priorPipeline=QualitySettings.renderPipeline;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type type=null;
         var sheet=new RenderTexture(2400,1500,24);sheet.Create();
@@ -36,7 +39,7 @@ public static class IslandLowPolyPreview
             if(source!=null){var pipeline=Object.Instantiate(source);Owned.Add(pipeline);pipeline.shadowDistance=110;pipeline.msaaSampleCount=4;QualitySettings.renderPipeline=pipeline;}
             var light=new GameObject("PreviewSun",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.35f;light.shadows=LightShadows.Soft;light.cullingMask=1<<30;light.transform.rotation=Quaternion.Euler(54,-35,0);
             var camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.nearClipPlane=.1f;camera.farClipPlane=240;camera.cullingMask=1<<30;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.12f,.27f,.32f);
-            SetupPalette();palm=Palm();boulder=Icosahedron();
+            if(!applied){SetupPalette();palm=Palm();boulder=Icosahedron();}
             for(int round=1;round<=4;round++)
             {
                 type.GetMethod("Prepare",Hidden).Invoke(fixture,new object[]{round,false});var view=(ArcadeCombatViewController)type.GetField("view",Hidden).GetValue(fixture);
@@ -52,13 +55,19 @@ public static class IslandLowPolyPreview
                     finally{camera.targetTexture=null;RenderTexture.active=priorRT;Object.DestroyImmediate(texture);RenderTexture.ReleaseTemporary(rt);}
                 }
                 camera.orthographicSize=30;camera.transform.position=new Vector3(0,60,-46);camera.transform.LookAt(new Vector3(0,0,2));
-                if(round==1)Capture("before-overview.png",1600,1000);
-                ApplyCandidate(candidate,round);AddRichness(candidate,round);Capture("candidate-round-"+round+".png",1600,1000);
+                if(!applied)
+                {
+                    if(round==1)Capture("before-overview.png",1600,1000);
+                    // 正式接入后直接复用同版资源，避免预览重跑造成棕榈二次缩放或重复装饰。
+                    if(candidate.transform.Find("FixedRounds/Round"+round+"/LowPolyDetails")==null)
+                    {ApplyCandidate(candidate,round);AddRichness(candidate,round);}
+                }
+                Capture((applied?"round-":"candidate-round-")+round+".png",1600,1000);
                 // 四个正式同机位候选直接渲染到各自视口，不后期改图或生成概念图。
                 camera.targetTexture=sheet;camera.rect=new Rect((round-1)%2*.5f,round<=2?.5f:0,.5f,.5f);camera.Render();camera.rect=new Rect(0,0,1,1);camera.targetTexture=null;
                 if(round==1)
                 {
-                    hero.transform.localPosition=new Vector3(-11,0,-7);camera.orthographicSize=8.5f;camera.transform.position=new Vector3(-10,17,-25);camera.transform.LookAt(new Vector3(-14,1,-7));Capture("candidate-detail.png",1400,1000);
+                    hero.transform.localPosition=new Vector3(-11,0,-7);camera.orthographicSize=8.5f;camera.transform.position=new Vector3(-10,17,-25);camera.transform.LookAt(new Vector3(-14,1,-7));Capture(applied?"detail.png":"candidate-detail.png",1400,1000);
                 }
                 Object.DestroyImmediate(holder);
             }

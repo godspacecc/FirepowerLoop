@@ -106,6 +106,34 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>已采用的低多边形配色与地表细节由当前轮资源提供，不侵占中央通行或依赖临时材质。</summary>
+        [Test] public void ApprovedLowPolyPaletteAndDetailsLoadForAllFourRounds()
+        {
+            for(int round=1;round<=4;round++)
+            {
+                Prepare(round);
+                Assert.That(view.IsIslandRoundReady,Is.True,view.IslandRoundLoadError);
+                var active=IslandRoot.Find("FixedRounds/Round"+round);
+                var sandMaterial=IslandRoot.Find("Sand").GetComponent<Renderer>().sharedMaterial;
+                Assert.That(sandMaterial.mainTexture,Is.Null,"正式沙地应使用已确认的纯色色块");
+                var ocean=IslandRoot.Find("Ocean").GetComponent<Renderer>().sharedMaterial;
+                var shallows=IslandRoot.Find("Water").GetComponent<Renderer>().sharedMaterial;
+                Assert.That(ocean.color,Is.Not.EqualTo(shallows.color),"深海和浅水需要保持预览中的不同色块");
+                var detail=active.Find("LowPolyDetails");
+                Assert.That(detail,Is.Not.Null,"每轮必须带自己的沙斑、湿沙、通道沙带和低矮装饰");
+                Assert.That(detail.GetComponentsInChildren<Collider>(true),Is.Empty,"中央视觉细节不得增加阻挡");
+                Assert.That(detail.GetComponentsInChildren<Renderer>().Count(r=>r.name.StartsWith("SandTone_")),Is.EqualTo(6));
+                foreach(var filter in active.GetComponentsInChildren<MeshFilter>(true))
+                    Assert.That(EditorUtility.IsPersistent(filter.sharedMesh),Is.True,"正式网格必须有资源引用："+filter.name);
+                foreach(var renderer in active.GetComponentsInChildren<Renderer>(true))
+                    foreach(var material in renderer.sharedMaterials)
+                        Assert.That(material!=null&&EditorUtility.IsPersistent(material),Is.True,"正式材质不得引用临时对象："+renderer.name);
+                foreach(var renderer in detail.GetComponentsInChildren<Renderer>())
+                    if(renderer.name=="BeachPebble"||renderer.name.StartsWith("DryLeaf_")||renderer.name.StartsWith("SandTone_"))
+                        Assert.That(renderer.bounds.max.y,Is.LessThan(.15f),"中央装饰必须足够低矮，不形成绕行点");
+            }
+        }
+
         [Test] public void EachObstacleInstantiatesOnlyItsChosenVariantWithoutAnyMapTemplate()
         {
             Prepare(1);
