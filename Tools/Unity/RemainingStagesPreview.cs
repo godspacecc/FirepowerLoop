@@ -11,10 +11,14 @@ using Object=UnityEngine.Object;
 /// <summary>后两关与竞速的独立项目方案预览；仅临时几何，不保存正式资源，不推断原作方向。</summary>
 public static class RemainingStagesPreview
 {
-    static bool RaceOnly;
-    static string Folder=>Path.GetFullPath(RaceOnly?"Temp/RaceCurvesPreview-v4":"Temp/RemainingStagesPreview-v3");
+    static bool RaceOnly,DockArtOnly,DockApplied;
+    static string Folder=>Path.GetFullPath(DockApplied?"Temp/DockApplied-v1":DockArtOnly?"Temp/DockArtPreview-v1":RaceOnly?"Temp/RaceCurvesPreview-v4":"Temp/RemainingStagesPreview-v3");
     public static string RunRace(){RaceOnly=true;try{return Run();}finally{RaceOnly=false;}}
+    public static string RunDockArt(){DockArtOnly=true;try{return Run();}finally{DockArtOnly=false;}}
+    public static string RunDockApplied(){DockApplied=DockArtOnly=true;try{return Run();}finally{DockApplied=DockArtOnly=false;}}
     static readonly List<Material> Materials=new List<Material>();
+    static readonly List<Mesh> Meshes=new List<Mesh>();
+    static readonly List<Shader> Shaders=new List<Shader>();
     static Transform root;static Camera camera;static int Layer=30;
     static Material grass,soil,wood,iron,water,cream,purple,dark,green;
     public static string Run()
@@ -26,13 +30,19 @@ public static class RemainingStagesPreview
         {
             SceneManager.SetActiveScene(scene);Directory.CreateDirectory(Folder);Directory.CreateDirectory(Folder+"/frames");
             root=new GameObject("TEMP_PROJECT_LAYOUT_V3").transform;
-            grass=Mat("Trees",.30f,.37f,.31f);soil=Mat("Dirt",.45f,.34f,.24f);wood=Mat("Wood",.45f,.31f,.18f);
-            iron=Mat("Metal",.18f,.24f,.27f);water=Mat("Water",.13f,.35f,.46f);cream=Mat("Cream",.87f,.83f,.69f);
-            purple=Mat("Vortex",.55f,.27f,.78f);dark=Mat("Dark",.10f,.12f,.13f);green=Mat("Truck",.28f,.44f,.34f);
+            InitializeMaterials();
             camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.cullingMask=1<<Layer;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.06f,.09f,.11f);camera.farClipPlane=250;
             var light=new GameObject("PreviewSun",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.15f;light.cullingMask=1<<Layer;light.transform.rotation=Quaternion.Euler(48,-30,0);
-            if(RaceOnly){Reset();RaceMotion();Reset();}
+            if(DockArtOnly)
+            {
+                Reset();
+                if(DockApplied){var environment=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab"),root);Hero(0,-4);Zombie(-6,4);Zombie(6,1);foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=Layer;}
+                else DockArt();camera.orthographicSize=18.5f;camera.transform.position=new Vector3(0,37,-30);camera.transform.LookAt(new Vector3(1,0,0));Capture("dock-art-overview.png",1440,1000);
+                root.GetComponentsInChildren<Game.CharacterWeaponPresenter>(true).First().transform.position=new Vector3(3.8f,0,-9);
+                camera.orthographicSize=7.2f;camera.transform.position=new Vector3(11,9,-23);camera.transform.LookAt(new Vector3(2,.6f,-10));Capture("dock-art-detail.png",1280,900);Reset();
+            }
+            else if(RaceOnly){Reset();RaceMotion();Reset();}
             else{Reset();Dock();Capture("docks.png",1440,900);Reset();Farm();Capture("farm.png",1440,900);
             Reset();Scale();Capture("scale.png",1280,720);Reset();BullMotion();Reset();RaceMotion();Reset();}
             return Folder;
@@ -41,8 +51,100 @@ public static class RemainingStagesPreview
         {
             camera.targetTexture=null;RenderTexture.active=oldRT;Object.DestroyImmediate(camera.gameObject);
             SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);
-            foreach(var m in Materials)if(m!=null)Object.DestroyImmediate(m);Materials.Clear();
+            foreach(var m in Materials)if(m!=null)Object.DestroyImmediate(m);Materials.Clear();foreach(var mesh in Meshes)if(mesh!=null)Object.DestroyImmediate(mesh);Meshes.Clear();foreach(var shader in Shaders)if(shader!=null)Object.DestroyImmediate(shader);Shaders.Clear();
         }
+    }
+    static void InitializeMaterials()
+    {
+            grass=Mat("Trees",.30f,.37f,.31f);soil=Mat("Dirt",.45f,.34f,.24f);wood=Mat("Wood",.45f,.31f,.18f);
+            iron=Mat("Metal",.18f,.24f,.27f);water=Mat("Water",.13f,.35f,.46f);cream=Mat("Cream",.87f,.83f,.69f);
+            purple=Mat("Vortex",.55f,.27f,.78f);dark=Mat("Dark",.10f,.12f,.13f);green=Mat("Truck",.28f,.44f,.34f);
+    }
+    /// <summary>DockArt-v1已获明确采用后，制作独立低批次环境，不携带战斗单位。</summary>
+    public static string ApplyConfirmedDock()
+    {
+        if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态正式制作");
+        const string folder="Assets/Game/Art/Arcade/Docks";Directory.CreateDirectory(folder+"/Textures");AssetDatabase.Refresh();
+        var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+        try
+        {
+            SceneManager.SetActiveScene(scene);InitializeMaterials();root=new GameObject("ArcadeDocksVisual").transform;DockArt();
+            // 电塔/桶/角色由各自业务入口投影，环境不重复带入一份固定实例。
+            foreach(var t in root.Cast<Transform>().Where(t=>t.name.Contains("GrayboxPlayer")||t.name.Contains("ArcadeZombieShambler")||t.name.Contains("Tower")||t.name.Contains("Vortex")||t.name.Contains("BarrelCandidate")).ToArray())Object.DestroyImmediate(t.gameObject);
+            // 绳索转换为三维圆截面后合并，避免LineRenderer固定在世界原点或增加数十绘制批次。
+            foreach(var line in root.GetComponentsInChildren<LineRenderer>(true))
+            {
+                for(int i=1;i<line.positionCount;i++)
+                {
+                    Vector3 a=line.GetPosition(i-1),b=line.GetPosition(i);if(!line.useWorldSpace){a=line.transform.TransformPoint(a);b=line.transform.TransformPoint(b);}
+                    a=root.InverseTransformPoint(a);b=root.InverseTransformPoint(b);
+                    var rope=new GameObject("StaticRope",typeof(MeshFilter),typeof(MeshRenderer));rope.transform.SetParent(root,false);rope.GetComponent<MeshFilter>().sharedMesh=RopeMesh(a,b,line.startWidth*.5f);rope.GetComponent<MeshRenderer>().sharedMaterial=line.sharedMaterial;
+                }
+                Object.DestroyImmediate(line.gameObject);
+            }
+            var shaderText=File.ReadAllText("Assets/Art/CoastStudy/CoastStudyWater.shader").Replace("CoastStudy/Water","FirepowerLoop/DockWater")
+                .Replace("float d=p.x-Shore(p.y); clip(d+0.24);","float d=8;").Replace("float foam=(1-smoothstep(0.025,0.14,abs(d-0.06-Noise(p*4.2)*0.2)))*0.9;","float foam=0;");
+            string shaderPath=folder+"/DockWater.shader";File.WriteAllText(shaderPath,shaderText);AssetDatabase.ImportAsset(shaderPath,ImportAssetOptions.ForceSynchronousImport);
+            var waterShader=AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);if(waterShader==null||ShaderUtil.ShaderHasError(waterShader))throw new InvalidOperationException("码头海面Shader不完整");
+            var textureCopies=new Dictionary<Texture,Texture>();var materialCopies=new Dictionary<Material,Material>();
+            Material SaveMaterial(Material source)
+            {
+                if(materialCopies.TryGetValue(source,out var saved))return saved;
+                string path=folder+"/Material"+materialCopies.Count+".mat";saved=AssetDatabase.LoadAssetAtPath<Material>(path);
+                if(saved==null){saved=new Material(source);AssetDatabase.CreateAsset(saved,path);}else EditorUtility.CopySerialized(source,saved);
+                saved.name="DockMaterial"+materialCopies.Count;
+                if(source.shader.name=="Hidden/TempDockWaterCandidate")saved.shader=waterShader;
+                foreach(var property in saved.GetTexturePropertyNames())
+                {
+                    var texture=saved.GetTexture(property);if(texture==null)continue;string original=AssetDatabase.GetAssetPath(texture);
+                    if(!original.StartsWith("Assets/Art/"))continue;
+                    if(!textureCopies.TryGetValue(texture,out var copy))
+                    {
+                        string target=folder+"/Textures/"+Path.GetFileName(original);
+                        if(AssetDatabase.LoadAssetAtPath<Texture>(target)==null&&!AssetDatabase.CopyAsset(original,target))throw new InvalidOperationException("复制码头贴图失败："+original);
+                        copy=AssetDatabase.LoadAssetAtPath<Texture>(target);if(copy==null)throw new InvalidOperationException("码头贴图副本为空："+target);textureCopies[texture]=copy;
+                    }
+                    saved.SetTexture(property,copy);
+                }
+                EditorUtility.SetDirty(saved);AssetDatabase.SaveAssetIfDirty(saved);materialCopies[source]=saved;return saved;
+            }
+            var groups=new Dictionary<Material,List<CombineInstance>>();
+            foreach(var filter in root.GetComponentsInChildren<MeshFilter>(true))
+            {
+                var renderer=filter.GetComponent<MeshRenderer>();if(renderer==null||filter.sharedMesh==null)throw new InvalidOperationException("码头网格缺少Renderer");
+                var palette=renderer.sharedMaterials;
+                for(int sub=0;sub<filter.sharedMesh.subMeshCount;sub++)
+                {
+                    var material=palette[Mathf.Min(sub,palette.Length-1)];if(!groups.TryGetValue(material,out var list))groups[material]=list=new List<CombineInstance>();
+                    list.Add(new CombineInstance{mesh=filter.sharedMesh,subMeshIndex=sub,transform=root.worldToLocalMatrix*filter.transform.localToWorldMatrix});
+                }
+            }
+            var output=new GameObject("CombinedEnvironment").transform;output.SetParent(root,false);int index=0;
+            foreach(var pair in groups)
+            {
+                var combined=new Mesh{name="DocksMesh"+index,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};Meshes.Add(combined);combined.CombineMeshes(pair.Value.ToArray(),true,true);combined.RecalculateBounds();
+                string path=folder+"/DocksMesh"+index+".asset";var saved=AssetDatabase.LoadAssetAtPath<Mesh>(path);
+                if(saved==null){AssetDatabase.CreateAsset(combined,path);saved=combined;}else{EditorUtility.CopySerialized(combined,saved);AssetDatabase.SaveAssetIfDirty(saved);}
+                var go=new GameObject("EnvironmentPart"+index++,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(output,false);go.GetComponent<MeshFilter>().sharedMesh=saved;go.GetComponent<MeshRenderer>().sharedMaterial=SaveMaterial(pair.Key);
+            }
+            foreach(var t in root.Cast<Transform>().Where(t=>t!=output).ToArray())Object.DestroyImmediate(t.gameObject);
+            PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab");return "已保存确认码头，绘制组="+index+"，贴图副本="+textureCopies.Count;
+        }
+        finally
+        {
+            SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);foreach(var m in Materials)if(m!=null&&!EditorUtility.IsPersistent(m))Object.DestroyImmediate(m);Materials.Clear();
+            foreach(var mesh in Meshes)if(mesh!=null&&!EditorUtility.IsPersistent(mesh))Object.DestroyImmediate(mesh);Meshes.Clear();foreach(var shader in Shaders)if(shader!=null&&!EditorUtility.IsPersistent(shader))Object.DestroyImmediate(shader);Shaders.Clear();
+        }
+    }
+    static Mesh RopeMesh(Vector3 a,Vector3 b,float radius)
+    {
+        var vertices=new List<Vector3>();var triangles=new List<int>();var direction=(b-a).normalized;var right=Vector3.Cross(direction,Mathf.Abs(direction.y)>.9f?Vector3.forward:Vector3.up).normalized;var up=Vector3.Cross(right,direction);
+        for(int i=0;i<8;i++)
+        {
+            var r=right*Mathf.Cos(i*Mathf.PI/4)+up*Mathf.Sin(i*Mathf.PI/4);var n=right*Mathf.Cos((i+1)*Mathf.PI/4)+up*Mathf.Sin((i+1)*Mathf.PI/4);int at=vertices.Count;
+            vertices.AddRange(new[]{a+r*radius,b+r*radius,b+n*radius,a+r*radius,b+n*radius,a+n*radius});triangles.AddRange(new[]{at,at+1,at+2,at+3,at+4,at+5});
+        }
+        var mesh=new Mesh{name="TemporaryDockRope"};Meshes.Add(mesh);mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
     }
     static Material Mat(string name,float r,float g,float b)
     {
@@ -151,6 +253,91 @@ public static class RemainingStagesPreview
         }
         Hero(0,-4);Zombie(-6,4);Zombie(6,1);
     }
+    // 只在独立临时场景完善已确认码头v2外观，不保存正式Prefab或改动布局体量。
+    static void DockArt()
+    {
+        Dock();
+        var weathered=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/CoastStudy/Generated/WeatheredWood.mat");
+        var metal=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/CoastStudy/Generated/RustIron.mat");
+        var waterSource=File.ReadAllText("Assets/Art/CoastStudy/CoastStudyWater.shader").Replace("CoastStudy/Water","Hidden/TempDockWaterCandidate")
+            .Replace("float d=p.x-Shore(p.y); clip(d+0.24);","float d=8;")
+            .Replace("float foam=(1-smoothstep(0.025,0.14,abs(d-0.06-Noise(p*4.2)*0.2)))*0.9;","float foam=0;");
+        var waterShader=ShaderUtil.CreateShaderAsset(waterSource,false);Shaders.Add(waterShader);
+        var sea=new Material(waterShader){name="TEMP_DockWaterCandidate"};Materials.Add(sea);
+        var hullMesh=AssetDatabase.LoadAssetAtPath<Mesh>("Assets/Game/Art/Arcade/Island/FixedRounds/DockedBoat.asset");
+        if(weathered==null||metal==null||sea==null||hullMesh==null)throw new InvalidOperationException("码头既有候选资源缺失");
+        foreach(var r in root.GetComponentsInChildren<MeshRenderer>(true))
+        {
+            if(r.name=="DeckPlank"||r.name=="DeckBase"||r.name=="Crate"||r.name=="HangingCargo")r.sharedMaterial=weathered;
+            if(r.name.StartsWith("Crane"))r.sharedMaterial=metal;
+            if(r.name=="Sea")r.sharedMaterial=sea;
+        }
+        var primitiveHull=root.Find("MooredHull");Object.DestroyImmediate(primitiveHull.gameObject);
+        var hull=new GameObject("MooredHullCandidate",typeof(MeshFilter),typeof(MeshRenderer));hull.layer=Layer;hull.transform.SetParent(root,false);
+        hull.GetComponent<MeshFilter>().sharedMesh=BoatHull();hull.GetComponent<MeshRenderer>().sharedMaterials=new[]{metal,weathered};hull.transform.position=new Vector3(2,0,-14.1f);
+        foreach(var t in root.Cast<Transform>().Where(t=>(t.name=="DeckPlank"||t.name=="DeckBase")&&Mathf.Abs(t.localPosition.x-6)<.01f&&Mathf.Abs(t.localScale.x-2.5f)<.01f))
+        {
+            var at=t.localPosition;at.y=t.name=="DeckBase"?.09f:.03f+Mathf.InverseLerp(-10.9f,-13.1f,at.z)*.43f;t.localPosition=at;t.localRotation=Quaternion.Euler(11.5f,0,0);
+        }
+        // 箱体添加斜木条与金属角，保留v2的每个箱位与1.1米体量。
+        foreach(var crate in root.Cast<Transform>().Where(t=>t.name=="Crate").ToArray())
+        {
+            for(int side=-1;side<=1;side+=2)
+            {
+                var at=crate.position;var brace=Box("CargoDiagonal",at.x,at.y,at.z+side*.56f,1.2f,.10f,.06f,weathered);brace.transform.rotation=Quaternion.Euler(0,0,35);
+                Box("CargoTopBand",at.x,at.y+.48f,at.z+side*.56f,1.08f,.08f,.06f,metal);
+                Box("CargoBottomBand",at.x,at.y-.48f,at.z+side*.56f,1.08f,.08f,.06f,metal);
+            }
+        }
+        for(int side=-1;side<=1;side+=2)
+        {
+            Beam("CraneBrace",new Vector3(-10+side*.8f,.4f,-2),new Vector3(-10-side*.8f,5.6f,-2),.12f,metal);
+            Beam("CraneBrace",new Vector3(-10+side*.8f,.4f,2),new Vector3(-10-side*.8f,5.6f,2),.12f,metal);
+        }
+        for(int i=0;i<3;i++)Box("CabinRoofBeam",1+i*.7f,2,-14.1f,.12f,.18f,2.55f,weathered);
+        for(int side=-1;side<=1;side+=2)for(int i=0;i<3;i++)Box("BoatSideWindow",1+i*.75f,1.3f,-14.1f+side*1.22f,.52f,.48f,.05f,water);
+        var rope=Mat("Rope",.43f,.33f,.19f);
+        RailEdge(-14,-10,10,true,weathered,rope,p=>p>1.5f&&p<6.5f);
+        RailEdge(12,-10,10,true,weathered,rope,p=>p>-6.5f&&p<-1.5f);
+        RailEdge(-11.5f,-13,11,false,weathered,rope,p=>p>4.2f&&p<7.8f);
+        RailEdge(11.5f,-13,11,false,weathered,rope,p=>p>.4f&&p<5.6f);
+        for(int i=0;i<8;i++)
+        {
+            float x=-1.8f+i*1.05f;Box("BoatRailPost",x,.9f,-15.45f,.10f,1.15f,.10f,metal);
+            if(i>0)Line("BoatRope",new Vector3(x-1.05f,1.3f,-15.45f),new Vector3(x,1.3f,-15.45f),.045f,rope);
+        }
+        // 漩涡桶外形沿用现有圆桶/箍/紫色口沿，不新增效果或碰撞。
+        var barrel=new GameObject("ExistingVortexBarrelCandidate").transform;barrel.SetParent(root,false);barrel.position=new Vector3(-3,0,2);
+        Shape("BarrelBody",PrimitiveType.Cylinder,new Vector3(0,.55f,0),new Vector3(.9f,.55f,.9f),purple,barrel);
+        Shape("BarrelUpperHoop",PrimitiveType.Cylinder,new Vector3(0,.95f,0),new Vector3(.96f,.06f,.96f),metal,barrel);
+        Shape("BarrelLowerHoop",PrimitiveType.Cylinder,new Vector3(0,.15f,0),new Vector3(.96f,.06f,.96f),metal,barrel);
+        foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=Layer;
+    }
+    static Mesh BoatHull()
+    {
+        var outline=new[]{new Vector2(-4.5f,-1.4f),new Vector2(3.9f,-1.5f),new Vector2(4.5f,0),new Vector2(3.9f,1.5f),new Vector2(-4.5f,1.4f)};
+        var vertices=new List<Vector3>();var sides=new List<int>();var top=new List<int>();
+        for(int i=0;i<outline.Length;i++)
+        {
+            var a=outline[i];var b=outline[(i+1)%outline.Length];var ta=new Vector3(a.x,.45f,a.y);var tb=new Vector3(b.x,.45f,b.y);
+            var ba=new Vector3(a.x*.9f,-.75f,a.y*.72f);var bb=new Vector3(b.x*.9f,-.75f,b.y*.72f);
+            Face(ta,tb,bb,sides);Face(ta,bb,ba,sides);Face(new Vector3(0,.45f,0),tb,ta,top);
+        }
+        void Face(Vector3 a,Vector3 b,Vector3 c,List<int> indices){int at=vertices.Count;vertices.Add(a);vertices.Add(b);vertices.Add(c);indices.AddRange(new[]{at,at+1,at+2});}
+        var mesh=new Mesh{name="TEMP_DockCargoBoat"};Meshes.Add(mesh);mesh.SetVertices(vertices);mesh.subMeshCount=2;mesh.SetTriangles(sides,0);mesh.SetTriangles(top,1);mesh.SetUVs(0,vertices.Select(v=>new Vector2(v.x*.25f,v.z*.4f)).ToList());mesh.RecalculateNormals();mesh.RecalculateBounds();return mesh;
+    }
+    static void RailEdge(float fixedCoordinate,float from,float to,bool alongZ,Material posts,Material rope,Func<float,bool> gap)
+    {
+        Vector3? previous=null;
+        for(float p=from;p<=to;p+=2)
+        {
+            if(gap(p)){previous=null;continue;}
+            var at=alongZ?new Vector3(fixedCoordinate,.48f,p):new Vector3(p,.48f,fixedCoordinate);Box("DockEdgePost",at.x,at.y,at.z,.18f,1.15f,.18f,posts);
+            if(previous.HasValue)Line("DockEdgeRope",previous.Value+Vector3.up*.3f,at+Vector3.up*.3f,.045f,rope);previous=at;
+        }
+    }
+    static void Beam(string name,Vector3 from,Vector3 to,float width,Material material)
+    {var at=(from+to)*.5f;var beam=Box(name,at.x,at.y,at.z,width,(to-from).magnitude,width,material);beam.transform.rotation=Quaternion.FromToRotation(Vector3.up,to-from);}
     // 四个约28米区域组成大农场，破墙缺口和门洞始终通行，不演示额外破坏/开门功能。
     static void Farm()
     {

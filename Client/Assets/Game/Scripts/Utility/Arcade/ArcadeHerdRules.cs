@@ -35,6 +35,16 @@ namespace FirepowerLoop.Arcade
         public ArcadeHerdSweep(long map,long charge,long version,float ax,float az,float bx,float bz,float radius)
         {MapInstanceId=map;ChargeId=charge;Version=version;FromX=ax;FromZ=az;ToX=bx;ToZ=bz;Radius=radius;}
     }
+    /// <summary>地图到View的只读牛姿态；阶段秒数由权威活动时钟提供，View不能自行推进。</summary>
+    public readonly struct ArcadeHerdSnapshot
+    {
+        public readonly long MapInstanceId,Id;
+        public readonly ArcadeHerdPhase Phase;
+        public readonly float X,Z,DirectionX,DirectionZ;
+        public readonly double PhaseSeconds;
+        public ArcadeHerdSnapshot(long map,long id,ArcadeHerdPhase phase,float x,float z,float dx,float dz,double seconds)
+        {MapInstanceId=map;Id=id;Phase=phase;X=x;Z=z;DirectionX=dx;DirectionZ=dz;PhaseSeconds=seconds;}
+    }
     /// <summary>双端同源的锁向、活动时间及扫掠规则；不写生命、掉落或保护状态。</summary>
     public static class ArcadeHerdRules
     {
