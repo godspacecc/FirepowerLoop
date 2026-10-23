@@ -988,7 +988,7 @@ MonoBehaviour:
   deliveredWeaponMaxSize: 1.7
   weaponDeliveryPoses:
   - prefabAddress: Prefabs/SceneObjects/ArcadeFlamethrower
-    localPosition: {x: 0, y: 0, z: 0}
+    localPosition: {x: -0.33271858, y: 0, z: 0.1743354}
     localEulerAngles: {x: 0, y: 110, z: 90}
 --- !u!1 &4683302406865300606
 GameObject:

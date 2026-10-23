@@ -56,5 +56,47 @@ namespace Game.Tests
             var drop=new ArcadeDropRuntime{WeaponAirdrop=true,DeliveryRemainingSeconds=1.2f};drop.Reset();
             Assert.That(drop.WeaponAirdrop,Is.False);Assert.That(drop.DeliveryRemainingSeconds,Is.Zero);Assert.That(drop.RemainingSeconds,Is.EqualTo(30));
         }
+
+        /// <summary>空投枪身中心固定在拾取轴上，重复快照/整周旋转不偏移；普通回池姿态仍恢复。</summary>
+        [Test] public void FlamethrowerAirdropRotatesAroundItsCenterAndRestoresOrdinaryPose()
+        {
+            var visual=instance.transform.Find("ArcadeDropVisual");
+            var originalPosition=visual.localPosition;var originalScale=visual.localScale;var originalRotation=visual.localRotation;
+            var rootPosition=instance.transform.position;
+            for(int cycle=0;cycle<2;cycle++)
+            {
+                for(int angle=0;angle<360;angle+=45)
+                {
+                    instance.transform.rotation=Quaternion.Euler(0,angle,0);
+                    pickup.SetWeaponDelivery(true,0,1.2f);
+                    var b=EntityBoundsInPickup(visual);
+                    Assert.That(new Vector2(b.center.x,b.center.z).magnitude,Is.LessThan(.0002f),"枪身中心必须对齐拾取旋转轴："+angle);
+                    var scale=instance.transform.lossyScale;
+                    Assert.That(Mathf.Max(b.size.x,b.size.y,b.size.z)*scale.x,Is.EqualTo(1.7f).Within(.002f));
+                    Assert.That(instance.transform.position,Is.EqualTo(rootPosition),"不能移动拾取根或箱体位置来补偿枪身");
+                }
+                pickup.SetWeaponDelivery(false,0,1.2f);
+                Assert.That(visual.localPosition,Is.EqualTo(originalPosition));
+                Assert.That(visual.localScale,Is.EqualTo(originalScale));
+                Assert.That(Quaternion.Angle(visual.localRotation,originalRotation),Is.LessThan(.001f));
+            }
+        }
+
+        /// <summary>使用实体网格角点度量，忽略枪口粒子；旋转拾取根后仍在同一根坐标系比较。</summary>
+        private Bounds EntityBoundsInPickup(Transform visual)
+        {
+            var result=new Bounds();bool found=false;
+            foreach(var renderer in visual.GetComponentsInChildren<MeshRenderer>(true))
+            {
+                var bounds=renderer.localBounds;var matrix=instance.transform.worldToLocalMatrix*renderer.transform.localToWorldMatrix;
+                for(int corner=0;corner<8;corner++)
+                {
+                    var point=matrix.MultiplyPoint3x4(bounds.center+Vector3.Scale(bounds.extents,
+                        new Vector3((corner&1)==0?-1:1,(corner&2)==0?-1:1,(corner&4)==0?-1:1)));
+                    if(found)result.Encapsulate(point);else{result=new Bounds(point,Vector3.zero);found=true;}
+                }
+            }
+            Assert.That(found,Is.True);return result;
+        }
     }
 }

@@ -9,10 +9,13 @@ using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using Object=UnityEngine.Object;
 
-/// <summary>空投喷火器旋转中心的临时对比；仅调整实例，不保存正式资源、场景或脚本。</summary>
+/// <summary>空投喷火器旋转中心的隔离对比；Run不保存资源，已采用姿态由独立入口接入。</summary>
 public static class FlamethrowerDropPivotPreview
 {
-    public static string Run()
+    public static string Run()=>Render(false);
+    /// <summary>右侧直接加载正式姿态；左侧仅在临时实例恢复旧零偏移，便于同机位对照。</summary>
+    public static string RunApplied()=>Render(true);
+    private static string Render(bool applied)
     {
         if(EditorApplication.isPlaying||EditorApplication.isCompiling||Application.dataPath.Replace('\\','/')!="E:/GitHub/FirepowerLoop/Client/Assets")
             throw new InvalidOperationException("仅本工程编辑态制作隔离预览");
@@ -26,13 +29,21 @@ public static class FlamethrowerDropPivotPreview
             for(int index=0;index<2;index++)
             {
                 var go=Object.Instantiate(Load("SceneObjects/TestResourcePickup"));pickups[index]=go;go.transform.position=new Vector3(index==0?-2.1f:2.1f,.3f,0);
-                var pickup=go.GetComponent<ResourcePickupView>();pickup.SetArcadePresentation(Load("SceneObjects/ArcadeFlamethrower"),"Prefabs/SceneObjects/ArcadeFlamethrower");
+                var pickup=go.GetComponent<ResourcePickupView>();
+                if(applied&&index==0)
+                {
+                    var serialized=new SerializedObject(pickup);var poses=serialized.FindProperty("weaponDeliveryPoses");
+                    for(int p=0;p<poses.arraySize;p++)if(poses.GetArrayElementAtIndex(p).FindPropertyRelative("prefabAddress").stringValue=="Prefabs/SceneObjects/ArcadeFlamethrower")
+                        poses.GetArrayElementAtIndex(p).FindPropertyRelative("localPosition").vector3Value=Vector3.zero;
+                    serialized.ApplyModifiedPropertiesWithoutUndo();
+                }
+                pickup.SetArcadePresentation(Load("SceneObjects/ArcadeFlamethrower"),"Prefabs/SceneObjects/ArcadeFlamethrower");
                 pickup.SetWeaponDelivery(true,0,1.2f);pickup.SetNameVisible(false);
                 if(index==1)
                 {
                     // 候选只补偿水平中心；底面高度、枪体姿态与尺寸保持正式版。
                     var visual=go.transform.Find("ArcadeDropVisual");var b=BoundsInPickup(go.transform,visual);
-                    visual.localPosition-=new Vector3(b.center.x,0,b.center.z);
+                    if(!applied)visual.localPosition-=new Vector3(b.center.x,0,b.center.z);
                     var centered=BoundsInPickup(go.transform,visual);
                     if(new Vector2(centered.center.x,centered.center.z).magnitude>.0001f)throw new InvalidOperationException("候选未对准中心");
                 }
@@ -48,7 +59,7 @@ public static class FlamethrowerDropPivotPreview
             var camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.cullingMask=1<<30;camera.orthographic=true;camera.orthographicSize=2.8f;camera.nearClipPlane=.1f;camera.farClipPlane=100;
             camera.transform.position=new Vector3(0,7,-9);camera.transform.LookAt(new Vector3(0,.8f,.1f));camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.10f,.16f,.18f);
             target=new RenderTexture(1120,630,24);pixels=new Texture2D(1120,630,TextureFormat.RGB24,false);camera.targetTexture=target;
-            string folder=Path.GetFullPath("Temp/FlamethrowerDropPivotPreview");Directory.CreateDirectory(folder);
+            string folder=Path.GetFullPath(applied?"Temp/FlamethrowerDropPivotApplied":"Temp/FlamethrowerDropPivotPreview");Directory.CreateDirectory(folder);
             for(int frame=0;frame<80;frame++)
             {
                 float seconds=frame/20f;
@@ -64,6 +75,40 @@ public static class FlamethrowerDropPivotPreview
             RenderTexture.active=priorRT;if(pixels!=null)Object.DestroyImmediate(pixels);if(target!=null){target.Release();Object.DestroyImmediate(target);}
             SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);if(floorMaterial!=null)Object.DestroyImmediate(floorMaterial);
         }
+    }
+    /// <summary>用户采用后仅更新现有空投姿态位置；模型、角度、尺寸、普通掉落和手持资源均保持。</summary>
+    public static string ApplyApprovedPose()
+    {
+        if(EditorApplication.isPlaying||EditorApplication.isCompiling||Application.dataPath.Replace('\\','/')!="E:/GitHub/FirepowerLoop/Client/Assets")
+            throw new InvalidOperationException("仅本工程编辑态接入已采用姿态");
+        Vector3 offset;
+        var sample=Object.Instantiate(Load("SceneObjects/TestResourcePickup"));
+        try
+        {
+            var source=Load("SceneObjects/ArcadeFlamethrower");var pickup=sample.GetComponent<ResourcePickupView>();
+            pickup.SetArcadePresentation(source,"Prefabs/SceneObjects/ArcadeFlamethrower");pickup.SetWeaponDelivery(true,0,1.2f);
+            var visual=sample.transform.Find("ArcadeDropVisual");var bounds=BoundsInPickup(sample.transform,visual);
+            float fitScale=visual.localScale.x/source.transform.localScale.x;
+            if(fitScale<=.0001f)throw new InvalidOperationException("空投缩放无效");
+            offset=new Vector3(bounds.center.x,0,bounds.center.z)/fitScale;
+        }
+        finally{Object.DestroyImmediate(sample);}
+        const string path="Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab";
+        var root=PrefabUtility.LoadPrefabContents(path);
+        try
+        {
+            var serialized=new SerializedObject(root.GetComponent<ResourcePickupView>());var poses=serialized.FindProperty("weaponDeliveryPoses");
+            for(int i=0;i<poses.arraySize;i++)
+            {
+                var pose=poses.GetArrayElementAtIndex(i);
+                if(pose.FindPropertyRelative("prefabAddress").stringValue!="Prefabs/SceneObjects/ArcadeFlamethrower")continue;
+                var position=pose.FindPropertyRelative("localPosition");position.vector3Value-=offset;
+                var result=position.vector3Value;serialized.ApplyModifiedPropertiesWithoutUndo();
+                PrefabUtility.SaveAsPrefabAsset(root,path);return "已保存已确认空投中心姿态："+result;
+            }
+            throw new InvalidOperationException("正式拾取模板缺少喷火器空投姿态");
+        }
+        finally{PrefabUtility.UnloadPrefabContents(root);}
     }
     /// <summary>实体网格包围盒转换至拾取根；枪口粒子不属于武器实体。</summary>
     private static Bounds BoundsInPickup(Transform pickup,Transform visual)
