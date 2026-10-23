@@ -14,7 +14,7 @@ internal static class IslandPassageOnlineChecks
         var checks = new (string Name, Action Check)[] {
             ("AllTwelvePassagesSpawnOutsideTheirRealEntry", SpawnEntries),
             ("AllTwelvePassagesApproachContinuously", Approach),
-            ("ActiveTimeRandomizesOnlyAtSegmentBoundary", ActiveTime),
+            ("ElapsedTimeAloneCannotUnlockNextPassage", ActiveTime),
             ("LoadingAndTransitionFreezePassages", LoadingFreeze),
             ("RespawnAndTreasureFreezePassagesAndSpawning", RespawnFreeze),
             ("ThreeClearExitsUseTheirActualPassages", ExitContact)
@@ -43,7 +43,7 @@ internal static class IslandPassageOnlineChecks
     private static OnlineArcadeEnemyRuntime Spawn(OnlineArcadeRunActor actor, int passage)
     {
         int seed = 0; while (new Random(seed).Next(3) != passage) seed++;
-        var b = actor.Battle; b.IslandPassages = new ArcadePassageSchedule(12, 3, new Random(seed));
+        var b = actor.Battle; b.IslandPassages = new ArcadePassageSchedule(.45f, 3, b.TotalInWave, new Random(seed));
         Require((bool)Call("TrySpawnEnemy", b, 10000L), "Expected one spawn"); return b.Enemies.Values.Single();
     }
 
@@ -75,11 +75,11 @@ internal static class IslandPassageOnlineChecks
     }
 
     private static void Clock(OnlineArcadeRunActor a)
-    { a.Battle.IslandPassages = new ArcadePassageSchedule(.3f, 3, new CycleRandom()); a.Battle.IslandPassages.Advance(0); a.Battle.MaxAlive = 0; }
+    { a.Battle.IslandPassages = new ArcadePassageSchedule(.3f, 3, a.Battle.TotalInWave, new CycleRandom()); a.Battle.MaxAlive = 0; }
     private static void ActiveTime()
     {
         var a = Create(); Clock(a); a.TickBattle(1200); Require(a.Battle.IslandPassages.Current == 0, "Changed before segment ended");
-        a.TickBattle(1400); Require(a.Battle.IslandPassages.Current == 1, "Active clock failed to select next random passage");
+        a.TickBattle(1400); Require(a.Battle.IslandPassages.Current == 0, "Time or full capacity must not unlock a new passage without actual spawns");
     }
     private static void LoadingFreeze()
     {

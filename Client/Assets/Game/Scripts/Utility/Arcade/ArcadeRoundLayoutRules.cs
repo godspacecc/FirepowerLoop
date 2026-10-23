@@ -239,31 +239,53 @@ namespace FirepowerLoop.Arcade
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
     }
 
-    /// <summary>海岛入场时钟；调用方仅在活动战斗推进，独立随机允许相邻时段抽中同一通道。</summary>
+    /// <summary>每图独占的有限通道批次；前批实际生成一半后开启下一通道，旧通道继续生成。</summary>
 #if DOTNET
     [ET.EnableClass]
 #endif
     public sealed class ArcadePassageSchedule
     {
-        private readonly float period;
-        private readonly int count;
-        private readonly Random random;
-        private double remaining;
-        public int Current { get; private set; } = -1;
-        public ArcadePassageSchedule(float period, int count, Random random)
+        /// <summary>各批不重复的真实通道、有限预算与已成功领取数量。</summary>
+        private readonly int[] passages, budgets, spawned;
+        /// <summary>各活动通道独立沿用敌群间隔，不在卡顿或预算解除后追赶连发。</summary>
+        private readonly double[] cooldowns;
+        private readonly float interval;
+        /// <summary>已开启批数及轮询起点，少量空位也公平分给各活动通道。</summary>
+        private int active, next;
+        public int Current { get; private set; }
+        public int RemainingCount { get; private set; }
+        public ArcadePassageSchedule(float interval, int count, int total, Random random)
         {
-            if (period <= 0 || float.IsNaN(period) || float.IsInfinity(period) || count <= 0 || random == null)
-                throw new ArgumentException("通道时钟参数无效");
-            this.period = period; this.count = count; this.random = random;
+            if(interval<=0||float.IsNaN(interval)||float.IsInfinity(interval)||count<=0||total<0||random==null)
+                throw new ArgumentException("通道批次参数无效");
+            this.interval=interval;RemainingCount=total;
+            var order=Enumerable.Range(0,count).ToArray();
+            for(int i=0;i<count;i++){int j=i+random.Next(count-i);int value=order[i];order[i]=order[j];order[j]=value;}
+            int batches=Math.Min(count,total);
+            passages=order.Take(batches).ToArray();budgets=new int[batches];spawned=new int[batches];cooldowns=new double[batches];
+            for(int i=0;i<batches;i++)budgets[i]=total/batches+(i<total%batches?1:0);
+            active=batches>0?1:0;Current=batches>0?passages[0]:-1;
         }
-        /// <summary>暂停等冻结阶段不调用；首次先选入口，计时到边界后再选下一段。</summary>
+        /// <summary>只在活动战斗推进已开启通道；不以时间或击杀数解锁下一批。</summary>
         public int Advance(float seconds)
         {
-            if (seconds < 0 || float.IsNaN(seconds) || float.IsInfinity(seconds)) throw new ArgumentOutOfRangeException(nameof(seconds));
-            if (Current < 0) { Current = random.Next(count); remaining = period; }
-            remaining -= seconds;
-            while (remaining <= 0) { Current = random.Next(count); remaining += period; }
+            if(seconds<0||float.IsNaN(seconds)||float.IsInfinity(seconds))throw new ArgumentOutOfRangeException(nameof(seconds));
+            for(int i=0;i<active;i++)cooldowns[i]=Math.Max(0,cooldowns[i]-seconds);
             return Current;
+        }
+        /// <summary>仅有存活空位时领取一次出生；半批向上取整，成功领取才消费总量和开启下一通道。</summary>
+        public bool TryTake(out int passage)
+        {
+            passage=-1;
+            for(int offset=0;offset<active;offset++)
+            {
+                int batch=(next+offset)%active;
+                if(spawned[batch]>=budgets[batch]||cooldowns[batch]>0)continue;
+                spawned[batch]++;RemainingCount--;cooldowns[batch]=interval;Current=passages[batch];passage=Current;
+                if(batch==active-1&&active<budgets.Length&&spawned[batch]>=(budgets[batch]+1)/2)active++;
+                next=(batch+1)%active;return true;
+            }
+            return false;
         }
     }
 

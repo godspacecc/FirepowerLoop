@@ -321,9 +321,9 @@ namespace Game
         public bool IslandTransitionViewPrepared;
         /// <summary>普通清场的单出口状态；不与整场完成出口混用。</summary>
         public bool IslandRoundAwaitingExit;
-        /// <summary>固定入口批次及预告剩余秒数；换向停止旧入口生成，保留在场敌人。</summary>
+        /// <summary>本次实际出生通道；开启后续批次不会停止旧通道。</summary>
         public int IslandEntryBatch;
-        /// <summary>本地图活动时钟；随轮现场重建，不保存临时入场进度。</summary>
+        /// <summary>本地图有限通道批次；各通道独立间隔、半批重叠，轮前恢复重建。</summary>
         public FirepowerLoop.Arcade.ArcadePassageSchedule IslandPassages;
         /// <summary>当前轮完整有限预算，按已出队数量划分固定入口批次。</summary>
         public int IslandWaveBudget;

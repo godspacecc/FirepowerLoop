@@ -101,8 +101,7 @@ namespace Game
             }
             runtime.IslandEntryBatch = 0;
             runtime.IslandWaveBudget = runtime.SpawnQueue.Count;
-            runtime.IslandEntryWarningRemaining = layout.SkillWarning;
-            runtime.IslandPassages=EarlyStage!=null?new ArcadePassageSchedule(layout.EntrySegmentSeconds,layout.Entries.Count,random):null;
+            runtime.IslandEntryWarningRemaining = 0;
             InitializeRoundContent(runtime);
             // 黑幕完全遮挡后才替换地图，准备期间冻结玩法并保持黑屏。
             view.BeginRoundTransition();
@@ -164,23 +163,6 @@ namespace Game
                 DestroyedBarrelIds = runtime.DestroyedGroundBarrelIds.OrderBy(id => id).ToList(),
                 TreasureCompleted = runtime.TreasureCompleted,
                 EncounterSeed = BuildCombatSeed(this.GetModel<ArcadeRunModel>().Current.RunId, runtime.ArenaNumber) ^ (runtime.WaveIndex + 1) * 7919 };
-        }
-
-        /// <summary>固定入口按已生成预算切换，短预告先于真正生成。</summary>
-        private bool ContentEntryReady(ArcadeCombatRuntime runtime, float seconds)
-        {
-            var layout = RoundLayout(runtime);
-            if(EarlyStage!=null)
-            {
-                runtime.IslandPassages??=new ArcadePassageSchedule(layout.EntrySegmentSeconds,layout.Entries.Count,random);
-                runtime.IslandEntryBatch=runtime.IslandPassages.Advance(seconds);runtime.IslandEntryWarningRemaining=0;return true;
-            }
-            int spawned = runtime.IslandWaveBudget - runtime.SpawnQueue.Count;
-            int batch = Mathf.Min(layout.Entries.Count - 1, spawned * layout.Entries.Count / Mathf.Max(1, runtime.IslandWaveBudget));
-            if (batch != runtime.IslandEntryBatch)
-            { runtime.IslandEntryBatch = batch; runtime.IslandEntryWarningRemaining = layout.SkillWarning; }
-            runtime.IslandEntryWarningRemaining = Mathf.Max(0, runtime.IslandEntryWarningRemaining - seconds);
-            return runtime.IslandEntryWarningRemaining <= 0;
         }
 
         private Vector2 ContentExitPosition(ArcadeCombatRuntime runtime, int index, int count)

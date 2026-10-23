@@ -2,6 +2,14 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="PassageOverlapOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int overlapMax)||overlapMax<1)
+        throw new ArgumentException("Explicit PassageOverlapOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=PassageOverlapOnlineChecks.Run(overlapMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="HerdOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int herdOnlineMax)||herdOnlineMax<1)throw new ArgumentException("Explicit HerdOnline limit required");

@@ -16,7 +16,7 @@ namespace Game.Tests
         {
             var app=new Game();var run=new ArcadeRunModel();app.RegisterModel(run);app.RegisterModel(new ArcadeCombatModel());
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
-            Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);
+            Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);app.RegisterUtility<IRuntimeConfigProvider>(provider);
             run.CommitSafeNode(new ArcadeRunSaveData{RunId="early-map",RemainingLives=3,IsCasualRoute=true,ArenaConfigNumber=22,NextArenaNumber=3,CompletedArenaCount=2});run.EnterArena();
             runtime=new ArcadeCombatRuntime{ArenaNumber=3,PlayerHealth=100,PlayerMaxHealth=100};app.GetModel<ArcadeCombatModel>().Begin(runtime);
             system=new ArcadeCombatSystem();((ICanSetArchitecture)system).SetArchitecture(app);Set("catalog",catalog);Stage(22);Set("view",new ArcadeCombatViewController());Set("random",new System.Random(8));
@@ -52,11 +52,10 @@ namespace Game.Tests
             Stage(21);runtime.IslandRoundAwaitingExit=true;runtime.PlayerPosition=Vector2.zero;
             Assert.DoesNotThrow(()=>Call("TickContentExit",runtime));Assert.That(runtime.WaveIndex,Is.Zero);Assert.That(runtime.IslandTransitionPending,Is.False);
         }
-        [Test] public void NewStageUsesOneTimedRandomEntryWithoutDirectionWarning()
+        [Test] public void NewStageKeepsFirstPassageUntilHalfBatchWithoutDirectionWarning()
         {
-            Stage(21);runtime.IslandWaveBudget=100;for(int i=0;i<100;i++)runtime.SpawnQueue.Enqueue("remaining-enemy");
-            Assert.That(Call("ContentEntryReady",runtime,0f),Is.True);int entry=runtime.IslandEntryBatch;
-            for(int i=0;i<70;i++)runtime.SpawnQueue.Dequeue();Assert.That(Call("ContentEntryReady",runtime,1f),Is.True);
+            Stage(21);Call("BeginWave",runtime,0);Call("TickSpawning",runtime,0f);int entry=runtime.IslandEntryBatch;
+            Call("TickSpawning",runtime,1f);
             Assert.That(runtime.IslandEntryBatch,Is.EqualTo(entry));Assert.That(runtime.IslandEntryWarningRemaining,Is.Zero);Assert.That(runtime.IslandPassages,Is.Not.Null);
         }
         [Test] public void LegacySequentialCycleDoesNotStartUsingNewCasualStageIds()

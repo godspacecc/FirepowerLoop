@@ -725,20 +725,36 @@ namespace Game
             if (!runtime.InTreasureRoom && runtime.Firing) TryFire(runtime);
         }
 
+        /// <summary>普通轮每通道独立刷怪，半批即开启下一通道，所有通道共享原存活上限。</summary>
         private void TickSpawning(ArcadeCombatRuntime runtime, float deltaTime)
         {
             if (group == null || runtime.SpawnQueue.Count == 0) return;
-            if (UsesIslandRounds(runtime) && !IslandEntryIsReady(runtime, deltaTime)) return;
-            if (UsesContentRounds(runtime) && !runtime.IsFinalBoss && !ContentEntryReady(runtime, deltaTime)) return;
+            var layout=RoundLayout(runtime);
+            if(layout!=null&&!runtime.IsChallenge&&!runtime.IsFinalBoss&&!runtime.ThemeBossStarted&&runtime.SlayerChallenge==null)
+            {
+                if(!RoundContentActive(runtime))return;
+                runtime.IslandPassages??=new ArcadePassageSchedule(group.SpawnIntervalSeconds,layout.Entries.Count,runtime.SpawnQueue.Count,random);
+                runtime.IslandPassages.Advance(deltaTime);runtime.IslandEntryWarningRemaining=0;
+                int cap=Mathf.Min(group.MaxAlive,catalog.Rule.MaxAliveEnemies);
+                while(runtime.SpawnQueue.Count>0&&runtime.Enemies.Count<cap&&runtime.IslandPassages.TryTake(out int passage))
+                {runtime.IslandEntryBatch=passage;if(!SpawnQueuedEnemy(runtime))return;}
+                return;
+            }
             runtime.SpawnCooldown = Mathf.Max(0f, runtime.SpawnCooldown - deltaTime);
             var aliveCap = Mathf.Min(group.MaxAlive, catalog.Rule.MaxAliveEnemies);
             if (runtime.SpawnCooldown > 0f || runtime.Enemies.Count >= aliveCap) return;
+            SpawnQueuedEnemy(runtime);
+        }
+
+        /// <summary>按已选真实通道交付一个现有队列敌人；属性、掉落归属及特殊敌人规则保持由原权威处理。</summary>
+        private bool SpawnQueuedEnemy(ArcadeCombatRuntime runtime)
+        {
             var enemyId = runtime.SpawnQueue.Dequeue();
             var provider = this.GetUtility<IRuntimeConfigProvider>();
             if (!provider.TryGetEnemy(enemyId, out var definition, out var error))
             {
                 FailCombat(error);
-                return;
+                return false;
             }
             var healthGrowth = 1f + catalog.Rule.HealthGrowthPerArena * (runtime.ArenaNumber - 1);
             var damageGrowth = 1f + catalog.Rule.DamageGrowthPerArena * (runtime.ArenaNumber - 1);
@@ -807,6 +823,7 @@ namespace Game
                 group = FindGroup(boss.ReinforcementGroupId);
             }
             runtime.SpawnCooldown = group.SpawnIntervalSeconds;
+            return true;
         }
 
         private void TickEnemies(ArcadeCombatRuntime runtime, float deltaTime)

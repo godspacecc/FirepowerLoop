@@ -249,16 +249,6 @@ namespace Game
             view.EndFirstPerson();
         }
 
-        /// <summary>仅按活动时间随机换向，保留原敌群数量和生成间隔，不插入方向预告。</summary>
-        private bool IslandEntryIsReady(ArcadeCombatRuntime runtime, float seconds)
-        {
-            var layout = RoundLayout(runtime);
-            runtime.IslandPassages ??= new ArcadePassageSchedule(layout.EntrySegmentSeconds, layout.Entries.Count, random);
-            runtime.IslandEntryBatch = runtime.IslandPassages.Advance(seconds);
-            runtime.IslandEntryWarningRemaining = 0;
-            return true;
-        }
-
         /// <summary>从当前通道外沿车道生成；进入后仍正常追击，不把敌人投影到场内。</summary>
         private void IslandRoundEntry(ArcadeCombatRuntime runtime, out Vector2 start, bool consume = true)
         {

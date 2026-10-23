@@ -190,15 +190,16 @@ namespace Game.Tests
 
         [Test] public void RoundStartDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(false);
 
-        /// <summary>相同活动时段只使用一个真实通道，敌人从边界外连续入场，不按出生序轮换方向。</summary>
+        /// <summary>半批之前只使用一个真实通道，敌人从边界外连续入场。</summary>
         [Test] public void OneActiveSegmentSpawnsOnlyOutsideItsVisiblePassageWithoutWarnings()
         {
+            Call("StartIslandRound", runtime, 0, null);
             Call("StartIslandRound", runtime, 1, null);
             Vector2? direction = null;
             for (int i = 0; i < 8; i++)
             {
                 runtime.Enemies.Clear(); runtime.SpawnCooldown = 0;
-                Call("TickSpawning", runtime, .1f);
+                Call("TickSpawning", runtime, 1f);
                 Assert.That(runtime.Enemies.Count, Is.EqualTo(1), "换向不能等待额外预警");
                 var position = runtime.Enemies.Values.Single().Position;
                 Assert.That(Mathf.Max(Mathf.Abs(position.x), Mathf.Abs(position.y)), Is.GreaterThan(19.5f), "不能在战斗区凭空出现");
@@ -208,19 +209,19 @@ namespace Game.Tests
             }
         }
 
-        /// <summary>每段从权威随机源独立抽取，允许重复；等待或过轮不靠击杀预算切换。</summary>
-        [Test] public void PassageSegmentsUseRandomDirectionsRatherThanFixedSpawnBudgets()
+        /// <summary>时间本身不解锁下一批，实际生成半批后才开启不同通道。</summary>
+        [Test] public void PassageBatchUnlocksAtHalfOfActualSpawnBudget()
         {
             Call("StartIslandRound", runtime, 0, null);
-            var expected = new System.Random(37); Set("random", new System.Random(37));
-            for (int segment = 0; segment < 10; segment++)
+            int first=-1;
+            for (int spawned = 0; spawned < 18; spawned++)
             {
-                Call("IslandEntryIsReady", runtime, segment == 0 ? 0f : 12f);
-                Assert.That(runtime.IslandEntryBatch, Is.EqualTo(expected.Next(3)), "每个时段应独立随机选通道");
-                int selected = runtime.IslandEntryBatch;
-                Call("IslandEntryIsReady", runtime, .01f);
-                Assert.That(runtime.IslandEntryBatch, Is.EqualTo(selected), "同段不应换向");
+                runtime.Enemies.Clear();Call("TickSpawning",runtime,12f);
+                if(first<0)first=runtime.IslandEntryBatch;
+                Assert.That(runtime.IslandEntryBatch,Is.EqualTo(first),"等待时间不能替代实际生成进度");
             }
+            runtime.Enemies.Clear();Call("TickSpawning",runtime,1f);
+            Assert.That(runtime.Enemies.Count,Is.EqualTo(2));Assert.That(runtime.IslandEntryBatch,Is.Not.EqualTo(first));
         }
         [Test] public void EntryBatchDoesNotRequestUnsolicitedSound() => AssertNoUnsolicitedSound(true);
 
@@ -256,7 +257,6 @@ namespace Game.Tests
             Call("TickSpawning", runtime, .01f);
             var enemy = runtime.Enemies.Values.First(); enemy.Position = runtime.PlayerPosition + Vector2.up * 4;
             var before = enemy.Position; runtime.SpawnCooldown = 0;
-            Call("IslandEntryIsReady", runtime, 12f);
             combat.Tick(runtime, .01f);
             Assert.That(runtime.IslandEntryWarningRemaining, Is.Zero);
             Assert.That(runtime.Enemies.ContainsKey(enemy.Id), Is.True);
@@ -363,6 +363,7 @@ namespace Game.Tests
 
         [Test] public void PassageChangesPreserveExistingEnemiesAndBudgetWithoutWarningWait()
         {
+            Call("StartIslandRound", runtime, 0, null);
             Call("StartIslandRound", runtime, 1, null);
             Call("TickSpawning", runtime, .01f); Assert.That(runtime.Enemies.Count, Is.EqualTo(1));
             var first = runtime.Enemies.Values.First();
@@ -377,14 +378,12 @@ namespace Game.Tests
         [Test] public void RespawnAndClearWaitDoNotConsumePassageTime()
         {
             Call("StartIslandRound", runtime, 0, null);
-            Set("random", new System.Random(37));
-            Call("IslandEntryIsReady", runtime, 0f);
+            Call("TickSpawning",runtime,0f);int remaining=runtime.IslandPassages.RemainingCount;
             runtime.RespawnRemaining = 100; combat.Tick(runtime, 30);
+            Assert.That(runtime.IslandPassages.RemainingCount,Is.EqualTo(remaining));
             runtime.RespawnRemaining = 0;
-            runtime.SpawnQueue.Clear(); Call("TickWaveTransition", runtime, 0f); combat.Tick(runtime, 30);
-            var expected = new System.Random(37); expected.Next(3);
-            Call("IslandEntryIsReady", runtime, 12f);
-            Assert.That(runtime.IslandEntryBatch, Is.EqualTo(expected.Next(3)));
+            runtime.SpawnQueue.Clear();runtime.Enemies.Clear();Call("TickWaveTransition", runtime, 0f); combat.Tick(runtime, 30);
+            Assert.That(runtime.IslandPassages.RemainingCount,Is.EqualTo(remaining));
         }
 
         [Test] public void CampfireWarningAndClearDoNotDamagePlayer()

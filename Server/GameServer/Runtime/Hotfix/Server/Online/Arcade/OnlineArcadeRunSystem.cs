@@ -1290,9 +1290,11 @@ namespace ET.Server
             battle.WeaponSpawns=null;
             if(battle.IsChallenge||battle.IsFinalBoss||record.RoundBossEncounter||battle.SlayerChallenge!=null||battle.SlayerMartReturnWave>0||battle.RoundLayout==null)return;
             var random=new Random(unchecked((int)MixDropSeed((ulong)record.RunId,battle.ArenaNumber,battle.WaveIndex+1)));
-            if (battle.RoundLayout?.ArenaConfigNumber == 1||EarlyStage(battle)!=null)
+            if (battle.RoundLayout!=null)
                 battle.IslandPassages = new FirepowerLoop.Arcade.ArcadePassageSchedule(
-                    battle.RoundLayout.EntrySegmentSeconds, battle.RoundLayout.Entries.Count, random);
+                    ResolveBattleGroup(battle,ResolveBattleArena(battle),battle.WaveIndex).SpawnIntervalSeconds,
+                    battle.RoundLayout.Entries.Count,battle.SpawnQueue.Count-battle.SpawnQueueIndex,random);
+            battle.PassageSpawnTickAt=0;
             battle.WeaponSpawns=battle.RoundLayout.CreateWeaponSpawnSchedule(random);
         }
 
@@ -1390,7 +1392,7 @@ namespace ET.Server
                 self.TickSlayerMartRegion(battle,shopSeconds);battle.InputsDirty=false;battle.BattleRevision++;return true;
             }
             if (!RoundPlayersReady(battle) || battle.RoundTransitionPending || self.DisconnectedAtByPlayer.Count>0)
-            { battle.LastTickAt=now; return battle.InputsDirty; }
+            { battle.LastTickAt=now;battle.PassageSpawnTickAt=now; return battle.InputsDirty; }
             float slayerElapsed=Math.Max(0,(now-battle.LastTickAt)/1000f);
             float deltaSeconds = Math.Clamp(slayerElapsed, 0f, 0.2f);
             battle.LastTickAt = now;
@@ -1448,9 +1450,6 @@ namespace ET.Server
             }
             changed |= TickFinalBossReinforcements(battle, deltaSeconds, now);
             changed |= TickWeaponPickups(battle, deltaSeconds);
-            if ((battle.RoundLayout?.ArenaConfigNumber == 1||EarlyStage(battle)!=null) && !battle.IsChallenge && !battle.IsFinalBoss &&
-                IslandPassageActive(battle) && battle.SpawnQueueIndex < battle.SpawnQueue.Count)
-                battle.IslandPassages?.Advance(deltaSeconds);
             changed |= TrySpawnEnemy(battle, now);
             changed |= self.TickEnemies(battle, deltaSeconds);
             if (!hazardRespawnWaiting && !battle.AllPlayersDefeated)
@@ -1466,7 +1465,7 @@ namespace ET.Server
             return changed;
         }
 
-        /// <summary>海岛只在双方活动战斗时推进通道；复活、奖励区域和清场等待不消耗时段或入场预算。</summary>
+        /// <summary>所有地图只在双方活动战斗时刷怪；复活、奖励区域和清场等待不消费通道预算。</summary>
         private static bool IslandPassageActive(OnlineArcadeBattleRuntime battle)
             => !battle.WaveClearAwarded && !battle.AwaitingExit && !battle.AllPlayersDefeated &&
                 !battle.ArenaCompletionReady && !battle.RoundTransitionPending &&
@@ -1474,8 +1473,27 @@ namespace ET.Server
 
         private static bool TrySpawnEnemy(OnlineArcadeBattleRuntime battle, long now)
         {
-            if (battle.RoundLayout?.ArenaConfigNumber == 1 && !IslandPassageActive(battle)) return false;
-            if (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || now < battle.NextSpawnAt)
+            float seconds=battle.PassageSpawnTickAt==0?0:Math.Max(0,(now-battle.PassageSpawnTickAt)/1000f);
+            battle.PassageSpawnTickAt=now;
+            if(battle.RoundLayout!=null&&!battle.IsChallenge&&!battle.IsFinalBoss&&!battle.RoundBossEncounter&&battle.SlayerChallenge==null)
+            {
+                if(!IslandPassageActive(battle)||battle.SpawnQueueIndex>=battle.SpawnQueue.Count)return false;
+                var arena=ResolveBattleArena(battle);var group=ResolveBattleGroup(battle,arena,battle.WaveIndex);
+                battle.IslandPassages??=new FirepowerLoop.Arcade.ArcadePassageSchedule(group.SpawnIntervalSeconds,
+                    battle.RoundLayout.Entries.Count,battle.SpawnQueue.Count-battle.SpawnQueueIndex,new Random(unchecked((int)battle.NextEnemyRuntimeId)));
+                battle.IslandPassages.Advance(seconds);
+                bool changed=false;
+                while(battle.SpawnQueueIndex<battle.SpawnQueue.Count&&battle.Enemies.Count<battle.MaxAlive&&battle.IslandPassages.TryTake(out int passage))
+                    changed|=SpawnQueuedEnemy(battle,now,passage);
+                return changed;
+            }
+            return SpawnQueuedEnemy(battle,now,-1);
+        }
+
+        /// <summary>交付一个已有队列敌人，通道批次只指定真实入口，不另发数量、属性或奖励。</summary>
+        private static bool SpawnQueuedEnemy(OnlineArcadeBattleRuntime battle,long now,int passage)
+        {
+            if (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || passage<0&&now < battle.NextSpawnAt)
                 return false;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, battle.WaveIndex);
@@ -1493,14 +1511,14 @@ namespace ET.Server
             bool islandSpawn = opening.Enabled && !battle.IsChallenge && !battle.IsFinalBoss;
             if (battle.RoundLayout != null && !islandSpawn)
             {
-                int index=EarlyStage(battle)!=null?battle.IslandPassages.Advance(0):battle.SpawnedInWave%battle.RoundLayout.Entries.Count;
+                int index=passage>=0?passage:battle.SpawnedInWave%battle.RoundLayout.Entries.Count;
                 var entry=battle.RoundLayout.Entries[index];x=entry.X;z=entry.Y;
             }
             if (islandSpawn)
             {
                 if (battle.RoundLayout != null)
                 {
-                    int entryIndex = battle.IslandPassages.Advance(0);
+                    int entryIndex = passage>=0?passage:battle.SpawnedInWave%battle.RoundLayout.Entries.Count;
                     var entry = battle.RoundLayout.GetPassageSpawn(entryIndex, battle.SpawnedInWave,
                         ServerConfig.Instance.ArcadeRule.ArenaHalfWidth, ServerConfig.Instance.ArcadeRule.ArenaHalfHeight,
                         opening.EnemySeaApproachDistance);
