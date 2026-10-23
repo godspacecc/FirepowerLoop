@@ -241,6 +241,34 @@ namespace FirepowerLoop.Arcade
             }
             return targets.All(p=>seen.Contains(Index(p.X,p.Y)));
         }
+        /// <summary>通道补桶只在出生点连通的地面随机取点；避开玩家及存活桶，无合法点时不放到原点。</summary>
+        public bool TryChoosePassageBarrelPoint(float halfWidth,float halfHeight,float playerRadius,
+            IEnumerable<ArcadeRegionPoint> occupied,Random random,out ArcadeRegionPoint point)
+        {
+            point=default;
+            if(!Finite(halfWidth)||!Finite(halfHeight)||!Finite(playerRadius)||halfWidth<=0||halfHeight<=0||playerRadius<=0||random==null)return false;
+            const float step=.5f;float clearance=playerRadius*2,spacing=clearance+.25f;
+            int columns=(int)(halfWidth*4)+1,rows=(int)(halfHeight*4)+1;
+            int sx=(int)Math.Round((SpawnX+halfWidth)/step),sy=(int)Math.Round((SpawnY+halfHeight)/step);
+            if(!IsWalkable(sx*step-halfWidth,sy*step-halfHeight,clearance,halfWidth,halfHeight))return false;
+            var blockers=occupied.ToArray();var candidates=new List<ArcadeRegionPoint>();
+            var seen=new HashSet<int>();var pending=new Queue<int>();int start=sy*columns+sx;seen.Add(start);pending.Enqueue(start);
+            var directions=new[]{new ArcadeRegionPoint(-1,0),new ArcadeRegionPoint(1,0),new ArcadeRegionPoint(0,-1),new ArcadeRegionPoint(0,1)};
+            while(pending.Count>0)
+            {
+                int current=pending.Dequeue(),cx=current%columns,cy=current/columns;
+                float px=cx*step-halfWidth,py=cy*step-halfHeight;
+                if(blockers.All(p=>(p.X-px)*(p.X-px)+(p.Y-py)*(p.Y-py)>=spacing*spacing))candidates.Add(new ArcadeRegionPoint(px,py));
+                foreach(var direction in directions)
+                {
+                    int x=cx+(int)direction.X,y=cy+(int)direction.Y,index=y*columns+x;
+                    if(x<0||y<0||x>=columns||y>=rows||seen.Contains(index)||!IsWalkable(x*step-halfWidth,y*step-halfHeight,clearance,halfWidth,halfHeight))continue;
+                    seen.Add(index);pending.Enqueue(index);
+                }
+            }
+            if(candidates.Count==0)return false;
+            point=candidates[random.Next(candidates.Count)];return true;
+        }
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
     }
 
@@ -279,13 +307,16 @@ namespace FirepowerLoop.Arcade
             return Current;
         }
         /// <summary>仅有存活空位时领取一次出生；半批向上取整，成功领取才消费总量和开启下一通道。</summary>
-        public bool TryTake(out int passage)
+        public bool TryTake(out int passage)=>TryTake(out passage,out _);
+        /// <summary>首只标记由本批有限预算决定，暂停或容量等待不会提前消费补桶机会。</summary>
+        public bool TryTake(out int passage,out bool startsBatch)
         {
-            passage=-1;
+            passage=-1;startsBatch=false;
             for(int offset=0;offset<active;offset++)
             {
                 int batch=(next+offset)%active;
                 if(spawned[batch]>=budgets[batch]||cooldowns[batch]>0)continue;
+                startsBatch=spawned[batch]==0;
                 spawned[batch]++;RemainingCount--;cooldowns[batch]=interval;Current=passages[batch];passage=Current;
                 if(batch==active-1&&active<budgets.Length&&spawned[batch]>=(budgets[batch]+1)/2)active++;
                 next=(batch+1)%active;return true;

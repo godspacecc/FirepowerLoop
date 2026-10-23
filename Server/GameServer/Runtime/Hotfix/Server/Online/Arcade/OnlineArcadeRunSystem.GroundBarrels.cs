@@ -7,6 +7,17 @@ namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
+        /// <summary>服务器在第二关通道首只实际出敌时补桶；两人通过原有动态桶快照看见同一位置。</summary>
+        private static void SpawnPassageBarrel(OnlineArcadeBattleRuntime b)
+        {
+            var layout=b.RoundLayout;if(layout==null||layout.ArenaConfigNumber!=21)return;
+            var occupied=GroundBarrelPoints(b).Select(p=>p.Value)
+                .Concat(b.Players.Values.Select(p=>new ArcadeRegionPoint(p.PositionX,p.PositionZ)));
+            if(!layout.TryChoosePassageBarrelPoint(ArenaHalfWidth(b),ArenaHalfHeight(b),ServerConfig.Instance.ArcadeRule.PlayerRadius,
+                occupied,new Random(),out var point))return;
+            b.NextGroundBarrelId=Math.Max(b.NextGroundBarrelId,layout.Barrels.Count);
+            b.DroppedBarrels.Add(b.NextGroundBarrelId++,point);
+        }
         /// <summary>预置桶与动态桶共用稳定身份；动态索引从预置数组之后开始且本地图内不复用。</summary>
         private static IEnumerable<KeyValuePair<int,ArcadeRegionPoint>> GroundBarrelPoints(OnlineArcadeBattleRuntime b)
         {

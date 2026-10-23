@@ -1483,8 +1483,11 @@ namespace ET.Server
                     battle.RoundLayout.Entries.Count,battle.SpawnQueue.Count-battle.SpawnQueueIndex,new Random(unchecked((int)battle.NextEnemyRuntimeId)));
                 battle.IslandPassages.Advance(seconds);
                 bool changed=false;
-                while(battle.SpawnQueueIndex<battle.SpawnQueue.Count&&battle.Enemies.Count<battle.MaxAlive&&battle.IslandPassages.TryTake(out int passage))
-                    changed|=SpawnQueuedEnemy(battle,now,passage);
+                while(battle.SpawnQueueIndex<battle.SpawnQueue.Count&&battle.Enemies.Count<battle.MaxAlive&&battle.IslandPassages.TryTake(out int passage,out bool startsBatch))
+                {
+                    bool spawned=SpawnQueuedEnemy(battle,now,passage);changed|=spawned;
+                    if(spawned&&startsBatch)SpawnPassageBarrel(battle);
+                }
                 return changed;
             }
             return SpawnQueuedEnemy(battle,now,-1);

@@ -32,20 +32,22 @@ internal static class DockBarrelOnlineChecks
     private static void NaturalCarriersDropAndSerializeOnce()
     {
         var actor=Spawn(2);var b=actor.Battle;var carriers=b.Enemies.Values.Where(e=>e.SpecialKind==1).ToArray();Require(carriers.Length>0,"正式出生没有载桶");
-        b.ContentClock.Advance(b.RoundLayout.BarrelDropSeconds-.01f,false);Call("TickVortexBarrels",b,.01f);Require(b.DroppedBarrels.Count==0,"未满时提前卸桶");
+        int passageBarrels=b.DroppedBarrels.Count;Require(passageBarrels==b.RoundLayout.Entries.Count,"通道桶未完整交付");
+        b.ContentClock.Advance(b.RoundLayout.BarrelDropSeconds-.01f,false);Call("TickVortexBarrels",b,.01f);Require(b.DroppedBarrels.Count==passageBarrels,"未满时提前卸桶");
         b.ContentClock.Advance(.02f,false);Call("TickVortexBarrels",b,.02f);Call("TickVortexBarrels",b,.02f);
-        Require(b.DroppedBarrels.Count==carriers.Length&&carriers.All(e=>e.SpecialKind==0),"卸桶重复或身份未清除");
+        Require(b.DroppedBarrels.Count==passageBarrels+carriers.Length&&carriers.All(e=>e.SpecialKind==0),"卸桶重复或身份未清除");
         using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",b);
         using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);
         using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));
-        Require(decoded.ContentAreas.Count(a=>a.Kind==13)==carriers.Length,"双人快照丢失动态桶");
+        Require(decoded.ContentAreas.Count(a=>a.Kind==13)==passageBarrels+carriers.Length,"双人快照丢失通道桶或卸下桶");
         Require(decoded.ContentAreas.Count(a=>a.Kind==11)==b.RoundLayout.Barrels.Count,"固定桶与动态桶混淆");
     }
     private static void EarlyDeathKeepsPurpleBlastAndBothPlayersSafe()
     {
         var actor=Spawn(1);var b=actor.Battle;var carrier=b.Enemies.Values.First(e=>e.SpecialKind==1);
         foreach(var player in b.Players.Values){player.PositionX=carrier.PositionX;player.PositionZ=carrier.PositionZ;}
-        Call("SpawnContentDeathZone",actor,b,carrier);Require(b.DroppedBarrels.Count==0&&b.DeathZones.Any(z=>z.Kind==14),"提前击杀没有紫爆或误卸桶");
+        int passageBarrels=b.DroppedBarrels.Count;
+        Call("SpawnContentDeathZone",actor,b,carrier);Require(b.DroppedBarrels.Count==passageBarrels&&b.DeathZones.Any(z=>z.Kind==14),"提前击杀没有紫爆或误卸桶");
         Require(b.Players.Values.All(p=>p.CurrentHealth==p.MaxHealth),"载桶紫爆伤害玩家");
     }
     private static object Call(string method,params object[] args)=>typeof(OnlineArcadeRunActorSystem).GetMethod(method,BindingFlags.Public|BindingFlags.NonPublic|BindingFlags.Static)!.Invoke(null,args)!;

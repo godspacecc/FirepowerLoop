@@ -8,6 +8,16 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
+        /// <summary>第二关每批通道首只实际出敌后补一个静止桶，复用地图桶的命中、吸物和清理。</summary>
+        private void SpawnPassageBarrel(ArcadeCombatRuntime r)
+        {
+            var layout=RoundLayout(r);if(layout==null||layout.ArenaConfigNumber!=21)return;
+            var occupied=r.GroundBarrels.Values.Select(p=>new ArcadeRegionPoint(p.x,p.y))
+                .Append(new ArcadeRegionPoint(r.PlayerPosition.x,r.PlayerPosition.y));
+            if(!layout.TryChoosePassageBarrelPoint(ArenaHalfWidth,ArenaHalfHeight,catalog.Rule.PlayerRadius,occupied,random,out var point))return;
+            r.NextGroundBarrelId=Math.Max(r.NextGroundBarrelId,layout.Barrels.Count);
+            r.GroundBarrels.Add(r.NextGroundBarrelId++,new Vector2(point.X,point.Y));
+        }
         /// <summary>同一地图重复准备不补发，新地图与布局版本才建立自己的稳定索引。</summary>
         private void InitializeGroundBarrels(ArcadeCombatRuntime r)
         {

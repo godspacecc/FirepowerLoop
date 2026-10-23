@@ -16,7 +16,10 @@ internal static class PassageOverlapOnlineChecks
             ("EveryMapAndRoundOverlaps", EveryLayout),
             ("CapacityNeverConsumesPendingBudget", Capacity),
             ("WaitingPlayersFreezeEveryMap", Waiting),
-            ("AllPassagesFinishExactFiniteBudget", FiniteBudget)
+            ("AllPassagesFinishExactFiniteBudget", FiniteBudget),
+            ("DocksEveryPassageAddsOneStationaryBarrel", DocksBarrels),
+            ("DocksCapacityAndWaitingCannotAddBarrels", DocksBarrelWaiting),
+            ("OtherMapsKeepExistingBarrelCount", OtherMapBarrels)
         };
         if (maximum < checks.Length) throw new ArgumentException("PassageOverlapOnline maximum too small");
         int failed = 0;
@@ -102,6 +105,36 @@ internal static class PassageOverlapOnlineChecks
             Require(b.SpawnQueueIndex==total&&b.SpawnedInWave==total,"Finite queue lost or duplicated enemies");
             Require(seen.Count==b.RoundLayout.Entries.Count,"Some passages never received their batch");
         }
+    }
+    private static void DocksBarrels()
+    {
+        for(int round=1;round<=4;round++)
+        {
+            var b=Create(21,round);var seen=new HashSet<int>();var positions=new Dictionary<int,FirepowerLoop.Arcade.ArcadeRegionPoint>();
+            for(int tick=0;tick<b.TotalInWave+3;tick++)
+            {
+                seen.UnionWith(Step(b,tick));Require(b.DroppedBarrels.Count==seen.Count,"Each first actual passage spawn must add exactly one barrel");
+                foreach(var pair in positions)Require(b.DroppedBarrels[pair.Key].Equals(pair.Value),"Barrel moved after spawning");
+                positions=new(b.DroppedBarrels);
+            }
+            Require(seen.Count==3,"Expected all three passage batches");
+            foreach(var point in positions.Values)
+                Require(b.RoundLayout.IsWalkable(point.X,point.Y,ServerConfig.Instance.ArcadeRule.PlayerRadius,20.5f,19.5f),"Barrel spawned in water or wall");
+        }
+    }
+    private static void DocksBarrelWaiting()
+    {
+        var b=Create(21);b.MaxAlive=0;Call("TrySpawnEnemy",b,10000L);
+        Require(b.DroppedBarrels.Count==0&&b.SpawnQueueIndex==0,"Capacity blocked but barrel appeared");
+        b.MaxAlive=24;b.Players[1].InTreasureRoom=true;Call("TrySpawnEnemy",b,11000L);
+        Require(b.DroppedBarrels.Count==0,"Waiting still added barrel");
+        b.Players[1].InTreasureRoom=false;Step(b,2);Require(b.DroppedBarrels.Count==1,"First real spawn missing barrel");
+        int id=b.DroppedBarrels.Keys.Single();b.DroppedBarrels.Remove(id);Step(b,3);
+        Require(!b.DroppedBarrels.ContainsKey(id),"Destroyed barrel returned during same batch");
+    }
+    private static void OtherMapBarrels()
+    {
+        foreach(int map in new[]{1,22,2,20}){var b=Create(map);Step(b,0);Require(b.DroppedBarrels.Count==0,"Other map gained docks barrels");}
     }
     private static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
 }

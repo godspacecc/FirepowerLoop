@@ -736,8 +736,11 @@ namespace Game
                 runtime.IslandPassages??=new ArcadePassageSchedule(group.SpawnIntervalSeconds,layout.Entries.Count,runtime.SpawnQueue.Count,random);
                 runtime.IslandPassages.Advance(deltaTime);runtime.IslandEntryWarningRemaining=0;
                 int cap=Mathf.Min(group.MaxAlive,catalog.Rule.MaxAliveEnemies);
-                while(runtime.SpawnQueue.Count>0&&runtime.Enemies.Count<cap&&runtime.IslandPassages.TryTake(out int passage))
-                {runtime.IslandEntryBatch=passage;if(!SpawnQueuedEnemy(runtime))return;}
+                while(runtime.SpawnQueue.Count>0&&runtime.Enemies.Count<cap&&runtime.IslandPassages.TryTake(out int passage,out bool startsBatch))
+                {
+                    runtime.IslandEntryBatch=passage;if(!SpawnQueuedEnemy(runtime))return;
+                    if(startsBatch)SpawnPassageBarrel(runtime);
+                }
                 return;
             }
             runtime.SpawnCooldown = Mathf.Max(0f, runtime.SpawnCooldown - deltaTime);
