@@ -191,14 +191,15 @@ namespace ET.Server
         }
         /// <summary>特殊敌人完整接管移动与攻击，冻结和预告不再落入旧普通攻击分支。</summary>
         private static bool TickSpecialEnemy(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime e,
-            OnlineArcadeBattlePlayerRuntime target,float targetX,float targetY,bool decoy,float movementDelta)
+            OnlineArcadeBattlePlayerRuntime target,float targetX,float targetY,bool decoy,float movementDelta,float seconds)
         {
             if(e.SpecialKind==0)return false;
-            if(!RoundContentActive(b))return true;
+            if(!RoundContentActive(b)){CancelMeleeWindup(e);return true;}
             var p=ContentTuning(b);int kind=e.SpecialKind;
             actor.TickSpecialAttack(b,e,target);
             if(e.ContentStunUntil>b.ContentClock.Elapsed||ArcadeRoundContentRules.IsUnderground(kind,e.ContentElapsed,p)||
-                kind==13&&e.ContentElapsed<p.SkillWarning||kind==3&&e.LastContentHitAt>=0&&e.ContentElapsed-e.LastContentHitAt<p.SkillWarning)return true;
+                kind==13&&e.ContentElapsed<p.SkillWarning||kind==3&&e.LastContentHitAt>=0&&e.ContentElapsed-e.LastContentHitAt<p.SkillWarning)
+            {CancelMeleeWindup(e);return true;}
             bool ranged=kind==8||kind==9||kind==11||kind==16||kind==17;
             if((kind==5||kind==10||kind==14||kind==17)&&!e.ContentWarning&&(e.ContentLockedX!=0||e.ContentLockedZ!=0))
             {targetX=e.PositionX+e.ContentLockedX*p.EventRadius*p.SkillMagnitude;targetY=e.PositionZ+e.ContentLockedZ*p.EventRadius*p.SkillMagnitude;}
@@ -206,7 +207,8 @@ namespace ET.Server
             if(!ranged||distance>e.AttackRange*e.AttackRange*.64f)
                 MoveEnemy(e,targetX,targetY,movementDelta,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));
             float radius=ServerConfig.Instance.ArcadeRule.PlayerRadius+ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
-            if(!ranged&&!decoy&&e.AttackCooldownSeconds<=0&&DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)<=radius*radius)
+            if(!ranged&&TryCompleteMeleeAttack(e,target.PlayerId,
+                DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)<=radius*radius,decoy,seconds))
             {
                 float aura=1;
                 foreach(var ally in b.Enemies.Values)if(ally.RuntimeId!=e.RuntimeId)
@@ -302,6 +304,7 @@ namespace ET.Server
                 var entry=b.RoundLayout.Entries[i%b.RoundLayout.Entries.Count];
                 var enemy=new OnlineArcadeEnemyRuntime{RuntimeId=id,EnemyConfigId=source.Id,PositionX=entry.X,PositionZ=entry.Y,
                     BlocksPurpleSkullDrop=source.BlocksPurpleSkullDrop,
+                    MeleeWindupSeconds=source.TelegraphSeconds,
                     MaxHealth=Math.Max(1,(int)Math.Round(source.MaxHP*group.HealthMultiplier)),Damage=Math.Max(1,(int)Math.Round(source.AttackDamage*group.DamageMultiplier)),
                     MoveSpeed=Math.Max(.1f,source.MoveSpeed*group.SpeedMultiplier),AttackKind=source.AttackKind,AttackRange=Math.Max(.7f,source.AttackRange),
                     AttackIntervalSeconds=Math.Max(.25f,source.AttackCooldownSeconds),ProjectileConfigId=source.ProjectileConfigId,WaveNumber=b.WaveIndex+1};

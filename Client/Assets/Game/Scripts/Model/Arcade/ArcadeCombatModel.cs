@@ -34,6 +34,10 @@ namespace Game
         public float AttackRange;
         public float AttackInterval;
         public float AttackCooldown;
+        /// <summary>普通近战的配置前摇及当前剩余秒数，仅进入攻击距离后推进。</summary>
+        public float MeleeWindupSeconds, MeleeWindupRemaining;
+        /// <summary>本次近战已经开始等待，离开范围、受控或回池立即取消。</summary>
+        public bool MeleeWindupActive;
         /// <summary>标记当前波次中的 Boss，只供常驻血条等表现读取，不参与伤害或行为判断。</summary>
         public bool IsBossPresentation;
         /// <summary>每次规则层接受攻击时递增；仅用于让表现层去重播放攻击动画。</summary>
@@ -76,6 +80,8 @@ namespace Game
             AttackRange = 0f;
             AttackInterval = 0f;
             AttackCooldown = 0f;
+            MeleeWindupSeconds = MeleeWindupRemaining = 0f;
+            MeleeWindupActive = false;
             IsBossPresentation = false;
             AttackSequence = 0;
             ContentSpecialKind = ContentBossKind = ContentMannequinHits = 0;

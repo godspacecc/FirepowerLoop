@@ -82,10 +82,10 @@ namespace Game
         private bool TickRoundEnemyContent(ArcadeCombatRuntime r,ArcadeEnemyRuntime e,Vector2 target,bool decoy,float dt)
         {
             if(RoundLayout(r)==null)return false;
-            if(e.ContentStunUntil>r.ContentClock.Elapsed)return true;
+            if(e.ContentStunUntil>r.ContentClock.Elapsed){CancelMeleeWindup(e);return true;}
             if(e.ContentBossKind==4)return false;
             if(e.ContentSpecialKind==0 && e.ContentBossKind==0 && e.ContentAllyBuff<=1)return false;
-            if(!RoundContentActive(r))return true;
+            if(!RoundContentActive(r)){CancelMeleeWindup(e);return true;}
             var p=ContentTuning(r);double now=r.ContentClock.Elapsed,age=now-e.ContentBornAt;
             var offset=target-e.Position;var direction=offset.sqrMagnitude>.001f ? offset.normalized : Vector2.up;
             if(now<e.ContentStunUntil)return true;
@@ -99,9 +99,11 @@ namespace Game
                 if(kind==16)AddContentArea(r,4,e.Position,e.Position+direction*p.EventRadius*p.SkillMagnitude,p.EventRadius*.12f,
                     Mathf.Max(0,p.SkillWarning-(float)(age%p.SkillPeriod)),0,0,true,false);
             }
-            if(kind==16 && phase==0)return true;
-            if(kind==3 && e.ContentMannequinHits>0 && now-e.ContentLastHitAt<p.SkillWarning)return true;
-            if(ArcadeRoundContentRules.IsUnderground(kind,age,p) || kind==13 && age<p.SkillWarning)return true;
+            if(kind==16 && phase==0){CancelMeleeWindup(e);return true;}
+            if(kind==3 && e.ContentMannequinHits>0 && now-e.ContentLastHitAt<p.SkillWarning)
+            {CancelMeleeWindup(e);return true;}
+            if(ArcadeRoundContentRules.IsUnderground(kind,age,p) || kind==13 && age<p.SkillWarning)
+            {CancelMeleeWindup(e);return true;}
             if(phase==1 && e.ContentSkillCycle!=cycle)
             {
                 e.ContentSkillCycle=cycle;
@@ -123,7 +125,8 @@ namespace Game
             { ContentShot(r,e,direction,0,0);e.AttackCooldown=e.AttackInterval; }
             if(!ranged || offset.magnitude>e.AttackRange*.8f)
                 MoveContentEnemy(r,e,target,direction,motion*e.ContentAllyBuff,dt,kind==2 || kind==6);
-            if(!ranged && !decoy && Vector2.Distance(e.Position,target)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius && e.AttackCooldown<=0)
+            if(!ranged && TryCompleteMeleeAttack(e, Vector2.Distance(e.Position,target)<=
+                catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius, decoy, dt))
             {
                 e.AttackSequence++;e.AttackCooldown=e.AttackInterval;
                 DamageContentPlayer(r,Mathf.Max(1,Mathf.RoundToInt(e.Damage*e.ContentAllyBuff)));
@@ -335,6 +338,7 @@ namespace Game
                 string id=source.Members[i%source.Members.Count].EnemyId;if(!provider.TryGetEnemy(id,out var d,out _))continue;
                 var e=runtimePool.RentEnemy();e.Id=r.NextEntityId++;e.ConfigId=d.Id;e.AttackKind=d.AttackKind;e.Position=ContentPosition(r,RandomBorderPosition());
                 e.BlocksPurpleSkullDrop=d.BlocksPurpleSkullDrop;
+                e.MeleeWindupSeconds=d.TelegraphSeconds;
                 e.MaxHealth=e.Health=Mathf.Max(1,Mathf.RoundToInt(d.MaxHP*source.HealthMultiplier));e.Damage=Mathf.Max(1,Mathf.RoundToInt(d.AttackDamage*source.DamageMultiplier));
                 e.Speed=Mathf.Max(.1f,d.MoveSpeed*source.SpeedMultiplier);e.AttackRange=Mathf.Max(.7f,d.AttackRange);e.AttackInterval=Mathf.Max(.25f,d.AttackCooldownSeconds);
                 AssignRoundEnemyContent(r,e);r.Enemies.Add(e.Id,e);

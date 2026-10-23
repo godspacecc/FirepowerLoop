@@ -272,6 +272,10 @@ namespace ET.Server
         public float AttackRange;
         public float AttackIntervalSeconds;
         public float AttackCooldownSeconds;
+        /// <summary>普通近战的配置前摇及现场倒计时，远处追击不推进。</summary>
+        public float MeleeWindupSeconds, MeleeWindupRemaining;
+        /// <summary>本次前摇锁定的玩家身份；换目标必须重新等待。</summary>
+        public long MeleeWindupTargetId;
         public string ProjectileConfigId;
         public long TargetPlayerId;
         public int WaveNumber;

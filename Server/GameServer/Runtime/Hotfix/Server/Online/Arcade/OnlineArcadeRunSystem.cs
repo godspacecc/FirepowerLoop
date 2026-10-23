@@ -1554,6 +1554,7 @@ namespace ET.Server
                 AttackRange = Math.Max(0.1f, enemyConfig.AttackRange),
                 AttackIntervalSeconds = Math.Max(0.1f, enemyConfig.AttackCooldownSeconds),
                 AttackCooldownSeconds = Math.Max(0.1f, enemyConfig.AttackCooldownSeconds),
+                MeleeWindupSeconds = enemyConfig.TelegraphSeconds,
                 ProjectileConfigId = enemyConfig.ProjectileConfigId ?? string.Empty,
                 TargetPlayerId = target?.PlayerId ?? 0,
                 WaveNumber = battle.WaveIndex + 1,
@@ -1693,11 +1694,13 @@ namespace ET.Server
                     .ThenBy(x => x.PlayerId).FirstOrDefault();
                 if (target == null)
                 {
+                    foreach (var waiting in battle.Enemies.Values) CancelMeleeWindup(waiting);
                     battle.AllPlayersDefeated = battle.Players.Values.All(p=>!p.Alive && p.RespawnSeconds<=0);
                     return changed || battle.AllPlayersDefeated;
                 }
 
-                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)continue;
+                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
+                {CancelMeleeWindup(enemy);continue;}
                 if(TickSlayerGuardian(self,battle,enemy,target,deltaSeconds)){changed=true;continue;}
                 enemy.TargetPlayerId = target.PlayerId;
                 enemy.AttackCooldownSeconds = Math.Max(0f, enemy.AttackCooldownSeconds - deltaSeconds);
@@ -1727,7 +1730,7 @@ namespace ET.Server
                 bool seaApproaching = arena.EnemySeaApproachDistance > 0 && seaRegion != null &&
                     !seaRegion.ContainsCircle(enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius);
                 if (self.TickContentBoss(battle,enemy,target,deltaSeconds)) { changed=true;continue; }
-                if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
+                if(self.TickSpecialEnemy(battle,enemy,target,targetX,targetZ,targetsDecoy,movementDelta,deltaSeconds)){changed=true;if(battle.AllPlayersDefeated)return true;continue;}
 
                 if (self.TickBoss(battle, enemy, target, directionX, directionZ, deltaSeconds, movementDelta,
                         rule, EffectiveObstacles(battle)))
@@ -1751,7 +1754,10 @@ namespace ET.Server
                 else
                 {
                     MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance,battle);
-                    if (distance <= rule.PlayerRadius + rule.EnemyContactRadius && enemy.AttackCooldownSeconds <= 0f)
+                    float contactRadius = rule.PlayerRadius + rule.EnemyContactRadius;
+                    if (TryCompleteMeleeAttack(enemy, target.PlayerId,
+                        DistanceSquared(enemy.PositionX, enemy.PositionZ, targetX, targetZ) <= contactRadius * contactRadius,
+                        targetsDecoy, deltaSeconds))
                     {
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
                         enemy.AttackCooldownSeconds = enemy.AttackIntervalSeconds;
@@ -1763,6 +1769,29 @@ namespace ET.Server
             ResolveEnemyCrowding(battle, rule, EffectiveObstacles(battle));
             return changed;
         }
+
+        /// <summary>服务器锁定当前近战目标，只有持续处于攻击距离才推进前摇；换人不能转移已等待时间。</summary>
+        private static bool TryCompleteMeleeAttack(OnlineArcadeEnemyRuntime enemy, long targetId,
+            bool inRange, bool decoy, float seconds)
+        {
+            if (!inRange || decoy || enemy.AttackCooldownSeconds > 0)
+            { CancelMeleeWindup(enemy); return false; }
+            if (!string.IsNullOrEmpty(enemy.BossId) || enemy.MeleeWindupSeconds <= 0) return true;
+            if (enemy.MeleeWindupTargetId != targetId)
+            {
+                enemy.MeleeWindupTargetId = targetId;
+                enemy.MeleeWindupRemaining = enemy.MeleeWindupSeconds;
+                return false;
+            }
+            enemy.MeleeWindupRemaining = Math.Max(0, enemy.MeleeWindupRemaining - Math.Max(0, seconds));
+            if (enemy.MeleeWindupRemaining > .00001f) return false;
+            CancelMeleeWindup(enemy);
+            return true;
+        }
+
+        /// <summary>放弃未命中的近战前摇，保留已有攻击冷却。</summary>
+        private static void CancelMeleeWindup(OnlineArcadeEnemyRuntime enemy)
+        { enemy.MeleeWindupTargetId = 0; enemy.MeleeWindupRemaining = 0; }
 
         /// <summary>服务器权威推进 Boss 蓄力与冲锋；每次冲锋对每名玩家最多命中一次。</summary>
         private static bool TickBoss(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,

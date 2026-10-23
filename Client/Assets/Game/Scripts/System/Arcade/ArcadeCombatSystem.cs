@@ -797,6 +797,7 @@ namespace Game
             enemy.Speed = Mathf.Max(0.1f, definition.MoveSpeed * group.SpeedMultiplier * speedGrowth);
             enemy.AttackRange = Mathf.Max(0.7f, definition.AttackRange);
             enemy.AttackInterval = Mathf.Max(0.25f, definition.AttackCooldownSeconds);
+            enemy.MeleeWindupSeconds = definition.TelegraphSeconds;
             enemy.AttackCooldown = UnityRandom(0f, Mathf.Max(0.1f, definition.AttackCooldownSeconds));
             enemy.Health = enemy.MaxHealth;
             AssignArmor(runtime, enemy);
@@ -832,7 +833,8 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
-                if(SlayerMartStormSpeed(runtime,enemy)==0)continue;
+                if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy);continue;}
+                if(enemy.ContentStunUntil>runtime.ContentClock.Elapsed)CancelMeleeWindup(enemy);
                 enemy.AttackCooldown = Mathf.Max(0f, enemy.AttackCooldown - deltaTime);
                 var targetPosition = runtime.PlayerPosition;
                 var targetIsDecoy = false;
@@ -873,7 +875,8 @@ namespace Game
                 else
                 {
                     MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
-                    if (distance <= catalog.Rule.PlayerRadius + catalog.Rule.EnemyContactRadius && enemy.AttackCooldown <= 0f)
+                    if (TryCompleteMeleeAttack(enemy, Vector2.Distance(enemy.Position, targetPosition) <=
+                        catalog.Rule.PlayerRadius + catalog.Rule.EnemyContactRadius, targetIsDecoy, deltaTime))
                     {
                         enemy.AttackSequence++;
                         if (!targetIsDecoy) DamagePlayer(runtime, enemy.Damage);
@@ -897,6 +900,29 @@ namespace Game
             enemy.Position = ResolveEnemyPosition(enemy.Position, enemy.Position + direction * enemy.Speed * deltaTime, catalog.Rule.EnemyContactRadius,
                 ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
         }
+
+        /// <summary>普通近战只有进入范围才开始前摇；距离或目标失效取消，不能在追击期间预付等待。</summary>
+        private static bool TryCompleteMeleeAttack(ArcadeEnemyRuntime enemy, bool inRange, bool decoy, float seconds)
+        {
+            if (!inRange || decoy || enemy.AttackCooldown > 0)
+            { CancelMeleeWindup(enemy); return false; }
+            // 独立Boss继续使用自己的蓄力与接触规则；旧非街机配置的零前摇保持兼容。
+            if (!string.IsNullOrEmpty(enemy.BossId) || enemy.MeleeWindupSeconds <= 0) return true;
+            if (!enemy.MeleeWindupActive)
+            {
+                enemy.MeleeWindupActive = true;
+                enemy.MeleeWindupRemaining = enemy.MeleeWindupSeconds;
+                return false;
+            }
+            enemy.MeleeWindupRemaining = Mathf.Max(0, enemy.MeleeWindupRemaining - Mathf.Max(0, seconds));
+            if (enemy.MeleeWindupRemaining > .00001f) return false;
+            CancelMeleeWindup(enemy);
+            return true;
+        }
+
+        /// <summary>取消未完成的近战等待，重新靠近时从完整配置时长开始。</summary>
+        private static void CancelMeleeWindup(ArcadeEnemyRuntime enemy)
+        { enemy.MeleeWindupActive = false; enemy.MeleeWindupRemaining = 0; }
 
         /// <summary>推进蓄力冲锋；蓄力期间锁定方向，冲锋命中同一玩家最多结算一次。</summary>
         private bool TickBoss(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, Vector2 targetDirection,

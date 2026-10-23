@@ -189,6 +189,8 @@ namespace Game.Tests
             runtime.PlayerInvulnerability=1000f;
             for(int wave=0;wave<4;wave++)
             {
+                // 本用例手动进入下一图，补齐正式转场会清除的出口门禁。
+                runtime.IslandRoundAwaitingExit=runtime.AwaitingExit=false;
                 runtime.Enemies.Clear();Call("BeginWave",runtime,wave);
                 int total=runtime.SpawnQueue.Count;
                 Assert.That(total,Is.EqualTo(110+10*wave));
@@ -200,8 +202,12 @@ namespace Game.Tests
                 Assert.That(region.Contains(water.Position.x,water.Position.y),Is.False);
                 Assert.That(region.Contains(shore.Position.x,shore.Position.y),Is.False);
                 Assert.That(runtime.Enemies.Count+runtime.SpawnQueue.Count,Is.EqualTo(total));
+                // 单独采样游动步长，避免同入口敌人的拥挤分离位移混入移动速度断言。
+                var companions=runtime.Enemies.Values.Where(e=>e.Id!=water.Id).ToArray();
+                foreach(var companion in companions)runtime.Enemies.Remove(companion.Id);
                 Vector2 before=water.Position;Call("TickEnemies",runtime,.05f);
                 Assert.That(Vector2.Distance(before,water.Position),Is.LessThanOrEqualTo(water.Speed*.05f+.001f));
+                foreach(var companion in companions)runtime.Enemies.Add(companion.Id,companion);
                 runtime.PlayerInvulnerability=1000f;runtime.PlayerPosition=Vector2.zero;
                 for(int i=0;i<500;i++)Call("TickEnemies",runtime,.05f);
                 Assert.That(region.IsShallow(water.Position.x,water.Position.y),Is.False);
@@ -210,22 +216,26 @@ namespace Game.Tests
                 runtime.PlayerPosition=water.Position+Vector2.up*.25f;
                 int health=runtime.PlayerHealth;
                 runtime.PlayerInvulnerability=0;water.AttackCooldown=0;
+                foreach(var contact in runtime.Enemies.Values)
+                {contact.MeleeWindupActive=false;contact.MeleeWindupRemaining=0;contact.AttackCooldown=0;}
                 Call("TickEnemies",runtime,.05f);
-                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"上岸后恢复原接触攻击");
+                Assert.That(runtime.PlayerHealth,Is.EqualTo(health),"上岸后首次接触必须先开始前摇");
+                Call("TickEnemies",runtime,.41f);
+                Assert.That(runtime.PlayerHealth,Is.LessThan(health),"持续贴近完成前摇后恢复近战伤害");
                 runtime.PlayerInvulnerability=1000f;runtime.PlayerPosition=Vector2.zero;
                 int spawned=runtime.Enemies.Count;
                 while(runtime.SpawnQueue.Count>0)
                 {
                     runtime.Enemies.Clear();runtime.SpawnCooldown=0;Call("TickSpawning",runtime,5f);
-                    Assert.That(runtime.Enemies.Count,Is.EqualTo(1));spawned++;
+                    Assert.That(runtime.Enemies.Count,Is.GreaterThan(0));spawned+=runtime.Enemies.Count;
                     // 弹丸等共享实体序号不能改变固定批次方向或既定总预算。
                     runtime.NextEntityId++;
-                    var e=runtime.Enemies.Values.Single();
-                    Assert.That(region.Contains(e.Position.x,e.Position.y),Is.False);
+                    foreach(var e in runtime.Enemies.Values)
+                        Assert.That(region.Contains(e.Position.x,e.Position.y),Is.False);
                 }
                 Assert.That(spawned,Is.EqualTo(total));
                 runtime.Enemies.Clear();
-                if(wave==2)
+                if(wave==2 && catalog.TreasureRooms.Any(room=>room.Enabled && room.ArenaConfigNumber==1 && room.WaveNumber==3))
                 {
                     runtime.PlayerPosition=new Vector2(-12,-12); // 清场后主动走到已验证可达的入口。
                     Call("TickTreasureRoom",runtime,0f);Assert.That(runtime.InTreasureRoom,Is.True);

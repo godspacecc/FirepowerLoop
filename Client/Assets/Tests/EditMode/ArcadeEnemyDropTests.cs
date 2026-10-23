@@ -121,6 +121,93 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>追赶时间不能预付近战前摇，第一次靠近仍需完整0.4秒。</summary>
+        [Test]
+        public void MeleeStartsWindupOnlyAfterEnteringRange()
+        {
+            var enemy = PrepareMelee(); enemy.Position = new Vector2(10, 0);
+            Call("TickEnemies", runtime, 5f);
+            enemy.Position = Vector2.right; Call("TickEnemies", runtime, 0f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100), "接触首帧不能直接扣血");
+            Call("TickEnemies", runtime, .39f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .02f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(90));
+        }
+
+        /// <summary>离开攻击距离取消前摇，重入不能继承已经等待的时间。</summary>
+        [Test]
+        public void MeleeLeavingRangeRestartsWindup()
+        {
+            var enemy = PrepareMelee(); Call("TickEnemies", runtime, 0f);
+            Call("TickEnemies", runtime, .2f);
+            enemy.Position = new Vector2(10, 0); Call("TickEnemies", runtime, .5f);
+            enemy.Position = Vector2.right; Call("TickEnemies", runtime, 0f);
+            Call("TickEnemies", runtime, .25f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .16f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(90));
+        }
+
+        /// <summary>每次有效挥击后保留原冷却，冷却结束也必须重新开始前摇。</summary>
+        [Test]
+        public void MeleeCooldownIsFollowedByFreshWindup()
+        {
+            PrepareMelee(); Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .41f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(90)); runtime.PlayerInvulnerability = 0;
+            Call("TickEnemies", runtime, .5f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(90));
+            Call("TickEnemies", runtime, .51f); Call("TickEnemies", runtime, .39f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(90));
+            Call("TickEnemies", runtime, .02f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(80));
+        }
+
+        /// <summary>盟友强化后的普通接触攻击也不能绕过靠近后的前摇。</summary>
+        [Test]
+        public void BuffedMeleeStillWaitsBeforeDamage()
+        {
+            var enemy = PrepareMelee(); enemy.ContentAllyBuff = 1.1f;
+            Call("TickEnemies", runtime, 0f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .41f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(89));
+        }
+
+        /// <summary>人偶受击停步会取消未完成挥击，恢复后需要重新靠近等待。</summary>
+        [Test]
+        public void InterruptedMeleeRestartsFullWindup()
+        {
+            var enemy = PrepareMelee(); enemy.ContentSpecialKind = 3;
+            Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .3f);
+            enemy.ContentMannequinHits = 1; enemy.ContentLastHitAt = 0;
+            Call("TickEnemies", runtime, .1f); enemy.ContentLastHitAt = -100;
+            Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .2f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .21f); Assert.That(runtime.PlayerHealth, Is.EqualTo(90));
+        }
+
+        /// <summary>对象池归还不能把前一只怪接近完成的攻击交给下一只怪。</summary>
+        [Test]
+        public void EnemyPoolClearsPendingMelee()
+        {
+            var enemy = PrepareMelee(); Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .3f);
+            Assert.That(enemy.MeleeWindupActive, Is.True);
+            enemy.Reset();
+            Assert.That(enemy.MeleeWindupActive, Is.False);
+            Assert.That(enemy.MeleeWindupRemaining, Is.Zero);
+            Assert.That(enemy.MeleeWindupSeconds, Is.Zero);
+        }
+
+        /// <summary>使用正式出生配置，固定位置与速度只隔离近战计时和距离判定。</summary>
+        private ArcadeEnemyRuntime PrepareMelee()
+        {
+            var enemy = SpawnLowTierEnemy("enemy.arcade.basic");
+            runtime.PlayerPosition = Vector2.zero; enemy.Position = Vector2.right;
+            enemy.Speed = 0; enemy.Damage = 10; enemy.AttackCooldown = 0;
+            return enemy;
+        }
+
         /// <summary>损坏的强度掉率表必须由客户端加载入口明确拒绝，避免战斗中才抛错。</summary>
         [TestCase("EnemyDropHealthUnit", 0f)]
         [TestCase("EnemyDropDamageUnit", float.NaN)]

@@ -901,7 +901,10 @@ namespace Game
             {
                 case global::EnemyAttackKind.Melee:
                     if (row.RetreatDistance != 0f) return $"TbEnemy[{row.Id}].RetreatDistance must be 0";
-                    if (row.TelegraphSeconds != 0f) return $"TbEnemy[{row.Id}].TelegraphSeconds must be 0";
+                    // 街机普通近战复用既有前摇字段；历史近战仍保留零前摇合同。
+                    if (row.Id.StartsWith("enemy.arcade.", StringComparison.Ordinal)
+                        ? !IsPositiveFinite(row.TelegraphSeconds) : row.TelegraphSeconds != 0f)
+                        return $"TbEnemy[{row.Id}].TelegraphSeconds is invalid";
                     if (!string.IsNullOrWhiteSpace(row.ProjectileConfigId)) return $"TbEnemy[{row.Id}].ProjectileConfigId must be empty";
                     if (!string.IsNullOrWhiteSpace(row.GuaranteedAmmoLootConfigId)) return $"TbEnemy[{row.Id}].GuaranteedAmmoLootConfigId must be empty";
                     if (row.AmmoCapacity != 0) return $"TbEnemy[{row.Id}].AmmoCapacity must be 0";
