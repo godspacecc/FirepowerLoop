@@ -13,6 +13,7 @@ namespace ET.Server
             long id=battle.NextEnemyRuntimeId++;int health=checked(c.BossHealthPerPlayer*battle.SlayerChallenge.Members.Count);
             battle.SlayerGuardian=new ArcadeSlayerGuardianState();battle.SlayerGuardianEnemyId=id;
             battle.Enemies.Add(id,new OnlineArcadeEnemyRuntime{RuntimeId=id,EnemyConfigId=c.BossEnemyId,ContentBossKind=1,
+                BlocksPurpleSkullDrop=definition.BlocksPurpleSkullDrop,
                 CurrentHealth=health,MaxHealth=health,Damage=c.BossContactDamage,MoveSpeed=c.BossMoveSpeed,
                 PositionX=0,PositionZ=0,AttackKind=definition.AttackKind,AttackRange=definition.AttackRange,
                 AttackIntervalSeconds=definition.AttackCooldownSeconds});

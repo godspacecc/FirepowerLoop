@@ -301,6 +301,7 @@ namespace ET.Server
                 var source=ServerConfig.Instance.GetEnemy(group.Members[i%group.Members.Length].EnemyId);long id=b.NextEnemyRuntimeId++;
                 var entry=b.RoundLayout.Entries[i%b.RoundLayout.Entries.Count];
                 var enemy=new OnlineArcadeEnemyRuntime{RuntimeId=id,EnemyConfigId=source.Id,PositionX=entry.X,PositionZ=entry.Y,
+                    BlocksPurpleSkullDrop=source.BlocksPurpleSkullDrop,
                     MaxHealth=Math.Max(1,(int)Math.Round(source.MaxHP*group.HealthMultiplier)),Damage=Math.Max(1,(int)Math.Round(source.AttackDamage*group.DamageMultiplier)),
                     MoveSpeed=Math.Max(.1f,source.MoveSpeed*group.SpeedMultiplier),AttackKind=source.AttackKind,AttackRange=Math.Max(.7f,source.AttackRange),
                     AttackIntervalSeconds=Math.Max(.25f,source.AttackCooldownSeconds),ProjectileConfigId=source.ProjectileConfigId,WaveNumber=b.WaveIndex+1};

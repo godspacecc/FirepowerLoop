@@ -1521,6 +1521,7 @@ namespace ET.Server
             {
                 RuntimeId = runtimeId,
                 EnemyConfigId = enemyConfigId,
+                BlocksPurpleSkullDrop = enemyConfig.BlocksPurpleSkullDrop,
                 PositionX = x,
                 PositionZ = z,
                 // 新生成目标本帧没有旧位置，避免从原点虚构一条机关扫掠路径。
@@ -2367,6 +2368,7 @@ namespace ET.Server
                 dropRule.EnemyDropHealthUnit, dropRule.EnemyDropDamageUnit, dropRule.EnemyDropMaxChance)) return;
             List<ArcadeDropConfig> candidates = ServerConfig.Instance.Tables.TbArcadeDrop.DataList
                 .Where(x => x.Weight > 0 && x.MinArena <= battle.ArenaNumber && x.EnemyMinArena > 0 && x.EnemyMinArena <= battle.ArenaNumber &&
+                            !(enemy.BlocksPurpleSkullDrop && x.ProductId == ServerConfig.Instance.WeaponUpgrade.PurplePowerupId) &&
                             (x.MaxArena <= 0 || x.MaxArena >= battle.ArenaNumber))
                 .OrderBy(x => x.Id, StringComparer.Ordinal).ToList();
             int totalWeight = candidates.Sum(x => x.Weight);

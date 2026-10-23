@@ -267,7 +267,8 @@ namespace Game
                 row.FallbackMeleeAttackRange,
                 row.MagazineCapacity,
                 row.ReloadSeconds,
-                row.WeaponId);
+                row.WeaponId,
+                row.BlocksPurpleSkullDrop);
             return true;
         }
 

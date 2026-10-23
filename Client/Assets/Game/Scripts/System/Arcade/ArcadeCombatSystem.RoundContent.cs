@@ -334,6 +334,7 @@ namespace Game
             {
                 string id=source.Members[i%source.Members.Count].EnemyId;if(!provider.TryGetEnemy(id,out var d,out _))continue;
                 var e=runtimePool.RentEnemy();e.Id=r.NextEntityId++;e.ConfigId=d.Id;e.AttackKind=d.AttackKind;e.Position=ContentPosition(r,RandomBorderPosition());
+                e.BlocksPurpleSkullDrop=d.BlocksPurpleSkullDrop;
                 e.MaxHealth=e.Health=Mathf.Max(1,Mathf.RoundToInt(d.MaxHP*source.HealthMultiplier));e.Damage=Mathf.Max(1,Mathf.RoundToInt(d.AttackDamage*source.DamageMultiplier));
                 e.Speed=Mathf.Max(.1f,d.MoveSpeed*source.SpeedMultiplier);e.AttackRange=Mathf.Max(.7f,d.AttackRange);e.AttackInterval=Mathf.Max(.25f,d.AttackCooldownSeconds);
                 AssignRoundEnemyContent(r,e);r.Enemies.Add(e.Id,e);

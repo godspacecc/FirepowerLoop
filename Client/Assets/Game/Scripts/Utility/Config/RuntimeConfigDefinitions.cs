@@ -390,7 +390,8 @@ namespace Game
             float fallbackMeleeAttackRange,
             int magazineCapacity = 0,
             float reloadSeconds = 0f,
-            string weaponId = null)
+            string weaponId = null,
+            bool blocksPurpleSkullDrop = false)
         {
             Id = id;
             PrefabAddress = prefabAddress;
@@ -412,6 +413,7 @@ namespace Game
             MagazineCapacity = magazineCapacity;
             ReloadSeconds = reloadSeconds;
             WeaponId = weaponId ?? string.Empty;
+            BlocksPurpleSkullDrop = blocksPurpleSkullDrop;
         }
 
         public string Id { get; }
@@ -435,6 +437,8 @@ namespace Game
         public float ReloadSeconds { get; }
         /// <summary>五角色共享武器目录的稳定身份；战斗数值仍由本敌人配置决定。</summary>
         public string WeaponId { get; }
+        /// <summary>普通小怪的禁紫掉落资格，独立于生命和攻击的数值成长。</summary>
+        public bool BlocksPurpleSkullDrop { get; }
     }
 
     public readonly struct LootConfigDefinition

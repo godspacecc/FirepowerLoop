@@ -260,6 +260,8 @@ namespace ET.Server
         public float HazardPreviousZ;
         public long RuntimeId;
         public string EnemyConfigId;
+        /// <summary>出生时由敌人配置固定的禁紫资格，不随关卡和生命成长解除。</summary>
+        public bool BlocksPurpleSkullDrop;
         public float PositionX;
         public float PositionZ;
         public int CurrentHealth;

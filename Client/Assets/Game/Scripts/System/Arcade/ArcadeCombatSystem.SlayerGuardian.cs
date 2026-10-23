@@ -14,6 +14,7 @@ namespace Game
             var c=slayerChallengeConfig;
             if(!this.GetUtility<IRuntimeConfigProvider>().TryGetEnemy(c.BossEnemyId,out var definition,out var error))throw new InvalidOperationException(error);
             var enemy=runtimePool.RentEnemy();enemy.Id=runtime.NextEntityId++;enemy.ConfigId=c.BossEnemyId;
+            enemy.BlocksPurpleSkullDrop=definition.BlocksPurpleSkullDrop;
             enemy.MaxHealth=enemy.Health=checked(c.BossHealthPerPlayer*runtime.SlayerChallenge.Members.Count);
             enemy.Damage=c.BossContactDamage;enemy.Speed=c.BossMoveSpeed;enemy.Position=Vector2.zero;
             enemy.AttackKind=definition.AttackKind;enemy.AttackInterval=definition.AttackCooldownSeconds;enemy.ContentBossKind=1;enemy.IsBossPresentation=true;

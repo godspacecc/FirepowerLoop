@@ -15,6 +15,9 @@ internal static class EnemyStrengthDropOnlineChecks
             ("ZeroChanceDisablesActualDeathDrops", ZeroChanceDisablesActualDeathDrops),
             ("InvalidStrengthConfigurationIsRejected", InvalidStrengthConfigurationIsRejected),
             ("HazardAndCapacityGuardsRemainEffective", HazardAndCapacityGuardsRemainEffective),
+            ("LowTierSpawnsHave100Health", LowTierSpawnsHave100Health),
+            ("LowTierNeverDropsPurpleAtAnyStrength", LowTierNeverDropsPurpleAtAnyStrength),
+            ("BossReinforcementsNeverDropPurple", BossReinforcementsNeverDropPurple),
         };
         if (maximum < checks.Length) throw new ArgumentException("Declared maximum smaller than EnemyStrengthDropOnline scope");
         int failed = 0;
@@ -45,7 +48,8 @@ internal static class EnemyStrengthDropOnlineChecks
         for (int id = 1; id <= count; id++)
         {
             actor.Battle.Drops.Clear();
-            var enemy = new OnlineArcadeEnemyRuntime { RuntimeId = id, EnemyConfigId = "enemy.arcade.basic", MaxHealth = health, Damage = damage };
+            var enemy = new OnlineArcadeEnemyRuntime { RuntimeId = id, EnemyConfigId = "enemy.arcade.brute", MaxHealth = health, Damage = damage,
+                BlocksPurpleSkullDrop = ServerConfig.Instance.GetEnemy("enemy.arcade.brute").BlocksPurpleSkullDrop };
             actor.Battle.Enemies.Add(id, enemy); Call("KillEnemy", actor, actor.Battle, enemy, false);
             if (actor.Battle.Drops.Count > 0) result.Add(id, actor.Battle.Drops.Values.Single().DropConfigId);
             Call("KillEnemy", actor, actor.Battle, enemy, false);
@@ -66,6 +70,74 @@ internal static class EnemyStrengthDropOnlineChecks
                 purple = sample.Values.Count(x => x == "arcade.drop.skull.large");
             Require(gold > red && red > purple && purple > 0 && gold + red + purple == sample.Count, "Loot rarity or source pool changed");
         }
+    }
+
+    /// <summary>从正式权威出生入口读取各普通小怪的生命，避免只校验CSV文字。</summary>
+    private static void LowTierSpawnsHave100Health()
+    {
+        foreach (string enemyId in LowTierIds)
+        {
+            var actor = Create();
+            var enemy = SpawnLowTier(actor, enemyId);
+            Require(enemy.MaxHealth == 100 && enemy.CurrentHealth == 100,
+                $"{enemyId} spawned with {enemy.CurrentHealth}/{enemy.MaxHealth} instead of 100/100");
+        }
+    }
+
+    /// <summary>出生取得禁紫资格后施加极端成长，真实死亡仍只产生金币和红骷髅。</summary>
+    private static void LowTierNeverDropsPurpleAtAnyStrength()
+    {
+        foreach (string enemyId in LowTierIds)
+        {
+            var actor = Create();
+            var enemy = SpawnLowTier(actor, enemyId);
+            actor.Battle.Enemies.Clear();
+            enemy.MaxHealth = int.MaxValue; enemy.Damage = int.MaxValue;
+            var kinds = new HashSet<string>();
+            for (int id = 1; id <= 4096; id++)
+            {
+                actor.Battle.Drops.Clear(); enemy.RuntimeId = id;
+                actor.Battle.Enemies.Add(id, enemy);
+                Call("KillEnemy", actor, actor.Battle, enemy, false);
+                foreach (var drop in actor.Battle.Drops.Values) kinds.Add(drop.DropConfigId);
+                Call("KillEnemy", actor, actor.Battle, enemy, false);
+                Require(actor.Battle.Drops.Count <= 1, "Repeated low-tier death awarded twice");
+            }
+            Require(kinds.SetEquals(new[] { "arcade.drop.gold.small", "arcade.drop.skull.small" }),
+                enemyId + " dropped forbidden loot or lost gold/red: " + string.Join(",", kinds));
+        }
+    }
+
+    private static readonly string[] LowTierIds = { "enemy.arcade.basic", "enemy.arcade.archer",
+        "enemy.arcade.zombie.shambler", "enemy.arcade.zombie.gaunt" };
+
+    /// <summary>独立Boss的普通增援不能绕过禁紫资格，验证实际增援与死亡入口。</summary>
+    private static void BossReinforcementsNeverDropPurple()
+    {
+        var actor = Create();
+        Call("SpawnContentReinforcements", actor.Battle, 1);
+        var enemy = actor.Battle.Enemies.Values.Single();
+        actor.Battle.Enemies.Clear();
+        var kinds = new HashSet<string>();
+        for (int id = 1; id <= 4096; id++)
+        {
+            actor.Battle.Drops.Clear(); enemy.RuntimeId = id;
+            actor.Battle.Enemies.Add(id, enemy);
+            Call("KillEnemy", actor, actor.Battle, enemy, false);
+            foreach (var drop in actor.Battle.Drops.Values) kinds.Add(drop.DropConfigId);
+        }
+        Require(kinds.SetEquals(new[] { "arcade.drop.gold.small", "arcade.drop.skull.small" }),
+            "Boss low-tier reinforcements dropped forbidden loot: " + string.Join(",", kinds));
+    }
+
+    /// <summary>保留正式关卡、玩家与波次，只指定本次要验证的普通怪身份。</summary>
+    private static OnlineArcadeEnemyRuntime SpawnLowTier(OnlineArcadeRunActor actor, string enemyId)
+    {
+        var battle = actor.Battle;
+        battle.SpawnQueue.Clear(); battle.SpawnQueue.Add(enemyId);
+        battle.SpawnQueueIndex = 0; battle.NextSpawnAt = 0;
+        Require((bool)Call("TrySpawnEnemy", battle, 10000L), "Low-tier enemy did not spawn");
+        return battle.Enemies.Values.Single();
     }
 
     private static void EqualStatsKeepSameDistributionAcrossArenas()

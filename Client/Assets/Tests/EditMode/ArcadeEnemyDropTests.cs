@@ -28,6 +28,7 @@ namespace Game.Tests
             var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
                 new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out catalog, out var error), Is.True, error);
+            architecture.RegisterUtility<IRuntimeConfigProvider>(provider);
             run.CommitSafeNode(new ArcadeRunSaveData { RunId = "enemy-drop-test", IsCasualRoute = true,
                 RemainingLives = 3 });
             run.EnterArena();
@@ -47,6 +48,78 @@ namespace Game.Tests
             Id = 900, Position = Vector2.one, Health = 0, MaxHealth = 100,
             IsBossPresentation = boss, BossId = boss ? "drop-test-boss" : null
         };
+
+        /// <summary>正式出生读取配置和适配器；先消耗99点伤害仍存活，第100点才清空生命。</summary>
+        [TestCase("enemy.arcade.basic")]
+        [TestCase("enemy.arcade.archer")]
+        [TestCase("enemy.arcade.zombie.shambler")]
+        [TestCase("enemy.arcade.zombie.gaunt")]
+        public void LowTierEnemySpawnsWith100Health(string enemyId)
+        {
+            var enemy = SpawnLowTierEnemy(enemyId);
+            Assert.That(enemy.MaxHealth, Is.EqualTo(100));
+            Call("DamageEnemy", enemy, 99);
+            Assert.That(enemy.Health, Is.EqualTo(1));
+            Call("DamageEnemy", enemy, 1);
+            Assert.That(enemy.Health, Is.Zero);
+        }
+
+        /// <summary>穷举真实死亡的全部43个权重，生命及伤害成长也不能让普通小怪掉紫骷髅。</summary>
+        [TestCase("enemy.arcade.basic")]
+        [TestCase("enemy.arcade.archer")]
+        [TestCase("enemy.arcade.zombie.shambler")]
+        [TestCase("enemy.arcade.zombie.gaunt")]
+        public void LowTierEnemyNeverDropsPurpleAfterStrengthGrowth(string enemyId)
+        {
+            int gold = 0, red = 0;
+            for (int roll = 0; roll < 43; roll++)
+            {
+                runtime.Drops.Clear();
+                var enemy = SpawnLowTierEnemy(enemyId);
+                enemy.MaxHealth = 10000; enemy.Damage = 1000;
+                Set("random", new ControlledRandom(43, roll));
+                Call("KillEnemy", runtime, enemy, false);
+                string dropId = runtime.Drops.Values.Single().Definition.Id;
+                if (dropId == "arcade.drop.gold.small") gold++;
+                else if (dropId == "arcade.drop.skull.small") red++;
+                else Assert.Fail("低级怪掉落了不允许的物品：" + dropId);
+            }
+            Assert.That(gold, Is.EqualTo(38));
+            Assert.That(red, Is.EqualTo(5));
+        }
+
+        /// <summary>使用无主题特例的正式首轮组，隔离出生资格与关卡强度，不替换生产配置。</summary>
+        private ArcadeEnemyRuntime SpawnLowTierEnemy(string enemyId)
+        {
+            runtime.ArenaNumber = 1;
+            Set("arena", catalog.Arenas.Single(a => a.ArenaNumber == 3));
+            Set("group", catalog.EnemyGroups.Single(g => g.Id == "arcade.group.rush.1"));
+            Set("random", new System.Random(7));
+            runtime.SpawnQueue.Clear(); runtime.SpawnQueue.Enqueue(enemyId);
+            // 每次代表独立的一只怪出生检查，不能沿用上次已经耗尽的通道预算。
+            runtime.IslandPassages = null;
+            runtime.SpawnCooldown = 0;
+            Call("TickSpawning", runtime, 0f);
+            return runtime.Enemies.Values.Single();
+        }
+
+        /// <summary>独立Boss的普通增援也走禁紫规则，不能因绕过波次队列恢复紫色掉落。</summary>
+        [Test]
+        public void BossReinforcementsNeverDropPurple()
+        {
+            runtime.ArenaNumber = 2;
+            for (int roll = 0; roll < 43; roll++)
+            {
+                runtime.Drops.Clear();
+                Set("random", new System.Random(7));
+                Call("SpawnThemeReinforcements", runtime, 1);
+                var enemy = runtime.Enemies.Values.Single();
+                Set("random", new ControlledRandom(43, roll));
+                Call("KillEnemy", runtime, enemy, false);
+                Assert.That(runtime.Drops.Values.Single().Definition.Id,
+                    Is.EqualTo("arcade.drop.gold.small").Or.EqualTo("arcade.drop.skull.small"));
+            }
+        }
 
         /// <summary>损坏的强度掉率表必须由客户端加载入口明确拒绝，避免战斗中才抛错。</summary>
         [TestCase("EnemyDropHealthUnit", 0f)]

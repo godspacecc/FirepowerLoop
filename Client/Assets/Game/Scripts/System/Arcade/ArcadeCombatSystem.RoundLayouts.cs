@@ -226,6 +226,7 @@ namespace Game
             var boss = runtimePool.RentEnemy(); boss.Id = runtime.NextEntityId++;
             runtime.ContentBossEnemyId = boss.Id;
             boss.ConfigId = source.Id; boss.Position = ContentExitPosition(runtime, 0, 1);
+            boss.BlocksPurpleSkullDrop = source.BlocksPurpleSkullDrop;
             boss.MaxHealth = Mathf.Max(1, Mathf.RoundToInt(source.MaxHP * layout.EnemyHealthScale * layout.SkillMagnitude * runtime.ArenaNumber));
             boss.Health = boss.MaxHealth; boss.Damage = source.AttackDamage;
             boss.Speed = source.MoveSpeed * layout.EnemySpeedScale;

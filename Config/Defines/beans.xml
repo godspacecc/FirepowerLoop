@@ -121,6 +121,8 @@
         <var name="FallbackMeleeAttackRange" type="float"/>
         <var name="MagazineCapacity" type="int"/>
         <var name="ReloadSeconds" type="float"/>
+        <!-- 普通小怪禁用紫骷髅击杀掉落，生命成长不能解除此资格限制。 -->
+        <var name="BlocksPurpleSkullDrop" type="bool"/>
     </bean>
     <bean name="LootConfig" group="c">
         <var name="Id" type="string"/>

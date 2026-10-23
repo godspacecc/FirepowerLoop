@@ -21,6 +21,8 @@ namespace Game
         public bool LastDamageWasFlame;
         public int Id;
         public string ConfigId;
+        /// <summary>出生时从权威配置固定的禁紫资格，强化生命不会变为高级掉落。</summary>
+        public bool BlocksPurpleSkullDrop;
         public global::EnemyAttackKind AttackKind;
         public Vector2 Position;
         public int Health;
@@ -63,6 +65,7 @@ namespace Game
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;
             Id = 0;
             ConfigId = null;
+            BlocksPurpleSkullDrop = false;
             AttackKind = default;
             Position = default;
             Health = 0;

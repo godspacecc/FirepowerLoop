@@ -35,6 +35,7 @@ public sealed partial class EnemyConfig : Luban.BeanBase
         FallbackMeleeAttackRange = _buf.ReadFloat();
         MagazineCapacity = _buf.ReadInt();
         ReloadSeconds = _buf.ReadFloat();
+        BlocksPurpleSkullDrop = _buf.ReadBool();
     }
 
     public static EnemyConfig DeserializeEnemyConfig(ByteBuf _buf)
@@ -62,6 +63,7 @@ public sealed partial class EnemyConfig : Luban.BeanBase
     public readonly float FallbackMeleeAttackRange;
     public readonly int MagazineCapacity;
     public readonly float ReloadSeconds;
+    public readonly bool BlocksPurpleSkullDrop;
    
     public const int __ID__ = 1284055242;
     public override int GetTypeId() => __ID__;
@@ -93,6 +95,7 @@ public sealed partial class EnemyConfig : Luban.BeanBase
         + "FallbackMeleeAttackRange:" + FallbackMeleeAttackRange + ","
         + "MagazineCapacity:" + MagazineCapacity + ","
         + "ReloadSeconds:" + ReloadSeconds + ","
+        + "BlocksPurpleSkullDrop:" + BlocksPurpleSkullDrop + ","
         + "}";
     }
 }
