@@ -44,6 +44,8 @@ namespace Game
         public float AttackCooldown;
         /// <summary>普通近战的配置前摇及当前剩余秒数，仅进入攻击距离后推进。</summary>
         public float MeleeWindupSeconds, MeleeWindupRemaining;
+        /// <summary>命中后的权威收招剩余量，表现直接采样，回池清零。</summary>
+        public float MeleeRecoveryRemaining;
         /// <summary>本次近战已经开始等待，离开范围、受控或回池立即取消。</summary>
         public bool MeleeWindupActive;
         /// <summary>标记当前波次中的 Boss，只供常驻血条等表现读取，不参与伤害或行为判断。</summary>
@@ -91,6 +93,7 @@ namespace Game
             AttackInterval = 0f;
             AttackCooldown = 0f;
             MeleeWindupSeconds = MeleeWindupRemaining = 0f;
+            MeleeRecoveryRemaining = 0f;
             MeleeWindupActive = false;
             IsBossPresentation = false;
             AttackSequence = 0;

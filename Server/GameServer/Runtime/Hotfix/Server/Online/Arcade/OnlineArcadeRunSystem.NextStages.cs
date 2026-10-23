@@ -49,7 +49,7 @@ namespace ET.Server
         private static bool TickNextStageEnemy(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime e,float seconds)
         {
             if(e.StageEnemy.Phase==0)return false;
-            CancelMeleeWindup(e);
+            CancelMeleeWindup(e,true);
             if(RoundContentActive(b)&&RoundPlayersReady(b))ArcadeNextStageEnemyRules.Advance(ref e.StageEnemy,seconds,ContentTuning(b));
             return true;
         }
@@ -68,7 +68,7 @@ namespace ET.Server
             if(!TryShadowLanding(b,e,out float x,out float z))return true;
             e.StageEnemy=new ArcadeStageEnemyState{Phase=3,RevivesRemaining=0,OriginX=oldX,OriginY=oldZ};
             e.PositionX=x;e.PositionZ=z;e.HazardPreviousX=x;e.HazardPreviousZ=z;e.CurrentHealth=e.MaxHealth;
-            e.FlameHitRemainingSeconds=0;e.LastDamageWasFlame=false;CancelMeleeWindup(e);
+            e.FlameHitRemainingSeconds=0;e.LastDamageWasFlame=false;CancelMeleeWindup(e,true);
             return true;
         }
 

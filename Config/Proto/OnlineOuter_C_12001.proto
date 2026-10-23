@@ -446,6 +446,9 @@ message OnlineArcadeEnemyInfo
 	int32 StageEnemyRevives = 24;
 	// 已完成的真实近战挥击序列；首快照只建立基线，重连不重播。
 	int32 AttackSequence = 25;
+	float MeleeWindupSeconds = 26;
+	float MeleeWindupRemaining = 27;
+	float MeleeRecoveryRemaining = 28;
 }
 
 // Opcode 12082

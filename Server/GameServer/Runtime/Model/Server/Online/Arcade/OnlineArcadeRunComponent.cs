@@ -302,6 +302,8 @@ namespace ET.Server
         public float AttackCooldownSeconds;
         /// <summary>普通近战的配置前摇及现场倒计时，远处追击不推进。</summary>
         public float MeleeWindupSeconds, MeleeWindupRemaining;
+        /// <summary>抓挠命中后的权威收招阶段，不由客户端重新计时。</summary>
+        public float MeleeRecoveryRemaining;
         /// <summary>本次前摇锁定的玩家身份；换目标必须重新等待。</summary>
         public long MeleeWindupTargetId;
         public string ProjectileConfigId;

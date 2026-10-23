@@ -8,6 +8,6 @@
 ,enemy.arcade.boss.archer,ArcadeEnemyBossArcher,weapon.bow,15,8,12,8,2,1.8,loot.metal-parts,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1,false
 ,enemy.han.melee,GrayboxEnemy,weapon.short-sword,40,10,8,1.35,1,2.2,loot.cloth,Melee,0,0,,loot.weapon.short-sword,,0,0,0,0,false
 ,enemy.han.archer,GrayboxArcher,weapon.bow,30,8,12,8,2,1.8,loot.gathered-food,Projectile,3,0.8,projectile.arrow.basic,loot.weapon.bow,loot.ammunition.arrow,10,1.35,1,1,false
-,enemy.arcade.zombie.shambler,ArcadeZombieShambler,weapon.zombie-claw,100,10,8,1.35,1,2.2,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,true
-,enemy.arcade.zombie.gaunt,ArcadeZombieGaunt,weapon.zombie-claw,100,8,12,1.35,2,1.8,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,true
-,enemy.arcade.zombie.bloated,ArcadeZombieBloated,weapon.zombie-claw,20,10,8,1.35,1,2.2,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.shambler,ArcadeZombieShambler,weapon.zombie-claw,100,10,8,0.9,1,2.2,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,true
+,enemy.arcade.zombie.gaunt,ArcadeZombieGaunt,weapon.zombie-claw,100,8,12,0.9,2,1.8,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,true
+,enemy.arcade.zombie.bloated,ArcadeZombieBloated,weapon.zombie-claw,20,10,8,0.9,1,2.2,loot.metal-parts,Melee,0,0.4,,,,0,0,0,0,false

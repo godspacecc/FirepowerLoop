@@ -34,6 +34,8 @@ namespace Game
         /// <summary>只携带已经裁决的死亡方向与爆炸类别，旧端口保留动画降级。</summary>
         void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive) => RemoveEnemy(runtimeId, playDeath);
         void SetEnemyBurning(int runtimeId,float remainingSeconds) { }
+        /// <summary>采样权威前摇和收招，不在表现层计算命中。</summary>
+        void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction) { }
         /// <summary>只投影牛撞快照，不从模型位置反推战斗位移。</summary>
         void SetHerdImpact(int runtimeId,FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction) { }
         /// <summary>联机断线等待时冻结牛撞尸体的表现时钟。</summary>

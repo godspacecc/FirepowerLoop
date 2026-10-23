@@ -353,7 +353,7 @@ namespace Game
 
             var bossWave = activeRoundLayout != null ? battle.RoundBossEncounter : !battle.IsFinalBoss && activeArena?.IsBoss == true && battle.WaveNumber == activeArena.WaveGroupIds.Count;
             SyncEnemies(inRoom ? Array.Empty<OnlineArcadeEnemySnapshot>() : battle.Enemies, bossWave,
-                battle.EnemyDeaths, battle.RoundGeneration, !inRoom && !supplyBaseline);
+                battle.EnemyDeaths, battle.RoundGeneration, !inRoom && !supplyBaseline,battle.Players);
             view.SetBabylon(inRoom || battle.IsChallenge ? null : activeArena?.Babylon, battle.CrateIds);
             SyncProjectiles(inRoom ? Array.Empty<OnlineArcadeProjectileSnapshot>() : battle.Projectiles);
             SyncDrops(inRoom ? Array.Empty<OnlineArcadeDropSnapshot>() : battle.Drops);
@@ -453,7 +453,8 @@ namespace Game
         }
 
         private void SyncEnemies(IReadOnlyList<OnlineArcadeEnemySnapshot> values, bool bossWave,
-            IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> deaths, int roundGeneration, bool allowDeaths)
+            IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> deaths, int roundGeneration, bool allowDeaths,
+            IReadOnlyList<OnlineArcadeBattlePlayerSnapshot> players)
         {
             seenIds.Clear();
             foreach (OnlineArcadeEnemySnapshot value in values)
@@ -468,6 +469,12 @@ namespace Game
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
                 view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);
                 view.SetEnemyHerdImpact(id,value.HerdImpact);
+                if(FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(value.EnemyConfigId))
+                {
+                    var target=players.FirstOrDefault(p=>p.PlayerId==value.TargetPlayerId);
+                    var direction=target.PlayerId==0?Vector2.zero:new Vector2(target.PositionX-value.PositionX,target.PositionZ-value.PositionZ);
+                    view.SetEnemyMelee(id,value.MeleeWindupSeconds,value.MeleeWindupRemaining,value.MeleeRecoveryRemaining,direction);
+                }
             }
             // 只消费已见实体的同轮移除；重复快照与重连没有旧映射，因此不会补播尸体。
             foreach (long runtimeId in enemyIds.Keys.Where(id => !seenIds.Contains(id)).ToArray())

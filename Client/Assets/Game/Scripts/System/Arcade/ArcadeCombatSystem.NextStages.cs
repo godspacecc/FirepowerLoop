@@ -58,7 +58,7 @@ namespace Game
             if(!TryShadowLanding(r,e,out var best)){e.Health=e.MaxHealth;return true;}
             e.Position=best;e.Health=e.MaxHealth;e.AttackCooldown=0;
             e.ContentStunUntil=0;e.FlameHitRemainingSeconds=0;e.LastDamageWasFlame=false;
-            e.HerdImpact=default;CancelMeleeWindup(e);
+            e.HerdImpact=default;CancelMeleeWindup(e,true);
             e.StageEnemy=new ArcadeStageEnemyState{Phase=3,RevivesRemaining=0,OriginX=origin.x,OriginY=origin.y};
             return true;
         }

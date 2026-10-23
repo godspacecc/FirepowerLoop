@@ -236,6 +236,10 @@ namespace Game
         public void SetHerdImpact(int runtimeId,FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetHerdImpact(state,direction);}
 
+        /// <summary>把当前攻击阶段交给正式模型；异步未就绪时等待下一帧投影。</summary>
+        public void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction)
+        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetMeleeAttack(duration,remaining,recovery,direction);}
+
         public void RemoveEnemy(int runtimeId, bool playDeath = false)
             => RemoveEnemy(runtimeId, playDeath, Vector3.zero, false);
 

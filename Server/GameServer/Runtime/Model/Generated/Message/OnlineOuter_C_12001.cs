@@ -1736,6 +1736,15 @@ namespace ET
         [MemoryPackOrder(24)]
         public int AttackSequence { get; set; }
 
+        [MemoryPackOrder(25)]
+        public float MeleeWindupSeconds { get; set; }
+
+        [MemoryPackOrder(26)]
+        public float MeleeWindupRemaining { get; set; }
+
+        [MemoryPackOrder(27)]
+        public float MeleeRecoveryRemaining { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1768,6 +1777,9 @@ namespace ET
             this.StageEnemyOriginZ = default;
             this.StageEnemyRevives = default;
             this.AttackSequence = default;
+            this.MeleeWindupSeconds = default;
+            this.MeleeWindupRemaining = default;
+            this.MeleeRecoveryRemaining = default;
 
             ObjectPool.Instance.Recycle(this);
         }

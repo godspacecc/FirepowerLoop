@@ -1,0 +1,8 @@
+<!doctype html><meta charset="utf-8"><title>丧尸贴身抓挠 v4</title>
+<style>body{margin:0;background:#121a1f;color:#e2e9ed;font:16px system-ui}main{max-width:1500px;margin:auto;padding:24px}h1{font-size:26px}p{line-height:1.7}img{display:block;width:100%;margin:20px auto;border-radius:12px}.single{max-width:900px}button{padding:9px 18px;cursor:pointer}small{color:#bdcbd3}h2{font-size:21px;margin-top:32px}.notice{border-left:4px solid #e9bf66;padding:10px 16px;background:#283035}</style>
+<main><h1>已保留大幅动作；这次先贴近，挥出时碰到玩家</h1><p class="notice">旧预览在中心距离1.5米时起手，画面里手爪够不到。此版候选缩到0.9米才允许起手：先追近，再开始完整0.4秒前摇，挥出触及身体；玩家提前跑开则取消。大幅后拉、前抓、内撕方向保持。</p>
+<button onclick="document.querySelectorAll('img').forEach(i=>{i.src=i.dataset.src+'?t='+Date.now()})">重新播放</button>
+<h2>贴近、接触、跑开取消</h2><img class="single" src="shambler-claw.gif" data-src="shambler-claw.gif" alt="丧尸靠近后抓到玩家的动态候选">
+<h2>挥出时刻的接触对比</h2><img src="contact-comparison.png" data-src="contact-comparison.png" alt="旧版隔空与新版接触对比">
+<details><summary>另外两类丧尸的接触表现</summary><img class="single" src="gaunt-claw.gif" data-src="gaunt-claw.gif" alt="疾行丧尸贴身抓挠"><img class="single" src="bloated-claw.gif" data-src="bloated-claw.gif" alt="重型丧尸贴身抓挠"></details>
+<p><small>本页是正式模型克隆的距离候选。前摇调用正式规则函数，但0.9米门禁及停步是临时预览输入，尚未修改正式攻击距离或接入正式动画，不是完整实战录像。每段5秒、20fps，角色保持原尺寸。三种丧尸接触时手指到主角网格最近距离约0.2～1.8厘米；范围外起手0次，第二段各取消1次。</small></p></main>

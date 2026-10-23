@@ -196,7 +196,7 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0,float meleeWindupSeconds=0,float meleeWindupRemaining=0,float meleeRecoveryRemaining=0)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
@@ -204,11 +204,17 @@ namespace Game
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
             FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;StageEnemy=stageEnemy;AttackSequence=attackSequence;
+            MeleeWindupSeconds=meleeWindupSeconds;MeleeWindupRemaining=meleeWindupRemaining;MeleeRecoveryRemaining=meleeRecoveryRemaining;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }
         /// <summary>已完成的近战挥击序列；只投影，不重算攻击或伤害。</summary>
         public int AttackSequence { get; }
+        /// <summary>当前攻击前摇的权威总时长和剩余量；重复快照直接采样。</summary>
+        public float MeleeWindupSeconds { get; }
+        public float MeleeWindupRemaining { get; }
+        /// <summary>命中后的收招剩余秒数，由服务器推进。</summary>
+        public float MeleeRecoveryRemaining { get; }
         public float PositionX { get; }
         public float PositionZ { get; }
         public int CurrentHealth { get; }

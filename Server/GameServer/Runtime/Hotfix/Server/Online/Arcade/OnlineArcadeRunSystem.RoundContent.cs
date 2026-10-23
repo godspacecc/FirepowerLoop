@@ -195,21 +195,28 @@ namespace ET.Server
             OnlineArcadeBattlePlayerRuntime target,float targetX,float targetY,bool decoy,float movementDelta,float seconds)
         {
             if(e.SpecialKind==0)return false;
-            if(!RoundContentActive(b)){CancelMeleeWindup(e);return true;}
+            if(!RoundContentActive(b)){CancelMeleeWindup(e,true);return true;}
             var p=ContentTuning(b);int kind=e.SpecialKind;
             actor.TickSpecialAttack(b,e,target);
             if(e.ContentStunUntil>b.ContentClock.Elapsed||ArcadeRoundContentRules.IsUnderground(kind,e.ContentElapsed,p)||
                 kind==13&&e.ContentElapsed<p.SkillWarning||kind==3&&e.LastContentHitAt>=0&&e.ContentElapsed-e.LastContentHitAt<p.SkillWarning)
-            {CancelMeleeWindup(e);return true;}
+            {CancelMeleeWindup(e,true);return true;}
             bool ranged=kind==8||kind==9||kind==11||kind==16||kind==17;
             if((kind==5||kind==10||kind==14||kind==17)&&!e.ContentWarning&&(e.ContentLockedX!=0||e.ContentLockedZ!=0))
             {targetX=e.PositionX+e.ContentLockedX*p.EventRadius*p.SkillMagnitude;targetY=e.PositionZ+e.ContentLockedZ*p.EventRadius*p.SkillMagnitude;}
             float distance=DistanceSquared(e.PositionX,e.PositionZ,targetX,targetY);
+            float radius=FirepowerLoop.Arcade.ArcadeMeleeRules.Reach(e.EnemyConfigId,e.AttackRange,
+                ServerConfig.Instance.ArcadeRule.PlayerRadius+ServerConfig.Instance.ArcadeRule.EnemyContactRadius);
+            if(!ranged && FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.EnemyConfigId))
+            {
+                float actualDistance=MathF.Sqrt(DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ));
+                if(actualDistance>radius+.0001f)CancelMeleeWindup(e);
+                movementDelta=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(actualDistance,radius,e.MoveSpeed,movementDelta,e.MeleeRecoveryRemaining);
+            }
             if(!ranged||distance>e.AttackRange*e.AttackRange*.64f)
                 MoveEnemy(e,targetX,targetY,movementDelta,ServerConfig.Instance.ArcadeRule,EffectiveObstacles(b),IslandFor(b));
-            float radius=ServerConfig.Instance.ArcadeRule.PlayerRadius+ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
             if(!ranged&&TryCompleteMeleeAttack(e,target.PlayerId,
-                DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)<=radius*radius,decoy,seconds))
+                DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)<=(radius+.0001f)*(radius+.0001f),decoy,seconds))
             {
                 e.AttackSequence++;
                 float aura=1;

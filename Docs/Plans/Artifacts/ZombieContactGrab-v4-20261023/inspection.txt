@@ -1,0 +1,9 @@
+ArcadeZombieShambler(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
+ArcadeZombieGaunt(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
+ArcadeZombieBloated(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
+enemy.arcade.zombie.shambler: hitAt=1.45, elapsed=0.40, centerDistance=0.900, handToBody=0.0020
+enemy.arcade.zombie.shambler: hits=1, cancels=1, outOfRangeStarts=0
+enemy.arcade.zombie.gaunt: hitAt=1.70, elapsed=0.40, centerDistance=0.900, handToBody=0.0182
+enemy.arcade.zombie.gaunt: hits=1, cancels=1, outOfRangeStarts=0
+enemy.arcade.zombie.bloated: hitAt=1.45, elapsed=0.40, centerDistance=0.900, handToBody=0.0166
+enemy.arcade.zombie.bloated: hits=1, cancels=1, outOfRangeStarts=0

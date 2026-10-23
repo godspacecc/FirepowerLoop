@@ -41,6 +41,8 @@ namespace Game
         void SetHerds(long mapId,IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> cows) { }
         void SetPlayerHerdImpact(long playerId,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
         void SetEnemyHerdImpact(int id,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
+        /// <summary>权威抓挠进度和当前目标方向，旧端口可忽略。</summary>
+        void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
         void SetHerdActivityPaused(bool paused) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
@@ -649,6 +651,15 @@ namespace Game
             enemyPresentation.TrySetEnemy(id, configId, mapRoot.TransformPoint(World(position, 0f)),
                 mapRoot.TransformDirection(facing), currentHealth, maximumHealth, out _, telegraph,
                 attackSequence, persistentHealthBar);
+        }
+
+        /// <summary>统一转换地图朝向，联机使用权威目标而非本机玩家。</summary>
+        public void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction)
+        {
+            if(mapRoot==null)return;
+            var worldDirection=mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y));
+            if(SetNextStageEnemyMelee(id,duration,remaining,recovery,worldDirection))return;
+            enemyPresentation?.SetMeleeAttack(id,duration,remaining,recovery,worldDirection);
         }
 
         public void RemoveEnemy(int id, bool playDeath = false)

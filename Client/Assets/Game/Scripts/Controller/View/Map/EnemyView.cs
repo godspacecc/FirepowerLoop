@@ -218,6 +218,7 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            ResetMeleeAttack();
             corpseFade?.Reset();
             FlameFeedback?.ResetForReuse();
             PhysicalReaction?.ResetForReuse();
@@ -756,6 +757,8 @@ namespace Game
         /// <summary>播放一次攻击表现；攻击命中与伤害时机仍由战斗系统决定。</summary>
         public void PlayAttackAnimation()
         {
+            // 空手抓挠已按权威进度从起手播到收招，命中时不能再由旧触发器重头播放。
+            if(meleeAuthorityEnabled && meleeVisual.Ready)return;
             if (animator == null || animationDead)
             {
                 return;
@@ -768,6 +771,7 @@ namespace Game
         /// <summary>开始死亡表现并返回建议保留时长；无 Animator 时由调用方立即回收。</summary>
         public bool TryPlayDeathAnimation(out float durationSeconds)
         {
+            ResetMeleeAttack();
             durationSeconds = 0f;
             if (animator == null)
             {
@@ -791,6 +795,7 @@ namespace Game
         /// <summary>消费最终伤害的力度类别，沿用尸体寿命、碰撞关闭与统一物理预算。</summary>
         public bool TryPlayPhysicalDeathWithImpact(Vector3 direction, bool explosive, int impactKind, out float durationSeconds)
         {
+            ResetMeleeAttack();
             var continuation=herdImpact;var continuedDirection=herdDirection;
             ResetHerdImpact();
             durationSeconds = 0f;
@@ -809,9 +814,9 @@ namespace Game
         }
 
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
-        public void LateTickCombatFeedback(){PhysicalReaction?.LateTick();ApplyHerdImpact();}
+        public void LateTickCombatFeedback(){PhysicalReaction?.LateTick();ApplyMeleeAttack();ApplyHerdImpact();}
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
         public bool IsHerdCorpse=>PhysicalReaction?.IsHerdDeath==true;
 
         /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>
@@ -878,6 +883,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            TickMeleeAttack(deltaTime);
             herdVisual.Restore();
             FlameFeedback?.Tick(deltaTime);
             PhysicalReaction?.Tick(deltaTime);

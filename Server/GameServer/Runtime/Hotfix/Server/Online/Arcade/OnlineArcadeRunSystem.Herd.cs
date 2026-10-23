@@ -70,7 +70,7 @@ namespace ET.Server
                     if(!b.Enemies.ContainsKey(enemy.RuntimeId)||!ArcadeHerdRules.TryContact(cow,sweep,b.RoundGeneration,enemy.RuntimeId,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,enemy.CurrentHealth>0))continue;
                     DamageEnemy(b,enemy,ArcadeRoundContentRules.Damage(enemy.MaxHealth,stage.HerdEnemyDamage));
                     if(enemy.CurrentHealth<=0)actor.KillEnemyWithReaction(b,enemy,true,false,enemy.PositionX-cow.DirectionX,enemy.PositionZ-cow.DirectionZ,ArcadeDeathImpactRules.Herd);
-                    else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy);
+                    else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy,true);
                     if(!RoundContentActive(b))return;
                 }
                 if(cow.Phase==ArcadeHerdPhase.Expired){ArcadeHerdRules.Cancel(cow);b.HerdCows.Remove(cow);}

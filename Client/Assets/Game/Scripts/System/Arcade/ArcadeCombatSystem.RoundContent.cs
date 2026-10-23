@@ -83,15 +83,15 @@ namespace Game
         private bool TickRoundEnemyContent(ArcadeCombatRuntime r,ArcadeEnemyRuntime e,Vector2 target,bool decoy,float dt)
         {
             if(RoundLayout(r)==null)return false;
-            if(e.ContentStunUntil>r.ContentClock.Elapsed){CancelMeleeWindup(e);return true;}
+            if(e.ContentStunUntil>r.ContentClock.Elapsed){CancelMeleeWindup(e,true);return true;}
             if(e.ContentBossKind==4)return false;
             if(e.ContentSpecialKind==0 && e.ContentBossKind==0 && e.ContentAllyBuff<=1)return false;
-            if(!RoundContentActive(r)){CancelMeleeWindup(e);return true;}
+            if(!RoundContentActive(r)){CancelMeleeWindup(e,true);return true;}
             var p=ContentTuning(r);double now=r.ContentClock.Elapsed,age=now-e.ContentBornAt;
             var offset=target-e.Position;var direction=offset.sqrMagnitude>.001f ? offset.normalized : Vector2.up;
             if(now<e.ContentStunUntil)return true;
             if(e.ContentBossKind>0)return TickContentBoss(r,e,target,decoy,dt,p,age);
-            if(ArcadeNextStageEnemyRules.Advance(ref e.StageEnemy,dt,p)){CancelMeleeWindup(e);return true;}
+            if(ArcadeNextStageEnemyRules.Advance(ref e.StageEnemy,dt,p)){CancelMeleeWindup(e,true);return true;}
             int kind=e.ContentSpecialKind;int phase=ArcadeRoundContentRules.Phase(age,p.SkillPeriod,p.SkillWarning);
             int cycle=(int)(age/p.SkillPeriod);
             e.ContentWarning=phase==0 && (kind==4 || kind==5 || kind==8 || kind==10 || kind==11 || kind==13 || kind==14 || kind==16 || kind==17);
@@ -101,11 +101,11 @@ namespace Game
                 if(kind==16)AddContentArea(r,4,e.Position,e.Position+direction*p.EventRadius*p.SkillMagnitude,p.EventRadius*.12f,
                     Mathf.Max(0,p.SkillWarning-(float)(age%p.SkillPeriod)),0,0,true,false);
             }
-            if(kind==16 && phase==0){CancelMeleeWindup(e);return true;}
+            if(kind==16 && phase==0){CancelMeleeWindup(e,true);return true;}
             if(kind==3 && e.ContentMannequinHits>0 && now-e.ContentLastHitAt<p.SkillWarning)
-            {CancelMeleeWindup(e);return true;}
+            {CancelMeleeWindup(e,true);return true;}
             if(ArcadeRoundContentRules.IsUnderground(kind,age,p) || kind==13 && age<p.SkillWarning)
-            {CancelMeleeWindup(e);return true;}
+            {CancelMeleeWindup(e,true);return true;}
             if(phase==1 && e.ContentSkillCycle!=cycle)
             {
                 e.ContentSkillCycle=cycle;
@@ -125,10 +125,18 @@ namespace Game
             bool ranged=kind==8 || kind==9 || kind==11 || kind==16 || kind==17 || kind==0 && e.AttackKind==global::EnemyAttackKind.Projectile;
             if(kind==0 && ranged && offset.magnitude<=e.AttackRange && e.AttackCooldown<=0)
             { ContentShot(r,e,direction,0,0);e.AttackCooldown=e.AttackInterval; }
+            float reach=FirepowerLoop.Arcade.ArcadeMeleeRules.Reach(e.ConfigId,e.AttackRange,catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius);
+            float moveDt=dt;
+            if(!ranged && FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
+            {
+                if(offset.magnitude>reach+.0001f)CancelMeleeWindup(e);
+                float effectiveSpeed=e.Speed*motion*e.ContentAllyBuff*EnemySpeedMultiplier(r)*SlayerMartStormSpeed(r,e);
+                moveDt=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(offset.magnitude,reach,effectiveSpeed,dt,e.MeleeRecoveryRemaining);
+            }
             if(!ranged || offset.magnitude>e.AttackRange*.8f)
-                MoveContentEnemy(r,e,target,direction,motion*e.ContentAllyBuff,dt,kind==2 || kind==6);
+                MoveContentEnemy(r,e,target,direction,motion*e.ContentAllyBuff,moveDt,kind==2 || kind==6);
             if(!ranged && TryCompleteMeleeAttack(e, Vector2.Distance(e.Position,target)<=
-                catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius, decoy, dt))
+                reach+.0001f, decoy, dt))
             {
                 e.AttackSequence++;e.AttackCooldown=e.AttackInterval;
                 DamageContentPlayer(r,Mathf.Max(1,Mathf.RoundToInt(e.Damage*e.ContentAllyBuff)));

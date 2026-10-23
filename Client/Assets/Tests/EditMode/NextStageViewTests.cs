@@ -108,6 +108,21 @@ namespace Game.Tests
             view.RemoveEnemy(51,true);Assert.That(flame==null,Is.True);Assert.That(Node("StageShadowDeath_51"),Is.Not.Null);Assert.That(root.GetComponentsInChildren<EnemyFlameFeedback>(true),Is.Empty);
             Release();Assert.That(root.transform.childCount,Is.Zero);
         }
+        /// <summary>墓穴的正式丧尸演员消费前摇/收招，命中序列不能重播旧片段。</summary>
+        [Test] public void GraveActorUsesAuthorityGrabWithoutPostHitReplay()
+        {
+            Ready(23);Set("mapRoot",root.transform);view.RecordRoundEnemyPosition(61,Vector2.zero);State(61,18,0,3,0,0,0);
+            var actor=Node("StageHumanoid_61");var hand=actor.GetComponentsInChildren<Transform>(true).Single(t=>t.name=="Middle1.R");
+            view.SetEnemyMelee(61,.4f,.1f,0,Vector2.right);var rear=hand.position;
+            view.SetEnemyMelee(61,.4f,0,.55f,Vector2.right);var contact=hand.position;
+            Assert.That(Vector3.Distance(rear,contact),Is.GreaterThan(.55f));
+            Assert.That(Vector3.Angle(actor.forward,Vector3.right),Is.LessThan(.1f));
+            view.SetEnemy(61,"unused",Vector2.zero,10,10,attackSequence:1);view.TickPlayerFeedback(.1f);
+            Assert.That(Vector3.Distance(hand.position,contact),Is.LessThan(.01f),"允许待机呼吸微动，但不能从旧Attack片段重新起手");
+            State(61,18,0,3,0,0,0);view.SetEnemyMelee(61,.4f,0,.55f,Vector2.right);
+            Assert.That(Vector3.Distance(hand.position,contact),Is.LessThan(.01f),"允许待机呼吸微动，重复阶段和快照不得累积旋转");
+            Release();Assert.That(actor==null,Is.True);
+        }
         [Test] public void FormalStageAttackSequenceSamplesOriginalClipOnceWithoutLateReplay()
         {
             Ready(24);view.SetEnemyContent(60,19,0,false);view.SetEnemy(60,"unused",new Vector2(2,-2),10,10,attackSequence:5);State(60,19,0,0,-5,-4,1);

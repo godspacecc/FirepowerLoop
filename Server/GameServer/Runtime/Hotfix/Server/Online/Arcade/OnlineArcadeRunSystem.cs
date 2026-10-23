@@ -1730,16 +1730,17 @@ namespace ET.Server
                     .ThenBy(x => x.PlayerId).FirstOrDefault();
                 if (target == null)
                 {
-                    foreach (var waiting in battle.Enemies.Values) CancelMeleeWindup(waiting);
+                    foreach (var waiting in battle.Enemies.Values) CancelMeleeWindup(waiting,true);
                     battle.AllPlayersDefeated = battle.Players.Values.All(p=>!p.Alive && p.RespawnSeconds<=0);
                     return changed || battle.AllPlayersDefeated;
                 }
 
                 if(TickNextStageEnemy(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
-                {CancelMeleeWindup(enemy);continue;}
+                {CancelMeleeWindup(enemy,true);continue;}
                 if(TickSlayerGuardian(self,battle,enemy,target,deltaSeconds)){changed=true;continue;}
                 enemy.TargetPlayerId = target.PlayerId;
+                enemy.MeleeRecoveryRemaining = Math.Max(0,enemy.MeleeRecoveryRemaining-deltaSeconds);
                 enemy.AttackCooldownSeconds = Math.Max(0f, enemy.AttackCooldownSeconds - deltaSeconds);
                 float targetX = target.PositionX;
                 float targetZ = target.PositionZ;
@@ -1790,10 +1791,18 @@ namespace ET.Server
                 }
                 else
                 {
-                    MoveEnemy(enemy, targetX, targetZ, movementDelta, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance,battle);
-                    float contactRadius = rule.PlayerRadius + rule.EnemyContactRadius;
+                    float contactRadius = FirepowerLoop.Arcade.ArcadeMeleeRules.Reach(enemy.EnemyConfigId, enemy.AttackRange,
+                        rule.PlayerRadius + rule.EnemyContactRadius);
+                    float approach = movementDelta;
+                    if (FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.EnemyConfigId) && string.IsNullOrEmpty(enemy.BossId))
+                    {
+                        if (distance > contactRadius + .0001f) CancelMeleeWindup(enemy);
+                        approach = FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance, contactRadius,
+                            enemy.MoveSpeed, movementDelta, enemy.MeleeRecoveryRemaining);
+                    }
+                    MoveEnemy(enemy, targetX, targetZ, approach, rule, EffectiveObstacles(battle), seaRegion, arena.EnemySeaApproachDistance,battle);
                     if (TryCompleteMeleeAttack(enemy, target.PlayerId,
-                        DistanceSquared(enemy.PositionX, enemy.PositionZ, targetX, targetZ) <= contactRadius * contactRadius,
+                        DistanceSquared(enemy.PositionX, enemy.PositionZ, targetX, targetZ) <= (contactRadius+.0001f) * (contactRadius+.0001f),
                         targetsDecoy, deltaSeconds))
                     {
                         enemy.AttackSequence++;
@@ -1812,7 +1821,7 @@ namespace ET.Server
         private static bool TryCompleteMeleeAttack(OnlineArcadeEnemyRuntime enemy, long targetId,
             bool inRange, bool decoy, float seconds)
         {
-            if (!inRange || decoy || enemy.AttackCooldownSeconds > 0)
+            if (!inRange || decoy || enemy.AttackCooldownSeconds > 0 || enemy.MeleeRecoveryRemaining > 0)
             { CancelMeleeWindup(enemy); return false; }
             if (!string.IsNullOrEmpty(enemy.BossId) || enemy.MeleeWindupSeconds <= 0) return true;
             if (enemy.MeleeWindupTargetId != targetId)
@@ -1824,12 +1833,14 @@ namespace ET.Server
             enemy.MeleeWindupRemaining = Math.Max(0, enemy.MeleeWindupRemaining - Math.Max(0, seconds));
             if (enemy.MeleeWindupRemaining > .00001f) return false;
             CancelMeleeWindup(enemy);
+            if (FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.EnemyConfigId))
+                enemy.MeleeRecoveryRemaining = FirepowerLoop.Arcade.ArcadeMeleeRules.RecoverySeconds;
             return true;
         }
 
         /// <summary>放弃未命中的近战前摇，保留已有攻击冷却。</summary>
-        private static void CancelMeleeWindup(OnlineArcadeEnemyRuntime enemy)
-        { enemy.MeleeWindupTargetId = 0; enemy.MeleeWindupRemaining = 0; }
+        private static void CancelMeleeWindup(OnlineArcadeEnemyRuntime enemy, bool interrupted = false)
+        { enemy.MeleeWindupTargetId = 0; enemy.MeleeWindupRemaining = 0; if (interrupted) enemy.MeleeRecoveryRemaining = 0; }
 
         /// <summary>服务器权威推进 Boss 蓄力与冲锋；每次冲锋对每名玩家最多命中一次。</summary>
         private static bool TickBoss(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
@@ -3129,10 +3140,14 @@ namespace ET.Server
                 float directionX = distance > 0.0001f ? offsetX / distance : ((left.RuntimeId & 1) == 0 ? 1f : -1f);
                 float directionZ = distance > 0.0001f ? offsetZ / distance : 0f;
                 float push = (minimumDistance - distance) * 0.5f;
-                float leftX = left.PositionX - directionX * push;
-                float leftZ = left.PositionZ - directionZ * push;
-                float rightX = right.PositionX + directionX * push;
-                float rightZ = right.PositionZ + directionZ * push;
+                // 已起手或收招的丧尸固定站位，让尚在追击的敌人承担分离位移。
+                bool leftLocked=FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(left.EnemyConfigId)&&(left.MeleeWindupTargetId!=0||left.MeleeRecoveryRemaining>0);
+                bool rightLocked=FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(right.EnemyConfigId)&&(right.MeleeWindupTargetId!=0||right.MeleeRecoveryRemaining>0);
+                float leftPush=leftLocked?0:push*(rightLocked?2:1),rightPush=rightLocked?0:push*(leftLocked?2:1);
+                float leftX = left.PositionX - directionX * leftPush;
+                float leftZ = left.PositionZ - directionZ * leftPush;
+                float rightX = right.PositionX + directionX * rightPush;
+                float rightZ = right.PositionZ + directionZ * rightPush;
                 ResolveBattleEnemyPosition(battle,ref leftX, ref leftZ, left.PositionX, left.PositionZ,
                     rule.EnemyContactRadius, rule, obstacles, IslandFor(battle), seaDistance);
                 ResolveBattleEnemyPosition(battle,ref rightX, ref rightZ, right.PositionX, right.PositionZ,
@@ -3474,6 +3489,9 @@ namespace ET.Server
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemy.Phase;enemy.StageEnemyAge=sourceEnemy.StageEnemy.Age;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemy.OriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemy.OriginY;enemy.StageEnemyRevives=sourceEnemy.StageEnemy.RevivesRemaining;
                 enemy.AttackSequence=sourceEnemy.AttackSequence;
+                enemy.MeleeWindupSeconds=sourceEnemy.MeleeWindupSeconds;
+                enemy.MeleeWindupRemaining=sourceEnemy.MeleeWindupRemaining;
+                enemy.MeleeRecoveryRemaining=sourceEnemy.MeleeRecoveryRemaining;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileRuntime sourceProjectile in source.Projectiles.Values.OrderBy(x => x.RuntimeId))
@@ -3703,6 +3721,9 @@ namespace ET.Server
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemyPhase;enemy.StageEnemyAge=sourceEnemy.StageEnemyAge;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemyOriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemyOriginZ;enemy.StageEnemyRevives=sourceEnemy.StageEnemyRevives;
                 enemy.AttackSequence=sourceEnemy.AttackSequence;
+                enemy.MeleeWindupSeconds=sourceEnemy.MeleeWindupSeconds;
+                enemy.MeleeWindupRemaining=sourceEnemy.MeleeWindupRemaining;
+                enemy.MeleeRecoveryRemaining=sourceEnemy.MeleeRecoveryRemaining;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileInfo sourceProjectile in source.Projectiles)

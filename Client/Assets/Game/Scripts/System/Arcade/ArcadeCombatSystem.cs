@@ -52,6 +52,8 @@ namespace Game
             new List<global::ArcadePowerupBehavior>();
         private readonly List<ArcadeEnemyRuntime> crowdingEnemies = new List<ArcadeEnemyRuntime>();
         private readonly List<Vector2> crowdingPositions = new List<Vector2>();
+        /// <summary>抓挠期间的固定站位，群怪分离由其他敌人承担。</summary>
+        private readonly List<bool> crowdingMovable = new List<bool>();
 
         /// <summary>最近一次入场失败原因；只供发起“继续”的界面在同步事件返回后显示。</summary>
         public string LastEntryError { get; private set; }
@@ -846,9 +848,10 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
-                if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy);continue;}
-                if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy);continue;}
-                if(enemy.ContentStunUntil>runtime.ContentClock.Elapsed)CancelMeleeWindup(enemy);
+                enemy.MeleeRecoveryRemaining = Mathf.Max(0, enemy.MeleeRecoveryRemaining - deltaTime);
+                if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy,true);continue;}
+                if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy,true);continue;}
+                if(enemy.ContentStunUntil>runtime.ContentClock.Elapsed)CancelMeleeWindup(enemy,true);
                 enemy.AttackCooldown = Mathf.Max(0f, enemy.AttackCooldown - deltaTime);
                 var targetPosition = runtime.PlayerPosition;
                 var targetIsDecoy = false;
@@ -888,9 +891,18 @@ namespace Game
                 }
                 else
                 {
-                    MoveEnemyTowards(runtime, enemy, targetPosition, movementDelta);
+                    float reach = FirepowerLoop.Arcade.ArcadeMeleeRules.Reach(enemy.ConfigId, enemy.AttackRange,
+                        catalog.Rule.PlayerRadius + catalog.Rule.EnemyContactRadius);
+                    float approach = movementDelta;
+                    if (FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId) && string.IsNullOrEmpty(enemy.BossId))
+                    {
+                        if (distance > reach + .0001f) CancelMeleeWindup(enemy);
+                        approach = FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance, reach, enemy.Speed,
+                            movementDelta, enemy.MeleeRecoveryRemaining);
+                    }
+                    MoveEnemyTowards(runtime, enemy, targetPosition, approach);
                     if (TryCompleteMeleeAttack(enemy, Vector2.Distance(enemy.Position, targetPosition) <=
-                        catalog.Rule.PlayerRadius + catalog.Rule.EnemyContactRadius, targetIsDecoy, deltaTime))
+                        reach + .0001f, targetIsDecoy, deltaTime))
                     {
                         enemy.AttackSequence++;
                         if (!targetIsDecoy) DamagePlayer(runtime, enemy.Damage);
@@ -918,7 +930,7 @@ namespace Game
         /// <summary>普通近战只有进入范围才开始前摇；距离或目标失效取消，不能在追击期间预付等待。</summary>
         private static bool TryCompleteMeleeAttack(ArcadeEnemyRuntime enemy, bool inRange, bool decoy, float seconds)
         {
-            if (!inRange || decoy || enemy.AttackCooldown > 0)
+            if (!inRange || decoy || enemy.AttackCooldown > 0 || enemy.MeleeRecoveryRemaining > 0)
             { CancelMeleeWindup(enemy); return false; }
             // 独立Boss继续使用自己的蓄力与接触规则；旧非街机配置的零前摇保持兼容。
             if (!string.IsNullOrEmpty(enemy.BossId) || enemy.MeleeWindupSeconds <= 0) return true;
@@ -931,12 +943,14 @@ namespace Game
             enemy.MeleeWindupRemaining = Mathf.Max(0, enemy.MeleeWindupRemaining - Mathf.Max(0, seconds));
             if (enemy.MeleeWindupRemaining > .00001f) return false;
             CancelMeleeWindup(enemy);
+            if (FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId))
+                enemy.MeleeRecoveryRemaining = FirepowerLoop.Arcade.ArcadeMeleeRules.RecoverySeconds;
             return true;
         }
 
         /// <summary>取消未完成的近战等待，重新靠近时从完整配置时长开始。</summary>
-        private static void CancelMeleeWindup(ArcadeEnemyRuntime enemy)
-        { enemy.MeleeWindupActive = false; enemy.MeleeWindupRemaining = 0; }
+        private static void CancelMeleeWindup(ArcadeEnemyRuntime enemy, bool interrupted = false)
+        { enemy.MeleeWindupActive = false; enemy.MeleeWindupRemaining = 0; if (interrupted) enemy.MeleeRecoveryRemaining = 0; }
 
         /// <summary>推进蓄力冲锋；蓄力期间锁定方向，冲锋命中同一玩家最多结算一次。</summary>
         private bool TickBoss(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, Vector2 targetDirection,
@@ -2271,6 +2285,9 @@ namespace Game
                 view.SetEnemyHerdImpact(enemy.Id,enemy.HerdImpact);
             }
             SyncRoundContent(runtime);
+            foreach(var enemy in runtime.Enemies.Values)
+                if(FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId))
+                    view.SetEnemyMelee(enemy.Id,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,runtime.PlayerPosition-enemy.Position);
             foreach(var enemy in runtime.Enemies.Values)view.SetEnemyBurning(enemy.Id,enemy.FlameHitRemainingSeconds);
             foreach (var projectile in runtime.Projectiles.Values)
                 if(projectile.SourceWeaponId=="arcade.support.drone")
@@ -2431,10 +2448,14 @@ namespace Game
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();
+            crowdingMovable.Clear();
             for (var index = 0; index < crowdingEnemies.Count; index++)
-                crowdingPositions.Add(crowdingEnemies[index].Position);
+            {
+                var enemy=crowdingEnemies[index];crowdingPositions.Add(enemy.Position);
+                crowdingMovable.Add(!FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId)||!enemy.MeleeWindupActive&&enemy.MeleeRecoveryRemaining<=0);
+            }
             ResolveCrowding(crowdingPositions, catalog.Rule.EnemyContactRadius,
-                ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance,crowdingMovable);
             for (var index = 0; index < crowdingEnemies.Count; index++)
                 crowdingEnemies[index].Position = crowdingPositions[index];
         }
@@ -2655,7 +2676,7 @@ namespace Game
         /// <summary>以固定顺序做两轮成对分离，复杂度受同屏敌人上限约束。</summary>
         internal static void ResolveCrowding(IList<Vector2> positions, float radius,
             float arenaHalfWidth, float arenaHalfHeight, IReadOnlyList<ArcadeObstacleDefinition> obstacles, ArcadeIslandRegion island = null,
-            float seaDistance = 0)
+            float seaDistance = 0,IReadOnlyList<bool> movable = null)
         {
             if (positions == null || positions.Count < 2 || radius <= 0f) return;
             var minimumDistance = radius * 1.7f;
@@ -2668,9 +2689,10 @@ namespace Game
                 if (distance >= minimumDistance) continue;
                 var direction = distance > 0.0001f ? delta / distance : ((first + second) & 1) == 0 ? Vector2.right : Vector2.up;
                 var correction = direction * ((minimumDistance - distance) * 0.5f);
-                positions[first] = ResolveEnemyPosition(positions[first], positions[first] - correction, radius,
+                bool moveFirst=movable==null||movable[first],moveSecond=movable==null||movable[second];
+                if(moveFirst)positions[first] = ResolveEnemyPosition(positions[first], positions[first] - correction*(moveSecond?1:2), radius,
                     arenaHalfWidth, arenaHalfHeight, obstacles, island, seaDistance);
-                positions[second] = ResolveEnemyPosition(positions[second], positions[second] + correction, radius,
+                if(moveSecond)positions[second] = ResolveEnemyPosition(positions[second], positions[second] + correction*(moveFirst?1:2), radius,
                     arenaHalfWidth, arenaHalfHeight, obstacles, island, seaDistance);
             }
         }

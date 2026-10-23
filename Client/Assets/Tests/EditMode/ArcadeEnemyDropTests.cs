@@ -208,6 +208,66 @@ namespace Game.Tests
             return enemy;
         }
 
+        /// <summary>丧尸爪子按正式0.9米攻击距离判断，不能借用1.5米身体碰撞圈隔空攻击。</summary>
+        [TestCase("enemy.arcade.zombie.shambler")]
+        [TestCase("enemy.arcade.zombie.gaunt")]
+        [TestCase("enemy.arcade.zombie.bloated")]
+        public void ZombieClawWaitsUntilItsActualReach(string id)
+        {
+            var enemy = SpawnLowTierEnemy(id);
+            Assert.That(enemy.AttackRange, Is.EqualTo(.9f).Within(.0001f));
+            runtime.PlayerPosition = Vector2.zero; enemy.Position = Vector2.right * 1.2f;
+            enemy.Speed = 0; enemy.AttackCooldown = 0;
+            Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .5f);
+            Assert.That(enemy.MeleeWindupActive, Is.False);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            enemy.Position = Vector2.right * .9f; Call("TickEnemies", runtime, 0f);
+            Call("TickEnemies", runtime, .39f); Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .02f); Assert.That(runtime.PlayerHealth, Is.LessThan(100));
+        }
+
+        /// <summary>追至攻击距离后停步，前摇不能继续把模型挤进主角身体。</summary>
+        [Test]
+        public void ZombieClawStopsAtReachDuringWindup()
+        {
+            var enemy = SpawnLowTierEnemy("enemy.arcade.zombie.shambler");
+            runtime.PlayerPosition = Vector2.zero; enemy.Position = Vector2.right * 2.9f;
+            enemy.Speed = 2.2f; enemy.AttackCooldown = 0;
+            Call("TickEnemies", runtime, 1f);
+            Assert.That(enemy.Position.x, Is.EqualTo(.9f).Within(.0001f));
+            Call("TickEnemies", runtime, .39f);
+            Assert.That(enemy.Position.x, Is.EqualTo(.9f).Within(.0001f));
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+            Call("TickEnemies", runtime, .02f);
+            Assert.That(runtime.PlayerHealth, Is.LessThan(100));
+        }
+
+        /// <summary>同一更新中追上刚跑开的玩家，也不能继承上一轮已经等过的前摇。</summary>
+        [Test]
+        public void ZombieClawCatchingEscapeStartsFullWindup()
+        {
+            var enemy = SpawnLowTierEnemy("enemy.arcade.zombie.shambler");
+            runtime.PlayerPosition = Vector2.zero; enemy.Position = Vector2.right * .9f;
+            enemy.Speed = 0; enemy.AttackCooldown = 0;
+            Call("TickEnemies", runtime, 0f); Call("TickEnemies", runtime, .3f);
+            runtime.PlayerPosition = Vector2.left * .2f; enemy.Speed = 20;
+            Call("TickEnemies", runtime, .02f); Call("TickEnemies", runtime, .11f);
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(100));
+        }
+
+        /// <summary>群怪分离不能推动已起手或收招中的丧尸，由后方怪物避让。</summary>
+        [Test] public void ZombieCrowdingKeepsWindupAndRecoveryPosition()
+        {
+            var enemy=SpawnLowTierEnemy("enemy.arcade.zombie.shambler");
+            runtime.PlayerPosition=Vector2.zero;enemy.Position=new Vector2(.9f,0);enemy.Speed=0;enemy.AttackCooldown=0;enemy.Damage=10;
+            runtime.Enemies.Add(999,new ArcadeEnemyRuntime{Id=999,ConfigId="enemy.arcade.basic",Position=new Vector2(1.9f,0),Health=100,MaxHealth=100,AttackCooldown=100});
+            Call("TickEnemies",runtime,0f);Assert.That(enemy.Position.x,Is.EqualTo(.9f).Within(.0001f));
+            Call("TickEnemies",runtime,.41f);Assert.That(runtime.PlayerHealth,Is.EqualTo(90));
+            Assert.That(enemy.Position.x,Is.EqualTo(.9f).Within(.0001f));
+            runtime.Enemies[999].Position=new Vector2(1.9f,0);Call("TickEnemies",runtime,.1f);
+            Assert.That(enemy.Position.x,Is.EqualTo(.9f).Within(.0001f));
+        }
+
         /// <summary>损坏的强度掉率表必须由客户端加载入口明确拒绝，避免战斗中才抛错。</summary>
         [TestCase("EnemyDropHealthUnit", 0f)]
         [TestCase("EnemyDropDamageUnit", float.NaN)]

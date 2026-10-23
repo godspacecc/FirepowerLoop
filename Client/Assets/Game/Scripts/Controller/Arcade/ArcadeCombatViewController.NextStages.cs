@@ -26,6 +26,10 @@ namespace Game
             public bool HasAttackBaseline,AttackPlaying;
             public int LastAttackSequence;
             public float AttackElapsed;
+            /// <summary>抓挠阶段按权威采样，跨阶段隐藏时清理，异步演员就绪后应用缓存。</summary>
+            public bool MeleeDriven;
+            public float MeleeDuration,MeleeRemaining,MeleeRecovery;
+            public Vector3 MeleeDirection;
         }
         private sealed class StageShadowDeath
         {
@@ -116,7 +120,7 @@ namespace Game
             if(!nextStageEnemies.TryGetValue(id,out var visual))return;
             bool increased=visual.HasAttackBaseline&&sequence>visual.LastAttackSequence;
             visual.HasAttackBaseline=true;visual.LastAttackSequence=sequence;
-            if(!increased||!visual.HasState||visual.State.Phase!=0||visual.Humanoid==null||!visual.Humanoid.activeInHierarchy)return;
+            if(visual.MeleeDriven||!increased||!visual.HasState||visual.State.Phase!=0||visual.Humanoid==null||!visual.Humanoid.activeInHierarchy)return;
             visual.AttackPlaying=true;visual.AttackElapsed=0;SampleNextStageActor(visual,false,0);
         }
         /// <summary>健康值仅用于比较新受击；首次、治疗、重复和隐藏态不补播旧反馈，也不创建健康条。</summary>
@@ -178,6 +182,7 @@ namespace Game
             if(state.Phase!=0){visual.AttackPlaying=false;visual.AttackElapsed=0;}
             if((arrival||travel)&&(visual.Humanoid.activeSelf||visual.Flame.IsBurning)){visual.View.ClearHitFeedback();visual.View.ResetPhysicalFeedback();}
             visual.Humanoid.SetActive(!arrival&&!travel);if(visual.Crow!=null)visual.Crow.SetActive(arrival);if(visual.Travel!=null)visual.Travel.SetActive(arrival||travel);
+            ApplyNextStageMelee(visual);
             SampleNextStageActor(visual,grave,age);
             visual.Humanoid.transform.localPosition=target;
             if(grave)
@@ -193,6 +198,7 @@ namespace Game
             else if(visual.Moving)
             {var delta=visual.Position-visual.LastPosition;visual.Humanoid.transform.localRotation=Quaternion.LookRotation(new Vector3(delta.x,0,delta.y));}
             else if(!visual.HasPosition||visual.Humanoid.transform.localRotation==Quaternion.identity)visual.Humanoid.transform.localRotation=Quaternion.Euler(0,180,0);
+            ApplyNextStageMelee(visual);
             if(arrival)
             {
                 visual.Crow.transform.localPosition=Vector3.Lerp(origin+new Vector3(-5,5,2),origin+Vector3.up*.5f,Mathf.Clamp01(age/roundLayout.SkillWarning));
@@ -205,12 +211,29 @@ namespace Game
                 SampleStageBlue(visual.Travel.transform,age,arrival ? .2f+.25f*Mathf.Sin(age*18)*Mathf.Sin(age*18) : .38f);
             }
         }
+        /// <summary>独立墓穴/暗影演员也消费同一抓挠阶段，保留自己的现身与换位表现。</summary>
+        private bool SetNextStageEnemyMelee(int id,float duration,float remaining,float recovery,Vector3 direction)
+        {
+            if(!nextStageEnemies.TryGetValue(id,out var visual))return false;
+            visual.MeleeDriven=true;visual.AttackPlaying=false;visual.MeleeDuration=duration;
+            visual.MeleeRemaining=remaining;visual.MeleeRecovery=recovery;visual.MeleeDirection=direction;
+            ApplyNextStageMelee(visual);
+            if(visual.View!=null&&visual.HasState)SampleNextStageActor(visual,visual.Kind==18&&visual.State.Phase==1,visual.State.Age);
+            return true;
+        }
+        private static void ApplyNextStageMelee(StageEnemyVisual visual)
+        {
+            if(!visual.MeleeDriven||visual.View==null)return;
+            bool active=visual.HasState&&visual.State.Phase==0;
+            visual.View.SetMeleeAttack(visual.MeleeDuration,active?visual.MeleeRemaining:0,active?visual.MeleeRecovery:0,visual.MeleeDirection);
+        }
         /// <summary>挥击期间位置/阶段快照不以待机覆盖；只采样正式角色自身动画。</summary>
         private void SampleNextStageActor(StageEnemyVisual visual,bool grave,float age)
         {
             // ResetPhysicalFeedback会恢复Animator，专用活体仍由此处手工采样，死亡接管后才交回原动画生命周期。
             visual.Animator.enabled=false;
-            var clip=visual.AttackPlaying&&visual.State.Phase==0?earlyStageLoad.StageAttack:
+            var clip=visual.MeleeDriven&&(visual.MeleeRemaining>0||visual.MeleeRecovery>0)&&visual.State.Phase==0?earlyStageLoad.StageIdle:
+                visual.AttackPlaying&&visual.State.Phase==0?earlyStageLoad.StageAttack:
                 grave&&age<=roundLayout.SkillWarning||!visual.Moving&&!grave?earlyStageLoad.StageIdle:earlyStageLoad.StageRun;
             var position=visual.Humanoid.transform.localPosition;var rotation=visual.Humanoid.transform.localRotation;
             visual.View.TickCombatFeedback(0);

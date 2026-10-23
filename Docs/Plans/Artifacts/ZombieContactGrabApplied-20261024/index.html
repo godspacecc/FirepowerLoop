@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>丧尸抓挠正式接入验证</title>
+<style>body{margin:0;background:#121a1f;color:#e2e9ed;font:16px system-ui}main{max-width:1000px;margin:auto;padding:24px}h1{font-size:26px}p{line-height:1.7}img{display:block;width:100%;margin:20px auto;border-radius:12px}button{padding:9px 18px;cursor:pointer}small{color:#bdcbd3}</style>
+<main><h1>正式接入：贴近后抓挠，命中再掉血</h1><p>三类丧尸都在中心距离0.9米停步，等待完整0.4秒再前抓；玩家提前跑开会取消。大幅后拉、前抓、内下撕沿用已确认版本。</p>
+<button onclick="document.querySelectorAll('img').forEach(i=>{i.src=i.dataset.src+'?t='+Date.now()})">重新播放</button>
+<h2>普通丧尸</h2><img src="shambler-claw.gif" data-src="shambler-claw.gif">
+<details><summary>疾行与重型丧尸</summary><img src="gaunt-claw.gif" data-src="gaunt-claw.gif"><img src="bloated-claw.gif" data-src="bloated-claw.gif"></details>
+<p><small>正式配置出生，真实TickEnemies推进位置、起手、取消与生命100→90，正式EnemyView叠加骨骼动作。原模型与主角同框、保持原尺寸。每段5秒/20fps，后半段演示跑开取消；为观察一次完整交互，首击收招结束后保持画面。属于隔离场景规则与表现验证，不是完整闯关或双机联网录屏。</small></p></main>

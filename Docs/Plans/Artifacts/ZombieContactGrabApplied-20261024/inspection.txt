@@ -1,0 +1,6 @@
+enemy.arcade.zombie.shambler: realTickHit=1.45, fullWindup=0.40, distance=0.900, handToBody=0.0135, health=100->90
+enemy.arcade.zombie.shambler: hits=1, cancels=1, outsideStarts=0, scale=(1.00, 1.00, 1.00)
+enemy.arcade.zombie.gaunt: realTickHit=1.70, fullWindup=0.40, distance=0.900, handToBody=0.0118, health=100->90
+enemy.arcade.zombie.gaunt: hits=1, cancels=1, outsideStarts=0, scale=(1.00, 1.00, 1.00)
+enemy.arcade.zombie.bloated: realTickHit=1.45, fullWindup=0.40, distance=0.900, handToBody=0.0149, health=100->90
+enemy.arcade.zombie.bloated: hits=1, cancels=1, outsideStarts=0, scale=(1.00, 1.00, 1.00)

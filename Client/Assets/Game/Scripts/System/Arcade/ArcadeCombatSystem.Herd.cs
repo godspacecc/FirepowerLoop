@@ -79,7 +79,7 @@ namespace Game
                     if(!r.Enemies.ContainsKey(enemy.Id)||!ArcadeHerdRules.TryContact(cow,sweep,r.HerdMapId,enemy.Id,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,enemy.Health>0))continue;
                     DamageEnemy(enemy,ArcadeRoundContentRules.Damage(enemy.MaxHealth,stage.HerdEnemyDamage));
                     if(enemy.Health<=0)KillEnemyWithReaction(r,enemy,true,false,enemy.Position-new UnityEngine.Vector2(cow.DirectionX,cow.DirectionZ),ArcadeDeathImpactRules.Herd);
-                    else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy);
+                    else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy,true);
                     if(this.GetModel<ArcadeCombatModel>().Runtime!=r||catalog==null||!RoundContentActive(r))return;
                 }
                 if(cow.Phase==ArcadeHerdPhase.Expired){ArcadeHerdRules.Cancel(cow);r.HerdCows.Remove(cow);}
