@@ -75,7 +75,7 @@ namespace Game
         }
         /// <summary>当前地图 Context 的静态场地根；与动态根分开，不能跨地图查找同名物件。</summary>
         private Transform islandBaseArenaRoot;
-        /// <summary>本控制器临时覆盖的 Renderer 原始状态；岛岸释放时逐项恢复，不改变碰撞。</summary>
+        /// <summary>本控制器临时覆盖的共享底图 Renderer 原始状态；最终离场逐项恢复，不改变碰撞。</summary>
         private readonly Dictionary<Renderer, bool> islandBaseVisibility = new();
 
         public void SetOpening(ArcadeOpeningParameters parameters, bool fireActive)
@@ -248,7 +248,7 @@ namespace Game
             islandWadingShader = null;
             DestroyObject(islandWarningMaterial); islandWarningMaterial = null;
             ReleaseObstacleVisualLoad(islandLoad); islandLoad = null;
-            if (root != null && root.activeSelf && contentEnvironment != null) HideIslandBaseArena();
+            ReapplyBaseArenaOverlay();
         }
 
         private void ReleaseIslandMeshes()
@@ -424,7 +424,19 @@ namespace Game
             instance.transform.localPosition = new Vector3(0, bottom, 0) - Vector3.Scale(new Vector3(bounds.center.x, bounds.min.y, bounds.center.z), scale);
         }
 
-        /// <summary>仅在岛岸候选加载成功后隐藏当前场地的旧地板与四面墙；重复调用不覆盖原始状态。</summary>
+        /// <summary>旧表现释放或公共资源失败后，仍由已就绪且正在显示的正式环境覆盖共享底图。</summary>
+        private void ReapplyBaseArenaOverlay()
+        {
+            if (root == null || !root.activeSelf) return;
+            bool hasIsland = island != null && island.activeSelf;
+            bool hasContent = contentEnvironment != null && contentEnvironment.activeSelf;
+            bool hasRound = roundLayoutReady && roundLayout != null && roundLayout.ArenaConfigNumber != 1 &&
+                roundContentRoot != null && roundContentRoot.activeSelf;
+            bool hasShop = slayerMartRegionReady && slayerMartRegionRoot != null && slayerMartRegionRoot.activeSelf;
+            if (hasIsland || hasContent || hasRound || hasShop) HideIslandBaseArena();
+        }
+
+        /// <summary>正式环境就绪后隐藏当前场地的旧地板与四面墙；重复调用不覆盖原始状态。</summary>
         private void HideIslandBaseArena()
         {
             if (islandBaseArenaRoot == null || islandBaseVisibility.Count > 0) return;

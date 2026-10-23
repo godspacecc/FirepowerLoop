@@ -1,0 +1,49 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 6,
+      "PassedTests": 1,
+      "FailedTests": 5,
+      "SkippedTests": 0,
+      "Duration": "00:00:05.2573116"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(21)",
+        "Status": "Failed",
+        "Duration": "00:00:00.7150000",
+        "Message": "  已准备好的地图不能露出共享底图\r\n  Expected: <empty>\r\n  But was:  < \"Ground\", \"NorthBoundary\", \"SouthBoundary\", \"WestBoundary\", \"EastBoundary\" >\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(22)",
+        "Status": "Failed",
+        "Duration": "00:00:00.5410000",
+        "Message": "  已准备好的地图不能露出共享底图\r\n  Expected: <empty>\r\n  But was:  < \"Ground\", \"NorthBoundary\", \"SouthBoundary\", \"WestBoundary\", \"EastBoundary\" >\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ContentLoadFailureCannotExposeAnAlreadyReadyEnvironment",
+        "Status": "Failed",
+        "Duration": "00:00:00.5200000",
+        "Message": "  已准备好的地图不能露出共享底图\r\n  Expected: <empty>\r\n  But was:  < \"Ground\", \"NorthBoundary\", \"SouthBoundary\", \"WestBoundary\", \"EastBoundary\" >\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.EveryConfiguredRoundKeepsBaseHiddenAcrossRepeatedSnapshots",
+        "Status": "Failed",
+        "Duration": "00:00:01.3980000",
+        "Message": "  全部正式轮布局都必须保持覆盖：arena.2.round.1,arena.2.round.2,arena.2.round.3,arena.2.round.4,arena.3.round.1,arena.3.round.2,arena.3.round.3,arena.3.round.4,arena.4.round.1,arena.4.round.2,arena.4.round.3,arena.4.round.4,arena.5.round.1,arena.5.round.2,arena.5.round.3,arena.5.round.4,arena.6.round.1,arena.6.round.2,arena.6.round.3,arena.6.round.4,arena.7.round.1,arena.7.round.2,arena.7.round.3,arena.7.round.4,arena.8.round.1,arena.8.round.2,arena.8.round.3,arena.8.round.4,arena.9.round.1,arena.9.round.2,arena.9.round.3,arena.9.round.4,arena.10.round.1,arena.10.round.2,arena.10.round.3,arena.10.round.4,arena.11.round.1,arena.11.round.2,arena.11.round.3,arena.11.round.4,arena.12.round.1,arena.12.round.2,arena.12.round.3,arena.12.round.4,arena.13.round.1,arena.13.round.2,arena.13.round.3,arena.13.round.4,arena.14.round.1,arena.14.round.2,arena.14.round.3,arena.14.round.4,arena.15.round.1,arena.15.round.2,arena.15.round.3,arena.15.round.4,arena.16.round.1,arena.16.round.2,arena.16.round.3,arena.16.round.4,arena.17.round.1,arena.17.round.2,arena.17.round.3,arena.17.round.4,arena.18.round.1,arena.18.round.2,arena.18.round.3,arena.18.round.4,arena.19.round.1,arena.19.round.2,arena.19.round.3,arena.19.round.4,arena.20.round.1,arena.20.round.2,arena.20.round.3,arena.20.round.4,arena.21.round.1,arena.21.round.2,arena.21.round.3,arena.21.round.4,arena.22.round.1,arena.22.round.2,arena.22.round.3,arena.22.round.4\r\n  Expected: <empty>\r\n  But was:  < \"arena.2.round.1\", \"arena.2.round.2\", \"arena.2.round.3\", \"arena.2.round.4\", \"arena.3.round.1\", \"arena.3.round.2\", \"arena.3.round.3\", \"arena.3.round.4\", \"arena.4.round.1\", \"arena.4.round.2\"... >\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.RoomRoundTripKeepsBaseHiddenAndFinalReleaseRestoresOriginalStates",
+        "Status": "Passed",
+        "Duration": "00:00:00.4500000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ShopRegionKeepsBaseHiddenWhenOpeningIsDisabled",
+        "Status": "Failed",
+        "Duration": "00:00:00.5170000",
+        "Message": "  已准备好的地图不能露出共享底图\r\n  Expected: <empty>\r\n  But was:  < \"Ground\", \"NorthBoundary\", \"SouthBoundary\", \"WestBoundary\", \"EastBoundary\" >\r\n"
+      }
+    ]
+  }
+}

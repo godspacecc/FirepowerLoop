@@ -88,7 +88,7 @@ namespace Game
                     projectileBlastTemplate=null;
                     barrelBlastTemplate=null;ClearBarrelBlasts();
                     hazardPresentation?.Dispose();hazardPresentation=null;
-                    contentEnvironmentIdentity=null; RestoreIslandBaseArena();
+                    contentEnvironmentIdentity=null; RestoreIslandBaseArena(); ReapplyBaseArenaOverlay();
                 }
                 ReleaseObstacleVisualLoad(state);if(ReferenceEquals(contentLoad,state))contentLoad=null;
             }

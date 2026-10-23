@@ -1,0 +1,235 @@
+[
+  {
+    "testClass": "ArcadeEarlyStageLoadingTests",
+    "result": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 8,
+          "PassedTests": 8,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:23.5202055"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.DockUsesConfirmedPrefabAndReleasesItsHandleOnce",
+            "Status": "Passed",
+            "Duration": "00:00:02.4730000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.ExpandedFarmHasPhysicalGroundSupportAndNoTemporaryObstacleArtRequest",
+            "Status": "Passed",
+            "Duration": "00:00:01.5350000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.FailedResourceKeepsMapUnreadyAndSameLayoutCanRetry",
+            "Status": "Passed",
+            "Duration": "00:00:02.4360000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.FarmWaitsForEnvironmentAndCowBeforePublishingReadiness",
+            "Status": "Passed",
+            "Duration": "00:00:02.0230000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.HerdSnapshotWaitsForTemplateAndRebindsAfterHiddenMap",
+            "Status": "Passed",
+            "Duration": "00:00:01.8900000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.LateCallbacksCannotRestoreReleasedMap",
+            "Status": "Passed",
+            "Duration": "00:00:01.3460000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.NewMapReplacesOldInvisibleWallsAndRestoresTheirOriginalEnabledState",
+            "Status": "Passed",
+            "Duration": "00:00:02.8870000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.OldMapHerdSnapshotCannotReplaceCurrentCows",
+            "Status": "Passed",
+            "Duration": "00:00:02.3900000"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "testClass": "ArcadeObstacleVisualTests",
+    "result": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 6,
+          "PassedTests": 6,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:07.2004463"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.Content_OpeningReleaseKeepsThemeHiddenAndEndRestoresBaseVisibility",
+            "Status": "Passed",
+            "Duration": "00:00:03.3540000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.Island_HidesBaseStageRenderersWithoutDisablingCollisionOrOtherMaps",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.Island_OceanCoversAreaBeyondShoreWithoutColliders",
+            "Status": "Passed",
+            "Duration": "00:00:00.0980000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.Island_ReleaseRestoresOriginalVisibilityAfterRepeatedHide",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.VisualSet_DoesNotDependOnIgnoredArtSources",
+            "Status": "Passed",
+            "Duration": "00:00:01.6230000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeObstacleVisualTests.VisualSet_HasFourObstacleVariantsAndDormantContentTemplates",
+            "Status": "Passed",
+            "Duration": "00:00:00.0090000"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "testClass": "ArcadeRoundContentViewTests",
+    "result": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 7,
+          "PassedTests": 7,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:08.7156788"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes",
+            "Status": "Passed",
+            "Duration": "00:00:01.2170000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact",
+            "Status": "Passed",
+            "Duration": "00:00:00.0800000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks",
+            "Status": "Passed",
+            "Duration": "00:00:00.1120000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot",
+            "Status": "Passed",
+            "Duration": "00:00:00.0420000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources",
+            "Status": "Passed",
+            "Duration": "00:00:03.3350000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings",
+            "Status": "Passed",
+            "Duration": "00:00:00.0960000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval",
+            "Status": "Passed",
+            "Duration": "00:00:00.0700000"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "testClass": "IslandRoundPresentationTests",
+    "result": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 12,
+          "PassedTests": 12,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:24.7817689"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.ApprovedLowPolyPaletteAndDetailsLoadForAllFourRounds",
+            "Status": "Passed",
+            "Duration": "00:00:02.7790000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.EachObstacleInstantiatesOnlyItsChosenVariantWithoutAnyMapTemplate",
+            "Status": "Passed",
+            "Duration": "00:00:01.8250000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.FixedForestsReleaseTheirOldMapBeforeShowingNextRound",
+            "Status": "Passed",
+            "Duration": "00:00:01.4660000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.FourRealLayoutsWaitForResourcesAndGenerateTheirAuthoritativeMeshes",
+            "Status": "Passed",
+            "Duration": "00:00:03.2370000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.FourthRoundWarningPrecedesFlameAndClearTurnsBothOff",
+            "Status": "Passed",
+            "Duration": "00:00:01.1690000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.LateObstacleCallbacksCannotExposeGenericVisualsOnAnyFixedMap",
+            "Status": "Passed",
+            "Duration": "00:00:02.1160000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.LateResourceCallbacksCannotRepopulateReleasedMapRoot",
+            "Status": "Passed",
+            "Duration": "00:00:01.5850000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.MissingWadingMaterialFailsBeforeCommittingIslandAndCanRetry",
+            "Status": "Passed",
+            "Duration": "00:00:01.7670000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.OnlyPassagesKeepInvisibleWallsAndMountainsUseAuthoritativeSolidRoots",
+            "Status": "Passed",
+            "Duration": "00:00:01.3060000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.ReleasedLocalLayoutCannotLeakIntoFollowingSharedMap",
+            "Status": "Passed",
+            "Duration": "00:00:01.3530000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.ThreeExitGuidesSharePassagesAndBoatAppearsOnlyInSecondRound",
+            "Status": "Passed",
+            "Duration": "00:00:01.1050000"
+          },
+          {
+            "Name": "Game.Tests.IslandRoundPresentationTests.WadingUsesLoadedMaterialShaderInsteadOfGlobalShaderLookup",
+            "Status": "Passed",
+            "Duration": "00:00:01.7720000"
+          }
+        ]
+      }
+    }
+  }
+]

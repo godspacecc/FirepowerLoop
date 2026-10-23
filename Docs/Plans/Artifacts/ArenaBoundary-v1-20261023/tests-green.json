@@ -1,0 +1,44 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 6,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:05.7664404"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(21)",
+        "Status": "Passed",
+        "Duration": "00:00:00.6340000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(22)",
+        "Status": "Passed",
+        "Duration": "00:00:00.5550000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ContentLoadFailureCannotExposeAnAlreadyReadyEnvironment",
+        "Status": "Passed",
+        "Duration": "00:00:00.4870000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.EveryConfiguredRoundKeepsBaseHiddenAcrossRepeatedSnapshots",
+        "Status": "Passed",
+        "Duration": "00:00:01.5550000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.RoomRoundTripKeepsBaseHiddenAndFinalReleaseRestoresOriginalStates",
+        "Status": "Passed",
+        "Duration": "00:00:00.5270000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeArenaBoundaryTests.ShopRegionKeepsBaseHiddenWhenOpeningIsDisabled",
+        "Status": "Passed",
+        "Duration": "00:00:00.7300000"
+      }
+    ]
+  }
+}
