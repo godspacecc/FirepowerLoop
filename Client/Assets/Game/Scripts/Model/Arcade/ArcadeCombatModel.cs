@@ -15,6 +15,8 @@ namespace Game
 
     internal sealed class ArcadeEnemyRuntime
     {
+        /// <summary>当前地图牛撞的权威飞行与落地僵直；对象回池必须归零。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>真实火焰命中后的短暂表现计时，不造成持续伤害。</summary>
         public float FlameHitRemainingSeconds;
         /// <summary>最后一次有效伤害是否来自喷火器，仅用于死亡表现。</summary>
@@ -87,6 +89,7 @@ namespace Game
             ContentSpecialKind = ContentBossKind = ContentMannequinHits = 0;
             ContentAssigned = ContentWarning = ContentEvolved = false;
             ContentBornAt = ContentStunUntil = 0;
+            HerdImpact=default;
             ContentLastHitAt = -1;
             ContentSkillCycle = ContentTelegraphCycle = -1;
             ContentLockedDirection = ContentLockedTarget = default;
@@ -213,6 +216,8 @@ namespace Game
     /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
     internal sealed class ArcadeCombatRuntime
     {
+        /// <summary>活动步推进的牛撞状态，不随UI或表现帧推进。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>当前轮金币现场，离开不补发也不写入安全节点。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
         /// <summary>整关清场后拥有的中央传送门。</summary>

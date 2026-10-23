@@ -498,6 +498,7 @@ namespace Game
         /// </summary>
         public void SetArcadePresentationActive(bool active)
         {
+            if(!active)ResetHerdImpact();
             arcadePresentationActive = active;
             SetActive(arcadePlayerMarker, presentationAlive && active);
             if (active)
@@ -776,11 +777,13 @@ namespace Game
         /// <summary>正式 Animator 求值后统一叠加后坐与副手握持；造型库手动采样也调用同一握持入口。</summary>
         private void LateUpdate()
         {
+            herdVisual.Restore();
             if (animator != null)
             {
                 if (groundContact == null) groundContact = new PlayerGroundContactPresenter(animator, CharacterController);
                 groundContact.Apply(presentationAlive && !SwimmingPresentation);
             }
+            if(ApplyHerdImpact())return;
             if (animator == null || !animator.isActiveAndEnabled) return;
             arcadeDamage?.ApplyHurtPose(animator);
             if(SwimmingPresentation){ApplySwimmingPresentation(Time.deltaTime);return;}
@@ -1114,6 +1117,7 @@ namespace Game
 
         private void OnDisable()
         {
+            ResetHerdImpact();
             arcadeDamage?.Reset();
             RestoreFeedbackColors();
             colorFeedbackRemainingSeconds = 0f;

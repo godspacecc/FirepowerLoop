@@ -34,6 +34,10 @@ namespace Game
         /// <summary>只携带已经裁决的死亡方向与爆炸类别，旧端口保留动画降级。</summary>
         void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive) => RemoveEnemy(runtimeId, playDeath);
         void SetEnemyBurning(int runtimeId,float remainingSeconds) { }
+        /// <summary>只投影牛撞快照，不从模型位置反推战斗位移。</summary>
+        void SetHerdImpact(int runtimeId,FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction) { }
+        /// <summary>联机断线等待时冻结牛撞尸体的表现时钟。</summary>
+        void SetHerdActivityPaused(bool paused) { }
         /// <summary>专属轮廓复用已预载敌人中的纯粒子模板，克隆由请求方地图根持有。</summary>
         bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback){feedback=null;return false;}
         void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)=>RemoveEnemy(runtimeId,playDeath,direction,explosive);

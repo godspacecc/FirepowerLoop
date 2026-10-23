@@ -1,0 +1,37 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 5,
+    "PassedTests": 5,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:02.0678581"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactVisualTests.CowKilledZombieFliesAndStaysDeadOnGroundThenResets",
+      "Status": "Passed",
+      "Duration": "00:00:00.2840000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactVisualTests.DeathDuringFlightContinuesCurrentHeightInsteadOfRestarting",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactVisualTests.LivingZombieGroundHoldDoesNotAccumulateOffset",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactVisualTests.NetworkPauseFreezesHerdCorpseAndItsReleaseDeadline",
+      "Status": "Passed",
+      "Duration": "00:00:00.0390000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactVisualTests.PlayerUsesBodyChildAndClearsWhenLeavingArcade",
+      "Status": "Passed",
+      "Duration": "00:00:00.1960000"
+    }
+  ]
+}

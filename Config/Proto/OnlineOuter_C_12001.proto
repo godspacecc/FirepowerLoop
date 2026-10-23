@@ -400,6 +400,10 @@ message OnlineArcadeBattlePlayerInfo
 	// 本次冲刺锁定方向，客户端预测使用同一权威向量。
 	float DashDirectionX = 27;
 	float DashDirectionZ = 28;
+	// 当前牛撞的权威剩余量；重连直接恢复飞行或落地僵直，不重播。
+	float HerdImpactRemaining = 29;
+	float HerdImpactDirectionX = 30;
+	float HerdImpactDirectionZ = 31;
 }
 
 // Opcode 12081
@@ -423,6 +427,10 @@ message OnlineArcadeEnemyInfo
 	bool ContentWarning = 15;
 	// 最近一次有效喷火命中的表现剩余时间，不产生持续伤害。
 	float FlameHitRemainingSeconds = 16;
+	// 存活敌人被牛撞后的当前飞行／落地状态。
+	float HerdImpactRemaining = 17;
+	float HerdImpactDirectionX = 18;
+	float HerdImpactDirectionZ = 19;
 }
 
 // Opcode 12082

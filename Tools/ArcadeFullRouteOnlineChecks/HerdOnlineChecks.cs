@@ -7,7 +7,8 @@ internal static class HerdOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var checks=new (string,Action)[]{("SingleFileAndSpeed",OneRow),("TailClearsBeforeNextBatch",TailClears),("SweepAndSingleDeath",Sweep),("Protections",Protections),("ClearAndLoadingFreeze",Freeze),("FreshRound",FreshRound),("SnapshotCloneAndCodec",Snapshot),("LethalMiddleCowKeepsRow",Lethal)};
+        var checks=new (string,Action)[]{("SingleFileAndSpeed",OneRow),("TailClearsBeforeNextBatch",TailClears),("SweepAndSingleDeath",Sweep),("Protections",Protections),("ClearAndLoadingFreeze",Freeze),("FreshRound",FreshRound),("SnapshotCloneAndCodec",Snapshot),("LethalMiddleCowKeepsRow",Lethal),
+            ("ImpactFlightAndGroundHold",ImpactFlight),("ImpactBlocksActions",ImpactActions),("ImpactSnapshotCodec",ImpactSnapshot),("CowDeathDirectionAndKind",ImpactDeath),("SurvivingEnemyImpact",LivingImpact)};
         if(maximum<checks.Length)throw new ArgumentException("HerdOnline maximum too small");int failed=0;
         foreach(var(name,test) in checks)try{test();Console.WriteLine("PASS HerdOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL HerdOnline."+name+": "+(e.InnerException??e).Message);}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -33,5 +34,44 @@ internal static class HerdOnlineChecks
     private static void Lethal(){var a=Create();Tick(a,8);a.Battle.Players[1].CurrentHealth=1;Tick(a,2);Require(a.Battle.Players[1].RespawnSeconds>0,"lethal contact did not enter actual respawn");Require(Cows(a).Select((c,i)=>Math.Abs(c.X-Cows(a)[0].X+i*3)<.001f&&c.Z==-14).All(v=>v),"lethal contact split single file");}
     private static void Snapshot(){var a=Create();Tick(a,8);using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",a.Battle);var prop=snapshot.GetType().GetProperty("Herds");Require(prop!=null,"herd protocol absent");using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));var items=((System.Collections.IEnumerable)prop.GetValue(decoded)!).Cast<object>().ToArray();Require(items.Length==5,"clone/codec lost herd");var first=items[0];Require((long)first.GetType().GetProperty("MapInstanceId")!.GetValue(first)! ==a.Battle.RoundGeneration,"map identity lost");}
     private static object Call(string name,params object[] args)=>typeof(OnlineArcadeRunActorSystem).GetMethod(name,BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic)!.Invoke(null,args)!;
+    /// <summary>与单人相同的3米飞行，落地完整0.5秒及恢复后解锁。</summary>
+    private static void ImpactFlight()
+    {
+        var a=Create();Tick(a,8);Tick(a,2);var p=a.Battle.Players[1];float start=p.PositionX;
+        Require(Math.Abs(p.HerdImpact.Remaining-1.7f)<.001,"no authoritative launch");
+        Call("TickHerdImpacts",a.Battle,.475f);Require(Math.Abs(p.PositionX-start-1.5f)<.001,"half flight wrong");
+        ArcadeHerdImpactRules.Sample(p.HerdImpact.Remaining,false,out float height,out _);Require(height>2.4,"body did not leave cow back");
+        Call("TickHerdImpacts",a.Battle,.475f);float landed=p.PositionX;Call("TickHerdImpacts",a.Battle,.49f);
+        Require(Math.Abs(landed-start-3)<.001&&p.PositionX==landed&&p.HerdImpact.Remaining>.25,"grounded half-second hold missing");
+        Call("TickHerdImpacts",a.Battle,.26f);Require(!p.HerdImpact.Active,"recovery never ended");
+        ArcadeHerdImpactRules.Begin(ref p.HerdImpact,1,0);a.Battle.WaveClearAwarded=true;
+        Call("TickPlayers",a,a.Battle,1.7f,TimeInfo.Instance.ServerNow());Require(!p.HerdImpact.Active,"clear phase locked player before exit");
+    }
+    private static void ImpactActions()
+    {
+        var a=Create();Tick(a,8);Tick(a,2);var p=a.Battle.Players[1];var record=a.Record.Players[0];record.Bombs=record.Dashes=2;p.AimX=1;p.Firing=true;p.MoveZ=1;
+        Require(!(bool)Call("Fire",a,a.Battle,p,record),"fired in flight");Call("UseBomb",a,a.Battle,p);Call("UseDash",a,p);
+        Require(record.Bombs==2&&record.Dashes==2&&p.DashSeconds==0,"used action while knocked down");
+        float x=p.PositionX,z=p.PositionZ;Call("TickPlayers",a,a.Battle,.1f,TimeInfo.Instance.ServerNow());Require(p.PositionX==x&&p.PositionZ==z,"input moved player during impact");
+    }
+    private static void ImpactSnapshot()
+    {
+        var a=Create();Tick(a,8);Tick(a,2);var enemy=new OnlineArcadeEnemyRuntime{RuntimeId=999,CurrentHealth=10,MaxHealth=10};ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,-1,0);a.Battle.Enemies.Add(999,enemy);
+        Call("TickHerdImpacts",a.Battle,1.1f);using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",a.Battle);using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);
+        using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));
+        Require(Math.Abs(decoded.Players[0].HerdImpactRemaining-.6f)<.001&&decoded.Players[0].HerdImpactDirectionX==1,"player impact lost in clone/codec");
+        Require(Math.Abs(decoded.Enemies.Single(e=>e.RuntimeId==999).HerdImpactRemaining-.6f)<.001&&decoded.Enemies.Single(e=>e.RuntimeId==999).HerdImpactDirectionX==-1,"enemy impact lost in clone/codec");
+    }
+    private static void ImpactDeath()
+    {
+        var a=Create();Tick(a,8);a.Battle.Enemies[77]=new OnlineArcadeEnemyRuntime{RuntimeId=77,PositionX=-26,PositionZ=-14,CurrentHealth=10,MaxHealth=10};Tick(a,2);
+        var death=a.Battle.EnemyDeaths.Single();Require(death.ImpactKind==ArcadeDeathImpactRules.Herd&&!death.Explosive&&death.DirectionX==1&&Math.Abs(death.DirectionZ)<.001,"cow corpse is not launched in cow direction");
+    }
+    private static void LivingImpact()
+    {
+        var a=Create();Tick(a,8);a.Battle.Enemies[77]=new OnlineArcadeEnemyRuntime{RuntimeId=77,PositionX=-26,PositionZ=-14,CurrentHealth=10,MaxHealth=10,SpecialKind=3};Tick(a,2);
+        Require(a.Battle.Enemies.TryGetValue(77,out var e)&&e.HerdImpact.Active,"survivor not launched");float x=e!.PositionX,z=e.PositionZ;
+        Call("TickEnemies",a,a.Battle,.1f);Require(e.PositionX==x&&e.PositionZ==z&&!a.Battle.Projectiles.Values.Any(p=>p.OwnerPlayerId==0),"survivor chased or attacked during flight");
+    }
     private static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
 }

@@ -11,6 +11,15 @@ namespace Game.Tests
     /// <summary>真正网络转换必须保留牛的地图身份和动作年龄，不持有可变协议消息。</summary>
     public sealed class ArcadeHerdNetworkTests
     {
+        [Test] public void ImpactCopiesCurrentPhaseForPlayersAndEnemiesAndStopsPrediction()
+        {
+            using var source=OnlineArcadeBattleInfo.Create();var player=OnlineArcadeBattlePlayerInfo.Create();player.PlayerId=4;player.HerdImpactRemaining=.6f;player.HerdImpactDirectionX=1;source.Players.Add(player);
+            var enemy=OnlineArcadeEnemyInfo.Create();enemy.RuntimeId=8;enemy.HerdImpactRemaining=1.2f;enemy.HerdImpactDirectionX=-1;source.Enemies.Add(enemy);
+            var method=typeof(OnlineArcadeRunSystem).GetMethods(BindingFlags.Static|BindingFlags.NonPublic).Single(m=>m.ReturnType==typeof(OnlineArcadeBattleSnapshot)&&m.GetParameters().Length==1);
+            var copy=(OnlineArcadeBattleSnapshot)method.Invoke(null,new object[]{source});player.HerdImpactRemaining=0;enemy.HerdImpactRemaining=0;
+            Assert.That(copy.Players[0].HerdImpact.Remaining,Is.EqualTo(.6f));Assert.That(copy.Enemies[0].HerdImpact.Remaining,Is.EqualTo(1.2f));Assert.That(copy.Enemies[0].HerdImpact.DirectionX,Is.EqualTo(-1));
+            Assert.That(OnlineArcadePresentationSystem.PredictedMovementDirection(Vector2.up,copy.Players[0]),Is.EqualTo(Vector2.zero));
+        }
         [Test] public void ProtocolToPresentationCopiesHerdPose()
         {
             var source=OnlineArcadeBattleInfo.Create();source.RoundGeneration=7;var cow=OnlineArcadeHerdInfo.Create();cow.MapInstanceId=7;cow.Id=12;cow.Phase=1;cow.X=-20;cow.Z=-14;cow.DirectionX=1;cow.PhaseSeconds=.4;source.Herds.Add(cow);

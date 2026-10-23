@@ -43,6 +43,8 @@ namespace Game
         void SetArcadePresentationActive(bool active) { }
         /// <summary>同步实际有效保护的纯视觉状态，不改变保护时长或受伤规则。</summary>
         void SetArcadeProtectionActive(bool active) { }
+        /// <summary>牛撞纯姿态镜像，权威仍拥有位置和禁用时间。</summary>
+        void SetHerdImpact(FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction) { }
         void SetTiliRing(float current, float maximum, bool isSprinting, bool exhausted);
         void ShowActionProgress(float progress01, string iconAddress)
         {

@@ -643,6 +643,7 @@ namespace Game
 
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            if(runtime.PlayerHealth<=0)runtime.HerdImpact=default;
             TickDropLifetimes(runtime, deltaTime);
             TickRoundReward(runtime,deltaTime);
             foreach(var enemy in runtime.Enemies.Values)enemy.FlameHitRemainingSeconds=Mathf.Max(0,enemy.FlameHitRemainingSeconds-deltaTime);
@@ -699,6 +700,9 @@ namespace Game
 
         private void TickPlayer(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            // 清轮后玩家仍需完成当前落地，避免冻结的牛群时钟锁死出口操作。
+            if(!RoundContentActive(runtime))TickHerdImpacts(runtime,deltaTime);
+            if(runtime.HerdImpact.Active)return;
             var speedBonus = UpgradeTotal(this.GetModel<ArcadeRunModel>().Current, global::ArcadeUpgradeKind.MoveSpeedPercent);
             var bootsBonus = TryGetPowerup(runtime, global::ArcadePowerupBehavior.Boots, out var boots)
                 ? boots.Definition.Magnitude
@@ -836,6 +840,7 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
+                if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy);continue;}
                 if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy);continue;}
                 if(enemy.ContentStunUntil>runtime.ContentClock.Elapsed)CancelMeleeWindup(enemy);
                 enemy.AttackCooldown = Mathf.Max(0f, enemy.AttackCooldown - deltaTime);
@@ -1510,6 +1515,7 @@ namespace Game
         /// <summary>攻击冷却结束且瞄准有效时，按当前临时或已购武器结算近战/发射弹丸；不消耗基地弹药。</summary>
         private void TryFire(ArcadeCombatRuntime runtime)
         {
+            if(runtime.HerdImpact.Active)return;
             if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.AwaitingExit || runtime.RespawnRemaining > 0f || runtime.FireCooldown > 0f || runtime.AimDirection.sqrMagnitude < 0.001f) return;
@@ -1593,6 +1599,7 @@ namespace Game
 
         private void UseBomb(ArcadeCombatRuntime runtime)
         {
+            if(runtime.HerdImpact.Active)return;
             if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.AwaitingExit || runtime.InTreasureRoom || runtime.Bombs <= 0 || runtime.RespawnRemaining > 0f) return;
@@ -1612,6 +1619,7 @@ namespace Game
         /// <summary>消耗一次冲刺并锁定方向；无移动输入时沿角色当前朝向，后续松键不取消位移。</summary>
         private void UseDash(ArcadeCombatRuntime runtime)
         {
+            if(runtime.HerdImpact.Active)return;
             if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
             if (runtime.Dashes <= 0 || runtime.RespawnRemaining > 0f || runtime.DashRemaining > 0f) return;
@@ -1680,6 +1688,7 @@ namespace Game
             runtime.PlayerHealth -= Mathf.Max(1, damage);
             runtime.PlayerInvulnerability = catalog.Rule.ContactInvulnerabilitySeconds;
             if (runtime.PlayerHealth > 0) return;
+            runtime.HerdImpact=default;
             EndFirstPerson(runtime);
 
             if (runtime.IsChallenge)
@@ -2184,6 +2193,7 @@ namespace Game
                 !runtime.WaveClearAwarded && !runtime.InTreasureRoom && runtime.IslandCampfireWarningRemaining > 0);
             SyncIslandEntryWarning(runtime);
             view.SetPlayerRescue(0,false);
+            view.SetPlayerHerdImpact(0,runtime.HerdImpact);
             view.SetPlayerDash(0,runtime.PlayerPosition,runtime.DashDirection,runtime.DashRemaining,runtime.RespawnRemaining<=0f);
             if (runtime.InTreasureRoom)
             {
@@ -2211,6 +2221,7 @@ namespace Game
                     enemy.BossPhase is ArcadeBossPhase.Telegraph or ArcadeBossPhase.RayTelegraph, enemy.AttackSequence,
                     enemy.IsBossPresentation);
                 view.SetEnemyArmor(enemy.Id, enemy.Position, enemy.ArmorHealth);
+                view.SetEnemyHerdImpact(enemy.Id,enemy.HerdImpact);
             }
             SyncRoundContent(runtime);
             foreach(var enemy in runtime.Enemies.Values)view.SetEnemyBurning(enemy.Id,enemy.FlameHitRemainingSeconds);

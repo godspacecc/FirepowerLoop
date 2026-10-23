@@ -9,6 +9,8 @@ namespace FirepowerLoop.Arcade
         public const int EnergyBlast = 1;
         /// <summary>近距霰弹只做低幅后倒，不声明爆炸或喷出爆炸血雾。</summary>
         public const int CloseShotgun = 2;
+        /// <summary>牛群击杀沿牛行进方向完整腾空，落地后保持尸体，不产生爆炸血雾。</summary>
+        public const int Herd = 3;
         /// <summary>按开枪时的玩家位置量取近距离，避免在途弹丸受换枪和玩家移动影响。</summary>
         private const float CloseShotgunDistanceSquared = 9f;
 
@@ -23,6 +25,6 @@ namespace FirepowerLoop.Arcade
 
         /// <summary>未知或与伤害类别矛盾的扩展值退回旧表现，兼容未携带新字段的死亡记录。</summary>
         public static int Normalize(bool explosive, int kind) =>
-            explosive && kind == EnergyBlast || !explosive && kind == CloseShotgun ? kind : Default;
+            explosive && kind == EnergyBlast || !explosive && (kind == CloseShotgun || kind == Herd) ? kind : Default;
     }
 }

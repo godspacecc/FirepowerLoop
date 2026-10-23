@@ -31,6 +31,10 @@ namespace Game
         private float hitRemaining, deathAge, simulationSeconds;
         /// <summary>本次死亡使用的力度分层；不在存活阶段施加物理。</summary>
         private int deathImpactKind;
+        /// <summary>牛撞尸体沿已采用的抛物线采样，停止后保持落地，不启动爆炸物理或血雾。</summary>
+        private readonly ArcadeHerdImpactVisual herdDeathVisual=new ArcadeHerdImpactVisual();
+        private float herdDeathInitialProgress;
+        public bool IsHerdDeath=>dead&&deathImpactKind==ArcadeDeathImpactRules.Herd;
         private Quaternion chestBeforeOffset;
         private Vector3 hitAxis;
         private const float HitSeconds = .18f;
@@ -83,6 +87,12 @@ namespace Game
             float seconds = Mathf.Max(0f, deltaTime);
             if (!dead) { hitRemaining = Mathf.Max(0f, hitRemaining - seconds); return; }
             deathAge += seconds;
+            if(deathImpactKind==ArcadeDeathImpactRules.Herd)
+            {
+                var state=new ArcadeHerdImpactState{Remaining=Mathf.Max(0,ArcadeHerdImpactRules.TotalSeconds-deathAge)};
+                float travel=ArcadeHerdImpactRules.Distance*(Mathf.Clamp01(deathAge/ArcadeHerdImpactRules.FlightSeconds)-herdDeathInitialProgress);
+                herdDeathVisual.Apply(animator.transform,state,deathDirection,true,travel);return;
+            }
             if (simulating && deathAge >= simulationSeconds) Freeze();
         }
 
@@ -114,17 +124,29 @@ namespace Game
         public bool BeginDeath(Vector3 worldDirection, bool explosive)
             => BeginDeathWithImpact(worldDirection, explosive, ArcadeDeathImpactRules.Default);
 
+        /// <summary>空中死亡继承当前牛撞进度，已由权威推进的水平位移不重复施加。</summary>
+        public bool BeginHerdDeathFromImpact(Vector3 direction,ArcadeHerdImpactState state)
+        {
+            if(!BeginDeathWithImpact(direction,false,ArcadeDeathImpactRules.Herd))return false;
+            deathAge=Mathf.Clamp(ArcadeHerdImpactRules.TotalSeconds-state.Remaining,0,ArcadeHerdImpactRules.TotalSeconds);
+            herdDeathInitialProgress=Mathf.Clamp01(deathAge/ArcadeHerdImpactRules.FlightSeconds);
+            herdDeathVisual.Apply(animator.transform,state,deathDirection,true,0);return true;
+        }
+
         /// <summary>最终伤害已裁决，能量爆炸降低抛升，近距霰弹只做低幅后倒。</summary>
         public bool BeginDeathWithImpact(Vector3 worldDirection, bool explosive, int impactKind)
         {
             if (!IsReady || dead) return false;
             CacheRig(); RemoveOffset(); hitRemaining = 0f; deathAge = 0f; dead = true;
+            herdDeathInitialProgress=0;
             deathImpactKind = ArcadeDeathImpactRules.Normalize(explosive, impactKind);
             bool shotgun = deathImpactKind == ArcadeDeathImpactRules.CloseShotgun;
             simulationSeconds = explosive ? 1.8f : shotgun ? 1.4f : StaggerSeconds + 1.4f;
             worldDirection.y = 0f;
             if (worldDirection.sqrMagnitude < .0001f) worldDirection = -transform.forward;
             deathDirection = worldDirection.normalized;
+            if(deathImpactKind==ArcadeDeathImpactRules.Herd)
+            {animator.enabled=false;return true;}
             if (explosive || shotgun) ActivatePhysics(explosive);
             else
             {
@@ -240,6 +262,8 @@ namespace Game
         /// <summary>禁用、切图和新用途统一清除速度、回弹及骨骼位姿，下一次激活可立即播放动画。</summary>
         public void ResetForReuse()
         {
+            herdDeathVisual.Restore();
+            herdDeathInitialProgress=0;
             RemoveOffset();
             if (IsReady)
             {

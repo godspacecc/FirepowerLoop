@@ -148,6 +148,7 @@ namespace Game
         {
             // 单人与联机共用表现端口，非活动联机系统不能停止单人持有的循环声。
             if (!active) return;
+            view?.SetHerdActivityPaused(latest.BattlePaused||latest.Battle?.RoundLoading==true);
             if (latest.Battle == null || catalog == null || latest.BattlePaused)
             { view?.StopPlayerFireAudio(); return; }
             if(roundTransitionPending)
@@ -168,6 +169,12 @@ namespace Game
             foreach (OnlineArcadeBattlePlayerSnapshot player in latest.Battle.Players)
                 if (player.PlayerId == selfId) { self = player; found = true; break; }
             if (!found || !self.Alive) return;
+            if(self.HerdImpact.Active)
+            {
+                predictedLocalPosition=new Vector2(self.PositionX,self.PositionZ);hasPrediction=true;
+                view.SetPlayer(predictedLocalPosition,new Vector2(self.AimX,self.AimZ),true,self.Invulnerable);
+                view.SetPlayerHerdImpact(0,self.HerdImpact);return;
+            }
             TickRoundExitContact(self);
             OnlineArcadeInputFrame input = this.GetSystem<OnlineArcadeRunSystem>().LastSampledInput;
             var moveSpeed = CalculatePredictedMoveSpeed(catalog.Rule.PlayerMoveSpeed, self.DashSeconds > 0f,
@@ -190,6 +197,7 @@ namespace Game
         /// <summary>冲刺只使用权威锁定方向；旧快照缺少方向时使用权威朝向补齐，不采纳后续本地输入。</summary>
         internal static Vector2 PredictedMovementDirection(Vector2 move, OnlineArcadeBattlePlayerSnapshot self)
         {
+            if(self.HerdImpact.Active)return Vector2.zero;
             if (self.DashSeconds <= 0) return move;
             FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(self.DashDirectionX, self.DashDirectionZ,
                 self.AimX, self.AimZ, out var x, out var y);
@@ -295,7 +303,7 @@ namespace Game
                 Vector2 facing = new(player.AimX, player.AimZ);
                 if (player.PlayerId == selfId)
                 {
-                    if (!hasPrediction || Vector2.Distance(predictedLocalPosition, position) > SnapDistance)
+                    if (player.HerdImpact.Active||!hasPrediction || Vector2.Distance(predictedLocalPosition, position) > SnapDistance)
                         predictedLocalPosition = position;
                     else predictedLocalPosition = Vector2.Lerp(predictedLocalPosition, position, .35f);
                     hasPrediction = true;
@@ -310,6 +318,7 @@ namespace Game
                         player.CurrentHealth, player.MaxHealth);
                 }
                 SyncPlayerCombat(player, selfId);
+                view.SetPlayerHerdImpact(player.PlayerId==selfId?0:player.PlayerId,player.Alive?player.HerdImpact:default);
                 view.SetPlayerRescue(player.PlayerId==selfId?0:player.PlayerId,!player.Alive&&player.DownedSeconds>0);
                 view.SetPlayerDash(player.PlayerId==selfId?0:player.PlayerId,displayPosition,
                     PredictedMovementDirection(Vector2.zero,player),player.DashSeconds,player.Alive);
@@ -440,6 +449,7 @@ namespace Game
                 view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
                 view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);
+                view.SetEnemyHerdImpact(id,value.HerdImpact);
             }
             // 只消费已见实体的同轮移除；重复快照与重连没有旧映射，因此不会补播尸体。
             foreach (long runtimeId in enemyIds.Keys.Where(id => !seenIds.Contains(id)).ToArray())

@@ -1,0 +1,17 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 1,
+    "PassedTests": 1,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.5593110"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.EnemyPhysicalReactionTests.WarmStaggerExplosionAndReuseDoNotAllocateManagedMemory",
+      "Status": "Passed",
+      "Duration": "00:00:00.4430000"
+    }
+  ]
+}

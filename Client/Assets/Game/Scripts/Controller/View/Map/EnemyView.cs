@@ -14,7 +14,7 @@ namespace Game
     /// </summary>
     [RequireComponent(typeof(Collider))]
     [RequireComponent(typeof(NavMeshAgent))]
-    public sealed class EnemyView : MonoBehaviour
+    public sealed partial class EnemyView : MonoBehaviour
     {
         [Serializable]
         private struct TrialPlayerWeaponPose
@@ -441,6 +441,7 @@ namespace Game
 
         private void OnDisable()
         {
+            ResetHerdImpact();
             corpseFade?.Reset();
             PhysicalReaction?.ResetForReuse();
             if (feedbackRemainingSeconds > 0f) RestoreFeedbackColors();
@@ -790,8 +791,12 @@ namespace Game
         /// <summary>消费最终伤害的力度类别，沿用尸体寿命、碰撞关闭与统一物理预算。</summary>
         public bool TryPlayPhysicalDeathWithImpact(Vector3 direction, bool explosive, int impactKind, out float durationSeconds)
         {
+            var continuation=herdImpact;var continuedDirection=herdDirection;
+            ResetHerdImpact();
             durationSeconds = 0f;
-            if (PhysicalReaction == null || !PhysicalReaction.BeginDeathWithImpact(direction, explosive, impactKind)) return false;
+            if (PhysicalReaction == null || !(continuation.Active
+                ?PhysicalReaction.BeginHerdDeathFromImpact(continuedDirection,continuation)
+                :PhysicalReaction.BeginDeathWithImpact(direction, explosive, impactKind))) return false;
             animationDead = true;
             // 独立挂载的武器不是物理骨架，死亡后收起，避免留在原位悬空。
             GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);
@@ -804,9 +809,10 @@ namespace Game
         }
 
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
-        public void LateTickCombatFeedback() => PhysicalReaction?.LateTick();
+        public void LateTickCombatFeedback(){PhysicalReaction?.LateTick();ApplyHerdImpact();}
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public bool IsHerdCorpse=>PhysicalReaction?.IsHerdDeath==true;
 
         /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>
         public void StopDeathSimulation() => PhysicalReaction?.StopDeathSimulation();
@@ -866,6 +872,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            herdVisual.Restore();
             FlameFeedback?.Tick(deltaTime);
             PhysicalReaction?.Tick(deltaTime);
             SampleMovement(deltaTime);

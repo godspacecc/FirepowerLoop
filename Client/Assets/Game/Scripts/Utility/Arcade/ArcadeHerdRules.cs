@@ -3,6 +3,48 @@ using System.Collections.Generic;
 
 namespace FirepowerLoop.Arcade
 {
+    /// <summary>单人和服务器共用的牛撞击飞瞬时状态；零值表示未受击，不写存档。</summary>
+    public struct ArcadeHerdImpactState
+    {
+        /// <summary>剩余活动秒数及已归一化的平面冲撞方向。</summary>
+        public float Remaining, DirectionX, DirectionZ;
+        public bool Active => Remaining > 0;
+    }
+    /// <summary>已采用v2的固定动作时间轴；水平位移由战斗权威裁决，View只采样高度和倾斜。</summary>
+    public static class ArcadeHerdImpactRules
+    {
+        /// <summary>飞行、落地停顿与起身阶段使用统一活动时间。</summary>
+        public const float FlightSeconds=.95f, StunSeconds=.5f, RecoverySeconds=.25f;
+        /// <summary>总禁用时长、无遮挡时前飞距离与最高抛升基准。</summary>
+        public const float TotalSeconds=FlightSeconds+StunSeconds+RecoverySeconds, Distance=3f, Height=2.5f;
+        /// <summary>只接受有效方向，已在击飞中的目标不会被后续牛反复重新起飞。</summary>
+        public static bool Begin(ref ArcadeHerdImpactState state,float dx,float dz)
+        {
+            if(state.Active||float.IsNaN(dx)||float.IsNaN(dz)||float.IsInfinity(dx)||float.IsInfinity(dz))return false;
+            float length=(float)Math.Sqrt(dx*dx+dz*dz);if(length<.001f||float.IsInfinity(length))return false;
+            state=new ArcadeHerdImpactState{Remaining=TotalSeconds,DirectionX=dx/length,DirectionZ=dz/length};return true;
+        }
+        /// <summary>只返回本活动步的水平路程；落地后的0.5秒不再滑动，暂停不消耗状态。</summary>
+        public static float Step(ref ArcadeHerdImpactState state,float seconds)
+        {
+            if(!state.Active||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return 0;
+            float before=Progress(state.Remaining);state.Remaining=Math.Max(0,state.Remaining-seconds);
+            // 消除固定帧累加的浮点尾差，0.5秒落地停顿不会额外多留一帧。
+            if(Math.Abs(state.Remaining)<.00001f)state.Remaining=0;
+            else if(Math.Abs(state.Remaining-RecoverySeconds)<.00001f)state.Remaining=RecoverySeconds;
+            else if(Math.Abs(state.Remaining-StunSeconds-RecoverySeconds)<.00001f)state.Remaining=StunSeconds+RecoverySeconds;
+            return (Progress(state.Remaining)-before)*Distance;
+        }
+        private static float Progress(float remaining)=>Math.Max(0,Math.Min(1,(TotalSeconds-remaining)/FlightSeconds));
+        /// <summary>存活者落地保持倒姿后起身；死亡者停在落地倒姿，绝不复活。</summary>
+        public static void Sample(float remaining,bool dead,out float height,out float tilt)
+        {
+            float flight=Progress(remaining),recovery=dead?0:Math.Max(0,Math.Min(1,(TotalSeconds-remaining-FlightSeconds-StunSeconds)/RecoverySeconds));
+            height=Height*4*flight*(1-flight)+.12f*flight*(1-recovery);
+            tilt=85*Math.Min(1,flight*3)*(1-recovery*recovery*(3-2*recovery));
+            if(!dead&&remaining<=0)height=tilt=0;
+        }
+    }
     /// <summary>牛群单次冲撞的活动阶段；起势仅给身体动作，不产生接触伤害。</summary>
     public enum ArcadeHerdPhase { Windup, Charging, Expired }
     /// <summary>由关卡配置提供的起势秒数、速度、最大行程和实体半径；不存美术尺寸。</summary>

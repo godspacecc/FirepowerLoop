@@ -1577,6 +1577,8 @@ namespace ET.Server
         private static bool TickPlayers(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float deltaSeconds, long now)
         {
+            // 清场只冻结机关，存活玩家须继续完成落地，不能被出口阶段永久锁住。
+            if(!RoundContentActive(battle)&&EarlyStage(battle)?.HerdCount>0)TickHerdImpacts(battle,deltaSeconds);
             bool changed = false;
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
@@ -1614,6 +1616,7 @@ namespace ET.Server
                            MathF.Abs(previousDash - player.DashSeconds) > 0.0001f;
                 if (!player.Alive)
                 {
+                    player.HerdImpact=default;
                     player.MoveX = 0f;
                     player.MoveZ = 0f;
                     player.Firing = false;
@@ -1632,6 +1635,7 @@ namespace ET.Server
                     changed = true;
                     continue;
                 }
+                if(player.HerdImpact.Active){changed=true;continue;}
                 if (now - player.LastInputAt > InputExpiryMilliseconds)
                 {
                     changed |= MathF.Abs(player.MoveX) > 0.0001f || MathF.Abs(player.MoveZ) > 0.0001f || player.Firing;
@@ -1703,7 +1707,7 @@ namespace ET.Server
                     return changed || battle.AllPlayersDefeated;
                 }
 
-                if(enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
+                if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
                 {CancelMeleeWindup(enemy);continue;}
                 if(TickSlayerGuardian(self,battle,enemy,target,deltaSeconds)){changed=true;continue;}
                 enemy.TargetPlayerId = target.PlayerId;
@@ -2060,6 +2064,7 @@ namespace ET.Server
         private static bool Fire(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player, OnlineArcadePlayerRecord record)
         {
+            if(player.HerdImpact.Active)return false;
             float aimLengthSquared = player.AimX * player.AimX + player.AimZ * player.AimZ;
             if (battle.AwaitingExit || aimLengthSquared < AimDeadZoneSquared) return false;
             string weaponId = player.TemporaryWeaponSeconds > 0f ? player.TemporaryWeaponId : record.WeaponId;
@@ -2444,6 +2449,7 @@ namespace ET.Server
         private static void UseBomb(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player)
         {
+            if(player.HerdImpact.Active)return;
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             if (battle.AwaitingExit || player.InTreasureRoom || record.Bombs <= 0) return;
             record.Bombs--;
@@ -2468,6 +2474,7 @@ namespace ET.Server
         /// <summary>冲刺只能在存活且未冲刺时消耗；有移动输入时沿输入，否则沿当前朝向锁定方向。</summary>
         private static void UseDash(this OnlineArcadeRunActor self, OnlineArcadeBattlePlayerRuntime player)
         {
+            if(player.HerdImpact.Active)return;
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             if (record.Dashes <= 0 || player.DashSeconds > 0f) return;
             FirepowerLoop.Arcade.ArcadeDashRules.ResolveDirection(player.MoveX, player.MoveZ, player.AimX, player.AimZ,
@@ -2784,6 +2791,7 @@ namespace ET.Server
             player.CurrentHealth -= Math.Max(1, damage);
             player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds;
             if (player.CurrentHealth > 0) return;
+            player.HerdImpact=default;
 
             OnlineArcadePlayerRecord record = self.Record.Players.First(x => x.PlayerId == player.PlayerId);
             player.CurrentHealth = 0;
@@ -3330,6 +3338,7 @@ namespace ET.Server
                 player.DashSeconds = sourcePlayer.DashSeconds;
                 player.DashDirectionX = sourcePlayer.DashDirectionX;
                 player.DashDirectionZ = sourcePlayer.DashDirectionZ;
+                player.HerdImpactRemaining=sourcePlayer.HerdImpact.Remaining;player.HerdImpactDirectionX=sourcePlayer.HerdImpact.DirectionX;player.HerdImpactDirectionZ=sourcePlayer.HerdImpact.DirectionZ;
                 foreach (OnlineArcadePowerupRuntime sourcePowerup in sourcePlayer.Powerups.Values
                              .OrderBy(x => x.Behavior))
                 {
@@ -3364,6 +3373,7 @@ namespace ET.Server
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
+                enemy.HerdImpactRemaining=sourceEnemy.HerdImpact.Remaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpact.DirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpact.DirectionZ;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileRuntime sourceProjectile in source.Projectiles.Values.OrderBy(x => x.RuntimeId))
@@ -3539,6 +3549,7 @@ namespace ET.Server
                 player.DashSeconds = sourcePlayer.DashSeconds;
                 player.DashDirectionX = sourcePlayer.DashDirectionX;
                 player.DashDirectionZ = sourcePlayer.DashDirectionZ;
+                player.HerdImpactRemaining=sourcePlayer.HerdImpactRemaining;player.HerdImpactDirectionX=sourcePlayer.HerdImpactDirectionX;player.HerdImpactDirectionZ=sourcePlayer.HerdImpactDirectionZ;
                 foreach (OnlineArcadePowerupInfo sourcePowerup in sourcePlayer.Powerups)
                 {
                     OnlineArcadePowerupInfo powerup = OnlineArcadePowerupInfo.Create();
@@ -3572,6 +3583,7 @@ namespace ET.Server
                 enemy.BossPhaseSeconds = sourceEnemy.BossPhaseSeconds;
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
+                enemy.HerdImpactRemaining=sourceEnemy.HerdImpactRemaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpactDirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpactDirectionZ;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileInfo sourceProjectile in source.Projectiles)

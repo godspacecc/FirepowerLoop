@@ -37,6 +37,9 @@ namespace Game
         /// <summary>投影环境活动时钟及区域，伤害仍由单人或服务器裁决。</summary>
         void SetRoundContent(double elapsed, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> areas) { }
         void SetHerds(long mapId,IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> cows) { }
+        void SetPlayerHerdImpact(long playerId,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
+        void SetEnemyHerdImpact(int id,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
+        void SetHerdActivityPaused(bool paused) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
         void SetIslandRound(int roundNumber) { }
@@ -299,6 +302,7 @@ namespace Game
 
         public void End()
         {
+            enemyPresentation?.SetHerdActivityPaused(false);
             earlyStage=null;
             StopFlamethrowerAudio();
             ReleaseSlayerMartRegion();
@@ -1004,6 +1008,7 @@ namespace Game
                 entry.View.Snap(displayed.localPosition,displayed.localEulerAngles.y);
             }
             entry.View.SetAlive(entry.Visible,!snap);
+            SetPlayerHerdImpact(entry.PlayerId,entry.Visible?entry.HerdImpact:default);
             entry.View.Instance?.GetComponent<PlayerView>()?.SetArcadeRescueActive(entry.RescueActive&&!entry.Visible);
             entry.View.Instance?.GetComponent<PlayerView>()?.SetArcadeProtectionActive(entry.Visible && entry.Invulnerable);
             ApplyRemotePlayerCombat(entry);
@@ -1018,6 +1023,8 @@ namespace Game
 
         private sealed class RemotePlayerEntry
         {
+            /// <summary>异步加载等待期间保留最新击飞姿态，不补播历史动作。</summary>
+            public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
             public long PlayerId;
             public int Generation;
             public Vector2 Position;

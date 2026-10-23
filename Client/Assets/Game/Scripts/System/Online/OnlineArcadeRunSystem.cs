@@ -453,13 +453,13 @@ namespace Game
                     player.TemporaryWeaponSeconds, player.SupportId, player.SupportSeconds, player.DashSeconds,
                     powerups, player.FireSequence, player.InTreasureRoom,player.VestSlots,player.Plates,player.HasStorm,player.StormCharge,player.StormSeconds,
                     player.SlayerMartSupports.Select(b=>new OnlineSlayerMartSupportSnapshot(b.ProductId,b.InstanceId,b.Kind,b.BodyIndex,b.PositionX,b.PositionZ,b.ShotDirectionX,b.ShotDirectionZ,b.RemainingSeconds,b.Charges)).ToArray(),player.DownedSeconds,player.RescueRate,
-                    player.DashDirectionX,player.DashDirectionZ));
+                    player.DashDirectionX,player.DashDirectionZ,new FirepowerLoop.Arcade.ArcadeHerdImpactState{Remaining=player.HerdImpactRemaining,DirectionX=player.HerdImpactDirectionX,DirectionZ=player.HerdImpactDirectionZ}));
             }
             List<OnlineArcadeEnemySnapshot> enemies = new(source.Enemies.Count);
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)
                 enemies.Add(new OnlineArcadeEnemySnapshot(enemy.RuntimeId, enemy.EnemyConfigId, enemy.PositionX,
                     enemy.PositionZ, enemy.CurrentHealth, enemy.MaxHealth, enemy.TargetPlayerId, enemy.WaveNumber,
-                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds));
+                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds,new FirepowerLoop.Arcade.ArcadeHerdImpactState{Remaining=enemy.HerdImpactRemaining,DirectionX=enemy.HerdImpactDirectionX,DirectionZ=enemy.HerdImpactDirectionZ}));
             List<OnlineArcadeProjectileSnapshot> projectiles = new(source.Projectiles.Count);
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,

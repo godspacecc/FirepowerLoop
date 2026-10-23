@@ -99,13 +99,15 @@ namespace Game
 
     public readonly struct OnlineArcadeBattlePlayerSnapshot
     {
+        /// <summary>服务器当前牛撞状态；只读复制，重连不重新开始计时。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeBattlePlayerSnapshot(long playerId, float positionX, float positionZ, float aimX,
             float aimZ, int currentHealth, int maxHealth, bool alive, bool invulnerable, float respawnSeconds,
             string temporaryWeaponId = null, float temporaryWeaponSeconds = 0f, string supportId = null,
             float supportSeconds = 0f, float dashSeconds = 0f,
             IReadOnlyList<OnlineArcadePowerupSnapshot> powerups = null, int fireSequence = 0, bool inTreasureRoom = false, int vestSlots = 0, int plates = 0, bool hasStorm = false,
             int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null, float downedSeconds=0, float rescueRate=0,
-            float dashDirectionX = 0, float dashDirectionZ = 0)
+            float dashDirectionX = 0, float dashDirectionZ = 0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact = default)
         {
             PlayerId = playerId; PositionX = positionX; PositionZ = positionZ; AimX = aimX; AimZ = aimZ;
             CurrentHealth = currentHealth; MaxHealth = maxHealth; Alive = alive;
@@ -113,7 +115,7 @@ namespace Game
             TemporaryWeaponId = temporaryWeaponId ?? string.Empty; TemporaryWeaponSeconds = temporaryWeaponSeconds;
             SupportId = supportId ?? string.Empty; SupportSeconds = supportSeconds;
             DashSeconds = dashSeconds;
-            DashDirectionX = dashDirectionX; DashDirectionZ = dashDirectionZ;
+            DashDirectionX = dashDirectionX; DashDirectionZ = dashDirectionZ;HerdImpact=herdImpact;
             Powerups = Array.AsReadOnly(Copy(powerups));
             FireSequence = fireSequence; InTreasureRoom = inTreasureRoom;
             VestSlots=vestSlots;Plates=plates;HasStorm=hasStorm;StormCharge=stormCharge;StormSeconds=stormSeconds;
@@ -180,16 +182,18 @@ namespace Game
 
     public readonly struct OnlineArcadeEnemySnapshot
     {
+        /// <summary>服务器当前牛撞状态；只读复制，重连不重新开始计时。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
             TargetPlayerId = targetPlayerId; WaveNumber = waveNumber;
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
-            FlameHitRemainingSeconds=flameHitRemainingSeconds;
+            FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }

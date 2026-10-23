@@ -1555,6 +1555,18 @@ namespace ET
         [MemoryPackOrder(27)]
         public float DashDirectionZ { get; set; }
 
+        /// <summary>
+        /// 当前牛撞的权威剩余量；重连直接恢复飞行或落地僵直，不重播。
+        /// </summary>
+        [MemoryPackOrder(28)]
+        public float HerdImpactRemaining { get; set; }
+
+        [MemoryPackOrder(29)]
+        public float HerdImpactDirectionX { get; set; }
+
+        [MemoryPackOrder(30)]
+        public float HerdImpactDirectionZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1590,6 +1602,9 @@ namespace ET
             this.RescueRate = default;
             this.DashDirectionX = default;
             this.DashDirectionZ = default;
+            this.HerdImpactRemaining = default;
+            this.HerdImpactDirectionX = default;
+            this.HerdImpactDirectionZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1658,6 +1673,18 @@ namespace ET
         [MemoryPackOrder(15)]
         public float FlameHitRemainingSeconds { get; set; }
 
+        /// <summary>
+        /// 存活敌人被牛撞后的当前飞行／落地状态。
+        /// </summary>
+        [MemoryPackOrder(16)]
+        public float HerdImpactRemaining { get; set; }
+
+        [MemoryPackOrder(17)]
+        public float HerdImpactDirectionX { get; set; }
+
+        [MemoryPackOrder(18)]
+        public float HerdImpactDirectionZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1681,6 +1708,9 @@ namespace ET
             this.ContentBossKind = default;
             this.ContentWarning = default;
             this.FlameHitRemainingSeconds = default;
+            this.HerdImpactRemaining = default;
+            this.HerdImpactDirectionX = default;
+            this.HerdImpactDirectionZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }

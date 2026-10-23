@@ -28,6 +28,9 @@ namespace Game
         private bool stagedArcade;
         private bool released;
         private bool stagedPrepared;
+        private bool herdActivityPaused;
+        /// <summary>只冻结本次新增牛撞轨迹及尸体寿命，恢复时继续剩余段，不重新播放。</summary>
+        public void SetHerdActivityPaused(bool paused)=>herdActivityPaused=paused;
         /// <summary>手机最多44个、桌面最多88个活动尸体刚体；超额冻结最旧尸体但保留可见姿态。</summary>
         private readonly int corpseBudget = Application.isMobilePlatform ? 4 : 8;
         /// <summary>独立限制可见尸体数；冻结后不再占用物理预算，避免密集击杀时立即消失。</summary>
@@ -228,6 +231,10 @@ namespace Game
             current.LastAttackSequence = attackSequence;
             return true;
         }
+
+        /// <summary>给存活敌人投影牛撞姿态，回池由EnemyView显式复位。</summary>
+        public void SetHerdImpact(int runtimeId,FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction)
+        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetHerdImpact(state,direction);}
 
         public void RemoveEnemy(int runtimeId, bool playDeath = false)
             => RemoveEnemy(runtimeId, playDeath, Vector3.zero, false);
@@ -677,13 +684,19 @@ namespace Game
 
         private void OnUpdate()
         {
-            explosionDeaths?.Tick(Time.deltaTime);
+            TickArcadeFeedback(Time.deltaTime,Time.time);
+        }
+        /// <summary>统一表现步进；参数同时用于正式生命周期和有界隔离检查。</summary>
+        private void TickArcadeFeedback(float seconds,float now)
+        {
+            explosionDeaths?.Tick(seconds);
             for (var i = dyingArcadeEnemies.Count - 1; i >= 0; i--)
             {
                 var entry = dyingArcadeEnemies[i];
-                entry.View?.TickCombatFeedback(Time.deltaTime);
-                entry.View?.SetCorpseFade(entry.ReleaseTime - Time.time);
-                if (entry.View != null && Time.time < entry.ReleaseTime)
+                if(herdActivityPaused&&entry.View?.IsHerdCorpse==true){entry.ReleaseTime+=seconds;continue;}
+                entry.View?.TickCombatFeedback(seconds);
+                entry.View?.SetCorpseFade(entry.ReleaseTime - now);
+                if (entry.View != null && now < entry.ReleaseTime)
                     continue;
                 RecycleArcadeEnemy(entry);
                 dyingArcadeEnemies.RemoveAt(i);
@@ -691,11 +704,11 @@ namespace Game
 
             foreach (var entry in arcadeEnemies.Values)
             {
-                entry.View?.TickCombatFeedback(Time.deltaTime);
+                entry.View?.TickCombatFeedback(seconds);
                 if (entry.View == null || entry.PersistentHealthBar)
                     continue;
                 var before = entry.HealthBarRevealRemaining;
-                entry.HealthBarRevealRemaining = AdvanceArcadeHealthBarReveal(before, Time.deltaTime);
+                entry.HealthBarRevealRemaining = AdvanceArcadeHealthBarReveal(before, seconds);
                 if (before > 0f && entry.HealthBarRevealRemaining <= 0f)
                     entry.View.SetHealthBarVisible(false);
             }

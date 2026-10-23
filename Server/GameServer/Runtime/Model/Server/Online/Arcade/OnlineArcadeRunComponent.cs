@@ -180,6 +180,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeBattlePlayerRuntime
     {
+        /// <summary>服务器权威牛撞飞行和落地僵直，不写安全节点存档。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>本次保底房已进入过，防止提前离开的成员被自动送回。</summary>
         /// <summary>轮代次加载确认、待仲裁出口及冰面速度，均为现场状态。</summary>
         public int ReadyRoundGeneration;
@@ -237,6 +239,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeEnemyRuntime
     {
+        /// <summary>敌人受牛撞后的活动状态，阻止移动和攻击直到恢复。</summary>
+        public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>真实喷火命中后的纯表现时钟，不参与持续伤害或存档。</summary>
         public float FlameHitRemainingSeconds;
         /// <summary>最后一次实际伤害的火焰来源，用于本轮死亡事实。</summary>

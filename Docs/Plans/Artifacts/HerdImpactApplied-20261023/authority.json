@@ -1,0 +1,37 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 5,
+    "PassedTests": 5,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:05.0042736"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactTests.ClearStopsCowsButFinishesLandingAndFreshMapClearsIt",
+      "Status": "Passed",
+      "Duration": "00:00:00.9500000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactTests.ImpactBlocksWalkingShootingBombAndDashUntilRecovery",
+      "Status": "Passed",
+      "Duration": "00:00:00.5600000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactTests.LivingEnemyLaunchCancelsAttackAndDoesNotChase",
+      "Status": "Passed",
+      "Duration": "00:00:00.6800000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactTests.PlayerFliesThreeMetersThenHoldsGroundedForHalfSecond",
+      "Status": "Passed",
+      "Duration": "00:00:00.5340000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdImpactTests.ProtectedPlayerIsNotLaunched",
+      "Status": "Passed",
+      "Duration": "00:00:00.5980000"
+    }
+  ]
+}
