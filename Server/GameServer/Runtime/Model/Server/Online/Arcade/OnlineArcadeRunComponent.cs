@@ -194,6 +194,10 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeBattlePlayerRuntime
     {
+        /// <summary>最近真实牛撞掉血的只读表现事实，致死同样保留；不写存档。</summary>
+        public long HerdContactSequence;
+        public float HerdContactX, HerdContactZ;
+        public double HerdContactElapsedSeconds;
         /// <summary>服务器权威牛撞飞行和落地僵直，不写安全节点存档。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>本次保底房已进入过，防止提前离开的成员被自动送回。</summary>

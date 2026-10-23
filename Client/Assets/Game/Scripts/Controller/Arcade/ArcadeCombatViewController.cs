@@ -44,6 +44,8 @@ namespace Game
         /// <summary>权威抓挠进度和当前目标方向，旧端口可忽略。</summary>
         void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
         void SetHerdActivityPaused(bool paused) { }
+        /// <summary>只接收权威实际掉血的牛撞，致死也播放一次短反馈，不由模型接触推算。</summary>
+        void PlayHerdContact(Vector2 position) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
         void SetNextStageEnemyState(int id,int kind,FirepowerLoop.Arcade.ArcadeStageEnemyState state) { }
@@ -471,6 +473,7 @@ namespace Game
 
         public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable)
         {
+            SyncHerdListener(position,visible);
             if(visible){electricListener=position;electricHasListener=true;}
             electricListenerVisible=visible;SyncElectricTowerAudio();
             if (!visible) StopFlamethrowerAudio();
@@ -681,6 +684,7 @@ namespace Game
         /// <summary>将权威力度类别和地图转换后的方向一起交给敌人表现端口。</summary>
         public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind)
         {
+            RemoveHerdEnemyFeedback(id,playDeath,impactKind);
             islandWading?.Remove(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
             if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
@@ -964,6 +968,7 @@ namespace Game
         {
             TickWeaponEvolutionVisuals(deltaTime);
             TickFlamethrowerAudio(deltaTime);
+            TickHerdFeedback(deltaTime);
             TickElectricTowerFeedback(deltaTime);
             TickRoundFlameFeedback(deltaTime);
             TickNextStageFeedback(deltaTime);

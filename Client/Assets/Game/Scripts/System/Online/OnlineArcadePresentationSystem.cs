@@ -154,7 +154,7 @@ namespace Game
         {
             // 单人与联机共用表现端口，非活动联机系统不能停止单人持有的循环声。
             if (!active) return;
-            view?.SetHerdActivityPaused(latest.BattlePaused||latest.Battle?.RoundLoading==true);
+            view?.SetHerdActivityPaused(latest.BattlePaused||latest.Battle?.RoundLoading==true||UIHelper.HasUIOpen);
             if (latest.Battle == null || catalog == null || latest.BattlePaused)
             { view?.StopPlayerFireAudio(); return; }
             if(roundTransitionPending)
@@ -292,6 +292,7 @@ namespace Game
                 activeArena.Hazards, battle.HazardElapsedSeconds);
             view.SetRoundContent(battle.ContentElapsed,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot>():battle.ContentAreas);
             view.SetHerds(battle.RoundGeneration,inRoom?Array.Empty<FirepowerLoop.Arcade.ArcadeHerdSnapshot>():battle.Herds);
+            SyncHerdContacts(battle,!inRoom&&!latest.BattlePaused&&!battle.RoundLoading&&view.IsRoundLayoutReady&&!UIHelper.HasUIOpen);
             // 四向出口同去一关；负数仅表示下一轮标签，服务端仍接收正数场地身份。
             var roundTargets=battle.WaveNumber<4?new[]{-(battle.WaveNumber+1)}:activeArena.NextArenaNumbers.Take(1).ToArray();
             if(battle.WaveNumber==4&&activeRoundLayout?.BossKind>0&&!battle.RoundBossEncounter&&battle.AwaitingExit)roundTargets=new[]{activeArena.ArenaNumber};
@@ -676,6 +677,7 @@ namespace Game
 
         private void EndPresentation()
         {
+            ClearHerdContactBaseline();
             roundTransitionPending=false;
             view?.EndRoundTransition();
             StageNotices.Clear();

@@ -1,0 +1,10 @@
+project=E:/GitHub/FirepowerLoop/Client/Assets
+previewOnly=true
+productionAssetsWritten=false
+frames=232
+fps=20
+mainSpeed=7.15
+spacing=3
+maxDustParticles=136
+footCloseupQuarterSpeed=true
+impactTime=9.1

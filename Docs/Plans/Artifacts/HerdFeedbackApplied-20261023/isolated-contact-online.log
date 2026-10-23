@@ -1,0 +1,4 @@
+PASS HerdContactOnline.LethalAndLivingContacts
+PASS HerdContactOnline.ProtectionDoesNotPublishContact
+PASS HerdContactOnline.ContactSnapshotCloneAndCodec
+3/3 passed

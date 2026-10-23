@@ -34,9 +34,11 @@ namespace Game
             }
             foreach(var id in herdViews.Keys.Where(id=>!present.Contains(id)).ToArray())
             {DestroyRoundVisual(herdViews[id].gameObject);herdViews.Remove(id);}
+            SyncHerdFeedback();
         }
         private void ClearHerdViews()
         {
+            ReleaseHerdFeedback();
             foreach(var visual in herdViews.Values)if(visual!=null)DestroyRoundVisual(visual.gameObject);
             herdViews.Clear();herdViewMap=0;herdSnapshots=System.Array.Empty<ArcadeHerdSnapshot>();
         }

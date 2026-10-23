@@ -480,6 +480,8 @@ namespace Game
             var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
             if(runtime==null){ClearSlayerMartClock();return;}
             if(catalog==null||arena==null)return;
+            // 真正暂停取消短反馈；倒地／清波只停止权威落蹄推进，已提交的本次撞击尾音仍自然结束。
+            view.SetHerdActivityPaused(this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen);
             view.TickPlayerFeedback(Time.deltaTime);
             TickFrame(runtime, Time.deltaTime);
         }

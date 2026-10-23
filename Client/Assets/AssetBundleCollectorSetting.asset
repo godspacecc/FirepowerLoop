@@ -1111,6 +1111,62 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdHoof.wav
+        CollectorGUID: 1a25aec112dccb946ac95d0d8035283c
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdHoof2.wav
+        CollectorGUID: d93350cf3215e6b4d8087403242123b3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdHoof3.wav
+        CollectorGUID: 5e7482cbc5a08c44bacb03ee27553fa3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdHoof4.wav
+        CollectorGUID: 48ab29df89ad93845b1fd388798412ae
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdScrape.wav
+        CollectorGUID: 2d2b0dc253166424180bf782c17e1c64
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdSnort.wav
+        CollectorGUID: 2c2f1a2bbd6c2f14b9e95660bb3195c0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeHerdImpact.wav
+        CollectorGUID: 7cc55f737b7c42243bd3ee1d65aefc66
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
       - CollectPath: Assets/Game/Audio/Sound/ArcadeExplosion.wav
         CollectorGUID: 4eeeee3db5aca4f4eb28204c0b44a635
         CollectorType: 0

@@ -3446,6 +3446,7 @@ namespace ET.Server
                 player.DashDirectionX = sourcePlayer.DashDirectionX;
                 player.DashDirectionZ = sourcePlayer.DashDirectionZ;
                 player.HerdImpactRemaining=sourcePlayer.HerdImpact.Remaining;player.HerdImpactDirectionX=sourcePlayer.HerdImpact.DirectionX;player.HerdImpactDirectionZ=sourcePlayer.HerdImpact.DirectionZ;
+                player.HerdContactSequence=sourcePlayer.HerdContactSequence;player.HerdContactX=sourcePlayer.HerdContactX;player.HerdContactZ=sourcePlayer.HerdContactZ;player.HerdContactElapsedSeconds=sourcePlayer.HerdContactElapsedSeconds;
                 foreach (OnlineArcadePowerupRuntime sourcePowerup in sourcePlayer.Powerups.Values
                              .OrderBy(x => x.Behavior))
                 {
@@ -3682,6 +3683,7 @@ namespace ET.Server
                 player.DashDirectionX = sourcePlayer.DashDirectionX;
                 player.DashDirectionZ = sourcePlayer.DashDirectionZ;
                 player.HerdImpactRemaining=sourcePlayer.HerdImpactRemaining;player.HerdImpactDirectionX=sourcePlayer.HerdImpactDirectionX;player.HerdImpactDirectionZ=sourcePlayer.HerdImpactDirectionZ;
+                player.HerdContactSequence=sourcePlayer.HerdContactSequence;player.HerdContactX=sourcePlayer.HerdContactX;player.HerdContactZ=sourcePlayer.HerdContactZ;player.HerdContactElapsedSeconds=sourcePlayer.HerdContactElapsedSeconds;
                 foreach (OnlineArcadePowerupInfo sourcePowerup in sourcePlayer.Powerups)
                 {
                     OnlineArcadePowerupInfo powerup = OnlineArcadePowerupInfo.Create();

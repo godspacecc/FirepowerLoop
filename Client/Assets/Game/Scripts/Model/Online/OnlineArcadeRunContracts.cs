@@ -109,13 +109,19 @@ namespace Game
     {
         /// <summary>服务器当前牛撞状态；只读复制，重连不重新开始计时。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
+        /// <summary>服务器实际牛撞掉血反馈；与存活击飞分离，致死也能显示，旧序列不会补播。</summary>
+        public long HerdContactSequence { get; }
+        public float HerdContactX { get; }
+        public float HerdContactZ { get; }
+        public double HerdContactElapsedSeconds { get; }
         public OnlineArcadeBattlePlayerSnapshot(long playerId, float positionX, float positionZ, float aimX,
             float aimZ, int currentHealth, int maxHealth, bool alive, bool invulnerable, float respawnSeconds,
             string temporaryWeaponId = null, float temporaryWeaponSeconds = 0f, string supportId = null,
             float supportSeconds = 0f, float dashSeconds = 0f,
             IReadOnlyList<OnlineArcadePowerupSnapshot> powerups = null, int fireSequence = 0, bool inTreasureRoom = false, int vestSlots = 0, int plates = 0, bool hasStorm = false,
             int stormCharge = 0, float stormSeconds = 0, IReadOnlyList<OnlineSlayerMartSupportSnapshot> slayerMartSupports = null, float downedSeconds=0, float rescueRate=0,
-            float dashDirectionX = 0, float dashDirectionZ = 0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact = default)
+            float dashDirectionX = 0, float dashDirectionZ = 0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact = default,
+            long herdContactSequence=0,float herdContactX=0,float herdContactZ=0,double herdContactElapsedSeconds=0)
         {
             PlayerId = playerId; PositionX = positionX; PositionZ = positionZ; AimX = aimX; AimZ = aimZ;
             CurrentHealth = currentHealth; MaxHealth = maxHealth; Alive = alive;
@@ -124,6 +130,7 @@ namespace Game
             SupportId = supportId ?? string.Empty; SupportSeconds = supportSeconds;
             DashSeconds = dashSeconds;
             DashDirectionX = dashDirectionX; DashDirectionZ = dashDirectionZ;HerdImpact=herdImpact;
+            HerdContactSequence=herdContactSequence;HerdContactX=herdContactX;HerdContactZ=herdContactZ;HerdContactElapsedSeconds=herdContactElapsedSeconds;
             Powerups = Array.AsReadOnly(Copy(powerups));
             FireSequence = fireSequence; InTreasureRoom = inTreasureRoom;
             VestSlots=vestSlots;Plates=plates;HasStorm=hasStorm;StormCharge=stormCharge;StormSeconds=stormSeconds;

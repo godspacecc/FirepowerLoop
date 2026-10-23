@@ -1,0 +1,20 @@
+{
+  "frames": 232,
+  "fps": 20,
+  "duration": 11.6,
+  "dimensions": [
+    1280,
+    840
+  ],
+  "audio_rate": 44100,
+  "channels": 2,
+  "peak": 0.44384686839165477,
+  "rms": 0.03803232026008861,
+  "hoof_events": 150,
+  "hit_time": 9.1,
+  "encoded_bytes": 1652319,
+  "full_audio_video_decode_passed": true,
+  "offline_synthesized_audio": true,
+  "production_assets_written": false,
+  "using_production_feedback_class": true
+}

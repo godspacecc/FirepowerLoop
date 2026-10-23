@@ -411,6 +411,11 @@ message OnlineArcadeBattlePlayerInfo
 	float HerdImpactRemaining = 29;
 	float HerdImpactDirectionX = 30;
 	float HerdImpactDirectionZ = 31;
+	// 实际掉血的牛撞反馈，包含致死；序列只增，位置在死亡/复活变更前记录。
+	int64 HerdContactSequence = 32;
+	float HerdContactX = 33;
+	float HerdContactZ = 34;
+	double HerdContactElapsedSeconds = 35;
 }
 
 // Opcode 12081

@@ -1,0 +1,12 @@
+{
+  "tree": "f215d694b0a974f1473a152003bc2e0dd01ce388",
+  "base": "5774caba74dd0357810278776765b291e3f41f5e",
+  "source_copy": "C:\\Users\\ADMINI~1\\AppData\\Local\\Temp\\FirepowerLoop-herd-source-check-_mt9s6bm",
+  "unity_library_copied": false,
+  "worktree_created": false,
+  "protocol_regeneration_matches_task_tree": true,
+  "testClass": "HerdContactOnline",
+  "maxTests": 3,
+  "includePassingTests": true,
+  "passed": 3
+}

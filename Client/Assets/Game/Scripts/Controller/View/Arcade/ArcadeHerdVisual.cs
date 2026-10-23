@@ -10,10 +10,14 @@ namespace Game
     {
         [SerializeField] private Transform bodyPose,headPose,tailPose;
         [SerializeField] private Transform[] hips=Array.Empty<Transform>(),knees=Array.Empty<Transform>();
+        /// <summary>已采用土尘的持久化材质，随正式牛模板加载，运行时不另发异步素材申请。</summary>
+        [SerializeField] private Material dustMaterial;
+        public Material DustMaterial => dustMaterial;
         /// <summary>仅缓存当前租用身份；不会从View反写地图或牛的权威状态。</summary>
         private long boundMap,boundId;
         public void Bind(long map,long id)
         {
+            if(boundMap==map&&boundId==id&&map>0&&gameObject.activeSelf)return;
             boundMap=boundId=0;
             if(map<=0||id<=0||!Validate(out _)){gameObject.SetActive(false);return;}
             boundMap=map;boundId=id;Pose(false,0);gameObject.SetActive(true);
@@ -27,7 +31,8 @@ namespace Game
             if(snapshot.Phase!=ArcadeHerdPhase.Windup&&snapshot.Phase!=ArcadeHerdPhase.Charging)return false;
             var direction=new Vector3(snapshot.DirectionX,0,snapshot.DirectionZ);if(direction.sqrMagnitude<.000001f)return false;
             transform.localPosition=new Vector3(snapshot.X,0,snapshot.Z);transform.localRotation=Quaternion.LookRotation(direction);
-            Pose(snapshot.Phase==ArcadeHerdPhase.Charging,(float)(snapshot.PhaseSeconds%1000));return true;
+            Pose(snapshot.Phase==ArcadeHerdPhase.Charging,(float)(snapshot.PhaseSeconds%1000)+
+                (snapshot.Phase==ArcadeHerdPhase.Charging?(boundId-1)%5*.07f:0));return true;
         }
         /// <summary>与已确认候选同源的局部采样；同一快照重复投影保持完全相同姿态。</summary>
         private void Pose(bool charging,float seconds)

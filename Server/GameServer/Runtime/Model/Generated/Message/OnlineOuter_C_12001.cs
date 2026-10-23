@@ -1594,6 +1594,21 @@ namespace ET
         [MemoryPackOrder(30)]
         public float HerdImpactDirectionZ { get; set; }
 
+        /// <summary>
+        /// 实际掉血的牛撞反馈，包含致死；序列只增，位置在死亡/复活变更前记录。
+        /// </summary>
+        [MemoryPackOrder(31)]
+        public long HerdContactSequence { get; set; }
+
+        [MemoryPackOrder(32)]
+        public float HerdContactX { get; set; }
+
+        [MemoryPackOrder(33)]
+        public float HerdContactZ { get; set; }
+
+        [MemoryPackOrder(34)]
+        public double HerdContactElapsedSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1632,6 +1647,10 @@ namespace ET
             this.HerdImpactRemaining = default;
             this.HerdImpactDirectionX = default;
             this.HerdImpactDirectionZ = default;
+            this.HerdContactSequence = default;
+            this.HerdContactX = default;
+            this.HerdContactZ = default;
+            this.HerdContactElapsedSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }

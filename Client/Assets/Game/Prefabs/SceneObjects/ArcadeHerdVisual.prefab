@@ -2416,8 +2416,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c61a00aee4827947ad1aeae96ce63da, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   bodyPose: {fileID: 3239535270768555755}
   headPose: {fileID: 4735843469523671732}
   tailPose: {fileID: 5311732635066153559}
@@ -2431,6 +2431,7 @@ MonoBehaviour:
   - {fileID: 7872912436009418342}
   - {fileID: 4810393785613655345}
   - {fileID: 5627947494395405993}
+  dustMaterial: {fileID: 2100000, guid: 30909f99a82beca4d9e089566bc896e7, type: 2}
 --- !u!1 &6152556030286024516
 GameObject:
   m_ObjectHideFlags: 0

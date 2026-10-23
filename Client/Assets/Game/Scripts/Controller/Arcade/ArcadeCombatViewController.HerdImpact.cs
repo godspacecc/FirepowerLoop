@@ -4,7 +4,8 @@ namespace Game
 {
     public sealed partial class ArcadeCombatViewController
     {
-        public void SetHerdActivityPaused(bool paused)=>enemyPresentation?.SetHerdActivityPaused(paused);
+        public void SetHerdActivityPaused(bool paused)
+        { PauseHerdFeedback(paused);enemyPresentation?.SetHerdActivityPaused(paused); }
         /// <summary>主角和远端都消费当前地图的只读状态，异步实例晚到时仍读取最新姿态。</summary>
         public void SetPlayerHerdImpact(long playerId,ArcadeHerdImpactState state)
         {
@@ -15,6 +16,7 @@ namespace Game
         }
         public void SetEnemyHerdImpact(int id,ArcadeHerdImpactState state)
         {
+            ObserveEnemyHerdImpact(id,state);
             var direction=new Vector3(state.DirectionX,0,state.DirectionZ);if(mapRoot!=null)direction=mapRoot.TransformDirection(direction);
             enemyPresentation?.SetHerdImpact(id,state,direction);
         }

@@ -1,0 +1,10 @@
+{
+  "approved_source_sha256": {
+    "Hoof": "db5c0fdd03716fe159204f8f40fe892a04fc996cce1b832c141006b4350ef87b",
+    "Scrape": "affbbda9b3803cb84a60ec606a1e349497df2b6e17d668e2f5e1ba36a5230530",
+    "Snort": "ace8906d0bb427b0842562b25c239277272ce2c094725e8f361f176485198d0f",
+    "Impact": "903ede3a9e8f315f480849f74c71092ec28e7cf720df9b4f9d7dd86879ef4c4e"
+  },
+  "cow_original_serialized_content_unchanged_except_dustMaterial": true,
+  "seven_sound_metas_present": true
+}

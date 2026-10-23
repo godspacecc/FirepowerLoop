@@ -1,0 +1,4 @@
+FAIL HerdContactOnline.LethalAndLivingContacts: missing authoritative contact field: HerdContactSequence
+FAIL HerdContactOnline.ProtectionDoesNotPublishContact: missing authoritative contact field: HerdContactSequence
+FAIL HerdContactOnline.ContactSnapshotCloneAndCodec: missing authoritative contact field: HerdContactSequence
+0/3 passed

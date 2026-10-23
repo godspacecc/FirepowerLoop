@@ -60,7 +60,10 @@ namespace ET.Server
                     if(ArcadeHerdRules.TryContact(cow,sweep,b.RoundGeneration,-p.PlayerId,p.PositionX,p.PositionZ,ServerConfig.Instance.ArcadeRule.PlayerRadius,p.Alive&&!p.InTreasureRoom))
                     {
                         int before=p.CurrentHealth;
+                        float contactX=p.PositionX,contactZ=p.PositionZ;
                         actor.ContentDamagePlayer(b,p,ArcadeRoundContentRules.Damage(p.MaxHealth,stage.HerdPlayerDamage));
+                        if(p.CurrentHealth<before)
+                        {p.HerdContactSequence++;p.HerdContactX=contactX;p.HerdContactZ=contactZ;p.HerdContactElapsedSeconds=b.HazardElapsedSeconds;}
                         if(p.Alive&&p.CurrentHealth<before&&BeginPlayerHerdImpact(b,p,cow))
                         {p.Firing=false;p.DashSeconds=0;}
                     }

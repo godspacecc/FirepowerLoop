@@ -69,7 +69,9 @@ namespace Game
                 if(ArcadeHerdRules.TryContact(cow,sweep,r.HerdMapId,-1,r.PlayerPosition.x,r.PlayerPosition.y,catalog.Rule.PlayerRadius,r.PlayerHealth>0))
                 {
                     int before=r.PlayerHealth;
+                    var contact=r.PlayerPosition;
                     DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,stage.HerdPlayerDamage));
+                    if(r.PlayerHealth<before)view?.PlayHerdContact(contact);
                     if(r.PlayerHealth>0&&r.PlayerHealth<before&&BeginPlayerHerdImpact(r,cow))
                     {r.Firing=false;r.DashRemaining=0;}
                 }
