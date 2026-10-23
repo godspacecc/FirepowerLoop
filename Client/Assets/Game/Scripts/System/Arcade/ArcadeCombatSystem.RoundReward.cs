@@ -6,11 +6,11 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
-        /// <summary>每个主线轮清场一次，箱子与落点都投影到当前可走地面。</summary>
+        /// <summary>每个主线轮清场一次，以玩家清场时的位置投影附近可走地面，落下后不跟随。</summary>
         private void StartRoundReward(ArcadeCombatRuntime r)
         {
             if(r.IsChallenge||r.SlayerChallenge!=null||this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute!=true||catalog.Rule.RoundReward==null)return;
-            var anchor=RewardGround(r,0,0,.65f);
+            var anchor=RewardGround(r,r.PlayerPosition.x,r.PlayerPosition.y,.65f);
             if(!ArcadeRoundRewardRules.TryStart(ref r.RoundReward,catalog.Rule.RoundReward,(r.ArenaNumber-1)*4+r.WaveIndex+1,anchor.x,anchor.y))return;
             for(int i=0;i<r.RoundReward.Items.Count;i++)
             {

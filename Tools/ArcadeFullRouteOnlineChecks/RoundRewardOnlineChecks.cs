@@ -5,7 +5,7 @@ internal static class RoundRewardOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var checks=new (string,Action)[]{("ClearCreatesOnce",ClearCreatesOnce),("FullEffectAndTwoPlayersAwardOnce",FullEffectAndTwoPlayersAwardOnce),("LeavingAbandonsRemaining",LeavingAbandonsRemaining),("ChallengeHasNoChest",ChallengeHasNoChest),("StagePortalReplacesFinalPassages",StagePortalReplacesFinalPassages),("SnapshotCloneCodecKeepsRewardAndPortal",SnapshotCloneCodecKeepsRewardAndPortal)};
+        var checks=new (string,Action)[]{("ClearCreatesOnce",ClearCreatesOnce),("NearLivePlayerAndStableLanding",NearLivePlayerAndStableLanding),("FullEffectAndTwoPlayersAwardOnce",FullEffectAndTwoPlayersAwardOnce),("LeavingAbandonsRemaining",LeavingAbandonsRemaining),("ChallengeHasNoChest",ChallengeHasNoChest),("StagePortalReplacesFinalPassages",StagePortalReplacesFinalPassages),("SnapshotCloneCodecKeepsRewardAndPortal",SnapshotCloneCodecKeepsRewardAndPortal)};
         if(maximum<checks.Length)throw new ArgumentException("RoundRewardOnline maximum too small");int failed=0;
         foreach(var c in checks){try{c.Item2();Console.WriteLine("PASS RoundRewardOnline."+c.Item1);}catch(Exception e){failed++;Console.WriteLine("FAIL RoundRewardOnline."+c.Item1+": "+(e.InnerException??e));}}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -22,6 +22,23 @@ internal static class RoundRewardOnlineChecks
     private static ArcadeRoundRewardState Reward(OnlineArcadeRunActor a)=>(ArcadeRoundRewardState)typeof(OnlineArcadeBattleRuntime).GetField("RoundReward")?.GetValue(a.Battle)!;
     private static void Require(bool ok,string why){if(!ok)throw new InvalidOperationException(why);}
     private static void ClearCreatesOnce(){var a=Create();Call("TryAdvanceWave",a,a.Battle,0f);Require(Reward(a)!=null,"No chest after clear");var first=Reward(a);Call("TryAdvanceWave",a,a.Battle,0f);Require(ReferenceEquals(first,Reward(a)),"Duplicate chest");}
+    /// <summary>共享箱选活跃玩家当前位置，倒地玩家不把箱子拉回远处；落地后不追随移动。</summary>
+    private static void NearLivePlayerAndStableLanding()
+    {
+        foreach(bool firstAlive in new[]{true,false})
+        {
+            var a=Create();var first=a.Battle.Players[1];var second=a.Battle.Players[2];
+            first.PositionX=6;first.PositionZ=6;second.PositionX=-6;second.PositionZ=6;
+            if(!firstAlive)first.Alive=false;
+            var anchor=firstAlive?first:second;
+            float x=anchor.PositionX,z=anchor.PositionZ;
+            Call("TryAdvanceWave",a,a.Battle,0f);var r=Reward(a);Require(r!=null,"Missing reward");
+            Require(MathF.Sqrt((r.X-x)*(r.X-x)+(r.Z-z)*(r.Z-z))<=3,"Chest is not near current live player");
+            float landingX=r.X,landingZ=r.Z;anchor.PositionX=-x;anchor.PositionZ=-z;
+            Call("TryAdvanceWave",a,a.Battle,0f);Call("TickRoundReward",a,a.Battle,.1f);
+            Require(ReferenceEquals(r,Reward(a))&&r.X==landingX&&r.Z==landingZ,"Chest followed player after clear");
+        }
+    }
     private static void FullEffectAndTwoPlayersAwardOnce()
     {
         var a=Create();Call("TryAdvanceWave",a,a.Battle,0f);var r=Reward(a);Require(r!=null,"No chest");var item=r.Items[0];foreach(var p in a.Battle.Players.Values){p.PositionX=item.X;p.PositionZ=item.Z;}

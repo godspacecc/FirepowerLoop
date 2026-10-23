@@ -30,6 +30,20 @@ namespace Game.Tests
         }
         [Test]public void ClearCreatesOnlyOneChestForThisRound()
         {Call("TickWaveTransition",runtime,0f);Assert.That(Reward,Is.Not.Null,"清场必须生成本轮宝箱");var first=Reward;Call("TickWaveTransition",runtime,0f);Assert.That(Reward,Is.SameAs(first));Assert.That(runtime.IslandRoundAwaitingExit,Is.True);}
+        /// <summary>清场落点取玩家当时的位置；移动与重复清场不能把已落地箱子带走。</summary>
+        [Test]public void ChestStartsNearCurrentPlayerAndStaysAtClearPosition()
+        {
+            foreach(var position in new[]{new Vector2(6,6),new Vector2(-6,6)})
+            {
+                runtime.RoundReward=null;runtime.WaveClearAwarded=false;runtime.IslandRoundAwaitingExit=false;
+                runtime.PlayerPosition=position;Call("TickWaveTransition",runtime,0f);
+                var reward=Reward;Assert.That(reward,Is.Not.Null);
+                var landing=new Vector2(reward.X,reward.Z);
+                Assert.That(Vector2.Distance(landing,position),Is.LessThanOrEqualTo(3f),"金币箱应落在清场玩家附近而非场地中心");
+                runtime.PlayerPosition=-position;Call("TickWaveTransition",runtime,0f);Call("TickRoundReward",runtime,.1f);
+                Assert.That(Reward,Is.SameAs(reward));Assert.That(new Vector2(reward.X,reward.Z),Is.EqualTo(landing));
+            }
+        }
         [Test]public void FullEffectBlocksPickupThenAwardsOnlyOnce()
         {
             Call("TickWaveTransition",runtime,0f);Assert.That(Reward,Is.Not.Null);var item=Reward.Items[0];runtime.PlayerPosition=new Vector2(item.X,item.Z);

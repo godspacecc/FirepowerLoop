@@ -10,7 +10,9 @@ namespace ET.Server
         {
             if(!b.IsCasualRoute||b.IsChallenge||b.SlayerChallenge!=null)return;
             var t=ServerConfig.Instance.RoundReward;var rule=ServerConfig.Instance.ArcadeRule;
-            var ground=RewardGround(b,0,0,.65f);float x=ground.X,z=ground.Y;
+            // 共享宝箱按稳定玩家顺序选择仍可活动的玩家，记录清场瞬间落点；无人可用时沿用原安全回退。
+            var anchor=b.Players.Values.Where(p=>p.Alive&&!p.InTreasureRoom&&p.RespawnSeconds<=0).OrderBy(p=>p.PlayerId).FirstOrDefault();
+            var ground=RewardGround(b,anchor?.PositionX??0,anchor?.PositionZ??0,.65f);float x=ground.X,z=ground.Y;
             if(!ArcadeRoundRewardRules.TryStart(ref b.RoundReward,t,(b.ArenaNumber-1)*4+b.WaveIndex+1,x,z))return;
             for(int i=0;i<b.RoundReward.Items.Count;i++)
             {var item=b.RoundReward.Items[i];var point=RewardGround(b,item.X,item.Z,.25f);b.RoundReward.Items[i]=new ArcadeRoundRewardItem(item.Id,item.GoldBar,item.Value,point.X,point.Y);}
