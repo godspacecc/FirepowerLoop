@@ -319,7 +319,7 @@ namespace Game
                 lastSnapshot.Revision, lastSnapshot.Phase, lastSnapshot.CompletedArena, lastSnapshot.NextArena,
                 lastSnapshot.ConfigFingerprint, lastSnapshot.Players, operation, OnlineArcadeResultCode.None,
                 lastSnapshot.Battle, lastSnapshot.Connections, lastSnapshot.BattlePaused,
-                lastSnapshot.ChallengeId, lastSnapshot.ChallengeAttempted));
+                lastSnapshot.ChallengeId, lastSnapshot.ChallengeAttempted, lastSnapshot.CasualRouteVersion));
             try
             {
                 TResponse response = await call(operationCancellation.Token);
@@ -425,7 +425,7 @@ namespace Game
                 (OnlineArcadeRunPhase)source.Phase, source.CompletedArena, source.NextArena,
                 source.ConfigFingerprint, players, OnlineArcadeOperationState.Idle, code, CopyBattle(source.Battle),
                 CopyConnections(source.Connections), source.BattlePaused, source.ChallengeId,
-                source.ChallengeAttempted);
+                source.ChallengeAttempted, source.CasualRouteVersion);
         }
 
         private static IReadOnlyList<OnlineArcadeConnectionSnapshot> CopyConnections(
@@ -464,7 +464,8 @@ namespace Game
             foreach (OnlineArcadeEnemyInfo enemy in source.Enemies)
                 enemies.Add(new OnlineArcadeEnemySnapshot(enemy.RuntimeId, enemy.EnemyConfigId, enemy.PositionX,
                     enemy.PositionZ, enemy.CurrentHealth, enemy.MaxHealth, enemy.TargetPlayerId, enemy.WaveNumber,
-                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds,new FirepowerLoop.Arcade.ArcadeHerdImpactState{Remaining=enemy.HerdImpactRemaining,DirectionX=enemy.HerdImpactDirectionX,DirectionZ=enemy.HerdImpactDirectionZ}));
+                    enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds,new FirepowerLoop.Arcade.ArcadeHerdImpactState{Remaining=enemy.HerdImpactRemaining,DirectionX=enemy.HerdImpactDirectionX,DirectionZ=enemy.HerdImpactDirectionZ},
+                    new FirepowerLoop.Arcade.ArcadeStageEnemyState{Phase=enemy.StageEnemyPhase,Age=enemy.StageEnemyAge,OriginX=enemy.StageEnemyOriginX,OriginY=enemy.StageEnemyOriginZ,RevivesRemaining=enemy.StageEnemyRevives},enemy.AttackSequence));
             List<OnlineArcadeProjectileSnapshot> projectiles = new(source.Projectiles.Count);
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,
@@ -555,7 +556,7 @@ namespace Game
                     snapshot.Revision, snapshot.Phase, snapshot.CompletedArena, snapshot.NextArena,
                     snapshot.ConfigFingerprint, snapshot.Players, lastSnapshot.OperationState,
                     snapshot.LastResultCode, snapshot.Battle, snapshot.Connections, snapshot.BattlePaused,
-                    snapshot.ChallengeId, snapshot.ChallengeAttempted);
+                    snapshot.ChallengeId, snapshot.ChallengeAttempted, snapshot.CasualRouteVersion);
             Publish(snapshot);
         }
 

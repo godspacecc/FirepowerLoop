@@ -71,6 +71,7 @@ namespace Game
             var checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1, GenerationSeed = seed };
             var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, checkpoint);
             candidate.IsCasualRoute = true;
+            candidate.CasualRouteVersion = FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion;
             candidate.ScoreShopRulesVersion = catalog.ScoreShop == null ? 0 : 1;
             candidate.SlayerMartRulesVersion = slayerMartRulesVersion;
             candidate.ArenaConfigNumber = catalog.Arenas[0].ArenaNumber;
@@ -426,8 +427,8 @@ namespace Game
                 var arena = catalog.Arenas.FirstOrDefault(value => value.ArenaNumber == current.ArenaConfigNumber);
                 var isTerminal = arena != null && arena.NextArenaNumbers.Count == 0 && !string.IsNullOrEmpty(arena.FinalBossId);
                 if (arena == null || completion.Victory != isTerminal ||
-                    completion.Victory && (current.NextArenaNumber != 10 || completion.NextArenaConfigNumber != 0) ||
-                    !completion.Victory && (current.NextArenaNumber >= 10 || !arena.NextArenaNumbers.Contains(completion.NextArenaConfigNumber)))
+                    completion.Victory && (current.NextArenaNumber != FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(current.CasualRouteVersion) || completion.NextArenaConfigNumber != 0) ||
+                    !completion.Victory && (current.NextArenaNumber >= FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(current.CasualRouteVersion) || !FirepowerLoop.Arcade.ArcadeRouteRules.NextArenas(current.CasualRouteVersion, arena.ArenaNumber, arena.NextArenaNumbers).Contains(completion.NextArenaConfigNumber)))
                 { error = "休闲路线选择或胜利身份无效"; return false; }
             }
             else if (completion.Victory)

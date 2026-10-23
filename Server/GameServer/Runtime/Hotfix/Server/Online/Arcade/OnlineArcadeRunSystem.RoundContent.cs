@@ -97,7 +97,7 @@ namespace ET.Server
             var layout=b.RoundLayout;var arena=ResolveBattleArena(b);
             bool nextRound=b.WaveIndex<3&&!b.RoundBossEncounter;
             bool nextBoss=!nextRound&&!b.RoundBossEncounter&&layout.BossKind>0;
-            var targets=nextRound||nextBoss?new[]{arena.ArenaNumber}:b.FinalBossDefeated?new[]{0}:arena.NextArenaNumbers;
+            var targets=nextRound||nextBoss?new[]{arena.ArenaNumber}:b.FinalBossDefeated?new[]{0}:ArcadeRouteRules.NextArenas(b.CasualRouteVersion,arena.ArenaNumber,arena.NextArenaNumbers);
             if(targets.Length==0)return false;
             var rule=ServerConfig.Instance.ArcadeRule;
             foreach(var p in b.Players.Values.OrderBy(p=>p.PlayerId))
@@ -148,6 +148,7 @@ namespace ET.Server
             if(enemy.SpecialKind==13)
             {var target=b.Players.Values.Where(v=>v.Alive).OrderBy(v=>v.PlayerId).FirstOrDefault();if(target!=null){float x=target.PositionX,y=target.PositionZ+p.EventRadius;ResolveBattlePosition(b,ref x,ref y,target.PositionX,target.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,EffectiveObstacles(b),IslandFor(b));enemy.PositionX=x;enemy.PositionZ=y;}}
             enemy.CurrentHealth=enemy.MaxHealth;
+            InitializeNextStageEnemy(b,enemy);
         }
         private static float EnemyContentMotion(OnlineArcadeBattleRuntime b,OnlineArcadeEnemyRuntime enemy,float delta)
         {
@@ -210,6 +211,7 @@ namespace ET.Server
             if(!ranged&&TryCompleteMeleeAttack(e,target.PlayerId,
                 DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)<=radius*radius,decoy,seconds))
             {
+                e.AttackSequence++;
                 float aura=1;
                 foreach(var ally in b.Enemies.Values)if(ally.RuntimeId!=e.RuntimeId)
                     aura=Math.Max(aura,ArcadeRoundContentRules.AllyBuff(ally.SpecialKind,MathF.Sqrt(DistanceSquared(e.PositionX,e.PositionZ,ally.PositionX,ally.PositionZ)),p));

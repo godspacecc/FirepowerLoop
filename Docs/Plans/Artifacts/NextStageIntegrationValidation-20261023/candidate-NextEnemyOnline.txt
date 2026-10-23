@@ -1,0 +1,13 @@
+PASS NextEnemyOnline.GraveBornAndImmune
+PASS NextEnemyOnline.GraveSlotsAreUnique
+PASS NextEnemyOnline.CrowCannotAttackBeforeLanding
+PASS NextEnemyOnline.ShadowFirstKillHasNoReward
+PASS NextEnemyOnline.ShadowIgnoresRepeatedKill
+PASS NextEnemyOnline.ShadowSecondKillEndsEnemy
+PASS NextEnemyOnline.HazardCleanupBypassesRevival
+PASS NextEnemyOnline.HazardFirstKillStillRevives
+PASS NextEnemyOnline.LoadingAndDisconnectFreezeAge
+PASS NextEnemyOnline.SnapshotCloneRetainsStage
+PASS NextEnemyOnline.ActualElectricKillRevivesShadow
+PASS NextEnemyOnline.BlockedTombsPreserveQueue
+12/12 passed

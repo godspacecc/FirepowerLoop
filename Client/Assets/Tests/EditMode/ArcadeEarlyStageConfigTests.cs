@@ -17,7 +17,8 @@ namespace Game.Tests
         [Test] public void NewStagesHaveEightFixedRoundsWithoutReplacingLegacyBranchIdentities()
         {
             Assert.That(catalog.Arenas.Any(a=>a.ArenaNumber==21),Is.True,"缺码头配置21");Assert.That(catalog.Arenas.Any(a=>a.ArenaNumber==22),Is.True,"缺农场配置22");
-            Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==21).NextArenaNumbers,Is.EqualTo(new[]{22}));Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==22).NextArenaNumbers,Is.EqualTo(new[]{5}));
+            Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==21).NextArenaNumbers,Is.EqualTo(new[]{22}));Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==22).NextArenaNumbers,Is.EqualTo(new[]{23}));
+            Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==22).WithRouteVersion(0).NextArenaNumbers,Is.EqualTo(new[]{5}),"旧存档继续原四十轮路线");
             Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==2).NextArenaNumbers,Is.EqualTo(new[]{4,15}));Assert.That(catalog.Arenas.First(a=>a.ArenaNumber==3).NextArenaNumbers,Is.EqualTo(new[]{4,15}));
             foreach(int id in new[]{4,15,20})Assert.That(catalog.Arenas.Any(a=>a.ArenaNumber==id),Is.True);
             Assert.That(catalog.RoundLayouts.Count(p=>p.ArenaConfigNumber==21||p.ArenaConfigNumber==22),Is.EqualTo(8));

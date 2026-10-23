@@ -1,0 +1,11 @@
+{
+  "ui.arcade.temple.round.1": { "zh-CN": "神庙庭院 · 第1轮", "en-US": "Temple Courtyard · Round 1" },
+  "ui.arcade.temple.round.2": { "zh-CN": "神庙庭院 · 第2轮", "en-US": "Temple Courtyard · Round 2" },
+  "ui.arcade.temple.round.3": { "zh-CN": "神庙庭院 · 第3轮", "en-US": "Temple Courtyard · Round 3" },
+  "ui.arcade.temple.round.4": { "zh-CN": "神庙庭院 · 第4轮", "en-US": "Temple Courtyard · Round 4" },
+  "ui.arcade.marketplace.round.1": { "zh-CN": "集市 · 第1轮", "en-US": "Marketplace · Round 1" },
+  "ui.arcade.marketplace.round.2": { "zh-CN": "集市 · 第2轮", "en-US": "Marketplace · Round 2" },
+  "ui.arcade.marketplace.round.3": { "zh-CN": "集市 · 第3轮", "en-US": "Marketplace · Round 3" },
+  "ui.arcade.marketplace.round.4": { "zh-CN": "集市 · 第4轮", "en-US": "Marketplace · Round 4" },
+  "ui.arcade.victory": { "zh-CN": "全部轮次与最终 Boss 已完成 · 通关结算", "en-US": "All rounds and the final Boss cleared · Victory settlement" }
+}

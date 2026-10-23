@@ -271,6 +271,20 @@ namespace Game
         public void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)
             => RemoveEnemy(runtimeId,playDeath,direction,explosive,flameKill,0);
 
+        /// <summary>仅接管当前地图子树内依赖完整的正式演员，复用原死亡路径；外部实例最终销毁而非混入Prefab池。</summary>
+        public bool TryPlayExternalEnemyDeath(int runtimeId,EnemyView view,Vector3 direction,bool explosive,bool flameKill,int impactKind)
+        {
+            var reaction=view!=null?view.GetComponent<EnemyPhysicalReaction>():null;
+            if(released||runtimeId<=0||arcadeRoot==null||arcadeMapInstanceId<=0||view==null||!view.transform.IsChildOf(arcadeRoot)||
+                view.Animator==null||view.Animator.runtimeAnimatorController==null||reaction==null||!reaction.IsReady||
+                explosive&&view.ExplosionDeathTemplate==null||flameKill&&view.GetComponentInChildren<EnemyFlameFeedback>(true)==null||
+                arcadeEnemies.ContainsKey(runtimeId)||dyingArcadeEnemies.Exists(e=>e.RuntimeId==runtimeId))return false;
+            var entry=new ArcadeEnemyPresentationEntry(runtimeId,string.Empty,view,0,view.transform.position,0,false){ExternalOwned=true};
+            // 先通过完整校验，再一次性提交归属；原轮根销毁从此不再包含该演员。
+            view.transform.SetParent(arcadeRoot,true);view.Animator.enabled=true;arcadeEnemies.Add(runtimeId,entry);
+            RemoveEnemy(runtimeId,true,direction,explosive,flameKill,impactKind);return true;
+        }
+
         /// <summary>力度只影响已裁决死亡的骨骼，不改变尸体与特效预算。</summary>
         public void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill,int impactKind)
         {
@@ -380,6 +394,7 @@ namespace Game
             entry.View.ResetPhysicalFeedback();
             entry.View.gameObject.SetActive(false);
             entry.View.ResetWeaponSelection();
+            if(entry.ExternalOwned){ReleaseArcadeView(entry.View);return;}
             if (!arcadeEnemyPool.TryGetValue(entry.ConfigId, out var pool))
             {
                 pool = new Stack<EnemyView>();
@@ -748,6 +763,8 @@ namespace Game
             public int LastHealth { get; set; }
             public Vector3 LastPosition { get; set; }
             public int LastAttackSequence { get; set; }
+            /// <summary>外部演员只借用尸体管线，回收不进入原配置池。</summary>
+            public bool ExternalOwned { get; set; }
             /// <summary>Boss 血条常驻；普通敌人只在受击计时窗口内显示。</summary>
             public bool PersistentHealthBar { get; set; }
             /// <summary>普通敌人血条剩余显示时间，单位秒；0 表示隐藏。</summary>

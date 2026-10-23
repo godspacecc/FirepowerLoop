@@ -1,0 +1,1 @@
+实际 ArcadeCombatViewController.SetEnemyContent/SetEnemy/SetNextStageEnemyState/RemoveEnemy 与 TickPlayerFeedback + 正式资源隔离采样；不是自然对局或真人双端。集市普通群敌使用正式Prefab和其自带移动片段逐帧采样；唯一暗影通过Controller。TimeScale未修改。

@@ -100,7 +100,7 @@ namespace FirepowerLoop.Arcade
             foreach (float v in new[] {p.SpecialRatio,p.EnemyHealthScale,p.EnemySpeedScale,p.SkillPeriod,p.SkillWarning,
                 p.SkillMagnitude,p.EventPeriod,p.EventWarning,p.EventRadius,p.EventDamage,p.EventMoveSpeed})
                 if (!Finite(v) || v < 0) throw new ArgumentException("内容参数必须为非负有限值");
-            if (p.SpecialKind < 0 || p.SpecialKind > 17 || p.EventKind < 0 || p.EventKind > 10 || p.BossKind < 0 || p.BossKind > 4 ||
+            if (p.SpecialKind < 0 || p.SpecialKind > 19 || p.EventKind < 0 || p.EventKind > 10 || p.BossKind < 0 || p.BossKind > 4 ||
                 p.SpecialRatio > 1 || p.EventDamage > 1 ||
                 ((p.SpecialKind != 0 || p.BossKind != 0) && (p.EnemyHealthScale <= 0 || p.EnemySpeedScale <= 0 ||
                     p.SkillPeriod <= 0 || p.SkillWarning <= 0 || p.SkillWarning >= p.SkillPeriod || p.SkillMagnitude <= 0)) ||

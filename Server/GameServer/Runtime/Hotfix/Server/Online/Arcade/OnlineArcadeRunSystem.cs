@@ -538,8 +538,8 @@ namespace ET.Server
                 bool victory = candidate.IsCasualRoute && actor.Battle.FinalBossDefeated;
                 if (candidate.IsCasualRoute)
                 {
-                    if (victory ? completedArena != 10 || string.IsNullOrEmpty(arena.FinalBossId) :
-                        completedArena >= 10 || !arena.NextArenaNumbers.Contains(actor.Battle.SelectedExitConfigNumber))
+                    if (victory ? completedArena != FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(candidate.CasualRouteVersion) || string.IsNullOrEmpty(arena.FinalBossId) :
+                        completedArena >= FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(candidate.CasualRouteVersion) || !FirepowerLoop.Arcade.ArcadeRouteRules.NextArenas(candidate.CasualRouteVersion, arena.ArenaNumber, arena.NextArenaNumbers).Contains(actor.Battle.SelectedExitConfigNumber))
                         throw new InvalidOperationException("Invalid casual route completion.");
                     if (!victory) candidate.ArenaConfigNumber = actor.Battle.SelectedExitConfigNumber;
                 }
@@ -713,6 +713,7 @@ namespace ET.Server
                 CompletedArena = 0,
                 NextArena = 1,
                 IsCasualRoute = true,
+                CasualRouteVersion = FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion,
                 ArenaConfigNumber = 1,
                 ClientVersion = room.ClientVersion ?? string.Empty,
                 ConfigFingerprint = rule.ConfigFingerprint,
@@ -836,8 +837,10 @@ namespace ET.Server
                     run.Revision <= 0 || run.Phase is not (OnlineArcadeRunPhase.SafeCheckpoint or OnlineArcadeRunPhase.Victory) || run.NextArena <= 0 ||
                     string.IsNullOrWhiteSpace(run.ConfigFingerprint) || run.Players == null || run.Players.Count != 2)
                     throw new InvalidOperationException("OnlineArcadeStore contains an invalid run.");
-                if (run.IsCasualRoute && (run.ArenaConfigNumber <= 0 || run.CompletedArena > 10 ||
-                    (run.Phase == OnlineArcadeRunPhase.Victory) != (run.CompletedArena == 10) ||
+                if (!FirepowerLoop.Arcade.ArcadeRouteRules.IsValidVersion(run.CasualRouteVersion) || !run.IsCasualRoute && run.CasualRouteVersion != 0)
+                    throw new InvalidOperationException("Invalid persisted casual route version.");
+                if (run.IsCasualRoute && (run.ArenaConfigNumber <= 0 || run.CasualRouteVersion == 0 && run.ArenaConfigNumber >= 23 || run.CompletedArena > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(run.CasualRouteVersion) ||
+                    (run.Phase == OnlineArcadeRunPhase.Victory) != (run.CompletedArena == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(run.CasualRouteVersion)) ||
                     run.NextArena != run.CompletedArena + 1 ||
                     ServerConfig.Instance.Tables.TbArcadeArena.GetOrDefault(run.ArenaConfigNumber) == null))
                     throw new InvalidOperationException("OnlineArcadeStore contains an invalid casual route.");
@@ -892,6 +895,14 @@ namespace ET.Server
             if(ServerConfig.Instance.ArcadeRule.ConfigFingerprint==earlyStageVersion&&
                 (run.ConfigFingerprint=="firepowerloop-20261022-v20-purple-ray"||run.ConfigFingerprint=="firepowerloop-20261022-v21-early-stage-data"))
                 run.ConfigFingerprint=earlyStageVersion;
+            // 只迁移已审查的相邻配置指纹；不改存档路线版本或轮前身份。
+            const string nextThreeVersion="firepowerloop-20261023-v25-next-three-52";
+            if(ServerConfig.Instance.ArcadeRule.ConfigFingerprint==nextThreeVersion &&
+                run.ConfigFingerprint is "firepowerloop-20261022-v20-purple-ray" or "firepowerloop-20261022-v21-early-stage-data" or
+                    "firepowerloop-20261022-v22-early-stage-herd" or "firepowerloop-20261023-v23-low-tier-skull-open-projectiles" or
+                    "firepowerloop-20261023-v24-melee-windup")
+                run.ConfigFingerprint=nextThreeVersion;
+
         }
 
         private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready, string scoreShopDropId = null)
@@ -1182,7 +1193,7 @@ namespace ET.Server
             long[] enemyIds = battle.Enemies.Keys.OrderBy(x => x).ToArray();
             foreach (long enemyId in enemyIds)
                 if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy))
-                    self.KillEnemy(battle, enemy, true);
+                    self.RemoveEnemyForCleanup(battle, enemy);
             return enemyIds.Length;
         }
 
@@ -1209,6 +1220,7 @@ namespace ET.Server
                 ArenaNumber = record.NextArena,
                 ArenaConfigNumber = arena.ArenaNumber,
                 IsCasualRoute = record.IsCasualRoute,
+                CasualRouteVersion = record.CasualRouteVersion,
                 WaveCount = challenge ? 1 : arena.WaveGroupIds.Length,
                 DifficultyPlayerCount = record.Players.Count,
                 IsChallenge = challenge,
@@ -1498,7 +1510,7 @@ namespace ET.Server
                     battle.RoundLayout.Entries.Count,battle.SpawnQueue.Count-battle.SpawnQueueIndex,new Random(unchecked((int)battle.NextEnemyRuntimeId)));
                 battle.IslandPassages.Advance(seconds);
                 bool changed=false;
-                while(battle.SpawnQueueIndex<battle.SpawnQueue.Count&&battle.Enemies.Count<battle.MaxAlive&&battle.IslandPassages.TryTake(out int passage,out bool startsBatch))
+                while(battle.SpawnQueueIndex<battle.SpawnQueue.Count&&battle.Enemies.Count<battle.MaxAlive&&NextStageSpawnAvailable(battle)&&battle.IslandPassages.TryTake(out int passage,out bool startsBatch))
                 {
                     bool spawned=SpawnQueuedEnemy(battle,now,passage);changed|=spawned;
                     if(spawned&&startsBatch)SpawnPassageBarrel(battle);
@@ -1511,6 +1523,7 @@ namespace ET.Server
         /// <summary>交付一个已有队列敌人，通道批次只指定真实入口，不另发数量、属性或奖励。</summary>
         private static bool SpawnQueuedEnemy(OnlineArcadeBattleRuntime battle,long now,int passage)
         {
+            if(!NextStageSpawnAvailable(battle))return false;
             if (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || passage<0&&now < battle.NextSpawnAt)
                 return false;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
@@ -1722,6 +1735,7 @@ namespace ET.Server
                     return changed || battle.AllPlayersDefeated;
                 }
 
+                if(TickNextStageEnemy(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
                 {CancelMeleeWindup(enemy);continue;}
                 if(TickSlayerGuardian(self,battle,enemy,target,deltaSeconds)){changed=true;continue;}
@@ -1782,6 +1796,7 @@ namespace ET.Server
                         DistanceSquared(enemy.PositionX, enemy.PositionZ, targetX, targetZ) <= contactRadius * contactRadius,
                         targetsDecoy, deltaSeconds))
                     {
+                        enemy.AttackSequence++;
                         if (!targetsDecoy) self.DamagePlayer(battle, target, enemy.Damage);
                         enemy.AttackCooldownSeconds = enemy.AttackIntervalSeconds;
                         if (battle.AllPlayersDefeated) return true;
@@ -2338,7 +2353,7 @@ namespace ET.Server
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             foreach (long enemyId in battle.EnemyIterationIds)
             {
-                if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) ||
+                if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) || enemy.StageEnemy.Phase>0 ||
                     DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
                 float offsetX = enemy.PositionX - centerX;
                 float offsetZ = enemy.PositionZ - centerZ;
@@ -2420,7 +2435,13 @@ namespace ET.Server
         /// <summary>首次死亡时写入力度分层，后续投影和重连只复制，不重新推断当前武器。</summary>
         private static void KillEnemyWithReaction(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeEnemyRuntime enemy, bool hazardKill, bool explosive, float originX, float originZ, int impactKind)
+            => self.ResolveEnemyDeath(battle,enemy,hazardKill,explosive,originX,originZ,impactKind,false);
+
+        /// <summary>清场和真实击杀共用原有结算，仅显式清理允许跳过现身与重生。</summary>
+        private static void ResolveEnemyDeath(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
+            OnlineArcadeEnemyRuntime enemy, bool hazardKill, bool explosive, float originX, float originZ, int impactKind, bool forceRemove)
         {
+            if(!battle.Enemies.ContainsKey(enemy.RuntimeId)||PreserveNextStageEnemy(battle,enemy,forceRemove))return;
             if (!battle.Enemies.Remove(enemy.RuntimeId)) return;
             float dx = enemy.PositionX - originX, dz = enemy.PositionZ - originZ;
             float length = MathF.Sqrt(dx * dx + dz * dz);
@@ -2448,7 +2469,7 @@ namespace ET.Server
                 battle.AwaitingExit = true;
                 battle.SpawnQueue.Clear();
                 battle.SpawnQueueIndex = 0;
-                foreach (var remaining in battle.Enemies.Values.ToArray()) self.KillEnemy(battle, remaining, true);
+                foreach (var remaining in battle.Enemies.Values.ToArray()) self.RemoveEnemyForCleanup(battle, remaining);
                 battle.Projectiles.Clear();battle.WeaponBurnAreas.Clear();foreach(var evolvedPlayer in battle.Players.Values)evolvedPlayer.WeaponEvolution.Clear();
             }
             foreach (var hazard in battle.Hazards) hazard.ForgetTarget(enemy.RuntimeId);
@@ -2894,7 +2915,7 @@ namespace ET.Server
                 foreach (var enemy in battle.Enemies.Values) battle.EnemyIterationIds.Add(enemy.RuntimeId);
                 foreach (long id in battle.EnemyIterationIds)
                 {
-                    if (!battle.Enemies.TryGetValue(id, out var enemy)) continue;
+                    if (!battle.Enemies.TryGetValue(id, out var enemy)||enemy.StageEnemy.Phase>0) continue;
                     if (!hazard.TryHit(id, enemy.HazardPreviousX, enemy.HazardPreviousZ,
                         enemy.PositionX, enemy.PositionZ, rule.EnemyContactRadius)) continue;
                     bool boss = ResolveBattleArena(battle).IsBoss && battle.WaveIndex + 1 == battle.WaveCount;
@@ -3018,7 +3039,8 @@ namespace ET.Server
             if (battle.RoundLayout != null) return TickRoundExit(battle);
             if (battle.TreasureRoom?.Members.Length > 0) return false;
             var arena = ResolveBattleArena(battle);
-            int count = battle.FinalBossDefeated ? 1 : arena.NextArenaNumbers.Length;
+            var next = FirepowerLoop.Arcade.ArcadeRouteRules.NextArenas(battle.CasualRouteVersion, arena.ArenaNumber, arena.NextArenaNumbers);
+            int count = battle.FinalBossDefeated ? 1 : next.Length;
             foreach (var player in battle.Players.Values.OrderBy(value => value.PlayerId))
             {
                 if (!player.Alive || player.InTreasureRoom) continue;
@@ -3027,7 +3049,7 @@ namespace ET.Server
                     float x = (index - (count - 1) * 0.5f) * 5f;
                     float z = ServerConfig.Instance.ArcadeRule.ArenaHalfHeight - 3f;
                     if (DistanceSquared(player.PositionX, player.PositionZ, x, z) > 2.25f) continue;
-                    battle.SelectedExitConfigNumber = battle.FinalBossDefeated ? 0 : arena.NextArenaNumbers[index];
+                    battle.SelectedExitConfigNumber = battle.FinalBossDefeated ? 0 : next[index];
                     battle.ArenaCompletionReady = true;
                     return true;
                 }
@@ -3098,6 +3120,7 @@ namespace ET.Server
             {
                 OnlineArcadeEnemyRuntime left = battle.Enemies[battle.EnemyIterationIds[leftIndex]];
                 OnlineArcadeEnemyRuntime right = battle.Enemies[battle.EnemyIterationIds[rightIndex]];
+                if(left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
                 float offsetX = right.PositionX - left.PositionX;
                 float offsetZ = right.PositionZ - left.PositionZ;
                 float distanceSquared = offsetX * offsetX + offsetZ * offsetZ;
@@ -3157,7 +3180,7 @@ namespace ET.Server
             ArcadeArenaConfig exact = ServerConfig.Instance.Tables.TbArcadeArena.GetOrDefault(arenaNumber);
             return exact ?? arenas.OrderBy(x => x.ArenaNumber).ElementAt((arenaNumber - 1) % arenas.Count);
         }
-        /// <summary>旧顺序局不进入新休闲地图21/22；保留原主题循环与旧安全节点语义。</summary>
+        /// <summary>旧顺序局不进入新休闲地图21—25；保留原主题循环与旧安全节点语义。</summary>
         private static ArcadeArenaConfig ResolveSequentialArena(int arenaNumber)
         {
             var arenas=ServerConfig.Instance.Tables.TbArcadeArena.DataList.Where(p=>!ServerConfig.Instance.EarlyStages.ContainsKey(p.ArenaNumber)).OrderBy(p=>p.ArenaNumber).ToArray();
@@ -3243,6 +3266,7 @@ namespace ET.Server
             snapshot.Phase = (int)record.Phase;
             snapshot.CompletedArena = record.CompletedArena;
             snapshot.NextArena = record.NextArena;
+            snapshot.CasualRouteVersion = record.CasualRouteVersion;
             snapshot.ConfigFingerprint = record.ConfigFingerprint ?? string.Empty;
             snapshot.ChallengeId = record.ChallengeId ?? string.Empty;
             snapshot.ChallengeAttempted = record.ChallengeAttempted;
@@ -3447,6 +3471,9 @@ namespace ET.Server
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpact.Remaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpact.DirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpact.DirectionZ;
+                enemy.StageEnemyPhase=sourceEnemy.StageEnemy.Phase;enemy.StageEnemyAge=sourceEnemy.StageEnemy.Age;
+                enemy.StageEnemyOriginX=sourceEnemy.StageEnemy.OriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemy.OriginY;enemy.StageEnemyRevives=sourceEnemy.StageEnemy.RevivesRemaining;
+                enemy.AttackSequence=sourceEnemy.AttackSequence;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileRuntime sourceProjectile in source.Projectiles.Values.OrderBy(x => x.RuntimeId))
@@ -3488,6 +3515,7 @@ namespace ET.Server
             clone.Phase = source.Phase;
             clone.CompletedArena = source.CompletedArena;
             clone.NextArena = source.NextArena;
+            clone.CasualRouteVersion = source.CasualRouteVersion;
             clone.ConfigFingerprint = source.ConfigFingerprint ?? string.Empty;
             clone.SelfSlayerMart=ClonePersonalSlayerMart(source.SelfSlayerMart);
             clone.Battle = CloneBattleSnapshot(source.Battle);
@@ -3672,6 +3700,9 @@ namespace ET.Server
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpactRemaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpactDirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpactDirectionZ;
+                enemy.StageEnemyPhase=sourceEnemy.StageEnemyPhase;enemy.StageEnemyAge=sourceEnemy.StageEnemyAge;
+                enemy.StageEnemyOriginX=sourceEnemy.StageEnemyOriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemyOriginZ;enemy.StageEnemyRevives=sourceEnemy.StageEnemyRevives;
+                enemy.AttackSequence=sourceEnemy.AttackSequence;
                 battle.Enemies.Add(enemy);
             }
             foreach (OnlineArcadeProjectileInfo sourceProjectile in source.Projectiles)

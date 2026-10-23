@@ -1,0 +1,42 @@
+NextStageViewTests：精确真实EditMode fixture，7项，includePassingTests=true，每次-MaxTests 7。
+实际RED：0/7，四项缺少阶段入口，三项仅预载环境而缺少模板依赖。
+首次GREEN尝试：1/7（晚回调清理通过）；6项被正式演员动画校验阻止。
+定位：当前正式普通/暗影Prefab是Civilian通用骨架，avatar=null，动画名Idle/Walk，无Humanoid Run。实际探查见next-stage-animator-probe-result.json。
+修正：只采样该正式Prefab自己的Idle与Run/Walk，保持原尺寸、骨架、动画；未修改角色原件。
+最终GREEN：7/7，覆盖全模板就绪门禁、墓穴起身/越沿、乌鸦/蓝影快照采样、旧阶段过滤、身份变化、晚回调单次释放、失败回滚重试、最终死亡蓝影和切图清理。
+上述7项fixture共实际执行21次用例，未扩大到完整套件。
+额外按root请求：Game.Tests.ArcadeRoundLayoutTests.CatalogContainsEveryThemeAndFourDistinctRoundLayouts 精确单方法1项RED，Expected88 But100；由root更新新路线预期并回归。
+无Player Build/打包/PlayMode/自然对局/真人双端声明。TimeScale进入时0，未修改。
+独立审查已请求，但新子代理创建因线程上限被拒，root后续统一独立审查仍须覆盖视图接线。
+
+2026-10-24 最终补充（以下状态替代上文“独立审查创建失败、仍待统一审查”的当时记录）
+
+审查发现的既有表现旁路问题已修复：正式演员保留原附火、按实际攻击序列播放自身Attack片段、健康下降复用EnemyView原闪色及胸部回弹；kind18死亡成功移交EnemyCtrl现有尸体/物理/火焰/爆炸/预算/地面/寿命管线，ExternalOwned实例回收直接销毁，不进原Prefab池；地图归属或依赖无效则拒绝接管，由原Controller安全销毁。kind19最终蓝影沿用已采用效果。
+
+新增4个真实完整方法均各自先RED1项再GREEN1项，includePassingTests=true，每次max1：
+- FormalStageHumanoidsKeepExistingFlameFeedbackAndClearOnHiddenOrRemoved：命中附火、零步长、唯一Tick、到期、隐藏、移除与蓝影清理。
+- FormalStageAttackSequenceSamplesOriginalClipOnceWithoutLateReplay：正式攻击骨骼采样、首份基线、重复去重、播放中不被Idle覆盖、隐藏不补播。
+- GraveDeathsTransferToExistingCorpsePipelineAndRejectForeignOwnershipSafely：普通/火焰/爆炸死亡、外部实例不入池、原寿命销毁、当前地图之外拒绝、地图释放与拒绝后安全销毁。
+- StageHealthLossUsesExistingHitFlashAndPhysicalResponseWithoutLateOrHiddenReplay：真实健康下降闪红和胸部回弹、结束还原、重复与隐藏阶段不补播。
+对应next-stage-{flame,attack,death,hit}-{red,green}.json均已归档。早期一次MCP调用因连接重试未成功启动，未把该次当作实际RED；其后同一精确方法成功执行上述真实RED。
+
+必要的两项清理复查各GREEN1/1：
+- FinalShadowDeathKeepsBriefBlueDissolveAndMapReleaseCleansImmediately。
+- LateTemplateCallbacksAfterReleaseCannotAttachAndHandlesReleaseOnce。
+结果为同目录next-stage-<完整方法名>-result.json。
+
+最终因受击Tick改为复用EnemyView而进行的三项必要复测均GREEN1/1：
+- next-stage-death-final-green.json。
+- next-stage-flame-final-green.json。
+- next-stage-attack-final-green.json。
+未无理由重新运行原7项整类或完整套件。
+
+按root授权代跑：ArcadeEarlyStageRouteTests max1 GREEN1/1；ArcadeEarlyStageConfigTests max3 GREEN3/3。独立链路修复由runtime_review实施的PurpleShotgunCannotPushHiddenStageEnemies，客户端同一完整方法先RED1项（隐藏phase1从(0,-6)被推到(1.2,-6)）后GREEN1项；服务端证据由该代理归档。
+
+正式动态已实际录制并编码于../NextStagesControllerApplied-20261023：墓园108源帧编码101GIF帧、9秒；神庙及集市各96帧、8秒；均960x600、循环GIF。实际Controller公开阶段接口与正式资源隔离采样，集市普通群敌为正式Prefab及自身移动片段逐帧采样。不是自然对局、真人双端或实机录像。root与本代理均查看关键帧，root确认三关符合已采用版；后续修复不改变已录起身/乌鸦/换位段，按root指示保留首轮，未做无关重复录制。
+
+最终只读复审：root已安排runtime_review复核，最新两次审查均未发现新增问题；原审查P2已处理并有上述真实回归。当前不存在“审查代理创建失败”造成的待处理阻塞。
+
+最终编辑器状态见next-stage-view-final-state.json：项目E:/GitHub/FirepowerLoop/Client/Assets，Boot未脏、编辑态、Scenes=1、Compiling=false、Failed=false；TimeScale保持进入时0，未修改。next-stage-view-final-console.json为最新3条历史记录，含23:48测试占用拒绝与既有警告，未清Console，不宣称全历史无错。全部Unity调用已结束，制作/测试窗口已明确释放给root。
+
+未执行Player Build、打包、PlayMode或完整套件。没有提交或推送，由root选择性收尾。

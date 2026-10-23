@@ -8,7 +8,7 @@ using StageConfig=global::ArcadeEarlyStageConfig;
 
 namespace FirepowerLoop.Arcade
 {
-    /// <summary>已确认码头与四区农场的不可变场地参数，不改变旧主题或全局场地尺寸。</summary>
+    /// <summary>已确认码头、农场、墓园、神庙和集市的不可变场地参数，不改变旧主题或全局场地尺寸。</summary>
 #if DOTNET
     [ET.EnableClass]
 #endif
@@ -26,19 +26,19 @@ namespace FirepowerLoop.Arcade
             HerdPlayerDamage=row.HerdPlayerDamage;HerdEnemyDamage=row.HerdEnemyDamage;
             Herd=new ArcadeHerdTuning(row.HerdWindup,row.HerdSpeed,row.HerdDistance,row.HerdRadius);
         }
-        /// <summary>新配置只影响21/22，拒绝路径注入、无效边界和多排/重叠牛群。</summary>
+        /// <summary>新配置只影响21—25，拒绝路径注入、无效边界和多排/重叠牛群。</summary>
         public static ArcadeEarlyStageParameters FromConfig(StageConfig row)
         {
             if(row==null)throw new ArgumentNullException(nameof(row));
             bool Name(string name)=>!string.IsNullOrWhiteSpace(name)&&name.All(c=>char.IsLetterOrDigit(c)||c=='_');
             bool Finite(float v)=>!float.IsNaN(v)&&!float.IsInfinity(v);
             var values=new[]{row.HalfWidth,row.HalfHeight,row.PortalX,row.PortalY,row.HerdSpacing,row.HerdWindup,row.HerdSpeed,row.HerdDistance,row.HerdRadius,row.HerdFirstDelay,row.HerdPeriod,row.HerdPlayerDamage,row.HerdEnemyDamage};
-            if(values.Any(v=>!Finite(v))||(row.ArenaConfigNumber!=21&&row.ArenaConfigNumber!=22)||!Name(row.EnvironmentPrefabName)||
+            if(values.Any(v=>!Finite(v))||(row.ArenaConfigNumber<21||row.ArenaConfigNumber>25)||!Name(row.EnvironmentPrefabName)||
                 row.HalfWidth<=5||row.HalfWidth>64||row.HalfHeight<=5||row.HalfHeight>64||Math.Abs(row.PortalX)+2>=row.HalfWidth||Math.Abs(row.PortalY)+2>=row.HalfHeight||
-                row.HerdCount<0||row.HerdCount>7||row.ArenaConfigNumber==21&&row.HerdCount!=0||row.ArenaConfigNumber==22&&row.HerdCount==0||
+                row.HerdCount<0||row.HerdCount>7||row.ArenaConfigNumber!=22&&row.HerdCount!=0||row.ArenaConfigNumber==22&&row.HerdCount==0||
                 row.HerdCount>0&&(!Name(row.HerdPrefabName)||row.HerdWindup<=0||row.HerdSpeed<=0||row.HerdDistance<=0||row.HerdRadius<=0||row.HerdSpacing<row.HerdRadius*2||
                 row.HerdFirstDelay<=0||row.HerdPeriod<=row.HerdWindup+row.HerdDistance/row.HerdSpeed||row.HerdPlayerDamage<=0||row.HerdPlayerDamage>1||row.HerdEnemyDamage<=0||row.HerdEnemyDamage>1))
-                throw new ArgumentException("新前三关场地参数无效："+row.ArenaConfigNumber);
+                throw new ArgumentException("早期固定场地参数无效："+row.ArenaConfigNumber);
             return new ArcadeEarlyStageParameters(row);
         }
     }

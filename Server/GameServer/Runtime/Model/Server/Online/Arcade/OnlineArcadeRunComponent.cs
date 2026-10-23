@@ -117,8 +117,10 @@ namespace ET.Server
         public OnlineArcadeRunPhase Phase { get; set; }
         public int CompletedArena { get; set; }
         public int NextArena { get; set; }
-        /// <summary>新局使用十场休闲分支；旧档缺省为 false，保留旧推进方式。</summary>
+        /// <summary>新局使用休闲分支，长度由路线版本决定；旧档缺省为 false，保留旧推进方式。</summary>
         public bool IsCasualRoute { get; set; }
+        /// <summary>旧记录缺失为0；新正式局保存1，避免恢复时中途插入三关。</summary>
+        public int CasualRouteVersion { get; set; }
         /// <summary>已选场地配置身份；与 NextArena 主线序号分离。</summary>
         public int ArenaConfigNumber { get; set; }
         /// <summary>本安全节点可用的挑战 ID；空字符串表示没有挑战入口。</summary>
@@ -253,6 +255,10 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeEnemyRuntime
     {
+        /// <summary>真实近战挥击完成后递增，客户端只用来去重播放既有攻击动作。</summary>
+        public int AttackSequence;
+        /// <summary>墓穴、乌鸦现身与一次蓝影换位的当前活动阶段，不进入轮前存档。</summary>
+        public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
         /// <summary>敌人受牛撞后的活动状态，阻止移动和攻击直到恢复。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>每名玩家残火的独立接触时间；来源消失或离开覆盖后清理。</summary>
@@ -451,6 +457,8 @@ namespace ET.Server
         public int ArenaConfigNumber;
         /// <summary>随本场运行局确定；旧安全档不强制切换到新休闲路线。</summary>
         public bool IsCasualRoute;
+        /// <summary>当前现场继承安全节点的路线版本，不由客户端决定。</summary>
+        public int CasualRouteVersion;
         /// <summary>独立于四轮主线的临时阶段，安全节点不保存现场进度。</summary>
         public bool IsFinalBoss;
         /// <summary>最终 Boss 的稳定实体 ID；零表示尚未生成，炸弹不能清除该实体。</summary>

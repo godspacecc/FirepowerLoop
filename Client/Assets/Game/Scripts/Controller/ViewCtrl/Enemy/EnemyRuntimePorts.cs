@@ -40,6 +40,8 @@ namespace Game
         void SetHerdActivityPaused(bool paused) { }
         /// <summary>专属轮廓复用已预载敌人中的纯粒子模板，克隆由请求方地图根持有。</summary>
         bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback){feedback=null;return false;}
+        /// <summary>已裁决死亡的外部正式演员交给现有尸体预算；成功后所有权归端口，拒绝时调用方仍负责销毁。</summary>
+        bool TryPlayExternalEnemyDeath(int runtimeId,EnemyView view,Vector3 direction,bool explosive,bool flameKill,int impactKind)=>false;
         void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill)=>RemoveEnemy(runtimeId,playDeath,direction,explosive);
         /// <summary>表现分层由最终伤害确定，旧实现仍可回退到既有死亡入口。</summary>
         void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill,int impactKind)=>RemoveEnemy(runtimeId,playDeath,direction,explosive,flameKill);

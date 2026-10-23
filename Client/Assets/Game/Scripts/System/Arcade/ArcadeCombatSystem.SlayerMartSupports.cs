@@ -110,6 +110,7 @@ namespace Game
                 }
                 foreach(var enemy in runtime.Enemies.Values.ToArray())
                 {
+                    if(enemy.StageEnemy.Phase!=0)continue;
                     string targetKey=runtime.ArenaNumber+":"+runtime.WaveIndex+":"+runtime.IsChallenge+":"+enemy.Id;
                     if(!ArcadeSlayerMartSupportRules.TryContact(state,item,targetKey,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,
                         runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter))continue;

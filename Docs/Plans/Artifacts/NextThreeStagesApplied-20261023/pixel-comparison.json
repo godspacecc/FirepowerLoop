@@ -1,0 +1,92 @@
+[
+  {
+    "stage": "graveyard",
+    "shot": "overview",
+    "candidateSha256": "f3c284f57c4caf294846709b50065ee781dca9d7c33f9df00feff95588a4853a",
+    "appliedSha256": "9f76c983e5e4325677c279b9bbc1d6dac45c4cb56cdc64cb79e5a38ae3126b53",
+    "changedPixels": 1,
+    "totalPixels": 1650000,
+    "changedPercent": 6.060606060606061e-05,
+    "maxChannelDifference": 1
+  },
+  {
+    "stage": "graveyard",
+    "shot": "detail",
+    "candidateSha256": "6cb1fbbb96950bb8c52789923ad4e257117546aedc7597edb97c1b635094f276",
+    "appliedSha256": "6cb1fbbb96950bb8c52789923ad4e257117546aedc7597edb97c1b635094f276",
+    "changedPixels": 0,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0,
+    "maxChannelDifference": 0
+  },
+  {
+    "stage": "graveyard",
+    "shot": "landmark",
+    "candidateSha256": "2cdc1b06b09900c3e5892428df7163d28a84545725f7823ddf2f249d48d3dc5d",
+    "appliedSha256": "a592f51eb591016b7e4a65e2c69c48e682a89ab9cf1106acb24fa840fe36b5c0",
+    "changedPixels": 7,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0006835937500000001,
+    "maxChannelDifference": 73
+  },
+  {
+    "stage": "temple",
+    "shot": "overview",
+    "candidateSha256": "36b6e34ea578b2acf73f929b3d5eb2340743db08eeda43344c7d3be08717def8",
+    "appliedSha256": "f19c5af10419bb4abb2602bce72979258a908e704934bdf078a3d9487c7972f8",
+    "changedPixels": 2,
+    "totalPixels": 1650000,
+    "changedPercent": 0.00012121212121212122,
+    "maxChannelDifference": 74
+  },
+  {
+    "stage": "temple",
+    "shot": "detail",
+    "candidateSha256": "a5730541f801ca60995aedf531e47e8df1443948eea02c92eaeb1a7658763490",
+    "appliedSha256": "a5730541f801ca60995aedf531e47e8df1443948eea02c92eaeb1a7658763490",
+    "changedPixels": 0,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0,
+    "maxChannelDifference": 0
+  },
+  {
+    "stage": "temple",
+    "shot": "landmark",
+    "candidateSha256": "eb8e08d1ffc4a60ae10c0e9b4992dbb636e67f3aa96ffe0384855c3a5a4877a0",
+    "appliedSha256": "3ff42a0afde7a57ac6d3f09ef6938d98becfc862a9d27017d653c889984701c6",
+    "changedPixels": 10,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0009765625,
+    "maxChannelDifference": 104
+  },
+  {
+    "stage": "marketplace",
+    "shot": "overview",
+    "candidateSha256": "f7abf2a4a81cd3ec795aa6f6433cb88f9ff80b2a6ab2fcc76f41e4f70208fe95",
+    "appliedSha256": "0f4df409ba5277f422d771dfae30271fef6764991fa7d4a0ded845da279e84aa",
+    "changedPixels": 5,
+    "totalPixels": 1650000,
+    "changedPercent": 0.00030303030303030303,
+    "maxChannelDifference": 1
+  },
+  {
+    "stage": "marketplace",
+    "shot": "detail",
+    "candidateSha256": "2715f826d8b7711bc6e21ba6b82c017c5d8d6e5bb216c31e564e192cbf892c41",
+    "appliedSha256": "bf627f72c0c8a6df5734617cb1a0284263911c223c005f9990529dd0a0dac5ea",
+    "changedPixels": 9,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0008789062499999999,
+    "maxChannelDifference": 12
+  },
+  {
+    "stage": "marketplace",
+    "shot": "landmark",
+    "candidateSha256": "021393a79769739fbe1236ee98746483996f593ca6093a97f9bd05567cb94337",
+    "appliedSha256": "9bb1ee51d54bcdaf7b084119eed3030b6be618c05f32af64856320037dc3ed4f",
+    "changedPixels": 6,
+    "totalPixels": 1024000,
+    "changedPercent": 0.0005859375,
+    "maxChannelDifference": 95
+  }
+]

@@ -2,3 +2,6 @@
 ##type,int,float,float,string,float,float,string,int,float,float,float,float,float,float,float,float,float
 ,21,20.5,19.5,ArcadeDocksVisual,0,0,,0,0,0,0,0,0,0,0,0,0
 ,22,30.5,30.5,ArcadeFarmVisual,0,14,ArcadeHerdVisual,5,3,0.8,7.15,78,0.65,8,18,0.25,1
+,23,28,28,ArcadeGraveyardVisual,0,0,,0,0,0,0,0,0,0,0,0,0
+,24,29,29,ArcadeTempleVisual,0,0,,0,0,0,0,0,0,0,0,0,0
+,25,26,24,ArcadeMarketplaceVisual,0,0,,0,0,0,0,0,0,0,0,0,0

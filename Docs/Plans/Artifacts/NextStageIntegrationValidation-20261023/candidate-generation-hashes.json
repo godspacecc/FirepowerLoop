@@ -1,0 +1,25 @@
+{
+  "protocol": {
+    "Client\\Assets\\Game\\Scripts\\Network\\Generated\\ClientMessage_C_1000.cs": "b147b56177b2881572b1c5637f9755b1da51e5513cfe8b749658b45c14894af6",
+    "Client\\Assets\\Game\\Scripts\\Network\\Generated\\LockStepOuter_C_11001.cs": "0f93b4985c6cc5ec2a3ba0974be1861ac687f750c546ff9e241425df22e8f1fe",
+    "Client\\Assets\\Game\\Scripts\\Network\\Generated\\OnlineOuter_C_12001.cs": "069a01aa9fd20bb6fec3e93c754fe320061c0fd95c3f4f66e0e2c14f84c217c0",
+    "Client\\Assets\\Game\\Scripts\\Network\\Generated\\OuterMessage_C_10001.cs": "f4cba7e223e2e7ccef613192f11963b4226a2fcc0c64f362fdcba64e339a3007",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\ClientMessage_C_1000.cs": "b147b56177b2881572b1c5637f9755b1da51e5513cfe8b749658b45c14894af6",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\InnerMessage_S_20001.cs": "1b0e4afc1e3f7b1cdc514041a0005c76ac9f2b0680ccc8ebfcd7cf5a6af42d6e",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\LockStepInner_S_21001.cs": "4aef9fd2de42ad9e3cdaef2502c2b2b54df6913840d3dfd1d28095bc8cb4fd10",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\LockStepOuter_C_11001.cs": "0f93b4985c6cc5ec2a3ba0974be1861ac687f750c546ff9e241425df22e8f1fe",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\OnlineInner_S_22001.cs": "f93969cc90d470bcc77bdb108a85b8b3450277d4d104dbb98dc338556d760fd1",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\OnlineOuter_C_12001.cs": "069a01aa9fd20bb6fec3e93c754fe320061c0fd95c3f4f66e0e2c14f84c217c0",
+    "Server\\GameServer\\Runtime\\Model\\Generated\\Message\\OuterMessage_C_10001.cs": "f4cba7e223e2e7ccef613192f11963b4226a2fcc0c64f362fdcba64e339a3007"
+  },
+  "config": {
+    "Client\\Assets\\Game\\Config\\tbarcadearena.bytes": "eebb50b3cb68f9394a89e5b0738c371760afffdfaff09bc88520645b4e94af37",
+    "Client\\Assets\\Game\\Config\\tbarcadeearlystage.bytes": "be8a069aad74fcbd415a9bc1014d8034178e8102ff903c086201529c1979e7ed",
+    "Client\\Assets\\Game\\Config\\tbarcaderoundlayout.bytes": "0d35705495429d7ee1b6754bf9055e15faf67b7bf991f7f8cd3657b1d93e4821",
+    "Client\\Assets\\Game\\Config\\tbarcaderule.bytes": "cfad608a4f6b31410e8c759d88ae53d491e676752d5e70361370d99bb87977b1",
+    "Server\\GameServer\\Config\\Luban\\tbarcadearena.bytes": "eebb50b3cb68f9394a89e5b0738c371760afffdfaff09bc88520645b4e94af37",
+    "Server\\GameServer\\Config\\Luban\\tbarcadeearlystage.bytes": "be8a069aad74fcbd415a9bc1014d8034178e8102ff903c086201529c1979e7ed",
+    "Server\\GameServer\\Config\\Luban\\tbarcaderoundlayout.bytes": "0d35705495429d7ee1b6754bf9055e15faf67b7bf991f7f8cd3657b1d93e4821",
+    "Server\\GameServer\\Config\\Luban\\tbarcaderule.bytes": "cfad608a4f6b31410e8c759d88ae53d491e676752d5e70361370d99bb87977b1"
+  }
+}

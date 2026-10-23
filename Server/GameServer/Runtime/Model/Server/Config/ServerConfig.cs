@@ -289,7 +289,7 @@ namespace ET
         private void ValidateArcadeConfig()
         {
             var early=this.tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-            if(early.Length!=2||early.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=2)throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected dock and farm");
+            if(early.Length!=5||early.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=5)throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected five fixed early stages");
             this.EarlyStages=new System.Collections.ObjectModel.ReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters>(early.ToDictionary(p=>p.ArenaConfigNumber));
             this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
             this.ScoreShop=FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(this.tables);
@@ -500,14 +500,14 @@ namespace ET
             }
             bool ValidateRoute(int id, int depth)
             {
-                if (depth > 10) return false;
+                if (depth > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion)) return false;
                 var arena = this.tables.TbArcadeArena.Get(id);
-                if (arena.NextArenaNumbers.Length == 0) return depth == 10 && !string.IsNullOrEmpty(arena.FinalBossId);
-                return depth < 10 && string.IsNullOrEmpty(arena.FinalBossId) &&
+                if (arena.NextArenaNumbers.Length == 0) return depth == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && !string.IsNullOrEmpty(arena.FinalBossId);
+                return depth < FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && string.IsNullOrEmpty(arena.FinalBossId) &&
                     arena.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
             }
             if (!ValidateRoute(1, 1))
-                throw ConfigError(this.Profile, "TbArcadeArena", "route", "casual routes must have ten arenas and a final Boss.");
+                throw ConfigError(this.Profile, "TbArcadeArena", "route", "casual routes must have thirteen arenas and a final Boss.");
         }
 
         /// <summary>将 Luban 行转换为与客户端完全相同的纯机关参数；不保存运行态。</summary>

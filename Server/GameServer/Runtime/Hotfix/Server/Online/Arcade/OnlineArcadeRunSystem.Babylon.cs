@@ -34,7 +34,7 @@ namespace ET.Server
         /// <summary>原有护甲和特殊敌人减伤裁决保持集中，来源标记在外层统一处理。</summary>
         private static void DamageEnemyCore(OnlineArcadeBattleRuntime battle, OnlineArcadeEnemyRuntime enemy, int damage)
         {
-            if(damage<=0)return;
+            if(damage<=0||enemy.StageEnemy.Phase>0)return;
             if(battle.RoundLayout!=null)
             {
                 var p=ContentTuning(battle);

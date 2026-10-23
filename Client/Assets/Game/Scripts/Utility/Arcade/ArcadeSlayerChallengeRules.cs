@@ -6,11 +6,12 @@ namespace FirepowerLoop.Arcade
     /// <summary>单人与服务端共用的Slayer候选规则，调用方成功发布前不会修改输入状态。</summary>
     public static class ArcadeSlayerChallengeRules
     {
+        /// <summary>返回身份接纳当前十三关路线；旧局仍由已保存的目的地返回，不重新计算路线。</summary>
         public static ArcadeSlayerChallengeState Create(ArcadeSlayerChallengeConfiguration config,string runId,long[] members,int returnArena,int returnMap,int generation)
         {
             if(config==null||!config.Enabled||string.IsNullOrWhiteSpace(runId)||runId.Length>128||runId.Contains(":")||members==null||
                 members.Length<1||members.Length>2||members.Any(p=>p<=0)||members.Distinct().Count()!=members.Length||
-                returnArena<1||returnArena>10||returnMap<1||returnMap>22||generation<=0)throw new ArgumentException("Slayer进入身份无效");
+                returnArena<1||returnArena>ArcadeRouteRules.ArenaCount(ArcadeRouteRules.CurrentVersion)||returnMap<1||returnMap>25||generation<=0)throw new ArgumentException("Slayer进入身份无效");
             var state=new ArcadeSlayerChallengeState{RunId=runId,Generation=generation,ReturnArena=returnArena,ReturnMap=returnMap,
                 Phase=ArcadeSlayerChallengePhase.Preparing,RemainingSeconds=config.PreparationSeconds,Members=members.OrderBy(p=>p).ToList()};
             foreach(long member in state.Members)state.EntryChoices[member]=0;return state;

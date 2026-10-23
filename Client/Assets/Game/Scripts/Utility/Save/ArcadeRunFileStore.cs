@@ -207,6 +207,8 @@ namespace Game
         public static bool TryValidate(ArcadeRunSaveData data, out string error)
         {
             if (data == null || data.Version != ArcadeRunSaveData.CurrentVersion || !ArcadeRunIdentity.IsValid(data.RunId) ||
+                !FirepowerLoop.Arcade.ArcadeRouteRules.IsValidVersion(data.CasualRouteVersion) ||
+                !data.IsCasualRoute && data.CasualRouteVersion != 0 ||
                 data.CompletedArenaCount < 0 || data.NextArenaNumber != data.CompletedArenaCount + 1 ||
                 data.Score < 0 || data.ScoreMultiplier < 1 || data.MultiplierProgress < 0 || (data.HasResult ? data.RemainingLives < 0 : data.RemainingLives <= 0) || data.RunGold < 0 || data.EmergencyResources == null ||
                 data.PurchasedUpgradeStacks == null || data.Consumables == null || data.EquipmentBySlot == null ||
@@ -254,8 +256,8 @@ namespace Game
                 return false;
             }
 
-            if (data.IsCasualRoute && (data.ArenaConfigNumber <= 0 || data.CompletedArenaCount > 10 ||
-                    data.Victory != (data.CompletedArenaCount == 10)) ||
+            if (data.IsCasualRoute && (data.ArenaConfigNumber <= 0 || data.CasualRouteVersion == 0 && data.ArenaConfigNumber >= 23 || data.CompletedArenaCount > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(data.CasualRouteVersion) ||
+                    data.Victory != (data.CompletedArenaCount == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(data.CasualRouteVersion))) ||
                 data.Victory && !data.IsCasualRoute)
             {
                 error = "街机休闲路线或胜利节点无效";
@@ -280,7 +282,7 @@ namespace Game
                 var round = data.RoundCheckpoint;
                 if (!data.IsCasualRoute || data.HasResult || data.IslandRoundCheckpoint != null || data.ArenaEntryState != null ||
                     round.ArenaNumber != data.NextArenaNumber || round.ArenaConfigNumber != data.ArenaConfigNumber ||
-                    round.ArenaConfigNumber < 1 || round.ArenaConfigNumber > 22 || round.RoundNumber < 1 || round.RoundNumber > 4 ||
+                    round.ArenaConfigNumber < 1 || round.ArenaConfigNumber > 25 || round.RoundNumber < 1 || round.RoundNumber > 4 ||
                     round.LayoutVersion <= 0 || round.MapId != $"arena.{round.ArenaConfigNumber}.round.{round.RoundNumber}" ||
                     round.PlayerState == null || round.PlayerState.MapId != round.MapId || round.PlayerState.RoundNumber != round.RoundNumber ||
                     !TryValidatePlayerState(round.PlayerState) || round.RemainingCrateIds == null ||

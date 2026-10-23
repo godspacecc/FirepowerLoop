@@ -438,6 +438,14 @@ message OnlineArcadeEnemyInfo
 	float HerdImpactRemaining = 17;
 	float HerdImpactDirectionX = 18;
 	float HerdImpactDirectionZ = 19;
+	// 墓穴、乌鸦和蓝影只同步当前权威阶段，不在客户端重播计时。
+	int32 StageEnemyPhase = 20;
+	float StageEnemyAge = 21;
+	float StageEnemyOriginX = 22;
+	float StageEnemyOriginZ = 23;
+	int32 StageEnemyRevives = 24;
+	// 已完成的真实近战挥击序列；首快照只建立基线，重连不重播。
+	int32 AttackSequence = 25;
 }
 
 // Opcode 12082
@@ -620,6 +628,8 @@ message OnlineArcadeRunSnapshot
 	bool ChallengeAttempted = 13;
 	// 仅定向本人响应填写；公共广播始终为空。
 	OnlineSlayerMartSnapshotInfo SelfSlayerMart = 14;
+	// 缺失为旧四十轮路线；服务器权威公开本局是否追加三关。
+	int32 CasualRouteVersion = 15;
 }
 
 // Opcode 12089

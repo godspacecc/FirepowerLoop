@@ -62,7 +62,7 @@ namespace FirepowerLoop.Arcade
         public float ExitY { get; }
         public float ExitSpacing { get; }
         /// <summary>海岛只显示真实存在的三条通道，其余主题保留原四向出口。</summary>
-        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ArenaConfigNumber==21||ArenaConfigNumber==22 ? Entries.Count : ExitDirectionCount;
+        public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries.Count : ExitDirectionCount;
         /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
         public float EntrySegmentSeconds { get; }
         /// <summary>在真实通道外生成，保留横向车道；不把入口投影到战斗区内。</summary>
@@ -77,7 +77,7 @@ namespace FirepowerLoop.Arcade
         }
         /// <summary>规则与表现共用四向落点；海岛沿用干陆地内侧的留量。</summary>
         public ArcadeRegionPoint GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
-            => ArenaConfigNumber==21||ArenaConfigNumber==22 ? Entries[direction] : DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
+            => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries[direction] : DirectionalExit(direction, ArenaConfigNumber == 1 ? 0 : ExitX,
                 ArenaConfigNumber == 1 ? halfHeight - 3 : ExitY,
                 halfWidth, halfHeight, playerRadius, ArenaConfigNumber == 1 ? RoundNumber : 0);
 
@@ -161,7 +161,7 @@ namespace FirepowerLoop.Arcade
             if(values.Any(v=>!Finite(v)) || p.ArenaConfigNumber<1 || p.RoundNumber<1 || p.RoundNumber>4 || p.Version!=(p.ArenaConfigNumber==3?2:1) ||
                 p.Id!="arena."+p.ArenaConfigNumber+".round."+p.RoundNumber || string.IsNullOrWhiteSpace(p.ThemeKey) ||
                 string.IsNullOrWhiteSpace(p.NameKey) || p.ExitSpacing<=0 || p.Entries.Count==0 ||
-                p.SpecialKind<0 || p.SpecialKind>17 || p.EventKind<0 || p.EventKind>10 || p.BossKind<0 || p.BossKind>4 ||
+                p.SpecialKind<0 || p.SpecialKind>19 || p.EventKind<0 || p.EventKind>10 || p.BossKind<0 || p.BossKind>4 ||
                 p.SpecialRatio<0 || p.SpecialRatio>1 || p.EnemyHealthScale<=0 || p.EnemySpeedScale<=0 ||
                 p.SkillPeriod<=0 || p.SkillWarning<=0 || p.SkillWarning>=p.SkillPeriod || p.SkillMagnitude<=0 ||
                 p.EventPeriod<=0 || p.EventWarning<=0 || p.EventWarning>=p.EventPeriod || p.EventRadius<=0 || p.EventDamage<0 || p.EventDamage>1 || p.EventMoveSpeed<0 ||

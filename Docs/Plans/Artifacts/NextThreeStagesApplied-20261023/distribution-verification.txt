@@ -1,0 +1,41 @@
+三关正式资源分发与轮名验证（2026-10-23）
+
+范围：AssetBundleCollectorSetting.asset、新增NextThreeDistributionTests及Unity生成的测试.meta、Config/Localization/arcade-next-three.json、Config/gen.bat、客户端zh-CN/en-US发布结果。未改Controller、业务、协议或执行总清单；未提交。
+
+真实分发回归：EditMode，testClass=NextThreeDistributionTests，每次最大2项，includePassingTests=true。
+1. RED：TotalTests=2、PassedTests=0、FailedTests=2。
+   AllTwelveRoundNamesTranslateInBothAuthoritativeLanguages：zh-CN缺少ui.arcade.temple.round.1。
+   StageAndShadowPrefabsResolveAtCollectedRuntimeAddresses：真实DefaultPackage.BeginCollect缺少以下全部6地址。
+2. 最小修复：显式注册6个正式Prefab，AddressByGameRelativePathNoExtension、PackSeparately、CollectAll、arcade标签，GUID直接取原.meta；补神庙/集市8键双语，墓园已有4键保持原文。
+3. GREEN：TotalTests=2、PassedTests=2、FailedTests=0。
+   Game.Tests.NextThreeDistributionTests.AllTwelveRoundNamesTranslateInBothAuthoritativeLanguages：Passed，0.429秒。
+   Game.Tests.NextThreeDistributionTests.StageAndShadowPrefabsResolveAtCollectedRuntimeAddresses：Passed，0.317秒。
+   整次Duration=00:00:02.2689792。
+   测试读取实际BeginCollect结果，核对运行时地址、arcade下载标签、真实AssetPath和非空Renderer；语言项经正式LocalizationUtility与实际语言JSON加载链验证，并分别检查每种语言自身存在键，避免中文回退掩盖英语缺项。
+
+正式地址：
+Prefabs/SceneObjects/ArcadeGraveyardVisual
+Prefabs/SceneObjects/ArcadeTempleVisual
+Prefabs/SceneObjects/ArcadeMarketplaceVisual
+Prefabs/SceneObjects/ArcadeShadowCrowVisual
+Prefabs/SceneObjects/ArcadeShadowTravelVisual
+Prefabs/Characters/ArcadeShadowZombie
+
+权威源与生成：
+Config/Localization/arcade-next-three.json仅含temple.round.1..4、marketplace.round.1..4，每项zh-CN/en-US；Config/gen.bat增加该源的publish-localization入口。客户端JSON是发布结果，未手改任何生成C#或bytes。
+2026-10-23 22:34正式运行Config/gen.bat，exit=0，Generate client、Generate server、Publish generated files、五组Localization published、Generation complete均完成。
+本次stage：C:/Users/Administrator/AppData/Local/Temp/FirepowerLoopLubanGen_23204_10732。
+随后实际SHA256逐文件比对生成stage与发布目标：client_code93/93、client_data36/36、server_code75/75、server_data30/30一致。
+8个源键与两语言发布值逐个完全一致。两语言限定diff各只增加这8键；旧墓园4键保持。文案使用配置中的原始本地化键加载，不要求生成Texts常量。
+限定git diff --check=0；collector限定diff48行，两JSON各8行，gen.bat一行。新增测试meta由Unity生成，原资源meta未改。
+
+本窗口代根代理取得的旧断言RED（不归本子任务修改）：
+ArcadeEarlyStageRouteTests：最大1项、includePassingTests=true，0/1；NewRunCompletesTenStagesThroughDocksAndFarmAndKeepsResult报“休闲路线选择或胜利身份无效”。
+ArcadeEarlyStageConfigTests：最大3项、includePassingTests=true，2/3；NewStagesHaveEightFixedRoundsWithoutReplacingLegacyBranchIdentities期望农场后继5、实际23；码头与农场两项几何通过。
+已将两项失败及对应源所有权交回根代理；后续修正/GREEN由根代理协调记录，不在此伪称已通过。
+
+Unity调用前核对：E:/GitHub/FirepowerLoop/Client/Assets；Boot未脏、编辑器无编译/编译失败。Console含其他会话旧RenderTexture错误、测试占用拒绝和旧动态执行错误，不声称历史Console全无错。
+分发GREEN及代跑4项结束后，Unity窗口已直接交给assets代理；随后只有静态核验及Config/gen.bat，无新增Unity调用。
+未运行完整套件、Player Build、资源包构建、PlayMode或真人双端验收；BeginCollect证明正式收集寻址，未将此等同打包运行验收。
+
+2026-10-24根代理最终补充：新增第9个权威键ui.arcade.victory，去掉固定40轮，适配新52/旧40路线。正式Config/gen.bat exit=0；9键×中英文发布值逐项一致。生成日志归档至NextStageIntegrationValidation-20261023/final-localization-generation.txt。前述8键与分发回归仍是原执行历史。

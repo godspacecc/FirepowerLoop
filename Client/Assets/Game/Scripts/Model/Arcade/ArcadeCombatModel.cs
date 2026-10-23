@@ -15,6 +15,8 @@ namespace Game
 
     internal sealed class ArcadeEnemyRuntime
     {
+        /// <summary>当前地图特色敌人的现身及一次重生状态，不写入轮前存档。</summary>
+        public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
         /// <summary>当前地图牛撞的权威飞行与落地僵直；对象回池必须归零。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>真实火焰命中后的短暂表现计时，不造成持续伤害。</summary>
@@ -72,6 +74,7 @@ namespace Game
         /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
         public void Reset()
         {
+            StageEnemy=default;
             EvolutionBurnContactSeconds=0;
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;
             Id = 0;

@@ -433,16 +433,18 @@ namespace Game
         {
             islandWading?.Set(id, position);
             roundEnemyPositions[id]=position;
+            RecordNextStageEnemyPosition(id,position);
             if(roundEnemies.TryGetValue(id,out var visual))
             {
                 var delta=position-visual.Position;visual.Root.transform.localPosition=new Vector3(position.x,0,position.y);
                 if(delta.sqrMagnitude>.00001f)visual.Root.transform.localRotation=Quaternion.LookRotation(new Vector3(delta.x,0,delta.y));visual.Position=position;
             }
         }
-        public bool HasRoundEnemyContent(int id)=>roundEnemies.ContainsKey(id);
+        public bool HasRoundEnemyContent(int id)=>roundEnemies.ContainsKey(id)||nextStageEnemies.ContainsKey(id);
         /// <summary>专属轮廓没有EnemyView，复用同一预载火焰模板且仍只消费真实命中状态。</summary>
         private bool SetRoundEnemyBurning(int id,float seconds)
         {
+            if(SetNextStageEnemyBurning(id,seconds))return true;
             if(!roundEnemies.TryGetValue(id,out var visual))return false;
             EnsureRoundFlame(visual,seconds>0);
             visual.Flame?.SetRemaining(seconds);return true;
@@ -481,6 +483,13 @@ namespace Game
         /// <summary>投影权威专属身份；载桶保留原丧尸，其余专用轮廓由 SetEnemy hook 跳过旧资源请求。</summary>
         public void SetEnemyContent(int id,int specialKind,int bossKind,bool warning)
         {
+            if((specialKind==18||specialKind==19)&&bossKind==0)
+            {
+                RemoveCarrierBarrel(id);
+                if(roundEnemies.TryGetValue(id,out var previous)){DestroyRoundVisual(previous.Root);roundEnemies.Remove(id);}
+                SetNextStageIdentity(id,specialKind);return;
+            }
+            RemoveNextStageEnemy(id,false);
             if(specialKind==1&&bossKind==0)
             {
                 // 载桶继续使用正式EnemyView及原动画；只挂载附属物，不再创建简易替身。
@@ -526,6 +535,9 @@ namespace Game
         }
         public void RemoveRoundEnemyContent(int id)
         {
+            RemoveNextStageEnemy(id,false);
+            nextStageAttackSequences.Remove(id);
+            nextStageHealthSnapshots.Remove(id);
             RemoveCarrierBarrel(id);
             if(roundEnemies.TryGetValue(id,out var visual)){DestroyRoundVisual(visual.Root);roundEnemies.Remove(id);}
             roundEnemyPositions.Remove(id);

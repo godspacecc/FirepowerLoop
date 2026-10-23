@@ -2,6 +2,43 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="NextRouteOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int routeMax)||routeMax<1)throw new ArgumentException("Explicit NextRouteOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    Environment.ExitCode=NextRouteOnlineChecks.Run(routeMax);return;
+}
+if(opts.GetValueOrDefault("testClass")=="NextEnemyOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int nextEnemyMax)||nextEnemyMax<1)throw new ArgumentException("Explicit NextEnemyOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=NextEnemyOnlineChecks.Run(nextEnemyMax);return;
+}
+if(opts.GetValueOrDefault("testClass")=="NextSlayerRouteOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int nextSlayerMax)||nextSlayerMax<1)throw new ArgumentException("Explicit NextSlayerRouteOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=NextSlayerRouteOnlineChecks.Run(nextSlayerMax);return;
+}
+if(opts.GetValueOrDefault("testClass")=="NextStageFlowOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="3")throw new ArgumentException("Explicit NextStageFlowOnline maxTests=3 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=NextStageFlowOnlineChecks.Run(3);return;
+}
+if(opts.GetValueOrDefault("testClass")=="NextStageAttackOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="1")throw new ArgumentException("Explicit NextStageAttackOnline maxTests=1 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=NextEnemyOnlineChecks.RunAttack();return;
+}
+if(opts.GetValueOrDefault("testClass")=="NextStagePushOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="1")throw new ArgumentException("Explicit NextStagePushOnline maxTests=1 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=NextEnemyOnlineChecks.RunPush();return;
+}
 if(opts.GetValueOrDefault("testClass")=="WeaponFeedbackOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int feedbackMax)||feedbackMax<1)throw new ArgumentException("Explicit WeaponFeedbackOnline limit required");

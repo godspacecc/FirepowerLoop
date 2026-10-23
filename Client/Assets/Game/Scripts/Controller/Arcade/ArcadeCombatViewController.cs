@@ -43,6 +43,8 @@ namespace Game
         void SetEnemyHerdImpact(int id,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
         void SetHerdActivityPaused(bool paused) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
+        /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
+        void SetNextStageEnemyState(int id,int kind,FirepowerLoop.Arcade.ArcadeStageEnemyState state) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
         void SetIslandRound(int roundNumber) { }
         bool IsIslandRoundReady => true;
@@ -636,6 +638,8 @@ namespace Game
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false)
         {
             RecordRoundEnemyPosition(id, position);
+            RecordNextStageEnemyAttack(id,attackSequence);
+            RecordNextStageEnemyHealth(id,currentHealth);
             SetRoundEnemyHealth(id, currentHealth, maximumHealth);
             if (HasRoundEnemyContent(id)) return;
             if (enemyPresentation == null || mapRoot == null) return;
@@ -667,10 +671,11 @@ namespace Game
         public void RemoveEnemy(int id,bool playDeath,Vector2 direction,bool explosive,bool flameKill,int impactKind)
         {
             islandWading?.Remove(id);
-            if(!TryPlayRoundFlameDeath(id,playDeath&&flameKill))RemoveRoundEnemyContent(id);
-            RemoveArmor(id);
             var worldDirection = new Vector3(direction.x, 0f, direction.y);
             if (mapRoot != null) worldDirection = mapRoot.TransformDirection(worldDirection);
+            RemoveNextStageEnemy(id,playDeath,worldDirection,explosive,flameKill,impactKind);
+            if(!TryPlayRoundFlameDeath(id,playDeath&&flameKill))RemoveRoundEnemyContent(id);
+            RemoveArmor(id);
             enemyPresentation?.RemoveEnemy(id, playDeath, worldDirection, explosive,flameKill,impactKind);
         }
 
@@ -950,6 +955,7 @@ namespace Game
             TickFlamethrowerAudio(deltaTime);
             TickElectricTowerFeedback(deltaTime);
             TickRoundFlameFeedback(deltaTime);
+            TickNextStageFeedback(deltaTime);
             islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);
             dashPresentation?.Tick(deltaTime);

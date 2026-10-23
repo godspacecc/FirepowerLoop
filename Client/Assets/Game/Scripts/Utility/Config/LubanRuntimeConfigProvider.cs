@@ -1202,7 +1202,7 @@ namespace Game
             {
                 var layouts = tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
                 var earlyStages=tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-                if(earlyStages.Length!=2||earlyStages.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=2)return "新前三关场地目录缺失或重复";
+                if(earlyStages.Length!=5||earlyStages.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=5)return "固定前六关场地目录缺失或重复";
                 var layoutRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (layoutRule == null || layouts.Length != tables.TbArcadeArena.DataList.Count * 4 ||
                     layouts.Select(p => p.Id).Distinct(StringComparer.Ordinal).Count() != layouts.Length)
@@ -1414,15 +1414,15 @@ namespace Game
                 if (row.ClearGold < 0 || !salts.Add(row.EncounterSeedSalt)) return $"TbArcadeArena[{row.ArenaNumber}] 金币或战斗种子盐无效";
             }
 
-            // 深度受十场限制，即使配置有环也不会无界递归或进入无法通关的路线。
+            // 深度受当前十三场限制，即使配置有环也不会无界递归或进入无法通关的路线。
             bool ValidateRoute(int id, int depth)
             {
-                if (depth > 10) return false;
+                if (depth > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion)) return false;
                 var row = arenas[id - 1];
-                if (row.NextArenaNumbers.Length == 0) return depth == 10 && !string.IsNullOrEmpty(row.FinalBossId);
-                return depth < 10 && string.IsNullOrEmpty(row.FinalBossId) && row.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
+                if (row.NextArenaNumbers.Length == 0) return depth == FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && !string.IsNullOrEmpty(row.FinalBossId);
+                return depth < FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion) && string.IsNullOrEmpty(row.FinalBossId) && row.NextArenaNumbers.All(next => ValidateRoute(next, depth + 1));
             }
-            if (!ValidateRoute(1, 1)) return "TbArcadeArena 休闲路线必须恰好十场并终止于独立最终 Boss";
+            if (!ValidateRoute(1, 1)) return "TbArcadeArena 休闲路线必须恰好十三场并终止于独立最终 Boss";
 
             var upgradeIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var row in tables.TbArcadeUpgrade.DataList)

@@ -59,12 +59,13 @@ namespace Game
             if(e.ContentSpecialKind==2 || e.ContentSpecialKind==6)e.Speed*=Mathf.Sqrt(layout.SkillMagnitude);
             if(e.ContentSpecialKind==13)
             { e.Position=ContentPosition(r,r.PlayerPosition+Vector2.up*layout.EventRadius); }
+            InitializeNextStageEnemy(r,e);
         }
 
         /// <summary>所有伤害共用潜地免伤、空降预警、护甲与人偶三段受击规则。</summary>
         private int RoundIncomingDamage(ArcadeEnemyRuntime e,int damage)
         {
-            if(damage<=0)return 0;var r=this.GetModel<ArcadeCombatModel>().Runtime;
+            if(damage<=0||e.StageEnemy.Phase!=0)return 0;var r=this.GetModel<ArcadeCombatModel>().Runtime;
             if(r==null || e.ContentSpecialKind==0 || RoundLayout(r)==null)return damage;
             var p=ContentTuning(r);double age=r.ContentClock.Elapsed-e.ContentBornAt;
             if(e.ContentSpecialKind==3)
@@ -90,6 +91,7 @@ namespace Game
             var offset=target-e.Position;var direction=offset.sqrMagnitude>.001f ? offset.normalized : Vector2.up;
             if(now<e.ContentStunUntil)return true;
             if(e.ContentBossKind>0)return TickContentBoss(r,e,target,decoy,dt,p,age);
+            if(ArcadeNextStageEnemyRules.Advance(ref e.StageEnemy,dt,p)){CancelMeleeWindup(e);return true;}
             int kind=e.ContentSpecialKind;int phase=ArcadeRoundContentRules.Phase(age,p.SkillPeriod,p.SkillWarning);
             int cycle=(int)(age/p.SkillPeriod);
             e.ContentWarning=phase==0 && (kind==4 || kind==5 || kind==8 || kind==10 || kind==11 || kind==13 || kind==14 || kind==16 || kind==17);
@@ -398,7 +400,11 @@ namespace Game
             AppendGroundBarrelSnapshots(r);
             view?.SetRoundContent(r.ContentClock.Elapsed,r.ContentPresentationSnapshots);
             view?.SetHerds(r.HerdMapId,r.HerdCows.Select(c=>ArcadeHerdRules.Snapshot(c,EarlyStage?.Herd??default)).ToArray());
-            foreach(var e in r.Enemies.Values)view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);
+            foreach(var e in r.Enemies.Values)
+            {
+                view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);
+                view?.SetNextStageEnemyState(e.Id,e.ContentSpecialKind,e.StageEnemy);
+            }
         }
     }
 }

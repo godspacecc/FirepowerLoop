@@ -854,6 +854,12 @@ namespace Game
             feedbackRemainingSeconds = HitFeedbackDurationSeconds;
             ApplyFeedbackColor(HitFeedbackColor);
         }
+        /// <summary>专用阶段隐藏时显式还原既有受击闪色，避免禁用脚本不能收到OnDisable而遗留红色。</summary>
+        public void ClearHitFeedback()
+        {
+            if(feedbackRemainingSeconds>0f)RestoreFeedbackColors();
+            feedbackRemainingSeconds=0f;
+        }
 
         public void ShowDamage(int damage)
         {

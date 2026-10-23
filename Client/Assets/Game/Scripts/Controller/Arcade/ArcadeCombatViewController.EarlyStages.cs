@@ -31,6 +31,10 @@ namespace Game
         {
             public GameObject Owner,Round;
             public ResourceLoadHandle EnvironmentHandle,HerdHandle;
+            /// <summary>三关正式演员与特效模板和环境同代拥有，释放后晚回调只能结束等待。</summary>
+            public ResourceLoadHandle StageBodyHandle,StageCrowHandle,StageTravelHandle;
+            public GameObject StageBody,StageCrow,StageTravel;
+            public AnimationClip StageIdle,StageRun,StageAttack;
             public bool Released;
         }
         /// <summary>正式环境与牛模板全部验证后才发布就绪；晚回调没有重挂旧地图的权限。</summary>
@@ -42,14 +46,16 @@ namespace Game
             {
                 state.EnvironmentHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.EnvironmentAddress,p=>environment.TrySetResult(p));
                 if(stage.HerdCount>0)state.HerdHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.HerdAddress,p=>herd.TrySetResult(p));
+                var stageTemplates=LoadNextStageTemplates(state,stage.ArenaConfigNumber);
                 var prefab=await environment.Task;
                 var cow=stage.HerdCount>0?await herd.Task:null;
+                await stageTemplates;
                 if(!EarlyStageLoadIsCurrent(state))return;
                 if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Length>0||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
                 if(stage.HerdCount>0&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
                 var instance=UnityEngine.Object.Instantiate(prefab,roundEnvironmentRoot.transform,false);instance.name="ConfirmedEarlyEnvironment";earlyHerdTemplate=cow;
-                roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();
+                roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();ProjectNextStageEnemies();
             }
             catch(Exception e)
             {
@@ -63,11 +69,17 @@ namespace Game
         private void ReleaseEarlyStageLoad()
         {
             ClearHerdViews();
+            ClearNextStageEnemies();
             var state=earlyStageLoad;earlyStageLoad=null;earlyHerdTemplate=null;
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);
             if(state.HerdHandle.IsValid)ResourceLoader.Release(state.HerdHandle);
+            if(state.StageBodyHandle.IsValid)ResourceLoader.Release(state.StageBodyHandle);
+            if(state.StageCrowHandle.IsValid)ResourceLoader.Release(state.StageCrowHandle);
+            if(state.StageTravelHandle.IsValid)ResourceLoader.Release(state.StageTravelHandle);
             state.EnvironmentHandle=state.HerdHandle=ResourceLoadHandle.Empty;
+            state.StageBodyHandle=state.StageCrowHandle=state.StageTravelHandle=ResourceLoadHandle.Empty;
+            state.StageBody=state.StageCrow=state.StageTravel=null;state.StageIdle=state.StageRun=state.StageAttack=null;
         }
     }
 }

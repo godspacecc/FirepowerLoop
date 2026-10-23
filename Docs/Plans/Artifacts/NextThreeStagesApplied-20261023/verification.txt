@@ -1,0 +1,26 @@
+三关正式美术资源落成证据（2026-10-23）
+
+采用来源：NextThreeStagesArt-v1-20261023 三关静态；墓园出敌采用 GraveyardTombs-v2-20261023。正式制作直接调用原候选的 Palette/ArtPalette/GraveArt/TempleArt/MarketArt/ArtCrow 方法，不另写布局、比例或配色。墓穴起身业务未在本子任务实现。
+
+新增正式资源：
+- Assets/Game/Art/Arcade/NextThree/{Graveyard,Temple,Marketplace}：持久网格及材质，含所有目录和文件 .meta。
+- Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab：15个同材质合并网格。
+- Assets/Game/Prefabs/SceneObjects/ArcadeTempleVisual.prefab：13个同材质合并网格。
+- Assets/Game/Prefabs/SceneObjects/ArcadeMarketplaceVisual.prefab：13个同材质合并网格。
+- Assets/Game/Prefabs/SceneObjects/ArcadeShadowCrowVisual.prefab：完整采用乌鸦，WingLeft/WingRight保留独立本地Z旋转轴；正脸朝本地-Z。采用动作两翅分别 sin(t*25)*38 与 -sin(t*25)*38 度。
+- Assets/Game/Prefabs/SceneObjects/ArcadeShadowTravelVisual.prefab：Core与Mote0至Mote5是根下直接子节点；初始Core缩放0.4，Mote缩放0.1，均在原点，运动由业务每帧设置。Core为7面蓝影，六光点为5面。
+- Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab：原 ArcadeZombieShambler 新副本，仅材质替为同源深色；保留原尺寸、组件、动画、蒙皮与原点。
+- Assets/Game/Art/Arcade/NextThree/Temple/Shadow/{Dark,AgedIron,ShadowBlue,ShadowZombieDark}.mat：独立材质。
+
+工具：Tools/Unity/NextThreeStagesAssetBake.cs 与 Invoke-NextThreeStagesAssetBake.ps1。
+脚本动作 Validate（默认）/ BakeAll / CaptureApplied；通过本项目原有 Invoke-UnityMcp.ps1 入口执行。只写这些新资源，不接入集合/Config/runtime。无运行时Update。
+
+实际验证：
+1. persistent-assets-check.json：实际LoadAssetAtPath及LoadPrefabContents核查5个环境/特效Prefab；只允许Transform、MeshFilter、MeshRenderer，所有网格、材质为持久引用。暗影丧尸额外核对根尺寸与全部材质持久性。
+2. 9张PNG是正式已保存Prefab的同机位实拍，临时主角和六只丧尸只做尺寸参照；不包含自然对局或真实运行测试。
+3. pixel-comparison.json：对已采用候选静态逐图比较；墓园detail、神庙detail两张SHA256完全相同，其余每张1至10个边缘像素不同，最大改变比例0.0009765625%。合并网格的浮点运算影响极少数边缘像素，未另改设计。
+4. 已查看墓园墓穴近景、神庙总览、集市近景。布局、配色、主角尺寸与候选保持。
+5. editor-final-state.json：项目E:/GitHub/FirepowerLoop/Client/Assets，Boot未脏，编辑态，1个场景，无编译、无编译失败；TimeScale保持进入时的0，未修改。
+6. console-latest.json仅为最新3条记录，含其他测试请求占用拒绝与既有警告；未清除Console、不声称全历史无错。
+
+未执行：任何测试、PlayMode、完整套件、Player Build、打包、自然对局或真人双端；Config/运行时/资产集合接线由根代理继续。无提交、无推送。Unity制作窗口已经明确释放。

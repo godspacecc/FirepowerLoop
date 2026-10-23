@@ -260,6 +260,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab
+        CollectorGUID: e72d3187e4d9fcc4683f850e7bbf96b1
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab
         CollectorGUID: 8332b259d783cb14884847e11bc1d168
         CollectorType: 0
@@ -930,6 +938,46 @@ MonoBehaviour:
         UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab
         CollectorGUID: 5ae5ce788f3929740847320102627fc2
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab
+        CollectorGUID: 8ca247d77a48b4f47812bc1044f39dd0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeTempleVisual.prefab
+        CollectorGUID: 9b391f6eb26245d40b629a6dadf214dd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeMarketplaceVisual.prefab
+        CollectorGUID: 3bd86f366974dea479d37ef61b5c47c6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeShadowCrowVisual.prefab
+        CollectorGUID: 01f54d88acfc5474db095a890a28c4ec
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeShadowTravelVisual.prefab
+        CollectorGUID: 8a63de924e6d809439c76a6924f398ab
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately

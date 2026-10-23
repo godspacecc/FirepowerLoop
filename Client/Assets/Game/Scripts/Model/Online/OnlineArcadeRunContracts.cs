@@ -190,21 +190,25 @@ namespace Game
 
     public readonly struct OnlineArcadeEnemySnapshot
     {
+        /// <summary>现身和一次重生的只读权威状态；晚加载沿当前阶段采样。</summary>
+        public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy { get; }
         /// <summary>服务器当前牛撞状态；只读复制，重连不重新开始计时。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
             TargetPlayerId = targetPlayerId; WaveNumber = waveNumber;
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
-            FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;
+            FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;StageEnemy=stageEnemy;AttackSequence=attackSequence;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }
+        /// <summary>已完成的近战挥击序列；只投影，不重算攻击或伤害。</summary>
+        public int AttackSequence { get; }
         public float PositionX { get; }
         public float PositionZ { get; }
         public int CurrentHealth { get; }
@@ -448,7 +452,7 @@ namespace Game
             IReadOnlyList<OnlineArcadePlayerSnapshot> players, OnlineArcadeOperationState operationState,
             OnlineArcadeResultCode lastResultCode, OnlineArcadeBattleSnapshot battle = null,
             IReadOnlyList<OnlineArcadeConnectionSnapshot> connections = null, bool battlePaused = false,
-            string challengeId = null, bool challengeAttempted = false)
+            string challengeId = null, bool challengeAttempted = false, int casualRouteVersion = 0)
         {
             HasRun = hasRun; RunId = runId; RoomId = roomId; Revision = revision; Phase = phase;
             CompletedArena = completedArena; NextArena = nextArena; ConfigFingerprint = configFingerprint ?? string.Empty;
@@ -456,6 +460,7 @@ namespace Game
             Battle = battle;
             Connections = Array.AsReadOnly(Copy(connections)); BattlePaused = battlePaused;
             ChallengeId = challengeId ?? string.Empty; ChallengeAttempted = challengeAttempted;
+            CasualRouteVersion = casualRouteVersion;
         }
         public bool HasRun { get; }
         public long RunId { get; }
@@ -473,6 +478,8 @@ namespace Game
         public bool BattlePaused { get; }
         public string ChallengeId { get; }
         public bool ChallengeAttempted { get; }
+        /// <summary>服务器确认的本局路线；零保留四十轮，版本1为五十二轮。</summary>
+        public int CasualRouteVersion { get; }
         public static OnlineArcadeRunClientSnapshot Empty(OnlineArcadeResultCode code = OnlineArcadeResultCode.None) =>
             new(false, 0, 0, 0, OnlineArcadeRunPhase.None, 0, 0, string.Empty,
                 Array.Empty<OnlineArcadePlayerSnapshot>(), OnlineArcadeOperationState.Idle, code);

@@ -81,7 +81,7 @@ namespace ET.Server
             var t=ServerConfig.Instance.WeaponUpgrade.Evolution;var rule=ServerConfig.Instance.ArcadeRule;
             foreach(var enemy in b.Enemies.Values)
             {
-                if(enemy.CurrentHealth<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.RuntimeId)||DistanceSquared(cx,cz,enemy.PositionX,enemy.PositionZ)>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
+                if(enemy.StageEnemy.Phase>0||enemy.CurrentHealth<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.RuntimeId)||DistanceSquared(cx,cz,enemy.PositionX,enemy.PositionZ)>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
                 p.EvolutionPushedEnemyIds.Add(enemy.RuntimeId);
                 float dx=enemy.PositionX-p.SourcePositionX,dz=enemy.PositionZ-p.SourcePositionZ;
                 float length=MathF.Sqrt(dx*dx+dz*dz);if(length<.00001f){dx=p.VelocityX;dz=p.VelocityZ;length=MathF.Sqrt(dx*dx+dz*dz);}

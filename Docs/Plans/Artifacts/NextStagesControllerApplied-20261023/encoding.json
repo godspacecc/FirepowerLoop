@@ -1,0 +1,35 @@
+[
+  {
+    "stage": "graveyard",
+    "sourceFrames": 108,
+    "encodedFrames": 101,
+    "durationMs": 9000,
+    "size": [
+      960,
+      600
+    ],
+    "loop": 0
+  },
+  {
+    "stage": "temple",
+    "sourceFrames": 96,
+    "encodedFrames": 96,
+    "durationMs": 8000,
+    "size": [
+      960,
+      600
+    ],
+    "loop": 0
+  },
+  {
+    "stage": "marketplace",
+    "sourceFrames": 96,
+    "encodedFrames": 96,
+    "durationMs": 8000,
+    "size": [
+      960,
+      600
+    ],
+    "loop": 0
+  }
+]

@@ -688,6 +688,11 @@ namespace Game
             Babylon = babylon;
         }
 
+        /// <summary>只投影本局出口，旧局继续原路线而不修改全局配置。</summary>
+        public ArcadeArenaDefinition WithRouteVersion(int version) => new ArcadeArenaDefinition(ArenaNumber, WaveGroupIds,
+            Obstacles, IsBoss, BossId, ClearGold, EncounterSeedSalt, Hazards,
+            FirepowerLoop.Arcade.ArcadeRouteRules.NextArenas(version, ArenaNumber, NextArenaNumbers), FinalBossId, Opening, Babylon);
+
         public int ArenaNumber { get; }
         /// <summary>首场水火与休整合同；禁用值表示沿用其他场地既有流程。</summary>
         public FirepowerLoop.Arcade.ArcadeOpeningParameters Opening { get; }
@@ -912,7 +917,7 @@ namespace Game
             RoundLayouts = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(roundLayouts ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters>()));
         }
 
-        /// <summary>仅新码头/农场使用的边界、资源与牛群参数。</summary>
+        /// <summary>固定前六关中五张新场地的边界与资源，牛群仅限农场。</summary>
         public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeEarlyStageParameters> EarlyStages { get; }
         public ArcadeRuleDefinition Rule { get; }
         /// <summary>正式积分商店目录；旧测试目录可省略，不隐式打开现金商店。</summary>

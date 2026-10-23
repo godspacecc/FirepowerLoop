@@ -121,7 +121,9 @@ namespace Game
                     await UniTask.NextFrame();
                     if(generation!=transitionGeneration||latest.RunId!=runId||latest.Battle?.ArenaNumber!=arenaNumber)return;
                 }
-                activeArena = ResolveArena(latest.Battle.ArenaConfigNumber > 0 ? latest.Battle.ArenaConfigNumber : arenaNumber);
+                // 只在进入场地时投影本局出口，显示与接触意图共用服务器确认的路线。
+                activeArena = ResolveArena(latest.Battle.ArenaConfigNumber > 0 ? latest.Battle.ArenaConfigNumber : arenaNumber)
+                    .WithRouteVersion(latest.CasualRouteVersion);
                 view.Begin(activeArena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight,
                     activeArena.Obstacles);
                 active = true;
@@ -460,8 +462,9 @@ namespace Game
                 int id = MapId(enemyIds, value.RuntimeId);
                 view.SetEnemy(id, value.EnemyConfigId, new Vector2(value.PositionX, value.PositionZ),
                     value.CurrentHealth, value.MaxHealth, value.BossPhase is ArcadeBossPhase.Telegraph or ArcadeBossPhase.RayTelegraph,
-                    persistentHealthBar: bossWave || !string.IsNullOrEmpty(value.BossId));
+                    attackSequence: value.AttackSequence, persistentHealthBar: bossWave || !string.IsNullOrEmpty(value.BossId));
                 view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
+                view.SetNextStageEnemyState(id,value.SpecialKind,value.StageEnemy);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
                 view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);
                 view.SetEnemyHerdImpact(id,value.HerdImpact);

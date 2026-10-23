@@ -15,12 +15,12 @@ namespace Game.Tests
         {
             var provider=new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
-            Assert.That(catalog.RoundLayouts.Count,Is.EqualTo(88));
+            Assert.That(catalog.RoundLayouts.Count,Is.EqualTo(100));
             foreach(var arena in catalog.Arenas)
             {
                 var group=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();
                 Assert.That(group.Select(p=>p.RoundNumber),Is.EquivalentTo(new[]{1,2,3,4}));
-                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(arena.ArenaNumber==21||arena.ArenaNumber==22?1:4));
+                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(arena.ArenaNumber>=21&&arena.ArenaNumber<=25?1:4));
             }
         }
         [Test] public void AllGeneratedEntrancesSpawnAndExitsHaveMultiplayerRoutes()

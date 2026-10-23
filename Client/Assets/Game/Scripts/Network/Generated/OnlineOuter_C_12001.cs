@@ -1712,6 +1712,30 @@ namespace ET
         [MemoryPackOrder(18)]
         public float HerdImpactDirectionZ { get; set; }
 
+        /// <summary>
+        /// 墓穴、乌鸦和蓝影只同步当前权威阶段，不在客户端重播计时。
+        /// </summary>
+        [MemoryPackOrder(19)]
+        public int StageEnemyPhase { get; set; }
+
+        [MemoryPackOrder(20)]
+        public float StageEnemyAge { get; set; }
+
+        [MemoryPackOrder(21)]
+        public float StageEnemyOriginX { get; set; }
+
+        [MemoryPackOrder(22)]
+        public float StageEnemyOriginZ { get; set; }
+
+        [MemoryPackOrder(23)]
+        public int StageEnemyRevives { get; set; }
+
+        /// <summary>
+        /// 已完成的真实近战挥击序列；首快照只建立基线，重连不重播。
+        /// </summary>
+        [MemoryPackOrder(24)]
+        public int AttackSequence { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1738,6 +1762,12 @@ namespace ET
             this.HerdImpactRemaining = default;
             this.HerdImpactDirectionX = default;
             this.HerdImpactDirectionZ = default;
+            this.StageEnemyPhase = default;
+            this.StageEnemyAge = default;
+            this.StageEnemyOriginX = default;
+            this.StageEnemyOriginZ = default;
+            this.StageEnemyRevives = default;
+            this.AttackSequence = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2419,6 +2449,12 @@ namespace ET
         [MemoryPackOrder(13)]
         public OnlineSlayerMartSnapshotInfo SelfSlayerMart { get; set; }
 
+        /// <summary>
+        /// 缺失为旧四十轮路线；服务器权威公开本局是否追加三关。
+        /// </summary>
+        [MemoryPackOrder(14)]
+        public int CasualRouteVersion { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2440,6 +2476,7 @@ namespace ET
             this.ChallengeId = default;
             this.ChallengeAttempted = default;
             this.SelfSlayerMart = default;
+            this.CasualRouteVersion = default;
 
             ObjectPool.Instance.Recycle(this);
         }

@@ -1,0 +1,9 @@
+PASS RouteSave.MissingVersionRetainsLegacy
+PASS RouteSave.Legacy40VictoryRoundTrips
+PASS RouteSave.New52VictoryRoundTrips
+PASS RouteSave.NewRound40IsStillPending
+PASS RouteSave.CannotExchangeVictoryCounts
+PASS RouteSave.UnknownVersionRefused
+PASS RouteSave.LegacyCannotInsertNewStage
+PASS RouteSave.InvalidRouteCannotReplaceNode
+8/8 passed

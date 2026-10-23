@@ -1,0 +1,3 @@
+PASS NextSlayerRouteOnline.NewFarmOpportunityReturnsToGraveyard
+PASS NextSlayerRouteOnline.LegacyFarmOpportunityReturnsToFive
+2/2 passed

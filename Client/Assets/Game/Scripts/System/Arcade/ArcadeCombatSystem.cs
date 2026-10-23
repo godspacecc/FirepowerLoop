@@ -273,7 +273,7 @@ namespace Game
             CopyKeys(runtime.Enemies, enemyIterationIds);
             var removed = enemyIterationIds.Count;
             for (var index = 0; index < enemyIterationIds.Count; index++)
-                if (runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) KillEnemy(runtime, enemy, true);
+                if (runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) RemoveEnemyForCleanup(runtime, enemy);
             return removed;
         }
 
@@ -313,6 +313,7 @@ namespace Game
             arena = run.IsCasualRoute
                 ? catalog.Arenas.First(value => value.ArenaNumber == run.ArenaConfigNumber)
                 : catalog.Arenas[ResolveConfiguredArenaIndex(run.NextArenaNumber, catalog.Arenas.Count)];
+            if(run.IsCasualRoute)arena=arena.WithRouteVersion(run.CasualRouteVersion);
             challenge = default;
             if (isChallenge)
             {
@@ -744,7 +745,7 @@ namespace Game
                 runtime.IslandPassages??=new ArcadePassageSchedule(group.SpawnIntervalSeconds,layout.Entries.Count,runtime.SpawnQueue.Count,random);
                 runtime.IslandPassages.Advance(deltaTime);runtime.IslandEntryWarningRemaining=0;
                 int cap=Mathf.Min(group.MaxAlive,catalog.Rule.MaxAliveEnemies);
-                while(runtime.SpawnQueue.Count>0&&runtime.Enemies.Count<cap&&runtime.IslandPassages.TryTake(out int passage,out bool startsBatch))
+                while(runtime.SpawnQueue.Count>0&&runtime.Enemies.Count<cap&&NextStageSpawnReady(runtime)&&runtime.IslandPassages.TryTake(out int passage,out bool startsBatch))
                 {
                     runtime.IslandEntryBatch=passage;if(!SpawnQueuedEnemy(runtime))return;
                     if(startsBatch)SpawnPassageBarrel(runtime);
@@ -760,6 +761,7 @@ namespace Game
         /// <summary>按已选真实通道交付一个现有队列敌人；属性、掉落归属及特殊敌人规则保持由原权威处理。</summary>
         private bool SpawnQueuedEnemy(ArcadeCombatRuntime runtime)
         {
+            if(!NextStageSpawnReady(runtime))return false;
             var enemyId = runtime.SpawnQueue.Dequeue();
             var provider = this.GetUtility<IRuntimeConfigProvider>();
             if (!provider.TryGetEnemy(enemyId, out var definition, out var error))
@@ -1147,7 +1149,7 @@ namespace Game
             CopyKeys(runtime.Enemies, enemyIterationIds);
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
-                if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
+                if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||enemy.StageEnemy.Phase!=0||
                     !IsWithinExplosion(center, enemy.Position, radius)) continue;
                 var direction = enemy.Position - center;
                 if (direction.sqrMagnitude < 0.001f) direction = Vector2.up;
@@ -1680,7 +1682,7 @@ namespace Game
                 foreach (var enemy in runtime.Enemies.Values) enemyIterationIds.Add(enemy.Id);
                 foreach (var id in enemyIterationIds)
                 {
-                    if (!runtime.Enemies.TryGetValue(id, out var enemy)) continue;
+                    if (!runtime.Enemies.TryGetValue(id, out var enemy)||enemy.StageEnemy.Phase!=0) continue;
                     var previous = runtime.HazardPreviousEnemyPositions.TryGetValue(id, out var value) ? value : enemy.Position;
                     if (!hazard.TryHit(id, previous.x, previous.y, enemy.Position.x, enemy.Position.y, catalog.Rule.EnemyContactRadius)) continue;
                     if (enemy.IsBossPresentation)
@@ -1810,6 +1812,10 @@ namespace Game
         private void KillEnemy(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill = false)
             => KillEnemyWithImpact(runtime, enemy, hazardKill, false, runtime.PlayerPosition);
 
+        /// <summary>换图和战斗清理直接释放实体，不触发暗影重生。</summary>
+        private void RemoveEnemyForCleanup(ArcadeCombatRuntime runtime,ArcadeEnemyRuntime enemy)
+            => KillEnemyReactionCore(runtime,enemy,true,false,runtime.PlayerPosition,0,true);
+
         /// <summary>伤害已裁决后传递死亡方向；爆炸来源只影响骨骼表现，不改变奖励或场内预算。</summary>
         private void KillEnemyWithImpact(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
             bool explosive, Vector2 origin)
@@ -1818,7 +1824,13 @@ namespace Game
         /// <summary>死亡来源一次性提交，不能由角色当前武器推断在途弹丸的类型。</summary>
         private void KillEnemyWithReaction(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
             bool explosive, Vector2 origin, int impactKind)
+            => KillEnemyReactionCore(runtime,enemy,hazardKill,explosive,origin,impactKind,false);
+
+        /// <summary>清理才允许强制移除，真实电塔等机关击杀仍遵循一次重生。</summary>
+        private void KillEnemyReactionCore(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, bool hazardKill,
+            bool explosive, Vector2 origin,int impactKind,bool forceRemove)
         {
+            if(!forceRemove&&runtime.Enemies.ContainsKey(enemy.Id)&&KeepNextStageEnemyAlive(runtime,enemy))return;
             if (!runtime.Enemies.Remove(enemy.Id)) return;
             if(hazardKill||explosive)enemy.LastDamageWasFlame=false;
             if(SlayerGuardianDefeated(runtime,enemy))return;
@@ -1831,7 +1843,7 @@ namespace Game
                 // 停止危险时保留本帧已经裁决的桶爆炸，避免 Boss 死亡吞掉视觉与声音。
                 runtime.ContentAreas.RemoveAll(a=>a.Kind!=ArcadeRoundContentRules.BarrelExplosionKind); runtime.ContentAreaSnapshots.Clear();
                 runtime.SpawnQueue.Clear();
-                foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
+                foreach (var other in runtime.Enemies.Values.ToArray()) RemoveEnemyForCleanup(runtime, other);
                 foreach (int id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
                 runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();
             }
@@ -1843,7 +1855,7 @@ namespace Game
                 runtime.AwaitingExit = true;
                 runtime.SpawnQueue.Clear();
                 // 最终 Boss 死亡后停止所有危险，不等待普通敌人清空才开放胜利出口。
-                foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
+                foreach (var other in runtime.Enemies.Values.ToArray()) RemoveEnemyForCleanup(runtime, other);
                 foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
                 runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();
             }
@@ -2415,7 +2427,7 @@ namespace Game
         {
             crowdingEnemies.Clear();
             foreach (var enemy in runtime.Enemies.Values)
-                crowdingEnemies.Add(enemy);
+                if(enemy.StageEnemy.Phase==0)crowdingEnemies.Add(enemy);
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();
