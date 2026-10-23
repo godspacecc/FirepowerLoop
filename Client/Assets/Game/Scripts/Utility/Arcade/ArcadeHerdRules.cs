@@ -48,13 +48,15 @@ namespace FirepowerLoop.Arcade
     /// <summary>双端同源的锁向、活动时间及扫掠规则；不写生命、掉落或保护状态。</summary>
     public static class ArcadeHerdRules
     {
-        /// <summary>双端使用同一固定东西向通路；每批只有一排，往返交替而地形不随机。</summary>
+        /// <summary>双端共用固定东西向通路；牛沿行进方向前后排成一队，往返交替而地形不随机。</summary>
         public static void StartBatch(List<ArcadeHerdState> cows,ArcadeEarlyStageParameters stage,long map,int batch)
         {
             float direction=(batch%2==1)?1:-1;
+            // 行程覆盖整队长度，使头牛在入口外起步、尾牛在出口外回收。
+            float entry=(stage.Herd.Distance-(stage.HerdCount-1)*stage.HerdSpacing)*.5f;
             for(int i=0;i<stage.HerdCount;i++)
-                if(TryStart(map,(long)batch*stage.HerdCount+i+1,-direction*stage.Herd.Distance*.5f,
-                    -stage.PortalY+(i-(stage.HerdCount-1)*.5f)*stage.HerdSpacing,direction,0,stage.Herd,out var cow))cows.Add(cow);
+                if(TryStart(map,(long)batch*stage.HerdCount+i+1,-direction*(entry+i*stage.HerdSpacing),
+                    -stage.PortalY,direction,0,stage.Herd,out var cow))cows.Add(cow);
         }
         /// <summary>只读姿态使用阶段年龄，切换冲撞时从零开始动作。</summary>
         public static ArcadeHerdSnapshot Snapshot(ArcadeHerdState cow,ArcadeHerdTuning tuning)=>new(cow.MapInstanceId,cow.Id,cow.Phase,cow.X,cow.Z,cow.DirectionX,cow.DirectionZ,

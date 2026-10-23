@@ -1,0 +1,9 @@
+PASS HerdOnline.SingleFileAndSpeed
+PASS HerdOnline.TailClearsBeforeNextBatch
+PASS HerdOnline.SweepAndSingleDeath
+PASS HerdOnline.Protections
+PASS HerdOnline.ClearAndLoadingFreeze
+PASS HerdOnline.FreshRound
+PASS HerdOnline.SnapshotCloneAndCodec
+PASS HerdOnline.LethalMiddleCowKeepsRow
+8/8 passed

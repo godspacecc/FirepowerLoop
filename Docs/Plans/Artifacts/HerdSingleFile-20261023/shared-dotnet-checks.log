@@ -1,0 +1,5 @@
+PASS HerdRulesDotNet.WindupAndSweep
+PASS HerdRulesDotNet.ContactIdentity
+PASS HerdRulesDotNet.PauseAndMapCancel
+PASS HerdRulesDotNet.FinalStepAndInvalidInputs
+4/4 passed
