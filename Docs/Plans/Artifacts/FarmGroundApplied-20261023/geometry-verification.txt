@@ -1,0 +1,10 @@
+project=E:/GitHub/FirepowerLoop/Client/Assets
+source=Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab
+sourceMeshCount=11
+originalVerticesAndTrianglesPreserved=true
+nonSnowMeshesUnchanged=true
+activeColliders=0
+dirtPatchCount=130
+trianglesByGroundHayStoneRoofFoliage=60,144,168,24,12288
+usingFormalAssets=True
+productionAssetsSavedDuringRender=false

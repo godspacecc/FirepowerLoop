@@ -1,0 +1,4 @@
+round=1:ready,oneGroundPatches,noCollider,releaseOnce
+round=2:ready,oneGroundPatches,noCollider,releaseOnce
+round=3:ready,oneGroundPatches,noCollider,releaseOnce
+round=4:ready,oneGroundPatches,noCollider,releaseOnce
