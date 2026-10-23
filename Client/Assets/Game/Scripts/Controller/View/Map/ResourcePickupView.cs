@@ -142,7 +142,7 @@ namespace Game
             return true;
         }
 
-        /// <summary>按权威空投阶段隐藏武器、光柱和名称；开盖后在箱内抬起武器，不改变根位置。</summary>
+        /// <summary>按权威空投阶段同步武器弹出与箱体消失；完成后显示光柱，不改变拾取根位置。</summary>
         public void SetWeaponDelivery(bool airdrop,float remaining,float duration)
         {
             if(airdrop&&weaponDelivery!=null)
@@ -157,7 +157,7 @@ namespace Game
                     deliveryWeaponPosition=activeArcadeVisual.transform.localPosition;
                 }
                 deliveryActive=true;weaponDelivery.SetProgress(remaining,duration);
-                if(activeArcadeVisual!=null){activeArcadeVisual.SetActive(weaponDelivery.WeaponVisible);activeArcadeVisual.transform.localPosition=deliveryWeaponPosition+Vector3.up*(.65f/Mathf.Max(.001f,Mathf.Abs(transform.lossyScale.y)));}
+                if(activeArcadeVisual!=null){activeArcadeVisual.SetActive(weaponDelivery.WeaponVisible);activeArcadeVisual.transform.localPosition=deliveryWeaponPosition+Vector3.up*((.65f+weaponDelivery.WeaponPopLift)/Mathf.Max(.001f,Mathf.Abs(transform.lossyScale.y)));}
                 if(activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(remaining<=0);
                 SetNameVisible(remaining<=0&&!string.IsNullOrWhiteSpace(currentDisplayName));
                 return;

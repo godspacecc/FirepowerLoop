@@ -26,10 +26,13 @@ namespace Game.Tests
             Assert.That(instance.transform.Find("ArcadeDropVisual").gameObject.activeSelf,Is.False);
             pickup.SetWeaponDelivery(true,.3f,1.2f);Assert.That(crate.transform.position.y,Is.EqualTo(0).Within(.001f));
         }
-        [Test] public void LidOpensUpwardAndRevealsWeaponAutomatically()
+        [Test] public void LandingPopsWeaponAndRemovesCrate()
         {
-            pickup.SetWeaponDelivery(true,0,1.2f);var lid=crate.transform.Find("LidHinge");
-            Assert.That(lid.TransformPoint(new Vector3(0,0,-.5f)).y,Is.GreaterThan(lid.position.y));
+            pickup.SetWeaponDelivery(true,1.2f,1.2f);
+            pickup.SetWeaponDelivery(true,.3f,1.2f);
+            Assert.That(instance.transform.Find("ArcadeDropVisual").gameObject.activeSelf,Is.True,"落地即弹出武器");
+            Assert.That(crate.GetComponentsInChildren<MeshRenderer>(true).All(r=>!r.enabled),Is.True,"弹出时箱体必须消失");
+            pickup.SetWeaponDelivery(true,0,1.2f);
             Assert.That(instance.transform.Find("ArcadeDropVisual").gameObject.activeSelf,Is.True);
             var renderers=instance.transform.Find("ArcadeDropVisual").GetComponentsInChildren<MeshRenderer>();
             var bounds=renderers[0].bounds;foreach(var renderer in renderers.Skip(1))bounds.Encapsulate(renderer.bounds);
@@ -43,6 +46,32 @@ namespace Game.Tests
             Assert.That(crate.gameObject.activeSelf,Is.False);Assert.That(visual.gameObject.activeSelf,Is.True);Assert.That(visual.localPosition,Is.EqualTo(original));
             Assert.That(visual.localScale,Is.EqualTo(originalScale));
             pickup.SetWeaponDelivery(true,1.2f,1.2f);Assert.That(crate.transform.position.y,Is.GreaterThan(7));
+            Assert.That(crate.GetComponentsInChildren<MeshRenderer>(true).All(r=>r.enabled),Is.True,"复用空投必须恢复箱体");
+        }
+        /// <summary>弹出过程先上升再落回悬浮位置，快照重复不累积位移或缩放。</summary>
+        [Test] public void PopArcRisesAndSettlesWithoutSnapshotDrift()
+        {
+            var visual=instance.transform.Find("ArcadeDropVisual");
+            pickup.SetWeaponDelivery(true,0,1.2f);var settled=visual.position;var scale=visual.localScale;
+            pickup.SetWeaponDelivery(true,.3f,1.2f);var start=visual.position;
+            pickup.SetWeaponDelivery(true,.15f,1.2f);var peak=visual.position;
+            Assert.That(peak.y,Is.GreaterThan(settled.y+.5f));
+            Assert.That(start.y,Is.LessThan(settled.y));
+            pickup.SetWeaponDelivery(true,.15f,1.2f);Assert.That(visual.position,Is.EqualTo(peak));
+            pickup.SetWeaponDelivery(true,0,1.2f);Assert.That(visual.position,Is.EqualTo(settled));
+            Assert.That(visual.localScale,Is.EqualTo(scale));
+        }
+        /// <summary>晚加载直接呈现已弹出的武器，不留下空箱，也不补播落地粒子。</summary>
+        [Test] public void LateCompletedSnapshotShowsOnlyWeaponAndPoolRestoresCrate()
+        {
+            pickup.SetWeaponDelivery(true,0,1.2f);
+            Assert.That(crate.GetComponentsInChildren<MeshRenderer>(true).All(r=>!r.enabled),Is.True);
+            Assert.That(crate.GetComponentInChildren<ParticleSystem>(true).particleCount,Is.Zero);
+            pickup.ClearArcadePresentation();
+            pickup.SetArcadePresentation(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab"),"Prefabs/SceneObjects/ArcadeFlamethrower");
+            pickup.SetWeaponDelivery(true,1.2f,1.2f);
+            Assert.That(crate.GetComponentsInChildren<MeshRenderer>(true).All(r=>r.enabled),Is.True);
+            Assert.That(instance.transform.Find("ArcadeDropVisual").gameObject.activeSelf,Is.False);
         }
         [Test] public void LandingDustDoesNotReplayOnDuplicateOrLateSnapshot()
         {
