@@ -33,7 +33,7 @@ namespace Game
             {
                 contentObstacleIdentity = layout.Id;
                 contentRoundObstacles = layout.Obstacles.Select(o =>
-                    new ArcadeObstacleDefinition(o.X, o.Y, o.HalfWidth, o.HalfHeight)).ToArray();
+                    new ArcadeObstacleDefinition(o.X, o.Y, o.HalfWidth, o.HalfHeight, o.BlocksProjectiles)).ToArray();
             }
             return contentRoundObstacles;
         }

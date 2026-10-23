@@ -376,6 +376,9 @@ namespace ET.Server
         public bool SlayerMartStormDamage;
         /// <summary>轮地图候选由管理器原子提交；加载与保存失败时冻结活动时钟。</summary>
         public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters RoundLayout;
+        /// <summary>当前布局的弹丸实体阻挡缓存；不包含仅限制行走的水面。</summary>
+        public IReadOnlyList<ArcadeObstacleConfig> ProjectileObstacleSource, ProjectileObstacles;
+        public FirepowerLoop.Arcade.ArcadeRoundLayoutParameters ProjectileObstacleLayout;
         /// <summary>当前地图的权威武器刷新时钟；候选现场替换后旧计划随之释放，不同步给客户端计时。</summary>
         public FirepowerLoop.Arcade.ArcadeWeaponSpawnSchedule WeaponSpawns;
         /// <summary>服务器独占的半批重叠调度，各通道共享整轮预算和存活上限。</summary>

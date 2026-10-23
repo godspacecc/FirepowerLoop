@@ -2152,14 +2152,11 @@ namespace ET.Server
                     if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInProjectileExplosion(battle, projectile);
                     battle.Projectiles.Remove(projectileId);changed=true;continue;
                 }
-                bool wallCrossed=ClipPlayerShotToWall(battle,projectile,priorX,priorZ);
+                bool wallCrossed=ClipShotToWall(battle,projectile,priorX,priorZ);
                 bool expired = projectile.RemainingSeconds <= 0f;
-                bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, EffectiveObstacles(battle));
-                // 海岛行走外缘不裁断朝深海的弹道；武器寿命及真实命中仍负责回收。
-                bool outsideArena = IslandFor(battle) == null &&
-                                    (MathF.Abs(projectile.PositionX) > ArenaHalfWidth(battle) ||
-                                     MathF.Abs(projectile.PositionZ) > ArenaHalfHeight(battle));
-                bool remove = expired || outsideArena || hitObstacle;
+                bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, ProjectileObstaclesFor(battle));
+                // 所有地图的行走边界都不裁断弹道；仅实体命中或寿命到期回收。
+                bool remove = expired || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
                     self.DamageEnemiesInProjectileExplosion(battle, projectile);

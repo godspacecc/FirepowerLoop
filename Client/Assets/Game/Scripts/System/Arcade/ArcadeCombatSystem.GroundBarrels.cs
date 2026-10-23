@@ -79,7 +79,7 @@ namespace Game
                 { first=entry;barrelId=pair.Key; }
             if(barrelId<0)return false;
             bool blocked=false;
-            foreach(var obstacle in ObstaclesFor(r))
+            foreach(var obstacle in ProjectileObstaclesFor(r))
                 if(TryGetSegmentObstacleEntry(from,to,0,obstacle,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var enemy in r.Enemies.Values)

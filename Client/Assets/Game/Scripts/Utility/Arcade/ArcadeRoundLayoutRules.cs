@@ -13,8 +13,10 @@ namespace FirepowerLoop.Arcade
     /// <summary>双端平面阻挡；和主题地标使用相同的中心与半尺寸。</summary>
     public readonly struct ArcadeLayoutObstacle
     {
-        public ArcadeLayoutObstacle(float x,float y,float halfWidth,float halfHeight)
-        { X=x;Y=y;HalfWidth=halfWidth;HalfHeight=halfHeight; }
+        public ArcadeLayoutObstacle(float x,float y,float halfWidth,float halfHeight,bool blocksProjectiles=true)
+        { X=x;Y=y;HalfWidth=halfWidth;HalfHeight=halfHeight;BlocksProjectiles=blocksProjectiles; }
+        /// <summary>实体遮挡弹丸；水面等仅行走阻挡不遮挡弹丸。</summary>
+        public bool BlocksProjectiles { get; }
         public float X { get; }
         public float Y { get; }
         public float HalfWidth { get; }
@@ -33,7 +35,7 @@ namespace FirepowerLoop.Arcade
             Id=row.Id;ThemeKey=row.ThemeKey;NameKey=row.NameKey;ArenaConfigNumber=row.ArenaConfigNumber;
             RoundNumber=row.RoundNumber;Version=row.Version;SpawnX=row.SpawnX;SpawnY=row.SpawnY;
             ExitX=row.ExitX;ExitY=row.ExitY;ExitSpacing=row.ExitSpacing;
-            Obstacles=Array.AsReadOnly(row.Obstacles.Select(o=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight)).ToArray());
+            Obstacles=Array.AsReadOnly(row.Obstacles.Select((o,i)=>new ArcadeLayoutObstacle(o.CenterX,o.CenterY,o.HalfWidth,o.HalfHeight,!row.MovementOnlyObstacleIndices.Contains(i))).ToArray());
             Entries=Array.AsReadOnly(row.Entries.Select(e=>new ArcadeRegionPoint(e.X,e.Y)).ToArray());
             Barrels=Array.AsReadOnly((barrels??row.Barrels.Select(e=>new ArcadeRegionPoint(e.X,e.Y))).ToArray());
             BarrelDropSeconds=row.BarrelDropSeconds;BarrelPullRadius=row.BarrelPullRadius;
@@ -150,6 +152,9 @@ namespace FirepowerLoop.Arcade
         public static ArcadeRoundLayoutParameters FromConfig(LayoutConfig row)
         {
             if(row==null)throw new ArgumentNullException(nameof(row));
+            if(row.MovementOnlyObstacleIndices.Any(i=>i<0||i>=row.Obstacles.Length)||
+                row.MovementOnlyObstacleIndices.Distinct().Count()!=row.MovementOnlyObstacleIndices.Length)
+                throw new ArgumentException("仅行走阻挡索引无效："+row.Id);
             var p=new ArcadeRoundLayoutParameters(row);
             var values=new[]{p.SpawnX,p.SpawnY,p.ExitX,p.ExitY,p.ExitSpacing,p.SpecialRatio,p.EnemyHealthScale,p.EnemySpeedScale,
                 p.SkillPeriod,p.SkillWarning,p.SkillMagnitude,p.EventPeriod,p.EventWarning,p.EventRadius,p.EventDamage,p.EventMoveSpeed};

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>真实紫级射线的墙面余程、连接上限和一次命中契约。</summary>
+    /// <summary>真实紫级射线的实体命中、连接上限和一次命中契约。</summary>
     public sealed class ArcadePurpleRayTests
     {
         private const BindingFlags Private=BindingFlags.Instance|BindingFlags.NonPublic;
@@ -31,20 +31,19 @@ namespace Game.Tests
         private ArcadeProjectileRuntime Shot(bool purple=true)
         {Pick("weapon.raygun");Pick(purple?"skull.large":"skull.small");Call("TryFire",runtime);return runtime.Projectiles.Values.Single();}
         private ArcadeEnemyRuntime Enemy(int id,float x,float z){var e=new ArcadeEnemyRuntime{Id=id,Position=new Vector2(x,z),Health=1000,MaxHealth=1000};runtime.Enemies[id]=e;return e;}
-        [Test] public void TwoReflectionsKeepUnusedDistanceAndThirdWallConsumesShot()
+        [Test] public void FirstSolidWallConsumesShotWithoutReflection()
         {
             Arena(new ArcadeObstacleDefinition(-3,0,.1f,12),new ArcadeObstacleDefinition(3,0,.1f,12));
-            var p=Shot();p.Position=Vector2.zero;p.Velocity=new Vector2(22,0);Call("TickProjectiles",runtime,.2f);
-            Assert.That(runtime.Projectiles.ContainsKey(p.Id),Is.True);Assert.That(p.Velocity.x,Is.LessThan(0));Assert.That(p.Position.x,Is.EqualTo(1.4f).Within(.01));
-            Call("TickProjectiles",runtime,.3f);Assert.That(p.Velocity.x,Is.GreaterThan(0));Assert.That(runtime.Projectiles.Count,Is.EqualTo(1));
-            Call("TickProjectiles",runtime,.3f);Assert.That(runtime.Projectiles,Is.Empty);
+            var p=Shot();p.Position=Vector2.zero;p.Velocity=new Vector2(22,0);p.RemainingReflections=2;
+            Call("TickProjectiles",runtime,.2f);
+            Assert.That(runtime.Projectiles,Is.Empty);
         }
-        [Test] public void CornerReflectsBothComponentsWithinOneStep()
+        [Test] public void SolidCornerConsumesShotWithoutReflection()
         {
             Arena(new ArcadeObstacleDefinition(3,3,1,1));
-            var p=Shot();p.Position=Vector2.zero;p.Velocity=new Vector2(10,10);Call("TickProjectiles",runtime,.3f);
-            Assert.That(runtime.Projectiles.Count,Is.EqualTo(1));Assert.That(p.Velocity.x,Is.LessThan(0));Assert.That(p.Velocity.y,Is.LessThan(0));
-            Assert.That(p.Position.x,Is.EqualTo(1).Within(.01));Assert.That(p.Position.y,Is.EqualTo(1).Within(.01));
+            var p=Shot();p.Position=Vector2.zero;p.Velocity=new Vector2(10,10);p.RemainingReflections=2;
+            Call("TickProjectiles",runtime,.3f);
+            Assert.That(runtime.Projectiles,Is.Empty);
         }
         [Test] public void FirstEnemyAndTwoOtherEnemiesAreDamagedOnceIncludingCloseNeighbours()
         {

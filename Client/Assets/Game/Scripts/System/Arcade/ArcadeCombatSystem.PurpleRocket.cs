@@ -30,10 +30,8 @@ namespace Game
                 p.Velocity=new Vector2(x,z);
             }
             var from=p.Position;var to=from+p.Velocity*active;float first=1;bool hit=false;int crateId=-1;
-            foreach(var wall in ObstaclesFor(r))
+            foreach(var wall in ProjectileObstaclesFor(r))
                 if(TryGetSegmentObstacleEntry(from,to,0,wall,out float entry)&&entry<=first){first=entry;hit=true;}
-            if(IslandFor(r)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(from.x,from.y,to.x,to.y,ArenaHalfWidth,ArenaHalfHeight,out float edge)&&edge<=first)
-            {first=edge;hit=true;}
             foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
                 if(enemy.Health>0&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(!hit||entry<first))
                 {first=entry;hit=true;crateId=-1;}

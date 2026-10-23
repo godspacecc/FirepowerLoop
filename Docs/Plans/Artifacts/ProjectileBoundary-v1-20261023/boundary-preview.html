@@ -1,0 +1,96 @@
+<div id="projectile-boundary-v1">
+  <div class="viz-row"><h3>全地图弹道边界 · 临时动态示意</h3><button class="btn btn-primary" type="button" id="boundary-play">播放对比</button></div>
+  <div class="text-small">普通弹、火箭和紫色射线均采用同一外框规则；保留各自射程与实体命中。</div>
+  <div id="boundary-panels"></div>
+  <div class="text-small" aria-live="polite" id="boundary-status">待播放 · 虚线为角色活动边界，候选中子弹可以越过。</div>
+</div>
+<style>
+#projectile-boundary-v1 { color:var(--foreground); }
+#projectile-boundary-v1 .viz-row { justify-content:space-between; padding-right:90px; }
+#projectile-boundary-v1 h3 { margin:0; }
+#projectile-boundary-v1 .boundary-panel { margin-top:18px; }
+#projectile-boundary-v1 .boundary-heading { font-weight:500; margin-bottom:4px; }
+#projectile-boundary-v1 .boundary-field { display:block; width:100%; height:194px; overflow:visible; }
+#projectile-boundary-v1 .boundary-field text { fill:var(--foreground); }
+#projectile-boundary-v1 .lane { stroke:var(--border); stroke-width:1; }
+#projectile-boundary-v1 .edge { stroke:var(--muted-foreground); stroke-width:1.5; stroke-dasharray:5 5; }
+#projectile-boundary-v1 .shot { fill:var(--viz-series-1); }
+#projectile-boundary-v1 .blast { fill:none; stroke:var(--viz-series-1); stroke-width:2; }
+#projectile-boundary-v1 .wall { fill:var(--muted); stroke:var(--muted-foreground); }
+#projectile-boundary-v1 .land { fill:var(--muted); opacity:.3; }
+@media(max-width:500px) { #projectile-boundary-v1 .viz-row { padding-right:0; align-items:flex-start; } }
+</style>
+<script>
+(() => {
+  const root=document.getElementById('projectile-boundary-v1');
+  const panels=root.querySelector('#boundary-panels');
+  const button=root.querySelector('#boundary-play');
+  const status=root.querySelector('#boundary-status');
+  const NS='http://www.w3.org/2000/svg';
+  let widths=[], scenes=[], active=false, started=0, animation=0;
+  const labels=['普通／敌弹','火箭','紫色射线','实体墙命中'];
+  function make(tag,attrs={},text='') {
+    const node=document.createElementNS(NS,tag);
+    Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,String(value)));
+    if(text)node.textContent=text;
+    return node;
+  }
+  for(let proposed=0;proposed<2;proposed++) {
+    const panel=document.createElement('div');panel.className='boundary-panel';
+    const heading=document.createElement('div');heading.className='boundary-heading';
+    heading.textContent=proposed?'拟修正：越过空旷边缘，按寿命回收':'当前问题：外框消失 / 爆炸 / 反弹';
+    panel.append(heading);
+    const svg=make('svg',{class:'boundary-field',role:'img','aria-label':proposed?'候选规则，所有弹种越过地图边界，实体墙仍阻挡':'当前规则，普通弹越界消失，火箭边缘爆炸，紫色射线边缘反弹'});
+    panel.append(svg);panels.append(panel);scenes.push({svg,proposed,marks:[],blasts:[]});
+  }
+  function draw() {
+    scenes.forEach(scene=>{
+      const w=Math.max(280,Math.floor(scene.svg.getBoundingClientRect().width));
+      const start=w<440?102:140, end=w-12, edge=start+(end-start)*.48;
+      scene.start=start;scene.end=end;scene.edge=edge;scene.svg.setAttribute('viewBox',`0 0 ${w} 194`);
+      scene.svg.replaceChildren();scene.marks=[];scene.blasts=[];
+      scene.svg.append(make('rect',{x:start-8,y:24,width:edge-start+8,height:162,class:'land'}));
+      scene.svg.append(make('line',{x1:edge,y1:22,x2:edge,y2:186,class:'edge'}));
+      scene.svg.append(make('text',{x:edge,y:15,'text-anchor':'middle'},'活动边界'));
+      for(let lane=0;lane<4;lane++) {
+        const y=42+lane*43;
+        scene.svg.append(make('text',{x:0,y:y+5},labels[lane]));
+        scene.svg.append(make('line',{x1:start,y1:y,x2:end,y2:y,class:'lane'}));
+        if(lane===3)scene.svg.append(make('rect',{x:edge-6,y:y-13,width:12,height:26,class:'wall'}));
+        const mark=make('rect',{x:start-11,y:y-3,width:11,height:6,rx:3,class:'shot'});
+        const blast=make('circle',{cx:edge,cy:y,r:0,class:'blast'});
+        scene.svg.append(mark,blast);scene.marks.push(mark);scene.blasts.push(blast);
+      }
+    });
+    update(0);
+  }
+  function sample(proposed,lane,progress) {
+    const edge=.48;
+    if(lane===3)return {x:Math.min(progress,edge-.025),visible:progress<edge-.025,blast:progress>=edge-.025&&progress<edge+.13};
+    if(proposed)return {x:progress,visible:progress<.98,blast:false};
+    if(lane===0)return {x:Math.min(progress,edge),visible:progress<edge,blast:false};
+    if(lane===1)return {x:Math.min(progress,edge),visible:progress<edge,blast:progress>=edge&&progress<edge+.18};
+    return {x:progress<=edge?progress:Math.max(0,2*edge-progress),visible:progress<.98,blast:false};
+  }
+  function update(progress) {
+    scenes.forEach(scene=>scene.marks.forEach((mark,lane)=>{
+      const point=sample(scene.proposed,lane,progress);
+      mark.setAttribute('x',scene.start+(scene.end-scene.start)*point.x-11);
+      mark.setAttribute('opacity',point.visible?1:0);
+      scene.blasts[lane].setAttribute('r',point.blast?9:0);
+    }));
+  }
+  function frame(now) {
+    const progress=Math.min(1,(now-started)/3000);update(progress);
+    if(progress<1)animation=requestAnimationFrame(frame);
+    else {active=false;button.disabled=false;button.textContent='重播对比';status.textContent='候选：空旷边界不再触发消失、爆炸或反弹；实体墙保持命中。';}
+  }
+  button.addEventListener('click',()=>{
+    cancelAnimationFrame(animation);button.disabled=true;button.textContent='播放中';active=true;
+    status.textContent='播放中 · 所有关卡、全部弹种、单人和联机统一适用。';
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){update(.78);active=false;button.disabled=false;button.textContent='重播对比';status.textContent='已显示越界后的对比位置（遵循减少动态偏好）。';return;}
+    started=performance.now();animation=requestAnimationFrame(frame);
+  });
+  const observer=new ResizeObserver(()=>{if(!active)draw();});observer.observe(panels);draw();
+})();
+</script>

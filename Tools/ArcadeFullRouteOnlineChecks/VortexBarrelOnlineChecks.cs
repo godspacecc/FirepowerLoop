@@ -69,6 +69,8 @@ internal static class VortexBarrelOnlineChecks
     private static void ControlledCarrierUsesActiveLifetimeFromBirth()
     {
         var actor=Create();var b=actor.Battle;b.ContentClock.Advance(20,false);
+        // 推进真实轮时钟前，模拟双方已完成当前地图加载确认。
+        foreach(var player in b.Players.Values)player.ReadyRoundGeneration=b.RoundGeneration;
         var enemy=new OnlineArcadeEnemyRuntime{RuntimeId=7,CurrentHealth=100,MaxHealth=100,ContentStunUntil=100};
         Call("InitializeEnemyContent",b,enemy);enemy.SpecialKind=1;b.Enemies.Add(7,enemy);
         Call("TickRoundContent",actor,b,.1f);Require(enemy.SpecialKind==1,"Late spawn inherited arena age");

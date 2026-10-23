@@ -3,7 +3,7 @@ using ET;
 using ET.Server;
 using FirepowerLoop.Arcade;
 
-/// <summary>双人权威弹道的定向回归：海岛越界继续飞行，其他场地保留边界。</summary>
+/// <summary>双人权威弹道的定向回归：海岛、其他场地与挑战越界均继续飞到寿命结束。</summary>
 internal static class IslandProjectileBoundaryOnlineChecks
 {
     public static int Run(int maximum)
@@ -50,11 +50,6 @@ internal static class IslandProjectileBoundaryOnlineChecks
             SourceWeaponId = weapon.Id, FromPlayerWeapon = true
         });
         Tick(actor, .3f);
-        if (index >= 4)
-        {
-            Require(!battle.Projectiles.ContainsKey(901), "Non-island projectile crossed arena boundary");
-            return;
-        }
         Require(battle.Projectiles.TryGetValue(901, out var projectile), "Island projectile removed at old boundary before its lifetime");
         Require(MathF.Max(MathF.Abs(projectile!.PositionX), MathF.Abs(projectile.PositionZ)) > 19.5f, "Fixture did not cross arena boundary");
         Tick(actor, weapon.ProjectileLifetimeSeconds - .4f);

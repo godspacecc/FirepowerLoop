@@ -477,6 +477,8 @@
         <var name="WeaponSpawnFirstDelayMax" type="float"/>
         <!-- 海岛分段入场的活动秒数；不是方向预警时间。 -->
         <var name="EntrySegmentSeconds" type="float"/>
+        <!-- 仅限制人物行走的阻挡索引，弹丸可穿过；索引从零开始。 -->
+        <var name="MovementOnlyObstacleIndices" type="(array#sep=;),int"/>
     </bean>
     <!-- 新商店使用独立商品合同，旧逐场商店和局外钱包不恢复。 -->
     <bean name="ArcadeSlayerMartItemConfig">

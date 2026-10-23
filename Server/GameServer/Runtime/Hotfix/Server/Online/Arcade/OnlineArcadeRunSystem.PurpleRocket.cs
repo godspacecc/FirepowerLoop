@@ -25,10 +25,8 @@ namespace ET.Server
             if(target!=null)ArcadeRoundContentRules.SteerTowards(p.VelocityX,p.VelocityZ,target.PositionX-p.PositionX,target.PositionZ-p.PositionZ,
                 tuning.PurpleRocketTurnRadians,active,out p.VelocityX,out p.VelocityZ);
             float ax=p.PositionX,az=p.PositionZ,bx=ax+p.VelocityX*active,bz=az+p.VelocityZ*active,first=1;bool hit=false;int crateId=-1;
-            foreach(var wall in EffectiveObstacles(b))
+            foreach(var wall in ProjectileObstaclesFor(b))
                 if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first){first=entry;hit=true;}
-            if(IslandFor(b)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(ax,az,bx,bz,ArenaHalfWidth(b),ArenaHalfHeight(b),out float edge)&&edge<=first)
-            {first=edge;hit=true;}
             foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
                 if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(!hit||entry<first))
                 {first=entry;hit=true;crateId=-1;}

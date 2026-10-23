@@ -75,7 +75,7 @@ namespace ET.Server
             }
             if(selected<0)return false;
             float blockerEntry=nearest;bool blocked=false;
-            foreach(var obstacle in EffectiveObstacles(b))
+            foreach(var obstacle in ProjectileObstaclesFor(b))
                 if(TryGetSegmentObstacleEntry(ax,ay,bx,by,0,obstacle,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var enemy in b.Enemies.Values)
@@ -107,12 +107,11 @@ namespace ET.Server
             AddContentZone(b,ArcadeRoundContentRules.BarrelExplosionKind,center.X,center.Y,center.X,center.Y,p.EventRadius,0,p.SkillWarning,0,false,false);
             return true;
         }
-        /// <summary>玩家武器长帧也截在首面墙，不能本帧越墙后下一帧从墙后射桶。</summary>
-        private static bool ClipPlayerShotToWall(OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime shot,float ax,float ay)
+        /// <summary>所有弹丸长帧也截在首面实体墙，不能本帧越墙后下一帧从墙后射桶。</summary>
+        private static bool ClipShotToWall(OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime shot,float ax,float ay)
         {
-            if(!shot.FromPlayerWeapon||shot.OwnerPlayerId<=0)return false;
             float first=float.MaxValue;
-            foreach(var wall in EffectiveObstacles(b))
+            foreach(var wall in ProjectileObstaclesFor(b))
                 if(TryGetSegmentObstacleEntry(ax,ay,shot.PositionX,shot.PositionZ,0,wall,out float entry)&&entry<first)first=entry;
             if(first==float.MaxValue)return false;
             shot.PositionX=ax+(shot.PositionX-ax)*first;shot.PositionZ=ay+(shot.PositionZ-ay)*first;return true;

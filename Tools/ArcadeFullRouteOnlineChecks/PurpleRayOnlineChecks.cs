@@ -6,7 +6,7 @@ internal static class PurpleRayOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var checks=new (string,Action)[]{("TwoReflectionsAndThirdWall",Reflections),("FirstPlusTwoOnce",Chain),("FourMetreRange",Range),("LifetimeAndPause",Lifetime),("RedWall",RedWall),("FinalLifetimeBarrel",FinalLifetimeBarrel),("ArcSnapshotAndExpiry",ArcSnapshotAndExpiry)};
+        var checks=new (string,Action)[]{("FirstSolidWallConsumes",SolidWall),("FirstPlusTwoOnce",Chain),("FourMetreRange",Range),("LifetimeAndPause",Lifetime),("RedWall",RedWall),("FinalLifetimeBarrel",FinalLifetimeBarrel),("ArcSnapshotAndExpiry",ArcSnapshotAndExpiry)};
         if(maximum<checks.Length)throw new ArgumentException("PurpleRayOnline maximum too small");int failed=0;
         foreach(var(name,test) in checks)try{test();Console.WriteLine("PASS PurpleRayOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL PurpleRayOnline."+name+": "+(e.InnerException??e).Message);}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -31,12 +31,11 @@ internal static class PurpleRayOnlineChecks
 
     private static OnlineArcadeRunActor Ready(bool purple=true){var a=Create();Apply(a,"weapon.raygun");Apply(a,purple?"skull.large":"skull.small");return a;}
     private static OnlineArcadeEnemyRuntime Enemy(OnlineArcadeRunActor a,long id,float x,float z){var e=new OnlineArcadeEnemyRuntime{RuntimeId=id,PositionX=x,PositionZ=z,CurrentHealth=1000,MaxHealth=1000};a.Battle.Enemies[id]=e;a.Battle.EnemyIterationIds.Add(id);return e;}
-    private static void Reflections()
+    private static void SolidWall()
     {
-        var a=Ready();a.Battle.ArenaConfigNumber=2;a.Battle.RoundLayout=null;var p=Shot(a);p.PositionX=18;p.PositionZ=10;p.VelocityX=22;p.VelocityZ=0;p.RemainingSeconds=20;
-        Call("TickProjectiles",a,a.Battle,.2f);Require(a.Battle.Projectiles.Count==1&&p.VelocityX<0&&Math.Abs(p.PositionX-16.6f)<.01f,"first reflection or remaining distance lost");
-        Call("TickProjectiles",a,a.Battle,1.7f);Require(a.Battle.Projectiles.Count==1&&p.VelocityX>0,"second reflection lost");
-        Call("TickProjectiles",a,a.Battle,1.8f);Require(a.Battle.Projectiles.Count==0,"third wall should consume");
+        var a=Ready();a.Battle.ArenaConfigNumber=21;a.Battle.RoundLayout=OnlineArcadeRunActorSystem.ResolveRoundLayout(21,1);
+        var p=Shot(a);p.PositionX=-6.75f;p.PositionZ=7;p.VelocityX=0;p.VelocityZ=10;p.RemainingReflections=2;
+        Call("TickProjectiles",a,a.Battle,.3f);Require(a.Battle.Projectiles.Count==0,"solid cargo must consume purple ray without reflection");
     }
     private static void Chain(){var a=Ready();var first=Enemy(a,9,0,4);var second=Enemy(a,10,.5f,4);var third=Enemy(a,11,-.5f,4);var extra=Enemy(a,12,2,4);int d=Shot(a).Damage;Call("TickProjectiles",a,a.Battle,.5f);Require(first.CurrentHealth==1000-d&&second.CurrentHealth==1000-d&&third.CurrentHealth==1000-d&&extra.CurrentHealth==1000,"first+two distinct damage wrong");Require(first.LastDamagePlayerId==1&&third.LastDamagePlayerId==1,"owner attribution lost");Call("TickProjectiles",a,a.Battle,.5f);Require(first.CurrentHealth==1000-d,"duplicate chain");}
     private static void Range(){var a=Ready();Enemy(a,9,0,4);var edge=Enemy(a,10,4,4);var outside=Enemy(a,11,-4.01f,4);int d=Shot(a).Damage;Call("TickProjectiles",a,a.Battle,.5f);Require(edge.CurrentHealth==1000-d&&outside.CurrentHealth==1000,"four metre boundary wrong");}

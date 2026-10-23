@@ -652,14 +652,17 @@ namespace Game
 
     public readonly struct ArcadeObstacleDefinition
     {
-        public ArcadeObstacleDefinition(float centerX, float centerY, float halfWidth, float halfHeight)
+        public ArcadeObstacleDefinition(float centerX, float centerY, float halfWidth, float halfHeight, bool blocksProjectiles = true)
         {
+            BlocksProjectiles = blocksProjectiles;
             Center = new Vector2(centerX, centerY);
             HalfExtents = new Vector2(halfWidth, halfHeight);
         }
 
         /// <summary>以竞技场中心为原点的局部坐标。</summary>
         public Vector2 Center { get; }
+        /// <summary>水面等仅行走阻挡为 false，实体障碍默认阻挡弹丸。</summary>
+        public bool BlocksProjectiles { get; }
         /// <summary>轴对齐矩形的半宽与半高，单位为米。</summary>
         public Vector2 HalfExtents { get; }
     }

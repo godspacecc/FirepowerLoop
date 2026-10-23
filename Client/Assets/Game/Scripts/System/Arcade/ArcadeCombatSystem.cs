@@ -988,20 +988,14 @@ namespace Game
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
-                var hitObstacle = IsInsideObstacle(projectile.Position, 0f, ObstaclesFor(runtime));
-                if (UsesRoundLayouts(runtime))
-                {
-                    float firstHit = 1f;
-                    foreach (var obstacle in ObstaclesFor(runtime))
-                        if (TryGetSegmentObstacleEntry(priorPosition, projectile.Position, 0, obstacle, out var entry) && entry <= firstHit)
-                        { firstHit = entry; hitObstacle = true; }
-                    if (hitObstacle) projectile.Position = Vector2.Lerp(priorPosition, projectile.Position, firstHit);
-                }
-                // 海岛外围是连续海面，行走边界不裁断弹道；深海中的弹丸仍由武器寿命和真实命中回收。
-                var outsideArena = IslandFor(runtime) == null &&
-                                   (Mathf.Abs(projectile.Position.x) > ArenaHalfWidth ||
-                                    Mathf.Abs(projectile.Position.y) > ArenaHalfHeight);
-                var remove = expired || outsideArena || hitObstacle;
+                var hitObstacle = IsInsideObstacle(projectile.Position, 0f, ProjectileObstaclesFor(runtime));
+                float firstHit = 1f;
+                foreach (var obstacle in ProjectileObstaclesFor(runtime))
+                    if (TryGetSegmentObstacleEntry(priorPosition, projectile.Position, 0, obstacle, out var entry) && entry <= firstHit)
+                    { firstHit = entry; hitObstacle = true; }
+                if (hitObstacle) projectile.Position = Vector2.Lerp(priorPosition, projectile.Position, firstHit);
+                // 所有地图的行走边界都不裁断弹道；仅实体命中或寿命到期回收。
+                var remove = expired || hitObstacle;
                 // 只补已确认的普通三枪墙面接触，不把过期、敌弹或爆炸弹移除误当成命中。
                 if (!expired && !projectile.Hostile && hitObstacle &&
                     (projectile.SourceWeaponId == "arcade.weapon.basic" ||

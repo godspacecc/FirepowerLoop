@@ -72,11 +72,11 @@ namespace Game.Tests
             Assert.That(runtime.Projectiles.ContainsKey(901), Is.False, "寿命耗尽仍须正常回收");
         }
 
-        /// <summary>深海放行只属于海岛；宝藏房、挑战及其他主题保留真实场地边界。</summary>
+        /// <summary>宝藏房、挑战及其他主题同样放行空旷边缘，按寿命回收。</summary>
         [TestCase("treasure")]
         [TestCase("challenge")]
         [TestCase("other-arena")]
-        public void NonIslandShot_StillStopsAtArenaEdge(string sceneKind)
+        public void NonIslandShot_CrossesArenaEdgeAndExpiresAtLifetime(string sceneKind)
         {
             runtime.InTreasureRoom = sceneKind == "treasure";
             runtime.IsChallenge = sceneKind == "challenge";
@@ -88,6 +88,8 @@ namespace Game.Tests
                 Velocity = Vector2.right * 16, RemainingSeconds = 1.6f, RemainingHits = 1
             });
             Call("TickProjectiles", runtime, .1f);
+            Assert.That(runtime.Projectiles.ContainsKey(901), Is.True);
+            Call("TickProjectiles", runtime, 1.51f);
             Assert.That(runtime.Projectiles.ContainsKey(901), Is.False);
         }
 

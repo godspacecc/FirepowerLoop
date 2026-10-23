@@ -15,44 +15,33 @@ namespace ET.Server
             return true;
         }
 
-        /// <summary>紫级玩家射线逐段扫掠，两次反射保留余程，寿命耗尽不制造命中。</summary>
+        /// <summary>紫级射线只扫掠最近实体命中；空旷外缘不截断，实体命中不反弹。</summary>
         private static bool TickPurpleRay(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime p,float seconds)
         {
             if(p.OwnerPlayerId<=0||!p.FromPlayerWeapon||p.SourceWeaponId!="arcade.weapon.raygun"||p.WeaponPowerLevel<2)return false;
             if(!float.IsFinite(seconds)||seconds<=0)return true;
-            float active=Math.Min(seconds,Math.Max(0,p.RemainingSeconds)),remaining=active;
-            if(remaining<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
-            var rule=ServerConfig.Instance.ArcadeRule;var tuning=ServerConfig.Instance.WeaponUpgrade;
-            for(int step=0;step<=tuning.PurpleRayReflections&&remaining>0;step++)
-            {
-                float ax=p.PositionX,az=p.PositionZ,bx=ax+p.VelocityX*remaining,bz=az+p.VelocityZ*remaining,first=1;
-                int kind=0,crateId=-1;OnlineArcadeEnemyRuntime target=null;
-                float cx=0,cz=0,hx=ArenaHalfWidth(b),hz=ArenaHalfHeight(b);
-                foreach(var wall in EffectiveObstacles(b))
-                    if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first)
-                    {first=entry;kind=1;cx=wall.CenterX;cz=wall.CenterY;hx=wall.HalfWidth;hz=wall.HalfHeight;}
-                if(IslandFor(b)==null&&ArcadeWeaponUpgradeRules.TryArenaExit(ax,az,bx,bz,ArenaHalfWidth(b),ArenaHalfHeight(b),out float edge)&&edge<=first)
-                {first=edge;kind=1;cx=cz=0;hx=ArenaHalfWidth(b);hz=ArenaHalfHeight(b);}
-                foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
-                    if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
-                    {first=entry;kind=2;target=enemy;}
-                foreach(var crate in b.Crates.Values.OrderBy(c=>c.Definition.Id))
-                    if(crate.Health>0&&GroundCircleEntry(ax,az,bx,bz,crate.Definition.X,crate.Definition.Y,crate.Definition.Radius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
-                    {first=entry;kind=3;crateId=crate.Definition.Id;}
-                float x=ax+(bx-ax)*first,z=az+(bz-az)*first;p.PositionX=x;p.PositionZ=z;
-                if(actor.TryHitGroundBarrel(b,p,ax,az,x,z))
-                {actor.DamageEnemiesInProjectileExplosion(b,p);b.Projectiles.Remove(p.RuntimeId);return true;}
-                p.PositionX=x;p.PositionZ=z;
-                if(kind==2){actor.HitPurpleRay(b,p,target);b.Projectiles.Remove(p.RuntimeId);return true;}
-                if(kind==3){actor.DamageCrate(b,crateId,p.Damage);actor.DamageEnemiesInProjectileExplosion(b,p);b.Projectiles.Remove(p.RuntimeId);return true;}
-                if(kind==0)break;
-                if(p.RemainingReflections<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
-                p.RemainingReflections--;
-                ArcadeWeaponUpgradeRules.Reflect(x,z,cx,cz,hx,hz,ref p.VelocityX,ref p.VelocityZ);
-                float speed=MathF.Sqrt(p.VelocityX*p.VelocityX+p.VelocityZ*p.VelocityZ);
-                if(speed>0){p.PositionX+=p.VelocityX/speed*.001f;p.PositionZ+=p.VelocityZ/speed*.001f;}
-                remaining*=1-first;
-            }
+            float active=Math.Min(seconds,Math.Max(0,p.RemainingSeconds));
+            if(active<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
+            var rule=ServerConfig.Instance.ArcadeRule;
+            float ax=p.PositionX,az=p.PositionZ,bx=ax+p.VelocityX*active,bz=az+p.VelocityZ*active,first=1;
+            int kind=0,crateId=-1;OnlineArcadeEnemyRuntime target=null;
+            foreach(var wall in ProjectileObstaclesFor(b))
+                if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first)
+                {first=entry;kind=1;}
+            foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
+                if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
+                {first=entry;kind=2;target=enemy;}
+            foreach(var crate in b.Crates.Values.OrderBy(c=>c.Definition.Id))
+                if(crate.Health>0&&GroundCircleEntry(ax,az,bx,bz,crate.Definition.X,crate.Definition.Y,crate.Definition.Radius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
+                {first=entry;kind=3;crateId=crate.Definition.Id;}
+            float x=ax+(bx-ax)*first,z=az+(bz-az)*first;p.PositionX=x;p.PositionZ=z;
+            if(actor.TryHitGroundBarrel(b,p,ax,az,x,z))
+            {actor.DamageEnemiesInProjectileExplosion(b,p);b.Projectiles.Remove(p.RuntimeId);return true;}
+            p.PositionX=x;p.PositionZ=z;
+            if(kind==2){actor.HitPurpleRay(b,p,target);b.Projectiles.Remove(p.RuntimeId);return true;}
+            if(kind==3){actor.DamageCrate(b,crateId,p.Damage);actor.DamageEnemiesInProjectileExplosion(b,p);b.Projectiles.Remove(p.RuntimeId);return true;}
+            if(kind==1){b.Projectiles.Remove(p.RuntimeId);return true;}
+
             p.RemainingSeconds=Math.Max(0,p.RemainingSeconds-active);
             if(p.RemainingSeconds<=0)b.Projectiles.Remove(p.RuntimeId);
             return true;
