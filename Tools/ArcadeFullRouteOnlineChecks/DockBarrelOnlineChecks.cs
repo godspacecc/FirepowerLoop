@@ -27,7 +27,7 @@ internal static class DockBarrelOnlineChecks
     private static void FourRoundsSpawnCarriers()
     {
         for(int round=1;round<=4;round++)
-        {var b=Spawn(round).Battle;int count=b.Enemies.Values.Count(e=>e.SpecialKind==1);Require(count>0&&count<b.Enemies.Count,"第"+round+"轮载桶缺失或替换了全部普通敌人");}
+        {var b=Spawn(round).Battle;int count=b.Enemies.Values.Count(e=>e.SpecialKind==1);Require(count*2==b.Enemies.Count,"第"+round+"轮载桶必须占实际出生预算的50%");}
     }
     private static void NaturalCarriersDropAndSerializeOnce()
     {

@@ -44,7 +44,7 @@ namespace Game.Tests
             for(int wave=0;wave<4;wave++)
             {
                 int budget=SpawnRound(wave),count=runtime.Enemies.Values.Count(e=>e.ContentSpecialKind==1);
-                Assert.That(count,Is.GreaterThan(0).And.LessThan(budget),"码头第"+(wave+1)+"轮缺少自然出生载桶敌人");
+                Assert.That(count*2,Is.EqualTo(budget),"码头第"+(wave+1)+"轮载桶敌人必须占实际出生预算的50%");
             }
         }
         [Test] public void NaturallySpawnedCarriersReleaseOnceAfterActiveLifetime()
