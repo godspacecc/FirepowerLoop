@@ -23,11 +23,13 @@ namespace Game.Tests
         private void Hit(){Call("TickRoundContent",runtime,8f);Call("TickRoundContent",runtime,2f);}
         [Test] public void PlayerFliesThreeMetersThenHoldsGroundedForHalfSecond()
         {
-            Hit();Assert.That(Remaining(runtime),Is.EqualTo(1.7f).Within(.001));float start=runtime.PlayerPosition.x;
-            Call("TickHerdImpacts",runtime,.475f);Assert.That(runtime.PlayerPosition.x,Is.EqualTo(start+1.5f).Within(.001));
-            Call("TickHerdImpacts",runtime,.475f);Assert.That(runtime.PlayerPosition.x,Is.EqualTo(start+3).Within(.001));
+            Hit();Assert.That(Remaining(runtime),Is.EqualTo(1.7f).Within(.001));var start=runtime.PlayerPosition;
+            Call("TickHerdImpacts",runtime,.475f);Assert.That(Vector2.Distance(runtime.PlayerPosition,start),Is.EqualTo(1.5f).Within(.001));
+            Call("TickHerdImpacts",runtime,.475f);Assert.That(Vector2.Distance(runtime.PlayerPosition,start),Is.EqualTo(3).Within(.001));
+            var landed=runtime.PlayerPosition;Assert.That(landed.x-start.x,Is.EqualTo(1.2f).Within(.001));
+            Assert.That(Mathf.Abs(landed.y-start.y),Is.EqualTo(Mathf.Sqrt(.84f)*3).Within(.001));
             Call("TickHerdImpacts",runtime,.49f);Assert.That(Remaining(runtime),Is.GreaterThan(.25f));
-            Assert.That(runtime.PlayerPosition.x,Is.EqualTo(start+3).Within(.001));
+            Assert.That(runtime.PlayerPosition,Is.EqualTo(landed));
             Call("TickHerdImpacts",runtime,.26f);Assert.That(Remaining(runtime),Is.Zero.Within(.001));
         }
         [Test] public void ImpactBlocksWalkingShootingBombAndDashUntilRecovery()

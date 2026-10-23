@@ -34,6 +34,21 @@ namespace Game
             for(int i=0;i<steps;i++)position=ResolvePosition(position+delta/steps,radius,ArenaHalfWidth,ArenaHalfHeight,ObstaclesFor(r),IslandFor(r));
             return position;
         }
+        /// <summary>用真实短步阻挡预估两侧落点，选离开牛道的一边；只锁定方向，不瞬移或追加保护。</summary>
+        private bool BeginPlayerHerdImpact(ArcadeCombatRuntime r,ArcadeHerdState cow)
+        {
+            if(r.HerdImpact.Active)return false;
+            ArcadeHerdImpactRules.PlayerDirection(cow.DirectionX,cow.DirectionZ,1,out float px,out float pz);
+            ArcadeHerdImpactRules.PlayerDirection(cow.DirectionX,cow.DirectionZ,-1,out float nx,out float nz);
+            var positive=new Vector2(px,pz);var negative=new Vector2(nx,nz);
+            var positiveEnd=MoveHerdTarget(r,r.PlayerPosition,positive*ArcadeHerdImpactRules.Distance,catalog.Rule.PlayerRadius);
+            var negativeEnd=MoveHerdTarget(r,r.PlayerPosition,negative*ArcadeHerdImpactRules.Distance,catalog.Rule.PlayerRadius);
+            var lateral=new Vector2(-cow.DirectionZ,cow.DirectionX);var origin=new Vector2(cow.X,cow.Z);
+            int side=ArcadeHerdImpactRules.PlayerSide(Mathf.Abs(Vector2.Dot(positiveEnd-origin,lateral)),
+                Mathf.Abs(Vector2.Dot(negativeEnd-origin,lateral)),-Vector2.Dot(r.PlayerPosition,lateral));
+            var direction=side>0?positive:negative;
+            return ArcadeHerdImpactRules.Begin(ref r.HerdImpact,direction.x,direction.y);
+        }
         /// <summary>活动循环生成固定通路的一排牛；不追踪玩家、不显示方向提示。</summary>
         private void TickHerd(ArcadeCombatRuntime r,float dt)
         {
@@ -55,7 +70,7 @@ namespace Game
                 {
                     int before=r.PlayerHealth;
                     DamageContentPlayer(r,ArcadeRoundContentRules.Damage(r.PlayerMaxHealth,stage.HerdPlayerDamage));
-                    if(r.PlayerHealth>0&&r.PlayerHealth<before&&ArcadeHerdImpactRules.Begin(ref r.HerdImpact,cow.DirectionX,cow.DirectionZ))
+                    if(r.PlayerHealth>0&&r.PlayerHealth<before&&BeginPlayerHerdImpact(r,cow))
                     {r.Firing=false;r.DashRemaining=0;}
                 }
                 if(this.GetModel<ArcadeCombatModel>().Runtime!=r||catalog==null||!RoundContentActive(r))return;

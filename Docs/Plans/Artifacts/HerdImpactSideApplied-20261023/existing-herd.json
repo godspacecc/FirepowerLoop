@@ -1,0 +1,62 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 10,
+    "PassedTests": 10,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:10.2440339"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.ChargeMovesOnlyTenPercentFasterThanBasePlayer",
+      "Status": "Passed",
+      "Duration": "00:00:01.2170000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.ClearFreezesCowsAndNewMapInvalidatesPreviousCharge",
+      "Status": "Passed",
+      "Duration": "00:00:00.8800000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.ExistingProtectionBlocksCowDamage(1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8180000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.ExistingProtectionBlocksCowDamage(2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8510000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.ExistingProtectionBlocksCowDamage(3)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8830000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.FirstBatchIsSingleFileAndWindupDoesNotHurt",
+      "Status": "Passed",
+      "Duration": "00:00:01.1200000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.LethalLeadCowDoesNotSplitSingleFile",
+      "Status": "Passed",
+      "Duration": "00:00:00.8820000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.RestoredGroundIdentityStillInitializesFreshHerdGeneration",
+      "Status": "Passed",
+      "Duration": "00:00:00.7920000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.SweptChargeHurtsPlayerAndKillsEnemyOnlyOnce",
+      "Status": "Passed",
+      "Duration": "00:00:00.8960000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdIntegrationTests.TailClearsMapBeforeNextOppositeDirectionBatch",
+      "Status": "Passed",
+      "Duration": "00:00:00.8510000"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 4,
+    "PassedTests": 4,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:02.7676065"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeHerdNetworkTests.ImpactCopiesCurrentPhaseForPlayersAndEnemiesAndStopsPrediction",
+      "Status": "Passed",
+      "Duration": "00:00:00.1030000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdNetworkTests.PresentationUsesAuthorityRoomIdentity(21,null,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7920000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdNetworkTests.PresentationUsesAuthorityRoomIdentity(3,\"123:4:arcade.armory.second\",True)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8360000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdNetworkTests.ProtocolToPresentationCopiesHerdPose",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    }
+  ]
+}

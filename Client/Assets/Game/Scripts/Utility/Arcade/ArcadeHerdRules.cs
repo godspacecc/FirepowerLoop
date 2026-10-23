@@ -10,7 +10,7 @@ namespace FirepowerLoop.Arcade
         public float Remaining, DirectionX, DirectionZ;
         public bool Active => Remaining > 0;
     }
-    /// <summary>已采用v2的固定动作时间轴；水平位移由战斗权威裁决，View只采样高度和倾斜。</summary>
+    /// <summary>v2动作时间轴及v3玩家侧飞；水平位移由战斗权威裁决，View只采样高度和倾斜。</summary>
     public static class ArcadeHerdImpactRules
     {
         /// <summary>飞行、落地停顿与起身阶段使用统一活动时间。</summary>
@@ -24,6 +24,16 @@ namespace FirepowerLoop.Arcade
             float length=(float)Math.Sqrt(dx*dx+dz*dz);if(length<.001f||float.IsInfinity(length))return false;
             state=new ArcadeHerdImpactState{Remaining=TotalSeconds,DirectionX=dx/length,DirectionZ=dz/length};return true;
         }
+        /// <summary>已采用的侧飞角度：三米行程分为前移1.2米、侧移约2.75米，敌人仍用原方向。</summary>
+        public static void PlayerDirection(float dx,float dz,int side,out float x,out float z)
+        {
+            float lateral=(float)Math.Sqrt(.84f)*(side>=0?1:-1);
+            x=.4f*dx-lateral*dz;z=.4f*dz+lateral*dx;
+        }
+        /// <summary>比较经过地图阻挡后的落点距牛道距离；两侧相同时朝场内，避免中心接触随机甩出场外。</summary>
+        public static int PlayerSide(float positiveClearance,float negativeClearance,float towardCenter)
+            => Math.Abs(positiveClearance-negativeClearance)>.01f
+                ? (positiveClearance>negativeClearance?1:-1) : (towardCenter>=0?1:-1);
         /// <summary>只返回本活动步的水平路程；落地后的0.5秒不再滑动，暂停不消耗状态。</summary>
         public static float Step(ref ArcadeHerdImpactState state,float seconds)
         {

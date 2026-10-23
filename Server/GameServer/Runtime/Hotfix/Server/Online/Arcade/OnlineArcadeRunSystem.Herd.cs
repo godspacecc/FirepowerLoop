@@ -5,6 +5,22 @@ namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
+        /// <summary>双人各自用真实地图阻挡比较两侧落点，中心接触优先场内，不改敌人的原直线击飞。</summary>
+        private static bool BeginPlayerHerdImpact(OnlineArcadeBattleRuntime b,OnlineArcadeBattlePlayerRuntime p,ArcadeHerdState cow)
+        {
+            if(p.HerdImpact.Active)return false;
+            ArcadeHerdImpactRules.PlayerDirection(cow.DirectionX,cow.DirectionZ,1,out float px,out float pz);
+            ArcadeHerdImpactRules.PlayerDirection(cow.DirectionX,cow.DirectionZ,-1,out float nx,out float nz);
+            float positiveX=p.PositionX+px*ArcadeHerdImpactRules.Distance,positiveZ=p.PositionZ+pz*ArcadeHerdImpactRules.Distance;
+            float negativeX=p.PositionX+nx*ArcadeHerdImpactRules.Distance,negativeZ=p.PositionZ+nz*ArcadeHerdImpactRules.Distance;
+            var obstacles=EffectiveObstacles(b);var island=IslandFor(b);float radius=ServerConfig.Instance.ArcadeRule.PlayerRadius;
+            ResolveBattlePosition(b,ref positiveX,ref positiveZ,p.PositionX,p.PositionZ,radius,obstacles,island);
+            ResolveBattlePosition(b,ref negativeX,ref negativeZ,p.PositionX,p.PositionZ,radius,obstacles,island);
+            float positiveClearance=Math.Abs((positiveX-cow.X)*-cow.DirectionZ+(positiveZ-cow.Z)*cow.DirectionX);
+            float negativeClearance=Math.Abs((negativeX-cow.X)*-cow.DirectionZ+(negativeZ-cow.Z)*cow.DirectionX);
+            int side=ArcadeHerdImpactRules.PlayerSide(positiveClearance,negativeClearance,p.PositionX*cow.DirectionZ-p.PositionZ*cow.DirectionX);
+            return ArcadeHerdImpactRules.Begin(ref p.HerdImpact,side>0?px:nx,side>0?pz:nz);
+        }
         /// <summary>服务端只在活动步推进飞行；位移仍经过原地图阻挡，落地禁用由同一状态控制。</summary>
         private static void TickHerdImpacts(OnlineArcadeBattleRuntime b,float seconds)
         {
@@ -45,7 +61,7 @@ namespace ET.Server
                     {
                         int before=p.CurrentHealth;
                         actor.ContentDamagePlayer(b,p,ArcadeRoundContentRules.Damage(p.MaxHealth,stage.HerdPlayerDamage));
-                        if(p.Alive&&p.CurrentHealth<before&&ArcadeHerdImpactRules.Begin(ref p.HerdImpact,cow.DirectionX,cow.DirectionZ))
+                        if(p.Alive&&p.CurrentHealth<before&&BeginPlayerHerdImpact(b,p,cow))
                         {p.Firing=false;p.DashSeconds=0;}
                     }
                 if(!RoundContentActive(b))return;

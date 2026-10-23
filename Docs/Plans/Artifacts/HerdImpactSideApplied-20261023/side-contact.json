@@ -1,0 +1,47 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 7,
+    "PassedTests": 7,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:08.0915169"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.BlockedSideChoosesOpenSideWithoutCrossingTheWall",
+      "Status": "Passed",
+      "Duration": "00:00:01.2570000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.EdgeContactChoosesTheInsideLanding(1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8470000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.EdgeContactChoosesTheInsideLanding(-1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.9520000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.FullQueuePassesAfterSideLaunch(1,0.0f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.9080000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.FullQueuePassesAfterSideLaunch(-1,0.0f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8420000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.FullQueuePassesAfterSideLaunch(1,0.6f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8810000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeHerdSideImpactTests.FullQueuePassesAfterSideLaunch(1,-0.6f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8550000"
+    }
+  ]
+}

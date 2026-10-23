@@ -1,0 +1,16 @@
+PASS HerdOnline.SingleFileAndSpeed
+PASS HerdOnline.TailClearsBeforeNextBatch
+PASS HerdOnline.SweepAndSingleDeath
+PASS HerdOnline.Protections
+PASS HerdOnline.ClearAndLoadingFreeze
+PASS HerdOnline.FreshRound
+PASS HerdOnline.SnapshotCloneAndCodec
+PASS HerdOnline.LethalMiddleCowKeepsRow
+PASS HerdOnline.ImpactFlightAndGroundHold
+PASS HerdOnline.ImpactBlocksActions
+PASS HerdOnline.ImpactSnapshotCodec
+PASS HerdOnline.CowDeathDirectionAndKind
+PASS HerdOnline.SurvivingEnemyImpact
+PASS HerdOnline.SideLaunchClearsWholeQueue
+PASS HerdOnline.SideLaunchChoosesInsideAtEdges
+15/15 passed

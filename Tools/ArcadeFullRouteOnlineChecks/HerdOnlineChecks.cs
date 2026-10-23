@@ -8,7 +8,8 @@ internal static class HerdOnlineChecks
     public static int Run(int maximum)
     {
         var checks=new (string,Action)[]{("SingleFileAndSpeed",OneRow),("TailClearsBeforeNextBatch",TailClears),("SweepAndSingleDeath",Sweep),("Protections",Protections),("ClearAndLoadingFreeze",Freeze),("FreshRound",FreshRound),("SnapshotCloneAndCodec",Snapshot),("LethalMiddleCowKeepsRow",Lethal),
-            ("ImpactFlightAndGroundHold",ImpactFlight),("ImpactBlocksActions",ImpactActions),("ImpactSnapshotCodec",ImpactSnapshot),("CowDeathDirectionAndKind",ImpactDeath),("SurvivingEnemyImpact",LivingImpact)};
+            ("ImpactFlightAndGroundHold",ImpactFlight),("ImpactBlocksActions",ImpactActions),("ImpactSnapshotCodec",ImpactSnapshot),("CowDeathDirectionAndKind",ImpactDeath),("SurvivingEnemyImpact",LivingImpact),
+            ("SideLaunchClearsWholeQueue",SideQueue),("SideLaunchChoosesInsideAtEdges",SideEdges)};
         if(maximum<checks.Length)throw new ArgumentException("HerdOnline maximum too small");int failed=0;
         foreach(var(name,test) in checks)try{test();Console.WriteLine("PASS HerdOnline."+name);}catch(Exception e){failed++;Console.WriteLine("FAIL HerdOnline."+name+": "+(e.InnerException??e).Message);}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -37,12 +38,12 @@ internal static class HerdOnlineChecks
     /// <summary>与单人相同的3米飞行，落地完整0.5秒及恢复后解锁。</summary>
     private static void ImpactFlight()
     {
-        var a=Create();Tick(a,8);Tick(a,2);var p=a.Battle.Players[1];float start=p.PositionX;
+        var a=Create();Tick(a,8);Tick(a,2);var p=a.Battle.Players[1];float start=p.PositionX,startZ=p.PositionZ;
         Require(Math.Abs(p.HerdImpact.Remaining-1.7f)<.001,"no authoritative launch");
-        Call("TickHerdImpacts",a.Battle,.475f);Require(Math.Abs(p.PositionX-start-1.5f)<.001,"half flight wrong");
+        Call("TickHerdImpacts",a.Battle,.475f);Require(Math.Abs(p.PositionX-start-.6f)<.001,"half side flight wrong");
         ArcadeHerdImpactRules.Sample(p.HerdImpact.Remaining,false,out float height,out _);Require(height>2.4,"body did not leave cow back");
         Call("TickHerdImpacts",a.Battle,.475f);float landed=p.PositionX;Call("TickHerdImpacts",a.Battle,.49f);
-        Require(Math.Abs(landed-start-3)<.001&&p.PositionX==landed&&p.HerdImpact.Remaining>.25,"grounded half-second hold missing");
+        Require(Math.Abs(landed-start-1.2f)<.001&&Math.Abs(p.PositionZ-startZ-3*Math.Sqrt(.84))<.001&&p.PositionX==landed&&p.HerdImpact.Remaining>.25,"side flight or grounded half-second hold missing");
         Call("TickHerdImpacts",a.Battle,.26f);Require(!p.HerdImpact.Active,"recovery never ended");
         ArcadeHerdImpactRules.Begin(ref p.HerdImpact,1,0);a.Battle.WaveClearAwarded=true;
         Call("TickPlayers",a,a.Battle,1.7f,TimeInfo.Instance.ServerNow());Require(!p.HerdImpact.Active,"clear phase locked player before exit");
@@ -59,7 +60,7 @@ internal static class HerdOnlineChecks
         var a=Create();Tick(a,8);Tick(a,2);var enemy=new OnlineArcadeEnemyRuntime{RuntimeId=999,CurrentHealth=10,MaxHealth=10};ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,-1,0);a.Battle.Enemies.Add(999,enemy);
         Call("TickHerdImpacts",a.Battle,1.1f);using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",a.Battle);using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);
         using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));
-        Require(Math.Abs(decoded.Players[0].HerdImpactRemaining-.6f)<.001&&decoded.Players[0].HerdImpactDirectionX==1,"player impact lost in clone/codec");
+        Require(Math.Abs(decoded.Players[0].HerdImpactRemaining-.6f)<.001&&Math.Abs(decoded.Players[0].HerdImpactDirectionX-.4f)<.001&&Math.Abs(decoded.Players[0].HerdImpactDirectionZ-Math.Sqrt(.84))<.001,"player side impact lost in clone/codec");
         Require(Math.Abs(decoded.Enemies.Single(e=>e.RuntimeId==999).HerdImpactRemaining-.6f)<.001&&decoded.Enemies.Single(e=>e.RuntimeId==999).HerdImpactDirectionX==-1,"enemy impact lost in clone/codec");
     }
     private static void ImpactDeath()
@@ -72,6 +73,36 @@ internal static class HerdOnlineChecks
         var a=Create();Tick(a,8);a.Battle.Enemies[77]=new OnlineArcadeEnemyRuntime{RuntimeId=77,PositionX=-26,PositionZ=-14,CurrentHealth=10,MaxHealth=10,SpecialKind=3};Tick(a,2);
         Require(a.Battle.Enemies.TryGetValue(77,out var e)&&e.HerdImpact.Active,"survivor not launched");float x=e!.PositionX,z=e.PositionZ;
         Call("TickEnemies",a,a.Battle,.1f);Require(e.PositionX==x&&e.PositionZ==z&&!a.Battle.Projectiles.Values.Any(p=>p.OwnerPlayerId==0),"survivor chased or attacked during flight");
+    }
+    /// <summary>主动撤掉接触保护，验证双人各自离开完整纵队通路而非追加免伤。</summary>
+    private static void PassSideQueue(OnlineArcadeRunActor a,int direction,float lane,float offset,float x=0)
+    {
+        Tick(a,8);var cows=Cows(a);
+        for(int i=0;i<cows.Count;i++){cows[i].X=x+(-7-3*i)*direction;cows[i].Z=lane;cows[i].DirectionX=direction;}
+        foreach(var p in a.Battle.Players.Values){p.PositionX=x;p.PositionZ=lane+offset;}
+        var obstacles=Call("EffectiveObstacles",a.Battle);
+        Require(!(bool)Call("InsideObstacle",x,lane+offset,ServerConfig.Instance.ArcadeRule.PlayerRadius,obstacles),"invalid wall-overlapping fixture start");
+        bool hit=false;
+        for(int i=0;i<120;i++)
+        {
+            foreach(var p in a.Battle.Players.Values)p.InvulnerabilitySeconds=0;
+            Tick(a,.05f);hit|=a.Battle.Players.Values.Any(p=>p.HerdImpact.Active);
+            Require(a.Battle.Players.Values.All(p=>p.CurrentHealth>=75),$"following cow hit again at {i*.05f:F2}s lane={lane}: "+string.Join(";",a.Battle.Players.Values.Select(p=>$"hp={p.CurrentHealth},pos=({p.PositionX},{p.PositionZ}),dir=({p.HerdImpact.DirectionX},{p.HerdImpact.DirectionZ}),remaining={p.HerdImpact.Remaining}")));
+        }
+        Require(hit&&a.Battle.Players.Values.All(p=>p.CurrentHealth==75&&!p.HerdImpact.Active&&Math.Abs(p.PositionZ-lane)>2.7),"player did not recover outside queue");
+    }
+    private static void SideQueue()
+    {
+        foreach(var sample in new[]{(1,0f),(-1,0f),(1,.6f),(1,-.6f)})PassSideQueue(Create(),sample.Item1,-14,sample.Item2);
+    }
+    private static void SideEdges()
+    {
+        float half=ServerConfig.Instance.EarlyStages[22].HalfHeight;
+        foreach(int edge in new[]{1,-1})
+        {
+            var a=Create();float lane=edge*(half-.6f);PassSideQueue(a,1,lane,0,2.2f);
+            Require(a.Battle.Players.Values.All(p=>p.PositionZ*edge<lane*edge&&Math.Abs(p.PositionZ)<half),"edge launched out of arena");
+        }
     }
     private static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
 }
