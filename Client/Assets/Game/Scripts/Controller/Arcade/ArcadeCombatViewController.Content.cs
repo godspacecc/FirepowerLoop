@@ -57,6 +57,7 @@ namespace Game
                 if (projectileBlastTemplate == null) throw new InvalidOperationException("公共投射物爆炸模板缺失");
                 barrelBlastTemplate=candidate.Find("VortexBarrelBlast");
                 if(barrelBlastTemplate==null)throw new InvalidOperationException("桶专属紫色爆炸模板缺失");
+                if(candidate.Find("VortexBarrelVisual")==null)throw new InvalidOperationException("正式紫桶及浓雾模板缺失");
                 contentTemplates=candidate;
                 var bombTemplate=candidate.Find("BombBlast");
                 if(bombTemplate==null)throw new InvalidOperationException("公共炸弹三阶段模板缺失");

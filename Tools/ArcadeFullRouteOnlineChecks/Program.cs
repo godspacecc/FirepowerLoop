@@ -2,6 +2,12 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="DockBarrelOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int dockBarrelMax)||dockBarrelMax<1)throw new ArgumentException("Explicit DockBarrelOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=DockBarrelOnlineChecks.Run(dockBarrelMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="AllMapProjectileOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int allShotMax)||allShotMax<1)throw new ArgumentException("Explicit AllMapProjectileOnline limit required");

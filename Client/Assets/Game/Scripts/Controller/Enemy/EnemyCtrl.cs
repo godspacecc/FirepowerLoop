@@ -239,6 +239,14 @@ namespace Game
         public void SetEnemyBurning(int runtimeId,float remainingSeconds)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetFlameRemaining(remainingSeconds);}
 
+        /// <summary>只借用当前已提交地图中的活动实例；回收或死亡的对象不作为附属物挂点。</summary>
+        public bool TryGetEnemyPresentationRoot(int runtimeId,out Transform root)
+        {
+            root=null;
+            if(arcadeRoot==null||arcadeMapInstanceId<=0||!arcadeEnemies.TryGetValue(runtimeId,out var entry)||entry.View==null||!entry.View.gameObject.activeInHierarchy)return false;
+            root=entry.View.transform;return root.IsChildOf(arcadeRoot);
+        }
+
         /// <summary>只克隆已有资源中的效果组，不创建额外敌人、单位或加载句柄。</summary>
         public bool TryCreateFlameFeedback(Transform parent,out EnemyFlameFeedback feedback)
         {

@@ -309,12 +309,15 @@ namespace Game
         /// <summary>用权威快照替换危险标记；无快照时立刻移除，不自行推进计时或伤害。</summary>
         public void SetRoundContent(double elapsed,IReadOnlyList<ArcadeContentAreaSnapshot> areas)
         {
+            SampleCarrierBarrels(elapsed);
             SetPurpleRayArcs(elapsed,areas);
             if(!IsRoundLayoutReady||roundAreaRoot==null)return;
             var active=new HashSet<int>();
             foreach(var area in areas??Array.Empty<ArcadeContentAreaSnapshot>())
             {
                 if(area.Kind==ArcadeRayArcState.Kind)continue;
+                // 环境与Content独立异步加载；模板晚到时不发布空桶，下份快照重试。
+                if((area.Kind==11||area.Kind==13)&&contentTemplates==null)continue;
                 if(float.IsNaN(area.X)||float.IsNaN(area.Y)||float.IsNaN(area.Radius)||float.IsInfinity(area.X)||float.IsInfinity(area.Y)||float.IsInfinity(area.Radius)||area.Radius<=0 ||
                     (area.Segment&&(float.IsNaN(area.EndX)||float.IsInfinity(area.EndX)||float.IsNaN(area.EndY)||float.IsInfinity(area.EndY))))continue;
                 if(area.Kind==ArcadeRoundContentRules.BarrelExplosionKind)
@@ -327,51 +330,48 @@ namespace Game
                 var delta=area.Segment ? new Vector2(area.EndX-area.X,area.EndY-area.Y) : Vector2.zero;
                 float length=delta.magnitude;
                 active.Add(area.Id);string identity=area.Kind+":"+area.Warning+":"+area.Radius+":"+area.Segment+":"+length;
-                if(roundAreaIdentities.TryGetValue(area.Id,out var old)&&old!=identity){DestroyRoundVisual(roundAreas[area.Id]);roundAreas.Remove(area.Id);}
+                if(roundAreaIdentities.TryGetValue(area.Id,out var old)&&old!=identity){DestroyRoundVisual(roundAreas[area.Id]);roundAreas.Remove(area.Id);groundBarrelVisuals.Remove(area.Id);}
                 if(!roundAreas.TryGetValue(area.Id,out var go))
                 {
-                    go=RoundGroup(roundAreaRoot.transform,"Area_"+area.Id+"_Kind_"+area.Kind);roundAreas[area.Id]=go;roundAreaIdentities[area.Id]=identity;
-                    uint color=area.Warning?0xEBCB5AFFu:area.Kind==7||area.Kind==8?0x97B43BFFu:area.Kind==5||area.Kind==6?0xA9DDEAFFu:0xDE6255FFu;
-                    if(area.Kind==12)
+                    go=RoundGroup(roundAreaRoot.transform,"Area_"+area.Id+"_Kind_"+area.Kind);
+                    try
                     {
-                        // 救援圈只读服务器位置与半径，十字明确区别于伤害警告，不创建 Collider。
-                        RoundRing(go.transform,"CoopRescueRadius",area.Radius,.15f,0x72DCC7FFu);
-                        RoundBox(go.transform,"RescueCrossHorizontal",0,.2f,0,1.1f,.12f,.28f,0xB8FFF0FFu);
-                        RoundBox(go.transform,"RescueCrossVertical",0,.2f,0,.28f,.12f,1.1f,0xB8FFF0FFu);
+                        uint color=area.Warning?0xEBCB5AFFu:area.Kind==7||area.Kind==8?0x97B43BFFu:area.Kind==5||area.Kind==6?0xA9DDEAFFu:0xDE6255FFu;
+                        if(area.Kind==12)
+                        {
+                            // 救援圈只读服务器位置与半径，十字明确区别于伤害警告，不创建 Collider。
+                            RoundRing(go.transform,"CoopRescueRadius",area.Radius,.15f,0x72DCC7FFu);
+                            RoundBox(go.transform,"RescueCrossHorizontal",0,.2f,0,1.1f,.12f,.28f,0xB8FFF0FFu);
+                            RoundBox(go.transform,"RescueCrossVertical",0,.2f,0,.28f,.12f,1.1f,0xB8FFF0FFu);
+                        }
+                        else if(area.Kind==11||area.Kind==13)
+                        {
+                            var barrel=CreateVortexBarrel(go.transform,"GroundBarrel_"+area.Id,false);
+                            groundBarrelVisuals[area.Id]=new ArcadeVortexBarrelPresentation(barrel.transform);
+                        }
+                        else if(area.Segment)
+                        {
+                            RoundCapsuleBoundary(go.transform,area.Radius,length,.15f,color);
+                            if(!area.Warning&&length>0)RoundBox(go.transform,"AuthoritativeBeam",0,.1f,0,area.Radius*.2f,.08f,length,color);
+                        }
+                        else
+                        {
+                            RoundRing(go.transform,"ExactDamageBoundary",area.Radius,.15f,color);
+                            if(!area.Warning)RoundCylinder(go.transform,"DangerCore",0,.035f,0,area.Radius*.4f,.04f,color);
+                        }
                     }
-                    else if(area.Kind==11||area.Kind==13)
-                    {
-                        var barrel=RoundGroup(go.transform,"GroundBarrel_"+area.Id).transform;
-                        RoundCylinder(barrel,"BarrelBody",0,.55f,0,.9f,1.1f,0x7D429DFFu);
-                        RoundCylinder(barrel,"UpperMetalHoop",0,.95f,0,.96f,.12f,0x3E4850FFu);
-                        RoundCylinder(barrel,"LowerMetalHoop",0,.15f,0,.96f,.12f,0x3E4850FFu);
-                        RoundCylinder(barrel,"VortexSmoke",0,1.3f,0,.6f,.18f,0xB16AE2FFu);
-                        RoundRing(barrel,"VortexMouth",.32f,1.12f,0xDC9CFFFFu);
-                    }
-                    else if(area.Segment)
-                    {
-                        RoundCapsuleBoundary(go.transform,area.Radius,length,.15f,color);
-                        if(!area.Warning&&length>0)RoundBox(go.transform,"AuthoritativeBeam",0,.1f,0,area.Radius*.2f,.08f,length,color);
-                    }
-                    else
-                    {
-                        RoundRing(go.transform,"ExactDamageBoundary",area.Radius,.15f,color);
-                        if(!area.Warning)RoundCylinder(go.transform,"DangerCore",0,.035f,0,area.Radius*.4f,.04f,color);
-                    }
+                    catch{DestroyRoundVisual(go);groundBarrelVisuals.Remove(area.Id);throw;}
+                    roundAreas[area.Id]=go;roundAreaIdentities[area.Id]=identity;
                 }
                 go.transform.localPosition=new Vector3(area.X+delta.x*.5f,.03f,area.Y+delta.y*.5f);
                 go.transform.localRotation=area.Segment&&length>.00001f ? Quaternion.LookRotation(new Vector3(delta.x,0,delta.y)) : Quaternion.identity;
                 if(area.Kind==11||area.Kind==13)
                 {
-                    // 漩涡仅采样权威活动时钟；冻结快照不继续飘动，也不新增碰撞体。
-                    var smoke=go.transform.Find("GroundBarrel_"+area.Id+"/VortexSmoke");
-                    float angle=(float)(elapsed*2);
-                    smoke.localPosition=new Vector3(Mathf.Sin(angle)*.14f,1.3f+Mathf.Sin(angle*.5f)*.12f,Mathf.Cos(angle)*.14f);
-                    smoke.localRotation=Quaternion.Euler(0,angle*Mathf.Rad2Deg,12);
+                    groundBarrelVisuals[area.Id].Sample(elapsed);
                 }
                 ProjectRoofBarrel(go,area,elapsed);
             }
-            foreach(int id in roundAreas.Keys.Where(id=>!active.Contains(id)).ToArray()){DestroyRoundVisual(roundAreas[id]);roundAreas.Remove(id);roundAreaIdentities.Remove(id);}
+            foreach(int id in roundAreas.Keys.Where(id=>!active.Contains(id)).ToArray()){DestroyRoundVisual(roundAreas[id]);roundAreas.Remove(id);roundAreaIdentities.Remove(id);groundBarrelVisuals.Remove(id);}
         }
         /// <summary>只有正式Barrage落桶事件从屋顶下落；位置完全取权威时钟，暂停不额外推进。</summary>
         private void ProjectRoofBarrel(GameObject areaRoot,ArcadeContentAreaSnapshot area,double elapsed)
@@ -478,9 +478,16 @@ namespace Game
                 visual.Root.transform.localRotation=Quaternion.Euler(0,0,-Mathf.Lerp(0,80,Mathf.Clamp01(visual.DeathElapsed/.35f)));
             }
         }
-        /// <summary>只组合纯规则给出的专用轮廓；首帧撤下旧模型，后续由 SetEnemy hook 跳过旧资源请求。</summary>
+        /// <summary>投影权威专属身份；载桶保留原丧尸，其余专用轮廓由 SetEnemy hook 跳过旧资源请求。</summary>
         public void SetEnemyContent(int id,int specialKind,int bossKind,bool warning)
         {
+            if(specialKind==1&&bossKind==0)
+            {
+                // 载桶继续使用正式EnemyView及原动画；只挂载附属物，不再创建简易替身。
+                if(roundEnemies.ContainsKey(id))RemoveRoundEnemyContent(id);
+                SetCarrierBarrel(id);return;
+            }
+            RemoveCarrierBarrel(id);
             if(specialKind==0&&bossKind==0){RemoveRoundEnemyContent(id);return;}
             if(!IsRoundLayoutReady || roundEnemyRoot==null)return;
             if(roundEnemies.TryGetValue(id,out var old)&&(old.SpecialKind!=specialKind||old.BossKind!=bossKind))
@@ -519,6 +526,7 @@ namespace Game
         }
         public void RemoveRoundEnemyContent(int id)
         {
+            RemoveCarrierBarrel(id);
             if(roundEnemies.TryGetValue(id,out var visual)){DestroyRoundVisual(visual.Root);roundEnemies.Remove(id);}
             roundEnemyPositions.Remove(id);
         }
@@ -537,6 +545,7 @@ namespace Game
         /// <summary>根先失活，再释放所有自有网格和材质；共享 Primitive 网格不在释放列表中。</summary>
         private void ReleaseRoundContent()
         {
+            ClearVortexBarrelVisuals();
             RestoreEarlyStageBaseWalls();
             ReleaseEarlyStageLoad();
             ClearPurpleRayArcs();

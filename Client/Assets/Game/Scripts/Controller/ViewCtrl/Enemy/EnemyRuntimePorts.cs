@@ -25,6 +25,8 @@ namespace Game
     /// <summary>街机仅复用敌人 Prefab 与表现生命周期；生命、移动和死亡结论仍由 ArcadeCombatSystem 权威维护。</summary>
     public interface IArcadeEnemyPresentationPort : IUtility
     {
+        /// <summary>仅返回当前地图仍存活的表现根，供地图拥有的背桶附属物绑定；不公开敌人业务状态。</summary>
+        bool TryGetEnemyPresentationRoot(int runtimeId,out Transform root){root=null;return false;}
         bool TrySetEnemy(int runtimeId, string configId, Vector3 position, Vector3 facing,
             int currentHealth, int maximumHealth, out string error, bool telegraph = false,
             int attackSequence = 0, bool persistentHealthBar = false);

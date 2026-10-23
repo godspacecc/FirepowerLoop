@@ -19,7 +19,7 @@ namespace Game.Tests
         private const BindingFlags Hidden=BindingFlags.Instance|BindingFlags.NonPublic;
         private ArcadeRoundLayoutParameters[] Layouts()=>new Tables(name=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",name+".bytes")))).TbArcadeRoundLayout.DataList.Select(ArcadeRoundLayoutParameters.FromConfig).ToArray();
         private object Field(string name)=>typeof(ArcadeCombatViewController).GetField(name,Hidden).GetValue(view);
-        [SetUp] public void Setup(){previousLoader=ResourceLoader.Current;ResourceLoader.Use(new FormalAssetLoader());view=new ArcadeCombatViewController();root=new GameObject("RoundContentTest");typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);view.ConfigureRoundBounds(19.5f,19.5f,.55f);}
+        [SetUp] public void Setup(){previousLoader=ResourceLoader.Current;ResourceLoader.Use(new FormalAssetLoader());view=new ArcadeCombatViewController();root=new GameObject("RoundContentTest");typeof(ArcadeCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(ArcadeCombatViewController).GetField("contentTemplates",Hidden).SetValue(view,AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));view.ConfigureRoundBounds(19.5f,19.5f,.55f);}
         [TearDown] public void Cleanup(){typeof(ArcadeCombatViewController).GetMethod("ReleaseRoundContent",Hidden).Invoke(view,null);if(root!=null)UnityEngine.Object.DestroyImmediate(root);ResourceLoader.Use(previousLoader);}
         [Test] public void EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources()
         {

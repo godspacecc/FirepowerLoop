@@ -1,0 +1,241 @@
+[
+  {
+    "testClass": "DockBarrelFlowTests",
+    "testMode": "EditMode",
+    "maxTests": 3,
+    "includePassingTests": true,
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3,
+      "PassedTests": 3,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.5198142"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget",
+        "Status": "Passed",
+        "Duration": "00:00:00.4340000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel",
+        "Status": "Passed",
+        "Duration": "00:00:00.5140000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersReleaseOnceAfterActiveLifetime",
+        "Status": "Passed",
+        "Duration": "00:00:00.4400000"
+      }
+    ]
+  },
+  {
+    "testClass": "DockBarrelVisualTests",
+    "testMode": "EditMode",
+    "maxTests": 7,
+    "includePassingTests": true,
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 7,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.3880203"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.CarrierKeepsOfficialZombieAndOnlyRemovesPackWhenUnloaded",
+        "Status": "Passed",
+        "Duration": "00:00:00.3040000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.FormalTemplateHasApprovedScalePersistentMaterialsAndNoCollider",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.GroundAndDroppedBarrelsUseApprovedVortexAndDisappearWithSnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.LateContentTemplateRetriesWithoutPublishingPartialGroundOrCarrier",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.LateEnemyBindingRetriesWithoutLeavingPackOnRecycledRoot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.MapReleaseRemovesPacksOutsideRoundRootAndKeepsZombie",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelVisualTests.RepeatedSnapshotsKeepOnePackAndFreezeAtSameAuthorityTime",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      }
+    ]
+  },
+  {
+    "testClass": "ArcadeRoundContentViewTests",
+    "testMode": "EditMode",
+    "maxTests": 7,
+    "includePassingTests": true,
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 7,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.0366028"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes",
+        "Status": "Passed",
+        "Duration": "00:00:00.0560000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact",
+        "Status": "Passed",
+        "Duration": "00:00:00.0310000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks",
+        "Status": "Passed",
+        "Duration": "00:00:00.0310000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources",
+        "Status": "Passed",
+        "Duration": "00:00:00.8210000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0290000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval",
+        "Status": "Passed",
+        "Duration": "00:00:00.0190000"
+      }
+    ]
+  },
+  {
+    "testClass": "GroundBarrelFlowTests",
+    "testMode": "EditMode",
+    "maxTests": 18,
+    "includePassingTests": true,
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 18,
+      "PassedTests": 18,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:10.3695517"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing",
+        "Status": "Passed",
+        "Duration": "00:00:00.5900000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.BarrelKillingThemeBossKeepsAlreadySettledExplosion",
+        "Status": "Passed",
+        "Duration": "00:00:00.4930000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.BarrelSurvivesWeakShotUntilAccumulatedDamageReachesHealth",
+        "Status": "Passed",
+        "Duration": "00:00:00.4640000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.CarrierReleasesOneIndependentBarrelAndThenDiesNormally",
+        "Status": "Passed",
+        "Duration": "00:00:00.5630000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.ExplosionDamagesActorsOnceAndKeepsCarrierDeathExplosion",
+        "Status": "Passed",
+        "Duration": "00:00:00.4450000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponBarrelHitPreservesNearbyPlayerLife",
+        "Status": "Passed",
+        "Duration": "00:00:00.4940000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponKeepsItsOriginalBlastWhenItDetonatesBarrel",
+        "Status": "Passed",
+        "Duration": "00:00:00.4500000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.8860000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.4400000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.PlayerShotDetonatesNearestBarrelOnceWithoutChangingBudget",
+        "Status": "Passed",
+        "Duration": "00:00:00.5650000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.PurpleExplosionStillProjectsWhenBarrelEndsTheWave",
+        "Status": "Passed",
+        "Duration": "00:00:00.4970000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.SameMapBeginKeepsDestroyedStateAndNewMapInitializesItsOwnBarrels",
+        "Status": "Passed",
+        "Duration": "00:00:00.5020000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.SameMapContentRestartNeverReusesBarrelExplosionIdentity",
+        "Status": "Passed",
+        "Duration": "00:00:00.4400000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.SubmittedResultStopsBarrelAndCarrierDamage",
+        "Status": "Passed",
+        "Duration": "00:00:00.5050000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.UnknownDestroyedBarrelIsRejectedBeforeCurrentEnemiesAreCleared",
+        "Status": "Passed",
+        "Duration": "00:00:00.5040000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.VortexFreezesInTreasureRoomAndIgnoresUndeliveredWeapons",
+        "Status": "Passed",
+        "Duration": "00:00:00.4960000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.VortexPullsDropsAndConsumesWithoutAwardOrRefund",
+        "Status": "Passed",
+        "Duration": "00:00:00.4450000"
+      },
+      {
+        "Name": "Game.Tests.GroundBarrelFlowTests.WallOrCloserEnemyBlocksShotToFarBarrel",
+        "Status": "Passed",
+        "Duration": "00:00:00.4880000"
+      }
+    ]
+  }
+]
