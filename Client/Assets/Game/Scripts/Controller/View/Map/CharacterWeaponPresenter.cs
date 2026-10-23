@@ -114,6 +114,9 @@ namespace Game
         {
             ClearReload();
             ClearUpperBodyGunFire();
+            // 暂停推进的世界粒子不能留在池化或失活的角色上。
+            if (flamethrowerMuzzle != null)
+                flamethrowerMuzzle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
         /// <summary>预览和独立测试可注入同一姿态系统；正式实例在运行时使用游戏架构服务。</summary>
@@ -307,11 +310,20 @@ namespace Game
         /// <summary>权威开火反馈触发喷嘴近端火焰；远端角色复用同一表现入口。</summary>
         public void PlayWeaponMuzzleEffect()
         {
-            if(flamethrowerMuzzle==null)return;
+            if (flamethrowerMuzzle == null || !isActiveAndEnabled) return;
+            if (!manualPoseSampling)
+            {
+                if (!CanGripCurrentAnimation()) return;
+                ApplyCurrentAnimationPose();
+            }
+            var emission = flamethrowerMuzzle.emission;
+            emission.enabled = true;
             flamethrowerMuzzle.Play(false);
             // 只重置发射窗口，保留已喷出的世界空间火焰；停火后窗口自动结束。
-            flamethrowerMuzzle.time=0;
+            flamethrowerMuzzle.time = 0;
             flamethrowerMuzzle.Emit(2);
+            // 动画会在粒子自动更新前重写手骨；统一留到帧末校正之后推进，避免侧喷。
+            flamethrowerMuzzle.Pause(false);
         }
 
         /// <summary>发布候选前检查模型、数值、Avatar、槽位和所有动作的显式兼容性。</summary>
@@ -548,11 +560,28 @@ namespace Game
             weaponAnimatorController = null;
         }
 
-        private void LateUpdate()
+        private void LateUpdate() => UpdateLatePresentation(Time.deltaTime);
+
+        /// <summary>先完成动画后的握持校正，再推进近端世界粒子，保持现有速度、发射率和消散时间。</summary>
+        private void UpdateLatePresentation(float deltaSeconds)
         {
-            if(GetComponent<PlayerView>()?.SwimmingPresentation==true)return;
+            if (GetComponent<PlayerView>()?.SwimmingPresentation == true)
+            {
+                if (flamethrowerMuzzle != null)
+                    flamethrowerMuzzle.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
+                return;
+            }
             if (visual == null || manualPoseSampling) return;
             ApplyOffhandGrip();
+            if (flamethrowerMuzzle == null || deltaSeconds <= 0f || !flamethrowerMuzzle.IsAlive(false)) return;
+            if (!CanGripCurrentAnimation())
+            {
+                // 受击、换弹等动作不强扳手骨，也不从未对齐的枪口续喷；已有火团正常消散。
+                var emission = flamethrowerMuzzle.emission;
+                emission.enabled = false;
+            }
+            // Simulate会保留暂停状态，自动粒子阶段不会重复推进同一帧。
+            flamethrowerMuzzle.Simulate(deltaSeconds, false, false, false);
         }
 
         private void OnDestroy()
