@@ -1,0 +1,143 @@
+{
+  "kind": "离线配置模型，非Unity实战",
+  "assumptions": [
+    "单人海岛四轮，500名100血10攻击小怪均由玩家击杀",
+    "金币与清场财宝全部及时拾取，忽略地面数量上限和过期损失",
+    "红骷髅不增加倍率进度；不建模武器选择、命中率、过量伤害或Boss",
+    "重置场景仅模拟每轮中点一次倍率归1，不作为真实玩家死亡分布"
+  ],
+  "budgets": [
+    110,
+    120,
+    130,
+    140
+  ],
+  "coinProbability": 0.1976060073139349,
+  "firstStageNoDeaths": {
+    "p10": 330280,
+    "median": 359900,
+    "p90": 389220
+  },
+  "firstStageMidRoundResetEachRound": {
+    "p10": 102140,
+    "median": 112620,
+    "p90": 123780
+  },
+  "noEnemyCoinsNoDeaths": 66840,
+  "weaponDamagePerSecond": [
+    {
+      "id": "arcade.weapon.basic",
+      "baseDamage": 36,
+      "interval": 0.24,
+      "allProjectilesHitDps": 150.0
+    },
+    {
+      "id": "arcade.weapon.rapid",
+      "baseDamage": 28,
+      "interval": 0.1,
+      "allProjectilesHitDps": 280.0
+    },
+    {
+      "id": "arcade.weapon.spread",
+      "baseDamage": 29,
+      "interval": 0.36,
+      "allProjectilesHitDps": 402.8
+    },
+    {
+      "id": "arcade.weapon.flamethrower",
+      "baseDamage": 23,
+      "interval": 0.1,
+      "allProjectilesHitDps": 690.0
+    },
+    {
+      "id": "arcade.weapon.piercing",
+      "baseDamage": 35,
+      "interval": 0.24,
+      "allProjectilesHitDps": 145.8
+    },
+    {
+      "id": "arcade.weapon.rocket",
+      "baseDamage": 56,
+      "interval": 0.72,
+      "allProjectilesHitDps": 77.8
+    },
+    {
+      "id": "arcade.weapon.grenade",
+      "baseDamage": 48,
+      "interval": 0.48,
+      "allProjectilesHitDps": 100.0
+    },
+    {
+      "id": "arcade.weapon.raygun",
+      "baseDamage": 46,
+      "interval": 0.18,
+      "allProjectilesHitDps": 255.6
+    }
+  ],
+  "droneAdditionalDps": 26.7,
+  "refreshKillsEquivalent": {
+    "multiplier1": 5,
+    "multiplier9": 0.5555555555555556
+  },
+  "prices": {
+    "common": 3000,
+    "drone": 4000,
+    "piercing": 4000,
+    "rocket": 5000,
+    "grenade": 5000,
+    "raygun": 6000
+  },
+  "seed": 20261023,
+  "trialsPerScenario": 10000,
+  "weaponDamagePerSecondAtInitialAudit": [
+    {
+      "id": "arcade.weapon.basic",
+      "baseDamage": 18,
+      "interval": 0.24,
+      "allProjectilesHitDps": 75
+    },
+    {
+      "id": "arcade.weapon.rapid",
+      "baseDamage": 10,
+      "interval": 0.1,
+      "allProjectilesHitDps": 100
+    },
+    {
+      "id": "arcade.weapon.spread",
+      "baseDamage": 11,
+      "interval": 0.36,
+      "allProjectilesHitDps": 152.8
+    },
+    {
+      "id": "arcade.weapon.flamethrower",
+      "baseDamage": 5,
+      "interval": 0.1,
+      "allProjectilesHitDps": 150
+    },
+    {
+      "id": "arcade.weapon.piercing",
+      "baseDamage": 17,
+      "interval": 0.24,
+      "allProjectilesHitDps": 70.8
+    },
+    {
+      "id": "arcade.weapon.rocket",
+      "baseDamage": 38,
+      "interval": 0.72,
+      "allProjectilesHitDps": 52.8
+    },
+    {
+      "id": "arcade.weapon.grenade",
+      "baseDamage": 30,
+      "interval": 0.48,
+      "allProjectilesHitDps": 62.5
+    },
+    {
+      "id": "arcade.weapon.raygun",
+      "baseDamage": 28,
+      "interval": 0.18,
+      "allProjectilesHitDps": 155.6
+    }
+  ],
+  "weaponAuditSource": "2026-10-23 当前Config权威源；独立枪械任务已提交全八枪伤害提高（dacd442f等），商店没有额外加伤。初始旧伤害模型保留历史字段。收入模型不模拟武器击杀耗时，未因DPS变化重估通关时长。"
+}

@@ -394,7 +394,7 @@ namespace ET.Server
         /// <summary>转发安全节点写意图；玩家 Actor 只校验会话并维护 RunId 路由，不复制安全节点状态。</summary>
         public static async ETTask<(int Error, string Message, bool Accepted, OnlineArcadeRunSnapshot Run)>
             OperateOnlineArcadeSafeCheckpoint(this OnlinePlayerActor self, long sessionEpoch, string operationId,
-                long expectedRevision, int actionKind, bool ready)
+                long expectedRevision, int actionKind, bool ready, string scoreShopDropId = null)
         {
             if (sessionEpoch != self.SessionEpoch || self.State != OnlinePlayerState.Online)
                 return (ErrorCode.ERR_OnlineSessionNotLoggedIn, "未登录", false, null);
@@ -409,6 +409,7 @@ namespace ET.Server
                 request.ExpectedRevision = expectedRevision;
                 request.ActionKind = actionKind;
                 request.Ready = ready;
+                request.ScoreShopDropId = scoreShopDropId;
                 using R2P_OperateOnlineArcadeSafeCheckpoint response = await self.Root().GetComponent<MessageSender>()
                     .Call(roomScene, request, false) as R2P_OperateOnlineArcadeSafeCheckpoint;
                 return (response.Error, response.Message, response.Accepted,

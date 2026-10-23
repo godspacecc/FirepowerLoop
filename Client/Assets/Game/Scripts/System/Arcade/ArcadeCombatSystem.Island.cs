@@ -58,7 +58,7 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>(); var run = model.Current;
             var rules = catalog.TreasureRooms.FirstOrDefault();
             if (run != null && ArcadeTreasureScoreRules.TryAwardKill(
-                new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives),
+                new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives, run.ScoreLifeTier),
                 rules, out var next)) model.SetTransientTreasureScore(next);
         }
     }

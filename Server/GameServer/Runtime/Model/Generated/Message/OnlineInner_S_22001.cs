@@ -2840,6 +2840,9 @@ namespace ET
         [MemoryPackOrder(8)]
         public bool Ready { get; set; }
 
+        [MemoryPackOrder(9)]
+        public string ScoreShopDropId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2856,6 +2859,7 @@ namespace ET
             this.OfferId = default;
             this.GoldAmount = default;
             this.Ready = default;
+            this.ScoreShopDropId = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2936,6 +2940,9 @@ namespace ET
         [MemoryPackOrder(7)]
         public bool Ready { get; set; }
 
+        [MemoryPackOrder(8)]
+        public string ScoreShopDropId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2951,6 +2958,7 @@ namespace ET
             this.OfferId = default;
             this.GoldAmount = default;
             this.Ready = default;
+            this.ScoreShopDropId = default;
 
             ObjectPool.Instance.Recycle(this);
         }

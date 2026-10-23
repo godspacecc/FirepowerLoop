@@ -1385,5 +1385,21 @@
   "ui.arcade.snowfarm.round.1": "Snow Farm · Round 1",
   "ui.arcade.snowfarm.round.2": "Snow Farm · Round 2",
   "ui.arcade.snowfarm.round.3": "Snow Farm · Round 3",
-  "ui.arcade.snowfarm.round.4": "Snow Farm · Round 4"
+  "ui.arcade.snowfarm.round.4": "Snow Farm · Round 4",
+  "ui.arcade.score_shop.brand": "FIREPOWERLOOP / FIELD SHOP",
+  "ui.arcade.score_shop.title": "How will you fight next?",
+  "ui.arcade.score_shop.subtitle": "Three offers. Buy at most one.\nOr keep your score and move on.",
+  "ui.arcade.score_shop.score_label": "CURRENT SCORE",
+  "ui.arcade.score_shop.rule": "Existing airdrops only. Receive your item at the start of the next stage with its original duration.\nBuying and refreshing spend score and delay your next extra life. Each refresh costs 500 points.",
+  "ui.arcade.score_shop.skip": "Skip and keep score →",
+  "ui.arcade.score_shop.refresh": "Refresh · {0} points",
+  "ui.arcade.score_shop.buy": "Buy",
+  "ui.arcade.score_shop.insufficient": "Not enough score",
+  "ui.arcade.score_shop.price": "{0} points",
+  "ui.arcade.score_shop.weapon": "AIRDROP WEAPON · {0}s",
+  "ui.arcade.score_shop.support": "AIRDROP SUPPORT · {0}s",
+  "ui.arcade.score_shop.weapon_description": "Receive this weapon next stage.\nUses existing airdrop and same-weapon upgrade rules.",
+  "ui.arcade.score_shop.drone_description": "Receive a support drone next stage.\nUses its existing upgrade and self-destruct rules.",
+  "ui.arcade.score_shop.waiting": "Confirming your action…",
+  "ui.arcade.score_shop.failed": "Action incomplete. Please retry. Score and offers follow the saved result."
 }

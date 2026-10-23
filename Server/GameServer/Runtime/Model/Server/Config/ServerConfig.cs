@@ -283,6 +283,8 @@ namespace ET
             }
         }
 
+        /// <summary>新积分商店只引用正式空投，与旧现金商店门禁隔离。</summary>
+        public FirepowerLoop.Arcade.ArcadeScoreShopConfiguration ScoreShop { get; private set; }
         /// <summary>服务启动时拒绝不能创建权威安全节点的街机配置。</summary>
         private void ValidateArcadeConfig()
         {
@@ -290,6 +292,7 @@ namespace ET
             if(early.Length!=2||early.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=2)throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected dock and farm");
             this.EarlyStages=new System.Collections.ObjectModel.ReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters>(early.ToDictionary(p=>p.ArenaConfigNumber));
             this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
+            this.ScoreShop=FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(this.tables);
             this.SlayerChallenge=FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration.FromTables(this.tables);
             foreach (var row in this.tables.TbArcadeTreasureRoom.DataList)
             {

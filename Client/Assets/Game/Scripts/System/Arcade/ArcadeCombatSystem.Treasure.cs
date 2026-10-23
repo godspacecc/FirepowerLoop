@@ -121,7 +121,7 @@ namespace Game
                 if (bomb) runtime.Bombs += added; else runtime.Dashes += added;
                 return true;
             }
-            var before = new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives);
+            var before = new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives, run.ScoreLifeTier);
             if (!ArcadeTreasureScoreRules.TryAward(before, reward, runtime.TreasureRoom.Parameters, out var next)) return false;
             model.SetTransientTreasureScore(next);
             return true;
@@ -132,7 +132,7 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var run = model.Current;
             if (run != null) model.SetTransientTreasureScore(
-                new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives).ResetAfterDeath());
+                new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier, run.MultiplierProgress, run.RemainingLives, run.ScoreLifeTier).ResetAfterDeath());
         }
 
         /// <summary>区域变化重建本机空间表现，规则现场保持原样；进入不卸载整队地图。</summary>

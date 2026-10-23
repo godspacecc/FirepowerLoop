@@ -1,0 +1,602 @@
+[
+  {
+    "testClass": "ScoreShopRulesTests",
+    "maxTests": 7,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.8460513"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.InsufficientScore_DoesNotMutateOffersOrRevision(Buy)",
+          "Status": "Passed",
+          "Duration": "00:00:00.1210000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.InsufficientScore_DoesNotMutateOffersOrRevision(Refresh)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.Purchase_SpendsQuotedPriceAndEndsVisitWithoutChangingInput",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.Refresh_ChargesFiveHundredAndChangesAtLeastOneOffer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0220000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.Skip_PreservesScoreAndEndsVisit",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.StageTwo_OnlyOffersThreeDistinctUnlockedAirdrops",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRulesTests.StaleRequestAndForeignProduct_CannotSpendScore",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopLifeTests",
+    "maxTests": 3,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0129954"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopLifeTests.CurrentScore_CrossingNextUnclaimedTierAwardsOnce",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopLifeTests.FullLives_ProcessesTierWithoutQueuingReward",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopLifeTests.SpentScore_RecrossingClaimedTierDoesNotAwardLife",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopRunTests",
+    "maxTests": 8,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:13.8847254"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.AbandonFromOpenShop_PersistsResultWithoutStalePurchaseState",
+          "Status": "Passed",
+          "Duration": "00:00:02.2500000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.FileValidation_RejectsRoundThatWouldSkipPendingPurchase",
+          "Status": "Passed",
+          "Duration": "00:00:00.9110000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.FinalVictory_HasNoShopAndLegacyRulesStayDisabled",
+          "Status": "Passed",
+          "Duration": "00:00:01.6810000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.Purchase_RetryCannotChargeTwiceAndPendingDeliverySurvivesReload",
+          "Status": "Passed",
+          "Duration": "00:00:01.7420000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.PurchasedEffectAndDeliveredFlag_SaveTogetherAndSurviveReload",
+          "Status": "Passed",
+          "Duration": "00:00:01.7320000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.Refresh_ReloadPreservesPaidOffersScoreAndLifeTier",
+          "Status": "Passed",
+          "Duration": "00:00:01.9050000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.SaveFailure_KeepsOriginalScoreAndOfferRevision",
+          "Status": "Passed",
+          "Duration": "00:00:00.8780000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopRunTests.WholeStage_OpensOnceAndBlocksContinueUntilSkip",
+          "Status": "Passed",
+          "Duration": "00:00:01.0400000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopDeliveryTests",
+    "maxTests": 3,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9739045"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopDeliveryTests.AlreadyDeliveredOrChallenge_DoesNotReceiveAnotherDrop",
+          "Status": "Passed",
+          "Duration": "00:00:00.2230000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopDeliveryTests.Drone_UsesExistingSupportAndOriginalDuration",
+          "Status": "Passed",
+          "Duration": "00:00:00.0400000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopDeliveryTests.Weapon_UsesFullOriginalDurationAndRepeatedPreparationDoesNotUpgradeTwice",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopUiTests",
+    "maxTests": 3,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1811551"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopUiTests.Dialog_HasGeneratedViewAndEveryRequiredReference",
+          "Status": "Passed",
+          "Duration": "00:00:00.1100000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopUiTests.FixedLabels_AreReadableAndDynamicFieldsHaveNoLocalizationWriter",
+          "Status": "Passed",
+          "Duration": "00:00:00.0640000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopUiTests.Offers_UseExternalBoxWithGeneratedBuyAndTextBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopControllerTests",
+    "maxTests": 4,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 4,
+        "PassedTests": 4,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9342365"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopControllerTests.BuyButton_ChargesOriginalOfferOnceAndEndsVisit",
+          "Status": "Passed",
+          "Duration": "00:00:00.8370000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopControllerTests.LowScore_DisablesSpendingAndKeepsSkipAvailable",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopControllerTests.RefreshAfterReopen_ChargesOnceAndSkipKeepsRemainingScore",
+          "Status": "Passed",
+          "Duration": "00:00:00.0380000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopControllerTests.ShowsThreePersonalOffers_AndUnchangedScoreWhenReopened",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ScoreShopOnlineAdapterTests",
+    "maxTests": 2,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 2,
+        "PassedTests": 2,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1329265"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ScoreShopOnlineAdapterTests.CompletedPurchasePush_ClearsUnknownIntent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0960000"
+        },
+        {
+          "Name": "Game.Tests.ScoreShopOnlineAdapterTests.NewVisitAfterReconnect_DoesNotLockNewOffersToOldPurchase",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ArcadeTreasureRoomRulesTests",
+    "maxTests": 40,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 32,
+        "PassedTests": 32,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.3254286"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.BeforeFirstEntry_ClockDoesNotStart",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Death_ResetsMultiplierButKeepsCumulativeScore",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Entry_RequiresDiscoveryAndClear(False,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Entry_RequiresDiscoveryAndClear(True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Entry_RequiresDiscoveryAndClear(False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.FailedApply_LeavesSharedRewardAvailable",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.FormalCatalog_ContainsFirstRoom",
+          "Status": "Passed",
+          "Duration": "00:00:00.8600000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.FormalRewards_AreOneFixedSharedSet",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.FullLives_DoesNotQueueOrCompensate",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Gem_Uses250PointsAndCarriesProgress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Gold_UsesOldMultiplierBeforeLevelGrowth",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.GroundRewards_ExpireThirtySecondsAfterFirstEntryWithoutClosingRoom",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidClaim_DoesNotInvokeApply(\"old\",1,1)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidClaim_DoesNotInvokeApply(\"run:1:3:first\",2,1)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidClaim_DoesNotInvokeApply(\"run:1:3:first\",1,99)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidDelta_DoesNotChangeClock(-1.0f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidDelta_DoesNotChangeClock(float.NaN)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.InvalidDelta_DoesNotChangeClock(float.PositiveInfinity)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.LateEntryAndReentry_DoNotResetSharedClock(False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.LateEntryAndReentry_DoNotResetSharedClock(True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.LeavingOneMember_DoesNotMoveOthers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.MultiplierCap_DiscardsFurtherProgress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.NewInstance_AfterRollbackHasIndependentLedger",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.OldExcessLives_AreNotReduced",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.ReentrantClaim_CannotApplySameRewardAgain",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.RoomCoordinatesMustFitArenaAndPlayerRadius",
+          "Status": "Passed",
+          "Duration": "00:00:00.0190000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.ScoreOverflow_RejectsWholeCandidate",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.ScoreTier_AwardsOnlyCrossedLifeThreshold",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.SharedClaim_AppliesExactlyOnceAcrossPlayers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.SharedRoomAuthority_Exists",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.ThrowingApply_LeavesRewardAndUnlocksGuard",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeTreasureRoomRulesTests.Timeout_ReturnsOnlyRemainingMembersOnce",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "RoundCheckpointTests",
+    "maxTests": 20,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 19,
+        "PassedTests": 19,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6626138"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.CloneOwnsPlayerEffectsAndCrates",
+          "Status": "Passed",
+          "Duration": "00:00:00.5070000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.InvalidSavePreservesPreviousFile",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.LegacyVersionOneWithoutRoundStillLoads",
+          "Status": "Passed",
+          "Duration": "00:00:00.0190000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.LockedDestinationPreservesPreviousFile",
+          "Status": "Passed",
+          "Duration": "00:00:00.0120000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsCrateHealthOutsideRemainingIds",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsHealthAndInventory",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsInvalidCrateIds",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsInvalidDestroyedBarrelIds",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsInvalidPlayerTimers",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsLayoutIdentity",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsMissingPlayerState",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsNonpositiveOrNullCrateHealth",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsResultCheckpoint",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsRoundAndPlayerIdentity",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsSimultaneousLegacyAndEntryNodes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RejectsWrongArenaOrConfig",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RetainsCrateHealthAndCloneOwnsDictionary",
+          "Status": "Passed",
+          "Duration": "00:00:00.0140000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RetainsDestroyedBarrelIdsAndCloneOwnsList",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.RoundCheckpointTests.RetainsRoundFourAndCompletePlayerState",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ArcadeRoundTransitionTests",
+    "maxTests": 5,
+    "includePassingTests": true,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 5,
+        "PassedTests": 5,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3432235"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRoundTransitionTests.AbortClearsBlackAndNewTransitionDoesNotInheritOpacity",
+          "Status": "Passed",
+          "Duration": "00:00:00.0390000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundTransitionTests.CurtainPrefabIsCollectedAtItsRuntimeAddress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0420000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundTransitionTests.FadeHoldsBlackAcrossDuplicateRequestsUntilResourcesReady",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundTransitionTests.FormalCurtainHasGeneratedReferenceAndCoversWholeScreen",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundTransitionTests.NormalRoundPreparationDoesNotOpenFullLoadingScreen",
+          "Status": "Passed",
+          "Duration": "00:00:00.1860000"
+        }
+      ]
+    }
+  }
+]

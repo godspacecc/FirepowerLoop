@@ -67,6 +67,7 @@ namespace Game
             if (current == null) return;
             current.Score = value.Score; current.ScoreMultiplier = value.Multiplier;
             current.MultiplierProgress = value.Progress; current.RemainingLives = value.Lives;
+            current.ScoreLifeTier = System.Math.Max(current.ScoreLifeTier,value.LifeTier);
         }
 
         internal void Clear()

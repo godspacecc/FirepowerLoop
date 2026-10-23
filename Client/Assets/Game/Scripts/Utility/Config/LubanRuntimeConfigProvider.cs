@@ -1402,7 +1402,9 @@ namespace Game
                         Math.Abs(obstacle.CenterY) <= obstacle.HalfHeight + rule.PlayerRadius + 0.5f)
                         return $"TbArcadeArena[{row.ArenaNumber}].Obstacles 尺寸、边界或中心复活区无效";
                 }
-                if (row.IsBoss != (row.ArenaNumber % rule.BossEveryArenas == 0)) return $"TbArcadeArena[{row.ArenaNumber}].IsBoss 与 BossEveryArenas 不匹配";
+                // 固定主题关拥有独立轮布局，配置编号不是普通路线序号，不能按编号强制插入Boss。
+                if (tables.TbArcadeEarlyStage.DataList.All(stage=>stage.ArenaConfigNumber!=row.ArenaNumber) &&
+                    row.IsBoss != (row.ArenaNumber % rule.BossEveryArenas == 0)) return $"TbArcadeArena[{row.ArenaNumber}].IsBoss 与 BossEveryArenas 不匹配";
                 if (!string.IsNullOrWhiteSpace(row.BossId))
                 {
                     if (!row.IsBoss || !bossesById.TryGetValue(row.BossId, out var boss) ||
@@ -1549,7 +1551,8 @@ namespace Game
                 tables.TbArcadeTreasureRoom.DataList.Select(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters.FromConfig),
                 tables.TbArcadeRoundLayout.DataList.OrderBy(row => row.ArenaConfigNumber).ThenBy(row => row.RoundNumber)
                     .Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig),
-                tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig));
+                tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig),
+                FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(tables));
         }
 
         private static bool IsNonNegativeFinite(float value) => IsFinite(value) && value >= 0f;

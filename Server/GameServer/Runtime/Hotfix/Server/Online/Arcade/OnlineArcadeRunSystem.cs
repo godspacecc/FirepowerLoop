@@ -239,7 +239,7 @@ namespace ET.Server
         /// </summary>
         public static async ETTask<(bool Accepted, OnlineArcadeRunSnapshot Snapshot)> OperateSafeCheckpoint(
             this OnlineArcadeRunManagerComponent self, long playerId, string operationId, long expectedRevision,
-            int actionKind, bool ready)
+            int actionKind, bool ready, string scoreShopDropId = null)
         {
             // 已撤销的购买/转账数值不得通过旧幂等记录重放。
             if (!Enum.IsDefined(typeof(OnlineArcadeSafeCheckpointActionKind), actionKind))
@@ -255,7 +255,7 @@ namespace ET.Server
             if (string.IsNullOrWhiteSpace(operationId) || operationId.Length > 64)
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeOperationConflict, "操作标识无效或冲突");
 
-            string fingerprint = OperationFingerprint(playerId, expectedRevision, actionKind, ready);
+            string fingerprint = OperationFingerprint(playerId, expectedRevision, actionKind, ready, scoreShopDropId);
             OnlineArcadeOperationRecord previous = actor.Record.Operations?.FirstOrDefault(x =>
                 string.Equals(x.OperationId, operationId, StringComparison.Ordinal));
             if (previous != null)
@@ -285,7 +285,7 @@ namespace ET.Server
             EnsureCollections(candidate);
             OnlineArcadePlayerRecord player = candidate.Players.FirstOrDefault(x => x.PlayerId == playerId) ??
                                               throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "玩家不属于该街机局");
-            ApplyCheckpointIntent(candidate, player, actionKind, ready);
+            ApplyCheckpointIntent(candidate, player, actionKind, ready, scoreShopDropId);
 
             candidate.Revision = checked(candidate.Revision + 1);
             candidate.UpdatedAtUtc = DateTime.UtcNow.ToString("O");
@@ -337,10 +337,14 @@ namespace ET.Server
         }
 
         /// <summary>按玩家顺序独立保存本局结果；任一步失败保留已成功玩家状态，后续操作可继续重试。</summary>
-        /// <summary>只处理准备、挑战和结果确认意图；无交易分支，候选落盘前不改变 Actor。</summary>
+        /// <summary>处理准备、挑战、结果确认及积分商店意图；候选落盘前不改变 Actor。</summary>
         private static void ApplyCheckpointIntent(OnlineArcadeRunRecord candidate, OnlineArcadePlayerRecord player,
-            int actionKind, bool ready)
+            int actionKind, bool ready, string scoreShopDropId = null)
         {
+            if (actionKind is 10 or 11 or 12)
+            { ApplyScoreShopIntent(candidate, player, actionKind, scoreShopDropId); return; }
+            if (ready && actionKind is 3 or 7 && OnlineArcadeRunActorSystem.HasPendingScoreShops(candidate))
+                throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "双方完成积分商店后才能继续");
             switch ((OnlineArcadeSafeCheckpointActionKind)actionKind)
             {
                 case OnlineArcadeSafeCheckpointActionKind.SetReady:
@@ -555,6 +559,7 @@ namespace ET.Server
                 }
                 candidate.SlayerMart= victory ? null : actor.Battle.SlayerMart?.Clone();
                 candidate.Phase = victory ? OnlineArcadeRunPhase.Victory : OnlineArcadeRunPhase.SafeCheckpoint;
+                OpenScoreShops(candidate);
                 candidate.ChallengeId = string.Empty;
                 candidate.ChallengeAttempted = false;
                 ConfigureSlayerOpportunity(candidate);
@@ -664,6 +669,7 @@ namespace ET.Server
         /// <summary>普通恢复点先保有提交节点，再以双方准备后的工作态构造下一场。</summary>
         private static bool TryStartTransitBattle(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor)
         {
+            if (actor?.Record != null && OnlineArcadeRunActorSystem.HasPendingScoreShops(actor.Record)) return false;
             if(actor!=null&&!actor.IsDisposed&&actor.Battle==null&&actor.Record?.Phase==OnlineArcadeRunPhase.SafeCheckpoint&&
                 actor.Record.ChallengeId==ServerConfig.Instance.SlayerChallenge.ChallengeId&&!actor.Record.ChallengeAttempted&&actor.DisconnectedAtByPlayer.Count==0)
             {
@@ -697,6 +703,7 @@ namespace ET.Server
             string now = DateTime.UtcNow.ToString("O");
             OnlineArcadeRunRecord record = new()
             {
+                ScoreShopRulesVersion = 1,
                 RunId = runId,
                 // 只在新局创建时采纳正式配置，已有局恢复不随发布开关迁移。
                 SlayerMartRulesVersion = ServerConfig.Instance.SlayerMart.Enabled ? 1 : 0,
@@ -855,6 +862,7 @@ namespace ET.Server
                     !FirepowerLoop.Arcade.ArcadeSlayerMartSupportRules.IsValid(p,ServerConfig.Instance.SlayerMart)))
                     throw new InvalidOperationException("OnlineArcadeStore invalid SlayerMart ability state.");
 
+                ValidateScoreShops(run);
                 if (run.Operations == null || run.Operations.GroupBy(x => x.OperationId, StringComparer.Ordinal).Any(x => x.Count() > 1))
                     throw new InvalidOperationException("OnlineArcadeStore contains invalid operation identities.");
             }
@@ -886,7 +894,8 @@ namespace ET.Server
                 run.ConfigFingerprint=earlyStageVersion;
         }
 
-        private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready) => $"{playerId}|{expectedRevision}|{actionKind}|{ready}";
+        private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready, string scoreShopDropId = null)
+            => $"{playerId}|{expectedRevision}|{actionKind}|{ready}" + (actionKind is 10 or 11 or 12 ? "|" + (scoreShopDropId ?? string.Empty) : string.Empty);
 
         private static void TrimOperations(List<OnlineArcadeOperationRecord> operations)
         {
@@ -1180,7 +1189,7 @@ namespace ET.Server
         /// <summary>双方准备成功后完整构造并校验不落盘的战斗现场候选。</summary>
         public static OnlineArcadeBattleRuntime PrepareBattle(OnlineArcadeRunRecord record, bool challenge, bool requireReady=true)
         {
-            if (record == null || record.Players.Count != 2 || !record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
+            if (record == null || HasPendingScoreShops(record) || record.Players.Count != 2 || !record.Players.Any(OnlineArcadeRunActorSystem.CanContinueCoop) ||
                 challenge && requireReady && record.Players.Any(x => !x.ChallengeReady) ||
                 !challenge && requireReady && record.Players.Any(x => OnlineArcadeRunActorSystem.CanContinueCoop(x) && !x.Ready))
                 throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid, "双方尚未满足进入竞技场条件");
@@ -1280,6 +1289,7 @@ namespace ET.Server
                     battle.Hazards.Add(new FirepowerLoop.Arcade.ArcadeHazardState(ServerConfig.GetHazardParameters(definition)));
             InitializeSlayerChallenge(record,battle);
             InitializeWeaponPickups(record,battle);
+            DeliverScoreShopDrops(record, battle);
             battle.LastTickAt = TimeInfo.Instance.ServerNow();
             return battle;
         }
@@ -3223,6 +3233,7 @@ namespace ET.Server
                 player.Lives = source.Lives;
                 player.CanReadyForArena=CanContinueCoop(source);
                 player.RunGold = source.RunGold;
+                player.ScoreShopJson = source.ScoreShop == null ? string.Empty : JsonSerializer.Serialize(source.ScoreShop);
                 player.Score = source.Score; player.ScoreMultiplier = source.ScoreMultiplier; player.MultiplierProgress = source.MultiplierProgress;
                 player.Bombs = source.Bombs;
                 player.Dashes = source.Dashes;
@@ -3467,6 +3478,7 @@ namespace ET.Server
                 player.Lives = sourcePlayer.Lives;
                 player.CanReadyForArena=sourcePlayer.CanReadyForArena;
                 player.RunGold = sourcePlayer.RunGold;
+                player.ScoreShopJson = sourcePlayer.ScoreShopJson;
                 player.Score = sourcePlayer.Score; player.ScoreMultiplier = sourcePlayer.ScoreMultiplier; player.MultiplierProgress = sourcePlayer.MultiplierProgress;
                 player.Bombs = sourcePlayer.Bombs;
                 player.Dashes = sourcePlayer.Dashes;

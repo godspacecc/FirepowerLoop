@@ -613,4 +613,10 @@
         <var name="HerdPlayerDamage" type="float"/>
         <var name="HerdEnemyDamage" type="float"/>
     </bean>
+    <!-- 积分商店只关联现有空投；refresh行保存固定刷新费用，绝不复制掉落效果。 -->
+    <bean name="ArcadeScoreShopConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="DropId" type="string"/>
+        <var name="ScoreCost" type="int"/>
+    </bean>
 </beans>

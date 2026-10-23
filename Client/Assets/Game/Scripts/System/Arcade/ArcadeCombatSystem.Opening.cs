@@ -42,7 +42,7 @@ namespace Game
             if (run == null || rules == null) return false;
             var reward = new ArcadeTreasureRewardParameters(0, FirepowerLoop.Arcade.ArcadeTreasureRewardKind.GoldBar, 0, 0, points, points, 1);
             if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(run.Score, run.ScoreMultiplier,
-                run.MultiplierProgress, run.RemainingLives), reward, rules, out var next)) return false;
+                run.MultiplierProgress, run.RemainingLives, run.ScoreLifeTier), reward, rules, out var next)) return false;
             model.SetTransientTreasureScore(next);
             return true;
         }

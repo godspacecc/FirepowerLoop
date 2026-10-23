@@ -156,7 +156,7 @@ namespace Game
         {
             var layout = RoundLayout(runtime);
             var state = CaptureIslandCheckpoint(runtime); state.MapId = layout.Id;
-            return new ArcadeRoundCheckpoint { SlayerMart=runtime.SlayerMart?.Clone(), ArenaNumber = runtime.ArenaNumber, ArenaConfigNumber = arena.ArenaNumber,
+            return new ArcadeRoundCheckpoint { ScoreShopDelivered=runtime.ScoreShopDeliveryApplied, SlayerMart=runtime.SlayerMart?.Clone(), ArenaNumber = runtime.ArenaNumber, ArenaConfigNumber = arena.ArenaNumber,
                 RoundNumber = runtime.WaveIndex + 1, LayoutVersion = layout.Version, MapId = layout.Id, PlayerState = state,
                 CratesInitialized = runtime.CratesInitialized, RemainingCrateIds = runtime.Crates.Keys.OrderBy(x => x).ToList(),
                 CrateHealth = runtime.Crates.ToDictionary(pair => pair.Key, pair => pair.Value.Health),

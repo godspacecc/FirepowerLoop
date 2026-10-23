@@ -35,6 +35,9 @@ namespace ET.Server
         ConfirmAbandon = 5,
         SetChallengeReady = 7,
         SetSlayerExit = 8,
+        ScoreShopBuy = 10,
+        ScoreShopRefresh = 11,
+        ScoreShopSkip = 12,
     }
 
 
@@ -49,6 +52,10 @@ namespace ET.Server
         public int RunGold { get; set; }
         /// <summary>个人累计积分及倍率进度，随整场成功提交，旧档缺省 0/1/0。</summary>
         public long Score { get; set; }
+        /// <summary>已处理加命档位，消费后再次越过旧档不重复加命；旧档-1由积分推导。</summary>
+        public long ScoreLifeTier { get; set; } = -1;
+        /// <summary>本人的整关积分商店与下关待交付空投，随积分原子持久化。</summary>
+        public FirepowerLoop.Arcade.ArcadeScoreShopState ScoreShop { get; set; }
         public int ScoreMultiplier { get; set; } = 1;
         public int MultiplierProgress { get; set; }
         public int Bombs { get; set; }
@@ -98,6 +105,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeRunRecord
     {
+        /// <summary>积分商店只对明确启用的新正式休闲局开放，旧档缺省0不追加玩法。</summary>
+        public int ScoreShopRulesVersion { get; set; }
         /// <summary>新商店仅对明确启用的新局开放，旧记录缺省0。</summary>
         public int SlayerMartRulesVersion { get; set; }
         /// <summary>已提交轮前的全员商店账本，不与战斗现场共用对象。</summary>

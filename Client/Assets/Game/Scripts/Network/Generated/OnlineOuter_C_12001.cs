@@ -2241,6 +2241,12 @@ namespace ET
         [MemoryPackOrder(20)]
         public bool CanReadyForArena { get; set; }
 
+        /// <summary>
+        /// 本人的商店只读账本，由权威服务器随个人积分发布。
+        /// </summary>
+        [MemoryPackOrder(21)]
+        public string ScoreShopJson { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2267,6 +2273,7 @@ namespace ET
             this.ScoreMultiplier = default;
             this.MultiplierProgress = default;
             this.CanReadyForArena = default;
+            this.ScoreShopJson = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2567,6 +2574,9 @@ namespace ET
         [MemoryPackOrder(7)]
         public string ProtocolFingerprint { get; set; }
 
+        [MemoryPackOrder(8)]
+        public string ScoreShopDropId { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2580,6 +2590,7 @@ namespace ET
             this.ActionKind = default;
             this.Ready = default;
             this.ProtocolFingerprint = default;
+            this.ScoreShopDropId = default;
 
             ObjectPool.Instance.Recycle(this);
         }

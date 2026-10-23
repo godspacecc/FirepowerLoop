@@ -90,7 +90,7 @@ namespace Game
             var run=this.GetModel<ArcadeRunModel>().Current;
             var treasure=catalog.TreasureRooms.First(p=>p.Rewards.Any(r=>r.Kind==FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem));
             bool ok=ArcadeSlayerMartBenefitRules.TryDeliver(state,slayerMartConfig,treasure,
-                new Dictionary<long,ArcadeTreasureScoreState>{{1,new(run.Score,run.ScoreMultiplier,run.MultiplierProgress,run.RemainingLives)}},nextRound,out candidate,out var scores,out error);
+                new Dictionary<long,ArcadeTreasureScoreState>{{1,new(run.Score,run.ScoreMultiplier,run.MultiplierProgress,run.RemainingLives,run.ScoreLifeTier)}},nextRound,out candidate,out var scores,out error);
             score=ok?scores[1]:default;return ok;
         }
         /// <summary>在下一普通轮资源全部就绪后消费加命，同一轮失败重试只保存同一已消费候选。</summary>

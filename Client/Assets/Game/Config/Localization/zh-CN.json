@@ -1385,5 +1385,21 @@
   "ui.arcade.snowfarm.round.1": "雪地农场 · 第1轮",
   "ui.arcade.snowfarm.round.2": "雪地农场 · 第2轮",
   "ui.arcade.snowfarm.round.3": "雪地农场 · 第3轮",
-  "ui.arcade.snowfarm.round.4": "雪地农场 · 第4轮"
+  "ui.arcade.snowfarm.round.4": "雪地农场 · 第4轮",
+  "ui.arcade.score_shop.brand": "FIREPOWERLOOP / FIELD SHOP",
+  "ui.arcade.score_shop.title": "下一关，怎么打？",
+  "ui.arcade.score_shop.subtitle": "三件商品，最多购买一件。\n也可以保留积分，直接出发。",
+  "ui.arcade.score_shop.score_label": "当前积分",
+  "ui.arcade.score_shop.rule": "仅出售现有空投物品，下一关开始时领取，沿用原有持续时间。\n购买与刷新都会扣除积分，推迟下一次加命。刷新每次固定500积分。",
+  "ui.arcade.score_shop.skip": "跳过，保留积分 →",
+  "ui.arcade.score_shop.refresh": "刷新商品 · {0} 积分",
+  "ui.arcade.score_shop.buy": "购买",
+  "ui.arcade.score_shop.insufficient": "积分不足",
+  "ui.arcade.score_shop.price": "{0} 积分",
+  "ui.arcade.score_shop.weapon": "空投武器 · {0}秒",
+  "ui.arcade.score_shop.support": "空投支援 · {0}秒",
+  "ui.arcade.score_shop.weapon_description": "下一关领取现有武器。\n效果与同枪强化均沿用空投规则。",
+  "ui.arcade.score_shop.drone_description": "下一关领取现有支援无人机。\n沿用原有强化与自毁规则。",
+  "ui.arcade.score_shop.waiting": "正在确认本次操作…",
+  "ui.arcade.score_shop.failed": "操作未完成，请重试。积分和商品以保存的结果为准。"
 }

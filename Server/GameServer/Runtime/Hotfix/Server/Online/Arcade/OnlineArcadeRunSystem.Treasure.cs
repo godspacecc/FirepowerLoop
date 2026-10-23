@@ -133,9 +133,9 @@ namespace ET.Server
                 if (recordFeedback) RecordTreasurePickup(actor, playerId, drop.Id, added, 0, reward);
                 return true;
             }
-            if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(record.Score, record.ScoreMultiplier, record.MultiplierProgress, record.Lives), reward, rules, out var next)) return false;
+            if (!ArcadeTreasureScoreRules.TryAward(new ArcadeTreasureScoreState(record.Score, record.ScoreMultiplier, record.MultiplierProgress, record.Lives, record.ScoreLifeTier), reward, rules, out var next)) return false;
             long scoreAdded = next.Score - record.Score;
-            record.Score = next.Score; record.ScoreMultiplier = next.Multiplier; record.MultiplierProgress = next.Progress; record.Lives = next.Lives;
+            record.Score = next.Score; record.ScoreMultiplier = next.Multiplier; record.MultiplierProgress = next.Progress; record.Lives = next.Lives; record.ScoreLifeTier = next.LifeTier;
             NormalizeCoopLifeGain(actor,record);
             if (recordFeedback && scoreAdded > 0) RecordTreasurePickup(actor, playerId, string.Empty, 0, scoreAdded, reward);
             return true;

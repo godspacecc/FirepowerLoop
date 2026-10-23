@@ -216,6 +216,15 @@ namespace Game
                 return false;
             }
 
+            if(data.ScoreLifeTier<0||data.ScoreShopRulesVersion<0||data.ScoreShopRulesVersion>1||
+                data.ScoreShopRulesVersion==0&&data.ScoreShop!=null||
+                data.ScoreShop!=null&&(!data.IsCasualRoute||data.HasResult||data.ScoreShop.NextArena!=data.NextArenaNumber||
+                    data.ScoreShop.Revision<=0||data.ScoreShop.Offers==null||data.ScoreShop.Offers.Count!=3||
+                    data.ScoreShop.Offers.Any(string.IsNullOrWhiteSpace)||data.ScoreShop.Offers.Distinct().Count()!=3||
+                    data.ScoreShop.PurchasedDropId!=null&&(!data.ScoreShop.Completed||!data.ScoreShop.Offers.Contains(data.ScoreShop.PurchasedDropId))||
+                    data.ScoreShop.Delivered&&data.ScoreShop.PurchasedDropId==null||
+                    data.RoundCheckpoint!=null&&(!data.ScoreShop.Completed||data.ScoreShop.PurchasedDropId!=null&&!data.ScoreShop.Delivered)))
+            {error="积分商店或加命档位无效";return false;}
             if(data.SlayerMartRulesVersion<0||data.SlayerMartRulesVersion>1||
                 data.SlayerMartRulesVersion==0&&(data.SlayerMart!=null||data.RoundCheckpoint?.SlayerMart!=null)||
                 data.HasResult&&(data.SlayerMart!=null||data.RoundCheckpoint?.SlayerMart!=null))

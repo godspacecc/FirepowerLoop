@@ -56,7 +56,7 @@ namespace ET.Server
             {
                 var result = await scene.GetComponent<OnlineArcadeRunManagerComponent>().OperateSafeCheckpoint(
                     request.PlayerId, request.OperationId, request.ExpectedRevision, request.ActionKind,
-                    request.Ready);
+                    request.Ready, request.ScoreShopDropId);
                 response.Error = ErrorCode.ERR_Success;
                 response.Accepted = result.Accepted;
                 response.Run = result.Snapshot;
@@ -65,6 +65,7 @@ namespace ET.Server
             {
                 response.Error = exception.Error;
                 response.Message = exception.Message;
+                response.Run = scene.GetComponent<OnlineArcadeRunManagerComponent>().GetActorForPlayer(request.PlayerId)?.BuildSnapshotForPlayer(request.PlayerId);
             }
         }
     }

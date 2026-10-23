@@ -131,6 +131,8 @@ namespace Game
     [Serializable]
     public sealed class ArcadeRoundCheckpoint
     {
+        /// <summary>首轮商品已由正式Drop入口写入角色候选，交付标记与该节点一同落盘。</summary>
+        public bool ScoreShopDelivered { get; set; }
         /// <summary>本轮完整商店账本；随下一正式轮节点整体提交，不保存购物中间态。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         /// <summary>本局场序。</summary>
@@ -178,6 +180,12 @@ namespace Game
         public int Version { get; set; } = CurrentVersion;
         /// <summary>旧档缺省0，只有明确启用的新局采用版本1，不转换旧局金币。</summary>
         public int SlayerMartRulesVersion { get; set; }
+        /// <summary>旧局缺省0保留原流程，新正式局启用积分三选一版本1。</summary>
+        public int ScoreShopRulesVersion { get; set; }
+        /// <summary>个人整关商店访问及待交付空投，随积分一起原子保存。</summary>
+        public FirepowerLoop.Arcade.ArcadeScoreShopState ScoreShop { get; set; }
+        /// <summary>已处理的最高加命档位，旧档0在首次计分／交易时按当前分数补齐。</summary>
+        public long ScoreLifeTier { get; set; }
         /// <summary>最近成功提交的商店全量状态，与轮节点中的副本一致。</summary>
         public FirepowerLoop.Arcade.ArcadeSlayerMartState SlayerMart { get; set; }
         public string RunId { get; set; }
@@ -200,7 +208,7 @@ namespace Game
         public bool HasResult => Victory || !string.IsNullOrEmpty(Outcome);
         public int RemainingLives { get; set; } = ArcadeRunDefaults.InitialLives;
         public long RunGold { get; set; }
-        /// <summary>本局个人累计积分，不是购物余额；随整场安全节点保存。</summary>
+        /// <summary>当前个人积分，可购买或刷新商店；随安全节点保存。</summary>
         public long Score { get; set; }
         /// <summary>领取前计分倍率；旧档缺省为 1，上限来自房间配置。</summary>
         public int ScoreMultiplier { get; set; } = 1;
@@ -224,6 +232,8 @@ namespace Game
         {
             Version = Version,
             SlayerMartRulesVersion=SlayerMartRulesVersion,
+            ScoreShopRulesVersion=ScoreShopRulesVersion,
+            ScoreShop=ScoreShop?.Clone(), ScoreLifeTier=ScoreLifeTier,
             SlayerMart=SlayerMart?.Clone(),
             RunId = RunId,
             CompletedArenaCount = CompletedArenaCount,

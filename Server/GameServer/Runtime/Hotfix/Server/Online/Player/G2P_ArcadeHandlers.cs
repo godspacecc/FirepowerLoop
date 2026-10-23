@@ -33,7 +33,7 @@ namespace ET.Server
             P2G_OperateOnlineArcadeSafeCheckpoint response)
         {
             var result = await actor.OperateOnlineArcadeSafeCheckpoint(request.SessionEpoch, request.OperationId,
-                request.ExpectedRevision, request.ActionKind, request.Ready);
+                request.ExpectedRevision, request.ActionKind, request.Ready, request.ScoreShopDropId);
             response.Error = result.Error;
             response.Message = result.Message;
             response.Accepted = result.Accepted;

@@ -35,6 +35,7 @@
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeRoundRewardRules.cs" Link="Share\ArcadeRoundRewardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeHazardRules.cs" Link="Share\ArcadeHazardRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeTreasureRoomRules.cs" Link="Share\ArcadeTreasureRoomRules.cs" />
+        <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeScoreShopRules.cs" Link="Share\ArcadeScoreShopRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeOpeningRules.cs" Link="Share\ArcadeOpeningRules.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeIslandRegion.cs" Link="Share\ArcadeIslandRegion.cs" />
         <Compile Include="..\..\..\..\Client\Assets\Game\Scripts\Utility\Arcade\ArcadeBabylonRules.cs" Link="Share\ArcadeBabylonRules.cs" />

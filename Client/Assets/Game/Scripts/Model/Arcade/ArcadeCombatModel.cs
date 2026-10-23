@@ -216,6 +216,8 @@ namespace Game
     /// <summary>保存当前竞技场全部瞬时战斗数据；退出竞技场时整体清空，永不进入安全节点文件。</summary>
     internal sealed class ArcadeCombatRuntime
     {
+        /// <summary>本次开场已领取积分商品，轮前保存失败时不能在同一现场重复升档。</summary>
+        public bool ScoreShopDeliveryApplied;
         /// <summary>活动步推进的牛撞状态，不随UI或表现帧推进。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>当前轮金币现场，离开不补发也不写入安全节点。</summary>

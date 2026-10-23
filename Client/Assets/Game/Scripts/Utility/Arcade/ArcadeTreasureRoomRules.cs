@@ -186,13 +186,15 @@ namespace FirepowerLoop.Arcade
     /// <summary>个人累计分、倍率与命数的值快照；不含购物现金、基地奖励或共享队友资源。</summary>
     public readonly struct ArcadeTreasureScoreState
     {
-        public ArcadeTreasureScoreState(long score, int multiplier, int progress, int lives)
-        { Score = score; Multiplier = multiplier; Progress = progress; Lives = lives; }
+        public ArcadeTreasureScoreState(long score, int multiplier, int progress, int lives, long lifeTier = -1)
+        { Score = score; Multiplier = multiplier; Progress = progress; Lives = lives; LifeTier = lifeTier; }
+        /// <summary>已处理的最高加命档位；-1兼容尚未初始化的旧调用。</summary>
+        public long LifeTier { get; }
         public long Score { get; }
         public int Multiplier { get; }
         public int Progress { get; }
         public int Lives { get; }
-        public ArcadeTreasureScoreState ResetAfterDeath() => new ArcadeTreasureScoreState(Score, 1, 0, Lives);
+        public ArcadeTreasureScoreState ResetAfterDeath() => new ArcadeTreasureScoreState(Score, 1, 0, Lives, LifeTier);
     }
 
     /// <summary>双端共用的纯积分候选计算，不修改账本、玩家记录、现金或存档。</summary>
@@ -208,10 +210,12 @@ namespace FirepowerLoop.Arcade
             try
             {
                 long score = checked(current.Score + 100L * current.Multiplier);
-                long tiers = score / rules.LifeThreshold - current.Score / rules.LifeThreshold;
+                long lifeTier = Math.Max(current.LifeTier, current.Score / rules.LifeThreshold);
+                long tiers = Math.Max(0, score / rules.LifeThreshold - lifeTier);
                 int lives = current.Lives >= rules.MaxLives ? current.Lives :
                     current.Lives + (int)Math.Min(tiers, rules.MaxLives - current.Lives);
-                next = new ArcadeTreasureScoreState(score, current.Multiplier, current.Progress, lives); return true;
+                next = new ArcadeTreasureScoreState(score, current.Multiplier, current.Progress, lives,
+                    Math.Max(lifeTier, score / rules.LifeThreshold)); return true;
             }
             catch (OverflowException) { return false; }
         }
@@ -228,13 +232,15 @@ namespace FirepowerLoop.Arcade
             try
             {
                 long score = checked(current.Score + checked((long)reward.Points * current.Multiplier));
-                long tiers = score / rules.LifeThreshold - current.Score / rules.LifeThreshold;
+                long lifeTier = Math.Max(current.LifeTier, current.Score / rules.LifeThreshold);
+                long tiers = Math.Max(0, score / rules.LifeThreshold - lifeTier);
                 int lives = current.Lives >= rules.MaxLives ? current.Lives :
                     current.Lives + (int)Math.Min(tiers, rules.MaxLives - current.Lives);
                 long progress = (long)current.Progress + reward.Progress;
                 int multiplier = (int)Math.Min(rules.MaxMultiplier, current.Multiplier + progress / rules.ProgressPerLevel);
                 next = new ArcadeTreasureScoreState(score, multiplier,
-                    multiplier == rules.MaxMultiplier ? 0 : (int)(progress % rules.ProgressPerLevel), lives);
+                    multiplier == rules.MaxMultiplier ? 0 : (int)(progress % rules.ProgressPerLevel), lives,
+                    Math.Max(lifeTier, score / rules.LifeThreshold));
                 return true;
             }
             catch (OverflowException) { return false; }

@@ -48,8 +48,8 @@ namespace ET.Server
             if (player == null || config == null) return;
             var rules = ArcadeTreasureRoomParameters.FromConfig(config);
             if (ArcadeTreasureScoreRules.TryAwardKill(new ArcadeTreasureScoreState(player.Score, player.ScoreMultiplier,
-                player.MultiplierProgress, player.Lives), rules, out var next))
-            { player.Score = next.Score; player.Lives = next.Lives; NormalizeCoopLifeGain(actor,player); }
+                player.MultiplierProgress, player.Lives, player.ScoreLifeTier), rules, out var next))
+            { player.Score = next.Score; player.Lives = next.Lives; player.ScoreLifeTier = next.LifeTier; NormalizeCoopLifeGain(actor,player); }
         }
     }
 }

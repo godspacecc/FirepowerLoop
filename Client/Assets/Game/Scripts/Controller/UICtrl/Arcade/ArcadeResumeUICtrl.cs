@@ -172,6 +172,7 @@ namespace Game
             }
             if (snapshot == null) return;
             current = snapshot.Clone();
+            UI.BtnContinue.interactable = !operationPending && !ShowScoreShopIfNeeded(current.ScoreShop);
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
             Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome))
                 : Loc.T("ui.arcade.details.continuable"));
@@ -190,6 +191,7 @@ namespace Game
         private void ChooseContinue()
         {
             if (operationPending) return;
+            if (ShowScoreShopIfNeeded(onlineMode ? this.GetSystem<OnlineArcadeRunSystem>().GetScoreShopState() : current?.ScoreShop)) return;
             int generation = operationGeneration;
             var online = this.GetSystem<OnlineArcadeRunSystem>().Snapshot;
             bool challenge = onlineMode
@@ -440,7 +442,8 @@ namespace Game
             UI.ResumeDetails.SetActive(true);
             UI.DialogTitle.text = Loc.T(victory ? "ui.arcade.dialog.result" : "ui.arcade.dialog.progress");
             UI.BtnContinue.gameObject.SetActive(!victory);
-            UI.BtnContinue.interactable = CanReadyOnline(self,idle);
+            bool choosingScoreShop=ShowScoreShopIfNeeded(this.GetSystem<OnlineArcadeRunSystem>().GetScoreShopState());
+            UI.BtnContinue.interactable = CanReadyOnline(self,idle) && !choosingScoreShop;
             SetButton(UI.BtnContinue, Loc.T(self.Ready ? "ui.arcade.online.cancel_ready" : "ui.arcade.online.ready"));
             UI.BtnSettle.gameObject.SetActive(victory);
             UI.BtnSettle.interactable = snapshot.OperationState == OnlineArcadeOperationState.Idle;
@@ -448,6 +451,14 @@ namespace Game
             UI.BtnAbandon.interactable = idle;
             UI.BtnOnline.gameObject.SetActive(false);
             RenderOnlineDetails(snapshot, victory);
+        }
+
+        /// <summary>安全节点呈现本人未完成的整关商店；显示不抽取商品，也不提交跳过。</summary>
+        private bool ShowScoreShopIfNeeded(FirepowerLoop.Arcade.ArcadeScoreShopState shop)
+        {
+            if(shop is not {Completed:false})return false;
+            if(IsShow() && UIHelper.GetUICtrl<ArcadeScoreShopUICtrl>()?.IsShow()!=true)UIHelper.ShowUI<ArcadeScoreShopUICtrl>();
+            return true;
         }
 
         /// <summary>复用详情框展示双方权威分数与准备/结果确认状态；与单人指标互斥，不改变联机规则。</summary>

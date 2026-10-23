@@ -574,6 +574,8 @@ message OnlineArcadePlayerInfo
 	int32 ScoreMultiplier = 19;
 	int32 MultiplierProgress = 20;
 	bool CanReadyForArena = 21;
+    // 本人的商店只读账本，由权威服务器随个人积分发布。
+    string ScoreShopJson = 22;
 }
 
 
@@ -655,6 +657,7 @@ message C2G_OperateOnlineArcadeSafeCheckpoint // ISessionRequest
 	int32 ActionKind = 4;
 	bool Ready = 7;
  string ProtocolFingerprint = 8;
+    string ScoreShopDropId = 9;
 }
 
 // Opcode 12094

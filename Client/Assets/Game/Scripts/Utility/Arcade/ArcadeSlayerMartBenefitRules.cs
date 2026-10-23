@@ -40,7 +40,7 @@ namespace FirepowerLoop.Arcade
                 else
                 {
                     if(score.Lives<0||score.Lives>config.Catalog.MaxLives)return false;
-                    score=new ArcadeTreasureScoreState(score.Score,score.Multiplier,score.Progress,Math.Min(config.Catalog.MaxLives,score.Lives+1));
+                    score=new ArcadeTreasureScoreState(score.Score,score.Multiplier,score.Progress,Math.Min(config.Catalog.MaxLives,score.Lives+1),score.LifeTier);
                 }
                 result[owner.PlayerId]=score;owner.Lives=score.Lives;owner.AppliedBenefitGrants.Add(grant.EventId);
             }

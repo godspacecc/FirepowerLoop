@@ -1,0 +1,53 @@
+{
+  "baseline": "68cd63510897ecd21ffec2cc02be60ce846845f9",
+  "configurationGenerator": "Config/gen.bat",
+  "protocolGenerator": "Tools/gen-protocol.ps1",
+  "build": {
+    "command": "dotnet build Tools/ArcadeFullRouteOnlineChecks/ArcadeFullRouteOnlineChecks.csproj -t:Rebuild --nologo",
+    "exitCode": 0,
+    "warnings": 0,
+    "errors": 0
+  },
+  "tests": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "fe2e1f",
+        "wall_time_seconds": 2.0347159,
+        "exit_code": 0,
+        "original_token_count": 294,
+        "output": "PASS ScoreShopOnline.Whole arena opens distinct personal visits\r\nPASS ScoreShopOnline.Final victory never opens shop\r\nPASS ScoreShopOnline.Purchase spends only authenticated player score\r\nPASS ScoreShopOnline.Refresh costs 500 and keeps visit open\r\nPASS ScoreShopOnline.Insufficient score rejects without mutation\r\nPASS ScoreShopOnline.Skip ends without spending\r\nPASS ScoreShopOnline.Ready and challenge cannot bypass either shopper\r\nPASS ScoreShopOnline.PrepareBattle rejects incomplete shops even without ready requirement\r\nPASS ScoreShopOnline.Drop delivery captures full duration and does not redeliver after reload\r\nPASS ScoreShopOnline.Drone delivery uses existing support entry\r\nPASS ScoreShopOnline.Clone preserves consumed score life tier and offers\r\nPASS ScoreShopOnline.Old fingerprint remains compatible and shop includes selected drop\r\nPASS ScoreShopOnline.Atomic failure preserves saved shop and source actor\r\nPASS ScoreShopOnline.Successful authority request replay never charges again\r\nPASS ScoreShopOnline.Generated request and snapshot retain selected drop and personal visit\r\nPASS ScoreShopOnline.Persisted malformed visit refuses restore\r\n16/16 passed\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "2fa5e8",
+        "wall_time_seconds": 1.7575475,
+        "exit_code": 0,
+        "original_token_count": 211,
+        "output": "PASS SlayerMartProtocolGate.Previous development payload cannot enter new shape\r\nPASS SlayerMartProtocolGate.Battle pushes require protocol acknowledgement in current login epoch\r\nPASS SlayerMartProtocolGate.Every arcade RPC gate rejects absent or old capability\r\nPASS SlayerMartProtocolGate.Old raw fingerprint cannot create or match arcade room\r\nPASS SlayerMartProtocolGate.Current protocol capability can create arcade room\r\nPASS SlayerMartProtocolGate.Different config with correct protocol still rejects\r\nPASS SlayerMartProtocolGate.General room compatibility stays unchanged\r\nPASS SlayerMartProtocolGate.Old existing arcade room cannot accept old client\r\nPASS SlayerMartProtocolGate.Matching current clients can join current room\r\nPASS SlayerMartProtocolGate.Capability derivation never rewrites saved config fingerprint\r\n10/10 passed\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "2219a0",
+        "wall_time_seconds": 1.8078286000000001,
+        "exit_code": 0,
+        "original_token_count": 95,
+        "output": "PASS RoundRewardOnline.ClearCreatesOnce\r\nPASS RoundRewardOnline.NearLivePlayerAndStableLanding\r\nPASS RoundRewardOnline.FullEffectAndTwoPlayersAwardOnce\r\nPASS RoundRewardOnline.LeavingAbandonsRemaining\r\nPASS RoundRewardOnline.ChallengeHasNoChest\r\nPASS RoundRewardOnline.StagePortalReplacesFinalPassages\r\nPASS RoundRewardOnline.SnapshotCloneCodecKeepsRewardAndPortal\r\n7/7 passed\r\n"
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "chunk_id": "5ce35c",
+        "wall_time_seconds": 1.7059921999999998,
+        "exit_code": 0,
+        "original_token_count": 123,
+        "output": "PASS SlayerMartReleaseGateOnline.Closed gate creates original rules\r\nPASS SlayerMartReleaseGateOnline.Open gate creates version one without granting shop money\r\nPASS SlayerMartReleaseGateOnline.Prepared battle inherits new run version\r\nPASS SlayerMartReleaseGateOnline.Existing old run never upgrades when gate opens\r\nPASS SlayerMartReleaseGateOnline.Existing new run never downgrades when gate closes\r\nPASS SlayerMartReleaseGateOnline.Candidate clone preserves enabled rules\r\n6/6 passed\r\n"
+      }
+    }
+  ]
+}

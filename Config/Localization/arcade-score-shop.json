@@ -1,0 +1,18 @@
+{
+  "ui.arcade.score_shop.brand": {"zh-CN":"FIREPOWERLOOP / FIELD SHOP","en-US":"FIREPOWERLOOP / FIELD SHOP"},
+  "ui.arcade.score_shop.title": {"zh-CN":"下一关，怎么打？","en-US":"How will you fight next?"},
+  "ui.arcade.score_shop.subtitle": {"zh-CN":"三件商品，最多购买一件。\n也可以保留积分，直接出发。","en-US":"Three offers. Buy at most one.\nOr keep your score and move on."},
+  "ui.arcade.score_shop.score_label": {"zh-CN":"当前积分","en-US":"CURRENT SCORE"},
+  "ui.arcade.score_shop.rule": {"zh-CN":"仅出售现有空投物品，下一关开始时领取，沿用原有持续时间。\n购买与刷新都会扣除积分，推迟下一次加命。刷新每次固定500积分。","en-US":"Existing airdrops only. Receive your item at the start of the next stage with its original duration.\nBuying and refreshing spend score and delay your next extra life. Each refresh costs 500 points."},
+  "ui.arcade.score_shop.skip": {"zh-CN":"跳过，保留积分 →","en-US":"Skip and keep score →"},
+  "ui.arcade.score_shop.refresh": {"zh-CN":"刷新商品 · {0} 积分","en-US":"Refresh · {0} points"},
+  "ui.arcade.score_shop.buy": {"zh-CN":"购买","en-US":"Buy"},
+  "ui.arcade.score_shop.insufficient": {"zh-CN":"积分不足","en-US":"Not enough score"},
+  "ui.arcade.score_shop.price": {"zh-CN":"{0} 积分","en-US":"{0} points"},
+  "ui.arcade.score_shop.weapon": {"zh-CN":"空投武器 · {0}秒","en-US":"AIRDROP WEAPON · {0}s"},
+  "ui.arcade.score_shop.support": {"zh-CN":"空投支援 · {0}秒","en-US":"AIRDROP SUPPORT · {0}s"},
+  "ui.arcade.score_shop.weapon_description": {"zh-CN":"下一关领取现有武器。\n效果与同枪强化均沿用空投规则。","en-US":"Receive this weapon next stage.\nUses existing airdrop and same-weapon upgrade rules."},
+  "ui.arcade.score_shop.drone_description": {"zh-CN":"下一关领取现有支援无人机。\n沿用原有强化与自毁规则。","en-US":"Receive a support drone next stage.\nUses its existing upgrade and self-destruct rules."},
+  "ui.arcade.score_shop.waiting": {"zh-CN":"正在确认本次操作…","en-US":"Confirming your action…"},
+  "ui.arcade.score_shop.failed": {"zh-CN":"操作未完成，请重试。积分和商品以保存的结果为准。","en-US":"Action incomplete. Please retry. Score and offers follow the saved result."}
+}

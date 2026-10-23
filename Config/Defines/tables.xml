@@ -42,4 +42,5 @@
     <table name="TbArcadeRoundReward" value="ArcadeRoundRewardConfig" input="arcade_round_reward.csv" group="e"/>
     <table name="TbArcadeWeaponUpgrade" value="ArcadeWeaponUpgradeConfig" input="arcade_weapon_upgrade.csv" group="e"/>
     <table name="TbArcadeEarlyStage" value="ArcadeEarlyStageConfig" input="arcade_early_stage.csv" group="e"/>
+    <table name="TbArcadeScoreShop" value="ArcadeScoreShopConfig" input="arcade_score_shop.csv" group="e"/>
 </tables>

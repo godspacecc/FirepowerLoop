@@ -111,11 +111,11 @@ namespace ET.Server
         {
             var treasure=ServerConfig.Instance.Tables.TbArcadeTreasureRoom.DataList.Select(ArcadeTreasureRoomParameters.FromConfig)
                 .First(p=>p.Rewards.Any(r=>r.Kind==FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem));
-            var current=record.Players.ToDictionary(p=>p.PlayerId,p=>new ArcadeTreasureScoreState(p.Score,p.ScoreMultiplier,p.MultiplierProgress,p.Lives));
+            var current=record.Players.ToDictionary(p=>p.PlayerId,p=>new ArcadeTreasureScoreState(p.Score,p.ScoreMultiplier,p.MultiplierProgress,p.Lives,p.ScoreLifeTier));
             return ArcadeSlayerMartBenefitRules.TryDeliver(state,ServerConfig.Instance.SlayerMart,treasure,current,nextRound,out candidate,out scores,out error);
         }
         private static void ApplySlayerMartScore(OnlineArcadePlayerRecord record,ArcadeTreasureScoreState score)
-        {record.Score=score.Score;record.ScoreMultiplier=score.Multiplier;record.MultiplierProgress=score.Progress;record.Lives=score.Lives;}
+        {record.Score=score.Score;record.ScoreMultiplier=score.Multiplier;record.MultiplierProgress=score.Progress;record.Lives=score.Lives;record.ScoreLifeTier=score.LifeTier;}
         /// <summary>只修改即将原子写盘的全员候选；零命加到一命沿现有复起等待加入，不在商店恢复HP。</summary>
         public static bool ApplySlayerMartRoundCandidate(OnlineArcadeRunRecord record,out string error)
         {

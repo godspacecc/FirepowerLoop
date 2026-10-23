@@ -71,6 +71,7 @@ namespace Game
             var checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1, GenerationSeed = seed };
             var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, checkpoint);
             candidate.IsCasualRoute = true;
+            candidate.ScoreShopRulesVersion = catalog.ScoreShop == null ? 0 : 1;
             candidate.SlayerMartRulesVersion = slayerMartRulesVersion;
             candidate.ArenaConfigNumber = catalog.Arenas[0].ArenaNumber;
             candidate.EmergencyResources[ArcadeRunDefaults.BombResourceId] = catalog.Rule.InitialBombs;
@@ -112,6 +113,8 @@ namespace Game
                     error = "存档路线场地不在当前配置中";
                     return false;
                 }
+                if(read.Data.ScoreShop!=null&&!FirepowerLoop.Arcade.ArcadeScoreShopRules.IsValid(catalog.ScoreShop,read.Data.ScoreShop))
+                {error="积分商店记录与当前空投配置不兼容，原存档已保留";return false;}
                 // 旧普通节点保留同一目的地和资源；未尝试挑战沿用普通继续规则。
                 if (!read.Data.HasResult && read.Data.Checkpoint?.ChallengeAttempted != true)
                     read.Data.Checkpoint = new ArcadeCheckpointSaveData
@@ -127,6 +130,8 @@ namespace Game
         public bool TryContinue(out ArcadeRunSaveData snapshot, out string error)
         {
             var model = this.GetModel<ArcadeRunModel>();
+            if(ScoreShopUnfinished(model.Current))
+            {snapshot=model.Current;error="请先购买一项或跳过本次商店";return false;}
             if (!model.HasRun || model.Phase != ArcadeRunPhase.SafeCheckpoint)
             {
                 snapshot = model.Current;
@@ -200,6 +205,13 @@ namespace Game
             }
             var candidate = current.Clone();
             candidate.RoundCheckpoint = checkpoint.Clone();
+            // 首轮效果已按空投入口写入PlayerState，和消费标记同一次落盘；失败可从原入场节点重试。
+            if(checkpoint.RoundNumber==1&&candidate.ScoreShop?.NextArena==candidate.NextArenaNumber&&
+                candidate.ScoreShop.PurchasedDropId!=null&&!candidate.ScoreShop.Delivered)
+            {
+                if(!checkpoint.ScoreShopDelivered){error="首轮候选尚未领取积分商品";return false;}
+                candidate.ScoreShop.Delivered=true;
+            }
             candidate.SlayerMart=checkpoint.SlayerMart?.Clone();
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;
@@ -232,6 +244,7 @@ namespace Game
             var model = this.GetModel<ArcadeRunModel>();
             var current = model.Current;
             snapshot = current;
+            if(ScoreShopUnfinished(current)){error="请先完成本次商店选择";return false;}
             if (model.Phase != ArcadeRunPhase.SafeCheckpoint || current?.Checkpoint == null ||
                 string.IsNullOrWhiteSpace(current.Checkpoint.ChallengeId) || current.Checkpoint.ChallengeAttempted)
             {
@@ -380,6 +393,7 @@ namespace Game
         private ArcadeRunSaveData CreateFailedCandidate(ArcadeRunSaveData current)
         {
             var candidate = current.Clone(); candidate.RemainingLives = 0; candidate.Outcome = "failed";
+            candidate.ScoreShop = null;
             candidate.SlayerMart = null; candidate.RoundCheckpoint = null; candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null; candidate.PendingRewards.Clear();
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O"); return candidate;
@@ -465,6 +479,7 @@ namespace Game
                 ? new ArcadeCheckpointSaveData { ArenaNumber = candidate.NextArenaNumber }
                 : completion.NextCheckpoint.Clone();
             ConfigureSlayerOpportunity(candidate);
+            if(!ConfigureScoreShop(candidate,out error))return false;
             candidate.UpdatedAtUtc = clock.UtcNow.ToUniversalTime().ToString("O");
             if (!store.Save(candidate, out error)) return false;
             CommitSafeNode(candidate);
@@ -513,6 +528,7 @@ namespace Game
             var candidate = current.Clone();
             candidate.Outcome = "abandoned";
             candidate.SlayerMart=null;
+            candidate.ScoreShop=null;
             candidate.RoundCheckpoint = null;
             candidate.IslandRoundCheckpoint = null;
             candidate.ArenaEntryState = null;

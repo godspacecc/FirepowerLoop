@@ -6,7 +6,7 @@ internal static class SlayerMartProtocolGateChecks
 {
     public static int Run(int max)
     {
-        string saved=ServerConfig.Instance.ArcadeRule.ConfigFingerprint;string network=saved+"|slayermart.v2|coop-rescue.v2";
+        string saved=ServerConfig.Instance.ArcadeRule.ConfigFingerprint;string network=saved+"|slayermart.v2|coop-rescue.v2|score-shop.v1";
         bool Create(string fp)=>OnlineRoomSnapshotHelper.TryValidateCreation((int)OnlineRoomPurpose.Arcade,(int)OnlineRoomVisibility.Private,"test",fp,out _,out _,out _,out _);
         OnlineRoomActor Room(string fp)=>new(){Purpose=OnlineRoomPurpose.Arcade,ClientVersion="test",ArcadeConfigFingerprint=fp};
         var tests=new (string,Action)[]{
@@ -15,7 +15,7 @@ internal static class SlayerMartProtocolGateChecks
             ("Every arcade RPC gate rejects absent or old capability",()=>{var type=typeof(OnlineRoomSnapshotHelper).Assembly.GetType("ET.Server.OnlineArcadeProtocolGuard")??throw new InvalidOperationException("Missing RPC protocol gate");var method=type.GetMethod("Matches");Require(!(bool)method.Invoke(null,new object[]{null})&&!(bool)method.Invoke(null,new object[]{saved})&&(bool)method.Invoke(null,new object[]{network}));}),
             ("Old raw fingerprint cannot create or match arcade room",()=>Require(!Create(saved))),
             ("Current protocol capability can create arcade room",()=>Require(Create(network))),
-            ("Different config with correct protocol still rejects",()=>Require(!Create("foreign|slayermart.v2|coop-rescue.v2"))),
+            ("Different config with correct protocol still rejects",()=>Require(!Create("foreign|slayermart.v2|coop-rescue.v2|score-shop.v1"))),
             ("General room compatibility stays unchanged",()=>Require(OnlineRoomSnapshotHelper.TryValidateCreation((int)OnlineRoomPurpose.General,(int)OnlineRoomVisibility.Public,"","",out _,out _,out _,out _))),
             ("Old existing arcade room cannot accept old client",()=>Require(!OnlineRoomSnapshotHelper.IsCompatible(Room(saved),(int)OnlineRoomPurpose.Arcade,"test",saved,out _))),
             ("Matching current clients can join current room",()=>Require(OnlineRoomSnapshotHelper.IsCompatible(Room(network),(int)OnlineRoomPurpose.Arcade,"test",network,out _))),

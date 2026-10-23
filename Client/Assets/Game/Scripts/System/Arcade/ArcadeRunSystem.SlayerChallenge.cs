@@ -33,9 +33,9 @@ namespace Game
             long cash=ArcadeSlayerChallengeRules.UnclaimedCash(state,c);
             foreach(var member in nextShop.Players){member.Cash=checked(member.Cash+cash);member.MenuOpen=false;member.Bombs=actual.Bombs;member.Dashes=actual.Dashes;member.Lives=current.RemainingLives;}
             var treasure=catalog.TreasureRooms.First(p=>p.Rewards.Any(r=>r.Kind==FirepowerLoop.Arcade.ArcadeTreasureRewardKind.Gem));
-            if(!ArcadeSlayerMartBenefitRules.TryDeliver(nextShop,shopConfig,treasure,new Dictionary<long,ArcadeTreasureScoreState>{{1,new(current.Score,current.ScoreMultiplier,current.MultiplierProgress,current.RemainingLives)}},
+            if(!ArcadeSlayerMartBenefitRules.TryDeliver(nextShop,shopConfig,treasure,new Dictionary<long,ArcadeTreasureScoreState>{{1,new(current.Score,current.ScoreMultiplier,current.MultiplierProgress,current.RemainingLives,current.ScoreLifeTier)}},
                 true,out nextShop,out var scores,out error))return false;
-            var score=scores[1];candidate.Score=score.Score;candidate.ScoreMultiplier=score.Multiplier;candidate.MultiplierProgress=score.Progress;candidate.RemainingLives=score.Lives;
+            var score=scores[1];candidate.Score=score.Score;candidate.ScoreMultiplier=score.Multiplier;candidate.MultiplierProgress=score.Progress;candidate.RemainingLives=score.Lives;candidate.ScoreLifeTier=score.LifeTier;
             candidate.SlayerMart=nextShop;
             var entry=candidate.RoundCheckpoint?.PlayerState??candidate.ArenaEntryState;
             if(entry!=null)

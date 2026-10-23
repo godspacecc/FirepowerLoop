@@ -1,0 +1,11 @@
+##var,Id,DropId,ScoreCost
+##type,string,string,int
+,refresh,-,500
+,flamethrower,arcade.drop.weapon.flamethrower,3000
+,drone,arcade.drop.support.drone,4000
+,rapid,arcade.drop.weapon.rapid,3000
+,spread,arcade.drop.weapon.spread,3000
+,piercing,arcade.drop.weapon.piercing,4000
+,rocket,arcade.drop.weapon.rocket,5000
+,grenade,arcade.drop.weapon.grenade,5000
+,raygun,arcade.drop.weapon.raygun,6000

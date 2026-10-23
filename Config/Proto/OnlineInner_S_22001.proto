@@ -719,6 +719,7 @@ message G2P_OperateOnlineArcadeSafeCheckpoint // IRequest
 	string OfferId = 7;
 	int32 GoldAmount = 8;
 	bool Ready = 9;
+    string ScoreShopDropId = 10;
 }
 
 // Opcode 22143
@@ -743,6 +744,7 @@ message P2R_OperateOnlineArcadeSafeCheckpoint // IRequest
 	string OfferId = 6;
 	int32 GoldAmount = 7;
 	bool Ready = 8;
+    string ScoreShopDropId = 9;
 }
 
 // Opcode 22145

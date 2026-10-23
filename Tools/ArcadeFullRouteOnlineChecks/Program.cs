@@ -8,6 +8,12 @@ if(opts.GetValueOrDefault("testClass")=="WeaponFeedbackOnline")
     World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
     World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=WeaponFeedbackOnlineChecks.Run(feedbackMax);return;
 }
+if(opts.GetValueOrDefault("testClass")=="ScoreShopOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int shopMax)||shopMax<1||shopMax>16)throw new ArgumentException("Explicit ScoreShopOnline limit 1..16 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=ScoreShopOnlineChecks.Run(shopMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="ElectricTowerOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int electricMax)||electricMax<1)throw new ArgumentException("Explicit ElectricTowerOnline limit required");

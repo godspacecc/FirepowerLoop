@@ -367,6 +367,8 @@ namespace Game
                 {
                     if (run.RoundCheckpoint == null && run.ArenaEntryState != null)
                         RestoreIslandCheckpoint(runtime, run.ArenaEntryState);
+                    if(run.RoundCheckpoint==null&&!TryApplyScoreShopDrop(runtime,run,out var shopError))
+                        throw new InvalidOperationException(shopError);
                     StartContentRound(runtime, (run.RoundCheckpoint?.RoundNumber ?? 1) - 1, run.RoundCheckpoint);
                 }
                 else

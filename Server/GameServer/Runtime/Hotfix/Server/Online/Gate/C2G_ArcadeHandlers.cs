@@ -88,6 +88,7 @@ namespace ET.Server
             inner.ExpectedRevision = request.ExpectedRevision;
             inner.ActionKind = request.ActionKind;
             inner.Ready = request.Ready;
+            inner.ScoreShopDropId = request.ScoreShopDropId;
             using P2G_OperateOnlineArcadeSafeCheckpoint result = await session.Root().GetComponent<MessageSender>()
                 .Call(proxy.PlayerActorId, inner, false) as P2G_OperateOnlineArcadeSafeCheckpoint;
             response.Error = result.Error;

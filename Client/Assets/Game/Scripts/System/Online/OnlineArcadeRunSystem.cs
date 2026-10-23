@@ -57,6 +57,7 @@ namespace Game
         protected override void OnDeinit()
         {
             CancelOperation();
+            ClearScoreShop();
             LifeCycle.UnregisterUpdate(OnUpdate);
             input?.Dispose();
             input = null;
@@ -350,6 +351,8 @@ namespace Game
                     }
                     Publish(snapshot);
                 }
+                else if(run!=null&&!IsStaleRunSnapshot(run)&&MatchesLocalConfig(run.ConfigFingerprint))
+                    Publish(CopySnapshot(run,code));
                 else Publish(WithIdle(code));
                 return new OnlineArcadeOperationResult(code, lastSnapshot);
             }
@@ -398,6 +401,7 @@ namespace Game
         private OnlineArcadeRunClientSnapshot CopySnapshot(ET.OnlineArcadeRunSnapshot source, OnlineArcadeResultCode code)
         {
             ObserveSlayerMart(source);
+            ObserveScoreShop(source);
             List<OnlineArcadePlayerSnapshot> players = new(source.Players.Count);
             foreach (OnlineArcadePlayerInfo sourcePlayer in source.Players)
             {
@@ -504,7 +508,7 @@ namespace Game
         private void Publish(OnlineArcadeRunClientSnapshot snapshot)
         {
             ResetInputOnBoundary(snapshot);
-            if(!snapshot.HasRun)ClearSlayerMart();
+            if(!snapshot.HasRun){ClearSlayerMart();ClearScoreShop(snapshot.LastResultCode is OnlineArcadeResultCode.Success or OnlineArcadeResultCode.VersionMismatch);}
             bool ended = lastSnapshot.HasRun && !snapshot.HasRun && snapshot.LastResultCode == OnlineArcadeResultCode.Success;
             if (ended)
             {
