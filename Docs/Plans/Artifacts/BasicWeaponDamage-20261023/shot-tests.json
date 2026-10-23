@@ -1,0 +1,40 @@
+{
+  "red": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.1024600"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeSkullPowerTests.ContactSkullUpgradesRealWeaponShot(False,2,\"#Red\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.0030000"
+        }
+      ]
+    }
+  },
+  "purple": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9070185"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeSkullPowerTests.ContactSkullUpgradesRealWeaponShot(True,3,\"#Purple\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.7820000"
+        }
+      ]
+    }
+  }
+}
