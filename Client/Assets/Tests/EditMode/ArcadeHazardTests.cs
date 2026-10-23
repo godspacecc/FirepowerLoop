@@ -1,4 +1,4 @@
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using FirepowerLoop.Arcade;
 using System;
 using System.IO;
@@ -318,8 +318,31 @@ namespace Game.Tests
             typeof(ArcadeCombatSystem).GetField("arena", flags).SetValue(system, catalog.Arenas[1]);
             action(system, runtime);
         }
+        [TestCase(false)] [TestCase(true)]
+        public void ElectricHitFeedbackFollowsAcceptedContactIncludingShield(bool shield)
+        {
+            WithCombat((system,runtime)=>
+            {
+                var feedback=(TestView)typeof(ArcadeCombatSystem).GetField("view",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(system);
+                if(shield)runtime.Powerups.Add(ArcadePowerupBehavior.Shield,new ArcadePowerupRuntime{RemainingSeconds=10,Charges=1});
+                Hit(system,runtime,.1f);Assert.That(feedback.ElectricHits,Is.EqualTo(1));Assert.That(feedback.LastHit,Is.EqualTo(new Vector2(4,0)));
+                Hit(system,runtime,.1f);Assert.That(feedback.ElectricHits,Is.EqualTo(1),"冷却/无敌不能生成假命中");
+            });
+        }
+        [Test] public void FatalElectricHitKeepsPreRespawnContactPosition()
+        {
+            WithConfiguredHazard(21,0,100,(system,runtime,run)=>
+            {
+                var feedback=(TestView)typeof(ArcadeCombatSystem).GetField("view",BindingFlags.NonPublic|BindingFlags.Instance).GetValue(system);
+                var contact=runtime.PlayerPosition;Hit(system,runtime,.1f);
+                Assert.That(feedback.ElectricHits,Is.EqualTo(1));Assert.That(feedback.LastHit,Is.EqualTo(contact));
+                Assert.That(run.Current.RemainingLives,Is.EqualTo(2));
+            });
+        }
         private sealed class TestView : IArcadeCombatViewPort
         {
+            public int ElectricHits;public Vector2 LastHit;
+            public void PlayElectricTowerHit(int id,Vector2 position){ElectricHits++;LastHit=position;}
             public bool IsActive => true;
             public void Begin(int number, float width, float height, IReadOnlyList<ArcadeObstacleDefinition> obstacles) { }
             public void End() { }

@@ -297,6 +297,20 @@ namespace Game
         {var state=new FirepowerLoop.Arcade.ArcadeRoundRewardState{RoundIdentity=RoundIdentity,X=X,Z=Z,ElapsedSeconds=ElapsedSeconds,Phase=Phase};state.Items.AddRange(Items);state.Collected.UnionWith(Collected);return state;}
     }
 
+    /// <summary>已裁决电击的只读地点与时间，和血量、死亡反馈独立同步。</summary>
+    public readonly struct OnlineArcadeElectricHitSnapshot
+    {
+        public OnlineArcadeElectricHitSnapshot(long sequence,int hazardId,float x,float z,int roundGeneration,float elapsedSeconds,long serverTime=0)
+        {Sequence=sequence;HazardId=hazardId;X=x;Z=z;RoundGeneration=roundGeneration;ElapsedSeconds=elapsedSeconds;ServerTime=serverTime;}
+        public long Sequence {get;}
+        public int HazardId {get;}
+        public float X {get;}
+        public float Z {get;}
+        public int RoundGeneration {get;}
+        public float ElapsedSeconds {get;}
+        public long ServerTime {get;}
+    }
+
     public sealed class OnlineArcadeBattleSnapshot
     {
         public OnlineArcadeBattleSnapshot(int arenaNumber, int waveNumber, int waveCount, int spawnedInWave,
@@ -313,7 +327,7 @@ namespace Game
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
             float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
             IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null, OnlineArcadeRoundRewardSnapshot roundReward=null,float stagePortalSeconds=0,float stagePortalX=0,float stagePortalZ=0,
-            IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> herds=null)
+            IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> herds=null,IReadOnlyList<OnlineArcadeElectricHitSnapshot> electricHits=null)
         {
             SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;RoundReward=roundReward;StagePortalSeconds=stagePortalSeconds;StagePortalX=stagePortalX;StagePortalZ=stagePortalZ;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
@@ -333,6 +347,7 @@ namespace Game
             SupplyPickups = Array.AsReadOnly(Copy(supplyPickups));
             BombBlasts = Array.AsReadOnly(Copy(bombBlasts));
             EnemyDeaths = Array.AsReadOnly(Copy(enemyDeaths));
+            ElectricHits=Array.AsReadOnly(Copy(electricHits));
             SpawnedInWave = spawnedInWave; TotalInWave = totalInWave;
             DifficultyPlayerCount = difficultyPlayerCount; BattleRevision = battleRevision; ServerTime = serverTime;
             Players = Array.AsReadOnly(Copy(players)); Enemies = Array.AsReadOnly(Copy(enemies));
@@ -394,6 +409,8 @@ namespace Game
         public IReadOnlyList<OnlineArcadeBombBlastSnapshot> BombBlasts { get; }
         /// <summary>最多24条同轮死亡事实；只为已经可见且本次移除的敌人播放。</summary>
         public IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> EnemyDeaths { get; }
+        /// <summary>每轮最多32条电塔命中事实，仅供去重表现。</summary>
+        public IReadOnlyList<OnlineArcadeElectricHitSnapshot> ElectricHits {get;}
         public bool IsChallenge { get; }
         public string ChallengeId { get; }
         public float ChallengeSeconds { get; }

@@ -1103,6 +1103,38 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeElectricCharge.wav
+        CollectorGUID: e5da697f0d21486982f462083eb46bcc
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeElectricDischarge.wav
+        CollectorGUID: 6b22b74524054cadb831f8a5221b73cd
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeElectricPowerOn.wav
+        CollectorGUID: 42ed992b27f04de2af43b24e18446f3f
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
+      - CollectPath: Assets/Game/Audio/Sound/ArcadeElectricHit.wav
+        CollectorGUID: cb7527cf4d164e018fbef11a4f487526
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData: 
       - CollectPath: Assets/Game/Audio/Sound/ArcadeFireFlameLoop.wav
         CollectorGUID: 8528513f3f494a5a83f7ed57d8a22b8f
         CollectorType: 0

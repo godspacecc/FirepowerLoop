@@ -55,6 +55,6 @@ namespace Game
         }
 
         /// <summary>联机断线暂停或世界表现暂挂时显式停声，不依赖被挂起的表现帧倒计时。</summary>
-        public void StopPlayerFireAudio() => StopFlamethrowerAudio();
+        public void StopPlayerFireAudio() { StopFlamethrowerAudio(); StopElectricTowerAudio(); }
     }
 }

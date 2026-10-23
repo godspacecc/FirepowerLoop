@@ -1,0 +1,11 @@
+{
+  "sample_rate": 44100,
+  "audition_seconds": 4.65,
+  "audition_peak": 0.55,
+  "mix_peak": 0.92,
+  "charge_rms": 0.10081934142935593,
+  "active_rms": 0.165,
+  "tonal_oscillators": 0,
+  "visual_stream": "copy of v1, unchanged",
+  "video_bytes": 2009769
+}

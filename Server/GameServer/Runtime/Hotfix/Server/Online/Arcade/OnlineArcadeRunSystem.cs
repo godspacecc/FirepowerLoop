@@ -1355,6 +1355,7 @@ namespace ET.Server
             battle.SpawnQueueIndex = 0;
             battle.SpawnedInWave = 0;
             battle.EnemyDeaths.Clear();
+            battle.ElectricHits.Clear();battle.NextElectricHitSequence=0;
             int totalWeight = group.Members.Sum(member => member.Count);
             bool casualOrdinary = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss && !battle.RoundBossEncounter;
             int total = casualOrdinary
@@ -2771,7 +2772,7 @@ namespace ET.Server
 
         /// <summary>统一分源挡伤；保留旧护盾，新增板不能抵消明确失命机关。</summary>
         private static void DamagePlayerCore(this OnlineArcadeRunActor self,OnlineArcadeBattleRuntime battle,
-            OnlineArcadeBattlePlayerRuntime player,int damage,FirepowerLoop.Arcade.SlayerMartHitKind kind)
+            OnlineArcadeBattlePlayerRuntime player,int damage,FirepowerLoop.Arcade.SlayerMartHitKind kind,int electricHazardId=0)
         {
             if(battle.SlayerChallenge!=null&&battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&
                 battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Boss)return;
@@ -2783,13 +2784,15 @@ namespace ET.Server
                 shield.Charges--;
                 if (shield.Charges <= 0) player.Powerups.Remove(ArcadePowerupBehavior.Shield);
                 player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds;
+                RecordElectricHit(battle,electricHazardId,player.PositionX,player.PositionZ);
                 return;
             }
             var ability=battle.SlayerMartRulesVersion==1?battle.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==player.PlayerId):null;
             if(FirepowerLoop.Arcade.ArcadeSlayerMartAbilityRules.TryBlockHit(kind,ability,false,false)==FirepowerLoop.Arcade.SlayerMartBlockResult.Plate)
-            {player.InvulnerabilitySeconds=rule.ContactInvulnerabilitySeconds;return;}
+            {player.InvulnerabilitySeconds=rule.ContactInvulnerabilitySeconds;RecordElectricHit(battle,electricHazardId,player.PositionX,player.PositionZ);return;}
             player.CurrentHealth -= Math.Max(1, damage);
             player.InvulnerabilitySeconds = rule.ContactInvulnerabilitySeconds;
+            RecordElectricHit(battle,electricHazardId,player.PositionX,player.PositionZ);
             if (player.CurrentHealth > 0) return;
             player.HerdImpact=default;
 
@@ -2821,6 +2824,14 @@ namespace ET.Server
                 self.Record.Players.First(recordPlayer => recordPlayer.PlayerId == x.PlayerId).Lives <= 0);
         }
 
+        /// <summary>伤害事务提交后记录真实接触，护盾挡伤同样反馈；旧主题无需新增电塔资源。</summary>
+        private static void RecordElectricHit(OnlineArcadeBattleRuntime battle,int hazardId,float x,float z)
+        {
+            if(hazardId<=0||battle.ArenaConfigNumber!=21)return;
+            if(battle.ElectricHits.Count>=32)battle.ElectricHits.RemoveAt(0);
+            battle.ElectricHits.Add(new OnlineArcadeElectricHitRuntime{Sequence=++battle.NextElectricHitSequence,HazardId=hazardId,X=x,Z=z,RoundGeneration=battle.RoundGeneration,ElapsedSeconds=(float)battle.HazardElapsedSeconds,ServerTime=TimeInfo.Instance.ServerNow()});
+        }
+
         /// <summary>服务端唯一机关伤害入口；客户端只同步时间。复活、清场等待与断线不推进。</summary>
         private static bool TickHazards(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle, float seconds)
         {
@@ -2837,7 +2848,7 @@ namespace ET.Server
                     if (!hazard.TryHit(-player.PlayerId, player.HazardPreviousX, player.HazardPreviousZ,
                         player.PositionX, player.PositionZ, rule.PlayerRadius)) continue;
                     self.DamagePlayerCore(battle, player, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(player.MaxHealth,
-                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?FirepowerLoop.Arcade.SlayerMartHitKind.LethalMechanism:FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary);
+                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?FirepowerLoop.Arcade.SlayerMartHitKind.LethalMechanism:FirepowerLoop.Arcade.SlayerMartHitKind.Ordinary,hazard.Parameters.Kind==1?hazard.Parameters.Id:0);
                     if (battle.AllPlayersDefeated || player.RespawnSeconds > 0f) return true;
                 }
                 battle.EnemyIterationIds.Clear();
@@ -2850,6 +2861,7 @@ namespace ET.Server
                     bool boss = ResolveBattleArena(battle).IsBoss && battle.WaveIndex + 1 == battle.WaveCount;
                     enemy.CurrentHealth = boss ? enemy.CurrentHealth - FirepowerLoop.Arcade.ArcadeHazardRules.Damage(
                         enemy.MaxHealth, hazard.Parameters.BossDamageRatio) : 0;
+                    if(hazard.Parameters.Kind==1)RecordElectricHit(battle,hazard.Parameters.Id,enemy.PositionX,enemy.PositionZ);
                     if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy, true);
                 }
             }
@@ -3282,6 +3294,11 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = TimeInfo.Instance.ServerNow();
+            foreach(var hit in source.ElectricHits)
+            {
+                var copy=OnlineArcadeElectricHitInfo.Create();copy.Sequence=hit.Sequence;copy.HazardId=hit.HazardId;copy.X=hit.X;copy.Z=hit.Z;
+                copy.RoundGeneration=hit.RoundGeneration;copy.ElapsedSeconds=hit.ElapsedSeconds;copy.ServerTime=hit.ServerTime;battle.ElectricHits.Add(copy);
+            }
             foreach (var receipt in source.EnemyDeaths)
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();
@@ -3497,6 +3514,11 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = source.ServerTime;
+            foreach(var hit in source.ElectricHits)
+            {
+                var copy=OnlineArcadeElectricHitInfo.Create();copy.Sequence=hit.Sequence;copy.HazardId=hit.HazardId;copy.X=hit.X;copy.Z=hit.Z;
+                copy.RoundGeneration=hit.RoundGeneration;copy.ElapsedSeconds=hit.ElapsedSeconds;copy.ServerTime=hit.ServerTime;battle.ElectricHits.Add(copy);
+            }
             foreach (var receipt in source.EnemyDeaths)
             {
                 var copy = OnlineArcadeEnemyDeathInfo.Create();

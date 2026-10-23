@@ -318,6 +318,14 @@ namespace Game
             if (sound.Source != null) sound.Source.transform.position = position;
         }
 
+        /// <summary>更新持续空间声的实际增益；加载中也保留最新值，音量设置刷新不会覆盖距离衰减。</summary>
+        public void SetSoundGain(AudioPlaybackHandle handle, float gain)
+        {
+            if (!sounds.TryGetValue(handle.Id, out var sound)) return;
+            sound.Gain = float.IsNaN(gain) || float.IsInfinity(gain) ? 0f : Mathf.Clamp01(gain);
+            if (sound.Source != null) sound.Source.volume = CurrentSoundVolume() * sound.Gain;
+        }
+
         /// <summary>同时包含加载中和正在播放的句柄，供持续音效在失败或音源抢占后恢复。</summary>
         public bool IsSoundActive(AudioPlaybackHandle handle) => handle.IsValid && sounds.ContainsKey(handle.Id);
 

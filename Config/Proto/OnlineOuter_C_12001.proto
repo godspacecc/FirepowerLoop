@@ -546,6 +546,8 @@ message OnlineArcadeBattleInfo
     float StagePortalZ = 62;
     // 地图独占牛群姿态；仅权威端推进与结算伤害。
     repeated OnlineArcadeHerdInfo Herds = 63;
+    // 已裁决电击的有界记录；客户端不能据此再扣血。
+    repeated OnlineArcadeElectricHitInfo ElectricHits = 64;
 }
 
 // Opcode 12085
@@ -860,4 +862,16 @@ message OnlineArcadeHerdInfo
  float DirectionX = 6;
  float DirectionZ = 7;
  double PhaseSeconds = 8;
+}
+
+// Opcode 12110
+message OnlineArcadeElectricHitInfo
+{
+ int64 Sequence = 1;
+ int32 HazardId = 2;
+ float X = 3;
+ float Z = 4;
+ int32 RoundGeneration = 5;
+ float ElapsedSeconds = 6;
+ int64 ServerTime = 7;
 }

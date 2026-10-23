@@ -1645,7 +1645,7 @@ namespace Game
                         runtime.PlayerPosition.y, catalog.Rule.PlayerRadius))
                 {
                     DamagePlayerCore(runtime, FirepowerLoop.Arcade.ArcadeHazardRules.Damage(runtime.PlayerMaxHealth,
-                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary);
+                        hazard.Parameters.PlayerDamageRatio),hazard.Parameters.PlayerDamageRatio>=1?SlayerMartHitKind.LethalMechanism:SlayerMartHitKind.Ordinary, hazard.Parameters.Kind==1?hazard.Parameters.Id:0);
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || runtime.RespawnRemaining > 0f) return;
                 }
                 enemyIterationIds.Clear();
@@ -1658,6 +1658,7 @@ namespace Game
                     if (enemy.IsBossPresentation)
                         enemy.Health -= FirepowerLoop.Arcade.ArcadeHazardRules.Damage(enemy.MaxHealth, hazard.Parameters.BossDamageRatio);
                     else enemy.Health = 0;
+                    if(hazard.Parameters.Kind==1)view?.PlayElectricTowerHit(hazard.Parameters.Id,enemy.Position);
                     if (enemy.Health <= 0) KillEnemy(runtime, enemy, true);
                 }
             }
@@ -1667,7 +1668,7 @@ namespace Game
             => DamagePlayerCore(runtime,damage,SlayerMartHitKind.Ordinary);
 
         /// <summary>正式挡伤入口；失命机关显式跳过新增护甲，旧保护与护盾优先级保留。</summary>
-        private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind)
+        private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind,int electricHazardId=0)
         {
             if (lastDeathReturnPending) return;
             if(runtime.SlayerChallenge!=null&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Collecting&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Boss)return;
@@ -1676,6 +1677,7 @@ namespace Game
             {
                 runtime.PlayerInvulnerability = catalog.Rule.ContactInvulnerabilitySeconds;
                 view?.PlayShieldBlock(0, runtime.PlayerPosition);
+                if(electricHazardId>0)view?.PlayElectricTowerHit(electricHazardId,runtime.PlayerPosition);
                 return;
             }
             var ability=runtime.SlayerMartRulesVersion==1?runtime.SlayerMart?.Players.FirstOrDefault(p=>p.PlayerId==1):null;
@@ -1683,10 +1685,12 @@ namespace Game
             {
                 runtime.PlayerInvulnerability=catalog.Rule.ContactInvulnerabilitySeconds;
                 view?.PlayShieldBlock(0,runtime.PlayerPosition);
+                if(electricHazardId>0)view?.PlayElectricTowerHit(electricHazardId,runtime.PlayerPosition);
                 return;
             }
             runtime.PlayerHealth -= Mathf.Max(1, damage);
             runtime.PlayerInvulnerability = catalog.Rule.ContactInvulnerabilitySeconds;
+            if(electricHazardId>0)view?.PlayElectricTowerHit(electricHazardId,runtime.PlayerPosition);
             if (runtime.PlayerHealth > 0) return;
             runtime.HerdImpact=default;
             EndFirstPerson(runtime);

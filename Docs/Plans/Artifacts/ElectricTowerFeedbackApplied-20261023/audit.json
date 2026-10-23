@@ -1,0 +1,11 @@
+{
+  "frames": 212,
+  "fps": 20,
+  "duration": 10.6,
+  "audioPeak": 0.256448486328125,
+  "formalMaxGain": 0.28,
+  "nearDistance": 1.5,
+  "silentDistance": 14,
+  "formalVisualEntry": "ArcadeCombatViewController.PlayElectricTowerHit",
+  "audio": "post-synchronized approved formal WAVs with actual gains, not live AudioSystem capture"
+}

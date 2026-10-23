@@ -452,6 +452,9 @@ namespace ET.Server
         public List<OnlineArcadeBombBlastRuntime> BombBlasts { get; } = new();
         /// <summary>最近二十四条死亡表现事实；只保留当前轮，既不保存也不模拟骨骼。</summary>
         public List<OnlineArcadeEnemyDeathRuntime> EnemyDeaths { get; } = new();
+        /// <summary>每轮最多32条实际电击事实；序列单调增长，仅投影表现。</summary>
+        public List<OnlineArcadeElectricHitRuntime> ElectricHits { get; } = new();
+        public long NextElectricHitSequence;
         public long LastTickAt;
         public float WaveTransitionSeconds;
         public bool WaveClearAwarded;
@@ -505,6 +508,16 @@ namespace ET.Server
         public readonly Dictionary<long, EntityRef<OnlineArcadeRunActor>> Runs = new();
         public readonly Dictionary<long, long> RunIdsByPlayer = new();
         public readonly Dictionary<long, long> RunIdsByRoom = new();
+    }
+
+    /// <summary>稳定命中地点在复活与移除目标前记录，不持有玩家对象。</summary>
+    [EnableClass]
+    public sealed class OnlineArcadeElectricHitRuntime
+    {
+        public long Sequence;
+        public int HazardId,RoundGeneration;
+        public float X,Z,ElapsedSeconds;
+        public long ServerTime;
     }
 
     /// <summary>战斗权威已经裁决的敌人死亡方向与类别。</summary>

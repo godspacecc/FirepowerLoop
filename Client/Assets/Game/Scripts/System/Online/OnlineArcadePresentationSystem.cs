@@ -27,6 +27,8 @@ namespace Game
         private readonly HashSet<long> observedSupplyPickupIds = new();
         /// <summary>炸弹只播放权威成功记录，双人共用表现且不从库存差推断。</summary>
         private readonly OnlineBombPresentationState bombPresentation = new();
+        /// <summary>电击只读命中收据，和死亡或血量变化独立消费。</summary>
+        private readonly OnlineElectricHitPresentationState electricHitPresentation = new();
         private readonly HashSet<long> seenIds = new();
         private IArcadeCombatViewPort view;
         private ArcadeConfigCatalogDefinition catalog;
@@ -352,6 +354,8 @@ namespace Game
             SyncDrops(inRoom ? Array.Empty<OnlineArcadeDropSnapshot>() : battle.Drops);
             SyncSupplyPickups(battle.SupplyPickups, selfId, supplyBaseline);
             bombPresentation.Observe(battle.BombBlasts,supplyBaseline,battle.RoundGeneration,!inRoom,view.PlayBombExplosion);
+            electricHitPresentation.Observe(battle.ElectricHits,supplyBaseline,battle.RoundGeneration,!inRoom&&!latest.BattlePaused,battle.HazardElapsedSeconds,view.PlayElectricTowerHit,battle.ServerTime,Time.realtimeSinceStartupAsDouble);
+            if(latest.BattlePaused)view.StopPlayerFireAudio();
         }
 
         /// <summary>只播放本机新增成功拾取记录；先标记身份再回调，重复或历史通知不重复反馈。</summary>
@@ -646,6 +650,7 @@ namespace Game
             shieldChargesByPlayer.Clear();
             observedSupplyPickupIds.Clear();
             bombPresentation.Clear();
+            electricHitPresentation.Clear();
             hasLocalFireBaseline = false;
             lastLocalFireSequence = 0;
         }

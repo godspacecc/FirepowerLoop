@@ -1,0 +1,17 @@
+{
+  "source_frames": 212,
+  "fps": 20,
+  "duration_seconds": 10.6,
+  "charge_start": 4,
+  "active_start": 5.5,
+  "hit": 6.1,
+  "slow_replay_start": 8.5,
+  "slow_replay_hit": 9.1,
+  "audio_sample_rate": 44100,
+  "audio_channels": 2,
+  "peak": 0.7281027820541711,
+  "rms_charge": 0.05733890856556968,
+  "rms_active": 0.06839588168068378,
+  "rms_hit": 0.059434732535553904,
+  "video_bytes": 2008465
+}

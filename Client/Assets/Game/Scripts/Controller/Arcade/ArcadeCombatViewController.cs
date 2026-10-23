@@ -28,6 +28,8 @@ namespace Game
         void SetExits(IReadOnlyList<int> destinations, float halfHeight, bool victory) { }
         /// <summary>仅显示权威周期；不自行推进机关时间、不裁决伤害。</summary>
         void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds) { }
+        /// <summary>电塔权威命中的只读反馈，不裁决伤害。</summary>
+        void PlayElectricTowerHit(int hazardId, Vector2 position) { }
         /// <summary>只按权威配置显示岛岸与第四轮营火，不从视觉碰撞计算伤害。</summary>
         void SetOpening(FirepowerLoop.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
         /// <summary>按权威布局准备当前轮，资源就绪后才允许规则开始活动。</summary>
@@ -304,6 +306,7 @@ namespace Game
         {
             enemyPresentation?.SetHerdActivityPaused(false);
             earlyStage=null;
+            ReleaseElectricTowerFeedback();
             StopFlamethrowerAudio();
             ReleaseSlayerMartRegion();
             ReleaseRoundContent();
@@ -370,6 +373,7 @@ namespace Game
         public void SetHazards(IReadOnlyList<FirepowerLoop.Arcade.ArcadeHazardParameters> hazards, double elapsedSeconds)
         {
             contentHazards = hazards; contentHazardElapsed = elapsedSeconds;
+            if(hazards!=null&&hazards.Count>0)electricHitDefinitions=hazards;
             if (root == null) return;
             if (hazardPresentation == null && hazards.Count > 0)
             {
@@ -378,6 +382,7 @@ namespace Game
                 hazardPresentation = new ArcadeHazardPresentation(root.transform, contentTemplates?.Find(towerName)?.gameObject);
             }
             hazardPresentation?.Sync(hazards, elapsedSeconds);
+            SyncElectricTowerAudio();
         }
 
         /// <summary>普通出口只保留指路箭头，场景通道后续逐图补充；最终胜利出口沿用现有显示。</summary>
@@ -454,6 +459,8 @@ namespace Game
 
         public void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable)
         {
+            if(visible){electricListener=position;electricHasListener=true;}
+            electricListenerVisible=visible;SyncElectricTowerAudio();
             if (!visible) StopFlamethrowerAudio();
             dashPresentation?.Move(0,position,visible);
             SetExitGuidePlayer(position, visible);
@@ -931,6 +938,7 @@ namespace Game
         public void TickPlayerFeedback(float deltaTime)
         {
             TickFlamethrowerAudio(deltaTime);
+            TickElectricTowerFeedback(deltaTime);
             TickRoundFlameFeedback(deltaTime);
             islandWading?.Tick(deltaTime);
             bombBlasts?.Tick(deltaTime);

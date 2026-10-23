@@ -2086,6 +2086,12 @@ namespace ET
         [MemoryPackOrder(62)]
         public List<OnlineArcadeHerdInfo> Herds { get; set; } = new();
 
+        /// <summary>
+        /// 已裁决电击的有界记录；客户端不能据此再扣血。
+        /// </summary>
+        [MemoryPackOrder(63)]
+        public List<OnlineArcadeElectricHitInfo> ElectricHits { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2156,6 +2162,7 @@ namespace ET
             this.StagePortalX = default;
             this.StagePortalZ = default;
             this.Herds.Clear();
+            this.ElectricHits.Clear();
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3411,6 +3418,55 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeElectricHitInfo)]
+    public partial class OnlineArcadeElectricHitInfo : MessageObject
+    {
+        public static OnlineArcadeElectricHitInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeElectricHitInfo), isFromPool) as OnlineArcadeElectricHitInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public long Sequence { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int HazardId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float X { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float Z { get; set; }
+
+        [MemoryPackOrder(4)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(5)]
+        public float ElapsedSeconds { get; set; }
+
+        [MemoryPackOrder(6)]
+        public long ServerTime { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Sequence = default;
+            this.HazardId = default;
+            this.X = default;
+            this.Z = default;
+            this.RoundGeneration = default;
+            this.ElapsedSeconds = default;
+            this.ServerTime = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3480,5 +3536,6 @@ namespace ET
         public const ushort OnlineArcadeRoundRewardInfo = 12107;
         public const ushort OnlineArcadeRoundRewardItemInfo = 12108;
         public const ushort OnlineArcadeHerdInfo = 12109;
+        public const ushort OnlineArcadeElectricHitInfo = 12110;
     }
 }
