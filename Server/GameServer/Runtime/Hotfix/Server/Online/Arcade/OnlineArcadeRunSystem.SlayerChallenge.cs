@@ -71,13 +71,15 @@ namespace ET.Server
         {
             var config=ServerConfig.Instance.SlayerChallenge;var challenge=ServerConfig.Instance.Tables.TbArcadeChallenge.Get(config.ChallengeId);
             var group=ServerConfig.Instance.Tables.TbArcadeEnemyGroup.Get(challenge.EnemyGroupId);int totalWeight=group.Members.Sum(p=>p.Count),previous=0;
+            // 配置给出单人每批总量；按本次原始参战人数倍增，倒地或复活不改变既有预算。
+            int total=checked(config.CollectionWaveTotal*battle.DifficultyPlayerCount);
             battle.SpawnQueue.Clear();battle.SpawnQueueIndex=battle.SpawnedInWave=0;
             foreach(var member in group.Members)
             {
-                int count=ArcadeOpeningRules.AllocateMember(config.CollectionWaveTotal,previous,member.Count,totalWeight);
+                int count=ArcadeOpeningRules.AllocateMember(total,previous,member.Count,totalWeight);
                 for(int i=0;i<count;i++)battle.SpawnQueue.Add(member.EnemyId);previous+=member.Count;
             }
-            battle.TotalInWave=battle.SpawnQueue.Count;battle.MaxAlive=Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies,group.MaxAlive*battle.DifficultyPlayerCount);
+            battle.TotalInWave=battle.SpawnQueue.Count;battle.MaxAlive=checked(Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies,group.MaxAlive)*battle.DifficultyPlayerCount);
             battle.NextSpawnAt=TimeInfo.Instance.ServerNow();battle.WaveClearAwarded=false;
         }
 

@@ -1370,8 +1370,9 @@ namespace ET.Server
                 previousWeight += member.Count;
             }
             battle.TotalInWave = battle.SpawnQueue.Count;
-            battle.MaxAlive = Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies,
-                checked(group.MaxAlive * battle.DifficultyPlayerCount));
+            // 先约束单人有效上限，再乘原始参战人数，双人不共用单人的24只封顶。
+            battle.MaxAlive = checked(Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies,
+                group.MaxAlive) * battle.DifficultyPlayerCount);
             battle.NextSpawnAt = TimeInfo.Instance.ServerNow();
             battle.WaveTransitionSeconds = 0f;
             battle.WaveClearAwarded = false;
@@ -2946,7 +2947,7 @@ namespace ET.Server
             foreach (var member in group.Members)
                 for (int index = 0; index < member.Count * battle.DifficultyPlayerCount; index++)
                     battle.SpawnQueue.Add(member.EnemyId);
-            battle.MaxAlive = Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies, group.MaxAlive * battle.DifficultyPlayerCount);
+            battle.MaxAlive = checked(Math.Min(ServerConfig.Instance.ArcadeRule.MaxAliveEnemies, group.MaxAlive) * battle.DifficultyPlayerCount);
             battle.NextSpawnAt = now;
             battle.ReinforcementCooldown = boss.ReinforcementIntervalSeconds;
             return true;

@@ -290,14 +290,15 @@ namespace ET.Server
             b.Projectiles.Add(id,new OnlineArcadeProjectileRuntime{RuntimeId=id,PositionX=e.PositionX,PositionZ=e.PositionZ,VelocityX=x*p.EventMoveSpeed,VelocityZ=y*p.EventMoveSpeed,
                 Damage=e.Damage,RemainingSeconds=p.SkillPeriod,RemainingHits=1,TrackingTurnRate=turn});
         }
-        /// <summary>增援由本轮正式敌群创建，和单人一样同时受敌群及全局数量上限约束。</summary>
+        /// <summary>增援由本轮正式敌群创建，数量及单人有效存活上限均按原始参战人数倍增。</summary>
         private static void SpawnContentReinforcements(OnlineArcadeBattleRuntime b,int count)
         {
             // 独立Boss占用第四组的一人预算；增援使用本场首个正式普通群，不能以Boss群上限静默禁用技能。
             var arena=ResolveBattleArena(b);
             var group=arena.WaveGroupIds.Select(id=>ServerConfig.Instance.Tables.TbArcadeEnemyGroup.Get(id)).FirstOrDefault(g=>g.MaxAlive>1&&g.Members.Length>0&&!ServerConfig.Instance.Tables.TbArcadeBoss.DataList.Any(boss=>boss.EnemyGroupId==g.Id));
             if(group==null||group.Members.Length==0)return;
-            int cap=Math.Min(group.MaxAlive,ServerConfig.Instance.ArcadeRule.MaxAliveEnemies);
+            int cap=checked(Math.Min(group.MaxAlive,ServerConfig.Instance.ArcadeRule.MaxAliveEnemies)*b.DifficultyPlayerCount);
+            count=checked(count*b.DifficultyPlayerCount);
             for(int i=0;i<count&&b.Enemies.Count<cap;i++)
             {
                 var source=ServerConfig.Instance.GetEnemy(group.Members[i%group.Members.Length].EnemyId);long id=b.NextEnemyRuntimeId++;

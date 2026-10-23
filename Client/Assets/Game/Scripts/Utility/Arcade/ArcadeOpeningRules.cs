@@ -82,10 +82,11 @@ namespace FirepowerLoop.Arcade
                 (long)previousWeight * total / totalWeight);
         }
 
+        /// <summary>先求单人轮次总量及400只封顶，再按原始参战人数直接倍增。</summary>
         public static int OrdinaryRoundTotal(int roundNumber, int playerCount)
         {
             if (roundNumber <= 0 || playerCount < 1 || playerCount > 4) throw new ArgumentOutOfRangeException();
-            return (int)Math.Min(100L + 10L * roundNumber, 400L) + 50 * (playerCount - 1);
+            return (int)Math.Min(100L + 10L * roundNumber, 400L) * playerCount;
         }
         /// <summary>只补空库存到一，已有库存不增加；普通轮开场调用一次。</summary>
         public static int ReplenishEmpty(int held) => held == 0 ? 1 : held;

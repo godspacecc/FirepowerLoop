@@ -413,9 +413,11 @@ namespace Game.Tests
             Assert.That(run.Current.Score,Is.EqualTo(1200));Assert.That(run.Current.ScoreMultiplier,Is.EqualTo(2));
             Assert.That(runtime.ArenaGold,Is.Zero);Assert.That(run.Current.RunGold,Is.Zero);
         }
-        [Test] public void DualPlayerTotals_AddFiftyInsteadOfMultiplyingSolo()
+        [Test] public void PlayerTotalsMultiplySoloForEachParticipant()
         {
-            for(int i=1;i<=4;i++)Assert.That(ArcadeOpeningRules.OrdinaryRoundTotal(i,2),Is.EqualTo(150+10*i));
+            for(int players=1;players<=4;players++)
+                for(int i=1;i<=4;i++)Assert.That(ArcadeOpeningRules.OrdinaryRoundTotal(i,players),Is.EqualTo((100+10*i)*players));
+            Assert.That(ArcadeOpeningRules.OrdinaryRoundTotal(40,2),Is.EqualTo(800));
             Assert.That(ArcadeOpeningRules.OrdinaryRoundTotal(40,1),Is.EqualTo(400));
         }
     }
