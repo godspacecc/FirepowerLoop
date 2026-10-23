@@ -44,6 +44,8 @@ namespace Game
                     "GoldPile0","GoldPile1","GoldPile2","GemPile0","GemPile1"};
                 if(candidate==null || required.Any(n=>candidate.Find(n)==null) || candidate.GetComponentsInChildren<Collider>(true).Length>0)
                     throw new InvalidOperationException("前两场 Content 模板缺失或携带碰撞体");
+                if(arena==21&&candidate.Find("DocksElectricTower")==null)
+                    throw new InvalidOperationException("码头正式线圈电塔模板缺失");
                 // 方向预告与旧出口复制该材质；发布就绪前确认资源包保留了直接 Shader 引用。
                 var cueMaterial = candidate.Find("RouteGate/ExitCue/GroundRing")?.GetComponent<LineRenderer>()?.sharedMaterial;
                 if (cueMaterial == null || cueMaterial.shader == null)

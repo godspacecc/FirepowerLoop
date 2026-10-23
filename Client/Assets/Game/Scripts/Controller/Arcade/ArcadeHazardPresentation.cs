@@ -24,6 +24,7 @@ namespace Game
                     entry = Create(p);
                     entries.Add(p.Id, entry);
                 }
+                if(entry.ElectricTower!=null){entry.ElectricTower.Sync(p,elapsed);continue;}
                 ArcadeHazardRules.Evaluate(p, elapsed, out int phase, out float angle);
                 // 相位之外还通过亮度和横臂运动区分状态，俯视视角无需依赖文字。
                 bool bright = phase != 1 || Math.Sin(elapsed * Math.PI * 6) >= 0;
@@ -43,6 +44,13 @@ namespace Game
             entry.Root = new GameObject($"Hazard_{p.Id}_{(p.Kind == 1 ? "ElectricTower" : "RotatingArm")}");
             entry.Root.transform.SetParent(owner, false);
             entry.Root.transform.localPosition = new Vector3(p.X, 0f, p.Y);
+            if(p.Kind==1&&towerTemplate!=null&&towerTemplate.transform.Find("塔顶聚电核")!=null)
+            {
+                var tower=UnityEngine.Object.Instantiate(towerTemplate,entry.Root.transform,false);tower.SetActive(true);
+                // 码头已采用电塔借用模板内的材质引用，不另建危险圈或材质实例。
+                entry.ElectricTower=new ArcadeElectricTowerPresentation(tower.transform);
+                return entry;
+            }
             var shader = Shader.Find("Universal Render Pipeline/Unlit") ?? Shader.Find("Unlit/Color");
             if (shader == null) throw new InvalidOperationException("机关表现缺少 Unlit Shader");
             entry.Material = new Material(shader) { name = "ArcadeHazard_Runtime" };
@@ -131,6 +139,7 @@ namespace Game
             public LineRenderer Ring;
             public Transform Arm;
             public GameObject ActiveMark;
+            public ArcadeElectricTowerPresentation ElectricTower;
         }
     }
 }

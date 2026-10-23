@@ -368,7 +368,11 @@ namespace Game
             contentHazards = hazards; contentHazardElapsed = elapsedSeconds;
             if (root == null) return;
             if (hazardPresentation == null && hazards.Count > 0)
-                hazardPresentation = new ArcadeHazardPresentation(root.transform, contentTemplates?.Find("ElectricTower")?.gameObject);
+            {
+                // 第二关码头使用已采用的线圈塔，旧主题保留原模板与表现。
+                string towerName=contentArena==21?"DocksElectricTower":"ElectricTower";
+                hazardPresentation = new ArcadeHazardPresentation(root.transform, contentTemplates?.Find(towerName)?.gameObject);
+            }
             hazardPresentation?.Sync(hazards, elapsedSeconds);
         }
 
