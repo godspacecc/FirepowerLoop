@@ -21,9 +21,11 @@ namespace FirepowerLoop.Arcade
         /// <summary>紫射线反射配置固定为零，保留字段兼容；额外目标数和连接半径继续有效。</summary>
         public readonly int PurpleRayReflections,PurpleRayChainCount;
         public readonly float PurpleRayChainRange;
+        /// <summary>六枪进化的同源参数，正式配置加载时赋值。</summary>
+        public ArcadeWeaponEvolutionTuning Evolution { get; private set; }
         public ArcadeWeaponUpgradeTuning(float minimum,float move,string red,string purple,int rocketCount,float rocketSpread,float rocketTurn,float rocketRange,int rayReflections,int rayCount,float rayRange)
         {MinimumPowerSeconds=minimum;PurpleMoveSpeedPercent=move;RedPowerupId=red;PurplePowerupId=purple;PurpleRocketCount=rocketCount;PurpleRocketSpreadDegrees=rocketSpread;PurpleRocketTurnRadians=rocketTurn;PurpleRocketRange=rocketRange;PurpleRayReflections=rayReflections;PurpleRayChainCount=rayCount;PurpleRayChainRange=rayRange;}
-        public static ArcadeWeaponUpgradeTuning FromConfig(UpgradeConfig row)=>row==null?null:new ArcadeWeaponUpgradeTuning(row.MinimumPowerSeconds,row.PurpleMoveSpeedPercent,row.RedPowerupId,row.PurplePowerupId,row.PurpleRocketCount,row.PurpleRocketSpreadDegrees,row.PurpleRocketTurnRadians,row.PurpleRocketRange,row.PurpleRayReflections,row.PurpleRayChainCount,row.PurpleRayChainRange);
+        public static ArcadeWeaponUpgradeTuning FromConfig(UpgradeConfig row)=>row==null?null:new ArcadeWeaponUpgradeTuning(row.MinimumPowerSeconds,row.PurpleMoveSpeedPercent,row.RedPowerupId,row.PurplePowerupId,row.PurpleRocketCount,row.PurpleRocketSpreadDegrees,row.PurpleRocketTurnRadians,row.PurpleRocketRange,row.PurpleRayReflections,row.PurpleRayChainCount,row.PurpleRayChainRange){Evolution=new ArcadeWeaponEvolutionTuning(row)};
     }
     /// <summary>同枪和骷髅共用等级、补时与移动规则；不写武器持有或持久化状态。</summary>
     public static class ArcadeWeaponUpgradeRules
@@ -37,7 +39,7 @@ namespace FirepowerLoop.Arcade
         public static float MovementMultiplier(int level,ArcadeWeaponUpgradeTuning tuning)=>level>=2?1+tuning.PurpleMoveSpeedPercent:1;
         public static bool Valid(ArcadeWeaponUpgradeTuning t)=>t!=null&&Finite(t.MinimumPowerSeconds)&&t.MinimumPowerSeconds>0&&Finite(t.PurpleMoveSpeedPercent)&&t.PurpleMoveSpeedPercent>=0&&t.PurpleMoveSpeedPercent<=1&&
             !string.IsNullOrWhiteSpace(t.RedPowerupId)&&!string.IsNullOrWhiteSpace(t.PurplePowerupId)&&t.RedPowerupId!=t.PurplePowerupId&&t.PurpleRocketCount==3&&Finite(t.PurpleRocketSpreadDegrees)&&t.PurpleRocketSpreadDegrees>=0&&t.PurpleRocketSpreadDegrees<=90&&
-            Finite(t.PurpleRocketTurnRadians)&&t.PurpleRocketTurnRadians>0&&Finite(t.PurpleRocketRange)&&t.PurpleRocketRange>0&&t.PurpleRayReflections==0&&t.PurpleRayChainCount==2&&Finite(t.PurpleRayChainRange)&&t.PurpleRayChainRange>0;
+            Finite(t.PurpleRocketTurnRadians)&&t.PurpleRocketTurnRadians>0&&Finite(t.PurpleRocketRange)&&t.PurpleRocketRange>0&&t.PurpleRayReflections==0&&t.PurpleRayChainCount==2&&Finite(t.PurpleRayChainRange)&&t.PurpleRayChainRange>0&&(t.Evolution==null||t.Evolution.Valid);
         /// <summary>三枚合计保留原强化单发预算，余数按发射顺序分配，不逐枚重新套紫级倍率。</summary>
         public static int SplitVolleyDamage(int total,int count,int index)=>count>0&&index>=0&&index<count?total/count+(index<total%count?1:0):0;
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);

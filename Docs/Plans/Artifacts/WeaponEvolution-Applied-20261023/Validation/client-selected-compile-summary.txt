@@ -1,0 +1,6 @@
+C:\Users\Administrator\AppData\Local\Temp\FirepowerLoop-Evolution-20261023\selected-source\Client\Assets\Game\Scripts\Controller\UICtrl\Online\OnlineRoomUICtrl.cs(34,29): warning CS0414: 字段“OnlineRoomUICtrl.requestArcadeMode”已被赋值，但从未使用过它的值 [C:\Users\Administrator\AppData\Local\Temp\FirepowerLoop-Evolution-20261023\selected-source\ClientCompile\ClientCompile.csproj]
+C:\Users\Administrator\AppData\Local\Temp\FirepowerLoop-Evolution-20261023\selected-source\Client\Assets\Game\Scripts\Controller\UICtrl\Online\OnlineLoginUICtrl.cs(17,29): warning CS0414: 字段“OnlineLoginUICtrl.requestArcadeRoomMode”已被赋值，但从未使用过它的值 [C:\Users\Administrator\AppData\Local\Temp\FirepowerLoop-Evolution-20261023\selected-source\ClientCompile\ClientCompile.csproj]
+    278 个警告
+    0 个错误
+
+已用时间 00:00:11.85

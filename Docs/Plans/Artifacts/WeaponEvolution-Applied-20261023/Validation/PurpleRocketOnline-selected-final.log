@@ -1,0 +1,9 @@
+PASS PurpleRocketOnline.ThreeWithBudget
+PASS PurpleRocketOnline.NoPartialVolley
+PASS PurpleRocketOnline.MovingTargetAfterSwitch
+PASS PurpleRocketOnline.SweptDamageOnce
+PASS PurpleRocketOnline.NoTargetExpiryQuiet
+PASS PurpleRocketOnline.NearestCrateBudget
+PASS PurpleRocketOnline.ZeroStepAndDeadTarget
+PASS PurpleRocketOnline.WallBeforeEnemy
+8/8 passed

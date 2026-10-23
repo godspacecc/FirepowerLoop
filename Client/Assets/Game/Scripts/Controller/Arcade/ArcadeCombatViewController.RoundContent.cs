@@ -315,7 +315,7 @@ namespace Game
             var active=new HashSet<int>();
             foreach(var area in areas??Array.Empty<ArcadeContentAreaSnapshot>())
             {
-                if(area.Kind==ArcadeRayArcState.Kind)continue;
+                if(area.Kind==ArcadeRayArcState.Kind||area.Kind==31)continue;
                 // 环境与Content独立异步加载；模板晚到时不发布空桶，下份快照重试。
                 if((area.Kind==11||area.Kind==13)&&contentTemplates==null)continue;
                 if(float.IsNaN(area.X)||float.IsNaN(area.Y)||float.IsNaN(area.Radius)||float.IsInfinity(area.X)||float.IsInfinity(area.Y)||float.IsInfinity(area.Radius)||area.Radius<=0 ||

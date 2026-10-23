@@ -1,0 +1,7 @@
+PASS WeaponUpgradeOnline.RepeatedLevels
+PASS WeaponUpgradeOnline.SeparateClocks
+PASS WeaponUpgradeOnline.SkullRefill
+PASS WeaponUpgradeOnline.TreasureWeaponUsesUpgrade
+PASS WeaponUpgradeOnline.SharedPickupOnce
+PASS WeaponUpgradeOnline.PurpleMovement
+6/6 passed

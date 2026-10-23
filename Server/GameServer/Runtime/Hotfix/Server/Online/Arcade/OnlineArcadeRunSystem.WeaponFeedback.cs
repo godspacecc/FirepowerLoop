@@ -15,7 +15,7 @@ namespace ET.Server
             if(battle.WeaponFeedback.Count>=128)battle.WeaponFeedback.RemoveAt(0);
             battle.WeaponFeedback.Add(new OnlineArcadeWeaponFeedbackRuntime{
                 Sequence=++battle.NextWeaponFeedbackSequence,Kind=kind,PositionX=x,PositionZ=z,
-                DirectionX=p.VelocityX,DirectionZ=p.VelocityZ,Radius=kind==3?p.ExplosionRadius:0,
+                DirectionX=p.VelocityX,DirectionZ=p.VelocityZ,Radius=kind>=3?p.ExplosionRadius:0,
                 RoundGeneration=battle.RoundGeneration,ServerTime=TimeInfo.Instance.ServerNow()});
         }
     }

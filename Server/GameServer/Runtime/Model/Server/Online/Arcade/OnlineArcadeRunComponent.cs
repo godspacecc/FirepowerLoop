@@ -183,6 +183,9 @@ namespace ET.Server
         /// <summary>仅当前场次的无人机状态，不序列化目标；恢复轮前节点后按剩余时长重新跟随。</summary>
         [System.Text.Json.Serialization.JsonIgnore]
         public FirepowerLoop.Arcade.ArcadeDroneState Drone;
+        /// <summary>紫级额外一架，共用道具剩余寿命。</summary>
+        [System.Text.Json.Serialization.JsonIgnore]
+        public FirepowerLoop.Arcade.ArcadeDroneState ExtraDrone;
         public int DronePowerTier=1;
     }
 
@@ -219,6 +222,8 @@ namespace ET.Server
         public float FireCooldownSeconds;
         /// <summary>本场实际成功攻击后递增的表现序列；空挥也递增，冷却拒绝不递增。</summary>
         public int FireSequence;
+        /// <summary>当前连续射击相位，不进入存档。</summary>
+        public readonly FirepowerLoop.Arcade.ArcadeWeaponEvolutionState WeaponEvolution=new();
         /// <summary>受击后的剩余无敌秒数；复活时使用规则配置的双倍时长。</summary>
         public float InvulnerabilitySeconds;
         /// <summary>大于零时玩家保持死亡表现，归零后在死亡原地恢复。</summary>
@@ -250,6 +255,8 @@ namespace ET.Server
     {
         /// <summary>敌人受牛撞后的活动状态，阻止移动和攻击直到恢复。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
+        /// <summary>每名玩家残火的独立接触时间；来源消失或离开覆盖后清理。</summary>
+        public readonly Dictionary<long,float> EvolutionBurnContactSeconds=new();
         /// <summary>真实喷火命中后的纯表现时钟，不参与持续伤害或存档。</summary>
         public float FlameHitRemainingSeconds;
         /// <summary>最后一次实际伤害的火焰来源，用于本轮死亡事实。</summary>
@@ -320,6 +327,11 @@ namespace ET.Server
         public float SourcePositionX, SourcePositionZ;
         /// <summary>发射时确定的头骨层级；仅同步该弹丸外观，不从玩家当前状态推断。</summary>
         public int WeaponPowerLevel;
+        /// <summary>齐射编号、宽贯穿半径和集束子代标记。</summary>
+        public long EvolutionVolleyId;
+        public HashSet<long> EvolutionPushedEnemyIds;
+        public float EvolutionHitRadius;
+        public bool EvolutionClusterChild;
         /// <summary>发射时固定的紫射线反射余量，仅当前地图。</summary>
         public int RemainingReflections;
         /// <summary>紫火箭锁定的敌人身份，仅权威现场持有，不写安全节点。</summary>
@@ -411,6 +423,8 @@ namespace ET.Server
         public long ContentEventCycle = -1, ContentEventTargetCycle = -1;
         public float ContentEventTargetX, ContentEventTargetY;
         public readonly FirepowerLoop.Arcade.ArcadeContentClock ContentClock = new();
+        /// <summary>有限紫火带，拥有玩家来源，不写轮前节点。</summary>
+        public readonly List<FirepowerLoop.Arcade.ArcadeWeaponBurnArea> WeaponBurnAreas=new();
         public readonly List<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> ContentAreas = new();
         /// <summary>不参与伤害判定的瞬时电弧，权威活动帧扣除余量。</summary>
         public readonly List<FirepowerLoop.Arcade.ArcadeRayArcState> PurpleRayArcs=new();

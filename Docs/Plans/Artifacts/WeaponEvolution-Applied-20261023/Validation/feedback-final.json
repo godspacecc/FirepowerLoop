@@ -1,0 +1,67 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 11,
+    "PassedTests": 11,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.1234199"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.AllThreeKindsKeepAuthoritativePositionDirectionAndRadius",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.BaselineAndDuplicateSnapshotDoNotReplay",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.ClearAllowsNextRunToEstablishNewBaseline",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.DelayedPacketAndFrozenBattleClockCannotReviveOldFeedback",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.HiddenAndPausedHitsAreConsumedWithoutLaterReplay",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.InvalidExplosionRadiusDoesNotSuppressFollowingValidHit",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.NewRoundAcceptsNewSequenceAndRejectsPreviousRound",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.OrdinaryExplosionOmitsOuterSparksAndPoolReuseKeepsEnergyFeedback",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.PresentationRoutesToExistingViewPorts",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.ProtocolProjectionCopiesFeedbackValues",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.OnlineWeaponFeedbackTests.StaleFutureAndMalformedRecordsAreConsumed",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    }
+  ]
+}

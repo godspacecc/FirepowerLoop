@@ -1,0 +1,52 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 8,
+    "PassedTests": 8,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:06.1276499"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.FastCrossingHitsEnemyOncePerRocketWithoutTunnelling",
+      "Status": "Passed",
+      "Duration": "00:00:00.7050000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.FullBudgetDoesNotCreatePartialVolleyOrConsumeFireSequence",
+      "Status": "Passed",
+      "Duration": "00:00:00.5710000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.InFlightRocketsTrackMovingEnemyAfterWeaponChange",
+      "Status": "Passed",
+      "Duration": "00:00:00.6360000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.NearerWallStopsSweepBeforeEnemyBehindIt",
+      "Status": "Passed",
+      "Duration": "00:00:00.5560000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.NearestCrateKeepsExistingDirectAndAreaDamageBudget",
+      "Status": "Passed",
+      "Duration": "00:00:00.6310000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.PauseAndHugeStepRespectLifetimeWithoutDistantBlast",
+      "Status": "Passed",
+      "Duration": "00:00:00.5610000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.PurpleVolleyHasThreeRocketsAndConservesTotalDamage",
+      "Status": "Passed",
+      "Duration": "00:00:00.6280000"
+    },
+    {
+      "Name": "Game.Tests.ArcadePurpleRocketTests.RedRocketKeepsSingleShotAndPurpleGrenadeKeepsContinuousSingleShape",
+      "Status": "Passed",
+      "Duration": "00:00:00.5550000"
+    }
+  ]
+}

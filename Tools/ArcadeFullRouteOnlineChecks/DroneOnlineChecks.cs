@@ -41,8 +41,8 @@ internal static class DroneOnlineChecks
     private static void ActualShotsTrackTierExpiry()
     {
         var a=Create();Apply(a,"support.drone");Apply(a,"skull.large");Enemy(a);Tick(a,.01f);
-        Require(a.Battle.Projectiles.Values.Single().Damage==36,"Purple shot damage");
-        Require(a.Battle.Projectiles.Values.Single().WeaponPowerLevel==2,"Purple projectile tint lost");
+        Require(a.Battle.Projectiles.Count==2&&a.Battle.Projectiles.Values.All(s=>s.Damage==36),"Purple pair shot damage");
+        Require(a.Battle.Projectiles.Values.All(s=>s.WeaponPowerLevel==2),"Purple projectile tint lost");
         a.Battle.Projectiles.Clear();var p=a.Battle.Players[1];p.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=.005f;
         p.Powerups[ArcadePowerupBehavior.Drone].Drone.FireCooldownSeconds=0;Tick(a,.01f);
         Require(a.Battle.Projectiles.Values.Single().Damage==12&&p.Powerups[ArcadePowerupBehavior.Drone].DronePowerTier==1,"Expired skull stayed on drone");
@@ -51,7 +51,7 @@ internal static class DroneOnlineChecks
     {
         var a=Create();Apply(a,"support.drone");Apply(a,"skull.large");var p=a.Battle.Players[1];p.Powerups[ArcadePowerupBehavior.Drone].RemainingSeconds=.2f;
         var enemy=Enemy(a,1.85f);Tick(a,.1f);Require(enemy.CurrentHealth==820,"Expected one purple explosion");
-        Tick(a,.1f);Require(enemy.CurrentHealth==820,"Repeated explosion damage");
+        Tick(a,.1f);Require(enemy.CurrentHealth==640,"Second purple drone explosion missing or repeated");
         typeof(OnlineArcadeRunManagerSystem).GetMethod("CaptureRoundCheckpoint",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,new object[]{a.Record,a.Battle});
         Require(a.Record.Players[0].RoundPowerups.All(p=>p.Behavior!=ArcadePowerupBehavior.Drone),"Consumed drone carried into next round");
         Tick(a,1);

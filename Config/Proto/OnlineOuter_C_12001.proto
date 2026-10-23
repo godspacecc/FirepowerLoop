@@ -365,6 +365,13 @@ message OnlineArcadePowerupInfo
 	// 无人机权威阶段和当前红紫强度；重连只投影当前阶段。
 	int32 DronePhase = 8;
 	int32 DronePowerTier = 9;
+	// 紫级第二架无人机的权威位置与阶段，未激活时HasExtraDrone=false。
+	bool HasExtraDrone = 10;
+	float ExtraDroneX = 11;
+	float ExtraDroneZ = 12;
+	int32 ExtraDronePhase = 13;
+	float ExtraDroneDirectionX = 14;
+	float ExtraDroneDirectionZ = 15;
 }
 
 // Opcode 12080
@@ -446,6 +453,11 @@ message OnlineArcadeProjectileInfo
 	string SourceWeaponId = 7;
 	// 弹丸生成时固定的头骨强化层级，0原色、1红色、2紫色。
 	int32 WeaponPowerLevel = 8;
+	// 发射时固定的宽贯穿半径与集束子弹标记，只投影实际生成的能力。
+	float EvolutionHitRadius = 9;
+	bool EvolutionClusterChild = 10;
+	// 剩余飞行寿命仅用于已采用榴弹弧线的相位，客户端不裁决引爆。
+	float RemainingSeconds = 11;
 }
 
 // Opcode 12083
@@ -724,6 +736,8 @@ message OnlineArcadeContentAreaInfo
  float EndX = 7;
  float EndY = 8;
  bool Segment = 9;
+ // 残火显示淡出使用的权威寿命；其它区域保持默认零。
+ float RemainingSeconds = 10;
 }
 
 

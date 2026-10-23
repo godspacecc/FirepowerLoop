@@ -1,0 +1,122 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 22,
+    "PassedTests": 22,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:19.5652012"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.BasicLongStepHitsFrontBeforeRearRegardlessOfInsertionOrder",
+      "Status": "Passed",
+      "Duration": "00:00:01.1040000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.BossExplosionCannotRecreateClearedChildren",
+      "Status": "Passed",
+      "Duration": "00:00:00.8300000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.ChargedBeamDamagesSideEnemyBeforeBarrel",
+      "Status": "Passed",
+      "Duration": "00:00:00.8160000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.ExpiredSkullAndImmediateRepickResetSwarmPhase",
+      "Status": "Passed",
+      "Duration": "00:00:00.8190000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.FuseFrameStillHitsBarrelBeforeEndpoint",
+      "Status": "Passed",
+      "Duration": "00:00:00.8110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.GroundExpiringInsideLongFrameCannotLendContactToNextFire",
+      "Status": "Passed",
+      "Duration": "00:00:00.8280000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.InterleavedShotgunVolleysCannotPushSameTargetTwice",
+      "Status": "Passed",
+      "Duration": "00:00:00.8260000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.NewDroneDuringLastSecondStillAddsOneWithoutRefillingClock",
+      "Status": "Passed",
+      "Duration": "00:00:00.7760000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.NewGroundAfterDryGapStartsFreshContactClock",
+      "Status": "Passed",
+      "Duration": "00:00:00.8390000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.OverlappingGroundDamageIsIndependentOfTickSize",
+      "Status": "Passed",
+      "Duration": "00:00:00.8220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PiercingMustHitBarrelAfterPassingFrontEnemy",
+      "Status": "Passed",
+      "Duration": "00:00:00.8200000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleBasicContinuesOnlyAfterKillAndStopsOnSurvivor",
+      "Status": "Passed",
+      "Duration": "00:00:00.8220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleDroneAddsOneOriginalAttackAndDowngradeRemovesIt",
+      "Status": "Passed",
+      "Duration": "00:00:00.7810000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleFlameLeavesDamageAfterFlyingFlamesAreGone",
+      "Status": "Passed",
+      "Duration": "00:00:00.8220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleGrenadeSplitsOnceAndChildrenDoNotSplitAgain",
+      "Status": "Passed",
+      "Duration": "00:00:00.8220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurplePiercingFourthVolleyHitsWiderLine",
+      "Status": "Passed",
+      "Duration": "00:00:00.7940000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleRapidAddsTwoSideShotsEveryThirdSuccessfulVolley",
+      "Status": "Passed",
+      "Duration": "00:00:00.8280000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.PurpleSpreadPushesNearbyLivingEnemiesOncePerVolley",
+      "Status": "Passed",
+      "Duration": "00:00:00.7760000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.RedRapidNeverAddsPurpleSideShots",
+      "Status": "Passed",
+      "Duration": "00:00:00.8270000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.SwarmBudgetFailurePreservesThirdVolley",
+      "Status": "Passed",
+      "Duration": "00:00:01.0900000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.SwitchingAwayAndBackWithoutShootingResetsContinuousCharge",
+      "Status": "Passed",
+      "Duration": "00:00:00.8860000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponEvolutionTests.ZeroTimeDoesNotDealDamageOrExpireGround",
+      "Status": "Passed",
+      "Duration": "00:00:00.8120000"
+    }
+  ]
+}

@@ -420,7 +420,7 @@ namespace Game
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
             foreach (var drop in runtime.Drops.Values) runtimePool.Return(drop);
             runtime.Enemies.Clear();
-            runtime.Projectiles.Clear();runtime.PurpleRayArcs.Clear();
+            runtime.Projectiles.Clear();runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();runtime.PurpleRayArcs.Clear();
             ClearHerd(runtime);
             runtime.Drops.Clear();
             runtime.WeaponSpawns = null;
@@ -646,6 +646,7 @@ namespace Game
         private void TickTimers(ArcadeCombatRuntime runtime, float deltaTime)
         {
             if(runtime.PlayerHealth<=0)runtime.HerdImpact=default;
+            runtime.WeaponEvolution.IdleSeconds+=Mathf.Max(0,deltaTime);
             TickDropLifetimes(runtime, deltaTime);
             TickRoundReward(runtime,deltaTime);
             foreach(var enemy in runtime.Enemies.Values)enemy.FlameHitRemainingSeconds=Mathf.Max(0,enemy.FlameHitRemainingSeconds-deltaTime);
@@ -682,6 +683,7 @@ namespace Game
                     runtime.Powerups.TryGetValue(behavior, out var decoy))
                     DamageEnemiesInExplosionRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
                 runtime.Powerups.Remove(behavior);
+                if(behavior==global::ArcadePowerupBehavior.WeaponSkull)runtime.WeaponEvolution.Clear();
             }
             if (runtime.TemporaryWeaponRemaining <= 0f)
             {
@@ -1007,12 +1009,14 @@ namespace Game
 
         private void TickProjectiles(ArcadeCombatRuntime runtime, float deltaTime)
         {
+            if(deltaTime<=0||float.IsNaN(deltaTime)||float.IsInfinity(deltaTime))return;
+            TickWeaponBurnAreas(runtime,deltaTime);
             TickPurpleRayArcs(runtime,deltaTime);
             CopyKeys(runtime.Projectiles, projectileIterationIds);
             for (var projectileIndex = 0; projectileIndex < projectileIterationIds.Count; projectileIndex++)
             {
                 if (!runtime.Projectiles.TryGetValue(projectileIterationIds[projectileIndex], out var projectile)) continue;
-                if(TickPurpleRocket(runtime,projectile,deltaTime)||TickPurpleRay(runtime,projectile,deltaTime))continue;
+                if(TickPurpleGrenade(runtime,projectile,deltaTime)||TickPurpleLine(runtime,projectile,deltaTime)||TickPurpleRocket(runtime,projectile,deltaTime)||TickPurpleRay(runtime,projectile,deltaTime))continue;
                 SteerRoundProjectile(runtime, projectile, deltaTime);
                 var priorPosition = projectile.Position;
                 projectile.Position += projectile.Velocity * deltaTime;
@@ -1041,14 +1045,15 @@ namespace Game
                 if (!projectile.Hostile && ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
                 {
                     // 只在规则确认引爆时发出表现通知，普通移除和火箭寿命耗尽都保持静音。
-                    view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
+                    PlayWeaponProjectileExplosion(projectile);
                     DamageEnemiesInProjectileExplosion(runtime, projectile);
                 }
+                if(!projectile.Hostile&&!hitObstacle)AddWeaponBurnArea(runtime,projectile);
                 if (!remove && !projectile.Hostile && HitCrate(runtime, priorPosition, projectile.Position, projectile.Damage))
                 {
                     if (IsExplosiveBehavior(projectile.Behavior))
                     {
-                        view?.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
+                        PlayWeaponProjectileExplosion(projectile);
                         DamageEnemiesInProjectileExplosion(runtime, projectile);
                     }
                     remove = true;
@@ -1070,22 +1075,24 @@ namespace Game
                     for (var enemyIndex = 0; enemyIndex < enemyIterationIds.Count; enemyIndex++)
                     {
                         if (!runtime.Enemies.TryGetValue(enemyIterationIds[enemyIndex], out var enemy)) continue;
-                        if (Vector2.Distance(projectile.Position, enemy.Position) > catalog.Rule.EnemyContactRadius + ProjectileHitRadius) continue;
+                        if (Vector2.Distance(projectile.Position, enemy.Position) > catalog.Rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius) continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
-                            view.PlayProjectileExplosion(projectile.Position, projectile.ExplosionRadius);
+                            PlayWeaponProjectileExplosion(projectile);
                             DamageEnemiesInProjectileExplosion(runtime, projectile);
                             remove = true;
                             break;
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.Id)) continue;
+                        PushPurpleShotgun(runtime,projectile,enemy.Position);
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(enemy,projectile.Damage);
                         else DamageEnemy(enemy, projectile.Damage);
                         if (projectile.SourceWeaponId == "arcade.weapon.basic" ||
                             projectile.SourceWeaponId == "arcade.weapon.rapid" ||
                             projectile.SourceWeaponId == "arcade.weapon.spread")
                             view.PlayImpactSound(enemy.Position, false);
-                        if (enemy.Health <= 0)
+                        bool evolutionKilled=enemy.Health<=0;
+                        if (evolutionKilled)
                         {
                             int impactKind = ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon,
                                 false, (enemy.Position - projectile.SourcePosition).sqrMagnitude);
@@ -1093,8 +1100,8 @@ namespace Game
                                 KillEnemyWithReaction(runtime, enemy, false, false, enemy.Position - projectile.Velocity, impactKind);
                             else KillEnemy(runtime, enemy);
                         }
-                        remove = projectile.Behavior != global::ArcadeWeaponBehavior.Piercing ||
-                                 projectile.RemainingHits <= 0;
+                        remove = IsPurpleEvolution(projectile,"basic")?!evolutionKilled:
+                            projectile.Behavior != global::ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
                         if (remove) break;
                     }
                 }
@@ -1112,8 +1119,11 @@ namespace Game
 
         /// <summary>使用弹丸生成时的武器身份选择爆炸力度，墙面、箱体和桶命中沿用同一入口。</summary>
         private void DamageEnemiesInProjectileExplosion(ArcadeCombatRuntime runtime, ArcadeProjectileRuntime projectile)
-            => DamageEnemiesInArea(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage, true,
+        {
+            DamageEnemiesInArea(runtime, projectile.Position, projectile.ExplosionRadius, projectile.Damage, true,
                 ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon, true, 0));
+            SpawnPurpleCluster(runtime,projectile);
+        }
 
         private void DamageEnemiesInArea(ArcadeCombatRuntime runtime, Vector2 center, float radius, int damage, bool explosive, int impactKind = 0)
         {
@@ -1552,10 +1562,17 @@ namespace Game
             }
             bool purpleRocket=weapon.Id=="arcade.weapon.rocket"&&CurrentWeaponPowerLevel(runtime)>=2;
             var tuning=catalog.Rule.WeaponUpgrade;
-            var projectileCount = purpleRocket?tuning.PurpleRocketCount:Mathf.Max(1, weapon.ProjectileCount);
+            int powerLevel=CurrentWeaponPowerLevel(runtime);
+            int evolutionShot=runtime.WeaponEvolution.Next(weapon.Id,powerLevel,tuning.Evolution);
+            bool swarm=powerLevel>=2&&weapon.Id=="arcade.weapon.rapid"&&ArcadeWeaponEvolutionRules.Periodic(evolutionShot,tuning.Evolution.RapidPeriod);
+            bool charged=powerLevel>=2&&weapon.Id=="arcade.weapon.piercing"&&ArcadeWeaponEvolutionRules.Periodic(evolutionShot,tuning.Evolution.PiercingPeriod);
+            var projectileCount = purpleRocket?tuning.PurpleRocketCount:swarm?3:Mathf.Max(1, weapon.ProjectileCount);
+            if(swarm&&catalog.Rule.MaxProjectiles-runtime.Projectiles.Count<projectileCount)return;
+            int volleyId=runtime.NextEntityId;
+            var pushedEnemies=powerLevel>=2&&weapon.Id=="arcade.weapon.spread"?new HashSet<int>():null;
             if(purpleRocket&&catalog.Rule.MaxProjectiles-runtime.Projectiles.Count<projectileCount)return;
             var rocketTargets=purpleRocket?RocketTargets(runtime,runtime.PlayerPosition):Array.Empty<ArcadeEnemyRuntime>();
-            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:weapon.SpreadDegrees;
+            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:swarm?tuning.Evolution.RapidSpreadDegrees:weapon.SpreadDegrees;
             var spawned = false;
             for (var index = 0; index < projectileCount; index++)
             {
@@ -1568,10 +1585,17 @@ namespace Game
                     direction * weapon.ProjectileSpeed, purpleRocket?ArcadeWeaponUpgradeRules.SplitVolleyDamage(damage,projectileCount,index):damage, weapon.ProjectileLifetimeSeconds,
                     weapon.Behavior, weapon.MaxHits, weapon.ExplosionRadius,
                     ArcadeWeaponPowerVisual.WithLevel(weapon.ProjectileVisualResourceName,Mathf.Clamp(Mathf.RoundToInt(skullMultiplier)-1,0,2)), true, weapon.Id, CurrentWeaponPowerLevel(runtime));
+                if(shot!=null)
+                {
+                    shot.EvolutionVolleyId=volleyId;shot.EvolutionPushedEnemyIds=pushedEnemies;
+                    if(IsPurpleEvolution(shot,"basic"))shot.RemainingHits=int.MaxValue;
+                    if(charged){shot.EvolutionHitRadius=tuning.Evolution.PiercingRadius;shot.RemainingHits=tuning.Evolution.PiercingHits;}
+                }
                 if(purpleRocket&&shot!=null&&rocketTargets.Length>0)shot.TrackingEnemyId=rocketTargets[index%rocketTargets.Length].Id;
                 spawned = true;
             }
             if (!spawned) return;
+            runtime.WeaponEvolution.Commit(weapon.Id,powerLevel,evolutionShot);
             runtime.PlayerFireSequence++;
             runtime.FireCooldown = weapon.FireIntervalSeconds / (Mathf.Max(1f, 1f + fireRateBonus)*skullMultiplier);
         }
@@ -1807,6 +1831,7 @@ namespace Game
                 runtime.SpawnQueue.Clear();
                 foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
                 foreach (int id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
+                runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();
             }
             OnRoundEnemyKilled(runtime, enemy, hazardKill);
             if (!hazardKill) AwardIslandKill(runtime, enemy);
@@ -1818,6 +1843,7 @@ namespace Game
                 // 最终 Boss 死亡后停止所有危险，不等待普通敌人清空才开放胜利出口。
                 foreach (var other in runtime.Enemies.Values.ToArray()) KillEnemy(runtime, other, true);
                 foreach (var id in runtime.Projectiles.Keys.ToArray()) RemoveProjectile(runtime, id);
+                runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();
             }
             foreach (var hazard in runtime.Hazards) hazard.ForgetTarget(enemy.Id);
             view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame, impactKind);
@@ -1903,6 +1929,7 @@ namespace Game
                     break;
                 case global::ArcadeDropKind.TemporaryWeapon:
                     bool sameWeapon=TryGetWeapon(runtime,out var previousWeapon)&&previousWeapon.Id==drop.ProductId;
+                    if(!sameWeapon)runtime.WeaponEvolution.Clear();
                     if(sameWeapon)GrantWeaponPower(runtime,ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(runtime)),0);
                     // 换枪保留玩家当前强化及余时；只有同枪领取才沿用升档补时规则。
                     runtime.TemporaryWeaponId = drop.ProductId;
@@ -1955,7 +1982,7 @@ namespace Game
             // 骷髅与同枪升档共用身份和时钟，低级不降档，所有领取均不缩短余量。
             if(definition.Behavior==global::ArcadePowerupBehavior.WeaponSkull)
             {GrantWeaponPower(runtime,Mathf.Max(CurrentWeaponPowerLevel(runtime),Mathf.RoundToInt(definition.Magnitude)-1),duration);return;}
-            powerup.Drone=null;
+            powerup.Drone=null;powerup.ExtraDrone=null;
             powerup.ProductId = definition.Id;
             powerup.Definition = definition;
             powerup.RemainingSeconds = duration;
@@ -2234,7 +2261,7 @@ namespace Game
             foreach (var projectile in runtime.Projectiles.Values)
                 if(projectile.SourceWeaponId=="arcade.support.drone")
                     view.SetDroneProjectile(projectile.Id,projectile.Position,projectile.Velocity,projectile.ProjectileVisualResourceName,catalog.Powerups.First(p=>p.Behavior==global::ArcadePowerupBehavior.Drone).VisualOffset.y);
-                else view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
+                else if(projectile.EvolutionHitRadius<=0&&!IsPurpleEvolution(projectile,"grenade")) view.SetProjectile(projectile.Id, projectile.Hostile, projectile.Position, projectile.Velocity,
                     projectile.ProjectileVisualResourceName, projectile.FromPlayerWeapon);
             foreach (var drop in runtime.Drops.Values)
             {
@@ -2243,12 +2270,17 @@ namespace Game
                 view.SetDropOpacity(drop.Id, GroundDropOpacity(drop.RemainingSeconds));
             }
             view.BeginEffectSync();
+            SyncWeaponEvolutionVisuals(runtime);
             view.SetRoundReward(runtime.RoundReward,catalog.Rule.RoundReward);
             view.SetStagePortal(UsesStagePortal(runtime)&&runtime.StagePortal!=null,runtime.StagePortal==null?Vector2.zero:new Vector2(runtime.StagePortal.X,runtime.StagePortal.Z),runtime.StagePortal?.ElapsedSeconds??0,catalog.Rule.RoundReward?.PortalAppearSeconds??0);
             foreach (ArcadePowerupRuntime powerup in runtime.Powerups.Values)
             {
                 if(powerup.Definition.Behavior==global::ArcadePowerupBehavior.Drone)
-                {view.SetDrone(0,powerup.Definition,powerup.Position,powerup.ShotDirection,(int)(powerup.Drone?.Phase??FirepowerLoop.Arcade.ArcadeDronePhase.Following),powerup.DronePowerTier);continue;}
+                {
+                    view.SetDroneUnit(0,0,powerup.Definition,powerup.Position,powerup.ShotDirection,(int)(powerup.Drone?.Phase??FirepowerLoop.Arcade.ArcadeDronePhase.Following),powerup.DronePowerTier);
+                    if(powerup.ExtraDrone is {} extra)view.SetDroneUnit(0,1,powerup.Definition,new Vector2(extra.X,extra.Z),new Vector2(extra.DirectionX,extra.DirectionZ),(int)extra.Phase,powerup.DronePowerTier);
+                    continue;
+                }
                 if(SyncSlayerMartOrdinaryOrbitVisual(runtime,powerup))continue;
                 view.SetPowerup(powerup.Definition,
                     powerup.Definition.VisualFollowPlayer ? runtime.PlayerPosition : powerup.Position,

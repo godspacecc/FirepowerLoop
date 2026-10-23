@@ -341,6 +341,7 @@ namespace Game
                 else shieldChargesByPlayer.Remove(player.PlayerId);
                 SyncPlayerEffects(player, displayPosition);
             }
+            SyncWeaponEvolutionVisuals(battle,inRoom);
             view.EndEffectSync();
 
             foreach (OnlineArcadePlayerSnapshot player in latest.Players)
@@ -432,7 +433,11 @@ namespace Game
                     ? displayPosition
                     : new Vector2(value.PositionX, value.PositionZ);
                 if(definition.Behavior==global::ArcadePowerupBehavior.Drone)
-                {view.SetDrone(player.PlayerId,definition,anchor,new Vector2(value.ShotDirectionX,value.ShotDirectionZ),value.DronePhase,value.DronePowerTier);continue;}
+                {
+                    view.SetDroneUnit(player.PlayerId,0,definition,anchor,new Vector2(value.ShotDirectionX,value.ShotDirectionZ),value.DronePhase,value.DronePowerTier);
+                    if(value.HasExtraDrone)view.SetDroneUnit(player.PlayerId,1,definition,new Vector2(value.ExtraDroneX,value.ExtraDroneZ),new Vector2(value.ExtraDroneDirectionX,value.ExtraDroneDirectionZ),value.ExtraDronePhase,value.DronePowerTier);
+                    continue;
+                }
                 view.SetPowerup(player.PlayerId, definition, anchor,
                     new Vector2(value.ShotDirectionX, value.ShotDirectionZ));
             }
@@ -488,6 +493,8 @@ namespace Game
                 case 1:view.PlayImpactSound(position,false);break;
                 case 2:view.PlayProjectileSurfaceImpact(position,new Vector2(hit.DirectionX,hit.DirectionZ));break;
                 case 3:view.PlayProjectileExplosion(position,hit.Radius);break;
+                case 4:view.PlayEvolvedGrenadeExplosion(position,hit.Radius,false);break;
+                case 5:view.PlayEvolvedGrenadeExplosion(position,hit.Radius,true);break;
             }
         }
 
@@ -506,6 +513,7 @@ namespace Game
                         ArcadeWeaponPowerVisual.WithLevel(source.ProjectileVisualResourceName,value.WeaponPowerLevel),drone.VisualOffset.y);
                     continue;
                 }
+                if(value.OwnerPlayerId>0&&(value.EvolutionHitRadius>0||value.SourceWeaponId=="arcade.weapon.grenade"&&value.WeaponPowerLevel==2))continue;
                 // 快照携带发射时身份，不能用拥有者当前武器重染飞行中的火焰或子弹。
                 var weapon = value.OwnerPlayerId > 0
                     ? catalog.Weapons.FirstOrDefault(w => w.Id == value.SourceWeaponId) : default;

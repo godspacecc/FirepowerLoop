@@ -21,6 +21,8 @@ namespace Game
         public float FlameHitRemainingSeconds;
         /// <summary>最后一次有效伤害是否来自喷火器，仅用于死亡表现。</summary>
         public bool LastDamageWasFlame;
+        /// <summary>当前敌人在同来源残火内的接触时间；离开覆盖后重新计时。</summary>
+        public float EvolutionBurnContactSeconds;
         public int Id;
         public string ConfigId;
         /// <summary>出生时从权威配置固定的禁紫资格，强化生命不会变为高级掉落。</summary>
@@ -68,6 +70,7 @@ namespace Game
         /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
         public void Reset()
         {
+            EvolutionBurnContactSeconds=0;
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;
             Id = 0;
             ConfigId = null;
@@ -110,6 +113,11 @@ namespace Game
         public int Id;
         /// <summary>玩家弹生成时的强化层级与追踪身份，换枪不改变；回池清零。</summary>
         public int WeaponPowerLevel,TrackingEnemyId;
+        /// <summary>本弹齐射身份、额外宽度与子榴弹标记，全部随回池清理。</summary>
+        public int EvolutionVolleyId;
+        public HashSet<int> EvolutionPushedEnemyIds;
+        public float EvolutionHitRadius;
+        public bool EvolutionClusterChild;
         /// <summary>紫射线发射时固定的反射余量，回池清零。</summary>
         public int RemainingReflections;
         /// <summary>追踪弹转速和寄生弹剩余减速秒数，由本弹的生成方固定。</summary>
@@ -139,6 +147,7 @@ namespace Game
         public void Reset()
         {
             Id = 0;
+            EvolutionPushedEnemyIds=null;EvolutionVolleyId=0;EvolutionHitRadius=0;EvolutionClusterChild=false;
             WeaponPowerLevel=TrackingEnemyId=RemainingReflections=0;
             ContentTurnRate = ContentSlowSeconds = 0;
             Hostile = false;
@@ -196,6 +205,8 @@ namespace Game
         public Vector2 ShotDirection;
         /// <summary>无人机当前场内阶段；不写轮前节点中的目标身份。</summary>
         public FirepowerLoop.Arcade.ArcadeDroneState Drone;
+        /// <summary>紫级额外无人机，不单独拥有道具补时。</summary>
+        public FirepowerLoop.Arcade.ArcadeDroneState ExtraDrone;
         public int DronePowerTier=1;
     }
 
@@ -308,6 +319,9 @@ namespace Game
         public float FireCooldown;
         /// <summary>每次规则层实际生成至少一枚玩家投射物后递增；仅供表现端去重播放开火反馈。</summary>
         public int PlayerFireSequence;
+        /// <summary>本场进化射击相位及残火，不写持久化数据。</summary>
+        public readonly FirepowerLoop.Arcade.ArcadeWeaponEvolutionState WeaponEvolution=new();
+        public readonly List<FirepowerLoop.Arcade.ArcadeWeaponBurnArea> WeaponBurnAreas=new();
         public float DashRemaining;
         /// <summary>本次冲刺开始时锁定的竞技场单位方向，与后续移动和瞄准输入独立。</summary>
         public Vector2 DashDirection;

@@ -37,9 +37,9 @@ namespace Game
         }
 
         /// <summary>非法协议值只丢弃当前反馈，不污染后续粒子或声音。</summary>
-        private static bool Valid(OnlineArcadeWeaponFeedbackSnapshot hit)=>hit.Kind>=1&&hit.Kind<=3&&
+        private static bool Valid(OnlineArcadeWeaponFeedbackSnapshot hit)=>hit.Kind>=1&&hit.Kind<=5&&
             Finite(hit.X)&&Finite(hit.Z)&&Finite(hit.DirectionX)&&Finite(hit.DirectionZ)&&
-            (hit.Kind!=3||Finite(hit.Radius)&&hit.Radius>0);
+            (hit.Kind<3||Finite(hit.Radius)&&hit.Radius>0);
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
 
         /// <summary>整场离开清理，下一局重新建立基线。</summary>

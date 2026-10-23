@@ -29,6 +29,24 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
         RedPowerupId_Ref = null;
         PurplePowerupId = _buf.ReadString();
         PurplePowerupId_Ref = null;
+        PurpleRapidPeriod = _buf.ReadInt();
+        PurpleRapidSpreadDegrees = _buf.ReadFloat();
+        PurpleShotgunPushRadius = _buf.ReadFloat();
+        PurpleShotgunPushDistance = _buf.ReadFloat();
+        PurpleFlameGroundSeconds = _buf.ReadFloat();
+        PurpleFlameGroundTickSeconds = _buf.ReadFloat();
+        PurpleFlameGroundRadius = _buf.ReadFloat();
+        PurpleFlameGroundDamageRatio = _buf.ReadFloat();
+        PurpleFlameGroundMaxAreas = _buf.ReadInt();
+        PurplePiercingPeriod = _buf.ReadInt();
+        PurplePiercingRadius = _buf.ReadFloat();
+        PurplePiercingHits = _buf.ReadInt();
+        PurpleClusterCount = _buf.ReadInt();
+        PurpleClusterSeconds = _buf.ReadFloat();
+        PurpleClusterRadius = _buf.ReadFloat();
+        PurpleClusterDamageRatio = _buf.ReadFloat();
+        PurpleClusterSpeed = _buf.ReadFloat();
+        PurpleContinuousResetSeconds = _buf.ReadFloat();
     }
 
     public static ArcadeWeaponUpgradeConfig DeserializeArcadeWeaponUpgradeConfig(ByteBuf _buf)
@@ -50,6 +68,24 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
     public ArcadePowerupConfig RedPowerupId_Ref;
     public readonly string PurplePowerupId;
     public ArcadePowerupConfig PurplePowerupId_Ref;
+    public readonly int PurpleRapidPeriod;
+    public readonly float PurpleRapidSpreadDegrees;
+    public readonly float PurpleShotgunPushRadius;
+    public readonly float PurpleShotgunPushDistance;
+    public readonly float PurpleFlameGroundSeconds;
+    public readonly float PurpleFlameGroundTickSeconds;
+    public readonly float PurpleFlameGroundRadius;
+    public readonly float PurpleFlameGroundDamageRatio;
+    public readonly int PurpleFlameGroundMaxAreas;
+    public readonly int PurplePiercingPeriod;
+    public readonly float PurplePiercingRadius;
+    public readonly int PurplePiercingHits;
+    public readonly int PurpleClusterCount;
+    public readonly float PurpleClusterSeconds;
+    public readonly float PurpleClusterRadius;
+    public readonly float PurpleClusterDamageRatio;
+    public readonly float PurpleClusterSpeed;
+    public readonly float PurpleContinuousResetSeconds;
    
     public const int __ID__ = -791992206;
     public override int GetTypeId() => __ID__;
@@ -75,6 +111,24 @@ public sealed partial class ArcadeWeaponUpgradeConfig : Luban.BeanBase
         + "PurpleMoveSpeedPercent:" + PurpleMoveSpeedPercent + ","
         + "RedPowerupId:" + RedPowerupId + ","
         + "PurplePowerupId:" + PurplePowerupId + ","
+        + "PurpleRapidPeriod:" + PurpleRapidPeriod + ","
+        + "PurpleRapidSpreadDegrees:" + PurpleRapidSpreadDegrees + ","
+        + "PurpleShotgunPushRadius:" + PurpleShotgunPushRadius + ","
+        + "PurpleShotgunPushDistance:" + PurpleShotgunPushDistance + ","
+        + "PurpleFlameGroundSeconds:" + PurpleFlameGroundSeconds + ","
+        + "PurpleFlameGroundTickSeconds:" + PurpleFlameGroundTickSeconds + ","
+        + "PurpleFlameGroundRadius:" + PurpleFlameGroundRadius + ","
+        + "PurpleFlameGroundDamageRatio:" + PurpleFlameGroundDamageRatio + ","
+        + "PurpleFlameGroundMaxAreas:" + PurpleFlameGroundMaxAreas + ","
+        + "PurplePiercingPeriod:" + PurplePiercingPeriod + ","
+        + "PurplePiercingRadius:" + PurplePiercingRadius + ","
+        + "PurplePiercingHits:" + PurplePiercingHits + ","
+        + "PurpleClusterCount:" + PurpleClusterCount + ","
+        + "PurpleClusterSeconds:" + PurpleClusterSeconds + ","
+        + "PurpleClusterRadius:" + PurpleClusterRadius + ","
+        + "PurpleClusterDamageRatio:" + PurpleClusterDamageRatio + ","
+        + "PurpleClusterSpeed:" + PurpleClusterSpeed + ","
+        + "PurpleContinuousResetSeconds:" + PurpleContinuousResetSeconds + ","
         + "}";
     }
 }

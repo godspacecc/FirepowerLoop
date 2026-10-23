@@ -53,7 +53,7 @@ namespace Game
             foreach (var enemy in runtime.Enemies.Values) runtimePool.Return(enemy);
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
             foreach (var drop in runtime.Drops.Values) runtimePool.Return(drop);
-            runtime.Enemies.Clear(); runtime.Projectiles.Clear();runtime.PurpleRayArcs.Clear(); runtime.Drops.Clear();
+            runtime.Enemies.Clear(); runtime.Projectiles.Clear();runtime.WeaponBurnAreas.Clear();runtime.WeaponEvolution.Clear();runtime.PurpleRayArcs.Clear(); runtime.Drops.Clear();
             runtime.Hazards.Clear(); runtime.HazardPreviousEnemyPositions.Clear(); runtime.Crates.Clear();
             runtime.CratesInitialized = false;
             runtime.InTreasureRoom = false;

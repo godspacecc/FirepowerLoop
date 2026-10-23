@@ -1345,6 +1345,7 @@ namespace ET.Server
         /// <summary>休闲普通轮按累计轮数建立整轮队列；独立Boss和挑战保持各自预算。</summary>
         private static void PrepareWave(OnlineArcadeBattleRuntime battle, ArcadeArenaConfig arena, int waveIndex)
         {
+            battle.WeaponBurnAreas.Clear();foreach(var p in battle.Players.Values)p.WeaponEvolution.Clear();
             battle.RoundReward=null;battle.StagePortal=null;
             InitializeCrates(battle);
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, waveIndex);
@@ -1597,6 +1598,7 @@ namespace ET.Server
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             foreach (OnlineArcadeBattlePlayerRuntime player in battle.Players.Values)
             {
+                player.WeaponEvolution.IdleSeconds+=Math.Max(0,deltaSeconds);
                 float previousInvulnerability = player.InvulnerabilitySeconds;
                 player.InvulnerabilitySeconds = Math.Max(0f, player.InvulnerabilitySeconds - deltaSeconds);
                 changed |= MathF.Abs(previousInvulnerability - player.InvulnerabilitySeconds) > 0.0001f;
@@ -1605,7 +1607,7 @@ namespace ET.Server
                 if(player.Powerups.TryGetValue(ArcadePowerupBehavior.WeaponSkull,out var skullTimer)&&deltaSeconds>0)
                 {
                     skullTimer.RemainingSeconds=Math.Max(0,skullTimer.RemainingSeconds-deltaSeconds);
-                    if(skullTimer.RemainingSeconds<=0)player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+                    if(skullTimer.RemainingSeconds<=0){player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);player.WeaponEvolution.Clear();}
                     changed=true;
                 }
                 // 军械库内、队友未返回和开战前等待均不消耗所选武器。
@@ -2120,10 +2122,17 @@ namespace ET.Server
             }
             bool purpleRocket=weapon.Id=="arcade.weapon.rocket"&&CurrentWeaponPowerLevel(player)>=2;
             var tuning=ServerConfig.Instance.WeaponUpgrade;
-            int projectileCount=purpleRocket?tuning.PurpleRocketCount:weapon.ProjectileCount;
+            int powerLevel=CurrentWeaponPowerLevel(player);
+            int evolutionShot=player.WeaponEvolution.Next(weapon.Id,powerLevel,tuning.Evolution);
+            bool swarm=powerLevel>=2&&weapon.Id=="arcade.weapon.rapid"&&ArcadeWeaponEvolutionRules.Periodic(evolutionShot,tuning.Evolution.RapidPeriod);
+            bool charged=powerLevel>=2&&weapon.Id=="arcade.weapon.piercing"&&ArcadeWeaponEvolutionRules.Periodic(evolutionShot,tuning.Evolution.PiercingPeriod);
+            int projectileCount=purpleRocket?tuning.PurpleRocketCount:swarm?3:weapon.ProjectileCount;
+            if(swarm&&ServerConfig.Instance.ArcadeRule.MaxProjectiles-battle.Projectiles.Count<projectileCount)return false;
+            long volleyId=battle.NextProjectileRuntimeId;
+            var pushedEnemies=powerLevel>=2&&weapon.Id=="arcade.weapon.spread"?new HashSet<long>():null;
             if(purpleRocket&&ServerConfig.Instance.ArcadeRule.MaxProjectiles-battle.Projectiles.Count<projectileCount)return false;
             var targets=purpleRocket?RocketTargets(battle,player.PositionX,player.PositionZ):Array.Empty<OnlineArcadeEnemyRuntime>();
-            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:weapon.SpreadDegrees;
+            float spread=purpleRocket?tuning.PurpleRocketSpreadDegrees:swarm?tuning.Evolution.RapidSpreadDegrees:weapon.SpreadDegrees;
             int created = 0;
             for (int index = 0; index < projectileCount &&
                  battle.Projectiles.Count < ServerConfig.Instance.ArcadeRule.MaxProjectiles; index++)
@@ -2138,6 +2147,8 @@ namespace ET.Server
                     OwnerPlayerId = player.PlayerId,
                     FromPlayerWeapon = true,
                     SourceWeaponId = weapon.Id,
+                    EvolutionVolleyId=volleyId,EvolutionPushedEnemyIds=pushedEnemies,
+                    EvolutionHitRadius=charged?tuning.Evolution.PiercingRadius:0,
                     SourcePositionX = player.PositionX, SourcePositionZ = player.PositionZ,
                     WeaponPowerLevel = Math.Clamp((int)MathF.Round(skullMultiplier)-1,0,2),
                     TrackingEnemyId=purpleRocket&&targets.Length>0?targets[index%targets.Length].RuntimeId:0,
@@ -2149,13 +2160,14 @@ namespace ET.Server
                     Damage = purpleRocket?FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.SplitVolleyDamage(damage,projectileCount,index):damage,
                     RemainingSeconds = weapon.ProjectileLifetimeSeconds,
                     Behavior = weapon.Behavior,
-                    RemainingHits = Math.Max(1, weapon.MaxHits),
+                    RemainingHits = powerLevel>=2&&weapon.Id=="arcade.weapon.basic"?int.MaxValue:charged?tuning.Evolution.PiercingHits:Math.Max(1, weapon.MaxHits),
                     ExplosionRadius = Math.Max(0f, weapon.ExplosionRadius),
                 });
                 created++;
             }
             if (created > 0)
             {
+                player.WeaponEvolution.Commit(weapon.Id,powerLevel,evolutionShot);
                 player.FireSequence++;
                 player.FireCooldownSeconds = weapon.FireIntervalSeconds /
                                              (Math.Max(1f, 1f + UpgradeTotal(record, ArcadeUpgradeKind.FireRatePercent))*skullMultiplier);
@@ -2181,7 +2193,9 @@ namespace ET.Server
         private static bool TickProjectiles(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float deltaSeconds)
         {
-            bool arcsChanged=TickPurpleRayArcs(battle,deltaSeconds);
+            if(deltaSeconds<=0||float.IsNaN(deltaSeconds)||float.IsInfinity(deltaSeconds))return false;
+            bool burnChanged=self.TickWeaponBurnAreas(battle,deltaSeconds);
+            bool arcsChanged=TickPurpleRayArcs(battle,deltaSeconds)||burnChanged;
             if (battle.Projectiles.Count == 0) return arcsChanged;
             ArcadeRuleConfig rule = ServerConfig.Instance.ArcadeRule;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
@@ -2191,7 +2205,7 @@ namespace ET.Server
             foreach (long projectileId in battle.ProjectileIterationIds)
             {
                 if (!battle.Projectiles.TryGetValue(projectileId, out OnlineArcadeProjectileRuntime projectile)) continue;
-                if(self.TickPurpleRocket(battle,projectile,deltaSeconds)||self.TickPurpleRay(battle,projectile,deltaSeconds)){changed=true;continue;}
+                if(self.TickPurpleGrenade(battle,projectile,deltaSeconds)||self.TickPurpleLine(battle,projectile,deltaSeconds)||self.TickPurpleRocket(battle,projectile,deltaSeconds)||self.TickPurpleRay(battle,projectile,deltaSeconds)){changed=true;continue;}
                 TickTrackingProjectile(battle,projectile,deltaSeconds);
                 float priorX = projectile.PositionX, priorZ = projectile.PositionZ;
                 projectile.PositionX += projectile.VelocityX * deltaSeconds;
@@ -2213,6 +2227,7 @@ namespace ET.Server
                 if (projectile.OwnerPlayerId != 0 &&
                     ShouldExplodeOnRemoval(projectile.Behavior, expired, hitObstacle))
                     self.DamageEnemiesInProjectileExplosion(battle, projectile);
+                if(projectile.OwnerPlayerId!=0&&!hitObstacle)AddWeaponBurnArea(battle,projectile);
                 if (!remove && projectile.OwnerPlayerId != 0 && self.HitCrate(battle, priorX, priorZ,
                     projectile.PositionX, projectile.PositionZ, projectile.Damage))
                 {
@@ -2240,7 +2255,7 @@ namespace ET.Server
                     foreach (long enemyId in battle.EnemyIterationIds)
                     {
                         if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy)) continue;
-                        float hitRadius = rule.EnemyContactRadius + ProjectileHitRadius;
+                        float hitRadius = rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius;
                         if (DistanceSquared(projectile.PositionX, projectile.PositionZ, enemy.PositionX, enemy.PositionZ) > hitRadius * hitRadius)
                             continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
@@ -2251,10 +2266,12 @@ namespace ET.Server
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.RuntimeId)) continue;
                         RecordWeaponFeedback(battle,projectile,1,enemy.PositionX,enemy.PositionZ);
+                        PushPurpleShotgun(battle,projectile,enemy.PositionX,enemy.PositionZ);
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(battle,enemy,projectile.Damage);
                         else DamageEnemy(battle, enemy, projectile.Damage);
-                        if (enemy.CurrentHealth <= 0)
+                        bool evolutionKilled=enemy.CurrentHealth<=0;
+                        if (evolutionKilled)
                         {
                             int impactKind = ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon,
                                 false, DistanceSquared(enemy.PositionX, enemy.PositionZ, projectile.SourcePositionX, projectile.SourcePositionZ));
@@ -2263,7 +2280,7 @@ namespace ET.Server
                                     enemy.PositionX-projectile.VelocityX, enemy.PositionZ-projectile.VelocityZ, impactKind);
                             else self.KillEnemy(battle, enemy);
                         }
-                        remove = projectile.Behavior != ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
+                        remove = IsPurpleEvolution(projectile,"basic")?!evolutionKilled:projectile.Behavior != ArcadeWeaponBehavior.Piercing || projectile.RemainingHits <= 0;
                         if (remove) break;
                     }
                 }
@@ -2287,10 +2304,11 @@ namespace ET.Server
         private static void DamageEnemiesInProjectileExplosion(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeProjectileRuntime projectile)
         {
-            RecordWeaponFeedback(battle,projectile,3,projectile.PositionX,projectile.PositionZ);
+            RecordWeaponFeedback(battle,projectile,IsPurpleEvolution(projectile,"grenade")?(projectile.EvolutionClusterChild?5:4):3,projectile.PositionX,projectile.PositionZ);
             self.DamageEnemiesInArea(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius,
                 projectile.Damage, projectile.OwnerPlayerId, true,
                 ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon, true, 0));
+            SpawnPurpleCluster(battle,projectile);
         }
 
         private static void DamageEnemiesInArea(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
@@ -2420,7 +2438,7 @@ namespace ET.Server
             {
                 battle.RoundBossDefeated=true; battle.AwaitingExit=true;StartRoundReward(battle);
                 if(battle.ArenaConfigNumber==20)battle.FinalBossDefeated=true;
-                battle.SpawnQueue.Clear();battle.SpawnQueueIndex=0; battle.Projectiles.Clear();
+                battle.SpawnQueue.Clear();battle.SpawnQueueIndex=0; battle.Projectiles.Clear();battle.WeaponBurnAreas.Clear();foreach(var evolvedPlayer in battle.Players.Values)evolvedPlayer.WeaponEvolution.Clear();
             }
             if (battle.IsFinalBoss && enemy.RuntimeId == battle.FinalBossEnemyId)
             {
@@ -2429,7 +2447,7 @@ namespace ET.Server
                 battle.SpawnQueue.Clear();
                 battle.SpawnQueueIndex = 0;
                 foreach (var remaining in battle.Enemies.Values.ToArray()) self.KillEnemy(battle, remaining, true);
-                battle.Projectiles.Clear();
+                battle.Projectiles.Clear();battle.WeaponBurnAreas.Clear();foreach(var evolvedPlayer in battle.Players.Values)evolvedPlayer.WeaponEvolution.Clear();
             }
             foreach (var hazard in battle.Hazards) hazard.ForgetTarget(enemy.RuntimeId);
             if (hazardKill || battle.Drops.Count >= ServerConfig.Instance.ArcadeRule.MaxDrops) return;
@@ -2652,6 +2670,7 @@ namespace ET.Server
         private static void ApplyWeaponDrop(OnlineArcadeBattlePlayerRuntime player,OnlineArcadePlayerRecord record,ArcadeDropConfig drop)
         {
             bool same=(player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)==drop.ProductId;
+            if(!same)player.WeaponEvolution.Clear();
             if(same)GrantWeaponPower(player,FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(player)),0);
             // 不同武器沿用玩家已有强化，不清除也不重置强化余时。
             player.TemporaryWeaponId=drop.ProductId;
@@ -3289,6 +3308,11 @@ namespace ET.Server
             {
                 var a=arc.Snapshot;var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=true;battle.ContentAreas.Add(item);
             }
+            foreach(var a in source.WeaponBurnAreas)
+            {
+                var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=31;item.X=a.X;item.Y=a.Z;
+                item.Radius=ServerConfig.Instance.WeaponUpgrade.Evolution.FlameGroundRadius;item.RemainingSeconds=a.RemainingSeconds;battle.ContentAreas.Add(item);
+            }
             foreach(var a in source.ContentAreas)
             {
                 if(a.Kind==ArcadeRoundContentRules.BarrelExplosionKind)continue;
@@ -3394,6 +3418,11 @@ namespace ET.Server
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
                     powerup.DronePhase=(int)(sourcePowerup.Drone?.Phase??FirepowerLoop.Arcade.ArcadeDronePhase.Following);
                     powerup.DronePowerTier=sourcePowerup.DronePowerTier;
+                    var extra=sourcePowerup.ExtraDrone;
+                    powerup.HasExtraDrone=extra!=null&&extra.Phase!=ArcadeDronePhase.Expired;
+                    powerup.ExtraDroneX=extra?.X??0;powerup.ExtraDroneZ=extra?.Z??0;
+                    powerup.ExtraDronePhase=(int)(extra?.Phase??ArcadeDronePhase.Expired);
+                    powerup.ExtraDroneDirectionX=extra?.DirectionX??0;powerup.ExtraDroneDirectionZ=extra?.DirectionZ??0;
                     player.Powerups.Add(powerup);
                 }
                 AppendSlayerMartPlayerSnapshot(source,sourcePlayer,player);
@@ -3425,6 +3454,7 @@ namespace ET.Server
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
                 projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
                 projectile.WeaponPowerLevel = sourceProjectile.WeaponPowerLevel;
+                projectile.EvolutionHitRadius=sourceProjectile.EvolutionHitRadius;projectile.EvolutionClusterChild=sourceProjectile.EvolutionClusterChild;projectile.RemainingSeconds=sourceProjectile.RemainingSeconds;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;
@@ -3525,7 +3555,7 @@ namespace ET.Server
             battle.RoundGeneration=source.RoundGeneration;
             battle.RoundBossEncounter=source.RoundBossEncounter;battle.RoundBossDefeated=source.RoundBossDefeated;battle.RoundLayoutId=source.RoundLayoutId;battle.RoundLayoutVersion=source.RoundLayoutVersion;
             battle.RoundLoading=source.RoundLoading;battle.RoundLoadError=source.RoundLoadError;battle.ContentElapsed=source.ContentElapsed;
-            foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;battle.ContentAreas.Add(item);}
+            foreach(var a in source.ContentAreas){var item=OnlineArcadeContentAreaInfo.Create();item.Id=a.Id;item.Kind=a.Kind;item.X=a.X;item.Y=a.Y;item.Radius=a.Radius;item.Warning=a.Warning;item.EndX=a.EndX;item.EndY=a.EndY;item.Segment=a.Segment;item.RemainingSeconds=a.RemainingSeconds;battle.ContentAreas.Add(item);}
 
             battle.WaveNumber = source.WaveNumber;
             battle.ArenaConfigNumber = source.ArenaConfigNumber;
@@ -3616,6 +3646,8 @@ namespace ET.Server
                     powerup.ShotDirectionZ = sourcePowerup.ShotDirectionZ;
                     powerup.DronePhase=sourcePowerup.DronePhase;
                     powerup.DronePowerTier=sourcePowerup.DronePowerTier;
+                    powerup.HasExtraDrone=sourcePowerup.HasExtraDrone;powerup.ExtraDroneX=sourcePowerup.ExtraDroneX;powerup.ExtraDroneZ=sourcePowerup.ExtraDroneZ;
+                    powerup.ExtraDronePhase=sourcePowerup.ExtraDronePhase;powerup.ExtraDroneDirectionX=sourcePowerup.ExtraDroneDirectionX;powerup.ExtraDroneDirectionZ=sourcePowerup.ExtraDroneDirectionZ;
                     player.Powerups.Add(powerup);
                 }
                 CloneSlayerMartPlayerSnapshot(sourcePlayer,player);
@@ -3647,6 +3679,7 @@ namespace ET.Server
                 projectile.OwnerPlayerId = sourceProjectile.OwnerPlayerId;
                 projectile.SourceWeaponId = sourceProjectile.SourceWeaponId;
                 projectile.WeaponPowerLevel = sourceProjectile.WeaponPowerLevel;
+                projectile.EvolutionHitRadius=sourceProjectile.EvolutionHitRadius;projectile.EvolutionClusterChild=sourceProjectile.EvolutionClusterChild;projectile.RemainingSeconds=sourceProjectile.RemainingSeconds;
                 projectile.PositionX = sourceProjectile.PositionX;
                 projectile.PositionZ = sourceProjectile.PositionZ;
                 projectile.VelocityX = sourceProjectile.VelocityX;

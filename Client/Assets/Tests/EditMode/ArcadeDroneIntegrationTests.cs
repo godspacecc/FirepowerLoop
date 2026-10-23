@@ -60,7 +60,8 @@ namespace Game.Tests
             Call("ApplyDrop",runtime,catalog.Drops.Single(d=>d.ProductId==skull.Id));
             runtime.Enemies.Add(50,new ArcadeEnemyRuntime{Id=50,Health=1000,MaxHealth=1000,Position=new Vector2(3,.35f)});
             Call("TickTimers",runtime,.01f);
-            Assert.That(runtime.Projectiles.Values.Single().Damage,Is.EqualTo(36));
+            Assert.That(runtime.Projectiles.Count,Is.EqualTo(2));
+            Assert.That(runtime.Projectiles.Values.All(p=>p.Damage==36),Is.True);
             runtime.Projectiles.Clear();runtime.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
             runtime.Powerups[ArcadePowerupBehavior.Drone].Drone.FireCooldownSeconds=0;
             Call("TickTimers",runtime,.01f);

@@ -67,6 +67,35 @@ namespace Game.Tests
             Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z),Is.EqualTo(.85f).Within(.002f));
             Assert.That(instance.GetComponentsInChildren<Collider>(true),Is.Empty);
         }
+        /// <summary>同一玩家的两架机体必须独立加载和定位，降级后只回收副机。</summary>
+        [Test]public void PurplePairLoadsIndependentlyAndDowngradeReleasesOnlyExtra()
+        {
+            view.BeginEffectSync();
+            Unit(1,0,Vector2.right);Unit(1,1,Vector2.left);view.EndEffectSync();loader.Complete();
+            Assert.That(Entries.Count,Is.EqualTo(2));
+            var primary=Instance();
+            var extraEntry=Entries["powerup:1:13:1"];
+            var extra=(GameObject)extraEntry.GetType().GetField("Instance",Flags).GetValue(extraEntry);
+            Assert.That(primary,Is.Not.SameAs(extra));
+            Assert.That(primary.transform.localPosition,Is.EqualTo(new Vector3(1,1.35f,0)));
+            Assert.That(extra.transform.localPosition,Is.EqualTo(new Vector3(-1,1.35f,0)));
+            view.BeginEffectSync();Unit(1,0,Vector2.up);view.EndEffectSync();
+            Assert.That(Entries.Count,Is.EqualTo(1));Assert.That(Instance(),Is.SameAs(primary));
+        }
+        /// <summary>过期副机的迟到加载不能复活，也不能替换同一玩家的主机。</summary>
+        [Test]public void LateExtraLoadCannotReturnAfterItIsRemoved()
+        {
+            view.BeginEffectSync();Unit(1,0,Vector2.right);Unit(1,1,Vector2.left);view.EndEffectSync();
+            view.BeginEffectSync();Unit(1,0,Vector2.up);view.EndEffectSync();loader.Complete();
+            Assert.That(Entries.Count,Is.EqualTo(1));Assert.That(root.transform.childCount,Is.EqualTo(1));
+            Assert.That(Instance().transform.localPosition,Is.EqualTo(new Vector3(0,1.35f,1)));
+        }
+        private void Unit(long owner,int unit,Vector2 position)
+        {
+            var method=typeof(ArcadeCombatViewController).GetMethod("SetDroneUnit",Flags);
+            Assert.That(method,Is.Not.Null,"第二架无人机需要独立的正式表现入口");
+            method.Invoke(view,new object[]{owner,unit,definition,position,Vector2.up,0,3});
+        }
         private sealed class Loader:IResourceLoader
         {
             private readonly List<Action> callbacks=new List<Action>();

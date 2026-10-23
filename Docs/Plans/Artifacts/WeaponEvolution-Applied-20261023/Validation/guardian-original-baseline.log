@@ -1,0 +1,12 @@
+PASS SlayerGuardianOnline.Unique Guardian scales health by original member count
+PASS SlayerGuardianOnline.Bomb cannot erase Slayer Guardian
+PASS SlayerGuardianOnline.Hammer warns before lethal impact
+PASS SlayerGuardianOnline.Hammer impact uses independent challenge down
+PASS SlayerGuardianOnline.Existing invulnerability blocks lethal hammer
+PASS SlayerGuardianOnline.Hammer radius does not hit distant member
+PASS SlayerGuardianOnline.Fireball explodes and leaves finite burn area
+PASS SlayerGuardianOnline.Fireball burn ticks after explosion without becoming lethal
+FAIL SlayerGuardianOnline.Flame path crosses borrowed stone obstacle: flame path blocked by stone or missing direct hit
+PASS SlayerGuardianOnline.Guardian body uses configured normal contact between warnings
+PASS SlayerGuardianOnline.Guardian victory opens shop instead of ending ordinary arena
+10/11 passed

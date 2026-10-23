@@ -73,6 +73,11 @@ namespace Game
         void SetPlayerFireSequence(int sequence, float attackIntervalSeconds) => SetPlayerFireSequence(sequence);
         /// <summary>投射物确实引爆时播放表现反馈，不参与范围伤害结算。</summary>
         void PlayProjectileExplosion(Vector2 position, float radius) { }
+        /// <summary>紫级进化只消费权威区域、弹丸与爆炸事件，默认替身无需加载资源。</summary>
+        void SetWeaponBurnArea(int id, Vector2 position, float radius, float remainingSeconds) { }
+        void SetEvolvedPiercing(int id, Vector2 position, Vector2 direction, float radius) { }
+        void SetEvolvedGrenade(int id, Vector2 position, Vector2 direction, bool child, float phase) { }
+        void PlayEvolvedGrenadeExplosion(Vector2 position, float radius, bool child) { }
         /// <summary>局内快捷炸弹成功消耗后播放三阶段视觉与独立清场音效。</summary>
         void PlayBombExplosion(Vector2 position) { }
         /// <summary>已结算的单次命中声音，不参与伤害与投射物生命周期。</summary>
@@ -129,6 +134,9 @@ namespace Game
         void SetRoundReward(FirepowerLoop.Arcade.ArcadeRoundRewardState state,FirepowerLoop.Arcade.ArcadeRoundRewardTuning tuning) { }
         void SetStagePortal(bool visible,Vector2 position,float seconds,float appearSeconds) { }
         void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
+        /// <summary>紫级副机单独同步；旧表现端仍可显示主机。</summary>
+        void SetDroneUnit(long ownerPlayerId,int unitIndex,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
+        {if(unitIndex==0)SetDrone(ownerPlayerId,definition,position,direction,phase,powerTier);}
         void SetPowerup(ArcadePowerupDefinition definition, Vector2 anchorPosition) { }
         void SetPowerup(long ownerPlayerId, ArcadePowerupDefinition definition, Vector2 anchorPosition) =>
             SetPowerup(definition, anchorPosition);
@@ -867,7 +875,8 @@ namespace Game
             EndStormSync();
             staleEffectVisualKeys.Clear();
             foreach (KeyValuePair<string, EffectVisualEntry> pair in effectVisuals)
-                if (pair.Value.LastSeenRevision != effectSyncRevision && pair.Value.ShieldFlashRemaining <= 0f)
+                if (pair.Value.LastSeenRevision != effectSyncRevision && pair.Value.ShieldFlashRemaining <= 0f &&
+                    !KeepWeaponEvolutionTail(pair.Value))
                     staleEffectVisualKeys.Add(pair.Key);
             for (var index = 0; index < staleEffectVisualKeys.Count; index++)
                 ReleaseEffectVisual(staleEffectVisualKeys[index]);
@@ -937,6 +946,7 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
+            TickWeaponEvolutionVisuals(deltaTime);
             TickFlamethrowerAudio(deltaTime);
             TickElectricTowerFeedback(deltaTime);
             TickRoundFlameFeedback(deltaTime);
@@ -1121,6 +1131,7 @@ namespace Game
                 entry.Instance.transform.localPosition = entry.LocalPosition;
                 if (entry.HasShotDirection) entry.Instance.transform.localRotation = entry.LocalRotation;
                 if(entry.IsDrone)ApplyDroneAppearance(entry);
+                  ApplyWeaponEvolution(entry);
                 ApplyRewardPortalAppearance(entry);
                 if (entry.ShieldFlashRemaining > 0f) ApplyShieldFlash(entry);
             }
@@ -1208,6 +1219,10 @@ namespace Game
             public float PortalSeconds,PortalAppearSeconds;
             public bool IsDrone;
             public int DronePowerTier=1;
+            /// <summary>已采用进化模板的最新快照和纯视觉烟尾，不持有玩法状态。</summary>
+            public int EvolutionMode;
+            public float EvolutionRadius, EvolutionRemaining, EvolutionPhase, EvolutionTailSeconds, EvolutionAge;
+            public bool EvolutionChild;
             public bool Released;
             public ResourceLoadHandle Handle;
             public GameObject Instance;

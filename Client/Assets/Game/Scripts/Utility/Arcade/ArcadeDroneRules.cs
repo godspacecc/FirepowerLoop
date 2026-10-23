@@ -38,6 +38,8 @@ namespace FirepowerLoop.Arcade
     {
         public ArcadeDronePhase Phase;
         public float RemainingSeconds,FireCooldownSeconds,VisualRemainingSeconds,X,Z;
+        /// <summary>最近一次真实攻击方向，仅投影外观。</summary>
+        public float DirectionX,DirectionZ;
         public long TargetId;
     }
     /// <summary>当前可攻击目标的只读位置；调用方只传入仍存活的敌人。</summary>
@@ -61,7 +63,7 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>零步长、无效步长和已结束实例不产生战斗事实；外观阶段不重复结算伤害。</summary>
         public static ArcadeDroneStep Step(ArcadeDroneState state,ArcadeDroneTuning tuning,float deltaTime,
-            float ownerX,float ownerZ,int powerTier,bool canAct,bool canFire,IReadOnlyList<ArcadeDroneTarget> targets)
+            float ownerX,float ownerZ,int powerTier,bool canAct,bool canFire,IReadOnlyList<ArcadeDroneTarget> targets,int formationSign=1,long excludedTargetId=0)
         {
             if(state==null)throw new ArgumentNullException(nameof(state));
             if(!Finite(deltaTime)||deltaTime<=0||state.Phase==ArcadeDronePhase.Expired||!Finite(ownerX)||!Finite(ownerZ))return default;
@@ -80,8 +82,8 @@ namespace FirepowerLoop.Arcade
             bool beganRam=false;
             if(state.Phase==ArcadeDronePhase.Following)
             {
-                state.X=ownerX+tuning.OffsetX;state.Z=ownerZ+tuning.OffsetZ;
-                var target=canAct?Nearest(state,targets,tuning.Range):default;
+                state.X=ownerX+tuning.OffsetX*formationSign;state.Z=ownerZ+tuning.OffsetZ;
+                var target=canAct?Nearest(state,targets,tuning.Range,excludedTargetId):default;
                 if(target.Id>0&&state.RemainingSeconds<=tuning.RamWindowSeconds)
                 {state.Phase=ArcadeDronePhase.Ramming;state.TargetId=target.Id;beganRam=true;}
                 else
@@ -120,12 +122,17 @@ namespace FirepowerLoop.Arcade
             Positive(t.RamSpeed)&&t.ExplosionDamage>0&&Positive(t.ExplosionRadius)&&Positive(t.ExplosionVisualSeconds);
 
         /// <summary>距离相同按稳定身份选敌，避免字典枚举顺序影响双人结果。</summary>
-        private static ArcadeDroneTarget Nearest(ArcadeDroneState state,IReadOnlyList<ArcadeDroneTarget> targets,float range)
+        private static ArcadeDroneTarget Nearest(ArcadeDroneState state,IReadOnlyList<ArcadeDroneTarget> targets,float range,long excludedTargetId)
         {
             ArcadeDroneTarget nearest=default;double best=(double)range*range;
             if(targets==null)return nearest;
+            bool hasAlternative=false;
+            foreach(var candidate in targets)
+                if(candidate.Id>0&&candidate.Id!=excludedTargetId&&Finite(candidate.X)&&Finite(candidate.Z)&&
+                    (double)(candidate.X-state.X)*(candidate.X-state.X)+(double)(candidate.Z-state.Z)*(candidate.Z-state.Z)<=best)hasAlternative=true;
             foreach(var target in targets)
             {
+                if(hasAlternative&&target.Id==excludedTargetId)continue;
                 if(target.Id<=0||!Finite(target.X)||!Finite(target.Z))continue;
                 double dx=(double)target.X-state.X,dz=(double)target.Z-state.Z,distance=dx*dx+dz*dz;
                 if(distance>best||distance==best&&nearest.Id>0&&target.Id>=nearest.Id)continue;

@@ -20,6 +20,12 @@ if(opts.GetValueOrDefault("testClass")=="ElectricTowerOnline")
     World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
     World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=ElectricTowerOnlineChecks.Run(electricMax);return;
 }
+if(opts.GetValueOrDefault("testClass")=="WeaponEvolutionOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int evolutionMax)||evolutionMax<1)throw new ArgumentException("Explicit WeaponEvolutionOnline limit required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=WeaponEvolutionOnlineChecks.Run(evolutionMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="MeleeWindupOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int meleeMax)||meleeMax<1)

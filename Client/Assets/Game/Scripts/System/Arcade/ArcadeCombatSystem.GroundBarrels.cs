@@ -85,21 +85,21 @@ namespace Game
             if(projectile.Hostile || !projectile.FromPlayerWeapon || !RoundContentActive(r) || r.GroundBarrels.Count==0)return false;
             float first=1;int barrelId=-1;
             foreach(var pair in r.GroundBarrels.OrderBy(pair=>pair.Key))
-                if(TryGroundBarrelEntry(from,to,pair.Value,ProjectileHitRadius,out float entry) && (barrelId<0 || entry<first))
+                if(TryGroundBarrelEntry(from,to,pair.Value,ProjectileHitRadius+projectile.EvolutionHitRadius,out float entry) && (barrelId<0 || entry<first))
                 { first=entry;barrelId=pair.Key; }
             if(barrelId<0)return false;
             bool blocked=false;
             foreach(var obstacle in ProjectileObstaclesFor(r))
-                if(TryGetSegmentObstacleEntry(from,to,0,obstacle,out var entry) && entry<=first)
+                if(TryGetSegmentObstacleEntry(from,to,projectile.EvolutionHitRadius,obstacle,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var enemy in r.Enemies.Values)
                 if(enemy.Health>0 && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
-                    catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out var entry) && entry<=first)
+                    catalog.Rule.EnemyContactRadius+ProjectileHitRadius+projectile.EvolutionHitRadius,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var crate in r.Crates.Values)
             {
                 var c=crate.Definition;
-                if(TryGroundBarrelEntry(from,to,new Vector2(c.X,c.Y),c.Radius+ProjectileHitRadius,out var entry) && entry<=first)
+                if(TryGroundBarrelEntry(from,to,new Vector2(c.X,c.Y),c.Radius+ProjectileHitRadius+projectile.EvolutionHitRadius,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             }
             // 更近的正式目标继续交给原命中入口；微小内移避免浮点端点落在接触边界之外。
@@ -110,7 +110,7 @@ namespace Game
             // 与既有箱体命中保持一致：消费弹丸，但爆炸武器自身的半径和伤害不能丢失。
             if(!r.CompletionSubmitted && catalog!=null && this.GetModel<ArcadeCombatModel>().Runtime==r && IsExplosiveBehavior(projectile.Behavior))
             {
-                view?.PlayProjectileExplosion(projectile.Position,projectile.ExplosionRadius);
+                PlayWeaponProjectileExplosion(projectile);
                 DamageEnemiesInProjectileExplosion(r,projectile);
             }
             return true;

@@ -450,7 +450,8 @@ namespace Game
                 foreach (OnlineArcadePowerupInfo powerup in player.Powerups)
                     powerups.Add(new OnlineArcadePowerupSnapshot(powerup.ProductId,
                         powerup.RemainingSeconds, powerup.Charges, powerup.PositionX, powerup.PositionZ,
-                        powerup.ShotDirectionX, powerup.ShotDirectionZ,powerup.DronePhase,powerup.DronePowerTier));
+                        powerup.ShotDirectionX, powerup.ShotDirectionZ,powerup.DronePhase,powerup.DronePowerTier,
+                        powerup.HasExtraDrone,powerup.ExtraDroneX,powerup.ExtraDroneZ,powerup.ExtraDronePhase,powerup.ExtraDroneDirectionX,powerup.ExtraDroneDirectionZ));
                 players.Add(new OnlineArcadeBattlePlayerSnapshot(player.PlayerId, player.PositionX, player.PositionZ,
                     player.AimX, player.AimZ, player.CurrentHealth, player.MaxHealth, player.Alive,
                     player.Invulnerable, player.RespawnSeconds, player.TemporaryWeaponId,
@@ -468,7 +469,7 @@ namespace Game
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,
                     projectile.PositionX, projectile.PositionZ, projectile.VelocityX, projectile.VelocityZ,
-                    projectile.SourceWeaponId,projectile.WeaponPowerLevel));
+                    projectile.SourceWeaponId,projectile.WeaponPowerLevel,projectile.EvolutionHitRadius,projectile.EvolutionClusterChild,projectile.RemainingSeconds));
             List<OnlineArcadeDropSnapshot> drops = new(source.Drops.Count);
             foreach (OnlineArcadeDropInfo drop in source.Drops)
                 drops.Add(new OnlineArcadeDropSnapshot(drop.RuntimeId, drop.DropConfigId,
@@ -486,7 +487,7 @@ namespace Game
                 source.TreasureDiscovered, source.TreasureOpen, source.TreasureExpired, source.TreasureSeconds,
                 source.TreasureRewardIds, source.CrateIds, supplyPickups, source.TreasureRewardSeconds,
                 source.RoundLayoutId,source.RoundLayoutVersion,source.RoundGeneration,source.RoundLoading,source.RoundLoadError,
-                source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated,
+                source.ContentElapsed,source.ContentAreas.Select(a=>new FirepowerLoop.Arcade.ArcadeContentAreaSnapshot(a.Id,a.Kind,a.X,a.Y,a.Radius,a.Warning,a.EndX,a.EndY,a.Segment,a.RemainingSeconds)).ToArray(),source.RoundBossEncounter,source.RoundBossDefeated,
                 new OnlineSlayerMartRegionSnapshot(source.SlayerMartRulesVersion,source.SlayerMartActive,source.SlayerMartVisit,source.SlayerMartGeneration,source.SlayerMartRevision,
                     source.SlayerMartPrepared,source.SlayerMartReady,source.SlayerMartClosing,source.SlayerMartSeconds,source.SlayerMartMembers.Select(Member),source.SlayerMartCashBoxIds),new OnlineSlayerChallengeSnapshot(source.SlayerPhase,source.SlayerDowns,source.SlayerDownLimit,source.SlayerCashCollected,source.SlayerOutcome,source.SlayerExitVotes,source.SlayerEnterReady,source.SlayerSkipReady),
                 source.BombBlasts.Select(b=>new OnlineArcadeBombBlastSnapshot(b.Sequence,b.PlayerId,b.PositionX,b.PositionZ,b.RoundGeneration)).ToArray(),

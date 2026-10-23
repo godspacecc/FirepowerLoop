@@ -1435,6 +1435,27 @@ namespace ET
         [MemoryPackOrder(8)]
         public int DronePowerTier { get; set; }
 
+        /// <summary>
+        /// 紫级第二架无人机的权威位置与阶段，未激活时HasExtraDrone=false。
+        /// </summary>
+        [MemoryPackOrder(9)]
+        public bool HasExtraDrone { get; set; }
+
+        [MemoryPackOrder(10)]
+        public float ExtraDroneX { get; set; }
+
+        [MemoryPackOrder(11)]
+        public float ExtraDroneZ { get; set; }
+
+        [MemoryPackOrder(12)]
+        public int ExtraDronePhase { get; set; }
+
+        [MemoryPackOrder(13)]
+        public float ExtraDroneDirectionX { get; set; }
+
+        [MemoryPackOrder(14)]
+        public float ExtraDroneDirectionZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1451,6 +1472,12 @@ namespace ET
             this.ShotDirectionZ = default;
             this.DronePhase = default;
             this.DronePowerTier = default;
+            this.HasExtraDrone = default;
+            this.ExtraDroneX = default;
+            this.ExtraDroneZ = default;
+            this.ExtraDronePhase = default;
+            this.ExtraDroneDirectionX = default;
+            this.ExtraDroneDirectionZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -1755,6 +1782,21 @@ namespace ET
         [MemoryPackOrder(7)]
         public int WeaponPowerLevel { get; set; }
 
+        /// <summary>
+        /// 发射时固定的宽贯穿半径与集束子弹标记，只投影实际生成的能力。
+        /// </summary>
+        [MemoryPackOrder(8)]
+        public float EvolutionHitRadius { get; set; }
+
+        [MemoryPackOrder(9)]
+        public bool EvolutionClusterChild { get; set; }
+
+        /// <summary>
+        /// 剩余飞行寿命仅用于已采用榴弹弧线的相位，客户端不裁决引爆。
+        /// </summary>
+        [MemoryPackOrder(10)]
+        public float RemainingSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1770,6 +1812,9 @@ namespace ET
             this.VelocityZ = default;
             this.SourceWeaponId = default;
             this.WeaponPowerLevel = default;
+            this.EvolutionHitRadius = default;
+            this.EvolutionClusterChild = default;
+            this.RemainingSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -2841,6 +2886,12 @@ namespace ET
         [MemoryPackOrder(8)]
         public bool Segment { get; set; }
 
+        /// <summary>
+        /// 残火显示淡出使用的权威寿命；其它区域保持默认零。
+        /// </summary>
+        [MemoryPackOrder(9)]
+        public float RemainingSeconds { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2857,6 +2908,7 @@ namespace ET
             this.EndX = default;
             this.EndY = default;
             this.Segment = default;
+            this.RemainingSeconds = default;
 
             ObjectPool.Instance.Recycle(this);
         }

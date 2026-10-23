@@ -592,6 +592,24 @@
         <var name="PurpleMoveSpeedPercent" type="float"/>
         <var name="RedPowerupId" type="string#ref=TbArcadePowerup"/>
         <var name="PurplePowerupId" type="string#ref=TbArcadePowerup"/>
+        <var name="PurpleRapidPeriod" type="int"/>
+        <var name="PurpleRapidSpreadDegrees" type="float"/>
+        <var name="PurpleShotgunPushRadius" type="float"/>
+        <var name="PurpleShotgunPushDistance" type="float"/>
+        <var name="PurpleFlameGroundSeconds" type="float"/>
+        <var name="PurpleFlameGroundTickSeconds" type="float"/>
+        <var name="PurpleFlameGroundRadius" type="float"/>
+        <var name="PurpleFlameGroundDamageRatio" type="float"/>
+        <var name="PurpleFlameGroundMaxAreas" type="int"/>
+        <var name="PurplePiercingPeriod" type="int"/>
+        <var name="PurplePiercingRadius" type="float"/>
+        <var name="PurplePiercingHits" type="int"/>
+        <var name="PurpleClusterCount" type="int"/>
+        <var name="PurpleClusterSeconds" type="float"/>
+        <var name="PurpleClusterRadius" type="float"/>
+        <var name="PurpleClusterDamageRatio" type="float"/>
+        <var name="PurpleClusterSpeed" type="float"/>
+        <var name="PurpleContinuousResetSeconds" type="float"/>
     </bean>
     <!-- 已采用二代码头/四区农场的独立边界与牛群参数，旧地图不套用。 -->
     <bean name="ArcadeEarlyStageConfig" group="e">

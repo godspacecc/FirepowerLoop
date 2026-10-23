@@ -15,8 +15,13 @@ namespace Game
 
         /// <summary>复用已有异步效果资源事务，切换阶段时释放旧机体，爆炸不拥有伤害逻辑。</summary>
         public void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
+            =>SetDroneUnit(ownerPlayerId,0,definition,position,direction,phase,powerTier);
+
+        /// <summary>同一玩家的两架无人机各自持有资源事务，降级或过期由效果同步独立回收。</summary>
+        public void SetDroneUnit(long ownerPlayerId,int unitIndex,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
         {
-            string key=$"powerup:{ownerPlayerId}:{(int)definition.Behavior}";
+            if(unitIndex<0||unitIndex>1)return;
+            string key=$"powerup:{ownerPlayerId}:{(int)definition.Behavior}"+(unitIndex==0?"":":1");
             if(phase==(int)ArcadeDronePhase.Expired){ReleaseEffectVisual(key);return;}
             bool exploded=phase==(int)ArcadeDronePhase.Exploding;
             string address=definition.ActiveVisualPrefabAddress;

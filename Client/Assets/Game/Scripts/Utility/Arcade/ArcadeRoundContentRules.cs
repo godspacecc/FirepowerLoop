@@ -10,8 +10,10 @@ namespace FirepowerLoop.Arcade
         public readonly float X, Y, Radius;
         public readonly bool Warning, Segment;
         public readonly float EndX, EndY;
-        public ArcadeContentAreaSnapshot(int id, int kind, float x, float y, float radius, bool warning, float endX = 0, float endY = 0, bool segment = false)
-        { Id=id;Kind=kind;X=x;Y=y;Radius=radius;Warning=warning;EndX=endX;EndY=endY;Segment=segment; }
+        /// <summary>权威残火的剩余秒数只供表现淡出。</summary>
+        public readonly float RemainingSeconds;
+        public ArcadeContentAreaSnapshot(int id, int kind, float x, float y, float radius, bool warning, float endX = 0, float endY = 0, bool segment = false, float remainingSeconds=0)
+        { Id=id;Kind=kind;X=x;Y=y;Radius=radius;Warning=warning;EndX=endX;EndY=endY;Segment=segment;RemainingSeconds=remainingSeconds; }
     }
     /// <summary>双端同源的不可变内容参数，战斗数值全部来自轮级配置。</summary>
     public readonly struct ArcadeContentTuning

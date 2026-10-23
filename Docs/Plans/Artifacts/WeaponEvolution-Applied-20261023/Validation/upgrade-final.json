@@ -1,0 +1,47 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 7,
+    "PassedTests": 7,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:08.6264878"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.DifferentWeaponPreservesPowerClockAndIndependentDrone",
+      "Status": "Passed",
+      "Duration": "00:00:00.9920000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.EverySkullAndRepeatRefillsMinimumWithoutShorteningOrDowngrading",
+      "Status": "Passed",
+      "Duration": "00:00:01.0800000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.PurpleMovementCombinesWithBootsAndDashThenExpires",
+      "Status": "Passed",
+      "Duration": "00:00:01.1150000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.RepeatedWeaponAdvancesRedPurpleAndCapsWithoutMultiplyingAgain",
+      "Status": "Passed",
+      "Duration": "00:00:00.9940000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.RestoredUpgradeKeepsIdentityAndRemainingTimeWithoutGrantingAgain",
+      "Status": "Passed",
+      "Duration": "00:00:01.0580000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.SameWeaponRefillDoesNotShortenLongerWeaponOrPowerClock",
+      "Status": "Passed",
+      "Duration": "00:00:01.1130000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeWeaponUpgradeTests.TreasureWeaponUsesTheSameUpgradeEntry",
+      "Status": "Passed",
+      "Duration": "00:00:01.0160000"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+PASS DroneOnline.SupportKeepsBothHeldWeapons
+PASS DroneOnline.ActualShotsTrackTierExpiry
+PASS DroneOnline.ActualRamExplodesOnce
+PASS DroneOnline.NoEnemyExitWaitStillExpires
+PASS DroneOnline.SnapshotCloneCodecKeepsDroneState
+PASS DroneOnline.RoundCloneKeepsTimeWithoutOldTarget
+PASS DroneOnline.InvalidTuningIsRejected
+7/7 passed

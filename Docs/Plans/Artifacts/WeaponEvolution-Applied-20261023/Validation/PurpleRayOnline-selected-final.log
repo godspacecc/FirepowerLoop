@@ -1,0 +1,8 @@
+PASS PurpleRayOnline.FirstSolidWallConsumes
+PASS PurpleRayOnline.FirstPlusTwoOnce
+PASS PurpleRayOnline.FourMetreRange
+PASS PurpleRayOnline.LifetimeAndPause
+PASS PurpleRayOnline.RedWall
+PASS PurpleRayOnline.FinalLifetimeBarrel
+PASS PurpleRayOnline.ArcSnapshotAndExpiry
+7/7 passed

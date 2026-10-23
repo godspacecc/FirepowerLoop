@@ -81,22 +81,22 @@ namespace ET.Server
             foreach(var pair in GroundBarrelPoints(b))
             {
                 var point=pair.Value;
-                if(GroundCircleEntry(ax,ay,bx,by,point.X,point.Y,ProjectileHitRadius,out float entry)&&entry<nearest)
+                if(GroundCircleEntry(ax,ay,bx,by,point.X,point.Y,ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<nearest)
                 {nearest=entry;selected=pair.Key;}
             }
             if(selected<0)return false;
             float blockerEntry=nearest;bool blocked=false;
             foreach(var obstacle in ProjectileObstaclesFor(b))
-                if(TryGetSegmentObstacleEntry(ax,ay,bx,by,0,obstacle,out float entry)&&entry<=blockerEntry)
+                if(TryGetSegmentObstacleEntry(ax,ay,bx,by,shot.EvolutionHitRadius,obstacle,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var enemy in b.Enemies.Values)
                 if(enemy.CurrentHealth>0&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
                     GroundCircleEntry(ax,ay,bx,by,enemy.PositionX,enemy.PositionZ,
-                        ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<=blockerEntry)
+                        ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var crate in b.Crates.Values)
                 if(crate.Health>0&&GroundCircleEntry(ax,ay,bx,by,crate.Definition.X,crate.Definition.Y,
-                    crate.Definition.Radius+ProjectileHitRadius,out float entry)&&entry<=blockerEntry)
+                    crate.Definition.Radius+ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             if(blocked)
             {

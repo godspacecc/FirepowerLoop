@@ -72,7 +72,7 @@ namespace Game
     public readonly struct OnlineArcadePowerupSnapshot
     {
         public OnlineArcadePowerupSnapshot(string productId, float remainingSeconds, int charges,
-            float positionX = 0f, float positionZ = 0f, float shotDirectionX = 0f, float shotDirectionZ = 0f,int dronePhase=0,int dronePowerTier=1)
+            float positionX = 0f, float positionZ = 0f, float shotDirectionX = 0f, float shotDirectionZ = 0f,int dronePhase=0,int dronePowerTier=1,bool hasExtraDrone=false,float extraDroneX=0,float extraDroneZ=0,int extraDronePhase=3,float extraDroneDirectionX=0,float extraDroneDirectionZ=0)
         {
             ProductId = productId ?? string.Empty;
             RemainingSeconds = remainingSeconds;
@@ -81,6 +81,7 @@ namespace Game
             PositionZ = positionZ;
             ShotDirectionX = shotDirectionX;
             ShotDirectionZ = shotDirectionZ; DronePhase=dronePhase;DronePowerTier=dronePowerTier;
+            HasExtraDrone=hasExtraDrone;ExtraDroneX=extraDroneX;ExtraDroneZ=extraDroneZ;ExtraDronePhase=extraDronePhase;ExtraDroneDirectionX=extraDroneDirectionX;ExtraDroneDirectionZ=extraDroneDirectionZ;
         }
 
         public string ProductId { get; }
@@ -95,6 +96,13 @@ namespace Game
         /// <summary>无人机当前权威阶段与玩家强化等级。</summary>
         public int DronePhase { get; }
         public int DronePowerTier { get; }
+        /// <summary>第二架只读权威投影，不由客户端推算寿命或伤害。</summary>
+        public bool HasExtraDrone { get; }
+        public float ExtraDroneX { get; }
+        public float ExtraDroneZ { get; }
+        public int ExtraDronePhase { get; }
+        public float ExtraDroneDirectionX { get; }
+        public float ExtraDroneDirectionZ { get; }
     }
 
     public readonly struct OnlineArcadeBattlePlayerSnapshot
@@ -217,12 +225,13 @@ namespace Game
     public readonly struct OnlineArcadeProjectileSnapshot
     {
         public OnlineArcadeProjectileSnapshot(long runtimeId, long ownerPlayerId, float positionX, float positionZ,
-            float velocityX, float velocityZ, string sourceWeaponId = null,int weaponPowerLevel=0)
+            float velocityX, float velocityZ, string sourceWeaponId = null,int weaponPowerLevel=0,float evolutionHitRadius=0,bool evolutionClusterChild=false,float remainingSeconds=0)
         {
             RuntimeId = runtimeId; OwnerPlayerId = ownerPlayerId; PositionX = positionX; PositionZ = positionZ;
             VelocityX = velocityX; VelocityZ = velocityZ;
             SourceWeaponId = sourceWeaponId ?? string.Empty;
-            WeaponPowerLevel=weaponPowerLevel;
+            WeaponPowerLevel=weaponPowerLevel;EvolutionHitRadius=evolutionHitRadius;EvolutionClusterChild=evolutionClusterChild;
+            RemainingSeconds=remainingSeconds;
         }
         public long RuntimeId { get; }
         public long OwnerPlayerId { get; }
@@ -234,6 +243,10 @@ namespace Game
         public string SourceWeaponId { get; }
         /// <summary>弹丸发射时的头骨层级，换枪后保留，敌弹忽略。</summary>
         public int WeaponPowerLevel { get; }
+        /// <summary>宽束及子榴弹外观所需的真实发射快照。</summary>
+        public float EvolutionHitRadius { get; }
+        public bool EvolutionClusterChild { get; }
+        public float RemainingSeconds { get; }
     }
 
     public readonly struct OnlineArcadeDropSnapshot

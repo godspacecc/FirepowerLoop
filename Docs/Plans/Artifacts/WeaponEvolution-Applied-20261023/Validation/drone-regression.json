@@ -1,0 +1,47 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 7,
+    "PassedTests": 7,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:04.4120136"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.ActualRamDamagesOnceAndExpiresAfterVisual",
+      "Status": "Passed",
+      "Duration": "00:00:00.4610000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.ActualShotsReadPlayerTierAndRevert",
+      "Status": "Passed",
+      "Duration": "00:00:00.5070000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.ExplodedDroneCannotBeSavedAsAnotherLiveDrone",
+      "Status": "Passed",
+      "Duration": "00:00:00.4540000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.FirstStageAirdropsContainOnlyFlameAndDrone",
+      "Status": "Passed",
+      "Duration": "00:00:00.5000000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.FullProjectileBudgetDoesNotSpendDroneCooldown",
+      "Status": "Passed",
+      "Duration": "00:00:00.4470000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.SupportExpiresEvenWhenThereAreNoEnemies",
+      "Status": "Passed",
+      "Duration": "00:00:00.5070000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeDroneIntegrationTests.TimedDroneCoexistsWithHeldFlamethrower",
+      "Status": "Passed",
+      "Duration": "00:00:00.4460000"
+    }
+  ]
+}
