@@ -1356,6 +1356,8 @@ namespace ET.Server
             battle.SpawnedInWave = 0;
             battle.EnemyDeaths.Clear();
             battle.ElectricHits.Clear();battle.NextElectricHitSequence=0;
+            // 旧逐波入口可能不换代次，序列保持战斗内单调，避免新一波被客户端当作重复。
+            battle.WeaponFeedback.Clear();
             int totalWeight = group.Members.Sum(member => member.Count);
             bool casualOrdinary = battle.IsCasualRoute && !battle.IsChallenge && !battle.IsFinalBoss && !battle.RoundBossEncounter;
             int total = casualOrdinary
@@ -2194,6 +2196,8 @@ namespace ET.Server
                 bool wallCrossed=ClipShotToWall(battle,projectile,priorX,priorZ);
                 bool expired = projectile.RemainingSeconds <= 0f;
                 bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, ProjectileObstaclesFor(battle));
+                if(!expired&&hitObstacle&&HasBulletImpactFeedback(projectile))
+                    RecordWeaponFeedback(battle,projectile,2,projectile.PositionX,projectile.PositionZ);
                 // 所有地图的行走边界都不裁断弹道；仅实体命中或寿命到期回收。
                 bool remove = expired || hitObstacle;
                 if (projectile.OwnerPlayerId != 0 &&
@@ -2236,6 +2240,7 @@ namespace ET.Server
                             break;
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.RuntimeId)) continue;
+                        RecordWeaponFeedback(battle,projectile,1,enemy.PositionX,enemy.PositionZ);
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(battle,enemy,projectile.Damage);
                         else DamageEnemy(battle, enemy, projectile.Damage);
@@ -2271,9 +2276,12 @@ namespace ET.Server
         /// <summary>墙面、箱体、桶和敌人命中的爆炸都使用弹丸生成时的来源身份。</summary>
         private static void DamageEnemiesInProjectileExplosion(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeProjectileRuntime projectile)
-            => self.DamageEnemiesInArea(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius,
+        {
+            RecordWeaponFeedback(battle,projectile,3,projectile.PositionX,projectile.PositionZ);
+            self.DamageEnemiesInArea(battle, projectile.PositionX, projectile.PositionZ, projectile.ExplosionRadius,
                 projectile.Damage, projectile.OwnerPlayerId, true,
                 ArcadeDeathImpactRules.FromProjectile(projectile.SourceWeaponId, projectile.FromPlayerWeapon, true, 0));
+        }
 
         private static void DamageEnemiesInArea(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             float centerX, float centerZ, float radius, int damage, long ownerPlayerId, bool explosive, int impactKind = 0)
@@ -3294,6 +3302,12 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = TimeInfo.Instance.ServerNow();
+            foreach(var hit in source.WeaponFeedback)
+            {
+                var copy=OnlineArcadeWeaponFeedbackInfo.Create();copy.Sequence=hit.Sequence;copy.Kind=hit.Kind;
+                copy.PositionX=hit.PositionX;copy.PositionZ=hit.PositionZ;copy.DirectionX=hit.DirectionX;copy.DirectionZ=hit.DirectionZ;
+                copy.Radius=hit.Radius;copy.RoundGeneration=hit.RoundGeneration;copy.ServerTime=hit.ServerTime;battle.WeaponFeedback.Add(copy);
+            }
             foreach(var hit in source.ElectricHits)
             {
                 var copy=OnlineArcadeElectricHitInfo.Create();copy.Sequence=hit.Sequence;copy.HazardId=hit.HazardId;copy.X=hit.X;copy.Z=hit.Z;
@@ -3514,6 +3528,12 @@ namespace ET.Server
             battle.DifficultyPlayerCount = source.DifficultyPlayerCount;
             battle.BattleRevision = source.BattleRevision;
             battle.ServerTime = source.ServerTime;
+            foreach(var hit in source.WeaponFeedback)
+            {
+                var copy=OnlineArcadeWeaponFeedbackInfo.Create();copy.Sequence=hit.Sequence;copy.Kind=hit.Kind;
+                copy.PositionX=hit.PositionX;copy.PositionZ=hit.PositionZ;copy.DirectionX=hit.DirectionX;copy.DirectionZ=hit.DirectionZ;
+                copy.Radius=hit.Radius;copy.RoundGeneration=hit.RoundGeneration;copy.ServerTime=hit.ServerTime;battle.WeaponFeedback.Add(copy);
+            }
             foreach(var hit in source.ElectricHits)
             {
                 var copy=OnlineArcadeElectricHitInfo.Create();copy.Sequence=hit.Sequence;copy.HazardId=hit.HazardId;copy.X=hit.X;copy.Z=hit.Z;

@@ -327,7 +327,8 @@ namespace Game
             int roundGeneration = 0, bool roundLoading = false, string roundLoadError = null,
             float contentElapsed = 0, IReadOnlyList<FirepowerLoop.Arcade.ArcadeContentAreaSnapshot> contentAreas = null, bool roundBossEncounter = false, bool roundBossDefeated = false, OnlineSlayerMartRegionSnapshot slayerMart = null,OnlineSlayerChallengeSnapshot slayerChallenge=null,
             IReadOnlyList<OnlineArcadeBombBlastSnapshot> bombBlasts=null, IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> enemyDeaths=null, OnlineArcadeRoundRewardSnapshot roundReward=null,float stagePortalSeconds=0,float stagePortalX=0,float stagePortalZ=0,
-            IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> herds=null,IReadOnlyList<OnlineArcadeElectricHitSnapshot> electricHits=null)
+            IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> herds=null,IReadOnlyList<OnlineArcadeElectricHitSnapshot> electricHits=null,
+            IReadOnlyList<OnlineArcadeWeaponFeedbackSnapshot> weaponFeedback=null)
         {
             SlayerMart=slayerMart;SlayerChallenge=slayerChallenge;RoundReward=roundReward;StagePortalSeconds=stagePortalSeconds;StagePortalX=stagePortalX;StagePortalZ=stagePortalZ;
             ArenaNumber = arenaNumber; WaveNumber = waveNumber; WaveCount = waveCount;
@@ -348,6 +349,7 @@ namespace Game
             BombBlasts = Array.AsReadOnly(Copy(bombBlasts));
             EnemyDeaths = Array.AsReadOnly(Copy(enemyDeaths));
             ElectricHits=Array.AsReadOnly(Copy(electricHits));
+            WeaponFeedback=Array.AsReadOnly(Copy(weaponFeedback));
             SpawnedInWave = spawnedInWave; TotalInWave = totalInWave;
             DifficultyPlayerCount = difficultyPlayerCount; BattleRevision = battleRevision; ServerTime = serverTime;
             Players = Array.AsReadOnly(Copy(players)); Enemies = Array.AsReadOnly(Copy(enemies));
@@ -411,6 +413,8 @@ namespace Game
         public IReadOnlyList<OnlineArcadeEnemyDeathSnapshot> EnemyDeaths { get; }
         /// <summary>每轮最多32条电塔命中事实，仅供去重表现。</summary>
         public IReadOnlyList<OnlineArcadeElectricHitSnapshot> ElectricHits {get;}
+        /// <summary>服务器实际命中、撞墙及武器爆炸，不由弹丸快照差分推断。</summary>
+        public IReadOnlyList<OnlineArcadeWeaponFeedbackSnapshot> WeaponFeedback {get;}
         public bool IsChallenge { get; }
         public string ChallengeId { get; }
         public float ChallengeSeconds { get; }

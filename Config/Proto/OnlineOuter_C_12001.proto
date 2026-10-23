@@ -548,6 +548,8 @@ message OnlineArcadeBattleInfo
     repeated OnlineArcadeHerdInfo Herds = 63;
     // 已裁决电击的有界记录；客户端不能据此再扣血。
     repeated OnlineArcadeElectricHitInfo ElectricHits = 64;
+ // 当前轮真实武器碰撞反馈，客户端不从弹丸消失推断命中。
+ repeated OnlineArcadeWeaponFeedbackInfo WeaponFeedback = 65;
 }
 
 // Opcode 12085
@@ -874,4 +876,18 @@ message OnlineArcadeElectricHitInfo
  int32 RoundGeneration = 5;
  float ElapsedSeconds = 6;
  int64 ServerTime = 7;
+}
+
+// Opcode 12111
+message OnlineArcadeWeaponFeedbackInfo
+{
+ int64 Sequence = 1;
+ int32 Kind = 2;
+ float PositionX = 3;
+ float PositionZ = 4;
+ float DirectionX = 5;
+ float DirectionZ = 6;
+ float Radius = 7;
+ int32 RoundGeneration = 8;
+ int64 ServerTime = 9;
 }

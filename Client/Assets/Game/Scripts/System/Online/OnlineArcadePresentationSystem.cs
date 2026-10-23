@@ -29,6 +29,8 @@ namespace Game
         private readonly OnlineBombPresentationState bombPresentation = new();
         /// <summary>电击只读命中收据，和死亡或血量变化独立消费。</summary>
         private readonly OnlineElectricHitPresentationState electricHitPresentation = new();
+        /// <summary>武器瞬时反馈只消费服务器事实，不从弹丸移除猜测命中。</summary>
+        private readonly OnlineWeaponFeedbackPresentationState weaponFeedbackPresentation = new();
         private readonly HashSet<long> seenIds = new();
         private IArcadeCombatViewPort view;
         private ArcadeConfigCatalogDefinition catalog;
@@ -355,6 +357,10 @@ namespace Game
             SyncSupplyPickups(battle.SupplyPickups, selfId, supplyBaseline);
             bombPresentation.Observe(battle.BombBlasts,supplyBaseline,battle.RoundGeneration,!inRoom,view.PlayBombExplosion);
             electricHitPresentation.Observe(battle.ElectricHits,supplyBaseline,battle.RoundGeneration,!inRoom&&!latest.BattlePaused,battle.HazardElapsedSeconds,view.PlayElectricTowerHit,battle.ServerTime,Time.realtimeSinceStartupAsDouble);
+            weaponFeedbackPresentation.Observe(battle.WeaponFeedback,supplyBaseline,battle.RoundGeneration,
+                !inRoom&&!latest.BattlePaused&&!battle.RoundLoading&&view.IsActive&&view.IsRoundLayoutReady&&view.IsIslandRoundReady&&
+                string.IsNullOrEmpty(view.RoundLayoutLoadError)&&string.IsNullOrEmpty(view.IslandRoundLoadError),
+                battle.ServerTime,Time.realtimeSinceStartupAsDouble,PlayWeaponFeedback);
             if(latest.BattlePaused)view.StopPlayerFireAudio();
         }
 
@@ -470,6 +476,18 @@ namespace Game
                     }
                 if (!played) view.RemoveEnemy(id);
                 enemyIds.Remove(runtimeId);
+            }
+        }
+
+        /// <summary>复用单人正式表现端口和声音限频；权威位置直接投影，不再次结算伤害。</summary>
+        private void PlayWeaponFeedback(OnlineArcadeWeaponFeedbackSnapshot hit)
+        {
+            var position=new Vector2(hit.X,hit.Z);
+            switch(hit.Kind)
+            {
+                case 1:view.PlayImpactSound(position,false);break;
+                case 2:view.PlayProjectileSurfaceImpact(position,new Vector2(hit.DirectionX,hit.DirectionZ));break;
+                case 3:view.PlayProjectileExplosion(position,hit.Radius);break;
             }
         }
 
@@ -651,6 +669,7 @@ namespace Game
             observedSupplyPickupIds.Clear();
             bombPresentation.Clear();
             electricHitPresentation.Clear();
+            weaponFeedbackPresentation.Clear();
             hasLocalFireBaseline = false;
             lastLocalFireSequence = 0;
         }

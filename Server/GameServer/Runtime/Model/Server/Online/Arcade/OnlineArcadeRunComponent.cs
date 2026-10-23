@@ -455,6 +455,10 @@ namespace ET.Server
         /// <summary>每轮最多32条实际电击事实；序列单调增长，仅投影表现。</summary>
         public List<OnlineArcadeElectricHitRuntime> ElectricHits { get; } = new();
         public long NextElectricHitSequence;
+        /// <summary>最近128条真实武器反馈，仅当前轮表现使用，不进入存档。</summary>
+        public List<OnlineArcadeWeaponFeedbackRuntime> WeaponFeedback { get; } = new();
+        /// <summary>战斗内单调反馈序列，兼容不换代次的旧逐波入口。</summary>
+        public long NextWeaponFeedbackSequence;
         public long LastTickAt;
         public float WaveTransitionSeconds;
         public bool WaveClearAwarded;

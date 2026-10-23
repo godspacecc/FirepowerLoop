@@ -90,6 +90,8 @@ namespace Game
                 var particles = entry.Particles[i];
                 var main = particles.main;
                 main.startColor = energy ? new ParticleSystem.MinMaxGradient(new Color(.3f, 2.5f, 4f, 1)) : entry.OriginalColors[i];
+                // 已确认的普通爆炸保留橙色主体，去掉外围飞散火星；复用前已清空，能量爆炸仍按原样播放。
+                if (!energy && particles.name == "Sparks") continue;
                 // 能量弹只保留短光晕和径向火星；再次用作火箭/榴弹时完整恢复原模板。
                 if (energy && (particles.name == "Burst" || particles.name == "Smoke")) continue;
                 particles.Play(false);

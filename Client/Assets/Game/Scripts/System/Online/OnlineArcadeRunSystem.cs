@@ -490,7 +490,8 @@ namespace Game
                 source.RoundReward==null?null:new OnlineArcadeRoundRewardSnapshot(source.RoundReward.RoundIdentity,source.RoundReward.X,source.RoundReward.Z,source.RoundReward.ElapsedSeconds,source.RoundReward.Phase,
                     source.RoundReward.Items.Select(i=>new FirepowerLoop.Arcade.ArcadeRoundRewardItem(i.Id,i.GoldBar,0,i.X,i.Z)),source.RoundReward.Items.Where(i=>i.Collected).Select(i=>i.Id)),source.StagePortalSeconds,source.StagePortalX,source.StagePortalZ,
                 source.Herds.Select(c=>new FirepowerLoop.Arcade.ArcadeHerdSnapshot(c.MapInstanceId,c.Id,(FirepowerLoop.Arcade.ArcadeHerdPhase)c.Phase,c.X,c.Z,c.DirectionX,c.DirectionZ,c.PhaseSeconds)).ToArray(),
-                source.ElectricHits.Select(h=>new OnlineArcadeElectricHitSnapshot(h.Sequence,h.HazardId,h.X,h.Z,h.RoundGeneration,h.ElapsedSeconds,h.ServerTime)).ToArray());
+                source.ElectricHits.Select(h=>new OnlineArcadeElectricHitSnapshot(h.Sequence,h.HazardId,h.X,h.Z,h.RoundGeneration,h.ElapsedSeconds,h.ServerTime)).ToArray(),
+                source.WeaponFeedback.Select(h=>new OnlineArcadeWeaponFeedbackSnapshot(h.Sequence,h.Kind,h.PositionX,h.PositionZ,h.DirectionX,h.DirectionZ,h.Radius,h.RoundGeneration,h.ServerTime)).ToArray());
         }
 
         private OnlineArcadeRunClientSnapshot WithIdle(OnlineArcadeResultCode code) =>

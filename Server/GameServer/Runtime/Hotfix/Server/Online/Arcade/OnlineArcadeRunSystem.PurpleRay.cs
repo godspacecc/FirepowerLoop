@@ -40,7 +40,7 @@ namespace ET.Server
             p.PositionX=x;p.PositionZ=z;
             if(kind==2){actor.HitPurpleRay(b,p,target);b.Projectiles.Remove(p.RuntimeId);return true;}
             if(kind==3){actor.DamageCrate(b,crateId,p.Damage);actor.DamageEnemiesInProjectileExplosion(b,p);b.Projectiles.Remove(p.RuntimeId);return true;}
-            if(kind==1){b.Projectiles.Remove(p.RuntimeId);return true;}
+            if(kind==1){RecordWeaponFeedback(b,p,2,p.PositionX,p.PositionZ);b.Projectiles.Remove(p.RuntimeId);return true;}
 
             p.RemainingSeconds=Math.Max(0,p.RemainingSeconds-active);
             if(p.RemainingSeconds<=0)b.Projectiles.Remove(p.RuntimeId);

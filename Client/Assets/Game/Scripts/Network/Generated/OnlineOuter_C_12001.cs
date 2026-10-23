@@ -2092,6 +2092,12 @@ namespace ET
         [MemoryPackOrder(63)]
         public List<OnlineArcadeElectricHitInfo> ElectricHits { get; set; } = new();
 
+        /// <summary>
+        /// 当前轮真实武器碰撞反馈，客户端不从弹丸消失推断命中。
+        /// </summary>
+        [MemoryPackOrder(64)]
+        public List<OnlineArcadeWeaponFeedbackInfo> WeaponFeedback { get; set; } = new();
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -2163,6 +2169,7 @@ namespace ET
             this.StagePortalZ = default;
             this.Herds.Clear();
             this.ElectricHits.Clear();
+            this.WeaponFeedback.Clear();
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3467,6 +3474,63 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineOuter.OnlineArcadeWeaponFeedbackInfo)]
+    public partial class OnlineArcadeWeaponFeedbackInfo : MessageObject
+    {
+        public static OnlineArcadeWeaponFeedbackInfo Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(OnlineArcadeWeaponFeedbackInfo), isFromPool) as OnlineArcadeWeaponFeedbackInfo;
+        }
+
+        [MemoryPackOrder(0)]
+        public long Sequence { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Kind { get; set; }
+
+        [MemoryPackOrder(2)]
+        public float PositionX { get; set; }
+
+        [MemoryPackOrder(3)]
+        public float PositionZ { get; set; }
+
+        [MemoryPackOrder(4)]
+        public float DirectionX { get; set; }
+
+        [MemoryPackOrder(5)]
+        public float DirectionZ { get; set; }
+
+        [MemoryPackOrder(6)]
+        public float Radius { get; set; }
+
+        [MemoryPackOrder(7)]
+        public int RoundGeneration { get; set; }
+
+        [MemoryPackOrder(8)]
+        public long ServerTime { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.Sequence = default;
+            this.Kind = default;
+            this.PositionX = default;
+            this.PositionZ = default;
+            this.DirectionX = default;
+            this.DirectionZ = default;
+            this.Radius = default;
+            this.RoundGeneration = default;
+            this.ServerTime = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineOuter
     {
         public const ushort C2G_Register = 12002;
@@ -3537,5 +3601,6 @@ namespace ET
         public const ushort OnlineArcadeRoundRewardItemInfo = 12108;
         public const ushort OnlineArcadeHerdInfo = 12109;
         public const ushort OnlineArcadeElectricHitInfo = 12110;
+        public const ushort OnlineArcadeWeaponFeedbackInfo = 12111;
     }
 }
