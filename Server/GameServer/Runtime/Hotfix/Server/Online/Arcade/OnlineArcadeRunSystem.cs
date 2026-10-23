@@ -1598,7 +1598,7 @@ namespace ET.Server
                 if (!holdArmoryWeapon) player.TemporaryWeaponSeconds = Math.Max(0f, player.TemporaryWeaponSeconds - deltaSeconds);
                 if (player.TemporaryWeaponSeconds <= 0f)
                 {
-                    if(!string.IsNullOrEmpty(player.TemporaryWeaponId))player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+                    // 与单人一致：只结束临时武器，骷髅继续使用自身剩余时间。
                     player.TemporaryWeaponId = string.Empty;
                 }
                 if(player.Powerups.TryGetValue(ArcadePowerupBehavior.Drone,out var drone))
@@ -2594,7 +2594,7 @@ namespace ET.Server
         {
             bool same=(player.TemporaryWeaponSeconds>0?player.TemporaryWeaponId:record.WeaponId)==drop.ProductId;
             if(same)GrantWeaponPower(player,FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(player)),0);
-            else player.Powerups.Remove(ArcadePowerupBehavior.WeaponSkull);
+            // 不同武器沿用玩家已有强化，不清除也不重置强化余时。
             player.TemporaryWeaponId=drop.ProductId;
             player.TemporaryWeaponSeconds=same?FirepowerLoop.Arcade.ArcadeWeaponUpgradeRules.Refill(player.TemporaryWeaponSeconds,drop.DurationSeconds):drop.DurationSeconds;
         }

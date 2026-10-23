@@ -1,0 +1,19 @@
+PASS SkullPowerOnline.RedAndPurpleScaleActualShots
+PASS SkullPowerOnline.ContactAwardsOnePlayerOnce
+PASS SkullPowerOnline.SmallerSkullCannotDowngrade
+FAIL SkullPowerOnline.SameWeaponRefreshAndDifferentWeaponPreserve: System.InvalidOperationException: Gun change cleared independent power or rewrote old shot
+   at SkullPowerOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 132
+   at SkullPowerOnlineChecks.SameWeaponRefreshAndDifferentWeaponPreserve() in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 63
+   at SkullPowerOnlineChecks.Run(Int32 maximum) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 18
+FAIL SkullPowerOnline.ExpiryAndZeroDeltaRespectClocks: System.InvalidOperationException: Weapon expiry cleared independent skull clock
+   at SkullPowerOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 132
+   at SkullPowerOnlineChecks.ExpiryAndZeroDeltaRespectClocks() in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 76
+   at SkullPowerOnlineChecks.Run(Int32 maximum) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 18
+PASS SkullPowerOnline.SnapshotAndCodecKeepShotTier
+PASS SkullPowerOnline.MasteryAndSkullRoundInSameOrder
+FAIL SkullPowerOnline.RoundCheckpointKeepsTierAndTime: System.Collections.Generic.KeyNotFoundException: The given key 'WeaponSkull' was not present in the dictionary.
+   at System.Collections.Generic.Dictionary`2.get_Item(TKey key)
+   at SkullPowerOnlineChecks.RoundCheckpointKeepsTierAndTime() in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 126
+   at SkullPowerOnlineChecks.Run(Int32 maximum) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\SkullPowerOnlineChecks.cs:line 18
+PASS SkullPowerOnline.SkullExpiryLeavesLongerWeaponActive
+6/9 passed

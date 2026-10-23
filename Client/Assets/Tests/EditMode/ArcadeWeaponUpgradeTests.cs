@@ -49,10 +49,13 @@ namespace Game.Tests
             Pick("skull.large");Assert.That(skull.RemainingSeconds,Is.EqualTo(45));Pick("skull.small");Assert.That(Level,Is.EqualTo(2));Assert.That(skull.RemainingSeconds,Is.EqualTo(45));
             skull.RemainingSeconds=1;Pick("weapon.rapid");Assert.That(skull.RemainingSeconds,Is.GreaterThanOrEqualTo(20));
         }
-        [Test] public void DifferentWeaponClearsPowerAndLeavesIndependentDrone()
+        [Test] public void DifferentWeaponPreservesPowerClockAndIndependentDrone()
         {
             Pick("weapon.rapid");Pick("skull.large");Pick("support.drone");var drone=runtime.Powerups[ArcadePowerupBehavior.Drone];
-            Pick("weapon.spread");Assert.That(Level,Is.Zero);Assert.That(runtime.Powerups[ArcadePowerupBehavior.Drone],Is.SameAs(drone));
+            var skull=runtime.Powerups[ArcadePowerupBehavior.WeaponSkull];skull.RemainingSeconds=7;
+            Pick("weapon.spread");Assert.That(Level,Is.EqualTo(2));Assert.That(skull.RemainingSeconds,Is.EqualTo(7));
+            Assert.That(runtime.Powerups[ArcadePowerupBehavior.WeaponSkull],Is.SameAs(skull));
+            Assert.That(runtime.Powerups[ArcadePowerupBehavior.Drone],Is.SameAs(drone));
         }
         [Test] public void PurpleMovementCombinesWithBootsAndDashThenExpires()
         {

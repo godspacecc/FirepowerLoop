@@ -682,7 +682,7 @@ namespace Game
             }
             if (runtime.TemporaryWeaponRemaining <= 0f)
             {
-                if(!string.IsNullOrEmpty(runtime.TemporaryWeaponId))runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
+                // 临时武器到期只恢复基础枪；骷髅按自己的剩余时间生效到期。
                 runtime.TemporaryWeaponId = null;
             }
             TickDrone(runtime,deltaTime);
@@ -1860,7 +1860,7 @@ namespace Game
                 case global::ArcadeDropKind.TemporaryWeapon:
                     bool sameWeapon=TryGetWeapon(runtime,out var previousWeapon)&&previousWeapon.Id==drop.ProductId;
                     if(sameWeapon)GrantWeaponPower(runtime,ArcadeWeaponUpgradeRules.RepeatedLevel(CurrentWeaponPowerLevel(runtime)),0);
-                    else runtime.Powerups.Remove(global::ArcadePowerupBehavior.WeaponSkull);
+                    // 换枪保留玩家当前强化及余时；只有同枪领取才沿用升档补时规则。
                     runtime.TemporaryWeaponId = drop.ProductId;
                     runtime.TemporaryWeaponRemaining = sameWeapon?ArcadeWeaponUpgradeRules.Refill(runtime.TemporaryWeaponRemaining,drop.DurationSeconds):drop.DurationSeconds;
                     break;

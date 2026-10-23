@@ -51,22 +51,46 @@ namespace Game.Tests
             Assert.That(shot.SourceWeaponId,Is.EqualTo(weapon.Id));
         }
 
-        [Test] public void SmallerSkullRefreshesWithoutDowngradingAndSwitchClearsOnlyNewShots()
+        [Test] public void SmallerSkullRefreshesWithoutDowngradingAndSwitchKeepsNewAndOldShotsPowered()
         {
             Pickup(Skull(true));Pickup(Skull(false));Call("TryFire",runtime);
             var old=runtime.Projectiles.Values.Single();Assert.That(old.ProjectileVisualResourceName,Does.EndWith("#Purple"));
             Pickup(catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid"));runtime.FireCooldown=0;Call("TryFire",runtime);
-            Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo("ArcadeBulletRapid"));
+            Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo("ArcadeBulletRapid#Purple"));
             Assert.That(old.ProjectileVisualResourceName,Does.EndWith("#Purple"));
         }
 
-        [Test] public void TemporaryWeaponExpiryClearsSkullAndZeroDeltaFreezesIt()
+        [TestCase(false,2,"#Red")] [TestCase(true,3,"#Purple")]
+        public void TemporaryWeaponExpiryKeepsSkullUntilItsOwnClockExpires(bool large,int multiplier,string suffix)
         {
-            Pickup(catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid"));Pickup(Skull(false));
-            Call("TickTimers",runtime,0f);runtime.FireCooldown=0;Call("TryFire",runtime);
-            Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Does.EndWith("#Red"));
-            runtime.TemporaryWeaponRemaining=.01f;Call("TickTimers",runtime,.02f);runtime.FireCooldown=0;Call("TryFire",runtime);
-            Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo("ArcadeBulletBasic"));
+            Pickup(catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid"));Pickup(Skull(large));
+            runtime.TemporaryWeaponRemaining=5f;var skull=runtime.Powerups[ArcadePowerupBehavior.WeaponSkull];skull.RemainingSeconds=15f;
+            Call("TickTimers",runtime,0f);
+            Assert.That(runtime.TemporaryWeaponRemaining,Is.EqualTo(5f));Assert.That(skull.RemainingSeconds,Is.EqualTo(15f));
+            Call("TickTimers",runtime,5f);
+            Assert.That(runtime.TemporaryWeaponId,Is.Null);
+            Assert.That(runtime.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),Is.True,"临时武器到期不能清除仍有10秒的强化");
+            Assert.That(skull.RemainingSeconds,Is.EqualTo(10f));runtime.FireCooldown=0;Call("TryFire",runtime);
+            var weapon=catalog.Weapons.First(w=>w.Id==catalog.Rule.BaseWeaponId);var shot=runtime.Projectiles.Values.Last();
+            Assert.That(shot.SourceWeaponId,Is.EqualTo(weapon.Id));Assert.That(shot.Damage,Is.EqualTo(weapon.Damage*multiplier));
+            Assert.That(shot.ProjectileVisualResourceName,Is.EqualTo(weapon.ProjectileVisualResourceName+suffix));
+            Assert.That(runtime.FireCooldown,Is.EqualTo(weapon.FireIntervalSeconds/multiplier).Within(.0001f));
+            Call("TickTimers",runtime,10f);runtime.FireCooldown=0;Call("TryFire",runtime);
+            Assert.That(runtime.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),Is.False);
+            Assert.That(runtime.Projectiles.Values.Last().Damage,Is.EqualTo(weapon.Damage));
+            Assert.That(runtime.Projectiles.Values.Last().ProjectileVisualResourceName,Is.EqualTo(weapon.ProjectileVisualResourceName));
+            Assert.That(shot.ProjectileVisualResourceName,Does.EndWith(suffix),"强化到期不能改写已发出的弹丸");
+        }
+
+        [TestCase(false)] [TestCase(true)]
+        public void SkullExpiryLeavesLongerTemporaryWeaponActive(bool large)
+        {
+            Pickup(catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid"));Pickup(Skull(large));
+            runtime.TemporaryWeaponRemaining=40f;runtime.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=5f;
+            Call("TickTimers",runtime,5f);runtime.FireCooldown=0;Call("TryFire",runtime);
+            var weapon=catalog.Weapons.First(w=>w.Id=="arcade.weapon.rapid");var shot=runtime.Projectiles.Values.Last();
+            Assert.That(runtime.TemporaryWeaponRemaining,Is.EqualTo(35f));Assert.That(shot.SourceWeaponId,Is.EqualTo(weapon.Id));
+            Assert.That(shot.Damage,Is.EqualTo(weapon.Damage));Assert.That(shot.ProjectileVisualResourceName,Is.EqualTo(weapon.ProjectileVisualResourceName));
         }
 
         [Test] public void SameWeaponRefreshUpgradesSkullAndItsOwnTimerExpires()
@@ -90,11 +114,17 @@ namespace Game.Tests
 
         [Test] public void RoundCheckpointPreservesSkullTierAndRemainingTime()
         {
-            Pickup(Skull(true));runtime.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=7;
+            Pickup(catalog.Drops.First(d=>d.Id=="arcade.drop.weapon.rapid"));Pickup(Skull(true));
+            runtime.TemporaryWeaponRemaining=5;runtime.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=12;
+            Call("TickTimers",runtime,5f);
             var saved=(ArcadeIslandRoundCheckpoint)Call("CaptureIslandCheckpoint",runtime);
             var restored=new ArcadeCombatRuntime{ArenaNumber=1};Call("RestoreIslandCheckpoint",restored,saved);
+            Assert.That(restored.TemporaryWeaponId,Is.Null);Assert.That(restored.TemporaryWeaponRemaining,Is.Zero);
+            Assert.That(restored.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),Is.True,"独立强化必须进入轮级节点");
             Assert.That(restored.Powerups[ArcadePowerupBehavior.WeaponSkull].Definition.Magnitude,Is.EqualTo(3));
             Assert.That(restored.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds,Is.EqualTo(7));
+            Call("TickTimers",restored,1f);
+            Assert.That(restored.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds,Is.EqualTo(6f));
         }
 
         [Test] public void ExitWaitStillConsumesSkullLifetime()

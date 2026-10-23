@@ -10,9 +10,10 @@ internal static class SkullPowerOnlineChecks
     {
         var checks=new (string,Action)[]{("RedAndPurpleScaleActualShots",RedAndPurpleScaleActualShots),
             ("ContactAwardsOnePlayerOnce",ContactAwardsOnePlayerOnce),("SmallerSkullCannotDowngrade",SmallerSkullCannotDowngrade),
-            ("SameWeaponRefreshAndDifferentWeaponClear",SameWeaponRefreshAndDifferentWeaponClear),
+            ("SameWeaponRefreshAndDifferentWeaponPreserve",SameWeaponRefreshAndDifferentWeaponPreserve),
             ("ExpiryAndZeroDeltaRespectClocks",ExpiryAndZeroDeltaRespectClocks),("SnapshotAndCodecKeepShotTier",SnapshotAndCodecKeepShotTier),
-            ("MasteryAndSkullRoundInSameOrder",MasteryAndSkullRoundInSameOrder),("RoundCheckpointKeepsTierAndTime",RoundCheckpointKeepsTierAndTime)};
+            ("MasteryAndSkullRoundInSameOrder",MasteryAndSkullRoundInSameOrder),("RoundCheckpointKeepsTierAndTime",RoundCheckpointKeepsTierAndTime),
+            ("SkullExpiryLeavesLongerWeaponActive",SkullExpiryLeavesLongerWeaponActive)};
         if(maximum<checks.Length)throw new ArgumentException("SkullPowerOnline maximum is too small");int failed=0;
         foreach(var check in checks){try{check.Item2();Console.WriteLine("PASS SkullPowerOnline."+check.Item1);}catch(Exception e){failed++;Console.WriteLine("FAIL SkullPowerOnline."+check.Item1+": "+(e.InnerException??e));}}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -53,30 +54,66 @@ internal static class SkullPowerOnlineChecks
     {
         var actor=Create();Apply(actor,"skull.large");Apply(actor,"skull.small");Require(Shot(actor).WeaponPowerLevel==2,"Small skull downgraded purple");
     }
-    private static void SameWeaponRefreshAndDifferentWeaponClear()
+    private static void SameWeaponRefreshAndDifferentWeaponPreserve()
     {
         var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,"skull.small");Apply(actor,"weapon.rapid");var old=Shot(actor);
-        Require(old.WeaponPowerLevel==2,"Same gun failed to upgrade red to purple");Apply(actor,"weapon.spread");
-        Require(Shot(actor).WeaponPowerLevel==0&&old.WeaponPowerLevel==2,"Gun change rewrote in-flight shot or kept power");
+        Require(old.WeaponPowerLevel==2,"Same gun failed to upgrade red to purple");
+        var skull=actor.Battle.Players[1].Powerups[ArcadePowerupBehavior.WeaponSkull];skull.RemainingSeconds=7;
+        Apply(actor,"weapon.spread");
+        Require(Shot(actor).WeaponPowerLevel==2&&old.WeaponPowerLevel==2,"Gun change cleared independent power or rewrote old shot");
+        Require(skull.RemainingSeconds==7,"Different weapon refilled independent skull clock");
     }
     private static void ExpiryAndZeroDeltaRespectClocks()
     {
-        var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,"skull.small");var player=actor.Battle.Players[1];
-        float duration=player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds;
-        Call("TickPowerups",actor,actor.Battle,0f);Require(player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds==duration,"Zero delta consumed power");
-        player.TemporaryWeaponSeconds=.01f;actor.Battle.SpawnQueueIndex=actor.Battle.SpawnQueue.Count;
-        actor.TickBattle(actor.Battle.LastTickAt+200);Require(!player.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Weapon expiry left skull active");
-        Apply(actor,"skull.small");actor.Battle.AwaitingExit=true;
-        player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=.1f;
-        actor.TickBattle(actor.Battle.LastTickAt+200);Require(!player.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Exit wait froze skull timer");
+        foreach(var (id,multiplier) in new[]{("skull.small",2),("skull.large",3)})
+        {
+            var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,id);var player=actor.Battle.Players[1];
+            var skull=player.Powerups[ArcadePowerupBehavior.WeaponSkull];skull.RemainingSeconds=15;player.TemporaryWeaponSeconds=5;
+            Call("TickPlayers",actor,actor.Battle,0f,actor.Battle.LastTickAt);
+            Require(skull.RemainingSeconds==15&&player.TemporaryWeaponSeconds==5,"Zero delta consumed a clock");
+            Call("TickPlayers",actor,actor.Battle,5f,actor.Battle.LastTickAt);
+            Require(string.IsNullOrEmpty(player.TemporaryWeaponId)&&player.TemporaryWeaponSeconds==0,"Weapon did not expire");
+            Require(player.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull)&&skull.RemainingSeconds==10,"Weapon expiry cleared independent skull clock");
+            var shot=Shot(actor);var weapon=ServerConfig.Instance.ArcadeRule.BaseWeaponId_Ref;
+            Require(shot.SourceWeaponId==weapon.Id&&shot.Damage==weapon.Damage*multiplier&&shot.WeaponPowerLevel==multiplier-1,"Fallback gun lost skull power");
+            Require(Math.Abs(player.FireCooldownSeconds-weapon.FireIntervalSeconds/multiplier)<.0001f,"Fallback fire rate lost power");
+            Require(!actor.Battle.Players[2].Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Fallback transferred power to teammate");
+            Call("TickPlayers",actor,actor.Battle,10f,actor.Battle.LastTickAt);
+            Require(!player.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Skull did not expire on its own clock");
+            Require(Shot(actor).WeaponPowerLevel==0&&shot.WeaponPowerLevel==multiplier-1,"Skull expiry failed or rewrote old shot");
+            // 等待出口不允许开火，在进入等待前检查普通弹，等待期间只检查时钟。
+            Apply(actor,id);skull=player.Powerups[ArcadePowerupBehavior.WeaponSkull];
+            actor.Battle.AwaitingExit=true;skull.RemainingSeconds=.1f;
+            actor.TickBattle(actor.Battle.LastTickAt+200);
+            Require(!player.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Exit wait froze skull timer");
+        }
+    }
+
+    /// <summary>反向到期只结束强化，不缩短仍在使用的临时武器。</summary>
+    private static void SkullExpiryLeavesLongerWeaponActive()
+    {
+        foreach(var id in new[]{"skull.small","skull.large"})
+        {
+            var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,id);var player=actor.Battle.Players[1];
+            player.TemporaryWeaponSeconds=40;player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=5;
+            Call("TickPlayers",actor,actor.Battle,5f,actor.Battle.LastTickAt);
+            var shot=Shot(actor);var weapon=Drop("weapon.rapid").ProductId;
+            Require(player.TemporaryWeaponSeconds==35&&shot.SourceWeaponId==weapon&&shot.WeaponPowerLevel==0,"Skull expiry ended or powered the remaining weapon");
+        }
     }
     private static void SnapshotAndCodecKeepShotTier()
     {
         var actor=Create();Apply(actor,"skull.large");var shot=Shot(actor);Apply(actor,"weapon.rapid");
+        var player=actor.Battle.Players[1];player.TemporaryWeaponSeconds=5;
+        player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=15;
+        Call("TickPlayers",actor,actor.Battle,5f,actor.Battle.LastTickAt);
         using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",actor.Battle);
         using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);
         using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));
         Require(decoded.Projectiles.Single(p=>p.RuntimeId==shot.RuntimeId).WeaponPowerLevel==2,"Tier lost across snapshot, clone or codec");
+        var decodedPlayer=decoded.Players.Single(p=>p.PlayerId==1);
+        Require(string.IsNullOrEmpty(decodedPlayer.TemporaryWeaponId)&&decodedPlayer.TemporaryWeaponSeconds==0,"Snapshot retained expired weapon");
+        Require(decodedPlayer.Powerups.Single(p=>p.ProductId=="arcade.powerup.skull.large").RemainingSeconds==10,"Independent skull clock lost across snapshot, clone or codec");
     }
     private static void MasteryAndSkullRoundInSameOrder()
     {
@@ -91,10 +128,17 @@ internal static class SkullPowerOnlineChecks
     }
     private static void RoundCheckpointKeepsTierAndTime()
     {
-        var actor=Create();Apply(actor,"skull.large");actor.Battle.Players[1].Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=7;
+        var actor=Create();Apply(actor,"weapon.rapid");Apply(actor,"skull.large");var player=actor.Battle.Players[1];
+        player.TemporaryWeaponSeconds=5;player.Powerups[ArcadePowerupBehavior.WeaponSkull].RemainingSeconds=12;
+        Call("TickPlayers",actor,actor.Battle,5f,actor.Battle.LastTickAt);
         typeof(OnlineArcadeRunManagerSystem).GetMethod("CaptureRoundCheckpoint",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,new object[]{actor.Record,actor.Battle});
         var restored=OnlineArcadeRunActorSystem.PrepareBattle(actor.Record,false);
-        var skull=restored.Players[1].Powerups[ArcadePowerupBehavior.WeaponSkull];Require(skull.Magnitude==3&&skull.RemainingSeconds==7,"Round restore lost skull tier or reset time");
+        var restoredPlayer=restored.Players[1];
+        Require(restoredPlayer.Powerups.ContainsKey(ArcadePowerupBehavior.WeaponSkull),"Round checkpoint lost independent skull");
+        var skull=restoredPlayer.Powerups[ArcadePowerupBehavior.WeaponSkull];
+        Require(string.IsNullOrEmpty(restoredPlayer.TemporaryWeaponId)&&restoredPlayer.TemporaryWeaponSeconds==0,"Round restore revived expired weapon");
+        Require(skull.Magnitude==3&&skull.RemainingSeconds==7,"Round restore lost independent skull tier or reset time");
+        Call("TickPlayers",actor,restored,1f,restored.LastTickAt);Require(skull.RemainingSeconds==6,"Restored skull clock failed to continue");
     }
     private static object Call(string name,params object[] args)=>typeof(OnlineArcadeRunActorSystem).GetMethod(name,BindingFlags.Static|BindingFlags.Public|BindingFlags.NonPublic)!.Invoke(null,args)!;
     private static void Require(bool value,string message){if(!value)throw new InvalidOperationException(message);}
