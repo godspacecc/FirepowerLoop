@@ -2732,7 +2732,7 @@ namespace ET.Server
                     if (powerup.RemainingSeconds <= 0f)
                     {
                         if (!player.InTreasureRoom && pair.Key == ArcadePowerupBehavior.Decoy)
-                            self.DamageEnemiesInExplosionRadius(battle, powerup.PositionX, powerup.PositionZ,
+                            self.DamageEnemiesFromSupportExplosion(battle, powerup.PositionX, powerup.PositionZ,
                                 SlayerMartRadius(battle,player.PlayerId,powerup), powerup.Damage, player.PlayerId);
                         player.Powerups.Remove(pair.Key);
                         continue;
@@ -2766,7 +2766,7 @@ namespace ET.Server
                                     DistanceSquared(player.PositionX, player.PositionZ,
                                         enemy.PositionX, enemy.PositionZ) <= powerup.Magnitude * powerup.Magnitude))
                             {
-                                self.DamageEnemiesInExplosionRadius(battle, player.PositionX, player.PositionZ,
+                                self.DamageEnemiesFromSupportExplosion(battle, player.PositionX, player.PositionZ,
                                     powerup.Radius, powerup.Damage, player.PlayerId);
                                 powerup.Charges--;
                                 powerup.CooldownSeconds = 0.45f;

@@ -22,7 +22,7 @@ namespace ET.Server
                 float radius=config.Parameter("support.contactRadius")+ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
                 if(!battle.Enemies.Values.Any(e=>DistanceSquared(body.X,body.Y,e.PositionX,e.PositionZ)<=radius*radius))return true;
                 battle.EnemyIterationIds.Clear();battle.EnemyIterationIds.AddRange(battle.Enemies.Keys.OrderBy(p=>p));
-                actor.DamageEnemiesInExplosionRadius(battle,body.X,body.Y,powerup.Radius,powerup.Damage,owner.PlayerId);
+                actor.DamageEnemiesFromSupportExplosion(battle,body.X,body.Y,powerup.Radius,powerup.Damage,owner.PlayerId);
                 powerup.Charges--;powerup.CooldownSeconds=config.Supports.Get(kind).Interval;
                 if(powerup.Charges==0)powerup.RemainingSeconds=0;return true;
             }
@@ -85,7 +85,7 @@ namespace ET.Server
                         bool touching=battle.Enemies.Values.Any(e=>DistanceSquared(bodies[0].X,bodies[0].Y,e.PositionX,e.PositionZ)<=radius*radius);
                         if(!ArcadeSlayerMartSupportRules.TryTriggerBarrel(item,touching,config.Supports))continue;
                         battle.EnemyIterationIds.Clear();battle.EnemyIterationIds.AddRange(battle.Enemies.Keys.OrderBy(p=>p));
-                        actor.DamageEnemiesInExplosionRadius(battle,bodies[0].X,bodies[0].Y,definition.Radius,definition.Damage,owner.PlayerId);changed=true;continue;
+                        actor.DamageEnemiesFromSupportExplosion(battle,bodies[0].X,bodies[0].Y,definition.Radius,definition.Damage,owner.PlayerId);changed=true;continue;
                     }
                     foreach(var enemy in battle.Enemies.Values.ToArray())
                     {

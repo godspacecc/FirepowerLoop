@@ -70,7 +70,7 @@ namespace Game.Tests
                 Assert.That(sparks.isPlaying,Is.False,"普通爆炸关闭外围Sparks，不能残留前次能量火星");
                 Assert.That(reused.Find("Burst").GetComponent<ParticleSystem>().isPlaying,Is.True,"橙色爆炸主体保留");
                 for(int i=0;i<12;i++)play.Invoke(view,new object[]{Vector2.zero,1.4f,true});
-                Assert.That(sparks.isPlaying,Is.True,"同一池槽再次用作能量爆炸时仍播放原有反馈");
+                Assert.That(sparks.isPlaying,Is.False,"新采用的能量爆炸同样收掉放射火星，复用不能恢复旧火星");
                 Assert.That(root.transform.childCount,Is.EqualTo(12),"沿用有界池，不按命中无限创建");
             }
             finally{UnityEngine.Object.DestroyImmediate(root);}

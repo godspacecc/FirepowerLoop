@@ -52,7 +52,7 @@ namespace Game.Tests
         [Test] public void MapTransitionFreezesPurchasedSupportClock()
         {Grant(SlayerMartEffect.ChickenPack,3,300);runtime.IslandTransitionPending=true;Step(5);Assert.That(Player.Supports.All(p=>p.RemainingSeconds==300),Is.True);}
         [Test] public void RealDeathClearsPurchasedAndOrdinarySupports()
-        {Grant(SlayerMartEffect.BarrelRelay,3);Player.VestSlots=2;Player.Owned.Add("slayermart.item.16");Player.StormCharge=99;foreach(var kind in new[]{ArcadePowerupBehavior.Chicken,ArcadePowerupBehavior.Saw,ArcadePowerupBehavior.Barrel})runtime.Powerups[kind]=new(){RemainingSeconds=10};runtime.PlayerHealth=10;Call("DamagePlayerCore",runtime,20,SlayerMartHitKind.Ordinary);Assert.That(Player.Supports,Is.Empty);Assert.That(Player.Queues,Is.Empty);Assert.That(runtime.Powerups,Is.Empty);Assert.That(Player.VestSlots,Is.EqualTo(2));Assert.That(Player.StormCharge,Is.EqualTo(99));}
+        {Grant(SlayerMartEffect.BarrelRelay,3);Player.VestSlots=2;Player.Owned.Add("slayermart.item.16");Player.StormCharge=99;foreach(var kind in new[]{ArcadePowerupBehavior.Chicken,ArcadePowerupBehavior.Saw,ArcadePowerupBehavior.Barrel})runtime.Powerups[kind]=new(){RemainingSeconds=10};runtime.PlayerHealth=10;Call("DamagePlayerCore",runtime,20,SlayerMartHitKind.Ordinary,0);Assert.That(Player.Supports,Is.Empty);Assert.That(Player.Queues,Is.Empty);Assert.That(runtime.Powerups,Is.Empty);Assert.That(Player.VestSlots,Is.EqualTo(2));Assert.That(Player.StormCharge,Is.EqualTo(99));}
         [Test] public void ExpiryImmediatelyReleasesChickenCapacity()
         {Grant(SlayerMartEffect.ChickenPack,3,300);Step(301);Assert.That(Player.Supports,Is.Empty);Assert.That(Player.Chickens,Is.Zero);}
         [Test] public void OrdinaryMasteredSawTouchesOppositeBody()

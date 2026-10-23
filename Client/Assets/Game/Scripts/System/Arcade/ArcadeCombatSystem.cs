@@ -682,7 +682,7 @@ namespace Game
             {
                 if (!runtime.InTreasureRoom && behavior == global::ArcadePowerupBehavior.Decoy &&
                     runtime.Powerups.TryGetValue(behavior, out var decoy))
-                    DamageEnemiesInExplosionRadius(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
+                    DamageEnemiesFromSupportExplosion(runtime, decoy.Position, SlayerMartRadius(runtime,decoy), decoy.Definition.Damage);
                 runtime.Powerups.Remove(behavior);
                 if(behavior==global::ArcadePowerupBehavior.WeaponSkull)runtime.WeaponEvolution.Clear();
             }
@@ -1281,7 +1281,7 @@ namespace Game
                         if (powerup.Charges > 0 && HasEnemyInRadius(runtime, runtime.PlayerPosition,
                                 powerup.Definition.Magnitude + catalog.Rule.EnemyContactRadius))
                         {
-                            DamageEnemiesInExplosionRadius(runtime, runtime.PlayerPosition, powerup.Definition.Radius,
+                            DamageEnemiesFromSupportExplosion(runtime, runtime.PlayerPosition, powerup.Definition.Radius,
                                 powerup.Definition.Damage);
                             powerup.Charges--;
                             powerup.CooldownSeconds = 0.45f;

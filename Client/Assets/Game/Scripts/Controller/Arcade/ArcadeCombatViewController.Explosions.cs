@@ -62,6 +62,8 @@ namespace Game
             public ParticleSystem[] Particles;
             /// <summary>普通爆炸原配色，用于清除上次能量爆炸的覆盖。</summary>
             public ParticleSystem.MinMaxGradient[] OriginalColors;
+            /// <summary>池复用恢复普通爆心尺寸和寿命，避免能量候选的增强参数污染普通武器。</summary>
+            public ParticleSystem.MinMaxCurve[] OriginalSizes, OriginalLifetimes;
         }
 
         /// <summary>只消费已确认引爆事件；半径只缩放视觉，不参与伤害或碰撞。</summary>
@@ -74,8 +76,11 @@ namespace Game
                 var instance = UnityEngine.Object.Instantiate(projectileBlastTemplate.gameObject, root.transform, false);
                 var particles = instance.GetComponentsInChildren<ParticleSystem>(true);
                 var colors = new ParticleSystem.MinMaxGradient[particles.Length];
+                var sizes = new ParticleSystem.MinMaxCurve[particles.Length];
+                var lifetimes = new ParticleSystem.MinMaxCurve[particles.Length];
                 for (int i = 0; i < particles.Length; i++) colors[i] = particles[i].main.startColor;
-                entry = new ProjectileBlastEntry { Root = instance, Particles = particles, OriginalColors = colors };
+                for (int i = 0; i < particles.Length; i++) { sizes[i] = particles[i].main.startSize; lifetimes[i] = particles[i].main.startLifetime; }
+                entry = new ProjectileBlastEntry { Root = instance, Particles = particles, OriginalColors = colors, OriginalSizes = sizes, OriginalLifetimes = lifetimes };
                 projectileBlastPool.Add(entry);
                 instance.SetActive(true);
             }
@@ -90,9 +95,15 @@ namespace Game
                 var particles = entry.Particles[i];
                 var main = particles.main;
                 main.startColor = energy ? new ParticleSystem.MinMaxGradient(new Color(.3f, 2.5f, 4f, 1)) : entry.OriginalColors[i];
-                // 已确认的普通爆炸保留橙色主体，去掉外围飞散火星；复用前已清空，能量爆炸仍按原样播放。
-                if (!energy && particles.name == "Sparks") continue;
-                // 能量弹只保留短光晕和径向火星；再次用作火箭/榴弹时完整恢复原模板。
+                main.startSize = entry.OriginalSizes[i]; main.startLifetime = entry.OriginalLifetimes[i];
+                // 九项候选正式采用：能量弹同样不放射火星，增强已有青蓝中心闪光。
+                if (energy && particles.name == "ImpactFlash")
+                {
+                    main.startLifetime = .32f;
+                    main.startSize = new ParticleSystem.MinMaxCurve(entry.OriginalSizes[i].constantMin * 1.35f, entry.OriginalSizes[i].constantMax * 1.35f);
+                }
+                if (particles.name == "Sparks") continue;
+                // 能量弹只保留短光晕；再次用作火箭/榴弹时完整恢复原模板。
                 if (energy && (particles.name == "Burst" || particles.name == "Smoke")) continue;
                 particles.Play(false);
             }

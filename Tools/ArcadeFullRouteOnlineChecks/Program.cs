@@ -2,6 +2,12 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="SupportExplosionOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int explosionMax)||explosionMax<1)throw new ArgumentException("Explicit SupportExplosionOnline maximum required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=SupportExplosionOnlineChecks.Run(explosionMax);return;
+}
 if(opts.GetValueOrDefault("testClass")=="NextRouteOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int routeMax)||routeMax<1)throw new ArgumentException("Explicit NextRouteOnline limit required");
