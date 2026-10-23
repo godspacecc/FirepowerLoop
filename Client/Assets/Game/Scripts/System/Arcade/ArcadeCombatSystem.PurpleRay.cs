@@ -60,6 +60,7 @@ namespace Game
                     while(r.PurpleRayArcs.Count>=catalog.Rule.MaxProjectiles*2)r.PurpleRayArcs.RemoveAt(0);
                     r.PurpleRayArcs.Add(new ArcadeRayArcState(r.NextEntityId++,origin.x,origin.y,enemy.Position.x,enemy.Position.y));
                 }
+                if(TryDamageCarrierBarrel(r,enemy,damage))continue;
                 DamageEnemy(enemy,damage);
                 if(enemy.Health<=0)KillEnemy(r,enemy);
                 if(r.CompletionSubmitted||this.GetModel<ArcadeCombatModel>().Runtime!=r||catalog==null)return;

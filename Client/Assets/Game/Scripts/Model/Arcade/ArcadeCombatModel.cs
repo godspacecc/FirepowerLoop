@@ -33,6 +33,8 @@ namespace Game
         public int MaxHealth;
         /// <summary>当前轮独立护甲耐久，归还对象池时清零，不计入生命或存档。</summary>
         public int ArmorHealth;
+        /// <summary>背桶独立耐久；零表示尚未命中，卸桶转交地面桶并在回池清零。</summary>
+        public int CarriedBarrelHealth;
         public int Damage;
         public float Speed;
         public float AttackRange;
@@ -79,7 +81,7 @@ namespace Game
             Position = default;
             Health = 0;
             MaxHealth = 0;
-            ArmorHealth = 0;
+            ArmorHealth = 0;CarriedBarrelHealth=0;
             Damage = 0;
             Speed = 0f;
             AttackRange = 0f;

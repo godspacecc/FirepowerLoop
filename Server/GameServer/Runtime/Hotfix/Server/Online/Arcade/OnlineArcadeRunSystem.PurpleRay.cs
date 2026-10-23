@@ -61,7 +61,9 @@ namespace ET.Server
                     while(b.PurpleRayArcs.Count>=ServerConfig.Instance.ArcadeRule.MaxProjectiles*2)b.PurpleRayArcs.RemoveAt(0);
                     b.PurpleRayArcs.Add(new ArcadeRayArcState((int)b.NextProjectileRuntimeId++,x,z,enemy.PositionX,enemy.PositionZ));
                 }
-                enemy.LastDamagePlayerId=p.OwnerPlayerId;DamageEnemy(b,enemy,p.Damage);
+                enemy.LastDamagePlayerId=p.OwnerPlayerId;
+                if(actor.TryDamageCarrierBarrel(b,enemy,p.Damage,p.OwnerPlayerId))continue;
+                DamageEnemy(b,enemy,p.Damage);
                 if(enemy.CurrentHealth<=0)actor.KillEnemy(b,enemy);
                 if(actor.Battle!=b)return;
             }

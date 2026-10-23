@@ -2268,6 +2268,7 @@ namespace ET.Server
                         RecordWeaponFeedback(battle,projectile,1,enemy.PositionX,enemy.PositionZ);
                         PushPurpleShotgun(battle,projectile,enemy.PositionX,enemy.PositionZ);
                         enemy.LastDamagePlayerId = projectile.OwnerPlayerId;
+                        if(self.TryDamageCarrierBarrel(battle,enemy,projectile.Damage,projectile.OwnerPlayerId)){remove=true;break;}
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(battle,enemy,projectile.Damage);
                         else DamageEnemy(battle, enemy, projectile.Damage);
                         bool evolutionKilled=enemy.CurrentHealth<=0;
@@ -2322,6 +2323,7 @@ namespace ET.Server
                 if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) ||
                     DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
                 enemy.LastDamagePlayerId = ownerPlayerId;
+                if(self.TryDamageCarrierBarrel(battle,enemy,damage,ownerPlayerId))continue;
                 DamageEnemy(battle, enemy, damage);
                 if (enemy.CurrentHealth <= 0) self.KillEnemyWithReaction(battle, enemy, false, explosive, centerX, centerZ, impactKind);
             }

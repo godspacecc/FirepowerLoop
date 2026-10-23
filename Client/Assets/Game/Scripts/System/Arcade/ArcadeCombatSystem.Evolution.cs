@@ -82,7 +82,9 @@ namespace Game
             foreach(var hit in hits)
             {
                 var enemy=hit.Enemy;if(!r.Enemies.ContainsKey(enemy.Id)||!TryRegisterProjectileHit(p,enemy.Id))continue;
-                p.Position=Vector2.Lerp(from,to,hit.Entry);DamageEnemy(enemy,p.Damage);bool killed=enemy.Health<=0;
+                p.Position=Vector2.Lerp(from,to,hit.Entry);
+                if(TryDamageCarrierBarrel(r,enemy,p.Damage)){RemoveProjectile(r,p.Id);return true;}
+                DamageEnemy(enemy,p.Damage);bool killed=enemy.Health<=0;
                 if(killed)KillEnemy(r,enemy);
                 if(r.CompletionSubmitted||catalog==null)return true;
                 if((basic&&!killed)||p.RemainingHits<=0){RemoveProjectile(r,p.Id);return true;}
@@ -138,7 +140,9 @@ namespace Game
             {
                 int damage=ArcadeWeaponEvolutionRules.BurningDamage(r.WeaponBurnAreas,0,enemy.Position.x,enemy.Position.y,
                     ref enemy.EvolutionBurnContactSeconds,seconds,t);
-                if(damage<=0)continue;DamageEnemyFromFlame(enemy,damage);
+                if(damage<=0)continue;
+                if(TryDamageCarrierBarrel(r,enemy,damage))continue;
+                DamageEnemyFromFlame(enemy,damage);
                 if(enemy.Health<=0)KillEnemy(r,enemy);
                 if(r.CompletionSubmitted||catalog==null)return;
             }

@@ -61,7 +61,9 @@ namespace ET.Server
             {
                 var enemy=hit.Enemy;if(!b.Enemies.ContainsKey(enemy.RuntimeId)||!TryRegisterProjectileHit(p,enemy.RuntimeId))continue;
                 p.PositionX=fromX+(toX-fromX)*hit.Entry;p.PositionZ=fromZ+(toZ-fromZ)*hit.Entry;
-                enemy.LastDamagePlayerId=p.OwnerPlayerId;DamageEnemy(b,enemy,p.Damage);bool killed=enemy.CurrentHealth<=0;
+                enemy.LastDamagePlayerId=p.OwnerPlayerId;
+                if(self.TryDamageCarrierBarrel(b,enemy,p.Damage,p.OwnerPlayerId)){b.Projectiles.Remove(p.RuntimeId);return true;}
+                DamageEnemy(b,enemy,p.Damage);bool killed=enemy.CurrentHealth<=0;
                 if(killed)self.KillEnemy(b,enemy);
                 if((basic&&!killed)||p.RemainingHits<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
                 float endX=fromX+(toX-fromX)*block,endZ=fromZ+(toZ-fromZ)*block;
@@ -116,7 +118,9 @@ namespace ET.Server
                     enemy.EvolutionBurnContactSeconds.TryGetValue(owner,out float contact);
                     int damage=ArcadeWeaponEvolutionRules.BurningDamage(b.WeaponBurnAreas,owner,enemy.PositionX,enemy.PositionZ,ref contact,seconds,t);
                     enemy.EvolutionBurnContactSeconds[owner]=contact;
-                    if(damage<=0)continue;enemy.LastDamagePlayerId=owner;DamageEnemyFromFlame(b,enemy,damage);
+                    if(damage<=0)continue;enemy.LastDamagePlayerId=owner;
+                    if(self.TryDamageCarrierBarrel(b,enemy,damage,owner))continue;
+                    DamageEnemyFromFlame(b,enemy,damage);
                     if(enemy.CurrentHealth<=0){self.KillEnemy(b,enemy);break;}
                 }
             }

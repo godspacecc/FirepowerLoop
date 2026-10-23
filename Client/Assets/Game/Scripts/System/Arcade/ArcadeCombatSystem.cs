@@ -1085,6 +1085,7 @@ namespace Game
                         }
                         if (!TryRegisterProjectileHit(projectile, enemy.Id)) continue;
                         PushPurpleShotgun(runtime,projectile,enemy.Position);
+                        if(TryDamageCarrierBarrel(runtime,enemy,projectile.Damage)){remove=true;break;}
                         if(projectile.FromPlayerWeapon&&projectile.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(enemy,projectile.Damage);
                         else DamageEnemy(enemy, projectile.Damage);
                         if (projectile.SourceWeaponId == "arcade.weapon.basic" ||
@@ -1134,6 +1135,7 @@ namespace Game
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
                     !IsWithinExplosion(center, enemy.Position, radius)) continue;
+                if(TryDamageCarrierBarrel(runtime,enemy,damage))continue;
                 DamageEnemy(enemy, damage);
                 if (enemy.Health <= 0) KillEnemyWithReaction(runtime, enemy, false, explosive, center, impactKind);
             }

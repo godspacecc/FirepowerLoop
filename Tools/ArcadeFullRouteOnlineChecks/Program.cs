@@ -34,6 +34,12 @@ if(opts.GetValueOrDefault("testClass")=="MeleeWindupOnline")
     World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
     Environment.ExitCode=MeleeWindupOnlineChecks.Run(meleeMax);return;
 }
+if(opts.GetValueOrDefault("testClass")=="CarrierBarrelOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="5")throw new ArgumentException("Explicit CarrierBarrelOnline maxTests=5 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();Environment.ExitCode=CarrierBarrelOnlineChecks.Run(5);return;
+}
 if(opts.GetValueOrDefault("testClass")=="DockBarrelOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||!int.TryParse(opts.GetValueOrDefault("maxTests"),out int dockBarrelMax)||dockBarrelMax<1)throw new ArgumentException("Explicit DockBarrelOnline limit required");

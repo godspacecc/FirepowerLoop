@@ -64,7 +64,9 @@ namespace Game
             foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
                 if(enemy.ContentSpecialKind==1&&enemy.Health>0&&r.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
                 {
-                    r.GroundBarrels.Add(r.NextGroundBarrelId++,ContentPosition(r,enemy.Position));
+                    int id=r.NextGroundBarrelId++;r.GroundBarrels.Add(id,ContentPosition(r,enemy.Position));
+                    if(enemy.CarriedBarrelHealth>0)r.GroundBarrelHealth[id]=enemy.CarriedBarrelHealth;
+                    enemy.CarriedBarrelHealth=0;
                     enemy.ContentSpecialKind=0;enemy.ContentWarning=false;
                 }
             foreach(var drop in r.Drops.Values.ToArray())

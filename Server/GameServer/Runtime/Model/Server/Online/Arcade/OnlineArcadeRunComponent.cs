@@ -276,6 +276,8 @@ namespace ET.Server
         public long LastDamagePlayerId;
         /// <summary>当前轮护甲耐久，不进入安全存档；协议只读投影供破甲表现。</summary>
         public int ArmorHealth;
+        /// <summary>背桶独立耐久，仅本次权威战斗持有；卸下后转交地面桶。</summary>
+        public int CarriedBarrelHealth;
         public float HazardPreviousX;
         public float HazardPreviousZ;
         public long RuntimeId;

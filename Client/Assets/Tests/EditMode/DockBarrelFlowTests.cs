@@ -26,7 +26,7 @@ namespace Game.Tests
             app.GetModel<ArcadeRunModel>().EnterArena();
             runtime=new ArcadeCombatRuntime{ArenaNumber=2,PlayerHealth=100,PlayerMaxHealth=100};app.GetModel<ArcadeCombatModel>().Begin(runtime);
             system=new ArcadeCombatSystem();((ICanSetArchitecture)system).SetArchitecture(app);
-            Set("catalog",catalog);Set("arena",catalog.Arenas.Single(a=>a.ArenaNumber==21));Set("random",new System.Random(17));
+            Set("view",new ArcadeCombatViewController());Set("catalog",catalog);Set("arena",catalog.Arenas.Single(a=>a.ArenaNumber==21));Set("random",new System.Random(17));
         }
         [TearDown] public void Cleanup()=>app.GetModel<ArcadeCombatModel>().Clear();
         private void Set(string key,object value)=>typeof(ArcadeCombatSystem).GetField(key,Hidden).SetValue(system,value);
@@ -63,6 +63,56 @@ namespace Game.Tests
             int count=runtime.GroundBarrels.Count;Call("OnRoundEnemyKilled",runtime,carrier,false);
             Assert.That(runtime.GroundBarrels.Count,Is.EqualTo(count));Assert.That(runtime.ContentAreas.Any(a=>a.Kind==14),Is.True);
             Assert.That(runtime.PlayerHealth,Is.EqualTo(100));
+        }
+        /// <summary>真实子弹先扣背桶耐久，不能先扣载体生命。</summary>
+        [Test] public void WeaponHitsBarrelBeforeCarrierBody()
+        {
+            var carrier=PrepareCarrier();FireAtCarrier(1);
+            Assert.That(carrier.Health,Is.EqualTo(1000),"桶未破时不能先扣丧尸生命");
+            Assert.That(carrier.ContentSpecialKind,Is.EqualTo(1));
+            Assert.That(runtime.Projectiles,Is.Empty);
+        }
+        /// <summary>爆桶只结算一次既有范围伤害，后续子弹才命中本体。</summary>
+        [Test] public void BreakingBarrelExplodesOnceThenBodyTakesLaterShots()
+        {
+            var carrier=PrepareCarrier();FireAtCarrier(10000);
+            Assert.That(carrier.ContentSpecialKind,Is.Zero,"桶被打破后必须先移除载桶身份");
+            Assert.That(carrier.Health,Is.GreaterThan(0).And.LessThan(1000),"本体只承受桶爆炸，不承受溢出弹伤");
+            Assert.That(runtime.ContentAreas.Count(a=>a.Kind==14),Is.EqualTo(1));
+            Assert.That(runtime.PlayerHealth,Is.EqualTo(100));
+            int before=carrier.Health;FireAtCarrier(1);Assert.That(carrier.Health,Is.EqualTo(before-1));
+            Assert.That(runtime.ContentAreas.Count(a=>a.Kind==14),Is.EqualTo(1));
+        }
+        /// <summary>卸桶后沿用剩余耐久，不能自动恢复为满耐久地面桶。</summary>
+        [Test] public void DamagedCarrierDropsBarrelWithRemainingHealth()
+        {
+            var carrier=PrepareCarrier();FireAtCarrier(1);
+            runtime.ContentClock.Advance(6,false);Call("TickVortexBarrels",runtime,.01f);
+            Assert.That(carrier.ContentSpecialKind,Is.Zero);int id=runtime.GroundBarrels.Single().Key;
+            var layout=catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1);
+            Assert.That(runtime.GroundBarrelHealth[id],Is.EqualTo(layout.BarrelHealth-1));
+        }
+        private ArcadeEnemyRuntime PrepareCarrier()
+        {
+            SpawnRound(0);runtime.Enemies.Clear();runtime.GroundBarrels.Clear();runtime.GroundBarrelHealth.Clear();runtime.Projectiles.Clear();
+            Set("contentObstacleIdentity",catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1).Id);
+            Set("contentRoundObstacles",Array.Empty<ArcadeObstacleDefinition>());
+            var enemy=new ArcadeEnemyRuntime{Id=700,Position=Vector2.zero,Health=1000,MaxHealth=1000,ContentSpecialKind=1};runtime.Enemies.Add(enemy.Id,enemy);return enemy;
+        }
+        /// <summary>范围武器与紫射线也先命中桶，回池清除耐久镜像。</summary>
+        [Test] public void ExplosionAndRayUseBarrelFirstAndResetClearsDurability()
+        {
+            var carrier=PrepareCarrier();
+            Call("DamageEnemiesInExplosionRadius",runtime,Vector2.zero,2f,1);
+            Call("HitPurpleRay",runtime,new ArcadeProjectileRuntime{Damage=1},carrier);
+            var layout=catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1);
+            Assert.That(carrier.Health,Is.EqualTo(1000));Assert.That(carrier.CarriedBarrelHealth,Is.EqualTo(layout.BarrelHealth-2));
+            carrier.Reset();Assert.That(carrier.CarriedBarrelHealth,Is.Zero);
+        }
+        private void FireAtCarrier(int damage)
+        {
+            var shot=new ArcadeProjectileRuntime{Id=900,Position=Vector2.left,Velocity=Vector2.right,RemainingSeconds=3,Damage=damage,FromPlayerWeapon=true,RemainingHits=1};
+            runtime.Projectiles.Add(shot.Id,shot);Call("TickProjectiles",runtime,1f);
         }
     }
 }
