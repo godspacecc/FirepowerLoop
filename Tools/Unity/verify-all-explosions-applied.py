@@ -6,7 +6,7 @@ import hashlib,json
 root=Path(__file__).resolve().parents[2]
 candidate=root/'Client/Temp/AllExplosions-v1-20261023'
 applied=root/'Client/Temp/AllExplosionsApplied-20261024'
-out=root/'Docs/Plans/Artifacts/AllExplosionsApplied-20261024'
+out=root/'Backup/Artifacts/AllExplosionsApplied-20261024'
 out.mkdir(parents=True,exist_ok=True)
 names=['energy','barrel','bomb','drone','cluster-main','cluster-child','enemy-death','decoy','orbit-barrel']
 font=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',20)

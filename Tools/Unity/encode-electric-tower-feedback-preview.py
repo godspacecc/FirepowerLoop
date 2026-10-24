@@ -12,7 +12,7 @@ sys.path.insert(0, str(root / "Client/Temp/ElectricTowerFeedbackTools"))
 import imageio_ffmpeg
 
 source = root / "Client/Temp/ElectricTowerFeedbackPreview"
-target = root / "Docs/Plans/Artifacts/ElectricTowerFeedback-v1-20261023"
+target = root / "Backup/Artifacts/ElectricTowerFeedback-v1-20261023"
 target.mkdir(parents=True, exist_ok=True)
 files = sorted(source.glob("[0-9][0-9][0-9].png"))
 assert len(files) == 212

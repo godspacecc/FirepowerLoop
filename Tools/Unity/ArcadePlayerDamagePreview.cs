@@ -54,7 +54,7 @@ public static class ArcadePlayerDamagePreview
                 }
                 finally{Object.DestroyImmediate(player);}
             }
-            strip.Apply();string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Docs/Plans/Artifacts/PlayerDamage-20261018"));Directory.CreateDirectory(directory);
+            strip.Apply();string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Backup/Artifacts/PlayerDamage-20261018"));Directory.CreateDirectory(directory);
             string path=Path.Combine(directory,"three-stages.png");File.WriteAllBytes(path,strip.EncodeToPNG());return path;
         }
         finally

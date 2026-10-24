@@ -17,7 +17,7 @@ public static class WeaponDeathImpactPreview
         if (Application.isPlaying || Application.dataPath.Replace('\\','/') != "E:/GitHub/FirepowerLoop/Client/Assets")
             throw new Exception("只允许本工程编辑态预览");
         string frames = Path.GetFullPath("Temp/WeaponDeathImpact/frames");
-        string output = Path.GetFullPath("../Docs/Plans/Artifacts/WeaponDeathImpact-20261020");
+        string output = Path.GetFullPath("../Backup/Artifacts/WeaponDeathImpact-20261020");
         Directory.CreateDirectory(frames); Directory.CreateDirectory(output);
         var scene = EditorSceneManager.NewPreviewScene(); var physics = scene.GetPhysicsScene();
         var owned = new List<Object>(); var views = new List<EnemyView>();

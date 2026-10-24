@@ -5,7 +5,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "Client/Temp/NextThreeStages-v1"
-TARGET = ROOT / "Docs/Plans/Artifacts/NextThreeStages-v1-20261023"
+TARGET = ROOT / "Backup/Artifacts/NextThreeStages-v1-20261023"
 TARGET.mkdir(parents=True, exist_ok=True)
 
 for name, count in (("graveyard", 84), ("temple", 96), ("marketplace", 96)):

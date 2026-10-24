@@ -66,7 +66,7 @@ public static class ConfirmedLootPreview
             var light=new GameObject("Key",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.8f;light.transform.rotation=Quaternion.Euler(45,-30,0);light.cullingMask=1<<31;
             var camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.cullingMask=1<<31;camera.orthographic=true;camera.orthographicSize=3f;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.07f,.12f,.14f);
             rt=new RenderTexture(1800,900,24);pixels=new Texture2D(1800,900,TextureFormat.RGB24,false);camera.targetTexture=rt;
-            string folder=Path.GetFullPath("../Docs/Plans/Artifacts/ConfirmedLoot-20261022");Directory.CreateDirectory(folder);
+            string folder=Path.GetFullPath("../Backup/Artifacts/ConfirmedLoot-20261022");Directory.CreateDirectory(folder);
             camera.transform.position=new Vector3(1,5.4f,-9);camera.transform.LookAt(new Vector3(1,.8f,0));Capture(camera,rt,pixels,Path.Combine(folder,formal?"drop-size-applied.png":"drop-size-v2.png"));
             foreach(var pickup in scene.GetRootGameObjects().Where(g=>g.name.StartsWith("TemporaryDrop_")))pickup.SetActive(false);
             camera.orthographicSize=1.2f;camera.transform.position=player.transform.position+new Vector3(2,1.8f,-3);camera.transform.LookAt(player.transform.position+Vector3.up*.95f);Capture(camera,rt,pixels,Path.Combine(folder,formal?"ak-held-applied.png":"ak-held-candidate.png"));

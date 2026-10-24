@@ -7,7 +7,7 @@ import subprocess
 import numpy as np
 
 root = Path(__file__).resolve().parents[2]
-target = root / "Docs/Plans/Artifacts/ElectricTowerFeedback-v2-20261023"
+target = root / "Backup/Artifacts/ElectricTowerFeedback-v2-20261023"
 target.mkdir(parents=True, exist_ok=True)
 rate = 44100
 
@@ -113,7 +113,7 @@ sys.path.insert(0, str(root / "Client/Temp/ElectricTowerFeedbackTools"))
 import imageio_ffmpeg
 video = target / "tower-feedback-crackle-candidate.mp4"
 command = [imageio_ffmpeg.get_ffmpeg_exe(), "-y", "-hide_banner", "-loglevel", "error",
-           "-i", str(root / "Docs/Plans/Artifacts/ElectricTowerFeedback-v1-20261023/tower-feedback-candidate.mp4"),
+           "-i", str(root / "Backup/Artifacts/ElectricTowerFeedback-v1-20261023/tower-feedback-candidate.mp4"),
            "-i", str(target / "preview-mix.wav"), "-map", "0:v:0", "-map", "1:a:0",
            "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-t", "10.6", "-movflags", "+faststart", str(video)]
 subprocess.run(command, check=True)

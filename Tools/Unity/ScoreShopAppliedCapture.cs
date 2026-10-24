@@ -49,7 +49,7 @@ public static class ScoreShopAppliedCapture
             }
             finally{RenderTexture.active=old;}
             string suffix=language=="zh-CN"?(score==10000?"":"-low-score"):"-en";
-            string path=Path.GetFullPath("../Docs/Plans/Artifacts/ScoreShop-v2-20261023/unity-applied"+suffix+".png");
+            string path=Path.GetFullPath("../Backup/Artifacts/ScoreShop-v2-20261023/unity-applied"+suffix+".png");
             File.WriteAllBytes(path,tex.EncodeToPNG());return path;
         }
         finally

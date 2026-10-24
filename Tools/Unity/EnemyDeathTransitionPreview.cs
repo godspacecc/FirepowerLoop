@@ -26,7 +26,7 @@ public static class EnemyDeathTransitionPreview
     {
         if (EditorApplication.isPlaying || Application.dataPath.Replace('\\', '/') != "E:/GitHub/FirepowerLoop/Client/Assets")
             throw new InvalidOperationException("仅在本工程编辑态执行隔离观察");
-        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../../Docs/Plans/Artifacts/EnemyDeathTransition-20261018"));
+        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../../Backup/Artifacts/EnemyDeathTransition-20261018"));
         Directory.CreateDirectory(folder);
         var scene = EditorSceneManager.NewPreviewScene();
         var physics = scene.GetPhysicsScene();

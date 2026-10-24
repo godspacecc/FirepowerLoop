@@ -8,7 +8,7 @@
 
 **技术栈：** Unity/C#、QFramework、Luban、ET生成协议及限定EditMode/.NET检查。
 
-**规格：** [执行总清单](执行总清单.md)“2026-10-24贴身v4正式采用”；[v4动态和接触证据](Artifacts/ZombieContactGrab-v4-20261023/README.md)。撕咬草案不在采用范围。
+**规格：** [执行总清单](执行总清单.md)“2026-10-24贴身v4正式采用”；[v4动态和接触证据](../../Backup/Artifacts/ZombieContactGrab-v4-20261023/README.md)。撕咬草案不在采用范围。
 
 ## 约束
 

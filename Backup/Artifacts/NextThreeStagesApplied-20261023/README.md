@@ -14,4 +14,4 @@
 
 墓穴起身后越过低墓沿再追击；为容纳原敌人0.95米碰撞半径，落脚比预览向前增加0.35米，保留墓碑、墓基、阻挡、方向和时长。暗影敌人先以乌鸦现身，首次打倒换位重生一次，第二次才最终消灭。集市保留八巷口分段来敌和重叠围攻，不新增方向提示。
 
-持久化引用及候选对比见`persistent-assets-check.json`、`pixel-comparison.json`和`verification.txt`。没有运行资源打包、Player Build或完整测试套件。状态与最后检查以[执行总清单](../../执行总清单.md)对应分区为准。
+持久化引用及候选对比见`persistent-assets-check.json`、`pixel-comparison.json`和`verification.txt`。没有运行资源打包、Player Build或完整测试套件。状态与最后检查以[执行总清单](../../../Docs/Plans/执行总清单.md)对应分区为准。

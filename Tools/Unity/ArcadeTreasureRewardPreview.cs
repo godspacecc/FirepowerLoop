@@ -16,7 +16,7 @@ using Object = UnityEngine.Object;
 /// <summary>使用实际奖励模板、配置和拾取 Prefab 做隔离画面检查；不运行规则、写档或打包。</summary>
 public static class ArcadeTreasureRewardPreview
 {
-    private const string Folder = "../Docs/Plans/Artifacts/TreasureRewardsRealistic-20261019";
+    private const string Folder = "../Backup/Artifacts/TreasureRewardsRealistic-20261019";
     private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
     public static string Run()
     {

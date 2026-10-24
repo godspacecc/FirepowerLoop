@@ -27,7 +27,7 @@ Unity EditMode 定向测试，均使用实际短 testClass，includePassingTests
 
 ## 隔离资源预览
 
-以下图像使用真实模板、配置和拾取 View，预览脚本位于 [ArcadeTreasureRewardPreview.cs](../../../../Tools/Unity/ArcadeTreasureRewardPreview.cs)。用于检查模型、尺度、离地高度和特效遮挡，非实际双客户端游玩截图；手机帧率与真实双端游玩仍待验。
+以下图像使用真实模板、配置和拾取 View，预览脚本位于 [ArcadeTreasureRewardPreview.cs](../../../Tools/Unity/ArcadeTreasureRewardPreview.cs)。用于检查模型、尺度、离地高度和特效遮挡，非实际双客户端游玩截图；手机帧率与真实双端游玩仍待验。
 
 - [模型近景](models.png)
 - [普通宝藏房](treasure-room.png)

@@ -6,7 +6,7 @@ from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = ROOT / "Client/Temp/NextStagesControllerApplied"
-TARGET = ROOT / "Docs/Plans/Artifacts/NextStagesControllerApplied-20261023"
+TARGET = ROOT / "Backup/Artifacts/NextStagesControllerApplied-20261023"
 report = []
 for name, count in (("graveyard", 108), ("temple", 96), ("marketplace", 96)):
     output = TARGET / name

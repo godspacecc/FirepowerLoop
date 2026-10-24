@@ -3,6 +3,7 @@
 独立街机游戏：单人本局与现有双人联机竞技场。启动进入街机主界面，使用本项目的配置、资源与服务，不需要基地或搜打撤存档。
 
 - Unity 工程：`Client`。打开该目录后使用 `Assets/Game/Scenes/Boot.unity` 启动。
+- 预览及验证资料：[Backup/Artifacts](Backup/Artifacts/)，存放于 Unity 工程外；目录用途见[备用资料说明](Backup/README.md)。
 - 配置源：`Config/Defines`、`Config/DataCsv`；唯一生成入口：`Config/gen.bat`。
 - 协议源：`Config/Proto`；生成入口：`Tools/gen-protocol.ps1`。
 - 游戏服务：`Server/GameServer`，本地 GameGate 默认 `31011`，诊断服务 `31012`。

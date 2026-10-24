@@ -55,7 +55,7 @@ public static class ArcadeBombPreview
                 foreach(var ps in root.GetComponentsInChildren<ParticleSystem>(true))ps.Simulate(times[i],false,true,true);
                 camera.Render();RenderTexture.active=rt;strip.ReadPixels(new Rect(0,0,900,720),i*900,0,false);
             }
-            strip.Apply();string dir=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Docs/Plans/Artifacts/BombVfx-20261018"));Directory.CreateDirectory(dir);
+            strip.Apply();string dir=Path.GetFullPath(Path.Combine(Application.dataPath,"../../Backup/Artifacts/BombVfx-20261018"));Directory.CreateDirectory(dir);
             string file=Path.Combine(dir,"three-stages.png");File.WriteAllBytes(file,strip.EncodeToPNG());return file;
         }
         finally

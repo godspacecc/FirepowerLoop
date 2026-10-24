@@ -13,8 +13,8 @@
 
 ## 视觉核对
 
-- [正式控制器第一轮布局预览](Artifacts/CoastalIsland-20261020/island-round-1.png)：编辑器隔离渲染，无战斗、无存档写入。
-- [正式加载 Prefab 预览](Artifacts/CoastalIsland-20261020/loading-preview.png)：示例进度 55%，不是实际加载耗时或进度测量。
+- [正式控制器第一轮布局预览](../../Backup/Artifacts/CoastalIsland-20261020/island-round-1.png)：编辑器隔离渲染，无战斗、无存档写入。
+- [正式加载 Prefab 预览](../../Backup/Artifacts/CoastalIsland-20261020/loading-preview.png)：示例进度 55%，不是实际加载耗时或进度测量。
 - 原图的分数、倍率、波次、状态、技能栏、角落注释等已去除，加载文字由原有 UI 单独呈现。
 
 ## 验证
@@ -39,7 +39,7 @@ Unity 连接确认路径为 E:/GitHub/FirepowerLoop/Client/Assets。最终编辑
 - Game.Tests.UnifiedMainMenuTests.Loading_LaterIslandTransitionReopensLoadingWithoutAnotherSceneLoad：第 96 行仍要求普通切轮显示完整加载页，与既有淡入淡出逻辑冲突。
 - Game.Tests.UnifiedMainMenuTests.Loading_PreparationFailureKeepsDetailsAndRetryOnLoadingScreen：第 122 行，失败后进入重试准备时，既有提前返回未刷新错误区域。此加载控制器问题不在本次换图范围，未修改业务逻辑或绕过断言。
 
-完整结果位于 [验证附件目录](Artifacts/CoastalIsland-20261020/)，其中 LoadingOldArtworkBaseline.txt 保存旧图对照复测。独立只读审查未发现本次地图和背景改动的重要问题。
+完整结果位于 [验证附件目录](../../Backup/Artifacts/CoastalIsland-20261020)，其中 LoadingOldArtworkBaseline.txt 保存旧图对照复测。独立只读审查未发现本次地图和背景改动的重要问题。
 
 制作工具：ArcadeCoastAuthoring、ArcadeCoastLoadingPreview、ArcadeCoastTestRunner。仅提交本任务文件，保留同工作区其他任务的修改。
 
@@ -59,4 +59,4 @@ Unity 连接确认路径为 E:/GitHub/FirepowerLoop/Client/Assets。最终编辑
 | ArcadeCombatSystemTests | 32 | 28/28 |
 | 合计 | | 85/85 |
 
-证据见 [PierCollision-20261021](Artifacts/PierCollision-20261021/)。测试覆盖模型与碰撞占地一致、普通移动与长距离冲刺阻挡、靠海侧位置修正、真实节点锚点恢复、切轮释放和出口／武器点连通性。独立审查发现的靠海侧投影问题已修正并复审。以上为定向规则与正式资源隔离检查，不代表真机或真实双客户端实玩验收；未执行 Player Build。
+证据见 [PierCollision-20261021](../../Backup/Artifacts/PierCollision-20261021)。测试覆盖模型与碰撞占地一致、普通移动与长距离冲刺阻挡、靠海侧位置修正、真实节点锚点恢复、切轮释放和出口／武器点连通性。独立审查发现的靠海侧投影问题已修正并复审。以上为定向规则与正式资源隔离检查，不代表真机或真实双客户端实玩验收；未执行 Player Build。

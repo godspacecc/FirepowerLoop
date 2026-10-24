@@ -6,7 +6,7 @@ from PIL import Image, ImageDraw, ImageFont
 root = Path(__file__).resolve().parents[2]
 applied = "--applied" in sys.argv
 source = root / ("Client/Temp/ElectricTowerApplied" if applied else "Client/Temp/ElectricTowerPreview")
-target = root / ("Docs/Plans/Artifacts/ElectricTowerApplied-20261023" if applied else "Docs/Plans/Artifacts/ElectricTower-v1-20261023")
+target = root / ("Backup/Artifacts/ElectricTowerApplied-20261023" if applied else "Backup/Artifacts/ElectricTower-v1-20261023")
 target.mkdir(parents=True, exist_ok=True)
 files = sorted(source.glob("[0-9][0-9][0-9].png"))
 assert len(files) == 170, f"预期170帧，实际{len(files)}"

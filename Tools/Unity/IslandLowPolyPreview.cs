@@ -26,7 +26,7 @@ public static partial class IslandLowPolyPreview
     private static string Render(bool applied)
     {
         if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态临时预览");
-        string folder=Path.GetFullPath(applied?"../Docs/Plans/Artifacts/IslandLowPolyApplied-20261022":"../Docs/Plans/Artifacts/IslandLowPoly-v2-20261022");Directory.CreateDirectory(folder);
+        string folder=Path.GetFullPath(applied?"../Backup/Artifacts/IslandLowPolyApplied-20261022":"../Backup/Artifacts/IslandLowPoly-v2-20261022");Directory.CreateDirectory(folder);
         var prior=SceneManager.GetActiveScene();var priorRT=RenderTexture.active;var priorPipeline=QualitySettings.renderPipeline;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type type=null;
         var sheet=new RenderTexture(2400,1500,24);sheet.Create();

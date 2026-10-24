@@ -14,7 +14,7 @@ public static class EnemyCorpseRetentionPreview
     {
         if (Application.isPlaying || Application.dataPath.Replace('\\', '/') != "E:/GitHub/FirepowerLoop/Client/Assets")
             throw new InvalidOperationException("只允许本工程编辑态观察");
-        string folder = Path.GetFullPath("../Docs/Plans/Artifacts/EnemyCorpseRetention-20261020");
+        string folder = Path.GetFullPath("../Backup/Artifacts/EnemyCorpseRetention-20261020");
         Directory.CreateDirectory(folder);
         var scene = EditorSceneManager.NewPreviewScene();
         var physics = scene.GetPhysicsScene();

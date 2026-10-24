@@ -16,7 +16,7 @@ public static class ArenaBoundaryAuditPreview
 {
     private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
     private static readonly string[] WallNames = { "NorthBoundary", "SouthBoundary", "EastBoundary", "WestBoundary" };
-    private static string Output => Path.GetFullPath("../Docs/Plans/Artifacts/ArenaBoundary-v1-20261023");
+    private static string Output => Path.GetFullPath("../Backup/Artifacts/ArenaBoundary-v1-20261023");
     private static void Set(object view, string name, object value) => view.GetType().GetField(name, Hidden).SetValue(view, value);
 
     /// <summary>磁盘边界同步读取正式Prefab，保留实际控制器创建、显隐和释放行为。</summary>

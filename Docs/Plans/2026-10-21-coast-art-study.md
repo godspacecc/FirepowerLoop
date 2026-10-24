@@ -4,7 +4,7 @@
 
 ## 已交付
 
-- [全景实拍](Artifacts/CoastArtStudy-20261021/coast-overview.png)及[码头近景](Artifacts/CoastArtStudy-20261021/dock-detail.png)，均由 Unity Camera 渲染，不是生成式概念图。
+- [全景实拍](../../Backup/Artifacts/CoastArtStudy-20261021/coast-overview.png)及[码头近景](../../Backup/Artifacts/CoastArtStudy-20261021/dock-detail.png)，均由 Unity Camera 渲染，不是生成式概念图。
 - 样板场景为 `Client/Assets/Art/CoastStudy/CoastArtStudy.unity`。三条陆路通过岩壁留口，右侧为海岸及木码头；使用真实地表与巨石贴图，自制细叶棕榈、木板与木桩。
 - 场景制作入口为 `Tools/Unity/ArcadeCoastArtStudy.cs`，只处理独立样板目录；不运行战斗、不写玩家数据、不替换正式场景、Prefab、规则或加载图。
 - 当前样板实际依赖及 SHA-256 见附件 `sample-assets.json`；未采用的候选资源和 meta 保留在备用目录，不纳入交付依赖。

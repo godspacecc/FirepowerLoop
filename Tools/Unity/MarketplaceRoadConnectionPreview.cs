@@ -67,7 +67,7 @@ public static class MarketplaceRoadConnectionPreview
             EditorApplication.isPlaying || EditorApplication.isCompiling) throw new InvalidOperationException("仅本工程编辑态预览");
         var previous = SceneManager.GetActiveScene(); var activeTexture = RenderTexture.active;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
-        var folder = Path.GetFullPath("../Docs/Plans/Artifacts/" + (applied ? "MarketplaceRoadApplied-20261024" : "MarketplaceRoad-v2-20261024")); Directory.CreateDirectory(folder);
+        var folder = Path.GetFullPath("../Backup/Artifacts/" + (applied ? "MarketplaceRoadApplied-20261024" : "MarketplaceRoad-v2-20261024")); Directory.CreateDirectory(folder);
         try
         {
             SceneManager.SetActiveScene(scene); Call("Palette", 2);

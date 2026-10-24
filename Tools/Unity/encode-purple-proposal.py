@@ -1,6 +1,6 @@
 from pathlib import Path
 from PIL import Image,ImageDraw,ImageFont
-src=Path('Client/Temp/PurpleWeaponProposal-v1');dst=Path('Docs/Plans/Artifacts/RemainingStages-v2-20261022')
+src=Path('Client/Temp/PurpleWeaponProposal-v1');dst=Path('Backup/Artifacts/RemainingStages-v2-20261022')
 f=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',24);small=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',19)
 titles=['紫级火箭筒｜三联火箭追踪移动敌人','紫级射线枪｜碰壁反射 + 命中后触电连到附近敌人','紫级榴弹枪｜快速连续发射，保留原有爆炸']
 frames=[]

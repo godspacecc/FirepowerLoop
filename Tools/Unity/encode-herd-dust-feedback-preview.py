@@ -14,7 +14,7 @@ import imageio_ffmpeg
 
 APPLIED = '--applied' in sys.argv
 SOURCE = ROOT / ('Client/Temp/HerdDustFeedbackApplied-v1-20261023' if APPLIED else 'Client/Temp/HerdDustFeedback-v1-20261023')
-OUTPUT = ROOT / ('Docs/Plans/Artifacts/HerdFeedbackApplied-20261023' if APPLIED else 'Docs/Plans/Artifacts/HerdDust-Unity-v1-20261023')
+OUTPUT = ROOT / ('Backup/Artifacts/HerdFeedbackApplied-20261023' if APPLIED else 'Backup/Artifacts/HerdDust-Unity-v1-20261023')
 OUTPUT.mkdir(parents=True, exist_ok=True)
 RATE, FPS, DURATION = 44100, 20, 11.6
 random = np.random.default_rng(2310237)

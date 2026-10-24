@@ -8,7 +8,7 @@ kind = next((v for v in sys.argv if v in ("chest", "portal")), "drone")
 formal = "--formal" in sys.argv
 source = root / "Client/Temp/ConfirmedDynamicPreview" / (kind+"-formal" if formal else kind)
 output_name = kind+"-applied.gif" if formal else kind + "-v1.gif"
-target = root / "Docs/Plans/Artifacts/ConfirmedDynamic-20261022"
+target = root / "Backup/Artifacts/ConfirmedDynamic-20261022"
 target.mkdir(parents=True, exist_ok=True)
 font = ImageFont.truetype("C:/Windows/Fonts/msyh.ttc", 23)
 small = ImageFont.truetype("C:/Windows/Fonts/msyh.ttc", 16)

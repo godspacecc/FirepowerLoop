@@ -28,7 +28,7 @@ public static class ArcadeScoreFlightPreview
         SceneManager.SetActiveScene(scene);
         var architecture = new Game.Game(); singleton.SetValue(null, architecture);
         typeof(Architecture<Game.Game>).GetField("mInited", Hidden).SetValue(architecture, true);
-        const string folder = "../Docs/Plans/Artifacts/ScoreFlight-20261019";
+        const string folder = "../Backup/Artifacts/ScoreFlight-20261019";
         Directory.CreateDirectory(folder);
         try
         {

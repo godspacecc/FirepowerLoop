@@ -66,7 +66,7 @@ public static class FlamethrowerAimPreview
             Label("WHITE: CHARACTER AIM     |     RED / GREEN: NOZZLE DIRECTION",.5f,.07f,27);
             target=new RenderTexture(1120,700,24);pixels=new Texture2D(1120,700,TextureFormat.RGB24,false);camera.targetTexture=target;
             camera.Render();RenderTexture.active=target;pixels.ReadPixels(new Rect(0,0,1120,700),0,0);pixels.Apply();camera.targetTexture=null;
-            string folder=Path.GetFullPath("../Docs/Plans/Artifacts/FlamethrowerAimFix-20261020");Directory.CreateDirectory(folder);
+            string folder=Path.GetFullPath("../Backup/Artifacts/FlamethrowerAimFix-20261020");Directory.CreateDirectory(folder);
             File.WriteAllBytes(Path.Combine(folder,"comparison.png"),pixels.EncodeToPNG());File.WriteAllText(Path.Combine(folder,"probe.txt"),report.ToString());
             return folder+"\n"+report;
         }

@@ -8,6 +8,8 @@ Boot 场景脏状态可按测试需要从磁盘重载，丢弃临时未保存变
 
 保留资源及 .meta。配置只改 Config 权威源，通过 Config/gen.bat 双端生成，不手改生成代码或 bytes。协议通过 Tools/gen-protocol.ps1 生成。核心手写类、函数和字段补中文注释；使用现有 QFramework 职责、Unity UI 和 Luban 业务技能。项目内技能中的 AnotherDay 背景不构成搜打撤实施授权。
 
+预览图片、视频、音频及验证报告、日志统一保存到仓库根目录 `Backup/Artifacts/`，按批次分目录；制作工具输出与文档链接同步使用该位置。候选美术资源仍放 `Client/Assets/Art/`，正式美术仍放 `Client/Assets/Game/Art/`。目录用途见 [备用资料说明](Backup/README.md)。
+
 对两个工程的公共修复分别审查和应用，不建立自动同步或共享框架。
 
 ## 协作与预览规则（全项目、长期生效）

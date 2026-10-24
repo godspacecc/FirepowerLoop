@@ -1,6 +1,6 @@
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
-src=Path("Client/Temp/RaceCurvesPreview-v4");dst=Path("Docs/Plans/Artifacts/RaceCurves-v4-20261022");dst.mkdir(parents=True,exist_ok=True)
+src=Path("Client/Temp/RaceCurvesPreview-v4");dst=Path("Backup/Artifacts/RaceCurves-v4-20261022");dst.mkdir(parents=True,exist_ok=True)
 font=ImageFont.truetype("C:/Windows/Fonts/msyh.ttc",25);small=ImageFont.truetype("C:/Windows/Fonts/msyh.ttc",18)
 def caption(im,title,detail):
  im=im.convert("RGB");out=Image.new("RGB",(im.width,im.height+90),(15,22,28));out.paste(im,(0,90));d=ImageDraw.Draw(out);d.text((22,10),title,font=font,fill="white");d.text((22,48),detail,font=small,fill=(190,207,217));return out

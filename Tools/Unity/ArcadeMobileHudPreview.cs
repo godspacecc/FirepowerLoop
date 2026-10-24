@@ -49,7 +49,7 @@ public static class ArcadeMobileHudPreview
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
         var oldTexture = RenderTexture.active;
-        const string folder = "../Docs/Plans/Artifacts/MobileHud-20261019/Implemented";
+        const string folder = "../Backup/Artifacts/MobileHud-20261019/Implemented";
         Directory.CreateDirectory(folder);
         try
         {

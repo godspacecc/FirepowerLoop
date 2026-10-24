@@ -5,7 +5,7 @@ from PIL import Image
 
 root = Path(__file__).resolve().parents[2]
 source = root / "Client/Temp/NextThreeStagesArt-v2/graveyard"
-target = root / "Docs/Plans/Artifacts/GraveyardTombs-v2-20261023"
+target = root / "Backup/Artifacts/GraveyardTombs-v2-20261023"
 target.mkdir(parents=True, exist_ok=True)
 for name in ("overview.png", "landmark.png"):
     shutil.copy2(source / name, target / name)

@@ -21,7 +21,7 @@ public static class ArcadeIslandWadingPreview
         var root = new GameObject("WadingPreviewMap"); SceneManager.MoveGameObjectToScene(root, scene);
         var meshes = new List<Mesh>(); var actors = new List<EnemyView>(); var positions = new List<Vector2>();
         RenderTexture target = null; Texture2D pixels = null; Camera camera = null; IDisposable effect = null;
-        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../../Docs/Plans/Artifacts/IslandWading-20261018"));
+        string folder = Path.GetFullPath(Path.Combine(Application.dataPath, "../../Backup/Artifacts/IslandWading-20261018"));
         Directory.CreateDirectory(folder);
         try
         {

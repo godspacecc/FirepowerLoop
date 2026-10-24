@@ -13,7 +13,7 @@
 
 ## 验证
 
-- 定向范围及命令见[实施计划](../../2026-10-24-zombie-contact-grab.md)，无完整测试套件或Player Build。
+- 定向范围及命令见[实施计划](../../../Docs/Plans/2026-10-24-zombie-contact-grab.md)，无完整测试套件或Player Build。
 - 客户端ArcadeEnemyDropTests：58/58通过，含新增群怪挤压回归；新增距离和挤压用例先失败后通过。先前57项中的一次并行场景日志干扰已重新执行通过。
 - ArcadeZombieGrabVisualTests：8/8通过；NextStageViewTests：12/12通过，包含墓穴权威抓挠及旧Attack不补播；允许待机呼吸带来的毫米级手部微动。客户端合计78项通过。
 - 服务端MeleeWindupOnline：14/14通过，含目标切换、配置距离、停步、追上重前摇、收招、快照克隆/协议往返、群怪挤压、真实暗影首次击倒换位清收招。

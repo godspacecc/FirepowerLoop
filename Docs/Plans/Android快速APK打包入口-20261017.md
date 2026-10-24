@@ -64,7 +64,7 @@
 
 ## 打包后整理与提交前复验
 
-2026-10-17 19:48，用户已完成打包并明确要求检查、提交。再次限定EditMode验证：AndroidQuickBuildTests最多18项，实际18/18；AndroidHostBuildTests最多17项，实际17/17；AndroidApkPublishTests最多8项，实际8/8，均includePassingTests=true，共43项通过。没有重跑Player Build、资源构建或发布。[本次持久证据](Artifacts/AndroidQuickBuild-20261017/)。静态独立审查未发现阻止提交的问题。
+2026-10-17 19:48，用户已完成打包并明确要求检查、提交。再次限定EditMode验证：AndroidQuickBuildTests最多18项，实际18/18；AndroidHostBuildTests最多17项，实际17/17；AndroidApkPublishTests最多8项，实际8/8，均includePassingTests=true，共43项通过。没有重跑Player Build、资源构建或发布。[本次持久证据](../../Backup/Artifacts/AndroidQuickBuild-20261017)。静态独立审查未发现阻止提交的问题。
 
 本次保留0.1.24/14设置和3份构建DLL：Game与该轮Android热更输出一致，Newtonsoft.Json、mscorlib与该轮独立AOT基线一致，SHA256见证据。再次核对已存在APK大小66753044、SHA256与上述真实快速打包记录及发布描述相符；未将APK或忽略目录纳入Git，也未声称设备安装通过。
 

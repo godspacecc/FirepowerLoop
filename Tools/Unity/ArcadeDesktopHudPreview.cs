@@ -49,7 +49,7 @@ public static class ArcadeDesktopHudPreview
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
         var oldTexture = RenderTexture.active;
-        const string folder = "../Docs/Plans/Artifacts/PcHud-20261020/Implemented";
+        const string folder = "../Backup/Artifacts/PcHud-20261020/Implemented";
         Directory.CreateDirectory(folder);
         try
         {

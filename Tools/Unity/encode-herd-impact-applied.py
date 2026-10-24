@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 root=Path(__file__).resolve().parents[2]
 source=root/'Client/Temp/HerdImpactApplied-20261023'
-output=root/'Docs/Plans/Artifacts/HerdImpactApplied-20261023'
+output=root/'Backup/Artifacts/HerdImpactApplied-20261023'
 output.mkdir(parents=True,exist_ok=True)
 trace=list(csv.DictReader((source/'authority-trace.csv').open(encoding='utf-8-sig')))
 assert len(trace)==100

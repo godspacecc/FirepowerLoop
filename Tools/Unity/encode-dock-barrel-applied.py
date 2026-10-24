@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 root = Path(__file__).resolve().parents[2]
 source = root / "Client/Temp/DockBarrelApplied"
-target = root / "Docs/Plans/Artifacts/DockBarrelApplied-20261023"
+target = root / "Backup/Artifacts/DockBarrelApplied-20261023"
 target.mkdir(parents=True, exist_ok=True)
 files = sorted(source.glob("[0-9][0-9][0-9].png"))
 assert len(files) == 96, f"预期96帧，实际{len(files)}"

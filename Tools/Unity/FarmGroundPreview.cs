@@ -43,8 +43,8 @@ public static class FarmGroundPreview
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         Camera camera = null;
         string folder = Path.GetFullPath(applied
-            ? "../Docs/Plans/Artifacts/FarmGroundApplied-20261023"
-            : "../Docs/Plans/Artifacts/FarmGround-Unity-v1-20261023");
+            ? "../Backup/Artifacts/FarmGroundApplied-20261023"
+            : "../Backup/Artifacts/FarmGround-Unity-v1-20261023");
         try
         {
             SceneManager.SetActiveScene(scene);
@@ -295,7 +295,7 @@ public static class FarmGroundPreview
                 }
             }
             string evidence = string.Join("\n", results) + "\n";
-            string folder = Path.GetFullPath("../Docs/Plans/Artifacts/FarmGroundApplied-20261023");
+            string folder = Path.GetFullPath("../Backup/Artifacts/FarmGroundApplied-20261023");
             File.WriteAllText(Path.Combine(folder, "four-round-load-release.txt"), evidence);
             return evidence;
         }

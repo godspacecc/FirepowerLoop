@@ -156,7 +156,7 @@
 - 商品卡由CustomListView直接引用外部Box，4×4网格，Controller不创建或销毁条目。独立详情区与卡片选中／禁用态保存在Prefab，不在运行时补造布局。
 - 依次执行Assets/智能更新BoxUI和Assets/智能更新UI，编译后调用同一生成器的绑定阶段补齐引用。生成器延迟绑定在MCP同步阶段未完成时，曾出现两项空字段；最终反序列化检查全部引用非空，列表连续刷新复用同16实例。
 - SlayerMartUiContractTests有效5/12红→12/12绿。离屏图发现详情与标题重叠、反馈被按钮遮盖，加入断言后10/12红→12/12绿；增加正式字体行高断言，防止字体行高大于文本框而空白。原ArcadeUiTests12/12回归通过，并将旧购买／结算按钮断言改为已批准的新界面合同，保留挑战准备独立入口检查。
-- 已核对中文1920×1080及1280×720布局，16卡同时可见；中文小屏样例见[布局预览](Artifacts/SlayerMart-20261017/ui-layout-zh-1280.png)。这是正式Prefab的样例报价布局，不是实际交易或完整通关证据。英语样例曾可见完整布局，但同步离屏捕获存在间歇空白／字形缺失，整体验收继续追踪，不宣称英文实机通过。
+- 已核对中文1920×1080及1280×720布局，16卡同时可见；中文小屏样例见[布局预览](../../Backup/Artifacts/SlayerMart-20261017/ui-layout-zh-1280.png)。这是正式Prefab的样例报价布局，不是实际交易或完整通关证据。英语样例曾可见完整布局，但同步离屏捕获存在间歇空白／字形缺失，整体验收继续追踪，不宣称英文实机通过。
 - 本段只完成正式资源与生成引用；生成的Controller脚手架仍待接交易和生命周期，技能输入／HUD／正式24商品中英文文案继续。release.enabled=0，未打包。
 
 ## 第二十段：正式交易界面与24商品中英文
@@ -207,7 +207,7 @@
 - 新增每名玩家独立的青色范围环与内侧闪电线，读取正式storm.radius；外圈保持真实5米半径，内侧摆动不影响几何判定。单人从实际活动能力投影，联机使用本人预测／远端显示位置跟随；死亡、复起与宝藏房不新增风暴视觉，购物走现有空效果同步回收。
 - 不创建普通ElectricOrb、不添加Collider、不重复计算伤害／控制／持续时间。每名玩家独立持有根与材质，既有效果同步删除过期视觉，地图结束统一释放；地图根先被卸载也必须释放材质。
 - SlayerMartStormVisualTests有效0/10红→10/10绿；追加提前卸载检查11/12红，复现MissingReferenceException及材质未释放，修复后12/12绿。回归原真实支援视觉7/7（上限12）、联机投影12/12，includePassingTests=true，无全套回退。
-- [隔离视觉预览](Artifacts/SlayerMart-20261017/storm-isolated.png)使用实际表现代码、正式GrayboxPlayer资源及1280×720离屏相机，检查范围轮廓与闪电可见；这是隔离预览，不作为战斗试玩、实际相机遮挡或性能验收。临时相机、对象、纹理、材质成对释放。
+- [隔离视觉预览](../../Backup/Artifacts/SlayerMart-20261017/storm-isolated.png)使用实际表现代码、正式GrayboxPlayer资源及1280×720离屏相机，检查范围轮廓与闪电可见；这是隔离预览，不作为战斗试玩、实际相机遮挡或性能验收。临时相机、对象、纹理、材质成对释放。
 - 继续任务8全量需求核对与新鲜代码评审。实体输入、真实双客户端及完整路线试玩仍单列，release.enabled=0，未打包。
 
 ## 第二十六段：完整评审与报价广播超车修复
@@ -238,7 +238,7 @@
 - 新鲜复核覆盖3e8ce35..6972d02，确认上一轮三项正确性缺陷均已关闭，未发现这些修复引入的新具体问题；复核不代替真实双端及设备验收。
 - 通过实际SlayerMartUiFlowTests夹具加载正式ArcadeShop Controller、Prefab及Config/Localization源文案，使用与Boot一致的CanvasScaler参考尺寸1920×1080与0.5匹配值，生成中英文1280×720和2160×1080横屏图。URP正式SingleCameraRequest渲染，延后6次编辑器更新以完成布局；临时架构、资源加载器、对象、相机及纹理均恢复／释放。
 - 逐图查看16张卡片、价格、限购、首项详情与底部三个操作按钮，没有发现截字或重叠；16项名称首选高度39.1、可用高度40，测量明细随图保存。2160横屏施加左右3.5%、上下3%的模拟安全区，仍完整显示。此项只证明这些视口和样本，不宣称实体移动触摸、真实刘海区域或战斗相机验收。
-- 证据：[中文1280](Artifacts/SlayerMart-20261017/ui-formal-zh-CN-1280.png)、[英文1280](Artifacts/SlayerMart-20261017/ui-formal-en-US-1280.png)、[中文横屏安全区](Artifacts/SlayerMart-20261017/ui-formal-zh-CN-2160.png)、[英文横屏安全区](Artifacts/SlayerMart-20261017/ui-formal-en-US-2160.png)。同名txt记录真实卡片数量与字体测量。未修改运行代码，未打包，release.enabled仍为0；继续剩余实际路线、场景与资源观察。
+- 证据：[中文1280](../../Backup/Artifacts/SlayerMart-20261017/ui-formal-zh-CN-1280.png)、[英文1280](../../Backup/Artifacts/SlayerMart-20261017/ui-formal-en-US-1280.png)、[中文横屏安全区](../../Backup/Artifacts/SlayerMart-20261017/ui-formal-zh-CN-2160.png)、[英文横屏安全区](../../Backup/Artifacts/SlayerMart-20261017/ui-formal-en-US-2160.png)。同名txt记录真实卡片数量与字体测量。未修改运行代码，未打包，release.enabled仍为0；继续剩余实际路线、场景与资源观察。
 
 ## 第三十段：逐条需求验收映射
 
@@ -249,9 +249,9 @@
 ## 第三十一段：实际观察发现并修复单人摇杆瞄准
 
 - 在正式Boot、临时测试存档目录和真实新局入口进行虚拟手柄驱动观察；没有写玩家血量、敌人、轮次或终局。最初编辑器更新回调没有形成有效右摇杆采样，且MCP重试留下重复观察器，均清理排除，不将该段CSV视为路线证据。
-- 改为Dynamic输入回调并收敛观察器后，采到[实际输入诊断](Artifacts/SlayerMart-20261017/solo-aim-before-fix.txt)：右摇杆与正式PlayerInputCtrl均持续变化并触发射击，运行AimDirection却固定为鼠标方向。核对正式ReadInput发现先写摇杆、随后无条件被桌面鼠标覆盖；联机已有正确的摇杆优先合同。
+- 改为Dynamic输入回调并收敛观察器后，采到[实际输入诊断](../../Backup/Artifacts/SlayerMart-20261017/solo-aim-before-fix.txt)：右摇杆与正式PlayerInputCtrl均持续变化并触发射击，运行AimDirection却固定为鼠标方向。核对正式ReadInput发现先写摇杆、随后无条件被桌面鼠标覆盖；联机已有正确的摇杆优先合同。
 - 单人俯视入口仅在摇杆未超过死区时读取鼠标瞄准，松开摇杆后鼠标继续接管；不改第一人称视线、射击预算或伤害。新增ArcadeAimPriorityTests五项覆盖空闲／按住鼠标时的摇杆优先、松开恢复鼠标瞄准与射击、死区回退。
-- 初始夹具漏掉Input System在编辑模式默认跳过Dynamic游戏动作的设置，后续还遇到位域状态写法与Update重载编译错误，全部排除，不计功能红。按本机Input System1.7源码启用只在内存有效的RUN_PLAYER_UPDATES_IN_EDIT_MODE并在TearDown恢复后，得到有效3/5红→5/5绿；[精简红绿结果](Artifacts/SlayerMart-20261017/solo-aim-red-green.json)只统计实际执行5项。
+- 初始夹具漏掉Input System在编辑模式默认跳过Dynamic游戏动作的设置，后续还遇到位域状态写法与Update重载编译错误，全部排除，不计功能红。按本机Input System1.7源码启用只在内存有效的RUN_PLAYER_UPDATES_IN_EDIT_MODE并在TearDown恢复后，得到有效3/5红→5/5绿；[精简红绿结果](../../Backup/Artifacts/SlayerMart-20261017/solo-aim-red-green.json)只统计实际执行5项。
 - 原第一人称类实际13/13通过，但运行前误按10个Test标记声明上限10，漏算3个TestCase，数量守卫拒绝接纳；这是本次范围声明失误，未回退完整套件，未重跑已通过用例。其后单人技能入口按真实上限4执行4/4通过。所有调用includePassingTests=true。
 - 已停止观察器和Play，临时设备成对移除；本段不宣称完整路线通关或实体手柄验收。release.enabled仍0，未打包。
 
@@ -261,11 +261,11 @@
 - 正式Luban提供者声明必须提供商店配置，读取失败或空配置时在保存／发布前拒绝开局；旧测试提供者保留缺省关闭合同，旧兼容开局入口不改规则。未改Config权威源、生成代码或bytes，当前release.enabled仍0；双端商店能力bytes SHA256相同。
 - 客户端SlayerMartReleaseGateTests有效4/7红→7/7绿，原ArcadeRunSystemTests回归14/14；服务端SlayerMartReleaseGateOnline有效2/6红→6/6绿，原SlayerCheckpointOnline回归8/8。均使用明确短类、上限7／14／6／8及includePassingTests=true，无全套回退。客户端夹具缺接口实现与服务端未就绪夹具修正均排除，不计功能红。
 - 新鲜只读评审覆盖本段入口、提供者与测试，未发现确定正确性或兼容性缺陷；检查版本1首次入店前空账本的使用路径，不要求提前创建经济。评审不代替自然进出店、真实双端与实体设备验收。
-- [精简红绿与回归结果](Artifacts/SlayerMart-20261017/release-gate-results.json)。服务端构建仅报告NU1900漏洞索引网络警告，检查正常执行。Unity最终仅Boot场景且无脏状态；未打包，未启用发布开关。
+- [精简红绿与回归结果](../../Backup/Artifacts/SlayerMart-20261017/release-gate-results.json)。服务端构建仅报告NU1900漏洞索引网络警告，检查正常执行。Unity最终仅Boot场景且无脏状态；未打包，未启用发布开关。
 
 ## 第三十三段：规则1新局自然推进的有界观察
 
 - 从正式Boot与新局按钮开始，临时目录CasualNatural-20261017-145008，RunId=0e210b64d6e54956bb046b8d66fea78f。只在独立反序列化Tables内把release.enabled改1，经正式Luban适配注册；未修改Config／bytes或正式门禁，未注入血量、轮次、敌人或终局。
-- 通过Dynamic虚拟Gamepad、正式出口确认和HUD炸弹按钮实际完成海岛4轮，292.76秒进入Babylon，454.91秒推进其第2轮。最后约469秒结束本次观察；[实际轮前节点](Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2-checkpoint.json)为规则1、arena.2.round.2、93700分、2命，[实际Game View](Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2.png)已查看。
+- 通过Dynamic虚拟Gamepad、正式出口确认和HUD炸弹按钮实际完成海岛4轮，292.76秒进入Babylon，454.91秒推进其第2轮。最后约469秒结束本次观察；[实际轮前节点](../../Backup/Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2-checkpoint.json)为规则1、arena.2.round.2、93700分、2命，[实际Game View](../../Backup/Artifacts/SlayerMart-20261017/NaturalRuleOne/actual-babylon-round2.png)已查看。
 - 最初Play域重载期间MCP请求失败，未形成观察；之后确认StartUI就绪才启动。输入驱动曾因射程／障碍／机关导航滞留并失去一命，改善输入策略后继续同一Run，不改战斗状态。输入脚本与CSV均归档，不能把驱动导航问题直接判为产品缺陷。
 - 本段没有抵达第11轮商店，没有完成40轮或最终结果，P0-1/P0-2保持待验；不重复把先前规则0自然路线证据记作本段新成果。临时输入事件／设备已移除，原配置提供者已恢复，Play停止；编辑器核对正确项目且无编译失败，未打包。

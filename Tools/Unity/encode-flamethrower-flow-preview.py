@@ -6,7 +6,7 @@ from PIL import Image
 root = Path(__file__).resolve().parents[2]
 applied = "--applied" in sys.argv
 source = root / ("Client/Temp/FlamethrowerFlowApplied" if applied else "Client/Temp/FlamethrowerFlowPreview")
-target = root / "Docs/Plans/Artifacts/FlamethrowerFlow-20261023"
+target = root / "Backup/Artifacts/FlamethrowerFlow-20261023"
 target.mkdir(parents=True, exist_ok=True)
 files = sorted(source.glob("*.png"))
 if len(files) != 72:

@@ -4,7 +4,7 @@
 
 - [截图](preview.jpg)
 - [交互稿](preview.html)，可直接在浏览器打开本地文件。
-- [最新设计草案](../../../superpowers/specs/2026-10-23-score-shop-design.md)
+- [最新设计草案](../../../Docs/superpowers/specs/2026-10-23-score-shop-design.md)
 
 ## 本次修正
 

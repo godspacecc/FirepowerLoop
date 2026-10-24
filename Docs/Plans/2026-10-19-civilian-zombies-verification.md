@@ -6,11 +6,11 @@
 
 以下为 Unity 隔离场景内正式 Prefab 拍摄，左侧为正式主角；共用地面、距离、相机，不是概念图，也不是实际对局截图。
 
-![主角与三种丧尸同框](Artifacts/CivilianZombies-20261019/lineup.png)
+![主角与三种丧尸同框](../../Backup/Artifacts/CivilianZombies-20261019/lineup.png)
 
-![扑抓姿态](Artifacts/CivilianZombies-20261019/claw.png)
+![扑抓姿态](../../Backup/Artifacts/CivilianZombies-20261019/claw.png)
 
-![躯干附着火焰](Artifacts/CivilianZombies-20261019/burning.png)
+![躯干附着火焰](../../Backup/Artifacts/CivilianZombies-20261019/burning.png)
 
 ## 验证记录
 

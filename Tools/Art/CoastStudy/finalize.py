@@ -7,7 +7,7 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[3]
 STUDY = ROOT / "Client/Assets/Art/CoastStudy"
-OUTPUT = ROOT / "Docs/Plans/Artifacts/CoastArtStudy-20261021"
+OUTPUT = ROOT / "Backup/Artifacts/CoastArtStudy-20261021"
 OUTPUT.mkdir(parents=True, exist_ok=True)
 guid_paths = {}
 for meta in STUDY.rglob("*.meta"):

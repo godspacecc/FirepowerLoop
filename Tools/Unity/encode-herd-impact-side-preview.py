@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 root = Path(__file__).resolve().parents[2]
 source = root / 'Client/Temp/HerdImpactSide-v3-20261023/frames'
-output = root / 'Docs/Plans/Artifacts/HerdImpactSide-v3-20261023'
+output = root / 'Backup/Artifacts/HerdImpactSide-v3-20261023'
 output.mkdir(parents=True, exist_ok=True)
 font = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 24)
 small = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 18)

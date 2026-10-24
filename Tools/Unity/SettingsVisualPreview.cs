@@ -17,7 +17,7 @@ public static class SettingsVisualPreview
     public static string Run()
     {
         if (Application.dataPath != "E:/GitHub/FirepowerLoop/Client/Assets" || EditorApplication.isPlaying) throw new InvalidOperationException("仅本项目编辑模式");
-        var folder = Path.GetFullPath("../Docs/Plans/Artifacts/SettingsVisual-20261018"); Directory.CreateDirectory(folder);
+        var folder = Path.GetFullPath("../Backup/Artifacts/SettingsVisual-20261018"); Directory.CreateDirectory(folder);
         var reports = new System.Collections.Generic.List<string>();
         foreach (var spec in new[] { ("zh-CN",1920,1080), ("en-US",1920,1080), ("zh-CN",2340,1080), ("en-US",1440,1080) })
         {

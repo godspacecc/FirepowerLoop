@@ -5,7 +5,7 @@ from PIL import Image, ImageDraw, ImageFont
 parser = argparse.ArgumentParser(description='拼接Unity隔离实拍；不编辑游戏资源。')
 parser.add_argument('--applied', action='store_true', help='比较已保存的修复前画面与正式修复后的画面')
 applied = parser.parse_args().applied
-folder = Path(__file__).resolve().parents[2] / 'Docs/Plans/Artifacts/ArenaBoundary-v1-20261023'
+folder = Path(__file__).resolve().parents[2] / 'Backup/Artifacts/ArenaBoundary-v1-20261023'
 font = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 24)
 small = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 19)
 names = {i:f'地图 {i}' for i in range(1,23)}

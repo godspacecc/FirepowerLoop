@@ -23,7 +23,7 @@ public static class ArcadeIslandPassageCapture
         var priorPipeline = QualitySettings.renderPipeline;
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         UniversalRenderPipelineAsset pipeline = null; RenderTexture target = null; Camera camera = null;
-        string output = Path.GetFullPath("../Docs/Plans/Artifacts/IslandConfirmed-20261022"); Directory.CreateDirectory(output);
+        string output = Path.GetFullPath("../Backup/Artifacts/IslandConfirmed-20261022"); Directory.CreateDirectory(output);
         try
         {
             SceneManager.SetActiveScene(scene); testType.GetMethod("Setup").Invoke(fixture, null);

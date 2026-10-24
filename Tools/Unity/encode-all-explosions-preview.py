@@ -4,7 +4,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 root=Path(__file__).resolve().parents[2]
 source=root/'Client/Temp/AllExplosions-v1-20261023'
-out=root/'Docs/Plans/Artifacts/AllExplosions-v1-20261023'
+out=root/'Backup/Artifacts/AllExplosions-v1-20261023'
 out.mkdir(parents=True,exist_ok=True)
 font=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',24)
 small=ImageFont.truetype('C:/Windows/Fonts/msyh.ttc',18)

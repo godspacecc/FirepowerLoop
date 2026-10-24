@@ -20,7 +20,7 @@ public static class ConfirmedFarmIntegrationCapture
         if(EditorApplication.isPlaying||EditorApplication.isCompiling)throw new InvalidOperationException("仅编辑态录制");
         var prior=SceneManager.GetActiveScene();var oldLoader=ResourceLoader.Current;var oldRT=RenderTexture.active;
         var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);object fixture=null;Type fixtureType=null;ArcadeCombatViewController view=null;
-        string folder=Path.GetFullPath("../Docs/Plans/Artifacts/FarmIntegrated-20261022");Directory.CreateDirectory(folder);Directory.CreateDirectory(folder+"/frames");
+        string folder=Path.GetFullPath("../Backup/Artifacts/FarmIntegrated-20261022");Directory.CreateDirectory(folder);Directory.CreateDirectory(folder+"/frames");
         try
         {
             SceneManager.SetActiveScene(scene);

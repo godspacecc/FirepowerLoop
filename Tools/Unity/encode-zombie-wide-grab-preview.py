@@ -7,7 +7,7 @@ import shutil
 
 root = Path(__file__).resolve().parents[2]
 source = root / 'Client/Temp/ZombieWideGrab-v3-20261023'
-output = root / 'Docs/Plans/Artifacts/ZombieWideGrab-v3-20261023'
+output = root / 'Backup/Artifacts/ZombieWideGrab-v3-20261023'
 output.mkdir(parents=True, exist_ok=True)
 font = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 23)
 small = ImageFont.truetype('C:/Windows/Fonts/msyh.ttc', 18)
