@@ -1639,8 +1639,9 @@ namespace Game
                 weapon = candidate;
                 return true;
             }
-            weapon = default;
-            return false;
+            // 已退役的旧武器身份与联机权威保持一致，安全回退基础枪。
+            weapon = catalog.Weapons.FirstOrDefault(value => value.Id == catalog.Rule.BaseWeaponId);
+            return !string.IsNullOrWhiteSpace(weapon.Id);
         }
 
         private void UseBomb(ArcadeCombatRuntime runtime)

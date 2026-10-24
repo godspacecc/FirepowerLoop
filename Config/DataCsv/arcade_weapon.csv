@@ -10,8 +10,5 @@
 ,arcade.weapon.raygun,ArcadeScifiPlasmaRifle,ArcadeRaygunBolt,true,0.000,0.010,0.720,46,0.18,22,1.40,1,0,Explosive,1,1.35,0,0
 ,weapon.short-sword,,,false,0,0,0,24,0.35,0,0,1,0,Melee,1,0,2.2,100
 ,weapon.greatsword,,,false,0,0,0,48,0.70,0,0,1,0,Melee,1,0,3.0,140
-,weapon.knife,,,false,0,0,0,15,0.18,0,0,1,0,Melee,1,0,1.5,70
-,weapon.axe,,,false,0,0,0,60,0.85,0,0,1,0,Melee,1,0,2.4,110
-,weapon.pickaxe,,,false,0,0,0,42,0.55,0,0,1,0,Melee,1,0,2.6,60
 ,weapon.bow,,GrayboxArrow,false,0,0,0,10,0.75,14,1,1,0,Direct,1,0,0,0
 ,weapon.zombie-claw,,,false,0,0,0,10,1,0,0,1,0,Melee,1,0,1.35,90

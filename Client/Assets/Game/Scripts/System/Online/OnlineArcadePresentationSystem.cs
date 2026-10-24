@@ -391,7 +391,8 @@ namespace Game
             var weaponId = player.TemporaryWeaponSeconds > 0f ? player.TemporaryWeaponId : savedWeaponId;
             if (string.IsNullOrWhiteSpace(weaponId)) weaponId = catalog.Rule.BaseWeaponId;
             var weapon = catalog.Weapons.FirstOrDefault(x => x.Id == weaponId);
-            if (weapon.Behavior == global::ArcadeWeaponBehavior.Melee)
+            // 退役配置也会出现在旧快照中，不能因此跳过持枪与开火序列同步。
+            if (string.IsNullOrWhiteSpace(weapon.Id) || weapon.Behavior == global::ArcadeWeaponBehavior.Melee)
                 weapon = catalog.Weapons.FirstOrDefault(x => x.Id == catalog.Rule.BaseWeaponId);
             if (string.IsNullOrWhiteSpace(weapon.Id)) return;
             if (player.PlayerId != selfId)

@@ -13,7 +13,8 @@ internal static class SkullPowerOnlineChecks
             ("SameWeaponRefreshAndDifferentWeaponPreserve",SameWeaponRefreshAndDifferentWeaponPreserve),
             ("ExpiryAndZeroDeltaRespectClocks",ExpiryAndZeroDeltaRespectClocks),("SnapshotAndCodecKeepShotTier",SnapshotAndCodecKeepShotTier),
             ("MasteryAndSkullRoundInSameOrder",MasteryAndSkullRoundInSameOrder),("RoundCheckpointKeepsTierAndTime",RoundCheckpointKeepsTierAndTime),
-            ("SkullExpiryLeavesLongerWeaponActive",SkullExpiryLeavesLongerWeaponActive)};
+            ("SkullExpiryLeavesLongerWeaponActive",SkullExpiryLeavesLongerWeaponActive),
+            ("RetiredMeleeFallsBackToBasicRifle",RetiredMeleeFallsBackToBasicRifle)};
         if(maximum<checks.Length)throw new ArgumentException("SkullPowerOnline maximum is too small");int failed=0;
         foreach(var check in checks){try{check.Item2();Console.WriteLine("PASS SkullPowerOnline."+check.Item1);}catch(Exception e){failed++;Console.WriteLine("FAIL SkullPowerOnline."+check.Item1+": "+(e.InnerException??e));}}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -28,6 +29,20 @@ internal static class SkullPowerOnlineChecks
         return actor;
     }
     private static ArcadeDropConfig Drop(string suffix)=>ServerConfig.Instance.Tables.TbArcadeDrop.Get("arcade.drop."+suffix);
+    /// <summary>退役近战不再占用街机配置；旧永久和临时身份仍经真实开火入口回退基础枪。</summary>
+    private static void RetiredMeleeFallsBackToBasicRifle()
+    {
+        foreach(var id in new[]{"weapon.knife","weapon.axe","weapon.pickaxe"})
+        {
+            Require(ServerConfig.Instance.Tables.TbArcadeWeapon.GetOrDefault(id)==null,"Retired config remains: "+id);
+            var actor=Create();actor.Record.Players[0].WeaponId=id;
+            var weapon=ServerConfig.Instance.ArcadeRule.BaseWeaponId_Ref;
+            Require(Shot(actor).SourceWeaponId==weapon.Id,"Saved retired weapon did not fall back: "+id);
+            var player=actor.Battle.Players[1];player.TemporaryWeaponId=id;player.TemporaryWeaponSeconds=5;
+            Require(Shot(actor).SourceWeaponId==weapon.Id&&Math.Abs(player.FireCooldownSeconds-weapon.FireIntervalSeconds)<.0001f,
+                "Temporary retired weapon did not fall back: "+id);
+        }
+    }
     private static void Apply(OnlineArcadeRunActor actor,string id)=>Require((bool)Call("ApplyDrop",actor,actor.Battle.Players[1],Drop(id)),"Drop rejected: "+id);
     private static OnlineArcadeProjectileRuntime Shot(OnlineArcadeRunActor actor)
     {

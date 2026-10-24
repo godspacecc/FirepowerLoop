@@ -42,6 +42,14 @@ namespace Game.Tests
             }
             finally{Object.DestroyImmediate(player);}
         }
+        [Test] public void UnusedMeleeConfigsAreRemovedWhileEnemyWeaponsRemainValid()
+        {
+            foreach(var id in new[]{"weapon.knife","weapon.axe","weapon.pickaxe"})
+                Assert.That(catalog.Weapons.Any(w=>w.Id==id),Is.False,id);
+            var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
+            foreach(var enemy in tables.TbEnemy.DataList)
+                Assert.That(catalog.Weapons.Any(w=>w.Id==enemy.WeaponId),Is.True,enemy.Id);
+        }
         [Test] public void OpenedAirdropIsPlayerSizedAndCrateIsSmaller()
         {
             WithPickup("ArcadeFlamethrower",(go,pickup)=>

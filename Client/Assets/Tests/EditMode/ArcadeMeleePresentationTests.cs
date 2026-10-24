@@ -143,12 +143,17 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ProjectileWeaponStillTriggersSharedFireAnimation()
+        public void ProjectileWeaponStillPlaysUpperBodyFireAnimation()
         {
             controller.SetPlayerWeapon(Weapon("arcade.weapon.basic"));
             view.Animator.ResetTrigger("Attack");
             controller.SetPlayerFireSequence(1);
-            Assert.That(view.Animator.GetBool("Attack"), Is.True);
+            // AK正式使用上半身开火层，不再通过全身Attack触发器播放。
+            var layer = view.Animator.GetLayerIndex("Shared Gun Upper Body");
+            Assert.That(layer, Is.GreaterThanOrEqualTo(0));
+            view.Animator.Update(0f);
+            Assert.That(view.Animator.GetLayerWeight(layer), Is.GreaterThan(0f));
+            Assert.That(view.Animator.GetCurrentAnimatorStateInfo(layer).IsName("Fire"), Is.True);
         }
 
         [Test]
@@ -180,6 +185,17 @@ namespace Game.Tests
         private ArcadeWeaponDefinition Weapon(string id)
         {
             foreach (var weapon in catalog.Weapons) if (weapon.Id == id) return weapon;
+            // 共用模型动画仍保留；退役街机行不再作为这些表现测试的数值来源。
+            var itemId = id switch { "weapon.knife" => 16, "weapon.axe" => 17, "weapon.pickaxe" => 18, _ => 0 };
+            if (itemId != 0)
+            {
+                var provider = new LubanRuntimeConfigProvider(() => new Tables(file => new ByteBuf(File.ReadAllBytes(
+                    Path.Combine(Application.dataPath, "Game", "Config", file + ".bytes")))));
+                Assert.That(provider.TryGetWeapon(itemId, out var source, out var error), Is.True, error);
+                return new ArcadeWeaponDefinition(id, string.Empty, string.Empty, false, Vector3.zero,
+                    source.AttackDamage, source.AttackCooldownSeconds, 0, 0, 1, 0,
+                    global::ArcadeWeaponBehavior.Melee, 1, 0, source.AttackRange, source.MeleeArcDegrees);
+            }
             throw new InvalidOperationException(id);
         }
 
