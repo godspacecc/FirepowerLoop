@@ -43,7 +43,12 @@ namespace Game
         /// <summary>每个 View 只绑定一次点击反馈；重复打开不会累计回调。</summary>
         private void Bind(Button button, UnityEngine.Events.UnityAction action)
         {
-            button.onClick.AddListener(() => this.GetSystem<AudioSystem>()?.PlayUiSound("FoundationClick"));
+            button.onClick.AddListener(() =>
+            {
+                var audio = this.GetSystem<AudioSystem>();
+                // 只降低暂停菜单的这次提示声，保留用户音量设置和其他界面音量。
+                if (audio != null) audio.SetSoundGain(audio.PlayUiSound("FoundationClick"), .25f);
+            });
             button.onClick.AddListener(action);
         }
 

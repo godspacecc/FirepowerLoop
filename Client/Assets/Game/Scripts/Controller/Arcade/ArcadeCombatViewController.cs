@@ -199,6 +199,8 @@ namespace Game
         private int lastPlayerFireSequence;
         /// <summary>当前武器 ID 与上次开火音效时刻仅用于本场战斗的声音选择、限频。</summary>
         private string currentWeaponId;
+        /// <summary>当前正式武器的基础开火间隔，仅供持续声音跨发衔接，不参与战斗计时。</summary>
+        private float currentWeaponFireIntervalSeconds;
         /// <summary>由完整武器定义确定反馈类型，避免冷兵器被枪械反馈入口忽略。</summary>
         private bool currentWeaponIsMelee;
         private float lastFireSoundTime = float.NegativeInfinity;
@@ -519,6 +521,7 @@ namespace Game
         public void SetPlayerWeapon(ArcadeWeaponDefinition weapon)
         {
             RememberWeaponForAudio(weapon.Id);
+            currentWeaponFireIntervalSeconds = weapon.FireIntervalSeconds;
             currentWeaponIsMelee = weapon.Behavior == global::ArcadeWeaponBehavior.Melee;
             playerMotor?.SetArcadeWeaponPresentation(weapon);
         }
@@ -528,6 +531,7 @@ namespace Game
             if (string.Equals(currentWeaponId, weaponId, StringComparison.Ordinal)) return;
             StopFlamethrowerAudio();
             currentWeaponId = weaponId;
+            currentWeaponFireIntervalSeconds = 0f;
             lastFireSoundTime = float.NegativeInfinity;
         }
 

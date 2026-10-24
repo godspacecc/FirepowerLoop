@@ -1,0 +1,58 @@
+{
+  "ArcadeFireFlameLoop-before.wav": {
+    "seconds": 4.0,
+    "channels": 1,
+    "peak": 0.5999755859375,
+    "rms": 0.050079657940921965,
+    "sha256": "3d1e78f7ed54054350c8d0b7e8177984e48a836fd5082efa968e6db35e474b18"
+  },
+  "ArcadeFireFlameStart-before.wav": {
+    "seconds": 0.22,
+    "channels": 1,
+    "peak": 0.5999755859375,
+    "rms": 0.10404515182767982,
+    "sha256": "f5f61d42a506c90b3a4598ac6be2edde3a2cb5e87dd1bbc68e65127b42fec358"
+  },
+  "candidate/ArcadeFireFlameLoop.wav": {
+    "seconds": 8.1555625,
+    "channels": 1,
+    "peak": 0.5999755859375,
+    "rms": 0.04945305978442744,
+    "sha256": "43cb8f25ffd43a3ee076753ab24b0f37057d1cbe66ccd31a4688c2aea198d2e5"
+  },
+  "candidate/ArcadeFireFlameStart.wav": {
+    "seconds": 0.22,
+    "channels": 1,
+    "peak": 0.40447998046875,
+    "rms": 0.0503584054602976,
+    "sha256": "1fbd1f691a914e98e779a6f2796a08472cb1671212d61cad08f1cc81987ace12"
+  },
+  "flame-before-after.wav": {
+    "seconds": 6.8,
+    "channels": 1,
+    "peak": 0.27508544921875,
+    "rms": 0.029709072807207665,
+    "sha256": "30272953de32bac6456de0eaa94a81e94d3ec07869aea16de8e4895a12cb2fa3"
+  },
+  "flame-new.wav": {
+    "seconds": 5.0,
+    "channels": 1,
+    "peak": 0.27508544921875,
+    "rms": 0.032043459975348444,
+    "sha256": "c93c0b6d097b4bb21b8ec36501b657b6bf3b9189e0c229c1dc6bc51d4f6e5edf"
+  },
+  "pause-buttons-before-after.wav": {
+    "seconds": 3.081,
+    "channels": 1,
+    "peak": 0.988525390625,
+    "rms": 0.06289409359241038,
+    "sha256": "cd082c8effa5a3fd5d76e1a4ba4b44e6de3e22160eb6efeb9fe490084d47fd46"
+  },
+  "pause-buttons-new.wav": {
+    "seconds": 1.0405,
+    "channels": 1,
+    "peak": 0.24713134765625,
+    "rms": 0.026248939868502415,
+    "sha256": "ad2d3c6afb7146fd6378c785907fb0819d26efe7a7bbf148d66b7f0b4a612453"
+  }
+}

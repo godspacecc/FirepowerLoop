@@ -227,7 +227,11 @@ namespace Game
                 return;
             }
             if (this.GetSystem<HotKeySystem>().TryExecuteAction(HotKeyActionIds.TogglePause))
-                this.GetSystem<AudioSystem>().PlayUiSound("ArcadeUiClick");
+            {
+                var audio = this.GetSystem<AudioSystem>();
+                // 暂停入口沿用原提示音，只降低本次播放的增益。
+                audio.SetSoundGain(audio.PlayUiSound("ArcadeUiClick"), .25f);
+            }
         }
 
         private void OpenSafeCheckpoint()

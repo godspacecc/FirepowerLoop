@@ -11,8 +11,8 @@ namespace Game
         private AudioSystem flameAudioOwner;
         /// <summary>由表现帧推进的停火余量；不跨局保存。</summary>
         private float flameSoundRemaining;
-        /// <summary>现有喷火器每秒十发，给序列更新留下六十毫秒余量。</summary>
-        private const float FlameSoundReleaseSeconds = .16f;
+        /// <summary>随正式武器间隔加六十毫秒余量，普通与强化射速均不会在两发之间反复点火。</summary>
+        private float FlameSoundReleaseSeconds => Mathf.Max(0f, currentWeaponFireIntervalSeconds) + .06f;
 
         /// <summary>权威开火序列续期循环；异步加载失败或音源被抢占后允许下次攻击重新申请。</summary>
         private void PlayFlamethrowerSound(AudioSystem audio, Vector3 position)

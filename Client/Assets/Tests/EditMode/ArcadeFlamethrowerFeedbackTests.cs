@@ -20,11 +20,15 @@ namespace Game.Tests
         private GameObject audioRoot;
         private ArcadeCombatViewController view;
         private AudioSystem audio;
+        private ArcadeWeaponDefinition flameWeapon;
         [SetUp] public void SetUp()
         {
             ResetArchitecture(); loader = new ControlledAudioLoader(); ResourceLoader.SetLoaderForTests(loader);
             audioRoot = CreateAudioRootBindings(); audio = Game.Interface.GetSystem<AudioSystem>();
-            view = new ArcadeCombatViewController(); view.SetPlayerWeapon("arcade.weapon.flamethrower");
+            var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new Luban.ByteBuf(System.IO.File.ReadAllBytes("Assets/Game/Config/"+n+".bytes"))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
+            flameWeapon=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.flamethrower");
+            view = new ArcadeCombatViewController(); view.SetPlayerWeapon(flameWeapon);
         }
         [TearDown] public void TearDown()
         {
@@ -38,18 +42,30 @@ namespace Game.Tests
         }
         [Test] public void HeldFireKeepsOneLoopAndOneIgnition()
         {
-            for(int i=0;i<8;i++) { Pulse(new Vector3(i,0,0)); Call("TickFlamethrowerAudio", .1f); }
+            for(int i=0;i<8;i++) { Pulse(new Vector3(i,0,0)); Call("TickFlamethrowerAudio", flameWeapon.FireIntervalSeconds); }
             Assert.That(loader.Requests.Count(r=>r.Address=="Audio/Sound/ArcadeFireFlameLoop"), Is.EqualTo(1));
             Assert.That(loader.Requests.Count(r=>r.Address=="Audio/Sound/ArcadeFireFlameStart"), Is.EqualTo(1));
             loader.Complete("Audio/Sound/ArcadeFireFlameLoop");
             var loop=audioRoot.GetComponentsInChildren<AudioSource>().Single(x=>x.clip!=null);
             Assert.That(loop.loop, Is.True); Assert.That(loop.transform.position, Is.EqualTo(new Vector3(7,0,0)));
         }
+        [Test] public void QuietUiGainSurvivesPendingLoadAndPauseWithoutChangingOtherClicks()
+        {
+            Game.Interface.SendEvent(new AppStateChangedEvent(AppState.Playing,AppState.Paused));
+            var quiet=audio.PlayUiSound("ArcadeUiClick");audio.SetSoundGain(quiet,.25f);
+            loader.Complete("Audio/Sound/ArcadeUiClick");
+            var quietSource=audioRoot.GetComponentsInChildren<AudioSource>().Single(x=>x.clip!=null);
+            Assert.That(quietSource.volume,Is.EqualTo(.25f).Within(.0001f));
+            Assert.That(quietSource.spatialBlend,Is.Zero);
+            audio.PlayUiSound("FoundationClick");loader.Complete("Audio/Sound/FoundationClick");
+            var normalSource=audioRoot.GetComponentsInChildren<AudioSource>().Single(x=>x.clip!=null&&x!=quietSource);
+            Assert.That(normalSource.volume,Is.EqualTo(1f).Within(.0001f));
+        }
         [TestCase("timeout")] [TestCase("weapon")] [TestCase("end")] [TestCase("hidden")]
         public void StopsBothHandlesAndReleasesLateLoads(string reason)
         {
             Pulse(Vector3.zero);
-            if(reason=="timeout") Call("TickFlamethrowerAudio", .2f);
+            if(reason=="timeout") Call("TickFlamethrowerAudio", flameWeapon.FireIntervalSeconds+.1f);
             else if(reason=="weapon") view.SetPlayerWeapon("arcade.weapon.basic");
             else if(reason=="hidden") view.SetPlayer(Vector2.zero,Vector2.up,false,false);
             else view.End();
@@ -62,7 +78,7 @@ namespace Game.Tests
         {
             Pulse(Vector3.zero); for(int i=0;i<20;i++) Call("TickFlamethrowerAudio", 0f);
             Pulse(Vector3.one); Assert.That(loader.Requests.Count, Is.EqualTo(2));
-            Call("TickFlamethrowerAudio", .2f); Pulse(Vector3.one); Assert.That(loader.Requests.Count, Is.EqualTo(4));
+            Call("TickFlamethrowerAudio", flameWeapon.FireIntervalSeconds+.1f); Pulse(Vector3.one); Assert.That(loader.Requests.Count, Is.EqualTo(4));
         }
         [Test] public void ClipsAreImportedAndCollectedWithoutBackupDependencies()
         {
@@ -94,7 +110,7 @@ namespace Game.Tests
                 Assert.That(loader.Requests.Count,Is.EqualTo(2),"同一权威序列只点火一次");
                 loader.Complete("Audio/Sound/ArcadeFireFlameStart"); loader.Complete("Audio/Sound/ArcadeFireFlameLoop");
                 Assert.That(audioRoot.GetComponentsInChildren<AudioSource>().Count(x=>x.clip!=null),Is.EqualTo(2));
-                view.TickPlayerFeedback(.2f); Assert.That(audio.ActiveSoundCount,Is.Zero);
+                view.TickPlayerFeedback(flameWeapon.FireIntervalSeconds+.1f); Assert.That(audio.ActiveSoundCount,Is.Zero);
                 Assert.That(audioRoot.GetComponentsInChildren<AudioSource>().All(x=>x.clip==null),Is.True);
             }
             finally { view.End(); if(root!=null) Object.DestroyImmediate(root); }
