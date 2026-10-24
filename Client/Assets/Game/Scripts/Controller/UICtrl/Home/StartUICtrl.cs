@@ -265,6 +265,12 @@ namespace Game
 
         private void OnResourceUpdateChanged(ResourceUpdateChangedEvent evt)
         {
+            if (evt.Snapshot.Status == ResourceUpdateStatus.NotChecked)
+            {
+                // 设置切服会重置检查上下文；旧服晚到的公告或安装包结果不得在首页弹出。
+                updatePresentationGeneration++;
+                manualChecking = false;
+            }
             RefreshUpdateText();
         }
 

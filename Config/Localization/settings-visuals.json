@@ -16,10 +16,10 @@
   "ui.settings.visual.sound_volume": { "zh-CN": "音效音量", "en-US": "Sound effects" },
   "ui.settings.network.game_hint": { "zh-CN": "下次联机时使用此地址。", "en-US": "Used the next time you connect." },
   "ui.settings.network.game_load_failed": { "zh-CN": "读取联机服务器地址失败。", "en-US": "Could not load the game server address." },
-  "ui.settings.network.resource_hint": { "zh-CN": "下次启动时用于资源更新。", "en-US": "Used for updates on the next launch." },
+  "ui.settings.network.resource_hint": { "zh-CN": "应用后，检查更新立即使用此地址。", "en-US": "Update checks use this address as soon as you apply it." },
   "ui.settings.network.resource_load_failed": { "zh-CN": "读取资源服务器地址失败。", "en-US": "Could not load the resource server address." },
   "ui.settings.network.game_saved": { "zh-CN": "已保存，下次联机生效。", "en-US": "Saved. Applies the next time you connect." },
-  "ui.settings.network.resource_saved": { "zh-CN": "已保存，下次启动时生效。", "en-US": "Saved. Applies on the next launch." },
+  "ui.settings.network.resource_saved": { "zh-CN": "已应用，可立即检查更新。", "en-US": "Applied. You can check for updates now." },
   "ui.settings.network.game_invalid": { "zh-CN": "地址格式无效，请输入 IP 或域名:端口。", "en-US": "Enter an IP address or hostname with a port." },
   "ui.settings.network.resource_invalid": { "zh-CN": "地址格式无效，请输入完整 HTTP/HTTPS 地址。", "en-US": "Enter a complete HTTP or HTTPS address." },
   "ui.settings.network.reset_failed": { "zh-CN": "恢复默认失败。", "en-US": "Could not restore defaults." }

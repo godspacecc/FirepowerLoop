@@ -41,9 +41,7 @@ namespace Game
         protected override void OnHide()
         {
             LifeCycle.UnregisterUpdate(RefreshPendingIfChanged);
-            loadCancellation?.Cancel();
-            loadCancellation?.Dispose();
-            loadCancellation = null;
+            CancelLoad();
         }
 
         private async UniTaskVoid LoadAsync(CancellationToken token)
@@ -90,6 +88,9 @@ namespace Game
         {
             if (this.GetUtility<IResourceServerConfigProvider>().TrySave(UI.ResourceServerInput.text, out var server, out _))
             {
+                // 应用后旧页面读取不得把输入框和反馈恢复成上一次地址。
+                CancelLoad();
+                this.GetSystem<ResourceUpdateSystem>().ApplyResourceServer(server);
                 UI.ResourceServerInput.text = server;
                 resourceFeedbackKey = "resource_saved";
                 RefreshFeedback();
@@ -102,6 +103,7 @@ namespace Game
         private void ResetResourceServer()
         {
             if (!this.GetUtility<IResourceServerConfigProvider>().TryReset(out _)) { resourceFeedbackKey = "reset_failed"; RefreshFeedback(); return; }
+            this.GetSystem<ResourceUpdateSystem>().ReloadResourceServerAsync().Forget();
             RestartLoad();
         }
 
@@ -185,10 +187,17 @@ namespace Game
         /// <summary>取消旧读取并启动新一轮，防止恢复默认后的旧结果晚到覆盖。</summary>
         private void RestartLoad()
         {
-            loadCancellation?.Cancel();
-            loadCancellation?.Dispose();
+            CancelLoad();
             loadCancellation = new CancellationTokenSource();
             LoadAsync(loadCancellation.Token).Forget();
+        }
+
+        /// <summary>仅取消页面读取，不取消更新系统已接收的服务器选择。</summary>
+        private void CancelLoad()
+        {
+            loadCancellation?.Cancel();
+            loadCancellation?.Dispose();
+            loadCancellation = null;
         }
     }
 }

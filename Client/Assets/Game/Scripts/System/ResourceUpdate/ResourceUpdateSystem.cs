@@ -21,6 +21,10 @@ namespace Game
         private Task<ResourceUpdateCheckWithNoticeResult> currentManualCheck;
         private CancellationTokenSource cancellation;
         private int generation;
+        /// <summary>当前已加载资源包初始化时绑定的服务器；检查地址变化不重建或切换运行中的资源包。</summary>
+        private string startupResourceServer = string.Empty;
+        /// <summary>服务器选择顺序，独立于检查代次；同地址再次应用也会废弃更早的默认地址读取。</summary>
+        private int serverSelectionRevision;
 
         public ResourceUpdateSnapshot Snapshot => this.GetModel<ResourceUpdateModel>().Snapshot.Value;
 
@@ -37,7 +41,45 @@ namespace Game
             cancellation = null;
         }
 
+        /// <summary>记录资源包的真实启动地址和版本，并建立本次检查上下文。</summary>
         public void InitializeStartupInfo(BootResourceStartupInfo info)
+        {
+            serverSelectionRevision++;
+            startupResourceServer = info.ResourceServer.TrimEnd('/');
+            ResetCheckContext(info);
+        }
+
+        /// <summary>设置保存成功后立即更换检查地址；保留已加载来源与版本，丢弃旧服候选及在途结果。</summary>
+        public void ApplyResourceServer(string resourceServer)
+        {
+            if (!ResourceServerPreference.TryNormalize(resourceServer, out string server)) return;
+            serverSelectionRevision++;
+            if (string.Equals(server, Snapshot.ResourceServer.TrimEnd('/'), StringComparison.Ordinal)) return;
+
+            ResetCheckContext(new BootResourceStartupInfo(
+                Snapshot.ResourceSource, server, Snapshot.CurrentVersion, string.Empty));
+        }
+
+        /// <summary>恢复默认保存成功后重读检查地址；不依赖设置页面可见性，后续选择会废弃本次读取。</summary>
+        public async UniTask ReloadResourceServerAsync()
+        {
+            int selectionRevision = ++serverSelectionRevision;
+            var token = cancellation.Token;
+            try
+            {
+                var result = await this.GetUtility<IResourceServerConfigProvider>().LoadAsync(token);
+                if (!token.IsCancellationRequested && selectionRevision == serverSelectionRevision && result.Success)
+                    ApplyResourceServer(result.ResourceServer);
+            }
+            catch (OperationCanceledException) { }
+            catch (Exception exception)
+            {
+                Log.Warning($"[ResourceUpdateSystem] 读取资源服务器地址失败：{exception.GetType().Name}");
+            }
+        }
+
+        /// <summary>只重置更新检查事务；不发布或篡改 Boot 的真实资源启动记录。</summary>
+        private void ResetCheckContext(BootResourceStartupInfo info)
         {
             // 启动上下文变化后旧请求失效，候选和已知结果不得串到另一个资源服务器。
             generation++;
@@ -162,9 +204,11 @@ namespace Game
         private async Task<ResourceUpdateSnapshot> CheckInternal(bool userInitiated, int requestGeneration)
         {
             var token = cancellation.Token;
-            if (Snapshot.ResourceSource == BootResourceSource.BuiltinFallback)
+            if (Snapshot.ResourceSource == BootResourceSource.BuiltinFallback ||
+                !string.Equals(Snapshot.ResourceServer.TrimEnd('/'), startupResourceServer, StringComparison.Ordinal))
             {
-                return await CheckBuiltinFallback(requestGeneration);
+                // 已初始化的 YooAsset 包仍指向原服务器；新服仅探测版本，真正切换仍交给重启流程。
+                return await CheckRemoteVersion(requestGeneration);
             }
 
             var checker = this.GetUtility<IResourceUpdateRuntimeChecker>();
@@ -238,8 +282,8 @@ namespace Game
             }
         }
 
-        /// <summary>内置兜底同样只探测服务器版本，不激活清单或下载资源。</summary>
-        private async Task<ResourceUpdateSnapshot> CheckBuiltinFallback(int requestGeneration)
+        /// <summary>内置兜底或更换地址后只探测选定服务器版本，不激活清单或下载资源。</summary>
+        private async Task<ResourceUpdateSnapshot> CheckRemoteVersion(int requestGeneration)
         {
             var token = cancellation.Token;
             Publish(new ResourceUpdateSnapshot(
@@ -257,7 +301,7 @@ namespace Game
             var probe = this.GetUtility<IRemoteResourceVersionProbe>();
             if (probe == null)
             {
-                var failedProbe = BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, "资源服务器版本探测器不可用", false);
+                var failedProbe = RemoteVersionSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, "资源服务器版本探测器不可用", false);
                 Publish(failedProbe);
                 return failedProbe;
             }
@@ -267,21 +311,21 @@ namespace Game
                 var result = await probe.ProbeAsync(Snapshot.ResourceServer, DefaultTimeoutSeconds);
                 if (token.IsCancellationRequested || requestGeneration != generation)
                 {
-                    return BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, Snapshot.TargetVersion, "资源服务器版本探测已取消或请求已过期", false);
+                    return RemoteVersionSnapshot(ResourceUpdateStatus.CheckFailed, Snapshot.TargetVersion, "资源服务器版本探测已取消或请求已过期", false);
                 }
 
                 ResourceUpdateSnapshot snapshot;
                 if (!result.Success)
                 {
-                    snapshot = BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, result.Error, false);
+                    snapshot = RemoteVersionSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, result.Error, false);
                 }
                 else if (string.Equals(result.Version, Snapshot.CurrentVersion, StringComparison.Ordinal))
                 {
-                    snapshot = BuiltinSnapshot(ResourceUpdateStatus.NoUpdate, result.Version, string.Empty, false);
+                    snapshot = RemoteVersionSnapshot(ResourceUpdateStatus.NoUpdate, result.Version, string.Empty, false);
                 }
                 else
                 {
-                    snapshot = BuiltinSnapshot(ResourceUpdateStatus.UpdateAvailable, result.Version, string.Empty, true);
+                    snapshot = RemoteVersionSnapshot(ResourceUpdateStatus.UpdateAvailable, result.Version, string.Empty, true);
                 }
 
                 Publish(snapshot);
@@ -290,13 +334,14 @@ namespace Game
             catch (Exception e)
             {
                 if (token.IsCancellationRequested || requestGeneration != generation) return Snapshot;
-                var failed = BuiltinSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, $"资源服务器版本探测异常：{e.Message}", false);
+                var failed = RemoteVersionSnapshot(ResourceUpdateStatus.CheckFailed, string.Empty, $"资源服务器版本探测异常：{e.Message}", false);
                 Publish(failed);
                 return failed;
             }
         }
 
-        private ResourceUpdateSnapshot BuiltinSnapshot(
+        /// <summary>保留当前运行版本及真实启动来源，未知下载量不能显示成零下载。</summary>
+        private ResourceUpdateSnapshot RemoteVersionSnapshot(
             ResourceUpdateStatus status,
             string targetVersion,
             string error,
