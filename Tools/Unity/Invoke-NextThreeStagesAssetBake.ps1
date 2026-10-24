@@ -1,4 +1,4 @@
-param([ValidateSet('BakeAll', 'Validate', 'CaptureApplied')][string]$Action = 'Validate')
+param([ValidateSet('BakeAll', 'BakeMarketplaceRoads', 'Validate', 'CaptureApplied')][string]$Action = 'Validate')
 $ErrorActionPreference = 'Stop'
 $taskRoot = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '../..'))
 Push-Location $taskRoot
@@ -7,9 +7,11 @@ try {
     $previewSource = Get-Content -LiteralPath 'Tools/Unity/NextThreeStagesArtPreview.cs' -Raw
     $bakeSource = Get-Content -LiteralPath 'Tools/Unity/NextThreeStagesAssetBake.cs' -Raw
     $bakeSource = [regex]::Replace($bakeSource, '(?m)^using [^\r\n]+\r?\n', '')
+    $roadSource = Get-Content -LiteralPath 'Tools/Unity/MarketplaceRoadConnectionPreview.cs' -Raw
+    $roadSource = [regex]::Replace($roadSource, '(?m)^using [^\r\n]+\r?\n', '')
     $argumentsPath = Join-Path $taskRoot 'Client/Temp/next-three-assets-command.json'
     $outputPath = Join-Path $taskRoot ('Client/Temp/next-three-assets-' + $Action + '-result.json')
-    @{ csharpCode = $previewSource + "`n" + $bakeSource; className = 'NextThreeStagesAssetBake'; methodName = $Action; isMethodBody = $false } |
+    @{ csharpCode = "using System.Reflection;`nusing System.Collections;`n" + $previewSource + "`n" + $bakeSource + "`n" + $roadSource; className = 'NextThreeStagesAssetBake'; methodName = $Action; isMethodBody = $false } |
         ConvertTo-Json -Depth 10 | Set-Content -LiteralPath $argumentsPath
     & 'Tools/PickupFeedbackChecks/Invoke-UnityMcp.ps1' -Tool script-execute -ArgumentsFile $argumentsPath -OutputFile $outputPath
 }

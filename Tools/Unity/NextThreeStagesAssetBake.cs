@@ -48,7 +48,16 @@ public static class NextThreeStagesAssetBake
     {
         var saved = AssetDatabase.LoadAssetAtPath<T>(path);
         if (saved == null) { AssetDatabase.CreateAsset(source, path); return source; }
-        EditorUtility.CopySerialized(source, saved); EditorUtility.SetDirty(saved); AssetDatabase.SaveAssetIfDirty(saved);
+        // 保留GUID覆盖时须刷新原生渲染缓存，否则CPU数据已变而同次实拍仍显示旧网格/材质。
+        if (saved is Mesh targetMesh) targetMesh.Clear();
+        if (saved is Material targetMaterial && source is Material sourceMaterial)
+        {
+            targetMaterial.shader = sourceMaterial.shader;
+            targetMaterial.CopyPropertiesFromMaterial(sourceMaterial); targetMaterial.name = sourceMaterial.name;
+        }
+        else EditorUtility.CopySerialized(source, saved);
+        if (saved is Mesh uploadedMesh) uploadedMesh.UploadMeshData(false);
+        EditorUtility.SetDirty(saved); AssetDatabase.SaveAssetIfDirty(saved);
         return saved;
     }
     static void Cleanup()
@@ -131,11 +140,30 @@ public static class NextThreeStagesAssetBake
                 var root = new GameObject("Arcade" + Names[stage] + "Visual").transform; Set("root", root);
                 Call("Box", "BackdropGround", 0f, -.4f, 0f, 108f, .5f, 104f, Get<Material>("ground"));
                 Call(stage == 0 ? "GraveArt" : stage == 1 ? "TempleArt" : "MarketArt");
+                if (stage == 2) MarketplaceRoadConnectionPreview.ApplyConfirmedRoads(root);
                 Combine(root, folder, Names[stage]);
                 PrefabUtility.SaveAsPrefabAsset(root.gameObject, Prefabs + root.name + ".prefab");
                 Object.DestroyImmediate(root.gameObject); Cleanup();
             }
             BakeShadowTemplates();
+            return Validate();
+        }
+        finally { SceneManager.SetActiveScene(prior); EditorSceneManager.CloseScene(scene, true); Cleanup(); }
+    }
+
+    /// <summary>仅接入已采用的集市道路；不重新生成墓园、神庙或暗影模板。</summary>
+    public static string BakeMarketplaceRoads()
+    {
+        Guard(); var prior = SceneManager.GetActiveScene();
+        var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
+        try
+        {
+            SceneManager.SetActiveScene(scene); Call("Palette", 2);
+            var root = new GameObject("ArcadeMarketplaceVisual").transform; Set("root", root);
+            Call("Box", "BackdropGround", 0f, -.4f, 0f, 108f, .5f, 104f, Get<Material>("ground"));
+            Call("MarketArt"); MarketplaceRoadConnectionPreview.ApplyConfirmedRoads(root);
+            Combine(root, Art + "/Marketplace", "Marketplace");
+            PrefabUtility.SaveAsPrefabAsset(root.gameObject, Prefabs + root.name + ".prefab");
             return Validate();
         }
         finally { SceneManager.SetActiveScene(prior); EditorSceneManager.CloseScene(scene, true); Cleanup(); }

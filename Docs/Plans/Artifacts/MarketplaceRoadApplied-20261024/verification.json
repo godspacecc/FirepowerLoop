@@ -1,0 +1,42 @@
+{
+  "after.png": {
+    "differentPixelsRatio": 3.636363636363636e-06,
+    "maximumChannelDifference": 1
+  },
+  "connection.png": {
+    "differentPixelsRatio": 9.722222222222222e-05,
+    "maximumChannelDifference": 52
+  },
+  "changedFormalFiles": [
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceAgedIron.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceBrickShadow.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceCoolPlaster.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceDark.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceEarth.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceFadedRedCloth.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh1.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh10.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh11.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh2.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh5.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh6.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh7.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh8.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceMesh9.asset",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceOliveLeaves.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplacePaleStone.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceStone.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceTerracottaRoof.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceTurnedEarth.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceWarmPlaster.mat",
+    "Client/Assets/Game/Art/Arcade/NextThree/Marketplace/MarketplaceWood.mat",
+    "Client/Assets/Game/Prefabs/SceneObjects/ArcadeMarketplaceVisual.prefab"
+  ],
+  "fourRounds": [
+    "arena.25.round.1",
+    "arena.25.round.2",
+    "arena.25.round.3",
+    "arena.25.round.4"
+  ],
+  "unchangedMetaAndOtherStages": true
+}
