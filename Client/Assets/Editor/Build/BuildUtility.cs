@@ -37,21 +37,21 @@ namespace Game.Editor
                 BuildLatestCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/PC/使用最近 Host 结果打包", false, 101)]
+        [MenuItem("Tools/打包/PC/快速打包/使用最近 Host 结果打包", false, 120)]
         private static void BuildRecentHostMenu()
         {
             if (Confirm("使用最近 Host 结果打包", "复用最近 Host 结果；请确认 Host 成功后未修改项目；将生成完整内置资源和 Player。", "使用 Host 结果打包"))
                 BuildRecentHostPlayerBatch();
         }
 
-        [MenuItem("Tools/打包/PC/复用 AOT 快速打包", false, 102)]
+        [MenuItem("Tools/打包/PC/快速打包/复用 AOT 快速打包", false, 121)]
         private static void BuildQuickAotMenu()
         {
             if (Confirm("复用 AOT 快速打包", "重新编译 Game 和资源但复用 AOT；仅用于临时验证；不能替代发布前完整打包。", "开始快速打包"))
                 BuildQuickAotPlayerBatch();
         }
 
-        [MenuItem("Tools/打包/PC/首包完整打包", false, 103)]
+        [MenuItem("Tools/打包/PC/首包完整打包", false, 101)]
         private static void BuildSmallHostBaseMenu()
         {
             if (Confirm(
@@ -63,13 +63,13 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/PC/Host代码+资源更新", false, 104)]
+        [MenuItem("Tools/打包/PC/Host代码+资源更新", false, 102)]
         private static void BuildHostMenu()
         {
             BuildHostCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/PC/仅重建完整内置资源", false, 105)]
+        [MenuItem("Tools/打包/PC/辅助工具/仅重建完整内置资源", false, 140)]
         private static void BuildBuiltinResourcesOnlyMenu()
         {
             BuildBuiltinResourcesOnlyBatch();

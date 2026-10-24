@@ -82,10 +82,12 @@ namespace Game.Tests
             var expected = new[]
             {
                 "Tools/打包/PC/Host代码+资源更新",
-                "Tools/打包/PC/使用最近 Host 结果打包",
-                "Tools/打包/PC/复用 AOT 快速打包",
+                "Tools/打包/PC/快速打包/使用最近 Host 结果打包",
+                "Tools/打包/PC/快速打包/复用 AOT 快速打包",
                 "Tools/打包/PC/最新代码资源完整打包",
-                "Tools/打包/PC/仅重建完整内置资源"
+                "Tools/打包/PC/首包完整打包",
+                "Tools/打包/PC/辅助工具/仅重建完整内置资源",
+                "Tools/打包/PC/辅助工具/为已有Player生成当前用户安装器"
             }.OrderBy(x => x).ToArray();
 
             CollectionAssert.AreEqual(expected, packagingMenus);

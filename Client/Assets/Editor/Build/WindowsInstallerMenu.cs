@@ -14,7 +14,7 @@ namespace Game.Editor
         private static bool running;
         private const string CompilerKey = "FirepowerLoop.WindowsInstaller.Compiler";
 
-        [MenuItem("Tools/打包/PC/为已有Player生成当前用户安装器", false, 150)]
+        [MenuItem("Tools/打包/PC/辅助工具/为已有Player生成当前用户安装器", false, 141)]
         private static async void Generate()
         {
             if (running) return;
