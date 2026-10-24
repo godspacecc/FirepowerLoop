@@ -25,7 +25,7 @@ namespace Game.Editor
         private const string NetworkConfigPath = "Assets/StreamingAssets/networkConfig.json";
         private const string PlayerGuidePath = "安卓联机玩家说明.md";
         private const string PlayerGuideFileName = "安卓联机玩家说明.md";
-        /// <summary>仅随 Android 完整内置测试包传入 Player 编译，不改变 Windows 与 Host 包的启动策略。</summary>
+        /// <summary>仅供显式纯离线候选包使用；普通完整包即使内置资源也先联网更新。</summary>
         internal const string BuiltinResourcesScriptingDefine = "FIREPOWERLOOP_ANDROID_BUILTIN_RESOURCES";
         private static bool s_isBuilding;
         /// <summary>只在本编辑器会话保存请求身份；真实重载后按白名单恢复一次，不保存委托。</summary>
@@ -34,29 +34,16 @@ namespace Game.Editor
         internal static bool HasActiveWorkflow => s_isBuilding ||
             !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
 
-        [MenuItem("Tools/打包/Android/最新代码资源完整打包", false, 150)]
+        [MenuItem("Tools/打包/Android/完整包", false, 150)]
         private static void BuildLatestMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android 最新代码资源完整打包",
-                    "将生成 ARM64、IL2CPP、完整内置资源的 Development APK。需要时会切换到 Android，并等待脚本重载后继续。",
-                    "开始完整打包",
-                    "取消"))
-            {
-                BuildLatestCodeAndResourcesBatch();
-            }
-        }
-
-        [MenuItem("Tools/打包/Android/Host基础包完整打包", false, 151)]
-        private static void BuildHostBaseMenu()
-        {
-            if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android Host 基础包完整打包",
-                    "将生成 ARM64、IL2CPP、完整内置回退资源且启动时连接资源服的 Development APK。请先把 hostConfig.json 配置为手机可访问的 HTTP/HTTPS 地址。",
+                    "Android 完整包",
+                    "生成带完整资源的 Development APK。启动先联网更新，失败时依次尝试已成功缓存和内置资源。需要时会切换到 Android，并等待脚本重载后继续。",
                     "开始打包",
                     "取消"))
             {
-                BuildHostBaseCodeAndResourcesBatch();
+                BuildLatestCodeAndResourcesBatch();
             }
         }
 
@@ -66,11 +53,11 @@ namespace Game.Editor
             BuildHostCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/Android/首包完整打包", false, 152)]
+        [MenuItem("Tools/打包/Android/启动包", false, 151)]
         private static void BuildSmallHostBaseMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android 首包完整打包",
+                    "Android 启动包",
                     "只在 APK 内置 Boot 和 YooAsset 清单，不内置资源 Bundle。首次启动必须能连接资源服并下载完整资源；无网络且无缓存时不能进入游戏。",
                     "开始打包",
                     "取消"))
@@ -79,7 +66,7 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/Android/复用本次AOT和资源快速打包", false, 154)]
+        [MenuItem("Tools/打包/Android/快速打包/复用本次AOT和资源快速打包", false, 170)]
         private static void BuildQuickReuseApkMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog(
@@ -89,7 +76,7 @@ namespace Game.Editor
                 BuildQuickReuseApkBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道候选包完整打包", false, 158)]
+        [MenuItem("Tools/打包/Android/渠道发行/渠道候选包完整打包", false, 190)]
         private static void BuildChannelCandidateMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 渠道候选包",
@@ -98,7 +85,7 @@ namespace Game.Editor
                 BuildChannelCandidateBatch();
         }
 
-        [MenuItem("Tools/打包/Android/单机首发候选包完整打包", false, 160)]
+        [MenuItem("Tools/打包/Android/渠道发行/单机首发候选包完整打包", false, 191)]
         private static void BuildOfflineSinglePlayerCandidateMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog("纯离线单机首发",
@@ -237,11 +224,11 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 按 Android 完整链路构建内置资源 APK 并发布整包更新；发布失败保留已验证 APK。
+        /// 兼容旧批处理方法名，统一生成联网优先且具有完整内置回退资源的 APK。
         /// </summary>
         public static void BuildLatestCodeAndResourcesBatch()
         {
-            BuildLatestCodeAndResources(false);
+            BuildHostBaseCodeAndResourcesBatch();
         }
 
         /// <summary>两种完整包共享构建事务；渠道模式仅归档候选 APK 和检查报告。</summary>
@@ -330,10 +317,10 @@ namespace Game.Editor
         /// </summary>
         public static void BuildHostBaseCodeAndResourcesBatch()
         {
-            if (!BeginWorkflow("Android Host 基础包完整打包"))
+            if (!BeginWorkflow("Android 完整包"))
                 return;
 
-            var timing = new BuildStageTiming("Android Host 基础包完整打包");
+            var timing = new BuildStageTiming("Android 完整包");
             var context = new AndroidBuildContext(DateTime.Now, Guid.NewGuid().ToString("N"));
             var previous = AndroidEditorOptions.Capture();
             bool finalApkValidated = false;
@@ -367,18 +354,18 @@ namespace Game.Editor
                 string appUpdatePath = timing.Run("PublishAndroidApk", () => PublishCompleteApk(context.FinalApkPath, appVersion));
 
                 Debug.Log(
-                    $"[AndroidBuildUtility] Android Host 基础包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
+                    $"[AndroidBuildUtility] Android 完整包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
                     $"Size={new FileInfo(context.FinalApkPath).Length}，DLLs={copied.Count}，整包更新={appUpdatePath}\n{timing.BuildSummary()}");
-                OfferStartServer("Android Host 基础包成功", $"APK: {context.FinalApkPath}\n应用版本: {appVersion}\n资源版本: {version}\n整包更新: {appUpdatePath}\n\n首次安装此 APK 后，后续 Game 代码和 YooAsset 资源可走 Android Host 更新。");
+                OfferStartServer("Android 完整包成功", $"APK: {context.FinalApkPath}\n应用版本: {appVersion}\n资源版本: {version}\n整包更新: {appUpdatePath}\n\n启动先联网更新，失败时尝试已成功缓存和内置资源；后续代码与资源可走 Host 更新。");
             }
             catch (Exception exception)
             {
                 if (finalApkValidated) context.CleanupPreparatoryDirectory();
                 else context.CleanupFailedBuild();
                 Debug.LogError(
-                    $"[AndroidBuildUtility] Android Host 基础包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
+                    $"[AndroidBuildUtility] Android 完整包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
                     timing.BuildSummary());
-                ShowDialog("Android Host 基础包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
+                ShowDialog("Android 完整包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
                     finalApkValidated ? context.FinalApkPath : null));
                 throw;
             }
@@ -395,10 +382,10 @@ namespace Game.Editor
         /// </summary>
         public static void BuildSmallHostBaseCodeAndResourcesBatch()
         {
-            if (!BeginWorkflow("Android 首包完整打包"))
+            if (!BeginWorkflow("Android 启动包"))
                 return;
 
-            var timing = new BuildStageTiming("Android 首包完整打包");
+            var timing = new BuildStageTiming("Android 启动包");
             var context = new AndroidBuildContext(DateTime.Now, Guid.NewGuid().ToString("N"));
             var previous = AndroidEditorOptions.Capture();
             bool finalApkValidated = false;
@@ -453,7 +440,7 @@ namespace Game.Editor
                     context.BootFingerprint));
 
                 Debug.Log(
-                    $"[AndroidBuildUtility] Android 首包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
+                    $"[AndroidBuildUtility] Android 启动包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
                     $"大小={new FileInfo(context.FinalApkPath).Length}，DLL数量={copied.Count}，资源服目录={publish.BundleDirectory}，整包更新={appUpdatePath}\n" +
                     timing.BuildSummary());
                 StartPublishedResourceServer(publish.BundleDirectory, version, timing);
@@ -464,9 +451,9 @@ namespace Game.Editor
                 if (finalApkValidated) context.CleanupPreparatoryDirectory();
                 else context.CleanupFailedBuild();
                 Debug.LogError(
-                    $"[AndroidBuildUtility] Android 首包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
+                    $"[AndroidBuildUtility] Android 启动包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
                     timing.BuildSummary());
-                ShowDialog("Android 首包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
+                ShowDialog("Android 启动包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
                     finalApkValidated ? context.FinalApkPath : null));
                 throw;
             }
@@ -744,7 +731,7 @@ namespace Game.Editor
         {
             if (!BuildStateStore.TryValidateAndroidAotBaseline(state, BuildTarget.Android, out string error))
                 throw new InvalidOperationException(
-                    $"Android Host AOT 基线不可用：{error} 请先执行 Android Host 基础包或首包完整打包。");
+                    $"Android Host AOT 基线不可用：{error} 请先执行 Android 完整包或启动包。");
         }
 
         /// <summary>
@@ -760,7 +747,7 @@ namespace Game.Editor
             string aotDirectory = null)
         {
             if (!string.IsNullOrEmpty(playerPath) && string.IsNullOrWhiteSpace(bootFingerprint))
-                throw new InvalidOperationException("Android 首包缺少本次构建的 Boot 指纹，不能保存宿主基线，请重新执行首包完整打包。");
+                throw new InvalidOperationException("Android 安装包缺少本次构建的 Boot 指纹，不能保存宿主基线，请重新执行完整包或启动包。");
             BuildState state = LoadStateOrThrow();
             long completedUtcTicks = DateTime.UtcNow.Ticks;
             string gameDllDirectory = HybridCLRBuildUtility.GetGameDllDirectory();
@@ -860,7 +847,7 @@ namespace Game.Editor
                 BuildPlayer(context.FinalApkPath, forceBuiltinResources, channel, offlineSinglePlayer);
                 // 打包中途修改 Boot 时不能把新源码错误记录为已生成 APK 的基线。
                 if (!string.Equals(bootFingerprint, AndroidBootBuildGuard.ComputeFingerprint(projectRoot), StringComparison.Ordinal))
-                    throw new InvalidOperationException("打包期间 Boot 发生变化，请重新执行 Android 首包完整打包。");
+                    throw new InvalidOperationException("打包期间 Boot 发生变化，请重新执行 Android 完整包或启动包。");
                 context.BootFingerprint = bootFingerprint;
                 AssetDatabase.SaveAssets();
                 Debug.Log($"[AndroidBuildUtility] Android 应用版本已递增：{previousVersion} -> {nextVersion}");
@@ -1024,6 +1011,8 @@ namespace Game.Editor
         {
             switch (workflow)
             {
+                case "Android 完整包": return BuildLatestCodeAndResourcesBatch;
+                case "Android 启动包": return BuildSmallHostBaseCodeAndResourcesBatch;
                 case "Android 最新代码资源完整打包": return BuildLatestCodeAndResourcesBatch;
                 case "Android 渠道候选包完整打包": return BuildChannelCandidateBatch;
                 case "Android 单机首发候选包完整打包": return BuildOfflineSinglePlayerCandidateBatch;
@@ -1105,7 +1094,7 @@ namespace Game.Editor
         }
 
         /// <summary>
-        /// 完整包和 Host 基础包展示成功结果和启动选择；仅确认后启动 Android 局域网资源服，启动失败不撤销构建产物。
+        /// 完整包展示成功结果和启动选择；仅确认后启动 Android 局域网资源服，启动失败不撤销构建产物。
         /// 选择稍后不改变服务状态，批处理仅记录结果。
         /// </summary>
         private static void OfferStartServer(string title, string message)

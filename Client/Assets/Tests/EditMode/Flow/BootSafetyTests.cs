@@ -65,7 +65,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void AndroidFullBuildSelectsBuiltinResourcesWithoutChangingHostDefault()
+        public void AndroidOfflineCandidateCanSelectBuiltinResourcesWithoutChangingHostDefault()
         {
             string androidBuild = File.ReadAllText("Assets/Editor/Build/AndroidBuildUtility.cs");
             string resourceBoot = File.ReadAllText("Assets/Boot/Res/ResourceBoot.cs");

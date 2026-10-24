@@ -36,6 +36,14 @@ namespace Game.Tests
             Assert.That((string[])Call("PlayerDefines", true, false), Does.Not.Contain("FIREPOWERLOOP_OFFLINE_SINGLE_PLAYER"));
             Assert.Throws<InvalidOperationException>(() => Call("PlayerDefines", false, true));
         }
+        [TestCase(true)]
+        [TestCase(false)]
+        public void OnlineBuildsUseHostStartupEvenWithBuiltinResources(bool builtin)
+        {
+            Assert.That((string[])Call("PlayerDefines", builtin, false), Is.Empty,
+                "联网包不能因内置资源而跳过在线更新；资源只决定更新失败后的回退能力。");
+        }
+
         [Test] public void OfflineBuildScopeDisablesAnalyticsAndRestoresAllValues()
         {
             bool enabled = AnalyticsSettings.enabled, startup = AnalyticsSettings.initializeOnStartup, core = AnalyticsSettings.packageRequiringCoreStatsPresent;

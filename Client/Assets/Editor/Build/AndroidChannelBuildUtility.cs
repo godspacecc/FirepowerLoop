@@ -202,12 +202,12 @@ namespace Game.Editor
             return json;
         }
 
-        [MenuItem("Tools/打包/Android/检查现有APK（内部测试，不打包）", false, 156)]
+        [MenuItem("Tools/打包/Android/检查工具/检查现有APK（内部测试，不打包）", false, 211)]
         private static void InspectInternalMenu() => InspectMenu(false);
-        [MenuItem("Tools/打包/Android/检查现有APK（渠道候选，不打包）", false, 157)]
+        [MenuItem("Tools/打包/Android/检查工具/检查现有APK（渠道候选，不打包）", false, 212)]
         private static void InspectChannelMenu() => InspectMenu(true);
 
-        [MenuItem("Tools/打包/Android/检查现有APK（纯离线单机，不打包）", false, 159)]
+        [MenuItem("Tools/打包/Android/检查工具/检查现有APK（纯离线单机，不打包）", false, 213)]
         private static void InspectOfflineMenu() => InspectMenu(true, true);
 
         private static void InspectMenu(bool channel, bool offline = false)

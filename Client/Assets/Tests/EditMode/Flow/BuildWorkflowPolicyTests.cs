@@ -59,6 +59,8 @@ namespace Game.Tests
             Assert.That(text, Does.Contain("PublishAndroidApk:"));
         }
 
+        [TestCase("Android 完整包", "BuildLatestCodeAndResourcesBatch")]
+        [TestCase("Android 启动包", "BuildSmallHostBaseCodeAndResourcesBatch")]
         [TestCase("Android 最新代码资源完整打包", "BuildLatestCodeAndResourcesBatch")]
         [TestCase("Android Host 基础包完整打包", "BuildHostBaseCodeAndResourcesBatch")]
         [TestCase("Android 首包完整打包", "BuildSmallHostBaseCodeAndResourcesBatch")]

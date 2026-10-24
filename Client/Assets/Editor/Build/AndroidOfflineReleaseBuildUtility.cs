@@ -19,12 +19,12 @@ namespace Game.Editor
         private const string ToolsNamespace = "http://schemas.android.com/tools";
         private static bool offlineBuildActive;
 
-        /// <summary>离线首发必须具有完整内置资源，不能依赖运行时服务器补齐。</summary>
+        /// <summary>联网包统一使用 Host 启动；仅显式离线首发携带离线标记并要求完整内置资源。</summary>
         public static string[] PlayerDefines(bool builtin, bool offline)
         {
             if (offline && !builtin) throw new InvalidOperationException("纯离线首发必须使用完整内置资源。");
             if (offline) return new[] { AndroidBuildUtility.BuiltinResourcesScriptingDefine, ScriptingDefine };
-            return builtin ? new[] { AndroidBuildUtility.BuiltinResourcesScriptingDefine } : Array.Empty<string>();
+            return Array.Empty<string>();
         }
 
         /// <summary>构建作用域内关闭引擎统计初始化；正常与异常结束均恢复原编辑器值。</summary>

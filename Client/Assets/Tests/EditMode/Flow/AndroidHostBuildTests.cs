@@ -47,15 +47,14 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OfflineBuildStillForcesBuiltinModeDefine()
+        public void FullBuildEntryUsesHostBaseWithBuiltinFallback()
         {
             string source = File.ReadAllText(AndroidBuildPath);
             string body = Extract(source,
                 "public static void BuildLatestCodeAndResourcesBatch()",
-                "public static void BuildHostBaseCodeAndResourcesBatch()");
+                "private static void BuildLatestCodeAndResources(bool channel");
 
-            Assert.That(body, Does.Contain("BuildFinalPlayerWithIncrementedPatchVersion(context, true)"));
-            Assert.That(source, Does.Contain("BuiltinResourcesScriptingDefine"));
+            Assert.That(body, Does.Contain("BuildHostBaseCodeAndResourcesBatch()"));
         }
 
         [Test]
@@ -86,7 +85,7 @@ namespace Game.Tests
                 "public static void BuildSmallHostBaseCodeAndResourcesBatch()",
                 "public static void BuildHostCodeAndResourcesBatch()");
 
-            Assert.That(source, Does.Contain("Tools/打包/Android/首包完整打包"));
+            Assert.That(source, Does.Contain("Tools/打包/Android/启动包"));
             Assert.That(source, Does.Contain("BuildAndroidApkFileName(appVersion)"));
             Assert.That(body, Does.Contain("BuildSmallHostPackageOrThrow(version)"));
             Assert.That(body, Does.Contain("ValidateManifestOnlyBuiltin(version)"));

@@ -19,7 +19,7 @@ namespace Game.Editor
         private static string WorkspaceRoot => Directory.GetParent(Application.dataPath).Parent.FullName;
 
         /// <summary>只检查本设备固定签名配置，便于新构建设备验收，不调用任何构建或发布。</summary>
-        [MenuItem("Tools/打包/Android/校验固定签名（不打包）", false, 155)]
+        [MenuItem("Tools/打包/Android/检查工具/校验固定签名（不打包）", false, 210)]
         private static void ValidateLocalSigningMenu()
         {
             ValidateLocalKey();

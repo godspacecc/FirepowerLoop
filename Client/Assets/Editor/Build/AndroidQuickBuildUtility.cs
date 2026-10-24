@@ -36,7 +36,7 @@ namespace Game.Editor
     /// <summary>快速 APK 的只读复用校验与快照保存；不调用任何构建或发布入口。</summary>
     public static class AndroidQuickBuildUtility
     {
-        private const string RebuildHint = "请执行 Android 首包完整打包，重新生成匹配的 AOT 和资源。";
+        private const string RebuildHint = "请执行 Tools/打包/Android/启动包，重新生成匹配的 AOT 和资源。";
         private static string ProjectRoot => Directory.GetParent(Application.dataPath).FullName;
         private static string RecordPath => Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickInputs.json");
 
