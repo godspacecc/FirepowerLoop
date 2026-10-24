@@ -1,6 +1,6 @@
 ##var,Id,HeldVisualResourceName,ProjectileVisualResourceName,MuzzleFlash,ProjectileFirePointX,ProjectileFirePointY,ProjectileFirePointZ,Damage,FireIntervalSeconds,ProjectileSpeed,ProjectileLifetimeSeconds,ProjectileCount,SpreadDegrees,Behavior,MaxHits,ExplosionRadius,MeleeRange,MeleeArcDegrees
 ##type,string,string,string,bool,float,float,float,int,float,float,float,int,float,ArcadeWeaponBehavior,int,float,float,float
-,arcade.weapon.basic,ArcadeBasicRifle,ArcadeBulletBasic,true,0.000,0.000,0.575,36,0.24,16,1.60,1,0,Direct,1,0,0,0
+,arcade.weapon.basic,ArcadeBasicRifle,ArcadeBulletBasic,true,0.000,0.000,0.575,36,0.16,16,1.60,1,0,Direct,1,0,0,0
 ,arcade.weapon.rapid,ArcadeRifle,ArcadeBulletRapid,true,-0.010,-0.040,0.630,28,0.10,18,1.50,1,0,Direct,1,0,0,0
 ,arcade.weapon.spread,ArcadeScifiShotgun,ArcadeBulletSpread,true,0.000,0.070,0.540,29,0.36,15,1.20,5,28,Direct,1,0,0,0
 ,arcade.weapon.flamethrower,ArcadeFlamethrower,ArcadeFlameBurst,false,0.000,0.015,0.720,23,0.10,8,0.45,3,18,Piercing,8,0,0,0

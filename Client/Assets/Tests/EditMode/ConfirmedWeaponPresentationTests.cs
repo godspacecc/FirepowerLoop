@@ -17,11 +17,11 @@ namespace Game.Tests
             var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
             Assert.That(provider.TryGetArcadeCatalog(out catalog,out var error),Is.True,error);
         }
-        [Test] public void BasicGunUsesSeparateAKWithoutChangingCombatStatsOrMP40()
+        [Test] public void BasicGunUsesSeparateAKWithFasterCadenceAndPreservesMP40()
         {
             var gun=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.basic");
             Assert.That(gun.HeldVisualResourceName,Is.EqualTo("ArcadeBasicRifle"));
-            Assert.That(gun.Damage,Is.EqualTo(18));Assert.That(gun.FireIntervalSeconds,Is.EqualTo(.24f));
+            Assert.That(gun.Damage,Is.EqualTo(36));Assert.That(gun.FireIntervalSeconds,Is.EqualTo(.16f));
             var player=Load("Characters/GrayboxPlayer").GetComponent<CharacterWeaponPresenter>();
             var basic=player.Catalog.Find("arcade.weapon.basic");var rapid=player.Catalog.Find("arcade.weapon.rapid");
             Assert.That(AssetDatabase.GetAssetPath(basic.VisualSource),Does.EndWith("/ArcadeBasicRifle.prefab"));
