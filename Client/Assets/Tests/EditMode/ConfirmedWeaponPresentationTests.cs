@@ -21,7 +21,11 @@ namespace Game.Tests
         {
             var gun=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.basic");
             Assert.That(gun.HeldVisualResourceName,Is.EqualTo("ArcadeBasicRifle"));
-            Assert.That(gun.Damage,Is.EqualTo(36));Assert.That(gun.FireIntervalSeconds,Is.EqualTo(.16f));
+            Assert.That(gun.Damage,Is.EqualTo(36));Assert.That(gun.FireIntervalSeconds,Is.EqualTo(.18f));
+            var rapidGun=catalog.Weapons.Single(w=>w.Id=="arcade.weapon.rapid");
+            Assert.That(rapidGun.FireIntervalSeconds,Is.EqualTo(.10f));
+            foreach(var other in catalog.Weapons.Where(w=>w.Id.StartsWith("arcade.weapon.")&&w.Id!=rapidGun.Id))
+                Assert.That(other.FireIntervalSeconds,Is.GreaterThan(rapidGun.FireIntervalSeconds),other.Id);
             var player=Load("Characters/GrayboxPlayer").GetComponent<CharacterWeaponPresenter>();
             var basic=player.Catalog.Find("arcade.weapon.basic");var rapid=player.Catalog.Find("arcade.weapon.rapid");
             Assert.That(AssetDatabase.GetAssetPath(basic.VisualSource),Does.EndWith("/ArcadeBasicRifle.prefab"));
