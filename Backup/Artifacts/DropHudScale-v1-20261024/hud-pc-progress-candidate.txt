@@ -1,0 +1,17 @@
+TextRespawn overflow=False text=
+Label overflow=False text=风暴 [F]
+TextStormCharge overflow=False text=75%
+TextName overflow=False text=我
+TextScore overflow=False text=42,350
+TextMultiplier overflow=False text=×3
+TextLives overflow=False text=3
+TextBombs overflow=False text=1
+TextBombKey overflow=False text=Q
+TextDashes overflow=False text=2
+TextDashKey overflow=False text=Space
+DesktopDuration overflow=False text=13s
+DesktopDuration overflow=False text=10s
+DesktopDuration overflow=False text=8s
+TextArena overflow=False text=竞技场 4
+TextWave overflow=False text=第 3 波 · 剩余 37
+DesktopArmor overflow=False text=护甲板 1/2

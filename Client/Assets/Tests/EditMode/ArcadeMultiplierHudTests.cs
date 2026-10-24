@@ -128,6 +128,31 @@ namespace Game.Tests
             Assert.That(Field<Image>(teammate, "MultiplierFill").fillAmount, Is.EqualTo(1f));
         }
 
+        /// <summary>桌面与手机复用玩家行时，零进度隐藏整槽，增长后恢复，最高倍率保留原满条。</summary>
+        [TestCase(false)]
+        [TestCase(true)]
+        public void EmptyProgressHidesWholeTrackAndReusedRowRestoresIt(bool mobile)
+        {
+            Install(new ArcadeTreasureScoreState(9000, 3, 0, 3));
+            var list = mobile ? hud.MobilePlayerStatusList : hud.PlayerStatusList;
+            var box = list.GetDraggableItems()[0].GetComponent<ArcadePlayerStatusBoxUI>();
+            var fill = mobile ? box.MobileMultiplierFill : box.MultiplierFill;
+            Assert.That(fill.transform.parent.gameObject.activeSelf, Is.False, "空条与底槽都应隐藏");
+            Assert.That((mobile ? box.MobileMultiplier : box.TextMultiplier).gameObject.activeSelf, Is.True,
+                "倍率数字继续显示");
+
+            Install(new ArcadeTreasureScoreState(9000, 3, 450, 3));
+            Assert.That(fill.transform.parent.gameObject.activeSelf, Is.True, "重新获得进度必须恢复整条");
+            Assert.That(fill.fillAmount, Is.EqualTo(.45f).Within(.00001f));
+
+            Install(new ArcadeTreasureScoreState(9000, 4, 0, 3));
+            Assert.That(fill.transform.parent.gameObject.activeSelf, Is.False, "恰好升档后的零余量再次隐藏");
+
+            Install(new ArcadeTreasureScoreState(9000, rules.MaxMultiplier, 0, 3));
+            Assert.That(fill.transform.parent.gameObject.activeSelf, Is.True, "最高倍率实际显示进度为满条");
+            Assert.That(fill.fillAmount, Is.EqualTo(1f));
+        }
+
         private void Install(ArcadeTreasureScoreState state)
         {
             var model = architecture.GetModel<ArcadeRunModel>();

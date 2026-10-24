@@ -528,6 +528,9 @@ namespace Game
             var maximum = multiplierRules != null && status.Multiplier >= multiplierRules.MaxMultiplier;
             var progress = maximum ? 1f : multiplierRules?.ProgressPerLevel > 0
                 ? Mathf.Clamp01((float)status.MultiplierProgress / multiplierRules.ProgressPerLevel) : 0f;
+            // 零进度隐藏填充与底槽；每次刷新完整覆盖，复用玩家行后有进度即可重新显示。
+            box.MultiplierFill.transform.parent.gameObject.SetActive(progress > 0f);
+            box.MobileMultiplierFill.transform.parent.gameObject.SetActive(progress > 0f);
             box.TextMultiplier.text = "×" + status.Multiplier;
             box.TextMultiplierState.text = maximum ? Loc.T("ui.arcade.hud.multiplier_max") : string.Empty;
             box.TextMultiplierState.gameObject.SetActive(maximum);
