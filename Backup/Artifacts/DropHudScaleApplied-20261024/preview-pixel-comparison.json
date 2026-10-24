@@ -1,0 +1,37 @@
+[
+  {
+    "Image": "skulls",
+    "ChangedChannels": 34,
+    "TotalChannels": 4320000,
+    "MaxDifference": 113,
+    "MeanDifference": 8.587962962962962E-05
+  },
+  {
+    "Image": "drones",
+    "ChangedChannels": 20,
+    "TotalChannels": 4320000,
+    "MaxDifference": 113,
+    "MeanDifference": 8.263888888888889E-05
+  },
+  {
+    "Image": "hud-pc-progress",
+    "ChangedChannels": 0,
+    "TotalChannels": 6220800,
+    "MaxDifference": 0,
+    "MeanDifference": 0.0
+  },
+  {
+    "Image": "hud-pc-zero",
+    "ChangedChannels": 0,
+    "TotalChannels": 6220800,
+    "MaxDifference": 0,
+    "MeanDifference": 0.0
+  },
+  {
+    "Image": "hud-phone-zero",
+    "ChangedChannels": 0,
+    "TotalChannels": 6220800,
+    "MaxDifference": 0,
+    "MeanDifference": 0.0
+  }
+]

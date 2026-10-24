@@ -1,0 +1,44 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 6,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:06.5550675"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.EmptyProgressHidesWholeTrackAndReusedRowRestoresIt(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.8540000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.EmptyProgressHidesWholeTrackAndReusedRowRestoresIt(True)",
+        "Status": "Passed",
+        "Duration": "00:00:01.2220000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.MaximumDeathAndRestoredRunOverwriteEveryReusedField",
+        "Status": "Passed",
+        "Duration": "00:00:00.8570000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.OnlinePlayersUseTheirOwnAuthoritativeMultiplierAndProgress",
+        "Status": "Passed",
+        "Duration": "00:00:00.7980000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.PlayerBoxHasGeneratedMultiplierReferencesAndNonBlockingBar",
+        "Status": "Passed",
+        "Duration": "00:00:00.8350000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMultiplierHudTests.RewardEventProjectsRealCarryAndMultipleLevelCrossing",
+        "Status": "Passed",
+        "Duration": "00:00:00.7950000"
+      }
+    ]
+  }
+}

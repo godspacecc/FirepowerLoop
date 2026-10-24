@@ -22,9 +22,13 @@ namespace Game
             [SerializeField]
             private Vector3 localEulerAngles;
 
+            /// <summary>空投展示可单独指定实体最长边；零值沿用模板的默认武器尺寸。</summary>
+            [SerializeField] private float maxSize;
+
             public string PrefabAddress => prefabAddress;
             public Vector3 LocalPosition => localPosition;
             public Vector3 LocalEulerAngles => localEulerAngles;
+            public float MaxSize => maxSize;
         }
 
         /// <summary>按资源地址选择光柱外观，未匹配的街机道具使用默认光柱。</summary>
@@ -153,7 +157,10 @@ namespace Game
                     deliveryOriginalWeaponScale=activeArcadeVisual.transform.localScale;
                     deliveryOriginalWeaponRotation=activeArcadeVisual.transform.localRotation;
                     ApplyVisualPose(weaponDeliveryPoses,activeArcadeVisual.transform,ActiveArcadeVisualPrefabAddress);
+                    // 先保留原空投定位，再按已采用比例缩小实体；尺寸覆盖不额外移动悬浮中心。
                     FitArcadeVisual(deliveredWeaponMaxSize);
+                    if (deliveredWeaponMaxSize > 0f)
+                        activeArcadeVisual.transform.localScale *= ResolveDeliveryVisualMaxSize() / deliveredWeaponMaxSize;
                     deliveryWeaponPosition=activeArcadeVisual.transform.localPosition;
                 }
                 deliveryActive=true;weaponDelivery.SetProgress(remaining,duration);
@@ -171,6 +178,16 @@ namespace Game
             }
             if(deliveryActive&&activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(true);
             deliveryActive=false;weaponDelivery?.ResetPresentation();
+        }
+
+        /// <summary>尺寸覆盖与现有空投姿态共用地址绑定，仅影响展示，不改变物品规则或其它武器。</summary>
+        private float ResolveDeliveryVisualMaxSize()
+        {
+            foreach (var pose in weaponDeliveryPoses)
+                if (pose != null && pose.MaxSize > 0f &&
+                    string.Equals(pose.PrefabAddress, ActiveArcadeVisualPrefabAddress, StringComparison.Ordinal))
+                    return pose.MaxSize;
+            return deliveredWeaponMaxSize;
         }
 
         /// <summary>按展示请求校准模型实例：最长边统一、底面抬至掉落根；重复应用不会累积缩放。</summary>

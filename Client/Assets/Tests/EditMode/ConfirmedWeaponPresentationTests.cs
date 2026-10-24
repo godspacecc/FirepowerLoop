@@ -76,6 +76,23 @@ namespace Game.Tests
                 Assert.That(Longest(visual.gameObject),Is.EqualTo(original).Within(.001f));
             });
         }
+        /// <summary>红紫掉落的实体最长边与正式金币一致；重复同步和空投回池不能污染普通尺寸。</summary>
+        [Test]
+        public void ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse()
+        {
+            float coinSize=0;
+            WithPickup("ArcadeDropCoin",(go,pickup)=>coinSize=Longest(go.transform.Find("ArcadeDropVisual").gameObject));
+            foreach(var skull in new[]{"ArcadeDropSkullRed","ArcadeDropSkullPurple"})
+            WithPickup(skull,(go,pickup)=>
+            {
+                var visual=go.transform.Find("ArcadeDropVisual");
+                Assert.That(Longest(visual.gameObject),Is.EqualTo(coinSize).Within(.001f));
+                pickup.SetArcadePresentation(Load("SceneObjects/"+skull),"Prefabs/SceneObjects/"+skull);
+                Assert.That(Longest(visual.gameObject),Is.EqualTo(coinSize).Within(.001f));
+                pickup.SetWeaponDelivery(true,0,2);pickup.SetWeaponDelivery(false,0,2);
+                Assert.That(Longest(visual.gameObject),Is.EqualTo(coinSize).Within(.001f));
+            });
+        }
         [Test] public void AllGroundDropNamesAreEmptyAtTheArcadeProjectionSource()
         {
             var resolve=typeof(ArcadeCombatViewController).GetMethod("ResolveDropDisplayName",BindingFlags.Static|BindingFlags.NonPublic);

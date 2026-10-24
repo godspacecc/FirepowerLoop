@@ -15,7 +15,10 @@ public static class DropHudScalePreview
 {
     private const string Folder = "../Backup/Artifacts/DropHudScale-v1-20261024";
 
-    public static string Run()
+    public static string Run() => Render(false);
+    /// <summary>直接拍摄正式资源，不再施加候选缩放；保留相同机位供采用版逐像素对照。</summary>
+    public static string RunApplied() => Render(true);
+    private static string Render(bool applied)
     {
         if (EditorApplication.isPlaying || EditorApplication.isCompiling ||
             Application.dataPath.Replace('\\', '/') != "E:/GitHub/FirepowerLoop/Client/Assets")
@@ -29,7 +32,8 @@ public static class DropHudScalePreview
         try
         {
             SceneManager.SetActiveScene(scene);
-            Directory.CreateDirectory(Folder);
+            string folder = applied ? "../Backup/Artifacts/DropHudScaleApplied-20261024" : Folder;
+            Directory.CreateDirectory(folder);
             RenderSettings.ambientMode = AmbientMode.Flat;
             RenderSettings.ambientLight = new Color(.62f, .64f, .65f);
             var stage = new GameObject("TemporaryModels");
@@ -55,7 +59,7 @@ public static class DropHudScalePreview
             var report = new StringBuilder();
             report.AppendLine("正式主角与基础AK，未改变主角比例；模型均由正式Prefab克隆。");
             report.AppendLine("金币实体最长边=" + Longest(BodyBounds(coin.transform.Find("ArcadeDropVisual"))).ToString("F6"));
-            report.AppendLine("原随身无人机实体最长边=" + equippedSize.ToString("F6"));
+            report.AppendLine((applied ? "正式随身无人机实体最长边=" : "原随身无人机实体最长边=") + equippedSize.ToString("F6"));
             floorMaterial = new Material(Shader.Find("Universal Render Pipeline/Lit")) { color = new Color(.22f, .28f, .28f) };
             var floor = GameObject.CreatePrimitive(PrimitiveType.Cube);
             floor.transform.position = new Vector3(0, -.12f, 0);
@@ -77,30 +81,30 @@ public static class DropHudScalePreview
             pixels = new Texture2D(1600, 900, TextureFormat.RGB24, false);
             camera.targetTexture = target;
             air.SetActive(false); equipped.SetActive(false);
-            Capture(camera, target, pixels, "skulls-current");
+            if (!applied) Capture(camera, target, pixels, "skulls-current", folder);
             float coinSize = Longest(BodyBounds(coin.transform.Find("ArcadeDropVisual")));
             foreach (var skull in new[] { red, purple })
             {
                 var visual = skull.transform.Find("ArcadeDropVisual");
                 float ratio = coinSize / Longest(BodyBounds(visual));
-                visual.localScale *= ratio;
-                report.AppendLine(skull.name + "候选倍率=" + ratio.ToString("F6") + "，目标最长边=" + Longest(BodyBounds(visual)).ToString("F6"));
+                if (!applied) visual.localScale *= ratio;
+                report.AppendLine(skull.name + (applied ? "正式尺寸与金币之比=" : "候选倍率=") + ratio.ToString("F6") + "，目标最长边=" + Longest(BodyBounds(visual)).ToString("F6"));
             }
-            Capture(camera, target, pixels, "skulls-candidate");
+            Capture(camera, target, pixels, applied ? "skulls-applied" : "skulls-candidate", folder);
             coin.SetActive(false); red.SetActive(false); purple.SetActive(false);
             air.SetActive(true); equipped.SetActive(true);
-            Capture(camera, target, pixels, "drones-current");
+            if (!applied) Capture(camera, target, pixels, "drones-current", folder);
             var airBody = air.transform.Find("ArcadeDropVisual");
             float airRatio = equippedSize / Longest(BodyBounds(airBody));
-            airBody.localScale *= airRatio;
+            if (!applied) airBody.localScale *= airRatio;
             // 保留同一空投位置，以可见尺寸说明候选，不改变正式弹出动作。
-            equipped.transform.localScale *= .7f;
-            report.AppendLine("空投无人机候选最长边=" + Longest(BodyBounds(airBody)).ToString("F6"));
-            report.AppendLine("随身无人机候选最长边=" + Longest(BodyBounds(equipped.transform)).ToString("F6") + "，原各轴乘0.7");
-            Capture(camera, target, pixels, "drones-candidate");
-            File.WriteAllText(Path.Combine(Folder, "model-measurements.txt"), report.ToString());
+            if (!applied) equipped.transform.localScale *= .7f;
+            report.AppendLine((applied ? "空投无人机正式最长边=" : "空投无人机候选最长边=") + Longest(BodyBounds(airBody)).ToString("F6"));
+            report.AppendLine((applied ? "随身无人机正式最长边=" : "随身无人机候选最长边=") + Longest(BodyBounds(equipped.transform)).ToString("F6") + "，原各轴乘0.7");
+            Capture(camera, target, pixels, applied ? "drones-applied" : "drones-candidate", folder);
+            File.WriteAllText(Path.Combine(folder, "model-measurements.txt"), report.ToString());
             camera.targetTexture = null;
-            return Path.GetFullPath(Folder) + "\n" + report;
+            return Path.GetFullPath(folder) + "\n" + report;
         }
         finally
         {
@@ -140,10 +144,10 @@ public static class DropHudScalePreview
     }
     private static float Longest(Bounds bounds) => Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
     private static GameObject Load(string path) => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/" + path + ".prefab") ?? throw new InvalidOperationException(path);
-    private static void Capture(Camera camera, RenderTexture target, Texture2D pixels, string name)
+    private static void Capture(Camera camera, RenderTexture target, Texture2D pixels, string name, string folder)
     {
         camera.Render(); RenderTexture.active = target;
         pixels.ReadPixels(new Rect(0, 0, target.width, target.height), 0, 0); pixels.Apply();
-        File.WriteAllBytes(Path.Combine(Folder, name + ".png"), pixels.EncodeToPNG());
+        File.WriteAllBytes(Path.Combine(folder, name + ".png"), pixels.EncodeToPNG());
     }
 }

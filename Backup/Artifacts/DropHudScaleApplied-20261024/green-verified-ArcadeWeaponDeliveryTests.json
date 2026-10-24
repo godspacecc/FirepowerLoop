@@ -1,0 +1,59 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 9,
+      "PassedTests": 9,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.2299221"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.DroneDeliveryKeepsApprovedSizeAndDoesNotResizeOtherWeapons",
+        "Status": "Passed",
+        "Duration": "00:00:00.1960000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.FallingBoxHidesWeaponAndLandsAtGround",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.FlamethrowerAirdropRotatesAroundItsCenterAndRestoresOrdinaryPose",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.LandingDustDoesNotReplayOnDuplicateOrLateSnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.LandingPopsWeaponAndRemovesCrate",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.LateCompletedSnapshotShowsOnlyWeaponAndPoolRestoresCrate",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.OrdinaryReuseClearsCrateAndRestoresWeaponPose",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.PoolResetRemovesDeliveryAuthorityFlags",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.PopArcRisesAndSettlesWithoutSnapshotDrift",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      }
+    ]
+  }
+}

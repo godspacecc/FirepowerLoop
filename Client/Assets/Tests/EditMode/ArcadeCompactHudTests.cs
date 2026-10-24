@@ -411,6 +411,9 @@ namespace Game.Tests
                 var box=ui.EffectList.GetDraggableItems()[0].GetComponent<ArcadeEffectBoxUI>();
                 Assert.That(box.Icon.gameObject.activeSelf,Is.True,"骷髅强化需要正式图标");
                 Assert.That(box.Icon.sprite,Is.SameAs(typeof(ArcadeHudUI).GetField(iconField).GetValue(ui)));
+                foreach(var list in new[]{ui.EffectList,ui.MobileEffectList})
+                    Assert.That(list.GetDraggableItems()[0].GetComponent<ArcadeEffectBoxUI>().Icon.rectTransform.localScale,
+                        Is.EqualTo(Vector3.one*.9f),"已采用HUD骷髅各轴缩小10%，手机和PC一致");
                 Assert.That(box.TextFallback.gameObject.activeSelf,Is.False);Assert.That(box.TextCharges.gameObject.activeSelf,Is.False);
                 Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.False);Assert.That(box.GetComponent<Image>().enabled,Is.False);
             }
@@ -432,7 +435,9 @@ namespace Game.Tests
                 pulse.Invoke(ctrl,new object[]{0d});Assert.That(box.Icon.color.a,Is.EqualTo(1).Within(.01f));
                 pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color.a,Is.InRange(.5f,.65f));
                 Render("skull.large",3.1f);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
+                Assert.That(box.Icon.rectTransform.localScale,Is.EqualTo(Vector3.one*.9f),"红转紫或重复刷新不能累乘缩小");
                 Render("boots",8);pulse.Invoke(ctrl,new object[]{.25d});Assert.That(box.Icon.color,Is.EqualTo(Color.white));
+                Assert.That(box.Icon.rectTransform.localScale,Is.EqualTo(Vector3.one),"普通道具复用应还原正式尺寸");
                 Assert.That(box.ProgressFill.transform.parent.gameObject.activeSelf,Is.True);Assert.That(box.GetComponent<Image>().enabled,Is.False);
                 Render("skull.small",0);Assert.That(ui.EffectList.GetDraggableItems(),Is.Empty);
             }

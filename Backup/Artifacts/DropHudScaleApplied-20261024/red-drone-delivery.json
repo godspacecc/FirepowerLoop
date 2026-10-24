@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1267132"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.DroneDeliveryKeepsApprovedSizeAndDoesNotResizeOtherWeapons",
+        "Status": "Failed",
+        "Duration": "00:00:00.2370000",
+        "Message": "  Expected: 0.850000024f +/- 0.00200000009f\r\n  But was:  1.70000005f\r\n"
+      }
+    ]
+  }
+}

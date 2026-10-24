@@ -64,7 +64,7 @@ namespace Game.Tests
         {
             var instance=Object.Instantiate(loader.LoadAsset<GameObject>(definition.ActiveVisualPrefabAddress),root.transform);
             var rs=instance.GetComponentsInChildren<Renderer>(true);var bounds=rs[0].bounds;foreach(var r in rs)bounds.Encapsulate(r.bounds);
-            Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z),Is.EqualTo(.85f).Within(.002f));
+            Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z),Is.EqualTo(.595f).Within(.002f));
             Assert.That(instance.GetComponentsInChildren<Collider>(true),Is.Empty);
         }
         /// <summary>同一玩家的两架机体必须独立加载和定位，降级后只回收副机。</summary>

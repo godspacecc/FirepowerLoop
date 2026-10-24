@@ -161,6 +161,8 @@ namespace Game
             box.TextCharges.text = effect.Charges > 0 ? effect.Charges.ToString() : string.Empty;
             box.TextCharges.gameObject.SetActive(effect.Charges > 0);
             bool skull=effect.Id=="arcade.powerup.skull.small"||effect.Id=="arcade.powerup.skull.large";
+            // 已采用的骷髅图标缩小10%；每次绑定覆盖比例，普通道具复用时还原且不累乘。
+            box.Icon.rectTransform.localScale = Vector3.one * (skull ? .9f : 1f);
             // 秒数与环只投影效果余量；手机继续使用原表现，不增加自己的计时或强化槽。
             box.DesktopDuration.gameObject.SetActive(desktop);
             box.DesktopDuration.text = Mathf.CeilToInt(effect.Seconds) + "s";

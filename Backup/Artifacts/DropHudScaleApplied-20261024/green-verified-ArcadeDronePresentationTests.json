@@ -1,0 +1,44 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 6,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.0093072"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.DelayedLoadUsesLatestTierAndRestoresOriginalMaterial",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.FormalDroneMatchesApprovedSizeAndCarriesNoColliders",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.LateBodyCannotReplaceExplosionAndExpiredCallbackCannotReviveIt",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.LateExtraLoadCannotReturnAfterItIsRemoved",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.PurplePairLoadsIndependentlyAndDowngradeReleasesOnlyExtra",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.TwoOwnersKeepIndependentPositionAndColor",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      }
+    ]
+  }
+}

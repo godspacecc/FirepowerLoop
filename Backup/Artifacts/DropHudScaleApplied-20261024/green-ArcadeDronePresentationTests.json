@@ -1,0 +1,45 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 6,
+      "PassedTests": 5,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1378862"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.DelayedLoadUsesLatestTierAndRestoresOriginalMaterial",
+        "Status": "Passed",
+        "Duration": "00:00:00.0510000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.FormalDroneMatchesApprovedSizeAndCarriesNoColliders",
+        "Status": "Failed",
+        "Duration": "00:00:00.0090000",
+        "Message": "  Expected: 0.595000029f +/- 0.00200000009f\r\n  But was:  0.5922001f\r\n"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.LateBodyCannotReplaceExplosionAndExpiredCallbackCannotReviveIt",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.LateExtraLoadCannotReturnAfterItIsRemoved",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.PurplePairLoadsIndependentlyAndDowngradeReleasesOnlyExtra",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeDronePresentationTests.TwoOwnersKeepIndependentPositionAndColor",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.1712937"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeCompactHudTests.SkullOnlyPulsesInLastThreeSecondsAndReuseRestoresNormalEffect",
+        "Status": "Failed",
+        "Duration": "00:00:01.2670000",
+        "Message": "  红转紫或重复刷新不能累乘缩小\r\n  Expected: (0.90, 0.90, 0.90)\r\n  But was:  (1.00, 1.00, 1.00)\r\n"
+      }
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:00.9669632"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeWeaponDeliveryTests.DroneDeliveryKeepsApprovedSizeAndDoesNotResizeOtherWeapons",
+        "Status": "Failed",
+        "Duration": "00:00:00.0520000",
+        "Message": "  空投机体缩小不应改变采用预览中的悬浮位置\r\n  Expected: less than 9.99999975E-05f\r\n  But was:  0.269267321f\r\n"
+      }
+    ]
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 8,
+      "PassedTests": 8,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:07.9215434"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.AllGroundDropNamesAreEmptyAtTheArcadeProjectionSource",
+        "Status": "Passed",
+        "Duration": "00:00:00.9550000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse",
+        "Status": "Passed",
+        "Duration": "00:00:00.9970000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicAKSwitchesBackAfterTemporaryGunWithoutLeakingVisuals",
+        "Status": "Passed",
+        "Duration": "00:00:00.9720000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicGunUsesSeparateAKWithFasterCadenceAndPreservesMP40",
+        "Status": "Passed",
+        "Duration": "00:00:00.7800000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.DeliveryRestoresOrdinaryRotationWhenPooled",
+        "Status": "Passed",
+        "Duration": "00:00:00.8310000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OpenedAirdropIsPlayerSizedAndCrateIsSmaller",
+        "Status": "Passed",
+        "Duration": "00:00:00.8160000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OrdinarySkullsKeepOriginalSizeAndCrateReuseRestoresPose",
+        "Status": "Passed",
+        "Duration": "00:00:00.7700000"
+      },
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.UnusedMeleeConfigsAreRemovedWhileEnemyWeaponsRemainValid",
+        "Status": "Passed",
+        "Duration": "00:00:00.8150000"
+      }
+    ]
+  }
+}

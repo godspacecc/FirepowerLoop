@@ -20,6 +20,52 @@ namespace Game.Tests
             crate=instance.GetComponentInChildren<ArcadeWeaponDeliveryView>(true);Assert.That(crate,Is.Not.Null);
         }
         [TearDown] public void Cleanup()=>Object.DestroyImmediate(instance);
+        /// <summary>无人机使用独立的已采用空投尺寸；重复阶段同步与普通/武器复用不能带入错误比例。</summary>
+        [Test] public void DroneDeliveryKeepsApprovedSizeAndDoesNotResizeOtherWeapons()
+        {
+            const string name="ArcadeSupportDroneVisual";
+            var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/"+name+".prefab");
+            pickup.SetArcadePresentation(source,"Prefabs/SceneObjects/"+name);
+            var visual=instance.transform.Find("ArcadeDropVisual");
+            var ordinaryScale=visual.localScale;var ordinaryPosition=visual.localPosition;
+            // 采用版先使用原空投姿态再缩小机体，不让尺寸适配额外改变浮空高度。
+            var serialized=new SerializedObject(pickup);
+            var poses=serialized.FindProperty("weaponDeliveryPoses");
+            SerializedProperty size=null;
+            for(int index=0;index<poses.arraySize;index++)
+            {
+                var pose=poses.GetArrayElementAtIndex(index);
+                if(pose.FindPropertyRelative("prefabAddress").stringValue=="Prefabs/SceneObjects/"+name)
+                    size=pose.FindPropertyRelative("maxSize");
+            }
+            Assert.That(size,Is.Not.Null);
+            Assert.That(size.floatValue,Is.EqualTo(.85f),"正式模板必须保存已采用的无人机专用尺寸");
+            size.floatValue=0;serialized.ApplyModifiedPropertiesWithoutUndo();
+            pickup.SetWeaponDelivery(true,0,1.2f);
+            var approvedPosition=visual.localPosition;
+            pickup.SetWeaponDelivery(false,0,1.2f);
+            size.floatValue=.85f;serialized.ApplyModifiedPropertiesWithoutUndo();
+            for(int cycle=0;cycle<2;cycle++)
+            {
+                foreach(float remaining in new[]{1.2f,.3f,0f,0f})
+                {
+                    pickup.SetWeaponDelivery(true,remaining,1.2f);
+                    var bounds=EntityBoundsInPickup(visual);
+                    Assert.That(Mathf.Max(bounds.size.x,bounds.size.y,bounds.size.z)*instance.transform.lossyScale.x,
+                        Is.EqualTo(.85f).Within(.002f));
+                    if(remaining==0)Assert.That(Vector3.Distance(visual.localPosition,approvedPosition),Is.LessThan(.0001f),
+                        "空投机体缩小不应改变采用预览中的悬浮位置");
+                }
+                pickup.SetWeaponDelivery(false,0,1.2f);
+                Assert.That(visual.localScale,Is.EqualTo(ordinaryScale));
+                Assert.That(visual.localPosition,Is.EqualTo(ordinaryPosition));
+            }
+            pickup.SetArcadePresentation(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab"),"Prefabs/SceneObjects/ArcadeFlamethrower");
+            pickup.SetWeaponDelivery(true,0,1.2f);
+            var weaponBounds=EntityBoundsInPickup(instance.transform.Find("ArcadeDropVisual"));
+            Assert.That(Mathf.Max(weaponBounds.size.x,weaponBounds.size.y,weaponBounds.size.z)*instance.transform.lossyScale.x,
+                Is.EqualTo(1.7f).Within(.002f));
+        }
         [Test] public void FallingBoxHidesWeaponAndLandsAtGround()
         {
             pickup.SetWeaponDelivery(true,1.2f,1.2f);Assert.That(crate.transform.position.y,Is.GreaterThan(7));

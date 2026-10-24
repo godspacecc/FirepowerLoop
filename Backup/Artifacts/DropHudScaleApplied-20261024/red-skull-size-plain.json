@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.8901789"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ConfirmedWeaponPresentationTests.ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse",
+        "Status": "Failed",
+        "Duration": "00:00:00.9600000",
+        "Message": "  Expected: 0.349580467f +/- 0.00100000005f\r\n  But was:  0.24862504f\r\n"
+      }
+    ]
+  }
+}
