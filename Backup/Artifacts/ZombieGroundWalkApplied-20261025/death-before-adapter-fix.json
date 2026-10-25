@@ -1,0 +1,100 @@
+{
+  "Summary": {
+    "Status": "Failed",
+    "TotalTests": 17,
+    "PassedTests": 14,
+    "FailedTests": 3,
+    "SkippedTests": 0,
+    "Duration": "00:00:12.4852086"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ExplosiveCarrierTransfersRadialImpulseToNearbyVictim",
+      "Status": "Passed",
+      "Duration": "00:00:01.1690000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.GenericCircularDamageDoesNotTurnElectricOrbIntoExplosion",
+      "Status": "Passed",
+      "Duration": "00:00:00.8800000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.GroundBarrelDeathCarriesExplosionAndDoesNotReplayAfterRemoval",
+      "Status": "Passed",
+      "Duration": "00:00:00.8720000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.NetworkProjectionCopiesDeathValuesIndependentOfMessageMutation",
+      "Status": "Passed",
+      "Duration": "00:00:00.0450000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.NonLethalShotgunDoesNotDisplaceLivingEnemyOrEmitDeath",
+      "Status": "Passed",
+      "Duration": "00:00:00.7970000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(7,True)",
+      "Status": "Failed",
+      "Duration": "00:00:00.0040000",
+      "Message": "System.Reflection.TargetParameterCountException : Number of parameters specified does not match the expected number."
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(6,False)",
+      "Status": "Failed",
+      "Duration": "00:00:00",
+      "Message": "System.Reflection.TargetParameterCountException : Number of parameters specified does not match the expected number."
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.raygun\",2.85f,1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8220000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.rocket\",1.75f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8160000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.grenade\",1.55f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7770000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectionAndVisibleOnlineRemovalPreserveTypedImpactWithoutReplay",
+      "Status": "Failed",
+      "Duration": "00:00:00.0010000",
+      "Message": "System.Reflection.TargetParameterCountException : Number of parameters specified does not match the expected number."
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(2.0f,0.09f,2)",
+      "Status": "Passed",
+      "Duration": "00:00:01.1800000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(4.0f,0.2233333f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7740000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(3.0f,0.1566667f,2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8200000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(3.01f,0.1573333f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8120000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.SoloBombCarriesExplosiveDeathWithoutChangingKillBudget",
+      "Status": "Passed",
+      "Duration": "00:00:00.7790000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.SoloExplosionCarriesRadialDirectionAndRepeatedKillDoesNotReplay",
+      "Status": "Passed",
+      "Duration": "00:00:00.8120000"
+    }
+  ]
+}

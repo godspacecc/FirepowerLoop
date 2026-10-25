@@ -1,0 +1,38 @@
+{
+  "scope": "formal Animator Run sampled at adopted phase in isolated cloned scene",
+  "frames": 360,
+  "fps": 20,
+  "seconds": 18,
+  "full_decode": "passed",
+  "image_comparisons": [
+    {
+      "kind": "Shambler",
+      "frames": 120,
+      "max_mean_channel_difference": 0.041591145833333336,
+      "max_different_pixels": 2615,
+      "max_channel_difference": 255
+    },
+    {
+      "kind": "Gaunt",
+      "frames": 120,
+      "max_mean_channel_difference": 0.04694704861111111,
+      "max_different_pixels": 2768,
+      "max_channel_difference": 255
+    },
+    {
+      "kind": "Bloated",
+      "frames": 120,
+      "max_mean_channel_difference": 0.03563454861111111,
+      "max_different_pixels": 2372,
+      "max_channel_difference": 255
+    }
+  ],
+  "existing_formal_files_checked": 122,
+  "expected_controller_changes": [
+    "Client\\Assets\\Game\\Art\\Enemies\\Zombies\\ArcadeZombieBloated.controller",
+    "Client\\Assets\\Game\\Art\\Enemies\\Zombies\\ArcadeZombieShambler.controller",
+    "Client\\Assets\\Game\\Art\\Enemies\\Zombies\\ArcadeZombieGaunt.controller"
+  ],
+  "other_existing_formal_changes": [],
+  "runtime_ik": false
+}

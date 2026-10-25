@@ -1,0 +1,29 @@
+[
+  {
+    "kind": "Shambler",
+    "initial_sha_reconstructed_exactly": true,
+    "changes": [
+      "m_Name",
+      "m_ClipBindingConstant"
+    ],
+    "animation_curves_changed": false
+  },
+  {
+    "kind": "Gaunt",
+    "initial_sha_reconstructed_exactly": true,
+    "changes": [
+      "m_Name",
+      "m_ClipBindingConstant"
+    ],
+    "animation_curves_changed": false
+  },
+  {
+    "kind": "Bloated",
+    "initial_sha_reconstructed_exactly": true,
+    "changes": [
+      "m_Name",
+      "m_ClipBindingConstant"
+    ],
+    "animation_curves_changed": false
+  }
+]

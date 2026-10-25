@@ -1,0 +1,97 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 17,
+    "PassedTests": 17,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:11.8570767"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ExplosiveCarrierTransfersRadialImpulseToNearbyVictim",
+      "Status": "Passed",
+      "Duration": "00:00:00.9420000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.GenericCircularDamageDoesNotTurnElectricOrbIntoExplosion",
+      "Status": "Passed",
+      "Duration": "00:00:00.8570000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.GroundBarrelDeathCarriesExplosionAndDoesNotReplayAfterRemoval",
+      "Status": "Passed",
+      "Duration": "00:00:00.8000000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.NetworkProjectionCopiesDeathValuesIndependentOfMessageMutation",
+      "Status": "Passed",
+      "Duration": "00:00:00.0490000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.NonLethalShotgunDoesNotDisplaceLivingEnemyOrEmitDeath",
+      "Status": "Passed",
+      "Duration": "00:00:00.8520000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(7,True)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.OnlineConsumesOnlyVisibleRemovedEnemyFromSameRound(6,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.raygun\",2.85f,1)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7810000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.rocket\",1.75f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8230000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectileExplosionKeepsItsDeathStyleAfterWeaponChange(\"arcade.weapon.grenade\",1.55f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8340000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ProjectionAndVisibleOnlineRemovalPreserveTypedImpactWithoutReplay",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(2.0f,0.09f,2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7820000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(4.0f,0.2233333f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8240000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(3.0f,0.1566667f,2)",
+      "Status": "Passed",
+      "Duration": "00:00:00.7740000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.ShotgunStyleUsesFiringPositionDespiteShooterMoving(3.01f,0.1573333f,0)",
+      "Status": "Passed",
+      "Duration": "00:00:00.8270000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.SoloBombCarriesExplosiveDeathWithoutChangingKillBudget",
+      "Status": "Passed",
+      "Duration": "00:00:00.7870000"
+    },
+    {
+      "Name": "Game.Tests.EnemyDeathPresentationTests.SoloExplosionCarriesRadialDirectionAndRepeatedKillDoesNotReplay",
+      "Status": "Passed",
+      "Duration": "00:00:00.8250000"
+    }
+  ]
+}

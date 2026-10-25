@@ -116,9 +116,11 @@ namespace Game.Tests
             typeof(OnlineArcadePresentationSystem).GetField("view", Flags).SetValue(online, recorder);
             var method = typeof(OnlineArcadePresentationSystem).GetMethod("SyncEnemies", Flags);
             var alive = new[] { new OnlineArcadeEnemySnapshot(41, "enemy.arcade.basic", 3, 0, 20, 20, 1, 1) };
-            method.Invoke(online, new object[] { alive, false, null, 7, true });
-            method.Invoke(online, new object[] { Array.Empty<OnlineArcadeEnemySnapshot>(), false, deaths, 7, true });
-            method.Invoke(online, new object[] { Array.Empty<OnlineArcadeEnemySnapshot>(), false, deaths, 7, true });
+            // 同步入口现已需要玩家列表供近战朝向使用，本例仅测死亡，显式传入空列表。
+            var players = Array.Empty<OnlineArcadeBattlePlayerSnapshot>();
+            method.Invoke(online, new object[] { alive, false, null, 7, true, players });
+            method.Invoke(online, new object[] { Array.Empty<OnlineArcadeEnemySnapshot>(), false, deaths, 7, true, players });
+            method.Invoke(online, new object[] { Array.Empty<OnlineArcadeEnemySnapshot>(), false, deaths, 7, true, players });
             Assert.That(recorder.Deaths.Count, Is.EqualTo(shouldPlay ? 1 : 0));
             if (shouldPlay) Assert.That(recorder.Deaths[0].explosive, Is.True);
         }

@@ -1,0 +1,116 @@
+{
+  "scope": "temporary cloned actors, manual motion sampling, no product changes or tests",
+  "frames": 360,
+  "fps": 20,
+  "seconds": 18,
+  "width": 1280,
+  "height": 720,
+  "full_decode": "passed",
+  "formal_files_checked": 122,
+  "formal_file_changes": [],
+  "motion": {
+    "Shambler": {
+      "max_target_error_m": 0.0,
+      "max_body_drop_m": 0.0436,
+      "mean_body_drop_m": 0.0223,
+      "max_simultaneous_knee_bend_degrees": 7.292,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.0649,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            7.252,
+            50.259
+          ],
+          "support_knee_bend_degrees": [
+            7.253,
+            34.202
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.0649,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            7.252,
+            50.259
+          ],
+          "support_knee_bend_degrees": [
+            7.252,
+            34.202
+          ]
+        }
+      }
+    },
+    "Gaunt": {
+      "max_target_error_m": 0.0,
+      "max_body_drop_m": 0.047,
+      "mean_body_drop_m": 0.0237,
+      "max_simultaneous_knee_bend_degrees": 7.063,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0511,
+          "candidate_vertical_range_m": 0.0649,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            6.965,
+            48.487
+          ],
+          "support_knee_bend_degrees": [
+            6.965,
+            34.15
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0511,
+          "candidate_vertical_range_m": 0.0649,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            6.965,
+            48.487
+          ],
+          "support_knee_bend_degrees": [
+            6.965,
+            34.149
+          ]
+        }
+      }
+    },
+    "Bloated": {
+      "max_target_error_m": 0.0,
+      "max_body_drop_m": 0.0405,
+      "mean_body_drop_m": 0.0216,
+      "max_simultaneous_knee_bend_degrees": 7.586,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.0499,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            7.485,
+            45.756
+          ],
+          "support_knee_bend_degrees": [
+            7.495,
+            34.282
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.0499,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            7.485,
+            45.756
+          ],
+          "support_knee_bend_degrees": [
+            7.495,
+            34.282
+          ]
+        }
+      }
+    }
+  },
+  "v1_v2_video_full_decode": "passed"
+}

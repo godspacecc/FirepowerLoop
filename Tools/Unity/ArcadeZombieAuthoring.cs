@@ -195,8 +195,16 @@ public static class ArcadeZombieAuthoring
         var controller=AssetDatabase.LoadAssetAtPath<AnimatorController>(path);
         var clips=new Dictionary<string,AnimationClip>();
         foreach(var name in new[]{"Idle","Walk","Run_Arms","Idle_Attack","HitReact","Death"})clips[name]=Motion(model,name);
+        // 角色重制时保留已采用v2地面步态，禁止重新绑定旧小幅腿部动画或丢失移速步频。
+        var groundWalk=AssetDatabase.LoadAssetAtPath<AnimationClip>(Art+kind+"GroundWalk.anim");
         foreach(var state in controller.layers[0].stateMachine.states.Select(s=>s.state))
-        {string motion=state.name=="Run"?(variant==1?"Run_Arms":"Walk"):state.name=="Attack"?"Idle_Attack":state.name=="Hit"?"HitReact":state.name;state.motion=clips[motion];state.speed=1;EditorUtility.SetDirty(state);}
+        {
+            string motion=state.name=="Run"?(variant==1?"Run_Arms":"Walk"):state.name=="Attack"?"Idle_Attack":state.name=="Hit"?"HitReact":state.name;
+            bool adopted=state.name=="Run"&&groundWalk!=null;
+            state.motion=adopted?groundWalk:clips[motion];state.speed=adopted?1/.9f:1;
+            state.speedParameterActive=adopted;state.speedParameter=adopted?"MoveSpeed":string.Empty;
+            EditorUtility.SetDirty(state);
+        }
         EditorUtility.SetDirty(controller);return controller;
     }
 

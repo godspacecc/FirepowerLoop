@@ -1,0 +1,82 @@
+{
+  "scope": "temporary cloned actors, manual motion sampling, no product changes or tests",
+  "frames": 360,
+  "fps": 20,
+  "seconds": 18,
+  "width": 1280,
+  "height": 720,
+  "full_decode": "passed",
+  "formal_files_checked": 122,
+  "formal_file_changes": [],
+  "motion": {
+    "Shambler": {
+      "max_target_error_m": 0.0,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.1796,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            37.406,
+            108.081
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.1799,
+          "max_stance_frame_drift_m": 0.0,
+          "knee_bend_degrees": [
+            37.405,
+            107.937
+          ]
+        }
+      }
+    },
+    "Gaunt": {
+      "max_target_error_m": 0.00271,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0511,
+          "candidate_vertical_range_m": 0.1826,
+          "max_stance_frame_drift_m": 0.002,
+          "knee_bend_degrees": [
+            34.518,
+            105.914
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0511,
+          "candidate_vertical_range_m": 0.1823,
+          "max_stance_frame_drift_m": 0.0013,
+          "knee_bend_degrees": [
+            34.519,
+            105.753
+          ]
+        }
+      }
+    },
+    "Bloated": {
+      "max_target_error_m": 0.00213,
+      "feet": {
+        "left": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.1315,
+          "max_stance_frame_drift_m": 0.0014,
+          "knee_bend_degrees": [
+            40.08,
+            99.84
+          ]
+        },
+        "right": {
+          "current_vertical_range_m": 0.0294,
+          "candidate_vertical_range_m": 0.1318,
+          "max_stance_frame_drift_m": 0.0017,
+          "knee_bend_degrees": [
+            40.08,
+            99.703
+          ]
+        }
+      }
+    }
+  }
+}

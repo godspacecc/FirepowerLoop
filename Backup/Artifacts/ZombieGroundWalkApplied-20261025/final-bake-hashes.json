@@ -1,0 +1,14 @@
+{
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieShambler.controller.meta": "0CD6FE218333DFF6FE475E4297C654E7B4546C86390A6A7D2B11241A26F3F7F5",
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieGaunt.controller": "2E377F732EBD5C1A6CBCAF2B60243388964D3CBCF9A700BBFCD47F0E5BAE157B",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/GauntGroundWalk.anim.meta": "B5701F447387921DF7F3D6B2D3A00AB85EFBA029B567B107326AA14195AF99E3",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/BloatedGroundWalk.anim.meta": "CA7413BD023D7FB156AE31C09676B8E61E9EF3CBB5E32BD4FF792153BD8FE3D2",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerGroundWalk.anim.meta": "5628A994220B0679442B47E624255ECC9353160E9D48E2BDE996E754B7AC21FF",
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieBloated.controller": "0CC6B15F4219CCC7085B62601A5B903D1A0EE458F1855C95EDA4499558F6CB93",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/GauntGroundWalk.anim": "D31D595FE796861BAD4819238FEE63DA9A209B358E563B63FBD55BE5BC427C73",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerGroundWalk.anim": "D599A87703EFDC37919168ADC43F0782B5FD0D33ED253B65F592ED1B30060FA8",
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieGaunt.controller.meta": "27EAC010A0E51BC17D3C963C782E7A0617C9065E108DD34F5CFF39EBDF24B551",
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieShambler.controller": "32C110A0DDD6639254EB9CCC6DD3BA29AB9EB3C250BE468BBE33D41F76BA185E",
+  "Client/Assets/Game/Art/Enemies/Zombies/Civilian/BloatedGroundWalk.anim": "3EF82B01CBF1C5851EB89ECAA8E3A75A965B2F74D2310880F1482832BB948515",
+  "Client/Assets/Game/Art/Enemies/Zombies/ArcadeZombieBloated.controller.meta": "53CF0701A6FA4302EBE0881098FEF2F713B613C1C196E35E4137770444AFC190"
+}

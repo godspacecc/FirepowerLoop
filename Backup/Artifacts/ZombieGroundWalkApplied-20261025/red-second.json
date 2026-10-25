@@ -1,0 +1,66 @@
+{
+  "Summary": {
+    "Status": "Failed",
+    "TotalTests": 9,
+    "PassedTests": 0,
+    "FailedTests": 9,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.5885558"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Shambler\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.3070000",
+      "Message": "  移动时已着地的脚掌不能随身体滑动\r\n  Expected: less than 0.00200000009f\r\n  But was:  0.00888166018f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Gaunt\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0270000",
+      "Message": "  移动时已着地的脚掌不能随身体滑动\r\n  Expected: less than 0.00200000009f\r\n  But was:  0.014943514f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Bloated\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0250000",
+      "Message": "  移动时已着地的脚掌不能随身体滑动\r\n  Expected: less than 0.00200000009f\r\n  But was:  0.00905692764f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Shambler\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0090000",
+      "Message": "  移动翻倍时步频应同步，避免快走却慢迈腿\r\n  Expected: 2 +/- 0.0199999996f\r\n  But was:  1.0f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Gaunt\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0030000",
+      "Message": "  移动翻倍时步频应同步，避免快走却慢迈腿\r\n  Expected: 2 +/- 0.0199999996f\r\n  But was:  1.0f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Bloated\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0040000",
+      "Message": "  移动翻倍时步频应同步，避免快走却慢迈腿\r\n  Expected: 2 +/- 0.0199999996f\r\n  But was:  1.0f\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Shambler\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0060000",
+      "Message": "  Expected: True\r\n  But was:  False\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Gaunt\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0040000",
+      "Message": "  Expected: True\r\n  But was:  False\r\n"
+    },
+    {
+      "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Bloated\")",
+      "Status": "Failed",
+      "Duration": "00:00:00.0030000",
+      "Message": "  Expected: True\r\n  But was:  False\r\n"
+    }
+  ]
+}

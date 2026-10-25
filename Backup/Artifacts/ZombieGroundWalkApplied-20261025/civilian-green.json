@@ -1,0 +1,27 @@
+{
+  "Summary": {
+    "Status": "Passed",
+    "TotalTests": 3,
+    "PassedTests": 3,
+    "FailedTests": 0,
+    "SkippedTests": 0,
+    "Duration": "00:00:01.6269709"
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.ArcadeCivilianZombieTests.HumanZombieMatchesPlayerHeightAndHeadSize(\"Shambler\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.4490000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeCivilianZombieTests.HumanZombieMatchesPlayerHeightAndHeadSize(\"Gaunt\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0270000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeCivilianZombieTests.HumanZombieMatchesPlayerHeightAndHeadSize(\"Bloated\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0320000"
+    }
+  ]
+}

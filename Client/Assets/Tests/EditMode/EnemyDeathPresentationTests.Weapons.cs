@@ -65,8 +65,9 @@ namespace Game.Tests
             Assert.That(snapshot.EnemyDeaths[0].GetType().GetProperty("ImpactKind").GetValue(snapshot.EnemyDeaths[0]),Is.EqualTo(1));
             var online=new OnlineArcadePresentationSystem(); typeof(OnlineArcadePresentationSystem).GetField("view",Flags).SetValue(online,recorder);
             var sync=typeof(OnlineArcadePresentationSystem).GetMethod("SyncEnemies",Flags);
-            sync.Invoke(online,new object[]{new[]{new OnlineArcadeEnemySnapshot(41,"enemy.arcade.basic",3,0,20,20,1,1)},false,null,7,true});
-            for(int i=0;i<2;i++) sync.Invoke(online,new object[]{Array.Empty<OnlineArcadeEnemySnapshot>(),false,snapshot.EnemyDeaths,7,true});
+            var players=Array.Empty<OnlineArcadeBattlePlayerSnapshot>();
+            sync.Invoke(online,new object[]{new[]{new OnlineArcadeEnemySnapshot(41,"enemy.arcade.basic",3,0,20,20,1,1)},false,null,7,true,players});
+            for(int i=0;i<2;i++) sync.Invoke(online,new object[]{Array.Empty<OnlineArcadeEnemySnapshot>(),false,snapshot.EnemyDeaths,7,true,players});
             CollectionAssert.AreEqual(new[]{1},recorder.Impacts);
         }
     }
