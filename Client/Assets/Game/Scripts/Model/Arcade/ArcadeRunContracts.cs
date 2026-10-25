@@ -178,7 +178,7 @@ namespace Game
     {
         public const int CurrentVersion = 1;
         public int Version { get; set; } = CurrentVersion;
-        /// <summary>缺失为旧十场路线；只有新正式局使用版本1的十三场路线。</summary>
+        /// <summary>缺失为原十场版本0，旧十三场为版本1；新正式局使用版本2的确认十关路线。</summary>
         public int CasualRouteVersion { get; set; }
         /// <summary>旧档缺省0，只有明确启用的新局采用版本1，不转换旧局金币。</summary>
         public int SlayerMartRulesVersion { get; set; }

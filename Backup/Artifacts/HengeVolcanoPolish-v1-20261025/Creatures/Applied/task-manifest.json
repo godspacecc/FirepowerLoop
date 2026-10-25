@@ -1,0 +1,913 @@
+{
+  "task": "SpecialKind4/5 adopted v1 formal integration; no scene-candidate adoption",
+  "baseCommit": "7bc4591cf733645daaa45b367ec8f52409e19a09",
+  "status": "implemented and verified, not staged/committed/pushed; parent coordinates selective integration",
+  "self": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/task-manifest.json",
+  "files": [
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/README.md",
+      "bytes": 5948,
+      "sha256": "93022ad10168d8fa996a429a3f5d05b70683e7fd2d5a01eb4b43e69b9dc3469d"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/bake-repeat.json",
+      "bytes": 239,
+      "sha256": "528834b9792fee5b711ce190ea22801aebfd9e7846aabb8e40fa072ae7d47a14"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/bake.txt",
+      "bytes": 82,
+      "sha256": "f63fba3dd796b1b140d4558ff2e4d5eac4e02cf049ff6c8ce8a2499bbe81078a"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/burrower-keyframes.jpg",
+      "bytes": 314352,
+      "sha256": "787c741d015f3999a230002a1221a9c1e3d6e8340e16d93555b24841dd876348"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/burrower-normal.gif",
+      "bytes": 5926348,
+      "sha256": "a5d3c5d88b0c238136b27813eb62d4aaa684dc262b80eddb137f9a772a5a67ab"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/burrower-normal.mp4",
+      "bytes": 567492,
+      "sha256": "9bf2efc629819a4e34a08ad0f67e00cbdc4b10772d1530fe7fbb1938764d7878"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/burrower-slow.mp4",
+      "bytes": 677789,
+      "sha256": "252607f239d55ade4cb619ae66df99206e7120a32ba9d9df4b7d09413a6541f9"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/burrower-timeline.csv",
+      "bytes": 8930,
+      "sha256": "39d74af66ab078b3c6ab99ffc429754666fe97d7678f0579290de8967920a2e3"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/capture.txt",
+      "bytes": 695,
+      "sha256": "549aa9426f9adb4bf5a51c05f28c5f0ff8fcd08583ae4ca269d1d4b40bf3249e"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/client-green-attempt.json",
+      "bytes": 2651,
+      "sha256": "5d6b75a943c8ba087fc8c1790444c95ed2096fd29709031668e5cd373ac613bc"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/client-green.json",
+      "bytes": 3073,
+      "sha256": "f7fe4fdc7ef8a32753356ce1a5fcff84b82144c627c1ab6a5de6fe28ceba3e91"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/client-red.json",
+      "bytes": 8007,
+      "sha256": "aae2f42aef58ff21a5630d4e97ccca98189deb54d0ef34166a25142f54e1068b"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/editor-final.json",
+      "bytes": 818,
+      "sha256": "c930b2ab2a015825eccd7b37fd9e5de081c13a456ab71434074f9ffda8fd39ee"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/encoding-log.txt",
+      "bytes": 1174,
+      "sha256": "517bff5f1517e388ecb3319d573bd30b435f2897f207f235e5e5044086f0733c"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/hound-keyframes.jpg",
+      "bytes": 306511,
+      "sha256": "917c11155cf7e1f62b887d02a554a8ea6e288cd6275c4b662590a5c191bd11e6"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/hound-normal.gif",
+      "bytes": 5802925,
+      "sha256": "46345703c18c30654773a559c39ed6100675e78ef21e8b264c13f070217743e8"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/hound-normal.mp4",
+      "bytes": 464228,
+      "sha256": "6e344fb41bfbb5cd99f9c1ab1fe6d19257364a9fb746a3af4c1b99cb319d9d20"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/hound-slow.mp4",
+      "bytes": 550251,
+      "sha256": "cb0305229dd8e680e57b1362af5060cfc0a39ff8ad2e0811c2cbcce1859feaa3"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/hound-timeline.csv",
+      "bytes": 8864,
+      "sha256": "c8ed63417c744e58fb80d3721efbf5b7891251908fd017c4126a38a839792222"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/index.html",
+      "bytes": 1462,
+      "sha256": "4ff1dc497d66e404ac8d0554dab30afbe2f4a80d2c92e5ca69c488f57046c903"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/protocol-generation.txt",
+      "bytes": 72,
+      "sha256": "f0393ba2948965a9a8038457ca4cb6adfc2705a61efa93a027086d8694a019c6"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/regression.json",
+      "bytes": 2726,
+      "sha256": "ea13e99c6508f2ad901816ed19fe3b3812541fd616bf9f362393d92347e3f448"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/resource-protection.json",
+      "bytes": 198,
+      "sha256": "85f76cdb1ccc14f1ba1b5b8d79cfb889554538b9cf2ca6810551f91074422f69"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/review-melee-red.json",
+      "bytes": 706,
+      "sha256": "c8f5e4110fefab5cb0198714efbb5c7d0a57867e561516e43b223bf37af4dca3"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/review-red.json",
+      "bytes": 996,
+      "sha256": "2ac9ef811480bbd7a4c7e96eece2f00bdeddfcf1f48a1162bca5981cdd52b348"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/server-checks.txt",
+      "bytes": 221,
+      "sha256": "ea6b2c7ca3e50f0db96b4fa625c6017a3b24f035c3ff6398bf3884146a8cc597"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/Applied/video-verification.json",
+      "bytes": 1215,
+      "sha256": "8a0c2dd128ea8a0930f2f622c770a6092fcd4df026ae5ea655860614481499a0"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/README.md",
+      "bytes": 6449,
+      "sha256": "6f24919227c66a49ba5db8321f29644cd5e03c8a766865c024d0783ba0d0c62c"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-candidate.png",
+      "bytes": 140083,
+      "sha256": "5b18b550db5d18ed97245f49c32a95fbd0c7054ab35419f4caf43a509d827220"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-comparison.png",
+      "bytes": 200718,
+      "sha256": "b690e8b301e5d1a3d5f47e9f8121cf825d32e86be2853b66d74d0411ff126932"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-current.png",
+      "bytes": 144460,
+      "sha256": "ce931545c65f8657b7f97eef707e0362117235d65f12d604e901c26a4be9bb25"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-keyframes.jpg",
+      "bytes": 255515,
+      "sha256": "4cd906e4320f096d383a1286d4e246b28ee22f4e6a70d28f05a4c708053c0473"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-normal.gif",
+      "bytes": 6991103,
+      "sha256": "6d6cac3fdeb897c69f14b709b9bf50a7fb0476b18ce894de9c18c7737c51f325"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-normal.mp4",
+      "bytes": 647525,
+      "sha256": "b804be41e05eb050bdc86887d0687115245a2db0e6641c6dee487d42a3e4bdd7"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-0.50.png",
+      "bytes": 139078,
+      "sha256": "6b5834852d0efa5c2d9b02aef9c06b8b7f0c4deeafc3a761ce8f032f752ccf1f"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-1.70.png",
+      "bytes": 121739,
+      "sha256": "0063e462572a7b5a8aa87963db5613954d93e4baac83c7072a4dea7a06a64f10"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-3.35.png",
+      "bytes": 133233,
+      "sha256": "e2dd666e57304cd929c7c33aaf7b38d1aa811600632ef7d67160273e88046aa3"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-3.70.png",
+      "bytes": 142263,
+      "sha256": "11c1857bf904283c9ac9d18f8a4d1028c54f2558956b084de02956f59931d8e4"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-4.30.png",
+      "bytes": 140485,
+      "sha256": "9e178d6c651513b456b764a9d251494b3a0b427988b61537bfee191cc046f8ac"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-5.80.png",
+      "bytes": 139453,
+      "sha256": "eba9ec0fa42a25cb3904fbf4a5affd2afd731a0d17fdd57faf483093108a406d"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-pose-7.30.png",
+      "bytes": 139970,
+      "sha256": "989097c928a4bc3a0a089fe2f812ea39562b5834363aa4d7ef3cf10bf64378ae"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-slow.mp4",
+      "bytes": 775951,
+      "sha256": "fc4e7b0bf69a959e3da25be63e8a5ad961e61ec8efad1ea65dc13fd0f4ccdf6d"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/burrower-trajectory.csv",
+      "bytes": 104372,
+      "sha256": "0438eae3f5500f231a7e80917b961c70a2b927018ed2de0cceb977ada218d47a"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/capture-inspection.txt",
+      "bytes": 485,
+      "sha256": "655fcfe362eb797f67008a8e2246ff6a3f66a6399329c5bf01919f346818387b"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/compiled-source.cs",
+      "bytes": 44493,
+      "sha256": "2e3616dbe3361319773cc5a8198cd1321de0057e96408406734ac464c2de51b7"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/editor-final.json",
+      "bytes": 803,
+      "sha256": "1e14ab035be3fbf61c62bcea86b078251a96384cdd1327c45b2c36bffa529d1d"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/encoding-log.txt",
+      "bytes": 3212,
+      "sha256": "9fab05366608ee2d6e5fe2b22c99f3521237ab0416f07ffb21b9eb6c3be36cdf"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-candidate.png",
+      "bytes": 129029,
+      "sha256": "4ec681705ad1968d6f27bc238aaf4f7c8d7586dd6dd0663d9640cd5087d67032"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-comparison.png",
+      "bytes": 185437,
+      "sha256": "cb9366c7ee380aaefbb685010323a479ef8c263c73b63502987f0226c0a3b2a2"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-current.png",
+      "bytes": 138979,
+      "sha256": "51bf57138118bb8eb61b45625f21e0d17880946094928f578327501f71e52706"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-keyframes.jpg",
+      "bytes": 273116,
+      "sha256": "aa8bac60b1b39f09cae6188dcb5b1a3c441cb1a3b5df3682c70445896f753bce"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-normal.gif",
+      "bytes": 5969221,
+      "sha256": "340238bc7ec0a27b802b1c56934a4c31f467de03735ff39bfb1de32a80449a5a"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-normal.mp4",
+      "bytes": 652401,
+      "sha256": "a45ba2eb45d76fdd388aad790f79b731eaa04eb4d69ac6cc70dd242bdf6ea0fc"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-0.30.png",
+      "bytes": 128956,
+      "sha256": "aedaff21f12be4a886f5ceafb3a9d37c1df6a32cedb2d660ca9fbfda2350f568"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-0.90.png",
+      "bytes": 127206,
+      "sha256": "0ada40521d56e2d31c2b230ce74e9d1266bcd32b6b9382713980d773a40f0c57"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-2.80.png",
+      "bytes": 126962,
+      "sha256": "c4dddc09eb00b11b9a9b370b26e6bcf209b82ccc4fb7688d3edcd9ef15f81cb7"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-3.40.png",
+      "bytes": 125489,
+      "sha256": "8b5094dc5f537ed30bd812cd7129b25829ecb7c68218194952d92b8409fd70c0"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-4.12.png",
+      "bytes": 124517,
+      "sha256": "7793a3edaa48c3e6665e506c2b9545a51977fcc3908014ffbf95ea44a16f9c9a"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-4.45.png",
+      "bytes": 124278,
+      "sha256": "52f9a382ac618f6eac637e52b8c105a1101dc82cc93c70f2d781e9b2441ac08a"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-4.90.png",
+      "bytes": 119250,
+      "sha256": "d9769d339c4064ab4d87076207dcb4caf71573a2e216465847420d24b0bb0f65"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-pose-6.50.png",
+      "bytes": 124797,
+      "sha256": "71dcf633975a480b3bfd47a30515f6cdf1b352ec0c8dd59af7b21fa452d627d2"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-slow.mp4",
+      "bytes": 781774,
+      "sha256": "26357fe809cd045566fb5c33379c8a3bdc4ae80c6347e82716ee18a23a73f6dc"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/hound-trajectory.csv",
+      "bytes": 84997,
+      "sha256": "1276a48efaf24dfeaed83b0accfa08ad39f423ee75e3c21cc57cadd11007c4e6"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/index.html",
+      "bytes": 2443,
+      "sha256": "d51acc3413a0c4fcf0491a59f27b2cebf0b602c2dac65c84d546f1ae34d91799"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/status.txt",
+      "bytes": 3776,
+      "sha256": "469531cf4011c089b76a9814113e77e9baed7bb32aa5c8a4b7f8801c38d0525b"
+    },
+    {
+      "path": "Backup/Artifacts/HengeVolcanoPolish-v1-20261025/Creatures/verification.json",
+      "bytes": 3239,
+      "sha256": "21b81b53178863b2ed540715f5f42828d22fd501f5b16249408e2c131d05ef36"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures.meta",
+      "bytes": 172,
+      "sha256": "db7b02057437a0551d33569735745fbbaeeea64223bfcdfa6c495d84a0a6bfac"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower.meta",
+      "bytes": 172,
+      "sha256": "624e4d7ac6c8219d7d1f929a5d2b48226dc636dee7795fe4deecd02476088876"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Bite.anim",
+      "bytes": 1720735,
+      "sha256": "b0f1b7c69915323cc6c9b253bd9034b376548b0d1baf2cd1dea6231f1a0441b6"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Bite.anim.meta",
+      "bytes": 188,
+      "sha256": "29f7d3a3840e06e461fadd2dfed8681c408f9a1d70cb3c39f98180172eade27f"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/BiteFace.anim",
+      "bytes": 135957,
+      "sha256": "fa06c9c641cfdc9d449f3697aac10cdc0882a0ec1e44078e016a04734fe2773c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/BiteFace.anim.meta",
+      "bytes": 188,
+      "sha256": "e3ab3687cc1c2fa2192e663740577bdaa697f43e77b5f4988d0bba99b71697af"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Emerge.anim",
+      "bytes": 4323965,
+      "sha256": "cb3ecbbab7b394d5775fc73994b4535d6cc13ac70bdc9e6ef2131a551c875611"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Emerge.anim.meta",
+      "bytes": 188,
+      "sha256": "eac99a338d7691ef22129a88a402cf612c7047a21fb49c0391552ac79803e5af"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Idle.anim",
+      "bytes": 185206,
+      "sha256": "fc1c906c6f2ed828b727d23448caed0755b6262e2f9aaa27790ee7fa9fbc0565"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Idle.anim.meta",
+      "bytes": 188,
+      "sha256": "6e47460fb521dda28367faa1cabf781b3488b79c0f7644311fe580a01d2ef22e"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material0.mat",
+      "bytes": 3626,
+      "sha256": "4aa12a86660a54fb4fd89f4ebff18ec4db7968c16cca46e81bfffccfbd04fef9"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material0.mat.meta",
+      "bytes": 188,
+      "sha256": "c17c16cd17b51f610d85e6fc27423b8d138914d6dcfcb9c599126cb567993bbb"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material1.mat",
+      "bytes": 3625,
+      "sha256": "1b09eb3009d54464239ccb165d8cbd6932c4e31c03d5b83ff3ba2c705d1c9d5d"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material1.mat.meta",
+      "bytes": 188,
+      "sha256": "e072a2c38a06f4b55967c6079a8db9e1b94308e4575b8d0184963aabc494ec18"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material2.mat",
+      "bytes": 3636,
+      "sha256": "06ba514cce827813d6fd88a2201a36bc12338a75003e40e825446b27e6c61b67"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material2.mat.meta",
+      "bytes": 188,
+      "sha256": "67a746865aa3b92b8ff77b9039a298ac00f669c04b506ecaa86e425fc6ba7a94"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material3.mat",
+      "bytes": 3628,
+      "sha256": "867fccd9159e31cf2002f76491e18eef9efc362464b2ca1f5d4f0f427b329ded"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material3.mat.meta",
+      "bytes": 188,
+      "sha256": "947fe470dfbf171cbaa0a02449e7fbd7581cb02c4b1b06cef628747512b5c794"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material4.mat",
+      "bytes": 3628,
+      "sha256": "2278f9769e783ef2fd335a3b28d173db6ee21371396c2f24d5e09e75d188d9a7"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material4.mat.meta",
+      "bytes": 188,
+      "sha256": "3c1061d72bf560df477d1ad58bcbc729be3ce4a9fad4901639c1296beb4b7e82"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material5.mat",
+      "bytes": 3643,
+      "sha256": "7632c78e6f9faa08b6bca946e48010f5572a1c7d9516779f69c18da584354c6f"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material5.mat.meta",
+      "bytes": 188,
+      "sha256": "a7d8ca1dc7086c6666aacf9666a286e631dad88acaecfb8061df91a07b32971c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material6.mat",
+      "bytes": 3618,
+      "sha256": "e4f0a2237d0a1b0339505d4a8ef3f7c1b44d18b4986cee79f28a71abcaa3d625"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material6.mat.meta",
+      "bytes": 188,
+      "sha256": "bfa51f1f8e304e60a0a005605da42dbee515fce882fb216737b9a42aa5c6a1b5"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material7.mat",
+      "bytes": 3633,
+      "sha256": "fdf519c7e7bcbc8ec32bb24187448c4cd9cab009fe5dcae9b5a944ebb0e032e3"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material7.mat.meta",
+      "bytes": 188,
+      "sha256": "7c1da6c363f266f4e3f6bb7d5c1b2e7dccda883d97cfe076abacc8100d0faf8b"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material8.mat",
+      "bytes": 3615,
+      "sha256": "cf39f672f5d19301895a22209da73b052744980012abfc907aa41315717ec132"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material8.mat.meta",
+      "bytes": 188,
+      "sha256": "6055fea511dfc8cda3539196e23a076821eac4155aab8b3349ea8e51ca87011b"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material9.mat",
+      "bytes": 3616,
+      "sha256": "2f4c4e942a143227128a9b694365a454ff48d22df0309f961e1cc8460e4baab1"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Material9.mat.meta",
+      "bytes": 188,
+      "sha256": "97100cc0db97fe5bf0d0f292134a4a22064b9a7df18b7171cebcb0fe6c704a98"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh0.asset",
+      "bytes": 10630,
+      "sha256": "f0abf3974ea231f9ac372344c6b5906bdbac257ad30c7b15d52b935dec75667c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh0.asset.meta",
+      "bytes": 188,
+      "sha256": "d72b922507db95aa87406d9b0a309c20963562e5dd9a0155a32f8f970a783a89"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh1.asset",
+      "bytes": 4084,
+      "sha256": "cdc6f86c7111ddbdc602d7e4448679a85a9570261d778ee870c3c27cce17c4df"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh1.asset.meta",
+      "bytes": 188,
+      "sha256": "f5cc8f8fa5e5e1cec9047dcd41270e56fbc936e1da111270f0120df0ae4def4f"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh2.asset",
+      "bytes": 5024,
+      "sha256": "a6beaea25f55ecd19acbc1d5cd0dd995f2cedba8ca6a5e53dd89bd6f628bf77a"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Mesh2.asset.meta",
+      "bytes": 188,
+      "sha256": "ff5dad9750e8995e91a17c75aacf33d72079e79fd83e1c2d9945d0486180d1aa"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Move.anim",
+      "bytes": 1158403,
+      "sha256": "a02b077f56460c23eb6e110041243b3c82f9b5771d40be93630e3d4e0838cc86"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Move.anim.meta",
+      "bytes": 188,
+      "sha256": "393b2efdf43b822697c081d913ae3805ab1a0c7672cde3389cab4132f72b7b15"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Pounce.anim",
+      "bytes": 4708944,
+      "sha256": "44230b8eabe88c57490e2d0b702bd5d8d8305cb51f98dc4025cb22a6d7609e87"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Pounce.anim.meta",
+      "bytes": 188,
+      "sha256": "179c3c00db778d661e5a73280d76b1b9ad6403e545041ad1fb31b782ced24e0f"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Sink.anim",
+      "bytes": 1439756,
+      "sha256": "ad272372a80216e768bc0b6411465888edecc3e60093a3609a66accb170fd726"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Sink.anim.meta",
+      "bytes": 188,
+      "sha256": "1303ef1a0690b2961353c4aa6e4d3c3c18f9bf8d0b06046747bb044ca8de7276"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Underground.anim",
+      "bytes": 1712607,
+      "sha256": "2ffc17355988f101d567724ad440a933781729de4eb2a03bfd7b160f6c5b1113"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Underground.anim.meta",
+      "bytes": 188,
+      "sha256": "3b916bf9878b34be5a23b7eb0cfba78f98cffa7dea759fc30f27efa0293cf765"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Windup.anim",
+      "bytes": 2358535,
+      "sha256": "9991855d760a71e138e946509f16b1bf781439b099f9aa7fa714c8d5ad50443a"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Burrower/Windup.anim.meta",
+      "bytes": 188,
+      "sha256": "68f234f197416101e929d6bf5500bd9fd4ea5594c5d79860014831a2799e0465"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound.meta",
+      "bytes": 172,
+      "sha256": "773390386d9475c1842c95e35e06fab639142a1066a9b723f3ce55559c98b58d"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Bite.anim",
+      "bytes": 217211,
+      "sha256": "46cfecf21b97337eaae42940d43ccc6013048b3fce006900886d4a81f58acd90"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Bite.anim.meta",
+      "bytes": 188,
+      "sha256": "91978dd5efbc161acdc09a9804b786f721df80a185a3445e52ff8efa3785802c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/BiteFace.anim",
+      "bytes": 132987,
+      "sha256": "3ca242bd4e36ac27f9bba211e28307e8a6a31563933ccf6b9a3caa80e2335e83"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/BiteFace.anim.meta",
+      "bytes": 188,
+      "sha256": "3476b25d5d731a78d2d1a2c774fd68830510dcadb2e4370953e2a3391721dab0"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Emerge.anim",
+      "bytes": 1407686,
+      "sha256": "fdc6fa37421259e4dbc3d8429abe5917e65be8e9086c0f9eed6b741e227ecf17"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Emerge.anim.meta",
+      "bytes": 188,
+      "sha256": "509e16e48cb505c8aa47950baad37156d616186f241bf3ac93dc8c057604176e"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Idle.anim",
+      "bytes": 94580,
+      "sha256": "924c6077e6d8120ba9a078134be34bb312db3dd0ff12a39094ae9a1da03832ec"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Idle.anim.meta",
+      "bytes": 188,
+      "sha256": "87c732c3de785d9f831a8d92aac9d74a874d797b6823d8bfa8ad7c1d065fa674"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material0.mat",
+      "bytes": 3628,
+      "sha256": "bde4262dd24380a162e19b9f32870323eb7cfe43c95090503d5e8a9089990039"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material0.mat.meta",
+      "bytes": 188,
+      "sha256": "d1ec502596be75aa1cf5d1672103a69a3f2ff9aa5747cd2cb9ac8c7d0c76e0d4"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material1.mat",
+      "bytes": 3626,
+      "sha256": "37bf725837b052cb7cbda5da68c3ea3b7d1fa3ba5a5c4b79762c26d636e63915"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material1.mat.meta",
+      "bytes": 188,
+      "sha256": "7f7391ee541acbdaf97741268d246af2146b8fcf2ce15f67466edfd03eaaeb77"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material2.mat",
+      "bytes": 3635,
+      "sha256": "afa3574a72925a9287fcb6f0ee4728319ef85fe2b2b7960363440a68b272f9bb"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material2.mat.meta",
+      "bytes": 188,
+      "sha256": "8f70b5f4cbb5a97cee36cc0240f3380f49a5794eedb5d298a577ef6b313df152"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material3.mat",
+      "bytes": 3628,
+      "sha256": "755c90c4fc6c74bd5cec620296f5fce5e570f4ae78846434bd24a1b37600fd4b"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material3.mat.meta",
+      "bytes": 188,
+      "sha256": "f8275e3bde73fb748baba3edcc045c810339b9683073f803f1bfbd031b9a2d65"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material4.mat",
+      "bytes": 3628,
+      "sha256": "4b3b14a30f40ec118dff34b6dbecee936553643d601cc52b6bca049cde7a661c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material4.mat.meta",
+      "bytes": 188,
+      "sha256": "ff2fef76fd2f9582e24d7452fd8d0e5fbb25e39a35b069f0ee0830cc27fe9dfb"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material5.mat",
+      "bytes": 3644,
+      "sha256": "1e62cbdb9f72a9732531b954355ebabad7b1d3471053bdc122de9b68e3aa7220"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material5.mat.meta",
+      "bytes": 188,
+      "sha256": "cba957e208ef92841d363ce48ed7f339a27761d4084e85474bf6c4b8351d6f3f"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material6.mat",
+      "bytes": 3616,
+      "sha256": "700589a750cd86ee491dbb19dbc4a4ddfdeccb74f3f77b82430d4db879988883"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Material6.mat.meta",
+      "bytes": 188,
+      "sha256": "094eb0424ea55e5c1810fac5a85783747526fdd76ddda4ca1091e775b7f0f9b8"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh0.asset",
+      "bytes": 10630,
+      "sha256": "f0abf3974ea231f9ac372344c6b5906bdbac257ad30c7b15d52b935dec75667c"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh0.asset.meta",
+      "bytes": 188,
+      "sha256": "1127ea755efc786c0ac2ac9c03ea6e26ca4e1576a3bc4f5659ca7f8bdb7b2f91"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh1.asset",
+      "bytes": 4084,
+      "sha256": "cdc6f86c7111ddbdc602d7e4448679a85a9570261d778ee870c3c27cce17c4df"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh1.asset.meta",
+      "bytes": 188,
+      "sha256": "bccd6bf8425a2ea02f65a46a6e01557368c0244b2593fb6ac6a320f2b0b73365"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh2.asset",
+      "bytes": 5024,
+      "sha256": "a6beaea25f55ecd19acbc1d5cd0dd995f2cedba8ca6a5e53dd89bd6f628bf77a"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Mesh2.asset.meta",
+      "bytes": 188,
+      "sha256": "a20cd99a3fb9577b2610b7229baaa1321edd92c384b5dcb0e9dbacb5697e1e90"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Move.anim",
+      "bytes": 465495,
+      "sha256": "1a5d9de3f8832c4b44a7a11603dd63d028c4fd0418349399e49a74b76210d95b"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Move.anim.meta",
+      "bytes": 188,
+      "sha256": "fc836572557e18bf4348a5ff83fe5f9f4afe47d383f844d14579319b52c0f967"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Pounce.anim",
+      "bytes": 1491018,
+      "sha256": "6f408fc33f90de0b50829f647540fbf29adcf45c12cd5ab5054c15f30e58ea99"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Pounce.anim.meta",
+      "bytes": 188,
+      "sha256": "075377ed551940dcd353b62d83047ee79e3ca9159baba86748943f45633e3eed"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Sink.anim",
+      "bytes": 1114181,
+      "sha256": "483b53921d92a1793014198b710375a47a03cf01828d290dbee74be55b800ae8"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Sink.anim.meta",
+      "bytes": 188,
+      "sha256": "108794f2170c87dd45653c93282c1afcfcc76f09ffe4a2200ffaadb40dac3b17"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Underground.anim",
+      "bytes": 1379313,
+      "sha256": "65402293a71bacd6378f38bd8a384e70123f94740c234ca88e908a73a6c4fe5b"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Underground.anim.meta",
+      "bytes": 188,
+      "sha256": "476075d8da36504eed7f1b65a478b7ccb6465fb2ed2f0bf748b0a6ad44353edd"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Windup.anim",
+      "bytes": 885162,
+      "sha256": "bdafbd59f156ebf6246c5596e2bc013b41dedc027aec7a753dd669b71c45ec30"
+    },
+    {
+      "path": "Client/Assets/Game/Art/Enemies/Creatures/Hound/Windup.anim.meta",
+      "bytes": 188,
+      "sha256": "1e113d89f1c8f92a6c05729cb2503f45aff788267cb8b909f1b77c9fbf02afd7"
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeBurrower.prefab",
+      "bytes": 272808,
+      "sha256": "6add365d953ae8ae12bf561115a32e52b659ead352f5f392a8987751aea1a2fa"
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeBurrower.prefab.meta",
+      "bytes": 154,
+      "sha256": "02763b345654178f73816af75e8b5cd28b8680b995d5b965e0c495a3c28b111e"
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeHound.prefab",
+      "bytes": 182224,
+      "sha256": "dea90fa223418412cae934402c08a09f4b75daa0f05855ede64be79e13ea4d93"
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeHound.prefab.meta",
+      "bytes": 154,
+      "sha256": "75f91f6c7a60ad24d0fea5cfe9b59d243bbad0c69e8fc7042f86b3df666a7b39"
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab",
+      "bytes": 763747,
+      "sha256": "03a2ae5f5ddda0d317d6e76029e759d7aa45640a497b82bb612cd445f2d19c88"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.Creatures.cs",
+      "bytes": 6338,
+      "sha256": "4b80107502c0350e9a776f6c8a7c3c46a47644d9b2fd8b87b82d22ae19b9bde8"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.Creatures.cs.meta",
+      "bytes": 243,
+      "sha256": "fc7873063c4561e8a867badc789b7043b44b0796da7f0bcbe0622581ac56d3cc"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.RoundContent.cs",
+      "bytes": 42127,
+      "sha256": "3534f23cd335bf927c522ee6501c8f2f6eb2b4b238c6c0502a0784ffa1dc47e3"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.cs",
+      "bytes": 84954,
+      "sha256": "b045c1024da678ebe496fb75214e9e1f2ba87c0fbad47f5230aa64037a3847d7"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/View/Map/ArcadeCreatureView.cs",
+      "bytes": 1129,
+      "sha256": "d4304a4dd4a1bb26e93c512fe4635edf421c47c13f7c5aa96a1634f7be3353d9"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/View/Map/ArcadeCreatureView.cs.meta",
+      "bytes": 243,
+      "sha256": "e0e9d17858d40c5a56f1fbb4033799ccded034a27fea08aab5ed5d0993a3303f"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Model/Online/OnlineArcadeRunContracts.cs",
+      "bytes": 36007,
+      "sha256": "8ba652291ea218ddd64d92b9c0067ec1935bcd90b029ace7a9277bea8b97f711"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Network/Generated/OnlineOuter_C_12001.cs",
+      "bytes": 115032,
+      "sha256": "2b7a955e57671e97ef0c1283ae578f94852ab20f587e4810ad63d7a52386ced0"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/System/Arcade/ArcadeCombatSystem.RoundContent.cs",
+      "bytes": 32768,
+      "sha256": "8dc9ae3140344b54f59169fdbe7362cf29ea0e13324fd400536c68ba9fff2aa5"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/System/Online/OnlineArcadePresentationSystem.cs",
+      "bytes": 48588,
+      "sha256": "2a54c6a637c87aba189e0af2c23b9d167189190d206e71e33ce3d5eb2df6ba0f"
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/System/Online/OnlineArcadeRunSystem.cs",
+      "bytes": 42431,
+      "sha256": "27e7262e04ee6123179c017694c28bfba750cf23c8e184eb65121161b78974e9"
+    },
+    {
+      "path": "Client/Assets/Tests/EditMode/CreaturePresentationTests.cs",
+      "bytes": 11409,
+      "sha256": "edfc4b09245187e624117997f657d55a1a156fab6f1dcddbe2424095036b8336"
+    },
+    {
+      "path": "Client/Assets/Tests/EditMode/CreaturePresentationTests.cs.meta",
+      "bytes": 243,
+      "sha256": "0a8ca2500717d0f9a81d50faf04beb5bc938e264c9e1c4c410c604f9b8a74a50"
+    },
+    {
+      "path": "Config/Proto/OnlineOuter_C_12001.proto",
+      "bytes": 22916,
+      "sha256": "6e23ed7696e26349cdc767ec90879cdb8cc958c4a3c6efe9d3245216286779df"
+    },
+    {
+      "path": "Docs/Plans/2026-10-25-burrower-hound-applied.md",
+      "bytes": 6051,
+      "sha256": "8c962fe2143cedac031f0abee337a1bf6bf5a49feab5afba4873b01db42ac663"
+    },
+    {
+      "path": "Server/GameServer/Runtime/Hotfix/Server/Online/Arcade/OnlineArcadeRunSystem.cs",
+      "bytes": 248194,
+      "sha256": "2b747284bbfef84119951977449f8de00d9d8d5bf249d2d170e987a2b596a8f3"
+    },
+    {
+      "path": "Server/GameServer/Runtime/Model/Generated/Message/OnlineOuter_C_12001.cs",
+      "bytes": 115032,
+      "sha256": "2b7a955e57671e97ef0c1283ae578f94852ab20f587e4810ad63d7a52386ced0"
+    },
+    {
+      "path": "Tools/CreatureOnlineChecks/CreatureOnlineChecks.csproj",
+      "bytes": 302,
+      "sha256": "5ccbee50d6690d2300b7283a14b803ef14e6f175726f3bd901f141ad175dd5ce"
+    },
+    {
+      "path": "Tools/CreatureOnlineChecks/Program.cs",
+      "bytes": 4297,
+      "sha256": "2a06ad75a492fa0422034bebcfe4869aadb65c88d1497df32dcf35ec9efe84b1"
+    },
+    {
+      "path": "Tools/Unity/BurrowerHoundAppliedCapture.cs",
+      "bytes": 16444,
+      "sha256": "ba3ef445bf20220eb1d4cf4469094ad50e508118dc48196145c13c80e7420ff3"
+    },
+    {
+      "path": "Tools/Unity/BurrowerHoundBake.cs",
+      "bytes": 9143,
+      "sha256": "fdf570b2648770a2563ddb18fdec3021f525cbe7f150619321ee1dcc550f72fd"
+    },
+    {
+      "path": "Tools/Unity/BurrowerHoundPreview.cs",
+      "bytes": 26323,
+      "sha256": "3d1ac905fa7241e28c387ea759923c9c1ed98ab0094f03fd7bce8b7190f4019c"
+    },
+    {
+      "path": "Tools/Unity/BurrowerHoundPreviewCapture.cs",
+      "bytes": 18286,
+      "sha256": "32c77d1239961bc6b97380cbab296589a47d30c1b0da7069bc53d2442f16fc10"
+    },
+    {
+      "path": "Tools/Unity/encode-burrower-hound-preview.py",
+      "bytes": 10851,
+      "sha256": "f0f46f14631a8f3b1f5b92547927633457711e8897533b5f7aa4b9d00aa167a9"
+    },
+    {
+      "path": "Tools/Unity/encode-creature-applied.py",
+      "bytes": 5539,
+      "sha256": "0135ef3bd7027df6b27536c603c46211c599c9d51bb3326c2fe2041402f1447b"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "baselineCount": 3230,
+  "unchanged": 3229,
+  "authorizedExistingChanges": [
+    "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab"
+  ],
+  "newArtFiles": 86
+}

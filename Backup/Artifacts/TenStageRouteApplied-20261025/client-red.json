@@ -1,0 +1,84 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":11,\"PassedTests\":5,\"FailedTests\":6,\"SkippedTests\":0,\"Duration\":\"00:00:11.6481529\"},\"Results\":[{\"Name\":\"Game.Tests.TenStageRouteTests.ConfiguredNewRunPersistsTenStageVersion\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.2320000\",\"Message\":\"  Expected: 2\\r\\n  But was:  1\\r\\n\"},{\"Name\":\"Game.Tests.TenStageRouteTests.ConfirmedStagesPrepareFortyRealOrdinaryRounds\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8300000\",\"Message\":\"System.ArgumentOutOfRangeException : Specified argument was out of the range of valid values.\\r\\nParameter name: version\"},{\"Name\":\"Game.Tests.TenStageRouteTests.GeneratedCatalogOnlyOpensConfirmedTenStages\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8930000\",\"Message\":\"  map 5\\r\\n  Expected is \\u003CSystem.Int32[1]\\u003E, actual is \\u003CSystem.Collections.ObjectModel.ReadOnlyCollection\\u00601[System.Int32]\\u003E with 1 elements\\r\\n  Values differ at index [0]\\r\\n  Expected: 7\\r\\n  But was:  6\\r\\n\"},{\"Name\":\"Game.Tests.TenStageRouteTests.LegacyExitProjectionPreservesFarmVolcanoAndBothCourtyards\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.7800000\",\"Message\":\"  Expected is \\u003CSystem.Int32[1]\\u003E, actual is \\u003CSystem.Collections.ObjectModel.ReadOnlyCollection\\u00601[System.Int32]\\u003E with 1 elements\\r\\n  Values differ at index [0]\\r\\n  Expected: 7\\r\\n  But was:  6\\r\\n\"},{\"Name\":\"Game.Tests.TenStageRouteTests.LegacyLateChallengeReturnsRemainValid\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8450000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.NewRunCompletesTenStagesAndKeepsSavedResult\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8570000\",\"Message\":\"  \\u4F11\\u95F2\\u8DEF\\u7EBF\\u9009\\u62E9\\u6216\\u80DC\\u5229\\u8EAB\\u4EFD\\u65E0\\u6548\\r\\n  Expected: True\\r\\n  But was:  False\\r\\n\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(7,9)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0200000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(8,10)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0080000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(13,16)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9550000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.RoundCheckpointsResumeAllRouteVersionsWithoutChangingIdentity\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8880000\",\"Message\":\"  \\u8857\\u673A\\u5B89\\u5168\\u8282\\u70B9\\u5FC5\\u9700\\u5B57\\u6BB5\\u65E0\\u6548\\r\\n  Expected: True\\r\\n  But was:  False\\r\\n\"},{\"Name\":\"Game.Tests.TenStageRouteTests.UnknownRouteVersionIsRejectedBeforeSaving\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7810000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 11,
+        "PassedTests": 5,
+        "FailedTests": 6,
+        "SkippedTests": 0,
+        "Duration": "00:00:11.6481529"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TenStageRouteTests.ConfiguredNewRunPersistsTenStageVersion",
+          "Status": "Failed",
+          "Duration": "00:00:01.2320000",
+          "Message": "  Expected: 2\r\n  But was:  1\r\n"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.ConfirmedStagesPrepareFortyRealOrdinaryRounds",
+          "Status": "Failed",
+          "Duration": "00:00:00.8300000",
+          "Message": "System.ArgumentOutOfRangeException : Specified argument was out of the range of valid values.\r\nParameter name: version"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.GeneratedCatalogOnlyOpensConfirmedTenStages",
+          "Status": "Failed",
+          "Duration": "00:00:00.8930000",
+          "Message": "  map 5\r\n  Expected is <System.Int32[1]>, actual is <System.Collections.ObjectModel.ReadOnlyCollection`1[System.Int32]> with 1 elements\r\n  Values differ at index [0]\r\n  Expected: 7\r\n  But was:  6\r\n"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.LegacyExitProjectionPreservesFarmVolcanoAndBothCourtyards",
+          "Status": "Failed",
+          "Duration": "00:00:00.7800000",
+          "Message": "  Expected is <System.Int32[1]>, actual is <System.Collections.ObjectModel.ReadOnlyCollection`1[System.Int32]> with 1 elements\r\n  Values differ at index [0]\r\n  Expected: 7\r\n  But was:  6\r\n"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.LegacyLateChallengeReturnsRemainValid",
+          "Status": "Passed",
+          "Duration": "00:00:00.8450000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.NewRunCompletesTenStagesAndKeepsSavedResult",
+          "Status": "Failed",
+          "Duration": "00:00:00.8570000",
+          "Message": "  休闲路线选择或胜利身份无效\r\n  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(7,9)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0200000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(8,10)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0080000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(13,16)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9550000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.RoundCheckpointsResumeAllRouteVersionsWithoutChangingIdentity",
+          "Status": "Failed",
+          "Duration": "00:00:00.8880000",
+          "Message": "  街机安全节点必需字段无效\r\n  Expected: True\r\n  But was:  False\r\n"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.UnknownRouteVersionIsRejectedBeforeSaving",
+          "Status": "Passed",
+          "Duration": "00:00:00.7810000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

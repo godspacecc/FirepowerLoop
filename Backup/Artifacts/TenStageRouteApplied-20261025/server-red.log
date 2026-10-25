@@ -1,0 +1,25 @@
+FAIL TenStageRouteOnline.NewOfficialRunUsesVersionTwo: System.InvalidOperationException: official new run did not select confirmed ten-stage route
+   at TenStageRouteOnline.Require(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 42
+   at TenStageRouteOnline.NewOfficialRun() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 54
+   at TenStageRouteOnline.Run() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 37
+FAIL TenStageRouteOnline.TenStagesPlayFortyRoundsRewardsAndFinalBoss: System.InvalidOperationException: ordinary round checkpoint failed
+   at TenStageRouteOnline.Require(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 42
+   at TenStageRouteOnline.<>c__DisplayClass12_0.<FortyRounds>b__0(OnlineArcadeRunManagerComponent manager) in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 127
+   at TenStageRouteOnline.WithStore(OnlineArcadeRunActor actor, Action`1 action) in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 84
+   at TenStageRouteOnline.FortyRounds() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 99
+   at TenStageRouteOnline.Run() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 37
+PASS TenStageRouteOnline.LegacyZeroKeepsThreeBranches
+PASS TenStageRouteOnline.LegacyOneKeepsThreeBranches
+PASS TenStageRouteOnline.AllVersionsResumeRoundCheckpoint
+FAIL TenStageRouteOnline.VictoryCountsKeepSavedVersion: System.NullReferenceException: Object reference not set to an instance of an object.
+   at ET.Log.GetLog() in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Core\World\Module\Log\Log.cs:line 15
+   at ET.Log.Error(DefaultInterpolatedStringHandler& message) in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Core\World\Module\Log\Log.cs:line 129
+   at ET.Server.OnlineArcadeRunManagerSystem.TryCommitArenaCompletion(OnlineArcadeRunManagerComponent self, OnlineArcadeRunActor actor) in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Hotfix\Server\Online\Arcade\OnlineArcadeRunSystem.cs:line 572
+   at InvokeStub_OnlineArcadeRunManagerSystem.TryCommitArenaCompletion(Object, Span`1)
+   at System.Reflection.MethodBaseInvoker.InvokeWithFewArgs(Object obj, BindingFlags invokeAttr, Binder binder, Object[] parameters, CultureInfo culture)
+FAIL TenStageRouteOnline.KnownFingerprintsMigrateWithoutChangingRoute: System.InvalidOperationException: known fingerprint migration dropped route version
+   at TenStageRouteOnline.Require(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 42
+   at TenStageRouteOnline.Fingerprints() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 232
+   at TenStageRouteOnline.Run() in E:\GitHub\FirepowerLoop\Tools\TenStageRouteOnlineChecks\Program.cs:line 37
+PASS TenStageRouteOnline.SnapshotCodecKeepsAllVersions
+4/8 passed

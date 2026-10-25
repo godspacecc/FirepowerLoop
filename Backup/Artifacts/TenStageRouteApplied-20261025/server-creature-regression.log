@@ -1,0 +1,5 @@
+PASS CreatureOnline.SnapshotUsesCurrentAuthority
+PASS CreatureOnline.CloneKeepsIndependentAuthority
+PASS CreatureOnline.CodecPreservesFacingAndAge
+PASS CreatureOnline.UndergroundStillRejectsRealProjectile
+4/4 passed

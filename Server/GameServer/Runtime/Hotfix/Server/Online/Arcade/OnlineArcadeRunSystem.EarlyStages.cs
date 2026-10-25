@@ -5,8 +5,8 @@ namespace ET.Server
 {
     public static partial class OnlineArcadeRunActorSystem
     {
-        /// <summary>只按真实配置身份取新场地参数，累计场数不决定地图尺寸。</summary>
-        private static ArcadeEarlyStageParameters EarlyStage(OnlineArcadeBattleRuntime b)=>b!=null&&ServerConfig.Instance.EarlyStages.TryGetValue(b.ArenaConfigNumber,out var stage)?stage:null;
+        /// <summary>仅21—25采用新场地规则；巨石资源绑定不改变旧出生、移动或传送门。</summary>
+        private static ArcadeEarlyStageParameters EarlyStage(OnlineArcadeBattleRuntime b)=>b!=null&&b.ArenaConfigNumber>=21&&b.ArenaConfigNumber<=25&&ServerConfig.Instance.EarlyStages.TryGetValue(b.ArenaConfigNumber,out var stage)?stage:null;
         private static float ArenaHalfWidth(OnlineArcadeBattleRuntime b)=>EarlyStage(b)?.HalfWidth??ServerConfig.Instance.ArcadeRule.ArenaHalfWidth;
         private static float ArenaHalfHeight(OnlineArcadeBattleRuntime b)=>EarlyStage(b)?.HalfHeight??ServerConfig.Instance.ArcadeRule.ArenaHalfHeight;
 

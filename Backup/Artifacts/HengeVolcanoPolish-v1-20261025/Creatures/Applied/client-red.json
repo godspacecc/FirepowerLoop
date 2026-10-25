@@ -1,0 +1,95 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":12,\"PassedTests\":0,\"FailedTests\":12,\"SkippedTests\":0,\"Duration\":\"00:00:01.9856798\"},\"Results\":[{\"Name\":\"Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(4)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.1090000\",\"Message\":\"  \\u6B63\\u5F0F\\u8868\\u73B0\\u7F3A\\u5C11\\u6743\\u5A01\\u5E74\\u9F84\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(5)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0130000\",\"Message\":\"  \\u6B63\\u5F0F\\u8868\\u73B0\\u7F3A\\u5C11\\u6743\\u5A01\\u5E74\\u9F84\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.BurrowerUndergroundOnlyShowsEarthAndEmergesBeforeActiveWindow\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0130000\",\"Message\":\"  \\u6B63\\u5F0F\\u8868\\u73B0\\u7F3A\\u5C11\\u6743\\u5A01\\u5E74\\u9F84\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.ClientSnapshotKeepsAuthoritativeAgeAndLockedFacing\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u5BA2\\u6237\\u7AEF\\u5FEB\\u7167\\u4E22\\u5931ContentAge\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(4)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  \\u7F3A\\u5C11\\u5DF2\\u91C7\\u7528\\u56DB\\u8DB3\\u6B63\\u5F0FPrefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(5)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00\",\"Message\":\"  \\u7F3A\\u5C11\\u5DF2\\u91C7\\u7528\\u56DB\\u8DB3\\u6B63\\u5F0FPrefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.FormalAnimationDoesNotMoveActorRootAndFeetKeepGroundContact\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0010000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.HoundWarningAndPounceKeepAuthoritativeFacingInsteadOfLocalPlayer\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0140000\",\"Message\":\"  \\u6B63\\u5F0F\\u8868\\u73B0\\u7F3A\\u5C11\\u6743\\u5A01\\u5E74\\u9F84\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.KindReplacementRemovalAndMapReleaseDestroyActorsButKeepSharedMeshes\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0190000\",\"Message\":\"System.NullReferenceException : Object reference not set to an instance of an object\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(4)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0560000\",\"Message\":\"  \\u4ECD\\u5728\\u4F7F\\u7528\\u65E7\\u51E0\\u4F55\\u66FF\\u8EAB\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(5)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0280000\",\"Message\":\"  \\u4ECD\\u5728\\u4F7F\\u7528\\u65E7\\u51E0\\u4F55\\u66FF\\u8EAB\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0280000\",\"Message\":\"  \\u6B63\\u5F0F\\u8868\\u73B0\\u7F3A\\u5C11\\u6743\\u5A01\\u5E74\\u9F84\\u5165\\u53E3\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 12,
+        "PassedTests": 0,
+        "FailedTests": 12,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9856798"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(4)",
+          "Status": "Failed",
+          "Duration": "00:00:00.1090000",
+          "Message": "  正式表现缺少权威年龄入口\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(5)",
+          "Status": "Failed",
+          "Duration": "00:00:00.0130000",
+          "Message": "  正式表现缺少权威年龄入口\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.BurrowerUndergroundOnlyShowsEarthAndEmergesBeforeActiveWindow",
+          "Status": "Failed",
+          "Duration": "00:00:00.0130000",
+          "Message": "  正式表现缺少权威年龄入口\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.ClientSnapshotKeepsAuthoritativeAgeAndLockedFacing",
+          "Status": "Failed",
+          "Duration": "00:00:00.0010000",
+          "Message": "  客户端快照丢失ContentAge\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(4)",
+          "Status": "Failed",
+          "Duration": "00:00:00.0010000",
+          "Message": "  缺少已采用四足正式Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(5)",
+          "Status": "Failed",
+          "Duration": "00:00:00",
+          "Message": "  缺少已采用四足正式Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.FormalAnimationDoesNotMoveActorRootAndFeetKeepGroundContact",
+          "Status": "Failed",
+          "Duration": "00:00:00.0010000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.HoundWarningAndPounceKeepAuthoritativeFacingInsteadOfLocalPlayer",
+          "Status": "Failed",
+          "Duration": "00:00:00.0140000",
+          "Message": "  正式表现缺少权威年龄入口\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.KindReplacementRemovalAndMapReleaseDestroyActorsButKeepSharedMeshes",
+          "Status": "Failed",
+          "Duration": "00:00:00.0190000",
+          "Message": "System.NullReferenceException : Object reference not set to an instance of an object"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(4)",
+          "Status": "Failed",
+          "Duration": "00:00:00.0560000",
+          "Message": "  仍在使用旧几何替身\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(5)",
+          "Status": "Failed",
+          "Duration": "00:00:00.0280000",
+          "Message": "  仍在使用旧几何替身\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot",
+          "Status": "Failed",
+          "Duration": "00:00:00.0280000",
+          "Message": "  正式表现缺少权威年龄入口\r\n  Expected: not null\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

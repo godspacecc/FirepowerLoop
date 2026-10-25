@@ -54,7 +54,15 @@ namespace Game
                 if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Length>0||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
                 if(stage.HerdCount>0&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
-                var instance=UnityEngine.Object.Instantiate(prefab,roundEnvironmentRoot.transform,false);instance.name="ConfirmedEarlyEnvironment";earlyHerdTemplate=cow;
+                ValidateHengeEnvironment(prefab,stage,layout);
+                var instance=UnityEngine.Object.Instantiate(prefab,roundEnvironmentRoot.transform,false);instance.name="ConfirmedEarlyEnvironment";instance.SetActive(false);
+                if(stage.ArenaConfigNumber==5)
+                {
+                    // 只显示本轮采用布局，入口沿用原有尺寸、颜色和坐标。
+                    for(int round=1;round<=4;round++)instance.transform.Find("Round_"+round).gameObject.SetActive(round==layout.RoundNumber);
+                    BuildRoundEntryMarkers(layout);
+                }
+                instance.SetActive(true);earlyHerdTemplate=cow;
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();ProjectNextStageEnemies();
             }
             catch(Exception e)
@@ -62,6 +70,17 @@ namespace Game
                 if(!EarlyStageLoadIsCurrent(state))return;
                 ReleaseRoundContent();roundLayout=layout;roundLayoutLoadError=e.Message;
                 Log.Error("[ArcadeCombatViewController] 已确认场地准备失败："+e.Message);
+            }
+        }
+        /// <summary>巨石四轮必须完整，先检查模板再实例化；缺失时沿原事务失败并允许原轮重试。</summary>
+        private static void ValidateHengeEnvironment(GameObject prefab,ArcadeEarlyStageParameters stage,ArcadeRoundLayoutParameters layout)
+        {
+            if(stage.ArenaConfigNumber!=5)return;
+            if(layout.RoundNumber<1||layout.RoundNumber>4||prefab.transform.childCount!=4)throw new InvalidOperationException("已采用巨石四轮布局不完整");
+            for(int round=1;round<=4;round++)
+            {
+                var variant=prefab.transform.Find("Round_"+round);
+                if(variant==null||variant.GetComponentsInChildren<Renderer>(true).Length==0)throw new InvalidOperationException("已采用巨石布局缺失："+round);
             }
         }
         private bool EarlyStageLoadIsCurrent(EarlyStageLoad state)=>!state.Released&&ReferenceEquals(earlyStageLoad,state)&&root!=null&&root==state.Owner&&roundContentRoot!=null&&roundContentRoot==state.Round;

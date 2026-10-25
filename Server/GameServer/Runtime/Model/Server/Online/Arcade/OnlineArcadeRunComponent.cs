@@ -119,7 +119,7 @@ namespace ET.Server
         public int NextArena { get; set; }
         /// <summary>新局使用休闲分支，长度由路线版本决定；旧档缺省为 false，保留旧推进方式。</summary>
         public bool IsCasualRoute { get; set; }
-        /// <summary>旧记录缺失为0；新正式局保存1，避免恢复时中途插入三关。</summary>
+        /// <summary>缺失为原十场0，旧十三场为1，新确认十关为2；恢复保留原版本和分支。</summary>
         public int CasualRouteVersion { get; set; }
         /// <summary>已选场地配置身份；与 NextArena 主线序号分离。</summary>
         public int ArenaConfigNumber { get; set; }

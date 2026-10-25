@@ -1,0 +1,124 @@
+{
+  "scope": "临时候选，隔离手动采样；非实战、不验证判伤/计时/单双人规则。",
+  "clips": {
+    "burrower": {
+      "sourceFrames": 230,
+      "sampleFps": 24,
+      "outputs": {
+        "normal": {
+          "file": "burrower-normal.mp4",
+          "fps": 24,
+          "framesDecoded": 230,
+          "seconds": 9.583333333333334,
+          "bytes": 647525,
+          "sha256": "b804be41e05eb050bdc86887d0687115245a2db0e6641c6dee487d42a3e4bdd7",
+          "fullDecode": true
+        },
+        "slow": {
+          "file": "burrower-slow.mp4",
+          "fps": 12,
+          "framesDecoded": 230,
+          "seconds": 19.166666666666668,
+          "bytes": 775951,
+          "sha256": "fc4e7b0bf69a959e3da25be63e8a5ad961e61ec8efad1ea65dc13fd0f4ccdf6d",
+          "fullDecode": true
+        }
+      },
+      "trajectory": {
+        "rows": 920,
+        "steadyStanceDriftMaxMeters": 0.0,
+        "pawBottomMinMeters": 0.0,
+        "upperLengthRange": [
+          0.17,
+          0.235
+        ],
+        "lowerLengthRange": [
+          0.17,
+          0.235
+        ],
+        "perLegLengthVariationMeters": {
+          "0": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "1": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "2": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "3": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          }
+        },
+        "undergroundPlanarDriftMeters": 0.0
+      }
+    },
+    "hound": {
+      "sourceFrames": 192,
+      "sampleFps": 24,
+      "outputs": {
+        "normal": {
+          "file": "hound-normal.mp4",
+          "fps": 24,
+          "framesDecoded": 192,
+          "seconds": 8.0,
+          "bytes": 652401,
+          "sha256": "a45ba2eb45d76fdd388aad790f79b731eaa04eb4d69ac6cc70dd242bdf6ea0fc",
+          "fullDecode": true
+        },
+        "slow": {
+          "file": "hound-slow.mp4",
+          "fps": 12,
+          "framesDecoded": 192,
+          "seconds": 16.0,
+          "bytes": 781774,
+          "sha256": "26357fe809cd045566fb5c33379c8a3bdc4ae80c6347e82716ee18a23a73f6dc",
+          "fullDecode": true
+        }
+      },
+      "trajectory": {
+        "rows": 768,
+        "steadyStanceDriftMaxMeters": 0.0,
+        "pawBottomMinMeters": 0.0005,
+        "upperLengthRange": [
+          0.245,
+          0.25
+        ],
+        "lowerLengthRange": [
+          0.25,
+          0.26
+        ],
+        "perLegLengthVariationMeters": {
+          "0": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "1": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "2": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          },
+          "3": {
+            "upperLength": 0.0,
+            "lowerLength": 0.0
+          }
+        },
+        "landingFrontRearSeconds": [
+          4.66667,
+          4.875
+        ]
+      }
+    }
+  },
+  "formalResources": {
+    "filesChecked": 3230,
+    "changed": []
+  }
+}

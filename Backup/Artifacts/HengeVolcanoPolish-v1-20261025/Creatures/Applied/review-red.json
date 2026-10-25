@@ -1,0 +1,31 @@
+{
+  "templates": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5388502"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CreaturePresentationTests.MissingCreatureTemplatesWaitWithoutOrphanNodesAndRecoverFromCurrentSnapshot",
+          "Status": "Failed",
+          "Duration": "00:00:00.6410000",
+          "Message": "  场地不能早于演员依赖报告就绪\r\n  Expected: False\r\n  But was:  True\r\n"
+        }
+      ]
+    }
+  },
+  "melee": {
+    "content": [
+      {
+        "type": "text",
+        "text": "No tests found matching method 'Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot'. Please check that the specified assembly, namespace, class, and method names are correct and that your Unity project contains tests."
+      }
+    ],
+    "isError": true
+  }
+}

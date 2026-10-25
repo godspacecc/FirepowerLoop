@@ -1,0 +1,58 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":7,\"PassedTests\":7,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:04.6038112\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.5450000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0290000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0340000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0160000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:02.8590000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0320000\"},{\"Name\":\"Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0140000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.6038112"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes",
+          "Status": "Passed",
+          "Duration": "00:00:00.5450000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources",
+          "Status": "Passed",
+          "Duration": "00:00:02.8590000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval",
+          "Status": "Passed",
+          "Duration": "00:00:00.0140000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,41 @@
+{
+  "scope": "正式Controller与正式资源的隔离快照回放，不是真实对局或真人双端录像；阶段使用原配置7.5秒周期/1.2秒预警。",
+  "clips": {
+    "burrower": {
+      "normal": {
+        "fps": 24,
+        "framesDecoded": 192,
+        "seconds": 8.0,
+        "sha256": "9bf2efc629819a4e34a08ad0f67e00cbdc4b10772d1530fe7fbb1938764d7878",
+        "bytes": 567492,
+        "fullDecode": true
+      },
+      "slow": {
+        "fps": 12,
+        "framesDecoded": 192,
+        "seconds": 16.0,
+        "sha256": "252607f239d55ade4cb619ae66df99206e7120a32ba9d9df4b7d09413a6541f9",
+        "bytes": 677789,
+        "fullDecode": true
+      }
+    },
+    "hound": {
+      "normal": {
+        "fps": 24,
+        "framesDecoded": 192,
+        "seconds": 8.0,
+        "sha256": "6e344fb41bfbb5cd99f9c1ab1fe6d19257364a9fb746a3af4c1b99cb319d9d20",
+        "bytes": 464228,
+        "fullDecode": true
+      },
+      "slow": {
+        "fps": 12,
+        "framesDecoded": 192,
+        "seconds": 16.0,
+        "sha256": "cb0305229dd8e680e57b1362af5060cfc0a39ff8ad2e0811c2cbcce1859feaa3",
+        "bytes": 550251,
+        "fullDecode": true
+      }
+    }
+  }
+}

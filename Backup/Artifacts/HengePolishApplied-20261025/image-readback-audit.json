@@ -1,0 +1,47 @@
+[
+  {
+    "accepted": "round-1-accepted.png",
+    "applied": "round-1-applied.png",
+    "width": 1600,
+    "height": 1200,
+    "mean_channel_error": 0.0,
+    "maximum_channel_error": 0,
+    "changed_pixels": 0
+  },
+  {
+    "accepted": "round-2-accepted.png",
+    "applied": "round-2-applied.png",
+    "width": 1600,
+    "height": 1200,
+    "mean_channel_error": 0.0,
+    "maximum_channel_error": 0,
+    "changed_pixels": 0
+  },
+  {
+    "accepted": "round-3-accepted.png",
+    "applied": "round-3-applied.png",
+    "width": 1600,
+    "height": 1200,
+    "mean_channel_error": 0.0,
+    "maximum_channel_error": 0,
+    "changed_pixels": 0
+  },
+  {
+    "accepted": "round-4-accepted.png",
+    "applied": "round-4-applied.png",
+    "width": 1600,
+    "height": 1200,
+    "mean_channel_error": 0.0,
+    "maximum_channel_error": 0,
+    "changed_pixels": 0
+  },
+  {
+    "accepted": "round-1-close-accepted.png",
+    "applied": "round-1-close-applied.png",
+    "width": 1600,
+    "height": 1200,
+    "mean_channel_error": 0.0,
+    "maximum_channel_error": 0,
+    "changed_pixels": 0
+  }
+]

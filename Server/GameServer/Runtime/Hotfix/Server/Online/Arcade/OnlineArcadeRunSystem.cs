@@ -903,6 +903,15 @@ namespace ET.Server
                     "firepowerloop-20261023-v24-melee-windup")
                 run.ConfigFingerprint=nextThreeVersion;
 
+            // 十关只影响新局；已发布且已审查的配置指纹升级时保留旧局路线版本、目的地和轮前状态。
+            const string tenStageVersion="firepowerloop-20261025-v26-ten-stages-40-contact-grab-dock-sea-entry";
+            if(ServerConfig.Instance.ArcadeRule.ConfigFingerprint==tenStageVersion &&
+                run.ConfigFingerprint is "firepowerloop-20261022-v20-purple-ray" or "firepowerloop-20261022-v21-early-stage-data" or
+                    "firepowerloop-20261022-v22-early-stage-herd" or "firepowerloop-20261023-v23-low-tier-skull-open-projectiles" or
+                    "firepowerloop-20261023-v24-melee-windup" or "firepowerloop-20261023-v25-next-three-52" or
+                    "firepowerloop-20261023-v25-next-three-52-contact-grab" or "firepowerloop-20261023-v25-next-three-52-contact-grab-dock-sea-entry")
+                run.ConfigFingerprint=tenStageVersion;
+
         }
 
         private static string OperationFingerprint(long playerId, long expectedRevision, int actionKind, bool ready, string scoreShopDropId = null)
@@ -3203,7 +3212,7 @@ namespace ET.Server
         /// <summary>旧顺序局不进入新休闲地图21—25；保留原主题循环与旧安全节点语义。</summary>
         private static ArcadeArenaConfig ResolveSequentialArena(int arenaNumber)
         {
-            var arenas=ServerConfig.Instance.Tables.TbArcadeArena.DataList.Where(p=>!ServerConfig.Instance.EarlyStages.ContainsKey(p.ArenaNumber)).OrderBy(p=>p.ArenaNumber).ToArray();
+            var arenas=ServerConfig.Instance.Tables.TbArcadeArena.DataList.Where(p=>p.ArenaNumber<21||p.ArenaNumber>25).OrderBy(p=>p.ArenaNumber).ToArray();
             if(arenas.Length==0)throw new InvalidOperationException("旧顺序主题目录为空");
             return arenas[(Math.Max(1,arenaNumber)-1)%arenas.Length];
         }
@@ -3492,6 +3501,11 @@ namespace ET.Server
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpact.Remaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpact.DirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpact.DirectionZ;
+                // 技能阶段只读同步现有权威年龄；锁向取真正的冲进方向，不指向接收客户端。
+                enemy.ContentAge=(float)sourceEnemy.ContentElapsed;
+                enemy.ContentFacingX=sourceEnemy.ContentLockedX;enemy.ContentFacingZ=sourceEnemy.ContentLockedZ;
+                if(source.Players.TryGetValue(sourceEnemy.TargetPlayerId,out var creatureTarget)&&sourceEnemy.SpecialKind!=5)
+                {enemy.ContentFacingX=creatureTarget.PositionX-sourceEnemy.PositionX;enemy.ContentFacingZ=creatureTarget.PositionZ-sourceEnemy.PositionZ;}
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemy.Phase;enemy.StageEnemyAge=sourceEnemy.StageEnemy.Age;
                 enemy.DockSeaEntryStarted=sourceEnemy.DockSeaEntry.Started;enemy.DockSeaEntryAge=sourceEnemy.DockSeaEntry.Age;enemy.DockSeaEntryLane=sourceEnemy.DockSeaEntry.Lane;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemy.OriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemy.OriginY;enemy.StageEnemyRevives=sourceEnemy.StageEnemy.RevivesRemaining;
@@ -3726,6 +3740,7 @@ namespace ET.Server
                 enemy.ArmorHealth = sourceEnemy.ArmorHealth;
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpactRemaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpactDirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpactDirectionZ;
+                enemy.ContentAge=sourceEnemy.ContentAge;enemy.ContentFacingX=sourceEnemy.ContentFacingX;enemy.ContentFacingZ=sourceEnemy.ContentFacingZ;
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemyPhase;enemy.StageEnemyAge=sourceEnemy.StageEnemyAge;
                 enemy.DockSeaEntryStarted=sourceEnemy.DockSeaEntryStarted;enemy.DockSeaEntryAge=sourceEnemy.DockSeaEntryAge;enemy.DockSeaEntryLane=sourceEnemy.DockSeaEntryLane;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemyOriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemyOriginZ;enemy.StageEnemyRevives=sourceEnemy.StageEnemyRevives;

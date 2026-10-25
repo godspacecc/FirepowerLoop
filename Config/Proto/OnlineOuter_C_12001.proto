@@ -458,6 +458,10 @@ message OnlineArcadeEnemyInfo
 	bool DockSeaEntryStarted = 29;
 	float DockSeaEntryAge = 30;
 	float DockSeaEntryLane = 31;
+	// 潜地怪与犬只投影当前权威技能年龄和锁向，不由客户端积分。
+	float ContentAge = 32;
+	float ContentFacingX = 33;
+	float ContentFacingZ = 34;
 }
 
 // Opcode 12082

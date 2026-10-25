@@ -1,0 +1,66 @@
+kind|measure|value
+Spider|candidateEnvelopeWidthHeightDepth|2.5078,1.0240,4.4084
+Spider|candidatePhysicalPoseSizeMin|2.5073,0.7736,1.8316
+Spider|candidatePhysicalPoseSizeMax|2.5078,1.0237,2.1562
+Spider|oldProfileWidthHeightDepth|2.5000,1.0000,1.6000
+Spider|formalHeroWidthHeightDepthIncludingHeldWeapon|1.3673,2.0000,1.4984
+Spider|formalHeroPrefabScale|1.0000,1.0000,1.0000
+Spider|candidateRootScale|1.0000,1.0000,1.0000
+Spider|heroContactRoot|0.1647,0.0250,0.9504
+Spider|contactReferenceAtTime|Body/Head/FangR @ 4.9
+Spider|nearestContactReferenceToHeroAABB|0.0000
+Spider|candidateLowestVertexAllFrames|0.0310
+Spider|contactMeaning|hand/mouth visual reference to renderer AABB only; no collider, no AI, no attack sequence, no hit or damage validation
+Spider|frames|160 at 20fps; 8s manual candidate motion; no slow-frame duplication
+Ghoul|candidateEnvelopeWidthHeightDepth|1.5217,1.8508,3.5535
+Ghoul|candidatePhysicalPoseSizeMin|1.0631,1.6042,0.8148
+Ghoul|candidatePhysicalPoseSizeMax|1.5217,1.8508,1.5039
+Ghoul|oldProfileWidthHeightDepth|1.4000,5.2000,1.0000
+Ghoul|formalHeroWidthHeightDepthIncludingHeldWeapon|1.3673,2.0000,1.4984
+Ghoul|formalHeroPrefabScale|1.0000,1.0000,1.0000
+Ghoul|candidateRootScale|1.0000,1.0000,1.0000
+Ghoul|heroContactRoot|0.2267,0.0250,1.2197
+Ghoul|contactReferenceAtTime|Body/ArmR/Hand @ 5.4
+Ghoul|nearestContactReferenceToHeroAABB|0.0000
+Ghoul|candidateLowestVertexAllFrames|0.0210
+Ghoul|contactMeaning|hand/mouth visual reference to renderer AABB only; no collider, no AI, no attack sequence, no hit or damage validation
+Ghoul|frames|160 at 20fps; 8s manual candidate motion; no slow-frame duplication
+RedMangler|candidateEnvelopeWidthHeightDepth|2.0274,2.2188,2.5344
+RedMangler|candidatePhysicalPoseSizeMin|1.8649,2.1587,1.2178
+RedMangler|candidatePhysicalPoseSizeMax|1.9659,2.2188,1.7107
+RedMangler|oldProfileWidthHeightDepth|2.8000,2.5000,1.6500
+RedMangler|formalHeroWidthHeightDepthIncludingHeldWeapon|1.3673,2.0000,1.4984
+RedMangler|formalHeroPrefabScale|1.0000,1.0000,1.0000
+RedMangler|candidateRootScale|1.0000,1.0000,1.0000
+RedMangler|heroContactRoot|-0.1500,0.0250,3.5000
+RedMangler|contactReferenceAtTime|Body/ArmR/Hand/BarrelRecoil @ 3.15
+RedMangler|nearestContactReferenceToHeroAABB|1.7625
+RedMangler|candidateLowestVertexAllFrames|0.0206
+RedMangler|contactMeaning|hand/mouth visual reference to renderer AABB only; no collider, no AI, no attack sequence, no hit or damage validation
+RedMangler|frames|160 at 20fps; 8s manual candidate motion; no slow-frame duplication
+ZRex|candidateEnvelopeWidthHeightDepth|1.8387,3.5320,9.1578
+ZRex|candidatePhysicalPoseSizeMin|1.7698,2.7769,6.3256
+ZRex|candidatePhysicalPoseSizeMax|1.8387,3.5320,6.8875
+ZRex|oldProfileWidthHeightDepth|3.6000,6.0000,7.1000
+ZRex|formalHeroWidthHeightDepthIncludingHeldWeapon|1.3673,2.0000,1.4984
+ZRex|formalHeroPrefabScale|1.0000,1.0000,1.0000
+ZRex|candidateRootScale|1.0000,1.0000,1.0000
+ZRex|heroContactRoot|0.2697,0.0250,2.4781
+ZRex|contactReferenceAtTime|Body/Core/Head/Jaw @ 3.8
+ZRex|nearestContactReferenceToHeroAABB|0.0000
+ZRex|candidateLowestVertexAllFrames|0.0148
+ZRex|contactMeaning|hand/mouth visual reference to renderer AABB only; no collider, no AI, no attack sequence, no hit or damage validation
+ZRex|frames|160 at 20fps; 8s manual candidate motion; no slow-frame duplication
+Papaback|candidateEnvelopeWidthHeightDepth|4.2387,3.9265,5.2700
+Papaback|candidatePhysicalPoseSizeMin|3.3941,3.4016,2.1185
+Papaback|candidatePhysicalPoseSizeMax|3.9812,3.7561,2.9877
+Papaback|oldProfileWidthHeightDepth|6.0000,8.0000,3.5000
+Papaback|formalHeroWidthHeightDepthIncludingHeldWeapon|1.3673,2.0000,1.4984
+Papaback|formalHeroPrefabScale|1.0000,1.0000,1.0000
+Papaback|candidateRootScale|1.0000,1.0000,1.0000
+Papaback|heroContactRoot|0.4941,0.0250,2.3302
+Papaback|contactReferenceAtTime|Body/ArmR/Hand @ 5.8
+Papaback|nearestContactReferenceToHeroAABB|0.0000
+Papaback|candidateLowestVertexAllFrames|-0.1556
+Papaback|contactMeaning|hand/mouth visual reference to renderer AABB only; no collider, no AI, no attack sequence, no hit or damage validation
+Papaback|frames|160 at 20fps; 8s manual candidate motion; no slow-frame duplication

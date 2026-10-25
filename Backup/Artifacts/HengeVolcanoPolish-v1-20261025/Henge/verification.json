@@ -1,0 +1,110 @@
+{
+  "image_count": 11,
+  "images": [
+    {
+      "file": "round-1-back-check.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "28fc6424038128abbcf7e3863586df5ff5fabe2d8ce7bd9d50e089a0be3d32eb"
+    },
+    {
+      "file": "round-1-before.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "d96d288d93739482b79caff7a213918a00424fc19ec1346fcf85ec4031652771"
+    },
+    {
+      "file": "round-1-candidate.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "ad07ab63f63243d7edbc3c09af75b5e90e8c4d03fd856ac4c4e7abf940b40112"
+    },
+    {
+      "file": "round-1-close-before.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "a0863306fc99fa2944ea02af5d0f665c68013906a3adc51d475501735b0f56bb"
+    },
+    {
+      "file": "round-1-close-candidate.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "d5130587e3bc93c89418b357b581c48eff2a32545189b7d3d5c6e63156b42662"
+    },
+    {
+      "file": "round-2-before.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "05be690617ad093a3f551249f078c4b4986b0c7790bb6290b5633b5ba5664209"
+    },
+    {
+      "file": "round-2-candidate.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "c060a51e725a9ba0cbfd38b6653baf27ebfbd556eb22ab5d1bb85b99f8474b3c"
+    },
+    {
+      "file": "round-3-before.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "54c29a53bacf5f9e55050b3f46e8a3adb54c34b289d75fea36273127661a5287"
+    },
+    {
+      "file": "round-3-candidate.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "59b6ba12bb00c0e7c1975a346c53360284f12b6b5563ef8b816ab209e65afbbb"
+    },
+    {
+      "file": "round-4-before.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "065e8d3376ac973034a2386edf4cbb179d6038fa22ac496cc28b4494a6788d45"
+    },
+    {
+      "file": "round-4-candidate.png",
+      "size": [
+        1600,
+        1200
+      ],
+      "decoded": true,
+      "sha256": "ed49f0bee8ca8706b95ecf922c7a51017326dd370f9b358a6621a14b5148bbaa"
+    }
+  ],
+  "formal_file_count": 3230,
+  "formal_hash_mismatch_count": 0,
+  "formal_hash_mismatches": [],
+  "video_required": false,
+  "business_tests_run": false,
+  "scope": "静态四轮场景临时候选，正式资源未采用，非自然对局或双端验证"
+}

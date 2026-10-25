@@ -1,0 +1,17 @@
+2026-10-25 Asia/Shanghai · Henge 场景会话
+
+持锁入口检查：
+Application.dataPath = E:/GitHub/FirepowerLoop/Client/Assets
+scenes: Boot | Assets/Game/Scenes/Boot.unity | isDirty=false | rootCount=5
+
+动态编译与执行（修正缺少的 using UnityEngine.Rendering 和 Characters 常量后）：
+Henge preview: 4 layouts, 8 wide + 2 close + 1 back = 11 PNGs; footprints checked; temporary only
+
+最终采样结束：
+scenes: Boot | Assets/Game/Scenes/Boot.unity | isDirty=false | rootCount=5
+console | where sequence > 10114: 0 results
+project=E:/GitHub/FirepowerLoop/Client/Assets; compiling=False; updating=False; tempRoots=0
+LOCK_RELEASED_HENGE
+
+历史 Console 包含其它任务旧错误及本次首次动态脚本编译缺少声明的错误，未清空历史。
+本次修正后两次 Run 均成功；最终 Console 无新增条目。不把历史 Console 报告成空。

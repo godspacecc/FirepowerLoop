@@ -1,0 +1,22 @@
+当前状态：本会话潜地怪/恶犬正式接入及限定验证已完成，待总会话统一汇总审查和选择性提交推送。
+授权：用户先采用Creatures v1最终动态，再明确同意本会话正式接入。方案/玩法方向、具体视觉、正式开工均已确认；不包含两个场景会话的视觉。
+验证：客户端CreaturePresentationTests14/14、相邻View7/7、原地下免伤与出生预算2/2；服务器CreatureOnline4/4。累计Unity50+Server4次用例，均明确过滤和上限/includePassingTests=true。无完整套件/Player Build/资源打包。
+回放：Creatures/Applied/index.html；两种normal.mp4/slow.mp4，各192帧；全部完整解码。正式主角原尺寸同框；正式Controller手动快照回放，不宣称真实AI或真人双端对局。
+审查：独立只读审查2项P2及1项P3均已复现/修复/必要复验；未宣称第二轮独立复审。
+正式资源：两种Prefab、各9动画片段、持久网格材质与meta；聚合模板休眠引用；协议经Tools/gen-protocol.ps1双端生成。原规则/Config CSV未改。
+保护：3230个原正式文件仅ArcadeObstacleVisualSet聚合模板有授权变化，其余3229未变。
+交接：Applied/README.md与task-manifest.json；本会话不git add/commit/push，总清单只读，遵守原并行分工。总会话继续全批次汇总，不能把本两种怪物完成当作两场景已采用或完成。
+--- 以下为历史记录，未实施/未授权等状态已被上述结果替代 ---
+2026-10-25 正式接入已授权：用户针对“现在是否也授权本会话继续正式接入这两种怪物？”再次回复“可以”。此决定解除本两种怪物的预览制作限制，不扩展到其他场景/怪物。
+方案/玩法：保留原规则，已确认。具体视觉：Creatures v1最终修订版已采用。正式接入开工：明确已授权，实施中。
+执行：按Docs/Plans/2026-10-25-burrower-hound-applied.md在当前会话实施；使用continuing-confirmed-work、code-role、writing-plans、executing-plans和TDD。遵从根AGENTS，限定测试与共享Unity锁。
+总清单只读及总会话统一汇总/提交规则仍保留，本会话不git add/commit/push；进度记录在此，避免并发编辑。
+--- 历史预览与采用记录（以下开工未授权状态已被上述新决定替代） ---
+状态：两个动态预览已交付；用户2026-10-25回复“可以”，已确认采用两种怪物的具体外形和动作。
+来源：2026-10-25已确认的第一批打磨预览，以及用户明确要求三个可见会话并行；本会话只负责SpecialKind4潜地怪、SpecialKind5恶犬。
+视觉：临时候选v1已采用，尚未接入正式资源。原委派仅授权预览的限制仍需明确解除，正式接入未开工。
+交付：index.html；两种normal.mp4/slow.mp4、normal.gif、comparison.png、keyframes.jpg；README.md与verification.json。
+验证：实际动态编译执行；230+192帧24fps；四条MP4完整解码；16/16乱序重复采样一致；四足固定段长；稳定行进支撑脚平面漂移0；犬前后足错开约0.208秒落地；潜地怪地下原位；3230正式文件SHA256未变。
+Unity最终：Client/Assets，Boot编辑态未脏，scriptCompilationFailed=false，无编译/导入；本次开始后Console新增错误0，临时候选与镜头对象0。自身独占锁已释放。
+未改Client/Assets、运行代码、Config、Server；未业务测试、未Player Build、未资源打包。未编辑其他会话脚本/输出或总清单，未git add/commit/push。
+下一步：明确正式接入执行授权及安排；总会话统一汇总、同步总清单与选择性审查提交。仅采用这两种怪物，不扩大到其他会话场景。

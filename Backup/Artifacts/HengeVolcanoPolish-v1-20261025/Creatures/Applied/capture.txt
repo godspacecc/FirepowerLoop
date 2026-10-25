@@ -1,0 +1,12 @@
+正式Controller/资源隔离快照采样；非自然对局；为看清腿和口部隐藏环境和头顶HUD。
+burrower=192 frames @24fps; skillPeriod=7.5 warning=1.2
+4/Idle positionError=0.000000 angleError=0.000000
+4/Move positionError=0.000050 angleError=0.000000
+4/Sink positionError=0.000108 angleError=0.000000
+4/Underground positionError=0.000079 angleError=0.000000
+4/Emerge positionError=0.000178 angleError=0.000000
+hound=192 frames @24fps; skillPeriod=7.5 warning=1.2
+5/Idle positionError=0.000000 angleError=0.000000
+5/Move positionError=0.001543 angleError=0.172459
+5/Windup positionError=0.000095 angleError=0.000000
+5/Pounce positionError=0.000104 angleError=0.000000

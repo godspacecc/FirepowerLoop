@@ -4,8 +4,8 @@ namespace Game
 {
     public sealed partial class ArcadeCombatSystem
     {
-        /// <summary>只按当前配置身份取新场地尺寸；本局累计场数不承担地图身份职责。</summary>
-        private ArcadeEarlyStageParameters EarlyStage=>catalog?.EarlyStages.FirstOrDefault(p=>p.ArenaConfigNumber==arena?.ArenaNumber);
+        /// <summary>仅21—25采用新场地规则；巨石的采用资源不改变旧出生、移动或传送门。</summary>
+        private ArcadeEarlyStageParameters EarlyStage=>catalog?.EarlyStages.FirstOrDefault(p=>p.ArenaConfigNumber>=21&&p.ArenaConfigNumber<=25&&p.ArenaConfigNumber==arena?.ArenaNumber);
         private float ArenaHalfWidth=>EarlyStage?.HalfWidth??catalog.Rule.ArenaHalfWidth;
         private float ArenaHalfHeight=>EarlyStage?.HalfHeight??catalog.Rule.ArenaHalfHeight;
     }

@@ -38,9 +38,11 @@ namespace Game
             public Vector2 Position;
             public EnemyFlameFeedback Flame;
             public float DeathElapsed;
+            /// <summary>采用版潜地怪/犬演员缓存，由本轮根统一释放。</summary>
+            public CreatureVisual Creature;
         }
-        public bool IsRoundLayoutReady => roundLayoutReady && root != null;
-        public string RoundLayoutLoadError => roundLayoutLoadError;
+        public bool IsRoundLayoutReady => roundLayoutReady && root != null && CreatureDependenciesReady;
+        public string RoundLayoutLoadError => roundLayoutLoadError ?? CreatureDependencyError;
 
         /// <summary>只记录当前战场权威尺寸；尺寸变化使旧候选失效，下一次 SetRoundLayout 重新准备。</summary>
         public void ConfigureRoundBounds(float halfWidth,float halfHeight,float radius)
@@ -436,7 +438,7 @@ namespace Game
             RecordNextStageEnemyPosition(id,position);
             if(roundEnemies.TryGetValue(id,out var visual))
             {
-                var delta=position-visual.Position;visual.Root.transform.localPosition=new Vector3(position.x,0,position.y);
+                var delta=position-visual.Position;RecordCreatureTravel(visual,delta);visual.Root.transform.localPosition=new Vector3(position.x,0,position.y);
                 if(delta.sqrMagnitude>.00001f)visual.Root.transform.localRotation=Quaternion.LookRotation(new Vector3(delta.x,0,delta.y));visual.Position=position;
             }
         }
@@ -509,7 +511,12 @@ namespace Game
                 var profile=ArcadeRoundContentRules.GetVisualProfile(specialKind,bossKind);
                 var holder=RoundGroup(roundEnemyRoot.transform,profile.Name+"_"+id);
                 var visual=new RoundEnemyVisual{Root=holder,SpecialKind=specialKind,BossKind=bossKind};
-                foreach(var part in profile.Parts)
+                if(bossKind==0&&(specialKind==4||specialKind==5))
+                {
+                    try{visual.Creature=CreateCreature(holder.transform,specialKind);}
+                    catch{DestroyRoundVisual(holder);throw;}
+                }
+                else foreach(var part in profile.Parts)
                 {
                     if(!Enum.TryParse(part.Primitive,out PrimitiveType shape))throw new InvalidOperationException("未知专用轮廓零件："+part.Primitive);
                     RoundPart(holder.transform,part.Primitive,shape,new Vector3(part.X,part.Y,part.Z),new Vector3(part.ScaleX,part.ScaleY,part.ScaleZ),part.Color);

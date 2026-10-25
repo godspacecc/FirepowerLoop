@@ -411,6 +411,8 @@ namespace Game
             foreach(var e in r.Enemies.Values)
             {
                 view?.SetEnemyContent(e.Id,e.ContentSpecialKind,e.ContentBossKind,e.ContentWarning);
+                if(e.ContentBossKind==0&&(e.ContentSpecialKind==4||e.ContentSpecialKind==5))
+                    view?.SetCreatureState(e.Id,(float)(r.ContentClock.Elapsed-e.ContentBornAt),e.ContentSpecialKind==5&&e.ContentLockedDirection.sqrMagnitude>.000001f?e.ContentLockedDirection:r.PlayerPosition-e.Position);
                 view?.SetNextStageEnemyState(e.Id,e.ContentSpecialKind,e.StageEnemy);
             }
         }

@@ -1,0 +1,9 @@
+临时候选：隔离手动采样；不是实战或单双人规则验证。
+正式主角保持Prefab原始缩放。
+hero bounds=(0.7574, 1.6450, 0.8035); scale=(1.0000, 1.0000, 1.0000)
+burrower standing bounds=(1.0340, 0.7510, 1.4081)
+kind=4 repeat=8/8 exact transform/active snapshots
+burrower frames=230;24fps; start=-1;heroZ=0.35
+hound standing bounds=(0.5270, 0.9439, 1.3661)
+kind=5 repeat=8/8 exact transform/active snapshots
+hound frames=192;24fps; start=-2.5;heroZ=1.3

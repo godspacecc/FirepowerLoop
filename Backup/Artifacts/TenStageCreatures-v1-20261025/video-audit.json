@@ -1,0 +1,82 @@
+[
+  {
+    "kind": "Spider",
+    "video": "Spider/normal.mp4",
+    "frames": 160,
+    "fps": 20,
+    "seconds": 8.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "Spider",
+    "video": "Spider/slow.mp4",
+    "frames": 160,
+    "fps": 10,
+    "seconds": 16.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "Ghoul",
+    "video": "Ghoul/normal.mp4",
+    "frames": 160,
+    "fps": 20,
+    "seconds": 8.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "Ghoul",
+    "video": "Ghoul/slow.mp4",
+    "frames": 160,
+    "fps": 10,
+    "seconds": 16.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "RedMangler",
+    "video": "RedMangler/normal.mp4",
+    "frames": 160,
+    "fps": 20,
+    "seconds": 8.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "RedMangler",
+    "video": "RedMangler/slow.mp4",
+    "frames": 160,
+    "fps": 10,
+    "seconds": 16.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "ZRex",
+    "video": "ZRex/normal.mp4",
+    "frames": 160,
+    "fps": 20,
+    "seconds": 8.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "ZRex",
+    "video": "ZRex/slow.mp4",
+    "frames": 160,
+    "fps": 10,
+    "seconds": 16.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "Papaback",
+    "video": "Papaback/normal.mp4",
+    "frames": 160,
+    "fps": 20,
+    "seconds": 8.0,
+    "full_decode": "passed"
+  },
+  {
+    "kind": "Papaback",
+    "video": "Papaback/slow.mp4",
+    "frames": 160,
+    "fps": 10,
+    "seconds": 16.0,
+    "full_decode": "passed"
+  }
+]

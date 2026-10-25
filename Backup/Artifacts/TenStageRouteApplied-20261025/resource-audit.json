@@ -1,0 +1,11 @@
+{
+  "original_formal_files_checked": 3230,
+  "expected_changed_files": [
+    "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab",
+    "Client/Assets/Game/Config/tbarcadearena.bytes",
+    "Client/Assets/Game/Config/tbarcadeearlystage.bytes",
+    "Client/Assets/Game/Config/tbarcaderule.bytes"
+  ],
+  "existing_meta_changes": [],
+  "three_generated_tables_match_both_ends": true
+}

@@ -1,0 +1,63 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":8,\"PassedTests\":8,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:08.3175877\"},\"Results\":[{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(1)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9100000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8690000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(3)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7960000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(4)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8440000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.HengeUsesConfirmedEnvironmentWithoutChangingBoundsOrHerdRules\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7910000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.LoadingAndChangingRoundsSelectOnlyTheMatchingVariant\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2600000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.MissingRoundVariantFailsBeforePublishingEnvironmentAndCanRetry\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7820000\"},{\"Name\":\"Game.Tests.HengeAppliedTests.ReleasedMapRejectsLateHengeCallbackAndReleasesHandleExactlyOnce\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8580000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:08.3175877"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(1)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9100000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(2)",
+          "Status": "Passed",
+          "Duration": "00:00:00.8690000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(3)",
+          "Status": "Passed",
+          "Duration": "00:00:00.7960000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(4)",
+          "Status": "Passed",
+          "Duration": "00:00:00.8440000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.HengeUsesConfirmedEnvironmentWithoutChangingBoundsOrHerdRules",
+          "Status": "Passed",
+          "Duration": "00:00:00.7910000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.LoadingAndChangingRoundsSelectOnlyTheMatchingVariant",
+          "Status": "Passed",
+          "Duration": "00:00:01.2600000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.MissingRoundVariantFailsBeforePublishingEnvironmentAndCanRetry",
+          "Status": "Passed",
+          "Duration": "00:00:00.7820000"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.ReleasedMapRejectsLateHengeCallbackAndReleasesHandleExactlyOnce",
+          "Status": "Passed",
+          "Duration": "00:00:00.8580000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,89 @@
+{
+  "view": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:03.6662390"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0440000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources",
+          "Status": "Passed",
+          "Duration": "00:00:02.4550000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0330000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval",
+          "Status": "Passed",
+          "Duration": "00:00:00.0140000"
+        }
+      ]
+    }
+  },
+  "burrow": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.9911291"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.BurrowWarningRejectsDamageThenExposes",
+          "Status": "Passed",
+          "Duration": "00:00:00.9980000"
+        }
+      ]
+    }
+  },
+  "budget": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.7600741"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.FullRouteContentFlowTests.SpecialSpawnSelectionDoesNotAddEnemyBudget",
+          "Status": "Passed",
+          "Duration": "00:00:00.7710000"
+        }
+      ]
+    }
+  }
+}

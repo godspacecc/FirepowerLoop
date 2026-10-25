@@ -1,0 +1,11 @@
+PASS NextRouteOnline.RouteVersionPersists
+PASS NextRouteOnline.ExpandedVersionKeeps52Rounds
+PASS NextRouteOnline.LegacyRouteKeeps40Rounds
+PASS NextRouteOnline.NewLayoutsAreConnected
+PASS NextRouteOnline.GraveWallsFollowCircle
+PASS NextRouteOnline.FarmPortalPersistsCorrectRoute
+PASS NextRouteOnline.BothFinalCountsPersist
+PASS NextRouteOnline.KnownFingerprintsOnly
+PASS NextRouteOnline.EnemyMouthsCannotExitBounds
+PASS NextRouteOnline.RunSnapshotRetainsVersion
+10/10 passed

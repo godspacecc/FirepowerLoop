@@ -1,0 +1,38 @@
+{
+  "context": {
+    "content": [
+      {
+        "type": "text",
+        "text": "System.String: \"E:/GitHub/FirepowerLoop/Client/Assets|Assets/Game/Scenes/Boot.unity|dirty=False|compiling=False|updating=False|playing=False|scriptCompilationFailed=False\""
+      }
+    ],
+    "isError": false
+  },
+  "errorsAfterResolvedImportFailure": {
+    "content": [
+      {
+        "type": "text",
+        "text": "0 results\nsequence|message"
+      }
+    ],
+    "isError": false
+  },
+  "scenes": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1 result\npath|isDirty|rootCount\nAssets/Game/Scenes/Boot.unity|false|5"
+      }
+    ],
+    "isError": false
+  },
+  "temporaryObjects": {
+    "content": [
+      {
+        "type": "text",
+        "text": "0 results\nname"
+      }
+    ],
+    "isError": false
+  }
+}

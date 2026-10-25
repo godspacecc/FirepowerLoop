@@ -1,0 +1,25 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 2,
+      "PassedTests": 1,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6500118"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.5490000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot(5)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0110000",
+        "Message": "  Expected: greater than 4\r\n  But was:  0.0f\r\n"
+      }
+    ]
+  }
+}

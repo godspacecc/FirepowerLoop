@@ -49,6 +49,8 @@ namespace Game
         /// <summary>只接收权威实际掉血的牛撞，致死也播放一次短反馈，不由模型接触推算。</summary>
         void PlayHerdContact(Vector2 position) { }
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
+        /// <summary>只采样潜地怪/犬的当前权威年龄和锁向，不推进技能。</summary>
+        void SetCreatureState(int id,float age,Vector2 facing) { }
         /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
         void SetNextStageEnemyState(int id,int kind,FirepowerLoop.Arcade.ArcadeStageEnemyState state) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>
@@ -665,6 +667,7 @@ namespace Game
         /// <summary>统一转换地图朝向，联机使用权威目标而非本机玩家。</summary>
         public void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction)
         {
+            if(SetCreatureMelee(id,duration,remaining,recovery,direction))return;
             if(mapRoot==null)return;
             var worldDirection=mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y));
             if(SetNextStageEnemyMelee(id,duration,remaining,recovery,worldDirection))return;

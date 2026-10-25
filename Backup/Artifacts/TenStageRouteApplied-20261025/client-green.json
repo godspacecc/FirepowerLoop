@@ -1,0 +1,78 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":11,\"PassedTests\":11,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:11.5576736\"},\"Results\":[{\"Name\":\"Game.Tests.TenStageRouteTests.ConfiguredNewRunPersistsTenStageVersion\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0800000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.ConfirmedStagesPrepareFortyRealOrdinaryRounds\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8780000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.GeneratedCatalogOnlyOpensConfirmedTenStages\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8430000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.LegacyExitProjectionPreservesFarmVolcanoAndBothCourtyards\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7910000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.LegacyLateChallengeReturnsRemainValid\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8450000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.NewRunCompletesTenStagesAndKeepsSavedResult\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8890000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(7,9)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9920000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(8,10)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9470000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(13,16)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9950000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.RoundCheckpointsResumeAllRouteVersionsWithoutChangingIdentity\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8800000\"},{\"Name\":\"Game.Tests.TenStageRouteTests.UnknownRouteVersionIsRejectedBeforeSaving\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7730000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 11,
+        "PassedTests": 11,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:11.5576736"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TenStageRouteTests.ConfiguredNewRunPersistsTenStageVersion",
+          "Status": "Passed",
+          "Duration": "00:00:01.0800000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.ConfirmedStagesPrepareFortyRealOrdinaryRounds",
+          "Status": "Passed",
+          "Duration": "00:00:00.8780000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.GeneratedCatalogOnlyOpensConfirmedTenStages",
+          "Status": "Passed",
+          "Duration": "00:00:00.8430000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.LegacyExitProjectionPreservesFarmVolcanoAndBothCourtyards",
+          "Status": "Passed",
+          "Duration": "00:00:00.7910000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.LegacyLateChallengeReturnsRemainValid",
+          "Status": "Passed",
+          "Duration": "00:00:00.8450000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.NewRunCompletesTenStagesAndKeepsSavedResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.8890000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(7,9)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9920000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(8,10)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9470000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.OldRunResumesAndCompletesOriginalBranches(13,16)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9950000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.RoundCheckpointsResumeAllRouteVersionsWithoutChangingIdentity",
+          "Status": "Passed",
+          "Duration": "00:00:00.8800000"
+        },
+        {
+          "Name": "Game.Tests.TenStageRouteTests.UnknownRouteVersionIsRejectedBeforeSaving",
+          "Status": "Passed",
+          "Duration": "00:00:00.7730000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

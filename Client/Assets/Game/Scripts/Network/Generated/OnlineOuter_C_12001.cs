@@ -1776,6 +1776,18 @@ namespace ET
         [MemoryPackOrder(30)]
         public float DockSeaEntryLane { get; set; }
 
+        /// <summary>
+        /// 潜地怪与犬只投影当前权威技能年龄和锁向，不由客户端积分。
+        /// </summary>
+        [MemoryPackOrder(31)]
+        public float ContentAge { get; set; }
+
+        [MemoryPackOrder(32)]
+        public float ContentFacingX { get; set; }
+
+        [MemoryPackOrder(33)]
+        public float ContentFacingZ { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1814,6 +1826,9 @@ namespace ET
             this.DockSeaEntryStarted = default;
             this.DockSeaEntryAge = default;
             this.DockSeaEntryLane = default;
+            this.ContentAge = default;
+            this.ContentFacingX = default;
+            this.ContentFacingZ = default;
 
             ObjectPool.Instance.Recycle(this);
         }

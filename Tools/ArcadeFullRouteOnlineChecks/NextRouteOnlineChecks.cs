@@ -1,13 +1,14 @@
 using System.Reflection;
 using ET;
 using ET.Server;
+using FirepowerLoop.Arcade;
 
 /// <summary>限定验证新增三关路线与旧局保存合同，不运行完整战斗套件。</summary>
 internal static class NextRouteOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var tests = new (string, Action)[] { ("RouteVersionPersists", VersionPersists), ("NewRoutesHave52Rounds", NewRoutes), ("LegacyRouteKeeps40Rounds", LegacyRoute), ("NewLayoutsAreConnected", Layouts), ("GraveWallsFollowCircle", GraveWalls), ("FarmPortalPersistsCorrectRoute", FarmPortal), ("BothFinalCountsPersist", FinalCounts), ("KnownFingerprintsOnly", Fingerprints), ("EnemyMouthsCannotExitBounds", EnemyMouths), ("RunSnapshotRetainsVersion", SnapshotVersion) };
+        var tests = new (string, Action)[] { ("RouteVersionPersists", VersionPersists), ("ExpandedVersionKeeps52Rounds", ExpandedRoutes), ("LegacyRouteKeeps40Rounds", LegacyRoute), ("NewLayoutsAreConnected", Layouts), ("GraveWallsFollowCircle", GraveWalls), ("FarmPortalPersistsCorrectRoute", FarmPortal), ("BothFinalCountsPersist", FinalCounts), ("KnownFingerprintsOnly", Fingerprints), ("EnemyMouthsCannotExitBounds", EnemyMouths), ("RunSnapshotRetainsVersion", SnapshotVersion) };
         if (maximum < tests.Length) throw new ArgumentException("NextRouteOnline maximum too small");
         int failed = 0;
         foreach (var (name, test) in tests) try { test(); Console.WriteLine("PASS NextRouteOnline." + name); }
@@ -23,18 +24,19 @@ internal static class NextRouteOnlineChecks
         property.SetValue(record, 1); Require((int)property.GetValue(OnlineArcadeRunManagerSystem.Clone(record))! == 1, "clone discarded route version");
         var room=new OnlineRoomActor {RoomId=2};room.Members[1]=new OnlineRoomMember {PlayerId=1,JoinSequence=1};room.Members[2]=new OnlineRoomMember {PlayerId=2,JoinSequence=2};
         var initial=(OnlineArcadeRunRecord)typeof(OnlineArcadeRunManagerSystem).GetMethod("BuildInitialRecord",BindingFlags.Static|BindingFlags.NonPublic)!.Invoke(null,new object[]{1L,room,ServerConfig.Instance.ArcadeRule})!;
-        Require(initial.CasualRouteVersion==1&&initial.IsCasualRoute&&initial.NextArena==1&&initial.ArenaConfigNumber==1,"new official run did not select 52-round route");
+        Require(initial.CasualRouteVersion==ArcadeRouteRules.CurrentVersion&&initial.IsCasualRoute&&initial.NextArena==1&&initial.ArenaConfigNumber==1,"new official run did not select current route");
     }
-    private static void NewRoutes()
+    private static void ExpandedRoutes()
     {
         void Visit(int map, int depth)
         {
             var row = ServerConfig.Instance.Tables.TbArcadeArena.Get(map);
-            if (row.NextArenaNumbers.Length == 0) { Require(depth == 13 && row.FinalBossId == "arcade.boss.final", "final boss must follow round 52"); return; }
-            Require(depth < 13, "route too long"); foreach (int next in row.NextArenaNumbers) Visit(next, depth + 1);
+            int[] nextArenas = ArcadeRouteRules.NextArenas(ArcadeRouteRules.ExpandedVersion, map, row.NextArenaNumbers);
+            if (nextArenas.Length == 0) { Require(depth == 13 && row.FinalBossId == "arcade.boss.final", "expanded-version final boss must follow round 52"); return; }
+            Require(depth < 13, "expanded route too long"); foreach (int next in nextArenas) Visit(next, depth + 1);
         }
         Visit(1, 1); int[] prefix = { 1, 21, 22, 23, 24, 25, 5, 6 };
-        for (int i = 0; i < prefix.Length - 1; i++) Require(ServerConfig.Instance.Tables.TbArcadeArena.Get(prefix[i]).NextArenaNumbers.SequenceEqual(new[] { prefix[i + 1] }), "confirmed prefix changed");
+        for (int i = 0; i < prefix.Length - 1; i++) Require(ArcadeRouteRules.NextArenas(ArcadeRouteRules.ExpandedVersion,prefix[i],ServerConfig.Instance.Tables.TbArcadeArena.Get(prefix[i]).NextArenaNumbers).SequenceEqual(new[] { prefix[i + 1] }), "saved expanded-version prefix changed");
     }
     private static void LegacyRoute()
     {

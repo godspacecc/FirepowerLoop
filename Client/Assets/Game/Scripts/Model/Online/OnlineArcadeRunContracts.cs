@@ -205,7 +205,7 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0,float meleeWindupSeconds=0,float meleeWindupRemaining=0,float meleeRecoveryRemaining=0,FirepowerLoop.Arcade.ArcadeDockSeaEntryState dockSeaEntry=default)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0,float meleeWindupSeconds=0,float meleeWindupRemaining=0,float meleeRecoveryRemaining=0,FirepowerLoop.Arcade.ArcadeDockSeaEntryState dockSeaEntry=default,float contentAge=-1,float contentFacingX=0,float contentFacingZ=0)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
@@ -214,6 +214,7 @@ namespace Game
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
             FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;StageEnemy=stageEnemy;AttackSequence=attackSequence;
             MeleeWindupSeconds=meleeWindupSeconds;MeleeWindupRemaining=meleeWindupRemaining;MeleeRecoveryRemaining=meleeRecoveryRemaining;DockSeaEntry=dockSeaEntry;
+            ContentAge=contentAge;ContentFacingX=contentFacingX;ContentFacingZ=contentFacingZ;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }
@@ -230,6 +231,10 @@ namespace Game
         public int SpecialKind { get; }
         public int ContentBossKind { get; }
         public bool ContentWarning { get; }
+        /// <summary>只读技能年龄与权威锁向；不在本地推进技能阶段。</summary>
+        public float ContentAge { get; }
+        public float ContentFacingX { get; }
+        public float ContentFacingZ { get; }
         /// <summary>最近一次有效喷火命中的可见剩余秒数。</summary>
         public float FlameHitRemainingSeconds { get; }
         public int ArmorHealth { get; }
@@ -493,7 +498,7 @@ namespace Game
         public bool BattlePaused { get; }
         public string ChallengeId { get; }
         public bool ChallengeAttempted { get; }
-        /// <summary>服务器确认的本局路线；零保留四十轮，版本1为五十二轮。</summary>
+        /// <summary>服务器确认的本局路线；0为原四十轮，1为五十二轮，2为确认十关四十轮。</summary>
         public int CasualRouteVersion { get; }
         public static OnlineArcadeRunClientSnapshot Empty(OnlineArcadeResultCode code = OnlineArcadeResultCode.None) =>
             new(false, 0, 0, 0, OnlineArcadeRunPhase.None, 0, 0, string.Empty,

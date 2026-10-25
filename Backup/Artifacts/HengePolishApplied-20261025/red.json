@@ -1,0 +1,71 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":8,\"PassedTests\":0,\"FailedTests\":8,\"SkippedTests\":0,\"Duration\":\"00:00:08.4877988\"},\"Results\":[{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(1)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1540000\",\"Message\":\"  \\u7F3A\\u5C11\\u91C7\\u7528\\u7248\\u6B63\\u5F0F\\u5DE8\\u77F3Prefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(2)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.7740000\",\"Message\":\"  \\u7F3A\\u5C11\\u91C7\\u7528\\u7248\\u6B63\\u5F0F\\u5DE8\\u77F3Prefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(3)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8240000\",\"Message\":\"  \\u7F3A\\u5C11\\u91C7\\u7528\\u7248\\u6B63\\u5F0F\\u5DE8\\u77F3Prefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(4)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.7930000\",\"Message\":\"  \\u7F3A\\u5C11\\u91C7\\u7528\\u7248\\u6B63\\u5F0F\\u5DE8\\u77F3Prefab\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.HengeUsesConfirmedEnvironmentWithoutChangingBoundsOrHerdRules\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8140000\",\"Message\":\"  \\u5DE8\\u77F3\\u4ECD\\u672A\\u63A5\\u5165\\u5DF2\\u91C7\\u7528\\u73AF\\u5883\\u76EE\\u5F55\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.LoadingAndChangingRoundsSelectOnlyTheMatchingVariant\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.4460000\",\"Message\":\"  \\u5DE8\\u77F3\\u4ECD\\u672A\\u63A5\\u5165\\u5DF2\\u91C7\\u7528\\u73AF\\u5883\\u76EE\\u5F55\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.MissingRoundVariantFailsBeforePublishingEnvironmentAndCanRetry\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.7700000\",\"Message\":\"  \\u5DE8\\u77F3\\u4ECD\\u672A\\u63A5\\u5165\\u5DF2\\u91C7\\u7528\\u73AF\\u5883\\u76EE\\u5F55\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.HengeAppliedTests.ReleasedMapRejectsLateHengeCallbackAndReleasesHandleExactlyOnce\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8220000\",\"Message\":\"  \\u5DE8\\u77F3\\u4ECD\\u672A\\u63A5\\u5165\\u5DF2\\u91C7\\u7528\\u73AF\\u5883\\u76EE\\u5F55\\r\\n  Expected: not null\\r\\n  But was:  null\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 8,
+        "PassedTests": 0,
+        "FailedTests": 8,
+        "SkippedTests": 0,
+        "Duration": "00:00:08.4877988"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(1)",
+          "Status": "Failed",
+          "Duration": "00:00:01.1540000",
+          "Message": "  缺少采用版正式巨石Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(2)",
+          "Status": "Failed",
+          "Duration": "00:00:00.7740000",
+          "Message": "  缺少采用版正式巨石Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(3)",
+          "Status": "Failed",
+          "Duration": "00:00:00.8240000",
+          "Message": "  缺少采用版正式巨石Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.EachPersistentVariantPreservesConfiguredFootprintsAndOuterLandmarks(4)",
+          "Status": "Failed",
+          "Duration": "00:00:00.7930000",
+          "Message": "  缺少采用版正式巨石Prefab\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.HengeUsesConfirmedEnvironmentWithoutChangingBoundsOrHerdRules",
+          "Status": "Failed",
+          "Duration": "00:00:00.8140000",
+          "Message": "  巨石仍未接入已采用环境目录\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.LoadingAndChangingRoundsSelectOnlyTheMatchingVariant",
+          "Status": "Failed",
+          "Duration": "00:00:01.4460000",
+          "Message": "  巨石仍未接入已采用环境目录\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.MissingRoundVariantFailsBeforePublishingEnvironmentAndCanRetry",
+          "Status": "Failed",
+          "Duration": "00:00:00.7700000",
+          "Message": "  巨石仍未接入已采用环境目录\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.HengeAppliedTests.ReleasedMapRejectsLateHengeCallbackAndReleasesHandleExactlyOnce",
+          "Status": "Failed",
+          "Duration": "00:00:00.8220000",
+          "Message": "  巨石仍未接入已采用环境目录\r\n  Expected: not null\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,4 +1,6 @@
-# FirepowerLoop 文档
+﻿# FirepowerLoop 文档
+
+2026-10-25新局已收口为固定十场四十普通轮，精确名单与旧局兼容见[当前关卡目录](当前项目/关卡配置/README.md)及[本批验证](../Backup/Artifacts/TenStageRouteApplied-20261025/README.md)。路线已完成，前七场已细化接入；后三场新视觉仍须候选采用，火山继续暂缓。
 
 预览图、视频及验证报告统一存放在根目录[Backup/Artifacts](../Backup/Artifacts/)，用途与后续输出约定见[备用资料说明](../Backup/README.md)。
 
