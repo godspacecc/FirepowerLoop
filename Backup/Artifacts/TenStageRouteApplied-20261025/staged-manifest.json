@@ -920,6 +920,7 @@
   "Client/Assets/Game/Scripts/Utility/Arcade/ArcadeRouteRules.cs",
   "Client/Assets/Game/Scripts/Utility/Arcade/ArcadeSlayerChallengeRules.cs",
   "Client/Assets/Game/Scripts/Utility/Config/LubanRuntimeConfigProvider.cs",
+  "Client/Assets/Game/Scripts/Utility/Config/RuntimeConfigDefinitions.cs",
   "Client/Assets/Tests/EditMode/ArcadeEarlyStageRouteTests.cs",
   "Client/Assets/Tests/EditMode/CreaturePresentationTests.cs",
   "Client/Assets/Tests/EditMode/CreaturePresentationTests.cs.meta",

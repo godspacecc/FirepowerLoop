@@ -917,7 +917,7 @@ namespace Game
             RoundLayouts = System.Array.AsReadOnly(System.Linq.Enumerable.ToArray(roundLayouts ?? System.Array.Empty<FirepowerLoop.Arcade.ArcadeRoundLayoutParameters>()));
         }
 
-        /// <summary>固定前六关中五张新场地的边界与资源，牛群仅限农场。</summary>
+        /// <summary>已采用场地资源；21—25提供新边界，巨石只提供视觉，牛群仅限农场。</summary>
         public System.Collections.Generic.IReadOnlyList<FirepowerLoop.Arcade.ArcadeEarlyStageParameters> EarlyStages { get; }
         public ArcadeRuleDefinition Rule { get; }
         /// <summary>正式积分商店目录；旧测试目录可省略，不隐式打开现金商店。</summary>
