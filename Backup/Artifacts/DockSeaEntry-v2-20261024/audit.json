@@ -1,0 +1,38 @@
+{
+  "scope": "temporary cloned scene, manually sampled skeleton, no formal map or spawn changes",
+  "version": 2,
+  "frames": 350,
+  "fps": 20,
+  "seconds": 17.5,
+  "width": 1280,
+  "height": 720,
+  "full_decode": "passed",
+  "formal_assets_checked": 8,
+  "formal_asset_changes": [],
+  "climb_leg_ranges": {
+    "leftKneeBend": [
+      5.34,
+      142.18
+    ],
+    "rightKneeBend": [
+      14.58,
+      121.68
+    ],
+    "leftFootX": [
+      11.84,
+      12.546
+    ],
+    "leftFootY": [
+      -0.962,
+      0.371
+    ],
+    "rightFootX": [
+      11.725,
+      12.684
+    ],
+    "rightFootY": [
+      -0.762,
+      0.264
+    ]
+  }
+}

@@ -41,6 +41,8 @@ namespace Game
         void SetHerds(long mapId,IReadOnlyList<FirepowerLoop.Arcade.ArcadeHerdSnapshot> cows) { }
         void SetPlayerHerdImpact(long playerId,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
         void SetEnemyHerdImpact(int id,FirepowerLoop.Arcade.ArcadeHerdImpactState state) { }
+        /// <summary>只采样右路海中进场的权威年龄，不自行计算出生或进度。</summary>
+        void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state) { }
         /// <summary>权威抓挠进度和当前目标方向，旧端口可忽略。</summary>
         void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
         void SetHerdActivityPaused(bool paused) { }
@@ -667,6 +669,11 @@ namespace Game
             var worldDirection=mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y));
             if(SetNextStageEnemyMelee(id,duration,remaining,recovery,worldDirection))return;
             enemyPresentation?.SetMeleeAttack(id,duration,remaining,recovery,worldDirection);
+        }
+
+        public void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state)
+        {
+            if(mapRoot!=null)enemyPresentation?.SetDockSeaEntry(id,state,mapRoot.TransformDirection(Vector3.left),mapRoot.up);
         }
 
         public void RemoveEnemy(int id, bool playDeath = false)

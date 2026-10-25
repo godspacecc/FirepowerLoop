@@ -1,0 +1,54 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":6,\"PassedTests\":5,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:06.0616072\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9550000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8550000\",\"Message\":\"  \\u624B\\u5957\\u4F24\\u5BB3\\u53EF\\u547D\\u4E2D\\uFF0C\\u4F46\\u4E0D\\u80FD\\u628A\\u6500\\u722C\\u8005\\u5939\\u56DE\\u5E73\\u53F0\\r\\n  Expected: less than 9.99999975E-05f\\r\\n  But was:  1.2278595f\\r\\n\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8070000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8210000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8240000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7860000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 6,
+        "PassedTests": 5,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:06.0616072"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit",
+          "Status": "Passed",
+          "Duration": "00:00:00.9550000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands",
+          "Status": "Failed",
+          "Duration": "00:00:00.8550000",
+          "Message": "  手套伤害可命中，但不能把攀爬者夹回平台\r\n  Expected: less than 9.99999975E-05f\r\n  But was:  1.2278595f\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen",
+          "Status": "Passed",
+          "Duration": "00:00:00.8070000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking",
+          "Status": "Passed",
+          "Duration": "00:00:00.8210000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck",
+          "Status": "Passed",
+          "Duration": "00:00:00.8240000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge",
+          "Status": "Passed",
+          "Duration": "00:00:00.7860000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

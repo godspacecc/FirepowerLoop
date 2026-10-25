@@ -197,13 +197,15 @@ namespace Game
 
     public readonly struct OnlineArcadeEnemySnapshot
     {
+        /// <summary>当前海路年龄和车道的只读副本，迟到实例不重新播放起点。</summary>
+        public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry { get; }
         /// <summary>现身和一次重生的只读权威状态；晚加载沿当前阶段采样。</summary>
         public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy { get; }
         /// <summary>服务器当前牛撞状态；只读复制，重连不重新开始计时。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact { get; }
         public OnlineArcadeEnemySnapshot(long runtimeId, string enemyConfigId, float positionX, float positionZ,
             int currentHealth, int maxHealth, long targetPlayerId, int waveNumber,
-            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0,float meleeWindupSeconds=0,float meleeWindupRemaining=0,float meleeRecoveryRemaining=0)
+            string bossId = "", ArcadeBossPhase bossPhase = ArcadeBossPhase.None, float bossPhaseSeconds = 0f, int armorHealth = 0, int specialKind = 0, int contentBossKind = 0, bool contentWarning = false,float flameHitRemainingSeconds=0, FirepowerLoop.Arcade.ArcadeHerdImpactState herdImpact=default,FirepowerLoop.Arcade.ArcadeStageEnemyState stageEnemy=default,int attackSequence=0,float meleeWindupSeconds=0,float meleeWindupRemaining=0,float meleeRecoveryRemaining=0,FirepowerLoop.Arcade.ArcadeDockSeaEntryState dockSeaEntry=default)
         {
             RuntimeId = runtimeId; EnemyConfigId = enemyConfigId ?? string.Empty; PositionX = positionX;
             PositionZ = positionZ; CurrentHealth = currentHealth; MaxHealth = maxHealth;
@@ -211,7 +213,7 @@ namespace Game
             BossId = bossId ?? string.Empty; BossPhase = bossPhase; BossPhaseSeconds = bossPhaseSeconds;
             ArmorHealth = armorHealth;SpecialKind=specialKind;ContentBossKind=contentBossKind;ContentWarning=contentWarning;
             FlameHitRemainingSeconds=flameHitRemainingSeconds;HerdImpact=herdImpact;StageEnemy=stageEnemy;AttackSequence=attackSequence;
-            MeleeWindupSeconds=meleeWindupSeconds;MeleeWindupRemaining=meleeWindupRemaining;MeleeRecoveryRemaining=meleeRecoveryRemaining;
+            MeleeWindupSeconds=meleeWindupSeconds;MeleeWindupRemaining=meleeWindupRemaining;MeleeRecoveryRemaining=meleeRecoveryRemaining;DockSeaEntry=dockSeaEntry;
         }
         public long RuntimeId { get; }
         public string EnemyConfigId { get; }

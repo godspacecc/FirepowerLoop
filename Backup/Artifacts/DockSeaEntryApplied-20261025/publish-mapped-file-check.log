@@ -1,0 +1,3 @@
+Expected old COPY failure: The requested operation cannot be performed on a file with a user-mapped section open.
+
+PASS mapped bytes atomic publication; old mapping intact; target updated; meta preserved; identical hash skipped; no temporary residue

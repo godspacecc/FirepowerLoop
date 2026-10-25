@@ -26,5 +26,18 @@ foreach ($generatedFile in (Get-ChildItem -LiteralPath $Source -Filter $Pattern 
     $generatedTarget = Join-Path $Destination $generatedFile.Name
     if ((Test-Path -LiteralPath $generatedTarget) -and
         (Get-GeneratedHash $generatedFile.FullName) -eq (Get-GeneratedHash $generatedTarget)) { continue }
-    Copy-Item -LiteralPath $generatedFile.FullName -Destination $generatedTarget -Force
+    # 已映射的bytes不能就地截断；在同目录准备完整候选后原子替换，保留原meta及稳定资源路径。
+    $generatedTemporary = Join-Path $Destination ('.luban-' + [Guid]::NewGuid().ToString('N') + '.tmp')
+    try {
+        Copy-Item -LiteralPath $generatedFile.FullName -Destination $generatedTemporary
+        if (Test-Path -LiteralPath $generatedTarget) {
+            [IO.File]::Replace([IO.Path]::GetFullPath($generatedTemporary), [IO.Path]::GetFullPath($generatedTarget), [System.Management.Automation.Language.NullString]::Value)
+        } else {
+            [IO.File]::Move([IO.Path]::GetFullPath($generatedTemporary), [IO.Path]::GetFullPath($generatedTarget))
+        }
+    } catch {
+        throw "Luban发布失败，原文件保留：$generatedTarget。$($_.Exception.Message)"
+    } finally {
+        if (Test-Path -LiteralPath $generatedTemporary) { Remove-Item -LiteralPath $generatedTemporary }
+    }
 }

@@ -1,0 +1,44 @@
+FAIL DockSeaEntryOnline.FourRoundsRightEntryAndLanes: System.InvalidOperationException: real spawned enemy lacks dock sea-entry state
+   at DockSeaEntryOnlineChecks.State(OnlineArcadeEnemyRuntime e) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 45
+   at DockSeaEntryOnlineChecks.Read[T](OnlineArcadeEnemyRuntime e, String field) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 46
+   at DockSeaEntryOnlineChecks.RightEntry() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 52
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.OtherPassagesKeepNormalSpawn: System.InvalidOperationException: real spawned enemy lacks dock sea-entry state
+   at DockSeaEntryOnlineChecks.State(OnlineArcadeEnemyRuntime e) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 45
+   at DockSeaEntryOnlineChecks.Read[T](OnlineArcadeEnemyRuntime e, String field) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 46
+   at DockSeaEntryOnlineChecks.OtherPassages() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 56
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.ActivePathCannotAttack: System.InvalidOperationException: grab edge: expected 12.55, got -12.899987
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Near(Single actual, Single expected, String label) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 134
+   at DockSeaEntryOnlineChecks.Path() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 62
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.StunHerdAndStormFreezeAge: System.InvalidOperationException: real spawned enemy lacks dock sea-entry state
+   at DockSeaEntryOnlineChecks.State(OnlineArcadeEnemyRuntime e) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 45
+   at DockSeaEntryOnlineChecks.Read[T](OnlineArcadeEnemyRuntime e, String field) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 46
+   at DockSeaEntryOnlineChecks.ControlFreeze() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 68
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.DisconnectLoadingAndTransitionFreeze: System.InvalidOperationException: real spawned enemy lacks dock sea-entry state
+   at DockSeaEntryOnlineChecks.State(OnlineArcadeEnemyRuntime e) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 45
+   at DockSeaEntryOnlineChecks.Read[T](OnlineArcadeEnemyRuntime e, String field) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 46
+   at DockSeaEntryOnlineChecks.BattleFreeze() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 77
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.FinishFrameThenResumePursuit: System.InvalidOperationException: standing X: expected 10.9, got -9.749991
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Near(Single actual, Single expected, String label) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 134
+   at DockSeaEntryOnlineChecks.Finish() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 84
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.CrowdingAndPushPreservePathButDamage: System.InvalidOperationException: crowding X: expected -2.4029982, got -3.3479981
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Near(Single actual, Single expected, String label) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 134
+   at DockSeaEntryOnlineChecks.Push() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 93
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.SnapshotCloneAndCodecKeepTerminalState: System.InvalidOperationException: codec lost source identity
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Snapshot() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 112
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+FAIL DockSeaEntryOnline.CarrierArmorDropAndExplosionRemain: System.InvalidOperationException: entry bypassed purple barrel armor
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Carrier() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 121
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+0/9 passed

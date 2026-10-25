@@ -1,0 +1,73 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":10,\"PassedTests\":10,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.6580632\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2990000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateCarrierBindsToSameRestMountAndImmediatelyFollowsClimb\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Shambler\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Gaunt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0880000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Bloated\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0950000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1170000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.RippleMeshIsReusedAndReleasedWithoutOwningSharedMaterial\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 10,
+        "PassedTests": 10,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6580632"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb",
+          "Status": "Passed",
+          "Duration": "00:00:00.2990000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateCarrierBindsToSameRestMountAndImmediatelyFollowsClimb",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Shambler\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Gaunt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0880000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Bloated\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0950000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.1170000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.RippleMeshIsReusedAndReleasedWithoutOwningSharedMaterial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

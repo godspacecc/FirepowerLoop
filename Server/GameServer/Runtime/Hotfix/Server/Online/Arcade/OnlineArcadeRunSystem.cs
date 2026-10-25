@@ -1594,6 +1594,7 @@ namespace ET.Server
                 BossRayCooldownSeconds = boss?.RayIntervalSeconds ?? 0f,
             };
             InitializeEnemyContent(battle,enemy);
+            InitializeDockSeaEntry(battle,enemy,passage);
             battle.Enemies.Add(runtimeId, enemy);
             if (battle.IsFinalBoss && battle.FinalBossEnemyId == 0) battle.FinalBossEnemyId = runtimeId;
             battle.SpawnedInWave++;
@@ -1735,6 +1736,7 @@ namespace ET.Server
                     return changed || battle.AllPlayersDefeated;
                 }
 
+                if(TickDockSeaEntry(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(TickNextStageEnemy(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
                 {CancelMeleeWindup(enemy,true);continue;}
@@ -2372,11 +2374,14 @@ namespace ET.Server
                 if (length < 0.001f) { offsetX = 0f; offsetZ = 1f; length = 1f; }
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
-                // 深海接近时保留原位置附近的击退，完整上岸后仍沿原岸线约束。
-                ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
-                    rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
-                enemy.PositionX = nextX;
-                enemy.PositionZ = nextZ;
+                // 海中进场固定路径仍接受原伤害；站稳后恢复既有击退与岸线约束。
+                if(!enemy.DockSeaEntry.Active)
+                {
+                    ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
+                        rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
+                    enemy.PositionX = nextX;
+                    enemy.PositionZ = nextZ;
+                }
                 enemy.LastDamagePlayerId = ownerPlayerId;
                 DamageEnemy(battle, enemy, damage);
                 if (enemy.CurrentHealth <= 0) self.KillEnemy(battle, enemy);
@@ -3131,7 +3136,7 @@ namespace ET.Server
             {
                 OnlineArcadeEnemyRuntime left = battle.Enemies[battle.EnemyIterationIds[leftIndex]];
                 OnlineArcadeEnemyRuntime right = battle.Enemies[battle.EnemyIterationIds[rightIndex]];
-                if(left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
+                if(left.DockSeaEntry.Active||right.DockSeaEntry.Active||left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
                 float offsetX = right.PositionX - left.PositionX;
                 float offsetZ = right.PositionZ - left.PositionZ;
                 float distanceSquared = offsetX * offsetX + offsetZ * offsetZ;
@@ -3488,6 +3493,7 @@ namespace ET.Server
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpact.Remaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpact.DirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpact.DirectionZ;
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemy.Phase;enemy.StageEnemyAge=sourceEnemy.StageEnemy.Age;
+                enemy.DockSeaEntryStarted=sourceEnemy.DockSeaEntry.Started;enemy.DockSeaEntryAge=sourceEnemy.DockSeaEntry.Age;enemy.DockSeaEntryLane=sourceEnemy.DockSeaEntry.Lane;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemy.OriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemy.OriginY;enemy.StageEnemyRevives=sourceEnemy.StageEnemy.RevivesRemaining;
                 enemy.AttackSequence=sourceEnemy.AttackSequence;
                 enemy.MeleeWindupSeconds=sourceEnemy.MeleeWindupSeconds;
@@ -3721,6 +3727,7 @@ namespace ET.Server
                 enemy.SpecialKind=sourceEnemy.SpecialKind;enemy.ContentBossKind=sourceEnemy.ContentBossKind;enemy.ContentWarning=sourceEnemy.ContentWarning;enemy.FlameHitRemainingSeconds=sourceEnemy.FlameHitRemainingSeconds;
                 enemy.HerdImpactRemaining=sourceEnemy.HerdImpactRemaining;enemy.HerdImpactDirectionX=sourceEnemy.HerdImpactDirectionX;enemy.HerdImpactDirectionZ=sourceEnemy.HerdImpactDirectionZ;
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemyPhase;enemy.StageEnemyAge=sourceEnemy.StageEnemyAge;
+                enemy.DockSeaEntryStarted=sourceEnemy.DockSeaEntryStarted;enemy.DockSeaEntryAge=sourceEnemy.DockSeaEntryAge;enemy.DockSeaEntryLane=sourceEnemy.DockSeaEntryLane;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemyOriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemyOriginZ;enemy.StageEnemyRevives=sourceEnemy.StageEnemyRevives;
                 enemy.AttackSequence=sourceEnemy.AttackSequence;
                 enemy.MeleeWindupSeconds=sourceEnemy.MeleeWindupSeconds;

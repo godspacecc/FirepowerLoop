@@ -104,7 +104,7 @@ namespace Game
             var t=catalog.Rule.WeaponUpgrade.Evolution;
             foreach(var enemy in r.Enemies.Values)
             {
-                if(enemy.StageEnemy.Phase>0||enemy.Health<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.Id)||
+                if(enemy.StageEnemy.Phase>0||enemy.DockSeaEntry.Active||enemy.Health<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.Id)||
                     (enemy.Position-center).sqrMagnitude>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
                 p.EvolutionPushedEnemyIds.Add(enemy.Id);
                 var direction=enemy.Position-p.SourcePosition;

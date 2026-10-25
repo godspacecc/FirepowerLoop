@@ -1,0 +1,17 @@
+PASS DockSeaEntryOnline.FourRoundsRightEntryAndLanes
+FAIL DockSeaEntryOnline.OtherPassagesKeepNormalSpawn: System.InvalidOperationException: real queued spawn failed
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Spawn(Int32 passage, Int32 sequence, Int32 round) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 41
+   at DockSeaEntryOnlineChecks.OtherPassages() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 57
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+PASS DockSeaEntryOnline.ActivePathCannotAttack
+PASS DockSeaEntryOnline.StunHerdAndStormFreezeAge
+PASS DockSeaEntryOnline.DisconnectLoadingAndTransitionFreeze
+PASS DockSeaEntryOnline.FinishFrameThenResumePursuit
+PASS DockSeaEntryOnline.CrowdingAndPushPreservePathButDamage
+PASS DockSeaEntryOnline.SnapshotCloneAndCodecKeepTerminalState
+FAIL DockSeaEntryOnline.CarrierArmorDropAndExplosionRemain: System.InvalidOperationException: entry bypassed purple barrel armor
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 135
+   at DockSeaEntryOnlineChecks.Carrier() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 121
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+7/9 passed

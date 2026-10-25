@@ -175,22 +175,43 @@ public static class RemainingStagesPreview
                     list.Add(new CombineInstance{mesh=filter.sharedMesh,subMeshIndex=sub,transform=root.worldToLocalMatrix*filter.transform.localToWorldMatrix});
                 }
             }
-            var output=new GameObject("CombinedEnvironment").transform;output.SetParent(root,false);int index=0;
+            var output=new GameObject("CombinedEnvironment").transform;output.SetParent(root,false);int index=0,removedPassage=0;
             foreach(var pair in groups)
             {
-                var combined=new Mesh{name="DocksMesh"+index,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};Meshes.Add(combined);combined.CombineMeshes(pair.Value.ToArray(),true,true);combined.RecalculateBounds();
+                var combined=new Mesh{name="DocksMesh"+index,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};Meshes.Add(combined);combined.CombineMeshes(pair.Value.ToArray(),true,true);
+                // 重制入口常独立动态编译，内联同一采用条件，不依赖额外制作脚本。
+                removedPassage+=RemoveConfirmedDockRightPassage(combined,pair.Key.shader.name.Contains("DockWater"));combined.RecalculateBounds();
                 string path=folder+"/DocksMesh"+index+".asset";var saved=AssetDatabase.LoadAssetAtPath<Mesh>(path);
                 if(saved==null){AssetDatabase.CreateAsset(combined,path);saved=combined;}else{EditorUtility.CopySerialized(combined,saved);AssetDatabase.SaveAssetIfDirty(saved);}
                 var go=new GameObject("EnvironmentPart"+index++,typeof(MeshFilter),typeof(MeshRenderer));go.transform.SetParent(output,false);go.GetComponent<MeshFilter>().sharedMesh=saved;go.GetComponent<MeshRenderer>().sharedMaterial=SaveMaterial(pair.Key);
             }
             foreach(var t in root.Cast<Transform>().Where(t=>t!=output).ToArray())Object.DestroyImmediate(t.gameObject);
-            PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab");return "已保存确认码头，绘制组="+index+"，贴图副本="+textureCopies.Count;
+            PrefabUtility.SaveAsPrefabAsset(root.gameObject,"Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab");return "已保存确认码头，绘制组="+index+"，贴图副本="+textureCopies.Count+"，右路撤板三角形="+removedPassage;
         }
         finally
         {
             SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);foreach(var m in Materials)if(m!=null&&!EditorUtility.IsPersistent(m))Object.DestroyImmediate(m);Materials.Clear();
             foreach(var mesh in Meshes)if(mesh!=null&&!EditorUtility.IsPersistent(mesh))Object.DestroyImmediate(mesh);Meshes.Clear();foreach(var shader in Shaders)if(shader!=null&&!EditorUtility.IsPersistent(shader))Object.DestroyImmediate(shader);Shaders.Clear();
         }
+    }
+    /// <summary>已采用撤板仅移除东侧低位通道，保留水面、立柱及高位栏杆；合并网格已在码头局部空间。</summary>
+    static int RemoveConfirmedDockRightPassage(Mesh combined,bool water)
+    {
+        if(water)return 0;
+        int removed=0;var vertices=combined.vertices;
+        for(int sub=0;sub<combined.subMeshCount;sub++)
+        {
+            var triangles=combined.GetTriangles(sub);var keep=new List<int>(triangles.Length);
+            for(int i=0;i<triangles.Length;i+=3)
+            {
+                var a=vertices[triangles[i]];var b=vertices[triangles[i+1]];var c=vertices[triangles[i+2]];
+                bool right=Mathf.Min(a.x,Mathf.Min(b.x,c.x))>=11.999f&&Mathf.Max(a.x,Mathf.Max(b.x,c.x))>12.001f;
+                bool deck=Mathf.Max(a.y,Mathf.Max(b.y,c.y))<.07f;
+                if(right&&deck)removed++;else{keep.Add(triangles[i]);keep.Add(triangles[i+1]);keep.Add(triangles[i+2]);}
+            }
+            combined.SetTriangles(keep,sub,false);
+        }
+        return removed;
     }
     static Mesh RopeMesh(Vector3 a,Vector3 b,float radius)
     {

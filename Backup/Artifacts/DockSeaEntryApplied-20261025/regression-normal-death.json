@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":1,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.3485882\"},\"Results\":[{\"Name\":\"Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\\u0022ArcadeEnemyBasic\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3170000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3485882"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.EnemyPhysicalReactionTests.NormalDeathStaggersBeforeHandingCurrentPoseToPhysics(\"ArcadeEnemyBasic\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.3170000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,63 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":8,\"PassedTests\":8,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.3415176\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.CancellationReturnsToIdleWithoutSwinging\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2910000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.DeathClearsPendingGrab\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.LargeGrabPullsBackAndReachesPlayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.LateLoadSamplesCurrentRecoveryImmediately\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.OnlineProjectionKeepsProgressAndAuthoritativeTarget\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0090000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.PoolResetClearsPendingGrab\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.RecoveryUsesAuthorityRatherThanLocalClock\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.ArcadeZombieGrabVisualTests.RepeatedLateSamplingDoesNotAccumulate\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3415176"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.CancellationReturnsToIdleWithoutSwinging",
+          "Status": "Passed",
+          "Duration": "00:00:00.2910000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.DeathClearsPendingGrab",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.LargeGrabPullsBackAndReachesPlayer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.LateLoadSamplesCurrentRecoveryImmediately",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.OnlineProjectionKeepsProgressAndAuthoritativeTarget",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.PoolResetClearsPendingGrab",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.RecoveryUsesAuthorityRatherThanLocalClock",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGrabVisualTests.RepeatedLateSamplingDoesNotAccumulate",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

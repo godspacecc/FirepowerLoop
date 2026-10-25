@@ -1764,6 +1764,18 @@ namespace ET
         [MemoryPackOrder(27)]
         public float MeleeRecoveryRemaining { get; set; }
 
+        /// <summary>
+        /// 码头海中进场：只复制当前权威进度，完成身份保留到实体结束。
+        /// </summary>
+        [MemoryPackOrder(28)]
+        public bool DockSeaEntryStarted { get; set; }
+
+        [MemoryPackOrder(29)]
+        public float DockSeaEntryAge { get; set; }
+
+        [MemoryPackOrder(30)]
+        public float DockSeaEntryLane { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1799,6 +1811,9 @@ namespace ET
             this.MeleeWindupSeconds = default;
             this.MeleeWindupRemaining = default;
             this.MeleeRecoveryRemaining = default;
+            this.DockSeaEntryStarted = default;
+            this.DockSeaEntryAge = default;
+            this.DockSeaEntryLane = default;
 
             ObjectPool.Instance.Recycle(this);
         }

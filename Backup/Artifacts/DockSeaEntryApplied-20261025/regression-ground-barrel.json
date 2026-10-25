@@ -1,0 +1,113 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":18,\"PassedTests\":18,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:16.2076205\"},\"Results\":[{\"Name\":\"Game.Tests.GroundBarrelFlowTests.AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9420000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.BarrelKillingThemeBossKeepsAlreadySettledExplosion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8560000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.BarrelSurvivesWeakShotUntilAccumulatedDamageReachesHealth\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8260000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.CarrierReleasesOneIndependentBarrelAndThenDiesNormally\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7830000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.ExplosionDamagesActorsOnceAndKeepsCarrierDeathExplosion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8340000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponBarrelHitPreservesNearbyPlayerLife\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8280000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponKeepsItsOriginalBlastWhenItDetonatesBarrel\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7870000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(1)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8290000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(4)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7930000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.PlayerShotDetonatesNearestBarrelOnceWithoutChangingBudget\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8330000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.PurpleExplosionStillProjectsWhenBarrelEndsTheWave\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8270000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.SameMapBeginKeepsDestroyedStateAndNewMapInitializesItsOwnBarrels\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8020000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.SameMapContentRestartNeverReusesBarrelExplosionIdentity\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1750000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.SubmittedResultStopsBarrelAndCarrierDamage\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7860000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.UnknownDestroyedBarrelIsRejectedBeforeCurrentEnemiesAreCleared\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8560000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.VortexFreezesInTreasureRoomAndIgnoresUndeliveredWeapons\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8000000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.VortexPullsDropsAndConsumesWithoutAwardOrRefund\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8140000\"},{\"Name\":\"Game.Tests.GroundBarrelFlowTests.WallOrCloserEnemyBlocksShotToFarBarrel\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8220000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 18,
+        "PassedTests": 18,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:16.2076205"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing",
+          "Status": "Passed",
+          "Duration": "00:00:00.9420000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.BarrelKillingThemeBossKeepsAlreadySettledExplosion",
+          "Status": "Passed",
+          "Duration": "00:00:00.8560000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.BarrelSurvivesWeakShotUntilAccumulatedDamageReachesHealth",
+          "Status": "Passed",
+          "Duration": "00:00:00.8260000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.CarrierReleasesOneIndependentBarrelAndThenDiesNormally",
+          "Status": "Passed",
+          "Duration": "00:00:00.7830000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.ExplosionDamagesActorsOnceAndKeepsCarrierDeathExplosion",
+          "Status": "Passed",
+          "Duration": "00:00:00.8340000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponBarrelHitPreservesNearbyPlayerLife",
+          "Status": "Passed",
+          "Duration": "00:00:00.8280000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.ExplosiveWeaponKeepsItsOriginalBlastWhenItDetonatesBarrel",
+          "Status": "Passed",
+          "Duration": "00:00:00.7870000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(1)",
+          "Status": "Passed",
+          "Duration": "00:00:00.8290000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.LastExplosionSurvivesActualBossEntry(4)",
+          "Status": "Passed",
+          "Duration": "00:00:00.7930000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.PlayerShotDetonatesNearestBarrelOnceWithoutChangingBudget",
+          "Status": "Passed",
+          "Duration": "00:00:00.8330000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.PurpleExplosionStillProjectsWhenBarrelEndsTheWave",
+          "Status": "Passed",
+          "Duration": "00:00:00.8270000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.SameMapBeginKeepsDestroyedStateAndNewMapInitializesItsOwnBarrels",
+          "Status": "Passed",
+          "Duration": "00:00:00.8020000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.SameMapContentRestartNeverReusesBarrelExplosionIdentity",
+          "Status": "Passed",
+          "Duration": "00:00:01.1750000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.SubmittedResultStopsBarrelAndCarrierDamage",
+          "Status": "Passed",
+          "Duration": "00:00:00.7860000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.UnknownDestroyedBarrelIsRejectedBeforeCurrentEnemiesAreCleared",
+          "Status": "Passed",
+          "Duration": "00:00:00.8560000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.VortexFreezesInTreasureRoomAndIgnoresUndeliveredWeapons",
+          "Status": "Passed",
+          "Duration": "00:00:00.8000000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.VortexPullsDropsAndConsumesWithoutAwardOrRefund",
+          "Status": "Passed",
+          "Duration": "00:00:00.8140000"
+        },
+        {
+          "Name": "Game.Tests.GroundBarrelFlowTests.WallOrCloserEnemyBlocksShotToFarBarrel",
+          "Status": "Passed",
+          "Duration": "00:00:00.8220000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

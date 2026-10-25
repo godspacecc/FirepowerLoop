@@ -1,0 +1,68 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":9,\"PassedTests\":9,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.8127951\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\\u0022Shambler\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3060000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\\u0022Gaunt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\\u0022Bloated\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1300000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\\u0022Shambler\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\\u0022Gaunt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\\u0022Bloated\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\\u0022Shambler\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\\u0022Gaunt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\\u0022Bloated\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 9,
+        "PassedTests": 9,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.8127951"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Shambler\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.3060000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Gaunt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.1030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.GroundStridePlantsFeetWithoutCrouching(\"Bloated\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.1300000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Shambler\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Gaunt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.MovementSpeedRetimesStrideWithoutRetimingHit(\"Bloated\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Shambler\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Gaunt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeZombieGroundWalkTests.StopDeathAndPoolReuseRestoreUprightIdle(\"Bloated\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

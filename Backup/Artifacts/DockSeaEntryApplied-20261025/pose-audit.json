@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "System.String: \"Shambler|0.000|maxJointErrorMetres=0.000002\\nShambler|2.500|maxJointErrorMetres=0.000001\\nShambler|3.400|maxJointErrorMetres=0.000001\\nShambler|4.100|maxJointErrorMetres=0.000001\\nShambler|5.000|maxJointErrorMetres=0.000001\\nShambler|5.600|maxJointErrorMetres=0.000000\\nGaunt|0.000|maxJointErrorMetres=0.000002\\nGaunt|2.500|maxJointErrorMetres=0.000001\\nGaunt|3.400|maxJointErrorMetres=0.000001\\nGaunt|4.100|maxJointErrorMetres=0.000001\\nGaunt|5.000|maxJointErrorMetres=0.000002\\nGaunt|5.600|maxJointErrorMetres=0.000000\\nBloated|0.000|maxJointErrorMetres=0.000000\\nBloated|2.500|maxJointErrorMetres=0.000000\\nBloated|3.400|maxJointErrorMetres=0.000001\\nBloated|4.100|maxJointErrorMetres=0.000001\\nBloated|5.000|maxJointErrorMetres=0.000001\\nBloated|5.600|maxJointErrorMetres=0.000001\\nmaximumJointErrorMetres=0.000002\""
+    }
+  ],
+  "isError": false
+}

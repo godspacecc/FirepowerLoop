@@ -1,0 +1,11 @@
+{
+  "scope": "temporary cloned scene, manually sampled skeleton, no formal map or spawn changes",
+  "frames": 304,
+  "fps": 20,
+  "seconds": 15.2,
+  "width": 1280,
+  "height": 720,
+  "full_decode": "passed",
+  "formal_assets_checked": 8,
+  "formal_asset_changes": []
+}

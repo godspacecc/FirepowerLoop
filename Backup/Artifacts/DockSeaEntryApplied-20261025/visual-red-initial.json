@@ -1,0 +1,66 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":8,\"PassedTests\":5,\"FailedTests\":3,\"SkippedTests\":0,\"Duration\":\"00:00:01.4529268\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.2630000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Shambler\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0110000\",\"Message\":\"  \\u4E0A\\u5CB8\\u9636\\u6BB5\\u5FC5\\u987B\\u7531\\u6743\\u5A01\\u5E74\\u9F84\\u91C7\\u6837\\uFF0C\\u4E0D\\u80FD\\u81EA\\u884C\\u64AD\\u653E\\u65E7\\u884C\\u8D70\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Gaunt\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0180000\",\"Message\":\"  \\u4E0A\\u5CB8\\u9636\\u6BB5\\u5FC5\\u987B\\u7531\\u6743\\u5A01\\u5E74\\u9F84\\u91C7\\u6837\\uFF0C\\u4E0D\\u80FD\\u81EA\\u884C\\u64AD\\u653E\\u65E7\\u884C\\u8D70\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Bloated\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0160000\",\"Message\":\"  \\u4E0A\\u5CB8\\u9636\\u6BB5\\u5FC5\\u987B\\u7531\\u6743\\u5A01\\u5E74\\u9F84\\u91C7\\u6837\\uFF0C\\u4E0D\\u80FD\\u81EA\\u884C\\u64AD\\u653E\\u65E7\\u884C\\u8D70\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1080000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 8,
+        "PassedTests": 5,
+        "FailedTests": 3,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4529268"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb",
+          "Status": "Passed",
+          "Duration": "00:00:00.2630000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Shambler\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  上岸阶段必须由权威年龄采样，不能自行播放旧行走\r\n  Expected: False\r\n  But was:  True\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Gaunt\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0180000",
+          "Message": "  上岸阶段必须由权威年龄采样，不能自行播放旧行走\r\n  Expected: False\r\n  But was:  True\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Bloated\")",
+          "Status": "Failed",
+          "Duration": "00:00:00.0160000",
+          "Message": "  上岸阶段必须由权威年龄采样，不能自行播放旧行走\r\n  Expected: False\r\n  But was:  True\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.1080000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

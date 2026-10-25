@@ -1,0 +1,25 @@
+{
+  "baseline_files_checked": 48,
+  "changed_existing_resources": [
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab",
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab",
+    "Client/Assets/Game/Art/Arcade/Docks/DocksMesh1.asset",
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab"
+  ],
+  "changed_existing_meta": [],
+  "formal_resource_hashes": {
+    "Client/Assets/Game/Art/Arcade/Docks/DocksMesh1.asset": "4DEB761DDF06F131D0DA1CF3E0E41A33A454E89ED50BB4E08339F3156CCB46C3",
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab": "FAF349D9558EBFCE7A80F87690B0E1D4313BB162853A7853601FF5D05D51E3DC",
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab": "B8BDB049E07D58F9C4A32D9336D3E2C1B39D9AC800150380676283ECE7BFA3F5",
+    "Client/Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab": "E25E2C5D771A949A815F3D6B7AC135B17FA517A59ACDA474B6D04EC6C7238283",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/BloatedDockSeaEntry.anim": "5B164EE13826F8DDC4CC7D52C84BBEA0E6F3B33BD16D628AEB062006050BB1A7",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/BloatedDockSeaEntry.anim.meta": "082A23AF3599F95BDE61D967CAFD50784D1D0E058C5A17E66D4C62BDC7D76161",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/GauntDockSeaEntry.anim": "EDC6C43D8698D53AB7B1D1E32F8D891962C3F27A6DD4DE952823EA34C257496B",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/GauntDockSeaEntry.anim.meta": "D18586426F6C4DE3066FB2A2AC6422A07DFF4F74A56EBA2DFC474D6B379D525A",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerDockSeaEntry.anim": "659B0C8432E0909DF08CD4FB82B68A8DF0D847A27FB814A72AC1A205F795CCBC",
+    "Client/Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerDockSeaEntry.anim.meta": "889AF7B8EC2C161603DA0D0719871FBA1484ACD66D8840918E5DA05D20B043C7",
+    "Client/Assets/Game/Art/Arcade/Docks/DockSeaEntryFoam.mat": "4223769313846417AC9A3E58A8BCB0444B94AB276BB4CC7FD1071280C34D4EC6",
+    "Client/Assets/Game/Art/Arcade/Docks/DockSeaEntryFoam.mat.meta": "5FB5F0A691FD667AE8E51BA5D6A87732DB0EB161F023EC5313BE993B5C750274"
+  },
+  "client_server_layout_bytes_equal": true
+}

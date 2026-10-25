@@ -831,6 +831,7 @@ namespace Game
                 enemy.BossRayCooldown = boss.RayIntervalSeconds;
             }
             AssignRoundEnemyContent(runtime, enemy);
+            InitializeDockSeaEntry(runtime, enemy);
             if (isFinalBossEnemy && UsesContentRounds(runtime)) enemy.ContentBossKind = 4;
             runtime.Enemies.Add(enemy.Id, enemy);
             if (isFinalBossEnemy)
@@ -850,6 +851,7 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
+                if (TickDockSeaEntry(runtime, enemy, deltaTime)) continue;
                 enemy.MeleeRecoveryRemaining = Mathf.Max(0, enemy.MeleeRecoveryRemaining - deltaTime);
                 if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy,true);continue;}
                 if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy,true);continue;}
@@ -1171,8 +1173,9 @@ namespace Game
                 if (direction.sqrMagnitude < 0.001f) direction = Vector2.up;
                 var displaced = enemy.Position + direction.normalized * knockbackDistance;
                 // 未上岸的敌人仍可受击，但不能因通用击退夹取瞬间跳到岸内。
-                enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
-                    ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
+                if (!enemy.DockSeaEntry.Active)
+                    enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
+                        ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
                 DamageEnemy(enemy, damage);
                 if (enemy.Health <= 0) KillEnemy(runtime, enemy);
             }
@@ -2286,6 +2289,7 @@ namespace Game
                     enemy.IsBossPresentation);
                 view.SetEnemyArmor(enemy.Id, enemy.Position, enemy.ArmorHealth);
                 view.SetEnemyHerdImpact(enemy.Id,enemy.HerdImpact);
+                view.SetEnemyDockSeaEntry(enemy.Id,enemy.DockSeaEntry);
             }
             SyncRoundContent(runtime);
             foreach(var enemy in runtime.Enemies.Values)
@@ -2447,7 +2451,7 @@ namespace Game
         {
             crowdingEnemies.Clear();
             foreach (var enemy in runtime.Enemies.Values)
-                if(enemy.StageEnemy.Phase==0)crowdingEnemies.Add(enemy);
+                if(enemy.StageEnemy.Phase==0 && !enemy.DockSeaEntry.Active)crowdingEnemies.Add(enemy);
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();

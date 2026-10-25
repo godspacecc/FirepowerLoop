@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.4279606\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3420000\",\"Message\":\"  \\u666E\\u901A\\u6B7B\\u4EA1\\u7684\\u77ED\\u6682\\u5931\\u8861\\u4E0D\\u80FD\\u8BA9\\u65E7Animator\\u8986\\u76D6\\u6293\\u8FB9\\u59FF\\u6001\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4279606"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)",
+          "Status": "Failed",
+          "Duration": "00:00:00.3420000",
+          "Message": "  普通死亡的短暂失衡不能让旧Animator覆盖抓边姿态\r\n  Expected: False\r\n  But was:  True\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

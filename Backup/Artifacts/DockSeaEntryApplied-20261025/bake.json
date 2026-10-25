@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "System.String: \"passageTrianglesRemoved=1344; changedMeshAssets=1; idempotentZeroAllowed=true\\nmesh=Assets/Game/Art/Arcade/Docks/DocksMesh1.asset; removedTriangles=1344\\nShambler -> Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerDockSeaEntry.anim; length=6.75; frameRate=40; bindingChanged=True\\nGaunt -> Assets/Game/Art/Enemies/Zombies/Civilian/GauntDockSeaEntry.anim; length=6.75; frameRate=40; bindingChanged=True\\nBloated -> Assets/Game/Art/Enemies/Zombies/Civilian/BloatedDockSeaEntry.anim; length=6.75; frameRate=40; bindingChanged=True\""
+    }
+  ],
+  "isError": false
+}

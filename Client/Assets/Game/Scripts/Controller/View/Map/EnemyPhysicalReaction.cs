@@ -135,6 +135,14 @@ namespace Game
 
         /// <summary>最终伤害已裁决，能量爆炸降低抛升，近距霰弹只做低幅后倒。</summary>
         public bool BeginDeathWithImpact(Vector3 worldDirection, bool explosive, int impactKind)
+            => BeginDeathCore(worldDirection, explosive, impactKind, false);
+
+        /// <summary>手动采样动作的死亡保留现场骨架，其余失衡时长和物理预算沿用普通入口。</summary>
+        public bool BeginSampledPoseDeath(Vector3 worldDirection, bool explosive, int impactKind)
+            => BeginDeathCore(worldDirection, explosive, impactKind, true);
+
+        /// <summary>既有动画驱动与手动采样共用同一死亡事务，只有失衡期间的Animator求值不同。</summary>
+        private bool BeginDeathCore(Vector3 worldDirection, bool explosive, int impactKind, bool preserveSampledPose)
         {
             if (!IsReady || dead) return false;
             CacheRig(); RemoveOffset(); hitRemaining = 0f; deathAge = 0f; dead = true;
@@ -152,6 +160,8 @@ namespace Game
             {
                 staggering = true;
                 animator.ResetTrigger(AttackParameter); animator.SetFloat(MoveParameter, 0f); animator.SetTrigger(HitParameter);
+                // 海中攀爬由权威年龄采样；失衡仍照常叠加，但不能让旧Run/Hit求值覆盖临终骨架。
+                if (preserveSampledPose) animator.enabled = false;
             }
             return true;
         }

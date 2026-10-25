@@ -1,0 +1,11 @@
+{
+  "source": "formal prefabs and bound clips, isolated EnemyView sampling, not natural battle or live dual-client session",
+  "main_source_frames": 180,
+  "slow_source_frames": 100,
+  "encoded_frames": 380,
+  "fps": 20,
+  "seconds": 19,
+  "full_decode": "passed",
+  "width": 1280,
+  "height": 720
+}

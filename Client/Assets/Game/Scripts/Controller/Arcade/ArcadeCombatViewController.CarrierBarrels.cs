@@ -42,6 +42,8 @@ namespace Game
             if(current==null)
             {
                 var pack=CreateVortexBarrel(enemy,"CarrierBarrel_"+id,true);pack.transform.localPosition=new Vector3(0,.45f,-.4f);
+                // 以静止挂点交给视觉根，迟到的背桶也跟随已经开始的攀爬。
+                enemy.GetComponent<EnemyView>()?.AttachCarriedVisual(pack.transform);
                 try{current=new CarrierBarrelVisual{EnemyRoot=enemy,Pack=pack,Effect=new ArcadeVortexBarrelPresentation(pack.transform)};}
                 catch{pack.SetActive(false);DestroyObject(pack);throw;}
                 carrierBarrels.Add(id,current);

@@ -1,0 +1,43 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":4,\"PassedTests\":4,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.0690713\"},\"Results\":[{\"Name\":\"Game.Tests.WeaponDeathPhysicsTests.CloseShotgunTravelsBackWithLowLiftAndLimitedTumbling\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0360000\"},{\"Name\":\"Game.Tests.WeaponDeathPhysicsTests.ControllerPassesShotgunStyleWithoutSpawningExplosiveMist\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.WeaponDeathPhysicsTests.EnergyBlastHasLessLiftTravelAndSpinThanHeavyExplosion\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"},{\"Name\":\"Game.Tests.WeaponDeathPhysicsTests.TypedDeathPauseAndReuseDoNotLeakIntoOrdinaryDeath\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 4,
+        "PassedTests": 4,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0690713"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.WeaponDeathPhysicsTests.CloseShotgunTravelsBackWithLowLiftAndLimitedTumbling",
+          "Status": "Passed",
+          "Duration": "00:00:00.0360000"
+        },
+        {
+          "Name": "Game.Tests.WeaponDeathPhysicsTests.ControllerPassesShotgunStyleWithoutSpawningExplosiveMist",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.WeaponDeathPhysicsTests.EnergyBlastHasLessLiftTravelAndSpinThanHeavyExplosion",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.WeaponDeathPhysicsTests.TypedDeathPauseAndReuseDoNotLeakIntoOrdinaryDeath",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

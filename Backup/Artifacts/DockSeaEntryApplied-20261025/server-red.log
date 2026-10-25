@@ -1,0 +1,7 @@
+Unhandled exception. System.Exception: Luban server config invalid. Profile=OnlineLocal, Table=TbArcadeRoundLayout, Key=21, invalid connected layout
+   at ET.ServerConfig.ValidateArcadeConfig() in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Model\Server\Config\ServerConfig.cs:line 499
+   at ET.ServerConfig.IndexSharedTables() in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Model\Server\Config\ServerConfig.cs:line 243
+   at ET.ServerConfig.BuildIndexes() in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Model\Server\Config\ServerConfig.cs:line 223
+   at ET.ServerConfig.Initialize(String profile, Func`2 loader) in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Model\Server\Config\ServerConfig.cs:line 186
+   at ET.ServerConfig.CreateForValidation(String profile, Func`2 loader) in E:\GitHub\FirepowerLoop\Server\GameServer\Runtime\Model\Server\Config\ServerConfig.cs:line 77
+   at Program.<Main>$(String[] args) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 12

@@ -1,0 +1,53 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":6,\"PassedTests\":6,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:06.1835456\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9690000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8920000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7850000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9320000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8240000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7810000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 6,
+        "PassedTests": 6,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:06.1835456"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit",
+          "Status": "Passed",
+          "Duration": "00:00:00.9690000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands",
+          "Status": "Passed",
+          "Duration": "00:00:00.8920000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen",
+          "Status": "Passed",
+          "Duration": "00:00:00.7850000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking",
+          "Status": "Passed",
+          "Duration": "00:00:00.9320000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck",
+          "Status": "Passed",
+          "Duration": "00:00:00.8240000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge",
+          "Status": "Passed",
+          "Duration": "00:00:00.7810000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

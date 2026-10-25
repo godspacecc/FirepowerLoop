@@ -454,6 +454,10 @@ message OnlineArcadeEnemyInfo
 	float MeleeWindupSeconds = 26;
 	float MeleeWindupRemaining = 27;
 	float MeleeRecoveryRemaining = 28;
+	// 码头海中进场：只复制当前权威进度，完成身份保留到实体结束。
+	bool DockSeaEntryStarted = 29;
+	float DockSeaEntryAge = 30;
+	float DockSeaEntryLane = 31;
 }
 
 // Opcode 12082

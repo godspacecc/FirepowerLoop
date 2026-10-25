@@ -1,0 +1,58 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":7,\"PassedTests\":7,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:06.7147219\"},\"Results\":[{\"Name\":\"Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8420000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.BreakingBarrelExplodesOnceThenBodyTakesLaterShots\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8750000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.DamagedCarrierDropsBarrelWithRemainingHealth\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8200000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7800000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.ExplosionAndRayUseBarrelFirstAndResetClearsDurability\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8230000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersReleaseOnceAfterActiveLifetime\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8180000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.WeaponHitsBarrelBeforeCarrierBody\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.7710000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:06.7147219"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget",
+          "Status": "Passed",
+          "Duration": "00:00:00.8420000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.BreakingBarrelExplodesOnceThenBodyTakesLaterShots",
+          "Status": "Passed",
+          "Duration": "00:00:00.8750000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.DamagedCarrierDropsBarrelWithRemainingHealth",
+          "Status": "Passed",
+          "Duration": "00:00:00.8200000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel",
+          "Status": "Passed",
+          "Duration": "00:00:00.7800000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.ExplosionAndRayUseBarrelFirstAndResetClearsDurability",
+          "Status": "Passed",
+          "Duration": "00:00:00.8230000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersReleaseOnceAfterActiveLifetime",
+          "Status": "Passed",
+          "Duration": "00:00:00.8180000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.WeaponHitsBarrelBeforeCarrierBody",
+          "Status": "Passed",
+          "Duration": "00:00:00.7710000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

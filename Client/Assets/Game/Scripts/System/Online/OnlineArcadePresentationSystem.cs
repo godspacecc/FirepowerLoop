@@ -471,6 +471,7 @@ namespace Game
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
                 view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);
                 view.SetEnemyHerdImpact(id,value.HerdImpact);
+                view.SetEnemyDockSeaEntry(id,value.DockSeaEntry);
                 if(FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(value.EnemyConfigId))
                 {
                     var target=players.FirstOrDefault(p=>p.PlayerId==value.TargetPlayerId);

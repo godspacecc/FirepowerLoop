@@ -1,0 +1,48 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":5,\"PassedTests\":5,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:03.7116134\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeRoundLayoutTests.AllGeneratedEntrancesSpawnAndExitsHaveMultiplayerRoutes\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9550000\"},{\"Name\":\"Game.Tests.ArcadeRoundLayoutTests.AllMapsProvideSixReachableWeaponPointsAndTwoPickups\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8520000\"},{\"Name\":\"Game.Tests.ArcadeRoundLayoutTests.CatalogContainsEveryThemeAndFourDistinctRoundLayouts\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9080000\"},{\"Name\":\"Game.Tests.ArcadeRoundLayoutTests.MissingConfigIsRejectedBeforeCreatingLayout\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"},{\"Name\":\"Game.Tests.ArcadeRoundLayoutTests.WeaponPointsRejectInvalidGeometryAndKeepImmutableCopies\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 5,
+        "PassedTests": 5,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:03.7116134"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeRoundLayoutTests.AllGeneratedEntrancesSpawnAndExitsHaveMultiplayerRoutes",
+          "Status": "Passed",
+          "Duration": "00:00:00.9550000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundLayoutTests.AllMapsProvideSixReachableWeaponPointsAndTwoPickups",
+          "Status": "Passed",
+          "Duration": "00:00:00.8520000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundLayoutTests.CatalogContainsEveryThemeAndFourDistinctRoundLayouts",
+          "Status": "Passed",
+          "Duration": "00:00:00.9080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundLayoutTests.MissingConfigIsRejectedBeforeCreatingLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeRoundLayoutTests.WeaponPointsRejectInvalidGeometryAndKeepImmutableCopies",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
