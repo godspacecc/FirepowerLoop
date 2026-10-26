@@ -1,0 +1,31 @@
+{
+  "dynamicCompileAndExecution": {
+    "content": [
+      {
+        "type": "text",
+        "text": "System.String: \"TEMPORARY CANDIDATE / isolated editor sampling, not gameplay; formal hero scale unchanged; static comparison identical cameras and lighting.\\nstage=8; arenaConfig=6; gameplay bounds=39x39m; no altered Config/runtime/Server; no added colliders, damage, paths, enemies or timing.\\nround=1; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS\\nglow demo=80 frames at 20fps, 4 seconds; fixed close camera; only candidate lava surface brightness, no hazard or movement.\\nround=2; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS\\nround=3; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS\\nround=4; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS\""
+      }
+    ],
+    "isError": false
+  },
+  "endScene": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1 result\nname|path|isDirty|rootCount\nBoot|Assets/Game/Scenes/Boot.unity|false|5"
+      }
+    ],
+    "isError": false
+  },
+  "newErrorsAfterPriorHistory": {
+    "content": [
+      {
+        "type": "text",
+        "text": "0 results\nsequence|message"
+      }
+    ],
+    "isError": false
+  },
+  "lockReleased": true,
+  "scope": "No business tests, no Player Build, no asset packaging. Isolated additive temporary scene only."
+}

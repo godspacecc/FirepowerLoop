@@ -1,0 +1,2 @@
+ArcadeEnemyBasic(Clone): attackTrigger=True, attack=HumanM@Attack1H01_R, length=1.1, scale=(1.00, 1.00, 1.00)
+ArcadeZombieShambler(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00)

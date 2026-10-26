@@ -1,0 +1,15 @@
+{
+  "scope": "Temporary clone sampling, not live combat or multiplayer capture.",
+  "clips": {
+    "basic": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "678e727200ac91e2c2491f83cf37981790d7729e64ee45c8fa2413a6dbccddec"
+    },
+    "zombie": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "151e15c67d06c2ff2d9ebb2e85e46a8b5ee2631c85a4431783ab9c93b86fa55a"
+    }
+  }
+}

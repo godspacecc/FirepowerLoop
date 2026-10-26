@@ -1,0 +1,18 @@
+{
+  "PNG_verified": 16,
+  "source_frames": 80,
+  "decoded_video_frames": 80,
+  "video_duration_seconds": 4,
+  "video_fps": 20,
+  "video_size": "1280x800",
+  "glow_difference_mean_RGB": [
+    0.01974609375,
+    0.008779296875,
+    0.0033984375
+  ],
+  "hashes": {
+    "checked": 3230,
+    "changed": [],
+    "unchanged": 3230
+  }
+}

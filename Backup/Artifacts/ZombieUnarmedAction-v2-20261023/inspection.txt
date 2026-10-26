@@ -1,0 +1,3 @@
+ArcadeZombieShambler(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
+ArcadeZombieGaunt(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
+ArcadeZombieBloated(Clone): attackTrigger=True, attack=Civilian|Idle_Attack, length=0.65, scale=(1.00, 1.00, 1.00), attachedWeapons=0, jaw=False
