@@ -1,0 +1,66 @@
+[
+  {
+    "name": "Spider",
+    "variant": "normal",
+    "frames": 160,
+    "durationSeconds": 8.0,
+    "bytes": 259603,
+    "decode": "passed"
+  },
+  {
+    "name": "Spider",
+    "variant": "slow",
+    "frames": 160,
+    "durationSeconds": 16.0,
+    "bytes": 306683,
+    "decode": "passed"
+  },
+  {
+    "name": "Ghoul",
+    "variant": "normal",
+    "frames": 160,
+    "durationSeconds": 8.0,
+    "bytes": 247116,
+    "decode": "passed"
+  },
+  {
+    "name": "Ghoul",
+    "variant": "slow",
+    "frames": 160,
+    "durationSeconds": 16.0,
+    "bytes": 291232,
+    "decode": "passed"
+  },
+  {
+    "name": "RedMangler",
+    "variant": "normal",
+    "frames": 160,
+    "durationSeconds": 8.0,
+    "bytes": 253928,
+    "decode": "passed"
+  },
+  {
+    "name": "RedMangler",
+    "variant": "slow",
+    "frames": 160,
+    "durationSeconds": 16.0,
+    "bytes": 302313,
+    "decode": "passed"
+  },
+  {
+    "name": "ZRex",
+    "variant": "normal",
+    "frames": 160,
+    "durationSeconds": 8.0,
+    "bytes": 465079,
+    "decode": "passed"
+  },
+  {
+    "name": "ZRex",
+    "variant": "slow",
+    "frames": 160,
+    "durationSeconds": 16.0,
+    "bytes": 551371,
+    "decode": "passed"
+  }
+]

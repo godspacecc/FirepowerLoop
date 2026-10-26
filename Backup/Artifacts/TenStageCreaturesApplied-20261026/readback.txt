@@ -1,0 +1,4 @@
+PASS Spider: 44 mesh vertex/normal/index arrays and colors identical; 164 samples; max position delta=0, angle delta=0; actor roots unchanged.
+PASS Ghoul: 56 mesh vertex/normal/index arrays and colors identical; 244 samples; max position delta=2.528811E-07, angle delta=0; actor roots unchanged.
+PASS RedMangler: 58 mesh vertex/normal/index arrays and colors identical; 214 samples; max position delta=2.528811E-07, angle delta=0; actor roots unchanged.
+PASS ZRex: 93 mesh vertex/normal/index arrays and colors identical; 243 samples; max position delta=3.625609E-07, angle delta=0; actor roots unchanged.

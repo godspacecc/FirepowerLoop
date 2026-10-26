@@ -1,0 +1,137 @@
+[
+  {
+    "image": "Fort\\round-1-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 1,
+    "maxChannelDifference": 1
+  },
+  {
+    "image": "Fort\\round-1-close-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 120,
+    "maxChannelDifference": 59
+  },
+  {
+    "image": "Fort\\round-2-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Fort\\round-3-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 1,
+    "maxChannelDifference": 1
+  },
+  {
+    "image": "Fort\\round-4-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 4,
+    "maxChannelDifference": 1
+  },
+  {
+    "image": "Koi\\round-1-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 4,
+    "maxChannelDifference": 12
+  },
+  {
+    "image": "Koi\\round-1-close-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 2,
+    "maxChannelDifference": 1
+  },
+  {
+    "image": "Koi\\round-2-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Koi\\round-3-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Koi\\round-4-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Nest\\round-1-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Nest\\round-1-close-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 6,
+    "maxChannelDifference": 41
+  },
+  {
+    "image": "Nest\\round-2-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Nest\\round-3-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 0,
+    "maxChannelDifference": 0
+  },
+  {
+    "image": "Nest\\round-4-applied.png",
+    "size": [
+      1600,
+      1200
+    ],
+    "changedPixels": 1,
+    "maxChannelDifference": 64
+  }
+]

@@ -1,0 +1,15 @@
+{
+  "protectedOriginalDirtyFiles": 33,
+  "changedProtectedFiles": [],
+  "restoredTaskImportSideEffects": 14,
+  "adoptedSources": {
+    "Tools/Unity/TenStageEnvironmentCandidates.cs": {
+      "contentUnchangedIgnoringCheckoutLineEndings": true,
+      "worktreeSha256": "df1df570926d6df510a3cd602d930a2441b34630e4c9a08f6776dad266e51a44"
+    },
+    "Tools/Unity/TenStageCreatureCandidates.cs": {
+      "contentUnchangedIgnoringCheckoutLineEndings": true,
+      "worktreeSha256": "7d0e9b971c033e3f0bab4238d2ec17dabeb020e0c275c82c431288738eab2295"
+    }
+  }
+}

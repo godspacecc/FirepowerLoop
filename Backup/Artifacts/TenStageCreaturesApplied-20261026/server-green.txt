@@ -1,0 +1,5 @@
+PASS TenStageCreatureOnline.LockedCreatureActionsKeepDirection
+PASS TenStageCreatureOnline.SpiderAndCannonUseAuthorityTarget
+PASS TenStageCreatureOnline.CloneKeepsIndependentAuthority
+PASS TenStageCreatureOnline.CodecPreservesFacingAndAge
+4/4 passed

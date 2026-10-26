@@ -42,9 +42,11 @@ namespace Game
             public CreatureVisual Creature;
             /// <summary>终局小龙与本轮根同生共灭，不拥有独立资源句柄。</summary>
             public FinalDragonVisual Dragon;
+            /// <summary>四种采用版角色同本轮根释放。</summary>
+            public AdoptedCreatureVisual Adopted;
         }
-        public bool IsRoundLayoutReady => roundLayoutReady && root != null && CreatureDependenciesReady && FinalDragonDependenciesReady;
-        public string RoundLayoutLoadError => roundLayoutLoadError ?? CreatureDependencyError ?? (!FinalDragonDependenciesReady&&contentTemplates!=null?"终局小龙模板缺失或不完整":null);
+        public bool IsRoundLayoutReady => roundLayoutReady && root != null && CreatureDependenciesReady && FinalDragonDependenciesReady && AdoptedDependenciesReady;
+        public string RoundLayoutLoadError => roundLayoutLoadError ?? CreatureDependencyError ?? (!AdoptedDependenciesReady&&contentTemplates!=null?"采用版角色模板缺失或不完整":null) ?? (!FinalDragonDependenciesReady&&contentTemplates!=null?"终局小龙模板缺失或不完整":null);
 
         /// <summary>只记录当前战场权威尺寸；尺寸变化使旧候选失效，下一次 SetRoundLayout 重新准备。</summary>
         public void ConfigureRoundBounds(float halfWidth,float halfHeight,float radius)
@@ -440,7 +442,7 @@ namespace Game
             RecordNextStageEnemyPosition(id,position);
             if(roundEnemies.TryGetValue(id,out var visual))
             {
-                var delta=position-visual.Position;RecordCreatureTravel(visual,delta);visual.Root.transform.localPosition=new Vector3(position.x,0,position.y);
+                var delta=position-visual.Position;RecordCreatureTravel(visual,delta);RecordAdoptedTravel(visual,delta);visual.Root.transform.localPosition=new Vector3(position.x,0,position.y);
                 if(visual.Dragon!=null){visual.Dragon.Moving=delta.sqrMagnitude>.000001f;if(visual.Dragon.Moving)visual.Dragon.Distance+=delta.magnitude;}
                 if(delta.sqrMagnitude>.00001f)visual.Root.transform.localRotation=Quaternion.LookRotation(new Vector3(delta.x,0,delta.y));visual.Position=position;
             }
@@ -522,6 +524,11 @@ namespace Game
                 else if(bossKind==0&&(specialKind==4||specialKind==5))
                 {
                     try{visual.Creature=CreateCreature(holder.transform,specialKind);}
+                    catch{DestroyRoundVisual(holder);throw;}
+                }
+                else if(UsesAdoptedCreature(specialKind,bossKind))
+                {
+                    try{visual.Adopted=CreateAdoptedCreature(holder.transform,specialKind,bossKind);}
                     catch{DestroyRoundVisual(holder);throw;}
                 }
                 else foreach(var part in profile.Parts)

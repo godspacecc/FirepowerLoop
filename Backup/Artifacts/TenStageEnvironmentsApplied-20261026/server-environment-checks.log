@@ -1,0 +1,4 @@
+PASS TenStageEnvironmentOnline.LoadsAllAdoptedEnvironments
+PASS TenStageEnvironmentOnline.RejectsMissingEnvironment
+PASS TenStageEnvironmentOnline.RejectsDuplicatedEnvironment
+3/3 passed

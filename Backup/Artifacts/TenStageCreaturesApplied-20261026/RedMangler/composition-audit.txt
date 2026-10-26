@@ -1,0 +1,1 @@
+Maximum composed shoulder gap=1.333321E-07m; 160 frames, both shoulders; actor root remains authoritative.

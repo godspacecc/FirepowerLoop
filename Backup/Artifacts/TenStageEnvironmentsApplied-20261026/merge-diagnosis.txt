@@ -1,0 +1,5 @@
+First merge failed before any persistent asset write. 32 source / 32 merged triangle records differ only in normalized normal final digit; exact world-space baking removes Unity CombineMeshes second normalization. Original 1e-4 geometry and 1e-3 footprint checks retained.
+TEMP_TenStageMat_D5C4A0FF|RGBA(0.835, 0.769, 0.627, 1.000)|On|True|-108650,10250,-84300/-5774,-5774,-5774|-109200,10800,-84300/-5774,-5774,-5774|-108650,10800,-84850/-5774,-5774,-5774
+TEMP_TenStageMat_D5C4A0FF|RGBA(0.835, 0.769, 0.627, 1.000)|On|True|-108650,11600,-84850/-5774,5774,-5774|-109200,11600,-84300/-5774,5774,-5774|-108650,12150,-84300/-5774,5774,-5774
+TEMP_TenStageMat_D5C4A0FF|RGBA(0.835, 0.769, 0.627, 1.000)|On|True|-108650,17550,-54300/-5774,-5774,-5774|-109200,18100,-54300/-5774,-5774,-5774|-108650,18100,-54850/-5774,-5774,-5774
+TEMP_TenStageMat_D5C4A0FF|RGBA(0.835, 0.769, 0.627, 1.000)|On|True|-108650,17550,-99300/-5774,-5774,-5774|-109200,18100,-99300/-5774,-5774,-5774|-108650,18100,-99850/-5774,-5774,-5774

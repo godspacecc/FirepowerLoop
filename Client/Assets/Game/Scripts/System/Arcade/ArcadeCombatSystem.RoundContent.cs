@@ -415,6 +415,12 @@ namespace Game
                     view?.SetFinalDragonState(e.Id,(float)(r.ContentClock.Elapsed-e.ContentBornAt),e.BossPhase,e.BossPhaseRemaining,e.BossDefinition,e.BossPhase==ArcadeBossPhase.None?r.PlayerPosition-e.Position:e.BossChargeDirection);
                 if(e.ContentBossKind==0&&(e.ContentSpecialKind==4||e.ContentSpecialKind==5))
                     view?.SetCreatureState(e.Id,(float)(r.ContentClock.Elapsed-e.ContentBornAt),e.ContentSpecialKind==5&&e.ContentLockedDirection.sqrMagnitude>.000001f?e.ContentLockedDirection:r.PlayerPosition-e.Position);
+                if(e.ContentBossKind==2||e.ContentBossKind==0&&(e.ContentSpecialKind==6||e.ContentSpecialKind==10||e.ContentSpecialKind==17))
+                {
+                    bool locked=e.ContentBossKind==2||e.ContentSpecialKind==10&&!e.ContentWarning&&e.MeleeWindupRemaining<=0&&e.MeleeRecoveryRemaining<=0;
+                    var facing=locked&&e.ContentLockedDirection.sqrMagnitude>.000001f?e.ContentLockedDirection:r.PlayerPosition-e.Position;
+                    view?.SetAdoptedCreatureState(e.Id,(float)(r.ContentClock.Elapsed-e.ContentBornAt),facing,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining);
+                }
                 view?.SetNextStageEnemyState(e.Id,e.ContentSpecialKind,e.StageEnemy);
             }
         }

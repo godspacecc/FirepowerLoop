@@ -3504,7 +3504,10 @@ namespace ET.Server
                 // 技能阶段只读同步现有权威年龄；锁向取真正的冲进方向，不指向接收客户端。
                 enemy.ContentAge=(float)sourceEnemy.ContentElapsed;
                 enemy.ContentFacingX=sourceEnemy.ContentLockedX;enemy.ContentFacingZ=sourceEnemy.ContentLockedZ;
-                if(source.Players.TryGetValue(sourceEnemy.TargetPlayerId,out var creatureTarget)&&sourceEnemy.SpecialKind!=5)
+                // 暴龙的预警/冲锋与食尸鬼活动冲进使用权威锁向；蜘蛛和炮口仍朝真实目标。
+                bool adoptedLockedFacing=sourceEnemy.ContentBossKind==2||sourceEnemy.SpecialKind==10&&!sourceEnemy.ContentWarning&&sourceEnemy.MeleeWindupRemaining<=0&&sourceEnemy.MeleeRecoveryRemaining<=0;
+                if(source.Players.TryGetValue(sourceEnemy.TargetPlayerId,out var creatureTarget)&&sourceEnemy.SpecialKind!=5&&
+                    !(adoptedLockedFacing&&(sourceEnemy.ContentLockedX!=0||sourceEnemy.ContentLockedZ!=0)))
                 {enemy.ContentFacingX=creatureTarget.PositionX-sourceEnemy.PositionX;enemy.ContentFacingZ=creatureTarget.PositionZ-sourceEnemy.PositionZ;}
                 // 终局小龙在蓄力、冲锋和射线期间严格使用原Boss锁向；不修改规则或协议。
                 if(sourceEnemy.ContentBossKind==4&&sourceEnemy.BossPhase!=OnlineArcadeBossPhase.None)

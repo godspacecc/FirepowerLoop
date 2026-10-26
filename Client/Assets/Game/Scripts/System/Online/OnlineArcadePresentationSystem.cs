@@ -471,6 +471,8 @@ namespace Game
                     view.SetFinalDragonState(id,value.ContentAge,value.BossPhase,value.BossPhaseSeconds,catalog.Bosses.FirstOrDefault(b=>b.Id==value.BossId),new Vector2(value.ContentFacingX,value.ContentFacingZ));
                 if(value.ContentBossKind==0&&(value.SpecialKind==4||value.SpecialKind==5))
                     view.SetCreatureState(id,value.ContentAge,new Vector2(value.ContentFacingX,value.ContentFacingZ));
+                if(value.ContentBossKind==2||value.ContentBossKind==0&&(value.SpecialKind==6||value.SpecialKind==10||value.SpecialKind==17))
+                    view.SetAdoptedCreatureState(id,value.ContentAge,new Vector2(value.ContentFacingX,value.ContentFacingZ),value.MeleeWindupSeconds,value.MeleeWindupRemaining,value.MeleeRecoveryRemaining);
                 view.SetNextStageEnemyState(id,value.SpecialKind,value.StageEnemy);
                 view.SetEnemyArmor(id, new Vector2(value.PositionX, value.PositionZ), value.ArmorHealth);
                 view.SetEnemyBurning(id,value.FlameHitRemainingSeconds);

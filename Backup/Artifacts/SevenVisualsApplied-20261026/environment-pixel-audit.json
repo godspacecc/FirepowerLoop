@@ -1,0 +1,92 @@
+[
+  {
+    "image": "Fort/round-1-applied.png",
+    "changedPixels": 1,
+    "maxChannelDelta": 1,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Fort/round-1-close-applied.png",
+    "changedPixels": 120,
+    "maxChannelDelta": 59,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Fort/round-2-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Fort/round-3-applied.png",
+    "changedPixels": 1,
+    "maxChannelDelta": 1,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Fort/round-4-applied.png",
+    "changedPixels": 4,
+    "maxChannelDelta": 1,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Koi/round-1-applied.png",
+    "changedPixels": 4,
+    "maxChannelDelta": 12,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Koi/round-1-close-applied.png",
+    "changedPixels": 2,
+    "maxChannelDelta": 1,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Koi/round-2-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Koi/round-3-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Koi/round-4-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Nest/round-1-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Nest/round-1-close-applied.png",
+    "changedPixels": 6,
+    "maxChannelDelta": 41,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Nest/round-2-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Nest/round-3-applied.png",
+    "changedPixels": 0,
+    "maxChannelDelta": 0,
+    "totalPixels": 1920000
+  },
+  {
+    "image": "Nest/round-4-applied.png",
+    "changedPixels": 1,
+    "maxChannelDelta": 64,
+    "totalPixels": 1920000
+  }
+]

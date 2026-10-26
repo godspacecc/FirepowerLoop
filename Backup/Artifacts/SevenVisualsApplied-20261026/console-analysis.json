@@ -1,0 +1,10 @@
+{
+  "actualConsoleEntries": 11,
+  "probeErrorCount": 1,
+  "probeWarningCount": 10,
+  "expectedTestErrorCount": 1,
+  "unexplainedErrors": 0,
+  "expectedError": "[ArcadeCombatViewController] 已确认场地准备失败：已采用场地四轮布局不完整",
+  "assertedBy": "HengeAppliedTests.MissingRoundVariantFailsBeforePublishingEnvironmentAndCanRetry (LogAssert.Expect; 8/8 class passed)",
+  "consoleWasNotCleared": true
+}

@@ -289,7 +289,7 @@ namespace ET
         private void ValidateArcadeConfig()
         {
             var early=this.tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-            if(early.Length!=6||early.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=6)throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected six confirmed environments");
+            if(!early.Select(p=>p.ArenaConfigNumber).OrderBy(p=>p).SequenceEqual(new[]{5,7,10,20,21,22,23,24,25}))throw ConfigError(this.Profile,"TbArcadeEarlyStage","count","expected adopted environments 5/7/10/20/21/22/23/24/25 without omissions or duplicates");
             this.EarlyStages=new System.Collections.ObjectModel.ReadOnlyDictionary<int,FirepowerLoop.Arcade.ArcadeEarlyStageParameters>(early.ToDictionary(p=>p.ArenaConfigNumber));
             this.SlayerMart=FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration.FromTables(this.tables);
             this.ScoreShop=FirepowerLoop.Arcade.ArcadeScoreShopConfiguration.FromTables(this.tables);

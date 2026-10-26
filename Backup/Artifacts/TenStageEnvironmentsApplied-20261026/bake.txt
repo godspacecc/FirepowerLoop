@@ -1,0 +1,158 @@
+source-sha256=DF1DF570926D6DF510A3CD602D930A2441B34630E4C9A08F6776DAD266E51A44
+arena.7.round.1|obstacle0 exact footprint|-11.000,-9.000,-3.000,11.000
+arena.7.round.1|obstacle1 exact footprint|9.000,11.000,-3.000,11.000
+arena.7.round.1|obstacle2 exact footprint|-8.000,-4.000,-7.000,-5.000
+arena.7.round.1|obstacle3 exact footprint|4.000,8.000,-7.000,-5.000
+arena.7.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.1|candidateColliders|0
+arena.7.round.1|obstacle0 exact footprint|-11.000,-9.000,-3.000,11.000
+arena.7.round.1|obstacle1 exact footprint|9.000,11.000,-3.000,11.000
+arena.7.round.1|obstacle2 exact footprint|-8.000,-4.000,-7.000,-5.000
+arena.7.round.1|obstacle3 exact footprint|4.000,8.000,-7.000,-5.000
+arena.7.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.1|candidateColliders|0
+arena.7.round.1|equivalent-triangles=709F523CF3436CE09F18579D9C989BD0F28C5A2CBD2242314E67E236B2839EE0|renderers=21
+arena.7.round.2|obstacle0 exact footprint|-13.000,-5.000,7.000,9.000
+arena.7.round.2|obstacle1 exact footprint|5.000,13.000,7.000,9.000
+arena.7.round.2|obstacle2 exact footprint|-8.000,-6.000,-2.000,6.000
+arena.7.round.2|obstacle3 exact footprint|6.000,8.000,-2.000,6.000
+arena.7.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.2|candidateColliders|0
+arena.7.round.2|obstacle0 exact footprint|-13.000,-5.000,7.000,9.000
+arena.7.round.2|obstacle1 exact footprint|5.000,13.000,7.000,9.000
+arena.7.round.2|obstacle2 exact footprint|-8.000,-6.000,-2.000,6.000
+arena.7.round.2|obstacle3 exact footprint|6.000,8.000,-2.000,6.000
+arena.7.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.2|candidateColliders|0
+arena.7.round.2|equivalent-triangles=E21304E3268F5E50C2EE1B3140F53CD549782EB0D22B865971A7078F9880A428|renderers=21
+arena.7.round.3|obstacle0 exact footprint|-12.000,-4.000,4.000,6.000
+arena.7.round.3|obstacle1 exact footprint|4.000,12.000,4.000,6.000
+arena.7.round.3|obstacle2 exact footprint|-12.000,-4.000,-6.000,-4.000
+arena.7.round.3|obstacle3 exact footprint|4.000,12.000,-6.000,-4.000
+arena.7.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.3|candidateColliders|0
+arena.7.round.3|obstacle0 exact footprint|-12.000,-4.000,4.000,6.000
+arena.7.round.3|obstacle1 exact footprint|4.000,12.000,4.000,6.000
+arena.7.round.3|obstacle2 exact footprint|-12.000,-4.000,-6.000,-4.000
+arena.7.round.3|obstacle3 exact footprint|4.000,12.000,-6.000,-4.000
+arena.7.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.3|candidateColliders|0
+arena.7.round.3|equivalent-triangles=ED940FCCC010C37EE9DE83D06702E2D3B5F959A9150F193541EF44E7E9597ECC|renderers=21
+arena.7.round.4|obstacle0 exact footprint|-13.000,-5.000,6.000,10.000
+arena.7.round.4|obstacle1 exact footprint|5.000,13.000,-10.000,-6.000
+arena.7.round.4|obstacle2 exact footprint|7.000,11.000,4.000,10.000
+arena.7.round.4|obstacle3 exact footprint|-11.000,-7.000,-10.000,-4.000
+arena.7.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.4|candidateColliders|0
+arena.7.round.4|obstacle0 exact footprint|-13.000,-5.000,6.000,10.000
+arena.7.round.4|obstacle1 exact footprint|5.000,13.000,-10.000,-6.000
+arena.7.round.4|obstacle2 exact footprint|7.000,11.000,4.000,10.000
+arena.7.round.4|obstacle3 exact footprint|-11.000,-7.000,-10.000,-4.000
+arena.7.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.7.round.4|candidateColliders|0
+arena.7.round.4|equivalent-triangles=71C4D88F649FFD866A945F7DAD68E18CF1FFDC5A108A49BFE5E876D1F2D66FF9|renderers=25
+arena.10.round.1|obstacle0 exact footprint|-13.000,-5.000,4.000,10.000
+arena.10.round.1|obstacle1 exact footprint|5.000,13.000,-10.000,-4.000
+arena.10.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.1|candidateColliders|0
+arena.10.round.1|obstacle0 exact footprint|-13.000,-5.000,4.000,10.000
+arena.10.round.1|obstacle1 exact footprint|5.000,13.000,-10.000,-4.000
+arena.10.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.1|candidateColliders|0
+arena.10.round.1|equivalent-triangles=2DD2A8A704C093C95B390C2C7C0CC13ADC8FFE1918D2E2378A33D6665A790293|renderers=37
+arena.10.round.2|obstacle0 exact footprint|-10.000,-6.000,2.000,8.000
+arena.10.round.2|obstacle1 exact footprint|6.000,10.000,2.000,8.000
+arena.10.round.2|obstacle2 exact footprint|-12.000,-10.000,-8.000,-4.000
+arena.10.round.2|obstacle3 exact footprint|10.000,12.000,-8.000,-4.000
+arena.10.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.2|candidateColliders|0
+arena.10.round.2|obstacle0 exact footprint|-10.000,-6.000,2.000,8.000
+arena.10.round.2|obstacle1 exact footprint|6.000,10.000,2.000,8.000
+arena.10.round.2|obstacle2 exact footprint|-12.000,-10.000,-8.000,-4.000
+arena.10.round.2|obstacle3 exact footprint|10.000,12.000,-8.000,-4.000
+arena.10.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.2|candidateColliders|0
+arena.10.round.2|equivalent-triangles=AFA11C0883260231E1983EF26B5EF8D29114B0A8E6F5B5200884B84705A091FB|renderers=61
+arena.10.round.3|obstacle0 exact footprint|-13.000,-5.000,5.000,9.000
+arena.10.round.3|obstacle1 exact footprint|5.000,13.000,5.000,9.000
+arena.10.round.3|obstacle2 exact footprint|-13.000,-5.000,-9.000,-5.000
+arena.10.round.3|obstacle3 exact footprint|5.000,13.000,-9.000,-5.000
+arena.10.round.3|obstacle4 exact footprint|-2.000,2.000,2.000,4.000
+arena.10.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.3|candidateColliders|0
+arena.10.round.3|obstacle0 exact footprint|-13.000,-5.000,5.000,9.000
+arena.10.round.3|obstacle1 exact footprint|5.000,13.000,5.000,9.000
+arena.10.round.3|obstacle2 exact footprint|-13.000,-5.000,-9.000,-5.000
+arena.10.round.3|obstacle3 exact footprint|5.000,13.000,-9.000,-5.000
+arena.10.round.3|obstacle4 exact footprint|-2.000,2.000,2.000,4.000
+arena.10.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.3|candidateColliders|0
+arena.10.round.3|equivalent-triangles=FE25C22FA0F06EBED0FFDE60512F5E1C509467DBBECB1778E7BEDAA2C2184CC3|renderers=73
+arena.10.round.4|obstacle0 exact footprint|-13.000,-7.000,4.000,10.000
+arena.10.round.4|obstacle1 exact footprint|7.000,13.000,4.000,10.000
+arena.10.round.4|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.10.round.4|obstacle3 exact footprint|6.000,8.000,-8.000,-2.000
+arena.10.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.4|candidateColliders|0
+arena.10.round.4|obstacle0 exact footprint|-13.000,-7.000,4.000,10.000
+arena.10.round.4|obstacle1 exact footprint|7.000,13.000,4.000,10.000
+arena.10.round.4|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.10.round.4|obstacle3 exact footprint|6.000,8.000,-8.000,-2.000
+arena.10.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.4|candidateColliders|0
+arena.10.round.4|equivalent-triangles=1CEA569A6AB0C3D68B3DE4464187A039449EDC374285FF3568712D332A1DF54B|renderers=61
+arena.20.round.1|obstacle0 exact footprint|-12.000,-8.000,3.000,11.000
+arena.20.round.1|obstacle1 exact footprint|8.000,12.000,-10.000,-2.000
+arena.20.round.1|obstacle2 exact footprint|-8.000,-6.000,-8.000,-4.000
+arena.20.round.1|obstacle3 exact footprint|6.000,8.000,5.000,9.000
+arena.20.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.1|candidateColliders|0
+arena.20.round.1|obstacle0 exact footprint|-12.000,-8.000,3.000,11.000
+arena.20.round.1|obstacle1 exact footprint|8.000,12.000,-10.000,-2.000
+arena.20.round.1|obstacle2 exact footprint|-8.000,-6.000,-8.000,-4.000
+arena.20.round.1|obstacle3 exact footprint|6.000,8.000,5.000,9.000
+arena.20.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.1|candidateColliders|0
+arena.20.round.1|equivalent-triangles=BF5DACAFA217330182E010FFD203527519DC08BDEC3C51282CCA8680F232E350|renderers=40
+arena.20.round.2|obstacle0 exact footprint|-9.000,-7.000,-3.000,11.000
+arena.20.round.2|obstacle1 exact footprint|7.000,9.000,-3.000,11.000
+arena.20.round.2|obstacle2 exact footprint|-14.000,-10.000,-7.000,-5.000
+arena.20.round.2|obstacle3 exact footprint|10.000,14.000,-7.000,-5.000
+arena.20.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.2|candidateColliders|0
+arena.20.round.2|obstacle0 exact footprint|-9.000,-7.000,-3.000,11.000
+arena.20.round.2|obstacle1 exact footprint|7.000,9.000,-3.000,11.000
+arena.20.round.2|obstacle2 exact footprint|-14.000,-10.000,-7.000,-5.000
+arena.20.round.2|obstacle3 exact footprint|10.000,14.000,-7.000,-5.000
+arena.20.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.2|candidateColliders|0
+arena.20.round.2|equivalent-triangles=A5C7A76D06BED887D82150A537EB06379C1B4B90DB7719E7024C3F00FF600E32|renderers=40
+arena.20.round.3|obstacle0 exact footprint|-14.000,-6.000,6.000,8.000
+arena.20.round.3|obstacle1 exact footprint|6.000,8.000,-1.000,7.000
+arena.20.round.3|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.20.round.3|obstacle3 exact footprint|6.000,14.000,-10.000,-8.000
+arena.20.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.3|candidateColliders|0
+arena.20.round.3|obstacle0 exact footprint|-14.000,-6.000,6.000,8.000
+arena.20.round.3|obstacle1 exact footprint|6.000,8.000,-1.000,7.000
+arena.20.round.3|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.20.round.3|obstacle3 exact footprint|6.000,14.000,-10.000,-8.000
+arena.20.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.3|candidateColliders|0
+arena.20.round.3|equivalent-triangles=2463A02D1C60152181D56B065B276FF77CB54D3BA15F07D67A39510707963CE1|renderers=40
+arena.20.round.4|obstacle0 exact footprint|-14.000,-10.000,4.000,10.000
+arena.20.round.4|obstacle1 exact footprint|10.000,14.000,4.000,10.000
+arena.20.round.4|obstacle2 exact footprint|-13.000,-7.000,-8.000,-6.000
+arena.20.round.4|obstacle3 exact footprint|7.000,13.000,-8.000,-6.000
+arena.20.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.4|candidateColliders|0
+arena.20.round.4|obstacle0 exact footprint|-14.000,-10.000,4.000,10.000
+arena.20.round.4|obstacle1 exact footprint|10.000,14.000,4.000,10.000
+arena.20.round.4|obstacle2 exact footprint|-13.000,-7.000,-8.000,-6.000
+arena.20.round.4|obstacle3 exact footprint|7.000,13.000,-8.000,-6.000
+arena.20.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.20.round.4|candidateColliders|0
+arena.20.round.4|equivalent-triangles=44F55B6E794877D7E2CF3F362253F035F4710AF5B16C348B5D6249329DBCCD10|renderers=40
+prefab=Assets/Game/Prefabs/SceneObjects/ArcadeFortVisual.prefab
+prefab=Assets/Game/Prefabs/SceneObjects/ArcadeKoiVisual.prefab
+prefab=Assets/Game/Prefabs/SceneObjects/ArcadeFinalNestVisual.prefab

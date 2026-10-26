@@ -1202,7 +1202,7 @@ namespace Game
             {
                 var layouts = tables.TbArcadeRoundLayout.DataList.Select(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters.FromConfig).ToArray();
                 var earlyStages=tables.TbArcadeEarlyStage.DataList.Select(FirepowerLoop.Arcade.ArcadeEarlyStageParameters.FromConfig).ToArray();
-                if(earlyStages.Length!=6||earlyStages.Select(p=>p.ArenaConfigNumber).Distinct().Count()!=6)return "已采用场地目录缺失或重复";
+                if(!earlyStages.Select(p=>p.ArenaConfigNumber).OrderBy(p=>p).SequenceEqual(new[]{5,7,10,20,21,22,23,24,25}))return "已采用场地目录缺失或重复";
                 var layoutRule = tables.TbArcadeRule.DataList.FirstOrDefault();
                 if (layoutRule == null || layouts.Length != tables.TbArcadeArena.DataList.Count * 4 ||
                     layouts.Select(p => p.Id).Distinct(StringComparer.Ordinal).Count() != layouts.Length)

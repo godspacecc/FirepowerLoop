@@ -1,0 +1,9 @@
+FAIL TenStageCreatureOnline.LockedCreatureActionsKeepDirection: System.InvalidOperationException: expected 0.6, got -13
+   at Program.<<Main>$>g__Require|0_11(Boolean value, String message) in F:\GitHub\FirepowerLoop\Tools\TenStageCreatureOnlineChecks\Program.cs:line 53
+   at Program.<<Main>$>g__Near|0_10(Single a, Single b) in F:\GitHub\FirepowerLoop\Tools\TenStageCreatureOnlineChecks\Program.cs:line 52
+   at Program.<<Main>$>g__Locked|0_5() in F:\GitHub\FirepowerLoop\Tools\TenStageCreatureOnlineChecks\Program.cs:line 34
+   at Program.<Main>$(String[] args) in F:\GitHub\FirepowerLoop\Tools\TenStageCreatureOnlineChecks\Program.cs:line 14
+PASS TenStageCreatureOnline.SpiderAndCannonUseAuthorityTarget
+PASS TenStageCreatureOnline.CloneKeepsIndependentAuthority
+PASS TenStageCreatureOnline.CodecPreservesFacingAndAge
+3/4 passed

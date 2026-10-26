@@ -1,0 +1,4 @@
+Spider: 44 meshes, 1782 triangles, 9 materials, 6 clips; no actor root curves.
+Ghoul: 56 meshes, 2310 triangles, 9 materials, 6 clips; no actor root curves.
+RedMangler: 58 meshes, 2506 triangles, 9 materials, 6 clips; no actor root curves.
+ZRex: 93 meshes, 3916 triangles, 12 materials, 6 clips; no actor root curves.

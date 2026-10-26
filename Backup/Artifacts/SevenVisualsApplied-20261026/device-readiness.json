@@ -1,0 +1,7 @@
+{
+  "checkedAt": "2026-10-26T18:27:42.8002221+08:00",
+  "project": "F:/GitHub/FirepowerLoop/Client",
+  "adbDevices": [],
+  "repositoryPlayerExecutables": [],
+  "limitation": "No attached Android device returned by adb devices -l; no FirepowerLoop player executable or apk found under Release, Server, Tools. Only the project Unity Editor is confirmed. No Player Build authorized. Real two-client and physical-device acceptance remain pending."
+}

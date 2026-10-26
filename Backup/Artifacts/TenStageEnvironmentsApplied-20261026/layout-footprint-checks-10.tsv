@@ -1,0 +1,103 @@
+layout|check|value
+arena.10.round.1|obstacle0 exact footprint|-13.000,-5.000,4.000,10.000
+arena.10.round.1|obstacle1 exact footprint|5.000,13.000,-10.000,-4.000
+arena.10.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.1|candidateColliders|0
+arena.10.round.1|obstacle0 exact footprint|-13.000,-5.000,4.000,10.000
+arena.10.round.1|obstacle1 exact footprint|5.000,13.000,-10.000,-4.000
+arena.10.round.1|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.1|candidateColliders|0
+arena.10.round.1|persistent-equivalence|2DD2A8A704C093C95B390C2C7C0CC13ADC8FFE1918D2E2378A33D6665A790293
+arena.10.round.1|FitsArena|true
+arena.10.round.1|previewKind|persistent environment through actual SetRoundLayout, formal hero, no rules changed
+arena.10.round.1|bounds/playerRadius|19.5,19.5,0.55
+arena.10.round.1|spawn|0,-13
+arena.10.round.1|entry0|-17,0
+arena.10.round.1|entry1|17,0
+arena.10.round.1|entry2|0,-17
+arena.10.round.1|entry3|0,17
+arena.10.round.1|exit0|0,16
+arena.10.round.1|exit1|16,0
+arena.10.round.1|exit2|0,-16
+arena.10.round.1|exit3|-16,0
+arena.10.round.1|formalHeroScale|(1.00, 1.00, 1.00)
+arena.10.round.2|obstacle0 exact footprint|-10.000,-6.000,2.000,8.000
+arena.10.round.2|obstacle1 exact footprint|6.000,10.000,2.000,8.000
+arena.10.round.2|obstacle2 exact footprint|-12.000,-10.000,-8.000,-4.000
+arena.10.round.2|obstacle3 exact footprint|10.000,12.000,-8.000,-4.000
+arena.10.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.2|candidateColliders|0
+arena.10.round.2|obstacle0 exact footprint|-10.000,-6.000,2.000,8.000
+arena.10.round.2|obstacle1 exact footprint|6.000,10.000,2.000,8.000
+arena.10.round.2|obstacle2 exact footprint|-12.000,-10.000,-8.000,-4.000
+arena.10.round.2|obstacle3 exact footprint|10.000,12.000,-8.000,-4.000
+arena.10.round.2|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.2|candidateColliders|0
+arena.10.round.2|persistent-equivalence|AFA11C0883260231E1983EF26B5EF8D29114B0A8E6F5B5200884B84705A091FB
+arena.10.round.2|FitsArena|true
+arena.10.round.2|previewKind|persistent environment through actual SetRoundLayout, formal hero, no rules changed
+arena.10.round.2|bounds/playerRadius|19.5,19.5,0.55
+arena.10.round.2|spawn|0,-13
+arena.10.round.2|entry0|-17,0
+arena.10.round.2|entry1|17,0
+arena.10.round.2|entry2|0,-17
+arena.10.round.2|entry3|0,17
+arena.10.round.2|exit0|0,16
+arena.10.round.2|exit1|16,0
+arena.10.round.2|exit2|0,-16
+arena.10.round.2|exit3|-16,0
+arena.10.round.2|formalHeroScale|(1.00, 1.00, 1.00)
+arena.10.round.3|obstacle0 exact footprint|-13.000,-5.000,5.000,9.000
+arena.10.round.3|obstacle1 exact footprint|5.000,13.000,5.000,9.000
+arena.10.round.3|obstacle2 exact footprint|-13.000,-5.000,-9.000,-5.000
+arena.10.round.3|obstacle3 exact footprint|5.000,13.000,-9.000,-5.000
+arena.10.round.3|obstacle4 exact footprint|-2.000,2.000,2.000,4.000
+arena.10.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.3|candidateColliders|0
+arena.10.round.3|obstacle0 exact footprint|-13.000,-5.000,5.000,9.000
+arena.10.round.3|obstacle1 exact footprint|5.000,13.000,5.000,9.000
+arena.10.round.3|obstacle2 exact footprint|-13.000,-5.000,-9.000,-5.000
+arena.10.round.3|obstacle3 exact footprint|5.000,13.000,-9.000,-5.000
+arena.10.round.3|obstacle4 exact footprint|-2.000,2.000,2.000,4.000
+arena.10.round.3|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.3|candidateColliders|0
+arena.10.round.3|persistent-equivalence|FE25C22FA0F06EBED0FFDE60512F5E1C509467DBBECB1778E7BEDAA2C2184CC3
+arena.10.round.3|FitsArena|true
+arena.10.round.3|previewKind|persistent environment through actual SetRoundLayout, formal hero, no rules changed
+arena.10.round.3|bounds/playerRadius|19.5,19.5,0.55
+arena.10.round.3|spawn|0,-13
+arena.10.round.3|entry0|-17,0
+arena.10.round.3|entry1|17,0
+arena.10.round.3|entry2|0,-17
+arena.10.round.3|entry3|0,17
+arena.10.round.3|exit0|0,16
+arena.10.round.3|exit1|16,0
+arena.10.round.3|exit2|0,-16
+arena.10.round.3|exit3|-16,0
+arena.10.round.3|formalHeroScale|(1.00, 1.00, 1.00)
+arena.10.round.4|obstacle0 exact footprint|-13.000,-7.000,4.000,10.000
+arena.10.round.4|obstacle1 exact footprint|7.000,13.000,4.000,10.000
+arena.10.round.4|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.10.round.4|obstacle3 exact footprint|6.000,8.000,-8.000,-2.000
+arena.10.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.4|candidateColliders|0
+arena.10.round.4|obstacle0 exact footprint|-13.000,-7.000,4.000,10.000
+arena.10.round.4|obstacle1 exact footprint|7.000,13.000,4.000,10.000
+arena.10.round.4|obstacle2 exact footprint|-8.000,-6.000,-8.000,-2.000
+arena.10.round.4|obstacle3 exact footprint|6.000,8.000,-8.000,-2.000
+arena.10.round.4|outsideLandmarks|all vertices outside playable rectangle
+arena.10.round.4|candidateColliders|0
+arena.10.round.4|persistent-equivalence|1CEA569A6AB0C3D68B3DE4464187A039449EDC374285FF3568712D332A1DF54B
+arena.10.round.4|FitsArena|true
+arena.10.round.4|previewKind|persistent environment through actual SetRoundLayout, formal hero, no rules changed
+arena.10.round.4|bounds/playerRadius|19.5,19.5,0.55
+arena.10.round.4|spawn|0,-13
+arena.10.round.4|entry0|-17,0
+arena.10.round.4|entry1|17,0
+arena.10.round.4|entry2|0,-17
+arena.10.round.4|entry3|0,17
+arena.10.round.4|exit0|0,16
+arena.10.round.4|exit1|16,0
+arena.10.round.4|exit2|0,-16
+arena.10.round.4|exit3|-16,0
+arena.10.round.4|formalHeroScale|(1.00, 1.00, 1.00)

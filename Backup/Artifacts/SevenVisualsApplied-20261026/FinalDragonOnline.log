@@ -1,0 +1,5 @@
+PASS FinalDragonOnline.LockedBossStagesKeepDirection
+PASS FinalDragonOnline.IdleUsesAuthorityTarget
+PASS FinalDragonOnline.CloneKeepsIndependentAuthority
+PASS FinalDragonOnline.CodecPreservesFacingAndAge
+4/4 passed

@@ -1,0 +1,46 @@
+{
+  "refs": 170,
+  "missing": [],
+  "duplicates": [],
+  "resolvedPackageReferences": {
+    "933532a4fcc9baf4fa0491de14d08ed7": "Client/Library/PackageCache/com.unity.render-pipelines.universal@14.0.11/Shaders/Lit.shader.meta",
+    "d0353a89b1f911e48b9e16bdc9f2e058": "Client/Library/PackageCache/com.unity.render-pipelines.universal@14.0.11/Editor/AssetVersion.cs.meta"
+  },
+  "prefabs": [
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeSpider.prefab",
+      "externalRefs": 95,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeGhoul.prefab",
+      "externalRefs": 119,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeRedMangler.prefab",
+      "externalRefs": 123,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/Characters/ArcadeZRex.prefab",
+      "externalRefs": 193,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/SceneObjects/ArcadeFortVisual.prefab",
+      "externalRefs": 176,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/SceneObjects/ArcadeKoiVisual.prefab",
+      "externalRefs": 464,
+      "unresolved": []
+    },
+    {
+      "path": "Client/Assets/Game/Prefabs/SceneObjects/ArcadeFinalNestVisual.prefab",
+      "externalRefs": 320,
+      "unresolved": []
+    }
+  ]
+}
