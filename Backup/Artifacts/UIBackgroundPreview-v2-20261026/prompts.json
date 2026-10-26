@@ -1,0 +1,150 @@
+{
+  "tool": "built-in image_gen",
+  "note": "Twelve separate concepts; farm uses adopted grass version, not obsolete snow. References are formal resource evidence, not exact final scene layouts.",
+  "jobs": [
+    {
+      "id": "main-menu",
+      "title": "主菜单",
+      "kind": "menu",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/NextThreeStagesApplied-20261023/marketplace/overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/HengePolishApplied-20261025/round-1-close-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/InfectedSoldier-20261017/after.png"
+      ],
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. MAIN MENU revised to represent a diverse ten-stage arcade campaign rather than one beach or final boss. Main focal subject one olive helmet soldier at x28%, full-body running and firing toward left, another smaller soldier in support at x45%. Several ordinary hostile gray-green humanoid infected soldiers in ragged green and rust work clothes in far-left middle distance, small readable silhouettes, no gore. A single coherent cinematic imagined journey panorama, no hard collage panels: near-ground terracotta-roof marketplace corner and striped awning, mid-distance green farmland and modest wooden dock at tiny far-left shoreline; a gray trilithon and pale sandstone courtyard break the skyline, far dark conifer graveyard silhouettes. Organize no more than 3 dominant environmental masses, not ten postcards or map icons. The hero and shooting remain central; no dragon dominating and no giant spider. Warm amber muzzle and sunlight contrasting cool slate blue atmosphere, NO SNOW since farm is green. RIGHT38% softly fades to dark low-contrast slate blue haze for menu. Depict varied campaign identity with elegant hierarchy, no literal map or UI."
+    },
+    {
+      "id": "online-lobby",
+      "title": "联机大厅",
+      "kind": "lobby",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/HengePolishApplied-20261025/round-1-close-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/NextThreeStagesApplied-20261023/marketplace/overview.png"
+      ],
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. ONLINE LOBBY revised as universally reusable two-player arcade cooperation key art, NOT tied to seaside or a physical player home base. Two matching full-body slim olive-helmet soldiers at extreme left x13% and right x87%, same scale, 3/4 facing inward ready with rifles lowered; one muted beige vest and one charcoal vest. They stand on understated dark faceted neutral stone ground. Behind them at the FAR EDGES only, very faint abstract silhouettes of varied journey landmarks (left small timber rail and terracotta roof, right weathered trilithon and square pale masonry). A restrained neutral blue-gray battlefield mist recedes across the open center, no sea, beach, palms, castle throne room or futuristic headquarters. CENTER65% remains dark, empty, extremely low contrast to support room list/chat panels. Amber rimlight left, cool teal rimlight right, identical visual fidelity to main menu, warm human collaboration. No UI or floating weapon displays or holograms."
+    },
+    {
+      "id": "01-island",
+      "title": "海岛",
+      "mapId": 1,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/IslandLowPolyApplied-20261022/four-rounds-overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "IslandLowPolyApplied-20261022/four-rounds-overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Tropical island: golden sand paths, vivid green low polygon palms on faceted cliff edges, blue sea and a small wooden landing. Sunny welcoming early stage. No monsters. One small olive-helmet rifle soldier as scale cue."
+    },
+    {
+      "id": "02-docks",
+      "title": "码头",
+      "mapId": 21,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/DockArt-v1-20261022/dock-applied-overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "DockArt-v1-20261022/dock-applied-overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Docks: broad continuous wooden plank combat platform over teal water, box cargo, rope rails, simple wooden lifting hoist and small moored work boat. Warm weathered wood and blue water; elevated cinematic camera, neither beach nor container megacity. One small rifle soldier for scale."
+    },
+    {
+      "id": "03-farm",
+      "title": "农场",
+      "mapId": 22,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/FarmGroundApplied-20261023/candidate-overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "FarmGroundApplied-20261023/candidate-overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. GREEN FARM, NO SNOW: grassy and earthen lanes divided by low stone walls, small brown-roof wooden farm sheds, golden hay bales, green trees, a few cream-and-brown low-poly cows in a lane. Spring daylight, yellow green and soil brown. One small rifle soldier for scale. Never snow, ice or winter."
+    },
+    {
+      "id": "04-graveyard",
+      "title": "墓园",
+      "mapId": 23,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/NextThreeStagesApplied-20261023/graveyard/overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "NextThreeStagesApplied-20261023/graveyard/overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Graveyard: low stone rectangular tombs and simple headstones in rows, crossing earthen paths, black iron fence on low stone wall, tiny gray mausoleum, angular gray boulders and conifers. Atmospheric cool sage fog and dusk blue. No sea, gore, ghosts or giant gothic castle. One small rifle soldier for scale."
+    },
+    {
+      "id": "05-temple",
+      "title": "神庙庭院",
+      "mapId": 24,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/NextThreeStagesApplied-20261023/temple/overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "NextThreeStagesApplied-20261023/temple/overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Temple courtyard: warm sandstone square-tiled open plaza, carved square pillar pedestals, low geometric walls, central squat stone shrine on plinth, orderly green trees, faceted sandstone cliffs. Golden late afternoon; restrained teal seams between stone. Not jungle pyramids or volcano. One small rifle soldier for scale."
+    },
+    {
+      "id": "06-market",
+      "title": "集市",
+      "mapId": 25,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/NextThreeStagesApplied-20261023/marketplace/overview.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "NextThreeStagesApplied-20261023/marketplace/overview.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Marketplace: dusty ochre town square, cross-shaped pale tiled walkways, FOUR modest vendor carts with red/cream and teal/cream striped awnings at edges, baskets of green produce, barrels, low plaster walls and small terracotta roof houses. Warm lively environment but no NPC crowd. One small rifle soldier. No modern shopping mall."
+    },
+    {
+      "id": "07-henge",
+      "title": "巨石环阵",
+      "mapId": 5,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/HengePolishApplied-20261025/round-1-close-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "HengePolishApplied-20261025/round-1-close-applied.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Megalith ring: multiple gray faceted trilithons, paired standing stones supporting broad weathered horizontal lintels, mossy green facets, short pale olive grass, tiny scattered rocks, broad open arena and cloudy highland sky. Strong cool gray and moss green, morning grazing light. No magical portals, glowing runes or giant stone monster. One small rifle soldier for true scale; stones 2 to 3 soldier heights."
+    },
+    {
+      "id": "08-fort",
+      "title": "要塞庭院",
+      "mapId": 7,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageEnvironmentsApplied-20261026/Fort/round-1-close-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "TenStageEnvironmentsApplied-20261026/Fort/round-1-close-applied.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Fortress courtyard: pale warm buff limestone, chunky rectangular crenellated low defensive parapets with square pillars and bevelled foundations, broad open tiled courtyard and clear lanes. Rich angled amber light across cream stone with deep blue-gray shadows. No immense fantasy citadel or coastline. One small soldier for scale; walls around 2 soldier heights."
+    },
+    {
+      "id": "09-koi",
+      "title": "锦鲤桥庭",
+      "mapId": 10,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageEnvironmentsApplied-20261026/Koi/round-1-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png"
+      ],
+      "reference": "TenStageEnvironmentsApplied-20261026/Koi/round-1-applied.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Koi bridge courtyard: quiet pale green stone garden, straight wooden plank walkway through middle, rectangular shallow aqua ponds edged by gray rocks on either side, clearly visible white-and-orange koi, modest stone lanterns, green bamboo groupings, restrained red-brown gate with green roof beyond. Soft jade morning light. Not beach or giant lake. One small rifle soldier at walkway for scale."
+    },
+    {
+      "id": "10-nest",
+      "title": "终局巢穴",
+      "mapId": 20,
+      "kind": "loading",
+      "refs": [
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageEnvironmentsApplied-20261026/Nest/round-1-applied.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/TenStageCreaturesApplied-20261026/Spider/poster.png",
+        "F:/GitHub/FirepowerLoop/Backup/Artifacts/FinalDragonApplied-20261026/three-quarter.png"
+      ],
+      "reference": "TenStageEnvironmentsApplied-20261026/Nest/round-1-applied.png",
+      "prompt": "Use case stylized-concept. Produce one polished 16:9 landscape low-poly 3D arcade shooter background illustration for FirepowerLoop. Use supplied formal resource image(s) as identity, palette, recognizable landmark and relative scale references; transform the neutral evidence screenshot into cinematic art, not a literal top-down screenshot. Clean angular flat-shaded geometry, readable large shapes, matte materials, elegant atmospheric depth, modest detail, no photoreal textures, no painterly linework. Human if present is the actual slim human olive-helmet soldier, beige short sleeves, dark vest, charcoal trousers and black boots holding a simple rifle, no chibi, no futuristic armor. No lettering, logos, numbers, UI, progress bars, icons, watermarks, image borders or contact sheets. One coherent full-bleed scene. Do not add other biomes from other reference images. Loading background layout: main landmark in middle upper 70%, elevated three-quarter cinematic viewpoint, bottom18% uninterrupted dark desaturated foreground softly graded for later progress and tips (NO actual UI). Not huge action crowds; prioritize unmistakable destination identity. Do not literally reproduce evidence captions, grids, overhead plan or neutral studio background. Final nest: COLD GRAY INDUSTRIAL OPEN ARENA of large square floor slabs, low rectangular slate equipment benches carrying clusters of angular muted coral-red organic nest pods and short tendrils, minimal slim white floor strip lights, steel braces in background. Approved BROWN DRAGON with four legs, two warm rust tan membrane wings, long tail and neck stands midground with one small human soldier at left for scale; dragon head about 2.5 soldier heights when on same ground. Ominous gray blue and muted crimson, not volcano, not lava, not cave, not eggs or gold treasure."
+    }
+  ]
+}

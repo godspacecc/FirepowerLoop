@@ -1,0 +1,111 @@
+{
+  "started": "2026-10-26",
+  "completed": "2026-10-27",
+  "status": "concept-preview-awaiting-adoption",
+  "images": [
+    {
+      "id": "main-menu",
+      "title": "主菜单",
+      "kind": "menu",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-7e1d3f1e-eb1f-4683-ae83-0b996ec54e73.png",
+      "file": "main-menu.png"
+    },
+    {
+      "id": "online-lobby",
+      "title": "联机大厅",
+      "kind": "lobby",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-e6198d34-fa00-4fd5-a59f-71f64cf5cd38.png",
+      "file": "online-lobby.png"
+    },
+    {
+      "id": "01-island",
+      "title": "海岛",
+      "kind": "loading",
+      "mapId": 1,
+      "reference": "IslandLowPolyApplied-20261022/four-rounds-overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-27e38cc0-aff8-4c1f-b771-bac2495fad21.png",
+      "file": "01-island.png"
+    },
+    {
+      "id": "02-docks",
+      "title": "码头",
+      "kind": "loading",
+      "mapId": 21,
+      "reference": "DockArt-v1-20261022/dock-applied-overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-85b3637c-eb5b-43e1-820b-b14897a7a1d8.png",
+      "file": "02-docks.png"
+    },
+    {
+      "id": "03-farm",
+      "title": "农场",
+      "kind": "loading",
+      "mapId": 22,
+      "reference": "FarmGroundApplied-20261023/candidate-overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-7a9b3cd0-e7c6-4ed8-b157-a72beef3fa2c.png",
+      "file": "03-farm.png"
+    },
+    {
+      "id": "04-graveyard",
+      "title": "墓园",
+      "kind": "loading",
+      "mapId": 23,
+      "reference": "NextThreeStagesApplied-20261023/graveyard/overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-e82d0816-1f7c-4068-bb8d-642b5259645e.png",
+      "file": "04-graveyard.png"
+    },
+    {
+      "id": "05-temple",
+      "title": "神庙庭院",
+      "kind": "loading",
+      "mapId": 24,
+      "reference": "NextThreeStagesApplied-20261023/temple/overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-b7338805-e64a-4892-bd73-1db170793519.png",
+      "file": "05-temple.png"
+    },
+    {
+      "id": "06-market",
+      "title": "集市",
+      "kind": "loading",
+      "mapId": 25,
+      "reference": "NextThreeStagesApplied-20261023/marketplace/overview.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-01dd3c30-3c2b-4f58-81ff-edc0fa0ac4b3.png",
+      "file": "06-market.png"
+    },
+    {
+      "id": "07-henge",
+      "title": "巨石环阵",
+      "kind": "loading",
+      "mapId": 5,
+      "reference": "HengePolishApplied-20261025/round-1-close-applied.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-186c8bcc-0ab4-4514-a8cf-d62af61b4eaa.png",
+      "file": "07-henge.png"
+    },
+    {
+      "id": "08-fort",
+      "title": "要塞庭院",
+      "kind": "loading",
+      "mapId": 7,
+      "reference": "TenStageEnvironmentsApplied-20261026/Fort/round-1-close-applied.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-02d68f39-44fb-42e6-8eec-98e952d69d01.png",
+      "file": "08-fort.png"
+    },
+    {
+      "id": "09-koi",
+      "title": "锦鲤桥庭",
+      "kind": "loading",
+      "mapId": 10,
+      "reference": "TenStageEnvironmentsApplied-20261026/Koi/round-1-applied.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-2b311ac7-e8ef-42b9-a95f-ebbb3aa1fcec.png",
+      "file": "09-koi.png"
+    },
+    {
+      "id": "10-nest",
+      "title": "终局巢穴",
+      "kind": "loading",
+      "mapId": 20,
+      "reference": "TenStageEnvironmentsApplied-20261026/Nest/round-1-applied.png",
+      "generatedSource": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-c5651858-e069-4a28-bd23-5e3cfae620d4.png",
+      "file": "10-nest.png"
+    }
+  ]
+}

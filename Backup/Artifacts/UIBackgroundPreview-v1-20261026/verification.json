@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "images": [
+    {
+      "file": "main-menu-v1.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "1c297ad5c69f19269e05bf57dadbce5648854054452570a9ee0e3b7672d06100"
+    },
+    {
+      "file": "online-lobby-v1.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "15ac493362b7f3b805450026ba9f11c8bd2e7bf82bc529b3b376635a8496e06d"
+    },
+    {
+      "file": "loading-v1.png",
+      "width": 1672,
+      "height": 941,
+      "sha256": "5e84f0a8f31600944617f9cd488adc8e7860f3d451bea0210f011263e9acccf6"
+    }
+  ],
+  "localLinksChecked": 10,
+  "missingLinks": [],
+  "protectedOriginalFiles": 33,
+  "changedProtectedFiles": [],
+  "scope": "Preview-only static asset validation; no gameplay, UI overlay or device acceptance."
+}

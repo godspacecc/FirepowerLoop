@@ -1,0 +1,32 @@
+[
+  {
+    "id": "main-menu",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-5e4f3e38-8a86-48ba-9df5-d12e232a3132.png",
+    "prompt": "Edit this main-menu background. Preserve the soldier combat, diverse journey panorama, colors and every composition detail of LEFT60%. Change only RIGHT40%: remove the large foreground striped awning, large right house and barrels; replace that whole area with deep low-contrast blue-gray atmospheric mist and faint distant silhouettes. Smooth gradual transition from the preserved left scene, no hard vertical boundary. Rightmost38% must be quiet dark negative space suitable behind real menu buttons. Keep width height and no text/UI. This is essential readability correction."
+  },
+  {
+    "id": "02-docks",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-1a7a82fc-6b91-4801-9e29-9a094e019d54.png",
+    "prompt": "Edit this loading background with ONE targeted change: REMOVE THE GIANT SPIDER completely, cleanly reconstruct the ground behind it and its shadow. Preserve the human soldier, all environment landmarks, camera, lighting, palette, bottom dark empty progress area, and entire rest of composition unchanged. Do not replace the spider with any other enemy or object. This is an environment-focused destination preview, not a repeated spider showcase. No text or UI."
+  },
+  {
+    "id": "04-graveyard",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-0e3cd7a8-601d-48ca-9fe9-29388f1bedb0.png",
+    "prompt": "Edit this loading background with ONE targeted change: REMOVE THE GIANT SPIDER completely, cleanly reconstruct the ground behind it and its shadow. Preserve the human soldier, all environment landmarks, camera, lighting, palette, bottom dark empty progress area, and entire rest of composition unchanged. Do not replace the spider with any other enemy or object. This is an environment-focused destination preview, not a repeated spider showcase. No text or UI."
+  },
+  {
+    "id": "05-temple",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-ac020540-23b4-467d-b1e9-3566b5cda44b.png",
+    "prompt": "Edit this loading background with ONE targeted change: REMOVE THE GIANT SPIDER completely, cleanly reconstruct the ground behind it and its shadow. Preserve the human soldier, all environment landmarks, camera, lighting, palette, bottom dark empty progress area, and entire rest of composition unchanged. Do not replace the spider with any other enemy or object. This is an environment-focused destination preview, not a repeated spider showcase. No text or UI."
+  },
+  {
+    "id": "07-henge",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-8275801f-c399-4cd4-9a69-eb606af1ce6b.png",
+    "prompt": "Edit this loading background with ONE targeted change: REMOVE THE GIANT SPIDER completely, cleanly reconstruct the ground behind it and its shadow. Preserve the human soldier, all environment landmarks, camera, lighting, palette, bottom dark empty progress area, and entire rest of composition unchanged. Do not replace the spider with any other enemy or object. This is an environment-focused destination preview, not a repeated spider showcase. No text or UI."
+  },
+  {
+    "id": "08-fort",
+    "reference": "C:\\Users\\78176\\.codex\\generated_images\\01a176c0-3524-7e31-8336-8d062baf8fd2\\exec-51454c77-42f6-46bc-9bf5-89f5fe643297.png",
+    "prompt": "Edit this loading background with ONE targeted change: REMOVE THE GIANT SPIDER completely, cleanly reconstruct the ground behind it and its shadow. Preserve the human soldier, all environment landmarks, camera, lighting, palette, bottom dark empty progress area, and entire rest of composition unchanged. Do not replace the spider with any other enemy or object. This is an environment-focused destination preview, not a repeated spider showcase. No text or UI."
+  }
+]
