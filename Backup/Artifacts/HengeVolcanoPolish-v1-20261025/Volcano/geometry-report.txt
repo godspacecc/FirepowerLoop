@@ -1,0 +1,7 @@
+TEMPORARY CANDIDATE / isolated editor sampling, not gameplay; formal hero scale unchanged; static comparison identical cameras and lighting.
+stage=8; arenaConfig=6; gameplay bounds=39x39m; no altered Config/runtime/Server; no added colliders, damage, paths, enemies or timing.
+round=1; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS
+glow demo=80 frames at 20fps, 4 seconds; fixed close camera; only candidate lava surface brightness, no hazard or movement.
+round=2; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS
+round=3; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS
+round=4; obstacles=4; checkedVertices=3516; maxFootprintExcess=0.000000m; lavaVertices=426; lavaOnWalkableGround=0; activeColliders=0; entries=4; geometry=PASS

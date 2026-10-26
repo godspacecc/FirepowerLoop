@@ -1,0 +1,25 @@
+{
+  "scope": "Temporary clone sampling, not live combat or multiplayer capture.",
+  "clips": {
+    "shambler-claw": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "489307ae264b245b9f587863940b078f357af2694bbac5819f43450df59cf43d"
+    },
+    "gaunt-claw": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "23f1e8af7ddab181c08370f7282690d55fd1ac937f22e182f851503ea1d2ab89"
+    },
+    "bloated-claw": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "19e290043b4a127292c4a29e860f546b0902262032bd5ac22c2cb29d8dc7fae5"
+    },
+    "shambler-bite-draft": {
+      "frames": 80,
+      "durationMs": 4000,
+      "sha256": "dea431ed4b1fe44661b92ca37a7d16583b7c2ee9c8701f3b61a235e10d09f66b"
+    }
+  }
+}

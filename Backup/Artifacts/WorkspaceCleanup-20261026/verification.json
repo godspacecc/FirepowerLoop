@@ -1,0 +1,222 @@
+{
+  "base_commit": "c3408a0211921d611ac097727d24a2e4d35d66a8",
+  "counts": {
+    "move": 6312,
+    "restore": 38,
+    "keep": 144,
+    "reconcile": 1
+  },
+  "backup_hashes_verified": true,
+  "restored_files_match_HEAD": true,
+  "archive_log_trailing_whitespace_normalized": 2,
+  "font": {
+    "before": 1120,
+    "after": 1128,
+    "added": [
+      {
+        "character": "农",
+        "unicode": 20892,
+        "glyph": 9703,
+        "rect": {
+          "X": 1475,
+          "Y": 2572,
+          "Width": 68,
+          "Height": 67
+        },
+        "nonzero_pixels": 3728
+      },
+      {
+        "character": "庙",
+        "unicode": 24217,
+        "glyph": 13001,
+        "rect": {
+          "X": 1789,
+          "Y": 3958,
+          "Width": 66,
+          "Height": 67
+        },
+        "nonzero_pixels": 4104
+      },
+      {
+        "character": "庭",
+        "unicode": 24237,
+        "glyph": 13021,
+        "rect": {
+          "X": 1411,
+          "Y": 2884,
+          "Width": 68,
+          "Height": 67
+        },
+        "nonzero_pixels": 4455
+      },
+      {
+        "character": "念",
+        "unicode": 24565,
+        "glyph": 13348,
+        "rect": {
+          "X": 1464,
+          "Y": 2807,
+          "Width": 68,
+          "Height": 66
+        },
+        "nonzero_pixels": 3783
+      },
+      {
+        "character": "概",
+        "unicode": 27010,
+        "glyph": 15784,
+        "rect": {
+          "X": 1484,
+          "Y": 3040,
+          "Width": 67,
+          "Height": 67
+        },
+        "nonzero_pixels": 4321
+      },
+      {
+        "character": "画",
+        "unicode": 30011,
+        "glyph": 18770,
+        "rect": {
+          "X": 1853,
+          "Y": 3883,
+          "Width": 60,
+          "Height": 62
+        },
+        "nonzero_pixels": 3700
+      },
+      {
+        "character": "觉",
+        "unicode": 35273,
+        "glyph": 24012,
+        "rect": {
+          "X": 1470,
+          "Y": 2650,
+          "Width": 63,
+          "Height": 67
+        },
+        "nonzero_pixels": 3941
+      },
+      {
+        "character": "院",
+        "unicode": 38498,
+        "glyph": 27233,
+        "rect": {
+          "X": 1479,
+          "Y": 2962,
+          "Width": 65,
+          "Height": 67
+        },
+        "nonzero_pixels": 4178
+      }
+    ],
+    "existing_glyphs_and_pixels_unchanged": true,
+    "atlas": [
+      4096,
+      4096
+    ]
+  },
+  "archive_links_checked": 123,
+  "media_fully_decoded": [
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\basic-melee-action.gif",
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\basic-strike.png",
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\basic-windup.png",
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\zombie-melee-action.gif",
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\zombie-strike.png",
+    "Backup\\Artifacts\\EnemyMeleeAction-v1-20261023\\zombie-windup.png",
+    "Backup\\Artifacts\\EntryScreensConcept-v2-20261024\\boot-concept-art.png",
+    "Backup\\Artifacts\\EntryScreensConcept-v2-20261024\\boot-full-preview.png",
+    "Backup\\Artifacts\\EntryScreensConcept-v2-20261024\\start-concept-art.png",
+    "Backup\\Artifacts\\EntryScreensConcept-v2-20261024\\start-full-preview.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\boot.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\loading-docks.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\loading-farm.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\loading-graveyard.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\loading-overview.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\loading-temple.png",
+    "Backup\\Artifacts\\EntryScreensRedesign-v1-20261024\\start.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\close-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\close-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\close-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\revision-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-1-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-1-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-1-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-2-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-2-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-2-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-3-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-3-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-3-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-4-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-4-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\round-4-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\Red-v2\\volcano-glow-preview.mp4",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\close-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\close-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\close-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\decoded-first-frame.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-1-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-1-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-1-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-2-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-2-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-2-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-3-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-3-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-3-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-4-before.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-4-candidate.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\round-4-comparison.png",
+    "Backup\\Artifacts\\HengeVolcanoPolish-v1-20261025\\Volcano\\volcano-glow-preview.mp4",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\05-henge-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\05-henge-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\06-volcano-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\06-volcano-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\07-fort-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\07-fort-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\08-church-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\08-church-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\09-garden-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\09-garden-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\10-koi-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\10-koi-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\11-piazza-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\11-piazza-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\12-estate-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\12-estate-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\13-motel-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\13-motel-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\14-museum-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\14-museum-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\16-homestead-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\16-homestead-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\17-shiver-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\17-shiver-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\18-swamp-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\18-swamp-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\19-spore-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\19-spore-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\20-papaback-close.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\20-papaback-overview.png",
+    "Backup\\Artifacts\\LaterStagePolishReview-20261025\\bosses-current.png",
+    "Backup\\Artifacts\\WeaponAirdropPop-v1-20261023\\pop-keyframe.png",
+    "Backup\\Artifacts\\WeaponAirdropPop-v1-20261023\\settled-keyframe.png",
+    "Backup\\Artifacts\\WeaponAirdropPopApplied-20261023\\pop-keyframe.png",
+    "Backup\\Artifacts\\WeaponAirdropPopApplied-20261023\\settled-keyframe.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\bloated-claw-melee-action.gif",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\bloated-claw-strike.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\bloated-claw-windup.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\gaunt-claw-melee-action.gif",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\gaunt-claw-strike.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\gaunt-claw-windup.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-bite-draft-melee-action.gif",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-bite-draft-strike.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-bite-draft-windup.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-claw-melee-action.gif",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-claw-strike.png",
+    "Backup\\Artifacts\\ZombieUnarmedAction-v2-20261023\\shambler-claw-windup.png"
+  ],
+  "unity_editor_running": false,
+  "limitations": "Offline asset/Git audit; no Unity EditMode or Player Build; server route checks recorded separately."
+}

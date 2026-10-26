@@ -1,0 +1,16 @@
+Current formal View; isolated static samples, not battle capture; no changed assets
+5|henge|special=4|event=0|obstacles=4
+6|volcano|special=5|event=1|obstacles=4
+7|fort|special=6|event=0|obstacles=4
+8|church|special=7|event=4|obstacles=4
+9|garden|special=9|event=8|obstacles=4
+10|koi|special=10|event=9|obstacles=2
+11|piazza|special=13|event=10|obstacles=3
+12|estate|special=14|event=0|obstacles=4
+13|motel|special=8|event=0|obstacles=4
+14|museum|special=8|event=4|obstacles=4
+16|homestead|special=11|event=0|obstacles=4
+17|shiver|special=12|event=6|obstacles=4
+18|swamp|special=15|event=7|obstacles=4
+19|spore|special=16|event=8|obstacles=4
+20|papaback|special=17|event=4|obstacles=4

@@ -9,6 +9,10 @@
 **/[Ll]ogs/
 **/[Uu]ser[Ss]ettings/
 
+# 本地检查工具的编译输出不进入版本库。
+/Tools/**/bin/
+/Tools/**/obj/
+
 # 嵌入 MCP 包的 Logs 目录包含运行时代码及 meta，不是 Unity 生成日志。
 !Client/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/
 !Client/Packages/com.ivanmurzak.unity.mcp/Runtime/Unity/Logs/**

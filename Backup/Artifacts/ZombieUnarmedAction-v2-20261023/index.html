@@ -1,0 +1,12 @@
+<!doctype html><meta charset="utf-8"><title>丧尸空手动作候选 v2</title>
+<style>body{margin:0;background:#121a1f;color:#e2e9ed;font:16px system-ui}main{max-width:1050px;margin:auto;padding:24px}h1{font-size:26px}p{line-height:1.7}img{display:block;width:100%;max-width:900px;margin:20px auto;border-radius:12px}button{padding:9px 18px;cursor:pointer}small{color:#bdcbd3}h2{font-size:21px;margin-top:32px}.notice{border-left:4px solid #e9bf66;padding:10px 16px;background:#283035}</style>
+<main><h1>丧尸只用空手：抓挠、近身咬击</h1><p class="notice">上一版持刀候选已被否决。本页所有左侧丧尸都没有武器；右侧持枪者是正式主角，用于同框比较。0.4秒前摇和跑开取消继续保留。</p>
+<button onclick="document.querySelectorAll('img').forEach(i=>{i.src=i.dataset.src+'?t='+Date.now()})">重新播放</button>
+<h2>扑抓：复用现有丧尸攻击片段</h2><p>靠近后抬臂准备，持续贴近才出手；第二次演示中途跑开，取消并追击。</p>
+<img src="shambler-claw-melee-action.gif" data-src="shambler-claw-melee-action.gif" alt="丧尸空手扑抓候选">
+<h2>近身咬击：临时动作草案</h2><p>用当前丧尸克隆叠加探身和头部前倾，仅展示咬击方向。现有模型没有独立下颌骨，尚无嘴部开合或正式撕咬片段；本段不是已接入的完整撕咬动作。</p>
+<img src="shambler-bite-draft-melee-action.gif" data-src="shambler-bite-draft-melee-action.gif" alt="近身咬击临时草案">
+<details><summary>查看另外两类丧尸的空手扑抓</summary>
+<img src="gaunt-claw-melee-action.gif" data-src="gaunt-claw-melee-action.gif" alt="疾行丧尸空手扑抓">
+<img src="bloated-claw-melee-action.gif" data-src="bloated-claw-melee-action.gif" alt="重型丧尸空手扑抓"></details>
+<p><small>正式模型克隆、保持原尺寸；每段4秒、20fps。未修改正式Prefab、动画、控制器或战斗代码，不是当前实战录像。具体动作仍待采用后接入。</small></p></main>
