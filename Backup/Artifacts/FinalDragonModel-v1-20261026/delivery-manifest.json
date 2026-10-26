@@ -1,0 +1,110 @@
+{
+  "Tools/Unity/FinalDragonCandidate.cs": {
+    "bytes": 15960,
+    "sha256": "abeec54fb84d86437ba2e45a30caba43fca0f2d0f1158034c38c1de99aa32e83"
+  },
+  "Tools/Unity/FinalDragonPreviewCapture.cs": {
+    "bytes": 17452,
+    "sha256": "ceedd4e8d16c7eaecf3de8cc31aced90e015607547eb6c76aa5daa663705a59e"
+  },
+  "Tools/Unity/Invoke-FinalDragonPreview.ps1": {
+    "bytes": 1454,
+    "sha256": "63722f294a971b0d3cb8939bb73b3643f21a4d0489efba31fa5176809d3815e5"
+  },
+  "Tools/Unity/encode-final-dragon-preview.py": {
+    "bytes": 4191,
+    "sha256": "a60d7f6f254b9d8ccb23cd2c2fd09db5c7da4ba236c4c53ce362ed20d5412e3f"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/.gitignore": {
+    "bytes": 29,
+    "sha256": "f1d2b6d833580da8957c0551b2630a8139e7d9a509300b583869405162cf48ed"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/capture-result.json": {
+    "bytes": 315,
+    "sha256": "97f5340d9d327f5ad6b029dd1104d0080fd22f6d297a59e6e1a83196366aa1f5"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/capture-state.txt": {
+    "bytes": 41,
+    "sha256": "4ac0d42d8f22109889761ea372a7dd0bfde0be040d88f2e78b62e1a0ce8a791e"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/cleanup-verification.json": {
+    "bytes": 248,
+    "sha256": "5f194aaab248cb9f2d648bb5e1b5792510b54cb8a881bd0c17fbb09b6caa4b32"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/console-before.json": {
+    "bytes": 11268,
+    "sha256": "a1de8d98fb4866f7de7a5d821289bf8a60ab2ee31fe5775d143dfddcf43b11c1"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/front.png": {
+    "bytes": 96745,
+    "sha256": "112dbe51b527017a3d84878e94f99a2cc1bb56d4233a2391509c2aab911366b8"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/head-detail.png": {
+    "bytes": 145344,
+    "sha256": "30603d621c073f96332d1a71bbaf35cf3971aa85be4a7d28ea4ad4a85410d5d3"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/index.html": {
+    "bytes": 3799,
+    "sha256": "c6ae7af8e46f3e4c4bac19f9bcb98c8a8987b227e8338d9b4e800814096a0a16"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/model-audit.txt": {
+    "bytes": 409,
+    "sha256": "4b9f5db7e62745b5ad1f6b52df58c01d2d570ad619975a9c567c44ab5aeb8b66"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/motion-contact-sheet.jpg": {
+    "bytes": 113856,
+    "sha256": "368877d940952a18db2fbabf383a964857c91172ba02e5de1764e058f2f5af16"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/motion-timeline.csv": {
+    "bytes": 10796,
+    "sha256": "cd2e5fdfa76b583fc2cc7f582481695e3ec842e6689395994c25e934938a58cc"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/normal.mp4": {
+    "bytes": 1110250,
+    "sha256": "e331e732ab2fd7d4dcbdd8ee92a7fb513c602ac3a08703fb94096a9b29780a3c"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/poster.png": {
+    "bytes": 121928,
+    "sha256": "dab3079b105a3cb80b47ff402fda5a31a7f186913f25bcace0c307f727792a2e"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/probe-after.json": {
+    "bytes": 478,
+    "sha256": "190e95c22f9a785ee00afe65fbe1e343b672050aa84c7f29c012ff822b249c1e"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/probe-result.json": {
+    "bytes": 478,
+    "sha256": "190e95c22f9a785ee00afe65fbe1e343b672050aa84c7f29c012ff822b249c1e"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/README.md": {
+    "bytes": 3849,
+    "sha256": "df68b8b7140602ab4ae006039fc24de2875dfc95ffd3b72ac81ff2e59e46af48"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/side.png": {
+    "bytes": 129629,
+    "sha256": "582e0a2b9679d1b331941167fc506c1e6ac06feea404e6cb67c40829f2f7c08d"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/slow.mp4": {
+    "bytes": 1426770,
+    "sha256": "6ce7fba0d684d39d8ca0b2472ae6af2e099814867084acfc9c6bfd48358883e6"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/source-diff-before.sha256": {
+    "bytes": 64,
+    "sha256": "d7a639f4c4bad900e79bc0e2c0facbdecda5572970799961be911b954bdde627"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/static-result.json": {
+    "bytes": 296,
+    "sha256": "684c4800f1ebb9968752907b07824c818fb5f043e0aae1abe244d447f8d9a908"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/three-quarter.png": {
+    "bytes": 136657,
+    "sha256": "d840782f451dda4f9f73097dae7806d15ceb6c1981d521209e510f33028919ef"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/verification.json": {
+    "bytes": 245,
+    "sha256": "349281ac3fdf4b2ec96cd2d53625208abf6dc850e7cb7bfd6c36132405000645"
+  },
+  "Backup/Artifacts/FinalDragonModel-v1-20261026/video-audit.json": {
+    "bytes": 417,
+    "sha256": "a3154f57692a98142eef0a858510023d4855946b26d4d43254ae5987bedd74bd"
+  }
+}
