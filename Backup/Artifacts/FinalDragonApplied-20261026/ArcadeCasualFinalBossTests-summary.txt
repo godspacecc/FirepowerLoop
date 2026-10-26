@@ -1,0 +1,99 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 17,
+      "PassedTests": 17,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:24.1419760"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ArmoryVisualsUseSixWeaponPrefabsAndFadeWithoutRemovingExit",
+        "Status": "Passed",
+        "Duration": "00:00:04.1510000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.Completion_PersistsSelectedMapSeparatelyFromProgress",
+        "Status": "Passed",
+        "Duration": "00:00:01.2800000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.Completion_RejectsUnreachableDestinationAndPrematureVictory",
+        "Status": "Passed",
+        "Duration": "00:00:01.0370000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds(1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0310000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds(3)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ExitVisuals_AreStableColliderFreeAndReleasedAfterSceneEnds(20)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.ExitVisuals_OrdinarySnapshotRestoresOnlyArrowsAfterContentLoads",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.FinalBossBomb_DoesNotClearBossOrOpenVictoryExit",
+        "Status": "Passed",
+        "Duration": "00:00:02.2840000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.FinalBossDeath_StopsReinforcementsAndWaitsForVictoryExit",
+        "Status": "Passed",
+        "Duration": "00:00:02.5170000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.FinalBossRay_TelegraphsThenFiresAndRespectsProjectileBudget",
+        "Status": "Passed",
+        "Duration": "00:00:03.5760000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.FourthMainWave_StartsIndependentBossWithoutAdvancingRoundOrCompletingArena",
+        "Status": "Passed",
+        "Duration": "00:00:01.3930000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.GeneratedFinalBoss_HasChargeRayAndOrdinaryReinforcements",
+        "Status": "Passed",
+        "Duration": "00:00:01.1710000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.GeneratedRoute_AllPathsHaveTenFourRoundArenasAndEndAtFinalBoss",
+        "Status": "Passed",
+        "Duration": "00:00:01.1400000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.SaveFailure_PreservesArenaAndCanRetrySameRoute",
+        "Status": "Passed",
+        "Duration": "00:00:01.2010000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.TreasureGroundRewards_FadeWithoutFadingReturnExitAndReleaseMaterials",
+        "Status": "Passed",
+        "Duration": "00:00:01.4080000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeCasualFinalBossTests.Victory_PersistsRetryNodeAndRejectsContinuePurchaseAndDuplicateCompletion",
+        "Status": "Passed",
+        "Duration": "00:00:01.2640000"
+      }
+    ]
+  }
+}

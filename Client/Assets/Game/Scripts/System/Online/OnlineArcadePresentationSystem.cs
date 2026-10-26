@@ -467,6 +467,8 @@ namespace Game
                     value.CurrentHealth, value.MaxHealth, value.BossPhase is ArcadeBossPhase.Telegraph or ArcadeBossPhase.RayTelegraph,
                     attackSequence: value.AttackSequence, persistentHealthBar: bossWave || !string.IsNullOrEmpty(value.BossId));
                 view.SetEnemyContent(id,value.SpecialKind,value.ContentBossKind,value.ContentWarning);
+                if(value.ContentBossKind==4)
+                    view.SetFinalDragonState(id,value.ContentAge,value.BossPhase,value.BossPhaseSeconds,catalog.Bosses.FirstOrDefault(b=>b.Id==value.BossId),new Vector2(value.ContentFacingX,value.ContentFacingZ));
                 if(value.ContentBossKind==0&&(value.SpecialKind==4||value.SpecialKind==5))
                     view.SetCreatureState(id,value.ContentAge,new Vector2(value.ContentFacingX,value.ContentFacingZ));
                 view.SetNextStageEnemyState(id,value.SpecialKind,value.StageEnemy);

@@ -1,0 +1,1 @@
+PASS: 118 mesh vertex/normal/index arrays identical; 118 renderer colors identical; 626 clip samples across 8 clips; max position delta=0; max angle delta=0; all actor roots unchanged.

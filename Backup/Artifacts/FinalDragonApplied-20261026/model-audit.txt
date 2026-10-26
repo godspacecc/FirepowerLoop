@@ -1,0 +1,14 @@
+source=formal persistent prefab; isolated animation replay
+hero=Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab
+heroScale=1.0000,1.0000,1.0000
+heroBounds=1.3673,2.0000,1.4984
+dragonIdleBounds=7.2083,3.7840,7.6125
+fullMotionBounds=7.4244,3.8771,10.2994
+minVertexY=0.003259301
+triangles=3808
+meshObjects=118
+noAI=true
+noDamage=true
+noColliders=true
+isolatedPreviewScene=True
+previewCameraSceneMatches=True

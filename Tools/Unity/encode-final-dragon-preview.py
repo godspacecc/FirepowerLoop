@@ -9,9 +9,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--ffmpeg', type=Path, required=True)
+parser.add_argument('--formal', action='store_true')
 args = parser.parse_args()
 root = Path(__file__).resolve().parents[2]
-folder = root / 'Backup/Artifacts/FinalDragonModel-v1-20261026'
+folder = root / ('Backup/Artifacts/FinalDragonApplied-20261026' if args.formal else 'Backup/Artifacts/FinalDragonModel-v1-20261026')
 frames = sorted((folder / 'frames').glob('[0-9][0-9][0-9].png'))
 assert len(frames) == 240, f'需要240帧，实际{len(frames)}'
 assert [p.stem for p in frames] == [f'{i:03}' for i in range(240)]
@@ -34,12 +35,12 @@ for name, fps in [('normal', 20), ('slow', 10)]:
                 frame = source.convert('RGB')
             draw = ImageDraw.Draw(frame)
             draw.rectangle((0, 0, 1280, 74), fill='#1c282c')
-            draw.text((32, 10), '终局小龙 · 临时模型与动作 v1', font=font, fill='white')
-            draw.text((32, 45), 'Unity实际渲染 · 正式主角原尺寸同框 · 模型与动作待采用', font=small, fill='#b9d3cc')
+            draw.text((32, 10), ('终局小龙 · 正式资源回读' if args.formal else '终局小龙 · 临时模型与动作 v1'), font=font, fill='white')
+            draw.text((32, 45), ('Unity正式Prefab与动画 · 主角原尺寸同框 · 已采用并接入' if args.formal else 'Unity实际渲染 · 正式主角原尺寸同框 · 模型与动作待采用'), font=small, fill='#b9d3cc')
             draw.rectangle((0, 672, 1280, 720), fill='#1c282c')
             label = phase_labels[rows[index]['phase']]
             speed = '原速' if fps == 20 else '0.5倍慢放'
-            draw.text((32, 684), f'{speed} / {label}    |    隔离动作采样，无AI或伤害判定，未正式接入', font=small, fill='#b9d3cc')
+            draw.text((32, 684), f'{speed} / {label}    |    '+('正式片段隔离回放，不是整局实战录像' if args.formal else '隔离动作采样，无AI或伤害判定，未正式接入'), font=small, fill='#b9d3cc')
             if name == 'normal' and index == 40:
                 frame.save(folder / 'poster.png')
             process.stdin.write(frame.tobytes())

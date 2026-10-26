@@ -51,6 +51,8 @@ namespace Game
         void SetEnemyContent(int id, int specialKind, int bossKind, bool warning) { }
         /// <summary>只采样潜地怪/犬的当前权威年龄和锁向，不推进技能。</summary>
         void SetCreatureState(int id,float age,Vector2 facing) { }
+        /// <summary>只投影终局小龙的权威阶段、年龄和锁向，不改变战斗规则。</summary>
+        void SetFinalDragonState(int id,float age,ArcadeBossPhase phase,float remaining,ArcadeBossDefinition boss,Vector2 facing) { }
         /// <summary>按权威年龄投影墓穴、乌鸦与蓝影，不自行推进或裁决重生。</summary>
         void SetNextStageEnemyState(int id,int kind,FirepowerLoop.Arcade.ArcadeStageEnemyState state) { }
         /// <summary>本地海岛局部地图准备；其他表现端口沿用原行为。</summary>

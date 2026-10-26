@@ -3506,6 +3506,9 @@ namespace ET.Server
                 enemy.ContentFacingX=sourceEnemy.ContentLockedX;enemy.ContentFacingZ=sourceEnemy.ContentLockedZ;
                 if(source.Players.TryGetValue(sourceEnemy.TargetPlayerId,out var creatureTarget)&&sourceEnemy.SpecialKind!=5)
                 {enemy.ContentFacingX=creatureTarget.PositionX-sourceEnemy.PositionX;enemy.ContentFacingZ=creatureTarget.PositionZ-sourceEnemy.PositionZ;}
+                // 终局小龙在蓄力、冲锋和射线期间严格使用原Boss锁向；不修改规则或协议。
+                if(sourceEnemy.ContentBossKind==4&&sourceEnemy.BossPhase!=OnlineArcadeBossPhase.None)
+                {enemy.ContentFacingX=sourceEnemy.BossChargeDirectionX;enemy.ContentFacingZ=sourceEnemy.BossChargeDirectionZ;}
                 enemy.StageEnemyPhase=sourceEnemy.StageEnemy.Phase;enemy.StageEnemyAge=sourceEnemy.StageEnemy.Age;
                 enemy.DockSeaEntryStarted=sourceEnemy.DockSeaEntry.Started;enemy.DockSeaEntryAge=sourceEnemy.DockSeaEntry.Age;enemy.DockSeaEntryLane=sourceEnemy.DockSeaEntry.Lane;
                 enemy.StageEnemyOriginX=sourceEnemy.StageEnemy.OriginX;enemy.StageEnemyOriginZ=sourceEnemy.StageEnemy.OriginY;enemy.StageEnemyRevives=sourceEnemy.StageEnemy.RevivesRemaining;

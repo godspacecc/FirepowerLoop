@@ -1,0 +1,53 @@
+{
+  "client": [
+    {
+      "file": "tests-green.json",
+      "Status": "Passed",
+      "TotalTests": 9,
+      "PassedTests": 9,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.1541846"
+    },
+    {
+      "file": "CreaturePresentationTests-result.json",
+      "Status": "Passed",
+      "TotalTests": 14,
+      "PassedTests": 14,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.8059404"
+    },
+    {
+      "file": "ArcadeRoundContentViewTests-result.json",
+      "Status": "Passed",
+      "TotalTests": 7,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:12.5351170"
+    },
+    {
+      "file": "ArcadeCasualFinalBossTests-result.json",
+      "Status": "Passed",
+      "TotalTests": 17,
+      "PassedTests": 17,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:24.1419760"
+    }
+  ],
+  "server": {
+    "FinalDragonOnline": {
+      "passed": 4,
+      "maxTests": 4
+    },
+    "TenStageRouteOnline": {
+      "passed": 8,
+      "maxTests": 8
+    }
+  },
+  "includePassingTests": true,
+  "playerBuild": false,
+  "liveTwoClientSession": false
+}

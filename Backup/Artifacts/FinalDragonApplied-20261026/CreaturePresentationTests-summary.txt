@@ -1,0 +1,84 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 14,
+      "PassedTests": 14,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.8059404"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9550000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.ActualTravelMovesFourLegGaitAndStoppedSnapshotsStopRunning(5)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0340000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.BurrowerUndergroundOnlyShowsEarthAndEmergesBeforeActiveWindow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0250000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.ClientSnapshotKeepsAuthoritativeAgeAndLockedFacing",
+        "Status": "Passed",
+        "Duration": "00:00:00.3700000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.1280000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.FormalActorsHaveArticulatedPawsJawAndPersistentSharedResources(5)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0890000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.FormalAnimationDoesNotMoveActorRootAndFeetKeepGroundContact",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.HoundWarningAndPounceKeepAuthoritativeFacingInsteadOfLocalPlayer",
+        "Status": "Passed",
+        "Duration": "00:00:00.0190000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.KindReplacementRemovalAndMapReleaseDestroyActorsButKeepSharedMeshes",
+        "Status": "Passed",
+        "Duration": "00:00:00.0300000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0210000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.LateAgeDirectlySamplesAndDuplicateOrOlderAgeCannotRewind(5)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0200000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot(4)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0270000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.MeleeWindupAndRecoveryDriveJawWithoutReplacingAuthorityRoot(5)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0210000"
+      },
+      {
+        "Name": "Game.Tests.CreaturePresentationTests.MissingCreatureTemplatesWaitWithoutOrphanNodesAndRecoverFromCurrentSnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0280000"
+      }
+    ]
+  }
+}

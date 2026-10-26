@@ -1,0 +1,49 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 7,
+      "PassedTests": 7,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:12.5351170"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.AuthoritativeAreasReplaceWarningAndReleaseRemovedMeshes",
+        "Status": "Passed",
+        "Duration": "00:00:01.2280000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.BarrageRoofBarrelFallsOnAuthoritativeWarningClockAndReleasesAtImpact",
+        "Status": "Passed",
+        "Duration": "00:00:00.0460000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.DiagonalSegmentsProjectExactCapsuleAndReplaceOwnedBoundaryWithoutLeaks",
+        "Status": "Passed",
+        "Duration": "00:00:00.0490000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.DroppedVortexBarrelShowsPurpleSmokeAndReleasesWithAuthoritySnapshot",
+        "Status": "Passed",
+        "Duration": "00:00:00.0280000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.EveryLayoutBuildsDistinctEnvironmentWithoutActiveCollidersAndReleasesResources",
+        "Status": "Passed",
+        "Duration": "00:00:09.7290000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.GroundBarrelsProjectOnlyRemainingAuthoritySnapshotsWithoutCollisionOrDangerRings",
+        "Status": "Passed",
+        "Duration": "00:00:00.0470000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeRoundContentViewTests.SpecialEnemyProjectsAuthoritativePositionHealthAndRemoval",
+        "Status": "Passed",
+        "Duration": "00:00:00.0210000"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "file": "normal.mp4",
+    "frames": 240,
+    "fps": 20,
+    "seconds": 12.0,
+    "full_decode": "passed",
+    "sha256": "93b0839cfc2adef1bef73091eaee1db025071b153e7443af28fbf4f04942ddba"
+  },
+  {
+    "file": "slow.mp4",
+    "frames": 240,
+    "fps": 10,
+    "seconds": 24.0,
+    "full_decode": "passed",
+    "sha256": "fc60a98934bb223d65a917a34b3d22aa8010b3863495dbbbc26be183dab73d23"
+  }
+]

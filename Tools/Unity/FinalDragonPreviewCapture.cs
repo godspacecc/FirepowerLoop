@@ -13,7 +13,8 @@ using Object = UnityEngine.Object;
 public static class FinalDragonPreviewCapture
 {
     private const int Layer=30, Width=1280, Height=720, Frames=240;
-    private static string Folder=>Path.GetFullPath(Path.Combine(Application.dataPath,"../../Backup/Artifacts/FinalDragonModel-v1-20261026"));
+    private static bool formal;
+    private static string Folder=>Path.GetFullPath(Path.Combine(Application.dataPath,formal?"../../Backup/Artifacts/FinalDragonApplied-20261026":"../../Backup/Artifacts/FinalDragonModel-v1-20261026"));
     private static Scene prior, preview, staging;
     private static Camera camera;
     private static RenderTexture target, priorTarget;
@@ -26,12 +27,12 @@ public static class FinalDragonPreviewCapture
     private static bool busy;
 
     /// <summary>启动一次独立预览；动态逐帧由编辑器回调推进，避免工具超时和重复捕获。</summary>
-    public static string Run(bool video=false)
+    public static string Run(bool video=false,bool useFormal=false)
     {
         if(Application.dataPath.Replace('\\','/')!="F:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying||EditorApplication.isCompiling||EditorApplication.isUpdating)
             throw new InvalidOperationException("只允许FirepowerLoop空闲编辑态拍摄");
         if(SessionState.GetBool("FinalDragonPreviewBusy",false))throw new InvalidOperationException("小龙预览仍在运行，拒绝重复启动");
-        prior=SceneManager.GetActiveScene();priorTarget=RenderTexture.active;
+        formal=useFormal;prior=SceneManager.GetActiveScene();priorTarget=RenderTexture.active;
         try
         {
             SessionState.SetBool("FinalDragonPreviewBusy",true);busy=true;
@@ -48,13 +49,13 @@ public static class FinalDragonPreviewCapture
             camera=new GameObject("TEMP_DragonCamera",typeof(Camera)).GetComponent<Camera>();camera.enabled=false;camera.orthographic=true;camera.cullingMask=1<<Layer;
             camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.12f,.16f,.18f);camera.nearClipPlane=.03f;camera.farClipPlane=100;
             target=new RenderTexture(Width,Height,24);pixels=new Texture2D(Width,Height,TextureFormat.RGB24,false);camera.targetTexture=target;
-            dragon=FinalDragonCandidate.Create(world.transform);SetLayer(dragon.Root);
+            dragon=formal?CreateFormal(world.transform):FinalDragonCandidate.Create(world.transform);SetLayer(dragon.Root);
             hero=CreateHero(owned);hero.Root.transform.SetPositionAndRotation(new Vector3(-3.05f,.025f,2.7f),Quaternion.Euler(0,20,0));SampleHero(hero);
             foreach(var go in staging.GetRootGameObjects())SceneManager.MoveGameObjectToScene(go,preview);
             camera.scene=preview;
             var envelope=BoundsOf(hero.Root);float minY=float.MaxValue;
-            for(int i=0;i<Frames;i++) {FinalDragonCandidate.Sample(dragon,i/20f);var b=BoundsOf(dragon.Root);envelope.Encapsulate(b);minY=Mathf.Min(minY,b.min.y);}
-            FinalDragonCandidate.Sample(dragon,0);
+            for(int i=0;i<Frames;i++) {SampleDragon(i/20f);var b=BoundsOf(dragon.Root);envelope.Encapsulate(b);minY=Mathf.Min(minY,b.min.y);}
+            SampleDragon(0);
             var still=BoundsOf(dragon.Root);still.Encapsulate(BoundsOf(hero.Root));Fit(camera,still,new Vector3(6,4.5f,10));Save("three-quarter.png");
             Fit(camera,still,new Vector3(12,3,0));Save("side.png");
             Fit(camera,still,new Vector3(0,4,12));Save("front.png");
@@ -63,13 +64,36 @@ public static class FinalDragonPreviewCapture
             int triangles=dragon.Root.GetComponentsInChildren<MeshFilter>().Sum(f=>f.sharedMesh.triangles.Length/3);
             if(minY<-.035f)throw new InvalidOperationException("模型穿过地面："+minY);
             if(dragon.Root.GetComponentsInChildren<Collider>(true).Length!=0)throw new InvalidOperationException("临时模型不应创建碰撞器");
-            File.WriteAllText(Path.Combine(Folder,"model-audit.txt"),"source=temporary procedural Unity mesh; not formal resource\nhero=Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab\nheroScale="+Triple(hero.Root.transform.localScale)+"\nheroBounds="+Triple(BoundsOf(hero.Root).size)+"\ndragonIdleBounds="+Triple(BoundsOf(dragon.Root).size)+"\nfullMotionBounds="+Triple(envelope.size)+"\nminVertexY="+minY+"\ntriangles="+triangles+"\nmeshObjects="+dragon.Root.GetComponentsInChildren<MeshFilter>().Length+"\nnoAI=true\nnoDamage=true\nnoColliders=true\nisolatedPreviewScene="+EditorSceneManager.IsPreviewScene(preview)+"\npreviewCameraSceneMatches="+(camera.scene==preview)+"\n");
+            File.WriteAllText(Path.Combine(Folder,"model-audit.txt"),(formal?"source=formal persistent prefab; isolated animation replay\n":"source=temporary procedural Unity mesh; not formal resource\n")+"hero=Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab\nheroScale="+Triple(hero.Root.transform.localScale)+"\nheroBounds="+Triple(BoundsOf(hero.Root).size)+"\ndragonIdleBounds="+Triple(BoundsOf(dragon.Root).size)+"\nfullMotionBounds="+Triple(envelope.size)+"\nminVertexY="+minY+"\ntriangles="+triangles+"\nmeshObjects="+dragon.Root.GetComponentsInChildren<MeshFilter>().Length+"\nnoAI=true\nnoDamage=true\nnoColliders=true\nisolatedPreviewScene="+EditorSceneManager.IsPreviewScene(preview)+"\npreviewCameraSceneMatches="+(camera.scene==preview)+"\n");
             if(!video){Cleanup();return "静态同框已拍摄，临时场景已清理："+Folder;}
             timeline.Clear();timeline.Add("frame,time,phase,rootZ,jawDegrees,leftFootY,rightFootY");next=0;
             File.WriteAllText(Path.Combine(Folder,"capture-state.txt"),"running:0/240");
             EditorApplication.update+=Tick;return "开始240帧/12秒候选动作拍摄，状态文件="+Folder+"/capture-state.txt";
         }
         catch(Exception e){try{TryWriteFailure(e);}finally{Cleanup();}throw;}
+    }
+    /// <summary>正式资源回读拍摄只创建实例，保持正式材质与片段引用。</summary>
+    private static FinalDragonCandidate.Rig CreateFormal(Transform parent)
+    {
+        var r=new FinalDragonCandidate.Rig();
+        r.Root=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeFinalDragon.prefab"),parent);
+        r.Body=r.Root.transform.Find("Body");r.Neck=r.Body.Find("Neck");r.Head=r.Neck.Find("Head");r.Jaw=r.Head.Find("Jaw");
+        foreach(string id in new[]{"ForeL","HindL","ForeR","HindR"})r.Legs.Add(new FinalDragonCandidate.Leg{Foot=r.Root.transform.Find(id+"Foot")});
+        return r;
+    }
+    /// <summary>正式片段按演示时间回放；根轨迹仅用于隔离对比，不进入游戏。</summary>
+    private static void SampleDragon(float t)
+    {
+        if(!formal){FinalDragonCandidate.Sample(dragon,t);return;}
+        var view=dragon.Root.GetComponent<ArcadeFinalDragonView>();
+        if(t<1.5f)view.SamplePose("Idle",t);
+        else if(t<4.5f)view.SamplePose("Move",Mathf.Repeat(t-1.5f,1.05f));
+        else if(t<5.4f)view.SamplePose("Windup",t-4.5f);
+        else if(t<6.16f)view.SamplePose("Charge",t-5.4f);
+        else if(t<7.4f)view.SamplePose("Idle",t-6.16f);
+        else if(t<9.5f)view.SamplePose("Roar",t-7.4f);
+        else view.SamplePose("Wings",t-9.5f);
+        dragon.Root.transform.localPosition=new Vector3(0,0,-1.3f+Mathf.Clamp(t-1.5f,0,3)*.52f+Mathf.SmoothStep(0,1,Mathf.InverseLerp(5.4f,6.1f,t))*1.05f);
     }
     private static void Tick()
     {
@@ -78,7 +102,7 @@ public static class FinalDragonPreviewCapture
             if(!busy||EditorApplication.isPlayingOrWillChangePlaymode)throw new InvalidOperationException("编辑器状态变化，停止临时拍摄");
             for(int j=0;j<3&&next<Frames;j++,next++)
             {
-                float t=next/20f;FinalDragonCandidate.Sample(dragon,t);SampleHero(hero);Save("frames/"+next.ToString("D3")+".png");
+                float t=next/20f;SampleDragon(t);SampleHero(hero);Save("frames/"+next.ToString("D3")+".png");
                 timeline.Add(FormattableString.Invariant($"{next},{t:F2},{Phase(t)},{dragon.Root.transform.position.z:F4},{dragon.Jaw.localEulerAngles.x:F3},{dragon.Legs[0].Foot.position.y:F4},{dragon.Legs[2].Foot.position.y:F4}"));
             }
             File.WriteAllText(Path.Combine(Folder,"capture-state.txt"),"running:"+next+"/240");
