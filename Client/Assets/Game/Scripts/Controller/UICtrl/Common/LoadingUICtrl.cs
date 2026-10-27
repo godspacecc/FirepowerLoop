@@ -88,9 +88,12 @@ namespace Game
             }).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeRunChangedEvent>(evt =>
             {
+                RefreshArtwork();
                 if (evt.Phase != ArcadeRunPhase.Arena && evt.Phase != ArcadeRunPhase.Challenge)
                     ClearArcadePreparation();
             }).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<OnlineArcadeRunChangedEvent>(_ => RefreshArtwork())
+                .UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
 
         /// <summary>资源和安全节点仍在准备时保持顶层阻断；终态快照才释放战斗画面。</summary>
@@ -329,8 +332,29 @@ namespace Game
             UI.MapArtwork.SetActive(!isBase);
             UI.BaseTitle.SetActive(isBase);
             UI.MapTitle.SetActive(!isBase);
+            RefreshArtwork();
             if (displayMode == DisplayMode.Map) SetMapProgress(mapProgress);
             else RenderDownloadProgress();
+        }
+
+        /// <summary>读取权威场地身份而非关卡序号；下载、非街机及缺失身份使用默认图。</summary>
+        private void RefreshArtwork()
+        {
+            int arena = 0;
+            if (displayMode == DisplayMode.Map && loadingMapId == MapIds.Arcade)
+            {
+                var online = this.GetModel<OnlineArcadeRunModel>()?.Snapshot.Value ?? OnlineArcadeRunClientSnapshot.Empty();
+                if (online.HasRun && online.Phase is OnlineArcadeRunPhase.Arena or OnlineArcadeRunPhase.Challenge && online.Battle != null)
+                    arena = online.Battle.ArenaConfigNumber;
+                else
+                {
+                    var run = this.GetModel<ArcadeRunModel>()?.Current;
+                    if (run != null && !run.HasResult)
+                        // 旧顺序局的关卡序号不等于场地编号；缺失真实身份时由View回退默认图。
+                        arena = run.IsCasualRoute ? run.ArenaConfigNumber : 0;
+                }
+            }
+            UI.LoadingArtwork.ShowArena(arena);
         }
 
         private void RenderDownloadProgress()

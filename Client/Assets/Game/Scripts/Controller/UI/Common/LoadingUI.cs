@@ -25,5 +25,6 @@ namespace Game
         public Button BtnCopyLog;
         public TextMeshProUGUI CopyStatusText;
         public Button BtnRetry;
+        public ArcadeLoadingArtwork LoadingArtwork;
     }
 }

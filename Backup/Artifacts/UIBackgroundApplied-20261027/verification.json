@@ -1,0 +1,166 @@
+{
+  "adoptedImages": [
+    {
+      "file": "main-menu.png",
+      "sourceIdentical": true,
+      "sha256": "2cda8c6bbda3f4c7cbe42376018b7fdcff1c8d74da2b91ea3dfa71aa8c76109e"
+    },
+    {
+      "file": "online-lobby.png",
+      "sourceIdentical": true,
+      "sha256": "e4516965aa5e1df3a4892903a4d52db302f1aaf6ab757e366daeb563374051f1"
+    },
+    {
+      "file": "01-island.png",
+      "sourceIdentical": true,
+      "sha256": "e482124b2fecf282de50e1d5ca686ebf363ad9cd8c8cdc918ee79095b7e648ee"
+    },
+    {
+      "file": "02-docks.png",
+      "sourceIdentical": true,
+      "sha256": "23938727550289296b0ef41b03a8dbb43a115b1997e856264cff26ca2969b635"
+    },
+    {
+      "file": "03-farm.png",
+      "sourceIdentical": true,
+      "sha256": "06631ee11a37f5b28babfdda7f790a8bff9804a7d0b1801b5d52252ea06854af"
+    },
+    {
+      "file": "04-graveyard.png",
+      "sourceIdentical": true,
+      "sha256": "d6f2f55f2e5706a12624149de9afdcc50c052c37258fc6959b8c96254458fbc4"
+    },
+    {
+      "file": "05-temple.png",
+      "sourceIdentical": true,
+      "sha256": "66ad988a0c9ec470bda09746b8720a694b610140ec20fa24f69ccdd37ba3def4"
+    },
+    {
+      "file": "06-market.png",
+      "sourceIdentical": true,
+      "sha256": "39aef849d71c2ffaaf960802c0056cda34bcb090ba7f514238ca9f55e42991ba"
+    },
+    {
+      "file": "07-henge.png",
+      "sourceIdentical": true,
+      "sha256": "033c65d053989c6391a8c4b83cb3740b7f8a5ce22dc215c03447e6a8087da91b"
+    },
+    {
+      "file": "08-fort.png",
+      "sourceIdentical": true,
+      "sha256": "6e52c0ab33dc80d987916c6eebd0ff55daf1ef867187caa2022afbb163c2c809"
+    },
+    {
+      "file": "09-koi.png",
+      "sourceIdentical": true,
+      "sha256": "5be5496907412f2e814ec50a52b1a109e973a55afd4a9a778ab3a5b23aa19cd8"
+    },
+    {
+      "file": "10-nest.png",
+      "sourceIdentical": true,
+      "sha256": "0a67ffb46929e26b9c9f84acaaf369c6527f94ffb6b981f9c672db3afe6a19a7"
+    }
+  ],
+  "captures": [
+    {
+      "file": "Home-Start-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "Home-Start-1440.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "Home-Start-2340.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "Online-OnlineRoom-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "Online-OnlineRoom-1440.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "Online-OnlineRoom-2340.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-1-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-1-1440.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-1-2340.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-21-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-22-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-23-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-24-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-25-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-5-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-7-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-10-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    },
+    {
+      "file": "loading-20-1672.png",
+      "pngDecoded": true,
+      "textOverflow": false
+    }
+  ],
+  "protectedSubstantiveFiles": 9,
+  "protectedMismatch": [],
+  "tests": {
+    "UiBackgroundTests": 7,
+    "ArcadeRoundTransitionTests": 5,
+    "UnifiedMainMenuExactMethods": 4
+  },
+  "playMode": false,
+  "playerBuild": false,
+  "manualAndDeviceAcceptance": "deferred by user"
+}

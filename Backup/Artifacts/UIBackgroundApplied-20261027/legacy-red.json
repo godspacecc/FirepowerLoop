@@ -1,0 +1,1 @@
+{"result":{"content":[{"type":"text","text":"Cannot run tests: another test run is already in progress. Active request id: abc87bc6-034b-479d-9f10-85337f4fd610. Wait for it to finish and try again."}],"isError":true},"id":2,"jsonrpc":"2.0"}

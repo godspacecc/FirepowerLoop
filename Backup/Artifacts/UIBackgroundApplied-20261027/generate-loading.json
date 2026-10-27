@@ -1,0 +1,1 @@
+{"result":{"content":[{"type":"text","text":"Invoke \u0027RunCallTool\u0027: Failed to invoke \u0027com.IvanMurzak.McpPlugin.Common.Model.RequestCallTool\u0027 after 10 retries."}],"isError":true},"id":2,"jsonrpc":"2.0"}

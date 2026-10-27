@@ -359,7 +359,7 @@ GameObject:
   - component: {fileID: 7566108306258480125}
   - component: {fileID: 2849861187494276617}
   - component: {fileID: 4308872078470827427}
-  - component: {fileID: -1396401445218693845}
+  - component: {fileID: -2438181780853355493}
   m_Layer: 0
   m_Name: Loading
   m_TagString: Untagged
@@ -508,7 +508,10 @@ MonoBehaviour:
   - key: BtnRetry
     gameObject: {fileID: 2449803135360128312}
     TypeName: UnityEngine.UI.Button
---- !u!114 &-1396401445218693845
+  - key: LoadingArtwork
+    gameObject: {fileID: 2607782032258569630}
+    TypeName: Game.ArcadeLoadingArtwork
+--- !u!114 &-2438181780853355493
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -539,6 +542,7 @@ MonoBehaviour:
   BtnCopyLog: {fileID: 8478110742941688554}
   CopyStatusText: {fileID: 3324199864272661035}
   BtnRetry: {fileID: 2449803135360128312}
+  LoadingArtwork: {fileID: 2607782032258569630}
 --- !u!1 &1757976897063215982
 GameObject:
   m_ObjectHideFlags: 0
@@ -2638,6 +2642,7 @@ GameObject:
   - component: {fileID: 5445767091672337136}
   - component: {fileID: 6950459207762905206}
   - component: {fileID: 6470917295198204669}
+  - component: {fileID: 2607782032258569630}
   m_Layer: 0
   m_Name: BackgroundArtwork
   m_TagString: Untagged
@@ -2692,7 +2697,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: a7ac514c35dd4a2f89a16bfa4f263c19, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 29c62ce79c39bc14f9528a7f95c7558c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2716,6 +2721,41 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   m_AspectMode: 4
   m_AspectRatio: 1.7777778
+--- !u!114 &2607782032258569630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5199976168560008072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cf6f0ba773617e41ad901893b3ce310, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  target: {fileID: 6950459207762905206}
+  fallback: {fileID: 21300000, guid: 29c62ce79c39bc14f9528a7f95c7558c, type: 3}
+  entries:
+  - ArenaConfigNumber: 1
+    Artwork: {fileID: 21300000, guid: 29c62ce79c39bc14f9528a7f95c7558c, type: 3}
+  - ArenaConfigNumber: 21
+    Artwork: {fileID: 21300000, guid: c2d4d2d02ede68948b6d1863807322bb, type: 3}
+  - ArenaConfigNumber: 22
+    Artwork: {fileID: 21300000, guid: f26325d2bf454f143bbaf5f0f4cde19e, type: 3}
+  - ArenaConfigNumber: 23
+    Artwork: {fileID: 21300000, guid: dc03d1c8983c6ed47802bd93792be217, type: 3}
+  - ArenaConfigNumber: 24
+    Artwork: {fileID: 21300000, guid: 2ab5844ec85c9b94ab54cff91613277f, type: 3}
+  - ArenaConfigNumber: 25
+    Artwork: {fileID: 21300000, guid: 9d51556ed93ded14f9071a0eab44e998, type: 3}
+  - ArenaConfigNumber: 5
+    Artwork: {fileID: 21300000, guid: b34660a1e8156af4caffb24a15264733, type: 3}
+  - ArenaConfigNumber: 7
+    Artwork: {fileID: 21300000, guid: 18951d9b0f78fdc45b1cf22dfeb8ca1a, type: 3}
+  - ArenaConfigNumber: 10
+    Artwork: {fileID: 21300000, guid: b31df696c25a246479f73ddb9de51291, type: 3}
+  - ArenaConfigNumber: 20
+    Artwork: {fileID: 21300000, guid: 324e8e8af94645c4ea463b12bb6f7507, type: 3}
 --- !u!1 &5234324342252065379
 GameObject:
   m_ObjectHideFlags: 0

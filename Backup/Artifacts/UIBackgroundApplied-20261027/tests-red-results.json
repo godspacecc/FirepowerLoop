@@ -1,0 +1,44 @@
+[
+  {
+    "name": "Game.Tests.UiBackgroundTests.ActiveOnlineBattleOverridesResidualSinglePlayerSave",
+    "status": "Failed",
+    "durationMs": 624,
+    "message": "  Expected string length 48 but was 57. Strings differ at index 19.\r\n  Expected: \"Assets/Game/Art/UI/ArcadeBackgrounds/10-nest.png\"\r\n  But was:  \"Assets/Game/Art/UI/Start/ArcadeCoastLoadingBackground.png\"\r\n  ------------------------------^\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.AssertImage (System.String file) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:60\r\nat Game.Tests.UiBackgroundTests.ActiveOnlineBattleOverridesResidualSinglePlayerSave () [0x000a7] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:82\r\n"
+  },
+  {
+    "name": "Game.Tests.UiBackgroundTests.FormalMenuAndLobbyReferenceAdoptedImages",
+    "status": "Failed",
+    "durationMs": 18,
+    "message": "  Expected string length 50 but was 58. Strings differ at index 19.\r\n  Expected: \"Assets/Game/Art/UI/ArcadeBackgrounds/main-menu.png\"\r\n  But was:  \"Assets/Game/Art/UI/Start/FirepowerLoop_PromoBackground.png\"\r\n  ------------------------------^\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.FormalMenuAndLobbyReferenceAdoptedImages () [0x00015] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:96\r\n"
+  },
+  {
+    "name": "Game.Tests.UiBackgroundTests.GeneratedArtworkReferenceAndAllRequiredViewFieldsResolve",
+    "status": "Failed",
+    "durationMs": 17,
+    "message": "  必须通过 ReferenceCollector 生成背景组件引用\r\n  Expected: not null\r\n  But was:  null\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.GeneratedArtworkReferenceAndAllRequiredViewFieldsResolve () [0x00014] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:103\r\n"
+  },
+  {
+    "name": "Game.Tests.UiBackgroundTests.NewEntryAndNonArcadeMapUseDefaultArtwork",
+    "status": "Failed",
+    "durationMs": 12,
+    "message": "  Expected string length 50 but was 57. Strings differ at index 19.\r\n  Expected: \"Assets/Game/Art/UI/ArcadeBackgrounds/01-island.png\"\r\n  But was:  \"Assets/Game/Art/UI/Start/ArcadeCoastLoadingBackground.png\"\r\n  ------------------------------^\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.AssertImage (System.String file) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:60\r\nat Game.Tests.UiBackgroundTests.NewEntryAndNonArcadeMapUseDefaultArtwork () [0x00011] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:87\r\n"
+  },
+  {
+    "name": "Game.Tests.UiBackgroundTests.TenStagesUseConfigIdentityInsteadOfOrdinalAndRefreshWhileVisible",
+    "status": "Failed",
+    "durationMs": 13,
+    "message": "  Expected string length 50 but was 57. Strings differ at index 19.\r\n  Expected: \"Assets/Game/Art/UI/ArcadeBackgrounds/01-island.png\"\r\n  But was:  \"Assets/Game/Art/UI/Start/ArcadeCoastLoadingBackground.png\"\r\n  ------------------------------^\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.AssertImage (System.String file) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:60\r\nat Game.Tests.UiBackgroundTests.TenStagesUseConfigIdentityInsteadOfOrdinalAndRefreshWhileVisible () [0x00026] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:65\r\n"
+  },
+  {
+    "name": "Game.Tests.UiBackgroundTests.UnknownStageAndDownloadResetPreviousArtwork",
+    "status": "Failed",
+    "durationMs": 12,
+    "message": "  Expected string length 48 but was 57. Strings differ at index 19.\r\n  Expected: \"Assets/Game/Art/UI/ArcadeBackgrounds/10-nest.png\"\r\n  But was:  \"Assets/Game/Art/UI/Start/ArcadeCoastLoadingBackground.png\"\r\n  ------------------------------^\r\n",
+    "stackTrace": "at Game.Tests.UiBackgroundTests.AssertImage (System.String file) [0x00000] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:60\r\nat Game.Tests.UiBackgroundTests.UnknownStageAndDownloadResetPreviousArtwork () [0x0001b] in F:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\UiBackgroundTests.cs:70\r\n"
+  }
+]

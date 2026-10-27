@@ -4088,7 +4088,7 @@ GameObject:
   - component: {fileID: 5176136951126456706}
   - component: {fileID: 6413837948502477963}
   - component: {fileID: 7781956137327583543}
-  - component: {fileID: 4963568728529806993}
+  - component: {fileID: 7026648876190049792}
   m_Layer: 0
   m_Name: OnlineRoom
   m_TagString: Untagged
@@ -4246,7 +4246,7 @@ MonoBehaviour:
   - key: WorldButton
     gameObject: {fileID: 2296414079395914297}
     TypeName: UnityEngine.UI.Button
---- !u!114 &4963568728529806993
+--- !u!114 &7026648876190049792
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4967,7 +4967,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 2d84fc1608b02c247899c71d3e46082c, type: 3}
+  m_Texture: {fileID: 2800000, guid: 0b09875e2c3cef34ebcb15690fb662a1, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
