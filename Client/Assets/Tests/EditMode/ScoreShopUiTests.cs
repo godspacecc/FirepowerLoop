@@ -11,6 +11,16 @@ namespace Game.Tests
     public sealed class ScoreShopUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Arcade/";
+        /// <summary>验证真实采集结果包含商店运行时地址，防止Prefab存在却无法加载。</summary>
+        [Test] public void Dialog_IsCollectedAtRuntimeAddressWithArcadeTag()
+        {
+            var setting=AssetDatabase.LoadAssetAtPath<Object>("Assets/AssetBundleCollectorSetting.asset");
+            var result=setting.GetType().GetMethod("BeginCollect").Invoke(setting,new object[]{"DefaultPackage",true,false});
+            var assets=(System.Collections.IEnumerable)result.GetType().GetProperty("CollectAssets").GetValue(result);
+            var matches=assets.Cast<object>().Where(asset=>(string)asset.GetType().GetProperty("Address").GetValue(asset)=="Prefabs/UI/Arcade/ArcadeScoreShop").ToArray();
+            Assert.That(matches,Has.Length.EqualTo(1),"积分商店必须能够按运行时地址加载");
+            Assert.That(matches[0].GetType().GetProperty("AssetTags").GetValue(matches[0]),Does.Contain("arcade"));
+        }
         [Test] public void Dialog_HasGeneratedViewAndEveryRequiredReference()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(Root+"ArcadeScoreShop.prefab");Assert.That(prefab,Is.Not.Null);

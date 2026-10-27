@@ -1,0 +1,34 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 4,
+      "PassedTests": 4,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.1393406"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ScoreShopUiTests.Dialog_HasGeneratedViewAndEveryRequiredReference",
+        "Status": "Passed",
+        "Duration": "00:00:00.1040000"
+      },
+      {
+        "Name": "Game.Tests.ScoreShopUiTests.Dialog_IsCollectedAtRuntimeAddressWithArcadeTag",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.ScoreShopUiTests.FixedLabels_AreReadableAndDynamicFieldsHaveNoLocalizationWriter",
+        "Status": "Passed",
+        "Duration": "00:00:00.0260000"
+      },
+      {
+        "Name": "Game.Tests.ScoreShopUiTests.Offers_UseExternalBoxWithGeneratedBuyAndTextBindings",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      }
+    ]
+  }
+}

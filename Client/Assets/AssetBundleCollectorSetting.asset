@@ -167,6 +167,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeScoreShop.prefab
+        CollectorGUID: 48d1247902f3fff4995cfaf80685ec69
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/UI/Arcade/ArcadeShop.prefab
         CollectorGUID: 43e180362c86df749bddcd61ccad2813
         CollectorType: 0
