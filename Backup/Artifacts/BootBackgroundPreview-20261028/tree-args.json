@@ -1,0 +1,5 @@
+{
+  "className": "BootTree",
+  "csharpCode": "using System.Linq; using UnityEngine; using UnityEditor; using UnityEngine.SceneManagement; public class BootTree { public static string Main() { return string.Join(\"\\n\", SceneManager.GetActiveScene().GetRootGameObjects().SelectMany(r=>r.GetComponentsInChildren<Transform>(true)).Select(t=>t.name+\" parent=\"+(t.parent?t.parent.name:\"ROOT\")+\" active=\"+t.gameObject.activeSelf+\" components=\"+string.Join(\",\",t.GetComponents<Component>().Select(c=>c?c.GetType().Name:\"MISSING\")))); }}",
+  "methodName": "Main"
+}

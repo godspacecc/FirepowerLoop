@@ -1,0 +1,5 @@
+{
+  "testMethod": "Game.Tests.Flow.BootResourceServerEditorTests.EntrySurvivesBusyAndFailureAndOpensBoundInput",
+  "testMode": "EditMode",
+  "includePassingTests": true
+}

@@ -1,0 +1,5 @@
+{
+  "className": "BootInspect",
+  "csharpCode": "using UnityEngine; using UnityEditor; using UnityEngine.SceneManagement; public class BootInspect { public static object Main() { var s=SceneManager.GetActiveScene(); var t=typeof(Editor).Assembly.GetType(\"UnityEditor.LogEntries\"); var a=new object[]{0,0,0}; t.GetMethod(\"GetCountsByType\").Invoke(null,a); return new {project=Application.dataPath,scene=s.path,dirty=s.isDirty,playing=EditorApplication.isPlaying,compiling=EditorApplication.isCompiling,errors=a[0],warnings=a[1],logs=a[2]}; }}",
+  "methodName": "Main"
+}
