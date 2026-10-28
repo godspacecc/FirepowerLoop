@@ -19,3 +19,14 @@
 - 结束Boot未脏、非Play、非编译；Console错误0、警告38，数量与本轮开始一致，见before.json/after.json。
 - 三个既有无关文件（地形asset、中文字体asset、ProjectSettings.asset）SHA256与开始一致，未纳入提交。
 - git diff --check通过。未执行完整套件、真实下载整流程、设备测试或Player Build。
+
+## 接续收尾（2026-10-28）
+
+用户在会话01a182d0-0953-7353-b1ee-1bb4e994a9fe要求接续原Boot会话并“处理完毕”。只读核验结果：
+
+- 原实现提交为31b994c81c479daa960570dc815843745aeb32a6。git ls-remote确认origin/main为c121b997c23d0e289a36dc80b88193195c60baa4，祖先关系检查确认包含该Boot提交；原推送HTTP 408后的重试已经成功。
+- Unity连接E:/GitHub/FirepowerLoop/Client，Boot编辑态未脏、未Play、未编译。现场Artwork引用Assets/Boot/Art/BootResourceBackground.png，BottomReadability引用Assets/Boot/Art/BootBottomShade.asset，两者raycastTarget=false。
+- 正式背景与采用的boot-concept.png均为SHA256 29AE887B1E24E4106E83619506C434A7986E886EAC56FC7F430E4A9A23F994D8；正式Boot场景与背景目录相对HEAD无差异。
+- 原定向测试证据保留于test.json，本次无产品修改，未重复运行测试。当前Console存在其他会话测试工具及UIRoot错误，未将原轮次错误0外推为当前全工程无错误。
+
+本项正式接入与原提交推送已完成；本次仅补文档收尾记录。设备与完整下载实玩仍按既有安排暂缓。
