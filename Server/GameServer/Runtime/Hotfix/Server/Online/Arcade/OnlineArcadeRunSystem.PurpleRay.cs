@@ -29,7 +29,7 @@ namespace ET.Server
                 if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first)
                 {first=entry;kind=1;}
             foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
-                if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
+                if(enemy.CurrentHealth>0&&enemy.DockSeaEntry.CanBeAttacked&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
                 {first=entry;kind=2;target=enemy;}
             foreach(var crate in b.Crates.Values.OrderBy(c=>c.Definition.Id))
                 if(crate.Health>0&&GroundCircleEntry(ax,az,bx,bz,crate.Definition.X,crate.Definition.Y,crate.Definition.Radius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
@@ -51,7 +51,7 @@ namespace ET.Server
         private static void HitPurpleRay(this OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime p,OnlineArcadeEnemyRuntime primary)
         {
             var tuning=ServerConfig.Instance.WeaponUpgrade;float x=primary.PositionX,z=primary.PositionZ;
-            var others=b.Enemies.Values.Where(e=>e.CurrentHealth>0&&e.RuntimeId!=primary.RuntimeId&&DistanceSquared(x,z,e.PositionX,e.PositionZ)<=tuning.PurpleRayChainRange*tuning.PurpleRayChainRange)
+            var others=b.Enemies.Values.Where(e=>e.CurrentHealth>0&&e.DockSeaEntry.CanBeAttacked&&e.RuntimeId!=primary.RuntimeId&&DistanceSquared(x,z,e.PositionX,e.PositionZ)<=tuning.PurpleRayChainRange*tuning.PurpleRayChainRange)
                 .OrderBy(e=>DistanceSquared(x,z,e.PositionX,e.PositionZ)).ThenBy(e=>e.RuntimeId).Take(tuning.PurpleRayChainCount).ToArray();
             foreach(var enemy in new[]{primary}.Concat(others))
             {

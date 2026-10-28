@@ -1,0 +1,1 @@
+隔离预览；正式Prefab与材质未修改。正式水面渲染器=EnvironmentPart0；纹理=512；源场景=Assets/Game/Scenes/Boot.unity；帧=320，20fps，两机位各4秒。岸距来源：正式网格水平平台三角形，不采用虚构岸线。

@@ -88,6 +88,13 @@ internal static class DockSeaEntryOnlineChecks
     }
     private static void Push()
     {
+        foreach(float age in new[]{0f,2.1f,3.4f,5.74f})
+        {
+            var(waterActor,waterEnemy)=Spawn();waterEnemy.SpecialKind=0;waterEnemy.ArmorHealth=20;Tick(waterActor,age);
+            Call("DamageEnemy",waterActor.Battle,waterEnemy,10);
+            Call("DamageEnemyFromFlame",waterActor.Battle,waterEnemy,10);
+            Require(waterEnemy.CurrentHealth==1000&&waterEnemy.ArmorHealth==20&&waterEnemy.FlameHitRemainingSeconds==0,"water/climbing enemy accepted damage");
+        }
         var(a,e)=Spawn();var b=a.Battle;e.SpecialKind=0;Tick(a,5.75f);float x=e.PositionX,z=e.PositionZ;
         var other=new OnlineArcadeEnemyRuntime{RuntimeId=999,PositionX=x+.01f,PositionZ=z,CurrentHealth=1000};b.Enemies.Add(999,other);b.EnemyIterationIds.Add(999);
         Call("ResolveEnemyCrowding",b,ServerConfig.Instance.ArcadeRule,Call("EffectiveObstacles",b));Near(e.PositionX,x,"crowding X");Near(e.PositionZ,z,"crowding Z");
@@ -118,17 +125,20 @@ internal static class DockSeaEntryOnlineChecks
     private static void Carrier()
     {
         var(a,e)=Spawn(2,1);var b=a.Battle;Require(e.SpecialKind==1,"real right route did not assign carrier");int hp=e.CurrentHealth;
-        Shot(a,e,1);Require(e.CurrentHealth==hp&&e.CarriedBarrelHealth==b.RoundLayout.BarrelHealth-1,"entry bypassed purple barrel armor");
+        int barrel=e.CarriedBarrelHealth;Shot(a,e,1);Require(e.CurrentHealth==hp&&e.CarriedBarrelHealth==barrel&&b.Projectiles.ContainsKey(900),"water enemy intercepted a bullet or lost barrel health");
+        var(rocketActor,rocketEnemy)=Spawn();Shot(rocketActor,rocketEnemy,10,"arcade.weapon.rocket",2);
+        Require(rocketActor.Battle.Projectiles.ContainsKey(900)&&rocketActor.Battle.Projectiles[900].TrackingEnemyId==0&&rocketEnemy.CurrentHealth==1000,"purple rocket exploded on or tracked water enemy");
         e.ContentStunUntil=100;Tick(a,1);b.ContentClock.Advance(5.01f,false);Call("TickVortexBarrels",b,.01f);
-        Require(Read<float>(e,"Age")==0&&e.SpecialKind==0&&b.DroppedBarrels.Count==1&&b.GroundBarrelHealth.Values.Single()==b.RoundLayout.BarrelHealth-1,"frozen entry paused five-second unload or repaired barrel");
+        Require(Read<float>(e,"Age")==0&&e.SpecialKind==0&&b.DroppedBarrels.Count==1&&b.GroundBarrelHealth.Values.All(h=>h==b.RoundLayout.BarrelHealth),"frozen entry paused five-second unload or changed barrel health");
         var(a2,e2)=Spawn(2,1);foreach(var p in a2.Battle.Players.Values){p.PositionX=e2.PositionX;p.PositionZ=e2.PositionZ;}
-        Shot(a2,e2,10000);Require(e2.SpecialKind==0&&a2.Battle.DeathZones.Count(z=>z.Kind==14)==1&&a2.Battle.Players.Values.All(p=>p.CurrentHealth==100),"entry barrel blast altered player safety or once-only rule");
+        Tick(a2,ArcadeDockSeaEntryRules.ClimbSeconds);Shot(a2,e2,10000);Require(e2.SpecialKind==0&&a2.Battle.DeathZones.Count(z=>z.Kind==14)==1&&a2.Battle.Players.Values.All(p=>p.CurrentHealth==100),"landed barrel blast altered player safety or once-only rule");
     }
-    private static void Shot(OnlineArcadeRunActor actor,OnlineArcadeEnemyRuntime enemy,int damage)
+    private static void Shot(OnlineArcadeRunActor actor,OnlineArcadeEnemyRuntime enemy,int damage,string weapon="",int level=0)
     {
         // 正常活动帧先经TickEnemies生成迭代身份；此处单独调用弹丸入口时补齐这一真实宿主前置条件。
         actor.Battle.EnemyIterationIds.Clear();actor.Battle.EnemyIterationIds.AddRange(actor.Battle.Enemies.Keys);
         actor.Battle.Projectiles.Add(900,new OnlineArcadeProjectileRuntime{RuntimeId=900,OwnerPlayerId=1,FromPlayerWeapon=true,
+            SourceWeaponId=weapon,WeaponPowerLevel=level,TrackingEnemyId=enemy.RuntimeId,
             PositionX=enemy.PositionX-1,PositionZ=enemy.PositionZ,VelocityX=1,RemainingSeconds=3,RemainingHits=1,Damage=damage});
         Call("TickProjectiles",actor,actor.Battle,1f);
     }

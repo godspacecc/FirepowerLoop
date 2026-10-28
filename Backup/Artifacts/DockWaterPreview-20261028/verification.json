@@ -1,0 +1,47 @@
+{
+  "source_frame_count": 320,
+  "video": "water-comparison.mp4",
+  "duration_seconds": 8,
+  "video_frames": 160,
+  "fps": 20,
+  "resolution": [
+    1280,
+    450
+  ],
+  "frame_comparison": {
+    "0-current": {
+      "mean_channel_difference": 0.0013798466435185185,
+      "changed_bounds": [
+        115,
+        0,
+        1163,
+        720
+      ]
+    },
+    "0-candidate": {
+      "mean_channel_difference": 2.9384049479166663,
+      "changed_bounds": [
+        115,
+        0,
+        1165,
+        720
+      ]
+    },
+    "1-current": {
+      "mean_channel_difference": 0.0,
+      "changed_bounds": null
+    },
+    "1-candidate": {
+      "mean_channel_difference": 2.2397392216435184,
+      "changed_bounds": [
+        0,
+        0,
+        1280,
+        720
+      ]
+    }
+  },
+  "unity_scene_after": "Boot | Assets/Game/Scenes/Boot.unity | isDirty=false",
+  "shader_compile": "passed; no new console errors",
+  "scope": "isolated formal-prefab clone, candidate only; no formal assets changed"
+}

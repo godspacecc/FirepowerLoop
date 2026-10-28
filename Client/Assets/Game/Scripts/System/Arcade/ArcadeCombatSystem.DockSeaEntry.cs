@@ -13,7 +13,7 @@ namespace Game
                 runtime.IslandEntryBatch % layout.Entries.Count, runtime.ContentSpawnSequence - 1, out enemy.DockSeaEntry)) return;
             enemy.Position = new Vector2(ArcadeDockSeaEntryRules.Sample(0).X, enemy.DockSeaEntry.Lane);
         }
-        /// <summary>进场不追击/攻击；受控保持姿态，仍可沿原生命和伤害路径击杀。</summary>
+        /// <summary>进场不追击/攻击；受控保持姿态，登台前免受攻击，登台后沿原伤害路径结算。</summary>
         private bool TickDockSeaEntry(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, float seconds)
         {
             if (!enemy.DockSeaEntry.Active) return false;

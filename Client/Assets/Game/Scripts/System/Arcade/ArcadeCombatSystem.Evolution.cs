@@ -46,7 +46,7 @@ namespace Game
                 if(crate.Health>0&&TryGroundBarrelEntry(from,to,new Vector2(crate.Definition.X,crate.Definition.Y),crate.Definition.Radius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=crate.Definition.Id;}
             foreach(var enemy in r.Enemies.Values)
-                if(enemy.Health>0&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
+                if(enemy.Health>0&&enemy.DockSeaEntry.CanBeAttacked&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=-1;}
             var end=Vector2.Lerp(from,to,first);p.Position=end;
             if(active>0&&TryHitGroundBarrel(r,p,from,end)){RemoveProjectile(r,id);return true;}
@@ -76,7 +76,7 @@ namespace Game
             var end=Vector2.Lerp(from,to,block);p.Position=end;
             if(TryHitGroundBarrel(r,p,from,end)){RemoveProjectile(r,p.Id);return true;}
             float radius=catalog.Rule.EnemyContactRadius+ProjectileHitRadius+p.EvolutionHitRadius;
-            var hits=r.Enemies.Values.Where(e=>e.Health>0&&!p.HitEnemyIds.Contains(e.Id))
+            var hits=r.Enemies.Values.Where(e=>e.Health>0&&e.DockSeaEntry.CanBeAttacked&&!p.HitEnemyIds.Contains(e.Id))
                 .Select(e=>new {Enemy=e,Entry=TryGroundBarrelEntry(from,to,e.Position,radius,out float f)?f:float.PositiveInfinity})
                 .Where(h=>h.Entry<=block&&(!blocked||h.Entry<block)).OrderBy(h=>h.Entry).ThenBy(h=>h.Enemy.Id).ToArray();
             foreach(var hit in hits)

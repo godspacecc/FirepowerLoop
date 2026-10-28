@@ -1095,6 +1095,7 @@ namespace Game
                     for (var enemyIndex = 0; enemyIndex < enemyIterationIds.Count; enemyIndex++)
                     {
                         if (!runtime.Enemies.TryGetValue(enemyIterationIds[enemyIndex], out var enemy)) continue;
+                        if (!enemy.DockSeaEntry.CanBeAttacked) continue;
                         if (Vector2.Distance(projectile.Position, enemy.Position) > catalog.Rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius) continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {

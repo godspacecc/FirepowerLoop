@@ -1,0 +1,1 @@
+{"result":{"Summary":{"Status":"Failed","TotalTests":1,"PassedTests":0,"FailedTests":1,"SkippedTests":0,"Duration":"00:00:02.2851836"},"Results":[{"Name":"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"rocket\",2)","Status":"Failed","Duration":"00:00:01.1750000","Message":"  水中目标不能拦截弹丸\r\n  Expected: True\r\n  But was:  False\r\n"}]}}

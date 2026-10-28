@@ -2292,6 +2292,7 @@ namespace ET.Server
                     foreach (long enemyId in battle.EnemyIterationIds)
                     {
                         if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy)) continue;
+                        if (!enemy.DockSeaEntry.CanBeAttacked) continue;
                         float hitRadius = rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius;
                         if (DistanceSquared(projectile.PositionX, projectile.PositionZ, enemy.PositionX, enemy.PositionZ) > hitRadius * hitRadius)
                             continue;

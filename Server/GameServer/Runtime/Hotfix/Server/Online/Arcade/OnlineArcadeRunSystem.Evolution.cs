@@ -22,7 +22,7 @@ namespace ET.Server
                 if(crate.Health>0&&GroundCircleEntry(ax,az,bx,bz,crate.Definition.X,crate.Definition.Y,crate.Definition.Radius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=crate.Definition.Id;}
             foreach(var enemy in b.Enemies.Values)
-                if(enemy.CurrentHealth>0&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
+                if(enemy.CurrentHealth>0&&enemy.DockSeaEntry.CanBeAttacked&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=-1;}
             float endX=ax+(bx-ax)*first,endZ=az+(bz-az)*first;p.PositionX=endX;p.PositionZ=endZ;
             if(active>0&&self.TryHitGroundBarrel(b,p,ax,az,endX,endZ))
@@ -54,7 +54,7 @@ namespace ET.Server
             p.PositionX=fromX+(toX-fromX)*block;p.PositionZ=fromZ+(toZ-fromZ)*block;
             if(self.TryHitGroundBarrel(b,p,fromX,fromZ,p.PositionX,p.PositionZ)){b.Projectiles.Remove(p.RuntimeId);return true;}
             float radius=ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+p.EvolutionHitRadius;
-            var hits=b.Enemies.Values.Where(e=>e.CurrentHealth>0&&!p.HitEnemyIds.Contains(e.RuntimeId))
+            var hits=b.Enemies.Values.Where(e=>e.CurrentHealth>0&&e.DockSeaEntry.CanBeAttacked&&!p.HitEnemyIds.Contains(e.RuntimeId))
                 .Select(e=>new {Enemy=e,Entry=GroundCircleEntry(fromX,fromZ,toX,toZ,e.PositionX,e.PositionZ,radius,out float f)?f:float.PositiveInfinity})
                 .Where(h=>h.Entry<=block&&(!blocked||h.Entry<block)).OrderBy(h=>h.Entry).ThenBy(h=>h.Enemy.RuntimeId).ToArray();
             foreach(var hit in hits)

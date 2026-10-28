@@ -107,13 +107,40 @@ namespace Game.Tests
         [Test] public void CrowdingAndHandgloveKeepPathWhileDamageStillLands()
         {
             var enemy = Spawn(2); enemy.ContentSpecialKind = 0; enemy.Health = enemy.MaxHealth = 1000;
-            Call("TickEnemies", runtime, 3.4f); var position = enemy.Position;
+            Call("TickEnemies", runtime, ArcadeDockSeaEntryRules.ClimbSeconds); var position = enemy.Position;
             runtime.Enemies.Add(999, new ArcadeEnemyRuntime { Id = 999, Health = 1000, Position = position + Vector2.right * .01f });
             Call("ResolveEnemyCrowding", runtime); Assert.That(enemy.Position, Is.EqualTo(position));
             runtime.Enemies.Remove(999);
             Call("DamageAndKnockbackEnemies", runtime, position - Vector2.right, 2f, 1, 2f);
-            Assert.That(enemy.Health, Is.EqualTo(999), "攀爬不能变成无敌阶段");
-            Assert.That(Vector2.Distance(enemy.Position, position), Is.LessThan(.0001f), "手套伤害可命中，但不能把攀爬者夹回平台");
+            Assert.That(enemy.Health, Is.EqualTo(999), "双脚登台后必须恢复受伤");
+            Assert.That(Vector2.Distance(enemy.Position, position), Is.LessThan(.0001f), "登台伤害可命中，但不能打断既有上岸末段路径");
+        }
+
+        /// <summary>游近、抓边与尚未登台期间，武器/范围/火焰均不能消耗生命、护甲或留下受伤标记。</summary>
+        [TestCase(0f)] [TestCase(2.1f)] [TestCase(3.4f)] [TestCase(5.74f)]
+        public void BeforeLanding_RejectsAllIncomingDamage(float age)
+        {
+            var enemy=Spawn(2); enemy.ContentSpecialKind=0; enemy.Health=enemy.MaxHealth=1000; enemy.ArmorHealth=20;
+            Call("TickEnemies",runtime,age);
+            Call("DamageEnemy",enemy,10);
+            Call("DamageEnemyFromFlame",enemy,10);
+            Call("DamageEnemiesInRadius",runtime,enemy.Position,2f,10);
+            Assert.That(enemy.Health,Is.EqualTo(1000)); Assert.That(enemy.ArmorHealth,Is.EqualTo(20));
+            Assert.That(enemy.FlameHitRemainingSeconds,Is.Zero); Assert.That(enemy.LastDamageWasFlame,Is.False);
+        }
+
+        [TestCase("basic",0)] [TestCase("rocket",2)] [TestCase("raygun",2)] [TestCase("grenade",2)] [TestCase("piercing",2)]
+        public void WaterEnemy_DoesNotConsumePlayerProjectile(string weapon,int level)
+        {
+            var enemy=Spawn(2); enemy.ContentSpecialKind=0; enemy.Health=enemy.MaxHealth=1000;
+            runtime.Projectiles.Add(900,new ArcadeProjectileRuntime{Id=900,FromPlayerWeapon=true,SourceWeaponId="arcade.weapon."+weapon,
+                WeaponPowerLevel=level,TrackingEnemyId=enemy.Id,Position=enemy.Position,Velocity=Vector2.right,RemainingSeconds=3,RemainingHits=1,Damage=10});
+            Call("TickProjectiles",runtime,.01f);
+            Assert.That(enemy.Health,Is.EqualTo(1000));
+            Assert.That(runtime.Projectiles.ContainsKey(900),Is.True,"水中目标不能拦截弹丸");
+            if(weapon=="rocket")Assert.That(runtime.Projectiles[900].TrackingEnemyId,Is.Zero,"追踪不能锁住水中目标");
+            Call("TickEnemies",runtime,ArcadeDockSeaEntryRules.ClimbSeconds);
+            Call("DamageEnemy",enemy,10); Assert.That(enemy.Health,Is.EqualTo(990),"登台当帧恢复受伤");
         }
     }
 }

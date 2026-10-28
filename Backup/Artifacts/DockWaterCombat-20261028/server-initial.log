@@ -1,0 +1,14 @@
+PASS DockSeaEntryOnline.FourRoundsRightEntryAndLanes
+PASS DockSeaEntryOnline.OtherPassagesKeepNormalSpawn
+PASS DockSeaEntryOnline.ActivePathCannotAttack
+PASS DockSeaEntryOnline.StunHerdAndStormFreezeAge
+PASS DockSeaEntryOnline.DisconnectLoadingAndTransitionFreeze
+PASS DockSeaEntryOnline.FinishFrameThenResumePursuit
+PASS DockSeaEntryOnline.CrowdingAndPushPreservePathButDamage
+PASS DockSeaEntryOnline.SnapshotCloneAndCodecKeepTerminalState
+FAIL DockSeaEntryOnline.CarrierArmorDropAndExplosionRemain: System.InvalidOperationException: Sequence contains no elements
+   at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at System.Linq.Enumerable.Single[TSource](IEnumerable`1 source)
+   at DockSeaEntryOnlineChecks.Carrier() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 130
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+8/9 passed
