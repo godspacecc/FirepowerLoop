@@ -1,0 +1,18 @@
+[
+  {
+    "path": "Backup/Artifacts/SkullOverheadPreview-20261028/candidate.png",
+    "sha256": "4776E2BA8007CA2BD94E3FCE78C550CEB8D77E7BE39AA5A9D91D53E9CC09A278"
+  },
+  {
+    "path": "Backup/Artifacts/SkullOverheadApplied-20261028/applied.png",
+    "sha256": "5D75A04931A5614D8924997506E097757D3BEAE0B7B8BFF6E424D6AA7C77C2B6"
+  },
+  {
+    "path": "Client/Assets/Game/Config/tbarcadepowerup.bytes",
+    "sha256": "FC8815EC89CD58F3B48C1E8739E35DD161A02B175F77CF2C349A08B18F8D415B"
+  },
+  {
+    "path": "Server/GameServer/Config/Luban/tbarcadepowerup.bytes",
+    "sha256": "FC8815EC89CD58F3B48C1E8739E35DD161A02B175F77CF2C349A08B18F8D415B"
+  }
+]

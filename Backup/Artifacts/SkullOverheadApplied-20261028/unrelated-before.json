@@ -1,0 +1,186 @@
+[
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/after.json",
+    "sha256": "1EBB5FDB69A502D844F8844EDEFC13D464A5429746D2896C184F6AAFF6B45CC3"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/apply-args.json",
+    "sha256": "1B2422DFC3EEECE01221980C0B1F7F23EDC8AAF1297F326E1FC6D7C0296E3768"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/Apply.cs",
+    "sha256": "9A04167922D71AACCC831A238694B51FC219B7428B4A5057CAD85569AA2BDC27"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/apply.json",
+    "sha256": "58693373083C2C9B0F928FAD2DFF2AB19D8E8D87325D4598F48C1721D8AB2E6E"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/before.json",
+    "sha256": "1EBB5FDB69A502D844F8844EDEFC13D464A5429746D2896C184F6AAFF6B45CC3"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/capture-args.json",
+    "sha256": "F4DC4F9A92E58E560556F73C179CD08120699D3DFA062BE47F480B638BE31139"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/Capture.cs",
+    "sha256": "97F9719B4714341AEB309E57CCFB55D9C2DB8B0CE50A43BAD2F076E10137404B"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/capture.json",
+    "sha256": "67D36D6D2E76BECF7A2F420A32A50A7F75589F52BA3801B460244A791F07B90B"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/formal-1440.png",
+    "sha256": "91BDE3DD5EA68FFA6BA2C58F7E495C5180CE16861D33856AF3F8DD132D9CCD2E"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/formal-1600.png",
+    "sha256": "F2B0E20F6B73419B77FD34EB12970084351D9A36CFD75FC763988FF386814BBA"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/formal-2340.png",
+    "sha256": "C923284675756592085FFCBF0A472734BCAB86E93ABD47413CC5E584E537F138"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/README.md",
+    "sha256": "8881C7ADAF2E7E0C01CAF58C12AF55CA35217A17B5F45748D8AFD68C131F9FEE"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/recreated-index-lock.txt",
+    "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/stale-index-lock.txt",
+    "sha256": "E3B0C44298FC1C149AFBF4C8996FB92427AE41E4649B934CA495991B7852B855"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/test-args.json",
+    "sha256": "7A2F7CFFE16C95AD6B87DF72064477118D19E03B8DFCCB38690AB41416519876"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/test.json",
+    "sha256": "E7F446FD5D9409C2A475EF03BBF8A0AD791CA3540480FACB60BDFAE83A7F3711"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundApplied-20261028/unrelated-before.json",
+    "sha256": "AC22D97DBFE69333FACD7BD34BBCA56EE163237574A1B1E42596BE9423E54BB4"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/after.json",
+    "sha256": "CF6F40AFC59DAC5ED3598A9AD6973D78F09828E60292C34BAA4521317831634D"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/BootBackgroundPreview.cs",
+    "sha256": "A3EBD9382369EBFE8356F921D7DEC56F0036DB4253C9B4B0A4804DB9C80FCAB7"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/candidate-1440.png",
+    "sha256": "85041E242586BD726927FC8761B595309365305CD5E790CCCA04BB7FF7839ED5"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/candidate-1600.png",
+    "sha256": "141D524CFD1E31C71226799217FA77B2945853B03AF04DACBAA25A9C3F8A693A"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/candidate-2340.png",
+    "sha256": "6FA91EE51F59CF81EEBA38C2EE3D1FD10B81C9DABEF1DA3CBEBB29762EB6CD56"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/capture.json",
+    "sha256": "41F09F4D401BA6570597C727D1A9F1C6097DA3B287D9EAC963124EA1BBCB36A7"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/current-1440.png",
+    "sha256": "FFF974D42AE85839F1C4A22A7BF52FDEE3F8E9B9E74B1FCA81318C3962C3FD42"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/current-1600.png",
+    "sha256": "B91F52A54872A32E41995C804078A3AC1A1DF468A1EC6E661031AA3404840AD0"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/current-2340.png",
+    "sha256": "85FA4798AB0A50D2EC907000D5A328146B95498AED0D0CF42BB8958DFD29DBA6"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/inspect-args.json",
+    "sha256": "43CAD9B2AA65D0CC637E0739F823B77D81EEFEACDC1EE5DF48E9B3905974CCBC"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/inspect.json",
+    "sha256": "CF6F40AFC59DAC5ED3598A9AD6973D78F09828E60292C34BAA4521317831634D"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/preview-args.json",
+    "sha256": "4D67C1F2508C6F0CD0A3273344D90C6F033AD81EB3A04B6B37D0279C79629137"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-20261028/tree-args.json",
+    "sha256": "9D16E0B990E1AC0A47B76AA6C48AF85602A5A2C241E690E35DA0F6A2D8B168E4"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/after.json",
+    "sha256": "1EBB5FDB69A502D844F8844EDEFC13D464A5429746D2896C184F6AAFF6B45CC3"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/before.json",
+    "sha256": "1EBB5FDB69A502D844F8844EDEFC13D464A5429746D2896C184F6AAFF6B45CC3"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/boot-concept.png",
+    "sha256": "29AE887B1E24E4106E83619506C434A7986E886EAC56FC7F430E4A9A23F994D8"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/BootBackgroundPreview.cs",
+    "sha256": "F0C756D92CB9556756D73990B4857572046E3E6808A62FFC4D503FE5452A17F2"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/candidate-1440.png",
+    "sha256": "60FABCDC945D3D870CEE0B46E1D26E8C95666C025C98F9963E9BF0AF826A834F"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/candidate-1600.png",
+    "sha256": "F2B0E20F6B73419B77FD34EB12970084351D9A36CFD75FC763988FF386814BBA"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/candidate-2340.png",
+    "sha256": "DD25AC5C1164C422D867EB971643C3FDE2263E4A417EE80FD065FAD655543482"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/capture.json",
+    "sha256": "2DEE784CAD33EB8950F943B434B532DFC01A9478AF824958D87151DCD637DFA6"
+  },
+  {
+    "path": "Backup/Artifacts/BootBackgroundPreview-v2-20261028/preview-args.json",
+    "sha256": "27CF6CA6358EF3D53B568E518CEA6A28B223DCC47BF5E10FA8FEB66F923CC55D"
+  },
+  {
+    "path": "Client/Assets/Boot/Art/BootBottomShade.asset",
+    "sha256": "6E6C69074D5BEC531CA271395379D8FEF657ADC1732A60E198955B31A0E70ECB"
+  },
+  {
+    "path": "Client/Assets/Boot/Art/BootBottomShade.asset.meta",
+    "sha256": "07E191A9574D87946FEE215EFE1F69CE4F4EDBDFF71FA9661F321568653AF55F"
+  },
+  {
+    "path": "Client/Assets/Boot/Art/BootResourceBackground.png",
+    "sha256": "29AE887B1E24E4106E83619506C434A7986E886EAC56FC7F430E4A9A23F994D8"
+  },
+  {
+    "path": "Client/Assets/Boot/Art/BootResourceBackground.png.meta",
+    "sha256": "B46FEFA142D1F332EC77BBCA668AA93E6FE49BAA3A95EC0BCB687A44649D8B54"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Arcade/Island/LowPolyV2/IslandLowPolyV2.asset",
+    "sha256": "CBB672BB762EA4E497D12F9F703C6A2326B8AA0B7C466CEA899318442EFC8C57"
+  },
+  {
+    "path": "Client/Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal SDF.asset",
+    "sha256": "D0F7337A98E54CF745054FF1BFC467BD5781AEBA6252C03639B68F007C4F3EF4"
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/Boot.unity",
+    "sha256": "38E8FE797E12961C01174B04BDA400DF8D816D5956B7A5FDA8BB6BE392EA3522"
+  }
+]

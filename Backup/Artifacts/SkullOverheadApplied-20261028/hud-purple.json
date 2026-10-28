@@ -1,0 +1,1 @@
+{"result":{"Summary":{"Status":"Passed","TotalTests":1,"PassedTests":1,"FailedTests":0,"SkippedTests":0,"Duration":"00:00:02.2563090"},"Results":[{"Name":"Game.Tests.ArcadeCompactHudTests.SkullStatusUsesColoredIconWithoutTextFrameOrProgress(\"large\",\"SkullPurpleIcon\")","Status":"Passed","Duration":"00:00:01.0170000"}]}}

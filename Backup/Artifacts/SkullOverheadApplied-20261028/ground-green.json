@@ -1,0 +1,1 @@
+{"result":{"Summary":{"Status":"Passed","TotalTests":1,"PassedTests":1,"FailedTests":0,"SkippedTests":0,"Duration":"00:00:02.3217745"},"Results":[{"Name":"Game.Tests.ConfirmedWeaponPresentationTests.ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse","Status":"Passed","Duration":"00:00:01.3250000"}]}}

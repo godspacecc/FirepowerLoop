@@ -1138,7 +1138,9 @@ namespace Game
 
             foreach (var row in tables.TbArcadePowerup.DataList)
             {
-                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName, false,
+                // 骷髅强化由HUD和武器效果提示，允许不配置头顶模型；其他强化仍要求生效资源。
+                var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName,
+                    row.Behavior == global::ArcadePowerupBehavior.WeaponSkull,
                     "TbArcadePowerup", row.Id, "ActiveVisualPrefabName");
                 if (error != null) return error;
             }
@@ -1537,7 +1539,8 @@ namespace Game
                         row.Amount, row.DurationSeconds, row.MaxOwned, row.EnemyMinArena)),
                 tables.TbArcadePowerup.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadePowerupDefinition(row.Id, row.Behavior,
-                        ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName),
+                        ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.ActiveVisualPrefabName,
+                            row.Behavior == global::ArcadePowerupBehavior.WeaponSkull),
                         row.VisualFollowPlayer, new Vector3(row.VisualOffsetX, row.VisualOffsetY, row.VisualOffsetZ),
                         row.Magnitude, row.Damage, row.IntervalSeconds, row.Radius, row.ProjectileSpeed, row.Charges)),
                 tables.TbArcadeSupportVisual.DataList.OrderBy(row => row.Id, StringComparer.Ordinal)
