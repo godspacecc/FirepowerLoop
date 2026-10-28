@@ -16,6 +16,8 @@ namespace Game
         /// <summary>仅联机沿用再次点击提交放弃意图，单人使用独立确认框。</summary>
         private bool awaitingAbandonConfirmation;
         private bool operationPending;
+        /// <summary>单人点击继续后等待商店完成的本局身份；关闭窗口或换局即失效。</summary>
+        private string continueAfterScoreShopRunId;
         /// <summary>双人准备与结果由服务器快照驱动，不读取单人存档。</summary>
         private bool onlineMode;
         /// <summary>上一次默认联机说明；语言切换只替换默认文案，不覆盖操作错误或放弃确认。</summary>
@@ -99,6 +101,7 @@ namespace Game
         protected override void OnShow()
         {
             operationGeneration++;
+            continueAfterScoreShopRunId = null;
             awaitingAbandonConfirmation = false;
             operationPending = false;
             UI.BtnContinue.interactable = true;
@@ -123,12 +126,14 @@ namespace Game
         protected override void OnHide()
         {
             operationGeneration++;
+            continueAfterScoreShopRunId = null;
             awaitingAbandonConfirmation = false;
         }
 
         protected override void OnUnload()
         {
             operationGeneration++;
+            continueAfterScoreShopRunId = null;
             operationPending = false;
         }
 
@@ -138,6 +143,38 @@ namespace Game
             if (!IsShow()) return;
             if (evt.Phase is ArcadeRunPhase.SafeCheckpoint or ArcadeRunPhase.Victory or ArcadeRunPhase.Result) Render(evt.Snapshot);
             else if (evt.Phase == ArcadeRunPhase.None) Hide();
+            if (continueAfterScoreShopRunId == null) return;
+            if (evt.Phase != ArcadeRunPhase.SafeCheckpoint || evt.Snapshot?.RunId != continueAfterScoreShopRunId || evt.Snapshot.HasResult)
+            {
+                continueAfterScoreShopRunId = null;
+                return;
+            }
+            if (evt.Snapshot.ScoreShop?.Completed == true)
+            {
+                // 成功落盘后才接续原点击；先消费意图，避免重复事件或购买回调再次加载。
+                continueAfterScoreShopRunId = null;
+                operationPending = true;
+                UI.BtnContinue.interactable = false;
+                ContinueAfterScoreShopAsync(evt.Snapshot.RunId, operationGeneration).Forget();
+            }
+        }
+
+        /// <summary>等安全节点事件派发结束再进关，避免旧事件覆盖新HUD；等待期间仍校验窗口与本局身份。</summary>
+        private async UniTask ContinueAfterScoreShopAsync(string runId, int generation)
+        {
+            await UniTask.Yield();
+            if (!IsShow() || generation != operationGeneration) return;
+            operationPending = false;
+            var model = this.GetModel<ArcadeRunModel>();
+            var snapshot = model.Current;
+            if (model.Phase != ArcadeRunPhase.SafeCheckpoint || snapshot?.RunId != runId ||
+                snapshot.HasResult || snapshot.ScoreShop?.Completed != true)
+            {
+                Render(snapshot);
+                return;
+            }
+            Render(snapshot);
+            ChooseContinue();
         }
 
         /// <summary>打开界面、存档事件与语言切换时刷新展示；不改变布局或街机领域数据。</summary>
@@ -172,7 +209,8 @@ namespace Game
             }
             if (snapshot == null) return;
             current = snapshot.Clone();
-            UI.BtnContinue.interactable = !operationPending && !ShowScoreShopIfNeeded(current.ScoreShop);
+            // 浏览进度仅展示存档，商店选择属于点击继续后的流程。
+            UI.BtnContinue.interactable = !operationPending;
             SetButton(UI.BtnContinue, Loc.T("ui.arcade.resume"));
             Set(UI.TextSummary, current.HasResult ? Loc.T("ui.arcade.result." + (current.Victory ? "victory" : current.Outcome))
                 : Loc.T("ui.arcade.details.continuable"));
@@ -191,6 +229,12 @@ namespace Game
         private void ChooseContinue()
         {
             if (operationPending) return;
+            if (!onlineMode && current?.ScoreShop is {Completed:false})
+            {
+                continueAfterScoreShopRunId = current.RunId;
+                ShowScoreShopIfNeeded(current.ScoreShop);
+                return;
+            }
             if (ShowScoreShopIfNeeded(onlineMode ? this.GetSystem<OnlineArcadeRunSystem>().GetScoreShopState() : current?.ScoreShop)) return;
             int generation = operationGeneration;
             var online = this.GetSystem<OnlineArcadeRunSystem>().Snapshot;
