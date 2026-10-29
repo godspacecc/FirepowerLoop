@@ -1,0 +1,25 @@
+{
+  "frames": 80,
+  "clock": "URP editor realtimeSinceStartup / in-game _Time.y",
+  "shots": [
+    {
+      "name": "overview",
+      "referenceMeanError": 0.0009370569299768517,
+      "referenceMaxFrameError": 0.0014040798611111112,
+      "dynamicMeanDifference": 2.6685261140046297,
+      "translationMeanDifference": 0.4862319155092593,
+      "realSeconds": 11.362099999999998
+    },
+    {
+      "name": "close",
+      "referenceMeanError": 0.0006576696325231482,
+      "referenceMaxFrameError": 0.0009450954861111111,
+      "dynamicMeanDifference": 2.0705258969907407,
+      "translationMeanDifference": 0.3943211082175926,
+      "realSeconds": 13.841917999999964
+    }
+  ],
+  "video": "water-applied.mp4",
+  "durationSeconds": 25.850274871794834,
+  "fullDecodePassed": true
+}

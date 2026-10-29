@@ -138,9 +138,8 @@ public static class RemainingStagesPreview
                 }
                 Object.DestroyImmediate(line.gameObject);
             }
-            var shaderText=File.ReadAllText("Assets/Art/CoastStudy/CoastStudyWater.shader").Replace("CoastStudy/Water","FirepowerLoop/DockWater")
-                .Replace("float d=p.x-Shore(p.y); clip(d+0.24);","float d=8;").Replace("float foam=(1-smoothstep(0.025,0.14,abs(d-0.06-Noise(p*4.2)*0.2)))*0.9;","float foam=0;");
-            string shaderPath=folder+"/DockWater.shader";File.WriteAllText(shaderPath,shaderText);AssetDatabase.ImportAsset(shaderPath,ImportAssetOptions.ForceSynchronousImport);
+            // 水体已独立采用新版；场景重制不得再从旧海岸样例覆盖正式Shader与岸距引用。
+            string shaderPath=folder+"/DockWater.shader";
             var waterShader=AssetDatabase.LoadAssetAtPath<Shader>(shaderPath);if(waterShader==null||ShaderUtil.ShaderHasError(waterShader))throw new InvalidOperationException("码头海面Shader不完整");
             var textureCopies=new Dictionary<Texture,Texture>();var materialCopies=new Dictionary<Material,Material>();
             Material SaveMaterial(Material source)
@@ -149,7 +148,13 @@ public static class RemainingStagesPreview
                 string path=folder+"/Material"+materialCopies.Count+".mat";saved=AssetDatabase.LoadAssetAtPath<Material>(path);
                 if(saved==null){saved=new Material(source);AssetDatabase.CreateAsset(saved,path);}else EditorUtility.CopySerialized(source,saved);
                 saved.name="DockMaterial"+materialCopies.Count;
-                if(source.shader.name=="Hidden/TempDockWaterCandidate")saved.shader=waterShader;
+                if(source.shader.name=="Hidden/TempDockWaterCandidate")
+                {
+                    saved.shader=waterShader;
+                    var shore=AssetDatabase.LoadAssetAtPath<Texture2D>(folder+"/DockShoreDistance.png");
+                    if(shore==null)throw new InvalidOperationException("缺少已采用码头岸距纹理；先执行DockWaterApplied.Bake");
+                    saved.SetTexture("_ShoreDistance",shore);
+                }
                 foreach(var property in saved.GetTexturePropertyNames())
                 {
                     var texture=saved.GetTexture(property);if(texture==null)continue;string original=AssetDatabase.GetAssetPath(texture);

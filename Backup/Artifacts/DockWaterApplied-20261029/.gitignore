@@ -1,0 +1,9 @@
+# 本机编辑器和MCP进程持续写入的运行日志，不作为正式交付。
+editor.log
+mcp-server.log
+mcp-server-error.log
+frames/
+encoded-frames/
+*-args.json
+mcp-tools.json
+concat.txt
