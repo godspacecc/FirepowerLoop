@@ -1,0 +1,262 @@
+[
+  {
+    "path": "Client/Build",
+    "files": 23,
+    "bytes": 668159350
+  },
+  {
+    "path": "Client/Bundles",
+    "files": 4841,
+    "bytes": 2649177773
+  },
+  {
+    "path": "Client/Logs",
+    "files": 1735,
+    "bytes": 198774775
+  },
+  {
+    "path": "Release",
+    "files": 219,
+    "bytes": 736876451
+  },
+  {
+    "path": "Client/HybridCLRData",
+    "files": 11737,
+    "bytes": 2029680168
+  },
+  {
+    "path": "Client/Temp",
+    "files": 4,
+    "bytes": 382287
+  },
+  {
+    "path": "Client/Library",
+    "files": 55013,
+    "bytes": 14575504642
+  },
+  {
+    "path": "Server/GameServer/Bin",
+    "files": 15,
+    "bytes": 10233000
+  },
+  {
+    "path": "Tools/ArcadeArmoryChecks/bin",
+    "files": 80,
+    "bytes": 42735405
+  },
+  {
+    "path": "Tools/ArcadeArmoryChecks/obj",
+    "files": 22,
+    "bytes": 390236
+  },
+  {
+    "path": "Tools/ArcadeBombChecks/bin",
+    "files": 80,
+    "bytes": 42688767
+  },
+  {
+    "path": "Tools/ArcadeBombChecks/obj",
+    "files": 22,
+    "bytes": 377906
+  },
+  {
+    "path": "Tools/ArcadeDashChecks/bin",
+    "files": 80,
+    "bytes": 42700859
+  },
+  {
+    "path": "Tools/ArcadeDashChecks/obj",
+    "files": 22,
+    "bytes": 380318
+  },
+  {
+    "path": "Tools/ArcadeFullRouteOnlineChecks/bin",
+    "files": 80,
+    "bytes": 43494316
+  },
+  {
+    "path": "Tools/ArcadeFullRouteOnlineChecks/obj",
+    "files": 22,
+    "bytes": 992739
+  },
+  {
+    "path": "Tools/ArcadeGeneralRoundSaveChecks/bin",
+    "files": 8,
+    "bytes": 3883439
+  },
+  {
+    "path": "Tools/ArcadeGeneralRoundSaveChecks/obj",
+    "files": 22,
+    "bytes": 385986
+  },
+  {
+    "path": "Tools/ArcadeIslandChecks/bin",
+    "files": 5,
+    "bytes": 182886
+  },
+  {
+    "path": "Tools/ArcadeIslandChecks/obj",
+    "files": 20,
+    "bytes": 207241
+  },
+  {
+    "path": "Tools/ArcadeOpeningChecks/bin",
+    "files": 80,
+    "bytes": 42715148
+  },
+  {
+    "path": "Tools/ArcadeOpeningChecks/obj",
+    "files": 22,
+    "bytes": 397043
+  },
+  {
+    "path": "Tools/ArcadeRoundContentChecks/bin",
+    "files": 5,
+    "bytes": 195296
+  },
+  {
+    "path": "Tools/ArcadeRoundContentChecks/obj",
+    "files": 20,
+    "bytes": 223023
+  },
+  {
+    "path": "Tools/ArcadeRoundLayoutChecks/bin",
+    "files": 5,
+    "bytes": 337661
+  },
+  {
+    "path": "Tools/ArcadeRoundLayoutChecks/obj",
+    "files": 20,
+    "bytes": 426778
+  },
+  {
+    "path": "Tools/ArcadeRoundSaveChecks/bin",
+    "files": 8,
+    "bytes": 3813194
+  },
+  {
+    "path": "Tools/ArcadeRoundSaveChecks/obj",
+    "files": 22,
+    "bytes": 280533
+  },
+  {
+    "path": "Tools/ArcadeRouteSaveChecks/bin",
+    "files": 5,
+    "bytes": 3772940
+  },
+  {
+    "path": "Tools/ArcadeRouteSaveChecks/obj",
+    "files": 22,
+    "bytes": 458261
+  },
+  {
+    "path": "Tools/ArcadeSlayerMartChecks/bin",
+    "files": 5,
+    "bytes": 483514
+  },
+  {
+    "path": "Tools/ArcadeSlayerMartChecks/obj",
+    "files": 20,
+    "bytes": 612517
+  },
+  {
+    "path": "Tools/ArcadeSupplyChecks/bin",
+    "files": 80,
+    "bytes": 42258185
+  },
+  {
+    "path": "Tools/ArcadeSupplyChecks/obj",
+    "files": 22,
+    "bytes": 404632
+  },
+  {
+    "path": "Tools/ArcadeTransactionChecks/bin",
+    "files": 80,
+    "bytes": 42251188
+  },
+  {
+    "path": "Tools/ArcadeTransactionChecks/obj",
+    "files": 22,
+    "bytes": 400323
+  },
+  {
+    "path": "Tools/ArcadeTreasureChecks/bin",
+    "files": 80,
+    "bytes": 42296063
+  },
+  {
+    "path": "Tools/ArcadeTreasureChecks/obj",
+    "files": 22,
+    "bytes": 398745
+  },
+  {
+    "path": "Tools/CreatureOnlineChecks/bin",
+    "files": 6,
+    "bytes": 1880332
+  },
+  {
+    "path": "Tools/CreatureOnlineChecks/obj",
+    "files": 22,
+    "bytes": 382122
+  },
+  {
+    "path": "Tools/DockSeaEntryOnlineChecks/bin",
+    "files": 80,
+    "bytes": 42954243
+  },
+  {
+    "path": "Tools/DockSeaEntryOnlineChecks/obj",
+    "files": 22,
+    "bytes": 399370
+  },
+  {
+    "path": "Tools/EnemyPhysicalFeedbackChecks/bin",
+    "files": 80,
+    "bytes": 42700856
+  },
+  {
+    "path": "Tools/EnemyPhysicalFeedbackChecks/obj",
+    "files": 22,
+    "bytes": 382747
+  },
+  {
+    "path": "Tools/PickupFeedbackChecks/bin",
+    "files": 170,
+    "bytes": 85572506
+  },
+  {
+    "path": "Tools/PickupFeedbackChecks/obj",
+    "files": 78,
+    "bytes": 892710
+  },
+  {
+    "path": "Tools/ProtocolGenerator/bin",
+    "files": 5,
+    "bytes": 199451
+  },
+  {
+    "path": "Tools/ProtocolGenerator/obj",
+    "files": 20,
+    "bytes": 225882
+  },
+  {
+    "path": "Tools/TenStageRouteOnlineChecks/bin",
+    "files": 80,
+    "bytes": 42957310
+  },
+  {
+    "path": "Tools/TenStageRouteOnlineChecks/obj",
+    "files": 22,
+    "bytes": 405301
+  },
+  {
+    "path": "Tools/PickupFeedbackChecks/Server/bin",
+    "files": 80,
+    "bytes": 42283877
+  },
+  {
+    "path": "Tools/PickupFeedbackChecks/Server/obj",
+    "files": 22,
+    "bytes": 382540
+  }
+]

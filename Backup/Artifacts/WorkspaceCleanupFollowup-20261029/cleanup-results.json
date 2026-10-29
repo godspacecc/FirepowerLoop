@@ -1,0 +1,28 @@
+{
+  "status": "completed",
+  "removedFiles": 11686,
+  "removedBytes": 6044600056,
+  "remainingPlannedFiles": [],
+  "retainedActiveLogs": [
+    "Client/Logs/shadercompiler-UnityShaderCompiler.exe0.log",
+    "Client/Logs/shadercompiler-UnityShaderCompiler.exe1.log",
+    "Client/Logs/shadercompiler-UnityShaderCompiler.exe2.log",
+    "Client/Logs/shadercompiler-UnityShaderCompiler.exe3.log",
+    "Client/Logs/shadercompiler-UnityShaderCompiler.exe4.log"
+  ],
+  "originalModifiedFileHashesUnchanged": {
+    "Client/Assets/Game/Art/Arcade/Island/LowPolyV2/IslandLowPolyV2.asset": true,
+    "Client/Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal SDF.asset": true,
+    "Client/ProjectSettings/ProjectSettings.asset": true
+  },
+  "preservedDirectories": [
+    "Client/Library",
+    "Client/Temp",
+    "Client/Assets/Art",
+    "Client/UserSettings",
+    "Client/HybridCLRData/hybridclr_repo",
+    "Client/HybridCLRData/il2cpp_plus_repo",
+    "Client/HybridCLRData/LocalIl2CppData-WindowsEditor"
+  ],
+  "verification": "All planned file paths absent; only current shadercompiler logs remain in selected targets. No tracked runtime file changed. Unity connection, editor and clean Boot scene checked; no tests or Player Build run."
+}
