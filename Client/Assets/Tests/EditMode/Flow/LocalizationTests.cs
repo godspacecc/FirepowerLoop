@@ -153,7 +153,7 @@ namespace Game.Tests
         [Test]
         public void LocalizedText_LoadPrefabContentsWithoutConfiguredLoader_PreservesPreviewWithoutResourceErrors()
         {
-            const string prefabPath = "Assets/Game/Prefabs/UI/Craft/Craft.prefab";
+            const string prefabPath = "Assets/Game/Prefabs/UI/Online/OnlineLogin.prefab";
             var errors = new List<string>();
             GameObject root = null;
             try
@@ -174,8 +174,8 @@ namespace Game.Tests
 
                 Assert.That(root, Is.Not.Null);
                 var localizedText = root.GetComponentsInChildren<LocalizedText>(true)
-                    .Single(item => item.Key == "ui.craft.title");
-                Assert.That(localizedText.GetComponent<TextMeshProUGUI>().text, Is.EqualTo("打造"));
+                    .Single(item => item.Key == "ui.online.title");
+                Assert.That(localizedText.GetComponent<TextMeshProUGUI>().text, Is.EqualTo("联机"));
                 Assert.That(errors.Any(message =>
                     message.Contains("[ResourceLoader]") && message.Contains("DefaultPackage 为空")), Is.False);
             }

@@ -24,37 +24,31 @@ namespace Game.Tests
         private const string RoomPrefabPath = "Assets/Game/Prefabs/UI/Online/OnlineRoom.prefab";
         private const string TestCmdPrefabPath = "Assets/Game/Prefabs/UI/Diagnostics/TestCmd.prefab";
         private const string RuntimeLogPrefabPath = "Assets/Game/Prefabs/UI/Diagnostics/RuntimeLog.prefab";
-        private static readonly string[] InventoryPrefabPaths =
-        {
-            "Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
-            "Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab",
-            "Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab"
-        };
 
         private static readonly IReadOnlyDictionary<string, FixedTextExpectation> LoginFixedKeys =
             new Dictionary<string, FixedTextExpectation>
             {
-                { "Title", Fixed("ui.online.title", "联机") },
-                { "AnonymousRoot/UserNameLabel", Fixed("ui.online.username", "用户名") },
-                { "AnonymousRoot/PasswordLabel", Fixed("ui.online.password", "密码") },
-                { "AnonymousRoot/LoginButton/Text", Fixed("ui.online.login", "登录") },
-                { "AuthenticatedRoot/LogoutButton/Text", Fixed("ui.online.logout", "退出登录") },
-                { "AuthenticatedRoot/RoomButton/Text", Fixed("ui.online.room.open", "房间") }
+                { "LoginContent/Title", Fixed("ui.online.title", "联机") },
+                { "LoginContent/AccountPanel/AnonymousRoot/UserNameLabel", Fixed("ui.online.account", "账号") },
+                { "LoginContent/AccountPanel/AnonymousRoot/PasswordLabel", Fixed("ui.online.password", "密码") },
+                { "LoginContent/AccountPanel/AnonymousRoot/LoginButton/Text", Fixed("ui.online.login", "登录") },
+                { "LoginContent/AccountPanel/AuthenticatedRoot/LogoutButton/Text", Fixed("ui.online.logout", "退出登录") },
+                { "LoginContent/AccountPanel/AuthenticatedRoot/RoomButton/Text", Fixed("ui.online.room.open", "房间") }
             };
 
         private static readonly IReadOnlyDictionary<string, FixedTextExpectation> RoomFixedKeys =
             new Dictionary<string, FixedTextExpectation>
             {
-                { "TitleText", Fixed("ui.online.room.title", "房间") },
-                { "EmptyRoot/RoomCodeLabel", Fixed("ui.online.room.code", "房间号") },
-                { "EmptyRoot/CreateButton/Text", Fixed("ui.online.room.create", "创建") },
-                { "EmptyRoot/JoinButton/Text", Fixed("ui.online.room.join", "加入") },
-                { "JoinedRoot/LeaveButton/Text", Fixed("ui.online.room.leave", "离开房间") },
-                { "JoinedRoot/WorldButton/Text", Fixed("ui.online.world.enter", "进入世界") },
-                { "JoinedRoot/DisconnectHintText", Fixed("ui.online.room.disconnected_hint", "连接已断开，服务端保留房间身份 60 秒") },
-                { "JoinedRoot/ChatPanel/ChatTitleText", Fixed("ui.online.room.chat.title", "房间聊天") },
-                { "JoinedRoot/ChatPanel/ChatSendButton/Text", Fixed("ui.online.room.chat.send", "发送") },
-                { "JoinedRoot/ChatPanel/ChatInput/Placeholder", Fixed("ui.online.room.chat.placeholder", "输入消息（最多 200 个字符）") }
+                { "LobbyContent/TitleText", Fixed("ui.online.room.title", "房间") },
+                { "LobbyContent/EmptyRoot/DirectJoinSection/RoomCodeLabel", Fixed("ui.online.room.code", "房间号") },
+                { "LobbyContent/EmptyRoot/CreateSection/CreateButton/Text", Fixed("ui.online.room.create", "创建") },
+                { "LobbyContent/EmptyRoot/DirectJoinSection/JoinButton/Text", Fixed("ui.online.room.join", "加入") },
+                { "LobbyContent/JoinedRoot/LeaveButton/Text", Fixed("ui.online.room.leave", "离开房间") },
+                { "LobbyContent/JoinedRoot/WorldButton/Text", Fixed("ui.online.world.enter", "进入世界") },
+                { "LobbyContent/JoinedRoot/DisconnectHintText", Fixed("ui.online.room.disconnected_hint", "连接已断开，服务端保留房间身份 60 秒") },
+                { "LobbyContent/JoinedRoot/ChatPanel/ChatTitleText", Fixed("ui.online.room.chat.title", "房间聊天") },
+                { "LobbyContent/JoinedRoot/ChatPanel/ChatSendButton/Text", Fixed("ui.online.room.chat.send", "发送") },
+                { "LobbyContent/JoinedRoot/ChatPanel/ChatInput/Placeholder", Fixed("ui.online.room.chat.placeholder", "输入消息（最多 200 个字符）") }
             };
 
         private static readonly IReadOnlyDictionary<string, string> TestCmdFixedTexts =
@@ -81,18 +75,6 @@ namespace Game.Tests
                 { "BtnClear/Text", "清空" }
             };
 
-        private static readonly IReadOnlyDictionary<string, FixedTextExpectation> InventoryFixedKeys =
-            new Dictionary<string, FixedTextExpectation>
-            {
-                { "BagOnlyRoot/BagOnlyTitleText", Fixed("ui.inventory.title_bag", "背包") },
-                { "BagOnlyRoot/BagOnlyPlayerBagTitleText", Fixed("ui.inventory.player_bag", "玩家背包") },
-                { "BagOnlyRoot/BagOnlyEquipmentTitleText", Fixed("ui.inventory.equipment", "装备") },
-                { "BagOnlyRoot/BagOnlyEquipmentRow/BagOnlyMeleeEquipmentGroup/BagOnlyMeleeSlotLabelText", Fixed("ui.inventory.weapon_slot.melee", "近战") },
-                { "BagOnlyRoot/BagOnlyEquipmentRow/BagOnlyRangedEquipmentGroup/BagOnlyRangedSlotLabelText", Fixed("ui.inventory.weapon_slot.ranged", "远程") },
-                { "BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnSplit/Text", Fixed("ui.inventory.split", "拆分") },
-                { "WarehousePanel/WarehouseTitleText", Fixed("ui.inventory.warehouse", "基地仓库") }
-            };
-
         private static readonly string[] LoginDynamicFields =
         {
             "AuthenticatedUserText",
@@ -104,7 +86,6 @@ namespace Game.Tests
         private static readonly string[] RoomDynamicFields =
         {
             "CurrentRoomCodeText",
-            "ResultText",
             "ChatStateText",
             "DisconnectHintRoot"
         };
@@ -146,30 +127,7 @@ namespace Game.Tests
             "TitleText"
         };
 
-        private static readonly string[] InventoryRemovedFields =
-        {
-            "BagOnlyTitleText",
-            "PlayerBagTitleText",
-            "BagOnlyPlayerBagTitleText",
-            "EquipmentTitleText",
-            "BagOnlyEquipmentTitleText",
-            "MeleeSlotLabelText",
-            "BagOnlyMeleeSlotLabelText",
-            "RangedSlotLabelText",
-            "BagOnlyRangedSlotLabelText",
-            "WarehouseTitleText"
-        };
 
-        private static readonly string[] InventoryDynamicTextFields =
-        {
-            "DetailNameText",
-            "DetailDescText",
-            "DetailAmountText",
-            "BagOnlyCapacityText",
-            "BagOnlyDetailNameText",
-            "BagOnlyDetailDescText",
-            "BagOnlyDetailAmountText"
-        };
 
         [TearDown]
         public void TearDown()
@@ -192,12 +150,6 @@ namespace Game.Tests
         }
 
         [Test]
-        public void InventoryPrefab_OwnsFixedTextWithLocalizedTextAndKeepsDynamicTextInController()
-        {
-            AssertInventoryPrefabContract();
-        }
-
-        [Test]
         public void GeneratedTmpFields_DoNotPointToLocalizedTextObjects()
         {
             var failures = new List<string>();
@@ -216,6 +168,25 @@ namespace Game.Tests
                         var text = field.GetValue(view) as TMP_Text;
                         if (text == null)
                         {
+                            continue;
+                        }
+
+                        // 更新公告复用按钮Box的固定标签，不由消息控制器写入动态文字。
+                        var fixedUpdateKey = prefabPath == "Assets/Game/Prefabs/UI/Common/ResourceUpdateMessage.prefab" &&
+                            view is MessageButtonBoxUI && field.Name == "ButtonText"
+                            ? TransformPath(prefab.transform, text.transform) switch
+                            {
+                                "ResourceUpdateMessage/Panel/Restart/ButtonText" => "ui.start.update.restart_now",
+                                "ResourceUpdateMessage/Panel/Later/ButtonText" => "ui.start.update.later",
+                                _ => null
+                            } : null;
+                        if (fixedUpdateKey != null)
+                        {
+                            var localized = text.GetComponents<LocalizedText>().Where(item => item.enabled).ToArray();
+                            Assert.That(localized, Has.Length.EqualTo(1), fixedUpdateKey);
+                            Assert.That(localized[0].Key, Is.EqualTo(fixedUpdateKey));
+                            Assert.That(localized[0].Texts, Is.Empty, fixedUpdateKey);
+                            Assert.That(text.text, Is.EqualTo(fixedUpdateKey == "ui.start.update.restart_now" ? "立即重启更新" : "稍后"), fixedUpdateKey);
                             continue;
                         }
 
@@ -574,32 +545,6 @@ namespace Game.Tests
             }
         }
 
-        private static void AssertInventoryPrefabContract()
-        {
-            foreach (var path in InventoryPrefabPaths)
-            {
-                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(path);
-                Assert.That(prefab, Is.Not.Null, path);
-                var collector = prefab.GetComponent<ReferenceCollector>();
-                Assert.That(collector, Is.Not.Null, path);
-                var view = prefab.GetComponents<BaseUI>().Single();
-                var fields = view.GetType().GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance);
-                Assert.That(collector.data.Select(item => item.key), Is.EquivalentTo(fields.Select(field => field.Name)), path);
-                foreach (var field in fields.Where(field => typeof(TMP_Text).IsAssignableFrom(field.FieldType)))
-                {
-                    var text = field.GetValue(view) as TMP_Text;
-                    Assert.That(text, Is.Not.Null, path + ":" + field.Name);
-                    Assert.That(text.GetComponents<LocalizedText>().Where(item => item.enabled), Is.Empty, path + ":" + field.Name);
-                }
-
-                foreach (var localized in prefab.GetComponentsInChildren<LocalizedText>(true).Where(item => item.enabled))
-                {
-                    Assert.That(localized.Key, Is.Not.Null.And.Not.Empty, path);
-                    Assert.That(localized.Texts, Is.Empty, path);
-                }
-            }
-        }
-
         private static LocalizationTableSet LoadLanguageTables()
         {
             var result = new Dictionary<string, HashSet<string>>(StringComparer.Ordinal);
@@ -887,6 +832,8 @@ namespace Game.Tests
             game.RegisterSystem(new OnlineAccountSystem());
             game.RegisterSystem(new OnlineRoomSystem());
             game.RegisterSystem(new OnlineRoomChatSystem());
+            // 大厅复用街机转场入口，语言测试提供其空快照依赖。
+            game.RegisterSystem(new OnlineArcadeRunSystem());
             Init(localizationModel);
             Init(accountModel);
             Init(roomModel);

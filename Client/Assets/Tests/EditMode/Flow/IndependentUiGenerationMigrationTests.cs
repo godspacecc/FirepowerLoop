@@ -28,10 +28,6 @@ namespace Game.Tests
         [Test]
         public void IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings()
         {
-            AssertPrefab<ExpeditionHudUI>("Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab", ExpeditionHudFields);
-            AssertPrefab<BagUI>("Assets/Game/Prefabs/UI/Inventory/Bag.prefab", BagFields);
-            AssertPrefab<WarehouseUI>("Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab", WarehouseFields);
-            AssertPrefab<SearchContainerUI>("Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab", SearchContainerFields);
             AssertPrefab<LoadingUI>("Assets/Game/Prefabs/UI/Common/Loading.prefab", LoadingFields);
             AssertPrefab<PlayerConditionHudUI>("Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab", PlayerConditionHudFields);
             AssertPrefab<GameplayGuideHudUI>("Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab", GameplayGuideHudFields);
@@ -46,20 +42,6 @@ namespace Game.Tests
             AssertPrefab<SettingAudioPageUI>("Assets/Game/Prefabs/UI/Home/Page/SettingAudio.prefab", SettingAudioFields);
             AssertPrefab<SettingControlsPageUI>("Assets/Game/Prefabs/UI/Home/Page/SettingControls.prefab", SettingControlsFields);
             AssertPrefab<SettingNetworkPageUI>("Assets/Game/Prefabs/UI/Home/Page/SettingNetwork.prefab", SettingNetworkFields);
-        }
-
-        [Test]
-        public void SearchContainerPrefab_ViewportUsesRectMask2D()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab");
-            var ui = prefab.GetComponent<SearchContainerUI>();
-
-            Assert.That(prefab, Is.Not.Null);
-            Assert.That(ui.SearchList.viewport, Is.Not.Null);
-            Assert.That(ui.SearchList.viewport, Is.SameAs(ui.SearchViewport));
-            Assert.That(ui.SearchScrollRect.viewport, Is.SameAs(ui.SearchViewport));
-            Assert.That(ui.SearchViewport.GetComponent<RectMask2D>(), Is.Not.Null);
-            Assert.That(ui.SearchViewport.GetComponent<Mask>(), Is.Null);
         }
 
         [Test]
@@ -202,23 +184,6 @@ namespace Game.Tests
             public string ObjectName { get; }
         }
 
-        private static readonly FieldExpectation[] ExpeditionHudFields =
-        {
-            // 桌面字段保留TMP_Text声明，手机布局由独立引用明确约束，禁止漏绑或串绑两套面板。
-            F("TimerText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/TimerText", "TimerText", typeof(TMP_Text)),
-            F("StatusText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/StatusText", "StatusText", typeof(TMP_Text)),
-            F("ResourceText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/ResourceText", "ResourceText", typeof(TMP_Text)),
-            F("BtnReturn", typeof(Button), typeof(Button), "ExpeditionHud/HudPanel/BtnReturn", "BtnReturn"),
-            F("ReturnButtonText", typeof(TMP_Text), typeof(TextMeshProUGUI), "ExpeditionHud/HudPanel/BtnReturn/Text", "Text", typeof(TMP_Text)),
-            F("DesktopHudPanel", typeof(GameObject), typeof(GameObject), "ExpeditionHud/HudPanel", "HudPanel"),
-            F("MobileHudPanel", typeof(GameObject), typeof(GameObject), "ExpeditionHud/MobileHudPanel", "MobileHudPanel"),
-            F("MobileBtnReturn", typeof(Button), typeof(Button), "ExpeditionHud/MobileHudPanel/BtnReturn", "BtnReturn"),
-            F("MobileTimerText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/TimerText", "TimerText"),
-            F("MobileStatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/StatusText", "StatusText"),
-            F("MobileResourceText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/ResourceText", "ResourceText"),
-            F("MobileReturnButtonText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "ExpeditionHud/MobileHudPanel/BtnReturn/Text", "Text")
-        };
-
         private static readonly FieldExpectation[] LoadingFields =
         {
             F("BtnBack", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/BackButton", "BackButton"),
@@ -240,6 +205,7 @@ namespace Game.Tests
             F("BtnCopyLog", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/CopyLogButton", "CopyLogButton"),
             F("CopyStatusText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Loading/MapRoot/ErrorRoot/CopyStatusText", "CopyStatusText"),
             F("BtnRetry", typeof(Button), typeof(Button), "Loading/MapRoot/ErrorRoot/RetryButton", "RetryButton"),
+            F("LoadingArtwork", typeof(ArcadeLoadingArtwork), typeof(ArcadeLoadingArtwork), "Loading/MapRoot/BackgroundArtwork", "BackgroundArtwork"),
         };
 
         private static readonly FieldExpectation[] PlayerConditionHudFields =
@@ -359,111 +325,5 @@ namespace Game.Tests
             F("ResourceServerResetButton", typeof(Button), typeof(Button), "SettingNetwork/ResourceServerResetButton", "ResourceServerResetButton")
         };
 
-        private static readonly FieldExpectation[] BagFields =
-        {
-            F("ActionRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot/BagOnlyActionRoot", "BagOnlyActionRoot"),
-            F("BackgroundImage", typeof(Image), typeof(Image), "Bag", "Bag"),
-            F("BagScrollRect", typeof(ScrollRect), typeof(ScrollRect), "Bag/ManagementRoot/InventoryPageRoot/Storage/BagViewport", "BagViewport"),
-            F("BtnClose", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BtnClose", "BtnClose"),
-            F("BtnDrop", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnDrop", "BagOnlyBtnDrop"),
-            F("BtnManagementClose", typeof(Button), typeof(Button), "Bag/ManagementRoot/BtnManagementClose", "BtnManagementClose"),
-            F("BtnMove", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/BtnMove", "BtnMove"),
-            F("BtnPageBackpack", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageBackpack", "BtnPageBackpack"),
-            F("BtnPageEquipment", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageEquipment", "BtnPageEquipment"),
-            F("BtnPageJournal", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageJournal", "BtnPageJournal"),
-            F("BtnPageMap", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageMap", "BtnPageMap"),
-            F("BtnPageStatus", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageStatus", "BtnPageStatus"),
-            F("BtnPageTasks", typeof(Button), typeof(Button), "Bag/ManagementRoot/Navigation/BtnPageTasks", "BtnPageTasks"),
-            F("BtnSplit", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnSplit", "BagOnlyBtnSplit"),
-            F("BtnUse", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BagOnlyActionRoot/BagOnlyBtnUse", "BagOnlyBtnUse"),
-            F("CapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyCapacityText", "BagOnlyCapacityText"),
-            F("CompanionRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot", "BagOnlyRoot"),
-            F("DetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailAmountText", "BagOnlyDetailAmountText"),
-            F("DetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailDescText", "BagOnlyDetailDescText"),
-            F("DetailIcon", typeof(Image), typeof(Image), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/DetailIcon", "DetailIcon"),
-            F("DetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/BagOnlyRoot/BagOnlyDetailRoot/BagOnlyDetailNameText", "BagOnlyDetailNameText"),
-            F("DetailRoot", typeof(GameObject), typeof(GameObject), "Bag/BagOnlyRoot/BagOnlyDetailRoot", "BagOnlyDetailRoot"),
-            F("EmptyDetailHint", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/EmptyDetailHint", "EmptyDetailHint"),
-            F("EquipmentPage", typeof(EquipmentManagementPageUI), typeof(EquipmentManagementPageUI), "Bag/ManagementRoot/EquipmentManagement", "EquipmentManagement"),
-            F("FullActionRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot", "FullActionRoot"),
-            F("FullBtnDrop", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnDrop", "FullBtnDrop"),
-            F("FullBtnSplit", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnSplit", "FullBtnSplit"),
-            F("FullBtnUse", typeof(Button), typeof(Button), "Bag/ManagementRoot/InventoryPageRoot/FullActionRoot/Operations/FullBtnUse", "FullBtnUse"),
-            F("FullCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/FullCapacityText", "FullCapacityText"),
-            F("FullDetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailAmountText", "FullDetailAmountText"),
-            F("FullDetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailDescText", "FullDetailDescText"),
-            F("FullDetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot/FullDetailNameText", "FullDetailNameText"),
-            F("FullDetailRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot/FullDetailRoot", "FullDetailRoot"),
-            F("FullPlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/ManagementRoot/InventoryPageRoot/Storage/BagViewport/FullPlayerBagList", "FullPlayerBagList"),
-            F("InventoryPageRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/InventoryPageRoot", "InventoryPageRoot"),
-            F("ManagementRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot", "ManagementRoot"),
-            F("PageTitleText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/PageTitleText", "PageTitleText"),
-            F("PlaceholderRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/PlaceholderRoot", "PlaceholderRoot"),
-            F("PlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/BagOnlyRoot/BagOnlyPlayerBagSlotRoot", "BagOnlyPlayerBagSlotRoot"),
-            F("PocketCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketCapacityText", "PocketCapacityText"),
-            F("PocketList", typeof(CustomListView), typeof(CustomListView), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketList", "PocketList"),
-            F("PocketNoticeText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/InventoryPageRoot/Storage/PocketNoticeText", "PocketNoticeText"),
-            F("SelectedBackpack", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageBackpack/Selected", "Selected"),
-            F("SelectedEquipment", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageEquipment/Selected", "Selected"),
-            F("SelectedJournal", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageJournal/Selected", "Selected"),
-            F("SelectedMap", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageMap/Selected", "Selected"),
-            F("SelectedStatus", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageStatus/Selected", "Selected"),
-            F("SelectedTasks", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/Navigation/BtnPageTasks/Selected", "Selected"),
-            F("TransferAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferAmountText", "TransferAmountText"),
-            F("StatusPage", typeof(StatusManagementPageUI), typeof(StatusManagementPageUI), "Bag/ManagementRoot/StatusManagement", "StatusManagement"),
-            F("MapPage", typeof(MapManagementPageUI), typeof(MapManagementPageUI), "Bag/ManagementRoot/MapManagement", "MapManagement"),
-            F("CompanionDetailIcon", typeof(Image), typeof(Image), "Bag/BagOnlyRoot/BagOnlyDetailRoot/CompanionDetailIcon", "CompanionDetailIcon"),
-            F("BtnStore", typeof(Button), typeof(Button), "Bag/BagOnlyRoot/BtnStore", "BtnStore"),
-            F("WarehouseCompanionRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot", "WarehouseCompanionRoot"),
-            F("WarehousePlayerBagList", typeof(CustomListView), typeof(CustomListView), "Bag/WarehouseCompanionRoot/BagOnlyPlayerBagSlotRoot", "BagOnlyPlayerBagSlotRoot"),
-            F("WarehouseCapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyCapacityText", "BagOnlyCapacityText"),
-            F("WarehouseDetailRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot", "BagOnlyDetailRoot"),
-            F("WarehouseDetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailNameText", "BagOnlyDetailNameText"),
-            F("WarehouseDetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailDescText", "BagOnlyDetailDescText"),
-            F("WarehouseDetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/BagOnlyDetailAmountText", "BagOnlyDetailAmountText"),
-            F("WarehouseDetailIcon", typeof(Image), typeof(Image), "Bag/WarehouseCompanionRoot/BagOnlyDetailRoot/CompanionDetailIcon", "CompanionDetailIcon"),
-            F("WarehouseActionRoot", typeof(GameObject), typeof(GameObject), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot", "BagOnlyActionRoot"),
-            F("WarehouseBtnUse", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnUse", "BagOnlyBtnUse"),
-            F("WarehouseBtnSplit", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnSplit", "BagOnlyBtnSplit"),
-            F("WarehouseBtnDrop", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BagOnlyActionRoot/BagOnlyBtnDrop", "BagOnlyBtnDrop"),
-            F("WarehouseBtnStore", typeof(Button), typeof(Button), "Bag/WarehouseCompanionRoot/BtnStore", "BtnStore"),
-            F("TasksPage", typeof(TasksManagementPageUI), typeof(TasksManagementPageUI), "Bag/ManagementRoot/TasksManagement", "TasksManagement"),
-            F("JournalPage", typeof(JournalManagementPageUI), typeof(JournalManagementPageUI), "Bag/ManagementRoot/JournalManagement", "JournalManagement"),
-            F("TransferQuantityRoot", typeof(GameObject), typeof(GameObject), "Bag/ManagementRoot/TransferQuantityRoot", "TransferQuantityRoot"),
-            F("TransferQuantityTitleText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferQuantityTitleText", "TransferQuantityTitleText"),
-            F("TransferItemNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/TransferItemNameText", "TransferItemNameText"),
-            F("BtnTransferDecrease", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferDecrease", "BtnTransferDecrease"),
-            F("BtnTransferIncrease", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferIncrease", "BtnTransferIncrease"),
-            F("BtnTransferCancel", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferCancel", "BtnTransferCancel"),
-            F("BtnTransferConfirm", typeof(Button), typeof(Button), "Bag/ManagementRoot/TransferQuantityRoot/TransferQuantityPanel/BtnTransferConfirm", "BtnTransferConfirm"),
-            F("BackpackCharacterPreview", typeof(RawImage), typeof(RawImage), "Bag/ManagementRoot/InventoryPageRoot/CharacterPanel/CharacterPreview", "CharacterPreview"),
-        };
-
-        private static readonly FieldExpectation[] WarehouseFields =
-        {
-            F("BackgroundImage", typeof(Image), typeof(Image), "Warehouse", "Warehouse"),
-            F("BtnClose", typeof(Button), typeof(Button), "Warehouse/BtnClose", "BtnClose"),
-            F("WarehouseList", typeof(CustomListView), typeof(CustomListView), "Warehouse/WarehousePanel/WarehouseScrollRect/Viewport/WarehouseSlotRoot", "WarehouseSlotRoot"),
-            F("WarehouseScrollRect", typeof(ScrollRect), typeof(ScrollRect), "Warehouse/WarehousePanel/WarehouseScrollRect", "WarehouseScrollRect"),
-            F("CapacityText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/CapacityText", "CapacityText"),
-            F("DetailRoot", typeof(GameObject), typeof(GameObject), "Warehouse/WarehousePanel/DetailRoot", "DetailRoot"),
-            F("DetailIcon", typeof(Image), typeof(Image), "Warehouse/WarehousePanel/DetailRoot/DetailIcon", "DetailIcon"),
-            F("DetailNameText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailNameText", "DetailNameText"),
-            F("DetailDescText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailDescText", "DetailDescText"),
-            F("DetailAmountText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/DetailRoot/DetailAmountText", "DetailAmountText"),
-            F("BtnTake", typeof(Button), typeof(Button), "Warehouse/WarehousePanel/BtnTake", "BtnTake"),
-            F("BtnExpand", typeof(Button), typeof(Button), "Warehouse/WarehousePanel/BtnExpand", "BtnExpand"),
-            F("ExpansionCostText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "Warehouse/WarehousePanel/ExpansionCostText", "ExpansionCostText"),
-        };
-
-        private static readonly FieldExpectation[] SearchContainerFields =
-        {
-            F("BackgroundImage", typeof(Image), typeof(Image), "SearchContainer", "SearchContainer"),
-            F("SearchRootRect", typeof(RectTransform), typeof(RectTransform), "SearchContainer/SearchRoot", "SearchRoot"),
-            F("SearchScrollRect", typeof(ScrollRect), typeof(ScrollRect), "SearchContainer/SearchRoot", "SearchRoot"),
-            F("SearchList", typeof(LoopGridLayoutGroup), typeof(LoopGridLayoutGroup), "SearchContainer/SearchRoot/Viewport/SlotRoot", "SlotRoot"),
-            F("SearchViewport", typeof(RectTransform), typeof(RectTransform), "SearchContainer/SearchRoot/Viewport", "Viewport"),
-            F("BtnClose", typeof(Button), typeof(Button), "SearchContainer/SearchRoot/BtnClose", "BtnClose"),
-        };
     }
 }

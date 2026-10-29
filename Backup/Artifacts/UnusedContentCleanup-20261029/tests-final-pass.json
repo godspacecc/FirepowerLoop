@@ -1,0 +1,219 @@
+[
+  {
+    "testClass": "IndependentUiGenerationMigrationTests",
+    "max": 5,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 5,
+        "PassedTests": 5,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1741407"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.GameplayGuideHudPrefab_HasGeneratedPauseButtonAndStableBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.2470000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiControllers_KeepPrefabPaths",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0360000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingNetworkPagePrefab_HasGeneratedDiagnosticBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingsPrefabs_HaveGeneratedBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "UiLocalizationOwnershipTests",
+    "max": 20,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 9,
+        "PassedTests": 6,
+        "FailedTests": 3,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.6662106"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.AllUiPrefabs_DoNotLeaveBareUiKeysAndKeyModeComponentsAreValid",
+          "Status": "Passed",
+          "Duration": "00:00:00.4480000"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.DiagnosticPrefabs_OwnFixedTextDirectlyAndExposeOnlyDynamicFields",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.GeneratedTmpFields_DoNotPointToLocalizedTextObjects",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  Assets/Game/Prefabs/UI/Common/ResourceUpdateMessage.prefab :: MessageButtonBoxUI.ButtonText points to LocalizedText object ResourceUpdateMessage/Panel/Restart/ButtonText.\r\nAssets/Game/Prefabs/UI/Common/ResourceUpdateMessage.prefab :: MessageButtonBoxUI.ButtonText points to LocalizedText object ResourceUpdateMessage/Panel/Later/ButtonText.\r\n  Expected: <empty>\r\n  But was:  < \"Assets/Game/Prefabs/UI/Common/ResourceUpdateMessage.prefab :: MessageButtonBoxUI.ButtonText points to LocalizedText object ResourceUpdateMessage/Panel/Restart/ButtonText.\", \"Assets/Game/Prefabs/UI/Common/ResourceUpdateMessage.prefab :: MessageButtonBoxUI.ButtonText points to LocalizedText object ResourceUpdateMessage/Panel/Later/ButtonText.\" >\r\n"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.LanguageChanged_RedrawsOnlineDynamicTextsAndReusedMemberRows",
+          "Status": "Failed",
+          "Duration": "00:00:00.1890000",
+          "Message": "System.NullReferenceException : Object reference not set to an instance of an object"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_EditModeKeepsReadablePreviewWhenKeyFallsBack",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_KeyModeStillRefreshesWhenTranslationExists",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.OnlinePrefabs_OwnFixedTextWithLocalizedTextAndExposeOnlyDynamicFields",
+          "Status": "Failed",
+          "Duration": "00:00:00.0030000",
+          "Message": "  Title\r\n  Expected: not null\r\n  But was:  null\r\n"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.Scanner_ReportsReadableKeyModeAndRejectsInternalKeyLeaks",
+          "Status": "Passed",
+          "Duration": "00:00:00.1960000"
+        },
+        {
+          "Name": "Game.Tests.UiLocalizationOwnershipTests.UiLocalizationGate_RejectsLocalizedTextComponentStructureAnomalies",
+          "Status": "Passed",
+          "Duration": "00:00:00.0120000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ResourceModuleAuditTests",
+    "max": 2,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 2,
+        "PassedTests": 1,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9688173"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ResourceModuleAuditTests.CollectorSettingsHaveKnownTagsAndDedicatedSharedFontBundle",
+          "Status": "Passed",
+          "Duration": "00:00:00.0960000"
+        },
+        {
+          "Name": "Game.Tests.ResourceModuleAuditTests.ReportAuditCountsFirstDownloadBundleOnlyOnce",
+          "Status": "Failed",
+          "Duration": "00:00:00.0210000",
+          "Message": "  Expected: 200\r\n  But was:  null\r\n"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.LocalizationTests.LocalizedText_LoadPrefabContentsWithoutConfiguredLoader_PreservesPreviewWithoutResourceErrors",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.7076717"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.LocalizationTests.LocalizedText_LoadPrefabContentsWithoutConfiguredLoader_PreservesPreviewWithoutResourceErrors",
+          "Status": "Passed",
+          "Duration": "00:00:00.0410000"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.AndroidHudLayoutTests.ConditionPrefab_ResolvesAllGeneratedReferencesAndMobileFillSprites",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.7271302"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AndroidHudLayoutTests.ConditionPrefab_ResolvesAllGeneratedReferencesAndMobileFillSprites",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.PlayerCameraTests.CameraPoseFollowsBindAndUnbindLifecycle",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.6692345"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.PlayerCameraTests.CameraPoseFollowsBindAndUnbindLifecycle",
+          "Status": "Failed",
+          "Duration": "00:00:00.0160000",
+          "Message": "  Expected: True\r\n  But was:  False\r\n"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.LegacyBootResourceCompatibilityTests.RetiredQuickBarRemainsLoadableWithoutRestoringGameplay",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.6565277"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.LegacyBootResourceCompatibilityTests.RetiredQuickBarRemainsLoadableWithoutRestoringGameplay",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  }
+]

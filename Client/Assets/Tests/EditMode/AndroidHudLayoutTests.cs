@@ -79,9 +79,6 @@ namespace Game.Tests
                 Assert.That(mobileFills[i].fillMethod, Is.EqualTo(Image.FillMethod.Radial360));
                 Assert.That(mobileFills[i].color, Is.EqualTo(originalFills[i].color));
             }
-            var mission = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab").GetComponent<ExpeditionHudUI>();
-            foreach (var field in typeof(ExpeditionHudUI).GetFields().Where(f => typeof(Object).IsAssignableFrom(f.FieldType)))
-                Assert.That((Object)field.GetValue(mission), Is.Not.Null, field.Name);
         }
 
         [TestCase(1920f, 1080f)]

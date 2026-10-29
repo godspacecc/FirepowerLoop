@@ -1,4 +1,6 @@
-﻿# FirepowerLoop 文档
+# FirepowerLoop 文档
+
+2026-10-29已按确认清理退役UI、空壳和三张旧场景，现役界面、姿态调试、旧局兼容及备用资源保留；原件连同.meta归档于Unity工程外，覆盖此前“28个旧View仍保留”的历史状态。范围与58项限定检查见[清理验证记录](../Backup/Artifacts/UnusedContentCleanup-20261029/README.md)。
 
 2026-10-25新局已收口为固定十场四十普通轮，精确名单与旧局兼容见[当前关卡目录](当前项目/关卡配置/README.md)及[本批验证](../Backup/Artifacts/TenStageRouteApplied-20261025/README.md)。路线已完成，前七场已细化接入；后三场新视觉仍须候选采用，火山继续暂缓。
 

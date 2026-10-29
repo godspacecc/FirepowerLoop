@@ -1,0 +1,792 @@
+[
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationSettlement.prefab",
+    "sha256": "2b6854a96bf7471349413049669d7e3829603af3426d3e0dab92cf38ebe6d016",
+    "bytes": 23920
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationSettlement.prefab.meta",
+    "sha256": "89dfb0d92c32914eb75227abcdc755dfcf7cf9b14f09ef027234fd8ad1b1518a",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationWorkshop.prefab",
+    "sha256": "f0e51e438e007842364d30d935b4bc0d3f5ba694c98561604a3e680869aa1bc7",
+    "bytes": 48627
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationWorkshop.prefab.meta",
+    "sha256": "dae16044aef4da6b5197aac660274f0a8abac354f66fabfed921fa3587ce86fd",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftCategoryBox.prefab",
+    "sha256": "5047fc8d4616fbe72d1a28f22fda1cbc037ed0eeac8697eeaf81990913c5f215",
+    "bytes": 13213
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftCategoryBox.prefab.meta",
+    "sha256": "01e5fa8016466519e390aa9a10284ede0edd782f2d8c0ea7e783c9a63df19268",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftMaterialBox.prefab",
+    "sha256": "db4fec37794984abbb8b5db66e4298bd4c2d4944361a7bcd4bb8561e8971642d",
+    "bytes": 25372
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftMaterialBox.prefab.meta",
+    "sha256": "d999805ac0f332f11c25ac6ac6a9309100762623bbe2d5373a551ef127161a7a",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftRecipeBox.prefab",
+    "sha256": "41bec9854586c28528b43e548756fe74ea55eb5332ecc7678d589ed10e458123",
+    "bytes": 27475
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftRecipeBox.prefab.meta",
+    "sha256": "d9ad7b734f4447b62bd03fb2adbcb3a457edf17ee84ca31004826e0e7f6f9edb",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Craft.prefab",
+    "sha256": "968a7c1c7e6f12ad3a681eb9d609dd017218f246433cee24467fbfee597abfbc",
+    "bytes": 68122
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Craft.prefab.meta",
+    "sha256": "44da6ae14a4d658aa6c18f72d0b14fcf18a9b74039a285a3adb4e781a1a7e59e",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Dialogue/Box/DialogueChoice.prefab",
+    "sha256": "d50db1a4f26b36f6e585f3d15bc3e9c37520f9c817c574f2ccd276bd112b37fa",
+    "bytes": 9300
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Dialogue/Box/DialogueChoice.prefab.meta",
+    "sha256": "e35f9d99ba03304d121ab3ab749515457a4df8b3593ea73cfeed8a6cc2318ff6",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Dialogue/Dialogue.prefab",
+    "sha256": "215f2ed5c852d7a1111c7813033c9fa18b1414a3e78912824dc0032fdda83d50",
+    "bytes": 43044
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Dialogue/Dialogue.prefab.meta",
+    "sha256": "a7921b189616c8f82823383d1f6e5d0c1f12ca271a6d8308e75269d223d89e61",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/Box/MapSelectionOptionBox.prefab",
+    "sha256": "59c235ce72f8197e6561598b593715b02f44d67ad55eb72a4ff5a696431050f8",
+    "bytes": 33993
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/Box/MapSelectionOptionBox.prefab.meta",
+    "sha256": "e4b74d02ffd9ac8f5b49224da7a6ce956b1b7d575b631c41a5dd6a7300fa4708",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab",
+    "sha256": "e77de8f9dbc47f89543427992d2ecd8f0a87f81a39412dac269b826b72414b4a",
+    "bytes": 47834
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab.meta",
+    "sha256": "b15cd4d8683faefa77511e0467134fbb8c4229ea49652af8df797e7c012de23c",
+    "bytes": 161
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/MapSelection.prefab",
+    "sha256": "8ac4d36e0ffbbfecd5de09782ad48e8b9ce54e412e9ce8bf96bc722351a1b10f",
+    "bytes": 101787
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/MapSelection.prefab.meta",
+    "sha256": "23aad658133767aca8307cd63b2ecea0d3e9298261f562214d21a1fbc5cff9e8",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+    "sha256": "50b722f89798a95c36ca66b5bbd038a9a8aeb68df6ae31c214422d9993e5d1ae",
+    "bytes": 454683
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab.meta",
+    "sha256": "d0981e627306b929b28a34fe4ea7c34669ca09cf99b5db63d955bb2d74f25986",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/InventorySlotBox.prefab",
+    "sha256": "576c612650bf990db75e0bea695919133af5d706efb97898461f2a18e360db22",
+    "bytes": 30760
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/InventorySlotBox.prefab.meta",
+    "sha256": "9913605be128b0240f739295d4fa6460b6a6483e5a45674c797e2e7a6f22fca9",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ItemContextActionBox.prefab",
+    "sha256": "b9e3d522b1cfd652d3cf3ef12bd45b85ed637dd6f14c9c44b2ab41145c396e3e",
+    "bytes": 8696
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ItemContextActionBox.prefab.meta",
+    "sha256": "e3998bb31f2923cd6f19502ab22ca2eb4343cfcc1e82d1f6ac8702af60115c30",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementInventorySlotBox.prefab",
+    "sha256": "8cd418438d910f621248ed2140984e639a4f9d0a01fcc5c513f0014719be77e9",
+    "bytes": 5523
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementInventorySlotBox.prefab.meta",
+    "sha256": "ce6c01ee5dd0b21f90820f4f082677cf2138d60da961261e5c8748cc9e31d61a",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementTask.prefab",
+    "sha256": "db813aca6bf0a882f0b0f4c733bd8d29ea1615c0d6faddea38879be50e75f988",
+    "bytes": 17846
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementTask.prefab.meta",
+    "sha256": "7d1cea8b06ef84f1d611f4162a9766fa51571ff8e82516568d406c34a65d6ff1",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/PreparationForbiddenItem.prefab",
+    "sha256": "4222078206ca5df853f842d5f44a14e909ea8191e063551f182125f2fb7f1893",
+    "bytes": 6580
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/PreparationForbiddenItem.prefab.meta",
+    "sha256": "2e5ccadcd6aff6aa316528a767ff429679625190dab85e66fd2e39f09b8a9871",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusAffliction.prefab",
+    "sha256": "79d3120b3d74fac580d867e41b8c654295fab15b0931a8ecfc6814316fe51449",
+    "bytes": 17927
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusAffliction.prefab.meta",
+    "sha256": "e7a788a3bd894ba3ecf4300c75a3c6a854c2830d9614b779cc5f10dfa6435c1f",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusItem.prefab",
+    "sha256": "f907c68df5a4bd2f0ac32545e6ad6604847fd25e0cb2bdbd8271b970628220fc",
+    "bytes": 27916
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusItem.prefab.meta",
+    "sha256": "db148112d566f3c28191bbe20daabf17a0d9c8ed77a3fd2c70a7b9406ce1500e",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/WarehouseInventorySlotBox.prefab",
+    "sha256": "6c1243ecc72d5c0bec0c4a676dcf25dbde48e6a2ae5c749fadb778db3ba85cda",
+    "bytes": 21630
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box/WarehouseInventorySlotBox.prefab.meta",
+    "sha256": "4ae8b179de3d113b609950aa0037d2b1c5a7d9247899b23d415e819abc6135a9",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/HeldItemPicker.prefab",
+    "sha256": "5e32c8f8575823804e9995a8ae5a0debf607f3d57d34b232fbc2eaf278db1534",
+    "bytes": 39895
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/HeldItemPicker.prefab.meta",
+    "sha256": "f23fc26babd6fbc65d52709c0cea5b1661ef91b707703d07f8f343fb3c1c2189",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/ItemContextMenu.prefab",
+    "sha256": "184bd6f3431e5305828c305b3ce00664270a67093a531161bcce989415135f6e",
+    "bytes": 6147
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/ItemContextMenu.prefab.meta",
+    "sha256": "cc4a8cd0141cafb4e66271d17fdbd8d382624349f361101fbc27494af8510a0c",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/ItemTooltip.prefab",
+    "sha256": "d9f88ddeee6490c4ec2975cc05d19f5a776a4d5ed868a8b424bbbb4b1aaffd89",
+    "bytes": 18234
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/ItemTooltip.prefab.meta",
+    "sha256": "0a20528fb152ac6059cf7dd6f08cefcfceec4f9ad694052f320d9114cf93d9f9",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/EquipmentManagement.prefab",
+    "sha256": "fe08b883db87f4bf67b00d802bb1f5ca55826d71b65a28cdf27da84e59f48f86",
+    "bytes": 160313
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/EquipmentManagement.prefab.meta",
+    "sha256": "3b1cc8e76989727d82bfb2ed9c42eaccfc7273dfc5d2f2d79785cbb5534b3bcc",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/JournalManagement.prefab",
+    "sha256": "5911913756192d7c09681f164906f1febbc078f94f914fd4f3a4c365651d917e",
+    "bytes": 57063
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/JournalManagement.prefab.meta",
+    "sha256": "01c20cfad66d0d7f4b82344430622375a0ace2ad931d7093c4f105a1addb8b20",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/MapManagement.prefab",
+    "sha256": "b6491a49d042f8f264b6373b35f62f86908e6238f3d79a820f674a054eb959d8",
+    "bytes": 48169
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/MapManagement.prefab.meta",
+    "sha256": "647bf142206d8331243d1a1fafbc48d172c49aef8ba0ab86210ebd84910481ed",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/StatusManagement.prefab",
+    "sha256": "f7841ca81e98b90148694e43016368c84b32e614c418cf7d72550181470af314",
+    "bytes": 88387
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/StatusManagement.prefab.meta",
+    "sha256": "fb59d9c0d1bbb765133646bf4c97d1f150dae1fbf43ff22c9d926bc105801287",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/TasksManagement.prefab",
+    "sha256": "b05d728fe686d5e992b7d8397f50c48ffcfdaa062abea649f7002fbb85458aa5",
+    "bytes": 71040
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page/TasksManagement.prefab.meta",
+    "sha256": "d5cfa8685e57ed2acbf3c772441903b3da688a4283e56b0ace0df5e63f41be67",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab",
+    "sha256": "3eb1786b1ecd2d8bae82d36c678db86909d0a603e63f41b5a391c683618f0fd5",
+    "bytes": 16831
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab.meta",
+    "sha256": "a299a1e1aa160d3d6b7636d8008c56c6644e8f867ef208653b34880e60cfe63d",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab",
+    "sha256": "770ad6d295da61d25a00044691a26ab584e2d8d826e39e9a8fe68b768b6c8e4e",
+    "bytes": 83505
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab.meta",
+    "sha256": "59fd5a222e8cff448baba9dc00f139f48271aebb97155781e99828123a31c8ba",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Map/Box/MapMarkerBox.prefab",
+    "sha256": "e7af31f581be8da85b88f2a22db6813a716f7f43291319cbc992b4a9b919b2c2",
+    "bytes": 4444
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Map/Box/MapMarkerBox.prefab.meta",
+    "sha256": "aef62265e7f816feee474ea9de97f31b4f20df84953641a42709c6d162fed697",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Shop/Box/ShopItemBox.prefab",
+    "sha256": "94eafa54baae877edc4b4d1279978057341f271f71faeea2588d22e49c9553e6",
+    "bytes": 24495
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Shop/Box/ShopItemBox.prefab.meta",
+    "sha256": "1c895c1b2143f3959344ebdd27a989c90486ddc4bcdd896e7e8b3105f0eeae8a",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Shop/Shop.prefab",
+    "sha256": "443e8452fcdb7db5ca630ffa8068eb762d0856938e2308e81b5d502e9af16044",
+    "bytes": 97546
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Shop/Shop.prefab.meta",
+    "sha256": "518bac12bfd8145df0cd47e579d6a2fa20dda46574518df85440ca95070f96b6",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBox.prefab",
+    "sha256": "9f7ae85f3f47f032a4ff3e46d9fc45a1520ef3efa4034bbc1659a43bd141f052",
+    "bytes": 15658
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBox.prefab.meta",
+    "sha256": "f811934c7e01a974cc067fd31de223c1ca322a31b4dca1c97e38353606c6353b",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingHud.prefab",
+    "sha256": "2186a17fc383dc4a247934555bb2387f2c6e96cc303ed07954ce0e53736ace7c",
+    "bytes": 53723
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingHud.prefab.meta",
+    "sha256": "1daac1391e6947c01e2d41b47b573ed934cceb24d5d593e5aef0f79e39e0fca3",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingSelect.prefab",
+    "sha256": "367e35a96a9b5288209b793abcb7b630da803edfc2f38918e6598a7698689731",
+    "bytes": 34568
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingSelect.prefab.meta",
+    "sha256": "e8e61bac6aab30f88d30c1c009311a571735c7fa20f2fef147a929a375e7f5c0",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/CivilisationValleyMap.unity",
+    "sha256": "d92925f99c121b4547707f8ca7d7d5ea56d62796c5102ab0b3bde3f9903e7441",
+    "bytes": 911004
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/CivilisationValleyMap.unity.meta",
+    "sha256": "bf40136d81ae534f3c43c84fdbde35251c87a1b9d4041b743d1e777a63fc312c",
+    "bytes": 155
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/SurvivalSampleMap.unity",
+    "sha256": "2c159ac7107d3e340f502a155f4bb03fb6ef7dc3918c2b54c64e522ae556de40",
+    "bytes": 20995
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/SurvivalSampleMap.unity.meta",
+    "sha256": "19d88f473f92d691470a751207547427111c8cb7511866672462bb25a6697909",
+    "bytes": 162
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/ValleyArtSample.unity",
+    "sha256": "903961405381fea6c010e42a7057915aee92ab1fcfa52ce5149727ad764e5265",
+    "bytes": 2817197
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/ValleyArtSample.unity.meta",
+    "sha256": "c6fcf20ff2be4c18ce2643f962be4b3e5ef7e1ea576456dded70523cd08c6740",
+    "bytes": 155
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationSettlementUI.cs",
+    "sha256": "cd2088a9793c050078db3031b8881c982ba45d27e76c5a02281bc513bcb14b61",
+    "bytes": 264
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationSettlementUI.cs.meta",
+    "sha256": "0e95cfc54b34bbd7c5de691b3e7b1c38150b05050042b2e1d53395f01060f719",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationWorkshopUI.cs",
+    "sha256": "d0a97f164d24feedf9d337f8fc2c93cfd6eaa8773594d33f506fe18bb57d32b0",
+    "bytes": 365
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationWorkshopUI.cs.meta",
+    "sha256": "8686bc15e6923247ac91c978023ffe3f3a7634b322cff6b019f89a79ff78dd4c",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftCategoryBoxUI.cs",
+    "sha256": "f05cd89fab70c1293c9a1075236b8bf7edad646f4481f7f50c116839c096d8d2",
+    "bytes": 261
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftCategoryBoxUI.cs.meta",
+    "sha256": "89ac43e85cde4f9f5ce4393178a1888c7738dca39d2b48b30b299f185443ee73",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftMaterialBoxUI.cs",
+    "sha256": "8d7718faa5bfe599d4daca80f69f601583219e79fa471a0edf21ad2c46810403",
+    "bytes": 265
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftMaterialBoxUI.cs.meta",
+    "sha256": "06ce780503bd78bf7a3498897a2524e081421bf478af436ae346110b826c6b16",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftRecipeBoxUI.cs",
+    "sha256": "2ff0c24febdea832bccae99dbbcb0f649ea145284f2250989a3b20d437a96cb1",
+    "bytes": 422
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftRecipeBoxUI.cs.meta",
+    "sha256": "8cf9540f72b09bb2e4a660eac8cacff415df86e23851cb738eb785f80e5439ee",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/CraftUI.cs",
+    "sha256": "e9d6772ce77b93dd88cd201208e4700fa5f1f637d0577c7a204510316fcef638",
+    "bytes": 810
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/CraftUI.cs.meta",
+    "sha256": "feb3204d85d6186914c7a9232b8e0185a82b80c4efd8cd1e520501ff4285c6c1",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box/DialogueChoiceBoxUI.cs",
+    "sha256": "c437c569bdee56376e8dd7945e0068ee5358af1e73154a47317897bb6c1fa60e",
+    "bytes": 223
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box/DialogueChoiceBoxUI.cs.meta",
+    "sha256": "a8c4a2f88f84eac8360083a7aeeabc6f7f292bd4374941ff5fdd6e969b3fb0cd",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/DialogueUI.cs",
+    "sha256": "d6fe22dc4f92f64a53eac1e58056ad3700d2f33ff0aa21665c777d3890019feb",
+    "bytes": 367
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/DialogueUI.cs.meta",
+    "sha256": "b100d47d330dab5fcfa794781386e942faf4238adbcc8e376f31fbc1620028f1",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box/MapSelectionOptionBoxUI.cs",
+    "sha256": "07fc24941da3ee0877d17d283eff01d51bd23e335d08d6386f4754938744db68",
+    "bytes": 386
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box/MapSelectionOptionBoxUI.cs.meta",
+    "sha256": "bcd9bf22415d06afaa28696c30c672d5888383d278e7c0d3af2a91e8d61be6a5",
+    "bytes": 60
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/ExpeditionHudUI.cs",
+    "sha256": "7bb5ba8dc9425d240700b2e9de71e6fe17508b4bc803f190d98e27c494621131",
+    "bytes": 661
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/ExpeditionHudUI.cs.meta",
+    "sha256": "5716d47b16830b9869158daa4f4bdb38aa6ef4e729ec7950dcc3c64f62c0d17c",
+    "bytes": 254
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/MapSelectionUI.cs",
+    "sha256": "0bc4d802b482c74310419e04c300f69fe999f0c654a086cffbcc8d6e92d7e425",
+    "bytes": 891
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/MapSelectionUI.cs.meta",
+    "sha256": "821fe54e09ba26eddd4fd5328887d645ec1687dea87b107c6ad383cb3bb38bce",
+    "bytes": 60
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs",
+    "sha256": "348979bad9eb1a2bbeeff582bcf054b486853c0b4643d13a1cf7d21aae5b9f06",
+    "bytes": 3523
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs.meta",
+    "sha256": "aaab2dccfed200d9f53854849f434ea1499d79f69947dce93525782ad156267c",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/EquipmentSlotBoxUI.cs",
+    "sha256": "5442a14c7d63f0b36a2a6a7220217f0ae4a204e52a93a83995ec76919616f296",
+    "bytes": 2550
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/EquipmentSlotBoxUI.cs.meta",
+    "sha256": "15ecebc8d431fb33d82b024f64a9dc8d01cd5f8f1fbd3a3d170ed37481205236",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/InventorySlotBoxUI.cs",
+    "sha256": "34c4fae8b778a0f0318027859aafbcbd6d76cb358ce6fc45cbe9b53e5e7d45c8",
+    "bytes": 611
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/InventorySlotBoxUI.cs.meta",
+    "sha256": "ff45f36221d008efd27d13fe823e14a8faa52d3632440b65d28d5ceb8bd7e6d0",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ItemContextActionBoxUI.cs",
+    "sha256": "a33b2dfa69c3587e8752f67542e6b3f5b8de96ebe76b51011e72207a9124e0fa",
+    "bytes": 225
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ItemContextActionBoxUI.cs.meta",
+    "sha256": "3ca5dec4073715da7c2abe42ce23ce44161f3571b969d896215295fb252fa63b",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ManagementTaskBoxUI.cs",
+    "sha256": "d7fcc73b5c2cf1b4f4c7dafa34836c8c4eab99c9334cc029740caac5d2e71ca4",
+    "bytes": 312
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ManagementTaskBoxUI.cs.meta",
+    "sha256": "6ff6efc2d5163ba0803c33efefb51494e4550d1aa920b6564f21d2afe485de4c",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/PreparationForbiddenItemBoxUI.cs",
+    "sha256": "da0f2ee0c4a7bb2d7c05c4d4d5a41b6936270323709e37cb2eb33c40a755f980",
+    "bytes": 174
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/PreparationForbiddenItemBoxUI.cs.meta",
+    "sha256": "bb61c04a507b047f3c960464f13aa0104632176b542efc98d7c6d3af70f0bdfc",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusAfflictionBoxUI.cs",
+    "sha256": "8b8933c099995081b3dda1a5c942a6ba15ebf94424f99ed174a9d6bc8f354892",
+    "bytes": 305
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusAfflictionBoxUI.cs.meta",
+    "sha256": "257b052f9f3665c69228c4cb5953e956151203ccb2ab3e5b6d377a0e591e1412",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusItemBoxUI.cs",
+    "sha256": "80f5ffad73678ca60c87704fdfc3afa677174c953857673f5f896120478c9c30",
+    "bytes": 630
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusItemBoxUI.cs.meta",
+    "sha256": "b8d43390712a3b772ab57be0791eaaf60a6f62d900889187b23fe51d7fb57ed5",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/HeldItemPickerUI.cs",
+    "sha256": "2965f564584229214e979819bf0af750eff36a615b77475a22f63e04908684f2",
+    "bytes": 333
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/HeldItemPickerUI.cs.meta",
+    "sha256": "875334db7ea05e2a3b56fc04593ca8e3280ec681fb7028e7250ca8c1f62ee031",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemContextMenuUI.cs",
+    "sha256": "355dea06ea6a9e86ec8508f86c8bcaecb04786863971117db6f1a74e593b56dc",
+    "bytes": 187
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemContextMenuUI.cs.meta",
+    "sha256": "2abd4ee6a0f4fdeb29aecc5b37e232efb242fab69bb8a0c5cb364cf5f3617786",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemTooltipUI.cs",
+    "sha256": "414e4c69d3b6d932662c3408b88aee6edbb645f372a9320af7a17c7546af4d3c",
+    "bytes": 345
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemTooltipUI.cs.meta",
+    "sha256": "a448bb128e0f0cebb2651b033b1435eb9e3c2315fba2e0ab332272482a880f04",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/EquipmentManagementPageUI.cs",
+    "sha256": "4e7af3fedf3cc5266b73656024e96ba4c86b2a24a25633f7c2e1f2f7ddfd5e18",
+    "bytes": 744
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/EquipmentManagementPageUI.cs.meta",
+    "sha256": "1c5525466381991b86b30984b0db8098f6eadc5d5c86a3da28d663181dc8e382",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/JournalManagementPageUI.cs",
+    "sha256": "c3a26b14756dec7dd02b4f79659f787f8274a383f0f846106dcc1235524ea1f1",
+    "bytes": 569
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/JournalManagementPageUI.cs.meta",
+    "sha256": "466057c257a7cd610889f2c5fdf00d1331b5e52693dce5ab60bb283d2b4f79da",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/MapManagementPageUI.cs",
+    "sha256": "2078638a3e954f14327bf1fa677fd14a0fd6bd4a3c97431d3d3d8784001f34cb",
+    "bytes": 663
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/MapManagementPageUI.cs.meta",
+    "sha256": "c02d7cf83d6d4fe498bea12f604ae8782e713ac68a93ea2bbc17550dded1f67f",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/StatusManagementPageUI.cs",
+    "sha256": "d8139a0b9bef1dc5e7c058addde735b03c589a90cc2d6d333e0566cd963abcca",
+    "bytes": 770
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/StatusManagementPageUI.cs.meta",
+    "sha256": "c264b62d47ea78b3d7d245863d39bd88cf1c671af92d9df5dfbbb3a66b0d038e",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/TasksManagementPageUI.cs",
+    "sha256": "c3b93a2128199426c5aec742af3c2223947afe852538bc124d9c2db596becb78",
+    "bytes": 664
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/TasksManagementPageUI.cs.meta",
+    "sha256": "e54f7124b9c77400525580b50d69b867b26611919051f3601e165c079fed167d",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/SearchContainerUI.cs",
+    "sha256": "7d42e5f24fd4c7cd056201c265f889969e0d11e13b47773e7e93e5c96905a788",
+    "bytes": 383
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/SearchContainerUI.cs.meta",
+    "sha256": "ae6e16387ebc30a5c8a45dc4e092654f9aa24bafb6a709a75fb60e9e758cac0d",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/WarehouseUI.cs",
+    "sha256": "f0e93f61824e0695e001db540dae5e695fde4619259278717883e07f1d74d96e",
+    "bytes": 682
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/WarehouseUI.cs.meta",
+    "sha256": "f122375397899e8edd5787d98be6ef02b9c0537a7cd2abc98cc3022a066b8c8d",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Map/Box/MapMarkerBoxUI.cs",
+    "sha256": "eebc4a25a2a098a96934f28c70fd20eec5a878c52c228b5f939731e3908ef4e0",
+    "bytes": 200
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Map/Box/MapMarkerBoxUI.cs.meta",
+    "sha256": "700ed1d8b4efa0cd87d42f97889ef7cf292bb809a32514f0ea2ad629d6d2a1cf",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/Box/ShopItemBoxUI.cs",
+    "sha256": "4bc90e45d553367c37cc8d674f61a9ccd984f6f5665d5d229ed67af951336d1d",
+    "bytes": 411
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/Box/ShopItemBoxUI.cs.meta",
+    "sha256": "9fb2bd3282ea455d4dd38e59cdf30cfbbab6542d804847efe6c9a824069fef55",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/ShopUI.cs",
+    "sha256": "52e0e27577d075f330290ba66bc5f8409339a73815799c6b57565c7084af33bf",
+    "bytes": 850
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/ShopUI.cs.meta",
+    "sha256": "a3ec3aa69f241ceccecf5d497aea225a80b350173f77a7cbedaa3cdf48c3e0f7",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBoxUI.cs",
+    "sha256": "c54ef908b8ccb1b4d701fd2b870f5ebc31433004aefa3482e7fcb72d0a81226a",
+    "bytes": 305
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBoxUI.cs.meta",
+    "sha256": "c7d25722f23bfa6e47d377a2b24f665ab4088ee227448717f564ff0cea460cb6",
+    "bytes": 60
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingHudUI.cs",
+    "sha256": "3ca0bf2e85fac60c73ea9a60a9c9a0a2c619b7926d1b3ff2c18248590804f1a2",
+    "bytes": 642
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingHudUI.cs.meta",
+    "sha256": "05f2ca4e04d1487d0bd076b00ee02f933bfb696679548ff68fdaf1ce7a7e813c",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingSelectUI.cs",
+    "sha256": "039c139d8deebd2f19b0ec815dc4c446fc8a12cb8403acdbe69534395fd8ea6d",
+    "bytes": 290
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingSelectUI.cs.meta",
+    "sha256": "f1c6dca69b7e58a3277f8b7e8cb0e81ce9f2024641d07ffba005bf1141bbc4b9",
+    "bytes": 60
+  },
+  {
+    "path": "Client/Assets/Readme.asset",
+    "sha256": "e448f8ad5ad8b0b8802c1dcf19a49f20cb9cf7eff4d0789670926059285b2f98",
+    "bytes": 1178
+  },
+  {
+    "path": "Client/Assets/Readme.asset.meta",
+    "sha256": "86b2e76e458e22228995ddddfaba9422b5dedcfe216ba9028208d3dd6f831ae7",
+    "bytes": 190
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Icons/URP.png",
+    "sha256": "1d17a9ff3537859abe2c008603d29d90cf43191ae77aa386167cc65e53ba03d9",
+    "bytes": 24069
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Icons/URP.png.meta",
+    "sha256": "03823ec2c2b908ccb33338f867f94977ed50895d4d692cd4146e15ada6ae8c8d",
+    "bytes": 3290
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Layout.wlt",
+    "sha256": "30d232879ca5c0c7377f245c9601feaf77053e5d70c222419ef25782e3272d2c",
+    "bytes": 16133
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Layout.wlt.meta",
+    "sha256": "436feb69902b5241ed43e01228b8ab54849270cdb6adcc0f35b83b7e5ce6522d",
+    "bytes": 184
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs",
+    "sha256": "dba85239fefb9cd33ab8a330100e550fa5a2eb0028b9b4fc2e1cbb23328dc370",
+    "bytes": 6636
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Scripts/Editor/ReadmeEditor.cs.meta",
+    "sha256": "6e8b1ed493b9120709c93fc0c1ca3b5a1f729ea3144ebfc1ce7073ec856f5712",
+    "bytes": 276
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Scripts/Readme.cs",
+    "sha256": "baa133f5baae44c1217e10c64061f8fb7d56878477339d746470502165d35019",
+    "bytes": 318
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Scripts/Readme.cs.meta",
+    "sha256": "d5fd919374ef6579b847f253237c31e58e1d5d4302a1eba70b13c9af7eca7958",
+    "bytes": 329
+  }
+]

@@ -10,41 +10,6 @@ namespace Game.Tests
 {
     public sealed class UiPrefabCompatibilityTests
     {
-        [Test]
-        public void MapSelectionUsesFormalBlockingDialogAndBoxPrefab()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Expedition/MapSelection.prefab");
-            var boxPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(
-                "Assets/Game/Prefabs/UI/Expedition/Box/MapSelectionOptionBox.prefab");
-            var ui = prefab.GetComponent<MapSelectionUI>();
-            var box = boxPrefab.GetComponent<MapSelectionOptionBoxUI>();
-
-            Assert.That(prefab, Is.Not.Null);
-            Assert.That(boxPrefab, Is.Not.Null);
-            Assert.That(ui, Is.Not.Null);
-            Assert.That(box, Is.Not.Null);
-            Assert.That(ui.BtnClose, Is.Not.Null);
-            Assert.That(ui.MapList, Is.Not.Null);
-            Assert.That(ui.MapScroll, Is.Not.Null);
-            Assert.That(ui.MapScroll.content, Is.SameAs(ui.MapList.transform));
-            Assert.That(ui.MapList.itemPrefab, Is.SameAs(boxPrefab));
-            Assert.That(box.TextName, Is.Not.Null);
-            Assert.That(box.TextDetail, Is.Not.Null);
-            Assert.That(box.TextState, Is.Not.Null);
-            Assert.That(box.BtnSelect, Is.Not.Null);
-            Assert.That(ui.BtnAction, Is.Not.Null);
-            Assert.That(ui.ActionText, Is.Not.Null);
-            Assert.That(ui.ActionText.GetComponent<LocalizedText>(), Is.Null, "动态状态文字由控制器刷新");
-            Assert.That(prefab.GetComponentsInChildren<LocalizedText>(true)
-                .Any(item => item.Key == "ui.map_selection.title"), Is.True);
-            Assert.That(ui.BtnClose.GetComponentInChildren<TextMeshProUGUI>(true).text, Is.EqualTo("×"));
-            Assert.That(CountMissingScriptsInHierarchy(prefab), Is.Zero);
-            Assert.That(CountMissingScriptsInHierarchy(boxPrefab), Is.Zero);
-
-
-
-        }
 
         [Test]
         public void Message_ButtonRoot_UsesCustomListWithHorizontalLayout()

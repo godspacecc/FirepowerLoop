@@ -449,7 +449,7 @@ namespace Game.Tests
 
                 Assert.IsFalse(cameraSystem.TryGetCameraPose(out _, out _));
                 Assert.IsTrue(unitSystem.TryRegister(new UnitSnapshot(1, 9, UnitType.Player, UnitSource.Player, "player.local", Vector3.zero, Quaternion.identity, UnitAuthorityMode.Local, 0, true), out _));
-                Game.Interface.SendEvent(new PlayerReadyEvent(1, 9));
+                Game.Interface.SendEvent(new ArcadePlayerReadyEvent(1, 9));
 
                 Assert.IsTrue(cameraSystem.TryGetCameraPose(out var position, out var up));
                 Assert.That(position, Is.EqualTo(cameraPort.Position));
@@ -459,10 +459,10 @@ namespace Game.Tests
                 Assert.IsTrue(unitSystem.TrySetActive(1, false));
                 Assert.IsFalse(cameraSystem.TryGetCameraPose(out _, out _));
 
-                Game.Interface.SendEvent(new PlayerReadyEvent(1, 9));
+                Game.Interface.SendEvent(new ArcadePlayerReadyEvent(1, 9));
                 Assert.IsFalse(cameraSystem.TryGetCameraPose(out _, out _));
                 Assert.IsTrue(unitSystem.TrySetActive(1, true));
-                Game.Interface.SendEvent(new PlayerReadyEvent(1, 9));
+                Game.Interface.SendEvent(new ArcadePlayerReadyEvent(1, 9));
                 Assert.IsTrue(cameraSystem.TryGetCameraPose(out _, out _));
                 Assert.IsTrue(unitSystem.Remove(1, UnitRemovedReason.MapInstanceReleased));
                 Assert.IsFalse(cameraSystem.TryGetCameraPose(out _, out _));
@@ -534,7 +534,6 @@ namespace Game.Tests
             public void RotateTowards(Quaternion rotation, float maxDegreesDelta) { }
             public void FaceDirection(Vector3 direction) { }
             public void SetTiliRing(float current, float maximum, bool isSprinting, bool exhausted) { }
-            public void SetWeaponPresentation(WeaponSlot activeSlot, bool showShortSword, bool showBow) { }
             public bool TryGetProjectileOrigin(Vector3 direction, out Vector3 origin)
             {
                 origin = Position;

@@ -1,0 +1,81 @@
+{
+  "Client/Assets/Samples/Input System/1.7.0/On-Screen Controls/Stick.prefab": [
+    "Client/Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab",
+    "Client/Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab"
+  ],
+  "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingHud.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftMaterialBox.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/EquipmentSlotBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftMaterialBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingSelect.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBox.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftRecipeBox.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Expedition/ExpeditionHudUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftCategoryBox.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Craft/Craft.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftRecipeBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/InventorySlotBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Craft/CraftUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Inventory/Box/InventorySlotBox.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingSelectUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Inventory/SearchContainerUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftCategoryBoxUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/Inventory/WarehouseUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ],
+  "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingHudUI.cs": [
+    "Client/Assets/Tests/EditMode/Flow/UiFunctionalDirectoryMigrationTests.cs"
+  ]
+}

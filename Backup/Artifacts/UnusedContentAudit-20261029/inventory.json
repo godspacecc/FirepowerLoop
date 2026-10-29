@@ -1,0 +1,467 @@
+{
+  "scope": "Read-only source and asset inventory; no tests or builds",
+  "sizes": {
+    "Art": {
+      "files": 60,
+      "MiB": 164.79
+    },
+    "Game/Art": {
+      "files": 2580,
+      "MiB": 617.7
+    },
+    "Game/Art/Environment/CivilisationExpedition": {
+      "files": 171,
+      "MiB": 27.48
+    },
+    "Game/Art/Civilisation": {
+      "files": 16,
+      "MiB": 0.38
+    },
+    "Game/MapTerrainSources": {
+      "files": 32,
+      "MiB": 54.83
+    },
+    "TutorialInfo": {
+      "files": 4,
+      "MiB": 0.04
+    },
+    "Samples": {
+      "files": 4,
+      "MiB": 0.05
+    }
+  },
+  "legacyUIPrefabs": {
+    "Civilisation": [
+      "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationSettlement.prefab",
+      "Client/Assets/Game/Prefabs/UI/Civilisation/CivilisationWorkshop.prefab"
+    ],
+    "Craft": [
+      "Client/Assets/Game/Prefabs/UI/Craft/Craft.prefab",
+      "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftCategoryBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftMaterialBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Craft/Box/CraftRecipeBox.prefab"
+    ],
+    "Dialogue": [
+      "Client/Assets/Game/Prefabs/UI/Dialogue/Dialogue.prefab",
+      "Client/Assets/Game/Prefabs/UI/Dialogue/Box/DialogueChoice.prefab"
+    ],
+    "Expedition": [
+      "Client/Assets/Game/Prefabs/UI/Expedition/ExpeditionHud.prefab",
+      "Client/Assets/Game/Prefabs/UI/Expedition/MapSelection.prefab",
+      "Client/Assets/Game/Prefabs/UI/Expedition/Box/MapSelectionOptionBox.prefab"
+    ],
+    "Inventory": [
+      "Client/Assets/Game/Prefabs/UI/Inventory/Bag.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/HeldItemPicker.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/ItemContextMenu.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/ItemTooltip.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/QuickBarHud.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/SearchContainer.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Warehouse.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/InventorySlotBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/ItemContextActionBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementInventorySlotBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/ManagementTask.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/PreparationForbiddenItem.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusAffliction.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/StatusItem.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Box/WarehouseInventorySlotBox.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Page/EquipmentManagement.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Page/JournalManagement.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Page/MapManagement.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Page/StatusManagement.prefab",
+      "Client/Assets/Game/Prefabs/UI/Inventory/Page/TasksManagement.prefab"
+    ],
+    "Shop": [
+      "Client/Assets/Game/Prefabs/UI/Shop/Shop.prefab",
+      "Client/Assets/Game/Prefabs/UI/Shop/Box/ShopItemBox.prefab"
+    ],
+    "TemporaryBuilding": [
+      "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingHud.prefab",
+      "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/TemporaryBuildingSelect.prefab",
+      "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBox.prefab"
+    ],
+    "Map": [
+      "Client/Assets/Game/Prefabs/UI/Map/Box/MapMarkerBox.prefab"
+    ]
+  },
+  "legacyUIViews": [
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationSettlementUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation/CivilisationWorkshopUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/CraftUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/DialogueUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/ExpeditionHudUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/MapSelectionUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/HeldItemPickerUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemContextMenuUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/ItemTooltipUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/SearchContainerUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/WarehouseUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/ShopUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingHudUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/TemporaryBuildingSelectUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftCategoryBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftMaterialBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box/CraftRecipeBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box/DialogueChoiceBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box/MapSelectionOptionBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/EquipmentSlotBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/InventorySlotBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ItemContextActionBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/ManagementTaskBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/PreparationForbiddenItemBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusAfflictionBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box/StatusItemBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/EquipmentManagementPageUI.cs",
+      "other_runtime_cs_references": [
+        "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs"
+      ]
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/JournalManagementPageUI.cs",
+      "other_runtime_cs_references": [
+        "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs"
+      ]
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/MapManagementPageUI.cs",
+      "other_runtime_cs_references": [
+        "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs"
+      ]
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/StatusManagementPageUI.cs",
+      "other_runtime_cs_references": [
+        "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs"
+      ]
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page/TasksManagementPageUI.cs",
+      "other_runtime_cs_references": [
+        "Client/Assets/Game/Scripts/Controller/UI/Inventory/BagUI.cs"
+      ]
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Map/Box/MapMarkerBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/Box/ShopItemBoxUI.cs",
+      "other_runtime_cs_references": []
+    },
+    {
+      "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box/TemporaryBuildingOptionBoxUI.cs",
+      "other_runtime_cs_references": []
+    }
+  ],
+  "emptyScriptDirectories": [
+    "Client/Assets/Game/Scripts/Command/Shop",
+    "Client/Assets/Game/Scripts/Controller/Extraction",
+    "Client/Assets/Game/Scripts/Controller/Npc",
+    "Client/Assets/Game/Scripts/Controller/TemporaryBuilding",
+    "Client/Assets/Game/Scripts/Controller/World",
+    "Client/Assets/Game/Scripts/Model/Civilisation",
+    "Client/Assets/Game/Scripts/Model/Combat",
+    "Client/Assets/Game/Scripts/Model/Currency",
+    "Client/Assets/Game/Scripts/Model/Equipment",
+    "Client/Assets/Game/Scripts/Model/Expedition",
+    "Client/Assets/Game/Scripts/Model/Extraction",
+    "Client/Assets/Game/Scripts/Model/Inventory",
+    "Client/Assets/Game/Scripts/Model/Loot",
+    "Client/Assets/Game/Scripts/Model/PlayerAttribute",
+    "Client/Assets/Game/Scripts/Model/PlayerCondition",
+    "Client/Assets/Game/Scripts/Model/Projectile",
+    "Client/Assets/Game/Scripts/Model/Shop",
+    "Client/Assets/Game/Scripts/Model/TemporaryBuilding",
+    "Client/Assets/Game/Scripts/System/Civilisation",
+    "Client/Assets/Game/Scripts/System/Combat",
+    "Client/Assets/Game/Scripts/System/Craft",
+    "Client/Assets/Game/Scripts/System/Dialogue",
+    "Client/Assets/Game/Scripts/System/Environment",
+    "Client/Assets/Game/Scripts/System/Equipment",
+    "Client/Assets/Game/Scripts/System/Expedition",
+    "Client/Assets/Game/Scripts/System/Extraction",
+    "Client/Assets/Game/Scripts/System/Interaction",
+    "Client/Assets/Game/Scripts/System/Inventory",
+    "Client/Assets/Game/Scripts/System/Loot",
+    "Client/Assets/Game/Scripts/System/PlayerAction",
+    "Client/Assets/Game/Scripts/System/PlayerAttribute",
+    "Client/Assets/Game/Scripts/System/PlayerCondition",
+    "Client/Assets/Game/Scripts/System/Save",
+    "Client/Assets/Game/Scripts/System/Shop",
+    "Client/Assets/Game/Scripts/System/TemporaryBuilding",
+    "Client/Assets/Game/Scripts/Utility/Combat",
+    "Client/Assets/Game/Scripts/Utility/Expedition",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Civilisation",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Craft",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Dialogue",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Expedition",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Inventory",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Map",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Player",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Shop",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/TemporaryBuilding",
+    "Client/Assets/Game/Scripts/Controller/View/World",
+    "Client/Assets/Game/Scripts/Controller/ViewCtrl/Civilisation",
+    "Client/Assets/Game/Scripts/Controller/ViewCtrl/Extraction",
+    "Client/Assets/Game/Scripts/Controller/ViewCtrl/Npc",
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Inventory/Page"
+  ],
+  "collectPaths": [
+    "Assets/Game/Scenes/Boot.unity",
+    "Assets/Game/Scenes/Main.unity",
+    "Assets/Game/Scenes/TaskSampleMap.unity",
+    "Assets/Game/Scenes/TaskSampleMap",
+    "Assets/Game/Art/UI/Icon_Close.png",
+    "Assets/Game/Art/UI/TiliRing.png",
+    "Assets/Game/Art/UI/Loading",
+    "Assets/Game/Art/UI/Items",
+    "Assets/Game/Fonts/Chinese",
+    "Assets/Game/Config",
+    "Assets/Game/Dlls",
+    "Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/ArcadeResume.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/ArcadeRoundTransition.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/ArcadeScoreShop.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/ArcadeShop.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/Box/ArcadePlayerStatusBox.prefab",
+    "Assets/Game/Prefabs/UI/Arcade/Box/ArcadeShopOfferBox.prefab",
+    "Assets/Game/Prefabs/UI/Common",
+    "Assets/Game/Prefabs/UI/Diagnostics",
+    "Assets/Game/Prefabs/UI/Home",
+    "Assets/Game/Prefabs/UI/Notify",
+    "Assets/Game/Prefabs/UI/Online",
+    "Assets/Game/Prefabs/UI/Player",
+    "Assets/Game/Prefabs/UI/World",
+    "Assets/Game/Prefabs/Characters/ArcadeEnemyArcher.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeEnemyBossArcher.prefab",
+    "Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab",
+    "Assets/Game/Prefabs/Characters/GrayboxArcher.prefab",
+    "Assets/Game/Prefabs/Characters/GrayboxEnemy.prefab",
+    "Assets/Game/Prefabs/Characters/GrayboxNpc.prefab",
+    "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeBasicWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeGrenadeWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadePiercingWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeRapidWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeRaygunWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeRocketWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/ArcadeSpreadWeaponShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/GrayboxBow.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/GrayboxShortSword.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/GreatswordShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab",
+    "Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab",
+    "Assets/Game/Prefabs/Combat/GrayboxArrow.prefab",
+    "Assets/Game/Prefabs/Combat/GrayboxBullet.prefab",
+    "Assets/Game/Prefabs/Combat/GrayboxGrenade.prefab",
+    "Assets/Game/Prefabs/Combat/GrayboxPlasma.prefab",
+    "Assets/Game/Prefabs/Combat/GrayboxRocket.prefab",
+    "Assets/Game/Prefabs/Building",
+    "Assets/Game/Prefabs/Environment",
+    "Assets/Game/Prefabs/SceneObjects/AmmoBulletPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/AmmoGrenadePickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/AmmoRocketPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeBootsSpeedEffect.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeChickenCompanion.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropAxe.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropBarrel.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropBomb.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropBoots.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropChicken.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropClock.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropCoin.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropDash.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropDecoy.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropElectricOrb.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropFirstPerson.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropGloves.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropGreatsword.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropKnife.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropLightning.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropMagnet.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropPickaxe.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropShield.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropShortSword.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropSkullPurple.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDropSkullRed.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeFlamethrower.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeGrenade.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeLootBeam.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeLootGoldBeam.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeLootWeaponBeam.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeMagnetEffect.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadePanzerschreck.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadePiercingGun.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeRifle.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeSawBlade.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeScifiPlasmaRifle.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeScifiShotgun.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeSentryTurret.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeShieldEffect.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeSupportDroneVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeTimedDroneVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDroneExplosion.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeRoundRewardVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeStagePortalVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeFarmVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeTempleVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeMarketplaceVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeShadowCrowVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeShadowTravelVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/ArcadeHerdVisual.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab",
+    "Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab",
+    "Assets/Game/Prefabs/Effects",
+    "Assets/Game/Audio/Music/FoundationMusic.wav",
+    "Assets/Game/Audio/Sound/AmbienceFire.wav",
+    "Assets/Game/Audio/Sound/AmbienceRiver.wav",
+    "Assets/Game/Audio/Sound/ArcadeBombExplosion.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdHoof.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdHoof2.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdHoof3.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdHoof4.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdScrape.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdSnort.wav",
+    "Assets/Game/Audio/Sound/ArcadeHerdImpact.wav",
+    "Assets/Game/Audio/Sound/ArcadeExplosion.wav",
+    "Assets/Game/Audio/Sound/ArcadeExplosionSciFi.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireBasic.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireLauncher.wav",
+    "Assets/Game/Audio/Sound/ArcadeFirePiercing.wav",
+    "Assets/Game/Audio/Sound/ArcadeElectricCharge.wav",
+    "Assets/Game/Audio/Sound/ArcadeElectricDischarge.wav",
+    "Assets/Game/Audio/Sound/ArcadeElectricPowerOn.wav",
+    "Assets/Game/Audio/Sound/ArcadeElectricHit.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireFlameLoop.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireFlameStart.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireRapid.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireRaygun.wav",
+    "Assets/Game/Audio/Sound/ArcadeFireSpread.wav",
+    "Assets/Game/Audio/Sound/ArcadeUiClick.wav",
+    "Assets/Game/Audio/Sound/ArcadeUiConfirm.wav",
+    "Assets/Game/Audio/Sound/ArcadeUiPurchase.wav",
+    "Assets/Game/Audio/Sound/CampfireIgnite.wav",
+    "Assets/Game/Audio/Sound/CombatBulletBody01.wav",
+    "Assets/Game/Audio/Sound/CombatBulletBody02.wav",
+    "Assets/Game/Audio/Sound/CombatBulletIce.wav",
+    "Assets/Game/Audio/Sound/CombatBulletMetal01.wav",
+    "Assets/Game/Audio/Sound/CombatBulletMetal02.wav",
+    "Assets/Game/Audio/Sound/CombatPunchHit01.wav",
+    "Assets/Game/Audio/Sound/CombatPunchHit02.wav",
+    "Assets/Game/Audio/Sound/CombatSwing01.wav",
+    "Assets/Game/Audio/Sound/CombatSwing02.wav",
+    "Assets/Game/Audio/Sound/FoleyCollectItem.wav",
+    "Assets/Game/Audio/Sound/FoleySearchBag.wav",
+    "Assets/Game/Audio/Sound/FoundationClick.wav",
+    "Assets/Game/Audio/Sound/FoundationSpatial.wav",
+    "Assets/Game/Audio/Sound/WeaponDryFire.wav",
+    "Assets/Game/Audio/Sound/WeaponHandling.wav",
+    "Assets/Game/Audio/Sound/WeaponMagazineIn.wav",
+    "Assets/Game/Audio/Sound/WeaponMagazineOut.wav",
+    "Assets/Game/Audio/Sound/WeaponShotgunCock.wav",
+    "Assets/Game/Audio/Sound/WeaponShotgunLoad.wav"
+  ]
+}

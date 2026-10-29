@@ -77,7 +77,7 @@ namespace Game.Tests
                     "\"BundleInfos\":[" +
                     "{\"BundleName\":\"startup\",\"FileSize\":100,\"Tags\":[\"startup\"]}," +
                     "{\"BundleName\":\"shared\",\"FileSize\":50,\"Tags\":[\"startup\",\"arcade\"]}," +
-                    "{\"BundleName\":\"expedition\",\"FileSize\":200,\"Tags\":[\"expedition\"]}," +
+                    "{\"BundleName\":\"arcade-online\",\"FileSize\":200,\"Tags\":[\"arcade-online\"]}," +
                     "{\"BundleName\":\"untagged\",\"FileSize\":10,\"Tags\":[]}" +
                     "]}");
 
@@ -95,7 +95,7 @@ namespace Game.Tests
                 var tagBytes = (IDictionary)Read<object>(result, "TagBytes");
                 Assert.That(tagBytes["startup"], Is.EqualTo(150L));
                 Assert.That(tagBytes["arcade"], Is.EqualTo(50L));
-                Assert.That(tagBytes["expedition"], Is.EqualTo(200L));
+                Assert.That(tagBytes["arcade-online"], Is.EqualTo(200L));
             }
             finally
             {

@@ -1,0 +1,562 @@
+[
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box.meta",
+    "sha256": "adddbeb0c2a2f0e9f505c4d60ed42b6a7fbc7f3d116cc09eaa2104039f949c8e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Craft/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box.meta",
+    "sha256": "4dd41dc6038a6e860ddf05c9336b00b14fc88405e980cb22d89bcfd16a0eec8b",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Dialogue/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box.meta",
+    "sha256": "7a289aa079dc79313f97886a724653f99e8cfd8e7230f02e02155f4264194584",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Expedition/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box.meta",
+    "sha256": "30b54fa882027bc8ba371208b53f9777e8fc1ca5aeab4f0121fbfdd3164a6c9f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page.meta",
+    "sha256": "250d4653c0b5c302d35295be9deaccc4cb477239559907a10c07b474cf88bd2d",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Inventory/Page"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Map/Box.meta",
+    "sha256": "a99c37e40d2772d82b3819c8a1bc4af088cfcd90808f0fea29db37255bc50e6a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Map/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Shop/Box.meta",
+    "sha256": "47e01ca07ad952f1cf898525f6886c368d5a4c5585cee840a9409ed1f65c3676",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Shop/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box.meta",
+    "sha256": "68f72653fe52d60b0b3b0594c4960ddce0b1100d9539ba5465aa37258cae8008",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/TemporaryBuilding/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Inventory/Page.meta",
+    "sha256": "8357df45c7282911dd141bc1164eb4d54935e719cb0292ad077be61330879e2a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Inventory/Page"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Civilisation.meta",
+    "sha256": "012945a6a705d6c9d02a4e5c21a945f18e9120e3221ba01bbbd9df4a15ef8170",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Civilisation.meta",
+    "sha256": "bec62e9c08844a75e75b4b3c3d24d0d2879a915852fd3a637038810e7bce6cd4",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Craft.meta",
+    "sha256": "dd9bd0ab0dec46ab78f34f375c8710f9c9da9c7fd1ab1cd12d33a95047887500",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Craft"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Dialogue.meta",
+    "sha256": "c68b8f359af963d100591cff1f87e35744cd4f517d03a79a2166398ba65c9677",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Dialogue"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Expedition.meta",
+    "sha256": "eca85041d7f0def0f6f8079ccd889a9b8d4048f9f1b9139b44fc4675417b303f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Expedition"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Map.meta",
+    "sha256": "765dcdaf4dd2067e45756ec1144aff0b8ec1c2b30447e1d4a125150fdad60c13",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Map"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Player.meta",
+    "sha256": "08f4f82a6bd0156235a677f3722c4cd15fd59d6dd256827ba496d0e4cdbf39a9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Player"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Shop.meta",
+    "sha256": "0a0d67d096333b55fb90cb29efb334627372610fc5760bd99d7dc9e21685879a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/Shop"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/TemporaryBuilding.meta",
+    "sha256": "4d13726d2bf4f7aedd2829758360078c5676abe7196eb1ecd4f364b4afd9d71c",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UICtrl/TemporaryBuilding"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/World.meta",
+    "sha256": "fe6882af83d23a1f5cfbdb55a9f6dbd28b8ad29465b0e508a4dd8114e9133759",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/View/World"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Civilisation.meta",
+    "sha256": "69d61394fdddc94af4ca85048b46f486c91aa0aff53c270dce01ba88c8fe5fbc",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Extraction.meta",
+    "sha256": "cd966ec2ec766e9793fe0dc08a73e4fb3ef4d06153420b09a05da8e5f83658e2",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Extraction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Npc.meta",
+    "sha256": "464232327f949906c83c9b9e26c36e1fffe3c94a509f16175333f86cf88572ae",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Npc"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Command/Shop.meta",
+    "sha256": "b2d3723ce8bbdb135dd6c946418df55e72e42a2326e743810a83b87f2465eba0",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Command/Shop"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/Extraction.meta",
+    "sha256": "19c75426e8ed869e4c93b16ade7b3e6a49f4fb66275728a65d7ca180662e3f8d",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/Extraction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/Npc.meta",
+    "sha256": "2d784fb1e1a00813863414cc7b8be98c4bf6bc46bf14cd7c7c997dd031feb9a4",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/Npc"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/TemporaryBuilding.meta",
+    "sha256": "da95b26b8b447e6ad04c0f674e083bace2efee4a38161c480e38da4edff94934",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/TemporaryBuilding"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/World.meta",
+    "sha256": "bc71133b2947d524862def2aef8438c0f5acac69fdef395b7e5809ee8d26dae9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/World"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Civilisation.meta",
+    "sha256": "8658f75e0c8a2447883c7bff82c989bb6150df4679d5fc4763ec2161780f3c9b",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Combat.meta",
+    "sha256": "f8528d2676826585dc8cd08d4cbf2ad1d52f0eec6d6eb433aeb913b12ad2ba7d",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Combat"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Currency.meta",
+    "sha256": "06f80d8a90a29768bdcee8eb540a0260aee271aa8155fc016413867a117308a4",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Currency"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Equipment.meta",
+    "sha256": "998da7761d6c9d88db637cefc2f44af107e1ded9a700215ec62e7f0c52f33515",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Equipment"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Expedition.meta",
+    "sha256": "7cbd77c0a7b79a20ed8d97d73f89695bad5af2deb084c329304f3c100c372fc9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Expedition"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Extraction.meta",
+    "sha256": "aaab26876e67f0a285daec1545ef97716146c499c754b0012985ef83853bc74f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Extraction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Inventory.meta",
+    "sha256": "0f089e1b69ddc423dcbd3a75395038a0a9892ceee4486e755da0864c21544df8",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Inventory"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Loot.meta",
+    "sha256": "e8eee4f42580b1882ccfedc7e05b0274a2ecd317884bd669b3db7a7b7d6a9edf",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Loot"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/PlayerAttribute.meta",
+    "sha256": "c1b9d58205ae649875b8298d97291fa2aff54d92191da391cdfce634a46a0167",
+    "bytes": 175
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/PlayerAttribute"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/PlayerCondition.meta",
+    "sha256": "f87e74f2f161fee27aadef39e447af7a58c13e216194782922696ba2574db184",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/PlayerCondition"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Projectile.meta",
+    "sha256": "ce8eec1fa484fad391404d38a48e9fc6731d6a16b757313d0dfdc4351d184d42",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Projectile"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Shop.meta",
+    "sha256": "117d51772d58c2415445205edd2de6f3b1132a581b9d090c32231eb50eca1952",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/Shop"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/TemporaryBuilding.meta",
+    "sha256": "09e1be96daf88705e6f0d84b514be8f00687774041f6221a63434e9e3770bbbd",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Model/TemporaryBuilding"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Civilisation.meta",
+    "sha256": "59236497cfcf010e9e2e3f5ab7bf132ecfb36f869cfff4048501814ef2591519",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Combat.meta",
+    "sha256": "53bc6c49397cbfd09d67937163bd72164d63360d66347e11dfb2a6ff610e8a4f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Combat"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Craft.meta",
+    "sha256": "a0a477f30958979390b9f99959e2d28add93dd65be429479bab7e5fad1cd28d9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Craft"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Dialogue.meta",
+    "sha256": "75adca75379677220ce78b4d64903388b195a6003832cfbbc460f6b539ab8ae9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Dialogue"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Environment.meta",
+    "sha256": "0011f91dddd27a78175e17117ef28a2e2952c2533683be8279018b088bfcb897",
+    "bytes": 169
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Environment"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Equipment.meta",
+    "sha256": "3c3e271c5f24a1567bb40615dc2238e871951c11ec07852dffb040f88006e46d",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Equipment"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Expedition.meta",
+    "sha256": "e481e8ee9456cc09da9609843305c2ae6da0f074c5e4b3624ad158ec9a38c420",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Expedition"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Extraction.meta",
+    "sha256": "c969a82ec83e082a27a628dd1c196b3468cd366c97dfd20c7c1d7c111784fe3f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Extraction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Interaction.meta",
+    "sha256": "83356cfad0872ac2dac929579737b9e5c917757c7ba37cc378b8eb889abfe384",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Interaction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Inventory.meta",
+    "sha256": "248a02f1e85bcdaa53ab384ea953d3f60d7d00701d2f6d8f668c76399c52ffb1",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Inventory"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Loot.meta",
+    "sha256": "621af87b94b4885b0f22ef6183aa2d3550e50788859265876cd8cfdd19ea93e4",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Loot"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/PlayerAction.meta",
+    "sha256": "a306a536e1106fe6e26407aa100dd9d1290beac4b97f6b33f462f99942d258d3",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/PlayerAction"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/PlayerAttribute.meta",
+    "sha256": "7ef1ae6095644383d3a9edd4df155c5ec3adc08df78770827e47621b669ef930",
+    "bytes": 175
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/PlayerAttribute"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/PlayerCondition.meta",
+    "sha256": "f5ed22c87a27fe2f4d57724774c27dbbfc532ec3820be84cffe26e007a1c392e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/PlayerCondition"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Save.meta",
+    "sha256": "0c81d458c87276b828d51d48c1f3a511ecd6d7b6483dd137f871d890a948ac30",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Save"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Shop.meta",
+    "sha256": "24118570bd1a0d8cb75dc3da4eb939926d70d9c27cda81e257bdffd2a4f42e6e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/Shop"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/TemporaryBuilding.meta",
+    "sha256": "8123968f40e2b0c8e48df81c3c7898c30f75b99b011b231c1f8c04a68855da73",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/System/TemporaryBuilding"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/Combat.meta",
+    "sha256": "e59b945df1c85f16ccc9948d8db95fcf2f801750fe99f4ca5f3c0d73faaf84e2",
+    "bytes": 177
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Utility/Combat"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/Expedition.meta",
+    "sha256": "1e4f0488b61a83eb9666b5f68292a9929da21287ca98e9f2dcc61d96aec83ece",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Utility/Expedition"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Craft/Box.meta",
+    "sha256": "817a962e1a9cfcf67de65b23ac41464365550da7d8da2f15fe4f29aae613b7a9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Craft/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Dialogue/Box.meta",
+    "sha256": "e9253843279d469dee9ce24d5b71dc2e30d833cb226231812abb4673e99b22f7",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Dialogue/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Expedition/Box.meta",
+    "sha256": "2ce7ea32b62a03f7b1baad6b1af30206396888e48b6130b6478dcab775354b50",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Expedition/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Box.meta",
+    "sha256": "8e63daa4472fedaccdd4d6cdb43388f8353de90e6695315a40749c4a370be009",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Inventory/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Inventory/Page.meta",
+    "sha256": "c6582220e8a525a930de83a3a34413dc9246727313516e6ba5f883686e00a140",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Inventory/Page"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Map/Box.meta",
+    "sha256": "5fdc0168a0fd4014c2a0a12bb24ac68ca15f09f04baab82e00b5f36bc186d250",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Map/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Shop/Box.meta",
+    "sha256": "00e933208141eac338ec067b006cd8b216fb397a3a36c0213b4c9a920b3dd487",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Shop/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box.meta",
+    "sha256": "2e489d28d0644c8b77564fb4fd911a0626010b1614c2b43bb844c358129139bd",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/TemporaryBuilding/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Civilisation.meta",
+    "sha256": "1450c482026f03bdbd3c3c62d2e01f6b96dcd96ff0f0e4e7b72c717a1f9254d9",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Civilisation"
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Scripts/Editor.meta",
+    "sha256": "95691357c049014315fcf6e6f690fcc51caa2a71ab2ecaef69fc41674224391b",
+    "bytes": 202
+  },
+  {
+    "emptyDirectory": "Client/Assets/TutorialInfo/Scripts/Editor"
+  },
+  {
+    "path": "Client/Assets/TutorialInfo/Icons.meta",
+    "sha256": "50014f60d3214b170318dd12a9201552b6257b8380fb49ecdba9f90c91a9670e",
+    "bytes": 202
+  },
+  {
+    "emptyDirectory": "Client/Assets/TutorialInfo/Icons"
+  }
+]

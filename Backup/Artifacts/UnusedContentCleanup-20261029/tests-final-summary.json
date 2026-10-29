@@ -1,0 +1,300 @@
+{
+  "Summary": {
+    "TotalTests": 58,
+    "PassedTests": 58,
+    "FailedTests": 0,
+    "note": "Each test uses its latest executed result; historical failing attempts remain in separate logs. Scoped EditMode tests only, includePassingTests=true; no suite or build."
+  },
+  "Results": [
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingMigrationAssets_KeepOriginalGuidsAndRemoveOldPaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0470000"
+    },
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingPrefabs_HaveExactRootCollectorAndGeneratedViewBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0120000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.GameplayGuideHudPrefab_HasGeneratedPauseButtonAndStableBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiControllers_KeepPrefabPaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0380000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingNetworkPagePrefab_HasGeneratedDiagnosticBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingsPrefabs_HaveGeneratedBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(null,False,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"\",False,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"challenge.time\",False,True)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"challenge.time\",True,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeControllers_UseExpectedBlockingLayers",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeHud_UsesOfficialDualOnScreenSticks",
+      "Status": "Passed",
+      "Duration": "00:00:00.2460000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadePlayerStatusHealthFill_UpdatesWithoutSprite",
+      "Status": "Passed",
+      "Duration": "00:00:00.0420000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadePrefabs_HaveCollectorGeneratedViewAndBoundReferences",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeResume_OnlineEntryIsGeneratedAndLocalized",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeShop_UsesExternalOfferBoxPrefab",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeStaticLabels_HaveLocalizationKeys",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.SlayerMartUsesPreservedResourceHost",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.CompleteBuiltinPassesAvailabilityCheck",
+      "Status": "Passed",
+      "Duration": "00:00:00.0130000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.CompleteStartupAllowsOptionalBundleToRemainAbsent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.ManifestOnlyBuiltinFailsBeforeLoadingAotList",
+      "Status": "Passed",
+      "Duration": "00:00:00.0140000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"Scenes/Main\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"tbitem.bytes\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"Game.dll.bytes\",GameDllMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"HybridCLRAssemblyList.bytes\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/Bag\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/Warehouse\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/SearchContainer\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Craft/Craft\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Shop/Shop\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(7,\"Bag\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(8,\"Warehouse\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(9,\"SearchContainer\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(10,\"Craft\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(11,\"Shop\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingStartupDependencyRejectsBuiltinFallback",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingTaggedStartupAssetRejectsBuiltinFallback",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(PackageVersionRequestFailed,ResourceVersion)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(PackageManifestUpdateFailed,ResourceManifest)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(ResourceDownloadFailed,ResourceDownload)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UsableBuiltinWinsOverHostFailure",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.AllUiPrefabs_DoNotLeaveBareUiKeysAndKeyModeComponentsAreValid",
+      "Status": "Passed",
+      "Duration": "00:00:00.2660000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.DiagnosticPrefabs_OwnFixedTextDirectlyAndExposeOnlyDynamicFields",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.GeneratedTmpFields_DoNotPointToLocalizedTextObjects",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LanguageChanged_RedrawsOnlineDynamicTextsAndReusedMemberRows",
+      "Status": "Passed",
+      "Duration": "00:00:00.2670000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_EditModeKeepsReadablePreviewWhenKeyFallsBack",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_KeyModeStillRefreshesWhenTranslationExists",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.OnlinePrefabs_OwnFixedTextWithLocalizedTextAndExposeOnlyDynamicFields",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.Scanner_ReportsReadableKeyModeAndRejectsInternalKeyLeaks",
+      "Status": "Passed",
+      "Duration": "00:00:00.1320000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.UiLocalizationGate_RejectsLocalizedTextComponentStructureAnomalies",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.ResourceModuleAuditTests.CollectorSettingsHaveKnownTagsAndDedicatedSharedFontBundle",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.ResourceModuleAuditTests.ReportAuditCountsFirstDownloadBundleOnlyOnce",
+      "Status": "Passed",
+      "Duration": "00:00:00.0220000"
+    },
+    {
+      "Name": "Game.Tests.LocalizationTests.LocalizedText_LoadPrefabContentsWithoutConfiguredLoader_PreservesPreviewWithoutResourceErrors",
+      "Status": "Passed",
+      "Duration": "00:00:00.0410000"
+    },
+    {
+      "Name": "Game.Tests.AndroidHudLayoutTests.ConditionPrefab_ResolvesAllGeneratedReferencesAndMobileFillSprites",
+      "Status": "Passed",
+      "Duration": "00:00:00.0180000"
+    },
+    {
+      "Name": "Game.Tests.PlayerCameraTests.CameraPoseFollowsBindAndUnbindLifecycle",
+      "Status": "Passed",
+      "Duration": "00:00:00.0230000"
+    },
+    {
+      "Name": "Game.Tests.LegacyBootResourceCompatibilityTests.RetiredQuickBarRemainsLoadableWithoutRestoringGameplay",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RuntimePrefabSources_RemainCollectedAndValid",
+      "Status": "Passed",
+      "Duration": "00:00:03.2260000"
+    }
+  ]
+}
