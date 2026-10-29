@@ -194,6 +194,8 @@ namespace ET.Server
     [EnableClass]
     public sealed class OnlineArcadeBattlePlayerRuntime
     {
+        /// <summary>仅当前权威现场的测试无敌；不写安全节点，新场景自然清除。</summary>
+        public bool TestInvincible;
         /// <summary>最近真实牛撞掉血的只读表现事实，致死同样保留；不写存档。</summary>
         public long HerdContactSequence;
         public float HerdContactX, HerdContactZ;
@@ -605,6 +607,8 @@ namespace ET.Server
         public OnlineArcadeRunRecord Record;
         /// <summary>最近成功提交记录的深克隆，仅由管理器在加载或写盘成功后替换；不单独序列化。</summary>
         public OnlineArcadeRunRecord CommittedRecord;
+        /// <summary>临时跳关前的正常安全节点；其他局写盘时仍读取此值。</summary>
+        public OnlineArcadeRunRecord NormalRecordBeforeTestGoto;
         public OnlineArcadeBattleRuntime Battle;
         public int BattleGeneration;
         /// <summary>成员断线时间，单位为服务器毫秒时间；只属于当前进程，不写入安全节点。</summary>

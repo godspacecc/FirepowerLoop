@@ -23,3 +23,8 @@
 ,arcade.clear-arena,arcade-game,900,完成当前竞技场,#arcade clear arena,清除当前单人竞技场或挑战并沿用正式完成与安全节点事务。,语法：#arcade clear arena,示例：#arcade clear arena
 ,condition.unitbar,diagnostics,700,开启敌人血条,#unitbar on,开启存活敌人的头顶生命条。,语法：#unitbar on,示例：#unitbar on
 ,condition.unitbar-off,diagnostics,800,关闭敌人血条,#unitbar off,关闭存活敌人的头顶生命条。,语法：#unitbar off,示例：#unitbar off
+,arcade.drops,arcade-game,1000,列出道具配置,#arcade drops,输出实际掉落ID和名称或明确类型。,语法：#arcade drops,示例：#arcade drops
+,arcade.goto,arcade-game,1100,跳到指定关轮,"#arcade goto ",进入临时测试局并保留正常局存档；旧路线无法唯一定位时拒绝。,语法：#arcade goto <关卡序号> <轮次>,示例：#arcade goto 2 3
+,arcade.god-on,arcade-game,1200,开启当前现场无敌,#arcade god on,仅当前现场生效；离场或新局清除。,语法：#arcade god on,示例：#arcade god on
+,arcade.god-off,arcade-game,1300,关闭当前现场无敌,#arcade god off,关闭后恢复正式伤害规则。,语法：#arcade god off,示例：#arcade god off
+,arcade.spawn,arcade-game,1400,生成指定敌人,"#arcade spawn ",生成1至20个指定配置敌人；超过存活上限或不支持的特殊现场拒绝。,语法：#arcade spawn <EnemyId> <数量>,示例：#arcade spawn enemy.arcade.basic 1

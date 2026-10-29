@@ -1,0 +1,7 @@
+{
+  "chunk_id": "c7948f",
+  "wall_time_seconds": 4.1987687,
+  "exit_code": 0,
+  "original_token_count": 27,
+  "output": "PASS ArcadeCommandOnline.AuthorityCommands (god damage, host scope, spawn queue/capacity, transient save)\r\n"
+}

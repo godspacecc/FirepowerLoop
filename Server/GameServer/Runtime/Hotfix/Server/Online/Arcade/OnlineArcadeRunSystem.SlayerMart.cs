@@ -173,6 +173,7 @@ namespace ET.Server
                 battle.SlayerMartRegionPrepared=true;battle.RoundGeneration=checked(battle.RoundGeneration+1);
                 int index=0;foreach(var player in battle.Players.Values.OrderBy(p=>p.PlayerId))
                 {
+                    player.TestInvincible=false;
                     player.ReadyRoundGeneration=-1;player.MoveX=player.MoveZ=0;player.Firing=false;
                     player.PositionX=layout.SpawnX+(index++-(battle.Players.Count-1)*.5f)*ServerConfig.Instance.ArcadeRule.PlayerRadius*2;
                     player.PositionZ=layout.SpawnY;

@@ -1,0 +1,4 @@
+Unhandled exception. System.Exception: restored normal revision rejected by client
+   at ArcadeCommandOnlineChecks.<Run>g__Require|0_0(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeCommandOnlineChecks.cs:line 11
+   at ArcadeCommandOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\ArcadeCommandOnlineChecks.cs:line 70
+   at Program.<Main>$(String[] args) in E:\GitHub\FirepowerLoop\Tools\ArcadeFullRouteOnlineChecks\Program.cs:line 12

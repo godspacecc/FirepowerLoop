@@ -1,0 +1,133 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":22,\"PassedTests\":22,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:04.5523321\"},\"Results\":[{\"Name\":\"Game.Tests.TestCmdTests.ArcadeCommandsUseStrictGrammarAndRejectWithoutLocalCombat\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0540000\"},{\"Name\":\"Game.Tests.TestCmdTests.ArcadeStatusGoldAndResourcesMutateOnlyTheActiveCombatRuntime\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0320000\"},{\"Name\":\"Game.Tests.TestCmdTests.BodySymbolsStayLiteralAndDollarRoutesWithCompleteHistoryForAllOutcomes\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0780000\"},{\"Name\":\"Game.Tests.TestCmdTests.CameraCommandSwitchesModeCaseInsensitivelyAndIsIdempotent\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.TestCmdTests.CameraCommandUsesStrictGrammarAndRequiresActivePlayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0160000\"},{\"Name\":\"Game.Tests.TestCmdTests.CommandWritesExpectedRuntimeLogSeverity\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0150000\"},{\"Name\":\"Game.Tests.TestCmdTests.GeneratedCatalogIncludesTerrainDiagnosticCommand\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.TestCmdTests.GeneratedRuntimeCatalogDiscoversCameraCategoryAndCommands\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0140000\"},{\"Name\":\"Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1760000\"},{\"Name\":\"Game.Tests.TestCmdTests.HistoryKeepsSubmittedUniqueRecentCommandsOnly\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0440000\"},{\"Name\":\"Game.Tests.TestCmdTests.LogCommandRequestsRuntimeLogWindowAndRejectsExtraArguments\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0230000\"},{\"Name\":\"Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\\u0022#arcade god on\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"},{\"Name\":\"Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\\u0022#arcade spawn missing 1\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\\u0022#arcade drops\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\\u0022#arcade goto 1 1\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0560000\"},{\"Name\":\"Game.Tests.TestCmdTests.PrefixBoundaryRejectsWithoutHistoryDomainOrNetworkSideEffects\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0180000\"},{\"Name\":\"Game.Tests.TestCmdTests.RequestedEnemySpawnPreservesWaveQueueAndEnforcesCapacity\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0210000\"},{\"Name\":\"Game.Tests.TestCmdTests.TerrainCommandRejectsExtraArgumentsAndUnavailableMap\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0170000\"},{\"Name\":\"Game.Tests.TestCmdTests.TerrainCommandReportsOnlyCurrentMapWithoutChangingItsState\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0180000\"},{\"Name\":\"Game.Tests.TestCmdTests.TerrainInstancingProbeChangesOnlyCurrentMapAndRestoresOriginalSettings\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0310000\"},{\"Name\":\"Game.Tests.TestCmdTests.TransientArcadeStoreNeverWritesOrDeletesNormalSaveFiles\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0310000\"},{\"Name\":\"Game.Tests.TestCmdTests.UnitBarCommandIsSessionOnlyStrictAndIdempotent\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0190000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 22,
+        "PassedTests": 22,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.5523321"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdTests.ArcadeCommandsUseStrictGrammarAndRejectWithoutLocalCombat",
+          "Status": "Passed",
+          "Duration": "00:00:00.0540000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.ArcadeStatusGoldAndResourcesMutateOnlyTheActiveCombatRuntime",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.BodySymbolsStayLiteralAndDollarRoutesWithCompleteHistoryForAllOutcomes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0780000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.CameraCommandSwitchesModeCaseInsensitivelyAndIsIdempotent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.CameraCommandUsesStrictGrammarAndRequiresActivePlayer",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.CommandWritesExpectedRuntimeLogSeverity",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.GeneratedCatalogIncludesTerrainDiagnosticCommand",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.GeneratedRuntimeCatalogDiscoversCameraCategoryAndCommands",
+          "Status": "Passed",
+          "Duration": "00:00:01.0140000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn",
+          "Status": "Passed",
+          "Duration": "00:00:01.1760000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.HistoryKeepsSubmittedUniqueRecentCommandsOnly",
+          "Status": "Passed",
+          "Duration": "00:00:00.0440000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.LogCommandRequestsRuntimeLogWindowAndRejectsExtraArguments",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\"#arcade god on\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\"#arcade spawn missing 1\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\"#arcade drops\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(\"#arcade goto 1 1\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0560000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.PrefixBoundaryRejectsWithoutHistoryDomainOrNetworkSideEffects",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.RequestedEnemySpawnPreservesWaveQueueAndEnforcesCapacity",
+          "Status": "Passed",
+          "Duration": "00:00:01.0210000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.TerrainCommandRejectsExtraArgumentsAndUnavailableMap",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.TerrainCommandReportsOnlyCurrentMapWithoutChangingItsState",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.TerrainInstancingProbeChangesOnlyCurrentMapAndRestoresOriginalSettings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.TransientArcadeStoreNeverWritesOrDeletesNormalSaveFiles",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.TestCmdTests.UnitBarCommandIsSessionOnlyStrictAndIdempotent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0190000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

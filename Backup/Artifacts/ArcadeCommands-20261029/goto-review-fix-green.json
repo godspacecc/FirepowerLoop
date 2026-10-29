@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":1,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:02.6262289\"},\"Results\":[{\"Name\":\"Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.7600000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.6262289"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn",
+          "Status": "Passed",
+          "Duration": "00:00:01.7600000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

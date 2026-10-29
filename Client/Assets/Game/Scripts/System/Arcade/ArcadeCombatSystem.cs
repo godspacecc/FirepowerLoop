@@ -58,6 +58,88 @@ namespace Game
         /// <summary>最近一次入场失败原因；只供发起“继续”的界面在同步事件返回后显示。</summary>
         public string LastEntryError { get; private set; }
 
+        /// <summary>测试无敌只绑定当前现场引用；现场被释放后不会应用于新局。</summary>
+        private ArcadeCombatRuntime testInvincibleRuntime;
+
+        /// <summary>跳关先校验现场，正式新建仍复用原入场与轮级地图事务。</summary>
+        internal bool CanGotoForTests(out string error) =>
+            TryGetActiveTestRuntime(out var runtime, out error) && TestMutationReady(runtime, out error) && !runtime.IsChallenge;
+
+        internal void RebuildForTestGoto(ArcadeRunSaveData candidate, int round)
+        {
+            EndCombat();
+            BeginCombat(candidate, false, round - 1);
+        }
+
+        internal bool TestGotoPending => this.GetModel<ArcadeCombatModel>().Runtime?.IslandTransitionPending == true;
+        internal string TestGotoError => LastEntryError ?? this.GetModel<ArcadeCombatModel>().Runtime?.IslandPreparationError;
+        /// <summary>命令窗口暂停玩法期间也允许地图资源事务完成，不推进敌人和战斗计时。</summary>
+        internal void AdvanceTestGoto()
+        {
+            var runtime = this.GetModel<ArcadeCombatModel>().Runtime;
+            if (runtime == null || !runtime.IslandTransitionPending) return;
+            if (UsesContentRounds(runtime)) TryFinishContentTransition(runtime);
+            else if (UsesIslandRounds(runtime)) TryFinishIslandTransition(runtime);
+        }
+
+        /// <summary>指定刷怪沿用正式出生流程，验证全部完成后才创建，不消费波次队列。</summary>
+        public bool TrySpawnEnemiesForTests(string enemyId, int count, out string summary, out string error)
+        {
+            summary = null;
+            if (!TryGetActiveTestRuntime(out var runtime, out error)) return false;
+            if (!TestMutationReady(runtime, out error)) return false;
+            if (count < 1 || count > 20) { error = "数量必须在1至20之间"; return false; }
+            if (runtime.IsChallenge || runtime.IsFinalBoss || arena.IsBoss || group == null ||
+                RoundLayout(runtime)?.SpecialKind == ArcadeNextStageEnemyRules.GraveKind ||
+                !NextStageSpawnReady(runtime)) { error = "当前特殊现场不支持指定刷怪"; return false; }
+            if (!this.GetUtility<IRuntimeConfigProvider>().TryGetEnemy(enemyId, out _, out error)) return false;
+            if (runtime.Enemies.Count + count > Mathf.Min(group.MaxAlive, catalog.Rule.MaxAliveEnemies))
+            { error = "刷怪数量超过当前存活上限"; return false; }
+            for (var index = 0; index < count; index++)
+                if (!SpawnQueuedEnemy(runtime, enemyId)) { error = "现场出生条件发生变化"; return false; }
+            SyncView(runtime);
+            PublishHud(runtime);
+            summary = $"已生成 {count} 个 {enemyId}";
+            return true;
+        }
+
+        /// <summary>切换当前单人现场的测试无敌，不修改生命或持久强化。</summary>
+        public bool TrySetInvincibleForTests(bool enabled, out string summary, out string error)
+        {
+            summary = null;
+            if (!TryGetActiveTestRuntime(out var runtime, out error)) return false;
+            if (!TestMutationReady(runtime, out error)) return false;
+            testInvincibleRuntime = enabled ? runtime : null;
+            summary = enabled ? "当前现场无敌已开启" : "当前现场无敌已关闭";
+            return true;
+        }
+
+        /// <summary>测试变更不进入过渡、结算、宝藏或等待复活的现场。</summary>
+        private bool TestMutationReady(ArcadeCombatRuntime runtime, out string error)
+        {
+            if (runtime.CompletionSubmitted || runtime.CompletionAwaitingRetry || runtime.IslandTransitionPending ||
+                runtime.IslandRoomTransitionPending || runtime.AwaitingExit || runtime.IslandRoundAwaitingExit ||
+                runtime.InTreasureRoom || runtime.RespawnRemaining > 0 || lastDeathReturnPending ||
+                this.GetModel<MapSceneModel>().Status.Value == MapLoadStatus.Loading)
+            { error = "当前正在加载、结算或等待现场切换"; return false; }
+            error = null;
+            return true;
+        }
+
+        /// <summary>列出实际掉落配置；缺少名称时明确显示配置类型。</summary>
+        public bool TryListDropsForTests(out string summary, out string error)
+        {
+            summary = null;
+            if (!TryGetActiveTestRuntime(out _, out error)) return false;
+            summary = string.Join("\n", catalog.Drops.Select(drop =>
+            {
+                var key = ProductNameKey(drop.ProductId);
+                var name = this.GetUtility<LocalizationUtility>().Translate(LocalizationLanguages.Default.Code, key);
+                return $"{drop.Id}（{(string.IsNullOrEmpty(name) || name == key ? "类型：" + drop.Kind : name)}）";
+            }));
+            return true;
+        }
+
         /// <summary>
         /// 返回当前单人街机现场摘要；只读测试入口不创建战斗，也不读取联机权威状态。
         /// </summary>
@@ -227,7 +309,11 @@ namespace Game
             view = this.GetUtility<IArcadeCombatViewPort>();
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged);
             this.RegisterEvent<ArcadeHudActionRequestedEvent>(OnHudAction);
-            this.RegisterEvent<MapLoadingStartedEvent>(_ => EndFirstPerson(this.GetModel<ArcadeCombatModel>().Runtime));
+            this.RegisterEvent<MapLoadingStartedEvent>(_ =>
+            {
+                testInvincibleRuntime = null;
+                EndFirstPerson(this.GetModel<ArcadeCombatModel>().Runtime);
+            });
             // Editor 切换设备模式时同样释放旧触点；不能跨模式保留触屏转向或开火。
             this.RegisterEvent<MobileInputModeChangedEvent>(_ =>
             {
@@ -289,7 +375,7 @@ namespace Game
         }
 
         /// <summary>进入竞技场时从最后安全节点构造全新的瞬时现场；任何失败都会退回该安全节点。</summary>
-        private void BeginCombat(ArcadeRunSaveData run, bool isChallenge)
+        private void BeginCombat(ArcadeRunSaveData run, bool isChallenge, int testWave = -1)
         {
             LastEntryError = null;
             var provider = this.GetUtility<IRuntimeConfigProvider>();
@@ -365,21 +451,21 @@ namespace Game
                 input.Enable();
                 if(InitializeSlayerChallenge(runtime,run)) { }
                 else if (UsesIslandRounds(runtime))
-                    StartIslandRound(runtime, (run.IslandRoundCheckpoint?.RoundNumber ?? 1) - 1, run.IslandRoundCheckpoint);
+                    StartIslandRound(runtime, testWave >= 0 ? testWave : (run.IslandRoundCheckpoint?.RoundNumber ?? 1) - 1, run.IslandRoundCheckpoint);
                 else if (UsesContentRounds(runtime))
                 {
                     if (run.RoundCheckpoint == null && run.ArenaEntryState != null)
                         RestoreIslandCheckpoint(runtime, run.ArenaEntryState);
                     if(run.RoundCheckpoint==null&&!TryApplyScoreShopDrop(runtime,run,out var shopError))
                         throw new InvalidOperationException(shopError);
-                    StartContentRound(runtime, (run.RoundCheckpoint?.RoundNumber ?? 1) - 1, run.RoundCheckpoint);
+                    StartContentRound(runtime, testWave >= 0 ? testWave : (run.RoundCheckpoint?.RoundNumber ?? 1) - 1, run.RoundCheckpoint);
                 }
                 else
                 {
                     view.Begin(arena.ArenaNumber, ArenaHalfWidth, ArenaHalfHeight, arena.Obstacles);
                     view.SetIslandRound(0);
                     if (!isChallenge && run.ArenaEntryState != null) BeginArenaEntry(runtime, run.ArenaEntryState);
-                    else BeginWave(runtime, 0);
+                    else BeginWave(runtime, testWave >= 0 ? testWave : 0);
                 }
                 SyncView(runtime);
                 PublishHud(runtime);
@@ -400,6 +486,7 @@ namespace Game
 
         private void EndCombat()
         {
+            testInvincibleRuntime = null;
             ClearSlayerMartClock();
             EndFirstPerson(this.GetModel<ArcadeCombatModel>()?.Runtime);
             islandRegion = null; islandMovementPath.Clear();
@@ -763,10 +850,10 @@ namespace Game
         }
 
         /// <summary>按已选真实通道交付一个现有队列敌人；属性、掉落归属及特殊敌人规则保持由原权威处理。</summary>
-        private bool SpawnQueuedEnemy(ArcadeCombatRuntime runtime)
+        private bool SpawnQueuedEnemy(ArcadeCombatRuntime runtime, string testEnemyId = null)
         {
             if(!NextStageSpawnReady(runtime))return false;
-            var enemyId = runtime.SpawnQueue.Dequeue();
+            var enemyId = testEnemyId ?? runtime.SpawnQueue.Dequeue();
             var provider = this.GetUtility<IRuntimeConfigProvider>();
             if (!provider.TryGetEnemy(enemyId, out var definition, out var error))
             {
@@ -1721,6 +1808,7 @@ namespace Game
         /// <summary>正式挡伤入口；失命机关显式跳过新增护甲，旧保护与护盾优先级保留。</summary>
         private void DamagePlayerCore(ArcadeCombatRuntime runtime,int damage,SlayerMartHitKind kind,int electricHazardId=0)
         {
+            if (ReferenceEquals(testInvincibleRuntime, runtime)) return;
             if (lastDeathReturnPending) return;
             if(runtime.SlayerChallenge!=null&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Collecting&&runtime.SlayerChallenge.Phase!=ArcadeSlayerChallengePhase.Boss)return;
             if (runtime.PlayerInvulnerability > 0f || runtime.DashRemaining > 0f || runtime.RespawnRemaining > 0f) return;

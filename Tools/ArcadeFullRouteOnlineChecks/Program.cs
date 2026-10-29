@@ -2,6 +2,15 @@ using System.Reflection;
 using ET;
 using ET.Server;
 var opts=args.Select(a=>a.Split('=',2)).ToDictionary(a=>a[0],a=>a.Length>1?a[1]:"");
+if(opts.GetValueOrDefault("testClass")=="ArcadeCommandOnline")
+{
+    if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="1")throw new ArgumentException("ArcadeCommandOnline maxTests=1 required");
+    World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>File.ReadAllBytes(Path.Combine("Server/GameServer/Config/Luban",n+".bytes"))));
+    World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
+    var method=typeof(OnlineArcadeRunActorSystem).GetMethod("SetInvincibleForTests");
+    if(method==null){Console.WriteLine("FAIL ArcadeCommandOnline.AuthorityCommands: missing SetInvincibleForTests");Environment.ExitCode=1;return;}
+    Environment.ExitCode=ArcadeCommandOnlineChecks.Run();return;
+}
 if(opts.GetValueOrDefault("testClass")=="HerdContactOnline")
 {
     if(opts.GetValueOrDefault("includePassingTests")!="true"||opts.GetValueOrDefault("maxTests")!="3")throw new ArgumentException("Explicit HerdContactOnline maxTests=3 required");

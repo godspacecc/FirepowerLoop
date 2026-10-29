@@ -6,7 +6,7 @@ namespace ET.Server
     [ServerTestCmdHandler("server.arcade", "arcade", "server.arcade", 10, "联机街机", 0,
         "联机街机调试", "$arcade <子指令>",
         "由房主在进行中的双人街机局内测试生命、资源、掉落与关卡推进",
-        "$arcade status|heal|damage <数值>|gold <数值>|bombs <数值>|dashes <数值>|drop <DropId>|clear wave|clear arena",
+        "$arcade status|drops|goto <关卡序号> <轮次>|god on/off|spawn <EnemyId> <1-20>|heal|damage <数值>|gold <数值>|bombs <数值>|dashes <数值>|drop <DropId>|clear wave|clear arena",
         "$arcade status")]
     [FriendOf(typeof(OnlineSessionComponent))]
     [FriendOf(typeof(GatePlayerProxy))]

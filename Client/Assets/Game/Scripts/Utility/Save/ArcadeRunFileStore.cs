@@ -19,6 +19,12 @@ namespace Game
         private static readonly Unity.Profiling.ProfilerMarker ReadMarker = new("FirepowerLoop.ArcadeRun.VerifyTemp");
         private static readonly Unity.Profiling.ProfilerMarker ReplaceMarker = new("FirepowerLoop.ArcadeRun.Replace");
         private readonly string rootDirectory;
+        /// <summary>测试跳关使用独立内存节点，所有读写及删除均不访问正式文件。</summary>
+        private bool transient;
+        private ArcadeRunSaveData transientData;
+
+        /// <summary>创建无磁盘副作用的独立测试局存储。</summary>
+        public static ArcadeRunFileStore CreateTransient() => new ArcadeRunFileStore() { transient = true };
         /// <summary>开始页与恢复入口共用已校验的私有快照；调用者只取得深拷贝。</summary>
         private SaveReadResult<ArcadeRunSaveData> cachedInspection;
         /// <summary>主文件和备份任意一方变化都重新校验，避免继续按钮使用旧结果。</summary>
@@ -44,6 +50,7 @@ namespace Game
 
         public SaveReadResult<ArcadeRunSaveData> Inspect()
         {
+            if (transient) return new SaveReadResult<ArcadeRunSaveData> { Status = transientData == null ? SaveFileStatus.Missing : SaveFileStatus.Valid, Data = transientData?.Clone() };
             int version = System.Threading.Volatile.Read(ref mutationVersion);
             bool hasRunStamp = TryReadStamp(RunPath, out var runStamp);
             bool hasBackupStamp = TryReadStamp(BackupPath, out var backupStamp);
@@ -124,6 +131,12 @@ namespace Game
 
         public bool Save(ArcadeRunSaveData data, out string error)
         {
+            if (transient)
+            {
+                if (!TryValidate(data, out error)) return false;
+                transientData = data.Clone();
+                return true;
+            }
             using var sample = SaveMarker.Auto();
             System.Threading.Interlocked.Increment(ref mutationVersion);
             error = null;
@@ -177,6 +190,7 @@ namespace Game
 
         public bool Delete(out string error)
         {
+            if (transient) { transientData = null; error = null; return true; }
             System.Threading.Interlocked.Increment(ref mutationVersion);
             error = null;
             try

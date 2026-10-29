@@ -12,6 +12,91 @@ namespace Game
     public sealed partial class ArcadeRunSystem : AbstractSystem
     {
         private ArcadeRunFileStore store;
+        /// <summary>测试跳关持有独立内存存储；退出时恢复正常节点，绝不删除正常文件。</summary>
+        private ArcadeRunFileStore normalStoreBeforeTestGoto;
+        private bool testGotoPending;
+        private int testGotoGeneration;
+        internal bool IsTestGotoSession => normalStoreBeforeTestGoto != null;
+
+        /// <summary>按已保存版本逐层解析路线序号；旧分支缺少历史身份时拒绝猜测。</summary>
+        internal static bool TryResolveTestGotoArena(ArcadeRunSaveData run, ArcadeConfigCatalogDefinition config,
+            int ordinal, out int arenaConfig, out string error)
+        {
+            arenaConfig = 0; error = null;
+            if (run == null || !run.IsCasualRoute || ordinal < 1 || ordinal > FirepowerLoop.Arcade.ArcadeRouteRules.ArenaCount(run.CasualRouteVersion))
+            { error = "目标不在本局路线范围内"; return false; }
+            if (ordinal == run.NextArenaNumber) { arenaConfig = run.ArenaConfigNumber; return true; }
+            var reachable = new HashSet<int> { 1 };
+            for (int step = 1; step < ordinal; step++)
+            {
+                var next = new HashSet<int>();
+                foreach (int id in reachable)
+                {
+                    var arena = config.Arenas.FirstOrDefault(a => a.ArenaNumber == id);
+                    if (arena == null) { error = "路线配置缺失"; return false; }
+                    foreach (int target in FirepowerLoop.Arcade.ArcadeRouteRules.NextArenas(run.CasualRouteVersion, id, arena.NextArenaNumbers)) next.Add(target);
+                }
+                reachable = next;
+            }
+            if (reachable.Count != 1) { error = "旧路线分支无法唯一确定目标，请使用当前关卡序号"; return false; }
+            arenaConfig = reachable.Single();
+            return true;
+        }
+
+        /// <summary>测试跳关不结算跳过关卡；地图失败退回原正常安全节点。</summary>
+        public async UniTask<(bool Success, string Message)> GotoForTestsAsync(int ordinal, int round, System.Threading.CancellationToken token)
+        {
+            if (testGotoPending) return (false, "测试跳关正在加载");
+            var combat = this.GetSystem<ArcadeCombatSystem>();
+            var model = this.GetModel<ArcadeRunModel>();
+            string error = null;
+            if (model.Phase != ArcadeRunPhase.Arena || !combat.CanGotoForTests(out error))
+                return (false, error ?? "当前不支持测试跳关");
+            if (!this.GetUtility<IRuntimeConfigProvider>().TryGetArcadeCatalog(out var config, out error)) return (false, error);
+            var current = model.Current;
+            if (!TryResolveTestGotoArena(current, config, ordinal, out int target, out error)) return (false, error);
+            var arena = config.Arenas.FirstOrDefault(a => a.ArenaNumber == target);
+            if (arena == null || round < 1 || round > arena.WaveGroupIds.Count || round > 4) return (false, "目标轮次或场地无效");
+            if (token.IsCancellationRequested) return (false, "测试跳关已取消");
+            var previousStore = store;
+            var previousNormalStore = normalStoreBeforeTestGoto;
+            var candidate = current.Clone();
+            candidate.NextArenaNumber = ordinal; candidate.CompletedArenaCount = ordinal - 1; candidate.ArenaConfigNumber = target;
+            candidate.Checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = ordinal, GenerationSeed = current.Checkpoint.GenerationSeed };
+            candidate.RoundCheckpoint = null; candidate.IslandRoundCheckpoint = null; candidate.ArenaEntryState = null;
+            candidate.ScoreShop = null; candidate.PendingRewards.Clear();
+            var memory = ArcadeRunFileStore.CreateTransient();
+            if (!memory.Save(candidate, out error)) return (false, error);
+            testGotoPending = true;
+            int generation = ++testGotoGeneration;
+            try
+            {
+            normalStoreBeforeTestGoto ??= store;
+            store = memory;
+            model.CommitRound(candidate);
+            try { combat.RebuildForTestGoto(candidate, round); }
+            catch (Exception exception) { error = exception.Message; }
+            var deadline = System.DateTime.UtcNow.AddSeconds(20);
+            while (error == null && generation == testGotoGeneration && combat.TestGotoPending && combat.TestGotoError == null && !token.IsCancellationRequested && System.DateTime.UtcNow < deadline)
+            {
+                try { combat.AdvanceTestGoto(); }
+                catch (Exception exception) { error = exception.Message; break; }
+                await UniTask.Yield();
+            }
+            if (generation != testGotoGeneration) return (false, "测试跳关已随现场退出或释放取消");
+            if (error != null || combat.TestGotoPending || combat.TestGotoError != null || !this.GetModel<ArcadeCombatModel>().IsActive || token.IsCancellationRequested)
+            {
+                error = error ?? combat.TestGotoError ?? "地图准备失败或测试跳关已取消";
+                store = previousStore;
+                normalStoreBeforeTestGoto = previousNormalStore;
+                model.CommitSafeNode(current);
+                Publish();
+                return (false, error + "；已退回原安全节点，正常存档保留");
+            }
+            return (true, $"已进入临时测试局：第{ordinal}关第{round}轮；正常存档保留，退出测试局恢复原节点");
+            }
+            finally { if (generation == testGotoGeneration) testGotoPending = false; }
+        }
         private ISaveClock clock = new UnitySaveClock();
         private string nextDeleteFailureForTests;
         /// <summary>体系卸载使旧写盘完成回调失效；文件事务仍完成，但不能再发布到旧世界。</summary>
@@ -159,7 +244,7 @@ namespace Game
                 return false;
             }
             var previousRound = current.IslandRoundCheckpoint?.RoundNumber ?? 0;
-            if (checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
+            if (!IsTestGotoSession && checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
             {
                 error = "海岛轮级节点必须连续推进";
                 return false;
@@ -199,7 +284,7 @@ namespace Game
                 return false;
             }
             var previousRound = current.RoundCheckpoint?.RoundNumber ?? current.IslandRoundCheckpoint?.RoundNumber ?? 0;
-            if (checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
+            if (!IsTestGotoSession && checkpoint.RoundNumber != previousRound + 1 && checkpoint.RoundNumber != previousRound)
             {
                 error = "通用轮级节点必须连续推进";
                 return false;
@@ -321,6 +406,19 @@ namespace Game
                 return false;
             }
 
+            if (IsTestGotoSession)
+            {
+                var normal = normalStoreBeforeTestGoto.Inspect();
+                if (!normal.IsValid) { snapshot = null; error = normal.Error ?? "正常节点不可读取，保留测试局"; return false; }
+                // 入场异常也可能经此退出；使等待中的跳关失效，禁止晚续体恢复旧测试存储。
+                if (testGotoPending) { testGotoGeneration++; testGotoPending = false; }
+                store = normalStoreBeforeTestGoto;
+                normalStoreBeforeTestGoto = null;
+                CommitSafeNode(normal.Data);
+                snapshot = normal.Data.Clone(); error = null;
+                return true;
+            }
+
             return TryResume(out snapshot, out error);
         }
 
@@ -387,6 +485,8 @@ namespace Game
 
         protected override void OnDeinit()
         {
+            testGotoGeneration++;
+            testGotoPending = false;
             resultSaveGeneration++; resultSaveCompletion?.TrySetResult(false);
         }
 
@@ -612,7 +712,9 @@ namespace Game
                 nextDeleteFailureForTests = null;
                 return false;
             }
-            return store.Delete(out error);
+            if (!store.Delete(out error)) return false;
+            if (IsTestGotoSession) { store = normalStoreBeforeTestGoto; normalStoreBeforeTestGoto = null; }
+            return true;
         }
 
         private void Publish()

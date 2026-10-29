@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System;
 using System.Threading;
 using System.IO;
@@ -15,6 +16,164 @@ namespace Game.Tests
 {
     public sealed class TestCmdTests
     {
+        [TestCase("#arcade god on")]
+        [TestCase("#arcade spawn missing 1")]
+        [TestCase("#arcade drops")]
+        [TestCase("#arcade goto 1 1")]
+        public void NewArcadeCommandsRecognizeSyntaxWithoutActiveBattle(string command)
+        {
+            var result = Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync(command, CancellationToken.None).GetAwaiter().GetResult();
+            Assert.That(result.Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+        }
+
+        [Test]
+        public void RequestedEnemySpawnPreservesWaveQueueAndEnforcesCapacity()
+        {
+            var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+                new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
+            Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
+            Game.Interface.RegisterUtility<IRuntimeConfigProvider>(provider);
+            var combat = Game.Interface.GetSystem<ArcadeCombatSystem>();
+            var arena = catalog.Arenas.First(a => !a.IsBoss && a.ArenaNumber > 1);
+            var group = catalog.EnemyGroups.First(g => g.Id == arena.WaveGroupIds[0]);
+            var enemyId = group.Members[0].EnemyId;
+            foreach (var pair in new[] { ("catalog", (object)catalog), ("arena", (object)arena), ("group", (object)group), ("random", (object)new System.Random(1)) })
+                typeof(ArcadeCombatSystem).GetField(pair.Item1, BindingFlags.Instance | BindingFlags.NonPublic).SetValue(combat, pair.Item2);
+            var runtime = new ArcadeCombatRuntime { ArenaNumber = arena.ArenaNumber, PlayerHealth = 100, PlayerMaxHealth = 100 };
+            runtime.SpawnQueue.Enqueue(enemyId);
+            Game.Interface.GetModel<ArcadeCombatModel>().Begin(runtime);
+            Assert.That(combat.TrySpawnEnemiesForTests(enemyId, 1, out _, out error), Is.True, error);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(1));
+            Assert.That(runtime.Enemies.Values.Single().ConfigId, Is.EqualTo(enemyId));
+            Assert.That(runtime.SpawnQueue.ToArray(), Is.EqualTo(new[] { enemyId }));
+            Assert.That(combat.TrySpawnEnemiesForTests("missing", 1, out _, out _), Is.False);
+            var cap = Mathf.Min(group.MaxAlive, catalog.Rule.MaxAliveEnemies);
+            while (runtime.Enemies.Count < cap)
+                Assert.That(combat.TrySpawnEnemiesForTests(enemyId, 1, out _, out error), Is.True, error);
+            Assert.That(combat.TrySpawnEnemiesForTests(enemyId, 1, out _, out _), Is.False);
+            Assert.That(runtime.Enemies.Count, Is.EqualTo(cap));
+            Assert.That(runtime.SpawnQueue.ToArray(), Is.EqualTo(new[] { enemyId }));
+        }
+
+        [Test]
+        public void TransientArcadeStoreNeverWritesOrDeletesNormalSaveFiles()
+        {
+            var factory = typeof(ArcadeRunFileStore).GetMethod("CreateTransient", BindingFlags.Public | BindingFlags.Static);
+            Assert.That(factory, Is.Not.Null, "测试跳关需要独立内存存档");
+            var store = (ArcadeRunFileStore)factory.Invoke(null, null);
+            var run = Game.Interface.GetSystem<ArcadeRunSystem>();
+            run.ConfigureForTests(tempRoot);
+            Assert.That(run.TryStartNewRun(new ArcadeCheckpointSaveData { ArenaNumber = 1 }, out var snapshot, out var error), Is.True, error);
+            var normal = new ArcadeRunFileStore(tempRoot);
+            var before = File.ReadAllBytes(normal.RunPath);
+            Assert.That(store.Save(snapshot, out error), Is.True, error);
+            Assert.That(store.Inspect().Data.RunId, Is.EqualTo(snapshot.RunId));
+            Assert.That(store.Delete(out error), Is.True, error);
+            Assert.That(store.Inspect().Status, Is.EqualTo(SaveFileStatus.Missing));
+            Assert.That(File.ReadAllBytes(normal.RunPath), Is.EqualTo(before));
+        }
+
+        [UnityTest]
+        public System.Collections.IEnumerator GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn()
+        {
+            var provider = new LubanRuntimeConfigProvider(() => new Tables(name =>
+                new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", name + ".bytes")))));
+            Game.Interface.RegisterUtility<IRuntimeConfigProvider>(provider);
+            Game.Interface.RegisterUtility<IArcadeCombatViewPort>(new GotoView());
+            var root = new GameObject("test-goto-map");
+            try
+            {
+                var context = root.AddComponent<MapContext>();
+                typeof(MapContext).GetField("mapContentRoot", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(context, root);
+                Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, new DiagnosticMapHandle(context));
+                var run = Game.Interface.GetSystem<ArcadeRunSystem>();
+                run.ConfigureForTests(tempRoot);
+                typeof(ArcadeCombatSystem).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(Game.Interface.GetSystem<ArcadeCombatSystem>(), new GotoView());
+                Assert.That(run.TryStartConfiguredRun(out _, out var error), Is.True, error);
+                Assert.That(run.TryContinue(out _, out error), Is.True, error);
+                var disk = new ArcadeRunFileStore(tempRoot);
+                var before = File.ReadAllBytes(disk.RunPath);
+                foreach (var invalid in new[] { (0, 1), (11, 1), (2, 0), (2, 5) })
+                {
+                    var rejected = run.GotoForTestsAsync(invalid.Item1, invalid.Item2, CancellationToken.None).AsTask();
+                    while (!rejected.IsCompleted) yield return null;
+                    Assert.That(rejected.GetAwaiter().GetResult().Success, Is.False);
+                    Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                    Assert.That(run.IsTestGotoSession, Is.False);
+                }
+                var pendingJump = run.GotoForTestsAsync(2, 3, CancellationToken.None).AsTask();
+                while (!pendingJump.IsCompleted) yield return null;
+                var jump = pendingJump.GetAwaiter().GetResult();
+                Assert.That(jump.Success, Is.True, jump.Message);
+                var model = Game.Interface.GetModel<ArcadeRunModel>();
+                Assert.That(model.Current.ArenaConfigNumber, Is.EqualTo(21));
+                Assert.That(Game.Interface.GetModel<ArcadeCombatModel>().Runtime.WaveIndex, Is.EqualTo(2));
+                Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                // 第二次跳关同步入场异常也必须保留正常局恢复入口。
+                typeof(ArcadeCombatSystem).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(Game.Interface.GetSystem<ArcadeCombatSystem>(), new GotoView { ThrowOnBegin = true });
+                var throwingJump = run.GotoForTestsAsync(3, 2, CancellationToken.None).AsTask();
+                while (!throwingJump.IsCompleted) yield return null;
+                Assert.That(throwingJump.GetAwaiter().GetResult().Success, Is.False);
+                Assert.That(run.InspectPending().Data.NextArenaNumber, Is.EqualTo(1), "异常退场后必须仍可恢复正常局");
+                typeof(ArcadeCombatSystem).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(Game.Interface.GetSystem<ArcadeCombatSystem>(), new GotoView());
+                Assert.That(run.TryContinue(out _, out error), Is.True, error);
+                var repeatJump = run.GotoForTestsAsync(2, 3, CancellationToken.None).AsTask();
+                while (!repeatJump.IsCompleted) yield return null;
+                Assert.That(repeatJump.GetAwaiter().GetResult().Success, Is.True);
+                typeof(ArcadeCombatSystem).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(Game.Interface.GetSystem<ArcadeCombatSystem>(), new GotoView { RoundLayoutLoadError = "测试地图加载失败" });
+                var failedJump = run.GotoForTestsAsync(3, 2, CancellationToken.None).AsTask();
+                while (!failedJump.IsCompleted) yield return null;
+                Assert.That(failedJump.GetAwaiter().GetResult().Success, Is.False);
+                Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                Assert.That(model.Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+                // 失败退回测试安全节点后先继续，返回入口才允许恢复正常局。
+                typeof(ArcadeCombatSystem).GetField("view", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(Game.Interface.GetSystem<ArcadeCombatSystem>(), new GotoView());
+                Assert.That(run.TryContinue(out _, out error), Is.True, error);
+                Assert.That(run.TryReturnToSafeNode(out var restored, out error), Is.True, error);
+                Assert.That(restored.NextArenaNumber, Is.EqualTo(1));
+                Assert.That(run.IsTestGotoSession, Is.False);
+                Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                Assert.That(provider.TryGetArcadeCatalog(out var catalog, out error), Is.True, error);
+                restored.CasualRouteVersion = 1;
+                Assert.That(ArcadeRunSystem.TryResolveTestGotoArena(restored, catalog, 9, out _, out error), Is.False);
+                Assert.That(error, Does.Contain("无法唯一"));
+                Assert.That(run.TryContinue(out _, out error), Is.True, error);
+                var deathJump = run.GotoForTestsAsync(2, 2, CancellationToken.None).AsTask();
+                while (!deathJump.IsCompleted) yield return null;
+                Assert.That(deathJump.GetAwaiter().GetResult().Success, Is.True);
+                model.SetTransientLives(1);
+                Assert.That(run.TryHandleDeath(out _, out error), Is.EqualTo(ArcadeDeathResult.RunFailed), error);
+                Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                Assert.That(run.TrySettle(out _, out error), Is.True, error);
+                Assert.That(run.IsTestGotoSession, Is.False);
+                Assert.That(File.ReadAllBytes(disk.RunPath), Is.EqualTo(before));
+                Assert.That(run.TryResume(out var normalAfterDeath, out error), Is.True, error);
+                Assert.That(normalAfterDeath.NextArenaNumber, Is.EqualTo(1));
+            }
+            finally { UnityEngine.Object.DestroyImmediate(root); }
+        }
+
+        private sealed class GotoView : IArcadeCombatViewPort
+        {
+            public bool IsActive => true;
+            public bool IsRoundTransitionCovered => true;
+            public string RoundLayoutLoadError { get; set; }
+            public bool ThrowOnBegin { get; set; }
+            public void Begin(int n,float w,float h,System.Collections.Generic.IReadOnlyList<ArcadeObstacleDefinition> o) { if (ThrowOnBegin) throw new InvalidOperationException("测试入场同步异常"); }
+            public void End() { }
+            public bool TryScreenToArena(Vector2 s,out Vector2 p) { p=default;return false; }
+            public void SetPlayer(Vector2 p,Vector2 f,bool v,bool i) { if (ThrowOnBegin) throw new InvalidOperationException("测试同步表现异常"); }
+            public void SetPlayerHealth(int c,int m) { }
+            public void SetEnemy(int id,string c,Vector2 p,int hp,int max,bool t=false,int seq=0,bool bar=false) { }
+            public void RemoveEnemy(int id,bool death=false) { }
+            public void SetProjectile(int id,bool h,Vector2 p,Vector2 d) { }
+            public void RemoveProjectile(int id) { }
+            public void SetDrop(int id,ArcadeDropDefinition d,Vector2 p) { }
+            public void RemoveDrop(int id) { }
+            public void SetRemotePlayer(long id,Vector2 p,Vector2 f,bool v,bool i,int c,int m) { }
+            public void RemoveRemotePlayer(long id) { }
+            public void TickPlayerFeedback(float d) { }
+        }
         private string tempRoot;
         private TestConfigProvider configs;
         private RoutingNetwork network;
@@ -250,6 +409,28 @@ namespace Game.Tests
             Game.Interface.GetModel<ArcadeCombatModel>().Begin(runtime);
             var system = Game.Interface.GetSystem<TestCmdSystem>();
 
+            Assert.That(system.ExecuteAsync("#arcade god on", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
+            typeof(ArcadeCombatSystem).GetMethod("DamagePlayer", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(combat, new object[] { runtime, 1 });
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(40));
+            Assert.That(system.ExecuteAsync("#arcade god off", CancellationToken.None).GetAwaiter().GetResult().Success, Is.True);
+            typeof(ArcadeCombatSystem).GetMethod("DamagePlayer", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(combat, new object[] { runtime, 1 });
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(39));
+            runtime.PlayerHealth = 40;
+            runtime.PlayerInvulnerability = 0;
+            system.ExecuteAsync("#arcade god on", CancellationToken.None).GetAwaiter().GetResult();
+            Game.Interface.SendEvent(new MapLoadingStartedEvent(MapIds.Arcade));
+            typeof(ArcadeCombatSystem).GetMethod("DamagePlayer", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(combat, new object[] { runtime, 1 });
+            Assert.That(runtime.PlayerHealth, Is.EqualTo(39), "离场开始应清除无敌");
+            runtime.PlayerHealth = 40;
+            var queueBefore = runtime.SpawnQueue.ToArray();
+            var enemiesBefore = runtime.Enemies.Count;
+            foreach (var command in new[] { "#arcade spawn missing 1", "#arcade spawn missing 0", "#arcade spawn missing 21", "#arcade spawn missing -1", "#arcade spawn missing 999999999999" })
+            {
+                Assert.That(system.ExecuteAsync(command, CancellationToken.None).GetAwaiter().GetResult().Success, Is.False);
+                Assert.That(runtime.SpawnQueue.ToArray(), Is.EqualTo(queueBefore));
+                Assert.That(runtime.Enemies.Count, Is.EqualTo(enemiesBefore));
+            }
+
             var status = system.ExecuteAsync("#arcade status", CancellationToken.None).GetAwaiter().GetResult();
             AssertResult(status, true, true, TestCmdResultCode.ArcadeCommandComplete, 0, 0);
             Assert.That(status.Message, Does.Contain("竞技场 3").And.Contain("生命 40/100"));
@@ -316,7 +497,9 @@ namespace Game.Tests
             Assert.That(Game.Interface.GetSystem<UnitSystem>().TryRegister(
                 new UnitSnapshot(PlayerModel.LocalPlayerUnitId, mapInstanceId, UnitType.Player, UnitSource.Player,
                     "player", Vector3.zero, Quaternion.identity, UnitAuthorityMode.Local, 0, true), out var error), Is.True, error);
-            Game.Interface.SendEvent(new PlayerReadyEvent(PlayerModel.LocalPlayerUnitId, mapInstanceId));
+            // 当前相机仅绑定街机地图提交事件，夹具提供与正式入口一致的地图和玩家。
+            Game.Interface.GetModel<MapSceneModel>().SetLoaded(MapIds.Arcade, null);
+            Game.Interface.SendEvent(new ArcadePlayerReadyEvent(PlayerModel.LocalPlayerUnitId, mapInstanceId));
 
             var system = Game.Interface.GetSystem<TestCmdSystem>();
             var shoulder = system.ExecuteAsync("#CaMeRa ShOuLdEr", CancellationToken.None).GetAwaiter().GetResult();

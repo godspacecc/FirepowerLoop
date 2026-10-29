@@ -86,7 +86,20 @@ namespace Game
             }
             else
             {
-                result = ExecuteClientBody(body);
+                var parts = body.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length >= 2 && string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(parts[1], "goto", StringComparison.OrdinalIgnoreCase))
+                {
+                    if (parts.Length != 4 || !TryParseStrictInt(parts[2], out int ordinal) || ordinal < 1 ||
+                        !TryParseStrictInt(parts[3], out int round) || round < 1)
+                        result = Finish(body, Warning(TestCmdResultCode.UsageError, "用法：#arcade goto <关卡序号> <轮次>"), true);
+                    else
+                    {
+                        var jump = await this.GetSystem<ArcadeRunSystem>().GotoForTestsAsync(ordinal, round, cancellationToken);
+                        result = Finish(body, jump.Success ? Result(true, true, TestCmdResultCode.ArcadeCommandComplete, jump.Message) : Warning(TestCmdResultCode.StateRejected, jump.Message), true);
+                    }
+                }
+                else result = ExecuteClientBody(body);
             }
 
             this.GetModel<TestCmdModel>().SetLastResult(result);
@@ -337,6 +350,14 @@ namespace Game
             string error;
             if (parts.Length == 2 && string.Equals(parts[1], "status", StringComparison.OrdinalIgnoreCase))
                 success = combat.TryGetTestStatus(out message, out error);
+            else if (parts.Length == 2 && string.Equals(parts[1], "drops", StringComparison.OrdinalIgnoreCase))
+                success = combat.TryListDropsForTests(out message, out error);
+            else if (parts.Length == 4 && string.Equals(parts[1], "spawn", StringComparison.OrdinalIgnoreCase) &&
+                     TryParseStrictInt(parts[3], out var spawnCount) && spawnCount >= 1 && spawnCount <= 20)
+                success = combat.TrySpawnEnemiesForTests(parts[2], spawnCount, out message, out error);
+            else if (parts.Length == 3 && string.Equals(parts[1], "god", StringComparison.OrdinalIgnoreCase) &&
+                     (string.Equals(parts[2], "on", StringComparison.OrdinalIgnoreCase) || string.Equals(parts[2], "off", StringComparison.OrdinalIgnoreCase)))
+                success = combat.TrySetInvincibleForTests(string.Equals(parts[2], "on", StringComparison.OrdinalIgnoreCase), out message, out error);
             else if (parts.Length == 2 && string.Equals(parts[1], "heal", StringComparison.OrdinalIgnoreCase))
                 success = combat.TryHealPlayerForTests(out message, out error);
             else if (parts.Length == 3 && string.Equals(parts[1], "damage", StringComparison.OrdinalIgnoreCase) &&

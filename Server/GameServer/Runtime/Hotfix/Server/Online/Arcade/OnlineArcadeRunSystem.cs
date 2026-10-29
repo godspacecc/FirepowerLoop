@@ -177,11 +177,22 @@ namespace ET.Server
                 return TestFailure(ServerTestCmdResultCode.ExecutionFailed, "队友断线暂停期间不能修改战斗状态", now);
             if (!actor.Battle.Players.TryGetValue(playerId, out OnlineArcadeBattlePlayerRuntime player))
                 return TestFailure(ServerTestCmdResultCode.ExecutionFailed, "房主不属于当前战斗现场", now);
+            if (actor.Battle.RoundTransitionPending || actor.Battle.Players.Values.Any(p => p.ReadyRoundGeneration != actor.Battle.RoundGeneration) || actor.Battle.AwaitingExit || actor.Battle.ArenaCompletionReady ||
+                actor.Battle.ChallengeCompletionReady || player.InTreasureRoom || !player.Alive || player.RespawnSeconds > 0)
+                return TestFailure(ServerTestCmdResultCode.ExecutionFailed, "当前正在加载、结算或等待现场切换", now);
 
             string summary;
             try
             {
-                if (args.Length == 1 && string.Equals(args[0], "heal", StringComparison.OrdinalIgnoreCase))
+                if (args.Length == 1 && string.Equals(args[0], "drops", StringComparison.OrdinalIgnoreCase))
+                    summary = string.Join("\n", ServerConfig.Instance.Tables.TbArcadeDrop.DataList.Select(d => $"{d.Id}（类型：{d.Kind}；产品：{d.ProductId}）"));
+                else if (args.Length == 2 && string.Equals(args[0], "god", StringComparison.OrdinalIgnoreCase) && (args[1].Equals("on", StringComparison.OrdinalIgnoreCase) || args[1].Equals("off", StringComparison.OrdinalIgnoreCase)))
+                    summary = actor.SetInvincibleForTests(player, args[1].Equals("on", StringComparison.OrdinalIgnoreCase));
+                else if (args.Length == 3 && string.Equals(args[0], "spawn", StringComparison.OrdinalIgnoreCase) && TryParsePositive(args[2], out int count) && count <= 20)
+                    summary = actor.SpawnEnemiesForTests(args[1], count);
+                else if (args.Length == 3 && string.Equals(args[0], "goto", StringComparison.OrdinalIgnoreCase) && TryParsePositive(args[1], out int ordinal) && TryParsePositive(args[2], out int round))
+                    summary = self.GotoForTests(actor, ordinal, round);
+                else if (args.Length == 1 && string.Equals(args[0], "heal", StringComparison.OrdinalIgnoreCase))
                     summary = actor.HealPlayerForTests(player);
                 else if (args.Length == 2 && string.Equals(args[0], "damage", StringComparison.OrdinalIgnoreCase) &&
                          TryParsePositive(args[1], out int damage))
@@ -205,7 +216,7 @@ namespace ET.Server
                     summary = actor.ClearArenaForTests();
                 else
                     return TestFailure(ServerTestCmdResultCode.InvalidInput,
-                        "用法：$arcade status|heal|damage <正整数>|gold <正整数>|bombs <0-9999>|dashes <0-9999>|drop <DropId>|clear wave|clear arena",
+                        "用法：$arcade status|drops|goto <关卡序号> <轮次>|god on/off|spawn <EnemyId> <1-20>|heal|damage <正整数>|gold <正整数>|bombs <0-9999>|dashes <0-9999>|drop <DropId>|clear wave|clear arena",
                         now);
             }
             catch (RpcException exception)
@@ -618,6 +629,11 @@ namespace ET.Server
         private static async ETTask<bool> TryCommitRunFailure(this OnlineArcadeRunManagerComponent self,
             OnlineArcadeRunActor actor)
         {
+            if (RestoreNormalAfterTestGoto(actor))
+            {
+                await self.BroadcastRunChanged(actor);
+                return true;
+            }
             long runId = actor.Record.RunId;
             long roomId = actor.Record.RoomId;
             long[] playerIds = actor.Record.Players.Select(x => x.PlayerId).ToArray();
@@ -769,6 +785,8 @@ namespace ET.Server
 
         private static void CommitWithCandidate(this OnlineArcadeRunManagerComponent self, OnlineArcadeRunRecord candidate, long replacingRunId)
         {
+            if (self.Runs.TryGetValue(replacingRunId, out var replacingRef))
+            { OnlineArcadeRunActor replacing = replacingRef; if (replacing?.NormalRecordBeforeTestGoto != null) return; }
             if (self.RemainingFailSaveCount > 0)
             {
                 self.RemainingFailSaveCount--;
@@ -779,7 +797,7 @@ namespace ET.Server
             {
                 OnlineArcadeRunActor actor = actorRef;
                 if (actor != null && !actor.IsDisposed && actor.Record.RunId != replacingRunId)
-                    snapshot.Runs.Add(CloneCommittedRecord(actor));
+                    snapshot.Runs.Add(Clone(actor.NormalRecordBeforeTestGoto) ?? CloneCommittedRecord(actor));
             }
             snapshot.Runs.Add(Clone(candidate));
             ValidateStore(snapshot);
@@ -798,7 +816,7 @@ namespace ET.Server
             {
                 OnlineArcadeRunActor actor = actorRef;
                 if (actor != null && !actor.IsDisposed && actor.Record.RunId != removedRunId)
-                    snapshot.Runs.Add(CloneCommittedRecord(actor));
+                    snapshot.Runs.Add(Clone(actor.NormalRecordBeforeTestGoto) ?? CloneCommittedRecord(actor));
             }
             WriteAtomic(self.StorePath, snapshot);
         }
@@ -1530,16 +1548,16 @@ namespace ET.Server
         }
 
         /// <summary>交付一个已有队列敌人，通道批次只指定真实入口，不另发数量、属性或奖励。</summary>
-        private static bool SpawnQueuedEnemy(OnlineArcadeBattleRuntime battle,long now,int passage)
+        private static bool SpawnQueuedEnemy(OnlineArcadeBattleRuntime battle,long now,int passage,string testEnemyId=null)
         {
             if(!NextStageSpawnAvailable(battle))return false;
-            if (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || passage<0&&now < battle.NextSpawnAt)
+            if (testEnemyId==null && (battle.SpawnQueueIndex >= battle.SpawnQueue.Count || battle.Enemies.Count >= battle.MaxAlive || passage<0&&now < battle.NextSpawnAt))
                 return false;
             ArcadeArenaConfig arena = ResolveBattleArena(battle);
             ArcadeEnemyGroupConfig group = ResolveBattleGroup(battle, arena, battle.WaveIndex);
             ArcadeBossConfig boss = battle.IsChallenge || battle.RoundLayout != null ? null : battle.IsFinalBoss && battle.FinalBossEnemyId == 0
                 ? ServerConfig.Instance.Tables.TbArcadeBoss.Get(arena.FinalBossId) : ResolveBoss(arena, group);
-            string enemyConfigId = battle.SpawnQueue[battle.SpawnQueueIndex++];
+            string enemyConfigId = testEnemyId ?? battle.SpawnQueue[battle.SpawnQueueIndex++];
             EnemyConfig enemyConfig = ServerConfig.Instance.GetEnemy(enemyConfigId);
             long runtimeId = battle.NextEnemyRuntimeId++;
             float arenaGrowth = 1f + ServerConfig.Instance.ArcadeRule.HealthGrowthPerArena * Math.Max(0, battle.ArenaNumber - 1);
@@ -2860,6 +2878,7 @@ namespace ET.Server
         private static void DamagePlayerCore(this OnlineArcadeRunActor self,OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player,int damage,FirepowerLoop.Arcade.SlayerMartHitKind kind,int electricHazardId=0)
         {
+            if (player.TestInvincible) return;
             if(battle.SlayerChallenge!=null&&battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Collecting&&
                 battle.SlayerChallenge.Phase!=FirepowerLoop.Arcade.ArcadeSlayerChallengePhase.Boss)return;
             if (!player.Alive || player.InTreasureRoom || player.InvulnerabilitySeconds > 0f || player.DashSeconds>0 || player.RespawnSeconds>0) return;
@@ -3448,7 +3467,7 @@ namespace ET.Server
                 player.CurrentHealth = sourcePlayer.CurrentHealth;
                 player.MaxHealth = sourcePlayer.MaxHealth;
                 player.Alive = sourcePlayer.Alive;
-                player.Invulnerable = sourcePlayer.InvulnerabilitySeconds > 0f;
+                player.Invulnerable = sourcePlayer.TestInvincible || sourcePlayer.InvulnerabilitySeconds > 0f;
                 player.RespawnSeconds = sourcePlayer.RespawnSeconds;
                 player.DownedSeconds=sourcePlayer.DownedSeconds;
                 player.RescueRate=sourcePlayer.DownedSeconds>0?CoopRescueRate(source,sourcePlayer):0;

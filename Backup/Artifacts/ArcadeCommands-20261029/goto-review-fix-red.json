@@ -1,0 +1,30 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.2994784\"},\"Results\":[{\"Name\":\"Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.6280000\",\"Message\":\"  \\u5F02\\u5E38\\u9000\\u573A\\u540E\\u5FC5\\u987B\\u4ECD\\u53EF\\u6062\\u590D\\u6B63\\u5E38\\u5C40\\r\\n  Expected: 1\\r\\n  But was:  2\\r\\n\",\"StackTrace\":\"at Game.Tests.TestCmdTests\\u002B\\u003CGotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn\\u003Ed__3.MoveNext () [0x00469] in E:\\\\GitHub\\\\FirepowerLoop\\\\Client\\\\Assets\\\\Tests\\\\EditMode\\\\TestCmdTests.cs:117\\r\\nat UnityEngine.TestTools.TestEnumerator\\u002B\\u003CExecute\\u003Ed__7.MoveNext () [0x0003a] in .\\\\Library\\\\PackageCache\\\\com.unity.test-framework@1.1.33\\\\UnityEngine.TestRunner\\\\NUnitExtensions\\\\Attributes\\\\TestEnumerator.cs:46\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.2994784"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdTests.GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn",
+          "Status": "Failed",
+          "Duration": "00:00:01.6280000",
+          "Message": "  异常退场后必须仍可恢复正常局\r\n  Expected: 1\r\n  But was:  2\r\n",
+          "StackTrace": "at Game.Tests.TestCmdTests+<GotoUsesRouteOrdinalAndKeepsNormalDiskNodeOnReturn>d__3.MoveNext () [0x00469] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\TestCmdTests.cs:117\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
