@@ -1,0 +1,42 @@
+{
+  "testMethod": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun",
+  "max": 5,
+  "selector": "exact existing method via RQL; five parameter cases only",
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 5,
+      "PassedTests": 5,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:09.2144290"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.short-sword\")",
+        "Status": "Passed",
+        "Duration": "00:00:02.0050000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.greatsword\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.1550000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.knife\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3180000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.axe\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3950000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.pickaxe\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.7330000"
+      }
+    ]
+  }
+}

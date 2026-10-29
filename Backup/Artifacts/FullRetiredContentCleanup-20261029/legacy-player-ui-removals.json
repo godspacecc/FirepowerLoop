@@ -1,0 +1,82 @@
+[
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab",
+    "sha256": "8ef06c13a028139aa1aeed6e1132adca2c5b89457b659d0dc18252e56c7c4c42",
+    "bytes": 133773
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab.meta",
+    "sha256": "3b953ddd16d6ec827addddc2301b176d4698540182ca92c2fcbc07f8a349df76",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab",
+    "sha256": "e50820e6c988366e5535fdd5661c1cb41e79117ad49bc801b782895a087bd951",
+    "bytes": 125696
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab.meta",
+    "sha256": "380cfc63f0660836ab9bf7ec0e2d12e292830c8c11594a90444340296fbcbe5b",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab",
+    "sha256": "08c3cb58e0aa5da3f8f8a7babe712020ed5097a7b82d2ab0884d21f04aadf844",
+    "bytes": 36474
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab.meta",
+    "sha256": "d7ad00dce7af4a5c858e2e1de111d88a3def8e6f016db05246bd3f295aa7fe77",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/Box/PocketSlotBox.prefab",
+    "sha256": "87134b07f6ac6ff970a7a41377d036e2e4e6da84678d70fc6c9221b7ea82719b",
+    "bytes": 25532
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/Box/PocketSlotBox.prefab.meta",
+    "sha256": "dc94428e4ae11ac9e083f6f3d5a60a115d70cf0e27cc311c2c6b0083d0955561",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/MobileJoystickUI.cs",
+    "sha256": "06f9a7a1898691979b7b71f873514e9ad594e54208f83481456aa3bdad075407",
+    "bytes": 1332
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/MobileJoystickUI.cs.meta",
+    "sha256": "9206eec0048432e9fa832c373c5884d5d61bda9c6470e3731176f9bf5b72f597",
+    "bytes": 240
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/PlayerConditionHudUI.cs",
+    "sha256": "ef56014994704014e40bbc8bdc180e9c879243a8764728d3d2e1345f16d4a8a8",
+    "bytes": 1912
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/PlayerConditionHudUI.cs.meta",
+    "sha256": "4f63f750dc461f2a5cf92d84ddc9007c0b602c4d77f5c4221c7092afc754802d",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/GameplayGuideHudUI.cs",
+    "sha256": "2e6247d4fc685bad93da08ea9d09d3585c416d9b0b12013a9831940cea23daf7",
+    "bytes": 479
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/GameplayGuideHudUI.cs.meta",
+    "sha256": "9d631e845f80854e2fa7e82d059bfb0405fec1e5fe8363697ced192184560374",
+    "bytes": 243
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/Box/PocketSlotBoxUI.cs",
+    "sha256": "0243b6818a56b6c903e3c2f53f89ef19c2c37be3342b3f91990613a63d60f464",
+    "bytes": 338
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/Box/PocketSlotBoxUI.cs.meta",
+    "sha256": "13916b35d795e5e0186793edef1f1bf072ff354804839ab8e7e1148e2823b91c",
+    "bytes": 243
+  }
+]

@@ -48,8 +48,12 @@ namespace Game.Tests
         }
         [Test] public void UnusedMeleeConfigsAreRemovedWhileEnemyWeaponsRemainValid()
         {
-            foreach(var id in new[]{"weapon.knife","weapon.axe","weapon.pickaxe"})
+            var presentation=Load("Characters/GrayboxPlayer").GetComponent<CharacterWeaponPresenter>().Catalog;
+            foreach(var id in new[]{"weapon.knife","weapon.axe","weapon.pickaxe","weapon.han.axe","weapon.han.pick","weapon.han.blade","weapon.han.bow","tool.torch"})
+            {
                 Assert.That(catalog.Weapons.Any(w=>w.Id==id),Is.False,id);
+                Assert.That(presentation.Find(id),Is.Null,id+" 已退役的目录项不能重新暴露到姿态调试");
+            }
             var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
             foreach(var enemy in tables.TbEnemy.DataList)
                 Assert.That(catalog.Weapons.Any(w=>w.Id==enemy.WeaponId),Is.True,enemy.Id);

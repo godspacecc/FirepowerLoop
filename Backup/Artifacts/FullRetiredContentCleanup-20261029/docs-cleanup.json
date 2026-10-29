@@ -1,0 +1,525 @@
+{
+  "date": "2026-10-29",
+  "authorization": "用户 那就全部清理掉吧；根代理明确委派旧资料清理",
+  "deleted": [
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_2_2_ZoneSketch_20260927.svg",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "e96779da1b63c3e1c3e7781956f5eccfd562a0b0f77f4369b95d890aa05eb2b0",
+      "bytes": 6730
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_CurrentView_CoarseLayout_Top.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "da494a6989f1d97e509d68cb9073534d4081019d802e530761f1e7f770550f9f",
+      "bytes": 1956263
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_RoadSample_Ground.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "90e008e81c5aec63b086654b7fab224dfe3a7954a9ad388c32d0d2f74910127d",
+      "bytes": 1011872
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_RoadSample_Top.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "ed49f2e8c2bbad43b8ef69c7c55b171c569d68226ce8b9a1cb648b04ea249d6c",
+      "bytes": 1745444
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_StageB_Ground036_Trial.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "69e05f5567a9cd848cc3d643ccf14ecc6bb818d19ffc1b2ad1441ae0273ca467",
+      "bytes": 1148618
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_StageB_RoadSafeSegment_Ground.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "bdf986cea6447d3a313af8f9fb18cf17326699ec7663d91e9c828c145bb290e4",
+      "bytes": 1049784
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_StageB_RoadSafeSegment_Top.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "cf7078041d8ee1a853124682ee03802c392fdcf91a50c310a03a7584c5fdbeba",
+      "bytes": 1912249
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_StageB_RouteAudit_1_1.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "b352506d3517c3bd743cfb39bb23f42d80412071bd801eb9417706457eaed928",
+      "bytes": 300402
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_ThreeConfirmedLakes_LocalSketch_20260927.svg",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "d5d909678700a5edae6296d506469e38402fe81ed802e006d2adfe661844e4ad",
+      "bytes": 4023
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_UserConfirmedViewport_GaodeSatellite_20260927.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "b08e21be9f6580858d076109e25c95b48cc7d9a4a2a4102d9a80bf35ff4e1d74",
+      "bytes": 52367
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_UserConfirmedViewport_ZoneSketch_20260927.svg",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "2547276094bf923a27de0df732f6eb59766a4f842cc44da5798e80808fd1df22",
+      "bytes": 10431
+    },
+    {
+      "path": "Docs/Plans/Images/HeJiaVillage_UserMarkedThreeLakes_GaodeSatellite_20260927.png",
+      "reason": "仅为退役何家村地图路线图和审计文档服务的配图；不属于现役待采用美术预览。",
+      "sha256": "47b697ffac270d8f2494eb6224a759e447db83313fac400770a4f968de37bdfd",
+      "bytes": 295778
+    },
+    {
+      "path": "Docs/Plans/NPC通用对话流程设计-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "29ac87ac055a8e9b9d5235f0f484a2def22a9104a1175cd62a0333ab9c48fd62",
+      "bytes": 8723
+    },
+    {
+      "path": "Docs/Plans/Visuals/基地准备-状态页-Unity预览.png",
+      "reason": "退役基地准备界面流程及旧Prefab预览，不属于当前街机界面或待采用预览。",
+      "sha256": "9cf183e2dc358e5653c2253715e50b9015fc03c97cae4b50f7bbf80f1be12083",
+      "bytes": 146106
+    },
+    {
+      "path": "Docs/Plans/Visuals/基地准备-章节页-Unity预览.png",
+      "reason": "退役基地准备界面流程及旧Prefab预览，不属于当前街机界面或待采用预览。",
+      "sha256": "4962923c3e308fc8d03a0cd83601144335fa2edcbec6b687f82f43bca533fe66",
+      "bytes": 364896
+    },
+    {
+      "path": "Docs/Plans/Visuals/基地准备流程-20261013.png",
+      "reason": "退役基地准备界面流程及旧Prefab预览，不属于当前街机界面或待采用预览。",
+      "sha256": "aef66d854bc07ca1d318a47f11f5398e8b527b53a531d3da72af165666a037d9",
+      "bytes": 212077
+    },
+    {
+      "path": "Docs/Plans/七部位穿戴扩展实施记录-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "93e9824f42e5d5c28b3d9b8443a112b8bc735c85e3be78ddb5ee892467d25ab8",
+      "bytes": 4490
+    },
+    {
+      "path": "Docs/Plans/主角整套造型测试指令实施记录-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "b59a98712c71d5f4eeffbdcc9eb83093f2572e8a22aae648861efd71b4b460ca",
+      "bytes": 4835
+    },
+    {
+      "path": "Docs/Plans/分部位穿戴与外观设计-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "cedffa3c0428b3d989bf73a150f6bb138ac0eabcc7e7b0a6add15d2a39290244",
+      "bytes": 12202
+    },
+    {
+      "path": "Docs/Plans/单一手持与穿戴分离实施计划-20261009.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "3ddd83128776e48f3ab15c64b4702817a79389abf64a6b7b0a0e4ef237a0174c",
+      "bytes": 18331
+    },
+    {
+      "path": "Docs/Plans/单一手持与穿戴分离设计-20261009.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "ef4cb91fe71ebb6b0b8999dd06800c97dc769bafbaa957ab64d7172af3ba4059",
+      "bytes": 10457
+    },
+    {
+      "path": "Docs/Plans/口袋与可穿戴背包设计-20261008.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "9855af18e8728af678a1435170ce812376907ee7386e69828825b0131a1930f9",
+      "bytes": 10068
+    },
+    {
+      "path": "Docs/Plans/可选玩法入口资源下载实施计划-修订版-20260930.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "61c13cffc6ccc51891a4e07efa4b0a1fa206f822bb56de87a84079e0f359ba04",
+      "bytes": 20403
+    },
+    {
+      "path": "Docs/Plans/和家村1_1当前视野粗布局-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "88cff6052a3aa0de966714362e13744ab400f35b2ad0be1f27ddcc04f2fb9314",
+      "bytes": 2071
+    },
+    {
+      "path": "Docs/Plans/和家村1_1样板区资料核对-20260926.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "5a77e693eb8a4d15fc780628a62ba0353988ad56595f75cdcb87eea1b2585e96",
+      "bytes": 6099
+    },
+    {
+      "path": "Docs/Plans/和家村1_1道路坡度与池塘交叉审计-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "7d4f7d10f26ce35281c4b29499cb27302c87f44d7ce970aae1da5dcb19145969",
+      "bytes": 5185
+    },
+    {
+      "path": "Docs/Plans/和家村1_1道路样板检查-20260926.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "f9e066b798817e316051af372d7a8b2b7238265da464a1b8ca5f6a98a4733c49",
+      "bytes": 6084
+    },
+    {
+      "path": "Docs/Plans/和家村2_2右上角区域划分草图-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "bd9af7e759ef2e36e8c5a40a411a4887f1f743853db936968d044bbc5520ff3a",
+      "bytes": 2837
+    },
+    {
+      "path": "Docs/Plans/和家村三处湖泊局部草图-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "fca471fb926c2b3e399e74dae2fbe219dceaf8cd52ca71fdb5cb709b8477d6c6",
+      "bytes": 1086
+    },
+    {
+      "path": "Docs/Plans/和家村全图粗布局实施-20260926.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "22df3ebef5a2935ecb50b74f993a5d02757d3c3998e55b043a5bfe9c182b47e7",
+      "bytes": 2339
+    },
+    {
+      "path": "Docs/Plans/和家村场景现实还原路线图-20260926.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "530ab8a8b866e3c1e7c60b5e8b9a65433ffc46fd5180acf71b180fc6f93257e2",
+      "bytes": 10998
+    },
+    {
+      "path": "Docs/Plans/和家村局部预览地图说明-20260928.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "8858152812027e9bce1b97ccdf8aacf25072ba13dc65d9ab2e7222a04e05b8c7",
+      "bytes": 2498
+    },
+    {
+      "path": "Docs/Plans/和家村新场景选定视野区域草图-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "c935e27385b1c35fe47e8a7c80d50cdf8c0be26b6cb76e483a2e9f90dc34c8e8",
+      "bytes": 3313
+    },
+    {
+      "path": "Docs/Plans/和家村新场景选定视野参考-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "f096c89d09f62a22d3a67ec4422ed0e248cf4ee4def479d4d702a47c058e9c7d",
+      "bytes": 1731
+    },
+    {
+      "path": "Docs/Plans/和家村标注接入说明-20260927.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "b4c89596938cda83642f78b382864f077ac9c793de7c698fb0dea8faa24f680f",
+      "bytes": 2889
+    },
+    {
+      "path": "Docs/Plans/地图局部画面更新实施记录-20261010.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "6b701f0e1de4de93d3b985b939ff6c5a3d05c4e4b659c6d46932af88292efde9",
+      "bytes": 2942
+    },
+    {
+      "path": "Docs/Plans/基地准备流程实施结果-20261013.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "db9d4239ab7420bf69373683b55fd8ffb41175934028d8429183d957e28c8a21",
+      "bytes": 2806
+    },
+    {
+      "path": "Docs/Plans/基地准备流程技术设计-20261013.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "81b417de72bacea3745157d130458ebde35bc9c58a18e1c9dc6d59fc7a0e0f57",
+      "bytes": 29248
+    },
+    {
+      "path": "Docs/Plans/基地准备流程验证-20261013.json",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "1691db802c9170a2de44501a3b93c5c8edfc0a9a36d3c6bd49ad1ff445c73fca",
+      "bytes": 10100
+    },
+    {
+      "path": "Docs/Plans/基地天气样板实施记录-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "806c103a961e062f491d24e7cc7603e4d9759af96c832377e126f0fbcd61d1e5",
+      "bytes": 5009
+    },
+    {
+      "path": "Docs/Plans/基地天气测试指令样板实施计划-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "b0680e5540f3ab0bd77d4423ebf282b123ef41cbff5e3bd463f39bdf99fad30c",
+      "bytes": 7727
+    },
+    {
+      "path": "Docs/Plans/基地手机三指操作实施-20261006.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "f173fb9945c17cf4c63fb409c06334835d2b7228f7dd423f0f244a06d4730123",
+      "bytes": 2047
+    },
+    {
+      "path": "Docs/Plans/基地晴雨与地面干燥样板设计-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "52135c3889161201bb1024354ede8965d91a3b1a88d99293758abc4d460d2527",
+      "bytes": 6839
+    },
+    {
+      "path": "Docs/Plans/基地木屋可进入实施计划-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "537906b82373bae51d44a5523776d7a8398329cf89b5f2a065a703bd55d03d7f",
+      "bytes": 2195
+    },
+    {
+      "path": "Docs/Plans/基地燃料照明设计-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "7e1c4d0409e43890db5c74684499143619a71bda714712a744e53eeb018c34ad",
+      "bytes": 9267
+    },
+    {
+      "path": "Docs/Plans/基地种植系统最小框架实施计划-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "318ba1fdb1657c26177d1042a9f83145abfe53e1b0558bfbed0e5d49cdf8fa7a",
+      "bytes": 11206
+    },
+    {
+      "path": "Docs/Plans/基地种植系统最小框架设计-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "d7a01c87682240c14aac3b7298eaadbc3a95809454b19d07a3303d62cba88b14",
+      "bytes": 8340
+    },
+    {
+      "path": "Docs/Plans/基地营地可建造摆件设计-20261004.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "79c53b82de965ee3d4660292986aa885c455efd60bb223c2b444ae85ad50dbba",
+      "bytes": 7160
+    },
+    {
+      "path": "Docs/Plans/基础资源与可选玩法分包实施计划-20261010.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "3764d9b58f6f47566b4b4c56acab4f87158538513a86674ef7215215e604a134",
+      "bytes": 6528
+    },
+    {
+      "path": "Docs/Plans/基础资源与可选玩法分包设计-20261010.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "892e8a76679ab10d3e04284ff4bede7da2ba4c6258b0c43d5a1592553dc29fe3",
+      "bytes": 11959
+    },
+    {
+      "path": "Docs/Plans/手持火把道具设计-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "1c9edd5716d5ab82484f78fcc88eefc18085aecb3e307c2dcc55adf89ed07953",
+      "bytes": 7536
+    },
+    {
+      "path": "Docs/Plans/汉末首章实施计划-20261010.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "5432df587fcb868a69b4082270732b6a33ab3626e237f1c1b0af36e69127b856",
+      "bytes": 5192
+    },
+    {
+      "path": "Docs/Plans/河谷地图道具验证-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "a24d0e0bf33bdfe5c709f67ee80344238722d93a5c351d2af4e0393312ca61c4",
+      "bytes": 1971
+    },
+    {
+      "path": "Docs/Plans/游戏玩法需求记录-20261005.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "9ba1a555c93776bb55334fd1faa64254977fc65607898b208d14b27effd761b7",
+      "bytes": 9007
+    },
+    {
+      "path": "Docs/Plans/统一背包界面与口袋实施计划-20261009.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "a86844a08a0ce11fd796cbcc939112e87ad5c28096d718a6cb5e2131ee6f98c7",
+      "bytes": 4089
+    },
+    {
+      "path": "Docs/Plans/联机三维弓箭实施计划-20261008.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "cf982263b59376f9c39fbc71e3808be146259890862b14ce45e6101960e9bb09",
+      "bytes": 15169
+    },
+    {
+      "path": "Docs/Plans/联机三维弓箭设计-20261008.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "3517d2a3b71f02e13697209d6750edf8867a9eb0f9520f5d70fb06cf227d435a",
+      "bytes": 7796
+    },
+    {
+      "path": "Docs/Plans/联机三维弓箭验证-20261008.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "d89bf200489a358c3b17ed9008ac411bef84044ef280d0debf186058c312dd3f",
+      "bytes": 4565
+    },
+    {
+      "path": "Docs/Plans/背包衣裤穿戴实施计划-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "eb7ff0c7622538382bd8cba5a163c0e18cef4e7221706a81150cef90a1f079f3",
+      "bytes": 8349
+    },
+    {
+      "path": "Docs/Plans/背包衣裤穿戴接入设计-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "ee56993209d615f87744b303f0c6cf630fa87da664433c0c1e25dc49cf5599bf",
+      "bytes": 6013
+    },
+    {
+      "path": "Docs/Plans/背包装备人物预览实施记录-20261011.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "96a36e11e1ede29b2e2298098afbc060134bc281e799c989537e149b95855c50",
+      "bytes": 4837
+    },
+    {
+      "path": "Docs/Plans/脚步声首版设计-20261007.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "b120ca86acb65e27ed85f03996b10cbfada808a073e9ebe0c69b291258a3812f",
+      "bytes": 21585
+    },
+    {
+      "path": "Docs/Plans/远征第一阶段内容设计-20261005.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "95d4a1a7a607e0eabb9733d682c41eab2f254a3a97611635cbb2ecbd82f74685",
+      "bytes": 19096
+    },
+    {
+      "path": "Docs/Plans/远征第一阶段资源驱动方案-20261005.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "e1542e28a3905d9eaad808fe75c219f59c04a0e57045ea51d974bace9f53b77d",
+      "bytes": 9101
+    },
+    {
+      "path": "Docs/Plans/远征首轮制作实施计划-20261005.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "1f93b0c8feed79f1334d39c94c62173deb02a146f1ef524b9fc751bf425bb498",
+      "bytes": 14395
+    },
+    {
+      "path": "Docs/Plans/远征首轮制作进度-20261005.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "8589157768455546499d949fcb986ee952bb4ec0b8f8c631864c70d3169759a4",
+      "bytes": 33301
+    },
+    {
+      "path": "Docs/Plans/随机河谷与早晨出发设计-20261007.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "d15be51542cb970b4725678c594bac7a0a48dd52f339257583eaf3c427a12d80",
+      "bytes": 10847
+    },
+    {
+      "path": "Docs/Plans/随机河谷与白天出发实施计划-20261007.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "18df6b9769956847aa867e221edc301337b495cc7f8ec28a1a897cdc0a5353cb",
+      "bytes": 24427
+    },
+    {
+      "path": "Docs/Plans/随机河谷与白天出发验证记录-20261007.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "f16d57f18b9f7bc0365680d1437ab81a4178c929b573d354ab702102496f2ea5",
+      "bytes": 4778
+    },
+    {
+      "path": "Docs/Plans/随身库存口袋统一使用验证-20261012.md",
+      "reason": "已退役的基地/库存穿戴事务/远征地图/联机开放世界或专属制作与验证记录；不再属于本项目功能或待办。",
+      "sha256": "511201a0e6af04b88771cf086fb739791431472ecde91af2a2d347410c30aa2d",
+      "bytes": 2381
+    },
+    {
+      "path": "Docs/superpowers/plans/2026-10-15-extraction-cleanup.md",
+      "reason": "旧远征增量存档或迁移清理快照；当前街机持久化与本批完整清理记录替代。",
+      "sha256": "d1ab33e95283889efbcb7d9f39ee1640b0250f657686553794f51b599116def9",
+      "bytes": 5022
+    },
+    {
+      "path": "Docs/superpowers/specs/2026-10-09-incremental-save-design.md",
+      "reason": "旧远征增量存档或迁移清理快照；当前街机持久化与本批完整清理记录替代。",
+      "sha256": "1cf8cadab62b30c67ef4f3f83b1a30f0320988bfee4d4c39170981225cea3349",
+      "bytes": 11866
+    },
+    {
+      "path": "Docs/superpowers/specs/2026-10-15-extraction-cleanup-analysis.md",
+      "reason": "旧远征增量存档或迁移清理快照；当前街机持久化与本批完整清理记录替代。",
+      "sha256": "a7ab405f51a29ae333baa16eb88d29e26afda4824a1fee32d2f95b605fffe678",
+      "bytes": 16437
+    },
+    {
+      "path": "Docs/superpowers/specs/2026-10-15-extraction-cleanup-dependencies.json",
+      "reason": "旧远征增量存档或迁移清理快照；当前街机持久化与本批完整清理记录替代。",
+      "sha256": "8017ce9d58da5dd85d0c1a3a4c84600bb1e2500b88e6c3319339d5d7af49abd1",
+      "bytes": 662566
+    },
+    {
+      "path": "Docs/地图与远征流程/地图与远征流程总设计.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "df22eddae1912d44737f580cb1722c40a78117ee1e145799502273c4ebe58db3",
+      "bytes": 50797
+    },
+    {
+      "path": "Docs/地图与远征流程/基地营地美术布置.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "9753ce1545c328a693997b0118dac5e7f2098851b4c930d564d939a62efe006c",
+      "bytes": 21355
+    },
+    {
+      "path": "Docs/存档与开始流程/存档与开始流程总设计.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "71f71aef65daf5f940792d643320cfda0dc805b9fe313fe903e9f06cc028fdc0",
+      "bytes": 21072
+    },
+    {
+      "path": "Docs/战斗与敌人/战斗与敌人总设计.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "570d7a6d2cf2f73889f7b986d1aea529230a8123678d09ff70963f2fe6f8db22",
+      "bytes": 29961
+    },
+    {
+      "path": "Docs/游戏世界观与产品设定.md",
+      "reason": "AnotherDay 世界观、文明成长与远征产品定位，与 FirepowerLoop 独立街机产品基线冲突。",
+      "sha256": "36f5c00647e951a4e1fa3ed6f55959b5a3093a06c37f11fdbbb897803ba00c48",
+      "bytes": 66714
+    },
+    {
+      "path": "Docs/物资与基地库存/物资与基地库存总设计.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "17e30b134707d55cf15b8cb3442d3af18d19e2a0a5a465018f4bc2a524c2481e",
+      "bytes": 29753
+    },
+    {
+      "path": "Docs/玩家操控与相机/玩家操控与相机总设计.md",
+      "reason": "AnotherDay 基地/远征/生存旧产品总设计，不能作为独立街机的规则或待办；当前街机设计另有专题。",
+      "sha256": "4b5e73c25733c06a0dd71dbce08186b2a7c611cf2f39164d0bb66a963225aa52",
+      "bytes": 34087
+    }
+  ],
+  "deletedCount": 81,
+  "updatedLinksIn": [
+    "Docs/MyAssets资源用途总表.md",
+    "Docs/Plans/今晚制作总计划-20261021.md",
+    "Docs/UI框架/UI框架总设计.md",
+    "Docs/美术资源库使用约定.md",
+    "Docs/联机服务端/联机服务端总设计.md"
+  ],
+  "rootOwnedLinksToUpdate": [],
+  "preserved": [
+    "Docs/基地街机小游戏 全目录（含现役第一人称正式设计）",
+    "Docs/superpowers/specs/2026-09-29-universal-character-weapons-design.md",
+    "Docs/Plans/现有人形武器动画兼容实施计划-修订版-20260930.md",
+    "全部现役街机方案、验证记录、发布通用资料和当前/待采用预览引用"
+  ],
+  "note": "不创建旧原文归档；Git可恢复。仅删除退役内容，不改变运行时代码、测试、资源。",
+  "additionalNotes": [
+    "UI框架去除纯退役库存/远征小节，保留通用UI能力；旧角色资源不随旧库存穿戴计划删除。",
+    "现役通用角色武器设计、动画兼容计划及基地街机小游戏全部保留。",
+    "MyAssets用途表和资源库约定中何家村当前接入说明改为历史退役。",
+    "联机服务端混合文档删除纯World建筑/武器/体力/三维箭及局外收益规则，保留账号房间聊天街机权威与发布隔离；UI框架精确清理旧生存HUD/库存分页及相应演进条目。"
+  ],
+  "verification": {
+    "all81DeletedFilesAbsent": true,
+    "remainingDeletedFiles": [],
+    "remainingMarkdownLinksToDeletedFiles": [],
+    "scope": "Docs（含根代理维护的主页与总清单，只读检查）；只核对本批删除导致的链接，非全仓历史链接全面审计。"
+  },
+  "rootSyncNeeded": [
+    "Docs/README.md 删除“旧五主题目录仍作历史资料”用途说明，改为旧资料已清理及当前街机主题入口。",
+    "Docs/Plans/执行总清单.md 记录81份退役资料删除及混合UI/联机文档实质收口，现役视觉待采用/确认记录照旧。",
+    "根README如有旧产品资料目录入口，需同步清除；本子任务未编辑根README、Docs/README或总清单。"
+  ]
+}

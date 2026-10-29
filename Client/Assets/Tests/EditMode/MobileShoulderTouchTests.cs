@@ -117,21 +117,6 @@ namespace Game.Tests
             finally { InputSystem.RemoveDevice(mouse); }
         }
 
-        [Test]
-        public void ShoulderPrefab_HasAttackAndNonBlockingCenterReticle()
-        {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
-            var ui = prefab.GetComponent<MobileJoystickUI>();
-            var button = ui.AttackButton;
-            var root = ui.ReticleRoot;
-            Assert.That(button, Is.Not.Null);
-            Assert.That(root, Is.Not.Null);
-            foreach (var graphic in root.GetComponentsInChildren<UnityEngine.UI.Graphic>(true))
-                Assert.That(graphic.raycastTarget, Is.False, "准星不能占用滑屏输入");
-            Assert.That(button.GetComponent<RectTransform>().sizeDelta.x, Is.GreaterThanOrEqualTo(120f));
-            Assert.That(prefab.GetComponent<ReferenceCollector>().data.Exists(x => x.key == "AttackButton" && x.gameObject == button), Is.True);
-        }
-
         private Vector2 Read(bool enabled) => reader.ReadDelta(enabled);
         private void Touch(int id, UnityEngine.InputSystem.TouchPhase phase, Vector2 position)
         {

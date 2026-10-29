@@ -8,14 +8,11 @@ namespace Game
         WeaponAppearancePrefab,
         SceneObjectPrefab,
         ProjectilePrefab,
-        TemporaryBuildingPrefab,
-        ItemIcon,
-        TemporaryBuildingIcon,
-        MapScene,
+        ItemIcon = 5,
+        MapScene = 7,
         UiPrefab,
         Music,
-        Sound,
-        MapUiImage
+        Sound
     }
 
     /// <summary>
@@ -154,14 +151,11 @@ namespace Game
                 case ResourceAddressKind.WeaponAppearancePrefab: return "Prefabs/Characters/Weapons/";
                 case ResourceAddressKind.SceneObjectPrefab: return "Prefabs/SceneObjects/";
                 case ResourceAddressKind.ProjectilePrefab: return "Prefabs/Combat/";
-                case ResourceAddressKind.TemporaryBuildingPrefab: return "Prefabs/Building/";
                 case ResourceAddressKind.ItemIcon: return "Art/UI/Items/";
-                case ResourceAddressKind.TemporaryBuildingIcon: return "Art/UI/TemporaryBuilding/";
                 case ResourceAddressKind.MapScene: return "Scenes/";
                 case ResourceAddressKind.UiPrefab: return "Prefabs/UI/";
                 case ResourceAddressKind.Music: return "Audio/Music/";
                 case ResourceAddressKind.Sound: return "Audio/Sound/";
-                case ResourceAddressKind.MapUiImage: return "Art/UI/Map/";
                 default: throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
             }
         }

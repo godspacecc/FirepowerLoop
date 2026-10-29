@@ -17,15 +17,7 @@ namespace Game
         private readonly InputAction moveAction;
         private readonly InputAction aimAction;
         private readonly InputAction attackAction;
-        private readonly InputAction holsterAction;
-        private readonly InputAction meleeSlotAction;
-        private readonly InputAction rangedSlotAction;
-        private readonly InputAction interactAction;
-        private readonly InputAction sprintAction;
-        private readonly InputAction buildAction;
-        private readonly InputAction destroyAction;
         private readonly InputAction cancelAction;
-        private readonly InputAction reloadAction;
         private readonly InputAction pointerPositionAction;
         private readonly InputAction lookDeltaAction;
         private readonly PointerUiBlocker pointerUiBlocker = new PointerUiBlocker();
@@ -41,39 +33,10 @@ namespace Game
                 "<Gamepad>/rightStick");
             attackAction = new InputAction("PlayerAttack", InputActionType.Button);
             attackAction.AddBinding("<Mouse>/leftButton");
-            holsterAction = new InputAction("HolsterHeldItem",InputActionType.Button,"<Keyboard>/h");
-            meleeSlotAction = new InputAction(
-                "WeaponSlotMelee",
-                InputActionType.Button,
-                "<Keyboard>/1");
-            rangedSlotAction = new InputAction(
-                "WeaponSlotRanged",
-                InputActionType.Button,
-                "<Keyboard>/2");
-            interactAction = new InputAction(
-                "PlayerInteract",
-                InputActionType.Button,
-                "<Keyboard>/e");
-            sprintAction = new InputAction(
-                "PlayerSprint",
-                InputActionType.Button,
-                "<Keyboard>/leftShift");
-            buildAction = new InputAction(
-                "TemporaryBuild",
-                InputActionType.Button,
-                "<Keyboard>/b");
-            destroyAction = new InputAction(
-                "TemporaryDestroy",
-                InputActionType.Button,
-                "<Keyboard>/z");
             cancelAction = new InputAction(
-                "TemporaryCancel",
+                "FirstPersonCancel",
                 InputActionType.Button,
                 "<Keyboard>/x");
-            reloadAction = new InputAction(
-                "Reload",
-                InputActionType.Button,
-                "<Keyboard>/r");
             pointerPositionAction = new InputAction("PointerPosition", InputActionType.Value, "<Pointer>/position");
             lookDeltaAction = new InputAction("CameraLook", InputActionType.Value, "<Mouse>/delta");
 
@@ -90,15 +53,7 @@ namespace Game
         /// <summary>鼠标左键持续按下且未落在 UI 上；屏幕右摇杆通过 AimInput 独立表达街机射击。</summary>
         public bool AttackHeld => attackAction.enabled && attackAction.IsPressed() &&
                                   TryGetUnblockedMousePosition(out _);
-        public bool HolsterPressedThisFrame => holsterAction.WasPressedThisFrame();
-        public bool MeleeSlotPressedThisFrame => meleeSlotAction.WasPressedThisFrame();
-        public bool RangedSlotPressedThisFrame => rangedSlotAction.WasPressedThisFrame();
-        public bool InteractPressedThisFrame => interactAction.WasPressedThisFrame();
-        public bool SprintHeld => sprintAction.IsPressed();
-        public bool BuildPressedThisFrame => buildAction.WasPressedThisFrame();
-        public bool DestroyPressedThisFrame => destroyAction.WasPressedThisFrame();
         public bool CancelPressedThisFrame => cancelAction.WasPressedThisFrame();
-        public bool ReloadPressedThisFrame => reloadAction.WasPressedThisFrame();
         public Vector2 LookDelta => Mouse.current != null ? lookDeltaAction.ReadValue<Vector2>() : Vector2.zero;
         /// <summary>物理右键持有状态；禁用玩法监听时仍观察松开，避免暂停后旧按压自动恢复。</summary>
         public bool ShoulderAimHeld => Mouse.current != null && Mouse.current.rightButton.isPressed;
@@ -146,45 +101,9 @@ namespace Game
                 attackAction.Enable();
             }
 
-            if (!meleeSlotAction.enabled)
-            {
-                meleeSlotAction.Enable();
-                holsterAction.Enable();
-            }
-
-            if (!rangedSlotAction.enabled)
-            {
-                rangedSlotAction.Enable();
-            }
-
-            if (!interactAction.enabled)
-            {
-                interactAction.Enable();
-            }
-
-            if (!sprintAction.enabled)
-            {
-                sprintAction.Enable();
-            }
-
-            if (!buildAction.enabled)
-            {
-                buildAction.Enable();
-            }
-
-            if (!destroyAction.enabled)
-            {
-                destroyAction.Enable();
-            }
-
             if (!cancelAction.enabled)
             {
                 cancelAction.Enable();
-            }
-
-            if (!reloadAction.enabled)
-            {
-                reloadAction.Enable();
             }
 
             if (!pointerPositionAction.enabled) pointerPositionAction.Enable();
@@ -210,45 +129,9 @@ namespace Game
                 attackAction.Disable();
             }
 
-            if (meleeSlotAction.enabled)
-            {
-                meleeSlotAction.Disable();
-                holsterAction.Disable();
-            }
-
-            if (rangedSlotAction.enabled)
-            {
-                rangedSlotAction.Disable();
-            }
-
-            if (interactAction.enabled)
-            {
-                interactAction.Disable();
-            }
-
-            if (sprintAction.enabled)
-            {
-                sprintAction.Disable();
-            }
-
-            if (buildAction.enabled)
-            {
-                buildAction.Disable();
-            }
-
-            if (destroyAction.enabled)
-            {
-                destroyAction.Disable();
-            }
-
             if (cancelAction.enabled)
             {
                 cancelAction.Disable();
-            }
-
-            if (reloadAction.enabled)
-            {
-                reloadAction.Disable();
             }
 
             if (pointerPositionAction.enabled) pointerPositionAction.Disable();
@@ -266,15 +149,7 @@ namespace Game
             moveAction.Dispose();
             aimAction.Dispose();
             attackAction.Dispose();
-            meleeSlotAction.Dispose();
-            holsterAction.Dispose();
-            rangedSlotAction.Dispose();
-            interactAction.Dispose();
-            sprintAction.Dispose();
-            buildAction.Dispose();
-            destroyAction.Dispose();
             cancelAction.Dispose();
-            reloadAction.Dispose();
             pointerPositionAction.Dispose();
             lookDeltaAction.Dispose();
             MoveInput = Vector2.zero;

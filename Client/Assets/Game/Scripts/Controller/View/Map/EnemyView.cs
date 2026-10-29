@@ -70,15 +70,6 @@ namespace Game
         private Collider combatCollider;
 
         [SerializeField]
-        private SphereCollider corpseSearchTrigger;
-
-        [SerializeField]
-        private GameObject corpsePromptRoot;
-
-        [SerializeField]
-        private Image corpseProgressFill;
-
-        [SerializeField]
         private UnitActionProgressView actionProgressView;
 
         [SerializeField]
@@ -90,9 +81,6 @@ namespace Game
         // 造型库试装时按此敌人骨架校准玩家武器；只影响临时可见模型，不参与攻击与装备状态。
         [SerializeField]
         private TrialPlayerWeaponPose[] trialPlayerWeaponPoses = Array.Empty<TrialPlayerWeaponPose>();
-
-        [SerializeField]
-        private GameObject corpseLootBoxObject;
 
         [SerializeField]
         private DamageNumberEmitter damageNumberEmitter;
@@ -115,7 +103,6 @@ namespace Game
         private int unitId;
         private long mapInstanceId;
         private bool isCorpse;
-        private bool isFocused;
         private bool animationDead;
         // 池化准备保持物体不可见，待激活且控制器绑定完成后再求值存活初态。
         private bool animationResetPending;
@@ -142,8 +129,6 @@ namespace Game
             index >= 0 && index < PresentationVariantCount && presentationVariants[index] != null
                 ? presentationVariants[index].name : null;
         public int WeaponVisualOptionCount => 2 + ValidMeleeVisualCount + ValidPlayerWeaponCount;
-        public string DisplayName => "[E]";
-        public bool CanInteract => false;
 
         public static float CalculateHealthFill(int current, int maximum)
         {
@@ -452,7 +437,6 @@ namespace Game
             ReleaseTemporaryWeaponVisual();
             GetComponent<CharacterWeaponPresenter>()?.SetWeapon(null);
             ResetMovementSampling();
-            SetFocused(false);
         }
 
         public void ConfigureRuntime(int configuredUnitId, long configuredMapInstanceId)
@@ -625,7 +609,6 @@ namespace Game
         {
             FaceWorldHud(healthBarRoot, cameraPosition, cameraUp);
             actionProgressView?.FaceWorld(cameraPosition, cameraUp);
-            FaceWorldHud(corpsePromptRoot != null ? corpsePromptRoot.transform : null, cameraPosition, cameraUp);
         }
 
         private static void FaceWorldHud(Transform root, Vector3 cameraPosition, Vector3 cameraUp)
@@ -652,17 +635,12 @@ namespace Game
         public void MarkOnlineDead()
         {
             MarkCorpse();
-            if(corpseSearchTrigger!=null)corpseSearchTrigger.enabled=false;
-            if(corpsePromptRoot!=null)corpsePromptRoot.SetActive(false);
-            if(corpseProgressFill!=null)corpseProgressFill.gameObject.SetActive(false);
-            isFocused=false;
         }
 
         public void ReviveOnline()
         {
             if(feedbackRemainingSeconds>0f)RestoreFeedbackColors();feedbackRemainingSeconds=0f;SetCorpsePresentation(false);
             if(combatCollider==null)combatCollider=GetComponent<Collider>();if(combatCollider!=null)combatCollider.enabled=true;
-            if(corpseSearchTrigger!=null)corpseSearchTrigger.enabled=false;
             SetHealthBarVisible(true);
         }
 
@@ -706,13 +684,6 @@ namespace Game
             SetCorpsePresentation(true);
         }
 
-        public void Interact() { }
-
-        public void SetFocused(bool focused)
-        {
-            isFocused = focused;
-            RefreshCorpsePrompt();
-        }
 
         public void SetDestination(Vector3 position)
         {
@@ -1029,7 +1000,6 @@ namespace Game
             if (!enabled)
             {
                 isCorpse = false;
-                isFocused = false;
             }
 
             if (livingRenderers != null)
@@ -1041,36 +1011,10 @@ namespace Game
             }
             ApplyPresentationVariant();
 
-            if (corpseLootBoxObject != null)
-            {
-                corpseLootBoxObject.SetActive(false);
-            }
 
-            if (corpseSearchTrigger != null)
-            {
-                corpseSearchTrigger.enabled = false;
-                corpseSearchTrigger.isTrigger = true;
-            }
 
-            RefreshCorpsePrompt();
             RefreshHealthBarVisibility();
-            if (corpseProgressFill != null)
-            {
-                corpseProgressFill.fillAmount = 0f;
-                corpseProgressFill.gameObject.SetActive(false);
-            }
         }
 
-        private void RefreshCorpsePrompt()
-        {
-            if (corpsePromptRoot != null)
-            {
-                var visible = false;
-                if (corpsePromptRoot.activeSelf != visible)
-                {
-                    corpsePromptRoot.SetActive(visible);
-                }
-            }
-        }
     }
 }

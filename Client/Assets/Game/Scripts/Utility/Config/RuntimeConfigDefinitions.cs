@@ -20,7 +20,7 @@ namespace Game
             global::ItemActionKind actionKind = global::ItemActionKind.None,
             string actionTarget = "",
             global::ClothingSlot wearSlot = global::ClothingSlot.None,
-            string appearanceId = "", float burnSeconds = 0f)
+            string appearanceId = "")
         {
             Id = id;
             Name = name;
@@ -37,7 +37,6 @@ namespace Game
             ActionTarget = actionTarget ?? string.Empty;
             WearSlot = wearSlot;
             AppearanceId = appearanceId ?? string.Empty;
-            BurnSeconds = burnSeconds;
         }
 
         public int Id { get; }
@@ -57,8 +56,6 @@ namespace Game
         public global::ClothingSlot WearSlot { get; }
         /// <summary>同骨架部件的稳定身份，不是运行时对象或资源句柄。</summary>
         public string AppearanceId { get; }
-        /// <summary>火把每实例的初始燃烧秒数；0 表示非燃烧工具。</summary>
-        public float BurnSeconds { get; }
     }
 
     /// <summary>武器规则的只读配置快照；提供攻击和装填参数，不保存装备、弹匣或背包状态。</summary>
@@ -75,9 +72,7 @@ namespace Game
             int ammoItemId,
             int magazineCapacity = 0,
             float reloadSeconds = 0f,
-            bool reloadWholeMagazine = false,
-            float treeHarvestEfficiency = 0f,
-            float stoneHarvestEfficiency = 0f)
+            bool reloadWholeMagazine = false)
         {
             ItemId = itemId;
             WeaponKind = weaponKind;
@@ -90,8 +85,6 @@ namespace Game
             MagazineCapacity = magazineCapacity;
             ReloadSeconds = reloadSeconds;
             ReloadWholeMagazine = reloadWholeMagazine;
-            TreeHarvestEfficiency = treeHarvestEfficiency;
-            StoneHarvestEfficiency = stoneHarvestEfficiency;
         }
 
         public int ItemId { get; }
@@ -106,10 +99,6 @@ namespace Game
         public float ReloadSeconds { get; }
         /// <summary>一次装填补足弹匣；false 每次只装一发，弹药不足时只装实际可用数量。</summary>
         public bool ReloadWholeMagazine { get; }
-        /// <summary>近战砍树进度倍率，无单位；1 为标准效率，0 表示此武器不参与砍树。</summary>
-        public float TreeHarvestEfficiency { get; }
-        /// <summary>近战挖矿进度倍率，无单位；独立于战斗伤害，0 表示此武器不参与挖矿。</summary>
-        public float StoneHarvestEfficiency { get; }
     }
 
     public readonly struct PlayerWeaponAppearanceDefinition
@@ -183,41 +172,6 @@ namespace Game
         public string Id { get; }
         public string SceneAddress => SceneAddresses[0];
         public System.Collections.Generic.IReadOnlyList<string> SceneAddresses { get; }
-    }
-
-    public readonly struct MapDisplayDefinition
-    {
-        /// <summary>
-        /// 定义一张地图图片覆盖的世界边界及其可视分区；分区只影响展示缩放，不改变地图或场景身份。
-        /// </summary>
-        public MapDisplayDefinition(string mapId, string imageAddress, float centerX, float centerZ, float width, float height,
-            int viewportColumns = 1, int viewportRows = 1)
-        {
-            MapId = mapId;
-            ImageAddress = imageAddress;
-            CenterX = centerX;
-            CenterZ = centerZ;
-            Width = width;
-            Height = height;
-            ViewportColumns = viewportColumns;
-            ViewportRows = viewportRows;
-        }
-
-        public string MapId { get; }
-        public string ImageAddress { get; }
-        public float CenterX { get; }
-        public float CenterZ { get; }
-        public float Width { get; }
-        public float Height { get; }
-        /// <summary>地图图片横向可视分区数，必须大于零。</summary>
-        public int ViewportColumns { get; }
-        /// <summary>地图图片纵向可视分区数，必须大于零。</summary>
-        public int ViewportRows { get; }
-        public float MinX => CenterX - Width * 0.5f;
-        public float MaxX => CenterX + Width * 0.5f;
-        public float MinZ => CenterZ - Height * 0.5f;
-        public float MaxZ => CenterZ + Height * 0.5f;
-        public float ViewportAspectRatio => (Width / ViewportColumns) / (Height / ViewportRows);
     }
 
     public readonly struct MapSpawnDefinition

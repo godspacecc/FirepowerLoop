@@ -214,19 +214,6 @@ namespace Game.Tests
             }
         }
 
-        [Test]
-        public void UncommittedBuildingPreviewKeepsItsOriginalPresentation()
-        {
-            root.AddComponent<TemporaryBuildingView>(); volume.enabled = false; roof.enabled = false;
-            root.transform.position = new Vector3(0,2.6f,-2); root.transform.localScale=Vector3.one*2;
-            var cameraObject = new GameObject("Preview camera"); var targetObject = new GameObject("Preview target");
-            var camera = cameraObject.AddComponent<Camera>();camera.transform.position=new Vector3(0,4,-4);
-            using(var controller = new TopDownOcclusionCtrl(camera,targetObject.transform))
-            {
-                try {Physics.SyncTransforms();controller.Tick(1f);Assert.That(body.sharedMaterial,Is.SameAs(original));}
-                finally {Object.DestroyImmediate(cameraObject);Object.DestroyImmediate(targetObject);}
-            }
-        }
         private void Field(string name, object value) => view.GetType().GetField(name).SetValue(view, value);
         private void Refresh(bool blocked, Vector3 position, float delta) =>
             view.GetType().GetMethod("Refresh").Invoke(view, new object[] { blocked, position, delta });

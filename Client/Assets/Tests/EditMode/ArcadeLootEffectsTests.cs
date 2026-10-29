@@ -61,7 +61,7 @@ namespace FirepowerLoop.Tests
         }
 
         [Test]
-        public void RecycledDropRestoresOpacityAndFadingKeepsInteractionAvailable()
+        public void RecycledDropRestoresOpacityAndFadingKeepsPickupColliderActive()
         {
             var view = Object.Instantiate(AssetDatabase.LoadAssetAtPath<ResourcePickupView>(Folder + "TestResourcePickup.prefab"));
             try
@@ -69,12 +69,9 @@ namespace FirepowerLoop.Tests
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(Folder + "ArcadeRifle.prefab");
                 view.SetArcadePresentation(prefab, "Prefabs/SceneObjects/ArcadeRifle");
                 var alpha = view.NameLabel.alpha;
-                var invoked = false;
-                view.InteractionRequested += () => invoked = true;
-                view.SetInteractionAvailable(true);
                 SetOpacity(view, 0f);
-                view.Interact();
-                Assert.That(invoked, Is.True);
+                Assert.That(view.GetComponent<Collider>().enabled, Is.True,
+                    "渐隐只改变表现，街机触发拾取碰撞必须继续有效");
                 var oldMaterial = view.transform.Find("ArcadeDropVisual").GetComponentInChildren<Renderer>().sharedMaterial;
                 var controller = new LootCtrl(null);
                 try

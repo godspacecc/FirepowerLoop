@@ -1,0 +1,12 @@
+[
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/UI/InventoryManagementGridLayout.cs",
+    "sha256": "babf56355e914cd60d310ba901f0a951b04d302e2a80cae299cb54279b69e5a3",
+    "bytes": 770
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/UI/InventoryManagementGridLayout.cs.meta",
+    "sha256": "671abf33456be3ba328f53e71659726170f1021ffd1f792f8b5b53806e3059fe",
+    "bytes": 243
+  }
+]

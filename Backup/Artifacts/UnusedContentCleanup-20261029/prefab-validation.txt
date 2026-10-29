@@ -1,4 +1,0 @@
-Project=E:/GitHub/FirepowerLoop/Client/Assets
-scriptCompilationFailed=False
-Prefabs inspected=184
-Missing scripts or serialized object references=0

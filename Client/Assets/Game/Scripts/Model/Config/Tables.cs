@@ -17,7 +17,6 @@ public partial class Tables
     public TbWeaponAppearance TbWeaponAppearance {get; }
     public TbProjectile TbProjectile {get; }
     public TbMap TbMap {get; }
-    public TbMapDisplay TbMapDisplay {get; }
     public TbMapScenePart TbMapScenePart {get; }
     public TbMapSpawn TbMapSpawn {get; }
     public TbPlayer TbPlayer {get; }
@@ -56,7 +55,6 @@ public partial class Tables
         TbWeaponAppearance = new TbWeaponAppearance(loader("tbweaponappearance"));
         TbProjectile = new TbProjectile(loader("tbprojectile"));
         TbMap = new TbMap(loader("tbmap"));
-        TbMapDisplay = new TbMapDisplay(loader("tbmapdisplay"));
         TbMapScenePart = new TbMapScenePart(loader("tbmapscenepart"));
         TbMapSpawn = new TbMapSpawn(loader("tbmapspawn"));
         TbPlayer = new TbPlayer(loader("tbplayer"));
@@ -97,7 +95,6 @@ public partial class Tables
         TbWeaponAppearance.ResolveRef(this);
         TbProjectile.ResolveRef(this);
         TbMap.ResolveRef(this);
-        TbMapDisplay.ResolveRef(this);
         TbMapScenePart.ResolveRef(this);
         TbMapSpawn.ResolveRef(this);
         TbPlayer.ResolveRef(this);

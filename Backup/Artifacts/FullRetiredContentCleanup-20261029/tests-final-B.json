@@ -1,0 +1,472 @@
+[
+  {
+    "testClass": "MobileShoulderTouchTests",
+    "max": 12,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.0489932"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.DragEnteringUi_CancelsUntilNewTouch",
+          "Status": "Passed",
+          "Duration": "00:00:00.3220000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.EditorMouseDrag_UsesSameCaptureAndDeltaRules",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.FocusLoss_DropsFingerUntilANewPress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.GateClosure_DropsFingerUntilANewPress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.LeftFingerAndOtherRightFinger_DoNotStealCapturedLook",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.RightFingerDrag_EmitsResolutionNormalizedDelta",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.MobileShoulderTouchTests.TouchStartingOnUi_CannotBecomeLookAfterLeavingUi",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "MobileControlLayoutTests",
+    "max": 60,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 31,
+        "PassedTests": 30,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:04.3252246"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeButtons_RoundTripKeepsRealActionsAndIgnoresRetiredActions",
+          "Status": "Passed",
+          "Duration": "00:00:00.2540000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeEditor_FormalReferencesExposeRealActionsWithoutBaseControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.3900000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks",
+          "Status": "Passed",
+          "Duration": "00:00:00.5830000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndMovingKnobsWithoutLabels",
+          "Status": "Failed",
+          "Duration": "00:00:00.0140000",
+          "Message": "  摇杆不应带玩家文字\r\n  Expected: <empty>\r\n  But was:  < <Text (TMPro.TextMeshProUGUI)> >\r\n",
+          "StackTrace": "at Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndMovingKnobsWithoutLabels () [0x00030] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\MobileControlLayoutTests.cs:282\r\n"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ButtonPositions_SurviveSettingsCloneAndLegacyDefaults",
+          "Status": "Passed",
+          "Duration": "00:00:00.0420000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ButtonDragsSaveCancelAndResetWithoutExecutingGameplayActions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0930000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_CancelDiscardsDraftAndReopenLoadsSavedLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(2400,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1800,900)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DragPreservesGrabOffsetAndDesktopSwitchClosesDraft",
+          "Status": "Passed",
+          "Duration": "00:00:00.0360000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_FillsActualSafeAreaAtCombatScale",
+          "Status": "Passed",
+          "Duration": "00:00:00.0300000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_FirstPersonPreviewKeepsFireSeparateAndCancelDiscardsItsDraft",
+          "Status": "Passed",
+          "Duration": "00:00:00.0420000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_SaveCommitsBothSticksAndTrialIsIsolated",
+          "Status": "Passed",
+          "Duration": "00:00:00.0410000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ToolbarCanCollapseWithoutChangingLayoutOrDraftAndReopensExpanded",
+          "Status": "Passed",
+          "Duration": "00:00:00.0440000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ViewUnloadReleasesDraftAfterBaseClearsViewReference",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0570000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(2340,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0430000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(1440,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0450000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.GeneratedPrefabs_AllReferencesResolveAndPreviewHasNoGamepadControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.6250000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,0.7f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,1.5f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(2146,966,1.5f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.LegacyDefaultSticks_MigrateIdempotentlyWithoutOverwritingCustomThumbs",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.LegacySettings_DefaultsAndCloneAreIndependent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Preview_TrialReturnsToCenterWithoutChangingLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SaveFailure_RollsBackAuthoritativeLayoutAndSendsNoEvent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0410000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SettingsFile_RoundTripKeepsBothSticks",
+          "Status": "Passed",
+          "Duration": "00:00:00.0900000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SettingsJson_PreservesMobileLayoutThroughClone",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "PauseUiFlowTests",
+    "max": 25,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 21,
+        "PassedTests": 20,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.7386690"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WhenSceneFlowBusyKeepsPauseAndAllowsRetry",
+          "Status": "Passed",
+          "Duration": "00:00:00.2880000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WithoutActiveHandleReturnsToMainMenuAndClosesPause",
+          "Status": "Passed",
+          "Duration": "00:00:00.0270000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.ArcadePause_ReopensWithLeaveActionAndRefreshesLanguage",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.DedicatedWindowHotKeysRemainRegistered",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.DirectPauseAction_UsesSamePauseMenuRouteAsKeyboard",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesEachWhitelistedControllerWithoutChangingAppState",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesTopLayerBeforeLaterDialog",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.EscapeDuringRebindOnlyCancelsCapture",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.EscapeFallsBackToPausedStateWhenNoRecoverableWorldExists",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.IslandRoundLeaveWarnsAboutWholeRoundRollbackAndCancelKeepsRun",
+          "Status": "Passed",
+          "Duration": "00:00:00.0880000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.MapPreparationFailure_BackKeepsFailedSceneCoveredUntilSafeNodeIsRestored",
+          "Status": "Passed",
+          "Duration": "00:00:00.4150000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease",
+          "Status": "Failed",
+          "Duration": "00:00:00.1430000",
+          "Message": "  Expected: SafeCheckpoint\r\n  But was:  Arena\r\n",
+          "StackTrace": "at Game.Tests.PauseUiFlowTests+<MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease>d__6.MoveNext () [0x00304] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\PauseUiFlowTests.cs:144\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46\r\n"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.NonBlockingUiDoesNotShieldWhitelistedWindow",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.NonWhitelistedBlockingUiShieldsUnderlyingWindowAndPause",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.PauseExit_RepeatedShowInvokesQuitOnlyOnce",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.PauseLayout_KeepsArcadeActionsCompactAcrossReopen",
+          "Status": "Passed",
+          "Duration": "00:00:00.0270000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.PausePrefab_HasAdaptivePanelCurrentButtonsAndNoRetiredCampEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.PauseSettings_CloseBackToPauseAndMapLoadingClearsMenu",
+          "Status": "Passed",
+          "Duration": "00:00:00.1250000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.StartExitUsesQuitCommand",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.TogglePauseWithoutRecoverableWorldKeepsPausedState",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.TopmostBlockingUiPrefersLayerThenShowOrder",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "IndependentUiGenerationMigrationTests",
+    "max": 4,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 4,
+        "PassedTests": 4,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5920647"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiControllers_KeepPrefabPaths",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0610000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingNetworkPagePrefab_HasGeneratedDiagnosticBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingsPrefabs_HaveGeneratedBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "UiFunctionalDirectoryMigrationTests",
+    "max": 3,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:31.0322554"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingMigrationAssets_KeepOriginalGuidsAndRemoveOldPaths",
+          "Status": "Passed",
+          "Duration": "00:00:00.0860000"
+        },
+        {
+          "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingPrefabs_HaveExactRootCollectorAndGeneratedViewBindings",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RuntimePrefabSources_RemainCollectedAndValid",
+          "Status": "Passed",
+          "Duration": "00:00:29.3680000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ConfirmedWeaponPresentationTests",
+    "max": 8,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:13.5954855"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.AllGroundDropNamesAreEmptyAtTheArcadeProjectionSource",
+          "Status": "Passed",
+          "Duration": "00:00:02.1640000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse",
+          "Status": "Passed",
+          "Duration": "00:00:01.5570000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicAKSwitchesBackAfterTemporaryGunWithoutLeakingVisuals",
+          "Status": "Passed",
+          "Duration": "00:00:01.6280000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicGunUsesSeparateAKWithFasterCadenceAndPreservesMP40",
+          "Status": "Passed",
+          "Duration": "00:00:01.3240000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.DeliveryRestoresOrdinaryRotationWhenPooled",
+          "Status": "Passed",
+          "Duration": "00:00:01.2150000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OpenedAirdropIsPlayerSizedAndCrateIsSmaller",
+          "Status": "Passed",
+          "Duration": "00:00:01.2310000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OrdinarySkullsKeepOriginalSizeAndCrateReuseRestoresPose",
+          "Status": "Passed",
+          "Duration": "00:00:01.4470000"
+        },
+        {
+          "Name": "Game.Tests.ConfirmedWeaponPresentationTests.UnusedMeleeConfigsAreRemovedWhileEnemyWeaponsRemainValid",
+          "Status": "Passed",
+          "Duration": "00:00:01.5260000"
+        }
+      ]
+    }
+  }
+]

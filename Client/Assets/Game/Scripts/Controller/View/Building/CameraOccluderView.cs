@@ -28,7 +28,6 @@ namespace Game
         private float roofAlpha = 1f;
         private bool inside;
         public bool FullyVisible => !inside && bodyAlpha >= 1f && roofAlpha >= 1f;
-        internal bool CanOcclude => !TryGetComponent<TemporaryBuildingView>(out var building) || building.IsCommitted;
 
         internal bool Obstructs(Ray sight, float distance)
         {

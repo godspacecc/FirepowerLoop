@@ -5,7 +5,7 @@ using UnityEngine.Rendering;
 namespace Game
 {
     /// <summary>
-    /// 将昼夜快照应用到全局方向光和环境光；地图可临时提供天体轨道，但不接管光强与环境状态。
+    /// 将固定晴天光照应用到全局方向光和环境光。
     /// 保留正午晴天光照，不推进玩法时间。
     /// </summary>
     [DisallowMultipleComponent]
@@ -36,9 +36,6 @@ namespace Game
         private AmbientMode baselineAmbientMode;
         private Color baselineAmbientLight;
         private Color baselineFogColor;
-        // 地图启用程序化天空时临时提供轨道；光强、颜色和环境光仍由本 View 统一应用。
-        private MapProceduralSkyView orbitSource;
-        private float lastDayProgress = .5f;
 
         private void Awake()
         {
@@ -62,7 +59,6 @@ namespace Game
 
         internal void Apply(float dayProgress)
         {
-            lastDayProgress = dayProgress;
             if (directionalLight == null)
             {
                 return;
@@ -80,15 +76,6 @@ namespace Game
             var yaw = solarHeight >= 0f ? lightYaw : lightYaw + 180f;
             directionalLight.transform.rotation = Quaternion.Euler(elevation, yaw, 0f);
             directionalLight.intensity = Mathf.Lerp(moonlightIntensity, daylightIntensity, daylight);
-            if (orbitSource != null)
-            {
-                var sunDirection = orbitSource.GetSunDirection(progress);
-                var incomingRay = solarHeight >= 0f ? -sunDirection : sunDirection;
-                directionalLight.transform.rotation = Quaternion.LookRotation(incomingRay);
-                // 日月在地平线换班时降低光强，避免相反方向的阴影突然翻转。
-                directionalLight.intensity *= Mathf.SmoothStep(0f, 1f,
-                    Mathf.InverseLerp(0f, 0.12f, Mathf.Abs(solarHeight)));
-            }
             directionalLight.color = Color.Lerp(
                 Color.Lerp(moonlightColor, twilightColor, twilight),
                 daylightColor,
@@ -111,23 +98,6 @@ namespace Game
             var distanceFromHorizon = Mathf.Abs(solarHeight);
             var normalized = Mathf.InverseLerp(0.05f, 0.75f, distanceFromHorizon);
             return 1f - Mathf.SmoothStep(0f, 1f, normalized);
-        }
-
-        /// <summary>地图天空准备完成后绑定轨道；拒绝第二个所有者，避免地图重叠时争抢方向光。</summary>
-        internal bool BindOrbit(MapProceduralSkyView source)
-        {
-            if (source == null || (orbitSource != null && orbitSource != source)) return false;
-            orbitSource = source;
-            Apply(lastDayProgress);
-            return true;
-        }
-
-        /// <summary>只有绑定者可以解除；立即恢复当前时刻的原有光照方向，不影响其他地图。</summary>
-        internal void UnbindOrbit(MapProceduralSkyView source)
-        {
-            if (orbitSource != source) return;
-            orbitSource = null;
-            Apply(lastDayProgress);
         }
 
         private void CaptureBaseline()

@@ -131,7 +131,15 @@ namespace Game.Tests
                 // 地图已开始释放后模拟安全节点文件损坏，不能用无句柄快速路径掩盖释放事件的顺序。
                 System.IO.File.WriteAllText(file, "broken save");
                 loader.Completion.TrySetResult(MapContentUnloadResult.Ok());
-                for (int frame = 0; frame < 10 && !view.BtnBack.interactable; frame++) yield return null;
+                var startFrame = Time.frameCount;
+                var recoveryDeadline = EditorApplication.timeSinceStartup + 2.0;
+                while (!view.BtnBack.interactable && EditorApplication.timeSinceStartup < recoveryDeadline)
+                {
+                    EditorApplication.QueuePlayerLoopUpdate();
+                    yield return null;
+                }
+                Assert.That(view.BtnBack.interactable, Is.True,
+                    "首次返回事务必须已完成，才可恢复文件并重试；frame=" + startFrame + "→" + Time.frameCount);
                 Assert.That(Game.Interface.GetModel<MapSceneModel>().CurrentMapId, Is.Null);
                 Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.Arena));
                 Assert.That(loading.IsShow(), Is.True);
@@ -140,8 +148,19 @@ namespace Game.Tests
                 loading.Hide();
                 Assert.That(loading.IsShow(), Is.True, "恢复失败不能仅关闭遮罩");
                 System.IO.File.WriteAllBytes(file, bytes);
+                Assert.That(runs.InspectPending().IsValid, Is.True, "重试前必须已恢复真实有效的安全节点文件");
                 view.BtnRetry.onClick.Invoke();
-                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint));
+                // 正式返回是异步入口，等待事务结束再判定，保留原安全节点目标。
+                for (int frame = 0; frame < 10 && Game.Interface.GetModel<ArcadeRunModel>().Phase != ArcadeRunPhase.SafeCheckpoint; frame++)
+                {
+                    EditorApplication.QueuePlayerLoopUpdate();
+                    yield return null;
+                }
+                Assert.That(Game.Interface.GetModel<ArcadeRunModel>().Phase, Is.EqualTo(ArcadeRunPhase.SafeCheckpoint),
+                    "恢复有效文件后应回到原安全节点：" + view.ErrorText.text + " / " +
+                    typeof(LoadingUICtrl).GetField("mapFailureReason", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading) +
+                    " / active=" + typeof(LoadingUICtrl).GetField("arcadePreparationActive", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading) +
+                    " / failed=" + typeof(LoadingUICtrl).GetField("arcadePreparationFailed", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(loading));
                 Assert.That(loading.IsShow(), Is.False);
             }
         }
@@ -180,8 +199,8 @@ namespace Game.Tests
             map.SetLoaded(MapIds.Arcade, null);
             ctrl.Show();
             Assert.That(text.text, Is.EqualTo("Return to Main Menu"));
-            Assert.That(GetBaseUI<PauseUI>(ctrl).BtnMainMenu.gameObject.activeSelf, Is.False);
-            Assert.That(GetBaseUI<PauseUI>(ctrl).BtnReturnCamp.gameObject.activeSelf, Is.False);
+            Assert.That(typeof(PauseUI).GetField("BtnMainMenu"), Is.Null);
+            Assert.That(GetBaseUI<PauseUI>(ctrl).GetComponentsInChildren<Transform>(true).Any(t => t.name == "BtnReturnCamp"), Is.False);
         }
 
         [Test]
@@ -311,8 +330,8 @@ namespace Game.Tests
             var group = (RectTransform)panel.Find("ButtonGroup");
             var height = panel.rect.height;
             var groupHeight = group.rect.height;
-            Assert.That(view.BtnMainMenu.gameObject.activeSelf, Is.False);
-            Assert.That(view.BtnReturnCamp.gameObject.activeSelf, Is.False);
+            Assert.That(typeof(PauseUI).GetField("BtnMainMenu"), Is.Null);
+            Assert.That(view.GetComponentsInChildren<Transform>(true).Any(t => t.name == "BtnReturnCamp"), Is.False);
             Assert.That(group.GetComponentsInChildren<Button>().Select(button => button.name),
                 Is.EquivalentTo(new[] { "BtnContinue", "BtnOnline", "BtnSetting", "BtnExit" }));
             Assert.That(ButtonBottomMargin(panel, view.BtnExit), Is.EqualTo(36f).Within(0.1f));
@@ -331,8 +350,8 @@ namespace Game.Tests
             ctrl.Show();
             Assert.That(panel.rect.height, Is.EqualTo(height).Within(0.1f));
             Assert.That(group.rect.height, Is.EqualTo(groupHeight).Within(0.1f));
-            Assert.That(view.BtnMainMenu.gameObject.activeSelf, Is.False);
-            Assert.That(view.BtnReturnCamp.gameObject.activeSelf, Is.False);
+            Assert.That(typeof(PauseUI).GetField("BtnMainMenu"), Is.Null);
+            Assert.That(view.GetComponentsInChildren<Transform>(true).Any(t => t.name == "BtnReturnCamp"), Is.False);
         }
 
         private static float ButtonBottomMargin(RectTransform panel, Button button)
@@ -343,7 +362,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void PausePrefab_HasAdaptivePanelReturnButtonAndNoStartArtwork()
+        public void PausePrefab_HasAdaptivePanelCurrentButtonsAndNoRetiredCampEntry()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Pause.prefab");
             Assert.That(prefab, Is.Not.Null);
@@ -356,14 +375,13 @@ namespace Game.Tests
             Assert.That(panel.GetComponent<ContentSizeFitter>().verticalFit, Is.EqualTo(ContentSizeFitter.FitMode.PreferredSize));
             Assert.That(panel.GetComponent<VerticalLayoutGroup>(), Is.Not.Null);
             Assert.That(prefab.GetComponentsInChildren<Button>(true).Select(b => b.name),
-                Is.EquivalentTo(new[] { "BtnContinue", "BtnOnline", "BtnSetting", "BtnMainMenu", "BtnReturnCamp", "BtnExit" }));
+                Is.EquivalentTo(new[] { "BtnContinue", "BtnOnline", "BtnSetting", "BtnExit" }));
             Assert.That(prefab.GetComponentsInChildren<RawImage>(true), Is.Empty);
             var view = prefab.GetComponent<BaseUI>();
             Assert.That(view, Is.Not.Null);
-            var returnCamp = prefab.GetComponent<PauseUI>().BtnReturnCamp;
-            var returnText = returnCamp.GetComponentInChildren<TMP_Text>(true);
-            Assert.That(returnText.text, Is.EqualTo("返回营地"));
-            Assert.That(returnText.GetComponent<LocalizedText>().Key, Is.EqualTo("ui.pause.return_camp"));
+            Assert.That(prefab.GetComponentsInChildren<Transform>(true).Any(t => t.name == "BtnReturnCamp"), Is.False);
+            Assert.That(prefab.GetComponent<ReferenceCollector>().data.Any(item => item.key == "BtnReturnCamp"), Is.False);
+            Assert.That(view.GetType().GetField("BtnReturnCamp"), Is.Null);
             foreach (var item in prefab.GetComponent<ReferenceCollector>().data)
             {
                 Assert.That(item.gameObject, Is.Not.Null, item.key);
@@ -758,7 +776,7 @@ namespace Game.Tests
                 [LocalizationLanguages.LanguagesAddress] = new TextAsset(
                     "{\"default\":\"zh-CN\",\"languages\":[{\"code\":\"zh-CN\",\"label\":\"简体中文\"},{\"code\":\"en-US\",\"label\":\"English\"}]}"),
                 ["zh-CN.json"] = new TextAsset(
-                    "{\"ui.pause.abandon_confirm\":\"放弃将丢失背包和装备\",\"ui.pause.return_camp\":\"返回营地\",\"ui.pause.title\":\"暂停\",\"ui.pause.leave_arcade\":\"离开街机\",\"ui.start.online\":\"联机游戏\",\"ui.pause.resume\":\"继续\",\"ui.pause.main_menu\":\"返回主菜单\",\"ui.start.settings\":\"设置\",\"ui.start.exit\":\"退出\"}"),
+                    "{\"ui.pause.abandon_confirm\":\"放弃将丢失背包和装备\",\"ui.pause.title\":\"暂停\",\"ui.pause.leave_arcade\":\"离开街机\",\"ui.start.online\":\"联机游戏\",\"ui.pause.resume\":\"继续\",\"ui.pause.main_menu\":\"返回主菜单\",\"ui.start.settings\":\"设置\",\"ui.start.exit\":\"退出\"}"),
                 ["en-US.json"] = new TextAsset(
                     "{\"ui.pause.title\":\"Paused\",\"ui.pause.leave_arcade\":\"Leave Arcade\",\"ui.start.online\":\"Online Game\",\"ui.pause.resume\":\"Resume\",\"ui.pause.main_menu\":\"Return to Main Menu\",\"ui.start.settings\":\"Settings\",\"ui.start.exit\":\"Exit\"}")
             };

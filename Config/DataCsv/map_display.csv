@@ -1,2 +1,0 @@
-##var,MapId,ImageName,CenterX,CenterZ,Width,Height,ViewportColumns,ViewportRows
-##type,string,string,float,float,float,float,int,int

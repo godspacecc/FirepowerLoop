@@ -1,0 +1,9 @@
+{
+  "scope": "All authority XML/JSON parse, CSV header/schema field sets and row widths; no generation or Unity execution",
+  "counts": {
+    "source": 41,
+    "client": 35,
+    "server": 30
+  },
+  "errors": []
+}

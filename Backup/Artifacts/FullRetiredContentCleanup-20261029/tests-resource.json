@@ -1,0 +1,545 @@
+[
+  {
+    "testClass": "TopDownOcclusionTests",
+    "max": 10,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 10,
+        "PassedTests": 10,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.5513557"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.AlphaClippedLeavesBlendTextureAlphaWhileFading(0.1f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0660000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.AlphaClippedLeavesBlendTextureAlphaWhileFading(1.0f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.BlockedObjectFadesAndRestoresWithoutChangingCollisionOrSharedMaterial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.CameraControllerDetectsMarkedObstructionAndDisposeRestoresIt",
+          "Status": "Passed",
+          "Duration": "00:00:00.0270000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.DisableRestoresRoofRendererAndMaterialImmediately",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.FadeRecoveryKeepsLatestExternalTintInsteadOfRevivingOldHighlight",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.FadingDoesNotOverrideLodManagedRendererEnabledState",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.InsideShelterFadesRoofKeepsOutlineAndUsesExitMargin(False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.InsideShelterFadesRoofKeepsOutlineAndUsesExitMargin(True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.TopDownOcclusionTests.WideCanopyFadesEvenWhenThinTrunkMissesTheCameraRay",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "GunLocomotionAnimationTests",
+    "max": 20,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 17,
+        "PassedTests": 16,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.8566907"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody",
+          "Status": "Passed",
+          "Duration": "00:00:01.3140000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.spread\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.piercing\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.raygun\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rocket\",False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0220000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"switch\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"hurt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"death\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.greatsword\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.short-sword\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer",
+          "Status": "Failed",
+          "Duration": "00:00:00.0190000",
+          "Message": "  Expected: greater than 1.0f\r\n  But was:  0.0f\r\n",
+          "StackTrace": "at Game.Tests.GunLocomotionAnimationTests+<>c.<MovingPistolUsesFirePoseOverrideOnGunLayer>b__2_0 (Game.CharacterWeaponPresenter presenter, Game.PlayerView view, UnityEngine.Animator animator, Game.OnlineRemotePlayerViewCtrl peer) [0x00055] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:91\r\nat Game.Tests.GunLocomotionAnimationTests.WithPlayer (System.Action`4[T1,T2,T3,T4] check) [0x0007e] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:245\r\nat Game.Tests.GunLocomotionAnimationTests.MovingPistolUsesFirePoseOverrideOnGunLayer () [0x00000] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\GunLocomotionAnimationTests.cs:83\r\n"
+        },
+        {
+          "Name": "Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ArcadeLootEffectsTests",
+    "max": 10,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.4603015"
+      },
+      "Results": [
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.DropOpacityFadesOwnedTransparentModelNameAndBeamWithoutChangingAssets",
+          "Status": "Passed",
+          "Duration": "00:00:00.6200000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.GoldWeaponAndPowerupUseDistinctBeamColors",
+          "Status": "Passed",
+          "Duration": "00:00:00.0600000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ImportedEffectsUseUrpMaterialsAndOnlyOwnedDependencies",
+          "Status": "Passed",
+          "Duration": "00:00:00.1650000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.LootBeamIsIdempotentAndReleasedWithDropVisual",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.MissingVisualDoesNotLeaveBeamOnRecycledPickup",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.RecycledDropRestoresOpacityAndFadingKeepsPickupColliderActive",
+          "Status": "Passed",
+          "Duration": "00:00:00.0530000"
+        },
+        {
+          "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ShieldBlockFlashesOwnedInstanceAndRestoresItsMaterial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "DynamicResourceAddressTests",
+    "max": 30,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 27,
+        "PassedTests": 26,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0515375"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.AddressKindsRejectTheWrongInputMethod",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.AllUiControllersExposeRelativePaths",
+          "Status": "Failed",
+          "Duration": "00:00:00.0180000",
+          "Message": "  Expected: property Count equal to 19\r\n  But was:  10\r\n",
+          "StackTrace": "at Game.Tests.DynamicResourceAddressTests.AllUiControllersExposeRelativePaths () [0x000c7] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\DynamicResourceAddressTests.cs:181\r\n"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.BaseUiShowLoadsTheFullAddressForALegalRelativePath",
+          "Status": "Passed",
+          "Duration": "00:00:00.0770000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.BaseUiShowRejectsInvalidPathWithoutLoadingOrChangingExistingUi",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(CharacterPrefab,\"GrayboxPlayer\",\"Prefabs/Characters/GrayboxPlayer\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(WeaponAppearancePrefab,\"GrayboxBow\",\"Prefabs/Characters/Weapons/GrayboxBow\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(SceneObjectPrefab,\"TestResourcePickup\",\"Prefabs/SceneObjects/TestResourcePickup\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(ProjectilePrefab,\"GrayboxArrow\",\"Prefabs/Combat/GrayboxArrow\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(ItemIcon,\"IconMedkit\",\"Art/UI/Items/IconMedkit\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(Music,\"HomeTheme\",\"Audio/Music/HomeTheme\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(Sound,\"FoundationClick\",\"Audio/Sound/FoundationClick\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Folder/Prefab\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Folder\\\\Prefab\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Prefab.prefab\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Icon.png\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Track.ogg\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Scene.unity\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.GenericLoaderAndGridDoNotAcceptResourceKindsOrStringPaths",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.OptionalFileNameAcceptsOnlyAnEmptyValue",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Prefabs/UI/Home/Start\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"/Home/Start\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/Start/\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home//Start\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/../Start\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home\\\\Start\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/Start.prefab\")",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.DynamicResourceAddressTests.UiAndMapRelativePathsProduceTheirFixedAddress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "AppearanceGallerySceneTests",
+    "max": 30,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 26,
+        "PassedTests": 14,
+        "FailedTests": 12,
+        "SkippedTests": 0,
+        "Duration": "00:00:08.4964850"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.EveryGalleryCharacterOffersTheSameThirteenWeapons",
+          "Status": "Failed",
+          "Duration": "00:00:01.0340000",
+          "Message": "  GrayboxPlayer\r\n  Expected: property Length equal to 14\r\n  But was:  12\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.EveryGalleryCharacterOffersTheSameThirteenWeapons () [0x00187] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:785\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.EveryGalleryWeaponMountsAndSamplesItsSharedActionsOnEveryCharacter",
+          "Status": "Failed",
+          "Duration": "00:00:00.0740000",
+          "Message": "System.InvalidOperationException : Avatar is not of type humanoid.",
+          "StackTrace": "  at UnityEngine.Animator.GetBoneTransform (UnityEngine.HumanBodyBones humanBoneId) [0x0004b] in <3558237dc2b84ebab193e5b1059ac395>:0 \r\n  at Game.Tests.AppearanceGallerySceneTests.EveryGalleryWeaponMountsAndSamplesItsSharedActionsOnEveryCharacter () [0x00241] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:841 \r\n  at (wrapper managed-to-native) System.Reflection.RuntimeMethodInfo.InternalInvoke(System.Reflection.RuntimeMethodInfo,object,object[],System.Exception&)\r\n  at System.Reflection.RuntimeMethodInfo.Invoke (System.Object obj, System.Reflection.BindingFlags invokeAttr, System.Reflection.Binder binder, System.Object[] parameters, System.Globalization.CultureInfo culture) [0x0006a] in <de920293e401402ab375ad8a2e1b19da>:0 "
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.EverySharedWeaponOverridesTheThreeFormalAnimatorActions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0980000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalArcadePlayerSelectsSharedGunByWeaponId",
+          "Status": "Failed",
+          "Duration": "00:00:00.0230000",
+          "Message": "  arcade.weapon.basic\r\n  Expected: True\r\n  But was:  False\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalArcadePlayerSelectsSharedGunByWeaponId () [0x00216] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:697\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBasicEnemySwordGripSitsInsideThePalm",
+          "Status": "Failed",
+          "Duration": "00:00:00.0040000",
+          "Message": "  Expected: same as <empty>\r\n  But was:  < < <empty> >, < <empty> >, < <empty> >, < <empty> >, < <empty> >, < <empty> >, <empty>, <empty> >\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalBasicEnemySwordGripSitsInsideThePalm () [0x00052] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:1231\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBowFirePortTriggersTheArrowAnimation",
+          "Status": "Failed",
+          "Duration": "00:00:00.0100000",
+          "Message": "  Expected: True\r\n  But was:  False\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalBowFirePortTriggersTheArrowAnimation () [0x00077] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:259\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBowUsesTheGalleryIdleWalkAndFireClips",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  Expected: not null\r\n  But was:  null\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalBowUsesTheGalleryIdleWalkAndFireClips () [0x00087] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:194\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalEnemyInstancesAcceptEverySharedWeapon",
+          "Status": "Failed",
+          "Duration": "00:00:00.0120000",
+          "Message": "  ArcadeEnemyBasic/weapon.short-sword\r\n  Expected: same as <Game.CharacterWeaponCatalog+Entry>\r\n  But was:  <Game.CharacterWeaponCatalog+Entry>\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalEnemyInstancesAcceptEverySharedWeapon () [0x00134] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:652\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalRifleAimClipHasNoOrphanMoveEvent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.FormalWorldPlayerSelectsEverySharedWeaponByEquipmentItemId",
+          "Status": "Failed",
+          "Duration": "00:00:02.4630000",
+          "Message": "  Expected: \"arcade.weapon.flamethrower\"\r\n  But was:  null\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.FormalWorldPlayerSelectsEverySharedWeaponByEquipmentItemId () [0x0008a] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:734\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryAlignsOnlyTheSelectedAnimatedCharacter",
+          "Status": "Passed",
+          "Duration": "00:00:00.0930000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryAppliesInspectorPoseEditsWithoutResettingCurrentPreview",
+          "Status": "Failed",
+          "Duration": "00:00:01.4460000",
+          "Message": "  Expected: (0.13, -0.03, 0.00)\r\n  But was:  (0.13, 0.05, 0.00)\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.GalleryAppliesInspectorPoseEditsWithoutResettingCurrentPreview () [0x0023b] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:962\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryMeleeOptionsUseFormalPreviewAssets",
+          "Status": "Passed",
+          "Duration": "00:00:00.0500000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.GallerySceneReferencesFormalCharactersAndAllControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.0520000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.NewAnimationPoseEntryKeepsWeaponDefaultsUntilFieldsAreEnabled",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.PiercingWeaponStaysNearBothHandsInRiflePreviewClips",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedAnimationOptionsKeepChineseDisplayNames",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedEnemyViewRestoresFormalWeaponAfterTrial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGalleryRestoresCompatibleActionTimeAndPauseAcrossCharacterAndWeapon",
+          "Status": "Passed",
+          "Duration": "00:00:01.5500000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGunBarrelsPointForwardFromTheHandsOnAllFiveCharacters",
+          "Status": "Failed",
+          "Duration": "00:00:00.0200000",
+          "Message": "  ArcadeEnemyBasic/arcade.weapon.basic gun barrel\r\n  Expected: greater than 0.800000012f\r\n  But was:  -0.020220682f\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.SharedGunBarrelsPointForwardFromTheHandsOnAllFiveCharacters () [0x00153] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:456\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGunOffhandReachesItsGripOnAllFiveCharacters",
+          "Status": "Failed",
+          "Duration": "00:00:00.0420000",
+          "Message": "  ArcadeEnemyBasic/arcade.weapon.basic/RifleIdleAiming/frame 0\r\n  Expected: less than 0.0700000003f\r\n  But was:  5.80305862f\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.SharedGunOffhandReachesItsGripOnAllFiveCharacters () [0x0020f] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:517\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedShortSwordGripsAndPointsForwardOnAllFiveCharacters",
+          "Status": "Failed",
+          "Duration": "00:00:00.0110000",
+          "Message": "  GrayboxPlayer/grip\r\n  Expected: less than 0.0799999982f\r\n  But was:  0.12814118f\r\n",
+          "StackTrace": "at Game.Tests.AppearanceGallerySceneTests.SharedShortSwordGripsAndPointsForwardOnAllFiveCharacters () [0x0013e] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\AppearanceGallerySceneTests.cs:566\r\n"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponCanConfigureEveryListedAnimationIndependently",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponGripKeepsTheOffhandOnCompatibleWeapons",
+          "Status": "Passed",
+          "Duration": "00:00:00.0800000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponUsesDifferentConfiguredPosesForIdleAndMoving",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.TrialGunsStayNearTheHandAcrossEnemyRigs",
+          "Status": "Passed",
+          "Duration": "00:00:00.0400000"
+        }
+      ]
+    }
+  }
+]

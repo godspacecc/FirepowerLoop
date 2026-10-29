@@ -1,0 +1,81 @@
+{
+  "testClass": "ArcadeMeleePresentationTests",
+  "max": 13,
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 13,
+      "PassedTests": 13,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:14.7435637"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.EnemyMeleeWeaponsTriggerSwingAndRepeatedSequenceDoesNotReplay",
+        "Status": "Passed",
+        "Duration": "00:00:01.3340000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.NetworkAttackSequenceSurvivesClientSnapshotConversion",
+        "Status": "Passed",
+        "Duration": "00:00:01.1580000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.OnlineProjectionSelectsTemporaryWeaponThenRestoresPurchaseWithoutReplayingHistory",
+        "Status": "Passed",
+        "Duration": "00:00:00.9790000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"fist\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.0440000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"bow\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.0180000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"projectile\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.9550000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"online-melee\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.1680000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.ProjectileWeaponStillPlaysUpperBodyFireAnimation",
+        "Status": "Passed",
+        "Duration": "00:00:01.2220000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteLoadBindsLatestWeaponAndSkipsBufferedAttackHistory",
+        "Status": "Passed",
+        "Duration": "00:00:01.0450000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteWeaponBindsBeforeAttackAndLoadedHistoryDoesNotReplay",
+        "Status": "Passed",
+        "Duration": "00:00:01.0100000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.0f)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9760000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.greatsword\",1.0f)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0590000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.5f)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9600000"
+      }
+    ]
+  }
+}

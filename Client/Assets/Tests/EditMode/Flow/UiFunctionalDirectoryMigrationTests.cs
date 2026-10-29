@@ -26,7 +26,6 @@ namespace Game.Tests
         // 固定为迁移前记录的 GUID；测试不得从当前 AssetDatabase、.meta 或扫描结果推导期望值。
         private static readonly AssetEntry[] Prefabs =
         {
-            new AssetEntry("Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab","13f9f4fb02ea3614594b9d511a18503c","Assets/Game/Prefabs/UI/Common/PlayerConditionHud.prefab","PlayerConditionHudUI"),
             new AssetEntry("Assets/Game/Prefabs/UI/Diagnostics/RuntimeLog.prefab","de5223b045130984fa4d2f53794b1749","Assets/Game/Prefabs/UI/Common/RuntimeLog.prefab","RuntimeLogUI"),
             new AssetEntry("Assets/Game/Prefabs/UI/Diagnostics/TestCmd.prefab","3c6c3ac513d9dbf4eb1ee05827647a97","Assets/Game/Prefabs/UI/Common/TestCmd.prefab","TestCmdUI"),
             new AssetEntry("Assets/Game/Prefabs/UI/Diagnostics/TestCmdButton.prefab","889a13e3200dfd645bad25e8c9ee7c13","Assets/Game/Prefabs/UI/Common/TestCmdButton.prefab","TestCmdButtonUI"),
@@ -36,7 +35,6 @@ namespace Game.Tests
         };
 
         private static readonly AssetEntry[] OtherAssets = ParseEntries(@"
-Assets/Game/Scripts/Controller/UI/Player/PlayerConditionHudUI.cs|903c3f7189784764383452795c07ce7f|Assets/Game/Scripts/Controller/UI/Common/PlayerConditionHudUI.cs
 Assets/Game/Scripts/Controller/UI/Diagnostics/RuntimeLogUI.cs|6bccda9ff000f29438b8ef0e1aaa1d24|Assets/Game/Scripts/Controller/UI/Common/RuntimeLogUI.cs
 Assets/Game/Scripts/Controller/UI/Diagnostics/TestCmdUI.cs|1a2d3f4cd2c8eed4ca49105a566f78f6|Assets/Game/Scripts/Controller/UI/Common/TestCmdUI.cs
 Assets/Game/Scripts/Controller/UI/Diagnostics/TestCmdButtonUI.cs|3609bfa8d3bef1b41a14dea427eca73b|Assets/Game/Scripts/Controller/UI/Common/TestCmdButtonUI.cs
@@ -53,7 +51,7 @@ Assets/Game/Scripts/Controller/UICtrl/Diagnostics/TestCmdButtonUICtrl.cs|f0be32e
         {
             foreach (var asset in Prefabs.Concat(OtherAssets))
                 AssertAsset(asset);
-            Assert.That(Prefabs.Length + OtherAssets.Length, Is.EqualTo(18));
+            Assert.That(Prefabs.Length + OtherAssets.Length, Is.EqualTo(16));
         }
 
         [Test]

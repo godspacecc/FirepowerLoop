@@ -4,458 +4,6 @@ namespace Game
     public static class Texts
     {
         /// <summary>
-        /// 汉末·山间运输路线
-        /// </summary>
-        public static string ChapterHanTransportName => Loc.T("chapter.han-transport.name");
-        /// <summary>
-        /// 继续探索
-        /// </summary>
-        public static string CivilisationCancel => Loc.T("civilisation.cancel");
-        /// <summary>
-        /// 包裹上的记号与沿途遗物相同，足迹通向{0}的高处。
-        /// </summary>
-        public static string CivilisationClueCamp(object arg0) => Loc.T("civilisation.clue.camp", arg0);
-        /// <summary>
-        /// 相同的包裹记号
-        ///
-        /// 布片上的记号与沿河遗物相同。附近有停歇后重新捆扎的痕迹，脚印继续向高处延伸。
-        ///
-        /// 有人在这里整理过行装，没有把所有东西都丢下。队伍离开原路后的行动似乎仍有安排。
-        /// </summary>
-        public static string CivilisationClueCampRecord => Loc.T("civilisation.clue.camp.record");
-        /// <summary>
-        /// 痕迹通向{0}，观察已记入日志。
-        /// </summary>
-        public static string CivilisationClueRecorded(object arg0) => Loc.T("civilisation.clue.recorded", arg0);
-        /// <summary>
-        /// 散落的粮粒和拖行痕迹转向{0}。队伍似乎离开了原来的运输路线。
-        /// </summary>
-        public static string CivilisationClueUpstream(object arg0) => Loc.T("civilisation.clue.upstream", arg0);
-        /// <summary>
-        /// 沿河车辙
-        ///
-        /// 车辙在岸边断开，散落的粮粒却继续伸向坡路。几处脚印踩在拖痕两侧，像是有人把车上的东西卸下后合力搬走。
-        ///
-        /// 没有足够的痕迹说明整支队伍都在这里遇难。他们或许舍弃了车辆，改走难行的小路。发现时的痕迹方向可以继续追查。
-        /// </summary>
-        public static string CivilisationClueUpstreamRecord => Loc.T("civilisation.clue.upstream.record");
-        /// <summary>
-        /// 采集完成，物品已放入背包。
-        /// </summary>
-        public static string CivilisationCollectDone => Loc.T("civilisation.collect.done");
-        /// <summary>
-        /// 继续
-        /// </summary>
-        public static string CivilisationContinue => Loc.T("civilisation.continue");
-        /// <summary>
-        /// 汉末乱世，一支运输队在山间失散。沿途调查遗物与线索，查明队伍去向；工艺资料可分别寻找。成功返程后保存工艺与剧情成果，剩余物资自动兑换，装备不带回。
-        /// </summary>
-        public static string CivilisationDepartureDetail => Loc.T("civilisation.departure.detail");
-        /// <summary>
-        /// 东方
-        /// </summary>
-        public static string CivilisationDirectionE => Loc.T("civilisation.direction.e");
-        /// <summary>
-        /// 北方
-        /// </summary>
-        public static string CivilisationDirectionN => Loc.T("civilisation.direction.n");
-        /// <summary>
-        /// 东北方
-        /// </summary>
-        public static string CivilisationDirectionNe => Loc.T("civilisation.direction.ne");
-        /// <summary>
-        /// 西北方
-        /// </summary>
-        public static string CivilisationDirectionNw => Loc.T("civilisation.direction.nw");
-        /// <summary>
-        /// 南方
-        /// </summary>
-        public static string CivilisationDirectionS => Loc.T("civilisation.direction.s");
-        /// <summary>
-        /// 东南方
-        /// </summary>
-        public static string CivilisationDirectionSe => Loc.T("civilisation.direction.se");
-        /// <summary>
-        /// 西南方
-        /// </summary>
-        public static string CivilisationDirectionSw => Loc.T("civilisation.direction.sw");
-        /// <summary>
-        /// 西方
-        /// </summary>
-        public static string CivilisationDirectionW => Loc.T("civilisation.direction.w");
-        /// <summary>
-        /// 请装备斧头并切换到近战槽后砍树。
-        /// </summary>
-        public static string CivilisationErrorAxe => Loc.T("civilisation.error.axe");
-        /// <summary>
-        /// 当前状态无法执行这项操作。
-        /// </summary>
-        public static string CivilisationErrorContext => Loc.T("civilisation.error.context");
-        /// <summary>
-        /// 请靠近调查点。
-        /// </summary>
-        public static string CivilisationErrorDistance => Loc.T("civilisation.error.distance");
-        /// <summary>
-        /// 金币不足。
-        /// </summary>
-        public static string CivilisationErrorGold => Loc.T("civilisation.error.gold");
-        /// <summary>
-        /// 先带回干粮工艺，才能在基地生产。
-        /// </summary>
-        public static string CivilisationErrorLocked => Loc.T("civilisation.error.locked");
-        /// <summary>
-        /// 请装备镐头并切换到近战槽后采石。
-        /// </summary>
-        public static string CivilisationErrorPickaxe => Loc.T("civilisation.error.pickaxe");
-        /// <summary>
-        /// 本趟已经领取过基础补给。
-        /// </summary>
-        public static string CivilisationErrorPreparation => Loc.T("civilisation.error.preparation");
-        /// <summary>
-        /// 保存失败，进度已保留，请重试。
-        /// </summary>
-        public static string CivilisationErrorSave => Loc.T("civilisation.error.save");
-        /// <summary>
-        /// 这里本趟已经调查过了。
-        /// </summary>
-        public static string CivilisationErrorSearched => Loc.T("civilisation.error.searched");
-        /// <summary>
-        /// 采集完成，产物已掉落，请拾取。
-        /// </summary>
-        public static string CivilisationHarvestDone => Loc.T("civilisation.harvest.done");
-        /// <summary>
-        /// 拾取斧头
-        /// </summary>
-        public static string CivilisationPointAxe => Loc.T("civilisation.point.axe");
-        /// <summary>
-        /// 调查弓具包裹
-        /// </summary>
-        public static string CivilisationPointBow => Loc.T("civilisation.point.bow");
-        /// <summary>
-        /// 整理过的弓具
-        ///
-        /// 散落箭材旁留下弓具制作与调整的记录。可用的箭被挑走，余下的是需要修整的材料。
-        ///
-        /// 有人在转移前重新整理了武器。带回资料后可制作改良弓，仍使用现有箭矢，提高命中后的伤害。
-        /// </summary>
-        public static string CivilisationPointBowRecord => Loc.T("civilisation.point.bow.record");
-        /// <summary>
-        /// 弓材、弦料和修整记录被包在一起。你从遗物中整理出制弓的资料。
-        /// </summary>
-        public static string CivilisationPointBowResult => Loc.T("civilisation.point.bow.result");
-        /// <summary>
-        /// 搜集布料
-        /// </summary>
-        public static string CivilisationPointCloth => Loc.T("civilisation.point.cloth");
-        /// <summary>
-        /// 查看沿河线索
-        /// </summary>
-        public static string CivilisationPointClue => Loc.T("civilisation.point.clue");
-        /// <summary>
-        /// 调查旧火塘工艺
-        /// </summary>
-        public static string CivilisationPointFire => Loc.T("civilisation.point.fire");
-        /// <summary>
-        /// 冷灶旁的干粮
-        ///
-        /// 灶边剩下少量干粮和处理口粮的记号。做饭的人把适合携带的部分另行收好，并未只顾眼前一顿。
-        ///
-        /// 这份做法能用于基地制作干粮。它能补充赶路所需的能量，但不能替代饮水。
-        /// </summary>
-        public static string CivilisationPointFireRecord => Loc.T("civilisation.point.fire.record");
-        /// <summary>
-        /// 搜索食物储藏处
-        /// </summary>
-        public static string CivilisationPointFood => Loc.T("civilisation.point.food");
-        /// <summary>
-        /// 调查粮食包裹
-        /// </summary>
-        public static string CivilisationPointGrain => Loc.T("civilisation.point.grain");
-        /// <summary>
-        /// 分装的口粮
-        ///
-        /// 粮食处理处有几份已经分开的包裹，包边标记着供几人携带。队伍没有把余粮集中留在车上，而是分给仍能行动的人。
-        ///
-        /// 加工记录可用于制作熟粮口粮。同样一份携带数量下，它能恢复更多能量，为深入支路留下余地。
-        /// </summary>
-        public static string CivilisationPointGrainRecord => Loc.T("civilisation.point.grain.record");
-        /// <summary>
-        /// 粮食先加工再分装，包裹上记着沿途食用的份量。你记录了这套准备口粮的方法。
-        /// </summary>
-        public static string CivilisationPointGrainResult => Loc.T("civilisation.point.grain.result");
-        /// <summary>
-        /// 调查修理工具
-        /// </summary>
-        public static string CivilisationPointIronTools => Loc.T("civilisation.point.iron_tools");
-        /// <summary>
-        /// 修整过的斧镐
-        ///
-        /// 工具刃口有反复修整的痕迹，柄部也重新固定过。旁边的记录提醒使用者：伐木与破石应各用合适的工具，不能只图省事。
-        ///
-        /// 队伍似乎准备离开车道后继续开路和取材。带回这份资料，可制作精锻斧与精锻镐，缩短对应采集的耗时。
-        /// </summary>
-        public static string CivilisationPointIronToolsRecord => Loc.T("civilisation.point.iron_tools.record");
-        /// <summary>
-        /// 斧镐的刃口留有反复修整痕迹，旁边保存着锻打次序。你收好了工具加工的资料。
-        /// </summary>
-        public static string CivilisationPointIronToolsResult => Loc.T("civilisation.point.iron_tools.result");
-        /// <summary>
-        /// 拾取镐头
-        /// </summary>
-        public static string CivilisationPointPickaxe => Loc.T("civilisation.point.pickaxe");
-        /// <summary>
-        /// 调查储水用品
-        /// </summary>
-        public static string CivilisationPointPottery => Loc.T("civilisation.point.pottery");
-        /// <summary>
-        /// 封好的水罐
-        ///
-        /// 罐口有封装痕迹，绳印说明容器曾被固定运输。旁边的使用记录提醒携带者在歇脚时检查封口，别让辛苦取得的水漏尽。
-        ///
-        /// 带回容器制作资料后可制作陶水罐，补充更多水分。它解决饮水问题，不能替代粮食。
-        /// </summary>
-        public static string CivilisationPointPotteryRecord => Loc.T("civilisation.point.pottery.record");
-        /// <summary>
-        /// 罐口的封装和运输痕迹仍在，遗留记录说明了容器的制作与使用。
-        /// </summary>
-        public static string CivilisationPointPotteryResult => Loc.T("civilisation.point.pottery.result");
-        /// <summary>
-        /// 领取基础补给
-        /// </summary>
-        public static string CivilisationPointPrepare => Loc.T("civilisation.point.prepare");
-        /// <summary>
-        /// 查看运输队留书
-        /// </summary>
-        public static string CivilisationPointProof => Loc.T("civilisation.point.proof");
-        /// <summary>
-        /// 运输队留书
-        ///
-        /// “车不能再走。能带的粮已分装，伤者随队，不留人在河边。后到的人不必守着车辆等候；见到旧包记号，便知我们曾在此歇脚。若能回去，请告知等消息的人：我们已经离开原路，携余粮转移。”
-        ///
-        /// 留书与沿途的拖痕、包裹记号相互印证：队伍在失去车辆后重新分配物资，带着伤者继续转移。
-        ///
-        /// 你收好了这份记录。成功返回即可交代此次调查结果；其他尚未找到的工艺资料仍可留待以后探索。
-        /// </summary>
-        public static string CivilisationPointProofRecord => Loc.T("civilisation.point.proof.record");
-        /// <summary>
-        /// 返回基地
-        /// </summary>
-        public static string CivilisationPointReturn => Loc.T("civilisation.point.return");
-        /// <summary>
-        /// 可采石块（需装备镐头）
-        /// </summary>
-        public static string CivilisationPointRock => Loc.T("civilisation.point.rock");
-        /// <summary>
-        /// 清理返程捷径
-        /// </summary>
-        public static string CivilisationPointShortcut => Loc.T("civilisation.point.shortcut");
-        /// <summary>
-        /// 调查遗留刃具
-        /// </summary>
-        public static string CivilisationPointSteelBlade => Loc.T("civilisation.point.steel_blade");
-        /// <summary>
-        /// 留下的刃具修整记录
-        ///
-        /// 刃具与杂物分开放置，纸上记着加工和修整时需要留意的步骤。几件用坏的工具被留下，能继续使用的已经取走。
-        ///
-        /// 这并非匆忙丢弃全部行装的样子。带回资料后可制作钢刀，在近身交战中提高每次有效命中的伤害。
-        /// </summary>
-        public static string CivilisationPointSteelBladeRecord => Loc.T("civilisation.point.steel_blade.record");
-        /// <summary>
-        /// 刃具包裹中留有材料与加工记录。队伍把需要修整的刀留在此处，轻装继续前行。
-        /// </summary>
-        public static string CivilisationPointSteelBladeResult => Loc.T("civilisation.point.steel_blade.result");
-        /// <summary>
-        /// 可砍树木（需装备斧头）
-        /// </summary>
-        public static string CivilisationPointTree => Loc.T("civilisation.point.tree");
-        /// <summary>
-        /// 河岸取水（可重复采集）
-        /// </summary>
-        public static string CivilisationPointWater => Loc.T("civilisation.point.water");
-        /// <summary>
-        /// 搜索木材堆
-        /// </summary>
-        public static string CivilisationPointWood => Loc.T("civilisation.point.wood");
-        /// <summary>
-        /// 工艺制作台
-        /// </summary>
-        public static string CivilisationPointWorkshop => Loc.T("civilisation.point.workshop");
-        /// <summary>
-        /// 已领取一份基础补给。
-        /// </summary>
-        public static string CivilisationPrepareDone => Loc.T("civilisation.prepare.done");
-        /// <summary>
-        /// 制作一份
-        /// </summary>
-        public static string CivilisationProduce => Loc.T("civilisation.produce");
-        /// <summary>
-        /// 工艺资料已记入日志 → 收集内容
-        /// </summary>
-        public static string CivilisationReadingRecorded => Loc.T("civilisation.reading.recorded");
-        /// <summary>
-        /// 章节完成：{0}。仍可再次进入寻找遗漏的技术。
-        /// </summary>
-        public static string CivilisationReceiptChapter(object arg0) => Loc.T("civilisation.receipt.chapter", arg0);
-        /// <summary>
-        /// （其中 {0} 份为免费补给，不兑换）
-        /// </summary>
-        public static string CivilisationReceiptExempt(object arg0) => Loc.T("civilisation.receipt.exempt", arg0);
-        /// <summary>
-        /// 本次获得 {0} 金币
-        /// </summary>
-        public static string CivilisationReceiptGold(object arg0) => Loc.T("civilisation.receipt.gold", arg0);
-        /// <summary>
-        /// 物资兑换
-        /// </summary>
-        public static string CivilisationReceiptItems => Loc.T("civilisation.receipt.items");
-        /// <summary>
-        /// 无
-        /// </summary>
-        public static string CivilisationReceiptNone => Loc.T("civilisation.receipt.none");
-        /// <summary>
-        /// {0} × {1} → {2} 金币
-        /// </summary>
-        public static string CivilisationReceiptRow(object arg0, object arg1, object arg2) => Loc.T("civilisation.receipt.row", arg0, arg1, arg2);
-        /// <summary>
-        /// 本次新科技
-        /// </summary>
-        public static string CivilisationReceiptTech => Loc.T("civilisation.receipt.tech");
-        /// <summary>
-        /// 调查地点
-        /// </summary>
-        public static string CivilisationReceiptVisited => Loc.T("civilisation.receipt.visited");
-        /// <summary>
-        /// 返回基地
-        /// </summary>
-        public static string CivilisationReturnTitle => Loc.T("civilisation.return.title");
-        /// <summary>
-        /// 成功返程会永久解锁当次工艺，并将背包剩余物品自动兑换为金币。是否返回？
-        /// </summary>
-        public static string CivilisationReturnWarning => Loc.T("civilisation.return.warning");
-        /// <summary>
-        /// 调查完成；工艺样本需要成功返程后才能永久解锁。
-        /// </summary>
-        public static string CivilisationSearchDone => Loc.T("civilisation.search.done");
-        /// <summary>
-        /// 远征结算
-        /// </summary>
-        public static string CivilisationSettlementTitle => Loc.T("civilisation.settlement.title");
-        /// <summary>
-        /// 返程捷径已打通。
-        /// </summary>
-        public static string CivilisationShortcutOpened => Loc.T("civilisation.shortcut.opened");
-        /// <summary>
-        /// 留书说明队伍已携余粮转移，伤者随行。你收好了能证明其去向的记录；成功返回后完成本章。
-        /// </summary>
-        public static string CivilisationStoryEvidence => Loc.T("civilisation.story.evidence");
-        /// <summary>
-        /// 已取得留书。可在日志阅读，返程后结算。
-        /// </summary>
-        public static string CivilisationStoryRecorded => Loc.T("civilisation.story.recorded");
-        /// <summary>
-        /// {0}
-        ///
-        /// 购买原料并制作一份干粮：{1} 金币
-        /// 干粮恢复60点能量，每格可携带2份。
-        ///
-        /// 当前金币：{2}
-        /// </summary>
-        public static string CivilisationWorkshopBody(object arg0, object arg1, object arg2) => Loc.T("civilisation.workshop.body", arg0, arg1, arg2);
-        /// <summary>
-        /// 本章剧情已完成；未学会的工艺仍可回到河谷寻找。
-        /// </summary>
-        public static string CivilisationWorkshopCompleted => Loc.T("civilisation.workshop.completed");
-        /// <summary>
-        /// 下一项
-        /// </summary>
-        public static string CivilisationWorkshopNext => Loc.T("civilisation.workshop.next");
-        /// <summary>
-        /// 运输队去向尚未查明。技术发现与剧情通关分别推进。
-        /// </summary>
-        public static string CivilisationWorkshopOngoing => Loc.T("civilisation.workshop.ongoing");
-        /// <summary>
-        /// 上一项
-        /// </summary>
-        public static string CivilisationWorkshopPrevious => Loc.T("civilisation.workshop.previous");
-        /// <summary>
-        /// 配方 {0}/{1}
-        ///
-        /// {2}
-        /// {3}
-        ///
-        /// {4}
-        /// {5}
-        ///
-        /// 制作一份：{6} 金币
-        /// 当前金币：{7}
-        /// </summary>
-        public static string CivilisationWorkshopRecipe(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5, object arg6, object arg7) => Loc.T("civilisation.workshop.recipe", arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
-        /// <summary>
-        /// 制作完成，产物已放入背包。
-        /// </summary>
-        public static string CivilisationWorkshopSuccess => Loc.T("civilisation.workshop.success");
-        /// <summary>
-        /// 工艺制作
-        /// </summary>
-        public static string CivilisationWorkshopTitle => Loc.T("civilisation.workshop.title");
-        /// <summary>
-        /// 已掌握，可制作
-        /// </summary>
-        public static string CivilisationWorkshopUnlocked => Loc.T("civilisation.workshop.unlocked");
-        /// <summary>
-        /// 继续
-        /// </summary>
-        public static string DialogueContinue => Loc.T("dialogue.continue");
-        /// <summary>
-        /// 暂时无法交谈，请稍后重试。
-        /// </summary>
-        public static string DialogueFailed => Loc.T("dialogue.failed");
-        /// <summary>
-        /// 结束交谈
-        /// </summary>
-        public static string DialogueLeave => Loc.T("dialogue.leave");
-        /// <summary>
-        /// 【对话流程测试】这是一段分支回答。正式剧情可以使用同一流程配置台词与回答，测试对话不会改变剧情进度。
-        /// </summary>
-        public static string DialogueTestAnswer => Loc.T("dialogue.test.answer");
-        /// <summary>
-        /// 这个流程怎样搭配剧情？
-        /// </summary>
-        public static string DialogueTestAsk => Loc.T("dialogue.test.ask");
-        /// <summary>
-        /// 返回话题选择
-        /// </summary>
-        public static string DialogueTestBack => Loc.T("dialogue.test.back");
-        /// <summary>
-        /// 【对话流程测试】你想了解哪一项？选择回答后，会进入对应分支。
-        /// </summary>
-        public static string DialogueTestBranch => Loc.T("dialogue.test.branch");
-        /// <summary>
-        /// 演示分支选择
-        /// </summary>
-        public static string DialogueTestChoose => Loc.T("dialogue.test.choose");
-        /// <summary>
-        /// 打开地图选择
-        /// </summary>
-        public static string DialogueTestFunction => Loc.T("dialogue.test.function");
-        /// <summary>
-        /// 【对话流程测试】请选择一项，体验连续台词、分支回答或进入地图选择。这里的文字不属于正式剧情。
-        /// </summary>
-        public static string DialogueTestIntro => Loc.T("dialogue.test.intro");
-        /// <summary>
-        /// 【对话流程测试】这是第一句台词。点击“继续”，可以阅读下一句。
-        /// </summary>
-        public static string DialogueTestLine1 => Loc.T("dialogue.test.line1");
-        /// <summary>
-        /// 【对话流程测试】这是第二句台词。再次继续将返回话题选择。
-        /// </summary>
-        public static string DialogueTestLine2 => Loc.T("dialogue.test.line2");
-        /// <summary>
-        /// 演示连续台词
-        /// </summary>
-        public static string DialogueTestSequential => Loc.T("dialogue.test.sequential");
-        /// <summary>
         /// 弓使用的弹药
         /// </summary>
         public static string ItemAmmunitionArrowDesc => Loc.T("item.ammunition.arrow.desc");
@@ -488,21 +36,13 @@ namespace Game
         /// </summary>
         public static string ItemAmmunitionRocketName => Loc.T("item.ammunition.rocket.name");
         /// <summary>
-        /// 普通容器保存的洁净饮水，使用后恢复40点水分
+        /// 街机地面掉落的通用表现承载，不作为背包材料
         /// </summary>
-        public static string ItemBottledWaterDesc => Loc.T("item.bottled_water.desc");
+        public static string ItemArcadeDropDesc => Loc.T("item.arcade_drop.desc");
         /// <summary>
-        /// 瓶装水
+        /// 街机掉落表现
         /// </summary>
-        public static string ItemBottledWaterName => Loc.T("item.bottled_water.name");
-        /// <summary>
-        /// 常见的柔软制作材料
-        /// </summary>
-        public static string ItemClothDesc => Loc.T("item.cloth.desc");
-        /// <summary>
-        /// 布料
-        /// </summary>
-        public static string ItemClothName => Loc.T("item.cloth.name");
+        public static string ItemArcadeDropName => Loc.T("item.arcade_drop.name");
         /// <summary>
         /// 可穿戴的蓝色长裤，仅改变外观。
         /// </summary>
@@ -576,166 +116,6 @@ namespace Game
         /// </summary>
         public static string ItemClothingWorkGlovesName => Loc.T("item.clothing.work_gloves.name");
         /// <summary>
-        /// 恢复60点能量；便于携带，支持更远的探索。
-        /// </summary>
-        public static string ItemDriedFoodDesc => Loc.T("item.dried_food.desc");
-        /// <summary>
-        /// 干粮
-        /// </summary>
-        public static string ItemDriedFoodName => Loc.T("item.dried_food.name");
-        /// <summary>
-        /// 恢复20点能量。免费准备份额不参与返程兑换。
-        /// </summary>
-        public static string ItemGatheredFoodDesc => Loc.T("item.gathered_food.desc");
-        /// <summary>
-        /// 采集食物
-        /// </summary>
-        public static string ItemGatheredFoodName => Loc.T("item.gathered_food.name");
-        /// <summary>
-        /// 近战伤害14，伐木效率为基础斧的两倍。
-        /// </summary>
-        public static string ItemHanAxeDesc => Loc.T("item.han.axe.desc");
-        /// <summary>
-        /// 精锻斧
-        /// </summary>
-        public static string ItemHanAxeName => Loc.T("item.han.axe.name");
-        /// <summary>
-        /// 近战伤害20；基础短刀伤害10。
-        /// </summary>
-        public static string ItemHanBladeDesc => Loc.T("item.han.blade.desc");
-        /// <summary>
-        /// 钢刀
-        /// </summary>
-        public static string ItemHanBladeName => Loc.T("item.han.blade.name");
-        /// <summary>
-        /// 命中伤害18，使用普通箭矢。
-        /// </summary>
-        public static string ItemHanBowDesc => Loc.T("item.han.bow.desc");
-        /// <summary>
-        /// 良弓
-        /// </summary>
-        public static string ItemHanBowName => Loc.T("item.han.bow.name");
-        /// <summary>
-        /// 恢复80点能量，每格可携带3份。
-        /// </summary>
-        public static string ItemHanGrainDesc => Loc.T("item.han.grain.desc");
-        /// <summary>
-        /// 熟粮口粮
-        /// </summary>
-        public static string ItemHanGrainName => Loc.T("item.han.grain.name");
-        /// <summary>
-        /// 近战伤害14，采石效率为基础镐的两倍。
-        /// </summary>
-        public static string ItemHanPickDesc => Loc.T("item.han.pick.desc");
-        /// <summary>
-        /// 精锻镐
-        /// </summary>
-        public static string ItemHanPickName => Loc.T("item.han.pick.name");
-        /// <summary>
-        /// 恢复80点水分，每格可携带3份。
-        /// </summary>
-        public static string ItemHanPotDesc => Loc.T("item.han.pot.desc");
-        /// <summary>
-        /// 装水陶罐
-        /// </summary>
-        public static string ItemHanPotName => Loc.T("item.han.pot.name");
-        /// <summary>
-        /// 记录基地及周边区域的地图资料。
-        /// </summary>
-        public static string ItemMapBaseDesc => Loc.T("item.map.base.desc");
-        /// <summary>
-        /// 基地地图
-        /// </summary>
-        public static string ItemMapBaseName => Loc.T("item.map.base.name");
-        /// <summary>
-        /// 记录本次河谷远征的探索区域，附近地形会随探索更新。
-        /// </summary>
-        public static string ItemMapCivilisationValleyDesc => Loc.T("item.map.civilisation_valley.desc");
-        /// <summary>
-        /// 河谷地图
-        /// </summary>
-        public static string ItemMapCivilisationValleyName => Loc.T("item.map.civilisation_valley.name");
-        /// <summary>
-        /// 记录何家村区域的地图资料。
-        /// </summary>
-        public static string ItemMapHejiaVillageDesc => Loc.T("item.map.hejia_village.desc");
-        /// <summary>
-        /// 何家村地图
-        /// </summary>
-        public static string ItemMapHejiaVillageName => Loc.T("item.map.hejia_village.name");
-        /// <summary>
-        /// 记录和家村局部区域的地图资料。
-        /// </summary>
-        public static string ItemMapHejiaVillageLocalDesc => Loc.T("item.map.hejia_village_local.desc");
-        /// <summary>
-        /// 和家村局部地图
-        /// </summary>
-        public static string ItemMapHejiaVillageLocalName => Loc.T("item.map.hejia_village_local.name");
-        /// <summary>
-        /// 记录任务样例区域的地图资料。
-        /// </summary>
-        public static string ItemMapMissionSampleDesc => Loc.T("item.map.mission_sample.desc");
-        /// <summary>
-        /// 任务样例地图
-        /// </summary>
-        public static string ItemMapMissionSampleName => Loc.T("item.map.mission_sample.name");
-        /// <summary>
-        /// 记录生存样例区域的地图资料。
-        /// </summary>
-        public static string ItemMapSurvivalSampleDesc => Loc.T("item.map.survival_sample.desc");
-        /// <summary>
-        /// 生存样例地图
-        /// </summary>
-        public static string ItemMapSurvivalSampleName => Loc.T("item.map.survival_sample.name");
-        /// <summary>
-        /// 包扎和止血用品，使用后恢复30点生命
-        /// </summary>
-        public static string ItemMedkitDesc => Loc.T("item.medkit.desc");
-        /// <summary>
-        /// 急救包
-        /// </summary>
-        public static string ItemMedkitName => Loc.T("item.medkit.name");
-        /// <summary>
-        /// 常见的金属制作材料
-        /// </summary>
-        public static string ItemMetalPartsDesc => Loc.T("item.metal_parts.desc");
-        /// <summary>
-        /// 金属零件
-        /// </summary>
-        public static string ItemMetalPartsName => Loc.T("item.metal_parts.name");
-        /// <summary>
-        /// 熟制、干燥保存的口粮，使用后恢复40点能量
-        /// </summary>
-        public static string ItemRationDesc => Loc.T("item.ration.desc");
-        /// <summary>
-        /// 口粮
-        /// </summary>
-        public static string ItemRationName => Loc.T("item.ration.name");
-        /// <summary>
-        /// 常见的石质建造材料
-        /// </summary>
-        public static string ItemStoneDesc => Loc.T("item.stone.desc");
-        /// <summary>
-        /// 石材
-        /// </summary>
-        public static string ItemStoneName => Loc.T("item.stone.name");
-        /// <summary>
-        /// 木柄包布的手持照明工具。拿出后按 R 点燃或熄灭；收起时熄灭。
-        /// </summary>
-        public static string ItemTorchDesc => Loc.T("item.torch.desc");
-        /// <summary>
-        /// 火把
-        /// </summary>
-        public static string ItemTorchName => Loc.T("item.torch.name");
-        /// <summary>
-        /// 可靠的近战武器
-        /// </summary>
-        public static string ItemWeaponAxeDesc => Loc.T("item.weapon.axe.desc");
-        /// <summary>
-        /// 战斧
-        /// </summary>
-        public static string ItemWeaponAxeName => Loc.T("item.weapon.axe.name");
-        /// <summary>
         /// 可靠的远程武器
         /// </summary>
         public static string ItemWeaponBowDesc => Loc.T("item.weapon.bow.desc");
@@ -759,22 +139,6 @@ namespace Game
         /// 手榴弹
         /// </summary>
         public static string ItemWeaponGrenadeName => Loc.T("item.weapon.grenade.name");
-        /// <summary>
-        /// 轻便的近战武器
-        /// </summary>
-        public static string ItemWeaponKnifeDesc => Loc.T("item.weapon.knife.desc");
-        /// <summary>
-        /// 短刀
-        /// </summary>
-        public static string ItemWeaponKnifeName => Loc.T("item.weapon.knife.name");
-        /// <summary>
-        /// 可靠的近战武器
-        /// </summary>
-        public static string ItemWeaponPickaxeDesc => Loc.T("item.weapon.pickaxe.desc");
-        /// <summary>
-        /// 战镐
-        /// </summary>
-        public static string ItemWeaponPickaxeName => Loc.T("item.weapon.pickaxe.name");
         /// <summary>
         /// 使用子弹的远程武器
         /// </summary>
@@ -832,14 +196,6 @@ namespace Game
         /// </summary>
         public static string ItemWeaponShotgunName => Loc.T("item.weapon.shotgun.name");
         /// <summary>
-        /// 常见的木质建造材料
-        /// </summary>
-        public static string ItemWoodDesc => Loc.T("item.wood.desc");
-        /// <summary>
-        /// 木材
-        /// </summary>
-        public static string ItemWoodName => Loc.T("item.wood.name");
-        /// <summary>
         /// 英语
         /// </summary>
         public static string LanguageEnUsName => Loc.T("language.en-US.name");
@@ -851,30 +207,6 @@ namespace Game
         /// 街机竞技场
         /// </summary>
         public static string MapArcadeName => Loc.T("map.arcade.name");
-        /// <summary>
-        /// 基地
-        /// </summary>
-        public static string MapBaseName => Loc.T("map.base.name");
-        /// <summary>
-        /// 山间运输路线
-        /// </summary>
-        public static string MapCivilisationValleyName => Loc.T("map.civilisation_valley.name");
-        /// <summary>
-        /// 和家村
-        /// </summary>
-        public static string MapHejiaVillageName => Loc.T("map.hejia_village.name");
-        /// <summary>
-        /// 和家村局部
-        /// </summary>
-        public static string MapHejiaVillageLocalName => Loc.T("map.hejia_village_local.name");
-        /// <summary>
-        /// 任务区域
-        /// </summary>
-        public static string MapMissionSampleName => Loc.T("map.mission_sample.name");
-        /// <summary>
-        /// 生存区域
-        /// </summary>
-        public static string MapSurvivalSampleName => Loc.T("map.survival_sample.name");
         /// <summary>
         /// 确认清空所有存档？此操作不可撤销。
         /// </summary>
@@ -904,154 +236,6 @@ namespace Game
         /// </summary>
         public static string NotifyUnsavedTitle => Loc.T("notify.unsaved.title");
         /// <summary>
-        /// 街机终端
-        /// </summary>
-        public static string NpcBaseArcadeName => Loc.T("npc.base.arcade.name");
-        /// <summary>
-        /// 基地商人
-        /// </summary>
-        public static string NpcBaseMerchantName => Loc.T("npc.base.merchant.name");
-        /// <summary>
-        /// 制作师
-        /// </summary>
-        public static string NpcRoleCrafter => Loc.T("npc.role.crafter");
-        /// <summary>
-        /// 和家村联络员
-        /// </summary>
-        public static string NpcRoleHejiaVillageGuide => Loc.T("npc.role.hejia_village_guide");
-        /// <summary>
-        /// 远征地图向导
-        /// </summary>
-        public static string NpcRoleMapGuide => Loc.T("npc.role.map_guide");
-        /// <summary>
-        /// 任务远征联络员
-        /// </summary>
-        public static string NpcRoleMissionGuide => Loc.T("npc.role.mission_guide");
-        /// <summary>
-        /// 生存远征联络员
-        /// </summary>
-        public static string NpcRoleSurvivalGuide => Loc.T("npc.role.survival_guide");
-        /// <summary>
-        /// 仓库管理员
-        /// </summary>
-        public static string NpcRoleWarehouseKeeper => Loc.T("npc.role.warehouse_keeper");
-        /// <summary>
-        /// 基地补给站
-        /// </summary>
-        public static string ShopBaseSuppliesName => Loc.T("shop.base.supplies.name");
-        /// <summary>
-        /// 清除威胁
-        /// </summary>
-        public static string TaskExpeditionMissionSampleKillName => Loc.T("task.expedition.mission_sample.kill.name");
-        /// <summary>
-        /// 存活一天
-        /// </summary>
-        public static string TaskExpeditionSurvivalSampleSurviveName => Loc.T("task.expedition.survival_sample.survive.name");
-        /// <summary>
-        /// 制弓
-        /// </summary>
-        public static string TechnologyBowMakingName => Loc.T("technology.bow_making.name");
-        /// <summary>
-        /// 可制作良弓；命中伤害18，基础弓为10，沿用普通箭矢。
-        /// </summary>
-        public static string TechnologyBowMakingUnlock => Loc.T("technology.bow_making.unlock");
-        /// <summary>
-        /// 干粮制作
-        /// </summary>
-        public static string TechnologyDryRationName => Loc.T("technology.dry_ration.name");
-        /// <summary>
-        /// 基地开放干粮制作位，可购买原料并加工远行干粮。
-        /// </summary>
-        public static string TechnologyDryRationUnlock => Loc.T("technology.dry_ration.unlock");
-        /// <summary>
-        /// 熟粮加工
-        /// </summary>
-        public static string TechnologyGrainProcessingName => Loc.T("technology.grain_processing.name");
-        /// <summary>
-        /// 可制作熟粮口粮；每份恢复80能量，每格3份。
-        /// </summary>
-        public static string TechnologyGrainProcessingUnlock => Loc.T("technology.grain_processing.unlock");
-        /// <summary>
-        /// 铁器锻造
-        /// </summary>
-        public static string TechnologyIronToolsName => Loc.T("technology.iron_tools.name");
-        /// <summary>
-        /// 可制作精锻斧和精锻镐；对应采集效率为基础工具的两倍。
-        /// </summary>
-        public static string TechnologyIronToolsUnlock => Loc.T("technology.iron_tools.unlock");
-        /// <summary>
-        /// 制陶储水
-        /// </summary>
-        public static string TechnologyPotteryName => Loc.T("technology.pottery.name");
-        /// <summary>
-        /// 可制作装水陶罐；每份恢复80水分，每格3份。
-        /// </summary>
-        public static string TechnologyPotteryUnlock => Loc.T("technology.pottery.unlock");
-        /// <summary>
-        /// 钢制刃具
-        /// </summary>
-        public static string TechnologySteelBladeName => Loc.T("technology.steel_blade.name");
-        /// <summary>
-        /// 可制作钢刀；近战命中伤害20，基础短刀为10。
-        /// </summary>
-        public static string TechnologySteelBladeUnlock => Loc.T("technology.steel_blade.unlock");
-        /// <summary>
-        /// 固定箭塔
-        /// </summary>
-        public static string TempBuildingArrowTowerName => Loc.T("temp_building.arrow_tower.name");
-        /// <summary>
-        /// 布棚
-        /// </summary>
-        public static string TempBuildingCampAwningStanding01aName => Loc.T("temp_building.camp_awning_standing_01a.name");
-        /// <summary>
-        /// 水桶
-        /// </summary>
-        public static string TempBuildingCampBarrel01Name => Loc.T("temp_building.camp_barrel_01.name");
-        /// <summary>
-        /// 长凳
-        /// </summary>
-        public static string TempBuildingCampBenchWood01Name => Loc.T("temp_building.camp_bench_wood_01.name");
-        /// <summary>
-        /// 小木箱
-        /// </summary>
-        public static string TempBuildingCampCrate01Name => Loc.T("temp_building.camp_crate_01.name");
-        /// <summary>
-        /// 大木箱
-        /// </summary>
-        public static string TempBuildingCampCrate02Name => Loc.T("temp_building.camp_crate_02.name");
-        /// <summary>
-        /// 木栅栏
-        /// </summary>
-        public static string TempBuildingCampFenceWood01aName => Loc.T("temp_building.camp_fence_wood_01a.name");
-        /// <summary>
-        /// 柴堆
-        /// </summary>
-        public static string TempBuildingCampLogWood01Name => Loc.T("temp_building.camp_log_wood_01.name");
-        /// <summary>
-        /// 营火
-        /// </summary>
-        public static string TempBuildingCampRpgfxcampfireName => Loc.T("temp_building.camp_rpgfxcampfire.name");
-        /// <summary>
-        /// 麻袋
-        /// </summary>
-        public static string TempBuildingCampSack02SetName => Loc.T("temp_building.camp_sack_02_set.name");
-        /// <summary>
-        /// 木棚
-        /// </summary>
-        public static string TempBuildingCampShedWood01Name => Loc.T("temp_building.camp_shed_wood_01.name");
-        /// <summary>
-        /// 木桌
-        /// </summary>
-        public static string TempBuildingCampTable01Name => Loc.T("temp_building.camp_table_01.name");
-        /// <summary>
-        /// 火堆
-        /// </summary>
-        public static string TempBuildingCampfireName => Loc.T("temp_building.campfire.name");
-        /// <summary>
-        /// 木质路障
-        /// </summary>
-        public static string TempBuildingRoadblockWoodName => Loc.T("temp_building.roadblock_wood.name");
-        /// <summary>
         /// 框架已就绪
         /// </summary>
         public static string TipFrameworkReady => Loc.T("tip.framework_ready");
@@ -1064,9 +248,17 @@ namespace Game
         /// </summary>
         public static string ArcadeAbandon => Loc.T("ui.arcade.abandon");
         /// <summary>
+        /// 确定放弃本局？本局进度将被清除。
+        /// </summary>
+        public static string ArcadeAbandonBody => Loc.T("ui.arcade.abandon.body");
+        /// <summary>
+        /// 确定放弃
+        /// </summary>
+        public static string ArcadeAbandonConfirm => Loc.T("ui.arcade.abandon.confirm");
+        /// <summary>
         /// 再次点击“放弃本局”确认清空本局数据
         /// </summary>
-        public static string ArcadeAbandonConfirm => Loc.T("ui.arcade.abandon_confirm");
+        public static string ArcadeAbandonConfirm2 => Loc.T("ui.arcade.abandon_confirm");
         /// <summary>
         /// 军械库入口 · 清场后开启
         /// </summary>
@@ -1208,6 +400,50 @@ namespace Game
         /// </summary>
         public static string ArcadeDestinationVictory => Loc.T("ui.arcade.destination.victory");
         /// <summary>
+        /// 已完成竞技场
+        /// </summary>
+        public static string ArcadeDetailsArenas => Loc.T("ui.arcade.details.arenas");
+        /// <summary>
+        /// FIREPOWERLOOP
+        /// </summary>
+        public static string ArcadeDetailsBrand => Loc.T("ui.arcade.details.brand");
+        /// <summary>
+        /// 已确认
+        /// </summary>
+        public static string ArcadeDetailsConfirmed => Loc.T("ui.arcade.details.confirmed");
+        /// <summary>
+        /// 可继续
+        /// </summary>
+        public static string ArcadeDetailsContinuable => Loc.T("ui.arcade.details.continuable");
+        /// <summary>
+        /// 双人准备
+        /// </summary>
+        public static string ArcadeDetailsCoop => Loc.T("ui.arcade.details.coop");
+        /// <summary>
+        /// 双方准备后继续
+        /// </summary>
+        public static string ArcadeDetailsCoopHint => Loc.T("ui.arcade.details.coop_hint");
+        /// <summary>
+        /// 本局金币
+        /// </summary>
+        public static string ArcadeDetailsGold => Loc.T("ui.arcade.details.gold");
+        /// <summary>
+        /// 剩余生命
+        /// </summary>
+        public static string ArcadeDetailsLives => Loc.T("ui.arcade.details.lives");
+        /// <summary>
+        /// 待确认
+        /// </summary>
+        public static string ArcadeDetailsPendingConfirmation => Loc.T("ui.arcade.details.pending_confirmation");
+        /// <summary>
+        /// 从已保存的进度继续
+        /// </summary>
+        public static string ArcadeDetailsResumeHint => Loc.T("ui.arcade.details.resume_hint");
+        /// <summary>
+        /// 本局积分
+        /// </summary>
+        public static string ArcadeDetailsScore => Loc.T("ui.arcade.details.score");
+        /// <summary>
         /// 本局进度
         /// </summary>
         public static string ArcadeDialogProgress => Loc.T("ui.arcade.dialog.progress");
@@ -1215,6 +451,22 @@ namespace Game
         /// 本局结果
         /// </summary>
         public static string ArcadeDialogResult => Loc.T("ui.arcade.dialog.result");
+        /// <summary>
+        /// 码头 · 第1轮
+        /// </summary>
+        public static string ArcadeDocksRound1 => Loc.T("ui.arcade.docks.round.1");
+        /// <summary>
+        /// 码头 · 第2轮
+        /// </summary>
+        public static string ArcadeDocksRound2 => Loc.T("ui.arcade.docks.round.2");
+        /// <summary>
+        /// 码头 · 第3轮
+        /// </summary>
+        public static string ArcadeDocksRound3 => Loc.T("ui.arcade.docks.round.3");
+        /// <summary>
+        /// 码头 · 第4轮
+        /// </summary>
+        public static string ArcadeDocksRound4 => Loc.T("ui.arcade.docks.round.4");
         /// <summary>
         /// 本局数量 +{0}
         /// </summary>
@@ -1476,6 +728,10 @@ namespace Game
         /// </summary>
         public static string ArcadeHudIconDecoy => Loc.T("ui.arcade.hud.icon.decoy");
         /// <summary>
+        /// 喷火
+        /// </summary>
+        public static string ArcadeHudIconFlamethrower => Loc.T("ui.arcade.hud.icon.flamethrower");
+        /// <summary>
         /// 磁
         /// </summary>
         public static string ArcadeHudIconMagnet => Loc.T("ui.arcade.hud.icon.magnet");
@@ -1643,6 +899,22 @@ namespace Game
         /// 锦鲤桥庭 · 第4图
         /// </summary>
         public static string ArcadeKoiRound4 => Loc.T("ui.arcade.koi.round.4");
+        /// <summary>
+        /// 集市 · 第1轮
+        /// </summary>
+        public static string ArcadeMarketplaceRound1 => Loc.T("ui.arcade.marketplace.round.1");
+        /// <summary>
+        /// 集市 · 第2轮
+        /// </summary>
+        public static string ArcadeMarketplaceRound2 => Loc.T("ui.arcade.marketplace.round.2");
+        /// <summary>
+        /// 集市 · 第3轮
+        /// </summary>
+        public static string ArcadeMarketplaceRound3 => Loc.T("ui.arcade.marketplace.round.3");
+        /// <summary>
+        /// 集市 · 第4轮
+        /// </summary>
+        public static string ArcadeMarketplaceRound4 => Loc.T("ui.arcade.marketplace.round.4");
         /// <summary>
         /// 无法返回街机主界面，请重试；本局数据已保留。
         /// </summary>
@@ -1901,6 +1173,14 @@ namespace Game
         /// </summary>
         public static string ArcadeProductArcadePowerupShieldName => Loc.T("ui.arcade.product.arcade.powerup.shield.name");
         /// <summary>
+        /// 紫骷髅强化
+        /// </summary>
+        public static string ArcadeProductArcadePowerupSkullLargeName => Loc.T("ui.arcade.product.arcade.powerup.skull.large.name");
+        /// <summary>
+        /// 红骷髅强化
+        /// </summary>
+        public static string ArcadeProductArcadePowerupSkullSmallName => Loc.T("ui.arcade.product.arcade.powerup.skull.small.name");
+        /// <summary>
         /// 炸弹补给
         /// </summary>
         public static string ArcadeProductArcadeResourceBombName => Loc.T("ui.arcade.product.arcade.resource.bomb.name");
@@ -1933,9 +1213,13 @@ namespace Game
         /// </summary>
         public static string ArcadeProductArcadeUpgradePickupRadiusName => Loc.T("ui.arcade.product.arcade.upgrade.pickup-radius.name");
         /// <summary>
-        /// 手枪
+        /// 基础步枪
         /// </summary>
         public static string ArcadeProductArcadeWeaponBasicName => Loc.T("ui.arcade.product.arcade.weapon.basic.name");
+        /// <summary>
+        /// 喷火器
+        /// </summary>
+        public static string ArcadeProductArcadeWeaponFlamethrowerName => Loc.T("ui.arcade.product.arcade.weapon.flamethrower.name");
         /// <summary>
         /// 榴弹发射器
         /// </summary>
@@ -2050,6 +1334,74 @@ namespace Game
         /// 街机存档损坏，无法恢复
         /// </summary>
         public static string ArcadeSaveCorrupted => Loc.T("ui.arcade.save_corrupted");
+        /// <summary>
+        /// FIREPOWERLOOP / FIELD SHOP
+        /// </summary>
+        public static string ArcadeScoreShopBrand => Loc.T("ui.arcade.score_shop.brand");
+        /// <summary>
+        /// 购买
+        /// </summary>
+        public static string ArcadeScoreShopBuy => Loc.T("ui.arcade.score_shop.buy");
+        /// <summary>
+        /// 下一关领取现有支援无人机。
+        /// 沿用原有强化与自毁规则。
+        /// </summary>
+        public static string ArcadeScoreShopDroneDescription => Loc.T("ui.arcade.score_shop.drone_description");
+        /// <summary>
+        /// 操作未完成，请重试。积分和商品以保存的结果为准。
+        /// </summary>
+        public static string ArcadeScoreShopFailed => Loc.T("ui.arcade.score_shop.failed");
+        /// <summary>
+        /// 积分不足
+        /// </summary>
+        public static string ArcadeScoreShopInsufficient => Loc.T("ui.arcade.score_shop.insufficient");
+        /// <summary>
+        /// {0} 积分
+        /// </summary>
+        public static string ArcadeScoreShopPrice(object arg0) => Loc.T("ui.arcade.score_shop.price", arg0);
+        /// <summary>
+        /// 刷新商品 · {0} 积分
+        /// </summary>
+        public static string ArcadeScoreShopRefresh(object arg0) => Loc.T("ui.arcade.score_shop.refresh", arg0);
+        /// <summary>
+        /// 仅出售现有空投物品，下一关开始时领取，沿用原有持续时间。
+        /// 购买与刷新都会扣除积分，推迟下一次加命。刷新每次固定500积分。
+        /// </summary>
+        public static string ArcadeScoreShopRule => Loc.T("ui.arcade.score_shop.rule");
+        /// <summary>
+        /// 当前积分
+        /// </summary>
+        public static string ArcadeScoreShopScoreLabel => Loc.T("ui.arcade.score_shop.score_label");
+        /// <summary>
+        /// 跳过，保留积分 →
+        /// </summary>
+        public static string ArcadeScoreShopSkip => Loc.T("ui.arcade.score_shop.skip");
+        /// <summary>
+        /// 三件商品，最多购买一件。
+        /// 也可以保留积分，直接出发。
+        /// </summary>
+        public static string ArcadeScoreShopSubtitle => Loc.T("ui.arcade.score_shop.subtitle");
+        /// <summary>
+        /// 空投支援 · {0}秒
+        /// </summary>
+        public static string ArcadeScoreShopSupport(object arg0) => Loc.T("ui.arcade.score_shop.support", arg0);
+        /// <summary>
+        /// 下一关，怎么打？
+        /// </summary>
+        public static string ArcadeScoreShopTitle => Loc.T("ui.arcade.score_shop.title");
+        /// <summary>
+        /// 正在确认本次操作…
+        /// </summary>
+        public static string ArcadeScoreShopWaiting => Loc.T("ui.arcade.score_shop.waiting");
+        /// <summary>
+        /// 空投武器 · {0}秒
+        /// </summary>
+        public static string ArcadeScoreShopWeapon(object arg0) => Loc.T("ui.arcade.score_shop.weapon", arg0);
+        /// <summary>
+        /// 下一关领取现有武器。
+        /// 效果与同枪强化均沿用空投规则。
+        /// </summary>
+        public static string ArcadeScoreShopWeaponDescription => Loc.T("ui.arcade.score_shop.weapon_description");
         /// <summary>
         /// 确认结果
         /// </summary>
@@ -2631,6 +1983,22 @@ namespace Game
         /// </summary>
         public static string ArcadeSlayermartYou => Loc.T("ui.arcade.slayermart.you");
         /// <summary>
+        /// 雪地农场 · 第1轮
+        /// </summary>
+        public static string ArcadeSnowfarmRound1 => Loc.T("ui.arcade.snowfarm.round.1");
+        /// <summary>
+        /// 雪地农场 · 第2轮
+        /// </summary>
+        public static string ArcadeSnowfarmRound2 => Loc.T("ui.arcade.snowfarm.round.2");
+        /// <summary>
+        /// 雪地农场 · 第3轮
+        /// </summary>
+        public static string ArcadeSnowfarmRound3 => Loc.T("ui.arcade.snowfarm.round.3");
+        /// <summary>
+        /// 雪地农场 · 第4轮
+        /// </summary>
+        public static string ArcadeSnowfarmRound4 => Loc.T("ui.arcade.snowfarm.round.4");
+        /// <summary>
         /// 孢子丛林 · 第1图
         /// </summary>
         public static string ArcadeSporeRound1 => Loc.T("ui.arcade.spore.round.1");
@@ -2679,6 +2047,22 @@ namespace Game
         /// 毒雾沼泽 · 第4图
         /// </summary>
         public static string ArcadeSwampRound4 => Loc.T("ui.arcade.swamp.round.4");
+        /// <summary>
+        /// 神庙庭院 · 第1轮
+        /// </summary>
+        public static string ArcadeTempleRound1 => Loc.T("ui.arcade.temple.round.1");
+        /// <summary>
+        /// 神庙庭院 · 第2轮
+        /// </summary>
+        public static string ArcadeTempleRound2 => Loc.T("ui.arcade.temple.round.2");
+        /// <summary>
+        /// 神庙庭院 · 第3轮
+        /// </summary>
+        public static string ArcadeTempleRound3 => Loc.T("ui.arcade.temple.round.3");
+        /// <summary>
+        /// 神庙庭院 · 第4轮
+        /// </summary>
+        public static string ArcadeTempleRound4 => Loc.T("ui.arcade.temple.round.4");
         /// <summary>
         /// 海岛
         /// </summary>
@@ -2772,7 +2156,7 @@ namespace Game
         /// </summary>
         public static string ArcadeTreasureReturn => Loc.T("ui.arcade.treasure.return");
         /// <summary>
-        /// 40 轮与最终 Boss 已完成 · 通关结算
+        /// 全部轮次与最终 Boss 已完成 · 通关结算
         /// </summary>
         public static string ArcadeVictory => Loc.T("ui.arcade.victory");
         /// <summary>
@@ -2791,103 +2175,6 @@ namespace Game
         /// 熔火巢穴 · 第4图
         /// </summary>
         public static string ArcadeVolcanoRound4 => Loc.T("ui.arcade.volcano.round.4");
-        /// <summary>
-        /// 调整物资
-        /// </summary>
-        public static string BasePrepAdjust => Loc.T("ui.base_prep.adjust");
-        /// <summary>
-        /// 请调整以下禁带物品
-        /// </summary>
-        public static string BasePrepBlocked => Loc.T("ui.base_prep.blocked");
-        /// <summary>
-        /// 基地第 {0} 天 {1}
-        /// </summary>
-        public static string BasePrepDate(object arg0, object arg1) => Loc.T("ui.base_prep.date", arg0, arg1);
-        /// <summary>
-        /// 禁带物品：{0}
-        /// </summary>
-        public static string BasePrepForbidden(object arg0) => Loc.T("ui.base_prep.forbidden", arg0);
-        /// <summary>
-        /// {0} × {1}
-        /// </summary>
-        public static string BasePrepForbiddenItem(object arg0, object arg1) => Loc.T("ui.base_prep.forbidden_item", arg0, arg1);
-        /// <summary>
-        /// 携带超重：{0:F1} / {1:F1} 千克
-        /// </summary>
-        public static string BasePrepOverweight(object arg0, object arg1) => Loc.T("ui.base_prep.overweight", arg0, arg1);
-        /// <summary>
-        /// 当前没有禁带物品
-        /// </summary>
-        public static string BasePrepReady => Loc.T("ui.base_prep.ready");
-        /// <summary>
-        /// 休息到次日08:00
-        /// </summary>
-        public static string BasePrepRest => Loc.T("ui.base_prep.rest");
-        /// <summary>
-        /// 免费恢复身体状态
-        /// 每日准备资金：{0}金币
-        /// </summary>
-        public static string BasePrepRestInfo(object arg0) => Loc.T("ui.base_prep.rest_info", arg0);
-        /// <summary>
-        /// 休息完成，已恢复状态并发放次日资金
-        /// </summary>
-        public static string BasePrepRestSuccess => Loc.T("ui.base_prep.rest_success");
-        /// <summary>
-        /// 允许普通冷兵器、传统工具和基础补给；禁止现代火器、爆炸武器及科幻装备。
-        /// </summary>
-        public static string BasePrepRulesTraditional => Loc.T("ui.base_prep.rules.traditional");
-        /// <summary>
-        /// 本地图不限制物品技术类别，出发仍需满足重量额度。
-        /// </summary>
-        public static string BasePrepRulesUnrestricted => Loc.T("ui.base_prep.rules.unrestricted");
-        /// <summary>
-        /// 当前状态无法休息
-        /// </summary>
-        public static string BasePrepUnavailable => Loc.T("ui.base_prep.unavailable");
-        /// <summary>
-        /// 携带重量：{0:F1} / {1:F1} 千克
-        /// </summary>
-        public static string BasePrepWeight(object arg0, object arg1) => Loc.T("ui.base_prep.weight", arg0, arg1);
-        /// <summary>
-        /// 建造
-        /// </summary>
-        public static string CampBuild => Loc.T("ui.camp.build");
-        /// <summary>
-        /// 取消
-        /// </summary>
-        public static string CampCancel => Loc.T("ui.camp.cancel");
-        /// <summary>
-        /// 确认
-        /// </summary>
-        public static string CampConfirm => Loc.T("ui.camp.confirm");
-        /// <summary>
-        /// 拆除
-        /// </summary>
-        public static string CampDemolish => Loc.T("ui.camp.demolish");
-        /// <summary>
-        /// 尚未选中，请靠近并点击可拆除物件
-        /// </summary>
-        public static string CampDemolishNoTarget => Loc.T("ui.camp.demolish.no_target");
-        /// <summary>
-        /// 已选中：{0}
-        /// </summary>
-        public static string CampDemolishTarget(object arg0) => Loc.T("ui.camp.demolish.target", arg0);
-        /// <summary>
-        /// 距离太远，请靠近（高低差也计入距离）
-        /// </summary>
-        public static string CampDemolishTooFar => Loc.T("ui.camp.demolish.too_far");
-        /// <summary>
-        /// 点击摆件选择目标，再确认拆除
-        /// </summary>
-        public static string CampHintDemolish => Loc.T("ui.camp.hint.demolish");
-        /// <summary>
-        /// 点击地面选位置，短按旋转15°，长按连续旋转，再确认建造
-        /// </summary>
-        public static string CampHintPlace => Loc.T("ui.camp.hint.place");
-        /// <summary>
-        /// 旋转
-        /// </summary>
-        public static string CampRotate => Loc.T("ui.camp.rotate");
         /// <summary>
         /// 基础内搭
         /// </summary>
@@ -2953,267 +2240,6 @@ namespace Game
         /// </summary>
         public static string CommonSwap => Loc.T("ui.common.swap");
         /// <summary>
-        /// 批数 {0}
-        /// </summary>
-        public static string CraftBatchCount(object arg0) => Loc.T("ui.craft.batch_count", arg0);
-        /// <summary>
-        /// 全部
-        /// </summary>
-        public static string CraftCategoryAll => Loc.T("ui.craft.category.all");
-        /// <summary>
-        /// 弹药
-        /// </summary>
-        public static string CraftCategoryAmmunition => Loc.T("ui.craft.category.ammunition");
-        /// <summary>
-        /// 消耗品
-        /// </summary>
-        public static string CraftCategoryConsumable => Loc.T("ui.craft.category.consumable");
-        /// <summary>
-        /// 材料
-        /// </summary>
-        public static string CraftCategoryMaterial => Loc.T("ui.craft.category.material");
-        /// <summary>
-        /// 武器
-        /// </summary>
-        public static string CraftCategoryWeapon => Loc.T("ui.craft.category.weapon");
-        /// <summary>
-        /// 制作失败
-        /// </summary>
-        public static string CraftFailed => Loc.T("ui.craft.failed");
-        /// <summary>
-        /// 制作一批
-        /// </summary>
-        public static string CraftMakeOneBatch => Loc.T("ui.craft.make_one_batch");
-        /// <summary>
-        /// {0}：背包 {1} + 仓库 {2} / 需要 {3}
-        /// </summary>
-        public static string CraftMaterialAmount(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.craft.material_amount", arg0, arg1, arg2, arg3);
-        /// <summary>
-        /// {0} / {1}
-        /// </summary>
-        public static string CraftMaterialOwnedRequired(object arg0, object arg1) => Loc.T("ui.craft.material_owned_required", arg0, arg1);
-        /// <summary>
-        /// {0} ×{1}
-        /// </summary>
-        public static string CraftOutputAmount(object arg0, object arg1) => Loc.T("ui.craft.output_amount", arg0, arg1);
-        /// <summary>
-        /// 产物优先放入背包，剩余进入仓库。
-        /// </summary>
-        public static string CraftOutputFlow => Loc.T("ui.craft.output_flow");
-        /// <summary>
-        /// 总产出 ×{0}
-        /// </summary>
-        public static string CraftOutputTotal(object arg0) => Loc.T("ui.craft.output_total", arg0);
-        /// <summary>
-        /// 批数无效
-        /// </summary>
-        public static string CraftReasonBatch => Loc.T("ui.craft.reason.batch");
-        /// <summary>
-        /// 配方配置不可用
-        /// </summary>
-        public static string CraftReasonConfig => Loc.T("ui.craft.reason.config");
-        /// <summary>
-        /// 脚边掉落创建失败
-        /// </summary>
-        public static string CraftReasonDrop => Loc.T("ui.craft.reason.drop");
-        /// <summary>
-        /// 材料不足
-        /// </summary>
-        public static string CraftReasonMaterials => Loc.T("ui.craft.reason.materials");
-        /// <summary>
-        /// 背包与仓库空间不足
-        /// </summary>
-        public static string CraftReasonSpace => Loc.T("ui.craft.reason.space");
-        /// <summary>
-        /// 当前只能在基地安全状态制作
-        /// </summary>
-        public static string CraftReasonState => Loc.T("ui.craft.reason.state");
-        /// <summary>
-        /// 已制作 {0} ×{1}
-        /// </summary>
-        public static string CraftSuccess(object arg0, object arg1) => Loc.T("ui.craft.success", arg0, arg1);
-        /// <summary>
-        /// 已制作 {0} ×{1}，部分产物已掉落在脚边
-        /// </summary>
-        public static string CraftSuccessWithDrop(object arg0, object arg1) => Loc.T("ui.craft.success_with_drop", arg0, arg1);
-        /// <summary>
-        /// 打造
-        /// </summary>
-        public static string CraftTitle => Loc.T("ui.craft.title");
-        /// <summary>
-        /// 设为当前
-        /// </summary>
-        public static string EquipmentActivate => Loc.T("ui.equipment.activate");
-        /// <summary>
-        /// 可替换武器（{0}）
-        /// </summary>
-        public static string EquipmentCandidates(object arg0) => Loc.T("ui.equipment.candidates", arg0);
-        /// <summary>
-        /// 衣物属性将在对应系统开放后显示
-        /// </summary>
-        public static string EquipmentClothingNote => Loc.T("ui.equipment.clothing_note");
-        /// <summary>
-        /// 当前使用
-        /// </summary>
-        public static string EquipmentCurrent => Loc.T("ui.equipment.current");
-        /// <summary>
-        /// 未装备
-        /// </summary>
-        public static string EquipmentEmpty => Loc.T("ui.equipment.empty");
-        /// <summary>
-        /// 当前槽位没有武器。可从下方选择对应武器。
-        /// </summary>
-        public static string EquipmentEmptyNote => Loc.T("ui.equipment.empty_note");
-        /// <summary>
-        /// 备用
-        /// </summary>
-        public static string EquipmentInactive => Loc.T("ui.equipment.inactive");
-        /// <summary>
-        /// 已装填：{0} / {1}
-        /// </summary>
-        public static string EquipmentLoadedAmmo(object arg0, object arg1) => Loc.T("ui.equipment.loaded_ammo", arg0, arg1);
-        /// <summary>
-        /// 没有适用于该部位的物品
-        /// </summary>
-        public static string EquipmentNoCandidates => Loc.T("ui.equipment.no_candidates");
-        /// <summary>
-        /// 护甲
-        /// </summary>
-        public static string EquipmentPartAccessory => Loc.T("ui.equipment.part.accessory");
-        /// <summary>
-        /// 背部
-        /// </summary>
-        public static string EquipmentPartBack => Loc.T("ui.equipment.part.back");
-        /// <summary>
-        /// 脚部
-        /// </summary>
-        public static string EquipmentPartFeet => Loc.T("ui.equipment.part.feet");
-        /// <summary>
-        /// 手部
-        /// </summary>
-        public static string EquipmentPartHands => Loc.T("ui.equipment.part.hands");
-        /// <summary>
-        /// 头部
-        /// </summary>
-        public static string EquipmentPartHead => Loc.T("ui.equipment.part.head");
-        /// <summary>
-        /// 腿部
-        /// </summary>
-        public static string EquipmentPartLegs => Loc.T("ui.equipment.part.legs");
-        /// <summary>
-        /// 上身
-        /// </summary>
-        public static string EquipmentPartTorso => Loc.T("ui.equipment.part.torso");
-        /// <summary>
-        /// 该部位尚未开放。后续可在这里查看、比较和更换穿戴物品。
-        /// </summary>
-        public static string EquipmentPlaceholderDetail => Loc.T("ui.equipment.placeholder_detail");
-        /// <summary>
-        /// 替换
-        /// </summary>
-        public static string EquipmentReplace => Loc.T("ui.equipment.replace");
-        /// <summary>
-        /// 来源：背包
-        /// </summary>
-        public static string EquipmentSourceBag => Loc.T("ui.equipment.source_bag");
-        /// <summary>
-        /// 来源：口袋
-        /// </summary>
-        public static string EquipmentSourcePocket => Loc.T("ui.equipment.source_pocket");
-        /// <summary>
-        /// 未装备近战武器时使用拳头。可从下方选择武器装备。
-        /// </summary>
-        public static string EquipmentUnarmedNote => Loc.T("ui.equipment.unarmed_note");
-        /// <summary>
-        /// 尚未开放
-        /// </summary>
-        public static string EquipmentUnavailable => Loc.T("ui.equipment.unavailable");
-        /// <summary>
-        /// 卸下
-        /// </summary>
-        public static string EquipmentUnequip => Loc.T("ui.equipment.unequip");
-        /// <summary>
-        /// 伤害：{0}   攻击间隔：{1:0.##} 秒
-        /// 攻击距离：{2:0.##} 米
-        /// </summary>
-        public static string EquipmentWeaponStats(object arg0, object arg1, object arg2) => Loc.T("ui.equipment.weapon_stats", arg0, arg1, arg2);
-        /// <summary>
-        /// 穿戴装备
-        /// </summary>
-        public static string EquipmentWorn => Loc.T("ui.equipment.worn");
-        /// <summary>
-        /// 第 {0} 天 {1}
-        /// </summary>
-        public static string ExpeditionDayClock(object arg0, object arg1) => Loc.T("ui.expedition.day_clock", arg0, arg1);
-        /// <summary>
-        /// {0} 小时 {1} 分钟
-        /// </summary>
-        public static string ExpeditionDuration(object arg0, object arg1) => Loc.T("ui.expedition.duration", arg0, arg1);
-        /// <summary>
-        /// 重试返回基地
-        /// </summary>
-        public static string ExpeditionRetryReturn => Loc.T("ui.expedition.retry_return");
-        /// <summary>
-        /// 返回基地
-        /// </summary>
-        public static string ExpeditionReturn => Loc.T("ui.expedition.return");
-        /// <summary>
-        /// 返回基地
-        /// </summary>
-        public static string ExpeditionReturning => Loc.T("ui.expedition.returning");
-        /// <summary>
-        /// 继续完成目标
-        /// </summary>
-        public static string ExpeditionStatusContinueGoal => Loc.T("ui.expedition.status.continue_goal");
-        /// <summary>
-        /// 远征失败
-        /// </summary>
-        public static string ExpeditionStatusDefeated => Loc.T("ui.expedition.status.defeated");
-        /// <summary>
-        /// 撤离条件已满足，前往撤离点
-        /// </summary>
-        public static string ExpeditionStatusGoToExtraction => Loc.T("ui.expedition.status.go_to_extraction");
-        /// <summary>
-        /// 已开放返回
-        /// </summary>
-        public static string ExpeditionStatusReturnOpen => Loc.T("ui.expedition.status.return_open");
-        /// <summary>
-        /// {0} 目标：生存 {1}
-        /// </summary>
-        public static string ExpeditionSurvivalClock(object arg0, object arg1) => Loc.T("ui.expedition.survival_clock", arg0, arg1);
-        /// <summary>
-        /// {0} 击杀 {1}/{2}
-        /// </summary>
-        public static string ExpeditionTaskClock(object arg0, object arg1, object arg2) => Loc.T("ui.expedition.task_clock", arg0, arg1, arg2);
-        /// <summary>
-        /// 攻击中断了撤离
-        /// </summary>
-        public static string ExtractionCancelAttack => Loc.T("ui.extraction.cancel.attack");
-        /// <summary>
-        /// 受伤中断了撤离
-        /// </summary>
-        public static string ExtractionCancelDamaged => Loc.T("ui.extraction.cancel.damaged");
-        /// <summary>
-        /// 已离开撤离范围
-        /// </summary>
-        public static string ExtractionCancelLeftRange => Loc.T("ui.extraction.cancel.left_range");
-        /// <summary>
-        /// 已取消撤离
-        /// </summary>
-        public static string ExtractionCancelUser => Loc.T("ui.extraction.cancel.user");
-        /// <summary>
-        /// 撤离中：{0} 秒
-        /// </summary>
-        public static string ExtractionPromptCountdown(object arg0) => Loc.T("ui.extraction.prompt.countdown", arg0);
-        /// <summary>
-        /// 按 E 开始撤离
-        /// </summary>
-        public static string ExtractionPromptStart => Loc.T("ui.extraction.prompt.start");
-        /// <summary>
-        /// 撤离失败，请重试
-        /// </summary>
-        public static string ExtractionReturnFailed => Loc.T("ui.extraction.return_failed");
-        /// <summary>
         /// [WASD / 方向键] 移动
         /// [左 Shift] 冲刺
         /// [鼠标左键] 攻击
@@ -3236,46 +2262,6 @@ namespace Game
         /// 测试版本 v{0}
         /// </summary>
         public static string GameplayGuideVersion(object arg0) => Loc.T("ui.gameplay_guide.version", arg0);
-        /// <summary>
-        /// 手持中
-        /// </summary>
-        public static string HeldCurrent => Loc.T("ui.held.current");
-        /// <summary>
-        /// 空手
-        /// </summary>
-        public static string HeldEmpty => Loc.T("ui.held.empty");
-        /// <summary>
-        /// 收起
-        /// </summary>
-        public static string HeldHolster => Loc.T("ui.held.holster");
-        /// <summary>
-        /// 没有可拿出的物品
-        /// </summary>
-        public static string HeldNoCandidates => Loc.T("ui.held.no_candidates");
-        /// <summary>
-        /// 从背包中选择手持物品（联机口袋尚未开放）
-        /// </summary>
-        public static string HeldOnlineHint => Loc.T("ui.held.online_hint");
-        /// <summary>
-        /// 从口袋和背包中选择手持物品
-        /// </summary>
-        public static string HeldPickerHint => Loc.T("ui.held.picker_hint");
-        /// <summary>
-        /// {0} · 手持中
-        /// </summary>
-        public static string HeldSelectedName(object arg0) => Loc.T("ui.held.selected_name", arg0);
-        /// <summary>
-        /// {0} · {1} 第 {2} 格
-        /// </summary>
-        public static string HeldSourceName(object arg0, object arg1, object arg2) => Loc.T("ui.held.source_name", arg0, arg1, arg2);
-        /// <summary>
-        /// 拿出
-        /// </summary>
-        public static string HeldTakeOut => Loc.T("ui.held.take_out");
-        /// <summary>
-        /// 当前手持
-        /// </summary>
-        public static string HeldTitle => Loc.T("ui.held.title");
         /// <summary>
         /// 打开/关闭手电筒
         /// </summary>
@@ -3320,224 +2306,6 @@ namespace Game
         /// [{0}] 交互
         /// </summary>
         public static string InteractionUse(object arg0) => Loc.T("ui.interaction.use", arg0);
-        /// <summary>
-        /// 数量：{0} / 最大堆叠：{1}
-        /// </summary>
-        public static string InventoryAmountStack(object arg0, object arg1) => Loc.T("ui.inventory.amount_stack", arg0, arg1);
-        /// <summary>
-        /// 取消选择
-        /// </summary>
-        public static string InventoryCancelSelection => Loc.T("ui.inventory.cancel_selection");
-        /// <summary>
-        /// {0} / {1} 格
-        /// </summary>
-        public static string InventoryCapacitySlots(object arg0, object arg1) => Loc.T("ui.inventory.capacity_slots", arg0, arg1);
-        /// <summary>
-        /// 未选择物品
-        /// </summary>
-        public static string InventoryDetailEmpty => Loc.T("ui.inventory.detail_empty");
-        /// <summary>
-        /// 丢弃
-        /// </summary>
-        public static string InventoryDrop => Loc.T("ui.inventory.drop");
-        /// <summary>
-        /// 装备
-        /// </summary>
-        public static string InventoryEquip => Loc.T("ui.inventory.equip");
-        /// <summary>
-        /// 装备
-        /// </summary>
-        public static string InventoryEquipment => Loc.T("ui.inventory.equipment");
-        /// <summary>
-        /// 仓库容量增加 1 格
-        /// 金属零件：{0}/{1}
-        /// 布料：{2}/{3}
-        /// </summary>
-        public static string InventoryExpandContent(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.inventory.expand_content", arg0, arg1, arg2, arg3);
-        /// <summary>
-        /// 仓库扩容失败
-        /// </summary>
-        public static string InventoryExpandFailed => Loc.T("ui.inventory.expand_failed");
-        /// <summary>
-        /// 扩容
-        /// </summary>
-        public static string InventoryExpandSlot => Loc.T("ui.inventory.expand_slot");
-        /// <summary>
-        /// 仓库扩容
-        /// </summary>
-        public static string InventoryExpandTitle => Loc.T("ui.inventory.expand_title");
-        /// <summary>
-        /// 近战武器
-        /// </summary>
-        public static string InventoryMeleeSlot => Loc.T("ui.inventory.melee_slot");
-        /// <summary>
-        /// 移入背包
-        /// </summary>
-        public static string InventoryMoveToBag => Loc.T("ui.inventory.move_to_bag");
-        /// <summary>
-        /// 移入口袋
-        /// </summary>
-        public static string InventoryMoveToPocket => Loc.T("ui.inventory.move_to_pocket");
-        /// <summary>
-        /// 打开地图
-        /// </summary>
-        public static string InventoryOpenMap => Loc.T("ui.inventory.open_map");
-        /// <summary>
-        /// 操作失败
-        /// </summary>
-        public static string InventoryOperationFailed => Loc.T("ui.inventory.operation_failed");
-        /// <summary>
-        /// 玩家背包
-        /// </summary>
-        public static string InventoryPlayerBag => Loc.T("ui.inventory.player_bag");
-        /// <summary>
-        /// 口袋
-        /// </summary>
-        public static string InventoryPocket => Loc.T("ui.inventory.pocket");
-        /// <summary>
-        /// 联机模式暂未开放口袋
-        /// </summary>
-        public static string InventoryPocketOnlineUnavailable => Loc.T("ui.inventory.pocket_online_unavailable");
-        /// <summary>
-        /// 远程武器
-        /// </summary>
-        public static string InventoryRangedSlot => Loc.T("ui.inventory.ranged_slot");
-        /// <summary>
-        /// 请选择物品查看详情
-        /// </summary>
-        public static string InventorySelectHint => Loc.T("ui.inventory.select_hint");
-        /// <summary>
-        /// 拆分
-        /// </summary>
-        public static string InventorySplit => Loc.T("ui.inventory.split");
-        /// <summary>
-        /// 背包
-        /// </summary>
-        public static string InventoryTitleBag => Loc.T("ui.inventory.title_bag");
-        /// <summary>
-        /// 背包与基地仓库
-        /// </summary>
-        public static string InventoryTitleStorage => Loc.T("ui.inventory.title_storage");
-        /// <summary>
-        /// 转移数量：{0}
-        /// </summary>
-        public static string InventoryTransferAmount(object arg0) => Loc.T("ui.inventory.transfer_amount", arg0);
-        /// <summary>
-        /// 转移失败，请检查数量、目标空间和当前状态。
-        /// </summary>
-        public static string InventoryTransferFailed => Loc.T("ui.inventory.transfer_failed");
-        /// <summary>
-        /// 拳
-        /// </summary>
-        public static string InventoryUnarmedMarker => Loc.T("ui.inventory.unarmed_marker");
-        /// <summary>
-        /// 卸下
-        /// </summary>
-        public static string InventoryUnequip => Loc.T("ui.inventory.unequip");
-        /// <summary>
-        /// 使用
-        /// </summary>
-        public static string InventoryUse => Loc.T("ui.inventory.use");
-        /// <summary>
-        /// 恢复生命：{0}
-        /// </summary>
-        public static string InventoryUseApplied(object arg0) => Loc.T("ui.inventory.use_applied", arg0);
-        /// <summary>
-        /// 恢复能量：{0}
-        /// </summary>
-        public static string InventoryUseAppliedPower(object arg0) => Loc.T("ui.inventory.use_applied_power", arg0);
-        /// <summary>
-        /// 恢复水分：{0}
-        /// </summary>
-        public static string InventoryUseAppliedWater(object arg0) => Loc.T("ui.inventory.use_applied_water", arg0);
-        /// <summary>
-        /// 水分已满或当前状态无法使用瓶装水
-        /// </summary>
-        public static string InventoryUseFailedWater => Loc.T("ui.inventory.use_failed_water");
-        /// <summary>
-        /// 基地仓库
-        /// </summary>
-        public static string InventoryWarehouse => Loc.T("ui.inventory.warehouse");
-        /// <summary>
-        /// 仓库
-        /// </summary>
-        public static string InventoryWarehouseColumn => Loc.T("ui.inventory.warehouse_column");
-        /// <summary>
-        /// 金属零件 {0} · 布料 {1}
-        /// </summary>
-        public static string InventoryWarehouseCost(object arg0, object arg1) => Loc.T("ui.inventory.warehouse_cost", arg0, arg1);
-        /// <summary>
-        /// 点击选择 · 拖动转移 · Esc 关闭
-        /// </summary>
-        public static string InventoryWarehouseHint => Loc.T("ui.inventory.warehouse_hint");
-        /// <summary>
-        /// 已达上限 {0} 格
-        /// </summary>
-        public static string InventoryWarehouseMaximum(object arg0) => Loc.T("ui.inventory.warehouse_maximum", arg0);
-        /// <summary>
-        /// 存入仓库 →
-        /// </summary>
-        public static string InventoryWarehouseStore => Loc.T("ui.inventory.warehouse_store");
-        /// <summary>
-        /// ← 取出到背包
-        /// </summary>
-        public static string InventoryWarehouseTake => Loc.T("ui.inventory.warehouse_take");
-        /// <summary>
-        /// 近战
-        /// </summary>
-        public static string InventoryWeaponSlotMelee => Loc.T("ui.inventory.weapon_slot.melee");
-        /// <summary>
-        /// 远程
-        /// </summary>
-        public static string InventoryWeaponSlotRanged => Loc.T("ui.inventory.weapon_slot.ranged");
-        /// <summary>
-        /// 收集内容
-        /// </summary>
-        public static string JournalCollections => Loc.T("ui.journal.collections");
-        /// <summary>
-        /// 尚无收集记录
-        /// </summary>
-        public static string JournalCollectionsEmpty => Loc.T("ui.journal.collections_empty");
-        /// <summary>
-        /// 发现线索、信件或工艺资料后，可在这里阅读。成功返程后归档。
-        /// </summary>
-        public static string JournalCollectionsHint => Loc.T("ui.journal.collections_hint");
-        /// <summary>
-        /// 探索记录 · {0} 则
-        /// </summary>
-        public static string JournalCollectionsTitle(object arg0) => Loc.T("ui.journal.collections_title", arg0);
-        /// <summary>
-        /// 生存日志
-        /// </summary>
-        public static string JournalDaily => Loc.T("ui.journal.daily");
-        /// <summary>
-        /// 尚无生存日志
-        /// </summary>
-        public static string JournalDailyEmpty => Loc.T("ui.journal.daily_empty");
-        /// <summary>
-        /// 这里将按日期整理探索与生存经历。
-        /// </summary>
-        public static string JournalDailyHint => Loc.T("ui.journal.daily_hint");
-        /// <summary>
-        /// 笔记
-        /// </summary>
-        public static string JournalNotes => Loc.T("ui.journal.notes");
-        /// <summary>
-        /// 尚无笔记
-        /// </summary>
-        public static string JournalNotesEmpty => Loc.T("ui.journal.notes_empty");
-        /// <summary>
-        /// 这里将保存你的个人笔记。
-        /// </summary>
-        public static string JournalNotesHint => Loc.T("ui.journal.notes_hint");
-        /// <summary>
-        /// 已发现的线索与资料可在收集内容中回看
-        /// </summary>
-        public static string JournalPlaceholder => Loc.T("ui.journal.placeholder");
-        /// <summary>
-        /// 这里只收录你已发现的内容。当次发现随远征保存，成功返程后归档；未带回的记录会随失败失去。
-        /// </summary>
-        public static string JournalRecordsScope => Loc.T("ui.journal.records_scope");
         /// <summary>
         /// 正在下载远征资源（{0}/{1}）
         /// </summary>
@@ -3623,306 +2391,6 @@ namespace Game
         /// 加载中
         /// </summary>
         public static string LoadingTitle => Loc.T("ui.loading.title");
-        /// <summary>
-        /// 背包
-        /// </summary>
-        public static string ManagementBackpack => Loc.T("ui.management.backpack");
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        public static string ManagementClose => Loc.T("ui.management.close");
-        /// <summary>
-        /// 装备
-        /// </summary>
-        public static string ManagementEquipment => Loc.T("ui.management.equipment");
-        /// <summary>
-        /// 日志
-        /// </summary>
-        public static string ManagementJournal => Loc.T("ui.management.journal");
-        /// <summary>
-        /// 地图
-        /// </summary>
-        public static string ManagementMap => Loc.T("ui.management.map");
-        /// <summary>
-        /// 此页将在后续版本开放
-        /// </summary>
-        public static string ManagementPlaceholder => Loc.T("ui.management.placeholder");
-        /// <summary>
-        /// 状态
-        /// </summary>
-        public static string ManagementStatus => Loc.T("ui.management.status");
-        /// <summary>
-        /// 任务
-        /// </summary>
-        public static string ManagementTasks => Loc.T("ui.management.tasks");
-        /// <summary>
-        /// 随身背包中没有当前区域地图。
-        /// </summary>
-        public static string MapErrorNoCurrentMapItem => Loc.T("ui.map.error.no_current_map_item");
-        /// <summary>
-        /// 只能查看当前所在区域的地图。
-        /// </summary>
-        public static string MapErrorNotCurrentRegion => Loc.T("ui.map.error.not_current_region");
-        /// <summary>
-        /// 地图资料暂不可用。
-        /// </summary>
-        public static string MapErrorUnavailable => Loc.T("ui.map.error.unavailable");
-        /// <summary>
-        /// 已探索 {0}%
-        /// </summary>
-        public static string MapExplored(object arg0) => Loc.T("ui.map.explored", arg0);
-        /// <summary>
-        /// 撤离点
-        /// </summary>
-        public static string MapExtractions => Loc.T("ui.map.extractions");
-        /// <summary>
-        /// 无法进入远征，请检查当前状态后重试。
-        /// </summary>
-        public static string MapInteractionEnterFailed => Loc.T("ui.map.interaction.enter_failed");
-        /// <summary>
-        /// 地图操作失败，请重试。
-        /// </summary>
-        public static string MapInteractionFailed => Loc.T("ui.map.interaction.failed");
-        /// <summary>
-        /// 远征地图
-        /// </summary>
-        public static string MapInteractionTitle => Loc.T("ui.map.interaction.title");
-        /// <summary>
-        /// 该远征地图当前不可用。
-        /// </summary>
-        public static string MapInteractionUnavailable => Loc.T("ui.map.interaction.unavailable");
-        /// <summary>
-        /// 基地仓库物资不足，无法解锁该远征地图。
-        /// </summary>
-        public static string MapInteractionUnlockCostInsufficient => Loc.T("ui.map.interaction.unlock_cost_insufficient");
-        /// <summary>
-        /// 远征地图已解锁。
-        /// </summary>
-        public static string MapInteractionUnlocked => Loc.T("ui.map.interaction.unlocked");
-        /// <summary>
-        /// 正在读取地图…
-        /// </summary>
-        public static string MapLoading => Loc.T("ui.map.loading");
-        /// <summary>
-        /// ›
-        /// </summary>
-        public static string MapNext => Loc.T("ui.map.next");
-        /// <summary>
-        /// 尚未携带地图。探索记录会随行进保存，获得地图后即可查看。
-        /// </summary>
-        public static string MapNoCarriedMap => Loc.T("ui.map.no_carried_map");
-        /// <summary>
-        /// ‹
-        /// </summary>
-        public static string MapPrevious => Loc.T("ui.map.previous");
-        /// <summary>
-        /// 重置视图
-        /// </summary>
-        public static string MapResetView => Loc.T("ui.map.reset_view");
-        /// <summary>
-        /// 世界地图尚未开放
-        /// </summary>
-        public static string MapWorldUnavailable => Loc.T("ui.map.world_unavailable");
-        /// <summary>
-        /// ＋
-        /// </summary>
-        public static string MapZoomIn => Loc.T("ui.map.zoom_in");
-        /// <summary>
-        /// −
-        /// </summary>
-        public static string MapZoomOut => Loc.T("ui.map.zoom_out");
-        /// <summary>
-        /// 检查资源…
-        /// </summary>
-        public static string MapSelectionActionChecking => Loc.T("ui.map_selection.action.checking");
-        /// <summary>
-        /// 下载资源
-        /// </summary>
-        public static string MapSelectionActionDownload => Loc.T("ui.map_selection.action.download");
-        /// <summary>
-        /// 下载中 {0}%
-        /// </summary>
-        public static string MapSelectionActionDownloading(object arg0) => Loc.T("ui.map_selection.action.downloading", arg0);
-        /// <summary>
-        /// 进入
-        /// </summary>
-        public static string MapSelectionActionEnter => Loc.T("ui.map_selection.action.enter");
-        /// <summary>
-        /// 出发探索
-        /// </summary>
-        public static string MapSelectionActionExplore => Loc.T("ui.map_selection.action.explore");
-        /// <summary>
-        /// 处理中
-        /// </summary>
-        public static string MapSelectionActionProcessing => Loc.T("ui.map_selection.action.processing");
-        /// <summary>
-        /// 重新检查
-        /// </summary>
-        public static string MapSelectionActionRetry => Loc.T("ui.map_selection.action.retry");
-        /// <summary>
-        /// 重试下载
-        /// </summary>
-        public static string MapSelectionActionRetryDownload => Loc.T("ui.map_selection.action.retry_download");
-        /// <summary>
-        /// 不可进入
-        /// </summary>
-        public static string MapSelectionActionUnavailable => Loc.T("ui.map_selection.action.unavailable");
-        /// <summary>
-        /// 解锁
-        /// </summary>
-        public static string MapSelectionActionUnlock => Loc.T("ui.map_selection.action.unlock");
-        /// <summary>
-        /// 基地仓库物资不足，无法解锁。
-        /// </summary>
-        public static string MapSelectionErrorCost => Loc.T("ui.map_selection.error.cost");
-        /// <summary>
-        /// 无法进入远征，请稍后重试。
-        /// </summary>
-        public static string MapSelectionErrorEnter => Loc.T("ui.map_selection.error.enter");
-        /// <summary>
-        /// 该地图不是远征地图。
-        /// </summary>
-        public static string MapSelectionErrorNotExpedition => Loc.T("ui.map_selection.error.not_expedition");
-        /// <summary>
-        /// 当前无法打开地图选择界面。
-        /// </summary>
-        public static string MapSelectionErrorOpen => Loc.T("ui.map_selection.error.open");
-        /// <summary>
-        /// 撤离目标配置异常，暂时无法进入
-        /// </summary>
-        public static string MapSelectionErrorTaskConfigUnavailable => Loc.T("ui.map_selection.error.task_config_unavailable");
-        /// <summary>
-        /// 未知的远征地图。
-        /// </summary>
-        public static string MapSelectionErrorUnknownMap => Loc.T("ui.map_selection.error.unknown_map");
-        /// <summary>
-        /// 下一章
-        /// </summary>
-        public static string MapSelectionNextChapter => Loc.T("ui.map_selection.next_chapter");
-        /// <summary>
-        /// 完成首章剧情即可取得后续章节开放资格，不要求收齐科技。下一章内容尚未制作。
-        /// </summary>
-        public static string MapSelectionNextDetail => Loc.T("ui.map_selection.next_detail");
-        /// <summary>
-        /// 待开放章节
-        /// </summary>
-        public static string MapSelectionNextName => Loc.T("ui.map_selection.next_name");
-        /// <summary>
-        /// 后续内容尚未开放
-        /// </summary>
-        public static string MapSelectionNextState => Loc.T("ui.map_selection.next_state");
-        /// <summary>
-        /// 撤离目标：{0}，击杀 {1}
-        /// </summary>
-        public static string MapSelectionObjectiveKill(object arg0, object arg1) => Loc.T("ui.map_selection.objective.kill", arg0, arg1);
-        /// <summary>
-        /// 撤离目标：{0}，生存 {1}
-        /// </summary>
-        public static string MapSelectionObjectiveSurvive(object arg0, object arg1) => Loc.T("ui.map_selection.objective.survive", arg0, arg1);
-        /// <summary>
-        /// 其他远征
-        /// </summary>
-        public static string MapSelectionOtherExpedition => Loc.T("ui.map_selection.other_expedition");
-        /// <summary>
-        /// 基地恢复未完成。可以重试恢复基地，或返回主菜单后继续游戏。存档会保留。
-        /// </summary>
-        public static string MapSelectionRecoveryContent => Loc.T("ui.map_selection.recovery.content");
-        /// <summary>
-        /// 进入地图失败
-        /// </summary>
-        public static string MapSelectionRecoveryTitle => Loc.T("ui.map_selection.recovery.title");
-        /// <summary>
-        /// 基础资源已就绪
-        /// </summary>
-        public static string MapSelectionResourcesBaseReady => Loc.T("ui.map_selection.resources.base_ready");
-        /// <summary>
-        /// {0} / {1}
-        /// </summary>
-        public static string MapSelectionResourcesProgress(object arg0, object arg1) => Loc.T("ui.map_selection.resources.progress", arg0, arg1);
-        /// <summary>
-        /// 地图资源已就绪
-        /// </summary>
-        public static string MapSelectionResourcesReady => Loc.T("ui.map_selection.resources.ready");
-        /// <summary>
-        /// 需下载 {0}
-        /// </summary>
-        public static string MapSelectionResourcesSize(object arg0) => Loc.T("ui.map_selection.resources.size", arg0);
-        /// <summary>
-        /// 成功返程后保留科技成果
-        /// </summary>
-        public static string MapSelectionReturnHint => Loc.T("ui.map_selection.return_hint");
-        /// <summary>
-        /// 待解锁
-        /// </summary>
-        public static string MapSelectionStateLocked => Loc.T("ui.map_selection.state.locked");
-        /// <summary>
-        /// 暂不可用
-        /// </summary>
-        public static string MapSelectionStateUnavailable => Loc.T("ui.map_selection.state.unavailable");
-        /// <summary>
-        /// 解锁需要 {0} ×{1}
-        /// </summary>
-        public static string MapSelectionStateUnlockCost(object arg0, object arg1) => Loc.T("ui.map_selection.state.unlock_cost", arg0, arg1);
-        /// <summary>
-        /// 已解锁
-        /// </summary>
-        public static string MapSelectionStateUnlocked => Loc.T("ui.map_selection.state.unlocked");
-        /// <summary>
-        /// 探索故事 · 获取科技 · 推进文明
-        /// </summary>
-        public static string MapSelectionSubtitle => Loc.T("ui.map_selection.subtitle");
-        /// <summary>
-        /// 击杀 {0}
-        /// </summary>
-        public static string MapSelectionTargetKills(object arg0) => Loc.T("ui.map_selection.target.kills", arg0);
-        /// <summary>
-        /// 生存 {0} 分钟
-        /// </summary>
-        public static string MapSelectionTargetSurviveMinutes(object arg0) => Loc.T("ui.map_selection.target.survive_minutes", arg0);
-        /// <summary>
-        /// 撤离目标配置不可用
-        /// </summary>
-        public static string MapSelectionTaskConfigUnavailable => Loc.T("ui.map_selection.task_config_unavailable");
-        /// <summary>
-        /// 已掌握
-        /// </summary>
-        public static string MapSelectionTechnologyKnown => Loc.T("ui.map_selection.technology_known");
-        /// <summary>
-        /// 科技目标
-        /// </summary>
-        public static string MapSelectionTechnologyTitle => Loc.T("ui.map_selection.technology_title");
-        /// <summary>
-        /// 尚未掌握
-        /// </summary>
-        public static string MapSelectionTechnologyUnknown => Loc.T("ui.map_selection.technology_unknown");
-        /// <summary>
-        /// 文明远征
-        /// </summary>
-        public static string MapSelectionTitle => Loc.T("ui.map_selection.title");
-        /// <summary>
-        /// 生存远征
-        /// </summary>
-        public static string MapSelectionTypeSurvival => Loc.T("ui.map_selection.type.survival");
-        /// <summary>
-        /// 任务远征
-        /// </summary>
-        public static string MapSelectionTypeTask => Loc.T("ui.map_selection.type.task");
-        /// <summary>
-        /// 第一章 · 山间运输路线
-        /// </summary>
-        public static string MapSelectionValleyChapter => Loc.T("ui.map_selection.valley_chapter");
-        /// <summary>
-        /// 汉末 · 架空山间路线
-        /// </summary>
-        public static string MapSelectionValleyEra => Loc.T("ui.map_selection.valley_era");
-        /// <summary>
-        /// 运输队离开原路后失去了消息。沿山间痕迹寻找其去向，探索散落在途中物件里的实用技艺。
-        /// </summary>
-        public static string MapSelectionValleyStory => Loc.T("ui.map_selection.valley_story");
-        /// <summary>
-        /// 已掌握工艺：{0} / {1}
-        /// </summary>
-        public static string MapSelectionValleyTechnology(object arg0, object arg1) => Loc.T("ui.map_selection.valley_technology", arg0, arg1);
         /// <summary>
         /// 交互
         /// </summary>
@@ -4055,26 +2523,6 @@ namespace Game
         /// 按 [E] 与{0}交互
         /// </summary>
         public static string NpcInteractionPrompt(object arg0) => Loc.T("ui.npc.interaction.prompt", arg0);
-        /// <summary>
-        /// 活动副本存档已损坏；文件已保留。
-        /// </summary>
-        public static string OfflineExpeditionCorrupted => Loc.T("ui.offline_expedition.corrupted");
-        /// <summary>
-        /// 是否继续上次副本？
-        /// </summary>
-        public static string OfflineExpeditionPendingMessage => Loc.T("ui.offline_expedition.pending.message");
-        /// <summary>
-        /// 发现活动副本
-        /// </summary>
-        public static string OfflineExpeditionPendingTitle => Loc.T("ui.offline_expedition.pending.title");
-        /// <summary>
-        /// 继续副本
-        /// </summary>
-        public static string OfflineExpeditionResume => Loc.T("ui.offline_expedition.resume");
-        /// <summary>
-        /// 返回基地
-        /// </summary>
-        public static string OfflineExpeditionReturnBase => Loc.T("ui.offline_expedition.return_base");
         /// <summary>
         /// 账号
         /// </summary>
@@ -4548,10 +2996,6 @@ namespace Game
         /// </summary>
         public static string OptionalExpeditionUnavailable => Loc.T("ui.optional.expedition.unavailable");
         /// <summary>
-        /// 尚未满足返程条件。返回营地将放弃本次远征，丢失背包内全部物品和已装备武器，也不会获得远征奖励。基地仓库不受影响。确定返回？
-        /// </summary>
-        public static string PauseAbandonConfirm => Loc.T("ui.pause.abandon_confirm");
-        /// <summary>
         /// 返回主界面失败
         /// </summary>
         public static string PauseErrorReturnMainMenuFailed => Loc.T("ui.pause.error.return_main_menu_failed");
@@ -4568,41 +3012,9 @@ namespace Game
         /// </summary>
         public static string PauseResume => Loc.T("ui.pause.resume");
         /// <summary>
-        /// 返回营地
-        /// </summary>
-        public static string PauseReturnCamp => Loc.T("ui.pause.return_camp");
-        /// <summary>
-        /// 结束本次远征并返回营地？已满足返程条件，将按正常返程结算。
-        /// </summary>
-        public static string PauseReturnCampConfirm => Loc.T("ui.pause.return_camp_confirm");
-        /// <summary>
-        /// 返回营地失败，请重试。
-        /// </summary>
-        public static string PauseReturnCampFailed => Loc.T("ui.pause.return_camp_failed");
-        /// <summary>
         /// 暂停
         /// </summary>
         public static string PauseTitle => Loc.T("ui.pause.title");
-        /// <summary>
-        /// ＋
-        /// </summary>
-        public static string PlayerConditionHealthIcon => Loc.T("ui.player_condition.health_icon");
-        /// <summary>
-        /// 能
-        /// </summary>
-        public static string PlayerConditionPowerIcon => Loc.T("ui.player_condition.power_icon");
-        /// <summary>
-        /// 温
-        /// </summary>
-        public static string PlayerConditionTemperatureIcon => Loc.T("ui.player_condition.temperature_icon");
-        /// <summary>
-        /// 体
-        /// </summary>
-        public static string PlayerConditionTiliIcon => Loc.T("ui.player_condition.tili_icon");
-        /// <summary>
-        /// 水
-        /// </summary>
-        public static string PlayerConditionWaterIcon => Loc.T("ui.player_condition.water_icon");
         /// <summary>
         /// 清空
         /// </summary>
@@ -4896,7 +3308,7 @@ namespace Game
         /// </summary>
         public static string SettingsNetworkResetFailed => Loc.T("ui.settings.network.reset_failed");
         /// <summary>
-        /// 下次启动时用于资源更新。
+        /// 应用后，检查更新立即使用此地址。
         /// </summary>
         public static string SettingsNetworkResourceHint => Loc.T("ui.settings.network.resource_hint");
         /// <summary>
@@ -4908,7 +3320,7 @@ namespace Game
         /// </summary>
         public static string SettingsNetworkResourceLoadFailed => Loc.T("ui.settings.network.resource_load_failed");
         /// <summary>
-        /// 已保存，下次启动时生效。
+        /// 已应用，可立即检查更新。
         /// </summary>
         public static string SettingsNetworkResourceSaved => Loc.T("ui.settings.network.resource_saved");
         /// <summary>
@@ -5023,110 +3435,6 @@ namespace Game
         /// 窗口
         /// </summary>
         public static string SettingsWindowed => Loc.T("ui.settings.windowed");
-        /// <summary>
-        /// 购买
-        /// </summary>
-        public static string ShopActionBuy => Loc.T("ui.shop.action.buy");
-        /// <summary>
-        /// 出售
-        /// </summary>
-        public static string ShopActionSell => Loc.T("ui.shop.action.sell");
-        /// <summary>
-        /// 关闭
-        /// </summary>
-        public static string ShopClose => Loc.T("ui.shop.close");
-        /// <summary>
-        /// 商店配置不可用。
-        /// </summary>
-        public static string ShopErrorConfigInvalid => Loc.T("ui.shop.error.config_invalid");
-        /// <summary>
-        /// 随身背包空间不足。
-        /// </summary>
-        public static string ShopErrorInsufficientBagSpace => Loc.T("ui.shop.error.insufficient_bag_space");
-        /// <summary>
-        /// 金币不足。
-        /// </summary>
-        public static string ShopErrorInsufficientGold => Loc.T("ui.shop.error.insufficient_gold");
-        /// <summary>
-        /// 随身背包中的物品不足。
-        /// </summary>
-        public static string ShopErrorInsufficientItems => Loc.T("ui.shop.error.insufficient_items");
-        /// <summary>
-        /// 交易数量无效。
-        /// </summary>
-        public static string ShopErrorInvalidQuantity => Loc.T("ui.shop.error.invalid_quantity");
-        /// <summary>
-        /// 商人不收购该物品。
-        /// </summary>
-        public static string ShopErrorNotAccepted => Loc.T("ui.shop.error.not_accepted");
-        /// <summary>
-        /// 该物品不可购买。
-        /// </summary>
-        public static string ShopErrorNotForSale => Loc.T("ui.shop.error.not_for_sale");
-        /// <summary>
-        /// 当前无法打开商店。
-        /// </summary>
-        public static string ShopErrorOpen => Loc.T("ui.shop.error.open");
-        /// <summary>
-        /// 交易正在处理中。
-        /// </summary>
-        public static string ShopErrorOperationInProgress => Loc.T("ui.shop.error.operation_in_progress");
-        /// <summary>
-        /// 交易数值超出范围。
-        /// </summary>
-        public static string ShopErrorOverflow => Loc.T("ui.shop.error.overflow");
-        /// <summary>
-        /// 交易保存失败，物品与金币已恢复。
-        /// </summary>
-        public static string ShopErrorSaveFailed => Loc.T("ui.shop.error.save_failed");
-        /// <summary>
-        /// 商店会话已失效。
-        /// </summary>
-        public static string ShopErrorSessionInvalid => Loc.T("ui.shop.error.session_invalid");
-        /// <summary>
-        /// 当前状态不允许交易。
-        /// </summary>
-        public static string ShopErrorStateNotAllowed => Loc.T("ui.shop.error.state_not_allowed");
-        /// <summary>
-        /// 金币：{0}
-        /// </summary>
-        public static string ShopGold(object arg0) => Loc.T("ui.shop.gold", arg0);
-        /// <summary>
-        /// 减少
-        /// </summary>
-        public static string ShopMinus => Loc.T("ui.shop.minus");
-        /// <summary>
-        /// 拥有：{0}
-        /// </summary>
-        public static string ShopOwned(object arg0) => Loc.T("ui.shop.owned", arg0);
-        /// <summary>
-        /// 增加
-        /// </summary>
-        public static string ShopPlus => Loc.T("ui.shop.plus");
-        /// <summary>
-        /// 拥有 {0}
-        /// </summary>
-        public static string ShopRowOwned(object arg0) => Loc.T("ui.shop.row.owned", arg0);
-        /// <summary>
-        /// 价格 {0}
-        /// </summary>
-        public static string ShopRowPrice(object arg0) => Loc.T("ui.shop.row.price", arg0);
-        /// <summary>
-        /// 购买
-        /// </summary>
-        public static string ShopTabBuy => Loc.T("ui.shop.tab.buy");
-        /// <summary>
-        /// 出售
-        /// </summary>
-        public static string ShopTabSell => Loc.T("ui.shop.tab.sell");
-        /// <summary>
-        /// 总价：{0}
-        /// </summary>
-        public static string ShopTotal(object arg0) => Loc.T("ui.shop.total", arg0);
-        /// <summary>
-        /// 单价：{0}
-        /// </summary>
-        public static string ShopUnitPrice(object arg0) => Loc.T("ui.shop.unit_price", arg0);
         /// <summary>
         /// 检查更新
         /// </summary>
@@ -5277,285 +3585,5 @@ namespace Game
         /// 当前版本：未知
         /// </summary>
         public static string StartVersionUnknown => Loc.T("ui.start.version_unknown");
-        /// <summary>
-        /// 伤病
-        /// </summary>
-        public static string StatusAfflictions => Loc.T("ui.status.afflictions");
-        /// <summary>
-        /// 身体属性
-        /// </summary>
-        public static string StatusAttributes => Loc.T("ui.status.attributes");
-        /// <summary>
-        /// 当前可用
-        /// </summary>
-        public static string StatusAvailable => Loc.T("ui.status.available");
-        /// <summary>
-        /// 身体状态
-        /// </summary>
-        public static string StatusBody => Loc.T("ui.status.body");
-        /// <summary>
-        /// 体温偏低
-        /// </summary>
-        public static string StatusCold => Loc.T("ui.status.cold");
-        /// <summary>
-        /// 配置不可用
-        /// </summary>
-        public static string StatusConfigUnavailable => Loc.T("ui.status.config_unavailable");
-        /// <summary>
-        /// 已耗尽
-        /// </summary>
-        public static string StatusDepleted => Loc.T("ui.status.depleted");
-        /// <summary>
-        /// 疾病
-        /// </summary>
-        public static string StatusDisease => Loc.T("ui.status.disease");
-        /// <summary>
-        /// 疾病系统尚未实现。当前没有疾病状态数据；疾病影响与恢复说明暂未接入。
-        /// </summary>
-        public static string StatusDiseaseDetail => Loc.T("ui.status.disease_detail");
-        /// <summary>
-        /// 生命
-        /// </summary>
-        public static string StatusHealth => Loc.T("ui.status.health");
-        /// <summary>
-        /// 影响
-        /// 受击会减少生命，生命归零会触发现有死亡流程。
-        ///
-        /// 恢复
-        /// 当前角色配置不可用，无法显示基地恢复速度。
-        /// </summary>
-        public static string StatusHealthConfigUnavailable => Loc.T("ui.status.health_config_unavailable");
-        /// <summary>
-        /// 影响
-        /// 受击会减少生命，生命归零会触发现有死亡流程。
-        ///
-        /// 恢复
-        /// 活着且在基地时，每现实秒恢复 {0} 点生命。恢复物品按各自已配置的效果生效。
-        /// </summary>
-        public static string StatusHealthDetail(object arg0) => Loc.T("ui.status.health_detail", arg0);
-        /// <summary>
-        /// 体温偏高
-        /// </summary>
-        public static string StatusHot => Loc.T("ui.status.hot");
-        /// <summary>
-        /// 受伤
-        /// </summary>
-        public static string StatusInjury => Loc.T("ui.status.injury");
-        /// <summary>
-        /// 受伤状态系统尚未实现。当前损伤只体现在生命值中；独立伤势、影响与治疗说明暂未接入。
-        /// </summary>
-        public static string StatusInjuryDetail => Loc.T("ui.status.injury_detail");
-        /// <summary>
-        /// 低于 20%
-        /// </summary>
-        public static string StatusLow => Loc.T("ui.status.low");
-        /// <summary>
-        /// 正常体温
-        /// </summary>
-        public static string StatusNormal => Loc.T("ui.status.normal");
-        /// <summary>
-        /// 能量
-        /// </summary>
-        public static string StatusPower => Loc.T("ui.status.power");
-        /// <summary>
-        /// 影响
-        /// 本地远征每游戏分钟消耗 {0} 点能量。耗尽后每现实秒受到 {1} 点伤害。
-        ///
-        /// 恢复
-        /// 活着且在基地时，每现实秒恢复 {2} 点。口粮按已配置效果恢复能量。联机 World 尚未接入此持续生存压力。
-        /// </summary>
-        public static string StatusPowerDetail(object arg0, object arg1, object arg2) => Loc.T("ui.status.power_detail", arg0, arg1, arg2);
-        /// <summary>
-        /// 冲刺耗尽锁定
-        /// </summary>
-        public static string StatusSprintLocked => Loc.T("ui.status.sprint_locked");
-        /// <summary>
-        /// 体温
-        /// </summary>
-        public static string StatusTemperature => Loc.T("ui.status.temperature");
-        /// <summary>
-        /// 影响
-        /// 体温使用摄氏度；低于 36°C 或高于 38°C 显示异常提示。异常伤害与环境升降温规则尚未实现。
-        ///
-        /// 恢复
-        /// 活着且在基地时，每现实秒向 {0}°C 恢复 {1}°C。
-        /// </summary>
-        public static string StatusTemperatureDetail(object arg0, object arg1) => Loc.T("ui.status.temperature_detail", arg0, arg1);
-        /// <summary>
-        /// {0} °C
-        /// </summary>
-        public static string StatusTemperatureValue(object arg0) => Loc.T("ui.status.temperature_value", arg0);
-        /// <summary>
-        /// 体力
-        /// </summary>
-        public static string StatusTili => Loc.T("ui.status.tili");
-        /// <summary>
-        /// 影响
-        /// 实际移动并加速时，速度为 {0} 倍，每现实秒消耗 {1} 点体力。
-        ///
-        /// 恢复
-        /// 普通移动每现实秒恢复 {2} 点，站立恢复 {3} 点。耗尽后需松开加速，恢复到 {4} 点，再重新按下加速。
-        /// </summary>
-        public static string StatusTiliDetail(object arg0, object arg1, object arg2, object arg3, object arg4) => Loc.T("ui.status.tili_detail", arg0, arg1, arg2, arg3, arg4);
-        /// <summary>
-        /// 尚未实现
-        /// </summary>
-        public static string StatusUnavailable => Loc.T("ui.status.unavailable");
-        /// <summary>
-        /// {0} / —
-        /// </summary>
-        public static string StatusValueUnavailable(object arg0) => Loc.T("ui.status.value_unavailable", arg0);
-        /// <summary>
-        /// 水分
-        /// </summary>
-        public static string StatusWater => Loc.T("ui.status.water");
-        /// <summary>
-        /// 影响
-        /// 本地远征每游戏分钟消耗 {0} 点水分。耗尽后每现实秒受到 {1} 点伤害。
-        ///
-        /// 恢复
-        /// 活着且在基地时，每现实秒恢复 {2} 点。饮用物品按已配置效果恢复水分。联机 World 尚未接入此持续生存压力。
-        /// </summary>
-        public static string StatusWaterDetail(object arg0, object arg1, object arg2) => Loc.T("ui.status.water_detail", arg0, arg1, arg2);
-        /// <summary>
-        /// 进行中
-        /// </summary>
-        public static string TasksActive => Loc.T("ui.tasks.active");
-        /// <summary>
-        /// 已完成
-        /// </summary>
-        public static string TasksCompleted => Loc.T("ui.tasks.completed");
-        /// <summary>
-        /// 目标已完成。前往可用的撤离点，完成撤离。
-        /// </summary>
-        public static string TasksCompletedDescription => Loc.T("ui.tasks.completed_description");
-        /// <summary>
-        /// 目标已完成
-        /// </summary>
-        public static string TasksCompletedState => Loc.T("ui.tasks.completed_state");
-        /// <summary>
-        /// 暂无进行中的任务
-        /// </summary>
-        public static string TasksEmptyActive => Loc.T("ui.tasks.empty_active");
-        /// <summary>
-        /// 当前远征暂无已完成任务
-        /// </summary>
-        public static string TasksEmptyCompleted => Loc.T("ui.tasks.empty_completed");
-        /// <summary>
-        /// 进入远征后，这里会显示当前目标与完成进度。
-        /// </summary>
-        public static string TasksEmptyHint => Loc.T("ui.tasks.empty_hint");
-        /// <summary>
-        /// 在当前远征中击败所需数量的敌人。进度由战斗结果自动记录。
-        /// </summary>
-        public static string TasksKillDescription => Loc.T("ui.tasks.kill_description");
-        /// <summary>
-        /// 击败敌人：{0} / {1}
-        /// </summary>
-        public static string TasksKillGoal(object arg0, object arg1) => Loc.T("ui.tasks.kill_goal", arg0, arg1);
-        /// <summary>
-        /// 目标
-        /// </summary>
-        public static string TasksObjective => Loc.T("ui.tasks.objective");
-        /// <summary>
-        /// 任务进行中
-        /// </summary>
-        public static string TasksProgressState => Loc.T("ui.tasks.progress_state");
-        /// <summary>
-        /// 仅显示当前远征的撤离任务
-        /// </summary>
-        public static string TasksScope => Loc.T("ui.tasks.scope");
-        /// <summary>
-        /// 选择一个任务查看详情
-        /// </summary>
-        public static string TasksSelect => Loc.T("ui.tasks.select");
-        /// <summary>
-        /// 在当前远征中存活至目标时长。进度以游戏内时间计算。
-        /// </summary>
-        public static string TasksSurviveDescription => Loc.T("ui.tasks.survive_description");
-        /// <summary>
-        /// 存活时长：{0} / {1}
-        /// </summary>
-        public static string TasksSurviveGoal(object arg0, object arg1) => Loc.T("ui.tasks.survive_goal", arg0, arg1);
-        /// <summary>
-        /// 任务资料暂不可用
-        /// </summary>
-        public static string TasksUnavailable => Loc.T("ui.tasks.unavailable");
-        /// <summary>
-        /// 箭矢：{0}
-        /// </summary>
-        public static string TempBuildingArrows(object arg0) => Loc.T("ui.temp_building.arrows", arg0);
-        /// <summary>
-        /// 左键拆除，X 取消
-        /// </summary>
-        public static string TempBuildingHintDestroy => Loc.T("ui.temp_building.hint.destroy");
-        /// <summary>
-        /// 左键射击，X 退出
-        /// </summary>
-        public static string TempBuildingHintOperating => Loc.T("ui.temp_building.hint.operating");
-        /// <summary>
-        /// 短按旋转15°，长按连续旋转；左键确认，X 取消
-        /// </summary>
-        public static string TempBuildingHintPreview => Loc.T("ui.temp_building.hint.preview");
-        /// <summary>
-        /// 正在搭建{0}
-        /// </summary>
-        public static string TempBuildingHintProgress(object arg0) => Loc.T("ui.temp_building.hint.progress", arg0);
-        /// <summary>
-        /// 拆除模式
-        /// </summary>
-        public static string TempBuildingModeDestroy => Loc.T("ui.temp_building.mode.destroy");
-        /// <summary>
-        /// 待命
-        /// </summary>
-        public static string TempBuildingModeNormal => Loc.T("ui.temp_building.mode.normal");
-        /// <summary>
-        /// 操作箭塔
-        /// </summary>
-        public static string TempBuildingModeOperating => Loc.T("ui.temp_building.mode.operating");
-        /// <summary>
-        /// 放置预览
-        /// </summary>
-        public static string TempBuildingModePreview => Loc.T("ui.temp_building.mode.preview");
-        /// <summary>
-        /// 建造中
-        /// </summary>
-        public static string TempBuildingModeProgress => Loc.T("ui.temp_building.mode.progress");
-        /// <summary>
-        /// 选择建筑
-        /// </summary>
-        public static string TempBuildingSelectTitle => Loc.T("ui.temp_building.select.title");
-        /// <summary>
-        /// 冷却：{0} 秒
-        /// </summary>
-        public static string TempBuildingStatusCooldown(object arg0) => Loc.T("ui.temp_building.status.cooldown", arg0);
-        /// <summary>
-        /// 当前位置不可放置
-        /// </summary>
-        public static string TempBuildingStatusInvalid => Loc.T("ui.temp_building.status.invalid");
-        /// <summary>
-        /// 就绪
-        /// </summary>
-        public static string TempBuildingStatusReady => Loc.T("ui.temp_building.status.ready");
-        /// <summary>
-        /// 临时建造
-        /// </summary>
-        public static string TempBuildingTitle => Loc.T("ui.temp_building.title");
-        /// <summary>
-        /// 熄灭
-        /// </summary>
-        public static string TorchExtinguish => Loc.T("ui.torch.extinguish");
-        /// <summary>
-        /// 点燃
-        /// </summary>
-        public static string TorchIgnite => Loc.T("ui.torch.ignite");
-        /// <summary>
-        /// 剩余燃烧时间：{0} 秒
-        /// </summary>
-        public static string TorchRemaining(object arg0) => Loc.T("ui.torch.remaining", arg0);
-        /// <summary>
-        /// 寻找撤离标识，靠近后读条撤离（可空手）
-        /// </summary>
-        public static string ValleyExtractionRule => Loc.T("ui.valley.extraction_rule");
     }
 }

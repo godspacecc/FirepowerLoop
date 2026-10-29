@@ -14,8 +14,6 @@
     {
         None = 0,
         RestoreHealth = 1,
-        RestorePower = 2,
-        RestoreWater = 3,
     }
 
  

@@ -11,8 +11,6 @@ namespace Game
         public Button BtnSetting;
         public Button BtnExit;
         public TextMeshProUGUI OnlineActionText;
-        public Button BtnMainMenu;
         public RectTransform PausePanel;
-        public Button BtnReturnCamp;
     }
 }

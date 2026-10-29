@@ -14,7 +14,6 @@
     {
         None = 0,
         OpenMap = 1,
-        ToggleTorch = 2,
     }
 
  

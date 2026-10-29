@@ -1,0 +1,762 @@
+[
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_BuiltUpReference.png",
+    "sha256": "92e768c0eab684114f5012902122595d5abd7f81df1e216f1235c401579f3364",
+    "bytes": 22422
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_BuiltUpReference.png.meta",
+    "sha256": "58d9db62e6112dd0f3a3d41749a86ba37491a27ae55e1a8f7bda39e754efd2ef",
+    "bytes": 2294
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_FeatureReference.metadata.json",
+    "sha256": "2185cd991da6f12b3d5b06c6da09d1f8716a5072940e5459233b8ac354395db2",
+    "bytes": 25356
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_FeatureReference.metadata.json.meta",
+    "sha256": "73b229287fabc0e3e6a8534988d6aa554cd5ad4b3d442ac9ce938ecbcfccf3d7",
+    "bytes": 162
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_ForestReference.png",
+    "sha256": "28d133bbfa79823df057336e1f0dd36b4b9b4fc57b1e87d1c0e5d7792c4c14e8",
+    "bytes": 26715
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_ForestReference.png.meta",
+    "sha256": "3afdd04e8f0df525a3b02f8ad00fa9173f3c960d9b7073ccffef0b1a0803879d",
+    "bytes": 2294
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_RoadReference.png",
+    "sha256": "1f2cc6285ffe614c682e4c96cedb812dd52d8af7b72e4b995ddfe3a271f82b9d",
+    "bytes": 23145
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_RoadReference.png.meta",
+    "sha256": "b2a143b4088083e0a68c116e808816a322941e06a54e92b178a3effc792b00ef",
+    "bytes": 2294
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_SurfaceControl.metadata.json",
+    "sha256": "201bce628074fab3c03b59402c9513c9ea3bc52c5b3bb6e38e67bc1e3eb7c5e8",
+    "bytes": 1279
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_SurfaceControl.metadata.json.meta",
+    "sha256": "92660c347caaf5031a0c6f4366be43c7929ef4615fb7087f53e8d03a261654c8",
+    "bytes": 159
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_SurfaceControl.png",
+    "sha256": "987cc2122119f0a8161b4cf3a1ca81f1f80304afc23f34f37e02f0cbd4c62cea",
+    "bytes": 520823
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_SurfaceControl.png.meta",
+    "sha256": "4aa92051bf235fa6a574294c43c9ec6433e0ab600f67086fb651292206bb9d7f",
+    "bytes": 2288
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_WaterReference.png",
+    "sha256": "ab6fb61c798259efba3a81ce18303e4ab62605aa75dc9d18678c1dc290d99410",
+    "bytes": 16869
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/HeJiaVillage_WaterReference.png.meta",
+    "sha256": "939522dfbf8a414b1b40d75b38d04c46de6115f218c616faf48532945b718b23",
+    "bytes": 2294
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/README.md",
+    "sha256": "a0ff3f1fbd3e5ba650c7f0ac331ff8ec62334747726bc8aab628563d24efab40",
+    "bytes": 1686
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences/README.md.meta",
+    "sha256": "04441a11a6f7efe4f8acf91690cb92139fffe39ce0a7ecb088bca3948d0e4ac5",
+    "bytes": 162
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Overlay.asset",
+    "sha256": "1d5a1e7d6539fe415b8928d83759a09ff220bb08ef323e1d412ff910d982f000",
+    "bytes": 3141563
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Overlay.asset.meta",
+    "sha256": "d8b46e72672e6adfe35aa9a942f584b900b944f1ed3371062ba6869f33b1fc77",
+    "bytes": 188
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Overlay.mat",
+    "sha256": "8bfef40c219050b6dfe26fdc13c589bc38cb54c6b712a927c9640b45483556e0",
+    "bytes": 1860
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Overlay.mat.meta",
+    "sha256": "fbfd006b9877266fc01709721446d5f4fb7e920991b21fb2066204023be1de26",
+    "bytes": 188
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Surface.asset",
+    "sha256": "be76d43792260b78500c526d22af5b302ccd0ffc3210b6ebab4d9b1e2fb8bb5d",
+    "bytes": 1455227
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9/Surface.asset.meta",
+    "sha256": "6d2f534c4c71330cbbbc93fa3d3c673f8931b1088095668ed026e2d59c1e171d",
+    "bytes": 188
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_Heightmap.metadata.json",
+    "sha256": "25e0bbb2ae167270e93c9a56e48d09dfd830c86225cbede6798cd8dd665a4c67",
+    "bytes": 6519
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_Heightmap.metadata.json.meta",
+    "sha256": "97cf5c5b5d82416d0524cac0be9e40fedbaa36e3e3083742135e8b3f5b039647",
+    "bytes": 158
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_Heightmap_RGB48.png",
+    "sha256": "c2502edc692ec340ebb0eeec97aeeabf06dd76b0d51c4c2db43b5b5c11d34d80",
+    "bytes": 2163314
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_Heightmap_RGB48.png.meta",
+    "sha256": "8882ecf939c6a15c4f77e7d2fa24cf5fff3d66df770c74283bc4a9aa8a4716d0",
+    "bytes": 2591
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_SatelliteRoadMask.png",
+    "sha256": "d1a96e8973fba7caa0607ff9b3dbe9e748a0be4ac74aab04e74aa43fc730538a",
+    "bytes": 24416
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_SatelliteRoadMask.png.meta",
+    "sha256": "e64de717043b0dc72a8448949bf98be896c9d405bc36975cf550c190f8e86a41",
+    "bytes": 2948
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_TerrainProfile.asset",
+    "sha256": "6a4a3ed6850c8886d81a8156f25a6bea7d08354e35a0e8670ea1841c7452ea1d",
+    "bytes": 1494
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/HeJiaVillage_TerrainProfile.asset.meta",
+    "sha256": "f66dad8274f8ab5c9086000bfdbab87abfd1fc1ea4ff54adf464fff9fe5dca38",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/RegionAnnotations/HeJiaVillage_RegionAnnotations.asset",
+    "sha256": "2e98c73eaad0a4dcef188dab58a71501cd45115d0ca0fdb94210cb659c01ed48",
+    "bytes": 522036
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/RegionAnnotations/HeJiaVillage_RegionAnnotations.asset.meta",
+    "sha256": "5a4eeab1bf7039577dfd72898c0c3e184d97f0d7349f4f149e8c5699d4e22d4b",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_1_1.asset",
+    "sha256": "13b9cb390e8c5c88ffaa5da86bd13fc37c1372e7100479df078f29d74c0b337e",
+    "bytes": 902304
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_1_1.asset.meta",
+    "sha256": "70834317830f66a30e5e3349f67c3c00065ce6bb2e9cf0535ebec7f110cb24f1",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_1_2.asset",
+    "sha256": "df0bbf10bd079353516803f8b60b5d53e15d76415063d88888fa6fff2eabe8fe",
+    "bytes": 902304
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_1_2.asset.meta",
+    "sha256": "2fe201de5d12066a5bc293c712f50f0a0f4cb51a66eaed133adc43d715666b96",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_2_1.asset",
+    "sha256": "a33db0b6c0ba0fd004ce8392b1ca7f10a5bc68b21a9cfa3f0dcefd20bd8dad07",
+    "bytes": 902304
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_2_1.asset.meta",
+    "sha256": "c82f578809b8ab490098a8286cb51195cfe5ffd718a09dedb02c3c1cee56b032",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_2_2.asset",
+    "sha256": "68808596eac8cab5d752539d0ba3182f6b0d1d4932d4fa8b66e15eedfa9b67a4",
+    "bytes": 902304
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData/HeJiaVillage_2_2.asset.meta",
+    "sha256": "c5053adf18c71f3abd0da44ac864227dc39f12271109edd36917d5aa93e2da04",
+    "bytes": 189
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Dirt.terrainlayer",
+    "sha256": "6532745d0f1af38ab097755b4adcdfa10530f0a8567878f588f24e0afe2eb508",
+    "bytes": 792
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Dirt.terrainlayer.meta",
+    "sha256": "306f09b96bf478b50b583c30bdce6fbb344067941afda8045ffe292d8e4a4432",
+    "bytes": 200
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Rock.terrainlayer",
+    "sha256": "3c098fb6ab8de3089a0dafa04bd40cebfd96dfca11959aa31c925b9a83c8039d",
+    "bytes": 794
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Rock.terrainlayer.meta",
+    "sha256": "39879d507293b90b43cec049e90b0a6d45f074cd34f39f4dc8c262d692f83641",
+    "bytes": 200
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Sand.terrainlayer",
+    "sha256": "526bb766f890d6b647a08376aa3ea6255c5e5e502df7c9ba5e182db59f8167b3",
+    "bytes": 794
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Sand.terrainlayer.meta",
+    "sha256": "cf2dc474ae8f2fea306b124d1ea808735f1a266975e7e37d69d053aff30f06e7",
+    "bytes": 200
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Vegetation.terrainlayer",
+    "sha256": "509c55d1f1b4ba91b6987e78ef82d92fd12f4dedce05ccc66f0da711bcc8bf44",
+    "bytes": 798
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers/HeJiaVillage_Vegetation.terrainlayer.meta",
+    "sha256": "a79a0867aa05fb6c7f3c1f055cd0ae7494783d62d4409f7ec0d952c8b097d558",
+    "bytes": 200
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_16_2_Sand_Base_Color.png",
+    "sha256": "b7190d8b9dc6b7155f11f87c37ec6d01ae8a5c1ea4a35ef15059a3c943a5f6a2",
+    "bytes": 4780244
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_16_2_Sand_Base_Color.png.meta",
+    "sha256": "df98cc48dd1a71663438c750160fb05c806eceeb05484595ac766a7a952dbff7",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_16_2_Sand_Normal.png",
+    "sha256": "2e560dc3eb0bba09c2f203062dde9d7fd50d71d8ea24782056a89b34d89e2872",
+    "bytes": 5620462
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_16_2_Sand_Normal.png.meta",
+    "sha256": "fb50ea0107f0c748a9eaab980ccf314b7ad7eb1b2ae64d85a7a559a922772065",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_19_4_Dirt_Base_Color.png",
+    "sha256": "ab0dc698a4483343d7b9e78453a6894a545ed30af470c4ff72bf453db3200cec",
+    "bytes": 5320151
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_19_4_Dirt_Base_Color.png.meta",
+    "sha256": "415b240f1ca072fd6d5fa08a11f4c2b1816da36758d6f3ac9f1a6cf7105a9095",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_19_4_Dirt_Normal.png",
+    "sha256": "67297a0211adc14cb07cd20e8ab9cb95e23bed09d789ac8dd40e39563e5b300a",
+    "bytes": 6880005
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_19_4_Dirt_Normal.png.meta",
+    "sha256": "a165c2ec096067dfb9883f885cc2575eddbab2c347b7fd02fb857893af21c8fd",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_23_1_Rocks_Base_Color.png",
+    "sha256": "6372637230317e449fdcc9d9810e9c94b0b0ca3fcc3ac954d8df22c724db1e52",
+    "bytes": 5719812
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_23_1_Rocks_Base_Color.png.meta",
+    "sha256": "96865d59fd61b34b72142f46863bda8cf4280691119ab5e6de1d2c031ec9431f",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_23_1_Rocks_Normal.png",
+    "sha256": "531810b1648729755ad636730d94292bc97f9b2c56148f14128776a0aa6a3523",
+    "bytes": 6037509
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_23_1_Rocks_Normal.png.meta",
+    "sha256": "22d97f14ac8f3c66f90d292c072e3652b029bdcdd537e4855633af15783283a9",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_42_1_Vegetation_Base_Color.png",
+    "sha256": "e10b3cb0fb4b18f1ce5558fe2c2b81e92b1bb6e9e2447d50c8622a79de491ca6",
+    "bytes": 4896523
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_42_1_Vegetation_Base_Color.png.meta",
+    "sha256": "48526e7585bf456038a97df69a4e4ad142d06097635d93b6beb7f36cfca4b98a",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_42_1_Vegetation_Normal.png",
+    "sha256": "e91484d7711de4b2fc6f7459d03b66fee9a80a597771a23ceb788735f36160e6",
+    "bytes": 6670340
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures/Vol_42_1_Vegetation_Normal.png.meta",
+    "sha256": "184c413e85fc2c0d6a8c78c4c715937fff4f49dda3d9de9b7084099df1b82ac9",
+    "bytes": 1656
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_RPGFXCampfire.prefab",
+    "sha256": "c91894aeb6fbec0567f777251f6efd507b53c55c0fe06f6dd3ece24b9ab7b72c",
+    "bytes": 135341
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_RPGFXCampfire.prefab.meta",
+    "sha256": "4ea546658dace8527adf48320569f066620ffe6a2227dc750fe2495e7b8d9536",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_awning_standing_01a.prefab",
+    "sha256": "ce694835389d58c88829133b1cf41cead75ab7ae25412de467bf52cc6133f54c",
+    "bytes": 14316
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_awning_standing_01a.prefab.meta",
+    "sha256": "f1f60217c2722f45cf7c4b4579a126122aed36d4e64b08ffb234150a9183107c",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_barrel_01.prefab",
+    "sha256": "5d74c7adf96de7002c21aa43785a26e12dc79aabe4ada30f1a10e6b437df60f5",
+    "bytes": 12352
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_barrel_01.prefab.meta",
+    "sha256": "ba22bdf4c2c137b0ca32e873a0c0a5906c15a41ae0a5e7ac07716c5f14b66ec1",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_bench_wood_01.prefab",
+    "sha256": "7a230b0aab2cb4838dfb9cfc177df326d31d415e9b5f8b0a7d50521bacf88061",
+    "bytes": 12356
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_bench_wood_01.prefab.meta",
+    "sha256": "751c1f90cc693860e046b013e8d3be668b14680b3f10713f477f52d7ee7fe3ec",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_crate_01.prefab",
+    "sha256": "8b06c82aebd4660c3faaa45066b1421e0ab0f7551ca5b55a96ce3daea55d04b0",
+    "bytes": 12381
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_crate_01.prefab.meta",
+    "sha256": "286f1f1f19d144dfd41196926514d09112dede9f8c0ea5eb960f6beabf8755b2",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_crate_02.prefab",
+    "sha256": "aec7e0828cc78af804ab9839935e31a86d661b4534b744d9ea91322c7a1ebf64",
+    "bytes": 12368
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_crate_02.prefab.meta",
+    "sha256": "fb18fffc922ef3525ac01fa4ff3e40f72ba989082880dd7caaca8c4175bb3d6f",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_fence_wood_01a.prefab",
+    "sha256": "4785ccfe8b92df1493db4cae9998455ec393c245efcfbead1d2950c13339b17b",
+    "bytes": 12366
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_fence_wood_01a.prefab.meta",
+    "sha256": "84f817cb8fcb1aa6fc484f1baa389ee0119b198b30e182c4ebd5dec1527f8ccc",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_log_wood_01.prefab",
+    "sha256": "260b0cd36a1333bd31219a5bcba947269147961b9eea6236d34d1197003a9947",
+    "bytes": 12351
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_log_wood_01.prefab.meta",
+    "sha256": "20403ad752689e877b2ae1202fabba73c917535c9dd847e0cd7ceda98ab4bc93",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_sack_02_set.prefab",
+    "sha256": "00c20f0f99e3b7ee5fce9b59c2d7fdbc70055e454477dbf5d7eb3c365377ee9c",
+    "bytes": 12351
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_sack_02_set.prefab.meta",
+    "sha256": "5db2432fe6b7b928f3510dbafdb32245c8289bc24ed877b1d3356af3d8d0d87b",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_shed_wood_01.prefab",
+    "sha256": "3027fbb7ae16c61983d0c1be36b925a9aa1583d7aa526276e291cc1537fd3aef",
+    "bytes": 14289
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_shed_wood_01.prefab.meta",
+    "sha256": "d8d44b63cea7d8047b6c47d79b2e93496d83329616ba2f0b9868953fc1da94ef",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_table_01.prefab",
+    "sha256": "db097f73da6b4d22718322211174c4ee6223400e1a4767d51809376b08fa854a",
+    "bytes": 12362
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/Camp_table_01.prefab.meta",
+    "sha256": "d6cf848d64bd9c4511a2b5239e77afd42b02d30be34d4a0d9947abe325ddc59d",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxArrowTower.prefab",
+    "sha256": "1ed9d864f0d16ef5e11fff74abf63a8f69c483683621f4c085865841086e9baf",
+    "bytes": 35860
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxArrowTower.prefab.meta",
+    "sha256": "64cf39ac4216eba4e6866ff0851d77d6599e93af046400f951b58c7cfbfeda8f",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxCampfire.prefab",
+    "sha256": "8ba5636cddcea8d840075f99ee9c0f9b9e895aef8af7e8c3bde14e0fd943e7b1",
+    "bytes": 128426
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxCampfire.prefab.meta",
+    "sha256": "b19be1df3aab31244d5e5f2af7ac0910ab27841863e772a0bc970990b6f0c1d1",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxRoadblock.prefab",
+    "sha256": "e08a13be2cd56b22d7451441ca10af878e13344c418ac5a542b17534d88848ba",
+    "bytes": 7852
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building/GrayboxRoadblock.prefab.meta",
+    "sha256": "7ed01303d3c4ee19bd0ab0102db2eb70d6042ebc23a9922549400ae427a1edf5",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcArcade.prefab",
+    "sha256": "2567c0120e41597fe17781500207b81301cd03008256cc471a7b5de2d4d9d682",
+    "bytes": 14924
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcArcade.prefab.meta",
+    "sha256": "0fa96c98ba4e48bc2bcb8ea2d3079fbfef2cbb2b94dc94dbb6bf066bbd2c25f3",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcCrafter.prefab",
+    "sha256": "c325636be5f09e65417c1d4586aefaea3e2d9bb5561f948996e7742d572f3e10",
+    "bytes": 14923
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcCrafter.prefab.meta",
+    "sha256": "8000152e47bbb7136bc8b00b95bf8affe757a75a0d83b126ac2df26717d47a08",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcMapGuide.prefab",
+    "sha256": "f499c6ab0852b97335f777ac681a2c2a788d5484b54453ac7bd176237828a791",
+    "bytes": 14928
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcMapGuide.prefab.meta",
+    "sha256": "965420682d11c96cda83b659370b294c55bdc27e8490613a73cf6570a94e7c51",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcMerchant.prefab",
+    "sha256": "eca5bea5c2db7187d71d22bad197a951dc0b4e047dce4daf473c6c13a1ce495c",
+    "bytes": 14921
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcMerchant.prefab.meta",
+    "sha256": "dba1630ac893b25a447f10c3ec6160ef2f63e393ed66e41d7e07dd07431cb8a3",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcWarehouseKeeper.prefab",
+    "sha256": "c77edd14f079de5a10fd89098a3cb4aa62c49bf4b14bce25b7e0f8fa8b4e3add",
+    "bytes": 14935
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/BaseNpcWarehouseKeeper.prefab.meta",
+    "sha256": "5b0584eae97bc6201731cf348c2d37aacaf4d07999a6f3d71cfaf50f610058d8",
+    "bytes": 151
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/GrayboxNpc.prefab",
+    "sha256": "c47d49ef6b468e7c16bb48b67358aa12539be198d94285e6f8394eb9f1a9990f",
+    "bytes": 10202
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/GrayboxNpc.prefab.meta",
+    "sha256": "918a68870acb8a94037a75047fa1475c34e711d11bb5262910e5584734c03de4",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab",
+    "sha256": "816e14c8c63e6861acac89c25963ab58e060038d95954f518f8e79fea8e4239e",
+    "bytes": 2518
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab.meta",
+    "sha256": "46486f2070c647a8cd534f66b1381ddbb1f5275f3e1c50d0a735229c5c2716eb",
+    "bytes": 161
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab",
+    "sha256": "3641057814106d7a2d55c823fdefbc95329610dfc579a39e86e7227dbacfac04",
+    "bytes": 6092
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab.meta",
+    "sha256": "fe5c7473bef18e504271ad7644bcda804073b793ad2e0f43019045d7151c4c08",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab",
+    "sha256": "e6d808c82c83db4250aa3b0c13cb5b7f73976ff69e15b17ca4797b529b2f22e7",
+    "bytes": 4981
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab.meta",
+    "sha256": "b5e33f23fe079283717d484daef6ca3b4d49e3a5e0e32c9b3b97b7af54362722",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab",
+    "sha256": "67bdebd6beaeb6053d5fee8bf8ce81cff72671dc316062138056472fac225a52",
+    "bytes": 4983
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab.meta",
+    "sha256": "9d73864cfd6a197286aaa0e24f1edfab1ccc42df93fbcf183b267ac0a997ff43",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab",
+    "sha256": "b222659391345e35e6dcd1be8e141e71ff417e0883f08ac1b7287568666da4b3",
+    "bytes": 5659
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab.meta",
+    "sha256": "a192154c3a4cf1b977f91863c668cb34eaf49982639ef1d6364d55eae06bc4d3",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HandheldTorch.prefab",
+    "sha256": "07fc2a0e2acbb0d0df4a6da38f95eb5e9c114f9d658213b51ce25e50da18af76",
+    "bytes": 151634
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/HandheldTorch.prefab.meta",
+    "sha256": "4290acaf18ca095b7d1991014e6ee3c9c5ae072cf3828cae817ad62ce60544fe",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab",
+    "sha256": "104a729c5e7b94f169135748e5a39d2faf69b45378c64ece64e88196e1b01ac6",
+    "bytes": 2509
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab.meta",
+    "sha256": "3ca26bbfc7dd10e46e4862f2898af01ab6a793afbe16664549c6d25d642119ca",
+    "bytes": 161
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab",
+    "sha256": "1e54b3687a330a0ec92187452b299c36f774fc383220346006d9ce17bbcb7d64",
+    "bytes": 2524
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab.meta",
+    "sha256": "0c4eeae1bc3189e10572d60579f7485d11cc9ca09f7a79ca85b22e417a040238",
+    "bytes": 161
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Environment/CivilisationValleyGenerationKit.prefab",
+    "sha256": "411bb65ac56924f5f44debcb77c3d6a087c8408134e0799a456e7484ea7f01b4",
+    "bytes": 1215574
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Environment/CivilisationValleyGenerationKit.prefab.meta",
+    "sha256": "a14f497a829b110de3b1097135c4a5221df960493dca979e101f87e946f2e0be",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab",
+    "sha256": "58bcbe603226c59a7b81412ee1355f19941c8a2c593c40ff7d63813d8a1e0ef6",
+    "bytes": 16605
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab.meta",
+    "sha256": "25d1feec57309314fc894bde8ac163c627a9b16a87f6e809979d80a2484a20f2",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab",
+    "sha256": "004a30102c404a84e7b304c70a013f8d19522d2248a979c1280cd0e2db08e3de",
+    "bytes": 16744
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab.meta",
+    "sha256": "cb46dc854f37d7bdf024f875ecf1b4bce4ec7305c37bd99e01e5dbc8831ad9ab",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab",
+    "sha256": "b5b2d0db4a3a37a95c47d27d150c90d139e66ac0ba5540e34c8d0bb5dad5a6f5",
+    "bytes": 16759
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab.meta",
+    "sha256": "9cc06e396ca878b45d820463023c5f47b935a4d34a742a0c08290452196524ab",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab",
+    "sha256": "e0172f125d2b9f06dc2e5537d1f7ef207b38190272c62123290024b5844105e9",
+    "bytes": 16657
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab.meta",
+    "sha256": "4d520aac8c3aba355164221ffc32a3b3a905a413f0db87971865dbb0fc69ad7b",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab",
+    "sha256": "0e925b03a4254b701e9137c150972130b2e431f86eabe22c8f5f32cd1613399c",
+    "bytes": 17602
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab.meta",
+    "sha256": "5fabc9a4fc5ef515441dba8c719710fa34d3c8b68c01f982efc1de449da4447a",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab",
+    "sha256": "64e9df71982f0d75f2ff983e99faa2e168270cf7c557d2d9e4d11b5f674e5fd9",
+    "bytes": 16551
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab.meta",
+    "sha256": "877f8896b0c093380d603d9362d1a700c50ddf099b5748ed10e50ea68b11c634",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab",
+    "sha256": "fc8513e3915f0dbbee8ea0c9addd3b9aa25780405d27fc765eb13305c1316c43",
+    "bytes": 165738
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab.meta",
+    "sha256": "bd25ec182c0b6b80d181aba024823eb919bee49c3232a30dc167ca65447b5500",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/TaskExit.prefab",
+    "sha256": "0eb3d3abf4a699587e709ac8f91dafa236ba8e7baadd0699943352e43a71dd81",
+    "bytes": 10697
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/SceneObjects/TaskExit.prefab.meta",
+    "sha256": "de4ad07aaae9392360d46f2452cd9969cbf3594783ea2151ce72cb6dce34ef83",
+    "bytes": 154
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/BaseMap.unity",
+    "sha256": "e7667e20a845e2ea1e8d481be256ce60e11492239303e346082e19428b4f087b",
+    "bytes": 894726
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/BaseMap.unity.meta",
+    "sha256": "fcb09f7cd1df12b6f53e0cf07b7546f5024a11458a7d944b74b879b9e225d386",
+    "bytes": 155
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationOverlay.asset",
+    "sha256": "84ec3d2b1fc7a7032acb6c2bfa8bbe29a7c2b9386a035f23e1923319010e69c4",
+    "bytes": 3141623
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationOverlay.asset.meta",
+    "sha256": "55ed840e0f0edbf0454c75f7b3d34037e1ee9608625cd3e6218152ab727b64d2",
+    "bytes": 196
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationOverlayMaterial.mat",
+    "sha256": "7851a7f7bb65166dc517bb1449e5b48cedd6aa846a7c8d758561aa0f28fd6729",
+    "bytes": 1890
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationOverlayMaterial.mat.meta",
+    "sha256": "44bc7d6cccc6e5d3d65ee77bafe4d0f103a2d6f29ee6be0b8d6ed0af938d4811",
+    "bytes": 196
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationSurface.asset",
+    "sha256": "d15d57139e4867f04e9c72a46d2831386b0a34793580a7f6b18ac655389da78e",
+    "bytes": 1455408
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/AnnotationSurface.asset.meta",
+    "sha256": "fbe8a9a13f1bd20a2a47f189c9bd9d656efa0f342725085d832e1c7c162ee800",
+    "bytes": 196
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/HeJiaVillageLocalPreview.unity",
+    "sha256": "88c6f761fa25809ed01215b3652753168a644c043e711e9cd79367371ebd5861",
+    "bytes": 8735145
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/HeJiaVillageLocalPreview.unity.meta",
+    "sha256": "bbdac4019b8c4a6ebf6f70d61a189a786ea54b6ab4115f502fb99ac00d86c709",
+    "bytes": 162
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/TerrainData.asset",
+    "sha256": "0adf0bf5acde58bf7388923d9b47583bf0fa425b3b158038c51ee1cee0d3f173",
+    "bytes": 1272948
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview/TerrainData.asset.meta",
+    "sha256": "6dfa853afe4a44677b357a3323572c3c425f898bb616ce64b4eba2a65ec7e41f",
+    "bytes": 197
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/Maps/RuntimeSample.unity",
+    "sha256": "961dcd680ed14d4dd7f147694b6d87c34923a150236b99f0f2e40613e0722e18",
+    "bytes": 13031
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/Maps/RuntimeSample.unity.meta",
+    "sha256": "2b6f128cb239162e4e5e228a342b73758ebafbc7db7b771167199abf0f8d6ac9",
+    "bytes": 162
+  }
+]

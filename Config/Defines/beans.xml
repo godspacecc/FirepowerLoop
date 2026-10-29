@@ -14,7 +14,6 @@
         <var name="UseDurationSeconds" type="float"/>
         <var name="ActionKind" type="ItemActionKind"/>
         <var name="ActionTarget" type="string"/>
-        <var name="BurnSeconds" type="float"/>
         <var name="WearSlot" type="ClothingSlot"/>
         <var name="AppearanceId" type="string"/>
     </bean>
@@ -30,8 +29,6 @@
         <var name="MagazineCapacity" type="int"/>
         <var name="ReloadSeconds" type="float"/>
         <var name="ReloadWholeMagazine" type="bool"/>
-        <var name="TreeHarvestEfficiency" type="float" comment="近战砍树进度倍率；1为标准效率，0为不可采集"/>
-        <var name="StoneHarvestEfficiency" type="float" comment="近战挖矿进度倍率；1为标准效率，0为不可采集"/>
     </bean>
     <bean name="WeaponAppearanceConfig" group="c">
         <var name="ItemId" type="int"/>
@@ -57,16 +54,6 @@
     <bean name="MapConfig" group="c">
         <var name="Id" type="string"/>
         <var name="ScenePath" type="string"/>
-    </bean>
-    <bean name="MapDisplayConfig" group="c">
-        <var name="MapId" type="string"/>
-        <var name="ImageName" type="string"/>
-        <var name="CenterX" type="float"/>
-        <var name="CenterZ" type="float"/>
-        <var name="Width" type="float"/>
-        <var name="Height" type="float"/>
-        <var name="ViewportColumns" type="int"/>
-        <var name="ViewportRows" type="int"/>
     </bean>
     <bean name="MapScenePartConfig" group="c">
         <var name="Id" type="string"/>

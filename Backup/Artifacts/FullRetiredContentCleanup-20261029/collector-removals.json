@@ -1,0 +1,19 @@
+[
+  "Assets/Game/Prefabs/Characters/GrayboxNpc.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab",
+  "Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab",
+  "Assets/Game/Prefabs/Building",
+  "Assets/Game/Prefabs/Environment",
+  "Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab",
+  "Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab"
+]

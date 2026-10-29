@@ -1,0 +1,11 @@
+{
+  "fontSizedObjectsChecked": 17,
+  "recovery": [
+    {
+      "gitBlob": "65b3469b4d89720673e4b9788fd57ef759de129c",
+      "newline": "b'\\n'",
+      "bom": false
+    }
+  ],
+  "exactBaselineRestored": true
+}

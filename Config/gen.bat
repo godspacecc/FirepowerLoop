@@ -45,8 +45,8 @@ dir /b "%CLIENT_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: client code generat
 dir /b "%CLIENT_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: client data generation is empty & exit /b 1)
 set /a CLIENT_TABLE_COUNT=0
 for %%F in ("%CLIENT_DATA_STAGE%\*.bytes") do set /a CLIENT_TABLE_COUNT+=1
-if not "!CLIENT_TABLE_COUNT!"=="36" (
-    echo Error: client table count expected 36 but got !CLIENT_TABLE_COUNT!
+if not "!CLIENT_TABLE_COUNT!"=="35" (
+    echo Error: client table count expected 35 but got !CLIENT_TABLE_COUNT!
     exit /b 1
 )
 dir /b "%CLIENT_CODE_STAGE%\*Start*.cs" >nul 2>nul && (echo Error: client stage contains server StartConfig code & exit /b 1)
@@ -98,6 +98,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localiza
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-details.json" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-score-shop.json" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-next-three.json" || exit /b 1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-drop-carrier.json" || exit /b 1
 echo === Generation complete ===
 echo Client code: "%CLIENT_CODE_DIR%"
 echo Client data: "%CLIENT_DATA_DIR%"

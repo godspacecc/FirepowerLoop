@@ -1,0 +1,15 @@
+{
+  "DeletedTrackedFiles": 1446,
+  "DeletedBytes": 210026243,
+  "RetiredUnityAssetFiles": 573,
+  "EmptyDirectories": 108,
+  "DeletedDocsFiles": 81,
+  "RetiredLocalizationKeys": 525,
+  "UnityDistinctTests": 243,
+  "ServerPickupTests": 7,
+  "UnrelatedFilesUnchanged": {
+    "Client/Assets/Game/Art/Arcade/Island/LowPolyV2/IslandLowPolyV2.asset": true,
+    "Client/Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal SDF.asset": true,
+    "Client/ProjectSettings/ProjectSettings.asset": true
+  }
+}

@@ -1,0 +1,117 @@
+[
+  {
+    "path": "Backup/Artifacts/UnusedContentAudit-20261029/candidate-external-guid-refs.json",
+    "bytes": 4315,
+    "sha256": "bb2313207c6cc90950b3f2cd88c1b19a1e9806406911e259c5f762e1ce1d8df1"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentAudit-20261029/initial-candidates.json",
+    "bytes": 6176,
+    "sha256": "4391cb0ae856f290af75b361488759d7d61132ccee03f9da9cb0424b3c7ca45a"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentAudit-20261029/inventory.json",
+    "bytes": 22386,
+    "sha256": "8f74d3282bbc6ccd545455dfd5218d00141d5c805b153d0270e1b77962d950ce"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentAudit-20261029/unity-dependencies.txt",
+    "bytes": 121805,
+    "sha256": "08f52f2b2d88d1e4770a8c049b4f70947390742fca14d3dc54afb076f0d65162"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/archive-validation.json",
+    "bytes": 594,
+    "sha256": "1f5cfec9963e37ed4dd665c8d3c8ab20bb7bf88ce5f75ee042186e08906104b0"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/empty-directories-removed.json",
+    "bytes": 22336,
+    "sha256": "e50a93124152fc946ac265d52effe4881e590fb33fdd6fb63a6d4953bc666a27"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/empty-directory-candidates.json",
+    "bytes": 18453,
+    "sha256": "4f96bf65643bec8fdfd31a0c8a6cadbbfc096df960593b5a1c3cc7b6f8f1a0df"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/orphan-mesh-candidates.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/prefab-validation.txt",
+    "bytes": 152,
+    "sha256": "1b7e8acd946ca9055445ab0bbb4ddae5c28010dbb28da30b6284d2f94f9e26d8"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/README.md",
+    "bytes": 3963,
+    "sha256": "d8c35400614a82c7f0edc2cc7335dfbf2107e5460ef9504ec1f30162c60afd8c"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/remove-absolute-paths.json",
+    "bytes": 17152,
+    "sha256": "709f2182b15e8d49827743530de3e34ebeeb095e09dd67dc3e7f85b7fd02913a"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/removed-files.json",
+    "bytes": 31437,
+    "sha256": "f8f684caa7815f54774a813a45ec507fb590ec8da11fb8369ae068c243e3627c"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/retired-originals.zip",
+    "bytes": 472665,
+    "sha256": "62b18498e7137c57fc7b90c2eff0b5a8a7b60bf471c0be9e60a1d70df04e7b14"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-final-pass.json",
+    "bytes": 7861,
+    "sha256": "02f38db1575b5bd6cd14290737ab350f88724bcdd2c326646777f90210a3fe2a"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-final-recheck.json",
+    "bytes": 6586,
+    "sha256": "3be54fedc4d8206e83405604f4fa18212b0b0014db5910700eeec33e4ec3daf8"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-final-summary.json",
+    "bytes": 11878,
+    "sha256": "a1af6c68b53a6c7c2e3d1ffcd06142b3e0760216c2fc810f6e493ff8ab44c6ca"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-first-pass.json",
+    "bytes": 10778,
+    "sha256": "6a99c4ee742ab9178b07bbe938cd42ec09d46025d64abb522be214dd4369ceaf"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-localization-final.json",
+    "bytes": 1935,
+    "sha256": "b7b93317550eff069ed8ac5ad973fbbaa5aa63295f16abf5de193ac178f8b012"
+  },
+  {
+    "path": "Backup/Artifacts/UnusedContentCleanup-20261029/tests-recheck.json",
+    "bytes": 7021,
+    "sha256": "18af8debd6af80dfd68d857327be3d63ba7cae69020647f96872635a65fc9599"
+  },
+  {
+    "path": "config-generation.log",
+    "bytes": 40094,
+    "sha256": "adaa1cab25a7484a59ac5bcf8ef069d5d594f9acd2083bd07413b2a3649e8480"
+  },
+  {
+    "path": "server-source-check.log",
+    "bytes": 84,
+    "sha256": "75af071fe9481e47ee3341886599aed36aa9f6f21f2fa6411632525392bfec97"
+  },
+  {
+    "path": "server-transaction-check.log",
+    "bytes": 1169,
+    "sha256": "b7f7f0c2fbb59a8d5cb0c1a8159bba93a1fa319d77f1a42f3f07199844ba80f1"
+  },
+  {
+    "path": "Backup/Artifacts/FullRetiredContentCleanup-20261029/asset-graph-before.json",
+    "bytes": 2,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  }
+]

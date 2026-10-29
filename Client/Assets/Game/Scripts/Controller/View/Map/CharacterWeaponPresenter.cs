@@ -22,7 +22,6 @@ namespace Game
         private CharacterWeaponCatalog.Entry current;
         private GameObject visual;
         private BowVisualView bowVisual;
-        private HandheldTorchView torchVisual;
         /// <summary>当前喷火器喷嘴的短程火焰，随手持模型创建和销毁，不持有伤害状态。</summary>
         private ParticleSystem flamethrowerMuzzle;
         /// <summary>最近一次有效的水平世界位移，单位为米；切换武器后用于立即选对方向。</summary>
@@ -245,7 +244,6 @@ namespace Game
                 current = entry;
                 visual = candidate;
                 bowVisual = visual.GetComponentInChildren<BowVisualView>(true);
-                torchVisual = visual.GetComponentInChildren<HandheldTorchView>(true);
                 flamethrowerMuzzle = entry.Id=="arcade.weapon.flamethrower" ? visual.GetComponentInChildren<ParticleSystem>(true) : null;
                 candidate = null;
                 visual.SetActive(true);
@@ -291,7 +289,6 @@ namespace Game
             current = null;
             bowVisual?.Dispose();
             bowVisual = null;
-            torchVisual = null;
             flamethrowerMuzzle = null;
             if (visual == null) return;
             visual.SetActive(false);
@@ -598,7 +595,6 @@ namespace Game
         public void ApplyOffhandGrip(CharacterAnimationDefinition definition, float normalizedTime = 0f)
         {
             ApplyAnimationPose(definition);
-            if (torchVisual != null) torchVisual.ApplyGrip(animator, current.HandLocalRotation);
             RefreshBow(definition == current?.Animations.Attack ? BowVisualView.AttackDrawWeight(normalizedTime) : 1f);
             if (definition == null || !definition.AllowOffhandGrip) return;
             ApplyOffhandGripCore();
@@ -613,7 +609,6 @@ namespace Game
                 return;
             }
             ApplyCurrentAnimationPose();
-            if (torchVisual != null) torchVisual.ApplyGrip(animator, current.HandLocalRotation);
             RefreshBow(CurrentBowDrawWeight());
             if (!CanGripCurrentAnimation()) return;
             ApplyOffhandGripCore();

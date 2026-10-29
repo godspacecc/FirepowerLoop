@@ -1,0 +1,27 @@
+{
+  "changed": [
+    "Client/Assets/Game/Scripts/Controller/UICtrl/Home/PauseUICtrl.cs",
+    "Client/Assets/Tests/EditMode/MobileShoulderTouchTests.cs",
+    "Client/Assets/Tests/EditMode/MobileControlLayoutTests.cs",
+    "Client/Assets/Tests/EditMode/AndroidHudLayoutTests.cs",
+    "Client/Assets/Tests/EditMode/Flow/PauseUiFlowTests.cs"
+  ],
+  "scope": "退役未加载的旧MobileJoystick契约，保留现役ArcadeHud摇杆及Pause全部当前行为；Prefab和生成View由根代理统一处理",
+  "unityTestsRun": false,
+  "retiredAdditionalTests": [
+    "AndroidHudLayoutTests（整个类仅检验已退役生存HUD）"
+  ],
+  "additionalChanged": [
+    "IndependentUiGenerationMigrationTests",
+    "UiFunctionalDirectoryMigrationTests",
+    "MobileControlLayoutTests"
+  ],
+  "suggestedShortTestClassMax": {
+    "MobileShoulderTouchTests": 7,
+    "MobileControlLayoutTests": 31,
+    "PauseUiFlowTests": 21,
+    "IndependentUiGenerationMigrationTests": 4,
+    "UiFunctionalDirectoryMigrationTests": 3
+  },
+  "includePassingTests": true
+}

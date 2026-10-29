@@ -1,0 +1,5 @@
+Compilation failed=False
+Time scale=1
+Pause buttons=BtnContinue,BtnOnline,BtnSetting,BtnExit
+Retired pause fields=False
+Retired pause collector keys=0

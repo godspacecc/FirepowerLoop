@@ -1,0 +1,507 @@
+=== FirepowerLoop Luban generation ===
+Config: "E:\GitHub\FirepowerLoop\Config\"
+Stage: "C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328"
+
+=== Generate client ===
+2026/10/29 16:15:50.572|INFO| ==========================================================================================
+2026/10/29 16:15:50.572|INFO|
+2026/10/29 16:15:50.572|INFO|  Luban is developed by Code Philosophy Technology Co., LTD. https://code-philosophy.com
+2026/10/29 16:15:50.572|INFO|
+2026/10/29 16:15:50.572|INFO| ==========================================================================================
+2026/10/29 16:15:56.321|INFO|load schema. collector: "default"
+2026/10/29 16:15:56.624|INFO|load datas begin
+2026/10/29 16:15:56.624|INFO|process code target:"cs-bin" begin
+2026/10/29 16:15:56.978|INFO|load datas end
+2026/10/29 16:15:56.978|INFO|validation begin
+2026/10/29 16:15:57.002|INFO|validation end
+2026/10/29 16:15:57.007|INFO|process data target:"bin" begin
+2026/10/29 16:15:57.041|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbitem.bytes
+2026/10/29 16:15:57.041|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbweapon.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeweaponupgrade.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeslayerchallenge.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadescoreshop.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcaderoundreward.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeslayermartability.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcaderoundlayout.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeslayermartregion.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeearlystage.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeslayermartitem.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeupgrade.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbweaponappearance.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadesupportvisual.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadedrop.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadedrone.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadepowerup.bytes
+2026/10/29 16:15:57.066|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeboss.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeenemygroup.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadeweapon.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadereward.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadearena.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcaderule.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbtestcmdcategory.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadesolodrop.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbtestcmdentry.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadetreasureroom.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbloot.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbprojectile.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbarcadechallenge.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbmapspawn.bytes
+2026/10/29 16:15:57.082|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbenemy.bytes
+2026/10/29 16:15:57.098|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbplayer.bytes
+2026/10/29 16:15:57.098|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbmapscenepart.bytes
+2026/10/29 16:15:57.122|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_data/tbmap.bytes
+2026/10/29 16:15:57.122|INFO|process data target:"bin" end
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/WeaponKind.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/Tables.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbItem.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbMapScenePart.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbMap.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbProjectile.cs
+2026/10/29 16:15:57.150|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbMapSpawn.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbWeapon.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbEnemy.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/PlayerWeaponAttachPoint.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbTestCmdCategory.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeArena.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeWeapon.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbLoot.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeBoss.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbTestCmdEntry.cs
+2026/10/29 16:15:57.168|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeEnemyGroup.cs
+2026/10/29 16:15:57.176|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbWeaponAppearance.cs
+2026/10/29 16:15:57.176|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbPlayer.cs
+2026/10/29 16:15:57.176|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeRule.cs
+2026/10/29 16:15:57.176|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeChallenge.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeTreasureRoom.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSoloDrop.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSupportVisual.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeReward.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeDrone.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSlayerMartItem.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadePowerup.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeUpgrade.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeDrop.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/MapSpawnObjectType.cs
+2026/10/29 16:15:57.198|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeRoundLayout.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSlayerMartRegion.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSlayerMartAbility.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeScoreShop.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeSlayerChallenge.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeWeaponUpgrade.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeEarlyStage.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TbArcadeRoundReward.cs
+2026/10/29 16:15:57.208|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeArenaConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeDroneConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeCrateConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ItemUseEffect.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeBossConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeChallengeConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeDropConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeEarlyStageConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeEnemyMemberConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeLayoutEntryConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeHazardConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeEnemyGroupConfig.cs
+2026/10/29 16:15:57.226|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeObstacleConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadePowerupConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeRewardConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ItemType.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeRoundLayoutConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeSlayerMartItemConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeScoreShopConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeRoundRewardConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeRuleConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeSupportVisualConfig.cs
+2026/10/29 16:15:57.241|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeSlayerChallengeConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeSlayerMartAbilityConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeSlayerMartRegionConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeTreasureRewardConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ItemActionKind.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeWeaponUpgradeConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeWeaponConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeUpgradeConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeTreasureRoomConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/EnemyConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/Item.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/MapConfig.cs
+2026/10/29 16:15:57.256|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/LootConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/MapScenePartConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/MapSpawnConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/PlayerConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TestCmdCategoryConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ProjectileConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/EnemyAttackKind.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/TestCmdEntryConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/WeaponAppearanceConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/WeaponConfig.cs
+2026/10/29 16:15:57.270|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeDropKind.cs
+2026/10/29 16:15:57.286|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeTreasureRewardKind.cs
+2026/10/29 16:15:57.286|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadePowerupBehavior.cs
+2026/10/29 16:15:57.286|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeHazardKind.cs
+2026/10/29 16:15:57.286|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeRewardTrigger.cs
+2026/10/29 16:15:57.342|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeUpgradeKind.cs
+2026/10/29 16:15:57.342|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ClothingSlot.cs
+2026/10/29 16:15:57.353|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\client_code/ArcadeWeaponBehavior.cs
+2026/10/29 16:15:57.353|INFO|process code target:"cs-bin" end
+2026/10/29 16:15:57.353|INFO|bye~
+
+=== Generate server ===
+2026/10/29 16:15:57.889|INFO| ==========================================================================================
+2026/10/29 16:15:57.889|INFO|
+2026/10/29 16:15:57.889|INFO|  Luban is developed by Code Philosophy Technology Co., LTD. https://code-philosophy.com
+2026/10/29 16:15:57.889|INFO|
+2026/10/29 16:15:57.889|INFO| ==========================================================================================
+2026/10/29 16:15:58.029|INFO|load schema. collector: "default"
+2026/10/29 16:15:58.319|INFO|load datas begin
+2026/10/29 16:15:58.319|INFO|process code target:"cs-bin" begin
+2026/10/29 16:15:58.457|INFO|load datas end
+2026/10/29 16:15:58.457|INFO|validation begin
+2026/10/29 16:15:58.511|INFO|validation end
+2026/10/29 16:15:58.527|INFO|process data target:"bin" begin
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbprojectile.bytes
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeRule.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadescoreshop.bytes
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/EnemyAttackKind.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeearlystage.bytes
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcaderoundlayout.bytes
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbProjectile.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeBoss.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeEnemyGroup.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeArena.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbEnemy.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/Tables.cs
+2026/10/29 16:15:58.576|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeWeapon.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeweaponupgrade.bytes
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeTreasureRoom.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeChallenge.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeWeaponBehavior.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadePowerup.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeDrop.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcaderoundreward.bytes
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeSupportVisual.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeReward.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbStartMachine.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeDrone.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbStartProcess.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeUpgrade.cs
+2026/10/29 16:15:58.584|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbAIConfig.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbStartScene.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeSlayerMartRegion.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeRoundReward.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbUnitConfig.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbstartscene.bytes
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeUpgradeKind.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbStartZone.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeScoreShop.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeArenaConfig.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/AIConfig.cs
+2026/10/29 16:15:58.602|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeSlayerMartItem.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeRoundLayout.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeSlayerMartAbility.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeWeaponUpgrade.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbenemy.bytes
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeCrateConfig.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeDroneConfig.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeEarlyStage.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/TbArcadeSlayerChallenge.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeEnemyGroupConfig.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeBossConfig.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeEnemyMemberConfig.cs
+2026/10/29 16:15:58.614|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeHazardConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeChallengeConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeslayermartability.bytes
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeDropConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeObstacleConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeTreasureRewardKind.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcaderule.bytes
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeweapon.bytes
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeLayoutEntryConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeRoundLayoutConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeRoundRewardConfig.cs
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeslayerchallenge.bytes
+2026/10/29 16:15:58.631|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeEarlyStageConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeSlayerMartAbilityConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeSlayerMartItemConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeRewardConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeslayermartregion.bytes
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeRuleConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeTreasureRewardConfig.cs
+2026/10/29 16:15:58.650|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeTreasureRoomConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeScoreShopConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeenemygroup.bytes
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeWeaponUpgradeConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeRewardTrigger.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeSupportVisualConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeslayermartitem.bytes
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeSlayerChallengeConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeSlayerMartRegionConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadePowerupConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/EnemyConfig.cs
+2026/10/29 16:15:58.661|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ProjectileConfig.cs
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeWeaponConfig.cs
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeHazardKind.cs
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbstartzone.bytes
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeUpgradeConfig.cs
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadeDropKind.cs
+2026/10/29 16:15:58.682|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/ArcadePowerupBehavior.cs
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadedrone.bytes
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadearena.bytes
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/StartMachineConfig.cs
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/StartZoneConfig.cs
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadesupportvisual.bytes
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeboss.bytes
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/StartProcessConfig.cs
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadepowerup.bytes
+2026/10/29 16:15:58.692|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadechallenge.bytes
+2026/10/29 16:15:58.708|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadedrop.bytes
+2026/10/29 16:15:58.708|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbunitconfig.bytes
+2026/10/29 16:15:58.708|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbstartprocess.bytes
+2026/10/29 16:15:58.708|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/StartSceneConfig.cs
+2026/10/29 16:15:58.708|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_code/UnitConfig.cs
+2026/10/29 16:15:58.723|INFO|process code target:"cs-bin" end
+2026/10/29 16:15:58.739|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadereward.bytes
+2026/10/29 16:15:58.739|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadeupgrade.bytes
+2026/10/29 16:15:58.739|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbaiconfig.bytes
+2026/10/29 16:15:58.739|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbarcadetreasureroom.bytes
+2026/10/29 16:15:58.739|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_3532_18328\server_data/tbstartmachine.bytes
+2026/10/29 16:15:58.739|INFO|process data target:"bin" end
+2026/10/29 16:15:58.739|INFO|bye~
+
+=== Publish generated files ===
+
+Invalid or duplicate retired localization key: chapter.han-transport.name civilisation.cancel civilisation.clue.camp ci
+vilisation.clue.camp.record civilisation.clue.recorded civilisation.clue.upstream civilisation.clue.upstream.record civ
+ilisation.collect.done civilisation.continue civilisation.departure.detail civilisation.direction.e civilisation.direct
+ion.n civilisation.direction.ne civilisation.direction.nw civilisation.direction.s civilisation.direction.se civilisati
+on.direction.sw civilisation.direction.w civilisation.error.axe civilisation.error.context civilisation.error.distance
+civilisation.error.gold civilisation.error.locked civilisation.error.pickaxe civilisation.error.preparation civilisatio
+n.error.save civilisation.error.searched civilisation.harvest.done civilisation.point.axe civilisation.point.bow civili
+sation.point.bow.record civilisation.point.bow.result civilisation.point.cloth civilisation.point.clue civilisation.poi
+nt.fire civilisation.point.fire.record civilisation.point.food civilisation.point.grain civilisation.point.grain.record
+ civilisation.point.grain.result civilisation.point.iron_tools civilisation.point.iron_tools.record civilisation.point.
+iron_tools.result civilisation.point.pickaxe civilisation.point.pottery civilisation.point.pottery.record civilisation.
+point.pottery.result civilisation.point.prepare civilisation.point.proof civilisation.point.proof.record civilisation.p
+oint.return civilisation.point.rock civilisation.point.shortcut civilisation.point.steel_blade civilisation.point.steel
+_blade.record civilisation.point.steel_blade.result civilisation.point.tree civilisation.point.water civilisation.point
+.wood civilisation.point.workshop civilisation.prepare.done civilisation.produce civilisation.reading.recorded civilisa
+tion.receipt.chapter civilisation.receipt.exempt civilisation.receipt.gold civilisation.receipt.items civilisation.rece
+ipt.none civilisation.receipt.row civilisation.receipt.tech civilisation.receipt.visited civilisation.return.title civi
+lisation.return.warning civilisation.search.done civilisation.settlement.title civilisation.shortcut.opened civilisatio
+n.story.evidence civilisation.story.recorded civilisation.workshop.body civilisation.workshop.completed civilisation.wo
+rkshop.next civilisation.workshop.ongoing civilisation.workshop.previous civilisation.workshop.recipe civilisation.work
+shop.success civilisation.workshop.title civilisation.workshop.unlocked dialogue.continue dialogue.failed dialogue.leav
+e dialogue.test.answer dialogue.test.ask dialogue.test.back dialogue.test.branch dialogue.test.choose dialogue.test.fun
+ction dialogue.test.intro dialogue.test.line1 dialogue.test.line2 dialogue.test.sequential item.bottled_water.desc item
+.bottled_water.name item.cloth.desc item.cloth.name item.dried_food.desc item.dried_food.name item.gathered_food.desc i
+tem.gathered_food.name item.han.axe.desc item.han.axe.name item.han.blade.desc item.han.blade.name item.han.bow.desc it
+em.han.bow.name item.han.grain.desc item.han.grain.name item.han.pick.desc item.han.pick.name item.han.pot.desc item.ha
+n.pot.name item.map.base.desc item.map.base.name item.map.civilisation_valley.desc item.map.civilisation_valley.name it
+em.map.hejia_village_local.desc item.map.hejia_village_local.name item.map.hejia_village.desc item.map.hejia_village.na
+me item.map.mission_sample.desc item.map.mission_sample.name item.map.survival_sample.desc item.map.survival_sample.nam
+e item.medkit.desc item.medkit.name item.metal_parts.desc item.metal_parts.name item.ration.desc item.ration.name item.
+stone.desc item.stone.name item.torch.desc item.torch.name item.weapon.axe.desc item.weapon.axe.name item.weapon.knife.
+desc item.weapon.knife.name item.weapon.pickaxe.desc item.weapon.pickaxe.name item.wood.desc item.wood.name map.base.na
+me map.civilisation_valley.name map.hejia_village_local.name map.hejia_village.name map.mission_sample.name map.surviva
+l_sample.name npc.base.arcade.name npc.base.merchant.name npc.role.crafter npc.role.hejia_village_guide npc.role.map_gu
+ide npc.role.mission_guide npc.role.survival_guide npc.role.warehouse_keeper shop.base.supplies.name task.expedition.mi
+ssion_sample.kill.name task.expedition.survival_sample.survive.name technology.bow_making.name technology.bow_making.un
+lock technology.dry_ration.name technology.dry_ration.unlock technology.grain_processing.name technology.grain_processi
+ng.unlock technology.iron_tools.name technology.iron_tools.unlock technology.pottery.name technology.pottery.unlock tec
+hnology.steel_blade.name technology.steel_blade.unlock temp_building.arrow_tower.name temp_building.camp_awning_standin
+g_01a.name temp_building.camp_barrel_01.name temp_building.camp_bench_wood_01.name temp_building.camp_crate_01.name tem
+p_building.camp_crate_02.name temp_building.camp_fence_wood_01a.name temp_building.camp_log_wood_01.name temp_building.
+camp_rpgfxcampfire.name temp_building.camp_sack_02_set.name temp_building.camp_shed_wood_01.name temp_building.camp_tab
+le_01.name temp_building.campfire.name temp_building.roadblock_wood.name ui.base_prep.adjust ui.base_prep.blocked ui.ba
+se_prep.date ui.base_prep.forbidden ui.base_prep.forbidden_item ui.base_prep.overweight ui.base_prep.ready ui.base_prep
+.rest ui.base_prep.rest_info ui.base_prep.rest_success ui.base_prep.rules.traditional ui.base_prep.rules.unrestricted u
+i.base_prep.unavailable ui.base_prep.weight ui.camp.build ui.camp.cancel ui.camp.confirm ui.camp.demolish ui.camp.demol
+ish.no_target ui.camp.demolish.target ui.camp.demolish.too_far ui.camp.hint.demolish ui.camp.hint.place ui.camp.rotate
+ui.craft.batch_count ui.craft.category.all ui.craft.category.ammunition ui.craft.category.consumable ui.craft.category.
+material ui.craft.category.weapon ui.craft.failed ui.craft.make_one_batch ui.craft.material_amount ui.craft.material_ow
+ned_required ui.craft.output_amount ui.craft.output_flow ui.craft.output_total ui.craft.reason.batch ui.craft.reason.co
+nfig ui.craft.reason.drop ui.craft.reason.materials ui.craft.reason.space ui.craft.reason.state ui.craft.success ui.cra
+ft.success_with_drop ui.craft.title ui.equipment.activate ui.equipment.candidates ui.equipment.clothing_note ui.equipme
+nt.current ui.equipment.empty ui.equipment.empty_note ui.equipment.inactive ui.equipment.loaded_ammo ui.equipment.no_ca
+ndidates ui.equipment.part.accessory ui.equipment.part.back ui.equipment.part.feet ui.equipment.part.hands ui.equipment
+.part.head ui.equipment.part.legs ui.equipment.part.torso ui.equipment.placeholder_detail ui.equipment.replace ui.equip
+ment.source_bag ui.equipment.source_pocket ui.equipment.unarmed_note ui.equipment.unavailable ui.equipment.unequip ui.e
+quipment.weapon_stats ui.equipment.worn ui.expedition.day_clock ui.expedition.duration ui.expedition.retry_return ui.ex
+pedition.return ui.expedition.returning ui.expedition.status.continue_goal ui.expedition.status.defeated ui.expedition.
+status.go_to_extraction ui.expedition.status.return_open ui.expedition.survival_clock ui.expedition.task_clock ui.extra
+ction.cancel.attack ui.extraction.cancel.damaged ui.extraction.cancel.left_range ui.extraction.cancel.user ui.extractio
+n.prompt.countdown ui.extraction.prompt.start ui.extraction.return_failed ui.held.current ui.held.empty ui.held.holster
+ ui.held.no_candidates ui.held.online_hint ui.held.picker_hint ui.held.selected_name ui.held.source_name ui.held.take_o
+ut ui.held.title ui.inventory.amount_stack ui.inventory.cancel_selection ui.inventory.capacity_slots ui.inventory.detai
+l_empty ui.inventory.drop ui.inventory.equip ui.inventory.equipment ui.inventory.expand_content ui.inventory.expand_fai
+led ui.inventory.expand_slot ui.inventory.expand_title ui.inventory.melee_slot ui.inventory.move_to_bag ui.inventory.mo
+ve_to_pocket ui.inventory.open_map ui.inventory.operation_failed ui.inventory.player_bag ui.inventory.pocket ui.invento
+ry.pocket_online_unavailable ui.inventory.ranged_slot ui.inventory.select_hint ui.inventory.split ui.inventory.title_ba
+g ui.inventory.title_storage ui.inventory.transfer_amount ui.inventory.transfer_failed ui.inventory.unarmed_marker ui.i
+nventory.unequip ui.inventory.use ui.inventory.use_applied ui.inventory.use_applied_power ui.inventory.use_applied_wate
+r ui.inventory.use_failed_water ui.inventory.warehouse ui.inventory.warehouse_column ui.inventory.warehouse_cost ui.inv
+entory.warehouse_hint ui.inventory.warehouse_maximum ui.inventory.warehouse_store ui.inventory.warehouse_take ui.invent
+ory.weapon_slot.melee ui.inventory.weapon_slot.ranged ui.journal.collections ui.journal.collections_empty ui.journal.co
+llections_hint ui.journal.collections_title ui.journal.daily ui.journal.daily_empty ui.journal.daily_hint ui.journal.no
+tes ui.journal.notes_empty ui.journal.notes_hint ui.journal.placeholder ui.journal.records_scope ui.management.backpack
+ ui.management.close ui.management.equipment ui.management.journal ui.management.map ui.management.placeholder ui.manag
+ement.status ui.management.tasks ui.map_selection.action.checking ui.map_selection.action.download ui.map_selection.act
+ion.downloading ui.map_selection.action.enter ui.map_selection.action.explore ui.map_selection.action.processing ui.map
+_selection.action.retry ui.map_selection.action.retry_download ui.map_selection.action.unavailable ui.map_selection.act
+ion.unlock ui.map_selection.error.cost ui.map_selection.error.enter ui.map_selection.error.not_expedition ui.map_select
+ion.error.open ui.map_selection.error.task_config_unavailable ui.map_selection.error.unknown_map ui.map_selection.next_
+chapter ui.map_selection.next_detail ui.map_selection.next_name ui.map_selection.next_state ui.map_selection.objective.
+kill ui.map_selection.objective.survive ui.map_selection.other_expedition ui.map_selection.recovery.content ui.map_sele
+ction.recovery.title ui.map_selection.resources.base_ready ui.map_selection.resources.progress ui.map_selection.resourc
+es.ready ui.map_selection.resources.size ui.map_selection.return_hint ui.map_selection.state.locked ui.map_selection.st
+ate.unavailable ui.map_selection.state.unlock_cost ui.map_selection.state.unlocked ui.map_selection.subtitle ui.map_sel
+ection.target.kills ui.map_selection.target.survive_minutes ui.map_selection.task_config_unavailable ui.map_selection.t
+echnology_known ui.map_selection.technology_title ui.map_selection.technology_unknown ui.map_selection.title ui.map_sel
+ection.type.survival ui.map_selection.type.task ui.map_selection.valley_chapter ui.map_selection.valley_era ui.map_sele
+ction.valley_story ui.map_selection.valley_technology ui.map.error.no_current_map_item ui.map.error.not_current_region
+ui.map.error.unavailable ui.map.explored ui.map.extractions ui.map.interaction.enter_failed ui.map.interaction.failed u
+i.map.interaction.title ui.map.interaction.unavailable ui.map.interaction.unlock_cost_insufficient ui.map.interaction.u
+nlocked ui.map.loading ui.map.next ui.map.no_carried_map ui.map.previous ui.map.reset_view ui.map.world_unavailable ui.
+map.zoom_in ui.map.zoom_out ui.offline_expedition.corrupted ui.offline_expedition.pending.message ui.offline_expedition
+.pending.title ui.offline_expedition.resume ui.offline_expedition.return_base ui.pause.abandon_confirm ui.pause.return_
+camp ui.pause.return_camp_confirm ui.pause.return_camp_failed ui.player_condition.health_icon ui.player_condition.power
+_icon ui.player_condition.temperature_icon ui.player_condition.tili_icon ui.player_condition.water_icon ui.shop.action.
+buy ui.shop.action.sell ui.shop.close ui.shop.error.config_invalid ui.shop.error.insufficient_bag_space ui.shop.error.i
+nsufficient_gold ui.shop.error.insufficient_items ui.shop.error.invalid_quantity ui.shop.error.not_accepted ui.shop.err
+or.not_for_sale ui.shop.error.open ui.shop.error.operation_in_progress ui.shop.error.overflow ui.shop.error.save_failed
+ ui.shop.error.session_invalid ui.shop.error.state_not_allowed ui.shop.gold ui.shop.minus ui.shop.owned ui.shop.plus ui
+.shop.row.owned ui.shop.row.price ui.shop.tab.buy ui.shop.tab.sell ui.shop.total ui.shop.unit_price ui.status.afflictio
+ns ui.status.attributes ui.status.available ui.status.body ui.status.cold ui.status.config_unavailable ui.status.deplet
+ed ui.status.disease ui.status.disease_detail ui.status.health ui.status.health_config_unavailable ui.status.health_det
+ail ui.status.hot ui.status.injury ui.status.injury_detail ui.status.low ui.status.normal ui.status.power ui.status.pow
+er_detail ui.status.sprint_locked ui.status.temperature ui.status.temperature_detail ui.status.temperature_value ui.sta
+tus.tili ui.status.tili_detail ui.status.unavailable ui.status.value_unavailable ui.status.water ui.status.water_detail
+ ui.tasks.active ui.tasks.completed ui.tasks.completed_description ui.tasks.completed_state ui.tasks.empty_active ui.ta
+sks.empty_completed ui.tasks.empty_hint ui.tasks.kill_description ui.tasks.kill_goal ui.tasks.objective ui.tasks.progre
+ss_state ui.tasks.scope ui.tasks.select ui.tasks.survive_description ui.tasks.survive_goal ui.tasks.unavailable ui.temp
+_building.arrows ui.temp_building.hint.destroy ui.temp_building.hint.operating ui.temp_building.hint.preview ui.temp_bu
+ilding.hint.progress ui.temp_building.mode.destroy ui.temp_building.mode.normal ui.temp_building.mode.operating ui.temp
+_building.mode.preview ui.temp_building.mode.progress ui.temp_building.select.title ui.temp_building.status.cooldown ui
+.temp_building.status.invalid ui.temp_building.status.ready ui.temp_building.title ui.torch.extinguish ui.torch.ignite
+ui.torch.remaining ui.valley.extraction_rule
+At E:\GitHub\FirepowerLoop\Config\publish-localization.ps1:13 char:9
++         throw "Invalid or duplicate retired localization key: $key"
++         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : OperationStopped: (Invalid or dupl...extraction_rule:String) [], RuntimeException
+    + FullyQualifiedErrorId : Invalid or duplicate retired localization key: chapter.han-transport.name civilisation.c
+   ancel civilisation.clue.camp civilisation.clue.camp.record civilisation.clue.recorded civilisation.clue.upstream c
+  ivilisation.clue.upstream.record civilisation.collect.done civilisation.continue civilisation.departure.detail civ
+ ilisation.direction.e civilisation.direction.n civilisation.direction.ne civilisation.direction.nw civilisation.di
+rection.s civilisation.direction.se civilisation.direction.sw civilisation.direction.w civilisation.error.axe civi    l
+isation.error.context civilisation.error.distance civilisation.error.gold civilisation.error.locked civilisation.    er
+ror.pickaxe civilisation.error.preparation civilisation.error.save civilisation.error.searched civilisation.harv    est
+.done civilisation.point.axe civilisation.point.bow civilisation.point.bow.record civilisation.point.bow.result     civ
+ilisation.point.cloth civilisation.point.clue civilisation.point.fire civilisation.point.fire.record civilisat    ion.p
+oint.food civilisation.point.grain civilisation.point.grain.record civilisation.point.grain.result civilisati    on.poi
+nt.iron_tools civilisation.point.iron_tools.record civilisation.point.iron_tools.result civilisation.point.p    ickaxe
+civilisation.point.pottery civilisation.point.pottery.record civilisation.point.pottery.result civilisation    .point.p
+repare civilisation.point.proof civilisation.point.proof.record civilisation.point.return civilisation.poi    nt.rock c
+ivilisation.point.shortcut civilisation.point.steel_blade civilisation.point.steel_blade.record civilisat    ion.point.
+steel_blade.result civilisation.point.tree civilisation.point.water civilisation.point.wood civilisation    .point.work
+shop civilisation.prepare.done civilisation.produce civilisation.reading.recorded civilisation.receipt.    chapter civi
+lisation.receipt.exempt civilisation.receipt.gold civilisation.receipt.items civilisation.receipt.none     civilisation
+.receipt.row civilisation.receipt.tech civilisation.receipt.visited civilisation.return.title civilis    ation.return.w
+arning civilisation.search.done civilisation.settlement.title civilisation.shortcut.opened civilisat    ion.story.evide
+nce civilisation.story.recorded civilisation.workshop.body civilisation.workshop.completed civilisa    tion.workshop.ne
+xt civilisation.workshop.ongoing civilisation.workshop.previous civilisation.workshop.recipe civil    isation.workshop.
+success civilisation.workshop.title civilisation.workshop.unlocked dialogue.continue dialogue.fai    led dialogue.leave
+ dialogue.test.answer dialogue.test.ask dialogue.test.back dialogue.test.branch dialogue.test.ch    oose dialogue.test.
+function dialogue.test.intro dialogue.test.line1 dialogue.test.line2 dialogue.test.sequential i    tem.bottled_water.de
+sc item.bottled_water.name item.cloth.desc item.cloth.name item.dried_food.desc item.dried_foo    d.name item.gathered_
+food.desc item.gathered_food.name item.han.axe.desc item.han.axe.name item.han.blade.desc ite    m.han.blade.name item.
+han.bow.desc item.han.bow.name item.han.grain.desc item.han.grain.name item.han.pick.desc it    em.han.pick.name item.h
+an.pot.desc item.han.pot.name item.map.base.desc item.map.base.name item.map.civilisation_v    alley.desc item.map.civi
+lisation_valley.name item.map.hejia_village_local.desc item.map.hejia_village_local.name i    tem.map.hejia_village.des
+c item.map.hejia_village.name item.map.mission_sample.desc item.map.mission_sample.name i    tem.map.survival_sample.de
+sc item.map.survival_sample.name item.medkit.desc item.medkit.name item.metal_parts.desc     item.metal_parts.name item
+.ration.desc item.ration.name item.stone.desc item.stone.name item.torch.desc item.torc    h.name item.weapon.axe.desc
+item.weapon.axe.name item.weapon.knife.desc item.weapon.knife.name item.weapon.pickaxe    .desc item.weapon.pickaxe.nam
+e item.wood.desc item.wood.name map.base.name map.civilisation_valley.name map.hejia_    village_local.name map.hejia_v
+illage.name map.mission_sample.name map.survival_sample.name npc.base.arcade.name np    c.base.merchant.name npc.role.c
+rafter npc.role.hejia_village_guide npc.role.map_guide npc.role.mission_guide npc.r    ole.survival_guide npc.role.ware
+house_keeper shop.base.supplies.name task.expedition.mission_sample.kill.name task    .expedition.survival_sample.survi
+ve.name technology.bow_making.name technology.bow_making.unlock technology.dry_ra    tion.name technology.dry_ration.un
+lock technology.grain_processing.name technology.grain_processing.unlock technol    ogy.iron_tools.name technology.iron
+_tools.unlock technology.pottery.name technology.pottery.unlock technology.stee    l_blade.name technology.steel_blade.
+unlock temp_building.arrow_tower.name temp_building.camp_awning_standing_01a.n    ame temp_building.camp_barrel_01.name
+ temp_building.camp_bench_wood_01.name temp_building.camp_crate_01.name temp_    building.camp_crate_02.name temp_build
+ing.camp_fence_wood_01a.name temp_building.camp_log_wood_01.name temp_buildi    ng.camp_rpgfxcampfire.name temp_buildin
+g.camp_sack_02_set.name temp_building.camp_shed_wood_01.name temp_building.    camp_table_01.name temp_building.campfir
+e.name temp_building.roadblock_wood.name ui.base_prep.adjust ui.base_prep.    blocked ui.base_prep.date ui.base_prep.fo
+rbidden ui.base_prep.forbidden_item ui.base_prep.overweight ui.base_prep.    ready ui.base_prep.rest ui.base_prep.rest_
+info ui.base_prep.rest_success ui.base_prep.rules.traditional ui.base_pr    ep.rules.unrestricted ui.base_prep.unavaila
+ble ui.base_prep.weight ui.camp.build ui.camp.cancel ui.camp.confirm ui    .camp.demolish ui.camp.demolish.no_target ui
+.camp.demolish.target ui.camp.demolish.too_far ui.camp.hint.demolish u    i.camp.hint.place ui.camp.rotate ui.craft.bat
+ch_count ui.craft.category.all ui.craft.category.ammunition ui.craft.    category.consumable ui.craft.category.material
+ ui.craft.category.weapon ui.craft.failed ui.craft.make_one_batch ui    .craft.material_amount ui.craft.material_owned_
+required ui.craft.output_amount ui.craft.output_flow ui.craft.outpu    t_total ui.craft.reason.batch ui.craft.reason.co
+nfig ui.craft.reason.drop ui.craft.reason.materials ui.craft.reaso    n.space ui.craft.reason.state ui.craft.success ui
+.craft.success_with_drop ui.craft.title ui.equipment.activate ui.    equipment.candidates ui.equipment.clothing_note ui
+.equipment.current ui.equipment.empty ui.equipment.empty_note ui    .equipment.inactive ui.equipment.loaded_ammo ui.equ
+ipment.no_candidates ui.equipment.part.accessory ui.equipment.p    art.back ui.equipment.part.feet ui.equipment.part.ha
+nds ui.equipment.part.head ui.equipment.part.legs ui.equipment    .part.torso ui.equipment.placeholder_detail ui.equipm
+ent.replace ui.equipment.source_bag ui.equipment.source_pocke    t ui.equipment.unarmed_note ui.equipment.unavailable u
+i.equipment.unequip ui.equipment.weapon_stats ui.equipment.w    orn ui.expedition.day_clock ui.expedition.duration ui.e
+xpedition.retry_return ui.expedition.return ui.expedition.r    eturning ui.expedition.status.continue_goal ui.expeditio
+n.status.defeated ui.expedition.status.go_to_extraction ui    .expedition.status.return_open ui.expedition.survival_clo
+ck ui.expedition.task_clock ui.extraction.cancel.attack u    i.extraction.cancel.damaged ui.extraction.cancel.left_rang
+e ui.extraction.cancel.user ui.extraction.prompt.countdo    wn ui.extraction.prompt.start ui.extraction.return_failed u
+i.held.current ui.held.empty ui.held.holster ui.held.no    _candidates ui.held.online_hint ui.held.picker_hint ui.held.
+selected_name ui.held.source_name ui.held.take_out ui.    held.title ui.inventory.amount_stack ui.inventory.cancel_sele
+ction ui.inventory.capacity_slots ui.inventory.detail    _empty ui.inventory.drop ui.inventory.equip ui.inventory.equip
+ment ui.inventory.expand_content ui.inventory.expand    _failed ui.inventory.expand_slot ui.inventory.expand_title ui.i
+nventory.melee_slot ui.inventory.move_to_bag ui.inv    entory.move_to_pocket ui.inventory.open_map ui.inventory.operati
+on_failed ui.inventory.player_bag ui.inventory.poc    ket ui.inventory.pocket_online_unavailable ui.inventory.ranged_sl
+ot ui.inventory.select_hint ui.inventory.split ui    .inventory.title_bag ui.inventory.title_storage ui.inventory.trans
+fer_amount ui.inventory.transfer_failed ui.inven    tory.unarmed_marker ui.inventory.unequip ui.inventory.use ui.invent
+ory.use_applied ui.inventory.use_applied_power     ui.inventory.use_applied_water ui.inventory.use_failed_water ui.inve
+ntory.warehouse ui.inventory.warehouse_column     ui.inventory.warehouse_cost ui.inventory.warehouse_hint ui.inventory.
+warehouse_maximum ui.inventory.warehouse_stor    e ui.inventory.warehouse_take ui.inventory.weapon_slot.melee ui.invent
+ory.weapon_slot.ranged ui.journal.collection    s ui.journal.collections_empty ui.journal.collections_hint ui.journal.c
+ollections_title ui.journal.daily ui.journa    l.daily_empty ui.journal.daily_hint ui.journal.notes ui.journal.notes_em
+pty ui.journal.notes_hint ui.journal.place    holder ui.journal.records_scope ui.management.backpack ui.management.clos
+e ui.management.equipment ui.management.j    ournal ui.management.map ui.management.placeholder ui.management.status ui
+.management.tasks ui.map_selection.actio    n.checking ui.map_selection.action.download ui.map_selection.action.downloa
+ding ui.map_selection.action.enter ui.m    ap_selection.action.explore ui.map_selection.action.processing ui.map_select
+ion.action.retry ui.map_selection.acti    on.retry_download ui.map_selection.action.unavailable ui.map_selection.action
+.unlock ui.map_selection.error.cost u    i.map_selection.error.enter ui.map_selection.error.not_expedition ui.map_selec
+tion.error.open ui.map_selection.err    or.task_config_unavailable ui.map_selection.error.unknown_map ui.map_selection.
+next_chapter ui.map_selection.next_    detail ui.map_selection.next_name ui.map_selection.next_state ui.map_selection.o
+bjective.kill ui.map_selection.obj    ective.survive ui.map_selection.other_expedition ui.map_selection.recovery.conten
+t ui.map_selection.recovery.title     ui.map_selection.resources.base_ready ui.map_selection.resources.progress ui.map_
+selection.resources.ready ui.map    _selection.resources.size ui.map_selection.return_hint ui.map_selection.state.locke
+d ui.map_selection.state.unavai    lable ui.map_selection.state.unlock_cost ui.map_selection.state.unlocked ui.map_sele
+ction.subtitle ui.map_selectio    n.target.kills ui.map_selection.target.survive_minutes ui.map_selection.task_config_u
+navailable ui.map_selection.t    echnology_known ui.map_selection.technology_title ui.map_selection.technology_unknown
+ui.map_selection.title ui.ma    p_selection.type.survival ui.map_selection.type.task ui.map_selection.valley_chapter ui
+.map_selection.valley_era u    i.map_selection.valley_story ui.map_selection.valley_technology ui.map.error.no_current_
+map_item ui.map.error.not_    current_region ui.map.error.unavailable ui.map.explored ui.map.extractions ui.map.interac
+tion.enter_failed ui.map.    interaction.failed ui.map.interaction.title ui.map.interaction.unavailable ui.map.interact
+ion.unlock_cost_insuffic    ient ui.map.interaction.unlocked ui.map.loading ui.map.next ui.map.no_carried_map ui.map.pr
+evious ui.map.reset_vie    w ui.map.world_unavailable ui.map.zoom_in ui.map.zoom_out ui.offline_expedition.corrupted ui
+.offline_expedition.pe    nding.message ui.offline_expedition.pending.title ui.offline_expedition.resume ui.offline_exp
+edition.return_base u    i.pause.abandon_confirm ui.pause.return_camp ui.pause.return_camp_confirm ui.pause.return_camp
+_failed ui.player_co    ndition.health_icon ui.player_condition.power_icon ui.player_condition.temperature_icon ui.play
+er_condition.tili_i    con ui.player_condition.water_icon ui.shop.action.buy ui.shop.action.sell ui.shop.close ui.shop.
+error.config_inval    id ui.shop.error.insufficient_bag_space ui.shop.error.insufficient_gold ui.shop.error.insufficien
+t_items ui.shop.e    rror.invalid_quantity ui.shop.error.not_accepted ui.shop.error.not_for_sale ui.shop.error.open ui.
+shop.error.opera    tion_in_progress ui.shop.error.overflow ui.shop.error.save_failed ui.shop.error.session_invalid ui.
+shop.error.stat    e_not_allowed ui.shop.gold ui.shop.minus ui.shop.owned ui.shop.plus ui.shop.row.owned ui.shop.row.pr
+ice ui.shop.ta    b.buy ui.shop.tab.sell ui.shop.total ui.shop.unit_price ui.status.afflictions ui.status.attributes ui
+.status.avail    able ui.status.body ui.status.cold ui.status.config_unavailable ui.status.depleted ui.status.disease u
+i.status.dis    ease_detail ui.status.health ui.status.health_config_unavailable ui.status.health_detail ui.status.hot
+ui.status.i    njury ui.status.injury_detail ui.status.low ui.status.normal ui.status.power ui.status.power_detail ui.s
+tatus.spri    nt_locked ui.status.temperature ui.status.temperature_detail ui.status.temperature_value ui.status.tili u
+i.status.    tili_detail ui.status.unavailable ui.status.value_unavailable ui.status.water ui.status.water_detail ui.ta
+sks.acti    ve ui.tasks.completed ui.tasks.completed_description ui.tasks.completed_state ui.tasks.empty_active ui.task
+s.empty    _completed ui.tasks.empty_hint ui.tasks.kill_description ui.tasks.kill_goal ui.tasks.objective ui.tasks.prog
+ress_s    tate ui.tasks.scope ui.tasks.select ui.tasks.survive_description ui.tasks.survive_goal ui.tasks.unavailable u
+i.tem    p_building.arrows ui.temp_building.hint.destroy ui.temp_building.hint.operating ui.temp_building.hint.preview
+ui.t    emp_building.hint.progress ui.temp_building.mode.destroy ui.temp_building.mode.normal ui.temp_building.mode.ope
+rat    ing ui.temp_building.mode.preview ui.temp_building.mode.progress ui.temp_building.select.title ui.temp_building.
+st    atus.cooldown ui.temp_building.status.invalid ui.temp_building.status.ready ui.temp_building.title ui.torch.extin
+g    uish ui.torch.ignite ui.torch.remaining ui.valley.extraction_rule

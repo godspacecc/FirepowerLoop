@@ -395,7 +395,6 @@ namespace Game.Tests
             {
                 Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#unitbar on", CancellationToken.None).GetAwaiter().GetResult();
                 Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 1 nope", CancellationToken.None).GetAwaiter().GetResult();
-                configs.ThrowOnSecondItemLookup = true;
                 Game.Interface.GetSystem<TestCmdSystem>().ExecuteAsync("#clone 2 1", CancellationToken.None).GetAwaiter().GetResult();
             }
 
@@ -485,67 +484,7 @@ namespace Game.Tests
 
         private sealed class TestConfigProvider : IRuntimeConfigProvider
         {
-            private int itemLookupCount;
-
-            private bool throwOnSecondItemLookup;
-            public bool ThrowOnFirstItemLookup { get; set; }
             public PlayerConfigDefinition? Player { get; set; }
-
-            public bool ThrowOnSecondItemLookup
-            {
-                get => throwOnSecondItemLookup;
-                set
-                {
-                    throwOnSecondItemLookup = value;
-                    itemLookupCount = 0;
-                }
-            }
-
-            public bool TryGetItem(int id, out ItemDefinition value, out string error)
-            {
-                itemLookupCount++;
-                if (ThrowOnFirstItemLookup)
-                {
-                    throw new InvalidOperationException("test item lookup failure");
-                }
-
-                if (throwOnSecondItemLookup && itemLookupCount >= 2)
-                {
-                    throw new InvalidOperationException("test item lookup failure");
-                }
-
-                switch (id)
-                {
-                    case 1:
-                        value = new ItemDefinition(id, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
-                        error = null;
-                        return true;
-                    case 2:
-                        value = new ItemDefinition(id, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
-                        error = null;
-                        return true;
-                    case 3:
-                        value = new ItemDefinition(id, "Medkit", "Medkit", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30);
-                        error = null;
-                        return true;
-                    default:
-                        value = default;
-                        error = "missing item";
-                        return false;
-                }
-            }
-
-            public bool TryGetItems(out System.Collections.Generic.IReadOnlyList<ItemDefinition> values, out string error)
-            {
-                values = new[]
-                {
-                    new ItemDefinition(1, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(2, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(3, "Medkit", "Medkit", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30)
-                };
-                error = null;
-                return true;
-            }
 
             public bool TryGetMap(string id, out MapAssetDefinition value, out string error)
             {

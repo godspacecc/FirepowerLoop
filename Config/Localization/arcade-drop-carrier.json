@@ -1,0 +1,4 @@
+{
+  "item.arcade_drop.name": { "zh-CN": "街机掉落表现", "en-US": "Arcade Drop Presentation" },
+  "item.arcade_drop.desc": { "zh-CN": "街机地面掉落的通用表现承载，不作为背包材料", "en-US": "Shared presentation carrier for arcade ground drops." }
+}

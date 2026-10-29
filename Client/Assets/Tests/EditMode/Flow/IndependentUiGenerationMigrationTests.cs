@@ -20,17 +20,9 @@ namespace Game.Tests
         }
 
         [Test]
-        public void GameplayGuideHudPrefab_HasGeneratedPauseButtonAndStableBindings()
-        {
-            AssertPrefab<GameplayGuideHudUI>("Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab", GameplayGuideHudFields);
-        }
-
-        [Test]
         public void IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings()
         {
             AssertPrefab<LoadingUI>("Assets/Game/Prefabs/UI/Common/Loading.prefab", LoadingFields);
-            AssertPrefab<PlayerConditionHudUI>("Assets/Game/Prefabs/UI/Player/PlayerConditionHud.prefab", PlayerConditionHudFields);
-            AssertPrefab<GameplayGuideHudUI>("Assets/Game/Prefabs/UI/Player/GameplayGuideHud.prefab", GameplayGuideHudFields);
             SettingsPrefabs_HaveGeneratedBindings();
         }
 
@@ -66,11 +58,6 @@ namespace Game.Tests
             Assert.That(fieldsByName.Keys, Is.EquivalentTo(expectedFields.Select(item => item.Name)), path);
             Assert.That(collector.data.Select(item => item.key), Is.EquivalentTo(expectedFields.Select(item => item.Name)), path);
             Assert.That(collector.data.Select(item => item.key).Distinct().Count(), Is.EqualTo(collector.data.Count), path);
-            if (typeof(T) == typeof(PlayerConditionHudUI))
-            {
-                Assert.That(typeof(T).GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static), Is.Empty, path);
-                Assert.That(typeof(T).GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static), Is.Empty, path);
-            }
 
             foreach (var expected in expectedFields)
             {
@@ -208,64 +195,7 @@ namespace Game.Tests
             F("LoadingArtwork", typeof(ArcadeLoadingArtwork), typeof(ArcadeLoadingArtwork), "Loading/MapRoot/BackgroundArtwork", "BackgroundArtwork"),
         };
 
-        private static readonly FieldExpectation[] PlayerConditionHudFields =
-        {
-            // 明确锁定桌面与手机HUD的现有对象路径，保留每个字段的类型与对象同一性检查。
-            F("AmmoBackground", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/AmmoBackground", "AmmoBackground"),
-            F("AmmoFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/AmmoFill", "AmmoFill"),
-            F("ContentRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot", "ContentRoot"),
-            F("HealthFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/HealthRoot/HealthFill", "HealthFill"),
-            F("HealthIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/HealthRoot/HealthIconText", "HealthIconText"),
-            F("HealthRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/HealthRoot", "HealthRoot"),
-            F("HudLayoutArea", typeof(RectTransform), typeof(RectTransform), "PlayerConditionHud/HudLayoutArea", "HudLayoutArea"),
-            F("MobileContentRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot", "MobileContentRoot"),
-            F("MobileHealthFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot/HealthFill", "HealthFill"),
-            F("MobileHealthIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot/HealthIconText", "HealthIconText"),
-            F("MobileHealthRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/HealthRoot", "HealthRoot"),
-            F("MobilePowerFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot/PowerFill", "PowerFill"),
-            F("MobilePowerIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot/PowerIcon", "PowerIcon"),
-            F("MobilePowerRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/PowerRoot", "PowerRoot"),
-            F("MobileStatusRow", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow", "MobileStatusRow"),
-            F("MobileTemperatureBulb", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot/ThermometerIcon/Bulb", "Bulb"),
-            F("MobileTemperatureRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot", "TemperatureRoot"),
-            F("MobileTemperatureStem", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TemperatureRoot/ThermometerIcon/Stem", "Stem"),
-            F("MobileTiliFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot/TiliFill", "TiliFill"),
-            F("MobileTiliIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot/TiliIcon", "TiliIcon"),
-            F("MobileTiliRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/TiliRoot", "TiliRoot"),
-            F("MobileWaterFill", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot/WaterFill", "WaterFill"),
-            F("MobileWaterIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot/WaterIcon", "WaterIcon"),
-            F("MobileWaterRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/MobileStatusRow/WaterRoot", "WaterRoot"),
-            F("PowerFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/PowerRoot/PowerFill", "PowerFill"),
-            F("PowerIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerIconText", "PowerIconText"),
-            F("PowerRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/PowerRoot", "PowerRoot"),
-            F("PowerValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/PowerRoot/PowerValueText", "PowerValueText"),
-            F("TemperatureFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureFill", "TemperatureFill"),
-            F("TemperatureIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureIconText", "TemperatureIconText"),
-            F("TemperatureRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TemperatureRoot", "TemperatureRoot"),
-            F("TemperatureValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TemperatureRoot/TemperatureValueText", "TemperatureValueText"),
-            F("TiliFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/TiliRoot/TiliFill", "TiliFill"),
-            F("TiliIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliIconText", "TiliIconText"),
-            F("TiliRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/TiliRoot", "TiliRoot"),
-            F("TiliValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/TiliRoot/TiliValueText", "TiliValueText"),
-            F("WaterFill", typeof(Image), typeof(Image), "PlayerConditionHud/ContentRoot/WaterRoot/WaterFill", "WaterFill"),
-            F("WaterIconText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterIconText", "WaterIconText"),
-            F("WaterRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/ContentRoot/WaterRoot", "WaterRoot"),
-            F("WaterValueText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "PlayerConditionHud/ContentRoot/WaterRoot/WaterValueText", "WaterValueText"),
-            F("WeaponIcon", typeof(Image), typeof(Image), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot/WeaponIcon", "WeaponIcon"),
-            F("WeaponInfoRoot", typeof(GameObject), typeof(GameObject), "PlayerConditionHud/HudLayoutArea/MobileContentRoot/WeaponInfoRoot", "WeaponInfoRoot"),
-        };
 
-        private static readonly FieldExpectation[] GameplayGuideHudFields =
-        {
-            F("GuideRoot", typeof(GameObject), typeof(GameObject), "GameplayGuideHud/GuideRoot", "GuideRoot"),
-            F("GuideText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/GuideRoot/GuideText", "GuideText"),
-            F("VersionText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/VersionText", "VersionText"),
-            F("BtnPause", typeof(Button), typeof(Button), "GameplayGuideHud/BtnPause", "BtnPause"),
-            F("MobileBtnPause", typeof(Button), typeof(Button), "GameplayGuideHud/MobilePauseArea/MobileBtnPause", "MobileBtnPause"),
-            F("MobilePauseArea", typeof(RectTransform), typeof(RectTransform), "GameplayGuideHud/MobilePauseArea", "MobilePauseArea"),
-            F("InteractionRoot", typeof(GameObject), typeof(GameObject), "GameplayGuideHud/InteractionRoot", "InteractionRoot"),
-            F("InteractionText", typeof(TextMeshProUGUI), typeof(TextMeshProUGUI), "GameplayGuideHud/InteractionRoot/InteractionText", "InteractionText")
-        };
 
         private static readonly FieldExpectation[] SettingFields =
         {

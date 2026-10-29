@@ -964,65 +964,6 @@ namespace Game.Tests
             }
         }
 
-        private sealed class InventoryTestConfigProvider : IRuntimeConfigProvider
-        {
-            public bool TryGetItem(int id, out ItemDefinition value, out string error)
-            {
-                if (id == 3)
-                {
-                    value = new ItemDefinition(id, "Medkit", "Restores health", "item.medkit.name", "item.medkit.desc", string.Empty, global::ItemType.Consumable, 5, global::ItemUseEffect.RestoreHealth, 30);
-                    error = null;
-                    return true;
-                }
-
-                value = new ItemDefinition(id, "Metal Parts", "Metal material", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 20, global::ItemUseEffect.None, 0);
-                error = null;
-                return true;
-            }
-
-            public bool TryGetWeapon(int itemId, out WeaponConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing weapon";
-                return false;
-            }
-
-            public bool TryGetMap(string id, out MapAssetDefinition value, out string error)
-            {
-                value = new MapAssetDefinition(id, id);
-                error = null;
-                return true;
-            }
-
-            public bool TryGetMapSpawns(string mapId, out IReadOnlyList<MapSpawnDefinition> values, out string error)
-            {
-                values = Array.Empty<MapSpawnDefinition>();
-                error = null;
-                return true;
-            }
-
-            public bool TryGetPlayer(string id, out PlayerConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing player";
-                return false;
-            }
-
-            public bool TryGetEnemy(string id, out EnemyConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing enemy";
-                return false;
-            }
-
-            public bool TryGetLoot(string id, out LootConfigDefinition value, out string error)
-            {
-                value = default;
-                error = "missing loot";
-                return false;
-            }
-        }
-
         private sealed class InlineLocalizationLoader : IResourceLoader
         {
             private readonly string zhCnJson;

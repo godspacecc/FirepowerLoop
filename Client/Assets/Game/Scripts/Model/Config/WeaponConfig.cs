@@ -26,8 +26,6 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         MagazineCapacity = _buf.ReadInt();
         ReloadSeconds = _buf.ReadFloat();
         ReloadWholeMagazine = _buf.ReadBool();
-        TreeHarvestEfficiency = _buf.ReadFloat();
-        StoneHarvestEfficiency = _buf.ReadFloat();
     }
 
     public static WeaponConfig DeserializeWeaponConfig(ByteBuf _buf)
@@ -46,14 +44,6 @@ public sealed partial class WeaponConfig : Luban.BeanBase
     public readonly int MagazineCapacity;
     public readonly float ReloadSeconds;
     public readonly bool ReloadWholeMagazine;
-    /// <summary>
-    /// 近战砍树进度倍率；1为标准效率，0为不可采集
-    /// </summary>
-    public readonly float TreeHarvestEfficiency;
-    /// <summary>
-    /// 近战挖矿进度倍率；1为标准效率，0为不可采集
-    /// </summary>
-    public readonly float StoneHarvestEfficiency;
    
     public const int __ID__ = 127041694;
     public override int GetTypeId() => __ID__;
@@ -76,8 +66,6 @@ public sealed partial class WeaponConfig : Luban.BeanBase
         + "MagazineCapacity:" + MagazineCapacity + ","
         + "ReloadSeconds:" + ReloadSeconds + ","
         + "ReloadWholeMagazine:" + ReloadWholeMagazine + ","
-        + "TreeHarvestEfficiency:" + TreeHarvestEfficiency + ","
-        + "StoneHarvestEfficiency:" + StoneHarvestEfficiency + ","
         + "}";
     }
 }

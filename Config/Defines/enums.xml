@@ -21,7 +21,6 @@
     <enum name="ItemActionKind" group="c">
         <var name="None" value="0"/>
         <var name="OpenMap" value="1"/>
-        <var name="ToggleTorch" value="2"/>
     </enum>
     <enum name="WeaponKind" group="c">
         <var name="Melee" value="1"/>
@@ -39,8 +38,6 @@
     <enum name="ItemUseEffect" group="c">
         <var name="None" value="0"/>
         <var name="RestoreHealth" value="1"/>
-        <var name="RestorePower" value="2"/>
-        <var name="RestoreWater" value="3"/>
     </enum>
     <enum name="MapSpawnObjectType" group="c">
         <var name="Player" value="1"/>

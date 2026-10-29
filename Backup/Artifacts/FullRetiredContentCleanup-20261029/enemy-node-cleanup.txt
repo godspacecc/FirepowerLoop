@@ -1,0 +1,10 @@
+Assets/Game/Prefabs/Characters/ArcadeEnemyArcher.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeEnemyBossArcher.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/GrayboxArcher.prefab removed old corpse roots=3
+Assets/Game/Prefabs/Characters/GrayboxEnemy.prefab removed old corpse roots=3

@@ -273,17 +273,18 @@ namespace Game.Tests
             Assert.That(legacy.MobileControlLayout.FirstPersonFire, Is.Not.Null);
         }
         [Test]
-        public void OrdinarySticks_HaveMatchingFixedRingsAndMovingKnobsWithoutLabels()
+        public void ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
-            var ui = prefab.GetComponent<MobileJoystickUI>();
-            foreach (var wrapper in new[] { ui.MoveJoystickRoot, ui.BaseAimRoot })
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
+            var ui = prefab.GetComponent<ArcadeHudUI>();
+            foreach (var wrapper in new[] { ui.MoveJoystickRoot, ui.AimJoystickRoot })
             {
-                Assert.That(wrapper.GetComponentsInChildren<TMPro.TMP_Text>(true), Is.Empty, "摇杆不应带玩家文字");
+                foreach (var label in wrapper.GetComponentsInChildren<TMPro.TMP_Text>(true))
+                    Assert.That(label.raycastTarget, Is.False, "摇杆现有提示文字不能阻挡触控");
                 Assert.That(wrapper.transform.Find("Ring"), Is.Not.Null, "底盘必须独立固定，不能跟随移动输入面一起移动");
             }
-            var moveKnob = ui.JoystickSurface.transform.Find("Handle").GetComponent<Image>();
-            var aimKnob = ui.BaseAimSurface.Handle.GetComponent<Image>();
+            var moveKnob = ui.MoveJoystick.transform.Find("Handle").GetComponent<Image>();
+            var aimKnob = ui.AimJoystick.transform.Find("Handle").GetComponent<Image>();
             Assert.That(moveKnob.sprite, Is.EqualTo(aimKnob.sprite));
             Assert.That(moveKnob.rectTransform.sizeDelta, Is.EqualTo(aimKnob.rectTransform.sizeDelta));
             Assert.That(moveKnob.raycastTarget, Is.False);
@@ -384,18 +385,18 @@ namespace Game.Tests
         }
 
         [Test]
-        public void OrdinaryJoystick_UsesIndependentGeneratedLayoutWrapper()
+        public void ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Player/MobileJoystick.prefab");
-            var ui = prefab.GetComponent<MobileJoystickUI>();
-            var field = typeof(MobileJoystickUI).GetField("MoveJoystickRoot");
-            Assert.That(field, Is.Not.Null, "普通地图必须接入共享布局容器");
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
+            var ui = prefab.GetComponent<ArcadeHudUI>();
+            var field = typeof(ArcadeHudUI).GetField("MoveJoystickRoot");
+            Assert.That(field, Is.Not.Null, "街机必须接入共享布局容器");
             var wrapper = (GameObject)field.GetValue(ui);
             Assert.That(wrapper, Is.Not.Null);
-            Assert.That(ui.JoystickSurface.transform.parent, Is.EqualTo(wrapper.transform));
-            Assert.That(((RectTransform)ui.JoystickSurface.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
-            Assert.That(((RectTransform)ui.JoystickSurface.transform).anchorMin, Is.EqualTo(Vector2.one * 0.5f));
-            Assert.That(typeof(MobileJoystickUI).GetField("MoveOpacity").GetValue(ui), Is.EqualTo(wrapper.GetComponent<CanvasGroup>()));
+            Assert.That(ui.MoveJoystick.transform.parent, Is.EqualTo(wrapper.transform));
+            Assert.That(((RectTransform)ui.MoveJoystick.transform).anchoredPosition, Is.EqualTo(Vector2.zero));
+            Assert.That(((RectTransform)ui.MoveJoystick.transform).anchorMin, Is.EqualTo(Vector2.one * 0.5f));
+            Assert.That(typeof(ArcadeHudUI).GetField("MoveOpacity").GetValue(ui), Is.EqualTo(wrapper.GetComponent<CanvasGroup>()));
         }
         [Test]
         public void SettingsJson_PreservesMobileLayoutThroughClone()
@@ -476,7 +477,7 @@ namespace Game.Tests
         [Test]
         public void GeneratedPrefabs_AllReferencesResolveAndPreviewHasNoGamepadControls()
         {
-            foreach (var path in new[] { "Home/MobileControlLayout", "Home/Setting", "Home/Page/SettingMobile", "Arcade/ArcadeHud", "Player/MobileJoystick", "Player/GameplayGuideHud" })
+            foreach (var path in new[] { "Home/MobileControlLayout", "Home/Setting", "Home/Page/SettingMobile", "Arcade/ArcadeHud" })
             {
                 var root = PrefabUtility.LoadPrefabContents("Assets/Game/Prefabs/UI/" + path + ".prefab");
                 try

@@ -28,7 +28,6 @@ public sealed partial class Item : Luban.BeanBase
         UseDurationSeconds = _buf.ReadFloat();
         ActionKind = (ItemActionKind)_buf.ReadInt();
         ActionTarget = _buf.ReadString();
-        BurnSeconds = _buf.ReadFloat();
         WearSlot = (ClothingSlot)_buf.ReadInt();
         AppearanceId = _buf.ReadString();
     }
@@ -51,7 +50,6 @@ public sealed partial class Item : Luban.BeanBase
     public readonly float UseDurationSeconds;
     public readonly ItemActionKind ActionKind;
     public readonly string ActionTarget;
-    public readonly float BurnSeconds;
     public readonly ClothingSlot WearSlot;
     public readonly string AppearanceId;
    
@@ -78,7 +76,6 @@ public sealed partial class Item : Luban.BeanBase
         + "UseDurationSeconds:" + UseDurationSeconds + ","
         + "ActionKind:" + ActionKind + ","
         + "ActionTarget:" + ActionTarget + ","
-        + "BurnSeconds:" + BurnSeconds + ","
         + "WearSlot:" + WearSlot + ","
         + "AppearanceId:" + AppearanceId + ","
         + "}";

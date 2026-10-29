@@ -64,12 +64,6 @@ namespace Game
         }
 
         bool TryGetMap(string id, out MapAssetDefinition value, out string error);
-        bool TryGetMapDisplay(string mapId, out MapDisplayDefinition value, out string error)
-        {
-            value = default;
-            error = $"TbMapDisplay[{mapId}].MapId 不存在";
-            return false;
-        }
         bool TryGetMapSpawns(string mapId, out IReadOnlyList<MapSpawnDefinition> values, out string error);
         bool TryGetPlayer(string id, out PlayerConfigDefinition value, out string error);
         bool TryGetEnemy(string id, out EnemyConfigDefinition value, out string error);

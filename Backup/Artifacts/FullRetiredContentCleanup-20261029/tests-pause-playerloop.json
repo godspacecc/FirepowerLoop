@@ -1,0 +1,123 @@
+{
+  "testClass": "PauseUiFlowTests",
+  "max": 25,
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 21,
+      "PassedTests": 20,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.3829410"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WhenSceneFlowBusyKeepsPauseAndAllowsRetry",
+        "Status": "Passed",
+        "Duration": "00:00:00.2770000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WithoutActiveHandleReturnsToMainMenuAndClosesPause",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.ArcadePause_ReopensWithLeaveActionAndRefreshesLanguage",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.DedicatedWindowHotKeysRemainRegistered",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.DirectPauseAction_UsesSamePauseMenuRouteAsKeyboard",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesEachWhitelistedControllerWithoutChangingAppState",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesTopLayerBeforeLaterDialog",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.EscapeDuringRebindOnlyCancelsCapture",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.EscapeFallsBackToPausedStateWhenNoRecoverableWorldExists",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.IslandRoundLeaveWarnsAboutWholeRoundRollbackAndCancelKeepsRun",
+        "Status": "Passed",
+        "Duration": "00:00:00.0340000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.MapPreparationFailure_BackKeepsFailedSceneCoveredUntilSafeNodeIsRestored",
+        "Status": "Passed",
+        "Duration": "00:00:00.1480000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease",
+        "Status": "Failed",
+        "Duration": "00:00:00.0840000",
+        "Message": "  首次返回事务必须已完成，才可恢复文件并重试\r\n  Expected: True\r\n  But was:  False\r\n",
+        "StackTrace": "at Game.Tests.PauseUiFlowTests+<MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease>d__6.MoveNext () [0x0023d] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\Flow\\PauseUiFlowTests.cs:140\r\nat UnityEngine.TestTools.TestEnumerator+<Execute>d__7.MoveNext () [0x0003a] in .\\Library\\PackageCache\\com.unity.test-framework@1.1.33\\UnityEngine.TestRunner\\NUnitExtensions\\Attributes\\TestEnumerator.cs:46\r\n"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.NonBlockingUiDoesNotShieldWhitelistedWindow",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.NonWhitelistedBlockingUiShieldsUnderlyingWindowAndPause",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.PauseExit_RepeatedShowInvokesQuitOnlyOnce",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.PauseLayout_KeepsArcadeActionsCompactAcrossReopen",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.PausePrefab_HasAdaptivePanelCurrentButtonsAndNoRetiredCampEntry",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.PauseSettings_CloseBackToPauseAndMapLoadingClearsMenu",
+        "Status": "Passed",
+        "Duration": "00:00:00.0560000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.StartExitUsesQuitCommand",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.TogglePauseWithoutRecoverableWorldKeepsPausedState",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.TopmostBlockingUiPrefersLayerThenShowOrder",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      }
+    ]
+  }
+}

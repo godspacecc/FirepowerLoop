@@ -90,7 +90,7 @@ namespace Game
                 row.UseValue,
                 row.UseDurationSeconds,
                 row.ActionKind,
-                row.ActionTarget, row.WearSlot, row.AppearanceId, row.BurnSeconds);
+                row.ActionTarget, row.WearSlot, row.AppearanceId);
             return true;
         }
 
@@ -116,7 +116,7 @@ namespace Game
                     row.UseValue,
                     row.UseDurationSeconds,
                     row.ActionKind,
-                    row.ActionTarget, row.WearSlot, row.AppearanceId, row.BurnSeconds))
+                    row.ActionTarget, row.WearSlot, row.AppearanceId))
                 .ToArray();
             return true;
         }
@@ -307,56 +307,6 @@ namespace Game
         {
             value=null;if(!EnsureValid(out error))return false;
             value=slayerMart;error=null;return value!=null;
-        }
-
-        /// <summary>读取地图显示范围；允许多个历史道具指向同一地图，但要求至少一个地图道具入口。</summary>
-        public bool TryGetMapDisplay(string mapId, out MapDisplayDefinition value, out string error)
-        {
-            value = default;
-            if (!EnsureValid(out error)) return false;
-            if (string.IsNullOrWhiteSpace(mapId))
-            {
-                error = "TbMapDisplay.MapId 为空";
-                return false;
-            }
-
-            var row = Tables.TbMapDisplay.GetOrDefault(mapId);
-            if (row == null)
-            {
-                error = $"TbMapDisplay[{mapId}].MapId 不存在";
-                return false;
-            }
-            if (Tables.TbMap.GetOrDefault(mapId) == null)
-            {
-                error = $"TbMapDisplay[{mapId}].MapId 引用不存在";
-                return false;
-            }
-            if (!IsPositiveFinite(row.Width) || !IsPositiveFinite(row.Height) ||
-                row.ViewportColumns <= 0 || row.ViewportRows <= 0 ||
-                !IsFinite(row.CenterX) || !IsFinite(row.CenterZ))
-            {
-                error = $"TbMapDisplay[{mapId}] 边界无效";
-                return false;
-            }
-            if (!ResourceAddress.TryFromFileName(ResourceAddressKind.MapUiImage, row.ImageName, false, out var address, out var addressError))
-            {
-                error = $"TbMapDisplay[{mapId}].ImageName 值“{row.ImageName}”无效：{addressError}";
-                return false;
-            }
-
-            var matches = Tables.TbItem.DataList.Where(item => item.ActionKind == global::ItemActionKind.OpenMap &&
-                string.Equals(item.ActionTarget, mapId, StringComparison.Ordinal)).ToArray();
-            // 历史地图道具可以共用稳定地图 ID，但每张可显示地图至少需要一个入口。
-            if (matches.Length == 0)
-            {
-                error = $"TbItem.ActionTarget 未绑定地图 {mapId}";
-                return false;
-            }
-
-            value = new MapDisplayDefinition(row.MapId, address, row.CenterX, row.CenterZ, row.Width, row.Height,
-                row.ViewportColumns, row.ViewportRows);
-            error = null;
-            return true;
         }
 
         public bool TryGetLootByItemId(int itemId, out LootConfigDefinition value, out string error)
@@ -675,9 +625,7 @@ namespace Game
                  row.ItemType == global::ItemType.Ammunition ||
                  row.ItemType == global::ItemType.Tool) &&
                 (row.UseEffect != global::ItemUseEffect.None || row.UseValue != 0 || row.UseDurationSeconds != 0f)) return $"TbItem[{row.Id}].Material 使用效果无效";
-            if (row.UseEffect == global::ItemUseEffect.RestoreHealth ||
-                row.UseEffect == global::ItemUseEffect.RestorePower ||
-                row.UseEffect == global::ItemUseEffect.RestoreWater)
+            if (row.UseEffect == global::ItemUseEffect.RestoreHealth)
             {
                 if (row.ItemType != global::ItemType.Consumable) return $"TbItem[{row.Id}].恢复效果只能用于 Consumable";
                 if (row.UseValue <= 0) return $"TbItem[{row.Id}].{row.UseEffect} UseValue 必须为正";
@@ -685,9 +633,7 @@ namespace Game
             }
 
             if (row.ItemType == global::ItemType.Consumable &&
-                row.UseEffect != global::ItemUseEffect.RestoreHealth &&
-                row.UseEffect != global::ItemUseEffect.RestorePower &&
-                row.UseEffect != global::ItemUseEffect.RestoreWater)
+                row.UseEffect != global::ItemUseEffect.RestoreHealth)
             {
                 return $"TbItem[{row.Id}].Consumable 使用效果无效";
             }
@@ -700,7 +646,7 @@ namespace Game
 
             if (row.ItemType == global::ItemType.Tool)
             {
-                if (row.ActionKind != global::ItemActionKind.OpenMap && row.ActionKind != global::ItemActionKind.ToggleTorch)
+                if (row.ActionKind != global::ItemActionKind.OpenMap)
                     return $"TbItem[{row.Id}].ActionKind 无效";
                 if (string.IsNullOrWhiteSpace(row.ActionTarget))
                     return $"TbItem[{row.Id}].ActionTarget 为空";
@@ -711,13 +657,6 @@ namespace Game
             {
                 return $"TbItem[{row.Id}].ActionKind 或 ActionTarget 无效";
             }
-
-            if (row.ActionKind == global::ItemActionKind.ToggleTorch)
-            {
-                if (!IsPositiveFinite(row.BurnSeconds) || row.MaxStackAmount != 1 || row.ActionTarget != System.IO.Path.GetFileName(row.ActionTarget))
-                    return $"TbItem[{row.Id}] 火把燃烧配置无效";
-            }
-            else if (row.BurnSeconds != 0f) return $"TbItem[{row.Id}] 非火把不可声明燃烧秒数";
             return null;
         }
 
@@ -731,9 +670,6 @@ namespace Game
             if (row.AttackDamage <= 0) return $"TbWeapon[{row.ItemId}].AttackDamage 必须为正";
             if (row.AttackCooldownSeconds <= 0f) return $"TbWeapon[{row.ItemId}].AttackCooldownSeconds 必须为正";
             if (row.AttackRange <= 0f) return $"TbWeapon[{row.ItemId}].AttackRange 必须为正";
-            if (float.IsNaN(row.TreeHarvestEfficiency) || float.IsInfinity(row.TreeHarvestEfficiency) || row.TreeHarvestEfficiency < 0f ||
-                float.IsNaN(row.StoneHarvestEfficiency) || float.IsInfinity(row.StoneHarvestEfficiency) || row.StoneHarvestEfficiency < 0f)
-                return $"TbWeapon[{row.ItemId}] 采集效率必须为有限非负数";
 
             switch (row.WeaponKind)
             {
@@ -918,9 +854,12 @@ namespace Game
                     if (tables.TbProjectile.GetOrDefault(row.ProjectileConfigId) == null) return $"TbEnemy[{row.Id}].ProjectileConfigId reference is missing";
                     if (row.AmmoCapacity <= 0) return $"TbEnemy[{row.Id}].AmmoCapacity must be positive";
                     if (row.MagazineCapacity <= 0 || row.MagazineCapacity > row.AmmoCapacity || row.ReloadSeconds <= 0f) return $"TbEnemy[{row.Id}] projectile reload parameters are invalid";
-                    if (string.IsNullOrWhiteSpace(row.GuaranteedAmmoLootConfigId)) return $"TbEnemy[{row.Id}].GuaranteedAmmoLootConfigId is empty";
-                    var ammoError = ValidateEnemyAmmoLoot(row, tables);
-                    if (ammoError != null) return ammoError;
+                    // 街机敌人只保留攻击弹药参数，不强制携带退役背包的保底掉落。
+                    if (!string.IsNullOrWhiteSpace(row.GuaranteedAmmoLootConfigId))
+                    {
+                        var ammoError = ValidateEnemyAmmoLoot(row, tables);
+                        if (ammoError != null) return ammoError;
+                    }
                     if (row.FallbackMeleeAttackRange <= 0f || row.FallbackMeleeAttackRange > row.AggroRange) return $"TbEnemy[{row.Id}].FallbackMeleeAttackRange is invalid";
                     return null;
                 default:
@@ -1024,9 +963,7 @@ namespace Game
                 row.AmmoItemId,
                 row.MagazineCapacity,
                 row.ReloadSeconds,
-                row.ReloadWholeMagazine,
-                row.TreeHarvestEfficiency,
-                row.StoneHarvestEfficiency);
+                row.ReloadWholeMagazine);
         }
 
         private static ProjectileConfigDefinition ToDefinition(global::ProjectileConfig row)

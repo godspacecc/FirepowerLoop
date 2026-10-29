@@ -281,13 +281,6 @@ namespace Game
                     skin.BakeMesh(mesh);
                     ownedMeshes.Add(mesh);
                 }
-                else if (source is ParticleSystemRenderer particles && source.GetComponentInParent<HandheldTorchView>() != null)
-                {
-                    // 仅复制火把的可见粒子网格，不复制点光源、声音、领域组件或粒子推进权威。
-                    mesh = new Mesh();
-                    particles.BakeMesh(mesh, camera, false);
-                    ownedMeshes.Add(mesh);
-                }
                 if (mesh == null) continue;
                 var go = new GameObject(source.name, typeof(MeshFilter), typeof(MeshRenderer));
                 go.transform.SetParent(weaponRoot.transform, false);

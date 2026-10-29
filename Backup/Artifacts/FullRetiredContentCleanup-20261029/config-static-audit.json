@@ -1,0 +1,12 @@
+{
+  "scope": "Config source static row shape and direct references only; no generation or Unity test run",
+  "counts": {
+    "item": 24,
+    "weapon": 10,
+    "weaponAppearance": 10,
+    "loot": 24,
+    "enemy": 7,
+    "projectile": 5
+  },
+  "errors": []
+}

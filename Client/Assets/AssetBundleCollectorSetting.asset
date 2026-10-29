@@ -239,14 +239,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/UI/Player
-        CollectorGUID: bcb3ae9c6114442499c5a53d8519602b
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: startup;arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/UI/World
         CollectorGUID: 326bca04b1c82b04f9193708b64236f3
         CollectorType: 0
@@ -340,14 +332,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/GrayboxNpc.prefab
-        CollectorGUID: 944590062aa08ec4b9bb7779767c4202
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab
         CollectorGUID: 2e96af74810a335438a1d61070bb3a0f
         CollectorType: 0
@@ -412,14 +396,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/AxeShared.prefab
-        CollectorGUID: 82f0618378994d947bdff41978fca593
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/Weapons/GrayboxBow.prefab
         CollectorGUID: 3d4660e60636497458cc7c38cd5d5f9e
         CollectorType: 0
@@ -438,54 +414,6 @@ MonoBehaviour:
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/Weapons/GreatswordShared.prefab
         CollectorGUID: 8f382e9e75f57de48b87f4a6e4943fd6
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/KnifeShared.prefab
-        CollectorGUID: 94d3a2b7d0f607d4e8a3ec55112d9e48
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/PickaxeShared.prefab
-        CollectorGUID: 4a6cb9de191f1444bb981d9f69634730
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanForgedAxe.prefab
-        CollectorGUID: 39431b696f5683c42acf2c5a3ae699d7
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanForgedPick.prefab
-        CollectorGUID: 7af94515698eb134e98a0a39de44f1ff
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanSteelBlade.prefab
-        CollectorGUID: e5a3bd07cb6b27c41a31477d0b08550a
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/Characters/Weapons/HanBow.prefab
-        CollectorGUID: 7cf049d461c7a0e41bda60268e1adbae
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -537,32 +465,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-    - GroupName: PrefabsBuilding
-      GroupDesc: "\u5EFA\u7B51\u9884\u5236\u4F53"
-      AssetTags: 
-      ActiveRuleName: EnableGroup
-      Collectors:
-      - CollectPath: Assets/Game/Prefabs/Building
-        CollectorGUID: b8a99ec049e7cf84dbe8c54ff8810796
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-    - GroupName: PrefabsEnvironment
-      GroupDesc: "\u6CB3\u8C37\u751F\u6210\u73AF\u5883\u6A21\u677F"
-      AssetTags: 
-      ActiveRuleName: EnableGroup
-      Collectors:
-      - CollectPath: Assets/Game/Prefabs/Environment
-        CollectorGUID: 1c6a17df884b8f0489caac1509672ff7
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
     - GroupName: PrefabsSceneObjects
       GroupDesc: "\u573A\u666F\u7269\u4F53\u9884\u5236\u4F53"
       AssetTags: 
@@ -610,14 +512,6 @@ MonoBehaviour:
         UserData: 
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeChickenCompanion.prefab
         CollectorGUID: df79d95c43e78b441870c0724b582824
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropAxe.prefab
-        CollectorGUID: 4a34aa12e17d040409d2c071986b6dc9
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -712,22 +606,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropGreatsword.prefab
-        CollectorGUID: ce1ba36d37ffe8744adf73e2582fa194
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropKnife.prefab
-        CollectorGUID: cdabe2ad4ba121c4fbd5bf6bcb8f60ab
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropLightning.prefab
         CollectorGUID: de4e7b0d4e421454bad8086818de07aa
         CollectorType: 0
@@ -744,24 +622,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropPickaxe.prefab
-        CollectorGUID: 5b949dae97f23ee4a9501b06b663c30d
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropShield.prefab
         CollectorGUID: 8a330a8b263492349b546b2a2c315098
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: arcade
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropShortSword.prefab
-        CollectorGUID: 0504bc70cb3bcc3439eb3c59744df3d8
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -1000,64 +862,8 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HandheldTorchPickup.prefab
-        CollectorGUID: c02be9431e684604b94cfff8a6bde919
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/TestResourcePickup.prefab
         CollectorGUID: 3b12d4b689c7f4e42883195658f54886
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanForgedAxePickup.prefab
-        CollectorGUID: aaf02f4340303a74a83d7425d832cdaf
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanForgedPickPickup.prefab
-        CollectorGUID: 422a0230c5a720e469d724d6c56da477
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanSteelBladePickup.prefab
-        CollectorGUID: af2d3fc34d79cb04f884c88f50526838
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanBowPickup.prefab
-        CollectorGUID: 7d19912592fc48f4ebaf9a35e8553797
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanGrainPouchPickup.prefab
-        CollectorGUID: b815f425c5f75584a8cee4be3cb67421
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Prefabs/SceneObjects/HanWaterPotPickup.prefab
-        CollectorGUID: 6056f82e73a8983428270cd994be6e31
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -1097,14 +903,6 @@ MonoBehaviour:
       Collectors:
       - CollectPath: Assets/Game/Audio/Sound/AmbienceFire.wav
         CollectorGUID: a87401ca83f7c8f43ab0a5dfdeb33b9b
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Audio/Sound/AmbienceRiver.wav
-        CollectorGUID: 5e7b404bb7e0b2e48a6eeec1c2e075d3
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
@@ -1311,14 +1109,6 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
-      - CollectPath: Assets/Game/Audio/Sound/CampfireIgnite.wav
-        CollectorGUID: d5c7ed1d0bcd0834ea38f1d7b7004c5d
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
       - CollectPath: Assets/Game/Audio/Sound/CombatBulletBody01.wav
         CollectorGUID: 7a19186dce3154e4faf8aad601559e59
         CollectorType: 0
@@ -1393,14 +1183,6 @@ MonoBehaviour:
         UserData: 
       - CollectPath: Assets/Game/Audio/Sound/FoleyCollectItem.wav
         CollectorGUID: e0d64334e86566a4687174932977d241
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackSeparately
-        FilterRuleName: CollectAll
-        AssetTags: startup
-        UserData: 
-      - CollectPath: Assets/Game/Audio/Sound/FoleySearchBag.wav
-        CollectorGUID: 8d3b4efcc490dcf4d9c6f127c02e400a
         CollectorType: 0
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately

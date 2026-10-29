@@ -60,7 +60,7 @@ namespace Game.Tests
             });
         }
 
-        [TestCase("weapon.knife")]
+        [TestCase("weapon.greatsword")]
         [TestCase("weapon.short-sword")]
         public void MeleeStillUsesFullBodyAttackWhileMoving(string weapon)
         {
@@ -78,7 +78,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void MovingPistolUsesFirePoseOverrideOnGunLayer()
+        public void MovingGunUsesConfiguredFirePoseOnGunLayer()
         {
             WithPlayer((presenter, view, animator, peer) =>
             {
@@ -87,12 +87,10 @@ namespace Game.Tests
                 Step(animator, view, 20);
                 var entry = presenter.Current;
                 entry.GetPose(entry.Animations.Attack, out var position, out var rotation, out var scale);
-                entry.GetPose(entry.Animations.MoveForward, out _, out var moveRotation, out _);
-                Assert.That(Quaternion.Angle(rotation, moveRotation), Is.GreaterThan(1f));
                 view.PlayProjectileFireFeedback();
                 Step(animator, view, 6);
                 Assert.That(presenter.TryGetProjectileOrigin(out _), Is.True);
-                // 当前手枪在射击姿态上叠加短后坐；第6帧仍有余量，不应要求静止位置。
+                // 当前基础枪使用 AK；射击与移动可共享姿态，仍须验证后坐与动作姿态的组合。
                 var kick = presenter.Visual.transform.localPosition - position;
                 Assert.That(Vector3.Dot(kick, rotation * Vector3.back), Is.GreaterThan(0f));
                 Assert.That(kick.magnitude, Is.LessThanOrEqualTo(.0351f));
@@ -143,7 +141,7 @@ namespace Game.Tests
                 int layer = animator.GetLayerIndex("Shared Gun Upper Body");
                 Assert.That(layer, Is.GreaterThan(0));
                 Assert.That(animator.GetLayerWeight(layer), Is.EqualTo(1f));
-                if (interruption == "switch") presenter.SetWeaponId("weapon.knife");
+                if (interruption == "switch") presenter.SetWeaponId("weapon.short-sword");
                 else if (interruption == "hurt") view.PlayHurtFeedback();
                 else view.SetAlivePresentation(false);
                 Step(animator, view, 6);

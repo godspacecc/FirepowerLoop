@@ -1,0 +1,6 @@
+Project=E:/GitHub/FirepowerLoop/Client/Assets
+Compilation failed=False
+Game prefabs=138
+YAML assets=1949
+Reference errors=0
+Time scale=0

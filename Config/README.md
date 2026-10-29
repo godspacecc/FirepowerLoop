@@ -4,6 +4,8 @@
 
 设置界面新增文案以 `Localization/settings-visuals.json` 为权威源；`gen.bat` 完成双端生成后调用 `publish-localization.ps1`，仅发布其中声明的键到客户端两种语言 JSON，其它历史文案保留。
 
+退役文案以 `Localization/retired-keys.json` 的明确键清单为权威源，发布时同步从两种语言删除，保留其它键的行序和格式；退役键不得同时出现在增补源中。当前清单525键，覆盖已移除的基地、远征、背包、制造、文明、地图道具、火把和旧物品文案，不删除现役街机、衣物与敌人武器文案。完成正式发布后，通过 Unity 菜单 `Tools/本地化/生成文本常量`（`Game.LocalizationTextGenerator.GenerateTexts()`）重生 `TextsGenerated.cs`，不手改生成成员。
+
 - Schema：`Defines/*.xml`
 - 数据：`DataCsv/*.csv`
 - 目标与组：`luban.conf`
@@ -14,9 +16,9 @@
 | 目标 | 生成 C# | 生成 bytes | 表数 |
 | --- | --- | --- | --- |
 | 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 35 |
-| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 29 |
+| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 30 |
 
-共 41 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 21 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
+共 41 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 22 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
 
 `arcade_round_layout.Barrels` 复用入口点坐标格式 `x|y;x|y`，为空表示本图没有预置可射桶。当前仅 Barrage（配置 3）四图各有两个，数组零基索引与地图 ID、Version 共同确定桶身份；该主题布局版本为 2，其余主题仍为 1。桶位由共享参数校验有限数、地标和障碍重叠，并按实际场地尺寸验证可达性。
 
@@ -34,7 +36,7 @@
 
 地图刷枪使用空投箱：`arcade_rule.WeaponDeliverySeconds=1.2` 秒，前 75% 从空中落到点位，后 25% 自动开盖并显示武器；开箱完成后才可拾取，30 秒地面存留从此开始。单双人分别由本地战斗系统和服务器计时，联机快照保留空投标记及剩余时间，表现按权威进度采样。宝箱等非空投来源的武器仍立即落地可拾取；空投外观和时长是本项目需求，不作为参考游戏规则结论。
 
-`map.firepowerloop.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 与 `map_display` 保留空表以维持共用地图适配契约。历史地图图片及图标资源保留，不由 Luban 生成。旧地图资料生成工具已移除。
+`map.firepowerloop.arcade` 是保留的稳定地图 ID，仍指向 `TaskSampleMap`。`map_scene_part` 保留空表以维持多场景加载适配契约；没有现役消费者的地图图片显示表 `map_display` 及其手写查询接口已移除。不再被现役场景、制作工具或调试引用的历史地图图片及图标已随退役内容清理；现役依赖与来源材料保留。旧地图资料生成工具已移除。
 
 `arcade_solo_drop` 仅面向客户端，保留第一场临时第一人称的权重 5、持续 20 秒配置；服务端不生成此表。街机宝藏、装备、强化道具、金币、挑战及单人/双人规则保留。商店及交易已移除：`arcade_shop_item` 由仅含支援视觉身份、地址与偏移的 `arcade_support_visual` 替代；`arcade_upgrade` 只用于本项目旧局已持有效果的恢复，不提供新获取入口。`arcade_reward` 为现有街机目录契约保留空表，已去除 scrap/core/token 局外奖励行，不提供成长钱包。
 
@@ -63,3 +65,5 @@
 2026-10-23近战攻击时序：街机普通近战复用`enemy.TelegraphSeconds=0.4`。攻击冷却就绪后，只有进入玩家与敌人的接触距离才开始完整0.4秒等待；离开范围、诱饵分流或受控立即取消，再靠近重新等待，联机换目标也重新计时。追击时间不能抵扣前摇，命中后再进入原攻击间隔；玩家0.65秒受伤保护保持。普通队列和Boss普通增援都传递该参数，盟友强化和特殊怪的普通接触伤害走相同判定；远程发射、Boss专用技能及旧非街机配置保持。本次修改伤害时序，没有修改正式攻击动画、预警视觉或资源。双端由Config/gen.bat生成，指纹为firepowerloop-20261023-v24-melee-windup。
 
 2026-10-24空手丧尸贴身抓挠：三个 `enemy.arcade.zombie.*` 的 `AttackRange` 均为0.9米，`TelegraphSeconds` 保持0.4秒；普通近战进入范围才起手，命中后0.55秒收招停步，离开取消。身体/弹丸碰撞仍使用原半径，攻击间隔、受伤无敌、生命和掉落规则不改。单双人共享距离及停步规则；当前指纹在既有v25后追加 `-contact-grab`，通过gen.bat双端生成（36/30表）。
+
+2026-10-29 退役共用内容清理：源表共41张，客户端35张、服务端30张。删除旧材料、食物、饮水、采集刀斧镐、汉代及火把共19个物品身份和对应掉落，保留现役敌人与姿态调试、枪械目录及衣物依赖。loot.arcade.drop与中性物品49承载现役街机落地表现，不再借用旧金属材料；文案源为Localization/arcade-drop-carrier.json，由正式生成入口发布。现役敌人清空退役背包保底掉落，仍保留投射物、弹匣与战斗参数；Schema移除物品火把燃烧、武器采集效率及已退役能量/水分恢复枚举。历史验证段的当时表数不据此改写。

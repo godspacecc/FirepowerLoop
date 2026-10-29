@@ -1,0 +1,192 @@
+[
+  {
+    "testClass": "ConfigLocalizationTests",
+    "max": 7,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 7,
+        "PassedTests": 7,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.9232159"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.ConfigLocalization_FallsBackToLegacyTextThenFallbackId",
+          "Status": "Passed",
+          "Duration": "00:00:00.2620000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.ConfigLocalization_UsesCurrentLanguageWithoutCaching",
+          "Status": "Passed",
+          "Duration": "00:00:00.0740000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.GeneratedCatalog_ExcludesRetiredItemsAndKeepsArcadePresentationCarrier",
+          "Status": "Passed",
+          "Duration": "00:00:01.5820000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.ItemConfig_GeneratesLocalizationKeysAndBinaryData",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.LanguageTables_ContainItemKeysInEveryLanguage",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.LubanGenerationBoundary_UsesSingleEntryAndKeepsClientServerTablesSeparate",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.ConfigLocalizationTests.PlayerConfig_ExposesGeneratedAndCompatibilityUnarmedRules",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "CharacterPresentationTests",
+    "max": 8,
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 8,
+        "PassedTests": 7,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:03.2009770"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.DirectionChangeReusesOverrideAndSelectsTheMatchingClip",
+          "Status": "Passed",
+          "Duration": "00:00:00.6400000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.EnemyPresentationRejectsGameplayKindMismatch",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.EnemyWeaponValidationUsesExactTableIdentityAndBehavior",
+          "Status": "Passed",
+          "Duration": "00:00:01.2660000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.HiddenBindingPreservesOriginalControllerWhenProfileFails",
+          "Status": "Passed",
+          "Duration": "00:00:00.0490000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.InvalidWeaponClearsThePreviousModelAndController",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.RifleReloadUsesUpperBodySequenceAndClearsOnCancelOrWeaponSwitch",
+          "Status": "Failed",
+          "Duration": "00:00:00.0320000",
+          "Message": "  手枪不可播放步枪动作\r\n  Expected: 0\r\n  But was:  1.0f\r\n",
+          "StackTrace": "at Game.Tests.CharacterPresentationTests.RifleReloadUsesUpperBodySequenceAndClearsOnCancelOrWeaponSwitch () [0x00176] in E:\\GitHub\\FirepowerLoop\\Client\\Assets\\Tests\\EditMode\\CharacterPresentationTests.cs:46\r\n"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.SharedPlayerPistolKeepsBothHandsCenteredAndBarrelForward",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.CharacterPresentationTests.UnarmedSprintUsesRunOnlyForForwardAndRestoresWalk",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        }
+      ]
+    }
+  },
+  {
+    "testClass": "ArcadeMeleePresentationTests",
+    "max": 13,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 13,
+        "PassedTests": 13,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:17.5612858"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.EnemyMeleeWeaponsTriggerSwingAndRepeatedSequenceDoesNotReplay",
+          "Status": "Passed",
+          "Duration": "00:00:01.7670000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.NetworkAttackSequenceSurvivesClientSnapshotConversion",
+          "Status": "Passed",
+          "Duration": "00:00:01.6270000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.OnlineProjectionSelectsTemporaryWeaponThenRestoresPurchaseWithoutReplayingHistory",
+          "Status": "Passed",
+          "Duration": "00:00:01.3000000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"fist\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.2380000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"bow\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.2850000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"projectile\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.3200000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"online-melee\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.2430000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.ProjectileWeaponStillPlaysUpperBodyFireAnimation",
+          "Status": "Passed",
+          "Duration": "00:00:01.0930000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteLoadBindsLatestWeaponAndSkipsBufferedAttackHistory",
+          "Status": "Passed",
+          "Duration": "00:00:01.1140000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteWeaponBindsBeforeAttackAndLoadedHistoryDoesNotReplay",
+          "Status": "Passed",
+          "Duration": "00:00:01.1250000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.0f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.2070000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.greatsword\",1.0f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.1150000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.5f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.1760000"
+        }
+      ]
+    }
+  }
+]

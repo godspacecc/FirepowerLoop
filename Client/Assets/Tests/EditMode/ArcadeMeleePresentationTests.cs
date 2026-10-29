@@ -38,10 +38,10 @@ namespace Game.Tests
         public void TearDown() => UnityEngine.Object.DestroyImmediate(instance);
 
         [Test]
-        public void FiveMeleeWeaponsTriggerSwingAndRepeatedSequenceDoesNotReplay()
+        public void EnemyMeleeWeaponsTriggerSwingAndRepeatedSequenceDoesNotReplay()
         {
             var sequence = 0;
-            foreach (var id in new[] { "weapon.short-sword", "weapon.greatsword", "weapon.knife", "weapon.axe", "weapon.pickaxe" })
+            foreach (var id in new[] { "weapon.short-sword", "weapon.greatsword" })
             {
                 controller.SetPlayerWeapon(Weapon(id));
                 view.Animator.Rebind();
@@ -71,7 +71,7 @@ namespace Game.Tests
             var entry = Activator.CreateInstance(entryType, true);
             ((IDictionary)Get(controller, "remotePlayers")).Add(2L, entry);
             var sync = typeof(ArcadeCombatViewController).GetMethod("SetRemotePlayerCombat");
-            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.knife"), 7 });
+            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.short-sword"), 7 });
             sync.Invoke(controller, new object[] { 2L, Weapon("weapon.greatsword"), 9 });
             Set(entry, "View", new OnlineRemotePlayerViewCtrl(instance));
             Set(entry, "Visible", true);
@@ -85,11 +85,7 @@ namespace Game.Tests
 
         [TestCase("weapon.short-sword", 1f)]
         [TestCase("weapon.greatsword", 1f)]
-        [TestCase("weapon.knife", 1f)]
-        [TestCase("weapon.axe", 1f)]
-        [TestCase("weapon.pickaxe", 1f)]
         [TestCase("weapon.short-sword", 1.5f)]
-        [TestCase("weapon.knife", 1.5f)]
         public void SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(string id, float rate)
         {
             var weapon = Weapon(id);
@@ -166,14 +162,14 @@ namespace Game.Tests
             ((IDictionary)Get(controller, "remotePlayers")).Add(2L, entry);
             var sync = typeof(ArcadeCombatViewController).GetMethod("SetRemotePlayerCombat");
             Assert.That(sync, Is.Not.Null, "联机玩家缺少武器与攻击同步入口");
-            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.axe"), 7 });
-            Assert.That(instance.GetComponent<CharacterWeaponPresenter>().Current.Id, Is.EqualTo("weapon.axe"));
+            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.short-sword"), 7 });
+            Assert.That(instance.GetComponent<CharacterWeaponPresenter>().Current.Id, Is.EqualTo("weapon.short-sword"));
             Assert.That(view.Animator.GetBool("Attack"), Is.False, "首次同步不能补播历史攻击");
-            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.axe"), 8 });
+            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.short-sword"), 8 });
             for (var frame = 0; frame < 8; frame++) view.Animator.Update(0.01f);
             Assert.That(view.Animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"), Is.True);
             var previousTime = view.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
-            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.axe"), 8 });
+            sync.Invoke(controller, new object[] { 2L, Weapon("weapon.short-sword"), 8 });
             view.Animator.Update(0.02f);
             Assert.That(view.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime, Is.GreaterThan(previousTime),
                 "同一远端攻击序号不能重新起手");
@@ -185,17 +181,6 @@ namespace Game.Tests
         private ArcadeWeaponDefinition Weapon(string id)
         {
             foreach (var weapon in catalog.Weapons) if (weapon.Id == id) return weapon;
-            // 共用模型动画仍保留；退役街机行不再作为这些表现测试的数值来源。
-            var itemId = id switch { "weapon.knife" => 16, "weapon.axe" => 17, "weapon.pickaxe" => 18, _ => 0 };
-            if (itemId != 0)
-            {
-                var provider = new LubanRuntimeConfigProvider(() => new Tables(file => new ByteBuf(File.ReadAllBytes(
-                    Path.Combine(Application.dataPath, "Game", "Config", file + ".bytes")))));
-                Assert.That(provider.TryGetWeapon(itemId, out var source, out var error), Is.True, error);
-                return new ArcadeWeaponDefinition(id, string.Empty, string.Empty, false, Vector3.zero,
-                    source.AttackDamage, source.AttackCooldownSeconds, 0, 0, 1, 0,
-                    global::ArcadeWeaponBehavior.Melee, 1, 0, source.AttackRange, source.MeleeArcDegrees);
-            }
             throw new InvalidOperationException(id);
         }
 

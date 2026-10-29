@@ -1,0 +1,801 @@
+[
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9.meta",
+    "sha256": "c0ac7cd6af564d30c201ded7e3fd38987d152cb6db452d650447ccf8decc7d83",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout/HeJiaVillage_2_1_d6d3b6ea9cf9"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs/Props/Containers.meta",
+    "sha256": "ed21a73b579804f1fee0eeb28e5a1c16fdba00539208b26c204fdee630946d50",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs/Props/Containers"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Materials.meta",
+    "sha256": "b7fa04c94487391f656f68287fe6e86738722a47b43c54f8a029cc4200304708",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Textures.meta",
+    "sha256": "6bcdaeb64dd6e16e80bf7d2114683fd3ee42b6e61943231100cffa9e238eb84a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Prefabs.meta",
+    "sha256": "157e701557fa56cd0dfe9f174e206cd69f539da2871e09eb0651621453ce019d",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Prefabs"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Models.meta",
+    "sha256": "6d3e99c1e743923364dce1d76218dcf23e93caae2580de1badcb4fdb86a4d49c",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs/Props.meta",
+    "sha256": "263f6fa811c87d037e27555d3f817371fc86c234dc4df08befc2fb1abacf9bff",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs/Props"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Exterior/Wood_path.meta",
+    "sha256": "a4478867b972e049b861ac0726ef8f596962a5a5f86989a1b33940ed1835ed7e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Exterior/Wood_path"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Models/Props.meta",
+    "sha256": "19a9d5f03a7fc579571130fdaad150bee288ede72e562e2be967f4308e046e94",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Models/Props"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Containers.meta",
+    "sha256": "a0a614f5ffb8b39edebe3a465c8892d4af9b654182568ecd2138b9478d1ec0fe",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Containers"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Materials.meta",
+    "sha256": "c12a359b015357c939975b42ba6db8796198eae9c9aa6255457a3dd369916118",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Textures.meta",
+    "sha256": "80f777382525ee6d196cb1c77eba5b963736494788e4e9c28748421d7fe31490",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack.meta",
+    "sha256": "3cbf3b96101bcf161a5ac01f82564e1d3cf7e90ff3509d0f1b76fa057e017c19",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/SimpleNaturePack"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Benches.meta",
+    "sha256": "c4fe235b62e831c986e7e255c3f3c3450d4fca8a7d9240152aa0c5641bd9ad28",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Benches"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs.meta",
+    "sha256": "cedaf90945619e793e5b969853762ed3e6d107d73ce41f1b7cde21c48d842198",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Prefabs"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/River/Shaders/CGIncludes.meta",
+    "sha256": "3de17c5904732f12a70344730ef7b347e64b006325b0e6fef4ccb09f7d0b71ca",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/River/Shaders/CGIncludes"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Models.meta",
+    "sha256": "b787a199622e5de0737b5385801b90021cc8bdc900a5400be6e06ff5d40d1cc3",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Tables.meta",
+    "sha256": "6680859c7be54cbe3cd37555001a7c05f1dfab852d1f8951272f1925104cbc2b",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Tables"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Shaders/CGIncludes.meta",
+    "sha256": "1e3f9f344345580c151c6ba579cd663dce89aae09dccf1737bce18a41c2f6822",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Shaders/CGIncludes"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Items.meta",
+    "sha256": "b2c891ec401bbb4bf6017698b5ab5fc4484b05a31dc4745e45bb02067893e995",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Items"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Wood.meta",
+    "sha256": "e4627d8a852df3ac5d56bfd1893c6a94e72e9241584339f273fc50b9db1aba06",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props/Wood"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Exterior.meta",
+    "sha256": "d77c0183afcf7b02bc7d310fbde7707dd9e4d41ebadf28727745123f1d7c1f95",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Exterior"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout.meta",
+    "sha256": "49cdc73249d767f026997b51985d9eaba30cfc16013b88babdd6e54ed84ee6e5",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/GeneratedAnnotationBlockout"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/ARPG Effects/Demo/Models.meta",
+    "sha256": "7b8396e83bf8a80dfcdaf9f381b67ce2c9630ff2604f978a2048d174e809d771",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/ARPG Effects/Demo/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Materials.meta",
+    "sha256": "6bcf397d0a54d3d116f35572d1839507ecb8d2529ca3dc441b41127c03158aaf",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models/Exterior.meta",
+    "sha256": "20bf9294426a1f85ee5ce2f0cc3598a21127007305e15d976df6589b129fa546",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models/Exterior"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Textures.meta",
+    "sha256": "19bc1c6441a0843a171bcec6dc18ead4cc12db868b9c48f32950b5f11c1e7d1c",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Materials.meta",
+    "sha256": "cfb07568435e98506395a342cc2ad7ab87acf1de5465b51065301ccc7bbfc241",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT.meta",
+    "sha256": "464021e4d4c49e636541182bb1976c02a88abcb23ca15d783e56fc830464073e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources/RPGPP_LT"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props.meta",
+    "sha256": "f547472676caba8b7228f6d694c90de6c418773d0605476eea0075a4dcb2afae",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs/Props"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Models.meta",
+    "sha256": "8a9f72884c66ef968735c212dc4c91eeb0ac7650079451334c3b356ee276a9aa",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/ARPG Effects/Textures.meta",
+    "sha256": "bcb08f16c64b6367ab34b4990df6d06129dc609df35d58918e1f29184343eb10",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/ARPG Effects/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models/Props.meta",
+    "sha256": "4f3d7170b2e93d9778da8d254333310ae8174c485de9f8fd0d44e352cc57912a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models/Props"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Textures.meta",
+    "sha256": "4f391b945916cbb55be6f37c4a8cc47b66170963bde2651b4a1679533267b393",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Prefabs.meta",
+    "sha256": "822d16b8294153f812ce8f02fa1c4cc0c928f60cecd873253d5c6f7a4fc83909",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Prefabs"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Terrain.meta",
+    "sha256": "7027bdf06721e28b1d875d6e73e83e0b49a6dcacfb3566b5cfca4bd6bff42018",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Terrain"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Meshes/Materials.meta",
+    "sha256": "d9de230382cc1b6a9d0d1ae4f4ae8f2022dc706b77c210e4c00c21dc83526e15",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Meshes/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Meshes.meta",
+    "sha256": "80fce48677fa869f0417912f6bad0a51791b67913ca3e55aba9ea95631e9e8c5",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack/Meshes"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/CurrentViewCoarseLayout.meta",
+    "sha256": "b7f90df2fc6505d40cdbaeb9ed6d68b8e693f325ca901f7748ae1b053aaa039e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/CurrentViewCoarseLayout"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Materials.meta",
+    "sha256": "815781763ea6c116b12e1b9c094ece29dec850f2bc140824e8c83eade30b2c47",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Textures.meta",
+    "sha256": "fe6f6b1f22e048bda88066ef67bcbc56aaf6d6c5bb31431a5edb0d0c630ceacc",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Textures.meta",
+    "sha256": "e22deee1185540f5033025b26c70a9f31163dc726a41c0cf47c03c2b1836e8cb",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Shaders.meta",
+    "sha256": "084983b02bd6c3fa6816256609fd608e049dd098558c3fd735e5a46149805aca",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky/Shaders"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Navigation.meta",
+    "sha256": "108c3a177dee180aea2fd8b77bcb174a327d52b7760aafa5c5223c97cb61da4a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Navigation"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Vegetation.meta",
+    "sha256": "8fcb6e91fdf294ddcf9c278a029576e8b0ccbe6bffff8eea77c83adc98672b5e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Vegetation"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs.meta",
+    "sha256": "4bde144321fb75abceea67ffe66fa13d662aad70bb7235864ae6ce5cd8e5c9a1",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Prefabs"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/RegionAnnotations.meta",
+    "sha256": "5fef3751b3722ef23cfee7dda332720679bea3e7500bf0d398d3ac15fb435830",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/RegionAnnotations"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models.meta",
+    "sha256": "7344c8071a5d8e7a00482ae075c13e3b6cb9744125249798c2404cc329d1f28a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Materials.meta",
+    "sha256": "c619b5dfd46a5fd21bab701bd8a26122f721ba6751083b9532f6e0508871031a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences.meta",
+    "sha256": "3159e84ebd9e3752522ef384451e3cf25e5756c1511e2fb5d961c7d06bf1c5bd",
+    "bytes": 180
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/FeatureReferences"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory.meta",
+    "sha256": "f43f42aef04f25cb659a5f82ff131b285d117b776ec7a608ef881a4081a53c56",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/HanStory"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources.meta",
+    "sha256": "58296fc6354da929c8b11f03675e20cd1b27671da2957907c4676d236735acdf",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sources"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Scenery.meta",
+    "sha256": "f6384156c1e4163feef6ee6435be3b85bec32e3d9a8f2dd562114909b6970dcb",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Scenery"
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview.meta",
+    "sha256": "9373cb838931a23115b44da1d806c93c1287e4e85de82b66284e52de52aacc00",
+    "bytes": 180
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scenes/GeneratedMaps/HeJiaVillageLocalPreview"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack.meta",
+    "sha256": "6fd3d9bf534339a475114299023027da7666133b0ab6c7bcae88e5ff113ac7b6",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/SimpleNaturePack"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers.meta",
+    "sha256": "bedb57e1238a1278bbb1166af8909e95226fd0cbfb5b37bd8dea2db6a5a4468c",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainLayers"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Prefabs.meta",
+    "sha256": "a155bb01246b0e9a9ea36e16291f2c37fc9ada0846cad9db57b2d68df2ae7457",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Prefabs"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky.meta",
+    "sha256": "e6f736f08e86228ee708755d2bcf553e56edfa7e3b952209df8236578b63d1d6",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/CivilisationExpedition/Sky"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Meshes.meta",
+    "sha256": "261be6dafab63d6a8b30cd13afbb732d363d91fb40ba9309d9a609a1856a100a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/Nature/Meshes"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData.meta",
+    "sha256": "9b33d0e0352b4fbb0a597f903c94d8be8d7d143d1c7f571f79c2c2297ed888f4",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/TerrainData"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT.meta",
+    "sha256": "33bdb00c01229ccc00807754cf71111d377ed97a48567fe49e990e3c04de6c42",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Sources/RPGPP_LT"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/RoadSample.meta",
+    "sha256": "0dfd79ba3fc3a98314ed6471e9626699a04ab9461adf47f5acb63f854b40c68f",
+    "bytes": 180
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/RoadSample"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Interaction.meta",
+    "sha256": "e8e2670293e50dfa827a568d4d7f981f7e5d911197cbc323d66e3ff57f411f64",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Interaction"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures.meta",
+    "sha256": "3161bbd97a4c44a7221aa1eb5f625e9bbd2f4a05c41ebeeecbe571f889dcfb27",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage/Textures"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/Civilisation.meta",
+    "sha256": "014ccfe374725a7f99df71fa69564ba5c947fc647e9fbf3ef458948efcca2980",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/View/Civilisation"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/HeJiaVillage/Skybox.meta",
+    "sha256": "74bc7925a315e0aaab02f25bdf3738b2e27dc59eac1051d0a51af662672b051f",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/HeJiaVillage/Skybox"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/Interaction.meta",
+    "sha256": "94cd5339ee560421a06a89d7cc0ac931787aa58a873cfb258e1e0416672ba53e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/View/Interaction"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Materials.meta",
+    "sha256": "abd5ffa0897d2b46a188e1576aeb7ea06cf81b649c9cb7345a17ca89a5be7fcf",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Materials"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Lakeside.meta",
+    "sha256": "f7cfcddb716aa00fa2b7f157f5f09428717b453102687448ea7ceec6584fbcf7",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Lakeside"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Civilisation/HanItems/Models.meta",
+    "sha256": "35bc171f30c166a93f11dd57a94e23dc20381fb7a8dfe41cfdd18c33af949339",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Civilisation/HanItems/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player/Box.meta",
+    "sha256": "b14d69e437b210c0affae95586fc3dbceba676e962e206e4be0666693009831e",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Player/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseCamp/Meshes.meta",
+    "sha256": "b84a1ab8c41401b7a7e815f640815e9006809a768e0e29938821c21ec9e532a5",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseCamp/Meshes"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources/HeJiaVillage.meta",
+    "sha256": "ca74590dc0b030eaaa4741f37d97bd38639e05263cecd78584d47bda8ae7c4a0",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources/HeJiaVillage"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Arcade/Weapons/Animations.meta",
+    "sha256": "12725f191c6cbc344cb89d850bc125a27e6606bbc618cefecd0eb5ce879d24e6",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Arcade/Weapons/Animations"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Player.meta",
+    "sha256": "480098b2a156bceed31725ced3d61bfcb5f32599b329aff4a57267e78e176705",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/UI/Player"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/Npc.meta",
+    "sha256": "fa0742500b1c08672b4087e43e54fff2d750c2159a5ccae05d5af59679c2a0ac",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scripts/Controller/View/Npc"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Environment/BaseWeather.meta",
+    "sha256": "5afca4698501f234bde86a0be514a647e0628e2ede54a2bdedd211e0e6865273",
+    "bytes": 169
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Environment/BaseWeather"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Arcade/Enemies/Models.meta",
+    "sha256": "c8176ab77202cae216f98a7a9eaeb7989c6465d5ae0debeeedb1bbc01cb62610",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Arcade/Enemies/Models"
+  },
+  {
+    "path": "Client/Assets/Game/Art/UI/TemporaryBuilding.meta",
+    "sha256": "b6a865c1fcabb449eb20941e148f3e45665a410359a71e3cfcabdf1f4a81737a",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/UI/TemporaryBuilding"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Items/HandheldTorch.meta",
+    "sha256": "64980bea07ac785e3e4fbbc06d61435ca7bb9f6728bc11393833c568bf2c5507",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Items/HandheldTorch"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Player/FirstPerson.meta",
+    "sha256": "b726b91127cc7119f04347b31b32a6afd5395655fc795bb2e50090fba946c297",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Player/FirstPerson"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player/Box.meta",
+    "sha256": "0a948451bf69d8fde767a92a5f0342a25b624b9d84d76cf6ced8e9b478e5acbc",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Player/Box"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Map/HeJiaVillage.meta",
+    "sha256": "32396686627d304046e7c80c9ebb03522c17055f96bb29e9244fc0bcf0b01541",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Map/HeJiaVillage"
+  },
+  {
+    "path": "Client/Assets/Game/Scenes/GeneratedMaps.meta",
+    "sha256": "856c41e9416c4aedacec3e67cd6bb24d429c9be26e6351f0823c25efa7bd518c",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Scenes/GeneratedMaps"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Environment.meta",
+    "sha256": "664d90dfa2c64638b84838d279ffbab28af263bac33a0bc57cdef4d54080ca97",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/Environment"
+  },
+  {
+    "path": "Client/Assets/Game/Art/UI/MapSelection.meta",
+    "sha256": "dbc28a916fba8ac73f123a30cf9765cece9d7092910dd417bd87797177d45c87",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/UI/MapSelection"
+  },
+  {
+    "path": "Client/Assets/Game/Art/UI/MapControls.meta",
+    "sha256": "1458e96ed8300914110facd46ef63f3e757a691a87d4afe49bb3db5f7dfa5eb1",
+    "bytes": 169
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/UI/MapControls"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Player.meta",
+    "sha256": "d17c41c3e763c87946f1e19b378c8edffbdd23f8398d038c73fa25592a9517f3",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/UI/Player"
+  },
+  {
+    "path": "Client/Assets/Game/MapTerrainSources.meta",
+    "sha256": "6b49d1d9fb984c3b4d7b226f6ff40211de70e5cd167269b0355d1566c7db8519",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/MapTerrainSources"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Building.meta",
+    "sha256": "1a6684d714daf7f83a0a3f40e31e22fd583309ea911ed104113f88ef8d0076ff",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/Building"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Npc/Humanoid.meta",
+    "sha256": "e8969530e1e7d618013ab1a47acf4820b114918c102a2e6964e197a9a8c2d209",
+    "bytes": 169
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Npc/Humanoid"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/Effects.meta",
+    "sha256": "1708adacc8a149b39b476ac402df3d70a2b9c3b73fea771455769ce4be6d8dc8",
+    "bytes": 180
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Prefabs/Effects"
+  },
+  {
+    "path": "Client/Assets/Game/Art/UI/Map.meta",
+    "sha256": "ce1ffd712b75c6994065c4d8fc80c5545eaa9768ff9e35ea53bdd9ab6e232b38",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/UI/Map"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Npc.meta",
+    "sha256": "14c6d6f0ff0c5a71cb7d9962ff91fd2573ad20f7037eab3834f9c1e476bafe79",
+    "bytes": 169
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Npc"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Map.meta",
+    "sha256": "dd95960a0f9c4f4ad95975fde978852f6be9d49e1b7aeb0d411e8bfb6ba6db59",
+    "bytes": 172
+  },
+  {
+    "emptyDirectory": "Client/Assets/Game/Art/Map"
+  },
+  {
+    "emptyDirectory": "Docs/Plans/Visuals"
+  },
+  {
+    "emptyDirectory": "Docs/Plans/Images"
+  },
+  {
+    "emptyDirectory": "Docs/物资与基地库存"
+  },
+  {
+    "emptyDirectory": "Docs/玩家操控与相机"
+  },
+  {
+    "emptyDirectory": "Docs/地图与远征流程"
+  },
+  {
+    "emptyDirectory": "Docs/存档与开始流程"
+  },
+  {
+    "emptyDirectory": "Docs/战斗与敌人"
+  },
+  {
+    "emptyDirectory": "Tools/MapTerrainData/HeJiaVillage"
+  },
+  {
+    "emptyDirectory": "Tools/MapTerrainData"
+  },
+  {
+    "emptyDirectory": "Tools/Art/HanCart"
+  },
+  {
+    "emptyDirectory": "Tools/Art/HanItems"
+  },
+  {
+    "emptyDirectory": "Backup/Artifacts/UnusedContentAudit-20261029"
+  },
+  {
+    "emptyDirectory": "Backup/Artifacts/UnusedContentCleanup-20261029"
+  }
+]

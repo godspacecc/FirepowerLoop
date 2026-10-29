@@ -333,7 +333,19 @@ namespace Game
             playerView?.SetSharedWeaponAnimationActive(true);
             playerView?.SetWeaponPresentation(false, false, false);
             enemyView?.SetWeaponPresentation(0);
-            var entry = index == 0 ? null : characterWeaponCatalog.Get(index - 1);
+            // 场景目录只提供稳定选项身份；实际姿态使用当前角色已采用的专属目录。
+            var requested = index == 0 ? null : characterWeaponCatalog.Get(index - 1);
+            var entry = requested == null ? null : weaponPresenter.Catalog?.Find(requested.Id);
+            if (requested != null && entry == null)
+            {
+                selectedSharedWeaponId = string.Empty;
+                weaponPresenter.SetWeapon(null);
+                ClearSharedAnimationOptions();
+                poseTuningPanel?.Bind(null, null);
+                if (equipmentHintText != null)
+                    equipmentHintText.text = $"当前角色未配置武器 {requested.Id}，无法预览";
+                return;
+            }
             selectedSharedWeaponId = entry?.Id ?? string.Empty;
             if (!weaponPresenter.SetWeapon(entry))
             {
@@ -947,8 +959,10 @@ namespace Game
                 string.IsNullOrEmpty(selectedSharedWeaponId)) return;
             for (var index = 0; index < characterWeaponCatalog.Count; index++)
             {
-                var entry = characterWeaponCatalog.Get(index);
-                if (entry?.Id != selectedSharedWeaponId) continue;
+                var requested = characterWeaponCatalog.Get(index);
+                if (requested?.Id != selectedSharedWeaponId) continue;
+                var entry = weaponPresenter.Catalog?.Find(selectedSharedWeaponId);
+                if (entry == null) return;
                 weaponPresenter.RefreshCurrentPose(entry);
                 return;
             }

@@ -26,7 +26,6 @@ namespace Game
             Bind(UI.BtnOnline, OpenOnlineOrLeaveArcade);
             Bind(UI.BtnSetting, () => UIHelper.ShowUI<SettingUICtrl>());
 
-
             Bind(UI.BtnExit, () => this.SendCommand<QuitGameCommand>());
             this.RegisterEvent<AppStateChangedEvent>(_ =>
             {
@@ -75,8 +74,6 @@ namespace Game
             UI.OnlineActionText.text = Loc.T("ui.pause.main_menu");
             UI.BtnOnline.interactable = !leavingMap;
             UI.BtnContinue.interactable = !leavingMap && this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
-            UI.BtnReturnCamp.gameObject.SetActive(false);
-            UI.BtnMainMenu.gameObject.SetActive(false);
         }
 
         /// <summary>根据领域地图身份提交意图，不以按钮显示文字决定行为。</summary>

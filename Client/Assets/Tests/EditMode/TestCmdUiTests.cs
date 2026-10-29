@@ -1087,9 +1087,9 @@ namespace Game.Tests
             Assert.That(FindText(ui.transform, "TextTitle").text, Is.EqualTo("测试指令"));
             Assert.That(ui.BtnExecute.GetComponentInChildren<TMP_Text>(true).text, Is.EqualTo("执行"));
 
-            ui.InputCommand.text = "#clone 1 1";
+            ui.InputCommand.text = "#unitbar on";
             ui.BtnExecute.onClick.Invoke();
-            Assert.That(ui.TextResult.text, Does.Contain("获得金属零件x1"));
+            Assert.That(ui.TextResult.text, Does.Contain("敌人头顶生命条已开启"));
             CreateRefreshedCategory(ctrl, 1).BtnSelect.onClick.Invoke();
             CreateRefreshedEntry(ctrl, 1).BtnSelect.onClick.Invoke();
             var categoryId = GetPrivate<string>(ctrl, "selectedCategoryId");
@@ -1104,9 +1104,9 @@ namespace Game.Tests
             Assert.That(Game.Interface.GetModel<TestToolSettingsModel>().RecentCommands, Is.EqualTo(history));
             Assert.That(FindText(ui.transform, "TextTitle").text, Is.EqualTo("测试指令"));
             Assert.That(ui.BtnExecute.GetComponentInChildren<TMP_Text>(true).text, Is.EqualTo("执行"));
-            ui.InputCommand.text = "#clear bag";
+            ui.InputCommand.text = "#unitbar off";
             ui.BtnExecute.onClick.Invoke();
-            Assert.That(ui.TextResult.text, Does.Contain("已清空玩家背包"));
+            Assert.That(ui.TextResult.text, Does.Contain("敌人头顶生命条已关闭"));
         }
 
         private static T GetBaseUI<T>(BaseUICtrl ctrl) where T : BaseUI
@@ -1700,36 +1700,6 @@ namespace Game.Tests
 
         private sealed class TestConfigProvider : IRuntimeConfigProvider
         {
-            public bool TryGetItem(int id, out ItemDefinition value, out string error)
-            {
-                switch (id)
-                {
-                    case 1:
-                        value = new ItemDefinition(id, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
-                        error = null;
-                        return true;
-                    case 2:
-                        value = new ItemDefinition(id, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0);
-                        error = null;
-                        return true;
-                    default:
-                        value = default;
-                        error = "missing item";
-                        return false;
-                }
-            }
-
-            public bool TryGetItems(out System.Collections.Generic.IReadOnlyList<ItemDefinition> values, out string error)
-            {
-                values = new[]
-                {
-                    new ItemDefinition(1, "Metal Parts", "Metal Parts", "item.metal_parts.name", "item.metal_parts.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0),
-                    new ItemDefinition(2, "Cloth", "Cloth", "item.cloth.name", "item.cloth.desc", string.Empty, global::ItemType.Material, 5, global::ItemUseEffect.None, 0)
-                };
-                error = null;
-                return true;
-            }
-
             public bool TryGetMap(string id, out MapAssetDefinition value, out string error)
             {
                 value = new MapAssetDefinition(id, id);

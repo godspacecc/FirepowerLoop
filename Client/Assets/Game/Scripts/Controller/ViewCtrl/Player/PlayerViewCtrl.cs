@@ -175,12 +175,6 @@ namespace Game
                 return false;
             }
             var provider = Game.Interface.GetUtility<IRuntimeConfigProvider>();
-            if (provider != null && provider.TryGetItem(itemId, out var tool, out _) && tool.ActionKind == global::ItemActionKind.ToggleTorch)
-            {
-                var shown = presenter.SetWeapon(entry);
-                if (!shown) SharedWeaponError = presenter.LastError;
-                return shown;
-            }
             if (provider == null || !provider.TryGetWeapon(itemId, out var weapon, out _) ||
                 weapon.WeaponKind != global::WeaponKind.Melee &&
                 weapon.WeaponKind != global::WeaponKind.Projectile ||

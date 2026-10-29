@@ -7,7 +7,7 @@ namespace Game
 {
     /// <summary>负责拾取物模型、名称及街机光柱的实例生命周期；不裁决拾取、掉落价值或强化规则。</summary>
     [RequireComponent(typeof(Collider))]
-    public sealed class ResourcePickupView : MonoBehaviour, IPlayerInteractable
+    public sealed class ResourcePickupView : MonoBehaviour
     {
         /// <summary>描述某个掉落模型在俯视场景中的局部展示姿态，不负责修改资源本体。</summary>
         [Serializable]
@@ -62,7 +62,7 @@ namespace Game
         [SerializeField]
         private ArcadeDropVisualPose[] arcadeVisualPoses = Array.Empty<ArcadeDropVisualPose>();
 
-        /// <summary>街机专用光柱；普通远征拾取物不会实例化，随模型替换或回收释放。</summary>
+        /// <summary>街机掉落专用光柱，随模型替换或回收释放。</summary>
         [SerializeField] private GameObject arcadeLootBeamPrefab;
         [SerializeField] private ArcadeLootBeamBinding[] arcadeLootBeamBindings = Array.Empty<ArcadeLootBeamBinding>();
 
@@ -93,14 +93,7 @@ namespace Game
 
         public event Action<ResourcePickupView, Collider> Triggered;
         public event Action<ResourcePickupView, Collider> RangeExited;
-        public event Action InteractionRequested;
-        /// <summary>Controller 同步的范围/背包可操作镜像，不裁决实际拾取结果。</summary>
-        private bool interactionAvailable;
         public string DisplayName => FormatDisplayName(currentDisplayName, currentDisplayAmount);
-        public bool CanInteract => isActiveAndEnabled && interactionAvailable && InteractionRequested != null;
-        public void SetInteractionAvailable(bool available) => interactionAvailable = available;
-        public void SetFocused(bool focused) { }
-        public void Interact() { if (CanInteract) InteractionRequested?.Invoke(); }
         public GameObject NameRoot => nameRoot;
         public TMP_Text NameLabel => nameLabel;
         public string ActiveArcadeVisualPrefabAddress { get; private set; }
@@ -318,7 +311,6 @@ namespace Game
 
         private void OnDisable()
         {
-            interactionAvailable = false;
             SetNameVisible(false);
             ClearArcadePresentation();
         }

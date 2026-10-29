@@ -3,9 +3,6 @@
 ,5,GrayboxShortSword,MeleeWeapon,0,0,0,0,0,0,1,1,1
 ,6,GrayboxBow,LeftHandWeapon,0,0,0,0,0,0,1,1,1
 ,15,GreatswordShared,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,16,KnifeShared,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,17,AxeShared,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,18,PickaxeShared,MeleeWeapon,0,0,0,0,0,0,1,1,1
 ,19,ArcadeBasicWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
 ,20,ArcadeRapidWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
 ,21,ArcadePiercingWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
@@ -13,7 +10,3 @@
 ,23,ArcadeRocketWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
 ,24,ArcadeSpreadWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
 ,25,ArcadeRaygunWeaponShared,RangedWeapon,0,0,0,0,0,0,1,1,1
-,32,HanForgedAxe,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,33,HanForgedPick,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,34,HanSteelBlade,MeleeWeapon,0,0,0,0,0,0,1,1,1
-,35,HanBow,LeftHandWeapon,0,0,0,0,0,0,1,1,1

@@ -18,7 +18,8 @@ namespace Game
         public const string BasicWeaponId = "arcade.weapon.basic";
         /// <summary>街机未指定独立弹体的枪械使用基础子弹；只选择表现，不读取其速度或射程。</summary>
         public const string ProjectileConfigId = "projectile.bullet.basic";
-        public const string DropPresentationLootConfigId = "loot.metal-parts";
+        /// <summary>街机落地物资的通用表现载体，与退役背包材料身份分离。</summary>
+        public const string DropPresentationLootConfigId = "loot.arcade.drop";
         public const string BombResourceId = "arcade.resource.bomb";
         public const string DashResourceId = "arcade.resource.dash";
     }

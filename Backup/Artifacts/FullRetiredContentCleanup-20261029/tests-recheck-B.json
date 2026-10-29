@@ -1,0 +1,65 @@
+[
+  {
+    "testMethod": "Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9334020"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels",
+          "Status": "Passed",
+          "Duration": "00:00:00.0620000"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.AppearanceGallerySceneTests.SharedGunBarrelsPointForwardFromTheHandsOnAllFiveCharacters",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2569752"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGunBarrelsPointForwardFromTheHandsOnAllFiveCharacters",
+          "Status": "Passed",
+          "Duration": "00:00:00.4780000"
+        }
+      ]
+    }
+  },
+  {
+    "testMethod": "Game.Tests.PauseUiFlowTests.MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease",
+    "max": 1,
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4967823"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.PauseUiFlowTests.MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease",
+          "Status": "Passed",
+          "Duration": "00:00:00.7470000"
+        }
+      ]
+    }
+  }
+]

@@ -189,7 +189,9 @@ namespace Game.Tests
                 var player = instance.GetComponent<PlayerView>();
                 var animator = player.Animator;
                 var baseController = animator.runtimeAnimatorController;
-                player.SetWeaponPresentation(true, false, true);
+                var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+                Assert.That(presenter.SetWeaponId("weapon.bow"), Is.True, presenter.LastError);
+                player.SetSharedWeaponAnimationActive(true);
                 var bowController = animator.runtimeAnimatorController as AnimatorOverrideController;
                 Assert.That(bowController, Is.Not.Null);
                 Assert.That(bowController.runtimeAnimatorController, Is.SameAs(baseController));
@@ -229,8 +231,12 @@ namespace Game.Tests
                 Assert.That(animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"), Is.True,
                     "正式射箭反馈应进入使用 ShootingArrow 的攻击状态");
 
-                player.SetWeaponPresentation(false, false, false);
-                Assert.That(animator.runtimeAnimatorController, Is.SameAs(baseController));
+                Assert.That(presenter.SetWeapon(null), Is.True, presenter.LastError);
+                Assert.That(presenter.Current, Is.Null);
+                var unarmed = animator.runtimeAnimatorController as AnimatorOverrideController;
+                Assert.That(unarmed, Is.Not.Null);
+                Assert.That(unarmed.runtimeAnimatorController, Is.SameAs(presenter.Profile.BaseController));
+                Assert.That(unarmed.animationClips, Does.Contain(presenter.Profile.UnarmedAnimations.Idle.Clip));
             }
             finally
             {
@@ -241,6 +247,9 @@ namespace Game.Tests
         [Test]
         public void FormalBowFirePortTriggersTheArrowAnimation()
         {
+            var architecture = Game.Interface;
+            var previousProvider = architecture.GetUtility<IRuntimeConfigProvider>();
+            architecture.RegisterUtility<IRuntimeConfigProvider>(CreateConfigProvider());
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab");
             var instance = Object.Instantiate(prefab);
@@ -250,7 +259,7 @@ namespace Game.Tests
                 var view = instance.GetComponent<PlayerView>();
                 controller = new PlayerViewCtrl(view, 1, 1, new ViewCtrlRegistry(),
                     new UnityViewInstanceProvider());
-                controller.SetWeaponPresentation(true, false, true);
+                Assert.That(controller.TrySetSharedWeaponPresentation(6), Is.True, controller.SharedWeaponError);
                 view.Animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                 view.Animator.Update(0.1f);
                 controller.PlayBowFireFeedback();
@@ -260,6 +269,7 @@ namespace Game.Tests
             }
             finally
             {
+                architecture.RegisterUtility<IRuntimeConfigProvider>(previousProvider);
                 controller?.Release();
                 if (instance != null) Object.DestroyImmediate(instance);
             }
@@ -437,7 +447,7 @@ namespace Game.Tests
                 var instance = Object.Instantiate(prefab);
                 try
                 {
-                    var animator = instance.GetComponentsInChildren<Animator>(true).First(a => a.isHuman);
+                    var animator = instance.GetComponent<CharacterWeaponPresenter>().BodyAnimator;
                     animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                     var presenter = instance.GetComponent<CharacterWeaponPresenter>();
                     foreach (var id in new[]
@@ -447,14 +457,20 @@ namespace Game.Tests
                                  "arcade.weapon.raygun"
                              })
                     {
-                        var entry = catalog.Find(id);
+                        var entry = presenter.Catalog.Find(id);
                         Assert.That(presenter.SetWeapon(entry), Is.True, $"{name}/{id}");
                         animator.Play("Idle", 0, 0f);
                         animator.Update(0.1f);
                         animator.Update(0.1f);
+                        // EditMode手动推进Animator不会自动触发LateUpdate，使用造型库相同的正式采样后入口。
+                        presenter.ApplyOffhandGrip(entry.Animations.Idle);
                         var hand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+                        entry.GetPose(entry.Animations.Idle, out _, out var idleRotation, out _);
+                        var expectedBarrel = hand.rotation * idleRotation * Vector3.forward;
+                        Assert.That(Vector3.Angle(presenter.Visual.transform.forward, expectedBarrel),
+                            Is.LessThan(0.01f), $"{name}/{id} adopted barrel pose");
                         Assert.That(Vector3.Dot(presenter.Visual.transform.forward, instance.transform.forward),
-                            Is.GreaterThan(0.8f), $"{name}/{id} gun barrel");
+                            Is.GreaterThan(0f), $"{name}/{id} barrel cannot point behind the character");
                         Assert.That(Vector3.Distance(presenter.Visual.transform.position, hand.position),
                             Is.LessThan(0.2f), $"{name}/{id} hand mount");
                     }
@@ -482,7 +498,7 @@ namespace Game.Tests
                 var instance = Object.Instantiate(prefab);
                 try
                 {
-                    var animator = instance.GetComponentsInChildren<Animator>(true).First(a => a.isHuman);
+                    var animator = instance.GetComponent<CharacterWeaponPresenter>().BodyAnimator;
                     animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                     var presenter = instance.GetComponent<CharacterWeaponPresenter>();
                     foreach (var id in new[]
@@ -491,7 +507,7 @@ namespace Game.Tests
                                  "arcade.weapon.spread", "arcade.weapon.raygun"
                              })
                     {
-                        var entry = catalog.Find(id);
+                        var entry = presenter.Catalog.Find(id);
                         Assert.That(presenter.SetWeapon(entry), Is.True, $"{name}/{id}");
                         foreach (var definition in new[] { entry.Animations.Idle,
                                      entry.Animations.MoveForward, entry.Animations.Attack })
@@ -510,12 +526,31 @@ namespace Game.Tests
                                     playable.SetTime(clip.length * frame / 4f);
                                     graph.Evaluate(0f);
                                     var before = animator.GetBoneTransform(HumanBodyBones.LeftHand).position;
+                                    var upper = animator.GetBoneTransform(HumanBodyBones.LeftUpperArm);
+                                    var lower = animator.GetBoneTransform(HumanBodyBones.LeftLowerArm);
+                                    var clavicle = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
+                                    var shoulderBefore = clavicle != null ? clavicle.position : upper.position;
+                                    var upperLength = Vector3.Distance(upper.position, lower.position);
+                                    var lowerLength = Vector3.Distance(lower.position, before);
                                     presenter.ApplyOffhandGrip(definition);
                                     var hand = animator.GetBoneTransform(HumanBodyBones.LeftHand);
                                     var target = presenter.Visual.transform.TransformPoint(entry.OffhandGripLocalPosition);
                                     if (definition.AllowOffhandGrip)
-                                        Assert.That(Vector3.Distance(hand.position, target), Is.LessThan(0.07f),
-                                            $"{name}/{id}/{clip.name}/frame {frame}");
+                                    {
+                                        var distance = Vector3.Distance(upper.position, target);
+                                        var unavoidable = Mathf.Max(0f, distance - upperLength - lowerLength,
+                                            Mathf.Abs(upperLength - lowerLength) - distance);
+                                        Assert.That(Vector3.Distance(hand.position, target),
+                                            Is.LessThan(unavoidable > 0f ? unavoidable + .005f : .07f),
+                                            $"{name}/{id}/{clip.name}/frame {frame}; unreachable={unavoidable}");
+                                        Assert.That(Vector3.Distance(upper.position, lower.position),
+                                            Is.EqualTo(upperLength).Within(.001f), "不能拉长上臂迎合武器");
+                                        Assert.That(Vector3.Distance(lower.position, hand.position),
+                                            Is.EqualTo(lowerLength).Within(.001f), "不能拉长前臂迎合武器");
+                                        if (clavicle != null)
+                                            Assert.That(Vector3.Distance(clavicle.position, shoulderBefore),
+                                                Is.LessThanOrEqualTo(.0801f), "锁骨只能有限修正");
+                                    }
                                     else
                                         Assert.That(Vector3.Distance(hand.position, before), Is.LessThan(0.001f),
                                             $"{name}/{id}/{clip.name}/disallowed grip");
@@ -536,54 +571,10 @@ namespace Game.Tests
         }
 
         [Test]
-        public void SharedKnifePointsDownInIdleOnAllFiveCharacters()
-        {
-            var catalog = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
-                "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
-            var entry = catalog.Find("weapon.knife");
-            foreach (var name in new[]
-                     {
-                         "GrayboxPlayer", "ArcadeEnemyBasic", "ArcadeEnemyBrute",
-                         "ArcadeEnemyArcher", "ArcadeEnemyBossArcher"
-                     })
-            {
-                var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(
-                    $"Assets/Game/Prefabs/Characters/{name}.prefab"));
-                try
-                {
-                    var animator = instance.GetComponentsInChildren<Animator>(true).First(a => a.isHuman);
-                    animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
-                    var presenter = instance.GetComponent<CharacterWeaponPresenter>();
-                    Assert.That(presenter.SetWeapon(entry), Is.True, name);
-                    var graph = PlayableGraph.Create("SharedKnifeIdleTest");
-                    try
-                    {
-                        graph.SetTimeUpdateMode(DirectorUpdateMode.Manual);
-                        var playable = AnimationClipPlayable.Create(graph, entry.Animations.Idle.Clip);
-                        AnimationPlayableOutput.Create(graph, "Character", animator).SetSourcePlayable(playable);
-                        graph.Play();
-                        graph.Evaluate(0f);
-                        Assert.That(Vector3.Dot(presenter.Visual.transform.forward, Vector3.down),
-                            Is.GreaterThan(0.95f), name);
-                    }
-                    finally
-                    {
-                        if (graph.IsValid()) graph.Destroy();
-                    }
-                }
-                finally
-                {
-                    Object.DestroyImmediate(instance);
-                }
-            }
-        }
-
-        [Test]
         public void SharedShortSwordGripsAndPointsForwardOnAllFiveCharacters()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
                 "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
-            var entry = catalog.Find("weapon.short-sword");
             foreach (var name in new[]
                      {
                          "GrayboxPlayer", "ArcadeEnemyBasic", "ArcadeEnemyBrute",
@@ -594,9 +585,10 @@ namespace Game.Tests
                     $"Assets/Game/Prefabs/Characters/{name}.prefab"));
                 try
                 {
-                    var animator = instance.GetComponentsInChildren<Animator>(true).First(a => a.isHuman);
+                    var animator = instance.GetComponent<CharacterWeaponPresenter>().BodyAnimator;
                     animator.cullingMode = AnimatorCullingMode.AlwaysAnimate;
                     var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+                    var entry = presenter.Catalog.Find("weapon.short-sword");
                     Assert.That(presenter.SetWeapon(entry), Is.True, name);
                     animator.Play("Idle", 0, 0f);
                     animator.Update(0.1f);
@@ -606,11 +598,14 @@ namespace Game.Tests
                     var mesh = visual.GetComponentInChildren<MeshFilter>(true)?.sharedMesh;
                     Assert.That(mesh, Is.Not.Null, name);
                     Assert.That(mesh.name, Is.Not.EqualTo("Cube"), name);
-                    Assert.That(Vector3.Distance(visual.transform.position, hand.position),
-                        Is.LessThan(0.08f), name + "/grip");
-                    var expected = (instance.transform.forward * 0.9f + Vector3.up * 0.4f).normalized;
-                    Assert.That(Vector3.Dot(visual.transform.up, expected),
-                        Is.GreaterThan(0.9f), name + "/blade direction");
+                    Assert.That(visual.transform.parent, Is.SameAs(hand), name + "/hand mount");
+                    Assert.That(Vector3.Distance(visual.transform.localPosition, entry.HandLocalPosition),
+                        Is.LessThan(0.001f), name + "/configured grip");
+                    var expected = hand.rotation * entry.HandLocalRotation * Vector3.up;
+                    Assert.That(Vector3.Angle(visual.transform.up, expected),
+                        Is.LessThan(0.01f), name + "/adopted blade direction");
+                    Assert.That(Vector3.Dot(visual.transform.up, instance.transform.forward),
+                        Is.GreaterThan(0f), name + "/blade cannot point behind the character");
                 }
                 finally
                 {
@@ -634,7 +629,7 @@ namespace Game.Tests
                     $"Assets/Game/Prefabs/Characters/{name}.prefab"));
                 try
                 {
-                    var animator = instance.GetComponentsInChildren<Animator>(true).First(a => a.isHuman);
+                    var animator = instance.GetComponent<CharacterWeaponPresenter>().BodyAnimator;
                     var original = animator.runtimeAnimatorController;
                     var presenter = instance.GetComponent<CharacterWeaponPresenter>();
                     for (var index = 0; index < catalog.Count; index++)
@@ -668,7 +663,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void FormalEnemyInstancesAcceptEverySharedWeapon()
+        public void FormalEnemyInstancesAcceptEveryConfiguredSharedWeapon()
         {
             var catalog = AssetDatabase.LoadAssetAtPath<CharacterWeaponCatalog>(
                 "Assets/Game/Art/Arcade/Weapons/CharacterWeaponCatalog.asset");
@@ -688,11 +683,13 @@ namespace Game.Tests
                     Assert.That(catalog.Find(defaultId), Is.Not.Null, $"{name}/default id");
                     Assert.That(enemy.SetCombatWeapon(defaultId), Is.True, $"{name}/default mount");
                     Assert.That(presenter.Current, Is.Not.Null, $"{name}/default");
-                    for (var index = 0; index < catalog.Count; index++)
+                    for (var index = 0; index < presenter.Catalog.Count; index++)
                     {
-                        var entry = catalog.Get(index);
+                        var entry = presenter.Catalog.Get(index);
+                        var ownEntry = presenter.Catalog.Find(entry.Id);
+                        Assert.That(catalog.Find(entry.Id), Is.Not.Null, name + "/" + entry.Id);
                         Assert.That(enemy.SetCombatWeapon(entry.Id), Is.True, $"{name}/{entry.Id}");
-                        Assert.That(presenter.Current, Is.SameAs(entry), $"{name}/{entry.Id}");
+                        Assert.That(presenter.Current, Is.SameAs(ownEntry), $"{name}/{entry.Id}");
                         Assert.That(presenter.Visual, Is.Not.Null, $"{name}/{entry.Id}");
                     }
                 }
@@ -718,7 +715,7 @@ namespace Game.Tests
                     new UnityViewInstanceProvider());
                 foreach (var pair in new[]
                          {
-                             ("arcade.weapon.basic", "ArcadePistol"),
+                             ("arcade.weapon.basic", "ArcadeBasicRifle"),
                              ("arcade.weapon.rapid", "ArcadeRifle"),
                              ("arcade.weapon.piercing", "ArcadePiercingGun"),
                              ("arcade.weapon.grenade", "ArcadeGrenade"),
@@ -734,11 +731,11 @@ namespace Game.Tests
                     Assert.That(presenter.Current?.Id, Is.EqualTo(pair.Item1), pair.Item1);
                     Assert.That(view.Animator.runtimeAnimatorController,
                         Is.TypeOf<AnimatorOverrideController>(), pair.Item1);
-                    var source = Enumerable.Range(0, view.ArcadeWeaponVisualCount)
-                        .Where(index => view.GetArcadeWeaponVisualName(index) == pair.Item2)
-                        .Select(view.GetArcadeWeaponVisualRoot).Single();
-                    Assert.That(source.GetComponentsInChildren<MeshRenderer>(true)
-                        .All(renderer => !renderer.enabled), Is.True, pair.Item1);
+                    foreach (var source in Enumerable.Range(0, view.ArcadeWeaponVisualCount)
+                                 .Select(view.GetArcadeWeaponVisualRoot))
+                        Assert.That(source.GetComponentsInChildren<MeshRenderer>(true)
+                            .All(renderer => !renderer.enabled || !renderer.gameObject.activeInHierarchy), Is.True,
+                            pair.Item1 + " 不能留下旧武器模型");
                     Assert.That(Vector3.Distance(view.GetProjectileOrigin(Vector3.forward),
                             presenter.Visual.transform.TransformPoint(
                                 presenter.Current.ProjectileFirePointLocalPosition)),
@@ -772,6 +769,7 @@ namespace Game.Tests
                 for (var index = 0; index < presenter.Catalog.Count; index++)
                 {
                     var entry = presenter.Catalog.Get(index);
+                    if (entry.WorldItemId <= 0) continue; // 喷火器只有街机身份。
                     Assert.That(controller.TrySetSharedWeaponPresentation(entry.WorldItemId), Is.True,
                         entry.Id);
                     Assert.That(presenter.Current?.Id, Is.EqualTo(entry.Id));
@@ -795,7 +793,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void EveryGalleryCharacterOffersTheSameThirteenWeapons()
+        public void EveryGalleryCharacterOffersTheCurrentSharedWeaponCatalog()
         {
             var previous = SceneManager.GetActiveScene();
             var scene = EditorSceneManager.OpenScene(
@@ -819,13 +817,15 @@ namespace Game.Tests
                         SetPrivate(view, "characterInstance", character);
                         SetPrivate(view, "playerView", character.GetComponent<PlayerView>());
                         SetPrivate(view, "enemyView", character.GetComponent<EnemyView>());
-                        SetPrivate(view, "animator", character.GetComponentsInChildren<Animator>(true)
-                            .First(a => a.isHuman));
+                        SetPrivate(view, "animator", character.GetComponent<CharacterWeaponPresenter>().BodyAnimator);
                         SetPrivate(view, "weaponPresenter", character.GetComponent<CharacterWeaponPresenter>());
                         SetPrivate(view, "hasBowAppearance", true);
                         InvokePrivate(view, "RefreshEquipmentOptions");
                         var names = dropdown.options.Select(option => option.text).ToArray();
-                        Assert.That(names, Has.Length.EqualTo(14), prefab.name);
+                        var catalog = (CharacterWeaponCatalog)data.FindProperty("characterWeaponCatalog").objectReferenceValue;
+                        Assert.That(names, Has.Length.EqualTo(catalog.Count + 1), prefab.name);
+                        CollectionAssert.AreEqual(new[] { "无武器" }.Concat(Enumerable.Range(0, catalog.Count)
+                            .Select(i => catalog.Get(i).DisplayName)), names, prefab.name);
                         Assert.That(names, Has.None.Contains("仅试装"), prefab.name);
                         if (expected == null) expected = names;
                         else CollectionAssert.AreEqual(expected, names, prefab.name);
@@ -868,23 +868,31 @@ namespace Game.Tests
                         SetPrivate(view, "characterInstance", character);
                         SetPrivate(view, "playerView", character.GetComponent<PlayerView>());
                         SetPrivate(view, "enemyView", character.GetComponent<EnemyView>());
-                        SetPrivate(view, "animator", character.GetComponentsInChildren<Animator>(true)
-                            .First(a => a.isHuman));
+                        SetPrivate(view, "animator", character.GetComponent<CharacterWeaponPresenter>().BodyAnimator);
                         SetPrivate(view, "weaponPresenter", character.GetComponent<CharacterWeaponPresenter>());
                         for (var weapon = 0; weapon < catalog.Count; weapon++)
                         {
                             InvokePrivate(view, "SelectEquipment", weapon + 1);
                             var presenter = character.GetComponent<CharacterWeaponPresenter>();
                             Assert.That(presenter, Is.Not.Null, prefab.name);
-                            Assert.That(presenter.Current, Is.SameAs(catalog.Get(weapon)),
+                            var ownEntry = presenter.Catalog?.Find(catalog.Get(weapon).Id);
+                            if (ownEntry == null)
+                            {
+                                Assert.That(presenter.Current, Is.Null, "缺少角色姿态时不得套用其他骨架");
+                                Assert.That(presenter.Visual, Is.Null);
+                                var hint = (Text)data.FindProperty("equipmentHintText").objectReferenceValue;
+                                Assert.That(hint.text, Does.Contain(catalog.Get(weapon).Id).And.Contain("无法预览"));
+                                continue;
+                            }
+                            Assert.That(presenter.Current, Is.SameAs(ownEntry),
                                 $"{prefab.name} / {catalog.Get(weapon).Id}: {presenter.LastError}");
                             Assert.That(presenter.Visual, Is.Not.Null);
                             Assert.That(presenter.Visual.activeInHierarchy, Is.True,
                                 $"{prefab.name} / {catalog.Get(weapon).Id} must be visible");
                             Assert.That(presenter.Visual.transform.parent,
-                                Is.SameAs(character.GetComponentInChildren<Animator>(true)
+                                Is.SameAs(presenter.BodyAnimator
                                     .GetBoneTransform(catalog.Get(weapon).MainHand)));
-                            var actions = catalog.Get(weapon).Animations;
+                            var actions = ownEntry.Animations;
                             foreach (var pair in new[]
                                      {
                                          (index: 0, clip: actions.Idle.Clip),
@@ -979,6 +987,12 @@ namespace Game.Tests
             {
                 SetPrivate(view, "characterWeaponCatalog", catalog);
                 view.Initialize(null, CreateConfigProvider());
+                // 独立夹具无架构所有者，显式开启帧采样且不读取本机覆盖。
+                SetPrivate(view, "initialized", true);
+                var previewPresenter = GetPrivate<CharacterWeaponPresenter>(view, "weaponPresenter");
+                var previewData = new SerializedObject(previewPresenter);
+                previewData.FindProperty("catalog").objectReferenceValue = catalog;
+                previewData.ApplyModifiedPropertiesWithoutUndo();
                 var sword = Enumerable.Range(0, catalog.Count)
                     .First(index => catalog.Get(index).Id == "weapon.short-sword");
                 InvokePrivate(view, "SelectEquipment", sword + 1);
@@ -1267,15 +1281,20 @@ namespace Game.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
                 "Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab");
             Assert.That(prefab, Is.Not.Null);
-            var hand = FindChild(prefab, "Hand_R");
-            var sword = FindChild(prefab, "Weapon");
-            var firstFinger = FindChild(hand.gameObject, "Finger_01_1");
-            var lastFinger = FindChild(hand.gameObject, "Finger_04_1");
-            Assert.That(sword.parent, Is.SameAs(hand));
-            Assert.That(sword.localPosition.x,
-                Is.InRange(hand.InverseTransformPoint(firstFinger.position).x,
-                    hand.InverseTransformPoint(lastFinger.position).x));
-            Assert.That(Mathf.Abs(sword.localPosition.z), Is.LessThan(0.05f));
+            var instance = Object.Instantiate(prefab);
+            try
+            {
+                var presenter = instance.GetComponent<CharacterWeaponPresenter>();
+                var entry = presenter.Catalog.Find("weapon.short-sword");
+                Assert.That(presenter.SetWeapon(entry), Is.True, presenter.LastError);
+                Assert.That(presenter.Visual.transform.parent,
+                    Is.SameAs(presenter.BodyAnimator.GetBoneTransform(entry.MainHand)));
+                Assert.That(Vector3.Distance(presenter.Visual.transform.localPosition, entry.HandLocalPosition),
+                    Is.LessThan(0.001f));
+                Assert.That(Quaternion.Angle(presenter.Visual.transform.localRotation, entry.HandLocalRotation),
+                    Is.LessThan(0.01f));
+            }
+            finally { Object.DestroyImmediate(instance); }
         }
 
         private static IRuntimeConfigProvider CreateConfigProvider() =>

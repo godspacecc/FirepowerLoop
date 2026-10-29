@@ -40,10 +40,10 @@ namespace Game.Tests
                 view.HideActionProgress();
                 Assert.That(animator.GetLayerWeight(layer), Is.Zero);
                 view.ShowActionProgress(0f, null);
-                presenter.SetWeapon(presenter.Catalog.Find("arcade.weapon.basic"));
+                presenter.SetWeapon(presenter.Catalog.Find("weapon.bow"));
                 Assert.That(animator.GetLayerWeight(layer), Is.Zero);
                 view.ShowActionProgress(0f, null);
-                Assert.That(animator.GetLayerWeight(layer), Is.Zero, "手枪不可播放步枪动作");
+                Assert.That(animator.GetLayerWeight(layer), Is.Zero, "弓不可播放步枪换弹动作");
             }
             finally { Object.DestroyImmediate(holder); }
         }
@@ -271,7 +271,7 @@ namespace Game.Tests
         [Test]
         public void EnemyWeaponValidationUsesExactTableIdentityAndBehavior()
         {
-            const string enemyId = "enemy.graybox.basic";
+            const string enemyId = "enemy.arcade.basic";
             const string originalWeaponId = "weapon.short-sword";
             var accepted = RealTables();
             var newWeapon = (ArcadeWeaponConfig)typeof(object)

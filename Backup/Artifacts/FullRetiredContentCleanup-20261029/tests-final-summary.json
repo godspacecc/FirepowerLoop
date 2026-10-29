@@ -1,0 +1,1247 @@
+{
+  "UnityDistinctTests": 243,
+  "UnityPassed": 243,
+  "UnityFailed": 0,
+  "ServerPickupPassed": 7,
+  "ClassCounts": {
+    "AppearanceGallerySceneTests": 26,
+    "ArcadeLootEffectsTests": 7,
+    "ArcadeMeleePresentationTests": 13,
+    "ArcadeOpeningFlowTests": 5,
+    "ArcadeUiTests": 12,
+    "BootResourceFallbackTests": 23,
+    "CharacterPresentationTests": 8,
+    "ConfigLocalizationTests": 9,
+    "ConfirmedWeaponPresentationTests": 8,
+    "DynamicResourceAddressTests": 27,
+    "GunLocomotionAnimationTests": 17,
+    "IndependentUiGenerationMigrationTests": 4,
+    "LocalizationTests": 1,
+    "MobileControlLayoutTests": 31,
+    "MobileShoulderTouchTests": 7,
+    "PauseUiFlowTests": 21,
+    "TestCmdTests": 1,
+    "TestCmdUiTests": 1,
+    "TopDownOcclusionTests": 10,
+    "UiFunctionalDirectoryMigrationTests": 3,
+    "UiLocalizationOwnershipTests": 9
+  },
+  "note": "最新执行结果；已退役/改名方法不计入。历史失败保留在分轮日志。未运行完整套件、PlayMode或Player Build。",
+  "Results": [
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.ConfigLocalization_FallsBackToLegacyTextThenFallbackId",
+      "Status": "Passed",
+      "Duration": "00:00:00.0290000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.ConfigLocalization_UsesCurrentLanguageWithoutCaching",
+      "Status": "Passed",
+      "Duration": "00:00:00.0430000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.GeneratedCatalog_ExcludesRetiredItemsAndKeepsArcadePresentationCarrier",
+      "Status": "Passed",
+      "Duration": "00:00:01.4210000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.ItemConfig_GeneratesLocalizationKeysAndBinaryData",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.LanguageTables_ContainItemKeysInEveryLanguage",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.LubanGenerationBoundary_UsesSingleEntryAndKeepsClientServerTablesSeparate",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.PlayerConfig_ExposesGeneratedAndCompatibilityUnarmedRules",
+      "Status": "Passed",
+      "Duration": "00:00:00.0120000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.DirectionChangeReusesOverrideAndSelectsTheMatchingClip",
+      "Status": "Passed",
+      "Duration": "00:00:01.7010000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.EnemyPresentationRejectsGameplayKindMismatch",
+      "Status": "Passed",
+      "Duration": "00:00:00.1000000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.EnemyWeaponValidationUsesExactTableIdentityAndBehavior",
+      "Status": "Passed",
+      "Duration": "00:00:01.1820000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.HiddenBindingPreservesOriginalControllerWhenProfileFails",
+      "Status": "Passed",
+      "Duration": "00:00:00.0160000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.InvalidWeaponClearsThePreviousModelAndController",
+      "Status": "Passed",
+      "Duration": "00:00:00.0150000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.RifleReloadUsesUpperBodySequenceAndClearsOnCancelOrWeaponSwitch",
+      "Status": "Passed",
+      "Duration": "00:00:00.0190000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.SharedPlayerPistolKeepsBothHandsCenteredAndBarrelForward",
+      "Status": "Passed",
+      "Duration": "00:00:00.0310000"
+    },
+    {
+      "Name": "Game.Tests.CharacterPresentationTests.UnarmedSprintUsesRunOnlyForForwardAndRestoresWalk",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.EnemyMeleeWeaponsTriggerSwingAndRepeatedSequenceDoesNotReplay",
+      "Status": "Passed",
+      "Duration": "00:00:01.3340000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.NetworkAttackSequenceSurvivesClientSnapshotConversion",
+      "Status": "Passed",
+      "Duration": "00:00:01.1580000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.OnlineProjectionSelectsTemporaryWeaponThenRestoresPurchaseWithoutReplayingHistory",
+      "Status": "Passed",
+      "Duration": "00:00:00.9790000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"fist\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.0440000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"bow\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.0180000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"projectile\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.9550000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.OtherAttackEntriesRestoreOriginalSpeedAfterSinglePlayerMelee(\"online-melee\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.1680000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.ProjectileWeaponStillPlaysUpperBodyFireAnimation",
+      "Status": "Passed",
+      "Duration": "00:00:01.2220000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteLoadBindsLatestWeaponAndSkipsBufferedAttackHistory",
+      "Status": "Passed",
+      "Duration": "00:00:01.0450000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.RemoteWeaponBindsBeforeAttackAndLoadedHistoryDoesNotReplay",
+      "Status": "Passed",
+      "Duration": "00:00:01.0100000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.0f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.9760000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.greatsword\",1.0f)",
+      "Status": "Passed",
+      "Duration": "00:00:01.0590000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeMeleePresentationTests.SinglePlayerRepeatedSwingCompletesRecoveryBeforeNextStrike(\"weapon.short-sword\",1.5f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.9600000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.AlphaClippedLeavesBlendTextureAlphaWhileFading(0.1f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0660000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.AlphaClippedLeavesBlendTextureAlphaWhileFading(1.0f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.BlockedObjectFadesAndRestoresWithoutChangingCollisionOrSharedMaterial",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.CameraControllerDetectsMarkedObstructionAndDisposeRestoresIt",
+      "Status": "Passed",
+      "Duration": "00:00:00.0270000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.DisableRestoresRoofRendererAndMaterialImmediately",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.FadeRecoveryKeepsLatestExternalTintInsteadOfRevivingOldHighlight",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.FadingDoesNotOverrideLodManagedRendererEnabledState",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.InsideShelterFadesRoofKeepsOutlineAndUsesExitMargin(False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.InsideShelterFadesRoofKeepsOutlineAndUsesExitMargin(True)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.TopDownOcclusionTests.WideCanopyFadesEvenWhenThinTrunkMissesTheCameraRay",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody",
+      "Status": "Passed",
+      "Duration": "00:00:00.4900000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath",
+      "Status": "Passed",
+      "Duration": "00:00:00.0230000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0260000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0210000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.spread\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0180000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.piercing\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0190000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.raygun\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0200000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rocket\",False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0220000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",True)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0280000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",True)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0210000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"switch\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"hurt\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"death\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.greatsword\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0090000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.short-sword\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.DropOpacityFadesOwnedTransparentModelNameAndBeamWithoutChangingAssets",
+      "Status": "Passed",
+      "Duration": "00:00:00.6200000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.GoldWeaponAndPowerupUseDistinctBeamColors",
+      "Status": "Passed",
+      "Duration": "00:00:00.0600000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ImportedEffectsUseUrpMaterialsAndOnlyOwnedDependencies",
+      "Status": "Passed",
+      "Duration": "00:00:00.1650000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.LootBeamIsIdempotentAndReleasedWithDropVisual",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.MissingVisualDoesNotLeaveBeamOnRecycledPickup",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.RecycledDropRestoresOpacityAndFadingKeepsPickupColliderActive",
+      "Status": "Passed",
+      "Duration": "00:00:00.0530000"
+    },
+    {
+      "Name": "FirepowerLoop.Tests.ArcadeLootEffectsTests.ShieldBlockFlashesOwnedInstanceAndRestoresItsMaterial",
+      "Status": "Passed",
+      "Duration": "00:00:00.0320000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.AddressKindsRejectTheWrongInputMethod",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.AllUiControllersExposeRelativePaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.BaseUiShowLoadsTheFullAddressForALegalRelativePath",
+      "Status": "Passed",
+      "Duration": "00:00:00.0470000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.BaseUiShowRejectsInvalidPathWithoutLoadingOrChangingExistingUi",
+      "Status": "Passed",
+      "Duration": "00:00:00.0120000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(CharacterPrefab,\"GrayboxPlayer\",\"Prefabs/Characters/GrayboxPlayer\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(WeaponAppearancePrefab,\"GrayboxBow\",\"Prefabs/Characters/Weapons/GrayboxBow\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(SceneObjectPrefab,\"TestResourcePickup\",\"Prefabs/SceneObjects/TestResourcePickup\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(ProjectilePrefab,\"GrayboxArrow\",\"Prefabs/Combat/GrayboxArrow\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(ItemIcon,\"IconMedkit\",\"Art/UI/Items/IconMedkit\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(Music,\"HomeTheme\",\"Audio/Music/HomeTheme\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameKindsProduceTheirFixedAddress(Sound,\"FoundationClick\",\"Audio/Sound/FoundationClick\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Folder/Prefab\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Folder\\\\Prefab\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Prefab.prefab\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Icon.png\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Track.ogg\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.FileNameRejectsDirectoriesAndResourceExtensions(\"Scene.unity\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.GenericLoaderAndGridDoNotAcceptResourceKindsOrStringPaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.OptionalFileNameAcceptsOnlyAnEmptyValue",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Prefabs/UI/Home/Start\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"/Home/Start\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/Start/\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home//Start\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/../Start\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home\\\\Start\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.RelativePathsRejectRootsTraversalSeparatorsAndExtensions(\"Home/Start.prefab\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.DynamicResourceAddressTests.UiAndMapRelativePathsProduceTheirFixedAddress",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.EveryGalleryWeaponMountsAndSamplesItsSharedActionsOnEveryCharacter",
+      "Status": "Passed",
+      "Duration": "00:00:01.1810000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.EverySharedWeaponOverridesTheThreeFormalAnimatorActions",
+      "Status": "Passed",
+      "Duration": "00:00:00.0660000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalArcadePlayerSelectsSharedGunByWeaponId",
+      "Status": "Passed",
+      "Duration": "00:00:00.0310000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBasicEnemySwordGripSitsInsideThePalm",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBowFirePortTriggersTheArrowAnimation",
+      "Status": "Passed",
+      "Duration": "00:00:01.4450000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalBowUsesTheGalleryIdleWalkAndFireClips",
+      "Status": "Passed",
+      "Duration": "00:00:00.0400000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalRifleAimClipHasNoOrphanMoveEvent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0090000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalWorldPlayerSelectsEverySharedWeaponByEquipmentItemId",
+      "Status": "Passed",
+      "Duration": "00:00:01.4100000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryAlignsOnlyTheSelectedAnimatedCharacter",
+      "Status": "Passed",
+      "Duration": "00:00:00.0620000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryAppliesInspectorPoseEditsWithoutResettingCurrentPreview",
+      "Status": "Passed",
+      "Duration": "00:00:01.5860000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.GalleryMeleeOptionsUseFormalPreviewAssets",
+      "Status": "Passed",
+      "Duration": "00:00:00.0390000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.GallerySceneReferencesFormalCharactersAndAllControls",
+      "Status": "Passed",
+      "Duration": "00:00:00.0450000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.NewAnimationPoseEntryKeepsWeaponDefaultsUntilFieldsAreEnabled",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.PiercingWeaponStaysNearBothHandsInRiflePreviewClips",
+      "Status": "Passed",
+      "Duration": "00:00:00.0220000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedAnimationOptionsKeepChineseDisplayNames",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedEnemyViewRestoresFormalWeaponAfterTrial",
+      "Status": "Passed",
+      "Duration": "00:00:00.0080000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGalleryRestoresCompatibleActionTimeAndPauseAcrossCharacterAndWeapon",
+      "Status": "Passed",
+      "Duration": "00:00:01.2870000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGunBarrelsPointForwardFromTheHandsOnAllFiveCharacters",
+      "Status": "Passed",
+      "Duration": "00:00:00.4780000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedGunOffhandReachesItsGripOnAllFiveCharacters",
+      "Status": "Passed",
+      "Duration": "00:00:00.1770000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedShortSwordGripsAndPointsForwardOnAllFiveCharacters",
+      "Status": "Passed",
+      "Duration": "00:00:00.0320000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponCanConfigureEveryListedAnimationIndependently",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponGripKeepsTheOffhandOnCompatibleWeapons",
+      "Status": "Passed",
+      "Duration": "00:00:00.0890000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.SharedWeaponUsesDifferentConfiguredPosesForIdleAndMoving",
+      "Status": "Passed",
+      "Duration": "00:00:00.0170000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.TrialGunsStayNearTheHandAcrossEnemyRigs",
+      "Status": "Passed",
+      "Duration": "00:00:00.0480000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.LocalizationPublisher_PrunesFirstAdjacentAndLastKeysWithoutReorderingAndIsIdempotent",
+      "Status": "Passed",
+      "Duration": "00:00:03.0030000"
+    },
+    {
+      "Name": "Game.Tests.ConfigLocalizationTests.RetiredLocalizationManifest_RemovesOnlyRetiredKeysFromPublishedTablesAndTexts",
+      "Status": "Passed",
+      "Duration": "00:00:05.2780000"
+    },
+    {
+      "Name": "Game.Tests.GunLocomotionAnimationTests.MovingGunUsesConfiguredFirePoseOnGunLayer",
+      "Status": "Passed",
+      "Duration": "00:00:00.0090000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.EveryGalleryCharacterOffersTheCurrentSharedWeaponCatalog",
+      "Status": "Passed",
+      "Duration": "00:00:00.5610000"
+    },
+    {
+      "Name": "Game.Tests.AppearanceGallerySceneTests.FormalEnemyInstancesAcceptEveryConfiguredSharedWeapon",
+      "Status": "Passed",
+      "Duration": "00:00:00.0520000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.DragEnteringUi_CancelsUntilNewTouch",
+      "Status": "Passed",
+      "Duration": "00:00:00.3220000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.EditorMouseDrag_UsesSameCaptureAndDeltaRules",
+      "Status": "Passed",
+      "Duration": "00:00:00.0090000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.FocusLoss_DropsFingerUntilANewPress",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.GateClosure_DropsFingerUntilANewPress",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.LeftFingerAndOtherRightFinger_DoNotStealCapturedLook",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.RightFingerDrag_EmitsResolutionNormalizedDelta",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.MobileShoulderTouchTests.TouchStartingOnUi_CannotBecomeLookAfterLeavingUi",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeButtons_RoundTripKeepsRealActionsAndIgnoresRetiredActions",
+      "Status": "Passed",
+      "Duration": "00:00:00.2540000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeEditor_FormalReferencesExposeRealActionsWithoutBaseControls",
+      "Status": "Passed",
+      "Duration": "00:00:00.3900000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks",
+      "Status": "Passed",
+      "Duration": "00:00:00.5830000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ButtonPositions_SurviveSettingsCloneAndLegacyDefaults",
+      "Status": "Passed",
+      "Duration": "00:00:00.0420000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_ButtonDragsSaveCancelAndResetWithoutExecutingGameplayActions",
+      "Status": "Passed",
+      "Duration": "00:00:00.0930000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_CancelDiscardsDraftAndReopenLoadsSavedLayout",
+      "Status": "Passed",
+      "Duration": "00:00:00.0320000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1920,1080)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0290000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(2400,1080)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0210000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1800,900)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0250000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_DragPreservesGrabOffsetAndDesktopSwitchClosesDraft",
+      "Status": "Passed",
+      "Duration": "00:00:00.0360000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_FillsActualSafeAreaAtCombatScale",
+      "Status": "Passed",
+      "Duration": "00:00:00.0300000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_FirstPersonPreviewKeepsFireSeparateAndCancelDiscardsItsDraft",
+      "Status": "Passed",
+      "Duration": "00:00:00.0420000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_SaveCommitsBothSticksAndTrialIsIsolated",
+      "Status": "Passed",
+      "Duration": "00:00:00.0410000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_ToolbarCanCollapseWithoutChangingLayoutOrDraftAndReopensExpanded",
+      "Status": "Passed",
+      "Duration": "00:00:00.0440000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Editor_ViewUnloadReleasesDraftAfterBaseClearsViewReference",
+      "Status": "Passed",
+      "Duration": "00:00:00.0310000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(1920,1080)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0570000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(2340,1080)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0430000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForBothModesAndInsetSafeArea(1440,1080)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0450000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.GeneratedPrefabs_AllReferencesResolveAndPreviewHasNoGamepadControls",
+      "Status": "Passed",
+      "Duration": "00:00:00.6250000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,0.7f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,1.5f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(2146,966,1.5f)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.LegacyDefaultSticks_MigrateIdempotentlyWithoutOverwritingCustomThumbs",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.LegacySettings_DefaultsAndCloneAreIndependent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.Preview_TrialReturnsToCenterWithoutChangingLayout",
+      "Status": "Passed",
+      "Duration": "00:00:00.0160000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.SaveFailure_RollsBackAuthoritativeLayoutAndSendsNoEvent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0410000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.SettingsFile_RoundTripKeepsBothSticks",
+      "Status": "Passed",
+      "Duration": "00:00:00.0900000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.SettingsJson_PreservesMobileLayoutThroughClone",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WhenSceneFlowBusyKeepsPauseAndAllowsRetry",
+      "Status": "Passed",
+      "Duration": "00:00:00.0260000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.ArcadeLeave_WithoutActiveHandleReturnsToMainMenuAndClosesPause",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.ArcadePause_ReopensWithLeaveActionAndRefreshesLanguage",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.DedicatedWindowHotKeysRemainRegistered",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.DirectPauseAction_UsesSamePauseMenuRouteAsKeyboard",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesEachWhitelistedControllerWithoutChangingAppState",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.EscapeClosesTopLayerBeforeLaterDialog",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.EscapeDuringRebindOnlyCancelsCapture",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.EscapeFallsBackToPausedStateWhenNoRecoverableWorldExists",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.IslandRoundLeaveWarnsAboutWholeRoundRollbackAndCancelKeepsRun",
+      "Status": "Passed",
+      "Duration": "00:00:00.0100000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.MapPreparationFailure_BackKeepsFailedSceneCoveredUntilSafeNodeIsRestored",
+      "Status": "Passed",
+      "Duration": "00:00:00.0340000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.MapPreparationReturn_RetriesSafeNodeRecoveryAfterActualMapRelease",
+      "Status": "Passed",
+      "Duration": "00:00:00.1540000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.NonBlockingUiDoesNotShieldWhitelistedWindow",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.NonWhitelistedBlockingUiShieldsUnderlyingWindowAndPause",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.PauseExit_RepeatedShowInvokesQuitOnlyOnce",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.PauseLayout_KeepsArcadeActionsCompactAcrossReopen",
+      "Status": "Passed",
+      "Duration": "00:00:00.0050000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.PausePrefab_HasAdaptivePanelCurrentButtonsAndNoRetiredCampEntry",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.PauseSettings_CloseBackToPauseAndMapLoadingClearsMenu",
+      "Status": "Passed",
+      "Duration": "00:00:00.0350000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.StartExitUsesQuitCommand",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.TogglePauseWithoutRecoverableWorldKeepsPausedState",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.PauseUiFlowTests.TopmostBlockingUiPrefersLayerThenShowOrder",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiControllers_KeepPrefabPaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.IndependentUiPrefabs_HaveRootCollectorGeneratedViewAndStableBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0610000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingNetworkPagePrefab_HasGeneratedDiagnosticBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.IndependentUiGenerationMigrationTests.SettingsPrefabs_HaveGeneratedBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingMigrationAssets_KeepOriginalGuidsAndRemoveOldPaths",
+      "Status": "Passed",
+      "Duration": "00:00:00.0860000"
+    },
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RemainingPrefabs_HaveExactRootCollectorAndGeneratedViewBindings",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.UiFunctionalDirectoryMigrationTests.RuntimePrefabSources_RemainCollectedAndValid",
+      "Status": "Passed",
+      "Duration": "00:00:29.3680000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.AllGroundDropNamesAreEmptyAtTheArcadeProjectionSource",
+      "Status": "Passed",
+      "Duration": "00:00:02.1640000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.ApprovedSkullDropMatchesCoinAndKeepsSizeAfterReuse",
+      "Status": "Passed",
+      "Duration": "00:00:01.5570000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicAKSwitchesBackAfterTemporaryGunWithoutLeakingVisuals",
+      "Status": "Passed",
+      "Duration": "00:00:01.6280000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.BasicGunUsesSeparateAKWithFasterCadenceAndPreservesMP40",
+      "Status": "Passed",
+      "Duration": "00:00:01.3240000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.DeliveryRestoresOrdinaryRotationWhenPooled",
+      "Status": "Passed",
+      "Duration": "00:00:01.2150000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OpenedAirdropIsPlayerSizedAndCrateIsSmaller",
+      "Status": "Passed",
+      "Duration": "00:00:01.2310000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.OrdinarySkullsKeepOriginalSizeAndCrateReuseRestoresPose",
+      "Status": "Passed",
+      "Duration": "00:00:01.4470000"
+    },
+    {
+      "Name": "Game.Tests.ConfirmedWeaponPresentationTests.UnusedMeleeConfigsAreRemovedWhileEnemyWeaponsRemainValid",
+      "Status": "Passed",
+      "Duration": "00:00:01.5260000"
+    },
+    {
+      "Name": "Game.Tests.TestCmdUiTests.TestCmdUsesReadableLabelsResultsAndIgnoresLanguageSwitch",
+      "Status": "Passed",
+      "Duration": "00:00:00.2900000"
+    },
+    {
+      "Name": "Game.Tests.TestCmdTests.CommandWritesExpectedRuntimeLogSeverity",
+      "Status": "Passed",
+      "Duration": "00:00:00.0290000"
+    },
+    {
+      "Name": "Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels",
+      "Status": "Passed",
+      "Duration": "00:00:00.0620000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.CompleteBuiltinPassesAvailabilityCheck",
+      "Status": "Passed",
+      "Duration": "00:00:00.0250000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.CompleteStartupAllowsOptionalBundleToRemainAbsent",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.ManifestOnlyBuiltinFailsBeforeLoadingAotList",
+      "Status": "Passed",
+      "Duration": "00:00:00.0160000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"Scenes/Main\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"tbitem.bytes\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"Game.dll.bytes\",GameDllMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRequiredStartupAddressStillRejectsStartup(\"HybridCLRAssemblyList.bytes\",RequiredResourceMissing)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/Bag\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/Warehouse\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Inventory/SearchContainer\")",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Craft/Craft\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayAddressDoesNotBlockStartup(\"Prefabs/UI/Shop/Shop\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(7,\"Bag\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(8,\"Warehouse\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(9,\"SearchContainer\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(10,\"Craft\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingRetiredGameplayBundleDoesNotBlockStartup(11,\"Shop\")",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingStartupDependencyRejectsBuiltinFallback",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.MissingTaggedStartupAssetRejectsBuiltinFallback",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(PackageVersionRequestFailed,ResourceVersion)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0020000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(PackageManifestUpdateFailed,ResourceManifest)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UnusableBuiltinPreservesOriginalHostFailureAndRetry(ResourceDownloadFailed,ResourceDownload)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.Flow.BootResourceFallbackTests.UsableBuiltinWinsOverHostFailure",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(null,False,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"\",False,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"challenge.time\",False,True)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeCheckpointChallengeButton_OnlyShowsBeforeCurrentNodeAttempt(\"challenge.time\",True,False)",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeControllers_UseExpectedBlockingLayers",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeHud_UsesOfficialDualOnScreenSticks",
+      "Status": "Passed",
+      "Duration": "00:00:00.0270000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadePlayerStatusHealthFill_UpdatesWithoutSprite",
+      "Status": "Passed",
+      "Duration": "00:00:00.0110000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadePrefabs_HaveCollectorGeneratedViewAndBoundReferences",
+      "Status": "Passed",
+      "Duration": "00:00:00.0180000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeResume_OnlineEntryIsGeneratedAndLocalized",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeShop_UsesExternalOfferBoxPrefab",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.ArcadeStaticLabels_HaveLocalizationKeys",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeUiTests.SlayerMartUsesPreservedResourceHost",
+      "Status": "Passed",
+      "Duration": "00:00:00"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.AllUiPrefabs_DoNotLeaveBareUiKeysAndKeyModeComponentsAreValid",
+      "Status": "Passed",
+      "Duration": "00:00:00.1530000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.DiagnosticPrefabs_OwnFixedTextDirectlyAndExposeOnlyDynamicFields",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.GeneratedTmpFields_DoNotPointToLocalizedTextObjects",
+      "Status": "Passed",
+      "Duration": "00:00:00.0060000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LanguageChanged_RedrawsOnlineDynamicTextsAndReusedMemberRows",
+      "Status": "Passed",
+      "Duration": "00:00:00.1280000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_EditModeKeepsReadablePreviewWhenKeyFallsBack",
+      "Status": "Passed",
+      "Duration": "00:00:00.0040000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.LocalizedText_KeyModeStillRefreshesWhenTranslationExists",
+      "Status": "Passed",
+      "Duration": "00:00:00.0010000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.OnlinePrefabs_OwnFixedTextWithLocalizedTextAndExposeOnlyDynamicFields",
+      "Status": "Passed",
+      "Duration": "00:00:00.0030000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.Scanner_ReportsReadableKeyModeAndRejectsInternalKeyLeaks",
+      "Status": "Passed",
+      "Duration": "00:00:00.0940000"
+    },
+    {
+      "Name": "Game.Tests.UiLocalizationOwnershipTests.UiLocalizationGate_RejectsLocalizedTextComponentStructureAnomalies",
+      "Status": "Passed",
+      "Duration": "00:00:00.0070000"
+    },
+    {
+      "Name": "Game.Tests.LocalizationTests.GeneratedTexts_MatchesProjectLanguageTables",
+      "Status": "Passed",
+      "Duration": "00:00:00.0560000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.short-sword\")",
+      "Status": "Passed",
+      "Duration": "00:00:02.0050000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.greatsword\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.1550000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.knife\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.3180000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.axe\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.3950000"
+    },
+    {
+      "Name": "Game.Tests.ArcadeOpeningFlowTests.LegacyMeleeEquipment_UsesBaselineGun(\"weapon.pickaxe\")",
+      "Status": "Passed",
+      "Duration": "00:00:01.7330000"
+    }
+  ]
+}

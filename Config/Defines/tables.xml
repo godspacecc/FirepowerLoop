@@ -5,7 +5,6 @@
     <table name="TbWeaponAppearance" value="WeaponAppearanceConfig" input="weapon_appearance.csv" group="c"/>
     <table name="TbProjectile" value="ProjectileConfig" input="projectile.csv" group="e"/>
     <table name="TbMap" value="MapConfig" input="map.csv" group="c"/>
-    <table name="TbMapDisplay" value="MapDisplayConfig" input="map_display.csv" group="c"/>
     <table name="TbMapScenePart" value="MapScenePartConfig" input="map_scene_part.csv" group="c"/>
     <table name="TbMapSpawn" value="MapSpawnConfig" input="map_spawn.csv" group="c"/>
     <table name="TbPlayer" value="PlayerConfig" input="player.csv" group="c"/>

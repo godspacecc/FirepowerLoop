@@ -1,0 +1,13 @@
+  Share.SourceGenerator -> E:\GitHub\FirepowerLoop\Server\GameServer\Share\Share.SourceGenerator\bin\Debug\Share.SourceGenerator.dll
+  Share.Analyzer -> E:\GitHub\FirepowerLoop\Server\GameServer\Share\Analyzer\bin\Debug\Share.Analyzer.dll
+  DotNet.ThirdParty -> E:\GitHub\FirepowerLoop\Server\GameServer\Bin\ThirdParty.dll
+  DotNet.Core -> E:\GitHub\FirepowerLoop\Server\GameServer\Bin\Core.dll
+  DotNet.Loader -> E:\GitHub\FirepowerLoop\Server\GameServer\Bin\Loader.dll
+  DotNet.Model -> E:\GitHub\FirepowerLoop\Server\GameServer\Bin\Model.dll
+  DotNet.Hotfix -> E:\GitHub\FirepowerLoop\Server\GameServer\Bin\Hotfix.dll
+
+已成功生成。
+    0 个警告
+    0 个错误
+
+已用时间 00:00:40.92

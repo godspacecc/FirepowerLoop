@@ -21,7 +21,7 @@ namespace Game
         private UnityEngine.SceneManagement.Scene indexedScene;
         public TopDownOcclusionCtrl(Camera camera, Transform player) { this.camera = camera; this.player = player; }
 
-        /// <summary>相机跟随完成后调用；显式物件的渲染包围盒覆盖树冠，排除建造预览与其他地图实例。</summary>
+        /// <summary>相机跟随完成后调用；显式物件的渲染包围盒覆盖树冠，排除其他地图实例。</summary>
         public void Tick(float deltaTime)
         {
             if (camera == null || player == null) { Dispose(); return; }
@@ -44,7 +44,7 @@ namespace Game
             foreach (var view in previous) candidates.Add(view);
             entries.Clear();
             foreach (var view in candidates)
-                if (view != null && view.isActiveAndEnabled && view.CanOcclude &&
+                if (view != null && view.isActiveAndEnabled &&
                     view.gameObject.scene == player.gameObject.scene && !view.transform.IsChildOf(player)) entries.Add(view);
             foreach (var view in entries)
             {
@@ -57,7 +57,7 @@ namespace Game
 
         private static Vector2Int Cell(Vector3 p) => new(Mathf.FloorToInt(p.x / CellMeters), Mathf.FloorToInt(p.z / CellMeters));
 
-        /// <summary>只在活动登记或所属场景变化时重建；可移动建筑每帧走原精确检查，避免预览移动使缓存过期。</summary>
+        /// <summary>只在活动登记或所属场景变化时重建；大型环境物件保持精确检查，避免分区膨胀。</summary>
         private void RebuildIndexIfNeeded()
         {
             var scene = player.gameObject.scene;
@@ -66,7 +66,6 @@ namespace Game
             foreach (var view in CameraOccluderView.ActiveViews)
             {
                 if (view == null || view.gameObject.scene != scene || view.transform.IsChildOf(player)) continue;
-                if (view.TryGetComponent<TemporaryBuildingView>(out _)) { dynamicViews.Add(view); continue; }
                 var bounds = view.GetOcclusionBounds(); var min = Cell(bounds.min); var max = Cell(bounds.max);
                 // 极大范围物件保持精确路径，避免为巨型屋顶分配过多分区。
                 if ((long)(max.x - min.x + 1) * (max.y - min.y + 1) > 256) { dynamicViews.Add(view); continue; }

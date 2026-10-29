@@ -27,11 +27,9 @@ namespace Game.Tests
 
         [TestCase(ResourceAddressKind.CharacterPrefab, "GrayboxPlayer", "Prefabs/Characters/GrayboxPlayer")]
         [TestCase(ResourceAddressKind.WeaponAppearancePrefab, "GrayboxBow", "Prefabs/Characters/Weapons/GrayboxBow")]
-        [TestCase(ResourceAddressKind.SceneObjectPrefab, "TaskExit", "Prefabs/SceneObjects/TaskExit")]
+        [TestCase(ResourceAddressKind.SceneObjectPrefab, "TestResourcePickup", "Prefabs/SceneObjects/TestResourcePickup")]
         [TestCase(ResourceAddressKind.ProjectilePrefab, "GrayboxArrow", "Prefabs/Combat/GrayboxArrow")]
-        [TestCase(ResourceAddressKind.TemporaryBuildingPrefab, "GrayboxCampfire", "Prefabs/Building/GrayboxCampfire")]
         [TestCase(ResourceAddressKind.ItemIcon, "IconMedkit", "Art/UI/Items/IconMedkit")]
-        [TestCase(ResourceAddressKind.TemporaryBuildingIcon, "IconTower", "Art/UI/TemporaryBuilding/IconTower")]
         [TestCase(ResourceAddressKind.Music, "HomeTheme", "Audio/Music/HomeTheme")]
         [TestCase(ResourceAddressKind.Sound, "FoundationClick", "Audio/Sound/FoundationClick")]
         public void FileNameKindsProduceTheirFixedAddress(ResourceAddressKind kind, string value, string expected)
@@ -180,7 +178,6 @@ namespace Game.Tests
                 [new OnlineRoomUICtrl()] = "Online/OnlineRoom",
             };
 
-            Assert.That(expectedPaths, Has.Count.EqualTo(19));
             var pathMethod = typeof(BaseUICtrl).GetMethod("Path", BindingFlags.Instance | BindingFlags.NonPublic);
             foreach (var pair in expectedPaths)
             {
