@@ -1,0 +1,108 @@
+{
+  "removedFiles": [
+    {
+      "path": "Tools/Unity/HandheldTorchPreview.png",
+      "bytes": 162839,
+      "sha256": "7c72cecc38ea90e55c52e8463b3829634c652134f3c8da44554cc8a2165650b3"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/back-view.png",
+      "bytes": 211044,
+      "sha256": "a27fc52fe72a48f0e17e997f3aa966477c10e88386b6defaddcdf5f1eb2b0895"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/back-view.png.txt",
+      "bytes": 927,
+      "sha256": "d8d7b381dd4888bdea58b8453fb5a2a0f3cc385ebc9b655240c56de1670484a5"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/background-candidate.png",
+      "bytes": 174817,
+      "sha256": "d62e185cec830f01b0f5215b5c74e98c647676e71d02aa244a7ee5631bbd6de5"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/backpack-4x3.png",
+      "bytes": 175731,
+      "sha256": "b40c9095712e49494e59335e0a4b2a680e4f20be501927547965854d88db933b"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/backpack-4x3.png.txt",
+      "bytes": 927,
+      "sha256": "d8d7b381dd4888bdea58b8453fb5a2a0f3cc385ebc9b655240c56de1670484a5"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/backpack.png",
+      "bytes": 231059,
+      "sha256": "369c6c870bde58fe8d43579777825f9e057358057671d861c7887d39af4d2cbb"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/backpack.png.txt",
+      "bytes": 927,
+      "sha256": "d8d7b381dd4888bdea58b8453fb5a2a0f3cc385ebc9b655240c56de1670484a5"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/diagnosis.png",
+      "bytes": 174828,
+      "sha256": "f0a03678507cee1b893e691f73f73eb555421c248bf8a576adf6c10a1bc41e80"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment-4x3.png",
+      "bytes": 192577,
+      "sha256": "8a1fa68ff6759d2cc16c7766aaeec54557c2a2553a7955e0bae70e32566624f6"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment-4x3.png.txt",
+      "bytes": 784,
+      "sha256": "d486583dae75d9e2af8e5e5cfd558d185f0343c4a1a6f1a84708d9f0653a007a"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment-tilted-close.png",
+      "bytes": 254235,
+      "sha256": "9da764a1155ed35f5e758111593ccd6dc9de41e5ef7074b600390f3347876d25"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment-tilted-close.png.txt",
+      "bytes": 784,
+      "sha256": "d486583dae75d9e2af8e5e5cfd558d185f0343c4a1a6f1a84708d9f0653a007a"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment.png",
+      "bytes": 208814,
+      "sha256": "aaecccda6949f27c3effb9926fd5e5808a829b06b6cade25abe202ac957ad53c"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/equipment.png.txt",
+      "bytes": 784,
+      "sha256": "d486583dae75d9e2af8e5e5cfd558d185f0343c4a1a6f1a84708d9f0653a007a"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/held-bow.png",
+      "bytes": 75971,
+      "sha256": "3c9eda7f24d6d0816c7d992813e3c2ad2a7a7c4d4c75a30644901d000637ea11"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/scoped-checks.txt",
+      "bytes": 1839,
+      "sha256": "0acd99b7b084992c3c35b7978377b7d867f0901fd4831552c6dc7dbeb0589dfe"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/tilted-close.png",
+      "bytes": 276202,
+      "sha256": "05fd4e24eebb23dc6d595be3a66468faff00d80ec55cb3483d9142ffa523c383"
+    },
+    {
+      "path": "Tools/Unity/InventoryCharacterPreview/tilted-close.png.txt",
+      "bytes": 927,
+      "sha256": "d8d7b381dd4888bdea58b8453fb5a2a0f3cc385ebc9b655240c56de1670484a5"
+    }
+  ],
+  "count": 19,
+  "bytes": 2146016,
+  "validation": {
+    "repositoryReferenceSearchMatches": 0,
+    "allDeletedPathsAbsent": true,
+    "outsideUnityAssets": true,
+    "originalModifiedFilesUnchanged": true
+  },
+  "note": "仅删除工程外旧预览和日志，无代码或运行资源变更，未重跑Unity测试。Unity MCP确认项目路径与Boot未脏；Console存在历史工具连接/执行报错，不宣称Console为空。"
+}
