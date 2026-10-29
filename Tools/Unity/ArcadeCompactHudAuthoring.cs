@@ -99,7 +99,6 @@ public static class ArcadeCompactHudAuthoring
             ui.TextArena.alignment = ui.TextWave.alignment = TextAlignmentOptions.Center;
             ui.TextArena.fontSizeMax = 23; ui.TextArena.fontSizeMin = 18;
             Place((RectTransform)ui.StageBannerRoot.transform, new Vector2(.5f, .68f), Vector2.zero, new Vector2(680, 92));
-            Place((RectTransform)ui.BtnExitFirstPerson.transform, Vector2.one, new Vector2(-160, -390), new Vector2(270, 64));
             collector.Sort(); PrefabUtility.SaveAsPrefabAsset(root, Hud);
         }
         finally { PrefabUtility.UnloadPrefabContents(root); }
@@ -203,7 +202,6 @@ public static class ArcadeCompactHudAuthoring
         try
         {
             var ui = hud.GetComponent<ArcadeHudUI>();
-            Place(ui.TextFirstPerson.rectTransform, new Vector2(.5f, 0), new Vector2(0, 130), new Vector2(440, 64), new Vector2(.5f, 0));
             PrefabUtility.SaveAsPrefabAsset(hud, Hud);
         }
         finally { PrefabUtility.UnloadPrefabContents(hud); }

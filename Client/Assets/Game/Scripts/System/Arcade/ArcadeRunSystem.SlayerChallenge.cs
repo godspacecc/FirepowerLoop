@@ -41,7 +41,7 @@ namespace Game
             if(entry!=null)
             {
                 entry.Bombs=actual.Bombs;entry.Dashes=actual.Dashes;entry.Powerups=actual.Powerups.Select(p=>p.Clone()).ToList();
-                entry.TemporaryWeaponId=actual.TemporaryWeaponId;entry.TemporaryWeaponRemaining=actual.TemporaryWeaponRemaining;entry.FirstPersonRemaining=actual.FirstPersonRemaining;
+                entry.TemporaryWeaponId=actual.TemporaryWeaponId;entry.TemporaryWeaponRemaining=actual.TemporaryWeaponRemaining;
             }
             if(candidate.RoundCheckpoint!=null)candidate.RoundCheckpoint.SlayerMart=nextShop.Clone();
             candidate.UpdatedAtUtc=clock.UtcNow.ToUniversalTime().ToString("O");

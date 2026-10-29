@@ -13,7 +13,6 @@ namespace Game
         private MobileControlLayoutData draft;
         private bool moveSelected = true;
         private MobileLayoutButton? buttonSelected;
-        private bool firstPersonPreview;
         private bool trial;
         private bool updateRegistered;
         private Vector2 lastAreaSize;
@@ -31,8 +30,6 @@ namespace Game
             UI.AimPreview.Selected = () => { if (!trial) Select(false); };
             UI.MovePreview.Dragged = point => DragStick(true, point);
             UI.AimPreview.Dragged = point => DragStick(false, point);
-            UI.ModeButton.onClick.AddListener(() =>
-            { firstPersonPreview = !firstPersonPreview; buttonSelected = null; moveSelected = true; SetTrial(false); });
             var buttons = ButtonPreviews();
             iconButtonColors = new[] { UI.PausePreview, UI.BombPreview, UI.DashPreview }
                 .Select(handle => handle.GetComponent<UnityEngine.UI.Image>().color).ToArray();
@@ -56,7 +53,7 @@ namespace Game
         {
             if (!this.GetSystem<MobileInputSystem>().IsMobileInputMode) { Hide(); return; }
             draft = this.GetModel<MobileControlLayoutModel>().ToData();
-            moveSelected = true; buttonSelected = null; firstPersonPreview = false;
+            moveSelected = true; buttonSelected = null;
             SetToolbarExpanded(true);
             Canvas.ForceUpdateCanvases(); SetTrial(false);
             LifeCycle.RegisterUpdate(RefreshOnResize); updateRegistered = true;
@@ -82,7 +79,7 @@ namespace Game
             };
         }
         private MobileLayoutStickHandle[] ButtonPreviews() => new[]
-        { UI.PausePreview, UI.BombPreview, UI.DashPreview, UI.FieldUpgradePreview, UI.DonateLifePreview, UI.ExitFirstPersonPreview, UI.FirstPersonFirePreview };
+        { UI.PausePreview, UI.BombPreview, UI.DashPreview, UI.FieldUpgradePreview, UI.DonateLifePreview };
         private void ResetGestures()
         {
             UI.MovePreview.ResetGesture(); UI.AimPreview.ResetGesture();
@@ -132,11 +129,9 @@ namespace Game
             lastAreaSize = UI.ControlSafeArea.rect.size;
             if (lastAreaSize.x <= 0 || lastAreaSize.y <= 0) return;
             var buttons = ButtonPreviews();
-            UI.ExitFirstPersonPreview.gameObject.SetActive(firstPersonPreview);
-            UI.FirstPersonFirePreview.gameObject.SetActive(firstPersonPreview);
-            UI.AimPreview.gameObject.SetActive(!firstPersonPreview);
+            UI.AimPreview.gameObject.SetActive(true);
             var obstacles = MobileControlLayoutGeometry.RenderArcadeButtons(UI.LayoutArea, draft,
-                buttons.Select(handle => (RectTransform)handle.transform).ToArray(), firstPersonPreview);
+                buttons.Select(handle => (RectTransform)handle.transform).ToArray());
             for (var i = 0; i < buttons.Length; i++)
                 buttons[i].GetComponent<UnityEngine.UI.Image>().color = buttonSelected == (MobileLayoutButton)i
                     ? new Color(.9f, .4f, .2f, .95f) : i < iconButtonColors.Length
@@ -147,11 +142,9 @@ namespace Game
             UI.SizeValue.text = $"{Mathf.RoundToInt(Selected.Scale * 100)}%";
             UI.OpacityValue.text = $"{Mathf.RoundToInt(Selected.Opacity * 100)}%";
             UI.MoveButton.interactable = !trial && (!moveSelected || buttonSelected.HasValue);
-            UI.AimButton.interactable = !trial && !firstPersonPreview && (moveSelected || buttonSelected.HasValue);
-            UI.ModeButton.interactable = !trial;
+            UI.AimButton.interactable = !trial && (moveSelected || buttonSelected.HasValue);
             UI.SizeSlider.interactable = UI.OpacitySlider.interactable = !trial && !buttonSelected.HasValue;
             UI.TrialText.text = Loc.T(trial ? "ui.mobile_layout.edit" : "ui.mobile_layout.trial");
-            UI.ModeText.text = Loc.T(firstPersonPreview ? "ui.mobile_layout.mode_first_person" : "ui.mobile_layout.mode_arcade");
             UI.HintText.text = Loc.T(trial ? "ui.mobile_layout.trial_hint" : "ui.mobile_layout.edit_hint");
         }
         private void Save()

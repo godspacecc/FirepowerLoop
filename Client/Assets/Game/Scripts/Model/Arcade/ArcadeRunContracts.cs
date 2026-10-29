@@ -7,7 +7,7 @@ namespace Game
     /// <summary>安全节点只承担恢复与准备，数值顺序兼容本项目旧局阶段。</summary>
     public enum ArcadeRunPhase { None, SafeCheckpoint, Arena, Challenge, Victory, Result, SavingResult }
     public enum ArcadeDeathResult { Rejected, Respawn, RunFailed }
-    public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, ExitFirstPerson, FieldUpgrade, DonateLife }
+    public enum ArcadeHudActionKind { Fire, Bomb, Dash, RetryCompletion, FieldUpgrade = 5, DonateLife = 6 }
 
     /// <summary>街机模式固定开局合同；不读取基地角色、装备、弹药、货币或背包。</summary>
     public static class ArcadeRunDefaults
@@ -102,8 +102,6 @@ namespace Game
         public string TemporaryWeaponId { get; set; }
         /// <summary>临时枪剩余秒数，加载等待期间冻结。</summary>
         public float TemporaryWeaponRemaining { get; set; }
-        /// <summary>临时视角剩余秒数，镜头实例在目标地图重建。</summary>
-        public float FirstPersonRemaining { get; set; }
         /// <summary>当前武器下一次可发射前的冷却秒数。</summary>
         public float FireCooldown { get; set; }
         /// <summary>角色现有保护剩余秒数。</summary>
@@ -316,8 +314,6 @@ namespace Game
         public int RemainingEnemies { get; set; }
         public string TemporaryWeaponNameKey { get; set; }
         public float TemporaryWeaponSeconds { get; set; }
-        /// <summary>单人临时第一人称剩余秒数；联机快照保持默认零。</summary>
-        public float FirstPersonSeconds { get; set; }
         /// <summary>本局规则与本人能力只读投影，不参与扣费或充能。</summary>
         public int SlayerMartRulesVersion { get; set; }
         public bool HasStorm { get; set; }

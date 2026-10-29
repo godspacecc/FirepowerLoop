@@ -1066,7 +1066,7 @@ namespace Game
                 if (error != null) return error;
             }
 
-            foreach (var row in tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList))
+            foreach (var row in tables.TbArcadeDrop.DataList)
             {
                 var error = ValidateFileName(ResourceAddressKind.SceneObjectPrefab, row.VisualPrefabName, true,
                     "TbArcadeDrop", row.Id, "VisualPrefabName");
@@ -1391,13 +1391,7 @@ namespace Game
                     !IsFinite(row.VisualOffsetX) || !IsFinite(row.VisualOffsetY) || !IsFinite(row.VisualOffsetZ))
                     return $"TbArcadePowerup[{row?.Id ?? "<null>"}] 无效";
             }
-            // 单人相机道具仅来自客户端专表，不向联机共享表扩散。
-            if (tables.TbArcadeDrop.DataList.Any(row => row.Kind == global::ArcadeDropKind.FirstPerson) ||
-                tables.TbArcadeSoloDrop.DataList.Any(row => row.Kind != global::ArcadeDropKind.FirstPerson ||
-                    row.MinArena != 1 || row.MaxArena != 1 || row.MaxOwned != 1 ||
-                    row.ProductId != "arcade.camera.first_person"))
-                return "街机第一人称掉落必须限定为第一场单人专表";
-            foreach (var row in tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList))
+            foreach (var row in tables.TbArcadeDrop.DataList)
             {
                 if (row == null || string.IsNullOrWhiteSpace(row.Id) || !dropIds.Add(row.Id) || row.MinArena <= 0 || row.MaxArena < 0 ||
                     row.MaxArena != 0 && row.MaxArena < row.MinArena || row.EnemyMinArena < 0 || row.Weight <= 0 || !Enum.IsDefined(typeof(global::ArcadeDropKind), row.Kind) ||
@@ -1406,8 +1400,7 @@ namespace Game
                 if(row.Kind==global::ArcadeDropKind.Support&&(row.ProductId!="arcade.support.drone"||!powerupIds.Contains(row.ProductId)||row.DurationSeconds!=tables.TbArcadeDrone.DataList[0].DurationSeconds))
                     return "TbArcadeDrop 无人机时长或引用无效";
                 var timed = row.Kind == global::ArcadeDropKind.TemporaryWeapon ||
-                            row.Kind == global::ArcadeDropKind.Support || row.Kind == global::ArcadeDropKind.Powerup ||
-                            row.Kind == global::ArcadeDropKind.FirstPerson;
+                            row.Kind == global::ArcadeDropKind.Support || row.Kind == global::ArcadeDropKind.Powerup;
                 if (timed != (row.DurationSeconds > 0f)) return $"TbArcadeDrop[{row.Id}].DurationSeconds 与掉落类型不匹配";
                 if (row.Kind == global::ArcadeDropKind.TemporaryWeapon && !weaponIds.Contains(row.ProductId))
                     return $"TbArcadeDrop[{row.Id}].ProductId 武器引用不存在";
@@ -1469,7 +1462,7 @@ namespace Game
                 tables.TbArcadeChallenge.DataList.OrderBy(row => row.StartArena).ThenBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeChallengeDefinition(row.Id, row.EnemyGroupId, row.StartArena,
                         row.Interval, row.TimeLimitSeconds)),
-                tables.TbArcadeDrop.DataList.Concat(tables.TbArcadeSoloDrop.DataList)
+                tables.TbArcadeDrop.DataList
                     .OrderBy(row => row.MinArena).ThenBy(row => row.Id, StringComparer.Ordinal)
                     .Select(row => new ArcadeDropDefinition(row.Id, row.MinArena, row.MaxArena, row.Weight, row.Kind,
                         row.ProductId, ResolveFileName(ResourceAddressKind.SceneObjectPrefab, row.VisualPrefabName, true),

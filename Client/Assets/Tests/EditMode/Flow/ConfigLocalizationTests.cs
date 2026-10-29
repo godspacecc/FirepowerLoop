@@ -98,7 +98,7 @@ namespace Game.Tests
                 .OrderBy(name => name)
                 .ToArray();
 
-            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadeSoloDrop", "TbArcadePowerup", "TbArcadeDrone", "TbArcadeSupportVisual", "TbArcadeUpgrade", "TbArcadeReward", "TbArcadeRoundLayout", "TbArcadeSlayerMartItem", "TbArcadeSlayerMartRegion", "TbArcadeSlayerMartAbility", "TbArcadeSlayerChallenge", "TbArcadeRoundReward", "TbArcadeWeaponUpgrade", "TbArcadeEarlyStage", "TbArcadeScoreShop" }));
+            Assert.That(clientTableNames, Is.EquivalentTo(new[] { "TbItem", "TbWeapon", "TbWeaponAppearance", "TbProjectile", "TbMap", "TbMapScenePart", "TbMapSpawn", "TbPlayer", "TbEnemy", "TbLoot", "TbTestCmdCategory", "TbTestCmdEntry", "TbArcadeRule", "TbArcadeWeapon", "TbArcadeArena", "TbArcadeEnemyGroup", "TbArcadeBoss", "TbArcadeChallenge", "TbArcadeTreasureRoom", "TbArcadeDrop", "TbArcadePowerup", "TbArcadeDrone", "TbArcadeSupportVisual", "TbArcadeUpgrade", "TbArcadeReward", "TbArcadeRoundLayout", "TbArcadeSlayerMartItem", "TbArcadeSlayerMartRegion", "TbArcadeSlayerMartAbility", "TbArcadeSlayerChallenge", "TbArcadeRoundReward", "TbArcadeWeaponUpgrade", "TbArcadeEarlyStage", "TbArcadeScoreShop" }));
 
             var configAssembly = typeof(Tables).Assembly;
             Assert.That(configAssembly.GetType("StartMachineConfig"), Is.Null);

@@ -51,7 +51,6 @@
         <var name="TemporaryWeapon" value="4"/>
         <var name="Support" value="5"/>
         <var name="Powerup" value="6"/>
-        <var name="FirstPerson" value="7"/>
     </enum>
     <enum name="ArcadeTreasureRewardKind" group="e">
         <var name="Weapon" value="5"/>

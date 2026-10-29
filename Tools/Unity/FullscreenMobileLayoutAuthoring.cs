@@ -46,7 +46,7 @@ public static class FullscreenMobileLayoutAuthoring
                 var rect = (RectTransform)expand.transform;
                 rect.anchorMin = rect.anchorMax = new Vector2(.5f, 1);
                 rect.pivot = new Vector2(.5f, 1); rect.anchoredPosition = new Vector2(0, -8);
-                var label = Object.Instantiate(ui.ModeText, expand.transform, false);
+                var label = Object.Instantiate(ui.TrialText, expand.transform, false);
                 label.name = "Label";
                 label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
                 label.rectTransform.offsetMin = new Vector2(8, 4); label.rectTransform.offsetMax = new Vector2(-48, -4);

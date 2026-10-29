@@ -147,9 +147,8 @@ namespace Game.Tests
                         Is.EqualTo(i == 0 ? "ui.arcade.hud.move_stick" : "ui.arcade.hud.aim_stick"));
                 }
             }
-            foreach (var button in new[] { ui.BtnPause, ui.BtnBomb, ui.BtnDash, ui.BtnFieldUpgrade, ui.BtnDonateLife, ui.BtnExitFirstPerson })
+            foreach (var button in new[] { ui.BtnPause, ui.BtnBomb, ui.BtnDash, ui.BtnFieldUpgrade, ui.BtnDonateLife })
                 Assert.That(button.image.raycastTarget, Is.True, button.name);
-            Assert.That(ui.FirstPersonFirePress.GetComponent<Image>().raycastTarget, Is.True);
         }
         [Test]
         public void JoystickNormalization_PreservesSmallInputAndCapsDiagonalMagnitude()

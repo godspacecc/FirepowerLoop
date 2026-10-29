@@ -337,8 +337,6 @@ namespace Game
         /// <summary>本次冲刺开始时锁定的竞技场单位方向，与后续移动和瞄准输入独立。</summary>
         public Vector2 DashDirection;
         public float TemporaryWeaponRemaining;
-        /// <summary>单人视角道具剩余秒数；暂停冻结，退出/死亡/离场清零，独立于临时枪且不保存。</summary>
-        public float FirstPersonRemaining;
         public string TemporaryWeaponId;
         /// <summary>允许不同强化并存；键为行为类型，保证同类重复拾取只刷新而不叠出多个实例。</summary>
         public readonly Dictionary<global::ArcadePowerupBehavior, ArcadePowerupRuntime> Powerups =
@@ -369,8 +367,6 @@ namespace Game
         public float IslandEntryWarningRemaining;
         /// <summary>第四图初始预警期间只显示边界，不结算营火伤害。</summary>
         public float IslandCampfireWarningRemaining;
-        /// <summary>宝藏内或转场时仅释放相机实例，保留视角效果逻辑时长。</summary>
-        public bool IslandFirstPersonSuspended;
         public float WaveTransitionRemaining;
         public bool WaveClearAwarded;
         /// <summary>清场后须先松开射击再按下才提前推进，避免持续射击跳过休整。</summary>

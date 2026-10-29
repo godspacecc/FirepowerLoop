@@ -1,0 +1,173 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":30,\"PassedTests\":30,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:02.7306378\"},\"Results\":[{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeButtons_RoundTripKeepsRealActionsAndIgnoresRetiredActions\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3210000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0160000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeEditor_FormalReferencesExposeRealActionsWithoutBaseControls\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0330000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3630000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.ButtonPositions_SurviveSettingsCloneAndLegacyDefaults\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0330000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_ButtonDragsSaveCancelAndResetWithoutExecutingGameplayActions\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0780000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_CancelDiscardsDraftAndReopenLoadsSavedLayout\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1920,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(2400,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0160000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1800,900)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0180000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_DragPreservesGrabOffsetAndDesktopSwitchClosesDraft\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_FillsActualSafeAreaAtCombatScale\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_SaveCommitsBothSticksAndTrialIsIsolated\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0290000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_ToolbarCanCollapseWithoutChangingLayoutOrDraftAndReopensExpanded\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0310000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Editor_ViewUnloadReleasesDraftAfterBaseClearsViewReference\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0170000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(1920,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0320000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(2340,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0290000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(1440,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0250000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.GeneratedPrefabs_AllReferencesResolveAndPreviewHasNoGamepadControls\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3120000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,0.7f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,1.5f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(2146,966,1.5f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.LegacyDefaultSticks_MigrateIdempotentlyWithoutOverwritingCustomThumbs\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.LegacySettings_DefaultsAndCloneAreIndependent\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.Preview_TrialReturnsToCenterWithoutChangingLayout\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.SaveFailure_RollsBackAuthoritativeLayoutAndSendsNoEvent\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0250000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.SettingsFile_RoundTripKeepsBothSticks\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0460000\"},{\"Name\":\"Game.Tests.MobileControlLayoutTests.SettingsJson_PreservesMobileLayoutThroughClone\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 30,
+        "PassedTests": 30,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.7306378"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeButtons_RoundTripKeepsRealActionsAndIgnoresRetiredActions",
+          "Status": "Passed",
+          "Duration": "00:00:00.3210000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeDefaults_MoveBothThumbsInwardAndMatchEditorProjection",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeEditor_FormalReferencesExposeRealActionsWithoutBaseControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.0330000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeHud_ConsumesSavedButtonPositionInSameSafeAreaAsSticks",
+          "Status": "Passed",
+          "Duration": "00:00:00.3630000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeJoystick_UsesIndependentGeneratedLayoutWrapper",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ArcadeSticks_HaveMatchingFixedRingsAndNonBlockingLabels",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.ButtonPositions_SurviveSettingsCloneAndLegacyDefaults",
+          "Status": "Passed",
+          "Duration": "00:00:00.0330000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ButtonDragsSaveCancelAndResetWithoutExecutingGameplayActions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0780000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_CancelDiscardsDraftAndReopenLoadsSavedLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(2400,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0160000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DefaultButtonsAvoidEachOtherAndBothSticks(1800,900)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_DragPreservesGrabOffsetAndDesktopSwitchClosesDraft",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_FillsActualSafeAreaAtCombatScale",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_SaveCommitsBothSticksAndTrialIsIsolated",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ToolbarCanCollapseWithoutChangingLayoutOrDraftAndReopensExpanded",
+          "Status": "Passed",
+          "Duration": "00:00:00.0310000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Editor_ViewUnloadReleasesDraftAfterBaseClearsViewReference",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(2340,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0290000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.EditorAndHud_ProjectSameControlsForInsetSafeArea(1440,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.GeneratedPrefabs_AllReferencesResolveAndPreviewHasNoGamepadControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.3120000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,0.7f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(1920,1080,1.5f)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Geometry_AvoidsEdgesButtonsAndOtherStick(2146,966,1.5f)",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.LegacyDefaultSticks_MigrateIdempotentlyWithoutOverwritingCustomThumbs",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.LegacySettings_DefaultsAndCloneAreIndependent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.Preview_TrialReturnsToCenterWithoutChangingLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SaveFailure_RollsBackAuthoritativeLayoutAndSendsNoEvent",
+          "Status": "Passed",
+          "Duration": "00:00:00.0250000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SettingsFile_RoundTripKeepsBothSticks",
+          "Status": "Passed",
+          "Duration": "00:00:00.0460000"
+        },
+        {
+          "Name": "Game.Tests.MobileControlLayoutTests.SettingsJson_PreservesMobileLayoutThroughClone",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

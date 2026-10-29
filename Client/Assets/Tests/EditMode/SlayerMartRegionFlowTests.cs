@@ -133,15 +133,10 @@ namespace Game.Tests
             public string RegionError;
             public string SlayerMartRegionLoadError=>RegionError;
             public void SetSlayerMartRegion(ArcadeSlayerMartRegionLayout layout,IReadOnlyList<int> remaining){}
-            public bool FirstPerson;
             public int Round;
             public bool TreasureEntranceShown;
             public bool IsIslandRoundReady => Ready;
             public bool IsIslandTreasureReady => Ready;
-            public bool IsFirstPersonActive => FirstPerson;
-            public bool TryBeginFirstPerson(out string error) { FirstPerson = true; error = null; return true; }
-            public bool TryReadFirstPersonAim(out Vector2 aim) { aim = Vector2.up; return FirstPerson; }
-            public void EndFirstPerson() { FirstPerson = false; }
             public void SetIslandRound(int number) { Round = number; }
             public void SetTreasureRoom(ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds)
                 { TreasureEntranceShown = !inRoom && discovered; }

@@ -1,0 +1,28 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":1,\"PassedTests\":1,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:00.8170548\"},\"Results\":[{\"Name\":\"Game.Tests.PlayerCameraTests.FirstPersonFollowsEyeAndRestoresLocalPresentation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0340000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.8170548"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.PlayerCameraTests.FirstPersonFollowsEyeAndRestoresLocalPresentation",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -76,7 +76,6 @@ namespace Game
                 // 场外弹丸不能随领取者进入新区域继续命中，逐个归还现有运行对象池。
                 foreach (var projectile in runtime.Projectiles.Values.Where(p => !p.Hostile).ToArray())
                     RemoveProjectile(runtime, projectile.Id);
-                if (UsesRoundLayouts(runtime)) SuspendIslandFirstPerson(runtime); else EndFirstPerson(runtime);
                 runtime.InTreasureRoom = true;
                 runtime.IslandRoomTransitionPending = UsesRoundLayouts(runtime);
                 runtime.PlayerPosition = new Vector2(rules.SpawnX, rules.SpawnY);

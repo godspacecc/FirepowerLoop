@@ -56,6 +56,19 @@ namespace Game.Tests
             Assert.That(saved.EmergencyResources[ArcadeRunDefaults.BombResourceId], Is.EqualTo(2));
         }
 
+        [Test] public void LegacyCameraFieldIsIgnoredAndRemovedOnNextSave()
+        {
+            Assert.That(system.TrySaveIslandRound(Node(1), out var error), Is.True, error);
+            var legacy = Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(store.RunPath));
+            legacy["IslandRoundCheckpoint"]["FirstPersonRemaining"] = 20;
+            File.WriteAllText(store.RunPath, legacy.ToString());
+            var loaded = store.Inspect();
+            Assert.That(loaded.IsValid, Is.True, loaded.Error);
+            Assert.That(loaded.Data.IslandRoundCheckpoint.TemporaryWeaponRemaining, Is.EqualTo(1.5f));
+            Assert.That(store.Save(loaded.Data, out error), Is.True, error);
+            Assert.That(File.ReadAllText(store.RunPath), Does.Not.Contain("FirstPersonRemaining"));
+        }
+
         [Test] public void FailedWriteKeepsNodeAndRetryCommitsOnce()
         {
             Assert.That(system.TrySaveIslandRound(Node(1), out var error), Is.True, error);
@@ -105,7 +118,8 @@ namespace Game.Tests
             Assert.That(system.TryContinue(out _, out error), Is.True, error);
             Assert.That(system.TryCompleteArena(new ArcadeArenaCompletion
             {
-                ArenaNumber = 1, NextArenaConfigNumber = 2, NextCheckpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 },
+                // 现役首关通往21号码头；场序仍是第二场，不能提交旧路线配置2。
+                ArenaNumber = 1, NextArenaConfigNumber = 21, NextCheckpoint = new ArcadeCheckpointSaveData { ArenaNumber = 2 },
                 Score = saved.Score, ScoreMultiplier = saved.ScoreMultiplier, MultiplierProgress = saved.MultiplierProgress,
                 EarnedGold = 17, EmergencyResources = saved.EmergencyResources, EquipmentBySlot = saved.EquipmentBySlot
             }, out saved, out error), Is.True, error);
@@ -143,7 +157,7 @@ namespace Game.Tests
         {
             RoundNumber = round, MapId = "island.round." + round, PlayerHealth = 80, PlayerMaxHealth = 100,
             Bombs = 2, Dashes = 3, ArenaGold = 17, TemporaryWeaponId = "arcade.weapon.basic",
-            TemporaryWeaponRemaining = 1.5f, FirstPersonRemaining = 2f, FireCooldown = .2f,
+            TemporaryWeaponRemaining = 1.5f, FireCooldown = .2f,
             InvulnerabilityRemaining = .1f, DashRemaining = .05f, AimDirectionY = 1f
         };
     }

@@ -124,7 +124,7 @@ namespace Game
             {
                 try
                 {
-                    SuspendIslandFirstPerson(runtime);view.Begin(arena.ArenaNumber,layout.HalfWidth,layout.HalfHeight,Array.Empty<ArcadeObstacleDefinition>());
+                    view.Begin(arena.ArenaNumber,layout.HalfWidth,layout.HalfHeight,Array.Empty<ArcadeObstacleDefinition>());
                     view.SetSlayerMartRegion(layout,Enumerable.Range(1,layout.Boxes.Count).ToArray());runtime.PlayerPosition=new Vector2(layout.SpawnX,layout.SpawnY);
                     runtime.SlayerMartRegionPrepared=true;
                 }

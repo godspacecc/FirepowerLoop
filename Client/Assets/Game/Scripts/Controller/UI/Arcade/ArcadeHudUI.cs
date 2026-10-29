@@ -15,7 +15,6 @@ namespace Game
         public Button BtnDash;
         public Button BtnDesktopOnlineExit;
         public Button BtnDonateLife;
-        public Button BtnExitFirstPerson;
         public Button BtnFieldUpgrade;
         public Button BtnPause;
         public Button BtnRetry;
@@ -33,8 +32,6 @@ namespace Game
         public TextMeshProUGUI DesktopTextWave;
         public GameObject DesktopWaveStatus;
         public CustomListView EffectList;
-        public MobileCombatPressView FirstPersonFirePress;
-        public GameObject FirstPersonRoot;
         public Sprite GlovesIcon;
         public Sprite GrenadeIcon;
         public RectTransform JoystickLayoutArea;
@@ -67,7 +64,6 @@ namespace Game
         public TextMeshProUGUI TextArmor;
         public TextMeshProUGUI TextBombCount;
         public TextMeshProUGUI TextDashCount;
-        public TextMeshProUGUI TextFirstPerson;
         public TextMeshProUGUI TextMobileBombCount;
         public TextMeshProUGUI TextMobileDashCount;
         public TextMeshProUGUI TextPauseOnlineExit;

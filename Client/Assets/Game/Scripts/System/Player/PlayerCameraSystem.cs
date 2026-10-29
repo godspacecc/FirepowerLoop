@@ -19,55 +19,8 @@ namespace Game
         private long initializedMapInstanceId;
         private int previousMapUnitId;
         private long previousMapInstanceId;
-        /// <summary>候选加载失败时恢复旧地图的第一人称租约。</summary>
-        private long previousArcadeFirstPersonMapInstanceId;
         private bool arcadeCamera;
-        /// <summary>临时街机视角所属地图；0 为无租约，解绑或其他视角接管后立即失效。</summary>
-        private long arcadeFirstPersonMapInstanceId;
         public PlayerCameraMode Mode => this.GetModel<PlayerCameraModeModel>().Mode;
-
-        public bool IsArcadeFirstPerson(long expectedMapInstanceId) => expectedMapInstanceId > 0 && arcadeFirstPersonMapInstanceId == expectedMapInstanceId && mapInstanceId == expectedMapInstanceId && !mapLoading && arcadeCamera && Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive();
-        /// <summary>单人街机请求临时第一人称；实际资源或构建失败时恢复俯视，不授予租约。</summary>
-        public bool TryBeginArcadeFirstPerson(long expectedMapInstanceId, out string error)
-        {
-            error = null;
-            if (IsArcadeFirstPerson(expectedMapInstanceId))
-                return true;
-            if (expectedMapInstanceId != mapInstanceId || !arcadeCamera || mapLoading || this.GetModel<MapSceneModel>().CurrentMode != MapPreparationMode.ArcadePlayerOnly || Mode != PlayerCameraMode.TopDown || !HasCurrentMapAndPlayer(out _) || this.GetModel<AppStateModel>().CurrentState.Value != AppState.Playing || !PlayerAliveAndConnected())
-            {
-                error = "当前地图或玩家不能进入街机第一人称";
-                return false;
-            }
-
-            try
-            {
-                if (!TrySetMode(PlayerCameraMode.FirstPerson, out error))
-                    return false;
-                this.GetModel<PlayerCameraModeModel>().ShoulderPitchDegrees = 0;
-                arcadeFirstPersonMapInstanceId = expectedMapInstanceId;
-                return true;
-            }
-            catch (System.Exception exception)
-            {
-                // 构建失败时回收隐藏状态与镜头子对象；领域层仍保有地面物品。
-                arcadeFirstPersonMapInstanceId = 0;
-                this.GetModel<PlayerCameraModeModel>().Mode = PlayerCameraMode.TopDown;
-                cameraPort?.ApplyMode(PlayerCameraMode.TopDown, 0, 0);
-                UnlockCursor();
-                error = "第一人称准备失败：" + exception.Message;
-                return false;
-            }
-        }
-
-        /// <summary>仅释放同一地图的街机租约；旧场景恢复请求不能覆盖后续相机。</summary>
-        public void EndArcadeFirstPerson(long expectedMapInstanceId)
-        {
-            if (expectedMapInstanceId == 0 || arcadeFirstPersonMapInstanceId != expectedMapInstanceId)
-                return;
-            arcadeFirstPersonMapInstanceId = 0;
-            if (mapInstanceId == expectedMapInstanceId && !mapLoading && arcadeCamera && Mode == PlayerCameraMode.FirstPerson && IsCurrentUnitActive())
-                TrySetMode(PlayerCameraMode.TopDown, out _);
-        }
 
         protected override void OnInit()
         {
@@ -146,8 +99,6 @@ namespace Game
 
             ClearShoulderAim(true);
             model.Mode = mode;
-            if (mode != PlayerCameraMode.FirstPerson)
-                arcadeFirstPersonMapInstanceId = 0;
             cameraPort.ApplyMode(mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
             RefreshCursorLock();
             error = null;
@@ -164,7 +115,7 @@ namespace Game
             model.ShoulderYawDegrees = NormalizeYaw(model.ShoulderYawDegrees + delta.x * ShoulderLookSensitivity);
             // 第一人称允许抬头和低头观察；越肩保持既有俯仰范围。
             var firstPerson = model.Mode == PlayerCameraMode.FirstPerson;
-            model.ShoulderPitchDegrees = IsArcadeFirstPerson(mapInstanceId) ? 0 : Mathf.Clamp(model.ShoulderPitchDegrees - delta.y * ShoulderLookSensitivity, firstPerson ? -80f : ShoulderMinPitch, firstPerson ? 80f : ShoulderMaxPitch);
+            model.ShoulderPitchDegrees = Mathf.Clamp(model.ShoulderPitchDegrees - delta.y * ShoulderLookSensitivity, firstPerson ? -80f : ShoulderMinPitch, firstPerson ? 80f : ShoulderMaxPitch);
             cameraPort?.LateUpdate(model.Mode, model.ShoulderYawDegrees, model.ShoulderPitchDegrees);
             return true;
         }
@@ -242,7 +193,6 @@ namespace Game
 
         private void OnMapLoadingStarted(MapLoadingStartedEvent evt)
         {
-            previousArcadeFirstPersonMapInstanceId = arcadeFirstPersonMapInstanceId;
             previousMapUnitId = unitId;
             previousMapInstanceId = mapInstanceId;
             mapLoading = true;
@@ -253,19 +203,15 @@ namespace Game
         {
             var restoreUnitId = previousMapUnitId;
             var restoreMapInstanceId = previousMapInstanceId;
-            var restoreFirstPerson = previousArcadeFirstPersonMapInstanceId;
             ClearMapLoadingState();
             if (restoreUnitId > 0 && restoreMapInstanceId > 0)
             {
                 BindPlayer(restoreUnitId, restoreMapInstanceId, true);
-                if (mapInstanceId == restoreFirstPerson && Mode == PlayerCameraMode.FirstPerson)
-                    arcadeFirstPersonMapInstanceId = restoreFirstPerson;
             }
         }
 
         private void ClearMapLoadingState()
         {
-            previousArcadeFirstPersonMapInstanceId = 0;
             mapLoading = false;
             previousMapUnitId = 0;
             previousMapInstanceId = 0;
@@ -394,7 +340,6 @@ namespace Game
 
         private void ClearBinding()
         {
-            arcadeFirstPersonMapInstanceId = 0;
             ClearShoulderAim(true);
             UnlockCursor();
             cameraPort = null;

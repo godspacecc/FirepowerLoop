@@ -15,14 +15,10 @@ namespace Game
         public RectTransform ControlSafeArea;
         public MobileLayoutStickHandle DashPreview;
         public MobileLayoutStickHandle DonateLifePreview;
-        public MobileLayoutStickHandle ExitFirstPersonPreview;
         public Button ExpandToolbarButton;
         public MobileLayoutStickHandle FieldUpgradePreview;
-        public MobileLayoutStickHandle FirstPersonFirePreview;
         public TextMeshProUGUI HintText;
         public RectTransform LayoutArea;
-        public Button ModeButton;
-        public TextMeshProUGUI ModeText;
         public Button MoveButton;
         public MobileLayoutStickHandle MovePreview;
         public CanvasGroup MovePreviewOpacity;

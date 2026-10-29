@@ -1,0 +1,63 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":8,\"PassedTests\":8,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:12.0670434\"},\"Results\":[{\"Name\":\"Game.Tests.IslandRoundSaveTests.AbandonAndFailureRemainValidResultFiles\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.6310000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.FailedWriteKeepsNodeAndRetryCommitsOnce\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3460000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.LegacyCameraFieldIsIgnoredAndRemovedOnNextSave\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1930000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.LegacyNodeResumesWithoutInventingCheckpoint\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3640000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.RoundFourPersistsTreasureStateAndCompletionClearsCheckpoint\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3950000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.SavePreservesWholeWorkingRunWithoutLeavingArena\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2370000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.SkippedOrMutatedSameRoundCannotReplaceNode\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1910000\"},{\"Name\":\"Game.Tests.IslandRoundSaveTests.TreasureInterruptionRestoresRoundThreeWholeState\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.4720000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:12.0670434"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.AbandonAndFailureRemainValidResultFiles",
+          "Status": "Passed",
+          "Duration": "00:00:01.6310000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.FailedWriteKeepsNodeAndRetryCommitsOnce",
+          "Status": "Passed",
+          "Duration": "00:00:01.3460000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.LegacyCameraFieldIsIgnoredAndRemovedOnNextSave",
+          "Status": "Passed",
+          "Duration": "00:00:01.1930000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.LegacyNodeResumesWithoutInventingCheckpoint",
+          "Status": "Passed",
+          "Duration": "00:00:01.3640000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.RoundFourPersistsTreasureStateAndCompletionClearsCheckpoint",
+          "Status": "Passed",
+          "Duration": "00:00:01.3950000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.SavePreservesWholeWorkingRunWithoutLeavingArena",
+          "Status": "Passed",
+          "Duration": "00:00:01.2370000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.SkippedOrMutatedSameRoundCannotReplaceNode",
+          "Status": "Passed",
+          "Duration": "00:00:01.1910000"
+        },
+        {
+          "Name": "Game.Tests.IslandRoundSaveTests.TreasureInterruptionRestoresRoundThreeWholeState",
+          "Status": "Passed",
+          "Duration": "00:00:01.4720000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

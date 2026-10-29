@@ -346,7 +346,7 @@ namespace Game
         {
             if (value.PlayerMaxHealth <= 0 || value.PlayerHealth <= 0 || value.PlayerHealth > value.PlayerMaxHealth ||
                 value.Bombs < 0 || value.Dashes < 0 || value.ArenaGold < 0 || value.Powerups == null ||
-                !ValidTimer(value.TemporaryWeaponRemaining) || !ValidTimer(value.FirstPersonRemaining) ||
+                !ValidTimer(value.TemporaryWeaponRemaining) ||
                 !ValidTimer(value.FireCooldown) || !ValidTimer(value.InvulnerabilityRemaining) || !ValidTimer(value.DashRemaining) ||
                 !Finite(value.AimDirectionX) || !Finite(value.AimDirectionY) ||
                 !Finite(value.DashDirectionX) || !Finite(value.DashDirectionY) ||

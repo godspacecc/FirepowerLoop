@@ -12,12 +12,6 @@ namespace Game
     {
         bool IsActive { get; }
         /// <summary>相机准备事务不拥有时长；未支持的表现端口拒绝进入。</summary>
-        bool IsFirstPersonActive => false;
-        bool TryBeginFirstPerson(out string error) { error = "当前相机不支持街机第一人称"; return false; }
-        void EndFirstPerson() { }
-        void ApplyFirstPersonLook(Vector2 delta) { }
-        bool TryReadFirstPersonAim(out Vector2 aim) { aim = default; return false; }
-        void PlayFirstPersonPickup() { }
         void Begin(int arenaNumber, float arenaHalfWidth, float arenaHalfHeight,
             IReadOnlyList<ArcadeObstacleDefinition> obstacles);
         void End();
@@ -217,10 +211,6 @@ namespace Game
         private float lastSciFiExplosionSoundTime = float.NegativeInfinity;
         private readonly HashSet<int> observedProjectileIds = new();
         private readonly Dictionary<int, ProjectileMuzzleDeparture> projectileMuzzleDepartures = new();
-        /// <summary>第一人称弹丸生成时的水平射击高度（地图局部米）；退出后在途弹丸仍保持原高度。</summary>
-        private readonly Dictionary<int, float> firstPersonProjectileHeights = new();
-        /// <summary>当前视角表现持有的地图租约；0 表示无所有权，旧地图恢复请求不会影响新相机。</summary>
-        private long firstPersonMapInstanceId;
         private Vector3 lastShotMuzzle;
         private bool hasLastShotMuzzle;
         /// <summary>本场机关表现及材质的唯一所有者；End 先释放，再销毁场地根。</summary>
@@ -336,8 +326,6 @@ namespace Game
             ReleaseRoundContent();
             ReleaseIslandEntryWarning();
             ClearPickupFeedback();
-            EndFirstPerson();
-            firstPersonProjectileHeights.Clear();
             if (root != null) root.SetActive(false);
             ReleaseIsland();
             ReleaseBabylon();
@@ -730,14 +718,9 @@ namespace Game
             var authoritative = mapRoot.TransformPoint(World(position, 0.75f));
             if (observedProjectileIds.Add(id) && !hostile && fromPlayerWeapon)
             {
-                if (IsFirstPersonActive && Game.Interface.GetSystem<PlayerCameraSystem>()
-                    .TryCreateAimRay(Vector2.zero, out var ray))
-                    firstPersonProjectileHeights[id] = mapRoot.InverseTransformPoint(ray.origin).y;
-                else if (hasLastShotMuzzle)
+                if (hasLastShotMuzzle)
                     projectileMuzzleDepartures[id] = new ProjectileMuzzleDeparture(lastShotMuzzle, authoritative);
             }
-            if (firstPersonProjectileHeights.TryGetValue(id, out var height))
-                authoritative = mapRoot.TransformPoint(World(position, height));
             var displayed = authoritative;
             if (projectileMuzzleDepartures.TryGetValue(id, out var departure))
             {
@@ -752,7 +735,6 @@ namespace Game
 
         public void RemoveProjectile(int id)
         {
-            firstPersonProjectileHeights.Remove(id);
             observedProjectileIds.Remove(id);
             projectileMuzzleDepartures.Remove(id);
             projectilePresentation?.RemoveProjectile(id);
@@ -779,46 +761,6 @@ namespace Game
         public void EndRoundTransition()=>UIHelper.GetUICtrl<ArcadeRoundTransitionUICtrl>()?.Finish();
         public void SetDropDelivery(int id,bool airdrop,float remaining,float duration)=>lootPresentation?.SetDropDelivery(id,airdrop,remaining,duration);
         public void SetDropOpacity(int id, float opacity) => lootPresentation?.SetDropOpacity(id, opacity);
-
-        public bool IsFirstPersonActive => firstPersonMapInstanceId != 0 &&
-            Game.Interface.GetSystem<PlayerCameraSystem>().IsArcadeFirstPerson(firstPersonMapInstanceId);
-
-        /// <summary>正式地图与玩家资源通过检查后复用相机；失败不建立表现所有权。</summary>
-        public bool TryBeginFirstPerson(out string error)
-        {
-            if (root == null || mapRoot == null || playerMotor == null || !playerMotor.IsValid)
-            { error = "街机玩家表现尚未准备完成"; return false; }
-            var id = Game.Interface.GetSystem<MapSceneSystem>().CurrentMapInstanceId;
-            if (!Game.Interface.GetSystem<PlayerCameraSystem>().TryBeginArcadeFirstPerson(id, out error)) return false;
-            firstPersonMapInstanceId = id;
-            return true;
-        }
-
-        /// <summary>仅释放当前地图的视角租约，过期恢复不写入新相机。</summary>
-        public void EndFirstPerson()
-        {
-            if (firstPersonMapInstanceId == 0) return;
-            var id = firstPersonMapInstanceId;
-            firstPersonMapInstanceId = 0;
-            Game.Interface.GetSystem<PlayerCameraSystem>().EndArcadeFirstPerson(id);
-        }
-
-        public void ApplyFirstPersonLook(Vector2 delta)
-        { if (IsFirstPersonActive) Game.Interface.GetSystem<PlayerCameraSystem>().TryApplyLookDelta(delta); }
-
-        /// <summary>屏幕中心水平射线转成竞技场方向；不从表现端口结算命中。</summary>
-        public bool TryReadFirstPersonAim(out Vector2 aim)
-        {
-            aim = default;
-            if (!IsFirstPersonActive || mapRoot == null || !Game.Interface.GetSystem<PlayerCameraSystem>()
-                .TryCreateAimRay(Vector2.zero, out var ray)) return false;
-            var local = mapRoot.InverseTransformDirection(ray.direction);
-            aim = new Vector2(local.x, local.z).normalized;
-            return aim.sqrMagnitude > 0.99f && Mathf.Abs(local.y) < 0.001f;
-        }
-
-        public void PlayFirstPersonPickup() => ShowPickup("first-person", 1,
-            _ => Loc.T("ui.arcade.first_person.picked"));
 
         /// <summary>沿用浮动提示显示实际补充次数；不根据掉落消失或库存差值推断成功。</summary>
         public void PlaySupplyPickup(ArcadeDropDefinition definition, int added)

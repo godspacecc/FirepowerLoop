@@ -5,14 +5,14 @@ namespace Game
     /// <summary>将设备布局适配到实际安全区；避免初始触摸面覆盖固定按钮，移动行程保留在屏幕内。</summary>
     public static class MobileControlLayoutGeometry
     {
-        /// <summary>编辑页与实战按相同动作顺序适配按钮；隐藏的技能和捐命保留位置，第一人称入口只在对应模式避让。</summary>
-        public static Rect[] RenderArcadeButtons(RectTransform area, MobileControlLayoutData data, RectTransform[] buttons, bool firstPerson)
+        /// <summary>编辑页与实战按相同动作顺序适配按钮；隐藏的技能和捐命保留位置。</summary>
+        public static Rect[] RenderArcadeButtons(RectTransform area, MobileControlLayoutData data, RectTransform[] buttons)
         {
             var occupied = new System.Collections.Generic.List<Rect>();
             for (var i = 0; i < buttons.Length; i++)
             {
                 RenderButton(area, buttons[i], data.Button((MobileLayoutButton)i), occupied.ToArray());
-                if (i < (int)MobileLayoutButton.ExitFirstPerson || firstPerson) occupied.Add(Bounds(area, buttons[i]));
+                occupied.Add(Bounds(area, buttons[i]));
             }
             return occupied.ToArray();
         }

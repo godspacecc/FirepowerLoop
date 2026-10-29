@@ -1,0 +1,38 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:02.7791199\"},\"Results\":[{\"Name\":\"Game.Tests.TemporaryCameraRetirementTests.FormalCatalogAndDropEnumExcludeTemporaryCamera\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2840000\"},{\"Name\":\"Game.Tests.TemporaryCameraRetirementTests.OldCheckpointIgnoresRetiredCameraAndKeepsWeapon\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.TemporaryCameraRetirementTests.OrdinaryAttackRequiresReleaseAfterInputClear\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.7791199"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TemporaryCameraRetirementTests.FormalCatalogAndDropEnumExcludeTemporaryCamera",
+          "Status": "Passed",
+          "Duration": "00:00:01.2840000"
+        },
+        {
+          "Name": "Game.Tests.TemporaryCameraRetirementTests.OldCheckpointIgnoresRetiredCameraAndKeepsWeapon",
+          "Status": "Passed",
+          "Duration": "00:00:00.0240000"
+        },
+        {
+          "Name": "Game.Tests.TemporaryCameraRetirementTests.OrdinaryAttackRequiresReleaseAfterInputClear",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

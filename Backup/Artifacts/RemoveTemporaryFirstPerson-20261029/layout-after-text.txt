@@ -1,0 +1,16 @@
+Count: 1
+Count: 2
+Label: 释放风暴
+Label: 捐出一命
+Title: 操控布局
+Label: 左摇杆 · 移动
+Label: 右摇杆 · 瞄准射击
+Label: 试用
+SizeLabel: 大小
+SizeValue: 100%
+OpacityLabel: 透明度
+OpacityValue: 100%
+Hint: 拖动控件调整位置；临时第一人称控件已移除（候选预览）
+Label: 恢复默认
+Label: 保存
+Label: 取消

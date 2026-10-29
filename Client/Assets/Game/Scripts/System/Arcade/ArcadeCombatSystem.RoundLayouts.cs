@@ -64,7 +64,7 @@ namespace Game
             runtime.AwaitingExit = runtime.CompletionAwaitingRetry = false;
             runtime.ThemeBossStarted = runtime.ThemeBossDefeated = false;
             runtime.ContentBossEnemyId = 0;
-            SuspendIslandFirstPerson(runtime);
+
             ClearArcadeInput(runtime);
             foreach (var enemy in runtime.Enemies.Values) runtimePool.Return(enemy);
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
@@ -136,16 +136,13 @@ namespace Game
             var failure = view.RoundLayoutLoadError ?? view.IslandRoundLoadError;
             if (!string.IsNullOrEmpty(failure)) { FailIslandTransition(runtime, failure); return false; }
             if (!runtime.IslandTransitionViewPrepared || !view.IsRoundLayoutReady || !view.IsIslandRoundReady) return false;
-            if (runtime.FirstPersonRemaining > 0 && !view.IsFirstPersonActive &&
-                (!view.TryBeginFirstPerson(out var error) || !view.TryReadFirstPersonAim(out _)))
-            { view.EndFirstPerson(); FailIslandTransition(runtime, error ?? "地图相机尚未准备完成"); return false; }
+
             var run = this.GetModel<ArcadeRunModel>().Current;
             if(!TryApplySlayerMartRoundBenefits(runtime,out var benefitError))
             {FailIslandTransition(runtime,benefitError);return false;}
             if (run.RoundCheckpoint?.MapId != RoundLayout(runtime).Id &&
                 !this.GetSystem<ArcadeRunSystem>().TrySaveRound(CaptureRoundCheckpoint(runtime), out var saveError))
             { FailIslandTransition(runtime, saveError); return false; }
-            runtime.IslandFirstPersonSuspended = false;
             runtime.IslandTransitionPending = false;
             view.EndRoundTransition();
             PublishHud(runtime);

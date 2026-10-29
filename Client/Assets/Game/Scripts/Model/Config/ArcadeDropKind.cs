@@ -18,7 +18,6 @@
         TemporaryWeapon = 4,
         Support = 5,
         Powerup = 6,
-        FirstPerson = 7,
     }
 
  

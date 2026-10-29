@@ -134,12 +134,6 @@ namespace Game.Tests
             Assert.That(ArcadeCombatSystem.IsInsideObstacle(restored.Position,catalog.Rule.PlayerRadius,obstacles),Is.False);
             Assert.That(restored.RemainingSeconds,Is.EqualTo(7));
         }
-        [Test] public void TreasureActivityKeepsFirstPersonIdentityAndConsumesActualTime()
-        {
-            runtime.InTreasureRoom = true; runtime.FirstPersonRemaining = 10;
-            Call("TickTimers", runtime, 2f);
-            Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(8));
-        }
         [Test] public void ClearPickupTimeConsumesRemainingTemporaryWeaponTime()
         {
             runtime.WaveClearAwarded = true; runtime.TemporaryWeaponId = "arcade.weapon.basic";
@@ -412,17 +406,17 @@ namespace Game.Tests
         {
             Call("StartIslandRound", runtime, 0, null); Call("StartIslandRound", runtime, 1, null);
             Call("StartIslandRound", runtime, 2, null); runtime.SpawnQueue.Clear();
-            runtime.FirstPersonRemaining = 10; runtime.TemporaryWeaponRemaining = 12;
-            runtime.TemporaryWeaponId = "arcade.weapon.rapid"; view.FirstPerson = true;
+            runtime.TemporaryWeaponRemaining = 12;
+            runtime.TemporaryWeaponId = "arcade.weapon.rapid";
             EnableLegacyTreasureFixture(); // 主动接触入口后才进入奖励区域。
             view.Ready = false; Call("TickTreasureRoom", runtime, 0f); Call("SyncView", runtime);
-            Assert.That(runtime.InTreasureRoom, Is.True); Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(10));
+            Assert.That(runtime.InTreasureRoom, Is.True);
             combat.Tick(runtime, 20); Assert.That(runtime.TemporaryWeaponRemaining, Is.EqualTo(12));
             view.Ready = true; combat.Tick(runtime, 20);
-            Call("TickTimers", runtime, 2f); Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(8));
+            Call("TickTimers", runtime, 2f);
             Call("ReturnFromTreasure", runtime);
             Assert.That(runtime.WaveIndex, Is.EqualTo(3)); Assert.That(runtime.InTreasureRoom, Is.False);
-            Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(8)); Assert.That(view.FirstPerson, Is.True);
+
             Assert.That(new ArcadeRunFileStore(directory).Inspect().Data.IslandRoundCheckpoint.RoundNumber, Is.EqualTo(4));
         }
 
@@ -435,7 +429,7 @@ namespace Game.Tests
             Call("StartIslandRound", runtime, 0, checkpoint);
             Assert.That(runtime.Bombs, Is.Zero); Assert.That(runtime.Dashes, Is.Zero);
             Assert.That(runtime.PlayerHealth, Is.EqualTo(51)); Assert.That(runtime.TemporaryWeaponId, Is.Null);
-            Assert.That(runtime.FirstPersonRemaining, Is.Zero);
+
         }
 
         [Test] public void FastProjectileCannotCrossMountainFootBetweenFrames()
@@ -515,13 +509,13 @@ namespace Game.Tests
         [Test] public void TransitionRejectsHudAttacksInventorySpendingAndCameraExit()
         {
             var app = new AppStateModel(); architecture.RegisterModel(app); app.CurrentState.Value = AppState.Playing;
-            runtime.Bombs = 2; runtime.Dashes = 2; runtime.FirstPersonRemaining = 10;
+            runtime.Bombs = 2; runtime.Dashes = 2;
             runtime.IslandTransitionPending = true;
             foreach (var action in new[] { ArcadeHudActionKind.Fire, ArcadeHudActionKind.Bomb,
-                ArcadeHudActionKind.Dash, ArcadeHudActionKind.ExitFirstPerson })
+                ArcadeHudActionKind.Dash })
                 Call("OnHudAction", new ArcadeHudActionRequestedEvent(action));
             Assert.That(runtime.Bombs, Is.EqualTo(2)); Assert.That(runtime.Dashes, Is.EqualTo(2));
-            Assert.That(runtime.FirstPersonRemaining, Is.EqualTo(10)); Assert.That(runtime.Projectiles, Is.Empty);
+            Assert.That(runtime.Projectiles, Is.Empty);
         }
 
         [Test] public void FollowingThemeResourceRetryKeepsItsOwnMapIdentity()
@@ -651,15 +645,10 @@ namespace Game.Tests
             public int SurfaceHits;
             public Vector2 SurfacePosition;
             public void PlayProjectileSurfaceImpact(Vector2 position, Vector2 direction) { SurfaceHits++; SurfacePosition = position; }
-            public bool FirstPerson;
             public int Round;
             public bool TreasureEntranceShown;
             public bool IsIslandRoundReady => Ready;
             public bool IsIslandTreasureReady => Ready;
-            public bool IsFirstPersonActive => FirstPerson;
-            public bool TryBeginFirstPerson(out string error) { FirstPerson = true; error = null; return true; }
-            public bool TryReadFirstPersonAim(out Vector2 aim) { aim = Vector2.up; return FirstPerson; }
-            public void EndFirstPerson() { FirstPerson = false; }
             public void SetIslandRound(int number) { Round = number; }
             public void SetTreasureRoom(ArcadeTreasureRoomParameters p, bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds)
                 { TreasureEntranceShown = !inRoom && discovered; }

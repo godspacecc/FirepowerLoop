@@ -564,26 +564,6 @@ namespace Game
         /// </summary>
         public static string ArcadeExitVictory => Loc.T("ui.arcade.exit.victory");
         /// <summary>
-        /// 返回俯视
-        /// </summary>
-        public static string ArcadeFirstPersonExit => Loc.T("ui.arcade.first_person.exit");
-        /// <summary>
-        /// 返回俯视 [X]
-        /// </summary>
-        public static string ArcadeFirstPersonExitPc => Loc.T("ui.arcade.first_person.exit_pc");
-        /// <summary>
-        /// 已进入临时第一人称：仅水平转向
-        /// </summary>
-        public static string ArcadeFirstPersonPicked => Loc.T("ui.arcade.first_person.picked");
-        /// <summary>
-        /// 第一人称 {0} 秒
-        /// </summary>
-        public static string ArcadeFirstPersonRemaining(object arg0) => Loc.T("ui.arcade.first_person.remaining", arg0);
-        /// <summary>
-        /// 第一人称 {0} 秒
-        /// </summary>
-        public static string ArcadeFirstPersonRemainingMobile(object arg0) => Loc.T("ui.arcade.first_person.remaining_mobile", arg0);
-        /// <summary>
         /// 要塞庭院 · 第1图
         /// </summary>
         public static string ArcadeFortRound1 => Loc.T("ui.arcade.fort.round.1");
@@ -1120,10 +1100,6 @@ namespace Game
         /// {0} 金币
         /// </summary>
         public static string ArcadePrice(object arg0) => Loc.T("ui.arcade.price", arg0);
-        /// <summary>
-        /// 第一人称视角
-        /// </summary>
-        public static string ArcadeProductArcadeCameraFirstPersonName => Loc.T("ui.arcade.product.arcade.camera.first_person.name");
         /// <summary>
         /// 额外生命
         /// </summary>
@@ -2436,7 +2412,7 @@ namespace Game
         /// </summary>
         public static string MobileLayoutCancel => Loc.T("ui.mobile_layout.cancel");
         /// <summary>
-        /// 调整移动、瞄准射击和街机按钮的位置。摇杆支持大小与透明度；第一人称使用滑屏转向和独立开火。布局保存在当前设备。
+        /// 调整移动、瞄准射击和街机按钮的位置。摇杆支持大小与透明度；布局保存在当前设备。
         /// </summary>
         public static string MobileLayoutDescription => Loc.T("ui.mobile_layout.description");
         /// <summary>
@@ -2444,7 +2420,7 @@ namespace Game
         /// </summary>
         public static string MobileLayoutEdit => Loc.T("ui.mobile_layout.edit");
         /// <summary>
-        /// 拖动摇杆或街机按钮调整位置；大小和透明度仅应用于摇杆。切换第一人称可编辑独立开火与返回俯视按钮。
+        /// 拖动摇杆或街机按钮调整位置；大小和透明度仅应用于摇杆。
         /// </summary>
         public static string MobileLayoutEditHint => Loc.T("ui.mobile_layout.edit_hint");
         /// <summary>
@@ -2464,17 +2440,9 @@ namespace Game
         /// </summary>
         public static string MobileLayoutHudWeapon => Loc.T("ui.mobile_layout.hud_weapon");
         /// <summary>
-        /// 俯视操控
-        /// </summary>
-        public static string MobileLayoutModeArcade => Loc.T("ui.mobile_layout.mode_arcade");
-        /// <summary>
         /// 基地操控
         /// </summary>
         public static string MobileLayoutModeBase => Loc.T("ui.mobile_layout.mode_base");
-        /// <summary>
-        /// 第一人称操控
-        /// </summary>
-        public static string MobileLayoutModeFirstPerson => Loc.T("ui.mobile_layout.mode_first_person");
         /// <summary>
         /// 左摇杆 · 移动
         /// </summary>

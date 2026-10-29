@@ -48,7 +48,7 @@ namespace Game
             runtime.IslandRoundAwaitingExit = false;
             runtime.AwaitingExit = false;
             runtime.CompletionAwaitingRetry = false;
-            SuspendIslandFirstPerson(runtime);
+
             ClearArcadeInput(runtime);
             foreach (var enemy in runtime.Enemies.Values) runtimePool.Return(enemy);
             foreach (var projectile in runtime.Projectiles.Values) runtimePool.Return(projectile);
@@ -119,16 +119,11 @@ namespace Game
             if (!string.IsNullOrEmpty(view.IslandRoundLoadError))
             { FailIslandTransition(runtime, view.IslandRoundLoadError); return false; }
             if (!runtime.IslandTransitionViewPrepared || !view.IsIslandRoundReady) return false;
-            if (runtime.FirstPersonRemaining > 0 && !view.IsFirstPersonActive)
-            {
-                if (!view.TryBeginFirstPerson(out var cameraError) || !view.TryReadFirstPersonAim(out _))
-                { view.EndFirstPerson(); FailIslandTransition(runtime, cameraError ?? "第一人称相机尚未准备完成"); return false; }
-            }
+
             var run = this.GetModel<ArcadeRunModel>().Current;
             if (UsesIslandRounds(runtime) && run.IslandRoundCheckpoint?.RoundNumber != runtime.WaveIndex + 1 &&
                 !this.GetSystem<ArcadeRunSystem>().TrySaveIslandRound(CaptureIslandCheckpoint(runtime), out var error))
             { FailIslandTransition(runtime, error); return false; }
-            runtime.IslandFirstPersonSuspended = false;
             runtime.IslandTransitionPending = false;
             view.EndRoundTransition();
             // 开场只提交就绪状态；全局确认音会在未射击时产生突兀的枪响感。
@@ -158,7 +153,7 @@ namespace Game
                 PublishHud(runtime);
                 return;
             }
-            SuspendIslandFirstPerson(runtime);
+
             if (UsesContentRounds(runtime)) PrepareContentRoundView(runtime);
             else PrepareIslandRoundView(runtime);
             PublishHud(runtime);
@@ -183,10 +178,7 @@ namespace Game
             if (!string.IsNullOrEmpty(view.IslandRoundLoadError))
             { FailIslandTransition(runtime, view.IslandRoundLoadError); return; }
             if (!view.IsIslandTreasureReady) return;
-            if (runtime.FirstPersonRemaining > 0 && !view.IsFirstPersonActive &&
-                (!view.TryBeginFirstPerson(out var error) || !view.TryReadFirstPersonAim(out _)))
-            { view.EndFirstPerson(); FailIslandTransition(runtime, error ?? "宝藏房相机尚未准备完成"); return; }
-            runtime.IslandFirstPersonSuspended = false;
+
             runtime.IslandRoomTransitionPending = false; PublishHud(runtime);
         }
 
@@ -198,7 +190,6 @@ namespace Game
             Bombs = runtime.Bombs, Dashes = runtime.Dashes, ArenaGold = runtime.ArenaGold,
             TemporaryWeaponId = runtime.TemporaryWeaponRemaining > 0 ? runtime.TemporaryWeaponId : null,
             TemporaryWeaponRemaining = Mathf.Max(0, runtime.TemporaryWeaponRemaining),
-            FirstPersonRemaining = Mathf.Max(0, runtime.FirstPersonRemaining),
             FireCooldown = Mathf.Max(0, runtime.FireCooldown), InvulnerabilityRemaining = Mathf.Max(0, runtime.PlayerInvulnerability),
             DashRemaining = Mathf.Max(0, runtime.DashRemaining), AimDirectionX = runtime.AimDirection.x, AimDirectionY = runtime.AimDirection.y,
             DashDirectionX = runtime.DashDirection.x, DashDirectionY = runtime.DashDirection.y,
@@ -217,7 +208,6 @@ namespace Game
             runtime.PlayerHealth = saved.PlayerHealth; runtime.PlayerMaxHealth = saved.PlayerMaxHealth;
             runtime.Bombs = saved.Bombs; runtime.Dashes = saved.Dashes; runtime.ArenaGold = saved.ArenaGold;
             runtime.TemporaryWeaponId = saved.TemporaryWeaponId; runtime.TemporaryWeaponRemaining = saved.TemporaryWeaponRemaining;
-            runtime.FirstPersonRemaining = saved.FirstPersonRemaining; runtime.IslandFirstPersonSuspended = saved.FirstPersonRemaining > 0;
             runtime.FireCooldown = saved.FireCooldown; runtime.PlayerInvulnerability = saved.InvulnerabilityRemaining;
             runtime.DashRemaining = saved.DashRemaining; runtime.AimDirection = new Vector2(saved.AimDirectionX, saved.AimDirectionY);
             if (runtime.AimDirection.sqrMagnitude < .001f) runtime.AimDirection = Vector2.up;
@@ -241,13 +231,7 @@ namespace Game
             runtime.TreasureCompleted = saved.RoundNumber == 4;
         }
 
-        /// <summary>只释放地图相机租约，转场冻结或宝藏重建仍保留逻辑剩余秒数。</summary>
-        private void SuspendIslandFirstPerson(ArcadeCombatRuntime runtime)
-        {
-            if (runtime.FirstPersonRemaining <= 0) return;
-            runtime.IslandFirstPersonSuspended = true;
-            view.EndFirstPerson();
-        }
+
 
         /// <summary>从当前通道外沿车道生成；进入后仍正常追击，不把敌人投影到场内。</summary>
         private void IslandRoundEntry(ArcadeCombatRuntime runtime, out Vector2 start, bool consume = true)

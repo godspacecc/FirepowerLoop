@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Linq;
 using System.IO;
 using Luban;
 using QFramework;
@@ -244,6 +245,25 @@ namespace Game.Tests
             finally { Object.DestroyImmediate(canvas); }
         }
 
+        [Test]
+        public void FormalHudExcludesRetiredCameraControls()
+        {
+            var root = PrefabUtility.LoadPrefabContents("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab");
+            try
+            {
+                var collector = root.GetComponent<ReferenceCollector>();
+                foreach (var key in new[] { "BtnExitFirstPerson", "FirstPersonRoot", "FirstPersonFirePress", "TextFirstPerson" })
+                {
+                    Assert.That(collector.data.Any(item => item.key == key), Is.False, key);
+                    Assert.That(typeof(ArcadeHudUI).GetField(key), Is.Null, key);
+                }
+                var ui = root.GetComponent<ArcadeHudUI>();
+                Assert.That(ui.MoveJoystickRoot, Is.Not.Null);
+                Assert.That(ui.AimJoystickRoot, Is.Not.Null);
+            }
+            finally { PrefabUtility.UnloadPrefabContents(root); }
+        }
+
         [TestCase(false, false)]
         [TestCase(false, true)]
         [TestCase(true, false)]
@@ -309,42 +329,7 @@ namespace Game.Tests
             }
         }
 
-        [Test]
-        public void FirstPersonTouchControls_ReleaseFireOnPauseAndRestoreAimOnExit()
-        {
-            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"));
-            try
-            {
-                var ui = root.GetComponent<ArcadeHudUI>();
-                var ctrl = new ArcadeHudUICtrl();
-                typeof(BaseUICtrl).GetField("BaseUI", Private).SetValue(ctrl, ui);
-                var snapshot = new ArcadeCombatHudSnapshot { FirstPersonSeconds = 10, PlayerHealth = 100 };
-                typeof(ArcadeHudUICtrl).GetField("combat", Private).SetValue(ctrl, snapshot);
-                typeof(ArcadeHudUICtrl).GetField("hasCombatSnapshot", Private).SetValue(ctrl, true);
-                var refresh = typeof(ArcadeHudUICtrl).GetMethod("RefreshFirstPersonMobileControls", Private);
-                refresh.Invoke(ctrl, new object[] { true, true });
-                Assert.That(ui.AimJoystickRoot.activeSelf, Is.False);
-                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.True);
-                int releases = 0;
-                ui.FirstPersonFirePress.Released += () => releases++;
-                var pointer = new UnityEngine.EventSystems.PointerEventData(null) { pointerId = 41 };
-                ui.FirstPersonFirePress.OnPointerDown(pointer);
-                refresh.Invoke(ctrl, new object[] { true, false });
-                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False);
-                Assert.That(releases, Is.EqualTo(1), "暂停必须释放原触点");
-                refresh.Invoke(ctrl, new object[] { true, true });
-                ui.FirstPersonFirePress.OnPointerUp(pointer);
-                Assert.That(releases, Is.EqualTo(1), "重开后旧触点的释放不能成为新请求");
-                snapshot.FirstPersonSeconds = 0;
-                refresh.Invoke(ctrl, new object[] { true, true });
-                Assert.That(ui.AimJoystickRoot.activeSelf, Is.True);
-                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False);
-                snapshot.FirstPersonSeconds = 10;
-                refresh.Invoke(ctrl, new object[] { false, false });
-                Assert.That(ui.FirstPersonFirePress.gameObject.activeSelf, Is.False, "桌面不显示触屏开火控件");
-            }
-            finally { Object.DestroyImmediate(root); }
-        }
+
 
         [TestCase(false, false)]
         [TestCase(false, true)]
@@ -541,23 +526,7 @@ namespace Game.Tests
             finally { Object.DestroyImmediate(canvas); }
         }
 
-        [Test]
-        public void FirstPersonCountdown_DoesNotCoverConcurrentEffectsOnTablet()
-        {
-            var canvas = new GameObject("Tablet", typeof(RectTransform), typeof(Canvas));
-            canvas.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
-            ((RectTransform)canvas.transform).sizeDelta = new Vector2(1440, 1080);
-            var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab"), canvas.transform, false);
-            try
-            {
-                var ui = root.GetComponent<ArcadeHudUI>();
-                var timer = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, ui.TextFirstPerson.rectTransform);
-                var supports = MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.SupportEffectRoot.transform);
-                Assert.That(timer.Overlaps(supports), Is.False, "第一人称计时与有效辅助效果须同时可读");
-                Assert.That(timer.Overlaps(MobileControlLayoutGeometry.Bounds(ui.JoystickLayoutArea, (RectTransform)ui.TextWave.transform.parent)), Is.False);
-            }
-            finally { Object.DestroyImmediate(canvas); }
-        }
+
     }
 }
 

@@ -523,5 +523,13 @@
   "ui.torch.extinguish",
   "ui.torch.ignite",
   "ui.torch.remaining",
-  "ui.valley.extraction_rule"
+  "ui.valley.extraction_rule",
+  "ui.arcade.product.arcade.camera.first_person.name",
+  "ui.arcade.first_person.picked",
+  "ui.arcade.first_person.remaining",
+  "ui.arcade.first_person.remaining_mobile",
+  "ui.arcade.first_person.exit",
+  "ui.arcade.first_person.exit_pc",
+  "ui.mobile_layout.mode_first_person",
+  "ui.mobile_layout.mode_arcade"
 ]

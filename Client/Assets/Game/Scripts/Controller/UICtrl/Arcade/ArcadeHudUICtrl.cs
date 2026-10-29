@@ -71,9 +71,6 @@ namespace Game
             UI.BtnPause.onClick.AddListener(PauseOrExitOnline);
             UI.BtnDesktopOnlineExit.onClick.AddListener(PauseOrExitOnline);
             UI.BtnRetry.onClick.AddListener(() => SendAction(ArcadeHudActionKind.RetryCompletion));
-            UI.BtnExitFirstPerson.onClick.AddListener(() => SendAction(ArcadeHudActionKind.ExitFirstPerson));
-            UI.FirstPersonFirePress.Pressed += OnFirstPersonFirePressed;
-            UI.FirstPersonFirePress.Released += OnFirstPersonFireReleased;
             this.RegisterEvent<ArcadeRunChangedEvent>(OnRunChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeCombatHudChangedEvent>(OnCombatChanged).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<ArcadeStageNoticeChangedEvent>(_ => TryPresentStageNotice()).UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -81,7 +78,7 @@ namespace Game
             this.RegisterEvent<ArcadeCombatOperationFailedEvent>(evt => Notify.ShowFloatTips(evt.Error)).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<OnlineArcadeRunChangedEvent>(evt => OnOnlineRunChanged(evt.Snapshot))
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<MobileInputModeChangedEvent>(_ => { RefreshJoystickVisibility(); RenderFirstPersonStatus(); SyncFieldUpgradeUi(); })
+            this.RegisterEvent<MobileInputModeChangedEvent>(_ => { RefreshJoystickVisibility(); SyncFieldUpgradeUi(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_ => { if (IsShow()) ApplyJoystickLayout(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -118,13 +115,11 @@ namespace Game
         {
             ClearScorePickupFeedback();
             ResetJoystickInteractions();
-            UI.FirstPersonFirePress.ResetCapture();
             ClearStageBanner();
             ReleaseJoystickUpdate();
             awaitingOnlineExit = false;
             ClearPlayerStatuses();
             ClearTimedEffects();
-            UI.FirstPersonRoot.SetActive(false);
         }
 
         protected override void OnUnload()
@@ -157,20 +152,11 @@ namespace Game
 
         private void OnCombatChanged(ArcadeCombatHudChangedEvent evt)
         {
-            var hadFirstPerson = combat.FirstPersonSeconds > 0;
             if (evt.Snapshot != null)
             {
                 if (evt.Snapshot.IslandTransitioning) ClearScorePickupFeedback();
                 combat = evt.Snapshot.Clone();
                 hasCombatSnapshot = true;
-            }
-            if (IsShow() && hadFirstPerson != (combat.FirstPersonSeconds > 0))
-            {
-                // 两种解释之间切换时释放虚拟轴；旧手指不能携带俯视世界方向进入第一人称。
-                ResetJoystickInteractions();
-                UI.MoveJoystickRoot.SetActive(false);
-                UI.AimJoystickRoot.SetActive(false);
-                RefreshJoystickVisibility();
             }
             if (IsShow()){Render();SyncSlayerMartUi();
             SyncCoopRescueUi();}
@@ -198,7 +184,7 @@ namespace Game
             if (combat.IslandTransitioning) Set(UI.TextWave, Loc.T("ui.arcade.island.loading"));
             RenderTimedStatus(combat.TemporaryWeaponNameKey, combat.TemporaryWeaponSeconds, combat.Powerups);
             SyncDesktopStage();
-            RenderFirstPersonStatus();
+
             snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.BombResourceId, out var bombs);
             snapshot.EmergencyResources.TryGetValue(ArcadeRunDefaults.DashResourceId, out var dashes);
             if (hasCombatSnapshot)
@@ -258,21 +244,6 @@ namespace Game
 
         private void SendAction(ArcadeHudActionKind action) => Game.Interface.SendEvent(new ArcadeHudActionRequestedEvent(action));
 
-        /// <summary>只渲染单人规则剩余时间；桌面由 X 退出以便鼠标保持锁定，触屏使用独立按钮。</summary>
-        private void RenderFirstPersonStatus()
-        {
-            if (UI == null) return;
-            var active = !onlineMode && hasCombatSnapshot && combat.FirstPersonSeconds > 0;
-            UI.FirstPersonRoot.SetActive(active);
-            var mobile = this.GetSystem<MobileInputSystem>().IsMobileInputMode;
-            RefreshFirstPersonMobileControls(mobile, mobile && !UIHelper.HasUIOpen);
-            if (!active) return;
-            Set(UI.TextFirstPerson, Loc.T(mobile ? "ui.arcade.first_person.remaining_mobile" :
-                "ui.arcade.first_person.remaining", Mathf.CeilToInt(combat.FirstPersonSeconds)));
-            SetButton(UI.BtnExitFirstPerson, Loc.T(mobile
-                ? "ui.arcade.first_person.exit" : "ui.arcade.first_person.exit_pc"));
-        }
-
         /// <summary>移动输入模式显示双摇杆；阻断前主动松开，使虚拟轴和摇杆图形一起回中。</summary>
         private void RefreshJoystickVisibility()
         {
@@ -283,7 +254,7 @@ namespace Game
             if (!visible && (UI.MoveJoystickRoot.activeSelf || UI.AimJoystickRoot.activeSelf))
                 ResetJoystickInteractions();
             if (UI.MoveJoystickRoot.activeSelf != visible) UI.MoveJoystickRoot.SetActive(visible);
-            RefreshFirstPersonMobileControls(mobile, visible);
+            if (UI.AimJoystickRoot.activeSelf != visible) UI.AimJoystickRoot.SetActive(visible);
             // 切回桌面或被阻断时也同步布局，避免跳过触屏自定义位置的桌面恢复。
             ApplyJoystickLayout();
         }
@@ -295,31 +266,6 @@ namespace Game
             UI.AimJoystick.OnPointerUp(null);
         }
 
-        /// <summary>第一人称用独立开火按钮替代右摇杆；失效、暂停、转场和重生时隐藏并释放原始触点。</summary>
-        private void RefreshFirstPersonMobileControls(bool mobile, bool visible)
-        {
-            bool firstPerson = !onlineMode && hasCombatSnapshot && combat.FirstPersonSeconds > 0;
-            bool aimVisible = visible && !firstPerson;
-            if (UI.AimJoystickRoot.activeSelf != aimVisible)
-            {
-                if (!aimVisible) UI.AimJoystick.OnPointerUp(null);
-                UI.AimJoystickRoot.SetActive(aimVisible);
-            }
-            bool fireVisible = mobile && visible && firstPerson && combat.PlayerHealth > 0 &&
-                               combat.RespawnSeconds <= 0 && !combat.IslandTransitioning && !combat.InTreasureRoom;
-            if (UI.FirstPersonFirePress.gameObject.activeSelf != fireVisible)
-            {
-                // 显隐所有者主动释放，再由 OnDisable 幂等兜底；不依赖编辑器是否派发运行时回调。
-                if (!fireVisible) UI.FirstPersonFirePress.ResetCapture();
-                UI.FirstPersonFirePress.gameObject.SetActive(fireVisible);
-            }
-        }
-
-        /// <summary>按钮仅提交新按压，输入资格和射击仍由街机 System 决定。</summary>
-        private void OnFirstPersonFirePressed() => this.GetSystem<ArcadeCombatSystem>()?.SetMobileFirstPersonFireHeld(true);
-        /// <summary>隐藏或失焦同样发送释放，避免暂停后残留持续开火。</summary>
-        private void OnFirstPersonFireReleased() => this.GetSystem<ArcadeCombatSystem>()?.SetMobileFirstPersonFireHeld(false);
-
         /// <summary>安全区或设置变化后适配布局；不写回持久值，不改变输入轴和战斗规则。</summary>
         private void ApplyJoystickLayout()
         {
@@ -330,8 +276,7 @@ namespace Game
             var data = this.GetModel<MobileControlLayoutModel>().ToData();
             var buttons = new[] { (RectTransform)UI.BtnPause.transform, (RectTransform)UI.BtnBomb.transform,
                 (RectTransform)UI.BtnDash.transform, (RectTransform)UI.BtnFieldUpgrade.transform,
-                (RectTransform)UI.BtnDonateLife.transform, (RectTransform)UI.BtnExitFirstPerson.transform,
-                (RectTransform)UI.FirstPersonFirePress.transform };
+                (RectTransform)UI.BtnDonateLife.transform };
             desktopButtonPlacements ??= buttons.Select(rect => new ButtonPlacement(rect)).ToArray();
             var mobile = this.GetSystem<MobileInputSystem>()?.IsMobileInputMode == true;
             ApplyFieldUpgradeLayout(mobile);
@@ -341,15 +286,11 @@ namespace Game
                 UI.GetComponent<SafeAreaFitter>()?.ApplyNow();
                 touchButtonsApplied = false;
             }
-            var firstPerson = !onlineMode && hasCombatSnapshot && combat.FirstPersonSeconds > 0;
-            var obstacles = mobile ? MobileControlLayoutGeometry.RenderArcadeButtons(UI.JoystickLayoutArea, data, buttons, firstPerson) : new[]
+            var obstacles = mobile ? MobileControlLayoutGeometry.RenderArcadeButtons(UI.JoystickLayoutArea, data, buttons) : new[]
             {
                 MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnDash.transform),
                 MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnBomb.transform),
                 MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnPause.transform),
-                MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.BtnExitFirstPerson.transform),
-                UI.FirstPersonFirePress.gameObject.activeSelf
-                    ? MobileControlLayoutGeometry.Bounds(UI.JoystickLayoutArea, (RectTransform)UI.FirstPersonFirePress.transform) : default
             };
             if (mobile) touchButtonsApplied = true;
             MobileControlLayoutGeometry.Render(UI.JoystickLayoutArea, (RectTransform)UI.MoveJoystickRoot.transform, UI.MoveOpacity, data.Move, true, obstacles);
@@ -377,7 +318,6 @@ namespace Game
         private void RenderOnline(OnlineArcadeRunClientSnapshot snapshot)
         {
             if (UI == null || snapshot.Battle == null) return;
-            UI.FirstPersonRoot.SetActive(false);
             long selfId = this.GetModel<OnlineAccountModel>().Snapshot.Value.PlayerId;
             OnlineArcadePlayerSnapshot runPlayer = System.Linq.Enumerable.FirstOrDefault(snapshot.Players, x => x.PlayerId == selfId);
             OnlineArcadeBattlePlayerSnapshot battlePlayer = System.Linq.Enumerable.FirstOrDefault(snapshot.Battle.Players, x => x.PlayerId == selfId);

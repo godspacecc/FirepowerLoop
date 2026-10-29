@@ -45,8 +45,8 @@ dir /b "%CLIENT_CODE_STAGE%\*.cs" >nul 2>nul || (echo Error: client code generat
 dir /b "%CLIENT_DATA_STAGE%\*.bytes" >nul 2>nul || (echo Error: client data generation is empty & exit /b 1)
 set /a CLIENT_TABLE_COUNT=0
 for %%F in ("%CLIENT_DATA_STAGE%\*.bytes") do set /a CLIENT_TABLE_COUNT+=1
-if not "!CLIENT_TABLE_COUNT!"=="35" (
-    echo Error: client table count expected 35 but got !CLIENT_TABLE_COUNT!
+if not "!CLIENT_TABLE_COUNT!"=="34" (
+    echo Error: client table count expected 34 but got !CLIENT_TABLE_COUNT!
     exit /b 1
 )
 dir /b "%CLIENT_CODE_STAGE%\*Start*.cs" >nul 2>nul && (echo Error: client stage contains server StartConfig code & exit /b 1)
@@ -79,8 +79,6 @@ for %%F in (tbarcadeweaponupgrade tbarcaderoundreward tbarcadedrone tbarcadeslay
 
 echo.
 echo === Publish generated files ===
-if not exist "%CLIENT_DATA_STAGE%\tbarcadesolodrop.bytes" (echo Error: client solo arcade drop table missing & exit /b 1)
-if exist "%SERVER_DATA_STAGE%\tbarcadesolodrop.bytes" (echo Error: solo arcade drop table leaked into server target & exit /b 1)
 if not exist "%CLIENT_CODE_DIR%" mkdir "%CLIENT_CODE_DIR%"
 if not exist "%CLIENT_DATA_DIR%" mkdir "%CLIENT_DATA_DIR%"
 if not exist "%SERVER_CODE_DIR%" mkdir "%SERVER_CODE_DIR%"

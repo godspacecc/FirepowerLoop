@@ -1,0 +1,19 @@
+Count: 1
+Count: 2
+Label: 释放风暴
+Label: 捐出一命
+Label: 返回俯视
+Label: 开火
+Title: 操控布局
+Label: 左摇杆 · 移动
+Label: 右摇杆 · 瞄准射击
+Label: 试用
+SizeLabel: 大小
+SizeValue: 100%
+OpacityLabel: 透明度
+OpacityValue: 100%
+Hint: 现有布局控件（正式Prefab副本，未进入实际设置流程）
+Label: 恢复默认
+Label: 保存
+Label: 取消
+Label: 第一人称操控

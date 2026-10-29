@@ -17,7 +17,6 @@ namespace Game
         private readonly InputAction moveAction;
         private readonly InputAction aimAction;
         private readonly InputAction attackAction;
-        private readonly InputAction cancelAction;
         private readonly InputAction pointerPositionAction;
         private readonly InputAction lookDeltaAction;
         private readonly PointerUiBlocker pointerUiBlocker = new PointerUiBlocker();
@@ -33,10 +32,6 @@ namespace Game
                 "<Gamepad>/rightStick");
             attackAction = new InputAction("PlayerAttack", InputActionType.Button);
             attackAction.AddBinding("<Mouse>/leftButton");
-            cancelAction = new InputAction(
-                "FirstPersonCancel",
-                InputActionType.Button,
-                "<Keyboard>/x");
             pointerPositionAction = new InputAction("PointerPosition", InputActionType.Value, "<Pointer>/position");
             lookDeltaAction = new InputAction("CameraLook", InputActionType.Value, "<Mouse>/delta");
 
@@ -53,7 +48,6 @@ namespace Game
         /// <summary>鼠标左键持续按下且未落在 UI 上；屏幕右摇杆通过 AimInput 独立表达街机射击。</summary>
         public bool AttackHeld => attackAction.enabled && attackAction.IsPressed() &&
                                   TryGetUnblockedMousePosition(out _);
-        public bool CancelPressedThisFrame => cancelAction.WasPressedThisFrame();
         public Vector2 LookDelta => Mouse.current != null ? lookDeltaAction.ReadValue<Vector2>() : Vector2.zero;
         /// <summary>物理右键持有状态；禁用玩法监听时仍观察松开，避免暂停后旧按压自动恢复。</summary>
         public bool ShoulderAimHeld => Mouse.current != null && Mouse.current.rightButton.isPressed;
@@ -101,11 +95,6 @@ namespace Game
                 attackAction.Enable();
             }
 
-            if (!cancelAction.enabled)
-            {
-                cancelAction.Enable();
-            }
-
             if (!pointerPositionAction.enabled) pointerPositionAction.Enable();
             if (!lookDeltaAction.enabled) lookDeltaAction.Enable();
         }
@@ -129,11 +118,6 @@ namespace Game
                 attackAction.Disable();
             }
 
-            if (cancelAction.enabled)
-            {
-                cancelAction.Disable();
-            }
-
             if (pointerPositionAction.enabled) pointerPositionAction.Disable();
             if (lookDeltaAction.enabled) lookDeltaAction.Disable();
 
@@ -149,7 +133,6 @@ namespace Game
             moveAction.Dispose();
             aimAction.Dispose();
             attackAction.Dispose();
-            cancelAction.Dispose();
             pointerPositionAction.Dispose();
             lookDeltaAction.Dispose();
             MoveInput = Vector2.zero;

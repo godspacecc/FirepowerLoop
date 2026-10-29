@@ -49,9 +49,9 @@ public static class ArcadeMobileLayoutAuthoring
                 collector.Remove(key);
             }
             var hud = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Arcade/ArcadeHud.prefab").GetComponent<ArcadeHudUI>();
-            var sources = new[] { hud.BtnPause, hud.BtnBomb, hud.BtnDash, hud.BtnFieldUpgrade, hud.BtnDonateLife, hud.BtnExitFirstPerson, hud.FirstPersonFirePress.GetComponent<Button>() };
-            var names = new[] { "Pause", "Bomb", "Dash", "FieldUpgrade", "DonateLife", "ExitFirstPerson", "FirstPersonFire" };
-            var keys = new[] { "ui.arcade.pause", "ui.arcade.bomb", "ui.arcade.dash", "ui.arcade.slayermart.hud_upgrade", "ui.arcade.coop.donate", "ui.arcade.first_person.exit", "ui.mobile_base.fire" };
+            var sources = new[] { hud.BtnPause, hud.BtnBomb, hud.BtnDash, hud.BtnFieldUpgrade, hud.BtnDonateLife };
+            var names = new[] { "Pause", "Bomb", "Dash", "FieldUpgrade", "DonateLife" };
+            var keys = new[] { "ui.arcade.pause", "ui.arcade.bomb", "ui.arcade.dash", "ui.arcade.slayermart.hud_upgrade", "ui.arcade.coop.donate" };
             for (var i = 0; i < names.Length; i++)
             {
                 var go = new GameObject(names[i] + "Preview", typeof(RectTransform), typeof(Image), typeof(MobileLayoutStickHandle));
@@ -125,7 +125,6 @@ public static class ArcadeMobileLayoutAuthoring
                 var ui = root.GetComponent<MobileControlLayoutUI>();
                 if (ui != null)
                 {
-                    ui.ModeText.text = (string)table["ui.mobile_layout.mode_arcade"];
                     ui.HintText.text = (string)table["ui.mobile_layout.edit_hint"];
                     ui.HintText.fontSize = 24; ui.HintText.enableAutoSizing = true;
                     ui.HintText.fontSizeMin = 18; ui.HintText.fontSizeMax = 24;

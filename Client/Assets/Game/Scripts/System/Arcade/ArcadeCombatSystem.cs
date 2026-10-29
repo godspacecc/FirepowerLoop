@@ -258,8 +258,6 @@ namespace Game
                 error = $"街机掉落配置不存在：{dropId}";
                 return false;
             }
-            if (definition.Kind == global::ArcadeDropKind.FirstPerson &&
-                !TryBeginFirstPerson(runtime, definition, out error)) return false;
             if(!ApplyDrop(runtime, definition)){error="当前强化容量不足或配置无效";return false;}
             SyncView(runtime);
             PublishHud(runtime);
@@ -312,7 +310,6 @@ namespace Game
             this.RegisterEvent<MapLoadingStartedEvent>(_ =>
             {
                 testInvincibleRuntime = null;
-                EndFirstPerson(this.GetModel<ArcadeCombatModel>().Runtime);
             });
             // Editor 切换设备模式时同样释放旧触点；不能跨模式保留触屏转向或开火。
             this.RegisterEvent<MobileInputModeChangedEvent>(_ =>
@@ -488,7 +485,6 @@ namespace Game
         {
             testInvincibleRuntime = null;
             ClearSlayerMartClock();
-            EndFirstPerson(this.GetModel<ArcadeCombatModel>()?.Runtime);
             islandRegion = null; islandMovementPath.Clear();
             islandRegionRound = islandObstacleRound = -1; islandRoundObstacles = null;
             input?.Disable();
@@ -555,10 +551,6 @@ namespace Game
                 case ArcadeHudActionKind.RetryCompletion:
                     RetryCompletion(runtime);
                     break;
-                case ArcadeHudActionKind.ExitFirstPerson:
-                    EndFirstPerson(runtime);
-                    PublishHud(runtime);
-                    break;
             }
         }
 
@@ -585,12 +577,6 @@ namespace Game
             { ClearArcadeInput(runtime); TryFinishIslandTransition(runtime); return; }
             if (runtime.IslandRoomTransitionPending)
             { ClearArcadeInput(runtime); TickIslandRoomTransition(runtime); return; }
-            // 死亡/区域变化可以来自本帧之外；零步长及暂停也不能保留失效视角。
-            if (runtime.FirstPersonRemaining > 0 && (runtime.PlayerHealth <= 0 ||
-                runtime.RespawnRemaining > 0 || runtime.InTreasureRoom && !UsesRoundLayouts(runtime) ||
-                !runtime.IslandFirstPersonSuspended && !view.IsFirstPersonActive))
-                EndFirstPerson(runtime);
-            // 暂停及阻断界面冻结两个独立时钟，清除战斗意图而不终止临时视角。
             var app = this.GetModel<AppStateModel>();
             if (app != null && app.CurrentState.Value != AppState.Playing || UIHelper.HasUIOpen)
             { ClearArcadeInput(runtime); return; }
@@ -698,22 +684,15 @@ namespace Game
             runtime.MoveDirection = input?.MoveInput ?? Vector2.zero;
             var stickAim = input?.AimInput ?? Vector2.zero;
             var stickFiring = stickAim.sqrMagnitude >= AimDeadZone * AimDeadZone;
-            if (ReadFirstPersonInput(runtime, runtime.MoveDirection, stickAim, stickFiring)) return;
             ReadTopDownAim(runtime, stickAim, stickFiring);
             runtime.Firing = ReadArcadeFiring(stickFiring);
         }
 
-        /// <summary>冲刺动作只读取当前移动和朝向；第一人称镜头增量仍由正常帧更新消费一次。</summary>
+        /// <summary>冲刺动作只读取当前移动和朝向，不重复消费本帧操作。</summary>
         private void ReadDashInput(ArcadeCombatRuntime runtime)
         {
             var move = input?.MoveInput ?? Vector2.zero;
-            if (runtime.FirstPersonRemaining > 0 && !runtime.IslandFirstPersonSuspended &&
-                view.IsFirstPersonActive && view.TryReadFirstPersonAim(out var forward))
-            {
-                runtime.AimDirection = forward;
-                runtime.MoveDirection = RelativeFirstPersonMovement(move, forward);
-                return;
-            }
+
             runtime.MoveDirection = move;
             var stickAim = input?.AimInput ?? Vector2.zero;
             ReadTopDownAim(runtime, stickAim, stickAim.sqrMagnitude >= AimDeadZone * AimDeadZone);
@@ -742,13 +721,7 @@ namespace Game
             TickDropLifetimes(runtime, deltaTime);
             TickRoundReward(runtime,deltaTime);
             foreach(var enemy in runtime.Enemies.Values)enemy.FlameHitRemainingSeconds=Mathf.Max(0,enemy.FlameHitRemainingSeconds-deltaTime);
-            if (runtime.FirstPersonRemaining > 0)
-            {
-                if (runtime.FirstPersonRemaining <= deltaTime ||
-                    !runtime.InTreasureRoom && !runtime.IslandFirstPersonSuspended && !view.IsFirstPersonActive)
-                    EndFirstPerson(runtime);
-                else runtime.FirstPersonRemaining -= deltaTime;
-            }
+
             runtime.PlayerInvulnerability = Mathf.Max(0f, runtime.PlayerInvulnerability - deltaTime);
             runtime.FireCooldown = Mathf.Max(0f, runtime.FireCooldown - deltaTime);
             runtime.DashRemaining = Mathf.Max(0f, runtime.DashRemaining - deltaTime);
@@ -1327,9 +1300,6 @@ namespace Game
                     ? runtime.Bombs : runtime.Dashes, definition) : 0;
                 if (supply && added <= 0) continue;
                 if (!CanApplyDrop(definition)) continue;
-                // 视角准备失败保留地面物品；相机提交成功后才注销并提示。
-                bool firstPerson = definition.Kind == global::ArcadeDropKind.FirstPerson;
-                if (firstPerson && !TryBeginFirstPerson(runtime, definition, out _)) continue;
                 long scoreBefore = this.GetModel<ArcadeRunModel>().Current?.Score ?? 0;
                 long goldBefore = runtime.ArenaGold;
                 // 先移出权威集合，防止同步反馈或重复范围检查再次结算同一掉落。
@@ -1349,7 +1319,6 @@ namespace Game
                     view.PlayTreasurePickup((this.GetModel<ArcadeRunModel>().Current?.Score ?? scoreBefore) - scoreBefore,
                         runtime.ArenaGold - goldBefore, pickupPosition);
                 if (supply) view.PlaySupplyPickup(definition, added);
-                if (firstPerson) view.PlayFirstPersonPickup();
                 if (definition.Kind == global::ArcadeDropKind.TemporaryWeapon || definition.Kind == global::ArcadeDropKind.Powerup)
                     view.PlayProductPickup(definition.ProductId);
             }
@@ -1832,7 +1801,6 @@ namespace Game
             if(electricHazardId>0)view?.PlayElectricTowerHit(electricHazardId,runtime.PlayerPosition);
             if (runtime.PlayerHealth > 0) return;
             runtime.HerdImpact=default;
-            EndFirstPerson(runtime);
 
             if (runtime.IsChallenge)
             {
@@ -2024,7 +1992,6 @@ namespace Game
                     return drop.DurationSeconds>0&&catalog.Powerups.Any(p=>p.Id==drop.ProductId&&p.Behavior==global::ArcadePowerupBehavior.Drone);
                 case global::ArcadeDropKind.Powerup:
                     return drop.DurationSeconds > 0 && catalog.Powerups.Any(p => p.Id == drop.ProductId);
-                case global::ArcadeDropKind.FirstPerson: return drop.DurationSeconds > 0;
                 default: return false;
             }
         }
@@ -2466,7 +2433,6 @@ namespace Game
                 RemainingEnemies = runtime.Enemies.Count + runtime.SpawnQueue.Count,
                 TemporaryWeaponNameKey = runtime.TemporaryWeaponRemaining > 0f ? ProductNameKey(temporary.ProductId) : null,
                 TemporaryWeaponSeconds = runtime.TemporaryWeaponRemaining,
-                FirstPersonSeconds = runtime.FirstPersonRemaining,
                 SlayerMartRulesVersion=runtime.SlayerMartRulesVersion,
                 HasStorm=SlayerMartAbility(runtime)?.Owned.Contains("slayermart.item.16")==true,
                 StormCharge=SlayerMartAbility(runtime)?.StormCharge??0,

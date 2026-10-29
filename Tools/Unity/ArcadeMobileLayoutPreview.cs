@@ -29,12 +29,12 @@ public static class ArcadeMobileLayoutPreview
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Additive);
         SceneManager.SetActiveScene(scene);
         var priorTexture = RenderTexture.active;
-        var folder = Path.GetFullPath("Temp/ArcadeMobileLayoutPreview"); Directory.CreateDirectory(folder);
+        var folder = Path.GetFullPath("../Backup/Artifacts/ArcadeMobileLayoutPreview"); Directory.CreateDirectory(folder);
         try
         {
             fixtureType.GetMethod("SetUp").Invoke(fixture, null);
             var architecture = (Game.Game)fixtureType.GetMethod("CreateEditorArchitecture", flags).Invoke(null, null);
-            foreach (var spec in new[] { ("zh-CN", 1920, 1080, false), ("zh-CN", 2340, 1080, true), ("en-US", 1440, 1080, false) })
+            foreach (var spec in new[] { ("zh-CN", 1920, 1080), ("zh-CN", 2340, 1080), ("en-US", 1440, 1080) })
             {
                 var args = new object[] { null, null };
                 var root = (GameObject)fixtureType.GetMethod("CreateEditor", flags).Invoke(null, args);
@@ -53,12 +53,11 @@ public static class ArcadeMobileLayoutPreview
                     architecture.GetModel<LocalizationModel>().CurrentLanguageCode.Value = spec.Item1;
                     foreach (var localized in ui.GetComponentsInChildren<LocalizedText>(true)) localized.Refresh();
                     Canvas.ForceUpdateCanvases(); ctrl.Show();
-                    if (spec.Item4) ui.ModeButton.onClick.Invoke();
                     Canvas.ForceUpdateCanvases();
                     foreach (var text in ui.GetComponentsInChildren<TextMeshProUGUI>()) text.ForceMeshUpdate();
                     camera.Render(); RenderTexture.active = target;
                     pixels.ReadPixels(new Rect(0, 0, spec.Item2, spec.Item3), 0, 0); pixels.Apply();
-                    var file = Path.Combine(folder, spec.Item1 + "-" + spec.Item2 + (spec.Item4 ? "-first-person" : "-top-down"));
+                    var file = Path.Combine(folder, spec.Item1 + "-" + spec.Item2 + "-top-down");
                     File.WriteAllBytes(file + ".png", pixels.EncodeToPNG());
                     File.WriteAllLines(file + ".txt", ui.GetComponentsInChildren<TextMeshProUGUI>()
                         .Select(t => t.name + ": overflow=" + t.isTextOverflowing + "; " + t.text));

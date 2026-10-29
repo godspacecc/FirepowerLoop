@@ -1,0 +1,158 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":27,\"PassedTests\":27,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:16.7347856\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeCompactHudTests.ConfirmedMobileInformationProjectsStateAndRestoresDesktop\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.7080000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(1920,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0470000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(2340,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0450000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(1440,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0370000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.DesktopAuthoringPreservesPhoneArmorAndMouseTarget\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0640000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.DesktopInformationUsesStockAndVerticalMultiplierWithoutGold\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3230000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.DroneTimedStatusShowsRemainingFractionOnDesktopAndMobile\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3550000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.FormalHudExcludesRetiredCameraControls\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0220000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(False,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0150000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(False,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0180000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0130000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(True,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0170000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(False,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1760000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(False,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0320000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(True,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0280000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(True,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileButtons_AreSeparatedAboveAimStickAndInsideSafeArea\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(1920,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2520000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(2340,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2070000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(1440,1080)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3950000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileStormJoinsSkillColumnWithoutOverwritingCustomLayout\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.MobileStormProjectsChargeDurationAndOwnership\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1620000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.SkullOnlyPulsesInLastThreeSecondsAndReuseRestoresNormalEffect\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.9480000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.SkullStatusUsesColoredIconWithoutTextFrameOrProgress(\\u0022small\\u0022,\\u0022SkullRedIcon\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2290000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.SkullStatusUsesColoredIconWithoutTextFrameOrProgress(\\u0022large\\u0022,\\u0022SkullPurpleIcon\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3160000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.TimedEffects_RefreshReplaceExpireWithoutOwningAClock\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2180000\"},{\"Name\":\"Game.Tests.ArcadeCompactHudTests.TimedEffects_UseExternalReusableBoxAndKeepAllActiveEffects\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 27,
+        "PassedTests": 27,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:16.7347856"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.ConfirmedMobileInformationProjectsStateAndRestoresDesktop",
+          "Status": "Passed",
+          "Duration": "00:00:01.7080000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0470000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(2340,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0450000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.CustomSticks_AvoidRealButtonsWithoutRewritingSavedSettings(1440,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0370000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.DesktopAuthoringPreservesPhoneArmorAndMouseTarget",
+          "Status": "Passed",
+          "Duration": "00:00:00.0640000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.DesktopInformationUsesStockAndVerticalMultiplierWithoutGold",
+          "Status": "Passed",
+          "Duration": "00:00:01.3230000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.DroneTimedStatusShowsRemainingFractionOnDesktopAndMobile",
+          "Status": "Passed",
+          "Duration": "00:00:01.3550000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.FormalHudExcludesRetiredCameraControls",
+          "Status": "Passed",
+          "Duration": "00:00:00.0220000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0150000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(False,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0130000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InputLayout_KeepsOnlineExitAndSeparatesDesktopFromTouch(True,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0170000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(False,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.1760000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(False,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0320000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(True,False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0280000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.InterruptedStick_ReopensAtCenter(True,True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0210000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileButtons_AreSeparatedAboveAimStickAndInsideSafeArea",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(1920,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:01.2520000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(2340,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:01.2070000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileCoopInformationFitsTextAndAvoidsTouchAreas(1440,1080)",
+          "Status": "Passed",
+          "Duration": "00:00:01.3950000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileStormJoinsSkillColumnWithoutOverwritingCustomLayout",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.MobileStormProjectsChargeDurationAndOwnership",
+          "Status": "Passed",
+          "Duration": "00:00:01.1620000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.SkullOnlyPulsesInLastThreeSecondsAndReuseRestoresNormalEffect",
+          "Status": "Passed",
+          "Duration": "00:00:01.9480000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.SkullStatusUsesColoredIconWithoutTextFrameOrProgress(\"small\",\"SkullRedIcon\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.2290000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.SkullStatusUsesColoredIconWithoutTextFrameOrProgress(\"large\",\"SkullPurpleIcon\")",
+          "Status": "Passed",
+          "Duration": "00:00:01.3160000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.TimedEffects_RefreshReplaceExpireWithoutOwningAClock",
+          "Status": "Passed",
+          "Duration": "00:00:01.2180000"
+        },
+        {
+          "Name": "Game.Tests.ArcadeCompactHudTests.TimedEffects_UseExternalReusableBoxAndKeepAllActiveEffects",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

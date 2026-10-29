@@ -18,7 +18,6 @@
 ,arcade.bombs,arcade-game,500,设置炸弹数量,"#arcade bombs ",设置当前竞技场持有的炸弹数量。,语法：#arcade bombs <非负整数>,示例：#arcade bombs 3
 ,arcade.dashes,arcade-game,600,设置冲刺数量,"#arcade dashes ",设置当前竞技场持有的冲刺数量。,语法：#arcade dashes <非负整数>,示例：#arcade dashes 5
 ,arcade.drop,arcade-game,700,模拟拾取掉落,"#arcade drop ",立即应用一条正式街机掉落配置，可测试金币、资源、临时武器和强化道具。,语法：#arcade drop <DropId>,示例：#arcade drop arcade.drop.powerup.shield
-,arcade.first-person,arcade-game,710,第一场临时第一人称,#arcade drop arcade.drop.first_person,第一场单人临时第一人称；仅水平转向，X 或 HUD 返回俯视，不影响当前枪械计时。,语法：#arcade drop arcade.drop.first_person,示例：#arcade drop arcade.drop.first_person
 ,arcade.clear-wave,arcade-game,800,清除当前波次,#arcade clear wave,清除当前波次已生成和待生成的敌人，并沿用正式波次结算。,语法：#arcade clear wave,示例：#arcade clear wave
 ,arcade.clear-arena,arcade-game,900,完成当前竞技场,#arcade clear arena,清除当前单人竞技场或挑战并沿用正式完成与安全节点事务。,语法：#arcade clear arena,示例：#arcade clear arena
 ,condition.unitbar,diagnostics,700,开启敌人血条,#unitbar on,开启存活敌人的头顶生命条。,语法：#unitbar on,示例：#unitbar on

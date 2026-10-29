@@ -1,4 +1,6 @@
 {
+  "ui.mobile_layout.description": { "zh-CN": "调整移动、瞄准射击和街机按钮的位置。摇杆支持大小与透明度；布局保存在当前设备。", "en-US": "Move and aim/fire with two sticks. Drag arcade buttons to reposition them and adjust stick size and opacity. Saved on this device." },
+  "ui.mobile_layout.edit_hint": { "zh-CN": "拖动摇杆或街机按钮调整位置；大小和透明度仅应用于摇杆。", "en-US": "Drag sticks or arcade buttons. Size and opacity apply to sticks." },
   "ui.arcade.product.arcade.powerup.skull.small.name": { "zh-CN": "红骷髅强化", "en-US": "Red Skull Power" },
   "ui.arcade.product.arcade.powerup.skull.large.name": { "zh-CN": "紫骷髅强化", "en-US": "Purple Skull Power" },
   "ui.arcade.product.arcade.weapon.flamethrower.name": { "zh-CN": "喷火器", "en-US": "Flamethrower" },
