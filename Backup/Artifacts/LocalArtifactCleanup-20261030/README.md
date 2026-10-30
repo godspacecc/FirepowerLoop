@@ -18,3 +18,12 @@
 - Docs/Plans/执行总清单.md内其他任务的确认及SDK方案继续保留，仅提交本次清理分区。
 
 `deletion-manifest.json`是精确删除清单；`preserved-hashes.json`记录保留文件哈希；`result.json`为执行结果。源码副本和帧图可由各已提交批次的制作/验证脚本重新生成，原验证日志的历史路径保持不变。
+
+## 第二批：一次性修改与提交辅助产物
+
+用户在剩余分类说明后回复“继续”，授权核对后清理临时索引、已应用补丁、一次性修改脚本及重复候选配置。删除21个未跟踪文件、25,771,065字节（约24.6 MiB），见`second-batch-manifest.json`及`second-batch-result.json`。
+
+- 码头批次删除prepare-snapshot.py、task-manifest.json、task-staged.patch及Artifacts目录内的task.index；保留verification-source.zip与export-verification.py，供历史验证来源追溯。
+- 场外入场批次删除12个一次性修改/暂存脚本、两份提交清单、Artifacts临时索引、幸存者已应用补丁和重复候选CSV。候选CSV与Config权威源字节一致；幸存者补丁20条非空新增行均在已提交HEAD对应文件中。
+- 85份其他未跟踪记录及正式资源差异的哈希清理前后完全一致。日志、预览、SDK方案和正式代码均保留；未修改游戏资源或运行测试。
+- 此前自动审批拒绝删除的.git内辅助索引未重试，本批删除的是Artifacts中两个不同的任务暂存索引，不修改.git内部文件。

@@ -1,0 +1,107 @@
+[
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/prepare-snapshot.py",
+    "bytes": 4171,
+    "sha256": "243ed3f6fa0e04c6fd06fb5b88cfc7766a5afd23c2e36b8ab89be12a5cb4121a"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/task-manifest.json",
+    "bytes": 2238,
+    "sha256": "ba6caf671a6b46b76130d46eac5eb5807aa69cc777e65f5669e9cc5b2093b1da"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/task-staged.patch",
+    "bytes": 19926979,
+    "sha256": "f0ae7bd14828e5615e9e0538e151029fcd564a13994b4d7905c552ea36e44b07"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/task.index",
+    "bytes": 1956638,
+    "sha256": "99ba3ad6e555b7ff78a1d81ea99d30e92bc15302b0d429abed7ddf53ab3f030c"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/arcade_dock_hit_pose.candidate.csv",
+    "bytes": 1860936,
+    "sha256": "01d6af68ea74e821e72c823300ec6a81b5f23c1e14a0d494dac7c2da2723d1f6"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/candidate.json",
+    "bytes": 113,
+    "sha256": "66c52339fbf9f455a9d3c53fefabb9260da4e8f05e30cc0062f915c983dff5bd"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/connect-hit-final.py",
+    "bytes": 3969,
+    "sha256": "793b266dde55ea77a84c0354c8f3aa7b220ff5502e5efbe8a69652d96625843c"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/connect-hit-last.py",
+    "bytes": 2920,
+    "sha256": "63a4280e26e05b0327e2b0e288543f2d46642a99f7042e34fe7574e9b094bea0"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/connect-hit-more.py",
+    "bytes": 3621,
+    "sha256": "fb28781484b74db0a37989fd1cd8bea3725e5284e0e7a16cfebd663c26889074"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/connect-hit-rest.py",
+    "bytes": 3149,
+    "sha256": "0e521ac97f32bcb695fa6ae994547e3ef5dcb7c309359f9284920111ea37db41"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/connect-hit.py",
+    "bytes": 4418,
+    "sha256": "9333a53a0bffbc4a4aff5127367d731dbd2c402a2b38afad8d35e40c2367ed28"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-barrel-path.py",
+    "bytes": 966,
+    "sha256": "1d81dc374908042fc6c13ab96010adb642ea3587b405d67b4da2dfe430532fd7"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-client-fixture.py",
+    "bytes": 401,
+    "sha256": "020d46235744697b33d9a4ab070873c4d3bb2d0ec86993ea16f5b532598190b1"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-closeout.py",
+    "bytes": 4808,
+    "sha256": "d79bdf93a4423dfd08c9d432863f1d30356b4d557dcd7cb58eb909304b6b20a5"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-fixtures.py",
+    "bytes": 305,
+    "sha256": "49c930d6f016db1d952e05823b3aff7ae5462b5ebb0450180234b3cfefa13beb"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-review-feedback.py",
+    "bytes": 2925,
+    "sha256": "b493001d6bc7c15f2a6f7a0e286b78b43c74e97296d26b8ed7358ff0bdf8ec2e"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/hit-review-fix.py",
+    "bytes": 4508,
+    "sha256": "ca62c38213ad32335555183f934330cf5db15bc987640414646fbfff5dc64800"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/stage-task.py",
+    "bytes": 1956,
+    "sha256": "ce62e15099a06849d4be72e59230b86aa10e4d6498522fde00e030957b6f8eef"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/survivor-route-failure.patch",
+    "bytes": 2773,
+    "sha256": "9a70af293eec1d0e03be075ec92033b41c0eda2b552827041be74946467d0bea"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/task-files.json",
+    "bytes": 10864,
+    "sha256": "4ca5d5bfabf8e78f167ff8aaa9244696b1706fe81be9b72878cdffb24175daa4"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/task.index",
+    "bytes": 1972407,
+    "sha256": "1fdd19edeba5e1b92ec851520c4b5769af56a4d4337ef8c0391b10d2700f7909"
+  }
+]

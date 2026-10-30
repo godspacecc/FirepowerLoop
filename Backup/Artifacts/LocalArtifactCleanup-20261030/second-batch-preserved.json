@@ -1,0 +1,342 @@
+[
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/build.log",
+    "sha256": "016c66fff977530dcce04af6e680e5a72cfe7fbce85f4cdab55b14cc007e5411"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/cleanup.log",
+    "sha256": "3552b8a789369c153787756d7858fb12fc02190aea479955e8b430d3c0570dd3"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/first.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/first.stdout.log",
+    "sha256": "43ac265a62b5e45d990e0aa4ae4d74a5fc8bfe2f182c0ce59626706fb0bc9243"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/identity.json",
+    "sha256": "fb6549a50846163c2a559e40e3f3c6844c00fbe22f61d1c99091c8cd3d75cf62"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/mongo.log",
+    "sha256": "821d455f03db4743aa3dce5b93d4e403403947eee6c9d4d18a3483bc43423e9a"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/native.log",
+    "sha256": "7f0ed1cde154979a10646e7f5cd30a03e7320de9f91bbcc393e6b98598de5e1b"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/restart.log",
+    "sha256": "a4c3a37dcbf0bef5fb0a0e32e234d3b4f92009ceb00fcc4ffc9f327e4de40f29"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/restart.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/restart.stdout.log",
+    "sha256": "0d741a295a7ee552c8efe4727c460b215a4ea60898d46fadca762b9c2292dcc0"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/result.txt",
+    "sha256": "fc2e9bad8d8b87aede907c954f52580300cc9ae63443583b3eb5a38affdea300"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/first.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/first.stdout.log",
+    "sha256": "eb96c232d3bae8f4b22dc4c644a7750e52c8f5a10ee63469d6cb7d726d5caa78"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/identity.json",
+    "sha256": "59526a3585d632383e6f4101ea3b1bdf9ce814aa94d9e24d7ce76c98af89f839"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/restart.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/restart.stdout.log",
+    "sha256": "40dd3cdf3732e593b6d9d7e0709fb2d6bc7e13653ded83c23102249d0a7aeec2"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/export-verification.py",
+    "sha256": "13ed2c0ba3a72ed0560b9a5cf592928b51d0dd0d497545049fa3d5f743c7ff27"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/verification-source.zip",
+    "sha256": "f55f39c3dce8cc5cff59210c744eca0d522bf5da810d3c27c4e4c750386e67a8"
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/temporary-mesh-audit.txt",
+    "sha256": "77a9157e41cda70b895eebd5d1203931a1cfae9eb42814c54b5790341253bf48"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/current-spatial-diagnostic.log",
+    "sha256": "218a3858a4b9715ba3a75587a6cf42b33751107bca2c980134d20d102afeec71"
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/stage.log",
+    "sha256": "4c53f46935cfdca774ef957b9afd3b5d64737f79d828a2cb8ab0c66d70b60697"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-checks-boundaries.log",
+    "sha256": "628855f9235ee11aa419fc0729c4ded40c7ea1e27e08002298fc1b022e3904a8"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-checks-final.log",
+    "sha256": "5c94466115521788f132d169dc0fa3c8e058f66123a2e0716056878fb3fb5819"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-checks.log",
+    "sha256": "fc54d21fa6f20594c527d0d707bae0fddfe2ca88e306e49602c534a63f40066d"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-fixture-r1.log",
+    "sha256": "d00eecd28741b6fa0f698497e823caab5caed600c02223d0776b52af09172280"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-fixture-run-final.log",
+    "sha256": "b17f6f1115222bdf173d642bbb1f2e7d342051a988231a5e56a13830e07fd5b3"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-fixture-run.log",
+    "sha256": "6ae7d2b4d877469a12789f3cd493989a785113957de5c4c3a747640d7b95c497"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-foundation-build-final.log",
+    "sha256": "8585e548564887d3faaaa6d85edb36b15b1a2eb7d5bdb160c88e245ca945b1c3"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-foundation-build.log",
+    "sha256": "10e6ee7411eba828dc6ab6a8b30962f488c2a2f51b20f6f69adff952e8e15951"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/account-service-build.log",
+    "sha256": "7ec25e411ecaa2a9560fce0e737face1735b02967055757e226b4c5dd0f23511"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/apply-login-limits.json",
+    "sha256": "f18749589b1af6201da521dc26fe38ab58a8a82e4a0f6398bf08512af09cffe7"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/apply-login-limits.log",
+    "sha256": "23cf46f50ad8e898a7dcf7d5b6c9bbce717468e6c52413846ac04107bbde2720"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/compile-errors.json",
+    "sha256": "4cf8685c176d434081e9760e306edadb523671a7b4f92a6f9055938ce4f63e8b"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/compile-errors.log",
+    "sha256": "db25a475398894981613900d56557a1cc69955e6a7df7072b06a581d25eed4ab"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/console.json",
+    "sha256": "900575a28fb308fccf66e7a9c3640762bf08d09d6ace99ec93947ecfe93ee488"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/diff-check.log",
+    "sha256": "651d5f23aebc7d6a34deb4a07fc6e9924650549fc935d390e8e73a472a7d7039"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/execution-plan-index.md",
+    "sha256": "65c1c5bbce173fe1255595f8f802a2f74c1c9134921a75c5e45031a0c0ee80b2"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/frame-tests.json",
+    "sha256": "782c5943ff585086d28bfe0e931fbd011bad8e4dc3b7f2d2d523bd5102fea6ef"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/hashes.json",
+    "sha256": "3cc5036a928b36ab28f805495b5efe368c538819e23d63ca72ca542023d19ef3"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/heartbeat-tests.json",
+    "sha256": "75a7ab835e409743c8e52d521ccf62122091ca6272661237ce33ec319fbb3562"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/heartbeat-tests.log",
+    "sha256": "1afa0503b86116b563b8814ce2a50cd857b57f534c2e51f1e7a53e2643780359"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/last-results.json",
+    "sha256": "f19921304cd98f0103f87dd68a9be3704148ed7cbf58a7dddce3a00ace3ac255"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/last-results.log",
+    "sha256": "d6d24e9175a5fdad9d7c2657ff482299018e6ffa4159a03138502bd23a9b13b6"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-contract.json",
+    "sha256": "67385099ab66b59a623abb767e9784e16e72755eb089c746002aaae7f6f88148"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests-account-final.log",
+    "sha256": "85935bb0481196ce875b94ad2f4347bfe5fe7ee6eeac6432bdf85303b00a007f"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests-account-recheck.log",
+    "sha256": "f96a00a84a9e6eba9bd27ce797457f969db326c0fa969e4db92085dc3ea8bef6"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests-account-recovered.log",
+    "sha256": "8e5887150ebd5184d4bb715ab182ebc1b43b80edb879d9246ef558bb11a4f8d2"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests-account.log",
+    "sha256": "3c6b0b9c6c8abfb374c1c697d212b2a41b45270277c0abbbcb1d664e42b99c17"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests.json",
+    "sha256": "c121520479157617b4c49b778f0cdd3f9658ddf162fd7a5f510528e021769012"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/login-tests.log",
+    "sha256": "4ffd26ba76628d0b078ef221dd5ca7725509e6f355b6ea087c44efbcec0c79b2"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/migration-build.log",
+    "sha256": "5b82f4fc6157ce7c83d3e9780f8cf2fd897a55845e025eedcd6cb09f39fa4b01"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/mobile-login-tests.json",
+    "sha256": "a4752421f6545f9aa08c8974a7c95dcd2ed6733f84f5928944e07109b0658ede"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-account-checks-fixed.log",
+    "sha256": "fa3ad206857f04e3fb2b3d163614e708cdd9d0cca76bde2674a01bbbc0b0d678"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-account-checks.log",
+    "sha256": "137895ee9228d67b69359e69d8397261ee60be8dedfbb3b3467991c487bc6e42"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-account-ready.log",
+    "sha256": "b252681f1d3f945991fa1576e811ae4705b56bcf77fd9c5f1767df0e006c1d03"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-check-build.log",
+    "sha256": "7bc7face639dee8f39cc3974c0b8b31b1dca49eaaf10c070554ad2b208741f13"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-cleanup.log",
+    "sha256": "afb6d42bcba5266cec1d5dcba6f4fa8a78f52b20710fa113fdc6178dc127dd5d"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-restart-resume.log",
+    "sha256": "05d958a794ffbf7c1c2c0e8e69d2b421b18d043b0a1ad4a72b95ef361e6222c0"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-restart-seed.log",
+    "sha256": "92c2b47695886d2a7aff7f54808a8bb56874775b200a290be4c632203f00b763"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/path.json",
+    "sha256": "a54276047a16825cbdc41595ded92a5cc4a642bfda98a368314c4de2301a9746"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/protocol-generation-final.log",
+    "sha256": "f0393ba2948965a9a8038457ca4cb6adfc2705a61efa93a027086d8694a019c6"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/protocol-generation.log",
+    "sha256": "f0393ba2948965a9a8038457ca4cb6adfc2705a61efa93a027086d8694a019c6"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/scenes.json",
+    "sha256": "ae11fd24e34a67f2ac75bd4fc69d73244e88a17e43e87e8ea302d0fbb75e5b21"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-account-build-final.log",
+    "sha256": "fc56e14be26703ebfa6a538d7a16290093db0bf33597744534e4053548bad39a"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-account-build.log",
+    "sha256": "9a6c6ed719ec9ea2ca07890fcae710e214cd2f09ed9bc87cee0a89dbea293b43"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-app-build.log",
+    "sha256": "79d1009d3d9b2dc62495f9895203074b68308f8fa6582edd955a10d74d04ce9b"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-bson-build.log",
+    "sha256": "85cafba07222a2711e87c274000f4eccc354f75411ab92a09e0d5d3498ae865f"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-build-recheck.log",
+    "sha256": "af5062ebe7a0d9b7cb3672fda3d2dd4616e4b7d89352a4164111d0ec908e0e54"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-build.log",
+    "sha256": "92cba35cec5afb64e9a5faa65e5149daa61f488e8bd9bce516eac2ac9504e003"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-hotfix-build.log",
+    "sha256": "d3e19afc8c4b1a31c291ade133f05542f47e2c15a3db84b84bcc98e977a2a0f2"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/server-session-build.log",
+    "sha256": "3ff5612f8d99c61bf81711403f6bb0ad5dbeaac99dbf1da8a60547bcca46a3e3"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/staged-task-paths.json",
+    "sha256": "01d6218aa30657c67352476608c92c914b883520ea8cb780d0f2c94d32584162"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/standalone-network.log",
+    "sha256": "ce97416bb9b4983e4fa1e887261f7298f66c1c9b41366e27ba3c7810bb905616"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/standalone-transport.log",
+    "sha256": "0939f738546153afce2e818b876a36ac14175aa595c7f8d77727c91be119b13a"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/transport-tests.json",
+    "sha256": "cb8c14853a501a7d3b6ec2624a19904e80e09b31a8026087c6c18910c458b987"
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/transport-tests.log",
+    "sha256": "75793468bfa2d4070dfc5103d1f014aa9eb278389323db65c07fcb8567a68f08"
+  },
+  {
+    "path": "Backup/Artifacts/ResumeCleanupPreview-20261030/README.md",
+    "sha256": "eda36ca419ebc5d8bf3b7ec5240be0ee4348bb7e139b7308b44a3013fb92cc0e"
+  },
+  {
+    "path": "Backup/Artifacts/ResumeCleanupPreview-20261030/ResumeCleanupPreview.cs",
+    "sha256": "93efce53b12a946209164fee0996fac06807426590e272f1b6ee5364fc776945"
+  },
+  {
+    "path": "Backup/Artifacts/ResumeCleanupPreview-20261030/after-zh-CN-1920.png",
+    "sha256": "760d6873e8dcd8453ee3c7eac2a198cfa76b209122e6a8eba73d015600c6c407"
+  },
+  {
+    "path": "Backup/Artifacts/ResumeCleanupPreview-20261030/before-zh-CN-1920.png",
+    "sha256": "c86f57dc2832238265e8c5394f45ade76eaf9a2f5728a9f2bc5c903aa18ea6f8"
+  },
+  {
+    "path": "Backup/Artifacts/ResumeCleanupPreview-20261030/overflow.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "Docs/Plans/SDK接入面试实践-20261030.md",
+    "sha256": "14b73e4ed79ca4efb77b4c1ba55e462a5b0edb956bb8b475ca4d5e814491f7ca"
+  },
+  {
+    "path": "Client/Assets/Game/Art/Arcade/Island/LowPolyV2/IslandLowPolyV2.asset",
+    "sha256": "cbb672bb762ea4e497d12f9f703c6a2326b8aa0b7c466cea899318442efc8c57"
+  },
+  {
+    "path": "Client/Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal SDF.asset",
+    "sha256": "8eddad0d50929b76e24d00f88b50dcafea542a6227e096beb47676f33bf6befc"
+  },
+  {
+    "path": "Client/Assets/Game/Dlls/HybridCLRAssemblyList.bytes",
+    "sha256": "d20330c00d2b34521e804b3de1a4ca5fa1e769dfe275599be13e877c299d3618"
+  }
+]
