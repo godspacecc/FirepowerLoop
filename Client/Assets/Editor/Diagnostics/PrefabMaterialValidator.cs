@@ -54,22 +54,27 @@ namespace Game.Editor
         private const string UniversalPipelineTag = "UniversalPipeline";
         private const string BuiltinResourcePath = "Resources/unity_builtin_extra";
 
+        /// <summary>手动只读检查并报告范围与完成数量；扫描失败不显示校验通过。</summary>
         [MenuItem(MenuPath)]
         public static void RunFromMenu()
         {
-            IReadOnlyList<PrefabMaterialIssue> issues = ScanGamePrefabs();
-            if (issues.Count == 0)
+            Debug.Log($"[PrefabMaterialValidator] 范围：{GamePrefabRoot} 下全部 Prefab 的 Renderer（含未激活子节点）；" +
+                      "不覆盖全部场景或 UI 材质，不修改资源。当前编辑器检查不能替代目标设备渲染验证。");
+            try
             {
-                Debug.Log($"[PrefabMaterialValidator] 校验通过：{GamePrefabRoot} 未发现异常 Renderer 材质。");
-                return;
+                IReadOnlyList<PrefabMaterialIssue> issues = ScanGamePrefabs(out int scannedCount);
+                foreach (PrefabMaterialIssue issue in issues)
+                    Debug.LogError($"[PrefabMaterialValidator] {issue}");
+                string summary = $"已完整扫描 {scannedCount} 个 Prefab，发现 {issues.Count} 个材质问题。";
+                if (issues.Count == 0)
+                    Debug.Log($"[PrefabMaterialValidator] 校验通过：{summary}");
+                else
+                    Debug.LogError($"[PrefabMaterialValidator] 校验失败：{summary}");
             }
-
-            for (int i = 0; i < issues.Count; i++)
+            catch (Exception exception)
             {
-                Debug.LogError($"[PrefabMaterialValidator] {issues[i]}");
+                Debug.LogError($"[PrefabMaterialValidator] 校验未完成：{exception.Message}");
             }
-
-            Debug.LogError($"[PrefabMaterialValidator] 校验失败：共发现 {issues.Count} 个异常材质槽。");
         }
 
         /// <summary>
@@ -77,7 +82,16 @@ namespace Game.Editor
         /// </summary>
         public static bool TryValidateGamePrefabs(out string error)
         {
-            IReadOnlyList<PrefabMaterialIssue> issues = ScanGamePrefabs();
+            IReadOnlyList<PrefabMaterialIssue> issues;
+            try
+            {
+                issues = ScanGamePrefabs();
+            }
+            catch (Exception exception)
+            {
+                error = $"Prefab 材质校验未完成：{exception.Message}";
+                return false;
+            }
             if (issues.Count == 0)
             {
                 error = null;
@@ -100,25 +114,42 @@ namespace Game.Editor
         /// </summary>
         public static IReadOnlyList<PrefabMaterialIssue> ScanGamePrefabs()
         {
+            return ScanGamePrefabs(out _);
+        }
+
+        /// <summary>统计完整扫描数量；缺目录、空集合或读取失败时抛错，禁止将漏检视为通过。</summary>
+        private static IReadOnlyList<PrefabMaterialIssue> ScanGamePrefabs(out int scannedCount)
+        {
+            scannedCount = 0;
+            if (!AssetDatabase.IsValidFolder(GamePrefabRoot))
+                throw new InvalidOperationException($"扫描目录不存在：{GamePrefabRoot}；已扫描 0 个 Prefab。");
+
             string[] prefabPaths = AssetDatabase.FindAssets("t:Prefab", new[] { GamePrefabRoot })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => path.EndsWith(".prefab", StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.Ordinal)
                 .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
+            if (prefabPaths.Length == 0)
+                throw new InvalidOperationException($"扫描目录未找到 Prefab：{GamePrefabRoot}；已扫描 0 个 Prefab。");
 
             var issues = new List<PrefabMaterialIssue>();
-            for (int i = 0; i < prefabPaths.Length; i++)
+            foreach (string prefabPath in prefabPaths)
             {
-                GameObject root = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPaths[i]);
-                if (root == null)
+                try
                 {
-                    continue;
+                    GameObject root = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+                    if (root == null)
+                        throw new InvalidOperationException("无法加载 Prefab。");
+                    issues.AddRange(ScanGameObject(root, prefabPath));
+                    scannedCount++;
                 }
-
-                issues.AddRange(ScanGameObject(root, prefabPaths[i]));
+                catch (Exception exception)
+                {
+                    throw new InvalidOperationException(
+                        $"已完整扫描 {scannedCount}/{prefabPaths.Length} 个 Prefab；读取或检查失败：{prefabPath}；{exception.Message}", exception);
+                }
             }
-
             return SortIssues(issues);
         }
 
