@@ -1,3 +1,3 @@
 ##var,WeaponSlots,Id,LayoutId,EnemyId,WeaponId,PlayerMaxHealth,PlayerMoveSpeed,SpawnIntervalSeconds,MinimumSpawnIntervalSeconds,SpawnIntervalReductionPerMinute,EnemyHealthGrowthPerMinute,EnemyDamageGrowthPerMinute,EnemySpeedGrowthPerMinute,MaxAliveEnemies,MaxProjectiles,MaxDrops,InitialExperienceThreshold,ExperienceThresholdGrowth,ExperiencePerKill,ScorePerKill,PickupRadius,MinimumSpawnDistance,AimRange,ExperienceDropChance,ExperienceVisualPrefabName
 ##type,int,string,string#ref=TbArcadeRoundLayout,string#ref=TbEnemy,string#ref=TbArcadeWeapon,int,float,float,float,float,float,float,float,int,int,int,int,int,int,int,float,float,float,float,string
-,3,survivor.default,arena.22.round.1,enemy.arcade.basic,arcade.weapon.basic,100,6.5,1.2,0.2,0.1,0.18,0.08,0.02,60,120,80,10,5,1,10,2,8,24,1,SurvivorExperienceCrystal
+,3,survivor.default,arena.22.round.1,enemy.arcade.basic,arcade.weapon.basic,100,6.5,1.2,0.2,0.1,0,0,0,60,120,80,10,5,1,10,2,8,24,1,SurvivorExperienceCrystal

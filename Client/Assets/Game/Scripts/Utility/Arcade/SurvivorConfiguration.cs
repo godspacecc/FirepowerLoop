@@ -76,9 +76,9 @@ namespace FirepowerLoop.Arcade
             if (float.IsNaN(r.SpawnIntervalSeconds) || float.IsInfinity(r.SpawnIntervalSeconds) || r.SpawnIntervalSeconds <= 0) throw new ArgumentException("幸存者 SpawnIntervalSeconds 必须为有限正数");
             if (float.IsNaN(r.MinimumSpawnIntervalSeconds) || float.IsInfinity(r.MinimumSpawnIntervalSeconds) || r.MinimumSpawnIntervalSeconds <= 0) throw new ArgumentException("幸存者 MinimumSpawnIntervalSeconds 必须为有限正数");
             if (float.IsNaN(r.SpawnIntervalReductionPerMinute) || float.IsInfinity(r.SpawnIntervalReductionPerMinute) || r.SpawnIntervalReductionPerMinute <= 0) throw new ArgumentException("幸存者 SpawnIntervalReductionPerMinute 必须为有限正数");
-            if (float.IsNaN(r.EnemyHealthGrowthPerMinute) || float.IsInfinity(r.EnemyHealthGrowthPerMinute) || r.EnemyHealthGrowthPerMinute <= 0) throw new ArgumentException("幸存者 EnemyHealthGrowthPerMinute 必须为有限正数");
-            if (float.IsNaN(r.EnemyDamageGrowthPerMinute) || float.IsInfinity(r.EnemyDamageGrowthPerMinute) || r.EnemyDamageGrowthPerMinute <= 0) throw new ArgumentException("幸存者 EnemyDamageGrowthPerMinute 必须为有限正数");
-            if (float.IsNaN(r.EnemySpeedGrowthPerMinute) || float.IsInfinity(r.EnemySpeedGrowthPerMinute) || r.EnemySpeedGrowthPerMinute <= 0) throw new ArgumentException("幸存者 EnemySpeedGrowthPerMinute 必须为有限正数");
+            if (float.IsNaN(r.EnemyHealthGrowthPerMinute) || float.IsInfinity(r.EnemyHealthGrowthPerMinute) || r.EnemyHealthGrowthPerMinute < 0) throw new ArgumentException("幸存者 EnemyHealthGrowthPerMinute 必须为有限非负数");
+            if (float.IsNaN(r.EnemyDamageGrowthPerMinute) || float.IsInfinity(r.EnemyDamageGrowthPerMinute) || r.EnemyDamageGrowthPerMinute < 0) throw new ArgumentException("幸存者 EnemyDamageGrowthPerMinute 必须为有限非负数");
+            if (float.IsNaN(r.EnemySpeedGrowthPerMinute) || float.IsInfinity(r.EnemySpeedGrowthPerMinute) || r.EnemySpeedGrowthPerMinute < 0) throw new ArgumentException("幸存者 EnemySpeedGrowthPerMinute 必须为有限非负数");
             if (float.IsNaN(r.MaxAliveEnemies) || float.IsInfinity(r.MaxAliveEnemies) || r.MaxAliveEnemies <= 0) throw new ArgumentException("幸存者 MaxAliveEnemies 必须为有限正数");
             if (float.IsNaN(r.MaxProjectiles) || float.IsInfinity(r.MaxProjectiles) || r.MaxProjectiles <= 0) throw new ArgumentException("幸存者 MaxProjectiles 必须为有限正数");
             if (float.IsNaN(r.MaxDrops) || float.IsInfinity(r.MaxDrops) || r.MaxDrops <= 0) throw new ArgumentException("幸存者 MaxDrops 必须为有限正数");

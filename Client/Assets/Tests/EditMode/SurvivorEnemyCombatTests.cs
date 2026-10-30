@@ -37,12 +37,31 @@ namespace Game.Tests
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();}
         private void Prepare(){Assert.That(Call("PrepareEnemyRoster",new object[]{null}),Is.True);}
+        /// <summary>同一敌种在4分钟与60分钟出生时，生命、伤害和移速均不增长。</summary>
+        [TestCase(0d)] [TestCase(.7d)] [TestCase(.999d)]
+        public void SpawnStatsStayFixedOverSurvivalTime(double sample)
+        {
+            Prepare();Set("enemyRandom",new SampleRandom(sample));model.State.Advance(240,false);Call("Spawn");
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var early=enemies.Values.Single();
+            model.State.Advance(3360,false);Call("Spawn");var late=enemies.Values.Single(e=>e.Id!=early.Id);
+            Assert.That(late.ConfigId,Is.EqualTo(early.ConfigId));
+            Assert.That(late.MaxHealth,Is.EqualTo(early.MaxHealth));
+            Assert.That(late.Damage,Is.EqualTo(early.Damage));
+            Assert.That(late.Speed,Is.EqualTo(early.Speed).Within(.00001f));
+        }
+        /// <summary>固定抽样使各个时间点选择同一敌种。</summary>
+        private sealed class SampleRandom:System.Random
+        {
+            private readonly double sample;
+            public SampleRandom(double sample){this.sample=sample;}
+            public override double NextDouble()=>sample;
+        }
         [Test] public void SpawnUsesUnlockedRosterAndPerModeStats()
         {
             Prepare();Set("enemyRandom",new FixedRandom());model.State.Advance(120,false);Call("Spawn");
             var e=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
-            Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(74));
-            Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f*1.04f).Within(.001));
+            Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(55));
+            Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f).Within(.001));
         }
         /// <summary>无隐藏出生点时不生成；已有敌人达到旧上限时仍可生成。</summary>
         [Test] public void HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies()

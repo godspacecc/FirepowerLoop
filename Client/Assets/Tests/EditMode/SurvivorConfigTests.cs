@@ -11,11 +11,25 @@ namespace Game.Tests
     public sealed class SurvivorConfigTests
     {
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
+        /// <summary>时间成长允许关闭；负数及非有限值仍拒绝开局。</summary>
+        [TestCase("EnemyHealthGrowthPerMinute")] [TestCase("EnemyDamageGrowthPerMinute")] [TestCase("EnemySpeedGrowthPerMinute")]
+        public void TimeGrowthAllowsZeroAndRejectsInvalidValues(string field)
+        {
+            var tables=Load();var row=tables.TbSurvivorRule.DataList[0];var member=typeof(global::SurvivorRuleConfig).GetField(field);
+            member.SetValue(row,0f);Assert.DoesNotThrow(()=>SurvivorConfiguration.FromTables(tables));
+            foreach(var invalid in new[]{-.01f,float.NaN,float.PositiveInfinity})
+            {
+                member.SetValue(row,invalid);Assert.Throws<ArgumentException>(()=>SurvivorConfiguration.FromTables(tables));
+            }
+        }
         [Test] public void LoadsIndependentConfigurationBeforeArcadeCatalog()
         {
             var provider = new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetSurvivor(out var config, out var error), Is.True, error);
             Assert.That(config.LayoutId, Is.EqualTo("arena.22.round.1"));
+            Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
+            Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
+            Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
             Assert.That(config.Upgrades.Count, Is.EqualTo(7));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
