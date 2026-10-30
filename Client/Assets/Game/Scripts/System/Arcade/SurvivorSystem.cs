@@ -193,10 +193,9 @@ namespace Game
             foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
             if(m.Health<=0)TryFinish(out _);else Publish();
         }
-        /// <summary>按入口轮转与存活预算生成敌人，避免贴身生成。</summary>
+        /// <summary>按入口轮转持续生成敌人，不限制存活数量，避免贴身生成。</summary>
         private void Spawn()
         {
-            if(SurvivorCombatRules.SpawnBudget(enemies.Count,config.MaxAliveEnemies,1)==0)return;
             if(enemyRoster==null&&!PrepareEnemyRoster(out var rosterError)){LastError=rosterError;Model.Paused=true;input.Disable();Publish();return;}
             var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
             var selected=enemyConfigs[choice.EnemyId];

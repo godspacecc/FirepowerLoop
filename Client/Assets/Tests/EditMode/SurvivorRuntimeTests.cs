@@ -37,6 +37,14 @@ namespace Game.Tests
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
+        /// <summary>幸存者敌人持续累积，超过旧的存活阈值仍按刷新节奏生成。</summary>
+        [Test] public void SpawnContinuesBeyondFormerAliveLimit()
+        {
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            for(int i=0;i<125;i++)Call("Spawn");
+            Assert.That(enemies.Count,Is.EqualTo(125),"不能因存活数量达到60而停止刷新");
+            Assert.That(model.Paused,Is.False);
+        }
         [Test] public void OutsideSpawnRejectsInvalidRouteWithoutCreatingEnemy()
         {
             // 海岛特殊布局不属于幸存者普通通道配置，模拟准备后配置失效。

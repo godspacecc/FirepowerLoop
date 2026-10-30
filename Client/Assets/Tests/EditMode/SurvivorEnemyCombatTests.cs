@@ -44,12 +44,13 @@ namespace Game.Tests
             Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(74));
             Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f*1.04f).Within(.001));
         }
-        [Test] public void HiddenSpawnFailureAndAliveBudgetDoNotCreateEnemies()
+        /// <summary>无隐藏出生点时不生成；已有敌人达到旧上限时仍可生成。</summary>
+        [Test] public void HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies()
         {
             Prepare();Set("view",new View{Hidden=false});Call("Spawn");
             var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.That(enemies,Is.Empty);
             Set("view",new View());for(int i=0;i<config.MaxAliveEnemies;i++)enemies.Add(1000+i,new ArcadeEnemyRuntime());
-            Call("Spawn");Assert.That(enemies.Count,Is.EqualTo(config.MaxAliveEnemies));
+            Call("Spawn");Assert.That(enemies.Count,Is.EqualTo(config.MaxAliveEnemies+1));
         }
         [Test] public void ZombieGrabDamagesAfterWindupAndCancelsOutOfRange()
         {
