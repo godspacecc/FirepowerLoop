@@ -28,9 +28,10 @@ namespace Game
             window.Show();
         }
 
+        /// <summary>只列出Assets内场景，搜索范围与窗口提示保持一致。</summary>
         public static IReadOnlyList<string> GetScenePaths()
         {
-            return AssetDatabase.FindAssets("t:Scene")
+            return AssetDatabase.FindAssets("t:Scene", new[] { "Assets" })
                 .Select(AssetDatabase.GUIDToAssetPath)
                 .Where(path => path.EndsWith(".unity", StringComparison.OrdinalIgnoreCase))
                 .Distinct(StringComparer.Ordinal)
@@ -148,11 +149,14 @@ namespace Game
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
             GUILayout.Label("构建", GUILayout.Width(48f));
 
-            foreach (string scenePath in buildScenePaths)
+            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
-                if (GUILayout.Button(Path.GetFileNameWithoutExtension(scenePath), GUILayout.Height(24f)))
+                foreach (string scenePath in buildScenePaths)
                 {
-                    OpenScene(scenePath);
+                    if (GUILayout.Button(Path.GetFileNameWithoutExtension(scenePath), GUILayout.Height(24f)))
+                    {
+                        OpenScene(scenePath);
+                    }
                 }
             }
 
@@ -175,7 +179,7 @@ namespace Game
             EditorGUILayout.SelectableLabel(scenePath, EditorStyles.miniLabel, GUILayout.Height(EditorGUIUtility.singleLineHeight));
             EditorGUILayout.EndVertical();
 
-            using (new EditorGUI.DisabledScope(EditorApplication.isPlaying))
+            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
                 if (GUILayout.Button("打开", GUILayout.Width(72f), GUILayout.Height(36f)))
                 {
@@ -186,12 +190,58 @@ namespace Game
             EditorGUILayout.EndHorizontal();
         }
 
+        /// <summary>所有打开入口共用保护；保留Unity保存询问，不主动保存、丢弃或停止运行。</summary>
         private static void OpenScene(string scenePath)
         {
-            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            try
             {
+                if (!CanOpenScene(scenePath, out string error))
+                {
+                    ShowOpenSceneError(error);
+                    return;
+                }
+                if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                    return;
+
+                // 保存对话框结束后再次核对，避免目标失效或状态变化后继续切换。
+                if (!CanOpenScene(scenePath, out error))
+                {
+                    ShowOpenSceneError(error);
+                    return;
+                }
                 EditorSceneManager.OpenScene(scenePath);
             }
+            catch (Exception exception)
+            {
+                ShowOpenSceneError($"打开场景失败：{scenePath}\n{exception.Message}");
+            }
+        }
+
+        /// <summary>拒绝运行中切换以及不属于Assets、已删除或无法识别的场景。</summary>
+        private static bool CanOpenScene(string scenePath, out string error)
+        {
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
+            {
+                error = "运行中或准备进入运行模式时不能切换场景，请自行退出运行后重试。";
+                return false;
+            }
+            if (string.IsNullOrWhiteSpace(scenePath) ||
+                !scenePath.StartsWith("Assets/", StringComparison.Ordinal) ||
+                !scenePath.EndsWith(".unity", StringComparison.OrdinalIgnoreCase) ||
+                !File.Exists(scenePath) || AssetDatabase.LoadAssetAtPath<SceneAsset>(scenePath) == null)
+            {
+                error = $"场景不存在、无法识别或不在Assets目录：{scenePath}。请刷新列表并检查场景路径。";
+                return false;
+            }
+            error = null;
+            return true;
+        }
+
+        /// <summary>明确报告打开失败，不自动改写构建列表或尝试其他场景。</summary>
+        private static void ShowOpenSceneError(string error)
+        {
+            Debug.LogError($"[场景切换] {error}");
+            EditorUtility.DisplayDialog("场景未打开", error, "确定");
         }
 
         private void RefreshSceneList()
