@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 
 namespace ET.Server
 {
@@ -15,7 +15,10 @@ namespace ET.Server
             root.AddComponent<MessageSender>();
 
             StartSceneConfig startSceneConfig = ServerConfig.Instance.GetScene((int)root.Id);
-            root.AddComponent<NetComponent, IPEndPoint, NetworkProtocol>(startSceneConfig.InnerIPPort, NetworkProtocol.TCP);
+            IPEndPoint endpoint = Options.Instance.OnlineLoopbackOnly
+                ? new IPEndPoint(IPAddress.Loopback, startSceneConfig.InnerIPPort.Port)
+                : startSceneConfig.InnerIPPort;
+            root.AddComponent<NetComponent, IPEndPoint, NetworkProtocol>(endpoint, NetworkProtocol.TCP);
             await ETTask.CompletedTask;
         }
     }

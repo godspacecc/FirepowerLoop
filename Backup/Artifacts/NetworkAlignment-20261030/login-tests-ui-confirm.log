@@ -1,0 +1,256 @@
+
+Run Tool
+  Tool: tests-run
+  URL: http://localhost:21032/api/tools/tests-run
+  Auth: from config or machine store
+──────────────────────────────────────────────────
+Calling tests-run...
+SUCCESS: tests-run completed
+SUCCESS: Response:
+{
+  "status": "success",
+  "structured": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 46,
+        "PassedTests": 46,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:15.2649125"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.CloseAnonymousDisconnectsButAuthenticatedCloseKeepsConnection",
+          "Status": "Passed",
+          "Duration": "00:00:00.1020000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.CloseAnonymousDuringLoginDoesNotLetOldLoginOverrideNewLogin",
+          "Status": "Passed",
+          "Duration": "00:00:00.4600000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.ConnectingCancelKeepsCanceledResultAndClosesTransport",
+          "Status": "Passed",
+          "Duration": "00:00:00.2060000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.DisconnectFailsPendingRpcAndOldGenerationCannotAffectNewConnection",
+          "Status": "Passed",
+          "Duration": "00:00:00.4470000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.ExistingAccountWrongPassword_RemainsAnonymous",
+          "Status": "Passed",
+          "Duration": "00:00:00.4210000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.FailuresNeverPersistUserNameOrPassword",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.GameRegistersSingleTcpRuntimeLifecycleWithoutEnablingKcp",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginLifecycleRegression_PreservesExistingFailuresAndStaleCompletion",
+          "Status": "Passed",
+          "Duration": "00:00:01.0200000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginNewAccountCompletesOnSingleConnection",
+          "Status": "Passed",
+          "Duration": "00:00:00.4010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginNewAccountPreferenceFailureKeepsAuthenticatedState",
+          "Status": "Passed",
+          "Duration": "00:00:00.2060000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginResultPresentation_CoversNewExistingAndPreferenceFailure",
+          "Status": "Passed",
+          "Duration": "00:00:01.1060000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginSuccessPublishesSnapshotAndPersistsOnlyUserName",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LoginValidation_PreservesCurrentRules",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.LogoutAndRemoteDisconnectClearAuthenticationWithoutReconnect",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.NetworkConfigMissingUsesDefaultAndInvalidFileDoesNotFallback",
+          "Status": "Passed",
+          "Duration": "00:00:00.0410000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeInitializeDoesNotConnectAndProcessesEventsOnUpdate",
+          "Status": "Passed",
+          "Duration": "00:00:00.2050000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.NetworkRuntimeProtocolDiagnosticsLogRedactedJsonRespectSwitchAndDoNotBreakTransport",
+          "Status": "Passed",
+          "Duration": "00:00:00.6340000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OldConnectTokenCancellationDoesNotCancelNewRuntimeConnect",
+          "Status": "Passed",
+          "Duration": "00:00:00.3150000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineCloseAnonymousSessionInvalidatesPendingLoginResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.4010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineControllerUsesAccountSystemAndViewLifetimeSubscriptions",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineDeinitDuringLogoutIgnoresLateFaultWithoutPublishing",
+          "Status": "Passed",
+          "Duration": "00:00:00.4980000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineDeinitInvalidatesPendingLoginResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.3030000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineDisconnectDuringLogoutInvalidatesPendingLogoutResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.5030000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineInputValidationAcceptsConfirmedBoundaries",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineInputValidationRejectsInvalidPasswords",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineInputValidationRejectsInvalidUserNames",
+          "Status": "Passed",
+          "Duration": "00:00:00"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineLocalBindsWildcardAndLauncherContractStaysUnchanged",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineLocalizationKeysResolveInBothLanguagesAndGeneratedTexts",
+          "Status": "Passed",
+          "Duration": "00:00:00.1050000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineLoginButton_UsesSingleLoginEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.8700000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineLoginPasswordInputMatchesTestStageContract",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineLoginPrefab_HasSingleSubmitEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineRemoteDisconnectInvalidatesPendingLoginResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.3940000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineResultText_ResolvesSpecificPlayerFacingErrorsInBothLanguages",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OnlineSessionReplacedInvalidatesPendingLoginResult",
+          "Status": "Passed",
+          "Duration": "00:00:00.2940000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.OverlappingRuntimeConnectsCompleteIndependentlyAndIgnoreOldEvents",
+          "Status": "Passed",
+          "Duration": "00:00:00.4010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.PlayerSavedNetworkEndpointOverridesEmbeddedConfigAndRejectsInvalidReplacement",
+          "Status": "Passed",
+          "Duration": "00:00:00.0260000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.RegisterRejectsLegacyShortPasswordWithoutNetworkRequest",
+          "Status": "Passed",
+          "Duration": "00:00:00.2050000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.RegisterSuccessAutoLogsInOnSameConnection",
+          "Status": "Passed",
+          "Duration": "00:00:00.4970000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.ServerLoginSuccessLogIsSanitizedAndVisible",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.SessionReplacedClearsAuthenticationAndPublishesAttention",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.SessionReplacedDuringLogoutDoesNotLetOldLogoutOverrideNewLogin",
+          "Status": "Passed",
+          "Duration": "00:00:00.6250000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.StartOnlineEntryAndLoginPrefabMatchConfirmedContract",
+          "Status": "Passed",
+          "Duration": "00:00:00.0180000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.TcpFrameReaderHandlesPartialStickyAndMultipleFramesAndRejectsInvalidLength",
+          "Status": "Passed",
+          "Duration": "00:00:00.0110000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.TcpFrameWriterMatchesEtOuterFrameContract",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.TcpTransportKeepsReceivingAfterConnectTimeoutWindow",
+          "Status": "Passed",
+          "Duration": "00:00:01.8020000"
+        },
+        {
+          "Name": "Game.Tests.TcpOnlineLoginTests.TcpTransportLoopbackConnectsWithBoundedWaitAndQueuesConnectedEvent",
+          "Status": "Passed",
+          "Duration": "00:00:00.3980000"
+        }
+      ]
+    }
+  }
+}

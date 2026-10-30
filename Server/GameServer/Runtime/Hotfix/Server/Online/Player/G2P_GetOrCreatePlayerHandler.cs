@@ -6,6 +6,11 @@ namespace ET.Server
     {
         protected override async ETTask Run(Scene scene, G2P_GetOrCreatePlayer request, P2G_GetOrCreatePlayer response)
         {
+            if (request.SessionEpoch <= 0)
+            {
+                response.Error = ErrorCode.ERR_OnlineSessionStateConflict;
+                return;
+            }
             OnlinePlayerManagerComponent manager = scene.GetComponent<OnlinePlayerManagerComponent>();
             OnlinePlayerActor actor = manager.Get(request.PlayerId);
             if (actor == null)
@@ -20,7 +25,14 @@ namespace ET.Server
                 manager.Add(actor);
             }
 
-            var result = await actor.BindGate(request.GateProxyActorId);
+            // 数据库约束之外再验证Actor归属，损坏或错误映射不能跨账号复用玩家。
+            if (actor.AccountId != request.AccountId)
+            {
+                response.Error = ErrorCode.ERR_OnlineSessionStateConflict;
+                return;
+            }
+
+            var result = await actor.BindGate(request.GateProxyActorId, request.SessionEpoch);
             response.Error = result.Error;
             response.Message = result.Message;
             response.PlayerActorId = result.PlayerActorId;

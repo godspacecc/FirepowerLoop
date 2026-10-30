@@ -116,6 +116,7 @@ namespace Game.Network
             while (processed++ < 64 && transport.TryDequeue(out ClientTransportEvent evt))
             {
                 ProcessTransportEvent(evt);
+                if (disposed || !IsInitialized) return;
             }
 
             rpc.TickTimeouts(clock.ElapsedMilliseconds);
@@ -126,6 +127,7 @@ namespace Game.Network
             if (Boot.ClientReleasePolicy.OfflineSinglePlayer)
                 throw new InvalidOperationException("纯离线发布模式不允许建立联机连接。");
             EnsureInitialized();
+            rpc.FailAll(new IOException("连接已替换，旧请求不自动重放。"));
             int generation = ++connectionGeneration;
             var pending = new PendingConnect(generation, cancellationToken);
             PendingConnect replaced = pendingConnect;
@@ -145,6 +147,7 @@ namespace Game.Network
                 if (IsCurrentPending(pending))
                 {
                     ConnectionState = NetworkConnectionState.Disconnected;
+                    transport.Disconnect(NetworkDisconnectReason.ConnectTimeout);
                     pending.Fail(new TimeoutException("网络连接超时。"));
                     pendingConnect = null;
                 }
@@ -156,6 +159,7 @@ namespace Game.Network
                 if (IsCurrentPending(pending))
                 {
                     ConnectionState = NetworkConnectionState.Disconnected;
+                    transport.Disconnect(NetworkDisconnectReason.LocalRequest);
                     pending.Cancel(cancellationToken);
                     pendingConnect = null;
                 }
@@ -375,10 +379,14 @@ namespace Game.Network
             switch (evt.Kind)
             {
                 case ClientTransportEventKind.Connected:
+                    if (ConnectionState != NetworkConnectionState.Connecting || pendingConnect == null) return;
+                    // 取消与成功争用同一个完成状态；取消胜出时由取消路径关闭 Socket。
+                    if (!pendingConnect.Succeed()) return;
+                    pendingConnect = null;
                     ConnectionState = NetworkConnectionState.Connected;
-                    CompletePending(evt.Generation, null);
                     break;
                 case ClientTransportEventKind.Frame:
+                    if (ConnectionState != NetworkConnectionState.Connected) return;
                     ProcessFrame(evt.Frame);
                     break;
                 case ClientTransportEventKind.Disconnected:
@@ -447,6 +455,7 @@ namespace Game.Network
                 if (decoded.Message is IResponse response)
                 {
                     NotifyResponseObservers(response);
+                    if (disposed || !IsInitialized) return;
                     rpc.TryComplete(response);
                     return;
                 }
@@ -457,11 +466,13 @@ namespace Game.Network
                     foreach (var handler in handlers.ToArray())
                     {
                         handler.DynamicInvoke(decoded.Message);
+                        if (disposed || !IsInitialized) return;
                     }
                 }
             }
             catch (Exception e)
             {
+                if (disposed || !IsInitialized) return;
                 rpc.FailAll(e);
                 Disconnect(NetworkDisconnectReason.ProtocolError);
             }
@@ -532,9 +543,9 @@ namespace Game.Network
             public CancellationToken Token => cancellation.Token;
             public Task Task => completion.Task;
 
-            public void Succeed()
+            public bool Succeed()
             {
-                completion.TrySetResult(true);
+                return completion.TrySetResult(true);
             }
 
             public void Fail(Exception exception)

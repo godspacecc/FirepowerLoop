@@ -1,0 +1,3 @@
+ET fixture processes stopped and random fixture databases dropped.
+Owned Mongo PID 26156 shut down through the authenticated Mongo shutdown command; process and listening port 57990 no longer present.
+Deletion of mongo/test-uri.txt was rejected by automatic approval (blocked by policy; no further reason supplied). File remains in the locally ignored mongo directory and is excluded from staging.

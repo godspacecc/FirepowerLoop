@@ -83,6 +83,26 @@ namespace Game
             });
         }
 
+        /// <summary>显式创建新账号后在同连接登录；新注册永不接受旧短密码规则。</summary>
+        public Task<OnlineAccountOperationResult> RegisterAsync(string userName, string password)
+        {
+            return RunExclusive(OnlineOperationState.Registering, userName, password, async (generation, trimmed, rawPassword, token) =>
+            {
+                if (!IsNewPassword(rawPassword)) return OnlineAccountResultCode.InvalidPassword;
+                var connected = await EnsureAnonymousConnected(generation, token);
+                if (connected != OnlineAccountResultCode.Success) return connected;
+                var request = C2G_Register.Create(); request.UserName = trimmed; request.Password = rawPassword;
+                G2C_Register response;
+                try { response = await network.CallAsync<G2C_Register>(request, RpcTimeoutMilliseconds, token); }
+                finally { request.Password = string.Empty; }
+                if (!IsCurrentOperation(generation)) return OnlineAccountResultCode.Disconnected;
+                var result = MapServerError(response.Error);
+                if (result != OnlineAccountResultCode.Success) return result;
+                var login = await LoginOnCurrentConnection(generation, trimmed, rawPassword, token);
+                return login == OnlineAccountResultCode.Success ? OnlineAccountResultCode.AccountCreated : login;
+            });
+        }
+
         /// <summary>结束当前账号连接；登出失败时保留错误结果并允许重登，不推定旧服务端会话仍有效。</summary>
         public async Task<OnlineAccountOperationResult> LogoutAsync()
         {
@@ -278,7 +298,9 @@ namespace Game
             var login = C2G_Login.Create();
             login.UserName = userName;
             login.Password = password;
-            var response = await network.CallAsync<G2C_Login>(login, RpcTimeoutMilliseconds, token);
+            G2C_Login response;
+            try { response = await network.CallAsync<G2C_Login>(login, RpcTimeoutMilliseconds, token); }
+            finally { login.Password = string.Empty; }
             if (!IsCurrentOperation(generation))
             {
                 return OnlineAccountResultCode.Disconnected;
@@ -636,19 +658,22 @@ namespace Game
         internal static OnlineAccountResultCode ValidateInput(string userName, string password)
         {
             string trimmed = (userName ?? string.Empty).Trim();
-            if (!IsAsciiAccountToken(trimmed, 3, 20))
+            if (!IsAsciiAccountToken(trimmed, 3, 32))
             {
                 return OnlineAccountResultCode.InvalidUserName;
             }
 
             string rawPassword = password ?? string.Empty;
-            if (rawPassword.Length > 0 && !IsAsciiAccountToken(rawPassword, 1, 8))
+            if (!IsNewPassword(rawPassword) && rawPassword.Length > 0 && !IsAsciiAccountToken(rawPassword, 1, 8))
             {
                 return OnlineAccountResultCode.InvalidPassword;
             }
 
             return OnlineAccountResultCode.Success;
         }
+
+        internal static bool IsNewPassword(string password) => password != null && password.Length >= 10 &&
+            password.Length <= 128 && System.Text.Encoding.UTF8.GetByteCount(password) <= 256;
 
         private static bool IsAsciiAccountToken(string value, int minLength, int maxLength)
         {
@@ -686,6 +711,10 @@ namespace Game
                 case 200106: return OnlineAccountResultCode.SessionReplaced;
                 case 200107: return OnlineAccountResultCode.ServiceUnavailable;
                 case 200108: return OnlineAccountResultCode.SessionConflict;
+                case 200201: return OnlineAccountResultCode.RateLimited;
+                case 200202: return OnlineAccountResultCode.AccountLocked;
+                case 200203: return OnlineAccountResultCode.AccountDisabled;
+                case 200204: return OnlineAccountResultCode.AccountBanned;
                 default: return OnlineAccountResultCode.UnknownFailure;
             }
         }

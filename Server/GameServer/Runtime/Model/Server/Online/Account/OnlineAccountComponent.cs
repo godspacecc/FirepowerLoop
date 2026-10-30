@@ -6,6 +6,8 @@ namespace ET.Server
     {
         public OnlineIdentityStoreSnapshot Snapshot = new();
         public string StorePath;
+        /// <summary>生产账号认证入口；JSON快照只保留给旧格式检查和显式迁移。</summary>
+        public FirepowerLoop.Accounts.AccountAuthenticationService Authentication;
     }
 
     [EnableClass]

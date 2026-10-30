@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 
 namespace ET.Server
@@ -7,7 +7,7 @@ namespace ET.Server
     [FriendOf(typeof(OnlineTestComponent))]
     public static partial class OnlineTestComponentSystem
     {
-        private const string Password = "Pass_123";
+        private const string Password = "Password-123";
 
         [EntitySystem]
         private static void Awake(this OnlineTestComponent self)

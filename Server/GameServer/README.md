@@ -1,3 +1,5 @@
+当前FirepowerLoop账号使用MongoDB；启动及本项目旧JSON身份迁移见[账号基础与迁移](../../Docs/联机服务端/账号基础与迁移.md)。以下为ET框架背景资料。
+
 # English: please use your browser to translate to english
 
 # __ET框架讨论群: 474643097 新手请加新手群:688514974__  

@@ -39,6 +39,7 @@ message A2G_Login // IResponse
 	string DisplayName = 6;
 	int64 Revision = 7;
 	bool IsNewAccount = 8;
+	int64 SessionEpoch = 9;
 }
 
 // Opcode 22008
@@ -51,6 +52,7 @@ message G2P_GetOrCreatePlayer // IRequest
 	string DisplayName = 4;
 	ActorId GateProxyActorId = 5;
 	int64 ProfileRevision = 8;
+	int64 SessionEpoch = 9;
 }
 
 // Opcode 22009
@@ -929,4 +931,20 @@ message R2P_OperateOnlineSlayerMart // IResponse
  bool Accepted = 4;
  bool Replayed = 5;
  OnlineArcadeRunSnapshot Run = 6;
+}
+
+// Opcode 22990
+// ResponseType A2G_ValidateAccountSession
+message G2A_ValidateAccountSession // IRequest
+{
+    int32 RpcId = 1;
+    int64 AccountId = 2;
+    int64 SessionEpoch = 3;
+}
+// Opcode 22991
+message A2G_ValidateAccountSession // IResponse
+{
+    int32 RpcId = 1;
+    int32 Error = 2;
+    string Message = 3;
 }

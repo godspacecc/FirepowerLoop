@@ -1,0 +1,1 @@
+Passed: Mongo账户策略、真实ET链路及重启持久身份；未包含诊断HTTP、Unity、房间玩法或Player验收。

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.IO;
 using MongoDB.Bson;
@@ -18,7 +18,7 @@ namespace ET
             {
                 supportInitialize.BeginInit();
             }
-            return obj.ToJson(defaultSettings);
+            return obj.ToJson(obj.GetType(), defaultSettings);
         }
 
         public static string ToJson(object obj, JsonWriterSettings settings)
@@ -27,7 +27,7 @@ namespace ET
             {
                 supportInitialize.BeginInit();
             }
-            return obj.ToJson(settings);
+            return obj.ToJson(obj.GetType(), settings);
         }
 
         public static T FromJson<T>(string str)
@@ -53,7 +53,7 @@ namespace ET
             {
                 supportInitialize.BeginInit();
             }
-            return obj.ToBson();
+            return obj.ToBson(obj.GetType());
         }
 
         public static void Serialize(object message, MemoryStream stream)
@@ -67,7 +67,7 @@ namespace ET
             
             BsonSerializationContext context = BsonSerializationContext.CreateRoot(bsonWriter);
             BsonSerializationArgs args = default;
-            args.NominalType = typeof (object);
+            args.NominalType = message.GetType();
             IBsonSerializer serializer = BsonSerializer.LookupSerializer(args.NominalType);
             serializer.Serialize(context, args, message);
         }

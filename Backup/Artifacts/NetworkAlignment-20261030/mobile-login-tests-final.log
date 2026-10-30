@@ -1,0 +1,41 @@
+
+Run Tool
+  Tool: tests-run
+  URL: http://localhost:21032/api/tools/tests-run
+  Auth: from config or machine store
+──────────────────────────────────────────────────
+Calling tests-run...
+SUCCESS: tests-run completed
+SUCCESS: Response:
+{
+  "status": "success",
+  "structured": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 3,
+        "PassedTests": 3,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2194877"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.OnlineLoginMobileUiTests.AuthenticatedActionsDoNotOverlapAndThemePreservesPrimaryColor",
+          "Status": "Passed",
+          "Duration": "00:00:00.0340000"
+        },
+        {
+          "Name": "Game.Tests.OnlineLoginMobileUiTests.LoginUsesCenteredDialogAndSettingsOwnServerAddress",
+          "Status": "Passed",
+          "Duration": "00:00:00.0030000"
+        },
+        {
+          "Name": "Game.Tests.OnlineLoginMobileUiTests.StaticCaptionsHaveReadableChinesePreviewsAndBothLanguages",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        }
+      ]
+    }
+  }
+}

@@ -141,6 +141,9 @@ namespace ET
         [MemoryPackOrder(7)]
         public bool IsNewAccount { get; set; }
 
+        [MemoryPackOrder(8)]
+        public long SessionEpoch { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -156,6 +159,7 @@ namespace ET
             this.DisplayName = default;
             this.Revision = default;
             this.IsNewAccount = default;
+            this.SessionEpoch = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -189,6 +193,9 @@ namespace ET
         [MemoryPackOrder(7)]
         public long ProfileRevision { get; set; }
 
+        [MemoryPackOrder(8)]
+        public long SessionEpoch { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -202,6 +209,7 @@ namespace ET
             this.DisplayName = default;
             this.GateProxyActorId = default;
             this.ProfileRevision = default;
+            this.SessionEpoch = default;
 
             ObjectPool.Instance.Recycle(this);
         }
@@ -3695,6 +3703,73 @@ namespace ET
         }
     }
 
+    [MemoryPackable]
+    [Message(OnlineInner.G2A_ValidateAccountSession)]
+    [ResponseType(nameof(A2G_ValidateAccountSession))]
+    public partial class G2A_ValidateAccountSession : MessageObject, IRequest
+    {
+        public static G2A_ValidateAccountSession Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(G2A_ValidateAccountSession), isFromPool) as G2A_ValidateAccountSession;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public long AccountId { get; set; }
+
+        [MemoryPackOrder(2)]
+        public long SessionEpoch { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.AccountId = default;
+            this.SessionEpoch = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
+    [MemoryPackable]
+    [Message(OnlineInner.A2G_ValidateAccountSession)]
+    public partial class A2G_ValidateAccountSession : MessageObject, IResponse
+    {
+        public static A2G_ValidateAccountSession Create(bool isFromPool = false)
+        {
+            return ObjectPool.Instance.Fetch(typeof(A2G_ValidateAccountSession), isFromPool) as A2G_ValidateAccountSession;
+        }
+
+        [MemoryPackOrder(0)]
+        public int RpcId { get; set; }
+
+        [MemoryPackOrder(1)]
+        public int Error { get; set; }
+
+        [MemoryPackOrder(2)]
+        public string Message { get; set; }
+
+        public override void Dispose()
+        {
+            if (!this.IsFromPool)
+            {
+                return;
+            }
+
+            this.RpcId = default;
+            this.Error = default;
+            this.Message = default;
+
+            ObjectPool.Instance.Recycle(this);
+        }
+    }
+
     public static class OnlineInner
     {
         public const ushort G2A_Register = 22002;
@@ -3787,5 +3862,7 @@ namespace ET
         public const ushort P2G_OperateOnlineSlayerMart = 22156;
         public const ushort P2R_OperateOnlineSlayerMart = 22157;
         public const ushort R2P_OperateOnlineSlayerMart = 22158;
+        public const ushort G2A_ValidateAccountSession = 22990;
+        public const ushort A2G_ValidateAccountSession = 22991;
     }
 }

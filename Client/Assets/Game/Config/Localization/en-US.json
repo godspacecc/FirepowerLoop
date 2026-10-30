@@ -248,8 +248,8 @@
   "ui.online.logging_in": "Logging in",
   "ui.online.account_created": "New account created and signed in",
   "ui.online.logging_out": "Logging out",
-  "ui.online.error.username": "User name must be 3 to 20 ASCII letters, numbers, or underscores",
-  "ui.online.error.password": "Password can be empty; when set, use 1 to 8 ASCII letters, numbers, or underscores",
+  "ui.online.error.username": "Use 3–32 letters, digits or underscores for the account name.",
+  "ui.online.error.password": "New accounts require 10–128 characters. Existing accounts may use their original password.",
   "ui.online.error.config": "Network configuration is invalid",
   "ui.online.error.connect_failed": "Cannot connect to server. Make sure the server is running",
   "ui.online.error.connect_timeout": "Server connection timed out",
@@ -912,5 +912,10 @@
   "ui.survivor.weapon.acquire": "Acquire {0}",
   "ui.survivor.weapon.upgrade": "Upgrade {0}",
   "ui.survivor.weapon.acquire_detail": "Lv.1 · Uses 1 weapon slot\nDamage {0}\nFire interval {1}s",
-  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\nDamage {2} → {3}\nFire interval {4} → {5}s"
+  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\nDamage {2} → {3}\nFire interval {4} → {5}s",
+  "ui.online.register_confirm": "The account or password is incorrect. If this is your first visit, confirm registration. Otherwise cancel and check your password.",
+  "ui.online.error.rate_limited": "Too many requests. Please try again later.",
+  "ui.online.error.locked": "This account is temporarily locked. Please try again later.",
+  "ui.online.error.disabled": "This account is disabled.",
+  "ui.online.error.banned": "This account is banned."
 }

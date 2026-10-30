@@ -26,6 +26,7 @@
         <NoWarn>0169,0649,3021,8981,CS9193,CS9192</NoWarn>
     </PropertyGroup>
     <ItemGroup>
+        <ProjectReference Include="../../../AccountFoundation/AccountFoundation.csproj" />
         <Compile Include="../../../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeDockSeaEntryRules.cs" Link="Share/ArcadeDockSeaEntryRules.cs" />
         <Compile Include="../../../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeHitGeometry.cs" Link="Share/ArcadeHitGeometry.cs" />
         <Compile Include="../../../../Client/Assets/Game/Scripts/Utility/Arcade/ArcadeHitPoseSequence.cs" Link="Share/ArcadeHitPoseSequence.cs" />

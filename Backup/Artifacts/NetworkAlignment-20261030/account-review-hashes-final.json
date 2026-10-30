@@ -1,0 +1,250 @@
+[
+  {
+    "Path": "Client/Assets/Game/Config/Localization/en-US.json",
+    "SHA256": "17e3f33dbcfdcb8318dedad2d29ec913127f628c390a05fb7ce4e6a3e247916c"
+  },
+  {
+    "Path": "Client/Assets/Game/Config/Localization/zh-CN.json",
+    "SHA256": "2e14141af2585473573be249660b9706222da7217cb127c7a06cfc7dfb5749dd"
+  },
+  {
+    "Path": "Client/Assets/Game/Prefabs/UI/Online/OnlineLogin.prefab",
+    "SHA256": "305831f1a05df9546a52bc4d13c9df5202e01feb9a894056198c87e3e19a6872"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Controller/UICtrl/Online/OnlineLoginUICtrl.cs",
+    "SHA256": "a7952253e15358e6c558e9e1259223ee83d995c6d5157355e77eaebce8508481"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Model/Online/OnlineAccountContracts.cs",
+    "SHA256": "23e6011392ad9d7aec04226a4fa71dfe55a40e8440cd7b8f5adefcc90ad5e3ad"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/System/Online/OnlineAccountSystem.cs",
+    "SHA256": "3c27976d1d052fb491cf4984e189bde26a01d56bd32ca0128a2e54bc5b48bb51"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Utility/Localization/TextsGenerated.cs",
+    "SHA256": "761dce03aa32e7b88483218c738b609ebf5077e52eb04d3faf105c849eca7528"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkEndpoint.cs",
+    "SHA256": "9a065cd00c57fddc84dd027fe8313da05afeff5de373c40233d8937c9518136f"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkRuntime.cs",
+    "SHA256": "4ebccea9e6eff749bb20c9466c9732d335c5ab68e62bf2e5134afcefcddfddf8"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Utility/Network/Runtime/NetworkClock.cs",
+    "SHA256": "ca77ce1c0ed0672f12c8dd58f30cdeaac48653c933205f0e125491b2ba538c17"
+  },
+  {
+    "Path": "Client/Assets/Game/Scripts/Utility/Network/Transport/TcpClientTransport.cs",
+    "SHA256": "4451c90402fb304e708e6b0314c902e53fbe80cd4a97de8933c1f23b7d941ec1"
+  },
+  {
+    "Path": "Client/Assets/Tests/EditMode/Flow/EtNetworkFrameTests.cs",
+    "SHA256": "39ab6def14a6bcef1934b92d6f3fe0fbe6525fcde0078e4df4f36f0f31093b14"
+  },
+  {
+    "Path": "Client/Assets/Tests/EditMode/Flow/EtNetworkFrameTests.cs.meta",
+    "SHA256": "07da02af2a03e6080f484017a540a610f05f7958505f7bf4812c598e1fb3346d"
+  },
+  {
+    "Path": "Client/Assets/Tests/EditMode/Flow/EtNetworkTransportTests.cs",
+    "SHA256": "96c622388d0a648e19b6f376239219737631726c2d77dcda3fde369e40a3a172"
+  },
+  {
+    "Path": "Client/Assets/Tests/EditMode/Flow/EtNetworkTransportTests.cs.meta",
+    "SHA256": "0cbefefb52bb0eb1316744780e416725ba864ed703678372c1ad2f3ce452cb88"
+  },
+  {
+    "Path": "Client/Assets/Tests/EditMode/Flow/TcpOnlineLoginTests.cs",
+    "SHA256": "0f30754fea84525bd83f61349f826b6a0fa6833bf0ca41f0e359cc210358b22e"
+  },
+  {
+    "Path": "Config/Proto/OnlineInner_S_22001.proto",
+    "SHA256": "0a5c1e5370f08d74d71fd30684db6df20a0514eff763b7773446a0cc913f54da"
+  },
+  {
+    "Path": "Docs/Plans/网络共同基础对齐-20261030.md",
+    "SHA256": "3a384c7d39ae4069f71600f1a43de84a342144cb105b8a9f9796906b11c948ba"
+  },
+  {
+    "Path": "Docs/README.md",
+    "SHA256": "ed6682a584cd71e7cef7cb5598fd79ddcf69187581b11c2ff119655273afba80"
+  },
+  {
+    "Path": "Docs/联机服务端/账号基础与迁移.md",
+    "SHA256": "d4cd1e647afdeed75d04b19018be34cc47b0a13981480f5994cfdf95bb130244"
+  },
+  {
+    "Path": "Server/AccountFoundation/AccountAuthenticationService.cs",
+    "SHA256": "ab780e89484f2c2bf43f8085406acee5146e707a6ef4f90efcfa6d411053034d"
+  },
+  {
+    "Path": "Server/AccountFoundation/AccountFailureGuard.cs",
+    "SHA256": "8d2cff2a59d328e608ffe2739227dfb307db2dbbd8045719075ef4726fb54c53"
+  },
+  {
+    "Path": "Server/AccountFoundation/AccountFoundation.csproj",
+    "SHA256": "4290cf1e5e318ae3ee70800f29227bf2b81f5b42df8f4af5386699065f25fb2f"
+  },
+  {
+    "Path": "Server/AccountFoundation/AccountRequestGuard.cs",
+    "SHA256": "a6ad9851dee849fb934682c9b6ac1f546d9254a4fa78f44f90ed4d7ea60447f2"
+  },
+  {
+    "Path": "Server/AccountFoundation/IdentityAccount.cs",
+    "SHA256": "11d76b2b111596b45deb1e965f00602ec7989c966c8c2f45d898a86bc8dea7ea"
+  },
+  {
+    "Path": "Server/AccountFoundation/LegacyIdentityImport.cs",
+    "SHA256": "45c60ced76b5ec94ff29532f8ac3c571b26901a23c50484bc30e5df2699f86d2"
+  },
+  {
+    "Path": "Server/AccountFoundation/MongoIdentityStore.cs",
+    "SHA256": "1354b15bf536fe6dd41a0821bd09f94a4adbfc0b89a2bf033939fd7998d78e2e"
+  },
+  {
+    "Path": "Server/GameServer/DotNet/Model/DotNet.Model.csproj",
+    "SHA256": "168ef9209f7a6886aa1600145749d9b7d70ca61f14bf5caf6c4e2629b948b3a4"
+  },
+  {
+    "Path": "Server/GameServer/DotNet/ThirdParty/DotNet.ThirdParty.csproj",
+    "SHA256": "e82db4c5b10875954be0d0941e6a3188f005a9f61161fe0ac14635f9f47eb31b"
+  },
+  {
+    "Path": "Server/GameServer/README.md",
+    "SHA256": "3e289eb10233622b18f72899f4a23012165acb7530cdb78063a81808744a4270"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Core/Fiber/Module/CoroutineLock/CoroutineLockType.cs",
+    "SHA256": "5a1cafe124c29e38765e3e18585eb38db8784575ac10326274e50bf728ad4789"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Core/Object/Object.cs",
+    "SHA256": "238da9657958311901882c4d035a996b7100f97e275f22366d751b3195fdc4a2"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Core/Serialize/MongoHelper.cs",
+    "SHA256": "9453481ea9f2fce194d3cb55838c2b4c1e91c761057bd030b41893c91b603a09"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Core/World/Module/Options/Options.cs",
+    "SHA256": "d3e8e04c464ffe1cad7327618ac47c53411f284bdbf76c1417aaaaa8889c9458"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/FiberInit_Account.cs",
+    "SHA256": "dd0ec2fdbfa58759a63db418eea961f74474b1a56fd385b37ddb1c73995ae465"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/G2A_LoginHandler.cs",
+    "SHA256": "95f5b846635ee9cc03101d90eeb0dfe1e9b878c05a44986f8fd7631953a84c3d"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/G2A_RegisterHandler.cs",
+    "SHA256": "13077f1e9bd0136c16fc7da62f4e8888ed236be4b556c5789ca7ba505f66b8ca"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Account/G2A_ValidateAccountSessionHandler.cs",
+    "SHA256": "502bf3a53c6b4a3be8219423d3ff3894681de9596914f768dd932210673bf77f"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Gate/C2G_LoginHandler.cs",
+    "SHA256": "cedff93e04149a6fd8d8f0a2b9eeedc4e64ac97913978e8c7092e1afe7b6818a"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Gate/C2G_Ping_GameGateHandler.cs",
+    "SHA256": "936aa54377af376212288ed8f50625c28293028224a4918648b0c3ab89be36c3"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Gate/C2G_RegisterHandler.cs",
+    "SHA256": "d3041ecc78af287c100fadbfef328c54a0af63b59566820c833bcd338f5ad80a"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Gate/FiberInit_GameGate.cs",
+    "SHA256": "b3d794fa1c3b86784a1b270b016475bef9da7d3221845c2ed1b0698a83bf7363"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Player/G2P_GetOrCreatePlayerHandler.cs",
+    "SHA256": "069a28845bf2c6113601daeec11735200f8e30178321210fa6b498300bf6ad46"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Player/OnlinePlayerActorSystem.cs",
+    "SHA256": "2e8b10abc63269b6e779ab4a98ff3b70eb15862830c7d847660dbc6b75f29388"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Hotfix/Server/Online/Test/OnlineTestComponentSystem.cs",
+    "SHA256": "949534cbf5f36ab100f108f38d0a380ca6afabdb0ef7716fd689f778848df71a"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Model/Generated/Message/OnlineInner_S_22001.cs",
+    "SHA256": "cbe8a3071b07f36ba0f476bab41540fda34eadf63986c468799ac8b1abb3cf79"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Model/Server/Online/Account/OnlineAccountAdmission.cs",
+    "SHA256": "6ab5970dcf40a60b2c5cebdfc3ef002aff21bd8a73e6384698d9da3a7863f89c"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Model/Server/Online/Account/OnlineAccountComponent.cs",
+    "SHA256": "5dd3ced5d18d1334029e5c19db6e9f1e81992e86006d079205e8805de921818e"
+  },
+  {
+    "Path": "Server/GameServer/Runtime/Model/Share/Module/Message/LogMsg.cs",
+    "SHA256": "29684f59abd5462ec589fcd54106c10c9b4e8da17b95ed176d572d36ddd9f8ba"
+  },
+  {
+    "Path": "Server/GameServer/Tools/run-online-lifecycle-tests.ps1",
+    "SHA256": "b4ce892ef3a1ef11a133dcb7476f79ce8e60d025d9c262f76d28582913d91b1c"
+  },
+  {
+    "Path": "Server/GameServer/Tools/start-local-online-server.ps1",
+    "SHA256": "3ea86df0dcc703c49bed8781ad5dbc0a1bf666568f3d03f40d51d6680ca7df90"
+  },
+  {
+    "Path": "Tools/AccountFoundationChecks/AccountFoundationChecks.csproj",
+    "SHA256": "391bc158514f56d6ac33e1f6eccd6edfa65fe9d28ef8d92b8999b1b06a09e539"
+  },
+  {
+    "Path": "Tools/AccountFoundationChecks/Program.cs",
+    "SHA256": "1f7e4a9d76bbcd45b7d1a5516576a302522495e35f8c7e0bcbf50529183c6c9d"
+  },
+  {
+    "Path": "Tools/AccountIdentityMigration/AccountIdentityMigration.csproj",
+    "SHA256": "58e71f8876f497c095dc8328f9b7795e26012a13f4df61e8faf7a4abda56cd9d"
+  },
+  {
+    "Path": "Tools/AccountIdentityMigration/Program.cs",
+    "SHA256": "462b9f5020b316e7fe55bb3f04eda9f03db8e981f63233c00ce0ed4e3377a806"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/Markers.cs",
+    "SHA256": "9fafc62c5ece8ff00d474e3536c8c3589f3d2e00b9e7cfc28d6657ccc6c9197e"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/NativeAccountChecks.cs",
+    "SHA256": "5edbb62a805945488300be4e98771543236b4250fd8466b7bf740488aeb9c51f"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/NetworkFoundationChecks.csproj",
+    "SHA256": "d915d4a2a81acda1a2e0f0cb139c59d9b468cef085cf0b00cd7dac18ffed6458"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/Program.cs",
+    "SHA256": "ad6c0bbc2a365531df3e15ba6f957a916df0b2cf8ac6adc53f9a9a3c8c4c65ab"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/RuntimeChecks.cs",
+    "SHA256": "f04dc9d48657c2a6eca4c109c32700c455e2e3fd24ef75a7144a8324586e9a9e"
+  },
+  {
+    "Path": "Tools/NetworkFoundationChecks/run-account-foundation.ps1",
+    "SHA256": "11a4c3731cacb367dce505a94a5379cc6a0442f914c5a3e76002f61209a40740"
+  },
+  {
+    "Path": "Docs/联机服务端/联机服务端总设计.md",
+    "SHA256": "da324571d580fc7358ae04eb2831737121ba4e37df358f94dd3ad59cbb2fb809"
+  }
+]

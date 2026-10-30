@@ -38,6 +38,10 @@ namespace ET
         [Option("Console", Required = false, Default = 0)]
         public int Console { get; set; }
         
+        /// <summary>隔离联调只监听回环，默认沿用场景配置；不改变生产端口。</summary>
+        [Option("OnlineLoopbackOnly", Required = false, Default = false)]
+        public bool OnlineLoopbackOnly { get; set; }
+
         [Option("OnlineStore", Required = false, Default = "../Store/Online/identity-store.json")]
         public string OnlineStore { get; set; }
 

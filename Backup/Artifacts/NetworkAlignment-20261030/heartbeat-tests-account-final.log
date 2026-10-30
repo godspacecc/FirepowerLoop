@@ -1,0 +1,106 @@
+
+Run Tool
+  Tool: tests-run
+  URL: http://localhost:21032/api/tools/tests-run
+  Auth: from config or machine store
+──────────────────────────────────────────────────
+Calling tests-run...
+SUCCESS: tests-run completed
+SUCCESS: Response:
+{
+  "status": "success",
+  "structured": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 16,
+        "PassedTests": 16,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:07.5579789"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.AuthenticatedSessionSendsFirstPingAfter2500Milliseconds",
+          "Status": "Passed",
+          "Duration": "00:00:00.3100000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.ConnectedNormalPingFailureDoesNotRetryBefore10000Milliseconds",
+          "Status": "Passed",
+          "Duration": "00:00:00.3050000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.ConnectedRecoveryPingFailureDoesNotRetryBefore3000Milliseconds",
+          "Status": "Passed",
+          "Duration": "00:00:00.4110000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.ControllerDisposeStopsPendingPingAndIgnoresOldCompletion",
+          "Status": "Passed",
+          "Duration": "00:00:00.4070000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.LogoutRejectedDisconnectsAndAllowsFreshLogin",
+          "Status": "Passed",
+          "Duration": "00:00:00.6010000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.LogoutStopsHeartbeatBeforeLogoutRpc",
+          "Status": "Passed",
+          "Duration": "00:00:00.4140000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.LogoutTimeoutDisconnectsAndAllowsFreshLogin",
+          "Status": "Passed",
+          "Duration": "00:00:00.6190000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.MissingResponseObserverDisconnectsAndDoesNotCommitAuthenticatedSnapshot",
+          "Status": "Passed",
+          "Duration": "00:00:00.2070000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.NewSessionEpochInvalidatesOldPingCompletion",
+          "Status": "Passed",
+          "Duration": "00:00:00.4160000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.NormalHeartbeatTimeoutDisconnectsAt10000MillisecondsFromLastResponse",
+          "Status": "Passed",
+          "Duration": "00:00:00.4170000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.OldGenerationAndDeinitDisposeStopOldCompletions",
+          "Status": "Passed",
+          "Duration": "00:00:00.6310000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.PassiveDisconnectAndSessionReplacedStopHeartbeat",
+          "Status": "Passed",
+          "Duration": "00:00:00.6010000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.PauseResumeSendsSingleRecoveryPingAndSuccessResetsPeriod",
+          "Status": "Passed",
+          "Duration": "00:00:00.3030000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.PingResponseResetsPeriodAndInFlightRequestPreventsOverlap",
+          "Status": "Passed",
+          "Duration": "00:00:00.2140000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.RecoveryWaitsForBothFocusAndUnpauseInEitherOrder",
+          "Status": "Passed",
+          "Duration": "00:00:00.4000000"
+        },
+        {
+          "Name": "Game.Tests.OnlineHeartbeatTests.ResumeSendsImmediatePingAndOldRpcDoesNotSatisfyThreeSecondWindow",
+          "Status": "Passed",
+          "Duration": "00:00:00.2230000"
+        }
+      ]
+    }
+  }
+}

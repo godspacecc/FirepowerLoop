@@ -1,4 +1,4 @@
-param(
+﻿param(
     [Parameter(Mandatory = $true)]
     [string]$GameServerRoot,
 
@@ -128,6 +128,9 @@ function Show-Controls {
 }
 
 function Invoke-Preflight {
+    if ([string]::IsNullOrWhiteSpace($env:FIREPOWERLOOP_MONGODB_URI)) {
+        throw "缺少 FIREPOWERLOOP_MONGODB_URI；请先配置本项目 MongoDB，旧身份文件须先显式迁移。"
+    }
     $root = Resolve-Root $GameServerRoot
     $bin = Join-Path $root "Bin"
     $app = Join-Path $bin "App.dll"

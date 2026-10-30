@@ -1,0 +1,46 @@
+
+Run Tool
+  Tool: tests-run
+  URL: http://localhost:21032/api/tools/tests-run
+  Auth: from config or machine store
+──────────────────────────────────────────────────
+Calling tests-run...
+SUCCESS: tests-run completed
+SUCCESS: Response:
+{
+  "status": "success",
+  "structured": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 4,
+        "PassedTests": 4,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1878182"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.EtNetworkFrameTests.AppendCopiesImmediatelyAndInvalidArgumentsPreservePendingBytes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0020000"
+        },
+        {
+          "Name": "Game.Tests.EtNetworkFrameTests.EverySplitPointAndCoalescedFramesPreserveBodies",
+          "Status": "Passed",
+          "Duration": "00:00:00.0200000"
+        },
+        {
+          "Name": "Game.Tests.EtNetworkFrameTests.InvalidLengthsAreRejectedAndMaximumRoundTrips",
+          "Status": "Passed",
+          "Duration": "00:00:00.0410000"
+        },
+        {
+          "Name": "Game.Tests.EtNetworkFrameTests.KnownWireBytesUseLittleEndianLength",
+          "Status": "Passed",
+          "Duration": "00:00:00.0010000"
+        }
+      ]
+    }
+  }
+}

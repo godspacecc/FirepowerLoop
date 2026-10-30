@@ -2512,6 +2512,10 @@ namespace Game
         /// </summary>
         public static string OnlineErrorAccountOrPassword => Loc.T("ui.online.error.account_or_password");
         /// <summary>
+        /// 账号已封禁
+        /// </summary>
+        public static string OnlineErrorBanned => Loc.T("ui.online.error.banned");
+        /// <summary>
         /// 当前操作尚未完成
         /// </summary>
         public static string OnlineErrorBusy => Loc.T("ui.online.error.busy");
@@ -2528,15 +2532,23 @@ namespace Game
         /// </summary>
         public static string OnlineErrorConnectTimeout => Loc.T("ui.online.error.connect_timeout");
         /// <summary>
+        /// 账号已停用
+        /// </summary>
+        public static string OnlineErrorDisabled => Loc.T("ui.online.error.disabled");
+        /// <summary>
         /// 与服务器的连接已断开
         /// </summary>
         public static string OnlineErrorDisconnected => Loc.T("ui.online.error.disconnected");
+        /// <summary>
+        /// 账号暂时锁定，请稍后再试
+        /// </summary>
+        public static string OnlineErrorLocked => Loc.T("ui.online.error.locked");
         /// <summary>
         /// 尚未登录
         /// </summary>
         public static string OnlineErrorNotLoggedIn => Loc.T("ui.online.error.not_logged_in");
         /// <summary>
-        /// 密码可留空；填写时仅限1至8位英文字母、数字或下划线
+        /// 新账号密码需10至128字符；旧账号可使用原密码
         /// </summary>
         public static string OnlineErrorPassword => Loc.T("ui.online.error.password");
         /// <summary>
@@ -2547,6 +2559,10 @@ namespace Game
         /// 已登录，但未能记住用户名
         /// </summary>
         public static string OnlineErrorPreferenceSave => Loc.T("ui.online.error.preference_save");
+        /// <summary>
+        /// 操作过于频繁，请稍后再试
+        /// </summary>
+        public static string OnlineErrorRateLimited => Loc.T("ui.online.error.rate_limited");
         /// <summary>
         /// 注册成功，但登录失败
         /// </summary>
@@ -2572,7 +2588,7 @@ namespace Game
         /// </summary>
         public static string OnlineErrorUnknown => Loc.T("ui.online.error.unknown");
         /// <summary>
-        /// 用户名需为3至20位英文字母、数字或下划线
+        /// 账号需为3至32位英文字母、数字或下划线
         /// </summary>
         public static string OnlineErrorUsername => Loc.T("ui.online.error.username");
         /// <summary>
@@ -2619,6 +2635,10 @@ namespace Game
         /// 注册
         /// </summary>
         public static string OnlineRegister => Loc.T("ui.online.register");
+        /// <summary>
+        /// 账号或密码不正确。若是首次使用，请确认注册新账号；已有账号请取消并检查密码。
+        /// </summary>
+        public static string OnlineRegisterConfirm => Loc.T("ui.online.register_confirm");
         /// <summary>
         /// 正在注册
         /// </summary>
@@ -3553,5 +3573,146 @@ namespace Game
         /// 当前版本：未知
         /// </summary>
         public static string StartVersionUnknown => Loc.T("ui.start.version_unknown");
+        /// <summary>
+        /// 闯关模式
+        /// </summary>
+        public static string SurvivorArcade => Loc.T("ui.survivor.arcade");
+        /// <summary>
+        /// 选择一项强化
+        /// </summary>
+        public static string SurvivorChoose => Loc.T("ui.survivor.choose");
+        /// <summary>
+        /// 进入幸存者模式失败，请重试
+        /// </summary>
+        public static string SurvivorErrorOpen => Loc.T("ui.survivor.error.open");
+        /// <summary>
+        /// 等级 {0}    经验  {1} / {2}
+        /// </summary>
+        public static string SurvivorHudExperience(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.hud.experience", arg0, arg1, arg2);
+        /// <summary>
+        /// 生命  {0} / {1}
+        /// </summary>
+        public static string SurvivorHudHealth(object arg0, object arg1) => Loc.T("ui.survivor.hud.health", arg0, arg1);
+        /// <summary>
+        /// 分数  {0}
+        /// </summary>
+        public static string SurvivorHudScore(object arg0) => Loc.T("ui.survivor.hud.score", arg0);
+        /// <summary>
+        /// 等级提升
+        /// </summary>
+        public static string SurvivorLevelUp => Loc.T("ui.survivor.level_up");
+        /// <summary>
+        /// 幸存者模式
+        /// </summary>
+        public static string SurvivorMode => Loc.T("ui.survivor.mode");
+        /// <summary>
+        /// 战斗已暂停
+        /// </summary>
+        public static string SurvivorPaused => Loc.T("ui.survivor.paused");
+        /// <summary>
+        /// 再来一局
+        /// </summary>
+        public static string SurvivorRestart => Loc.T("ui.survivor.restart");
+        /// <summary>
+        /// 保存失败：{0}。点击再来一局或返回主菜单重试。
+        /// </summary>
+        public static string SurvivorResultRetry(object arg0) => Loc.T("ui.survivor.result.retry", arg0);
+        /// <summary>
+        /// 本局分数  {0}
+        /// </summary>
+        public static string SurvivorResultScore(object arg0) => Loc.T("ui.survivor.result.score", arg0);
+        /// <summary>
+        /// 本局结束
+        /// </summary>
+        public static string SurvivorResultTitle => Loc.T("ui.survivor.result.title");
+        /// <summary>
+        /// 选择
+        /// </summary>
+        public static string SurvivorSelect => Loc.T("ui.survivor.select");
+        /// <summary>
+        /// 生存时间  {0}
+        /// </summary>
+        public static string SurvivorTime(object arg0) => Loc.T("ui.survivor.time", arg0);
+        /// <summary>
+        /// 提高子弹伤害
+        /// </summary>
+        public static string SurvivorUpgrade1Detail => Loc.T("ui.survivor.upgrade.1.detail");
+        /// <summary>
+        /// 火力提升
+        /// </summary>
+        public static string SurvivorUpgrade1Title => Loc.T("ui.survivor.upgrade.1.title");
+        /// <summary>
+        /// 缩短自动射击间隔
+        /// </summary>
+        public static string SurvivorUpgrade2Detail => Loc.T("ui.survivor.upgrade.2.detail");
+        /// <summary>
+        /// 射速提升
+        /// </summary>
+        public static string SurvivorUpgrade2Title => Loc.T("ui.survivor.upgrade.2.title");
+        /// <summary>
+        /// 提高生命上限
+        /// </summary>
+        public static string SurvivorUpgrade3Detail => Loc.T("ui.survivor.upgrade.3.detail");
+        /// <summary>
+        /// 生命提升
+        /// </summary>
+        public static string SurvivorUpgrade3Title => Loc.T("ui.survivor.upgrade.3.title");
+        /// <summary>
+        /// 提高移动速度
+        /// </summary>
+        public static string SurvivorUpgrade4Detail => Loc.T("ui.survivor.upgrade.4.detail");
+        /// <summary>
+        /// 移速提升
+        /// </summary>
+        public static string SurvivorUpgrade4Title => Loc.T("ui.survivor.upgrade.4.title");
+        /// <summary>
+        /// 扩大经验拾取范围
+        /// </summary>
+        public static string SurvivorUpgrade5Detail => Loc.T("ui.survivor.upgrade.5.detail");
+        /// <summary>
+        /// 拾取提升
+        /// </summary>
+        public static string SurvivorUpgrade5Title => Loc.T("ui.survivor.upgrade.5.title");
+        /// <summary>
+        /// 等级 {0} → {1}
+        /// 累计效果 {2} → {3}
+        /// </summary>
+        public static string SurvivorUpgradeProgress(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.upgrade.progress", arg0, arg1, arg2, arg3);
+        /// <summary>
+        /// 无人机
+        /// </summary>
+        public static string SurvivorWeaponDrone => Loc.T("ui.survivor.weapon.Drone");
+        /// <summary>
+        /// 基础步枪
+        /// </summary>
+        public static string SurvivorWeaponRifle => Loc.T("ui.survivor.weapon.Rifle");
+        /// <summary>
+        /// 获得{0}
+        /// </summary>
+        public static string SurvivorWeaponAcquire(object arg0) => Loc.T("ui.survivor.weapon.acquire", arg0);
+        /// <summary>
+        /// Lv.1 · 占用 1 个武器槽
+        /// 伤害 {0}
+        /// 射击间隔 {1} 秒
+        /// </summary>
+        public static string SurvivorWeaponAcquireDetail(object arg0, object arg1) => Loc.T("ui.survivor.weapon.acquire_detail", arg0, arg1);
+        /// <summary>
+        /// 空武器槽
+        /// </summary>
+        public static string SurvivorWeaponEmpty => Loc.T("ui.survivor.weapon.empty");
+        /// <summary>
+        /// {0}  Lv.{1}
+        /// </summary>
+        public static string SurvivorWeaponSlot(object arg0, object arg1) => Loc.T("ui.survivor.weapon.slot", arg0, arg1);
+        /// <summary>
+        /// 提升{0}等级
+        /// </summary>
+        public static string SurvivorWeaponUpgrade(object arg0) => Loc.T("ui.survivor.weapon.upgrade", arg0);
+        /// <summary>
+        /// Lv.{0} → Lv.{1}
+        /// 伤害 {2} → {3}
+        /// 射击间隔 {4} → {5} 秒
+        /// </summary>
+        public static string SurvivorWeaponUpgradeDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.weapon.upgrade_detail", arg0, arg1, arg2, arg3, arg4, arg5);
     }
 }

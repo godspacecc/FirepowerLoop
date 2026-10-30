@@ -248,8 +248,8 @@
   "ui.online.logging_in": "正在登录",
   "ui.online.account_created": "新账号已创建并登录",
   "ui.online.logging_out": "正在退出登录",
-  "ui.online.error.username": "用户名需为3至20位英文字母、数字或下划线",
-  "ui.online.error.password": "密码可留空；填写时仅限1至8位英文字母、数字或下划线",
+  "ui.online.error.username": "账号需为3至32位英文字母、数字或下划线",
+  "ui.online.error.password": "新账号密码需10至128字符；旧账号可使用原密码",
   "ui.online.error.config": "网络配置无效",
   "ui.online.error.connect_failed": "无法连接服务器，请确认服务器已启动",
   "ui.online.error.connect_timeout": "连接服务器超时",
@@ -912,5 +912,10 @@
   "ui.survivor.weapon.acquire": "获得{0}",
   "ui.survivor.weapon.upgrade": "提升{0}等级",
   "ui.survivor.weapon.acquire_detail": "Lv.1 · 占用 1 个武器槽\n伤害 {0}\n射击间隔 {1} 秒",
-  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\n伤害 {2} → {3}\n射击间隔 {4} → {5} 秒"
+  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\n伤害 {2} → {3}\n射击间隔 {4} → {5} 秒",
+  "ui.online.register_confirm": "账号或密码不正确。若是首次使用，请确认注册新账号；已有账号请取消并检查密码。",
+  "ui.online.error.rate_limited": "操作过于频繁，请稍后再试",
+  "ui.online.error.locked": "账号暂时锁定，请稍后再试",
+  "ui.online.error.disabled": "账号已停用",
+  "ui.online.error.banned": "账号已封禁"
 }

@@ -26,11 +26,14 @@ namespace ET.Server
 
         public static async ETTask<(int Error, string Message, ActorId PlayerActorId, long SessionEpoch, bool Reused)> BindGate(
                 this OnlinePlayerActor self,
-                ActorId gateProxyActorId)
+                ActorId gateProxyActorId, long sessionEpoch)
         {
             // Offlining owns an unfinished save/commit transaction; rebinding would expose an old Unit or create two authorities for one player.
             if (self.State == OnlinePlayerState.Offlining)
                 return (ErrorCode.ERR_OnlineServiceUnavailable, "角色正在完成离线事务，请稍后重试", default, self.SessionEpoch, true);
+            // 账号库分配持久世代；较晚到达的旧登录不能覆盖已提交的新绑定。
+            if (sessionEpoch <= self.SessionEpoch)
+                return (ErrorCode.ERR_OnlineSessionStateConflict, "登录会话已被更新，请重新登录", default, self.SessionEpoch, true);
             bool reused = self.SessionEpoch > 0;
             self.TimerGeneration++;
             self.SaveRetryPending = false;
@@ -44,7 +47,7 @@ namespace ET.Server
                 self.Root().GetComponent<MessageSender>().Send(oldProxy, replaced);
             }
 
-            self.SessionEpoch++;
+            self.SessionEpoch = sessionEpoch;
             self.GateProxyActorId = gateProxyActorId;
             self.State = OnlinePlayerState.Online;
             await self.AddOrRefreshLocation();

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><OutputType>Exe</OutputType><TargetFramework>net8.0</TargetFramework><ImplicitUsings>enable</ImplicitUsings><AllowUnsafeBlocks>true</AllowUnsafeBlocks></PropertyGroup>
+  <ItemGroup>
+    <Compile Include="../../Server/GameServer/Runtime/ThirdParty/Unity.Mathematics/**/*.cs" Exclude="../../Server/GameServer/Runtime/ThirdParty/Unity.Mathematics/PropertyAttributes.cs;../../Server/GameServer/Runtime/ThirdParty/Unity.Mathematics/math_unity_conversion.cs;../../Server/GameServer/Runtime/ThirdParty/Unity.Mathematics/Properties/*.cs" Link="Mathematics/%(RecursiveDir)%(Filename)%(Extension)" />
+    <PackageReference Include="MemoryPack" Version="1.10.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <Compile Include="../../Client/Assets/Game/Scripts/ThirdParty/ET/EtMessageRuntime.cs" Link="EtMessageRuntime.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Network/Generated/OuterMessage_C_10001.cs" Link="OuterMessage.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Network/Generated/OnlineOuter_C_12001.cs" Link="OnlineOuter.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkRuntime.cs" Link="NetworkRuntime.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Runtime/NetworkClock.cs" Link="NetworkClock.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Rpc/RpcMessageDispatcher.cs" Link="RpcMessageDispatcher.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Serialization/MemoryPackMessageCodec.cs" Link="MemoryPackMessageCodec.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Diagnostics/NetworkDiagnostics.cs" Link="NetworkDiagnostics.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Adapter/NetworkEndpoint.cs" Link="NetworkEndpoint.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Adapter/INetworkRuntime.cs" Link="INetworkRuntime.cs" />
+    <Compile Include="../../Client/Assets/Game/Scripts/Utility/Network/Transport/TcpClientTransport.cs" Link="TcpClientTransport.cs" />
+  </ItemGroup>
+</Project>

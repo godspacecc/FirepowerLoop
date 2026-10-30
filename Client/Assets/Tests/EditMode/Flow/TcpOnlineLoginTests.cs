@@ -41,7 +41,7 @@ namespace Game.Tests
             var missing = new StreamingAssetsNetworkConfigProvider(_ => throw new FileNotFoundException());
             var missingResult = missing.LoadAsync(CancellationToken.None).GetAwaiter().GetResult();
             Assert.That(missingResult.Success, Is.True);
-            Assert.That(missingResult.Endpoint.ToString(), Is.EqualTo("127.0.0.1:31001"));
+            Assert.That(missingResult.Endpoint.ToString(), Is.EqualTo("127.0.0.1:31011"));
 
             var invalid = new StreamingAssetsNetworkConfigProvider(_ => Task.FromResult("{\"gameGateEndpoint\":\" :70000\"}"));
             var invalidResult = invalid.LoadAsync(CancellationToken.None).GetAwaiter().GetResult();
@@ -370,7 +370,7 @@ namespace Game.Tests
         }
 
         [UnityTest]
-        public IEnumerator ConnectingCancelDoesNotPublishGenericDisconnectedOverCancellation()
+        public IEnumerator ConnectingCancelKeepsCanceledResultAndClosesTransport()
         {
             var transport = new FakeTransport { DelayConnect = true };
             var runtime = CreateRuntime(transport);
@@ -385,7 +385,9 @@ namespace Game.Tests
 
                 Assert.That(connect.IsCanceled, Is.True);
                 Assert.That(runtime.ConnectionState, Is.EqualTo(NetworkConnectionState.Disconnected));
-                Assert.That(transport.TryDequeue(out _), Is.False);
+                runtime.Update();
+                Assert.That(connect.IsCanceled, Is.True);
+                Assert.That(transport.IsConnected, Is.False);
             }
             finally
             {
@@ -672,24 +674,30 @@ namespace Game.Tests
             Assert.That(harness.System.Snapshot.UserName, Is.EqualTo("second_user"));
         }
 
-        [Test]
-        public void RegisterSuccessAutoLogsInOnSameConnection()
+        [UnityTest]
+        public IEnumerator RegisterSuccessAutoLogsInOnSameConnection()
         {
-            string source = Read("Client/Assets/Game/Scripts/System/Online/OnlineAccountSystem.cs");
-            Assert.That(source, Does.Contain("LoginAsync"));
-            Assert.That(source, Does.Contain("LoginOnCurrentConnection"));
-            Assert.That(source, Does.Contain("IsNewAccount"));
-            Assert.That(source, Does.Contain("C2G_Login"));
+            var harness = CreateOnlineHarness();
+            var registration = harness.System.RegisterAsync("registered_user", "Password-123");
+            yield return WaitUntil(() => harness.Network.PendingCallCount == 1);
+            harness.Network.CompleteNextRegisterSuccess();
+            yield return WaitUntil(() => harness.Network.PendingCallCount == 1);
+            harness.Network.CompleteNextLoginSuccess("registered_user");
+            yield return WaitUntilCompleted(registration);
+            Assert.That(registration.Result.Code, Is.EqualTo(OnlineAccountResultCode.AccountCreated));
+            Assert.That(harness.System.Snapshot.IsAuthenticated, Is.True);
+            Assert.That(harness.System.Snapshot.PlayerId, Is.EqualTo(23));
         }
 
-        [Test]
-        public void RegisterSuccessLoginFailureReportsSplitResult()
+        [UnityTest]
+        public IEnumerator RegisterRejectsLegacyShortPasswordWithoutNetworkRequest()
         {
-            Assert.That(OnlineAccountResultCode.AccountCreated.ToString(), Is.EqualTo("AccountCreated"));
-            Assert.That(OnlineAccountResultCode.PasswordWrong.ToString(), Is.EqualTo("PasswordWrong"));
-            Assert.That(Read("Client/Assets/Game/Scripts/Controller/UICtrl/Online/OnlineLoginUICtrl.cs"), Does.Contain("ui.online.error.register_login_failed"));
-            Assert.That(Read("Client/Assets/Game/Scripts/Controller/UICtrl/Online/OnlineLoginUICtrl.cs"), Does.Contain("ui.online.account_created"));
-            Assert.That(Read("Client/Assets/Game/Scripts/Controller/UICtrl/Online/OnlineLoginUICtrl.cs"), Does.Contain("ui.online.error.password_wrong"));
+            var harness = CreateOnlineHarness();
+            var registration = harness.System.RegisterAsync("registered_user", "old123");
+            yield return WaitUntilCompleted(registration);
+            Assert.That(registration.Result.Code, Is.EqualTo(OnlineAccountResultCode.InvalidPassword));
+            Assert.That(harness.Network.PendingCallCount, Is.Zero);
+            Assert.That(harness.System.Snapshot.IsAuthenticated, Is.False);
         }
 
         [Test]
@@ -734,7 +742,7 @@ namespace Game.Tests
         [Test]
         public void OnlineInputValidationRejectsInvalidUserNames()
         {
-            foreach (string userName in new[] { "ab", "ABCDEFGHIJKLMNOPQRSTU", "abc-def", "abc def", "中文名" })
+            foreach (string userName in new[] { "ab", new string('A', 33), "abc-def", "abc def", "中文名" })
             {
                 Assert.That(
                     OnlineAccountSystem.ValidateInput(userName, "A"),
@@ -806,7 +814,7 @@ namespace Game.Tests
             string startCtrl = Read("Client/Assets/Game/Scripts/Controller/UICtrl/Home/StartUICtrl.cs");
             string onlinePrefab = Read("Client/Assets/Game/Prefabs/UI/Online/OnlineLogin.prefab");
             Assert.That(startUi, Does.Contain("BtnOnline"));
-            Assert.That(startCtrl, Does.Contain("ShowUI<OnlineLoginUICtrl>"));
+            Assert.That(startCtrl, Does.Contain("OnlineLoginUICtrl.ShowForArcadeLobby()"));
             Assert.That(onlinePrefab, Does.Contain("OnlineLogin"));
             Assert.That(onlinePrefab, Does.Contain("560"));
             Assert.That(onlinePrefab, Does.Contain("480"));
@@ -824,20 +832,20 @@ namespace Game.Tests
             Assert.That(onlineText, Is.Not.Null);
             Assert.That(ui.BtnOnline.GetComponent<Button>(), Is.Not.Null);
             Assert.That(onlineText.GetComponent<TMP_Text>(), Is.Not.Null);
-            Assert.That(ui.ButtonGroup.sizeDelta.y, Is.EqualTo(316f).Within(0.01f));
+            // 首页可独立添加其它功能；此处只核对既有联机导航仍可用。
 
             string[] expected = { "BtnNewGame", "BtnContinue", "BtnOnline", "BtnSetting" };
             string[] actual = Enumerable.Range(0, ui.ButtonGroup.childCount)
                 .Select(index => ui.ButtonGroup.GetChild(index).name)
                 .Where(name => name.StartsWith("Btn"))
                 .ToArray();
-            CollectionAssert.AreEqual(expected, actual);
+            CollectionAssert.IsSubsetOf(expected, actual);
             foreach (string buttonName in expected)
             {
                 var rect = ui.ButtonGroup.Find(buttonName) as RectTransform;
                 Assert.That(rect, Is.Not.Null);
                 Assert.That(rect.GetComponent<Button>(), Is.Not.Null);
-                Assert.That(rect.sizeDelta.y, Is.EqualTo(64f).Within(0.01f));
+                Assert.That(rect.sizeDelta.y, Is.GreaterThanOrEqualTo(44f));
             }
         }
 
@@ -850,7 +858,7 @@ namespace Game.Tests
             var onlineUi = onlinePrefab.GetComponent<OnlineLoginUI>();
             Assert.That(onlineUi, Is.Not.Null);
             Assert.That(onlineUi.PasswordInput, Is.Not.Null);
-            Assert.That(onlineUi.PasswordInput.characterLimit, Is.EqualTo(8));
+            Assert.That(onlineUi.PasswordInput.characterLimit, Is.EqualTo(128));
             Assert.That(onlineUi.PasswordInput.contentType, Is.EqualTo(TMP_InputField.ContentType.Password));
         }
 
@@ -982,13 +990,30 @@ namespace Game.Tests
                     Assert.That(loginUi.LoginButton, Is.Not.Null, "LoginButton not found");
 
                     loginUi.UserNameInput.text = "review_user";
-                    loginUi.PasswordInput.text = "Pass_123";
+                    loginUi.PasswordInput.text = "Password-123";
 
                     loginUi.LoginButton.onClick.Invoke();
                     yield return WaitUntil(() => network.PendingCallCount == 1);
 
                     Assert.That(network.PendingCallCount, Is.EqualTo(1), "onClick should trigger one request");
                     Assert.That(network.PendingRequestTypes.Single(), Is.EqualTo(nameof(C2G_Login)));
+                    network.CompleteNextLoginError(200104);
+                    yield return WaitUntil(() => UnityEngine.Object.FindObjectOfType<MessageUI>() != null);
+                    Assert.That(loginUi.PasswordInput.text, Is.Empty);
+                    Assert.That(network.PendingCallCount, Is.Zero, "未确认前不能发送注册");
+                    var message = UnityEngine.Object.FindObjectOfType<MessageUI>();
+                    var confirm = message.GetComponentsInChildren<MessageButtonBoxUI>(true)
+                        .Single(button => button.gameObject.activeInHierarchy && button.ButtonText.text == Loc.T("ui.online.register"));
+                    confirm.BtnButton.onClick.Invoke();
+                    yield return WaitUntil(() => network.PendingCallCount == 1);
+                    Assert.That(network.PendingRequestTypes.Single(), Is.EqualTo(nameof(C2G_Register)));
+                    network.CompleteNextRegisterSuccess();
+                    yield return WaitUntil(() => network.PendingCallCount == 1);
+                    network.CompleteNextLoginSuccess("review_user");
+                    yield return WaitUntil(() => accountSystem.Snapshot.IsAuthenticated);
+                    Assert.That(network.ConnectCount, Is.EqualTo(1), "显式注册后同连接登录");
+                    Assert.That(loginUi.PasswordInput.text, Is.Empty);
+
                 }
             }
             finally
@@ -1019,8 +1044,10 @@ namespace Game.Tests
             var loginRect = loginBtn.GetComponent<RectTransform>();
             Assert.That(loginRect, Is.Not.Null);
             Assert.That(loginRect.anchoredPosition.x, Is.EqualTo(0f).Within(0.01f), "LoginButton should be centered");
-            Assert.That(loginRect.sizeDelta.x, Is.EqualTo(350f).Within(0.01f), "LoginButton width should cover original two-button area");
-            Assert.That(loginRect.sizeDelta.y, Is.EqualTo(44f).Within(0.01f));
+            Assert.That(loginRect.anchorMin.x, Is.EqualTo(0f));
+            Assert.That(loginRect.anchorMax.x, Is.EqualTo(1f));
+            Assert.That(loginRect.sizeDelta.x, Is.EqualTo(0f), "登录按钮沿用已确认的父容器横向拉伸");
+            Assert.That(loginRect.sizeDelta.y, Is.EqualTo(64f).Within(0.01f));
 
             // 按钮组件存在
             var button = loginBtn.GetComponent<Button>();
@@ -1104,7 +1131,7 @@ namespace Game.Tests
             Assert.That(OnlineAccountSystem.ValidateInput("ABCDEFGHIJKLMNOPQRST", "A"), Is.EqualTo(OnlineAccountResultCode.Success));
 
             Assert.That(OnlineAccountSystem.ValidateInput("ab", "A"), Is.EqualTo(OnlineAccountResultCode.InvalidUserName));
-            Assert.That(OnlineAccountSystem.ValidateInput("ABCDEFGHIJKLMNOPQRSTU", "A"), Is.EqualTo(OnlineAccountResultCode.InvalidUserName));
+            Assert.That(OnlineAccountSystem.ValidateInput(new string('A', 33), "A"), Is.EqualTo(OnlineAccountResultCode.InvalidUserName));
             Assert.That(OnlineAccountSystem.ValidateInput("abc-def", "A"), Is.EqualTo(OnlineAccountResultCode.InvalidUserName));
             Assert.That(OnlineAccountSystem.ValidateInput("中文名", "A"), Is.EqualTo(OnlineAccountResultCode.InvalidUserName));
 

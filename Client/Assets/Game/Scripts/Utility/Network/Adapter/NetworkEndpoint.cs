@@ -2,15 +2,16 @@ using System;
 
 namespace Game.Network
 {
+    /// <summary>无凭据的 DNS/IP 端点；拒绝 URL 和路径，避免诊断包含敏感输入。</summary>
     public readonly struct NetworkEndpoint : IEquatable<NetworkEndpoint>
     {
         public NetworkEndpoint(string host, int port)
         {
             Host = (host ?? string.Empty).Trim();
             Port = port;
-            if (string.IsNullOrWhiteSpace(Host))
+            if (Uri.CheckHostName(Host) == UriHostNameType.Unknown)
             {
-                throw new ArgumentException("网络端点 host 为空。", nameof(host));
+                throw new ArgumentException("网络端点必须为有效主机名或 IP，不得包含凭据或路径。", nameof(host));
             }
             if (port < 1 || port > 65535)
             {
@@ -70,7 +71,7 @@ namespace Game.Network
 
         public override int GetHashCode()
         {
-            return StringComparer.OrdinalIgnoreCase.GetHashCode(Host) ^ Port;
+            return StringComparer.OrdinalIgnoreCase.GetHashCode(Host ?? string.Empty) ^ Port;
         }
     }
 }

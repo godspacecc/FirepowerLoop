@@ -40,7 +40,11 @@ namespace Game
         Disconnected,
         PreferenceSaveFailed,
         OperationInProgress,
-        UnknownFailure
+        UnknownFailure,
+        RateLimited,
+        AccountLocked,
+        AccountDisabled,
+        AccountBanned
     }
 
     public readonly struct OnlineAccountSnapshot

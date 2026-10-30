@@ -12,6 +12,8 @@ namespace Game
         /// <summary>每次操作或隐藏时递增，使旧异步回调失效。</summary>
         private int operationGeneration;
         private bool isVisible;
+        // 注册确认仅短暂持有本次输入，隐藏、取消或提交立即清理，绝不写入偏好。
+        private string registrationUser, registrationPassword;
         private OnlineOperationState lastNoticeOperationState;
         private OnlineAccountResultCode lastNoticeResultCode;
         private static bool requestArcadeRoomMode;
@@ -67,6 +69,7 @@ namespace Game
 
         protected override void OnShow()
         {
+            registrationUser = registrationPassword = null;
             isVisible = true;
             arcadeRoomMode = true;
             requestArcadeRoomMode = false;
@@ -83,6 +86,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            registrationUser = registrationPassword = null;
             enterLobbyAfterLogin = false;
             isVisible = false;
             arcadeRoomMode = false;
@@ -106,11 +110,12 @@ namespace Game
         /// <summary>提交账号登录；账号系统读取网络设置，本弹窗不保存或覆盖服务器地址。</summary>
         private UniTask SubmitLogin()
         {
-            return RunOperation((system, user, password) => system.LoginAsync(user, password));
+            return RunOperation((system, user, password) => system.LoginAsync(user, password), true);
         }
 
         private async UniTask SubmitLogout()
         {
+            registrationUser = registrationPassword = null;
             int generation = ++operationGeneration;
             try
             {
@@ -132,18 +137,22 @@ namespace Game
             }
         }
 
-        private async UniTask RunOperation(System.Func<OnlineAccountSystem, string, string, System.Threading.Tasks.Task<OnlineAccountOperationResult>> operation)
+        private async UniTask RunOperation(System.Func<OnlineAccountSystem, string, string, System.Threading.Tasks.Task<OnlineAccountOperationResult>> operation,
+            bool offerRegistration = false)
         {
+            registrationUser = registrationPassword = null;
             int generation = ++operationGeneration;
             try
             {
                 SetInputsEnabled(false);
                 string user = UI.UserNameInput.text;
                 string password = UI.PasswordInput.text;
-                await operation(this.GetSystem<OnlineAccountSystem>(), user, password);
+                var result = await operation(this.GetSystem<OnlineAccountSystem>(), user, password);
                 if (generation == operationGeneration && UI != null)
                 {
                     ClearPasswordAndFocus();
+                    if (offerRegistration && isVisible && result.Code == OnlineAccountResultCode.PasswordWrong)
+                        OfferRegistration(user, password, generation);
                 }
             }
             catch (OperationCanceledException)
@@ -155,6 +164,25 @@ namespace Game
                 Log.Error($"[OnlineLoginUICtrl] 账号操作异常：generation={generation} exception={exception}");
                 RestoreAfterUnexpectedFailure(generation);
             }
+        }
+
+        private void OfferRegistration(string user, string password, int generation)
+        {
+            registrationUser = user; registrationPassword = password;
+            Notify.ShowMessage(Loc.T("ui.online.register"), Loc.T("ui.online.register_confirm"),
+                new System.Collections.Generic.List<MessageButtonConfig>
+                {
+                    new MessageButtonConfig { ButtonText = Texts.CommonCancel, Role = MessageButtonRole.Cancel,
+                        OnClick = () => { if (generation == operationGeneration) registrationUser = registrationPassword = null; } },
+                    new MessageButtonConfig { ButtonText = Loc.T("ui.online.register"), Role = MessageButtonRole.Confirm,
+                        OnClick = () =>
+                        {
+                            if (!isVisible || generation != operationGeneration) return;
+                            string name = registrationUser, secret = registrationPassword;
+                            registrationUser = registrationPassword = null;
+                            RunOperation((system, _, __) => system.RegisterAsync(name, secret)).Forget();
+                        } }
+                });
         }
 
         private void RestoreAfterUnexpectedFailure(int generation)
@@ -263,6 +291,10 @@ namespace Game
                 case OnlineAccountResultCode.AccountCreated: return Loc.T("ui.online.account_created");
                 case OnlineAccountResultCode.InvalidUserName: return Loc.T("ui.online.error.username");
                 case OnlineAccountResultCode.InvalidPassword: return Loc.T("ui.online.error.password");
+                case OnlineAccountResultCode.RateLimited: return Loc.T("ui.online.error.rate_limited");
+                case OnlineAccountResultCode.AccountLocked: return Loc.T("ui.online.error.locked");
+                case OnlineAccountResultCode.AccountDisabled: return Loc.T("ui.online.error.disabled");
+                case OnlineAccountResultCode.AccountBanned: return Loc.T("ui.online.error.banned");
                 case OnlineAccountResultCode.InvalidNetworkConfig: return Loc.T("ui.online.error.config");
                 case OnlineAccountResultCode.ConnectFailed: return Loc.T("ui.online.error.connect_failed");
                 case OnlineAccountResultCode.ConnectTimeout: return Loc.T("ui.online.error.connect_timeout");
@@ -289,6 +321,7 @@ namespace Game
             switch (state)
             {
                 case OnlineOperationState.LoggingIn: return Loc.T("ui.online.logging_in");
+                case OnlineOperationState.Registering: return Loc.T("ui.online.registering");
                 case OnlineOperationState.LoggingOut: return Loc.T("ui.online.logging_out");
                 default: return string.Empty;
             }
