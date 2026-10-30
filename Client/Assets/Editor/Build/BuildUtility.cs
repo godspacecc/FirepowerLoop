@@ -30,10 +30,10 @@ namespace Game.Editor
         internal static bool HasActiveWorkflow => s_isBuilding ||
             !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
 
-        [MenuItem("Tools/打包/PC/最新代码资源完整打包", false, 100)]
+        [MenuItem("Tools/打包/PC/完整打包", false, 100)]
         private static void BuildLatestMenu()
         {
-            if (Confirm("最新代码资源完整打包", "重新生成 HybridCLR、AOT、Game DLL 和完整资源；耗时最长；正式发布或无法判断时使用。", "开始完整打包"))
+            if (Confirm("完整打包", "重新生成 HybridCLR、AOT、Game DLL 和完整资源；耗时最长；正式发布或无法判断时使用。", "开始完整打包"))
                 BuildLatestCodeAndResourcesBatch();
         }
 
