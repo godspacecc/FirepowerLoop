@@ -37,30 +37,61 @@ namespace Game.Editor
             StartupTag
         };
 
+        /// <summary>选择已有报告进行只读分析；自动模式按文件修改时间选择，不代表最新发布版本。</summary>
         [MenuItem("Tools/打包/资源/分析最新模块体积", false, 190)]
         private static void AnalyzeLatestReportMenu()
         {
             string packageRoot = YooAssetBuildUtility.GetPackageRoot(EditorUserBuildSettings.activeBuildTarget);
-            if (!TryFindLatestReport(packageRoot, out string reportPath, out string findError))
-            {
-                Debug.LogError($"[ResourceModuleAudit] {findError}");
-                EditorUtility.DisplayDialog("模块体积分析失败", findError, "确定");
+            int choice = EditorUtility.DisplayDialogComplex(
+                "选择模块体积报告",
+                $"当前平台：{EditorUserBuildSettings.activeBuildTarget}\n" +
+                "自动选择按报告文件修改时间排序，不代表最新发布版本，可能包含历史测量报告。\n" +
+                "也可手动选择已有 .report 文件；不会构建或发布资源。",
+                "最近修改的报告", "取消", "手动选择报告");
+            if (choice == 1)
                 return;
-            }
 
-            if (!TryAnalyzeReport(reportPath, out ResourceModuleAuditResult result, out string auditError))
+            try
             {
-                Debug.LogError($"[ResourceModuleAudit] {auditError}");
-                EditorUtility.DisplayDialog("模块体积分析失败", auditError, "确定");
-                return;
-            }
+                string reportPath;
+                if (choice == 2)
+                {
+                    reportPath = EditorUtility.OpenFilePanel("选择 YooAsset 构建报告",
+                        Directory.Exists(packageRoot) ? packageRoot : Application.dataPath, "report");
+                    if (string.IsNullOrWhiteSpace(reportPath))
+                        return;
+                }
+                else if (!TryFindLatestReport(packageRoot, out reportPath, out string findError))
+                {
+                    ShowAnalysisError(findError);
+                    return;
+                }
 
-            string summary = BuildSummary(result);
-            if (result.UntaggedBundles.Count > 0 || result.UnknownTags.Count > 0)
-                Debug.LogError(summary);
-            else
-                Debug.Log(summary);
-            EditorUtility.DisplayDialog("模块体积分析", summary, "确定");
+                if (!TryAnalyzeReport(reportPath, out ResourceModuleAuditResult result, out string auditError))
+                {
+                    ShowAnalysisError(auditError);
+                    return;
+                }
+
+                string selection = choice == 2 ? "手动选择（以报告内平台和版本为准）" : "当前平台目录中文件修改时间最近的报告";
+                string summary = $"选择依据：{selection}\n" + BuildSummary(result);
+                if (result.UntaggedBundles.Count > 0 || result.UnknownTags.Count > 0)
+                    Debug.LogError(summary);
+                else
+                    Debug.Log(summary);
+                EditorUtility.DisplayDialog("模块体积分析", summary, "确定");
+            }
+            catch (Exception exception)
+            {
+                ShowAnalysisError($"无法读取或分析报告：{exception.Message}");
+            }
+        }
+
+        /// <summary>统一显示只读分析失败原因，不回退构建或修改已有报告。</summary>
+        private static void ShowAnalysisError(string error)
+        {
+            Debug.LogError($"[ResourceModuleAudit] {error}");
+            EditorUtility.DisplayDialog("模块体积分析失败", error, "确定");
         }
 
         /// <summary>
@@ -261,6 +292,7 @@ namespace Game.Editor
             return true;
         }
 
+        /// <summary>展示报告原始体积与标签归属；多标签体积存在重叠，不等同于实际网络下载量。</summary>
         public static string BuildSummary(ResourceModuleAuditResult result)
         {
             if (result == null)
@@ -270,17 +302,21 @@ namespace Game.Editor
             {
                 $"平台: {result.BuildTarget}",
                 $"版本: {result.PackageVersion}",
+                $"构建时间（报告记录）: {result.BuildDate}",
                 $"Bundle: {result.BundleCount} 个，共 {ToMiB(result.TotalBytes):F2} MiB",
-                $"首次必需(startup：基地与河谷): {ToMiB(result.FirstDownloadBytes):F2} MiB"
+                $"启动资源(startup): {ToMiB(result.FirstDownloadBytes):F2} MiB"
             };
-            foreach (string tag in AllowedTags.OrderBy(value => value, StringComparer.Ordinal))
-                lines.Add($"{tag}: {ToMiB(result.TagBytes[tag]):F2} MiB");
+            foreach (var tag in result.TagBytes.OrderBy(pair => pair.Key, StringComparer.Ordinal))
+                lines.Add($"{tag.Key}: {ToMiB(tag.Value):F2} MiB");
+            lines.Add("模块按标签统计，同一资源包可能计入多个模块，各模块大小不能直接相加。");
+            lines.Add("启动资源大小不是实际首次下载量；实际下载受内置资源和本地缓存影响。");
             lines.Add($"未分类 Bundle: {result.UntaggedBundles.Count}");
             lines.Add($"未知标签: {result.UnknownTags.Count}");
             lines.Add($"报告: {result.ReportPath}");
             return string.Join("\n", lines);
         }
 
+        /// <summary>按文件修改时间选择报告；时间相同时按路径排序，保证选择稳定。</summary>
         private static bool TryFindLatestReport(string packageRoot, out string reportPath, out string error)
         {
             reportPath = null;
@@ -293,6 +329,7 @@ namespace Game.Editor
 
             reportPath = Directory.GetFiles(packageRoot, $"{PackageName}_*.report", SearchOption.AllDirectories)
                 .OrderByDescending(File.GetLastWriteTimeUtc)
+                .ThenBy(path => path, StringComparer.Ordinal)
                 .FirstOrDefault();
             if (reportPath != null)
                 return true;
