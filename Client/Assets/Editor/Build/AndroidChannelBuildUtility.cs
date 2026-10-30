@@ -202,44 +202,6 @@ namespace Game.Editor
             return json;
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/检查渠道包", false, 191)]
-        private static void InspectChannelMenu() => InspectMenu(true);
-
-        [MenuItem("Tools/打包/Android/渠道发行/检查单机包", false, 193)]
-        private static void InspectOfflineMenu() => InspectMenu(true, true);
-
-        /// <summary>选择已有APK；渠道和单机检查统一默认目录、独立报告批次及结果提示。</summary>
-        private static void InspectMenu(bool channel, bool offline = false)
-        {
-            string title = offline ? "检查单机包" : "检查渠道包";
-            string project = Directory.GetParent(Application.dataPath).FullName;
-            string initialDirectory = Path.Combine(project, "Build", "Android");
-            while (!Directory.Exists(initialDirectory) && initialDirectory != project)
-                initialDirectory = Path.GetDirectoryName(initialDirectory);
-            string apk = EditorUtility.OpenFilePanel("选择已有 APK", initialDirectory, "apk");
-            if (string.IsNullOrEmpty(apk)) return;
-            string output = Path.Combine(Directory.GetParent(project).FullName, "Backup", "Artifacts",
-                (offline ? "AndroidSinglePlayerInspection-" : "AndroidChannelInspection-") +
-                DateTime.Now.ToString("yyyyMMdd-HHmmssfff") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8),
-                offline ? "offline-apk-check.json" : "channel-apk-check.json");
-            try
-            {
-                var result = JObject.Parse(offline ? InspectOfflineAndSave(apk, output) : InspectAndSave(apk, output, channel));
-                UnityEngine.Debug.Log("[AndroidChannelBuildUtility] APK 技术检查 " + ((bool)result["passed"] ? "通过" : "未通过") + "，报告：" + output + "；未执行打包或发布。");
-                if (EditorUtility.DisplayDialog(title,
-                        ((bool)result["passed"] ? "技术检查通过。" : "技术检查未通过，请查看报告中的失败项。") +
-                        "\n报告：" + output + "\n未检查完整游戏资源，不代表真机或渠道验收通过。",
-                        "查看报告位置", "关闭"))
-                    EditorUtility.RevealInFinder(output);
-            }
-            catch (Exception exception)
-            {
-                UnityEngine.Debug.LogError("[AndroidChannelBuildUtility] APK 检查失败：" + exception.Message);
-                EditorUtility.DisplayDialog(title + "失败", exception.Message +
-                        (File.Exists(output) ? "\n已保存报告：" + output : "\n未生成完整检查报告。修复检查工具或配置后可重查同一APK。"), "关闭");
-            }
-        }
-
         private static JObject ReadConfig(ZipArchive archive, string name)
         {
             var entry = archive.GetEntry(name);

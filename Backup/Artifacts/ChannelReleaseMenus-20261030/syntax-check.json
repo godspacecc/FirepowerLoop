@@ -1,0 +1,9 @@
+{
+  "UnityTestsRun": false,
+  "UnityCompilationRun": false,
+  "SyntaxErrors": [],
+  "CheckedFiles": [
+    "Client/Assets/Editor/Build/AndroidChannelBuildUtility.cs",
+    "Client/Assets/Editor/Build/AndroidBuildUtility.cs"
+  ]
+}

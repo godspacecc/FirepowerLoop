@@ -76,7 +76,7 @@ namespace Game.Editor
                 BuildQuickReuseApkBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/渠道打包", false, 190)]
+        [MenuItem("Tools/渠道发行/Android/渠道打包", false, 190)]
         private static void BuildChannelCandidateMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 渠道打包",
@@ -85,7 +85,7 @@ namespace Game.Editor
                 BuildChannelCandidateBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/打单机包", false, 192)]
+        [MenuItem("Tools/渠道发行/Android/打单机包", false, 192)]
         private static void BuildOfflineSinglePlayerCandidateMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 打单机包",
