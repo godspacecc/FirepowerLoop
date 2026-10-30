@@ -19,7 +19,7 @@ namespace Game.Editor
         private static async void Generate()
         {
             if (running) return;
-            string exe = EditorUtility.OpenFilePanel("选择正式 Player 的 FirepowerLoop.exe", "", "exe");
+            string exe = EditorUtility.OpenFilePanel("选择正式 Player 的 FirepowerLoop.exe", GetPlayerSelectionDirectory(), "exe");
             if (string.IsNullOrEmpty(exe)) return;
             if (Path.GetFileName(exe) != "FirepowerLoop.exe") { UnityEngine.Debug.LogError("请选择 FirepowerLoop.exe。"); return; }
             string output = WindowsInstallerPublishUtility.CreateOutputDirectory();
@@ -50,6 +50,25 @@ namespace Game.Editor
             }
             catch (Exception e) { UnityEngine.Debug.LogError("安装器生成失败：" + e.Message + "\n输出批次（若已创建则保留）：" + output); }
             finally { running = false; }
+        }
+
+        /// <summary>优先定位最近成功的Windows游戏；旧记录失效时回到平台输出目录或其现存父目录。</summary>
+        private static string GetPlayerSelectionDirectory()
+        {
+            string project = Directory.GetParent(Application.dataPath).FullName;
+            var state = BuildStateStore.Load(out string warning);
+            if (!string.IsNullOrEmpty(warning)) UnityEngine.Debug.LogWarning(warning);
+            string player = state?.LastPlayer?.PlayerPath;
+            // 仅使用PC成功记录，不从Android记录或磁盘时间猜测最近游戏。
+            if (!string.IsNullOrWhiteSpace(player) && File.Exists(player) && Path.IsPathRooted(player) &&
+                string.Equals(Path.GetFileName(player), "FirepowerLoop.exe", StringComparison.OrdinalIgnoreCase))
+                return Path.GetDirectoryName(player);
+
+            string directory = Path.Combine(project, "Build", "Windows");
+            // 尚未打包时目录可能不存在，使用现存父目录避免文件窗口沿用任意历史位置。
+            while (!Directory.Exists(directory) && !string.Equals(directory, project, StringComparison.OrdinalIgnoreCase))
+                directory = Path.GetDirectoryName(directory);
+            return directory;
         }
 
         /// <summary>为脚本参数保留路径边界，拒绝无法安全引用的路径。</summary>
