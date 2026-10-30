@@ -13,6 +13,8 @@ namespace Game
         /// <summary>有界网格尺寸及可行走标记。</summary>
         private readonly int columns,rows;
         private readonly bool[] walkable;
+        /// <summary>静态格间通路位图：左1、右2、下4、上8，建图时验证，换目标时直接复用。</summary>
+        private readonly byte[] connections;
         /// <summary>全体敌人共用距离和广搜队列，不按帧创建寻路对象。</summary>
         private readonly int[] distance,queue;
         /// <summary>固定场地障碍快照与当前目标格。</summary>
@@ -23,8 +25,19 @@ namespace Game
         {
             width=halfWidth;height=halfHeight;radius=bodyRadius;obstacles=blocking;
             columns=Mathf.FloorToInt((width-radius)*2/Cell)+1;rows=Mathf.FloorToInt((height-radius)*2/Cell)+1;
-            walkable=new bool[columns*rows];distance=new int[walkable.Length];queue=new int[walkable.Length];
+            walkable=new bool[columns*rows];distance=new int[walkable.Length];queue=new int[walkable.Length];connections=new byte[walkable.Length];
             for(int i=0;i<walkable.Length;i++)walkable[i]=Clear(Point(i));
+            for(int i=0;i<walkable.Length;i++)
+            {
+                if(i%columns+1<columns)Connect(i,i+1,2,1);
+                if(i/columns+1<rows)Connect(i,i+columns,8,4);
+            }
+        }
+        /// <summary>相邻格只检查一次精确穿越，双向缓存；仍禁止切过围栏和障碍角。</summary>
+        private void Connect(int a,int b,byte forward,byte backward)
+        {
+            if(!walkable[a]||!walkable[b]||!CanTravel(Point(a),Point(b)))return;
+            connections[a]|=forward;connections[b]|=backward;
         }
         private Vector2 Point(int i)=>new Vector2(-width+radius+i%columns*Cell,-height+radius+i/columns*Cell);
         private bool Clear(Vector2 p)
@@ -74,10 +87,11 @@ namespace Game
         {
             int next=Nearest(target,false);if(next==goal)return;goal=next;Array.Fill(distance,-1);if(goal<0)return;
             int head=0,tail=0;queue[tail++]=goal;distance[goal]=0;
-            while(head<tail){int at=queue[head++],x=at%columns,y=at/columns;
-                Visit(at,x>0?at-1:-1,ref tail);Visit(at,x+1<columns?at+1:-1,ref tail);Visit(at,y>0?at-columns:-1,ref tail);Visit(at,y+1<rows?at+columns:-1,ref tail);}
+            while(head<tail){int at=queue[head++];byte links=connections[at];
+                if((links&1)!=0)Visit(at,at-1,ref tail);if((links&2)!=0)Visit(at,at+1,ref tail);
+                if((links&4)!=0)Visit(at,at-columns,ref tail);if((links&8)!=0)Visit(at,at+columns,ref tail);}
         }
-        private void Visit(int from,int to,ref int tail){if(to<0||!walkable[to]||distance[to]>=0||!CanTravel(Point(from),Point(to)))return;distance[to]=distance[from]+1;queue[tail++]=to;}
+        private void Visit(int from,int to,ref int tail){if(distance[to]>=0)return;distance[to]=distance[from]+1;queue[tail++]=to;}
         /// <summary>沿可见的下降格移动，限制本帧步长；直达目标时不再绕格。</summary>
         public Vector2 Move(Vector2 position,Vector2 target,float amount)
         {

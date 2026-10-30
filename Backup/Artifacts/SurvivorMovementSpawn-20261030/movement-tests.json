@@ -1,0 +1,74 @@
+{
+  "red": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:03.1468477\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorNavigationTests.MovingTargetDoesNotRescanStaticObstacles\",\"Status\":\"Failed\",\"Duration\":\"00:00:02.1690000\",\"Message\":\"  \\u73A9\\u5BB6\\u6362\\u683C\\u65F6\\u5E94\\u590D\\u7528\\u9759\\u6001\\u901A\\u8DEF\\uFF0C\\u4E0D\\u80FD\\u91CD\\u65B0\\u626B\\u63CF\\u5168\\u56FE\\u969C\\u788D\\r\\n  Expected: 0\\r\\n  But was:  998340\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:03.1468477"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorNavigationTests.MovingTargetDoesNotRescanStaticObstacles",
+            "Status": "Failed",
+            "Duration": "00:00:02.1690000",
+            "Message": "  玩家换格时应复用静态通路，不能重新扫描全图障碍\r\n  Expected: 0\r\n  But was:  998340\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "green": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":4,\"PassedTests\":4,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:05.6597200\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesOppositeSideWithoutCrossingFence\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2570000\"},{\"Name\":\"Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesPlayerSpawn\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1090000\"},{\"Name\":\"Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReplansForMovingPlayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0420000\"},{\"Name\":\"Game.Tests.SurvivorNavigationTests.MovingTargetDoesNotRescanStaticObstacles\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1980000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 4,
+          "PassedTests": 4,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:05.6597200"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesOppositeSideWithoutCrossingFence",
+            "Status": "Passed",
+            "Duration": "00:00:01.2570000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesPlayerSpawn",
+            "Status": "Passed",
+            "Duration": "00:00:01.1090000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReplansForMovingPlayer",
+            "Status": "Passed",
+            "Duration": "00:00:01.0420000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorNavigationTests.MovingTargetDoesNotRescanStaticObstacles",
+            "Status": "Passed",
+            "Duration": "00:00:01.1980000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  }
+}
