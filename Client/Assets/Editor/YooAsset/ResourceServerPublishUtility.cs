@@ -99,11 +99,13 @@ namespace Game.Editor
         public static ResourceServerPublishResult PublishLatestValidAndroidPackage()
         {
             var workspaceRoot = GetWorkspaceRoot();
-            return Publish(
+            var result = PublishPackage(
                 Path.Combine(workspaceRoot, "Client", "Bundles", "Android", PackageName),
                 Path.Combine(workspaceRoot, "Server", "ResourceServer"),
                 Path.Combine(workspaceRoot, "Release", "ResourceServer", "Android"),
-                DateTime.Now);
+                DateTime.Now, null, verifyCompleteResources: true);
+            result.Operation = "生成资源服";
+            return result;
         }
 
         /// <summary>以最新 Android Host 包原子替换最近发布的 Android ResourceFiles。</summary>
@@ -230,7 +232,7 @@ namespace Game.Editor
                     return Fail(PublishOperation, "验证源资源", source, releaseRoot, "源 Host 资源校验失败");
                 }
 
-                // PC手动生成入口冻结完整源资源；其他既有入口保持当前校验策略。
+                // PC与Android手动生成入口冻结完整源资源；其他既有入口保持当前校验策略。
                 var snapshot = verifyCompleteResources ? PcBuiltinResourceValidator.CaptureRemote(source, version) : null;
                 Directory.CreateDirectory(releaseRoot);
                 target = FullPath(Path.Combine(releaseRoot, $"ResourceServerBundle_{timestamp:yyyyMMdd_HHmmss}"));

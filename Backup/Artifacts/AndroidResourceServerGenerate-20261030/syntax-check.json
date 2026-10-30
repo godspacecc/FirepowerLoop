@@ -1,0 +1,9 @@
+{
+  "SyntaxErrors": [],
+  "UnityCompilationRun": false,
+  "UnityTestsRun": false,
+  "CheckedFiles": [
+    "Client/Assets/Editor/Build/AndroidBuildUtility.cs",
+    "Client/Assets/Editor/YooAsset/ResourceServerPublishUtility.cs"
+  ]
+}

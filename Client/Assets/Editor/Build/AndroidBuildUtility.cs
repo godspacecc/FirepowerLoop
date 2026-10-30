@@ -100,7 +100,7 @@ namespace Game.Editor
         /// <summary>显式渠道入口；没有正式签名及外部服务配置时，在切平台或分配版本之前失败。</summary>
         public static void BuildChannelCandidateBatch() => BuildLatestCodeAndResources(true);
 
-        [MenuItem("Tools/服务器/Android/发布资源服", false, 210)]
+        [MenuItem("Tools/服务器/Android/生成资源服", false, 210)]
         private static void PublishAndroidResourceServerMenu()
         {
             ShowResourceServerResult(ResourceServerPublishUtility.PublishLatestValidAndroidPackage());
@@ -995,7 +995,10 @@ namespace Game.Editor
         {
             if (result.Success)
             {
-                ShowDialog(result.Operation + "成功", $"版本: {result.Version}\n目录: {result.BundleDirectory}");
+                string message = $"版本: {result.Version}\n目录: {result.BundleDirectory}";
+                if (result.Operation == "生成资源服")
+                    message += $"\n源资源: {result.SourcePackageDirectory}\n\n仅生成本地资源和服务脚本，未启动、未上传公网；不会继承旧目录的APK更新文件。需要整包更新时，请另行发布匹配APK。";
+                ShowDialog(result.Operation + "成功", message);
                 return;
             }
 
