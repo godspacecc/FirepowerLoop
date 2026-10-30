@@ -76,10 +76,10 @@ namespace Game.Editor
                 BuildQuickReuseApkBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/渠道候选包完整打包", false, 190)]
+        [MenuItem("Tools/打包/Android/渠道发行/渠道打包", false, 190)]
         private static void BuildChannelCandidateMenu()
         {
-            if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 渠道候选包",
+            if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 渠道打包",
                     "使用显式正式签名和公网配置，生成非 Development 的完整内置 APK，并检查实际产物。不会发布资源服或提交商店。",
                     "开始候选包打包", "取消"))
                 BuildChannelCandidateBatch();
@@ -286,23 +286,42 @@ namespace Game.Editor
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel, offlineSinglePlayer));
-                timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
+                // 本轮只精简联网渠道入口，纯离线候选保留原流程，另行审阅。
+                if (!channel || offlineSinglePlayer)
+                {
+                    timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel, offlineSinglePlayer));
+                    timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
+                }
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
+                if (channel && !offlineSinglePlayer) timing.Run("ValidateGeneratedAot", ValidateAndroidAotOutput);
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
                 string version = BuildWorkflowUtility.CreateResourceVersion(context.Timestamp);
                 var package = timing.Run("BuildAndroidBuiltinPackage", () => BuildPackageOrThrow(version));
                 timing.Run("ValidateAndroidBuiltinPackage", () => ValidateBuiltinPackage(package.OutputPackageDirectory, version));
+                // 构建前冻结完整内置资源，防止最终APK与构建后的可变目录一起漂移。
+                var builtinSnapshot = channel && !offlineSinglePlayer
+                    ? timing.Run("CaptureChannelBuiltin", () => PcBuiltinResourceValidator.Capture(YooAssetBuildUtility.GetStreamingAssetsDirectory(), version))
+                    : null;
                 string appVersion = timing.Run("BuildFinalApk", () =>
                     channel ? BuildFinalPlayerWithIncrementedPatchVersion(context, true, true, offlineSinglePlayer) :
                     BuildFinalPlayerWithIncrementedPatchVersion(context, true));
                 timing.Run("ValidateFinalApk", context.ValidateFinalApk);
                 finalApkValidated = true;
+                if (builtinSnapshot != null)
+                {
+                    timing.Run("RevalidateChannelBuiltin", () => builtinSnapshot.ValidateDirectory(YooAssetBuildUtility.GetStreamingAssetsDirectory()));
+                    timing.Run("ValidateChannelApkResources", () => AndroidQuickBuildUtility.ValidateApkResources(
+                        context.FinalApkPath, YooAssetBuildUtility.GetStreamingAssetsDirectory()));
+                    timing.Run("RevalidateChannelBuiltinAfterApk", () => builtinSnapshot.ValidateDirectory(YooAssetBuildUtility.GetStreamingAssetsDirectory()));
+                }
                 if (channel)
                 {
-                    string reportPath = Path.Combine(context.BatchDirectory, offlineSinglePlayer ? "offline-apk-check.json" : "channel-apk-check.json");
+                    string reportDirectory = offlineSinglePlayer ? context.BatchDirectory : Path.Combine(
+                        Directory.GetParent(Application.dataPath).Parent.FullName, "Backup", "Artifacts",
+                        "AndroidChannelBuild-" + Path.GetFileName(context.BatchDirectory));
+                    string reportPath = Path.Combine(reportDirectory, offlineSinglePlayer ? "offline-apk-check.json" : "channel-apk-check.json");
                     string report = timing.Run("InspectChannelApk", () => offlineSinglePlayer ? AndroidChannelBuildUtility.InspectOfflineAndSave(context.FinalApkPath, reportPath) :
                         AndroidChannelBuildUtility.InspectAndSave(context.FinalApkPath, reportPath, true));
                     if (!Newtonsoft.Json.Linq.JObject.Parse(report).Value<bool>("passed"))
@@ -332,7 +351,10 @@ namespace Game.Editor
                 ShowDialog(
                     "Android 构建失败",
                     BuildWorkflowUtility.FormatFailure(timing, exception.Message,
-                        finalApkValidated ? context.FinalApkPath : null));
+                        finalApkValidated ? context.FinalApkPath : null) +
+                    (channel && !offlineSinglePlayer && finalApkValidated
+                        ? "\nAPK保留供排查，不代表全部检查通过。资源、签名或配置不正确须重打；仅检查工具或证书策略配置错误可修复后检查现有APK。"
+                        : ""));
                 throw;
             }
             finally
