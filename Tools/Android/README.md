@@ -23,7 +23,7 @@ ee30b78a81c36576770e53ebad16e927f662ef84080815aa511b7ee8e37bbfee
 
 1. 拉取包含固定签名文件的最新提交。
 2. 确认仓库根目录的 `.codex/signing/` 下已有 `FirepowerLoop.keystore` 和 `android-signing.local.json`。配置使用相对路径，仓库可以放在另一台设备的不同磁盘或目录；不需要替换系统的 `.android/debug.keystore`。
-3. 在 Unity 菜单执行 `Tools/打包/Android/检查工具/校验固定签名（不打包）`。
+3. 配置完成后，普通完整打包、启动包及快速打包会在构建前自动检查固定测试签名；失败时按报错修复配置，不会继续构建。原单独签名检查菜单已移除，无需额外点击。
 4. 只有校验成功后才使用项目已有打包入口。本次修改及验证不执行 Unity 打包。
 
 用户已明确接受风险并授权将 `.codex/signing/FirepowerLoop.keystore` 和 `.codex/signing/android-signing.local.json` 明文提交到仓库，因此普通 Git 拉取会同时取得私钥和密码。其他私钥和签名目录中的额外文件仍被忽略。签名文件不放入资源服或客户端资源。
