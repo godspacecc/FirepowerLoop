@@ -35,20 +35,13 @@ namespace Game
         /// <summary>校验原始语言表并安全写入；失败抛给调用方，返回值表示文件是否更新。</summary>
         public static bool GenerateTextsOrThrow()
         {
-            var state = LocalizationJsonEditorUtility.LoadStateFromProject();
-            // 校验磁盘原始表，避免编辑器合并行时补空值掩盖缺键或无效JSON。
-            var jsonByLanguage = new Dictionary<string, string>(StringComparer.Ordinal);
-            foreach (var language in state.Languages)
-            {
-                LocalizationJsonEditorUtility.ValidateLanguageCode(language.Code);
-                string path = Path.Combine(LocalizationEditorPaths.ConfigFolder, language.Code + ".json");
-                jsonByLanguage.Add(language.Code, File.ReadAllText(path));
-            }
+            // 与手动校验共用严格磁盘读取，禁止无效语言配置被自动回退。
+            var jsonByLanguage = LocalizationValidatorMenu.LoadJsonTables(out string defaultLanguage, out string commentLanguage);
             var report = LocalizationValidator.ValidateJsonTables(jsonByLanguage);
             if (!report.IsValid)
                 throw new InvalidDataException(string.Join("\n", report.Issues.Select(issue => issue.ToString())));
 
-            string source = GenerateSource(jsonByLanguage, state.DefaultLanguageCode, state.CommentLanguageCode);
+            string source = GenerateSource(jsonByLanguage, defaultLanguage, commentLanguage);
             if (!WriteSourceIfChanged(LocalizationEditorPaths.GeneratedTextsPath, source))
                 return false;
             try

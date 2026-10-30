@@ -1,0 +1,10 @@
+{
+  "UnityTestsRun": false,
+  "UnityCompilationRun": false,
+  "SyntaxErrors": [],
+  "CheckedFiles": [
+    "Client/Assets/Editor/Localization/LocalizationValidatorMenu.cs",
+    "Client/Assets/Editor/Localization/LocalizationTextGenerator.cs",
+    "Client/Assets/Editor/Localization/LocalizationJsonEditorWindow.cs"
+  ]
+}

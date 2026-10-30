@@ -805,15 +805,25 @@ namespace Game
         {
             try
             {
+                // 原始文件与窗口草稿分别检查，不能用合并后的草稿替代磁盘校验。
+                var diskTables = LocalizationValidatorMenu.LoadJsonTables();
+                var diskReport = LocalizationValidator.ValidateJsonTables(diskTables);
+                string scope = $"磁盘范围：{LocalizationEditorPaths.ConfigFolder}；语言：{string.Join(", ", diskTables.Keys)}。";
+                string limitation = "仅检查JSON、键集合和简单{0}占位符；不完整验证格式说明符或翻译质量。";
+                if (!diskReport.IsValid)
+                {
+                    status = $"磁盘校验失败（{diskReport.Issues.Count}个问题）：{scope}\n{string.Join("\n", diskReport.Issues.Select(issue => issue.ToString()))}\n{limitation}\n窗口草稿尚未校验，未保存任何文件。";
+                    return;
+                }
                 LocalizationJsonEditorUtility.RefreshMemberNames(state.Rows);
                 var report = LocalizationValidator.ValidateJsonTables(state.ToJsonByLanguage());
                 if (!report.IsValid)
                 {
-                    status = $"失败：{string.Join("\n", report.Issues.Select(issue => issue.ToString()))}";
+                    status = $"磁盘校验通过；窗口草稿校验失败（{report.Issues.Count}个问题）：{scope}\n{string.Join("\n", report.Issues.Select(issue => issue.ToString()))}\n{limitation}";
                     return;
                 }
 
-                status = $"校验通过：{state.Languages.Count} 种语言，{state.Rows.Count} 条文本。";
+                status = $"磁盘与窗口草稿校验通过，0个问题。{scope}\n窗口草稿：{state.Languages.Count} 种语言，{state.Rows.Count} 条文本；未保存。\n{limitation}";
             }
             catch (Exception exception)
             {

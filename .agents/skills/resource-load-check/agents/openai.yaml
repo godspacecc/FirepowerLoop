@@ -1,0 +1,4 @@
+interface:
+  display_name: "动态资源加载检查"
+  short_description: "检查Unity动态资源的实际地址、YooAsset收集、下载标签与预加载链路"
+  default_prompt: "使用 $resource-load-check 检查本次动态资源变更，验证真实收集结果并说明运行及发布验证边界。"
