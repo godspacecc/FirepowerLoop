@@ -45,9 +45,11 @@ namespace Game.Tests
                 new ByteBuf(File.ReadAllBytes("Assets/Game/Config/" + name + ".bytes"))));
             Assert.That(provider.TryGetArcadeCatalog(out var catalog, out var error), Is.True, error);
             Assert.That(catalog.Drops, Is.Not.Empty);
+            Assert.That(provider.TryGetSurvivor(out var survivor, out error), Is.True, error);
             var assets = CollectAssets().Cast<object>().ToDictionary(asset => (string)Read(asset, "Address"), StringComparer.Ordinal);
 
             var addresses = catalog.Drops.Select(drop => drop.VisualPrefabAddress)
+                .Concat(new[] { survivor.ExperienceVisualPrefabAddress })
                 .Where(address => !string.IsNullOrWhiteSpace(address)).Distinct().ToArray();
             Assert.That(addresses, Is.Not.Empty);
             Assert.That(addresses.Where(address => !assets.ContainsKey(address)).ToArray(), Is.Empty,

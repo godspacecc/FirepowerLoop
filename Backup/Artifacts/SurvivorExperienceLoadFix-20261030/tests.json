@@ -1,0 +1,89 @@
+{
+  "red": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.0715769\"},\"Results\":[{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.ConfiguredDropVisualsAreCollectedForArcadeEntry\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.0740000\",\"Message\":\"  \\u6B63\\u5F0F\\u6389\\u843D\\u914D\\u7F6E\\u7684\\u5165\\u573A\\u9884\\u8F7D\\u5730\\u5740\\u5FC5\\u987B\\u5168\\u90E8\\u6536\\u96C6\\r\\n  Expected: \\u003Cempty\\u003E\\r\\n  But was:  \\u003C \\u0022Prefabs/SceneObjects/SurvivorExperienceCrystal\\u0022 \\u003E\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.0715769"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.ConfiguredDropVisualsAreCollectedForArcadeEntry",
+            "Status": "Failed",
+            "Duration": "00:00:01.0740000",
+            "Message": "  正式掉落配置的入场预载地址必须全部收集\r\n  Expected: <empty>\r\n  But was:  < \"Prefabs/SceneObjects/SurvivorExperienceCrystal\" >\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "green": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":7,\"PassedTests\":7,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:03.9256463\"},\"Results\":[{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.ActiveAndStageVisualsAreCollectedForArcadeEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.7390000\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.ArcadeEnemiesAreNotStartupAndDoNotSharePlayerBundle\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0140000\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.ArcadeSceneIsCollectedWithArcadeTag\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.BootDownloadsCoreAndArcadeTogether\",\"Status\":\"Passed\",\"Duration\":\"00:00:00\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.ConfiguredDropVisualsAreCollectedForArcadeEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9150000\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.SkullDropsAreCollectedForArcadeEntry(\\u0022Prefabs/SceneObjects/ArcadeDropSkullRed\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.GameplayResourceDistributionTests.SkullDropsAreCollectedForArcadeEntry(\\u0022Prefabs/SceneObjects/ArcadeDropSkullPurple\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 7,
+          "PassedTests": 7,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:03.9256463"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.ActiveAndStageVisualsAreCollectedForArcadeEntry",
+            "Status": "Passed",
+            "Duration": "00:00:01.7390000"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.ArcadeEnemiesAreNotStartupAndDoNotSharePlayerBundle",
+            "Status": "Passed",
+            "Duration": "00:00:00.0140000"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.ArcadeSceneIsCollectedWithArcadeTag",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.BootDownloadsCoreAndArcadeTogether",
+            "Status": "Passed",
+            "Duration": "00:00:00"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.ConfiguredDropVisualsAreCollectedForArcadeEntry",
+            "Status": "Passed",
+            "Duration": "00:00:00.9150000"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.SkullDropsAreCollectedForArcadeEntry(\"Prefabs/SceneObjects/ArcadeDropSkullRed\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.GameplayResourceDistributionTests.SkullDropsAreCollectedForArcadeEntry(\"Prefabs/SceneObjects/ArcadeDropSkullPurple\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  }
+}

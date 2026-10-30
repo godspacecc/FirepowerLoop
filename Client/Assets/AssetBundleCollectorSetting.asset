@@ -574,6 +574,46 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/SurvivorExperienceCrystal.prefab
+        CollectorGUID: 5da29900a1dda324dab5b748268e5d71
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeHengeVisual.prefab
+        CollectorGUID: f860bd6fe1f9fa24ab03c1d049130dda
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFortVisual.prefab
+        CollectorGUID: 01f6e78d7344ec84a89c6e732d7e45d6
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeKoiVisual.prefab
+        CollectorGUID: 687983d8b8b0c144daf7d89557abb49e
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeFinalNestVisual.prefab
+        CollectorGUID: 65cd730611393f74e9653dc337f68c95
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDropDash.prefab
         CollectorGUID: 024b7be8209652c489bcef953e7c9384
         CollectorType: 0

@@ -1,0 +1,9 @@
+# 经验晶体资源加载修复
+
+- 用户反馈最新经验模型加载失败，沿用此前已确认的蓝青晶体及尺寸。
+- 根因：Prefab和资源逻辑地址存在，但Assets/AssetBundleCollectorSetting.asset使用逐文件主资源收集，新增经验晶体遗漏登记。AssetDatabase直接读取Prefab无法发现此问题。
+- 回归：将独立幸存者配置ExperienceVisualPrefabAddress加入既有掉落收集检查，通过正式BeginCollect读取YooAsset收集结果，不使用AssetDatabase加载器替身、不打包。修复前明确缺少Prefabs/SceneObjects/SurvivorExperienceCrystal，1项失败。
+- 修复：补充经验晶体main collector，GUID来自现有.meta，AddressByGameRelativePathNoExtension，PackSeparately，CollectAll，arcade标签。
+- 同类7项检查首次6通过1失败，另发现现有配置引用的ArcadeHengeVisual、ArcadeFortVisual、ArcadeKoiVisual、ArcadeFinalNestVisual漏收集；四个Prefab均存在，按相同规则补齐登记，不改模型或场景。
+- 最终GameplayResourceDistributionTests限定7项，7通过0失败，includePassingTests=true。验证主资源地址、街机下载标签、Prefab存在及Renderer、既有启动资源分组。
+- 未触发资源打包或Player Build，未更新既有发布包/运行中清单；编辑器重新进入Play时需使用刷新后的收集设置。已打包客户端需要后续正常资源发布流程带入这些资源，不能把收集验证称作发布包加载验证。
