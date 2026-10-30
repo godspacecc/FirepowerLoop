@@ -69,12 +69,6 @@ namespace Game.Editor
             BuildHostCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/PC/辅助工具/仅重建完整内置资源", false, 140)]
-        private static void BuildBuiltinResourcesOnlyMenu()
-        {
-            BuildBuiltinResourcesOnlyBatch();
-        }
-
         [MenuItem("Tools/服务器/PC/启动资源服", false, 200)]
         private static void StartResourceServerMenu()
         {
