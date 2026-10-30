@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace Game
 {
@@ -18,7 +19,7 @@ namespace Game
             var rows=tables.TbSurvivorEnemy.DataList;
             if(rows.Count==0)throw new ArgumentException("幸存者敌池不能为空");
             var entries=rows.Select(r=>new SurvivorEnemyDefinition(r.Id,r.EnemyId,r.UnlockSeconds,r.Weight,
-                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier)).ToArray();
+                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier,new Vector3(r.ScaleX,r.ScaleY,r.ScaleZ))).ToArray();
             if(entries.Select(e=>e.Id).Distinct().Count()!=entries.Length ||
                 entries.Any(e=>tables.TbEnemy.GetOrDefault(e.EnemyId)==null) ||
                 !entries.Any(e=>e.UnlockSeconds==0))
@@ -52,14 +53,17 @@ namespace Game
         public float HealthMultiplier { get; }
         public float DamageMultiplier { get; }
         public float SpeedMultiplier { get; }
-        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,int weight,float health,float damage,float speed)
+        /// <summary>已采用的本模式三轴体型；占地及受击使用水平最大比例。</summary>
+        public Vector3 VisualScale { get; }
+        public float BodyRadiusMultiplier => Mathf.Max(VisualScale.x,VisualScale.z);
+        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,int weight,float health,float damage,float speed,Vector3 scale)
         {
             if(string.IsNullOrWhiteSpace(id)||string.IsNullOrWhiteSpace(enemyId)||weight<=0 ||
-                new[]{unlock,health,damage,speed}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)) ||
-                unlock<0||health<=0||damage<=0||speed<=0)
+                new[]{unlock,health,damage,speed,scale.x,scale.y,scale.z}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)) ||
+                unlock<0||health<=0||damage<=0||speed<=0||scale.x<=0||scale.y<=0||scale.z<=0)
                 throw new ArgumentException("幸存者敌池参数无效");
             Id=id;EnemyId=enemyId;UnlockSeconds=unlock;Weight=weight;HealthMultiplier=health;
-            DamageMultiplier=damage;SpeedMultiplier=speed;
+            DamageMultiplier=damage;SpeedMultiplier=speed;VisualScale=scale;
         }
     }
 }

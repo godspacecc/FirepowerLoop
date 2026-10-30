@@ -692,5 +692,8 @@
         <var name="HealthMultiplier" type="float"/>
         <var name="DamageMultiplier" type="float"/>
         <var name="SpeedMultiplier" type="float"/>
+        <var name="ScaleX" type="float"/>
+        <var name="ScaleY" type="float"/>
+        <var name="ScaleZ" type="float"/>
     </bean>
 </beans>

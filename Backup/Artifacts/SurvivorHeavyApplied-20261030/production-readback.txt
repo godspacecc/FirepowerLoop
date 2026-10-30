@@ -1,0 +1,6 @@
+GrayboxPlayer bounds=(4.91, 1.81, 2.33)
+ArcadeZombieShambler bounds=(1.91, 2.67, 1.33)
+ArcadeZombieGaunt bounds=(1.85, 2.19, 1.20)
+ArcadeZombieBloated bounds=(4.73, 3.21, 1.91)
+HeavySurfaceMaxY=2.173167
+VisibilityEnvelopeHeight=3

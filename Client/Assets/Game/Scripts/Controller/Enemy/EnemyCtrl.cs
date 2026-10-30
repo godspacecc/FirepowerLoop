@@ -243,6 +243,13 @@ namespace Game
         public void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetMeleeAttack(duration,remaining,recovery,direction);}
 
+        /// <summary>每帧均相对源比例投影，不能累乘；源Prefab与其它模式不受影响。</summary>
+        public void SetPresentationScale(int runtimeId,Vector3 scale)
+        {
+            if(arcadeEnemies.TryGetValue(runtimeId,out var entry)&&entry.View!=null)
+                entry.View.transform.localScale=Vector3.Scale(entry.OriginalScale,scale);
+        }
+
         public void RemoveEnemy(int runtimeId, bool playDeath = false)
             => RemoveEnemy(runtimeId, playDeath, Vector3.zero, false);
 
@@ -405,6 +412,7 @@ namespace Game
             entry.View.SetNavigationEnabled(false);
             entry.View.SetTelegraphVisible(false);
             entry.View.ResetPhysicalFeedback();
+            entry.View.transform.localScale=entry.OriginalScale;
             entry.View.gameObject.SetActive(false);
             entry.View.ResetWeaponSelection();
             if(entry.ExternalOwned){ReleaseArcadeView(entry.View);return;}
@@ -764,6 +772,7 @@ namespace Game
                 RuntimeId = runtimeId;
                 ConfigId = configId;
                 View = view;
+                OriginalScale = view!=null?view.transform.localScale:Vector3.one;
                 LastHealth = health;
                 LastPosition = position;
                 LastAttackSequence = attackSequence;
@@ -773,6 +782,8 @@ namespace Game
             public int RuntimeId { get; }
             public string ConfigId { get; }
             public EnemyView View { get; }
+            /// <summary>本次取出时的源比例，回池前恢复，避免污染后续闯关实例。</summary>
+            public Vector3 OriginalScale { get; }
             public int LastHealth { get; set; }
             public Vector3 LastPosition { get; set; }
             public int LastAttackSequence { get; set; }

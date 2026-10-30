@@ -23,6 +23,9 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         HealthMultiplier = _buf.ReadFloat();
         DamageMultiplier = _buf.ReadFloat();
         SpeedMultiplier = _buf.ReadFloat();
+        ScaleX = _buf.ReadFloat();
+        ScaleY = _buf.ReadFloat();
+        ScaleZ = _buf.ReadFloat();
     }
 
     public static SurvivorEnemyConfig DeserializeSurvivorEnemyConfig(ByteBuf _buf)
@@ -38,6 +41,9 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly float HealthMultiplier;
     public readonly float DamageMultiplier;
     public readonly float SpeedMultiplier;
+    public readonly float ScaleX;
+    public readonly float ScaleY;
+    public readonly float ScaleZ;
    
     public const int __ID__ = -2055649804;
     public override int GetTypeId() => __ID__;
@@ -57,6 +63,9 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "HealthMultiplier:" + HealthMultiplier + ","
         + "DamageMultiplier:" + DamageMultiplier + ","
         + "SpeedMultiplier:" + SpeedMultiplier + ","
+        + "ScaleX:" + ScaleX + ","
+        + "ScaleY:" + ScaleY + ","
+        + "ScaleZ:" + ScaleZ + ","
         + "}";
     }
 }

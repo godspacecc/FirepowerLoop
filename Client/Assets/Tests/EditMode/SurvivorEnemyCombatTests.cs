@@ -90,10 +90,48 @@ namespace Game.Tests
             Assert.That(model.Health,Is.EqualTo(90));
         }
         private sealed class FixedRandom:System.Random {public override double NextDouble()=>.999;}
+        [Test] public void HeavySpawnUsesHighHealthSlowSpeedAndLargeBody()
+        {
+            Prepare();Set("enemyRandom",new FixedRandom());model.State.Advance(240,false);Call("Spawn");
+            var e=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
+            Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.bloated"));
+            Assert.That(e.MaxHealth,Is.EqualTo(300));Assert.That(e.Speed,Is.EqualTo(1.43f).Within(.001));
+            Assert.That(Call("EnemyRadius",e),Is.EqualTo(Get<ArcadeConfigCatalogDefinition>("catalog").Rule.EnemyContactRadius*1.5f));
+        }
+        [Test] public void RealFrameProjectsHeavyScaleAndChecksFullSpawnBody()
+        {
+            Prepare();var app=new AppStateModel();app.CurrentState.Value=AppState.Playing;
+            ((IBelongToArchitecture)system).GetArchitecture().RegisterModel(app);
+            var catalog=Get<ArcadeConfigCatalogDefinition>("catalog");Set("weapon",catalog.Weapons.Single(x=>x.Id==config.WeaponId));
+            Set("navigation",new SurvivorNavigation(40,40,catalog.Rule.EnemyContactRadius,Array.Empty<ArcadeObstacleDefinition>()));
+            model.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");model.State.Advance(240,false);Set("enemyRandom",new FixedRandom());
+            var port=new View{Visible=false};Set("view",port);Call("TickFrame",.01f);
+            Assert.That(port.Scale,Is.EqualTo(new Vector3(1.5f,1.2f,1.4f)),"正式帧必须投影采用体型");
+            Assert.That(port.SpawnRadius,Is.EqualTo(catalog.Rule.EnemyContactRadius*1.5f));
+        }
+        [Test] public void ProjectileHitsEnlargedBodyBeyondOrdinaryRadius()
+        {
+            Prepare();float radius=Get<ArcadeConfigCatalogDefinition>("catalog").Rule.EnemyContactRadius;
+            var enemy=new ArcadeEnemyRuntime{Id=100,ConfigId="enemy.arcade.zombie.bloated",Position=new Vector2(1,0),Health=100,MaxHealth=100};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(enemy.Id,enemy);
+            Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Add(101,new ArcadeProjectileRuntime{Id=101,Position=new Vector2(0,radius*1.2f),Velocity=new Vector2(40,0),Damage=10,RemainingSeconds=1});
+            Call("AdvanceBullets",.05f);Assert.That(enemy.Health,Is.EqualTo(90));
+        }
+        [Test] public void LargeBodyCannotUseNarrowGapThatSmallBodyCanTraverse()
+        {
+            Prepare();var obstacles=new[]{new ArcadeObstacleDefinition(0,2.5f,1.5f,1.5f,true),new ArcadeObstacleDefinition(0,-2.5f,1.5f,1.5f,true)};
+            float radius=Get<ArcadeConfigCatalogDefinition>("catalog").Rule.EnemyContactRadius;
+            var small=new SurvivorNavigation(8,4,radius*.9f,obstacles);var large=new SurvivorNavigation(8,4,radius*1.5f,obstacles);
+            var target=new Vector2(5,0);small.SetTarget(target);large.SetTarget(target);var a=new Vector2(-5,0);var b=a;
+            for(int i=0;i<200;i++){a=small.Move(a,target,.1f);b=large.Move(b,target,.1f);}
+            Assert.That(a.x,Is.GreaterThan(4));Assert.That(b.x,Is.LessThan(-1.5f));
+        }
         private sealed class View:IArcadeCombatViewPort
         {
             public bool Hidden=true,Visible=true;
-            public bool IsArenaSpawnHidden(Vector2 p,float r)=>Hidden;
+            public float SpawnRadius;public Vector3 Scale;
+            public bool IsArenaSpawnHidden(Vector2 p,float r){SpawnRadius=r;return Hidden;}
+            public void SetEnemyScale(int id,Vector3 scale){Scale=scale;}
             public bool IsArenaTargetVisible(Vector2 p)=>Visible;
             public bool IsActive=>true;
             public bool IsRoundLayoutReady=>true;

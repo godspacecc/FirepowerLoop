@@ -1,0 +1,69 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 11,
+      "PassedTests": 11,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:16.6366848"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApproachingExactMeleeBoundaryStillStartsAndHits",
+        "Status": "Passed",
+        "Duration": "00:00:01.9860000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HeavySpawnUsesHighHealthSlowSpeedAndLargeBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.1570000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies",
+        "Status": "Passed",
+        "Duration": "00:00:01.2300000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.LargeBodyCannotUseNarrowGapThatSmallBodyCanTraverse",
+        "Status": "Passed",
+        "Duration": "00:00:01.1100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ProjectileHitsEnlargedBodyBeyondOrdinaryRadius",
+        "Status": "Passed",
+        "Duration": "00:00:01.2520000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.RealFrameProjectsHeavyScaleAndChecksFullSpawnBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.4050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.0d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.1260000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.7d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.1490000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.999d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.3140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnUsesUnlockedRosterAndPerModeStats",
+        "Status": "Passed",
+        "Duration": "00:00:01.1180000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ZombieGrabDamagesAfterWindupAndCancelsOutOfRange",
+        "Status": "Passed",
+        "Duration": "00:00:01.6770000"
+      }
+    ]
+  }
+}

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using QFramework;
 using UnityEngine;
 namespace Game
@@ -10,6 +11,34 @@ namespace Game
         private SurvivorEnemyRoster enemyRoster;
         private System.Random enemyRandom=new System.Random();
         private readonly Dictionary<string,EnemyConfigDefinition> enemyConfigs=new();
+        /// <summary>同体型共用距离场，较胖敌人不能沿普通体型的窄缝穿墙。</summary>
+        private readonly Dictionary<float,SurvivorNavigation> sizedNavigation=new();
+        /// <summary>仅查询本局只读敌池中的已采用比例。</summary>
+        private SurvivorEnemyDefinition Shape(string configId)=>enemyRoster?.Entries.FirstOrDefault(x=>x.EnemyId==configId);
+        /// <summary>圆形命中及行走半径保守覆盖水平较宽的一轴。</summary>
+        private float EnemyRadius(ArcadeEnemyRuntime enemy)=>catalog.Rule.EnemyContactRadius*(Shape(enemy.ConfigId)?.BodyRadiusMultiplier??1);
+        /// <summary>抓挠范围随水平身体比例同步，保持手臂表现与规则相配。</summary>
+        private float MeleeReach(ArcadeEnemyRuntime enemy,EnemyConfigDefinition definition)=>definition.AttackRange*(Shape(enemy.ConfigId)?.BodyRadiusMultiplier??1);
+        /// <summary>入场时预建不同占地的静态通路，避免后期首次混入大体型时卡一帧。</summary>
+        private void PrepareSizedNavigation()
+        {
+            sizedNavigation.Clear();
+            foreach(var shape in enemyRoster.Entries)
+            {
+                float radius=catalog.Rule.EnemyContactRadius*shape.BodyRadiusMultiplier;
+                if(!Mathf.Approximately(radius,catalog.Rule.EnemyContactRadius)&&!sizedNavigation.ContainsKey(radius))
+                    sizedNavigation.Add(radius,new SurvivorNavigation(HalfWidth,HalfHeight,radius,obstacles));
+            }
+        }
+        /// <summary>相同占地复用距离场；测试或晚到实体可按需补齐，但不逐敌人重算。</summary>
+        private SurvivorNavigation NavigationFor(ArcadeEnemyRuntime enemy)
+        {
+            float radius=EnemyRadius(enemy);
+            if(Mathf.Approximately(radius,catalog.Rule.EnemyContactRadius))return navigation;
+            if(!sizedNavigation.TryGetValue(radius,out var field))
+            {field=new SurvivorNavigation(HalfWidth,HalfHeight,radius,obstacles);field.SetTarget(player);sizedNavigation.Add(radius,field);}
+            return field;
+        }
         private bool PrepareEnemyRoster(out string error)
         {
             var provider=this.GetUtility<IRuntimeConfigProvider>();
@@ -20,7 +49,7 @@ namespace Game
                 if(!provider.TryGetEnemy(entry.EnemyId,out var definition,out error))return false;
                 configs[entry.EnemyId]=definition;
             }
-            enemyRoster=roster;enemyConfigs.Clear();
+            enemyRoster=roster;enemyConfigs.Clear();sizedNavigation.Clear();
             foreach(var pair in configs)enemyConfigs.Add(pair.Key,pair.Value);
             return true;
         }
@@ -28,6 +57,8 @@ namespace Game
         /// <summary>沿既有画面外通道入场；新增僵尸追到抓挠距离，前摇与收招时停步。</summary>
         private void TickEnemies(float dt)
         {
+            // 每种体型每帧只更新一次目标格，不随敌人数量重复找格或重算。
+            foreach(var field in sizedNavigation.Values)field.SetTarget(player);
             foreach(var e in enemies.Values)
             {
                 if(FirepowerLoop.Arcade.ArcadeOutsideEntryRules.Advance(ref e.OutsideEntry,dt,e.Speed,out var entryPosition))
@@ -37,8 +68,8 @@ namespace Game
                 if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*dt);
                 else if(!e.MeleeWindupActive&&e.MeleeRecoveryRemaining<=0)
                 {
-                    float approach=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance,definition.AttackRange,e.Speed,dt,e.MeleeRecoveryRemaining);
-                    e.Position=navigation.Move(e.Position,player,e.Speed*approach);
+                    float approach=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance,MeleeReach(e,definition),e.Speed,dt,e.MeleeRecoveryRemaining);
+                    e.Position=NavigationFor(e).Move(e.Position,player,e.Speed*approach);
                 }
                 if(configured)TickMeleeEnemy(e,dt);
                 else if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius)
@@ -53,7 +84,7 @@ namespace Game
             enemy.AttackCooldown=Math.Max(0,enemy.AttackCooldown-dt);
             enemy.MeleeRecoveryRemaining=Math.Max(0,enemy.MeleeRecoveryRemaining-dt);
             // 与闯关相同的边界容差，避免恰好追到攻击距离时因浮点舍入永远取消起手。
-            if(enemy.OutsideEntry.Active||Vector2.Distance(enemy.Position,player)>definition.AttackRange+.0001f)
+            if(enemy.OutsideEntry.Active||Vector2.Distance(enemy.Position,player)>MeleeReach(enemy,definition)+.0001f)
             {enemy.MeleeWindupActive=false;enemy.MeleeWindupRemaining=0;return;}
             if(enemy.MeleeRecoveryRemaining>0||enemy.AttackCooldown>0)return;
             if(!enemy.MeleeWindupActive)

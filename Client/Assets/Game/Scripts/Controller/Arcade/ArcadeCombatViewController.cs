@@ -43,6 +43,8 @@ namespace Game
         void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state) { }
         /// <summary>权威抓挠进度和当前目标方向，旧端口可忽略。</summary>
         void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
+        /// <summary>幸存者实例体型与攻击快照独立，不修改源Prefab。</summary>
+        void SetEnemyScale(int id,Vector3 scale) { }
         void SetHerdActivityPaused(bool paused) { }
         /// <summary>只接收权威实际掉血的牛撞，致死也播放一次短反馈，不由模型接触推算。</summary>
         void PlayHerdContact(Vector2 position) { }
@@ -715,6 +717,9 @@ namespace Game
             if(SetNextStageEnemyMelee(id,duration,remaining,recovery,worldDirection))return;
             enemyPresentation?.SetMeleeAttack(id,duration,remaining,recovery,worldDirection);
         }
+
+        /// <summary>把已提交的模式体型交给实例拥有者，不改共用Prefab。</summary>
+        public void SetEnemyScale(int id,Vector3 scale) => enemyPresentation?.SetPresentationScale(id,scale);
 
         public void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state)
         {

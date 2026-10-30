@@ -1,0 +1,4 @@
+tbsurvivorenemy.bytes | Assets/Game/Config/tbsurvivorenemy.bytes | startup | deps=1
+Prefabs/Characters/ArcadeZombieShambler | Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab | arcade | deps=60
+Prefabs/Characters/ArcadeZombieGaunt | Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab | arcade | deps=60
+Prefabs/Characters/ArcadeZombieBloated | Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab | arcade | deps=60

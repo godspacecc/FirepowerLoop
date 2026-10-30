@@ -1,4 +1,5 @@
-##var,Id,EnemyId,UnlockSeconds,Weight,HealthMultiplier,DamageMultiplier,SpeedMultiplier
-##type,string,string#ref=TbEnemy,float,int,float,float,float
-,shambler,enemy.arcade.zombie.shambler,0,40,1,1,1
-,gaunt,enemy.arcade.zombie.gaunt,120,25,0.55,1,1.7
+##var,Id,EnemyId,UnlockSeconds,Weight,HealthMultiplier,DamageMultiplier,SpeedMultiplier,ScaleX,ScaleY,ScaleZ
+##type,string,string#ref=TbEnemy,float,int,float,float,float,float,float,float
+,shambler,enemy.arcade.zombie.shambler,0,40,1,1,1,1,1,1
+,gaunt,enemy.arcade.zombie.gaunt,120,25,0.55,1,1.7,0.9,0.82,0.9
+,bloated,enemy.arcade.zombie.bloated,240,10,15,1,0.65,1.5,1.2,1.4

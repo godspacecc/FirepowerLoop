@@ -1,0 +1,34 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 4,
+      "PassedTests": 4,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:06.9233271"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesOppositeSideWithoutCrossingFence",
+        "Status": "Passed",
+        "Duration": "00:00:01.3690000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReachesPlayerSpawn",
+        "Status": "Passed",
+        "Duration": "00:00:01.3330000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorNavigationTests.EveryFarmEntranceReplansForMovingPlayer",
+        "Status": "Passed",
+        "Duration": "00:00:01.4310000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorNavigationTests.MovingTargetDoesNotRescanStaticObstacles",
+        "Status": "Passed",
+        "Duration": "00:00:01.4640000"
+      }
+    ]
+  }
+}

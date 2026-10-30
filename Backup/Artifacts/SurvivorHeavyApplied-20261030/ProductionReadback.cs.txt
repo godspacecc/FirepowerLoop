@@ -1,0 +1,49 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using System.IO;using Game;using System.Linq;using System.Reflection;using System.Collections;using Luban;
+public class Script {public static object Main(){
+var scene=EditorSceneManager.NewPreviewScene();var root=new GameObject("SurvivorEnemyCandidatePreview");SceneManager.MoveGameObjectToScene(root,scene);root.SetActive(false);RenderTexture rt=null;Material mat=null;
+try{
+var roster=SurvivorEnemyRoster.FromTables(new global::Tables(n=>new ByteBuf(File.ReadAllBytes("E:/GitHub/FirepowerLoop/Client/Assets/Game/Config/"+n+".bytes"))));
+var controller=new EnemyCtrl(new global::Game.Game());var port=new ArcadeCombatViewController();var flags=BindingFlags.Instance|BindingFlags.NonPublic;
+typeof(ArcadeCombatViewController).GetField("enemyPresentation",flags).SetValue(port,controller);
+var entryType=typeof(EnemyCtrl).GetNestedType("ArcadeEnemyPresentationEntry",BindingFlags.NonPublic);
+var entries=(IDictionary)typeof(EnemyCtrl).GetField("arcadeEnemies",flags).GetValue(controller);
+float maxSurfaceHeight=0;
+string[] names={"GrayboxPlayer","ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeZombieBloated"};
+var actors=new GameObject[4];var anims=new Animator[4];var bounds=new string[4];var localPositions=new Vector3[4];var localRotations=new Quaternion[4];
+for(int i=0;i<4;i++){
+actors[i]=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/"+names[i]+".prefab"),root.transform);
+if(i>0){var id=i==1?"enemy.arcade.zombie.shambler":i==2?"enemy.arcade.zombie.gaunt":"enemy.arcade.zombie.bloated";
+entries.Add(i,System.Activator.CreateInstance(entryType,i,id,actors[i].GetComponent<EnemyView>(),100,Vector3.zero,0,false));
+port.SetEnemyScale(i,roster.Entries.Single(e=>e.EnemyId==id).VisualScale);}
+actors[i].transform.position=new Vector3((i-1.5f)*2.5f,0,0);actors[i].transform.rotation=Quaternion.Euler(0,155,0);
+foreach(var b in actors[i].GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+foreach(var nav in actors[i].GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>(true))nav.enabled=false;
+foreach(var canvas in actors[i].GetComponentsInChildren<Canvas>(true))canvas.gameObject.SetActive(false);
+anims[i]=actors[i].GetComponentInChildren<Animator>(true);anims[i].enabled=true;anims[i].cullingMode=AnimatorCullingMode.AlwaysAnimate;
+}
+root.SetActive(true);
+for(int i=0;i<4;i++){
+if(i==0){var presenter=actors[i].GetComponent<CharacterWeaponPresenter>();if(!presenter.SetWeaponId("arcade.weapon.basic"))throw new System.Exception(presenter.LastError);anims[i]=presenter.BodyAnimator;anims[i].enabled=true;anims[i].cullingMode=AnimatorCullingMode.AlwaysAnimate;var view=actors[i].GetComponent<PlayerView>();view.SetSharedWeaponAnimationActive(true);view.SetArcadePresentationActive(true);}
+else {var view=actors[i].GetComponent<EnemyView>();view.SetPresentationVariant(1);view.SetWeaponPresentation(1);}
+anims[i].applyRootMotion=false;anims[i].Rebind();anims[i].Update(0);localPositions[i]=anims[i].transform.localPosition;localRotations[i]=anims[i].transform.localRotation;
+var bb=new Bounds(actors[i].transform.position,Vector3.zero);foreach(var renderer in actors[i].GetComponentsInChildren<Renderer>())bb.Encapsulate(renderer.bounds);bounds[i]=names[i]+" bounds="+bb.size;
+}
+var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.SetParent(root.transform);floor.transform.position=new Vector3(0,-.12f,0);floor.transform.localScale=new Vector3(16,.1f,5);mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));mat.color=new Color(.13f,.18f,.21f);floor.GetComponent<Renderer>().sharedMaterial=mat;
+var lo=new GameObject("Light");lo.transform.SetParent(root.transform);lo.transform.rotation=Quaternion.Euler(40,-30,0);lo.AddComponent<Light>().type=LightType.Directional;lo.GetComponent<Light>().intensity=1.8f;
+var co=new GameObject("Camera");co.transform.SetParent(root.transform);var cam=co.AddComponent<Camera>();cam.cameraType=CameraType.Preview;cam.scene=scene;cam.orthographic=true;cam.orthographicSize=3.6f;cam.transform.position=new Vector3(0,5,-11);cam.transform.LookAt(new Vector3(0,1,0));cam.backgroundColor=new Color(.055f,.075f,.1f);cam.clearFlags=CameraClearFlags.SolidColor;rt=new RenderTexture(1200,600,24);cam.targetTexture=rt;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorHeavyApplied-20261030/frames";Directory.CreateDirectory(dir);
+for(int f=0;f<60;f++){
+for(int i=0;i<4;i++){
+if(i==0){var v=actors[i].GetComponent<PlayerView>();v.SetMovementSpeed(f<36?2.2f:0);v.SetMovementDirection(Vector3.forward);if(f>=36&&f%5==0)v.PlayProjectileFireFeedback();}
+else {anims[i].SetFloat("MoveSpeed",f<36?(i==2?3.06f:i==3?1.43f:2.2f):0);anims[i].Play(f<36?"Base Layer.Run":(i==1||i==2||i==3)?"Base Layer.Idle":"Base Layer.Attack",0,(f<36?f*(i==3?.65f:1):f-36)/12f);}
+
+anims[i].Update(i==0?1f/12:0);if(i>0){anims[i].transform.localPosition=localPositions[i];anims[i].transform.localRotation=localRotations[i];}
+if(i>0){var ev=actors[i].GetComponent<EnemyView>();ev.TickCombatFeedback(1f/12);float phase=((f-36)%12)/12f;ev.SetMeleeAttack(.4f,f>=36&&phase<.4f?.4f-phase:0,f>=36&&phase>=.4f?.95f-phase:0,actors[i].transform.forward);ev.LateTickCombatFeedback();}
+actors[i].transform.position=new Vector3((i-1.5f)*2.5f,0,f<36?Mathf.Sin(f/36f*Mathf.PI)*.35f:0);
+}
+if(f==24||f==41){foreach(var renderer in actors[3].GetComponentsInChildren<SkinnedMeshRenderer>()){if(!renderer.enabled)continue;var baked=new Mesh();renderer.BakeMesh(baked);foreach(var v in baked.vertices)maxSurfaceHeight=Mathf.Max(maxSurfaceHeight,renderer.transform.TransformPoint(v).y);Object.DestroyImmediate(baked);}}
+cam.Render();RenderTexture.active=rt;var tex=new Texture2D(1200,600,TextureFormat.RGB24,false);tex.ReadPixels(new Rect(0,0,1200,600),0,0);tex.Apply();File.WriteAllBytes(Path.Combine(dir,f.ToString("D3")+".png"),tex.EncodeToPNG());Object.DestroyImmediate(tex);
+}
+File.WriteAllText("E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorHeavyApplied-20261030/production-readback.txt",string.Join("\n",bounds)+"\nHeavySurfaceMaxY="+maxSurfaceHeight+"\nVisibilityEnvelopeHeight=3");return bounds;
+}finally{RenderTexture.active=null;if(rt!=null)Object.DestroyImmediate(rt);EditorSceneManager.ClosePreviewScene(scene);if(mat!=null)Object.DestroyImmediate(mat);}
+}}

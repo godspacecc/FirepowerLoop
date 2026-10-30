@@ -1,0 +1,63 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 9,
+      "PassedTests": 5,
+      "FailedTests": 4,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.4857279"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.ApprovedProportionsAndHeavyUnlockComeFromModeConfig",
+        "Status": "Failed",
+        "Duration": "00:00:00.0100000",
+        "Message": "  缺少本模式体型配置\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.InvalidTimeAndRandomInputAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.1050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.OnlyApprovedEnemiesAndFastMultipliersRemain",
+        "Status": "Failed",
+        "Duration": "00:00:00.0550000",
+        "Message": "  Expected: equivalent to < \"enemy.arcade.zombie.shambler\", \"enemy.arcade.zombie.gaunt\", \"enemy.arcade.zombie.bloated\" >\r\n  But was:  < \"enemy.arcade.zombie.shambler\", \"enemy.arcade.zombie.gaunt\" >\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.0f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(119.99d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(120.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(240.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0100000",
+        "Message": "  Expected string length 27 but was 25. Strings differ at index 20.\r\n  Expected: \"enemy.arcade.zombie.bloated\"\r\n  But was:  \"enemy.arcade.zombie.gaunt\"\r\n  -------------------------------^\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(360.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0070000",
+        "Message": "  Expected string length 27 but was 25. Strings differ at index 20.\r\n  Expected: \"enemy.arcade.zombie.bloated\"\r\n  But was:  \"enemy.arcade.zombie.gaunt\"\r\n  -------------------------------^\r\n"
+      }
+    ]
+  }
+}
