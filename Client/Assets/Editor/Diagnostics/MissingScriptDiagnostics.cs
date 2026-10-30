@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -67,15 +66,6 @@ namespace Game
 
     public static class MissingScriptDiagnostics
     {
-        private const string MenuPath = "Tools/诊断/执行只读诊断";
-
-        [MenuItem(MenuPath)]
-        public static void RunProjectScanFromMenu()
-        {
-            IReadOnlyList<EditorDiagnosticIssue> issues = ScanProject();
-            LogIssues(issues, "项目");
-        }
-
         public static IReadOnlyList<EditorDiagnosticIssue> ScanProject()
         {
             var issues = new List<EditorDiagnosticIssue>();
@@ -376,24 +366,6 @@ namespace Game
                 .ThenBy(issue => issue.HierarchyPath, StringComparer.OrdinalIgnoreCase)
                 .ThenBy(issue => issue.IssueType)
                 .ToArray();
-        }
-
-        private static void LogIssues(IReadOnlyList<EditorDiagnosticIssue> issues, string scope)
-        {
-            if (issues.Count == 0)
-            {
-                Debug.Log($"[只读诊断] {scope}扫描完成，未发现问题。");
-                return;
-            }
-
-            var builder = new StringBuilder();
-            builder.AppendLine($"[只读诊断] {scope}扫描发现 {issues.Count} 个问题。");
-            foreach (EditorDiagnosticIssue issue in issues)
-            {
-                builder.AppendLine(issue.ToString());
-            }
-
-            Debug.LogWarning(builder.ToString());
         }
 
         private static string GetIssueTypeName(EditorDiagnosticIssueType issueType)

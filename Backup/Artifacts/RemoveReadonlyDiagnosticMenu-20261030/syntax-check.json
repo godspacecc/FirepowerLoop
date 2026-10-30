@@ -1,0 +1,8 @@
+{
+  "UnityTestsRun": false,
+  "CheckedFiles": [
+    "Client/Assets/Editor/Diagnostics/MissingScriptDiagnostics.cs"
+  ],
+  "SyntaxErrors": [],
+  "UnityCompilationRun": false
+}
