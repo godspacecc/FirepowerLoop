@@ -443,7 +443,7 @@ namespace Game.Tests
             Assert.That(GetField<bool>(result, "BundleSyncSucceeded"), Is.False);
             Assert.That(GetField<string>(result, "TargetVersion"), Is.EqualTo("202607230800"));
             Assert.That(GetField<string>(result, "VersionStatus"), Is.EqualTo("当前服务器包"));
-            Assert.That(GetField<string>(result, "Message"), Does.Contain("bundle sync failed"));
+            Assert.That(GetField<string>(result, "Message"), Does.Contain("发布目录同步失败"));
             Assert.That(ResourceUpdateNoticeDocument.TryParse(File.ReadAllText(noticeFile), out _).Success, Is.True);
             Assert.That(Directory.GetFiles(Path.GetDirectoryName(noticeFile), "*.tmp").Length, Is.EqualTo(0));
         }

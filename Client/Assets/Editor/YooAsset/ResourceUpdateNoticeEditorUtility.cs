@@ -35,6 +35,9 @@ namespace Game.Editor
         /// </summary>
         public sealed class VersionBinding
         {
+            // 固定编辑开始时的平台与发布版本，保存前用来识别目标变化。
+            public string Platform;
+            public string BundleVersion;
             public string Version;
             public string Status;
             public bool CanSave;
@@ -111,10 +114,21 @@ namespace Game.Editor
 
         public static VersionBinding ResolveVersionBinding()
         {
-            var packageRoot = Path.Combine(WorkspaceRoot, "Client", "Bundles", "StandaloneWindows64", PackageName);
+            var target = EditorUserBuildSettings.activeBuildTarget;
+            if (target != BuildTarget.Android && target != BuildTarget.StandaloneWindows64)
+            {
+                return new VersionBinding { CanSave = false, Error = "请先将当前打包平台切换为 PC（Windows64）或 Android。" };
+            }
+
+            var platform = target == BuildTarget.Android ? "Android" : "PC";
+            var packageRoot = Path.Combine(WorkspaceRoot, "Client", "Bundles", target.ToString(), PackageName);
             var releaseRoot = Path.Combine(WorkspaceRoot, "Release", "ResourceServer");
+            if (target == BuildTarget.Android)
+                releaseRoot = Path.Combine(releaseRoot, "Android");
             var templateRoot = Path.Combine(WorkspaceRoot, "Server", "ResourceServer");
-            return ResolveVersionBinding(packageRoot, releaseRoot, templateRoot);
+            var result = ResolveVersionBinding(packageRoot, releaseRoot, templateRoot);
+            result.Platform = platform;
+            return result;
         }
 
         internal static VersionBinding ResolveVersionBinding(string packageRoot, string releaseRoot, string templateRoot)
@@ -164,8 +178,19 @@ namespace Game.Editor
                 Version = version,
                 Status = status,
                 CanSave = true,
+                BundleVersion = bundleVersion,
                 LatestBundle = compatibleBundle ? bundle : null
             };
+        }
+
+        // 保存时不把旧草稿重新绑定到其他平台、版本或新生成的发布目录。
+        internal static bool IsSameTarget(VersionBinding edited, VersionBinding current)
+        {
+            return edited != null && current != null && edited.CanSave && current.CanSave &&
+                string.Equals(edited.Platform, current.Platform, StringComparison.Ordinal) &&
+                string.Equals(edited.Version, current.Version, StringComparison.Ordinal) &&
+                string.Equals(edited.BundleVersion, current.BundleVersion, StringComparison.Ordinal) &&
+                string.Equals(edited.LatestBundle, current.LatestBundle, StringComparison.OrdinalIgnoreCase);
         }
 
         public static NoticeEditState LoadEditState(string version, IReadOnlyList<LanguageInfo> languages)
@@ -175,9 +200,11 @@ namespace Game.Editor
 
         internal static NoticeEditState LoadEditState(string version, IReadOnlyList<LanguageInfo> languages, string noticeFilePath)
         {
-            EnsureNoticeFile(noticeFilePath);
-            var json = File.ReadAllText(noticeFilePath, Encoding.UTF8);
-            ResourceUpdateNoticeDocument.TryParse(json, out _);
+            // 打开窗口只读取；没有公告时在内存初始化，首次有效保存才创建文件。
+            var json = File.Exists(noticeFilePath) ? File.ReadAllText(noticeFilePath, Encoding.UTF8) : EmptyJson;
+            var parsed = ResourceUpdateNoticeDocument.TryParse(json, out _);
+            if (!parsed.Success)
+                throw new InvalidOperationException($"公告源文件无效，未重新加载：{parsed.Error}");
             var root = JObject.Parse(json);
             var record = (root["notices"] as JArray)?
                 .OfType<JObject>()
@@ -241,8 +268,11 @@ namespace Game.Editor
             string versionStatus = "")
         {
             noticeFilePath = string.IsNullOrWhiteSpace(noticeFilePath) ? NoticeFilePath : noticeFilePath;
-            EnsureNoticeFile(noticeFilePath);
-            var root = JObject.Parse(File.ReadAllText(noticeFilePath, Encoding.UTF8));
+            var originalJson = File.Exists(noticeFilePath) ? File.ReadAllText(noticeFilePath, Encoding.UTF8) : EmptyJson;
+            var originalParse = ResourceUpdateNoticeDocument.TryParse(originalJson, out _);
+            if (!originalParse.Success)
+                throw new InvalidOperationException($"公告源文件无效，未覆盖：{originalParse.Error}");
+            var root = JObject.Parse(originalJson);
             root["schemaVersion"] = 1;
             root["defaultLanguage"] = defaultLanguage;
             var notices = root["notices"] as JArray ?? new JArray();
@@ -264,7 +294,7 @@ namespace Game.Editor
                     MaintenanceSourceSucceeded = false,
                     TargetVersion = state.Version,
                     VersionStatus = versionStatus ?? string.Empty,
-                    Message = $"Notice save failed: {parse.Error}",
+                    Message = $"公告校验失败，源文件未保存：{parse.Error}",
                     Error = parse.Error
                 };
             }
@@ -281,19 +311,20 @@ namespace Game.Editor
                     MaintenanceSourceSucceeded = false,
                     TargetVersion = state.Version,
                     VersionStatus = versionStatus ?? string.Empty,
-                    Message = exception.Message,
+                    Message = $"公告源文件保存失败：{noticeFilePath}\n{exception.Message}",
                     Error = exception.Message
                 };
             }
 
-            var message = BuildSaveMessage("Maintenance notice source saved", state.Version, versionStatus);
-            if (!string.IsNullOrWhiteSpace(latestBundle) && Directory.Exists(latestBundle))
+            var message = BuildSaveMessage("公告源文件已保存", state.Version, versionStatus) + $"\n源文件：{noticeFilePath}";
+            if (!string.IsNullOrWhiteSpace(latestBundle))
             {
                 try
                 {
+                    if (!Directory.Exists(latestBundle))
+                        throw new DirectoryNotFoundException($"目标发布目录已不存在：{latestBundle}");
                     var target = Path.Combine(latestBundle, "Notices", "resource-update-notices.json");
                     SafeReplace(target, json);
-                    AssetDatabase.Refresh();
                     return new NoticeSaveResult
                     {
                         Success = true,
@@ -302,12 +333,11 @@ namespace Game.Editor
                         BundleSyncSucceeded = true,
                         TargetVersion = state.Version,
                         VersionStatus = versionStatus ?? string.Empty,
-                        Message = message + "; latest ResourceServer bundle synced"
+                        Message = message + $"\n发布目录公告已同步：{target}\n若资源服正在使用该目录，后续公告请求可读到新内容；未上传到其他设备。"
                     };
                 }
                 catch (Exception exception)
                 {
-                    AssetDatabase.Refresh();
                     return new NoticeSaveResult
                     {
                         Success = false,
@@ -316,13 +346,12 @@ namespace Game.Editor
                         BundleSyncSucceeded = false,
                         TargetVersion = state.Version,
                         VersionStatus = versionStatus ?? string.Empty,
-                        Message = message + $"; bundle sync failed: {exception.Message}",
+                        Message = message + $"\n发布目录同步失败，源文件未回退：{latestBundle}\n{exception.Message}\n编辑内容已保留，修复后可重试。",
                         Error = exception.Message
                     };
                 }
             }
 
-            AssetDatabase.Refresh();
             return new NoticeSaveResult
             {
                 Success = true,
@@ -331,7 +360,7 @@ namespace Game.Editor
                 BundleSyncSucceeded = false,
                 TargetVersion = state.Version,
                 VersionStatus = versionStatus ?? string.Empty,
-                Message = message
+                Message = message + "\n没有兼容的发布目录，本次仅保存源文件；后续生成或更新资源服时带入。"
             };
         }
 
@@ -339,10 +368,10 @@ namespace Game.Editor
         {
             if (string.IsNullOrWhiteSpace(status))
             {
-                return $"{prefix}; target version {version}";
+                return $"{prefix}；目标版本：{version}";
             }
 
-            return $"{prefix}; target version {version}; status {status}";
+            return $"{prefix}；目标版本：{version}；状态：{status}";
         }
         private static JObject ToJsonRecord(NoticeEditState state)
         {
@@ -364,20 +393,6 @@ namespace Game.Editor
                 ["enabled"] = state.Enabled,
                 ["texts"] = texts
             };
-        }
-
-        private static void EnsureNoticeFile()
-        {
-            EnsureNoticeFile(NoticeFilePath);
-        }
-
-        private static void EnsureNoticeFile(string noticeFilePath)
-        {
-            Directory.CreateDirectory(Path.GetDirectoryName(noticeFilePath));
-            if (!File.Exists(noticeFilePath))
-            {
-                File.WriteAllText(noticeFilePath, EmptyJson, new UTF8Encoding(false));
-            }
         }
 
         private static void SafeReplace(string path, string json)

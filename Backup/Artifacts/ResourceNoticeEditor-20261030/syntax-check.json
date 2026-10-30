@@ -1,0 +1,10 @@
+{
+  "UnityCompilationRun": false,
+  "SyntaxErrors": [],
+  "CheckedFiles": [
+    "Client/Assets/Editor/YooAsset/ResourceUpdateNoticeEditorUtility.cs",
+    "Client/Assets/Editor/YooAsset/ResourceUpdateNoticeEditorWindow.cs",
+    "Client/Assets/Tests/EditMode/Flow/ResourceServerPublishTests.cs"
+  ],
+  "UnityTestsRun": false
+}
