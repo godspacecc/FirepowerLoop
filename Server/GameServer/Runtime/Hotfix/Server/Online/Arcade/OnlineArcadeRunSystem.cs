@@ -1495,7 +1495,8 @@ namespace ET.Server
             changed |= self.TickSlayerMartSupports(battle,deltaSeconds);
             if (battle.AwaitingExit)
             {
-                changed |= TickPurpleRayArcs(battle,deltaSeconds);
+                // 清场等门仍可射击；只推进弹丸及其短暂效果，不恢复敌人或机关。
+                changed |= self.TickProjectiles(battle, deltaSeconds);
                 // 等待出口仍按服务器权威规则拾取，并将奖励纳入本帧快照及随后离场结算。
                 changed |= self.TickDrops(battle);
                 changed |= TickExit(battle);
@@ -2136,7 +2137,8 @@ namespace ET.Server
         {
             if(player.HerdImpact.Active)return false;
             float aimLengthSquared = player.AimX * player.AimX + player.AimZ * player.AimZ;
-            if (battle.AwaitingExit || aimLengthSquared < AimDeadZoneSquared) return false;
+            // 等待出口不禁枪；死亡、房间和真实传送由上层权威 Tick 门禁拦截。
+            if (aimLengthSquared < AimDeadZoneSquared) return false;
             string weaponId = player.TemporaryWeaponSeconds > 0f ? player.TemporaryWeaponId : record.WeaponId;
             ArcadeWeaponConfig weapon = ServerConfig.Instance.Tables.TbArcadeWeapon.GetOrDefault(weaponId) ??
                                         ServerConfig.Instance.ArcadeRule.BaseWeaponId_Ref;

@@ -33,6 +33,15 @@ namespace Game.Tests
             var ring=go.transform.Find("Portal/PortalOuter").GetComponent<LineRenderer>();Assert.That(ring.GetPosition(0).x,Is.EqualTo(1.3f).Within(.001f));
             var c=go.GetComponent("ArcadeStagePortalVisual");Assert.That(c,Is.Not.Null);var method=c.GetType().GetMethod("Apply");method.Invoke(c,new object[]{0f,.75f});Assert.That(go.transform.Find("Portal").gameObject.activeSelf,Is.False);
             method.Invoke(c,new object[]{.75f,.75f});Assert.That(go.transform.Find("Portal").localScale,Is.EqualTo(Vector3.one));
+            var door = go.transform.Find("Portal");
+            Assert.That(door.localPosition.y, Is.EqualTo(.09f).Within(.001f));
+            for (int sample = 1; sample <= 8; sample++)
+            {
+                method.Invoke(c, new object[] { sample * .5f, .75f });
+                Assert.That(Mathf.Abs(Vector3.Dot(door.forward, Vector3.up)), Is.GreaterThan(.999f), "动画过程中门面须始终水平");
+                var flow = door.Find("Flow0");
+                Assert.That(Mathf.Abs(Vector3.Dot(flow.forward, Vector3.up)), Is.GreaterThan(.999f));
+            }
         }
         [Test]public void DelayedChestUsesLatestCollectedState()
         {

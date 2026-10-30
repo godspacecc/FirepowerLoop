@@ -1,0 +1,170 @@
+{
+  "red": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.3381362\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeOpeningFlowTests.PortalWaiting_AllowsFireAndAdvancesProjectiles\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.3250000\",\"Message\":\"  \\u7B49\\u5F85\\u4F20\\u9001\\u4E0D\\u5E94\\u7981\\u67AA\\r\\n  Expected: greater than 0\\r\\n  But was:  0\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.3381362"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PortalWaiting_AllowsFireAndAdvancesProjectiles",
+            "Status": "Failed",
+            "Duration": "00:00:01.3250000",
+            "Message": "  等待传送不应禁枪\r\n  Expected: greater than 0\r\n  But was:  0\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "transition": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":4,\"PassedTests\":4,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:05.5844654\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\\u0022IslandTransitionPending\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3940000\"},{\"Name\":\"Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\\u0022IslandRoomTransitionPending\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9860000\"},{\"Name\":\"Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\\u0022CompletionAwaitingRetry\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0480000\"},{\"Name\":\"Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\\u0022CompletionSubmitted\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9240000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 4,
+          "PassedTests": 4,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:05.5844654"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\"IslandTransitionPending\")",
+            "Status": "Passed",
+            "Duration": "00:00:01.3940000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\"IslandRoomTransitionPending\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.9860000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\"CompletionAwaitingRetry\")",
+            "Status": "Passed",
+            "Duration": "00:00:01.0480000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeOpeningFlowTests.PortalTransition_StillBlocksFire(\"CompletionSubmitted\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.9240000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "contact": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:05.8353074\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeStagePortalTests.FourthRoundCreatesCentralPortalOnlyAfterClear\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.4960000\"},{\"Name\":\"Game.Tests.ArcadeStagePortalTests.OrdinaryRoundHasPassagesAndNoStagePortal\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.4160000\"},{\"Name\":\"Game.Tests.ArcadeStagePortalTests.PlayerAlreadyAtPortalMustLeaveThenEnter\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.4890000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3,
+          "PassedTests": 3,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:05.8353074"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeStagePortalTests.FourthRoundCreatesCentralPortalOnlyAfterClear",
+            "Status": "Passed",
+            "Duration": "00:00:01.4960000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeStagePortalTests.OrdinaryRoundHasPassagesAndNoStagePortal",
+            "Status": "Passed",
+            "Duration": "00:00:01.4160000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeStagePortalTests.PlayerAlreadyAtPortalMustLeaveThenEnter",
+            "Status": "Passed",
+            "Duration": "00:00:01.4890000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "visual": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":5,\"PassedTests\":5,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.6167614\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeRewardPortalPresentationTests.ChestFallsBurstsAndKeepsGroundRewardsAfterWholeEffect\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0220000\"},{\"Name\":\"Game.Tests.ArcadeRewardPortalPresentationTests.DelayedChestUsesLatestCollectedState\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0650000\"},{\"Name\":\"Game.Tests.ArcadeRewardPortalPresentationTests.EndedMapRejectsLateRewardAndPortalResources\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.ArcadeRewardPortalPresentationTests.PortalUsesApprovedRingAndAppearingAnimation\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.ArcadeRewardPortalPresentationTests.RewardVisualHasBothSizesWithoutGroundHudOrColliders\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 5,
+          "PassedTests": 5,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.6167614"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeRewardPortalPresentationTests.ChestFallsBurstsAndKeepsGroundRewardsAfterWholeEffect",
+            "Status": "Passed",
+            "Duration": "00:00:00.0220000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRewardPortalPresentationTests.DelayedChestUsesLatestCollectedState",
+            "Status": "Passed",
+            "Duration": "00:00:00.0650000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRewardPortalPresentationTests.EndedMapRejectsLateRewardAndPortalResources",
+            "Status": "Passed",
+            "Duration": "00:00:00.0060000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRewardPortalPresentationTests.PortalUsesApprovedRingAndAppearingAnimation",
+            "Status": "Passed",
+            "Duration": "00:00:00.0100000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeRewardPortalPresentationTests.RewardVisualHasBothSizesWithoutGroundHudOrColliders",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "singlePlayerGreen": {
+    "method": "Game.Tests.ArcadeOpeningFlowTests.PortalWaiting_AllowsFireAndAdvancesProjectiles",
+    "testMode": "EditMode",
+    "includePassingTests": true,
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "duration": "00:00:02.8463166",
+    "source": "Observed Unity tests_run result after fix"
+  }
+}

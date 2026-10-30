@@ -1,0 +1,9 @@
+PASS BothPlayersCanFireWhileAwaitingPortal
+PASS PortalWaitingProjectilesMoveAndExpire
+PASS TransitionCompletionLoadingAndDisconnectBlockFire
+PASS DeadPlayerCannotFireWhilePartnerCan
+PASS TreasureRoomPlayerCannotFireWhilePartnerCan
+PASS ShopRegionCannotFire
+PASS ExpiredInputAndCooldownStillBlockFire
+PASS WaitingDoesNotResumeSpawnsOrHazardClock
+PortalExitServerChecks: 8/8 passed

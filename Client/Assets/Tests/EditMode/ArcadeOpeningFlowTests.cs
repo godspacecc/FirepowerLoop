@@ -289,6 +289,39 @@ namespace Game.Tests
             Call("TickWaveTransition",runtime,600f);Assert.That(runtime.WaveIndex,Is.Zero);
             Assert.That(runtime.IslandRoundAwaitingExit,Is.True);
         }
+        /// <summary>整关清场等待传送仍可开枪，弹丸按正常生命周期推进，不重启敌群。</summary>
+        [Test] public void PortalWaiting_AllowsFireAndAdvancesProjectiles()
+        {
+            Call("BeginWave", runtime, 3);
+            runtime.SpawnQueue.Clear(); runtime.Enemies.Clear();
+            runtime.AwaitingExit = true; runtime.WaveClearAwarded = true;
+            runtime.PlayerPosition = new Vector2(-5, -5); runtime.AimDirection = Vector2.right;
+            runtime.FireCooldown = 0;
+            Call("TryFire", runtime);
+            Assert.That(runtime.Projectiles.Count, Is.GreaterThan(0), "等待传送不应禁枪");
+            var projectile = runtime.Projectiles.Values.First();
+            var before = projectile.Position;
+            Call("Tick", runtime, .05f);
+            Assert.That(projectile.Position, Is.Not.EqualTo(before), "等待出口仍需推进弹丸");
+            Assert.That(runtime.SpawnQueue, Is.Empty);
+            Assert.That(runtime.Enemies, Is.Empty);
+            Assert.That(runtime.WaveIndex, Is.EqualTo(3));
+        }
+
+        /// <summary>允许清场射击不能穿透真正传送、离场提交或复活保护。</summary>
+        [TestCase("IslandTransitionPending")]
+        [TestCase("IslandRoomTransitionPending")]
+        [TestCase("CompletionAwaitingRetry")]
+        [TestCase("CompletionSubmitted")]
+        public void PortalTransition_StillBlocksFire(string field)
+        {
+            Call("BeginWave", runtime, 3); runtime.AwaitingExit = true;
+            runtime.AimDirection = Vector2.right; runtime.FireCooldown = 0;
+            typeof(ArcadeCombatRuntime).GetField(field).SetValue(runtime, true);
+            Call("TryFire", runtime);
+            Assert.That(runtime.Projectiles, Is.Empty);
+        }
+
         [Test] public void FinalClear_OpensExitsWithoutStartingAnotherWave()
         {
             Call("BeginWave",runtime,3);runtime.SpawnQueue.Clear();Call("TickWaveTransition",runtime,0f);

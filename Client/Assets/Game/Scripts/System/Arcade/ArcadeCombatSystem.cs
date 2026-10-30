@@ -633,7 +633,8 @@ namespace Game
             if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
             if (runtime.AwaitingExit)
             {
-                TickPurpleRayArcs(runtime,deltaTime);
+                // 清场不再生成敌群，但已发射弹丸仍须飞行、命中与到期回收。
+                TickProjectiles(runtime, deltaTime);
                 // 清场后仍可领取地面物资；先结算拾取，再处理出口或超时离场，避免漏存同帧奖励。
                 TickDrops(runtime);
                 if (!UsesRoundLayouts(runtime) && UsesEarlyRest(runtime) && !runtime.CompletionAwaitingRetry)
@@ -1612,7 +1613,8 @@ namespace Game
             if(runtime.HerdImpact.Active)return;
             if(runtime.SlayerMartReturnWave>0)return;
             if (runtime.IslandTransitionPending || runtime.IslandRoomTransitionPending || runtime.CompletionAwaitingRetry || runtime.CompletionSubmitted) return;
-            if (runtime.AwaitingExit || runtime.RespawnRemaining > 0f || runtime.FireCooldown > 0f || runtime.AimDirection.sqrMagnitude < 0.001f) return;
+            // 清场等待传送仍可射击；真正离场和切图由上方事务门禁阻止。
+            if (runtime.RespawnRemaining > 0f || runtime.FireCooldown > 0f || runtime.AimDirection.sqrMagnitude < 0.001f) return;
             if (!TryGetWeapon(runtime, out var weapon)) return;
             var run = this.GetModel<ArcadeRunModel>().Current;
             var damageBonus = UpgradeTotal(run, global::ArcadeUpgradeKind.DamagePercent);

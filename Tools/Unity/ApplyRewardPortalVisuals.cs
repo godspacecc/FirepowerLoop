@@ -35,7 +35,8 @@ public static class ApplyRewardPortalVisuals
             }
             for(int i=0;i<8;i++){var part=Primitive(PrimitiveType.Cube,brown,new Vector3(.23f,.09f,.2f));part.name="Debris"+i;part.transform.SetParent(root.transform,false);part.SetActive(false);}
             Strip(root);PrefabUtility.SaveAsPrefabAsset(root,"Assets/Game/Prefabs/SceneObjects/ArcadeRoundRewardVisual.prefab");Object.DestroyImmediate(root);
-            root=new GameObject("ArcadeStagePortalVisual",typeof(ArcadeStagePortalVisual));var door=new GameObject("Portal");door.transform.SetParent(root.transform,false);door.transform.localPosition=new Vector3(0,1.45f,0);
+            root=new GameObject("ArcadeStagePortalVisual",typeof(ArcadeStagePortalVisual));var door=new GameObject("Portal");door.transform.SetParent(root.transform,false);// 2026-10-30采用平铺预览：门面朝上，略高于地面避免闪烁。
+            door.transform.localPosition=new Vector3(0,.09f,0);door.transform.localRotation=Quaternion.Euler(90,0,0);
             Circle("PortalOuter",1.3f,.12f,bright,door.transform);Circle("PortalInner",1.14f,.055f,bright,door.transform);
             var disc=Primitive(PrimitiveType.Cylinder,dark,new Vector3(2.26f,.012f,2.26f));disc.transform.SetParent(door.transform,false);disc.transform.localRotation=Quaternion.Euler(90,0,0);
             for(int j=0;j<5;j++){var swirl=new GameObject("Flow"+j,typeof(LineRenderer));swirl.transform.SetParent(door.transform,false);var line=swirl.GetComponent<LineRenderer>();line.useWorldSpace=false;line.sharedMaterial=bright;line.widthMultiplier=.04f;line.positionCount=45;

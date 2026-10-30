@@ -1,0 +1,138 @@
+[
+  {
+    "path": "Client/Assets/Game/Art/Arcade/Island/LowPolyV2/IslandLowPolyV2.asset",
+    "sha256": "cbb672bb762ea4e497d12f9f703c6a2326b8aa0b7c466cea899318442efc8c57"
+  },
+  {
+    "path": "Client/Assets/Game/Config/Localization/en-US.json",
+    "sha256": "f47d6f9038b0a27f0b5bea8547577d568920a00b54f40f1cc427415e6df0c8be"
+  },
+  {
+    "path": "Client/Assets/Game/Config/Localization/zh-CN.json",
+    "sha256": "39ad781cfe9b23ea748dacd3a46279e260f2cb5693e8cd46ae120106428c0188"
+  },
+  {
+    "path": "Client/Assets/Game/Config/tbsurvivorrule.bytes",
+    "sha256": "0ba3f13d976ba9faba6ed383e90a2aaedc77ded1f9379d39cfbe53c4b44b51b4"
+  },
+  {
+    "path": "Client/Assets/Game/Config/tbsurvivorupgrade.bytes",
+    "sha256": "9ed7d59bc6838a7e6054e51bffd3301becb54cc2101e2296260c02151d8cc78c"
+  },
+  {
+    "path": "Client/Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal SDF.asset",
+    "sha256": "8eddad0d50929b76e24d00f88b50dcafea542a6227e096beb47676f33bf6befc"
+  },
+  {
+    "path": "Client/Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab",
+    "sha256": "6486cecaafc3f2147f13c468b8e55e470569640d41fbfb49ff84dac5f30e3ea1"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UI/Survivor/SurvivorHudUI.cs",
+    "sha256": "7c51bceadb7db98deedf14d632734db018daec6a669fc51a3ad9dd45bfef854c"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Survivor/SurvivorHudUICtrl.cs",
+    "sha256": "79ae835d7eb09947ab01b349d7473071838cf49ce74775762f4fcdaffa973a31"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/UICtrl/Survivor/SurvivorUpgradeBoxCtrl.cs",
+    "sha256": "4c7a1089fb61b1239e20cfb8c234526625a1d64d0ff35333c6c68e5a7b16856d"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Arcade/SurvivorModel.cs",
+    "sha256": "5e920be8b880a48a62d19d06f4a11281d8896e44bbe093b1d96646660a172a27"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/SurvivorRuleConfig.cs",
+    "sha256": "0d99fa8b2fea1ca1c89c353378aece309459637aabaac95892eb111d9d84db0b"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/SurvivorUpgradeConfig.cs",
+    "sha256": "e6e078006adc67720a4f90220b795d45db811d249d3a19ac4a7f957f8ae953c5"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/Tables.cs",
+    "sha256": "1a8ae6f3d5ccaab562fc877d2bf071737197c0c490118482f9fcb1a10853ee79"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/TbSurvivorRule.cs",
+    "sha256": "89139ede8458c771a850c0d2da21fde7ba40c5c939e3232386ec03c875c2aa68"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/TbSurvivorUpgrade.cs",
+    "sha256": "c5b147edad331ee5b193e08163a60f9c6b0fe7801451769fa174be9dacfc8549"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Arcade/SurvivorSystem.cs",
+    "sha256": "eddd5ac9c2a30325f106f4896b3f9145cc1553600b335793b7a182bc3e7cb5f3"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/Arcade/SurvivorConfiguration.cs",
+    "sha256": "e831d2bcf03984bbd46f33e3fa9068437f6ea87c1e68601792253a1ad5761fa3"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/Arcade/SurvivorRules.cs",
+    "sha256": "1773be3bcd1605f2208cc505e825a857ec1827320cc7bb11fc561feb3a61db7e"
+  },
+  {
+    "path": "Client/Assets/Tests/EditMode/SurvivorConfigTests.cs",
+    "sha256": "351019047bd05bea675cfc1df14a79414215f7553c83eda26afd7efbc2a716d8"
+  },
+  {
+    "path": "Client/Assets/Tests/EditMode/SurvivorRuntimeTests.cs",
+    "sha256": "e8255758b681b0c7fc47eb70e1b1c0b4e259c18a6ec6d6f530d426f025fa1dd2"
+  },
+  {
+    "path": "Client/Assets/Tests/EditMode/SurvivorUiTests.cs",
+    "sha256": "756ffe444357eba50a57326ed544615a176ee6c3da397dc7cba03695587ecaa0"
+  },
+  {
+    "path": "Config/DataCsv/survivor_rule.csv",
+    "sha256": "11150296381a9eaa1194e0578d3aabf7ca0144ec12d309e28d9f9fcfeca520e0"
+  },
+  {
+    "path": "Config/DataCsv/survivor_upgrade.csv",
+    "sha256": "6b2a6605f17314ee83718c5bea54358036e6c91674160fe29d5585bae91fc492"
+  },
+  {
+    "path": "Config/Defines/beans.xml",
+    "sha256": "4de8aba1a212044df668394abc3512c56170b8ee1a5e26bd6cbfdc31ded8d58c"
+  },
+  {
+    "path": "Config/Defines/tables.xml",
+    "sha256": "344811cefbf4ca4d3362ab68fd7328283fddf47b567775510346d4991649dd80"
+  },
+  {
+    "path": "Config/Localization/survivor.json",
+    "sha256": "c53f34c2f8742e66c7ece1906a016fa46bef155b83f8c9278902cfab47ae09ce"
+  },
+  {
+    "path": "Config/gen.bat",
+    "sha256": "1ff923fbe130c1c7a7423d372e79809ce42642e6272ddb11dbab5eb472f5b140"
+  },
+  {
+    "path": "Docs/Plans/执行总清单.md",
+    "sha256": "3d412ef637055c71aede241f092285ca9b3d399593365df72c30f8693695197c"
+  },
+  {
+    "path": "Server/GameServer/Config/Luban/tbsurvivorrule.bytes",
+    "sha256": "0ba3f13d976ba9faba6ed383e90a2aaedc77ded1f9379d39cfbe53c4b44b51b4"
+  },
+  {
+    "path": "Server/GameServer/Config/Luban/tbsurvivorupgrade.bytes",
+    "sha256": "9ed7d59bc6838a7e6054e51bffd3301becb54cc2101e2296260c02151d8cc78c"
+  },
+  {
+    "path": "Server/GameServer/Runtime/Model/Generated/Config/SurvivorRuleConfig.cs",
+    "sha256": "b7f2fcd2c6ff9985e04259c5bf78b3b88bd75dfa9fabe8627b23bed48f0aad28"
+  },
+  {
+    "path": "Server/GameServer/Runtime/Model/Generated/Config/SurvivorUpgradeConfig.cs",
+    "sha256": "d1434c3c6a0d76b3f67660ad00dc07fa04c600fd41dd70337a7e0e3b241248ee"
+  },
+  {
+    "path": "Server/GameServer/Runtime/Model/Generated/Config/Tables.cs",
+    "sha256": "d9088a0fc331753a529702b651609e74cbd07bc8d4ca1694ab3eacc47ef81d54"
+  }
+]

@@ -1,0 +1,21 @@
+FAIL BothPlayersCanFireWhileAwaitingPortal: System.Exception: 清场等门时两名玩家都应成功射击
+   at Program.<<Main>$>g__Require|0_2(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 29
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__4() in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 38
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Check|3(String name, Action test) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 33
+FAIL PortalWaitingProjectilesMoveAndExpire: System.Exception: 等待出口时弹丸应移动并消耗寿命
+   at Program.<<Main>$>g__Require|0_2(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 29
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__5() in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 46
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Check|3(String name, Action test) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 33
+PASS TransitionCompletionLoadingAndDisconnectBlockFire
+FAIL DeadPlayerCannotFireWhilePartnerCan: System.Exception: 死亡玩家不能射击，存活队友不受影响
+   at Program.<<Main>$>g__Require|0_2(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 29
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__7() in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 61
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Check|3(String name, Action test) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 33
+FAIL TreasureRoomPlayerCannotFireWhilePartnerCan: System.Exception: 房间玩家不能射击，场内队友可以
+   at Program.<<Main>$>g__Require|0_2(Boolean condition, String message) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 29
+   at Program.<>c__DisplayClass0_0.<<Main>$>b__8() in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 65
+   at Program.<>c__DisplayClass0_0.<<Main>$>g__Check|3(String name, Action test) in E:\GitHub\FirepowerLoop\Tools\PortalExitChecks\Server\ServerChecks.cs:line 33
+PASS ShopRegionCannotFire
+PASS ExpiredInputAndCooldownStillBlockFire
+PASS WaitingDoesNotResumeSpawnsOrHazardClock
+PortalExitServerChecks: 4/8 passed
