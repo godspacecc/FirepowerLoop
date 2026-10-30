@@ -46,6 +46,9 @@ namespace Game.Editor
                 CopyTree(aot.GameDllDirectory, Path.Combine(staging, "Dlls"));
                 CopyTree(package.OutputPackageDirectory, Path.Combine(staging, "Package"));
                 CopyTree(generatedDirectory, Path.Combine(staging, "Generated"));
+                // 新PC宿主携带独立热更基线；旧归档仍能读取，但热更门禁会要求重新出包。
+                if (platform == "PC" && !string.IsNullOrEmpty(state.PcHotUpdateBaselineDirectory))
+                    CopyTree(state.PcHotUpdateBaselineDirectory, Path.Combine(staging, "PcHostBaseline"));
                 string playerName = Path.GetFileName(player.PlayerPath);
                 if (platform == "PC") CopyTree(Path.GetDirectoryName(player.PlayerPath), Path.Combine(staging, "Player"));
                 else { Directory.CreateDirectory(Path.Combine(staging, "Player")); WorkspaceBuildLock.EnsureNoLinks(player.PlayerPath); File.Copy(player.PlayerPath, Path.Combine(staging, "Player", playerName)); }
@@ -54,7 +57,11 @@ namespace Game.Editor
                 player.PlayerPath = "Player/" + playerName;
                 var selected = new BuildState();
                 if (platform == "Android") { selected.LastAndroidHost = host; selected.LastAndroidAotBaseline = aot; selected.LastAndroidPackage = package; selected.LastAndroidPlayer = player; }
-                else { selected.LastHost = host; selected.LastAotBaseline = aot; selected.LastPackage = package; selected.LastPlayer = player; }
+                else
+                {
+                    selected.LastHost = host; selected.LastAotBaseline = aot; selected.LastPackage = package; selected.LastPlayer = player;
+                    if (!string.IsNullOrEmpty(state.PcHotUpdateBaselineDirectory)) selected.PcHotUpdateBaselineDirectory = "PcHostBaseline";
+                }
                 File.WriteAllText(Path.Combine(staging, "state.json"), JsonConvert.SerializeObject(selected, Formatting.Indented));
                 var manifest = new Manifest { Platform = platform, Commit = commit, UnityVersion = unityVersion, BootFingerprint = bootFingerprint };
                 manifest.Files = TreeFiles(staging).Select(file => new Entry { Path = Relative(staging, file), Size = new FileInfo(file).Length, Sha256 = Hash(file) }).ToList();
@@ -116,6 +123,11 @@ namespace Game.Editor
             aot.AotDirectory = Resolve(directory, aot.AotDirectory); aot.RuntimeListPath = Resolve(directory, aot.RuntimeListPath); aot.GameDllDirectory = Resolve(directory, aot.GameDllDirectory);
             host.OutputPackageDirectory = Resolve(directory, host.OutputPackageDirectory); host.GameDllDirectory = Resolve(directory, host.GameDllDirectory);
             package.OutputPackageDirectory = Resolve(directory, package.OutputPackageDirectory); player.PlayerPath = Resolve(directory, player.PlayerPath);
+            if (platform == "PC" && !string.IsNullOrEmpty(state.PcHotUpdateBaselineDirectory))
+            {
+                if (state.PcHotUpdateBaselineDirectory != "PcHostBaseline") throw new InvalidOperationException("PC热更基线归档路径不符合固定布局");
+                state.PcHotUpdateBaselineDirectory = Resolve(directory, "PcHostBaseline");
+            }
             bool valid = platform == "Android" ? BuildStateStore.TryValidateAndroidAotBaseline(state, UnityEditor.BuildTarget.Android, out _) : BuildStateStore.TryValidateAotBaseline(state, UnityEditor.BuildTarget.StandaloneWindows64, out _);
             if (!valid || !File.Exists(player.PlayerPath) || File.ReadAllText(Path.Combine(package.OutputPackageDirectory, "DefaultPackage.version")).Trim() != package.Version)
                 throw new InvalidOperationException("基线AOT、Player或资源版本缺失");

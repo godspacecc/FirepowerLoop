@@ -19,6 +19,8 @@ namespace Game.Editor
         public AotBaselineRecord LastAotBaseline;
         public PackageBuildRecord LastPackage;
         public PlayerBuildRecord LastPlayer;
+        /// <summary>与实际PC宿主绑定的独立AOT/输入基线目录，热更新不覆盖。</summary>
+        public string PcHotUpdateBaselineDirectory;
 
         /// <summary>Android Host 最近一次成功资源版本；与 Windows 记录隔离，避免跨平台误复用。</summary>
         public HostBuildRecord LastAndroidHost;
@@ -144,7 +146,7 @@ namespace Game.Editor
             error = null;
             var host = state?.LastHost;
             if (host == null)
-                return Fail("缺少最近 Host 成功记录，请先执行 Tools/打包/PC/Host代码+资源更新。", out error);
+                return Fail("缺少最近 Host 成功记录，请先执行 Tools/打包/PC/构建热更新（代码+资源）。", out error);
 
             if (!TargetMatches(host.BuildTarget, target))
                 return Fail($"最近 Host 平台不匹配: {host.BuildTarget}，请改用完整打包。", out error);

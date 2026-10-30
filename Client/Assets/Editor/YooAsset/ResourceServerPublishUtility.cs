@@ -145,6 +145,27 @@ namespace Game.Editor
                 : PublishPackage(root, Path.Combine(workspace, "Server", "ResourceServer"), release, DateTime.Now, version);
         }
 
+        /// <summary>PC补做绑定准备批次，禁止选中后来生成的其他资源版本。</summary>
+        public static ResourceServerPublishResult PublishOrUpdateWindowsPackage(string packageDirectory, string version)
+        {
+            string workspace = GetWorkspaceRoot();
+            string root = Path.Combine(workspace, "Client", "Bundles", "StandaloneWindows64", PackageName);
+            ValidateWindowsPackageIdentity(packageDirectory, version, root);
+            string release = Path.Combine(workspace, "Release", "ResourceServer");
+            return TryFindLatestBundle(release, out _, out _)
+                ? UpdatePackage(root, release, version)
+                : PublishPackage(root, Path.Combine(workspace, "Server", "ResourceServer"), release, DateTime.Now, version);
+        }
+
+        /// <summary>在任何发布写入前确认Windows资源属于指定版本及平台目录。</summary>
+        internal static void ValidateWindowsPackageIdentity(string packageDirectory, string version, string root)
+        {
+            if (string.IsNullOrWhiteSpace(packageDirectory) || string.IsNullOrWhiteSpace(version) ||
+                version.IndexOfAny(new[] { '/', '\\', '.', ':' }) >= 0 ||
+                !string.Equals(FullPath(packageDirectory), FullPath(Path.Combine(root, version)), StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("只能发布本项目 Windows 的指定资源版本。");
+        }
+
         /// <summary>CI只复制明确版本到独立新发布根，不选择最新来源，不启动服务。</summary>
         public static ResourceServerPublishResult PublishExactPackage(string packageDirectory, string version, string templateRoot, string releaseRoot)
         {

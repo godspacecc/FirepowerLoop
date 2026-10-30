@@ -8,7 +8,7 @@
 
 ## 新入口
 
-`Tools/打包/Android/复用本次AOT和资源快速打包`
+`Tools/打包/Android/快速打包/复用全部打包`
 
 复用已准备好的同轮 Game DLL、AOT 补充元数据、桥接生成物、完整远端资源以及首包内置清单。跳过预备 Player、HybridCLR 生成和 YooAsset 资源重建，只执行一次最终 APK 构建；Unity 本身仍可能编译、裁剪或运行 IL2CPP，不能承诺固定耗时。
 

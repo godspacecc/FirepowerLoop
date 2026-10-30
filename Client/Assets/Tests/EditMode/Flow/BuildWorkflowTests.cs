@@ -54,7 +54,7 @@ namespace Game.Tests
         public void PlayerWorkflowsPublishInstallerAfterPlayerValidation()
         {
             string source = File.ReadAllText(Path.Combine(Application.dataPath, "Editor/Build/BuildUtility.cs"));
-            foreach (string name in new[] { "BuildLatestCodeAndResourcesBatch", "BuildSmallHostBaseCodeAndResourcesBatch", "BuildRecentHostPlayerBatch", "BuildQuickAotPlayerBatch" })
+            foreach (string name in new[] { "BuildLatestCodeAndResourcesBatch", "BuildSmallHostBaseCodeAndResourcesBatch" })
             {
                 int start = source.IndexOf("public static void " + name + "()", StringComparison.Ordinal);
                 int end = source.IndexOf("public static void ", start + 1, StringComparison.Ordinal);
@@ -64,6 +64,25 @@ namespace Game.Tests
                 Assert.That(body.IndexOf("WindowsInstallerPublishUtility.GenerateAndPublish", StringComparison.Ordinal),
                     Is.GreaterThan(body.IndexOf("BuildWindowsPlayer", StringComparison.Ordinal)), name);
             }
+            string prepared = ExtractSourceRange(source, "private static void BuildPreparedPlayer(", "public static void BuildBuiltinResourcesOnlyBatch()");
+            Assert.That(prepared, Does.Contain("WindowsInstallerPublishUtility.EnsureCompiler"));
+            Assert.That(prepared.IndexOf("WindowsInstallerPublishUtility.GenerateAndPublish", StringComparison.Ordinal),
+                Is.GreaterThan(prepared.IndexOf("builtin.ValidatePlayer(player)", StringComparison.Ordinal)));
+            Assert.That(prepared, Does.Contain("compiler, prepared.Package"), "补做必须发布准备批次，不能自动选最新资源。");
+        }
+
+        [TestCase("StandaloneWindows64", "v1", "v1", true)]
+        [TestCase("Android", "v1", "v1", false)]
+        [TestCase("StandaloneWindows64", "v2", "v1", false)]
+        [TestCase("StandaloneWindows64", "v1", "../v1", false)]
+        public void WindowsPublicationRejectsWrongPlatformAndVersion(string platform, string directoryVersion, string version, bool valid)
+        {
+            string root = Path.Combine(Path.GetTempPath(), "WindowsPublication", "StandaloneWindows64", "DefaultPackage");
+            string directory = Path.Combine(Path.GetTempPath(), "WindowsPublication", platform, "DefaultPackage", directoryVersion);
+            var type = Type.GetType("Game.Editor.ResourceServerPublishUtility, Assembly-CSharp-Editor", true);
+            var method = type.GetMethod("ValidateWindowsPackageIdentity", BindingFlags.Static | BindingFlags.NonPublic);
+            if (valid) Assert.DoesNotThrow(() => method.Invoke(null, new object[] { directory, version, root }));
+            else Assert.Throws<TargetInvocationException>(() => method.Invoke(null, new object[] { directory, version, root }));
         }
 
         [Test]
@@ -125,13 +144,16 @@ namespace Game.Tests
                 "public static void BuildSmallHostBaseCodeAndResourcesBatch()",
                 "public static void BuildHostCodeAndResourcesBatch()");
 
-            Assert.That(buildSource, Does.Contain("Tools/打包/PC/首包完整打包"));
+            Assert.That(buildSource, Does.Contain("Tools/打包/PC/启动包（首次下载资源）"));
             Assert.That(body, Does.Contain("HybridCLRBuildUtility.GeneratePrePlayer(target)"));
-            Assert.That(body, Does.Contain("BuildPreparatoryPlayer"));
+            Assert.That(body, Does.Not.Contain("BuildPreparatoryPlayer"));
             Assert.That(body, Does.Contain("HybridCLRBuildUtility.GeneratePostPlayer(target)"));
             Assert.That(body, Does.Contain("BuildManifestOnlyPackageOrThrow(version)"));
-            Assert.That(body, Does.Contain("ValidateManifestOnlyBuiltinOrThrow(version)"));
-            Assert.That(body, Does.Contain("BuildWindowsPlayer"));
+            Assert.That(body, Does.Contain("CaptureStartup"));
+            Assert.That(body, Does.Contain("startupSnapshot.ValidatePlayer(player)"));
+            Assert.That(body, Does.Contain("ConfigureStandalonePlayerBuild"));
+            Assert.That(body, Does.Contain("cleanupPrepPlayer: false"));
+            Assert.That(body, Does.Contain("BuildPreparedPlayer"));
             Assert.That(body, Does.Contain("WindowsInstallerPublishUtility.GenerateAndPublish"));
             Assert.That(body, Does.Contain("\"SmallHostBase\""));
             Assert.That(body, Does.Contain("updateAot: true"));
@@ -442,29 +464,23 @@ namespace Game.Tests
         }
 
         [Test]
-        public void RecentHostPlayerWorkflowCreatesNewBuiltinPackageVersion()
+        public void ReuseCodeAndResourcesWorkflowDoesNotRebuildPreparedPackage()
         {
             string root = Path.GetFullPath(Path.Combine(Application.dataPath, ".."));
             string source = File.ReadAllText(Path.Combine(root, "Assets/Editor/Build/BuildUtility.cs"));
 
             string body = ExtractSourceRange(
                 source,
-                "public static void BuildRecentHostPlayerBatch()",
+                "public static void BuildQuickReusePlayerBatch()",
                 "public static void BuildQuickAotPlayerBatch()");
 
-            Assert.That(body, Does.Contain("BuildStateStore.TryValidateRecentHost"));
-            Assert.That(body, Does.Contain("string version = CreateVersion();"));
-            Assert.That(body, Does.Contain("BuildPackageOrThrow(version, true)"));
-            Assert.That(body, Does.Contain("ValidateBuiltinPackage"));
-            Assert.That(body, Does.Contain("ValidatePlayerAndBuiltin(player, version)"));
-            Assert.That(body, Does.Contain("NewPackageRecord(version, \"RecentHost\", package.OutputPackageDirectory)"));
-            Assert.That(body, Does.Contain("NewPlayerRecord(version, \"RecentHost\", player)"));
-            Assert.That(body, Does.Not.Contain("state.LastHost.Version"));
-            Assert.That(body, Does.Not.Contain("state.LastHost.OutputPackageDirectory"));
-            Assert.That(body, Does.Not.Contain("BuildDefaultPackageFromHostVersion"));
-            Assert.That(body, Does.Not.Contain("ReplaceBuiltinPackageFromRecentHost"));
-            Assert.That(body, Does.Not.Contain("PrepareBuiltinFromRecentHost"));
-            Assert.That(body, Does.Not.Contain("hostPackageDirectory"));
+            Assert.That(body, Does.Contain("PcQuickBuildUtility"));
+            Assert.That(body, Does.Contain("BuildWindowsPlayer"));
+            Assert.That(body, Does.Not.Contain("CreateVersion()"));
+            Assert.That(body, Does.Not.Contain("BuildPackageOrThrow"));
+            Assert.That(body, Does.Not.Contain("CompileHotUpdateDll"));
+            Assert.That(body, Does.Not.Contain("GeneratePrePlayer"));
+            Assert.That(body, Does.Not.Contain("GeneratePostPlayer"));
         }
 
         [Test]

@@ -36,14 +36,20 @@ namespace Game.Editor
         }
 
         /// <summary>独立批次保留失败产物；清单只在安装器哈希验证成功后发布，不重用发布序号。</summary>
-        public static string GenerateAndPublish(string player, string resourceVersion, string compiler)
+        public static string GenerateAndPublish(string player, string resourceVersion, string compiler, string packageDirectory = null)
         {
+            // 快速补做可能早于最新资源版本，必须冻结并发布明确的准备目录。
+            var resources = packageDirectory == null ? null : PcBuiltinResourceValidator.CaptureRemote(packageDirectory, resourceVersion);
             string output = GenerateOnly(player, compiler);
             try
             {
-                var publish = ResourceServerPublishUtility.PublishOrUpdateLatestPackage();
+                if (resources != null) resources.ValidateDirectory(packageDirectory);
+                var publish = packageDirectory == null
+                    ? ResourceServerPublishUtility.PublishOrUpdateLatestPackage()
+                    : ResourceServerPublishUtility.PublishOrUpdateWindowsPackage(packageDirectory, resourceVersion);
                 if (!publish.Success || publish.Version != resourceVersion)
                     throw new InvalidOperationException("资源服同步失败或资源版本不一致：" + publish.Error);
+                if (resources != null) resources.ValidateDirectory(Path.Combine(publish.BundleDirectory, "ResourceFiles"));
                 PublishGenerated(output, publish.BundleDirectory);
                 UnityEngine.Debug.Log($"[WindowsInstaller] 安装器发布成功：{output}，资源服={publish.BundleDirectory}");
                 return Path.Combine(publish.BundleDirectory, "ResourceFiles");

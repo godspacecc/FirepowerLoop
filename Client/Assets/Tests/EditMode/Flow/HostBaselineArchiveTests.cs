@@ -28,7 +28,7 @@ namespace Game.Tests
             try { return type.GetMethod(method, BindingFlags.Public | BindingFlags.Static).Invoke(null, args); }
             catch (TargetInvocationException e) { throw e.InnerException; }
         }
-        private void Create(string platform = "Android")
+        private void Create(string platform = "Android", bool withPcHotBaseline = false)
         {
             var state = new JObject
             {
@@ -38,9 +38,21 @@ namespace Game.Tests
                 ["LastAndroidPlayer"] = new JObject { ["Version"] = "v1", ["PlayerPath"] = Path.Combine(source, "Player/FirepowerLoop.apk"), ["BootFingerprint"] = "boot-v1:test" }
             };
             if (platform == "PC") { foreach (string key in new[] { "Host", "AotBaseline", "Package", "Player" }) { state["Last" + key] = state["LastAndroid" + key]; state.Remove("LastAndroid" + key); if (key != "Player") state["Last" + key]["BuildTarget"] = "StandaloneWindows64"; } }
+            if (withPcHotBaseline)
+            {
+                Write("PcHostBaseline/baseline.json", "fixture-baseline");
+                state["PcHotUpdateBaselineDirectory"] = Path.Combine(source, "PcHostBaseline");
+            }
             Call("Create", archive, platform, Commit, "2022.3.test", "boot-v1:test", state.ToString(), Path.Combine(source, "Generated"));
         }
         private object Validate(string platform = "Android", string unity = "2022.3.test", string boot = "boot-v1:test") => Call("Validate", archive, platform, unity, boot);
+        [Test] public void PcHotBaselinePathIsPreservedAndRebased()
+        {
+            Create("PC", true); Directory.Delete(source, true);
+            var state = JObject.Parse((string)Call("Restore", archive, restored, "PC", "2022.3.test", "boot-v1:test"));
+            Assert.That((string)state["PcHotUpdateBaselineDirectory"], Is.EqualTo(Path.Combine(restored, "PcHostBaseline")));
+            Assert.That(File.ReadAllText(Path.Combine(restored, "PcHostBaseline/baseline.json")), Is.EqualTo("fixture-baseline"));
+        }
         [TestCase("Android")][TestCase("PC")] public void ArchiveRestoresIntoCleanDirectoryAfterSourceIsRemoved(string platform)
         {
             Create(platform); Directory.Delete(source, true); Validate(platform);

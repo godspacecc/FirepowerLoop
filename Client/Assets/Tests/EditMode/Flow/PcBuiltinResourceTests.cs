@@ -91,6 +91,112 @@ namespace Game.Tests
             Assert.That(Assert.Throws<TargetInvocationException>(() => Capture()).InnerException.Message, Does.Contain("BuildinCatalog.bytes"));
         }
 
+        [Test]
+        public void StartupPlayerAndCompleteRemotePackagePass()
+        {
+            string builtin = CreateStartupBuiltin();
+            // 远程包不要求内置catalog；它只属于Player内置目录。
+            File.Delete(Path.Combine(source, "BuildinCatalog.bytes"));
+            File.Delete(Path.Combine(source, "BuildinCatalog.json"));
+            Validate(CaptureStartup(builtin));
+        }
+
+        [Test]
+        public void StartupRejectsDifferentValidManifestWithSameVersion()
+        {
+            string builtin = CreateStartupBuiltin();
+            string path = Path.Combine(builtin, "DefaultPackage_v1.bytes");
+            var tools = typeof(ResourcePackage).Assembly.GetType("YooAsset.ManifestTools");
+            object manifest = tools.GetMethod("DeserializeFromBinary", Flags).Invoke(null,
+                new object[] { File.ReadAllBytes(path), null });
+            Set(manifest, "PackageNote", "different build with same version");
+            tools.GetMethod("SerializeToBinary", Flags).Invoke(null, new[] { path, manifest, null });
+            using (var md5 = MD5.Create()) File.WriteAllText(Path.Combine(builtin, "DefaultPackage_v1.hash"),
+                BitConverter.ToString(md5.ComputeHash(File.ReadAllBytes(path))).Replace("-", "").ToLowerInvariant());
+            var error = Assert.Throws<TargetInvocationException>(() => CaptureStartup(builtin));
+            Assert.That(error.InnerException.Message, Does.Contain("启动包清单与完整下载资源不一致"));
+        }
+
+        [TestCase("missing-remote")]
+        [TestCase("corrupt-remote")]
+        [TestCase("catalog")]
+        [TestCase("catalog-not-empty")]
+        [TestCase("manifest")]
+        [TestCase("bundle-in-source")]
+        public void StartupCaptureRejectsInvalidInputs(string defect)
+        {
+            string builtin = CreateStartupBuiltin();
+            if (defect == "missing-remote") File.Delete(Path.Combine(source, "second.bundle"));
+            if (defect == "corrupt-remote") File.WriteAllText(Path.Combine(source, "second.bundle"), "xxxxx");
+            if (defect == "catalog") File.WriteAllText(Path.Combine(builtin, "BuildinCatalog.bytes"), "corrupt");
+            if (defect == "catalog-not-empty") File.Copy(Path.Combine(source, "BuildinCatalog.bytes"), Path.Combine(builtin, "BuildinCatalog.bytes"), true);
+            if (defect == "manifest") File.WriteAllText(Path.Combine(builtin, "DefaultPackage_v1.bytes"), "wrong");
+            if (defect == "bundle-in-source") File.WriteAllText(Path.Combine(builtin, "unexpected.bundle"), "extra");
+            var error = Assert.Throws<TargetInvocationException>(() => CaptureStartup(builtin));
+            Assert.That(error.InnerException, Is.Not.TypeOf<MissingMethodException>());
+        }
+
+        [TestCase("missing-manifest")]
+        [TestCase("extra-bundle")]
+        [TestCase("nested-bundle")]
+        [TestCase("wrong-version")]
+        [TestCase("corrupt-catalog")]
+        [TestCase("remote-changed")]
+        public void StartupValidationRejectsInvalidFinalFiles(string defect)
+        {
+            string builtin = CreateStartupBuiltin();
+            object snapshot = CaptureStartup(builtin);
+            if (defect == "missing-manifest") File.Delete(Path.Combine(output, "DefaultPackage_v1.bytes"));
+            if (defect == "extra-bundle") File.WriteAllText(Path.Combine(output, "unexpected.bundle"), "extra");
+            if (defect == "nested-bundle")
+            {
+                Directory.CreateDirectory(Path.Combine(output, "nested"));
+                File.WriteAllText(Path.Combine(output, "nested", "unexpected.bundle"), "extra");
+            }
+            if (defect == "wrong-version") File.WriteAllText(Path.Combine(output, "DefaultPackage.version"), "old");
+            if (defect == "corrupt-catalog") File.WriteAllText(Path.Combine(output, "BuildinCatalog.bytes"), "corrupt");
+            if (defect == "remote-changed") File.WriteAllText(Path.Combine(source, "second.bundle"), "xxxxx");
+            Assert.Throws<TargetInvocationException>(() => Validate(snapshot));
+        }
+
+        /// <summary>清单由真实序列化器生成；启动包仅有元数据，远程目录保留完整资源。</summary>
+        private string CreateStartupBuiltin()
+        {
+            string builtin = Path.Combine(root, "builtin");
+            Directory.CreateDirectory(builtin);
+            foreach (string file in Directory.GetFiles(source))
+                if (!file.EndsWith(".bundle")) File.Copy(file, Path.Combine(builtin, Path.GetFileName(file)));
+            string json = "{\"PackageName\":\"DefaultPackage\",\"PackageVersion\":\"v1\",\"Wrappers\":[]}";
+            File.WriteAllText(Path.Combine(builtin, "BuildinCatalog.json"), json);
+            var assembly = typeof(ResourcePackage).Assembly;
+            object catalog = UnityEngine.JsonUtility.FromJson(json, assembly.GetType("YooAsset.DefaultBuildinFileCatalog"));
+            assembly.GetType("YooAsset.CatalogTools").GetMethod("SerializeToBinary", Flags).Invoke(null, new[] { Path.Combine(builtin, "BuildinCatalog.bytes"), catalog });
+            foreach (string file in Directory.GetFiles(output)) File.Delete(file);
+            foreach (string file in Directory.GetFiles(builtin)) File.Copy(file, Path.Combine(output, Path.GetFileName(file)));
+            return builtin;
+        }
+
+        private object CaptureStartup(string builtin)
+        {
+            var method = Type.GetType("Game.Editor.PcBuiltinResourceValidator, Assembly-CSharp-Editor", true).GetMethod("CaptureStartup", Flags);
+            Assert.That(method, Is.Not.Null, "缺少启动包实际产物校验入口");
+            return method.Invoke(null, new object[] { builtin, source, "v1" });
+        }
+
+        [TestCase("valid")]
+        [TestCase("missing")]
+        [TestCase("corrupt")]
+        public void RemotePackageRequiresEveryBundleWithoutBuiltinCatalog(string state)
+        {
+            File.Delete(Path.Combine(source, "BuildinCatalog.bytes")); File.Delete(Path.Combine(source, "BuildinCatalog.json"));
+            if (state == "missing") File.Delete(Path.Combine(source, "second.bundle"));
+            if (state == "corrupt") File.WriteAllText(Path.Combine(source, "second.bundle"), "xxxxx");
+            var method = Type.GetType("Game.Editor.PcBuiltinResourceValidator, Assembly-CSharp-Editor", true).GetMethod("CaptureRemote", Flags);
+            Assert.That(method, Is.Not.Null);
+            if (state == "valid") Assert.That(method.Invoke(null, new object[] { source, "v1" }), Is.Not.Null);
+            else Assert.Throws<TargetInvocationException>(() => method.Invoke(null, new object[] { source, "v1" }));
+        }
+
         private object Capture() => Type.GetType("Game.Editor.PcBuiltinResourceValidator, Assembly-CSharp-Editor", true)
             .GetMethod("Capture", Flags).Invoke(null, new object[] { source, "v1" });
         private void Validate(object snapshot) => snapshot.GetType().GetMethod("ValidatePlayer", Flags).Invoke(snapshot, new object[] { player });

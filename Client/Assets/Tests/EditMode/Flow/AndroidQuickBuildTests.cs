@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.IO;
+using System.IO.Compression;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
@@ -91,6 +92,70 @@ namespace Game.Tests
         {
             var action = (Action)Call("AndroidBuildUtility", "ResolveWorkflow", "Android 复用本次 AOT和资源快速打包");
             Assert.That(action, Is.Not.Null); Assert.That(action.Method.Name, Is.EqualTo("BuildQuickReuseApkBatch"));
+        }
+
+        [Test] public void UnknownPreparedKindIsRejected() => Assert.Throws<InvalidOperationException>(() =>
+            Call("AndroidQuickBuildUtility", "ValidateIdentity", 2, "Android", "Channel"));
+        [Test] public void CrossPlatformPreparedSnapshotIsRejected() => Assert.Throws<InvalidOperationException>(() =>
+            Call("AndroidQuickBuildUtility", "ValidateIdentity", 2, "StandaloneWindows64", "HostBase"));
+        [Test] public void LegacyPreparedSnapshotIsRejected() => Assert.Throws<InvalidOperationException>(() =>
+            Call("AndroidQuickBuildUtility", "ValidateIdentity", 0, "Android", "SmallHostBase"));
+
+        [TestCase("new", false)]
+        [TestCase("old", true)]
+        public void ApkResourceValidationRejectsTamperedOrExtraFiles(string content, bool extra)
+        {
+            string builtin = Path.Combine(root, "builtin"); Directory.CreateDirectory(builtin);
+            File.WriteAllText(Path.Combine(builtin, "sample.bundle"), "old");
+            string apk = Path.Combine(root, "sample.apk");
+            using (var archive = ZipFile.Open(apk, ZipArchiveMode.Create))
+            {
+                using (var writer = new StreamWriter(archive.CreateEntry("assets/yoo/DefaultPackage/sample.bundle").Open())) writer.Write(content);
+                if (extra) archive.CreateEntry("assets/yoo/DefaultPackage/stale.bundle");
+            }
+            Assert.Throws<InvalidOperationException>(() => Call("AndroidQuickBuildUtility", "ValidateApkResources", apk, builtin));
+        }
+        [Test] public void AotReuseWorkflowIsRegisteredWithoutExecutingIt()
+        {
+            var action = (Action)Call("AndroidBuildUtility", "ResolveWorkflow", "Android 复用 AOT 打包");
+            Assert.That(action.Method.Name, Is.EqualTo("BuildQuickReuseAotBatch"));
+        }
+
+        [Test] public void NonMainProjectSettingsChangeInvalidatesPreparedInputs()
+        {
+            string settings = Path.Combine(root, "ProjectSettings"); Directory.CreateDirectory(settings);
+            File.WriteAllText(Path.Combine(settings, "ProjectSettings.asset"), "  bundleVersion: 1.0.0\n  AndroidBundleVersionCode: 1\n");
+            string quality = Path.Combine(settings, "QualitySettings.asset"); File.WriteAllText(quality, "old");
+            object before = Call("AndroidQuickBuildUtility", "ComputeSettingsFingerprint", root);
+            File.WriteAllText(quality, "new");
+            Assert.That(Call("AndroidQuickBuildUtility", "ComputeSettingsFingerprint", root), Is.Not.EqualTo(before));
+        }
+        [Test] public void ApplicationVersionOnlyChangeKeepsPreparedInputs()
+        {
+            string settings = Path.Combine(root, "ProjectSettings"); Directory.CreateDirectory(settings);
+            string path = Path.Combine(settings, "ProjectSettings.asset");
+            File.WriteAllText(path, "  bundleVersion: 1.0.0\n  AndroidBundleVersionCode: 1\n");
+            object before = Call("AndroidQuickBuildUtility", "ComputeSettingsFingerprint", root);
+            File.WriteAllText(path, "  bundleVersion: 1.0.1\n  AndroidBundleVersionCode: 2\n");
+            Assert.That(Call("AndroidQuickBuildUtility", "ComputeSettingsFingerprint", root), Is.EqualTo(before));
+        }
+        [Test] public void CrossVersionFrozenDirectoryIsRejected() => Assert.Throws<InvalidOperationException>(() =>
+            Call("AndroidQuickBuildUtility", "ValidatePreparedPaths", "20261030000000", Path.Combine(root, "packages", "20261030000000"),
+                Path.Combine(root, "cache", "20261029000000"), Path.Combine(root, "packages"), Path.Combine(root, "cache")));
+
+        [Test] public void HostAssetSelectionIncludesEmbeddedConfigButExcludesRemoteArtAndBundles()
+        {
+            foreach (string relative in new[] { "Resources/local.txt", "StreamingAssets/host.json", "StreamingAssets/yoo/DefaultPackage/test.bundle", "Game/Art/test.png", "Game/Prefabs/boot.prefab" })
+            {
+                string path = Path.Combine(root, "Assets", relative); Directory.CreateDirectory(Path.GetDirectoryName(path)); File.WriteAllText(path, "data");
+            }
+            string boot = Path.GetFullPath(Path.Combine(root, "Assets", "Game/Prefabs/boot.prefab"));
+            var files = (string[])Call("AndroidQuickAotUtility", "CollectHostAssetInputs", root, new[] { boot });
+            Assert.That(files, Does.Contain(boot));
+            Assert.That(files, Does.Contain(Path.GetFullPath(Path.Combine(root, "Assets", "Resources/local.txt"))));
+            Assert.That(files, Does.Contain(Path.GetFullPath(Path.Combine(root, "Assets", "StreamingAssets/host.json"))));
+            Assert.That(files, Does.Not.Contain(Path.GetFullPath(Path.Combine(root, "Assets", "StreamingAssets/yoo/DefaultPackage/test.bundle"))));
+            Assert.That(files, Does.Not.Contain(Path.GetFullPath(Path.Combine(root, "Assets", "Game/Art/test.png"))));
         }
 
         private string Preserve()

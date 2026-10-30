@@ -1,4 +1,4 @@
-#if UNITY_EDITOR
+﻿#if UNITY_EDITOR
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,12 +13,18 @@ using UnityEngine;
 
 namespace Game.Editor
 {
-    /// <summary>同一轮首包已经准备好的输入快照；发布失败仍可用于只重建 APK。</summary>
+    /// <summary>同一轮完整包或启动包已经准备好的输入快照；发布失败仍可用于只重建 APK。</summary>
     [Serializable]
     public sealed class AndroidQuickBuildInputs
     {
         /// <summary>完整远端资源版本，快速入口不得另建版本。</summary>
         public string Version;
+        /// <summary>可信记录格式，旧记录不能推断为可靠基线。</summary>
+        public int Schema = 2;
+        /// <summary>限制使用 Android 本平台记录。</summary>
+        public string Platform = "Android";
+        /// <summary>保留完整包或启动包类型。</summary>
+        public string Kind;
         /// <summary>本项目 Android 完整远端资源目录。</summary>
         public string PackageDirectory;
         /// <summary>这轮生成对应的 Boot 源输入指纹。</summary>
@@ -31,24 +37,37 @@ namespace Game.Editor
         public string UnityVersion;
         /// <summary>从资源内补充元数据复制的不可变 AOT 目录，不受 Player 构建清空现场目录影响。</summary>
         public string AotDirectory;
+        /// <summary>冻结底层输入与桥接，允许玩法资源变化。</summary>
+        public string HostFingerprint;
+        /// <summary>冻结目录内容，检测缺失和篡改。</summary>
+        public string FrozenFingerprint;
     }
 
     /// <summary>快速 APK 的只读复用校验与快照保存；不调用任何构建或发布入口。</summary>
     public static class AndroidQuickBuildUtility
     {
-        private const string RebuildHint = "请执行 Tools/打包/Android/启动包，重新生成匹配的 AOT 和资源。";
+        private const string RebuildHint = "请执行 Tools/打包/Android/完整包 或 启动包，重新生成匹配的 AOT 和资源。";
         private static string ProjectRoot => Directory.GetParent(Application.dataPath).FullName;
         private static string RecordPath => Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickInputs.json");
 
         /// <summary>完整首包资源验证成功后立即保存，最终 APK 或发布失败也不会丢失这轮输入。</summary>
-        public static AndroidQuickBuildInputs Capture(string version, string packageDirectory, string compilationFingerprint)
+        public static AndroidQuickBuildInputs Capture(string version, string packageDirectory, string compilationFingerprint, string generatedFingerprint, string kind = "SmallHostBase")
         {
             if (compilationFingerprint != CaptureCompilationFingerprint())
                 throw new InvalidOperationException("编译 Game DLL 后运行时代码或编译配置发生变化，不能保存复用基线。" + RebuildHint);
-            ValidateCompiledSourceTimes();
+            if (generatedFingerprint != CaptureGeneratedFingerprint())
+                throw new InvalidOperationException("资源构建期间 DLL、AOT 清单或生成桥接发生变化，不能保存准备记录。");
             string aot = PreserveAotMetadata(version, HybridCLRBuildUtility.GetRuntimeListPath(), HybridCLRBuildUtility.GetGameDllDirectory(),
                 Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickAot"));
-            var record = ReadCurrent(version, packageDirectory, aot);
+            AndroidQuickAotUtility.Preserve(aot);
+            var record = ReadCurrent(version, packageDirectory, aot, kind);
+            if (compilationFingerprint != CaptureCompilationFingerprint() || generatedFingerprint != CaptureGeneratedFingerprint())
+                throw new InvalidOperationException("登记快照期间源码、资源源文件或生成输入发生变化。");
+            string immutableRecord = aot + ".json";
+            string json = JsonUtility.ToJson(record, true);
+            if (File.Exists(immutableRecord) && File.ReadAllText(immutableRecord) != json)
+                throw new InvalidOperationException("不可变准备记录不允许覆盖。");
+            if (!File.Exists(immutableRecord)) File.WriteAllText(immutableRecord, json);
             Directory.CreateDirectory(Path.GetDirectoryName(RecordPath));
             string pending = RecordPath + ".pending";
             try
@@ -61,7 +80,7 @@ namespace Game.Editor
             return record;
         }
 
-        /// <summary>优先使用内容快照；旧流程遗留产物必须由最近成功的 Android Player 报告及包内清单佐证。</summary>
+        /// <summary>只接受完整准备阶段保存的可信内容快照，旧流程遗留产物须重新准备。</summary>
         public static AndroidQuickBuildInputs LoadAndValidate()
         {
             if (File.Exists(RecordPath))
@@ -72,46 +91,58 @@ namespace Game.Editor
                 return saved;
             }
 
-            var report = BuildReport.GetLatestReport();
-            if (report == null || report.summary.result != BuildResult.Succeeded || report.summary.platform != BuildTarget.Android)
-                throw new InvalidOperationException("没有可验证的成功 Android Player 报告。" + RebuildHint);
-            string apk = Path.GetFullPath(report.summary.outputPath);
-            string allowed = Path.Combine(ProjectRoot, "Build", "Android") + Path.DirectorySeparatorChar;
-            if (!apk.StartsWith(allowed, StringComparison.OrdinalIgnoreCase) || !File.Exists(apk) || Path.GetExtension(apk) != ".apk")
-                throw new InvalidOperationException("最近 Player 不是本项目保留的最终 APK。" + RebuildHint);
-            string builtin = YooAssetBuildUtility.GetStreamingAssetsDirectory();
-            string version = File.ReadAllText(Path.Combine(builtin, "DefaultPackage.version")).Trim();
-            string package = Path.Combine(YooAssetBuildUtility.GetPackageRoot(BuildTarget.Android), version);
-            // 旧流程未保存内容快照时，保守拒绝在 Player 开始后编辑过的运行时输入和构建设置。
-            // Unity 2022 的报告时间字段携带 UTC 钟面值；不再次按本机时区换算。
-            DateTime startedUtc = DateTime.SpecifyKind(report.summary.buildStartedAt, DateTimeKind.Utc);
-            ValidateRecoveryInputTimes(RuntimeInputs().Concat(GeneratedInputs()).ToArray(), startedUtc);
-            // Player 自身会在启动构建时写入递增后的版本，允许该次构建保存设置，但禁止构建结束后再改设置。
-            ValidateRecoveryInputTimes(new[] { Path.Combine(ProjectRoot, "ProjectSettings", "ProjectSettings.asset") },
-                DateTime.SpecifyKind(report.summary.buildEndedAt, DateTimeKind.Utc));
-            using (var archive = ZipFile.OpenRead(apk))
-            {
-                foreach (string file in Directory.GetFiles(builtin).Where(path => !path.EndsWith(".meta", StringComparison.OrdinalIgnoreCase)))
-                {
-                    var entry = archive.GetEntry("assets/yoo/DefaultPackage/" + Path.GetFileName(file));
-                    if (entry == null) throw new InvalidOperationException("保留 APK 与当前内置清单不匹配。" + RebuildHint);
-                    using (var input = entry.Open())
-                    using (var buffer = new MemoryStream())
-                    {
-                        input.CopyTo(buffer);
-                        if (!buffer.ToArray().SequenceEqual(File.ReadAllBytes(file)))
-                            throw new InvalidOperationException("保留 APK 的清单内容已变化。" + RebuildHint);
-                    }
-                }
-            }
-            // 只在实际请求快速打包时建立恢复快照；编辑器重载和测试不会自动建立它。
-            ValidateCompiledSourceTimes();
-            return Capture(version, package, CaptureCompilationFingerprint());
+            throw new InvalidOperationException("缺少可信准备记录，不能由时间戳推断可复用性。" + RebuildHint);
+        }
+
+        /// <summary>拒绝旧格式、跨平台及渠道记录。</summary>
+        public static void ValidateIdentity(int schema, string platform, string kind)
+        {
+            if (schema != 2 || platform != "Android" || (kind != "HostBase" && kind != "SmallHostBase"))
+                throw new InvalidOperationException("准备记录格式、平台或包型不适用于快速测试包。" + RebuildHint);
+        }
+
+        /// <summary>记录路径必须属于当前项目、平台和资源版本。</summary>
+        public static void ValidatePreparedPaths(string version, string package, string aot, string packageRoot, string cacheRoot)
+        {
+            if (string.IsNullOrEmpty(version) || version.Any(c => c < '0' || c > '9') ||
+                string.IsNullOrEmpty(package) || string.IsNullOrEmpty(aot) ||
+                !string.Equals(Path.GetFullPath(package), Path.GetFullPath(Path.Combine(packageRoot, version)), StringComparison.OrdinalIgnoreCase) ||
+                !string.Equals(Path.GetFullPath(aot), Path.GetFullPath(Path.Combine(cacheRoot, version)), StringComparison.OrdinalIgnoreCase))
+                throw new InvalidOperationException("准备记录路径与当前平台版本不一致。");
+        }
+        /// <summary>索引记录必须与该版本不可变原始记录一致。</summary>
+        private static void ValidateRecord(AndroidQuickBuildInputs saved)
+        {
+            ValidateIdentity(saved.Schema, saved.Platform, saved.Kind);
+            ValidatePreparedPaths(saved.Version, saved.PackageDirectory, saved.AotDirectory, YooAssetBuildUtility.GetPackageRoot(BuildTarget.Android),
+                Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickAot"));
+            string immutableRecord = saved.AotDirectory + ".json";
+            if (!File.Exists(immutableRecord) || File.ReadAllText(immutableRecord) != JsonUtility.ToJson(saved, true))
+                throw new InvalidOperationException("准备记录原件缺失或索引内容已改变。");
+        }
+
+        /// <summary>复用 AOT 时只检查不可变底层，不要求玩法和资源保持原样。</summary>
+        public static AndroidQuickBuildInputs LoadForAotReuse()
+        {
+            if (!File.Exists(RecordPath)) throw new InvalidOperationException("没有可信准备记录。" + RebuildHint);
+            var saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(RecordPath));
+            if (saved == null) throw new InvalidOperationException("准备记录损坏。");
+            ValidateRecord(saved);
+            if (saved.UnityVersion != Application.unityVersion || saved.SettingsFingerprint != SettingsFingerprint() ||
+                saved.HostFingerprint != AndroidQuickAotUtility.HostFingerprint() ||
+                saved.FrozenFingerprint != FingerprintFiles(Directory.GetFiles(saved.AotDirectory)))
+                throw new InvalidOperationException("底层、桥接或冻结 AOT 已变化。" + RebuildHint);
+            return saved;
         }
 
         /// <summary>在本轮 Game DLL 编译前登记手写输入，正常生成的 HybridCLR 文件单独在资源完成后登记。</summary>
         public static string CaptureCompilationFingerprint() => FingerprintFiles(RuntimeInputs()
-            .Where(path => !path.Replace('\\', '/').Contains("/HybridCLRGenerate/")).ToArray()) + "|" + SettingsFingerprint();
+            .Where(path => !IsGeneratedSource(path)).ToArray()) + "|" + SettingsFingerprint();
+
+        /// <summary>资源构建前绑定实际进入资源包的 DLL、AOT 清单与生成桥接，防止打包期间替换输入。</summary>
+        public static string CaptureGeneratedFingerprint() => FingerprintFiles(
+            Directory.GetFiles(HybridCLRBuildUtility.GetGameDllDirectory(), "*", SearchOption.AllDirectories)
+                .Concat(GeneratedInputs()).ToArray());
 
         /// <summary>旧构建恢复及快照建立前验证源码不晚于其 DLL；防止编译后、最终 Player 前改码被误登记。</summary>
         private static void ValidateCompiledSourceTimes()
@@ -137,22 +168,28 @@ namespace Game.Editor
         /// <summary>在构建前及发布前复核输入，禁止将长流程中修改后的源码登记成旧 AOT 基线。</summary>
         public static void Validate(AndroidQuickBuildInputs saved)
         {
-            var current = ReadCurrent(saved.Version, saved.PackageDirectory, saved.AotDirectory);
-            if (saved.UnityVersion != current.UnityVersion || saved.Fingerprint != current.Fingerprint ||
+            ValidateRecord(saved);
+            var current = ReadCurrent(saved.Version, saved.PackageDirectory, saved.AotDirectory, saved.Kind);
+            if (saved.HostFingerprint != current.HostFingerprint || saved.FrozenFingerprint != current.FrozenFingerprint || saved.UnityVersion != current.UnityVersion || saved.Fingerprint != current.Fingerprint ||
                 saved.BootFingerprint != current.BootFingerprint || saved.SettingsFingerprint != current.SettingsFingerprint)
                 throw new InvalidOperationException("AOT、代码、资源或构建设置已变化，不能复用本次结果。" + RebuildHint);
         }
 
         /// <summary>校验同平台清单、完整资源及 DLL 对应关系后计算内容快照。</summary>
-        private static AndroidQuickBuildInputs ReadCurrent(string version, string packageDirectory, string aotDirectory)
+        private static AndroidQuickBuildInputs ReadCurrent(string version, string packageDirectory, string aotDirectory, string kind)
         {
             string expected = Path.GetFullPath(Path.Combine(YooAssetBuildUtility.GetPackageRoot(BuildTarget.Android), version ?? ""));
             if (string.IsNullOrEmpty(version) || version.IndexOfAny(new[] { '/', '\\', '.' }) >= 0 ||
                 !string.Equals(Path.GetFullPath(packageDirectory), expected, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidOperationException("快速打包资源必须来自本项目 Android 版本目录。");
-            if (!YooAssetBuildUtility.ValidateManifestOnlyBuiltinPackage(version) || !YooAssetBuildUtility.ValidateBuildResult(expected, version))
+            if ((kind == "SmallHostBase" && !YooAssetBuildUtility.ValidateManifestOnlyBuiltinPackage(version)) || !YooAssetBuildUtility.ValidateBuildResult(expected, version))
                 throw new InvalidOperationException("首包资源或内置清单无效。" + RebuildHint);
+            PcBuiltinResourceValidator.CaptureRemote(expected, version);
             string builtin = YooAssetBuildUtility.GetStreamingAssetsDirectory();
+            if (kind == "HostBase") PcBuiltinResourceValidator.Capture(builtin, version);
+            else PcBuiltinResourceValidator.CaptureStartup(builtin, expected, version);
+            if (kind == "HostBase" && !YooAssetBuildUtility.ValidateBuildResult(builtin, version))
+                throw new InvalidOperationException("完整包内置资源无效。");
             foreach (string extension in new[] { ".bytes", ".hash" })
                 RequireSameFile(Path.Combine(builtin, "DefaultPackage_" + version + extension), Path.Combine(expected, "DefaultPackage_" + version + extension));
             HybridCLRBuildUtility.ValidateGeneratedDlls();
@@ -173,14 +210,17 @@ namespace Game.Editor
                 .Concat(Directory.GetFiles(expected, "*", SearchOption.AllDirectories));
             return new AndroidQuickBuildInputs
             {
-                Version = version, PackageDirectory = expected, UnityVersion = Application.unityVersion, AotDirectory = aot,
+                Kind = kind, Version = version, PackageDirectory = expected, UnityVersion = Application.unityVersion, AotDirectory = aot,
                 BootFingerprint = AndroidBootBuildGuard.ComputeFingerprint(ProjectRoot), Fingerprint = FingerprintFiles(files.ToArray()),
+                HostFingerprint = AndroidQuickAotUtility.HostFingerprint(), FrozenFingerprint = FingerprintFiles(Directory.GetFiles(aot)),
                 SettingsFingerprint = SettingsFingerprint()
             };
         }
 
         /// <summary>收集 Player 源码与 Boot 场景依赖，排除编辑器及测试源码，防止改代码后复用旧热更 DLL。</summary>
-        private static string[] RuntimeInputs() => CompilationPipeline.GetAssemblies(AssembliesType.Player)
+        private static string[] RuntimeInputs() => SourceAssetInputs()
+            .Concat(AndroidQuickAotUtility.CollectHostAssetInputs(ProjectRoot, Array.Empty<string>()))
+            .Concat(CompilationPipeline.GetAssemblies(AssembliesType.Player)
             .Where(assembly => !assembly.name.Contains("Test") && (assembly.flags & AssemblyFlags.EditorAssembly) == 0)
             .SelectMany(assembly => assembly.sourceFiles)
             .Concat(Directory.GetFiles(Path.Combine(ProjectRoot, "Assets", "Boot"), "*", SearchOption.AllDirectories))
@@ -191,7 +231,46 @@ namespace Game.Editor
             .Concat(Directory.GetFiles(Path.Combine(ProjectRoot, "Assets"), "*HybridCLR*.asset", SearchOption.AllDirectories))
             .Concat(new[] { Path.Combine(ProjectRoot, "Packages", "manifest.json"), Path.Combine(ProjectRoot, "Packages", "packages-lock.json") })
             .SelectMany(path => File.Exists(path + ".meta") ? new[] { path, path + ".meta" } : new[] { path })
-            .Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+            .Select(Path.GetFullPath)).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
+
+        /// <summary>生成目录及根meta由生成器维护，不属于准备前手写输入。</summary>
+        private static bool IsGeneratedSource(string path)
+        {
+            string normalized = path.Replace('\\', '/');
+            return normalized.Contains("/HybridCLRGenerate/") || normalized.EndsWith("/HybridCLRGenerate.meta", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>资源源文件变化同样使已准备资源失效；排除构建器正常生成的产物。</summary>
+        private static string[] SourceAssetInputs() => Directory.GetFiles(Path.Combine(ProjectRoot, "Assets"), "*", SearchOption.AllDirectories)
+            .Where(path => !path.Replace('\\', '/').Contains("/StreamingAssets/") &&
+                !path.Replace('\\', '/').EndsWith("/StreamingAssets.meta", StringComparison.OrdinalIgnoreCase) &&
+                !IsGeneratedSource(path) &&
+                !path.Replace('\\', '/').Contains("/Editor/") && !path.Replace('\\', '/').Contains("/Tests/") &&
+                !path.StartsWith(HybridCLRBuildUtility.GetGameDllDirectory(), StringComparison.OrdinalIgnoreCase)).ToArray();
+
+        /// <summary>校验 APK 实际资源的完整清单及字节，拒绝漏文件、额外文件及陈旧文件。</summary>
+        public static void ValidateApkResources(string apk, string builtin)
+        {
+            const string prefix = "assets/yoo/DefaultPackage/";
+            var files = Directory.GetFiles(builtin, "*", SearchOption.AllDirectories)
+                .Where(p => !p.EndsWith(".meta", StringComparison.OrdinalIgnoreCase)).ToArray();
+            using (var archive = ZipFile.OpenRead(apk))
+            {
+                var entries = archive.Entries.Where(e => e.FullName.StartsWith(prefix, StringComparison.Ordinal) && !e.FullName.EndsWith("/")).ToArray();
+                if (entries.Length != files.Length) throw new InvalidOperationException("APK 内置资源数量不符。");
+                foreach (string file in files)
+                {
+                    string name = prefix + file.Substring(builtin.TrimEnd(Path.DirectorySeparatorChar).Length + 1).Replace('\\', '/');
+                    var entry = entries.SingleOrDefault(e => e.FullName == name);
+                    if (entry == null) throw new InvalidOperationException("APK 缺少资源：" + name);
+                    using (var input = entry.Open()) using (var buffer = new MemoryStream())
+                    {
+                        input.CopyTo(buffer);
+                        if (!buffer.ToArray().SequenceEqual(File.ReadAllBytes(file))) throw new InvalidOperationException("APK 资源内容不符：" + name);
+                    }
+                }
+            }
+        }
 
         /// <summary>桥接与链接清单也是编译输入，必须随快照校验并参与旧产物恢复门禁。</summary>
         private static string[] GeneratedInputs() => Directory.GetFiles(Path.GetFullPath(HybridCLR.Editor.SettingsUtil.GeneratedCppDir), "*", SearchOption.AllDirectories)
@@ -223,11 +302,16 @@ namespace Game.Editor
         }
 
         /// <summary>应用版本与版本码在每次 APK 重建时变化，其余 Player 设置必须与准备阶段一致。</summary>
-        private static string SettingsFingerprint()
+        private static string SettingsFingerprint() => ComputeSettingsFingerprint(ProjectRoot);
+
+        /// <summary>全部项目设置参与准备窗口校验，只归一化正常递增的应用版本。</summary>
+        public static string ComputeSettingsFingerprint(string root)
         {
-            string settings = File.ReadAllText(Path.Combine(ProjectRoot, "ProjectSettings", "ProjectSettings.asset"));
+            string directory = Path.Combine(root, "ProjectSettings");
+            string settings = File.ReadAllText(Path.Combine(directory, "ProjectSettings.asset"));
             settings = System.Text.RegularExpressions.Regex.Replace(settings, @"(?m)^  (bundleVersion|AndroidBundleVersionCode):.*\r?\n", "");
-            using (var hash = SHA256.Create()) return Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(settings)));
+            using (var hash = SHA256.Create()) return Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(settings))) + "|" +
+                FingerprintFiles(Directory.GetFiles(directory, "*", SearchOption.AllDirectories).Where(p => Path.GetFileName(p) != "ProjectSettings.asset").ToArray());
         }
 
         /// <summary>按路径与内容计算哈希，检测同长度修改、文件增删和重命名；不使用修改时间判等。</summary>

@@ -37,25 +37,25 @@ namespace Game.Editor
                 BuildLatestCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/PC/快速打包/使用最近 Host 结果打包", false, 120)]
+        [MenuItem("Tools/打包/PC/快速打包/复用全部打包", false, 121)]
         private static void BuildRecentHostMenu()
         {
-            if (Confirm("使用最近 Host 结果打包", "复用最近 Host 结果；请确认 Host 成功后未修改项目；将生成完整内置资源和 Player。", "使用 Host 结果打包"))
-                BuildRecentHostPlayerBatch();
+            if (Confirm("复用全部打包", "复用已准备好的玩法代码、AOT和资源，沿用原包型，只重新生成游戏程序及安装器；输入变化时停止。", "开始打包"))
+                BuildQuickReusePlayerBatch();
         }
 
-        [MenuItem("Tools/打包/PC/快速打包/复用 AOT 快速打包", false, 121)]
+        [MenuItem("Tools/打包/PC/快速打包/复用 AOT 打包", false, 120)]
         private static void BuildQuickAotMenu()
         {
-            if (Confirm("复用 AOT 快速打包", "重新编译 Game 和资源但复用 AOT；仅用于临时验证；不能替代发布前完整打包。", "开始快速打包"))
+            if (Confirm("复用 AOT 打包", "重新编译玩法代码、重打资源，复用AOT并沿用完整包或启动包类型。用于日常测试；底层不兼容时停止，正式发布前仍需完整验证。", "开始打包"))
                 BuildQuickAotPlayerBatch();
         }
 
-        [MenuItem("Tools/打包/PC/首包完整打包", false, 101)]
+        [MenuItem("Tools/打包/PC/启动包（首次下载资源）", false, 101)]
         private static void BuildSmallHostBaseMenu()
         {
             if (Confirm(
-                    "PC 首包完整打包",
+                    "启动包（首次下载资源）",
                     "只在 Player 内置 Boot 和 YooAsset 清单，不内置资源 Bundle。首次启动必须能连接资源服并下载完整资源；无网络且无缓存时不能进入游戏。",
                     "开始打包"))
             {
@@ -63,7 +63,7 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/PC/Host代码+资源更新", false, 102)]
+        [MenuItem("Tools/打包/PC/构建热更新（代码+资源）", false, 102)]
         private static void BuildHostMenu()
         {
             BuildHostCodeAndResourcesBatch();
@@ -103,12 +103,15 @@ namespace Game.Editor
                 ValidateProjectSettings();
                 BuildTarget target = BuildTarget.StandaloneWindows64;
 
-                timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(target));
-                // GeneratePostPlayer 内部 StripAOTDll 已执行必要构建，此处只保留独立播放器设置。
                 ConfigureStandalonePlayerBuild();
+                string sourceInputs = PcQuickBuildUtility.Sources();
+                string hostInputs = PcHotUpdateBaseline.CaptureCurrentInputs();
+                timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(target));
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(target));
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
+                string runtimeDllInputs = PcHotUpdateBaseline.CaptureRuntimeDllInputs();
+                string generatedInputs = PcQuickBuildUtility.Generated();
 
                 string version = CreateVersion();
                 var package = timing.Run("BuildDefaultPackage", () => BuildPackageOrThrow(version, true));
@@ -116,12 +119,15 @@ namespace Game.Editor
                 // 构建前冻结内置资源，构建后核对实际 Player，避免把旧资源包误认成本轮结果。
                 var builtinSnapshot = timing.Run("CaptureBuiltinPackage", () =>
                     PcBuiltinResourceValidator.Capture(YooAssetBuildUtility.GetStreamingAssetsDirectory(), version));
+                var prepared = PcQuickBuildUtility.Save(version, "Full", package.OutputPackageDirectory, sourceInputs, hostInputs, runtimeDllInputs, generatedInputs);
                 string player = timing.Run("BuildWindowsPlayer", BuildWindowsPlayer);
                 timing.Run("ValidatePlayerAndBuiltin", () => builtinSnapshot.ValidatePlayer(player));
+                PcQuickBuildUtility.Validate(prepared, true);
 
-                SaveSuccessfulState(version, "Full", package.OutputPackageDirectory, player, updateAot: true, updateHost: false);
+                string baselineDirectory = timing.Run("PreservePcHostBaseline", () => PreservePcHostBaseline(player, hostInputs, runtimeDllInputs));
+                SaveSuccessfulState(version, "Full", package.OutputPackageDirectory, player, updateAot: true, updateHost: false, pcBaselineDirectory: baselineDirectory);
                 Debug.Log($"[BuildUtility] Player 构建成功（已保存，可补做安装器与发布）：Version={version}，Player={player}，DLLs={copied.Count}");
-                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
+                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler, package.OutputPackageDirectory));
                 Debug.Log($"[BuildUtility] 完整打包完成：Version={version}，Player={player}，资源服={serverResources}");
                 OfferStartServer(version, serverResources, "安装包发布成功", timing);
             }, cleanupPrepPlayer: false);
@@ -138,34 +144,42 @@ namespace Game.Editor
                 ValidateProjectSettings();
                 BuildTarget target = BuildTarget.StandaloneWindows64;
 
+                ConfigureStandalonePlayerBuild();
+                string sourceInputs = PcQuickBuildUtility.Sources();
+                string hostInputs = PcHotUpdateBaseline.CaptureCurrentInputs();
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(target));
-                timing.Run("BuildPreparatoryPlayer", BuildPreparatoryPlayer);
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(target));
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
+                string runtimeDllInputs = PcHotUpdateBaseline.CaptureRuntimeDllInputs();
+                string generatedInputs = PcQuickBuildUtility.Generated();
 
                 string version = CreateVersion();
                 var package = timing.Run("BuildSmallHostPackage", () => BuildManifestOnlyPackageOrThrow(version));
                 timing.Run("ValidateHostPackage", () => ValidatePackageOrThrow(package.OutputPackageDirectory, version));
-                timing.Run("ValidateManifestOnlyBuiltin", () => ValidateManifestOnlyBuiltinOrThrow(version));
-                timing.Run("CleanupPreparatoryPlayer", CleanupPreparatoryPlayer);
+                var startupSnapshot = timing.Run("CaptureStartupPackage", () =>
+                    PcBuiltinResourceValidator.CaptureStartup(YooAssetBuildUtility.GetStreamingAssetsDirectory(), package.OutputPackageDirectory, version));
+                var prepared = PcQuickBuildUtility.Save(version, "SmallHostBase", package.OutputPackageDirectory, sourceInputs, hostInputs, runtimeDllInputs, generatedInputs);
                 string player = timing.Run("BuildSmallHostPlayer", BuildWindowsPlayer);
-                timing.Run("ValidateSmallHostPlayer", () => ValidateSmallHostPlayer(player, version));
+                timing.Run("ValidateSmallHostPlayer", () => startupSnapshot.ValidatePlayer(player));
+                PcQuickBuildUtility.Validate(prepared, true);
 
+                string baselineDirectory = timing.Run("PreservePcHostBaseline", () => PreservePcHostBaseline(player, hostInputs, runtimeDllInputs));
                 SaveSuccessfulState(
                     version,
                     "SmallHostBase",
                     package.OutputPackageDirectory,
                     player,
                     updateAot: true,
-                    updateHost: true);
+                    updateHost: true,
+                    pcBaselineDirectory: baselineDirectory);
                 if (CiBuildSession.Current != null)
                 {
                     string installer = timing.Run("GenerateInstallerOnly", () => WindowsInstallerPublishUtility.GenerateOnly(player, compiler));
                     CiBuildSession.Current.Capture(version, package.OutputPackageDirectory, player, installer);
                     return;
                 }
-                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
+                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler, package.OutputPackageDirectory));
                 Debug.Log(
                     $"[BuildUtility] PC 首包完成：版本={version}，Player路径={player}，" +
                     $"DLL数量={copied.Count}，资源服目录={Path.GetDirectoryName(serverResources)}");
@@ -175,7 +189,7 @@ namespace Game.Editor
                     ShowDialog("PC 首包已发布，资源服启动失败", BuildWorkflowUtility.FormatFailure(timing, server.Error, serverResources));
                 else
                     Debug.Log($"[BuildUtility] PC 首包资源服已启动：版本={version}，地址={server.BaseUrl}");
-            }, cleanupPrepPlayer: true);
+            }, cleanupPrepPlayer: false);
         }
 
         public static void BuildHostCodeAndResourcesBatch()
@@ -185,20 +199,17 @@ namespace Game.Editor
                 ValidateProjectSettings();
                 BuildTarget target = BuildTarget.StandaloneWindows64;
 
-                IReadOnlyList<string> copied;
-                if (CiBuildSession.Current != null)
-                {
-                    var baseline = LoadStateOrThrow();
-                    if (!BuildStateStore.TryValidateAotBaseline(baseline, target, out string error)) throw new InvalidOperationException(error);
-                    timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(target));
-                    copied = timing.Run("CopyGeneratedDllsFromBaseline", () => HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(target, baseline.LastAotBaseline.AotDirectory, baseline.LastAotBaseline.RuntimeListPath));
-                }
-                else
-                {
-                    timing.Run("ValidateExistingPlayerAot", ValidateExistingPlayerAot);
-                    timing.Run("GenerateAll", HybridCLRBuildUtility.GenerateAll);
-                    copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, true));
-                }
+                var baseline = LoadStateOrThrow();
+                string hostInputs = timing.Run("CapturePcHostInputs", PcHotUpdateBaseline.CaptureCurrentInputs);
+                timing.Run("ValidatePcHostBaseline", () => PcHotUpdateBaseline.Validate(
+                    baseline.PcHotUpdateBaselineDirectory, baseline.LastPlayer?.PlayerPath, hostInputs));
+                timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(target));
+                timing.Run("ValidateGameNativeBridge", () => PcHotUpdateBaseline.ValidateHotUpdateAssembly(
+                    baseline.PcHotUpdateBaselineDirectory, Path.Combine(Directory.GetParent(Application.dataPath).FullName,
+                        "HybridCLRData", "HotUpdateDlls", target.ToString(), "Game.dll")));
+                var copied = timing.Run("CopyGeneratedDllsFromBaseline", () => HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(
+                    target, Path.Combine(baseline.PcHotUpdateBaselineDirectory, "Aot"),
+                    Path.Combine(baseline.PcHotUpdateBaselineDirectory, "HybridCLRAssemblyList.bytes")));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
                 string builtinDir = YooAssetBuildUtility.GetStreamingAssetsDirectory();
@@ -206,11 +217,14 @@ namespace Game.Editor
 
                 string version = CreateVersion();
                 var package = timing.Run("BuildHostPackage", () => BuildPackageOrThrow(version, false));
-                timing.Run("ValidateHostPackage", () => ValidatePackageOrThrow(package.OutputPackageDirectory, version));
+                var remoteSnapshot = timing.Run("ValidateCompleteRemotePackage", () => PcBuiltinResourceValidator.CaptureRemote(package.OutputPackageDirectory, version));
                 var after = timing.Run("SnapshotBuiltinAfter", () => SnapshotDirectory(builtinDir));
                 timing.Run("CompareBuiltinSnapshot", () => EnsureSnapshotsEqual(before, after));
 
-                SaveSuccessfulState(version, "Host", package.OutputPackageDirectory, null, updateAot: CiBuildSession.Current == null, updateHost: true);
+                timing.Run("RevalidatePcHostBaseline", () => PcHotUpdateBaseline.Validate(
+                    baseline.PcHotUpdateBaselineDirectory, baseline.LastPlayer?.PlayerPath, PcHotUpdateBaseline.CaptureCurrentInputs()));
+                timing.Run("RevalidateRemotePackage", () => remoteSnapshot.ValidateDirectory(package.OutputPackageDirectory));
+                SaveSuccessfulState(version, "Host", package.OutputPackageDirectory, null, updateAot: false, updateHost: true);
                 if (CiBuildSession.Current != null) { CiBuildSession.Current.Capture(version, package.OutputPackageDirectory); return; }
                 var server = timing.Run("StartResourceServer", () => LocalResourceServerUtility.StartAndProbe(package.OutputPackageDirectory, version));
                 if (!server.Success)
@@ -225,66 +239,63 @@ namespace Game.Editor
             }, cleanupPrepPlayer: false);
         }
 
+        /// <summary>旧入口语义不再有效，禁止重载恢复时静默改为另一种复用。</summary>
         public static void BuildRecentHostPlayerBatch()
         {
-            RunWorkflow("使用最近 Host 结果打包", timing =>
-            {
-                string compiler = timing.Run("CheckInstallerCompiler", WindowsInstallerPublishUtility.EnsureCompiler);
-                ValidateProjectSettings();
-                var state = LoadStateOrThrow();
-                timing.Run("ValidateLastHost", () =>
-                {
-                    if (!BuildStateStore.TryValidateRecentHost(state, BuildTarget.StandaloneWindows64, out string error))
-                        throw new InvalidOperationException($"最近 Host 校验失败：{error}");
-                });
-
-                string version = CreateVersion();
-                var package = timing.Run("BuildDefaultPackage", () => BuildPackageOrThrow(version, true));
-                timing.Run("ValidateBuiltinPackage", () => ValidatePackageOrThrow(package.OutputPackageDirectory, version));
-                string player = timing.Run("BuildWindowsPlayer", BuildWindowsPlayer);
-                timing.Run("ValidatePlayerAndBuiltin", () => ValidatePlayerAndBuiltin(player, version));
-
-                state.LastPackage = NewPackageRecord(version, "RecentHost", package.OutputPackageDirectory);
-                state.LastPlayer = NewPlayerRecord(version, "RecentHost", player);
-                BuildStateStore.Save(state);
-                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
-                OfferStartServer(version, serverResources, "安装包发布成功", timing);
-            }, cleanupPrepPlayer: false);
+            throw new InvalidOperationException("旧的复用代码入口已移除，请重新选择复用全部打包。");
         }
 
+        /// <summary>沿用可信准备记录，只补做最终Player及发布。</summary>
+        public static void BuildQuickReusePlayerBatch()
+        {
+            RunWorkflow("复用代码和资源打包", timing => BuildPreparedPlayer(timing, PcQuickBuildUtility.Load(true)), cleanupPrepPlayer: false);
+        }
+
+        /// <summary>重新编译玩法和资源，沿用冻结的AOT与原包型。</summary>
         public static void BuildQuickAotPlayerBatch()
         {
             RunWorkflow("复用 AOT 快速打包", timing =>
             {
-                string compiler = timing.Run("CheckInstallerCompiler", WindowsInstallerPublishUtility.EnsureCompiler);
                 ValidateProjectSettings();
-                var state = LoadStateOrThrow();
-                timing.Run("ValidateAotBaseline", () =>
-                {
-                    if (!BuildStateStore.TryValidateAotBaseline(state, BuildTarget.StandaloneWindows64, out string error))
-                        throw new InvalidOperationException($"AOT 基线校验失败：{error}");
-                });
-
+                ConfigureStandalonePlayerBuild();
+                var previous = PcQuickBuildUtility.Load(false);
+                string source = PcQuickBuildUtility.Sources();
+                string host = PcHotUpdateBaseline.CaptureCurrentInputs();
                 BuildTarget target = BuildTarget.StandaloneWindows64;
                 timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(target));
-                var copied = timing.Run("CopyGeneratedDllsFromBaseline", () => HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(target, state.LastAotBaseline.AotDirectory, state.LastAotBaseline.RuntimeListPath));
-                timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
-
+                PcHotUpdateBaseline.ValidateHotUpdateAssembly(previous.Directory,
+                    Path.Combine(Directory.GetParent(Application.dataPath).FullName, "HybridCLRData", "HotUpdateDlls", target.ToString(), "Game.dll"));
+                timing.Run("CopyGeneratedDllsFromBaseline", () => HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(
+                    target, Path.Combine(previous.Directory, "Aot"), Path.Combine(previous.Directory, "HybridCLRAssemblyList.bytes")));
+                HybridCLRBuildUtility.ValidateGeneratedDlls();
+                PcQuickBuildUtility.Validate(previous, false);
+                string runtimeDllInputs = PcHotUpdateBaseline.CaptureRuntimeDllInputs();
+                string generatedInputs = PcQuickBuildUtility.Generated();
                 string version = CreateVersion();
-                var package = timing.Run("BuildDefaultPackage", () => BuildPackageOrThrow(version, true));
-                timing.Run("ValidateBuiltinPackage", () => ValidatePackageOrThrow(package.OutputPackageDirectory, version));
-                string player = timing.Run("BuildWindowsPlayer", BuildWindowsPlayer);
-                timing.Run("ValidatePlayerAndBuiltin", () => ValidatePlayerAndBuiltin(player, version));
-
-                state.LastPackage = NewPackageRecord(version, "QuickAot", package.OutputPackageDirectory);
-                state.LastPlayer = NewPlayerRecord(version, "QuickAot", player);
-                BuildStateStore.Save(state);
-                Debug.Log($"[BuildUtility] 复用 AOT 快速打包完成：DLLs={copied.Count}");
-                string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
-                OfferStartServer(version, serverResources, "安装包发布成功", timing);
+                var package = previous.Kind == "Full" ? BuildPackageOrThrow(version, true) : BuildManifestOnlyPackageOrThrow(version);
+                ValidatePackageOrThrow(package.OutputPackageDirectory, version);
+                var prepared = PcQuickBuildUtility.Save(version, previous.Kind, package.OutputPackageDirectory, source, host, runtimeDllInputs, generatedInputs);
+                BuildPreparedPlayer(timing, prepared);
             }, cleanupPrepPlayer: false);
         }
 
+        /// <summary>最终输出必须匹配准备快照，再绑定新宿主基线并发布。</summary>
+        private static void BuildPreparedPlayer(BuildStageTiming timing, PcQuickBuildUtility.Prepared prepared)
+        {
+            string compiler = WindowsInstallerPublishUtility.EnsureCompiler();
+            ValidateProjectSettings();
+            PcQuickBuildUtility.Validate(prepared, true);
+            Debug.Log($"[BuildUtility] 本次快速打包类型：{(prepared.Kind == "Full" ? "完整包" : "启动包（首次下载资源）")}，资源版本：{prepared.Version}");
+            var builtin = PcQuickBuildUtility.Builtin(prepared);
+            string player = timing.Run("BuildWindowsPlayer", BuildWindowsPlayer);
+            builtin.ValidatePlayer(player);
+            PcQuickBuildUtility.Validate(prepared, true);
+            string baseline = PreservePcHostBaseline(player, prepared.Host, prepared.Runtime);
+            SaveSuccessfulState(prepared.Version, prepared.Kind, prepared.Package, player, updateAot: false,
+                updateHost: prepared.Kind == "SmallHostBase", pcBaselineDirectory: baseline);
+            string serverResources = WindowsInstallerPublishUtility.GenerateAndPublish(player, prepared.Version, compiler, prepared.Package);
+            OfferStartServer(prepared.Version, serverResources, "安装包发布成功", timing);
+        }
         public static void BuildBuiltinResourcesOnlyBatch()
         {
             RunWorkflow("仅重建完整内置资源", timing =>
@@ -485,6 +496,7 @@ namespace Game.Editor
                     case "首包完整打包": BuildSmallHostBaseCodeAndResourcesBatch(); break;
                     case "Host代码+资源更新": BuildHostCodeAndResourcesBatch(); break;
                     case "使用最近 Host 结果打包": BuildRecentHostPlayerBatch(); break;
+                    case "复用代码和资源打包": BuildQuickReusePlayerBatch(); break;
                     case "复用 AOT 快速打包": BuildQuickAotPlayerBatch(); break;
                     case "仅重建完整内置资源": BuildBuiltinResourcesOnlyBatch(); break;
                     default: Debug.LogError($"[BuildUtility] 无法恢复未知工作流：{workflow}"); break;
@@ -727,13 +739,6 @@ namespace Game.Editor
                 throw new InvalidOperationException("PC 首包内置清单校验失败。");
         }
 
-        private static void ValidateSmallHostPlayer(string playerPath, string version)
-        {
-            if (!File.Exists(playerPath))
-                throw new FileNotFoundException($"PC 首包 Player 不存在: {playerPath}");
-            ValidateManifestOnlyBuiltinOrThrow(version);
-        }
-
         private static void ValidateExistingPlayerAot()
         {
             string aotDir = HybridCLRBuildUtility.GetAotDirectory(BuildTarget.StandaloneWindows64);
@@ -743,7 +748,7 @@ namespace Game.Editor
                 throw new InvalidOperationException($"Player AOT 输出为空: {aotDir}");
         }
 
-        private static void SaveSuccessfulState(string version, string buildKind, string packageDirectory, string playerPath, bool updateAot, bool updateHost)
+        private static void SaveSuccessfulState(string version, string buildKind, string packageDirectory, string playerPath, bool updateAot, bool updateHost, string pcBaselineDirectory = null)
         {
             var state = BuildStateStore.Load(out string warning);
             if (!string.IsNullOrEmpty(warning))
@@ -773,10 +778,23 @@ namespace Game.Editor
                 };
             }
 
+            if (pcBaselineDirectory != null) state.PcHotUpdateBaselineDirectory = pcBaselineDirectory;
             state.LastPackage = NewPackageRecord(version, buildKind, packageDirectory);
             if (!string.IsNullOrEmpty(playerPath))
                 state.LastPlayer = NewPlayerRecord(version, buildKind, playerPath);
             BuildStateStore.Save(state);
+        }
+
+        /// <summary>只在新宿主通过检查后归档本次AOT；输入中途变化时拒绝把它记成可热更基线。</summary>
+        private static string PreservePcHostBaseline(string player, string expectedInputs, string expectedRuntimeDlls)
+        {
+            if (PcHotUpdateBaseline.CaptureCurrentInputs() != expectedInputs)
+                throw new InvalidOperationException("宿主构建期间底层输入变化，请重新完整打包或生成启动包。");
+            if (PcHotUpdateBaseline.CaptureRuntimeDllInputs() != expectedRuntimeDlls)
+                throw new InvalidOperationException("构建期间代码资源变化，不能归档与游戏不匹配的AOT。请重新完整打包或生成启动包。");
+            string directory = Path.Combine(Directory.GetParent(Path.GetDirectoryName(player)).FullName, "HostBaseline");
+            PcHotUpdateBaseline.Capture(directory, player, HybridCLRBuildUtility.GetGameDllDirectory(), expectedInputs);
+            return directory;
         }
 
         private static PackageBuildRecord NewPackageRecord(string version, string buildKind, string outputPackageDirectory)
