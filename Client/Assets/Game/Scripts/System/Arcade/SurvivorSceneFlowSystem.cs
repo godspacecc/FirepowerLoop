@@ -37,9 +37,14 @@ namespace Game
             if (!system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
             busy = true;
             bool entered = false;
+            LoadingUICtrl loading=null;
+            int loadingRequest=0;
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, lifetime.Token);
             try
             {
+                // 同时覆盖菜单入口和结算后的再来一局；接管入口令牌，防止旧回调提前隐藏。
+                loading=UIHelper.ShowUI<LoadingUICtrl>();
+                loadingRequest=loading.BeginSurvivorEntryPreparation();
                 var result = await this.GetSystem<ArcadeSceneFlowSystem>().EnterArenaMapAsync(linked.Token);
                 if (!result.Success) return result;
                 entered = true;
@@ -67,7 +72,7 @@ namespace Game
                     await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(showFailureDialog: false);
                 return ArcadeSceneFlowResult.Fail(exception is OperationCanceledException ? "幸存者开局已取消" : exception.Message);
             }
-            finally { busy = false; }
+            finally { loading?.EndEntryPreparation(loadingRequest);busy = false; }
         }
 
         /// <summary>保存结果成功后才释放现场；失败保留已结束结果供再次退出重试。</summary>

@@ -59,6 +59,28 @@ namespace Game.Tests
         }
         private void AssertImage(string file) => Assert.That(AssetDatabase.GetAssetPath(view.MapArtwork.GetComponent<Image>().sprite), Is.EqualTo(Art + file + ".png"));
 
+        private int BeginSurvivor()
+        {
+            var method=typeof(LoadingUICtrl).GetMethod("BeginSurvivorEntryPreparation");
+            Assert.That(method,Is.Not.Null,"缺少幸存者独立加载背景入口");
+            return (int)method.Invoke(controller,null);
+        }
+        [Test] public void SurvivorArtworkOverridesResidualRunThroughoutPreparation()
+        {
+            SetRun(20);BeginSurvivor();AssertImage("survivor-loading");
+            architecture.SendEvent(new MapLoadingStartedEvent(MapIds.Arcade));SetRun(22);AssertImage("survivor-loading");
+            controller.BeginResourceDownload(7);AssertImage("survivor-loading");
+        }
+        [Test] public void SurvivorStaleReleaseCannotClearNewRequestAndArcadeEntryResetsArt()
+        {
+            SetRun(22);int old=BeginSurvivor();int current=BeginSurvivor();controller.EndEntryPreparation(old);AssertImage("survivor-loading");
+            controller.EndEntryPreparation(current);controller.BeginEntryPreparation(MapIds.Arcade);AssertImage("03-farm");
+        }
+        [Test] public void UnrelatedMapDoesNotRetainSurvivorArtwork()
+        {
+            BeginSurvivor();architecture.SendEvent(new MapLoadingStartedEvent("unrelated-map"));AssertImage("01-island");
+        }
+
         [Test] public void TenStagesUseConfigIdentityInsteadOfOrdinalAndRefreshWhileVisible()
         {
             controller.BeginEntryPreparation(MapIds.Arcade);

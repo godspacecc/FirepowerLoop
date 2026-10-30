@@ -22,6 +22,8 @@ namespace Game
         private bool entryPreparing;
         /// <summary>隔离旧入口的异步清理，避免关闭后来发起的加载请求。</summary>
         private int entryRequestId;
+        /// <summary>入口准备期固定幸存者身份，不能借用残留闯关或联机存档选图。</summary>
+        private bool survivorEntryArtwork;
         /// <summary>基础场景完成后的地图内容、相机与安全节点准备，独立于场景加载进度。</summary>
         private bool arcadePreparationActive;
         /// <summary>当前准备快照允许重试；不把普通结算保存失败当作地图失败。</summary>
@@ -207,6 +209,7 @@ namespace Game
         /// <summary>销毁后的 View 不再接收旧返回结果；新实例依据最新准备快照重新显示。</summary>
         protected override void OnUnload()
         {
+            survivorEntryArtwork=false;
             preparationVersion++;
             returningFromPreparation = false;
         }
@@ -227,6 +230,7 @@ namespace Game
 
         private void OnLoadingStarted(MapLoadingStartedEvent evt)
         {
+            if(!entryPreparing||evt.MapId!=MapIds.Arcade)survivorEntryArtwork=false;
             preparationVersion++;
             arcadePreparationActive = arcadePreparationFailed = returningFromPreparation = false;
             loadingMapId=evt.MapId;mapStage=null;mapFailureReason=null;
@@ -247,7 +251,14 @@ namespace Game
 
         /// <summary>点击开局立即显示现有地图加载界面；先订阅事件，再交接后续地图进度。</summary>
         public int BeginEntryPreparation(string mapId)
+            =>BeginEntryPreparationCore(mapId,false);
+
+        /// <summary>幸存者从资源准备起使用独立背景；新请求接管后旧令牌不能清理新背景。</summary>
+        public int BeginSurvivorEntryPreparation()=>BeginEntryPreparationCore(MapIds.Arcade,true);
+
+        private int BeginEntryPreparationCore(string mapId,bool survivor)
         {
+            survivorEntryArtwork=survivor;
             entryPreparing = true;
             int requestId = ++entryRequestId;
             OnLoadingStarted(new MapLoadingStartedEvent(mapId));
@@ -260,6 +271,7 @@ namespace Game
         {
             if (!entryPreparing || requestId != entryRequestId) return;
             entryPreparing = false;
+            if(!mapLoadingActive&&string.IsNullOrEmpty(mapError))survivorEntryArtwork=false;
             if (UI == null) return;
             RefreshPresentation();
             if (!mapLoadingActive && string.IsNullOrEmpty(mapError)) Hide();
@@ -271,6 +283,7 @@ namespace Game
             if(mapStage.HasValue)RenderMapStage();
             mapLoadingActive = false;
             if (!arcadePreparationActive) mapError = null;
+            if(!entryPreparing&&string.IsNullOrEmpty(mapError))survivorEntryArtwork=false;
             if (displayMode == DisplayMode.ResourceDownload) return;
             RefreshPresentation();
             Hide();
@@ -340,6 +353,8 @@ namespace Game
         /// <summary>读取权威场地身份而非关卡序号；下载、非街机及缺失身份使用默认图。</summary>
         private void RefreshArtwork()
         {
+            // 资源下载覆盖及地图进度事件不能把幸存者插画换成旧存档的关卡图。
+            if(survivorEntryArtwork&&loadingMapId==MapIds.Arcade){UI.LoadingArtwork.ShowSurvivor();return;}
             int arena = 0;
             if (displayMode == DisplayMode.Map && loadingMapId == MapIds.Arcade)
             {

@@ -176,7 +176,7 @@ namespace Game
             try
             {
                 startLoading = UIHelper.ShowUI<LoadingUICtrl>();
-                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
+                startLoadingRequestId = startLoading.BeginSurvivorEntryPreparation();
                 var preparation = this.GetUtility<IGameplayResourcePreparation>();
                 if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
                 await UniTask.NextFrame();

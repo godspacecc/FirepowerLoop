@@ -16,6 +16,8 @@ namespace Game
 
         [SerializeField] private Image target;
         [SerializeField] private Sprite fallback;
+        /// <summary>已确认的幸存者独立加载插画，不覆盖闯关各场地图片。</summary>
+        [SerializeField] private Sprite survivorArtwork;
         [SerializeField] private Entry[] entries = Array.Empty<Entry>();
 
         /// <summary>未知场地或缺失图片立即回退默认图，防止重复打开时残留上一关背景。</summary>
@@ -30,5 +32,7 @@ namespace Game
             }
             target.sprite = artwork;
         }
+        /// <summary>准备期按明确入口身份显示；资源缺失时仍有默认背景。</summary>
+        public void ShowSurvivor()=>target.sprite=survivorArtwork!=null?survivorArtwork:fallback;
     }
 }
