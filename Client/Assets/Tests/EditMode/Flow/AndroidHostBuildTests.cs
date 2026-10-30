@@ -85,12 +85,12 @@ namespace Game.Tests
                 "public static void BuildSmallHostBaseCodeAndResourcesBatch()",
                 "public static void BuildHostCodeAndResourcesBatch()");
 
-            Assert.That(source, Does.Contain("Tools/打包/Android/启动包"));
+            Assert.That(source, Does.Contain("Tools/打包/Android/启动包（首次下载资源）"));
             Assert.That(source, Does.Contain("BuildAndroidApkFileName(appVersion)"));
             Assert.That(body, Does.Contain("BuildSmallHostPackageOrThrow(version)"));
             Assert.That(body, Does.Contain("ValidateManifestOnlyBuiltin(version)"));
             Assert.That(body, Does.Contain("BuildFinalPlayerWithIncrementedPatchVersion(context, false)"));
-            Assert.That(body, Does.Contain("PublishOrUpdateLatestAndroidPackage"));
+            Assert.That(body, Does.Contain("PublishOrUpdateAndroidPackage(inputs.PackageDirectory, inputs.Version)"));
             Assert.That(body, Does.Contain("\"SmallHostBase\""));
             Assert.That(body, Does.Not.Contain("BuildFinalPlayerWithIncrementedPatchVersion(context, true)"));
         }

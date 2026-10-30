@@ -11,7 +11,7 @@ namespace Game.Editor
     public static class AndroidBootBuildGuard
     {
         /// <summary>所有拒绝路径给出同一可执行操作，不允许通过重新记录当前指纹跳过首包。</summary>
-        private const string RebuildHint = "请执行 Tools/打包/Android/完整打包 或 Tools/打包/Android/启动包，并在设备安装新 APK 后再更新代码和资源。";
+        private const string RebuildHint = "请执行 Tools/打包/Android/完整打包 或 Tools/打包/Android/启动包（首次下载资源），并在设备安装新 APK 后再更新代码和资源。";
 
         /// <summary>按项目相对路径和内容计算指纹，覆盖 Boot 目录、根 meta 及 Boot 场景；不使用时间戳。</summary>
         public static string ComputeFingerprint(string projectRoot)

@@ -53,11 +53,11 @@ namespace Game.Editor
             BuildHostCodeAndResourcesBatch();
         }
 
-        [MenuItem("Tools/打包/Android/启动包", false, 151)]
+        [MenuItem("Tools/打包/Android/启动包（首次下载资源）", false, 151)]
         private static void BuildSmallHostBaseMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android 启动包",
+                    "Android 启动包（首次下载资源）",
                     "只在 APK 内置 Boot 和 YooAsset 清单，不内置资源 Bundle。首次启动必须能连接资源服并下载完整资源；无网络且无缓存时不能进入游戏。",
                     "开始打包",
                     "取消"))
@@ -445,9 +445,9 @@ namespace Game.Editor
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 string compilationFingerprint = timing.Run("CaptureQuickCompilationInputs", AndroidQuickBuildUtility.CaptureCompilationFingerprint);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, false));
-                timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
+                // 专用AOT生成已经包含必要裁剪构建，不再额外生成预备APK。
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
+                timing.Run("ValidateGeneratedAot", ValidateAndroidAotOutput);
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
@@ -463,30 +463,27 @@ namespace Game.Editor
                 AndroidQuickBuildUtility.Validate(inputs);
                 AndroidQuickBuildUtility.ValidateApkResources(context.FinalApkPath, YooAssetBuildUtility.GetStreamingAssetsDirectory());
                 finalApkValidated = true;
+                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "SmallHostBase",
+                    package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory));
+                Debug.Log($"[AndroidBuildUtility] 启动APK已生成并保存成功记录，尚未发布：{context.FinalApkPath}");
                 timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
                 timing.Run("CleanupPreparatoryPlayer", context.CleanupPreparatoryDirectory);
 
                 if (CiBuildSession.Current != null)
                 {
-                    SaveAndroidHostState(version, "SmallHostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory);
                     CiBuildSession.Current.Capture(version, package.OutputPackageDirectory, context.FinalApkPath, appVersion: appVersion, versionCode: PlayerSettings.Android.bundleVersionCode);
                     return;
                 }
-                SaveAndroidHostState(version, "SmallHostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory);
-                var publish = timing.Run("PublishAndroidResourceServer", ResourceServerPublishUtility.PublishOrUpdateLatestAndroidPackage);
+                // 发布已准备批次的明确版本，避免误选后来生成的其他资源。
+                var publish = timing.Run("PublishAndroidResourceServer", () =>
+                    ResourceServerPublishUtility.PublishOrUpdateAndroidPackage(inputs.PackageDirectory, inputs.Version));
                 if (!publish.Success)
                     throw new InvalidOperationException($"首包资源服同步失败：{publish.Error}");
 
+                timing.Run("ValidatePublishedResources", () => ValidateQuickPublishedResources(publish.BundleDirectory, inputs));
+
                 string appUpdatePath = timing.Run("PublishAndroidApk", () => AndroidApkPublishUtility.Publish(
                     context.FinalApkPath, publish.BundleDirectory, appVersion, PlayerSettings.Android.bundleVersionCode));
-
-                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(
-                    version,
-                    "SmallHostBase",
-                    package.OutputPackageDirectory,
-                    context.FinalApkPath,
-                    true,
-                    context.BootFingerprint, inputs.AotDirectory));
 
                 Debug.Log(
                     $"[AndroidBuildUtility] Android 启动包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
@@ -503,7 +500,9 @@ namespace Game.Editor
                     $"[AndroidBuildUtility] Android 启动包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
                     timing.BuildSummary());
                 ShowDialog("Android 启动包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
-                    finalApkValidated ? context.FinalApkPath : null));
+                    finalApkValidated ? context.FinalApkPath : null) +
+                    (finalApkValidated ? "\nAPK已保留；修复失败步骤后补做成功记录、说明复制或同版本资源/APK发布，无需重打APK。" :
+                        "\n若准备记录有效且输入未变，可用复用全部打包重试；否则重新制作启动包。"));
                 throw;
             }
             finally
