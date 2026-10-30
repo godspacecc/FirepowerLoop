@@ -232,7 +232,21 @@ namespace Game
         }
         /// <summary>步进弹丸线段检查实体阻挡，防止穿越农场围栏。</summary>
         private bool Blocked(Vector2 from,Vector2 to){int steps=Math.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/.1f));for(int i=0;i<=steps;i++){var p=Vector2.Lerp(from,to,(float)i/steps);foreach(var o in obstacles)if(o.BlocksProjectiles&&Mathf.Abs(p.x-o.Center.x)<=o.HalfExtents.x&&Mathf.Abs(p.y-o.Center.y)<=o.HalfExtents.y)return true;}return false;}
-        /// <summary>按弹道线段结算击杀，掉落满额时合并经验而不丢失。</summary>
+        /// <summary>仅将完全同坐标经验累加到同一晶体；满额时沿用既有合并保全经验机制。</summary>
+        private void AddExperienceDrop(Vector2 position)
+        {
+            int existing=0;
+            // Vector2的==带距离容差，必须使用Equals，不能合并旁边的不同落点。
+            foreach(var pair in drops)if(pair.Value.Position.Equals(position)){existing=pair.Key;break;}
+            if(existing==0&&drops.Count<config.MaxDrops)
+            {
+                drops.Add(++identity,(position,config.ExperiencePerKill));return;
+            }
+            if(existing==0)existing=drops.OrderBy(x=>(x.Value.Position-position).sqrMagnitude).First().Key;
+            var drop=drops[existing];
+            drops[existing]=(drop.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,drop.Experience)+config.ExperiencePerKill);
+        }
+        /// <summary>按弹道线段结算击杀，同落点与满额掉落合并经验而不丢失。</summary>
         private void AdvanceBullets(float dt)
         {
             foreach(var b in bullets.Values.ToArray()){
@@ -241,8 +255,8 @@ namespace Game
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(Vector2.Distance(e.Position,old+segment*t)>catalog.Rule.EnemyContactRadius)continue;
                     e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;Model.Score=Math.Min(long.MaxValue-config.ScorePerKill,Model.Score)+config.ScorePerKill;
-                        if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f))) {
-                        if(drops.Count<config.MaxDrops)drops.Add(++identity,(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position,config.ExperiencePerKill));else {int id=drops.OrderBy(x=>(x.Value.Position-e.Position).sqrMagnitude).First().Key;var d=drops[id];drops[id]=(d.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,d.Experience)+config.ExperiencePerKill);}}}
+                        if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))
+                            AddExperienceDrop(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position);}
                     break;
                 }
                 if(remove){bullets.Remove(b.Id);view.RemoveProjectile(b.Id);}

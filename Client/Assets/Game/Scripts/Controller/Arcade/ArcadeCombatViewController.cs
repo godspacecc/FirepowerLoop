@@ -788,11 +788,11 @@ namespace Game
                 ResolveDropDisplayName(definition), definition.Amount, definition.VisualPrefabAddress, out _);
         }
 
-        /// <summary>经验独立显示名称和模型，不经过金币产品身份。</summary>
+        /// <summary>经验只显示晶体，不显示名称或数量；累计经验仍由幸存者权威结算。</summary>
         public void SetExperienceDrop(int id,string visualPrefabName,Vector2 position,long experience)
         {
             if (lootPresentation == null || mapRoot == null) return;
-            lootPresentation.TrySetDrop(id,mapRoot.TransformPoint(World(position,.3f)),"经验",(int)Math.Min(int.MaxValue,experience),visualPrefabName,out _);
+            lootPresentation.TrySetDrop(id,mapRoot.TransformPoint(World(position,.3f)),string.Empty,(int)Math.Min(int.MaxValue,experience),visualPrefabName,out _);
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);

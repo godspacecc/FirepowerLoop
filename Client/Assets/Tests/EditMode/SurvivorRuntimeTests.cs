@@ -201,10 +201,46 @@ namespace Game.Tests
             view.TargetVisible=true;Call("Fire");Call("TickDrone",.01f);
             Assert.That(bullets.Count,Is.EqualTo(2),"进入画面后步枪和无人机都应恢复攻击");
         }
-        private void KillOne()
+        [Test] public void ExactOverlapKeepsOneDropWithAllExperience()
         {
-            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=1,MaxHealth=1,Position=new Vector2(1,0)});
-            Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Add(902,new ArcadeProjectileRuntime{Id=902,Position=Vector2.zero,Velocity=new Vector2(20,0),Damage=1,RemainingSeconds=1});Call("AdvanceBullets",.05f);
+            KillOne();KillOne();
+            var drops=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
+            Assert.That(drops.Count,Is.EqualTo(1));
+            Assert.That(drops.Values.Single().Experience,Is.EqualTo(config.ExperiencePerKill*2));
+            Assert.That(model.State.Experience,Is.Zero,"经验仍需拾取才能获得");
+        }
+        [Test] public void NearbyDistinctDropsRemainSeparate()
+        {
+            KillOne();KillOne(new Vector2(1.000001f,0));
+            Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Count,Is.EqualTo(2),"不能用距离容差合并不同落点");
+        }
+        [Test] public void ExperiencePresentationSendsNoNameOrQuantityLabel()
+        {
+            var rootObject=new GameObject("ExperienceNameTest");
+            try
+            {
+                var port=new ExperienceLootSpy();var presentation=new ArcadeCombatViewController();
+                typeof(ArcadeCombatViewController).GetField("mapRoot",Flags).SetValue(presentation,rootObject.transform);
+                typeof(ArcadeCombatViewController).GetField("lootPresentation",Flags).SetValue(presentation,port);
+                presentation.SetExperienceDrop(1,config.ExperienceVisualPrefabAddress,Vector2.zero,3);
+                Assert.That(port.Name,Is.Empty);Assert.That(port.Amount,Is.EqualTo(3));
+                Assert.That(port.Address,Is.EqualTo(config.ExperienceVisualPrefabAddress));
+            }
+            finally{UnityEngine.Object.DestroyImmediate(rootObject);}
+        }
+        private sealed class ExperienceLootSpy:IArcadeLootPresentationPort
+        {
+            public string Name,Address;public int Amount;
+            public bool TrySetDrop(int id,Vector3 position,string name,int amount,out string error){Name=name;Amount=amount;error=null;return true;}
+            public bool TrySetDrop(int id,Vector3 position,string name,int amount,string address,out string error){Address=address;return TrySetDrop(id,position,name,amount,out error);}
+            public void RemoveDrop(int id){}
+            public void ClearArcadeDrops(){}
+        }
+        private void KillOne(Vector2? position=null)
+        {
+            var point=position??new Vector2(1,0);
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=1,MaxHealth=1,Position=point});
+            Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Add(902,new ArcadeProjectileRuntime{Id=902,Position=point-Vector2.right,Velocity=new Vector2(20,0),Damage=1,RemainingSeconds=1});Call("AdvanceBullets",.05f);
         }
         [Test] public void ZeroExperienceChanceKeepsKillAndScoreWithoutDrop()
         {
