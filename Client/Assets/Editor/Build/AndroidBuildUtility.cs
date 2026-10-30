@@ -141,13 +141,19 @@ namespace Game.Editor
                     throw new FileNotFoundException("Android 资源服版本文件不存在。", versionFile);
 
                 string version = File.ReadAllText(versionFile).Trim();
+                // 先核对全部下载资源，避免停止原服务后才发现发布目录损坏。
+                PcBuiltinResourceValidator.CaptureRemote(resourceRoot, version);
+                bool hasApkUpdate = File.Exists(Path.Combine(bundleDirectory, "AppUpdates", "Android", "app-update.json"));
                 var result = LocalResourceServerUtility.StartAndProbe(resourceRoot, version, true);
                 if (!result.Success)
                     throw new InvalidOperationException($"Android 资源服启动失败：{result.Error}");
 
-                Debug.Log(
-                    $"[AndroidBuildUtility] Android 资源服已启动：版本={version}，" +
-                    $"资源目录={resourceRoot}，本机地址={result.BaseUrl}，整包更新接口={result.BaseUrl}/app-update.json");
+                string updateStatus = hasApkUpdate
+                    ? $"已有APK更新描述，接口探测通过：{result.BaseUrl}/app-update.json（不代表APK下载或安装验收通过）"
+                    : "未发布APK更新描述；当前仅提供资源等已有内容，不提供整包更新。";
+                string message = $"版本：{version}\n资源目录：{resourceRoot}\n本机地址：{result.BaseUrl}\n{updateStatus}\n\n手机应连接同一局域网，使用此电脑的局域网IP和8001端口；不能使用127.0.0.1。请确认网络与防火墙允许连接，本次探测仅验证本机访问。";
+                Debug.Log("[AndroidBuildUtility] Android 资源服已启动：" + message);
+                ShowDialog("Android资源服已启动", message);
             }
             catch (Exception exception)
             {
