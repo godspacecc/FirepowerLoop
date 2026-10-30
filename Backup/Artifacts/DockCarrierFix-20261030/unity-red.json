@@ -1,0 +1,71 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":9,\"PassedTests\":6,\"FailedTests\":3,\"SkippedTests\":0,\"Duration\":\"00:00:11.1917449\"},\"Results\":[{\"Name\":\"Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3100000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.BreakingBarrelExplodesOnceThenBodyTakesLaterShots\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1220000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.DamagedCarrierKeepsBarrelAndRemainingHealth\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.0720000\",\"Message\":\"  Expected: 1\\r\\n  But was:  0\\r\\n\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9650000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.ExplosionAndRayUseBarrelFirstAndResetClearsDurability\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0110000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.LandedSeaCarrierBarrelBreaksWithTwoBasicShots\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9950000\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersKeepBarrelsAfterActiveLifetime\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.4650000\",\"Message\":\"  Expected: 1\\r\\n  But was:  6\\r\\n\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.SeaCarrierDoesNotTrapProjectileBeforeGroundBarrel\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.0600000\",\"Message\":\"  \\u547D\\u4E2D\\u5730\\u9762\\u6876\\u540E\\u5FC5\\u987B\\u6D88\\u8D39\\u5F39\\u4E38\\uFF0C\\u4E0D\\u80FD\\u505C\\u5728\\u6D77\\u4E2D\\u654C\\u4EBA\\u4E0A\\r\\n  Expected: \\u003Cempty\\u003E\\r\\n  But was:  \\u003C [900, Game.ArcadeProjectileRuntime] \\u003E\\r\\n\"},{\"Name\":\"Game.Tests.DockBarrelFlowTests.WeaponHitsBarrelBeforeCarrierBody\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0130000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 9,
+        "PassedTests": 6,
+        "FailedTests": 3,
+        "SkippedTests": 0,
+        "Duration": "00:00:11.1917449"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget",
+          "Status": "Passed",
+          "Duration": "00:00:01.3100000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.BreakingBarrelExplodesOnceThenBodyTakesLaterShots",
+          "Status": "Passed",
+          "Duration": "00:00:01.1220000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.DamagedCarrierKeepsBarrelAndRemainingHealth",
+          "Status": "Failed",
+          "Duration": "00:00:01.0720000",
+          "Message": "  Expected: 1\r\n  But was:  0\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel",
+          "Status": "Passed",
+          "Duration": "00:00:00.9650000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.ExplosionAndRayUseBarrelFirstAndResetClearsDurability",
+          "Status": "Passed",
+          "Duration": "00:00:01.0110000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.LandedSeaCarrierBarrelBreaksWithTwoBasicShots",
+          "Status": "Passed",
+          "Duration": "00:00:00.9950000"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersKeepBarrelsAfterActiveLifetime",
+          "Status": "Failed",
+          "Duration": "00:00:01.4650000",
+          "Message": "  Expected: 1\r\n  But was:  6\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.SeaCarrierDoesNotTrapProjectileBeforeGroundBarrel",
+          "Status": "Failed",
+          "Duration": "00:00:01.0600000",
+          "Message": "  命中地面桶后必须消费弹丸，不能停在海中敌人上\r\n  Expected: <empty>\r\n  But was:  < [900, Game.ArcadeProjectileRuntime] >\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockBarrelFlowTests.WeaponHitsBarrelBeforeCarrierBody",
+          "Status": "Passed",
+          "Duration": "00:00:01.0130000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

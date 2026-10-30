@@ -1,0 +1,6 @@
+PASS CarrierBarrelOnline.WeakShotHitsBarrelFirst
+PASS CarrierBarrelOnline.BreakOnceAndProtectBothPlayers
+PASS CarrierBarrelOnline.DamagedCarrierKeepsBarrel
+PASS CarrierBarrelOnline.ExplosionAndRayHitBarrelFirst
+PASS CarrierBarrelOnline.OrdinaryEnemyStillTakesDamage
+5/5 passed

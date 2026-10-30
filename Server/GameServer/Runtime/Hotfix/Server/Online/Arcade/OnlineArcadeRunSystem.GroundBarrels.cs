@@ -26,21 +26,11 @@ namespace ET.Server
             foreach(var pair in b.DroppedBarrels.OrderBy(p=>p.Key))yield return pair;
         }
 
-        /// <summary>服务器唯一推进载体放桶和吸物；全队共享删除，不发放奖励或保留已吞物品。</summary>
+        /// <summary>服务器只推进地面桶吸物；载桶敌人持续背桶直到打爆，全队共享删除已吞物品。</summary>
         private static void TickVortexBarrels(OnlineArcadeBattleRuntime b,float seconds)
         {
             if(!RoundContentActive(b)||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return;
             var layout=b.RoundLayout;
-            b.NextGroundBarrelId=Math.Max(b.NextGroundBarrelId,layout.Barrels.Count);
-            foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
-                if(enemy.SpecialKind==1&&enemy.CurrentHealth>0&&b.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
-                {
-                    float x=enemy.PositionX,y=enemy.PositionZ;
-                    ResolveBattlePosition(b,ref x,ref y,x,y,ServerConfig.Instance.ArcadeRule.PlayerRadius,EffectiveObstacles(b),IslandFor(b));
-                    int id=b.NextGroundBarrelId++;b.DroppedBarrels.Add(id,new ArcadeRegionPoint(x,y));
-                    if(enemy.CarriedBarrelHealth>0)b.GroundBarrelHealth[id]=enemy.CarriedBarrelHealth;
-                    enemy.CarriedBarrelHealth=0;enemy.SpecialKind=0;enemy.ContentWarning=false;
-                }
             var barrels=GroundBarrelPoints(b).ToArray();if(barrels.Length==0)return;
             foreach(var drop in b.Drops.Values.ToArray())
             {
@@ -92,7 +82,8 @@ namespace ET.Server
                 if(TryGetSegmentObstacleEntry(ax,ay,bx,by,shot.EvolutionHitRadius,obstacle,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var enemy in b.Enemies.Values)
-                if(enemy.CurrentHealth>0&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
+                // 海中与攀爬中的敌人尚不可命中，不能先截断弹道再被后续伤害入口跳过。
+                if(enemy.CurrentHealth>0&&enemy.DockSeaEntry.CanBeAttacked&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
                     GroundCircleEntry(ax,ay,bx,by,enemy.PositionX,enemy.PositionZ,
                         ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}

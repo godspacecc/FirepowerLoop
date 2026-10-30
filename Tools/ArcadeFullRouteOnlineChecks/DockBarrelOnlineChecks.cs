@@ -3,12 +3,12 @@ using ET;
 using ET.Server;
 using MemoryPack;
 
-/// <summary>用正式码头配置及权威出生入口验证载桶、卸桶与双人快照。</summary>
+/// <summary>用正式码头配置及权威出生入口验证持续载桶与双人快照。</summary>
 internal static class DockBarrelOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var checks=new (string Name,Action Check)[]{("FourRoundsSpawnCarriers",FourRoundsSpawnCarriers),("NaturalCarriersDropAndSerializeOnce",NaturalCarriersDropAndSerializeOnce),("EarlyDeathKeepsPurpleBlastAndBothPlayersSafe",EarlyDeathKeepsPurpleBlastAndBothPlayersSafe)};
+        var checks=new (string Name,Action Check)[]{("FourRoundsSpawnCarriers",FourRoundsSpawnCarriers),("NaturalCarriersKeepBarrelsAndSerialize",NaturalCarriersKeepBarrelsAndSerialize),("EarlyDeathKeepsPurpleBlastAndBothPlayersSafe",EarlyDeathKeepsPurpleBlastAndBothPlayersSafe)};
         if(maximum<checks.Length)throw new ArgumentException("DockBarrelOnline requires maximum >= 3");int failures=0;
         foreach(var check in checks)try{check.Check();Console.WriteLine("PASS DockBarrelOnline."+check.Name);}catch(Exception e){failures++;Console.WriteLine("FAIL DockBarrelOnline."+check.Name+": "+(e.InnerException??e));}
         Console.WriteLine($"{checks.Length-failures}/{checks.Length} passed");return failures==0?0:1;
@@ -29,17 +29,17 @@ internal static class DockBarrelOnlineChecks
         for(int round=1;round<=4;round++)
         {var b=Spawn(round).Battle;int count=b.Enemies.Values.Count(e=>e.SpecialKind==1);Require(count*2==b.Enemies.Count,"第"+round+"轮载桶必须占实际出生预算的50%");}
     }
-    private static void NaturalCarriersDropAndSerializeOnce()
+    private static void NaturalCarriersKeepBarrelsAndSerialize()
     {
         var actor=Spawn(2);var b=actor.Battle;var carriers=b.Enemies.Values.Where(e=>e.SpecialKind==1).ToArray();Require(carriers.Length>0,"正式出生没有载桶");
         int passageBarrels=b.DroppedBarrels.Count;Require(passageBarrels==b.RoundLayout.Entries.Count,"通道桶未完整交付");
         b.ContentClock.Advance(b.RoundLayout.BarrelDropSeconds-.01f,false);Call("TickVortexBarrels",b,.01f);Require(b.DroppedBarrels.Count==passageBarrels,"未满时提前卸桶");
         b.ContentClock.Advance(.02f,false);Call("TickVortexBarrels",b,.02f);Call("TickVortexBarrels",b,.02f);
-        Require(b.DroppedBarrels.Count==passageBarrels+carriers.Length&&carriers.All(e=>e.SpecialKind==0),"卸桶重复或身份未清除");
+        Require(b.DroppedBarrels.Count==passageBarrels&&carriers.All(e=>e.SpecialKind==1),"载桶身份被计时清除或生成卸下桶");
         using var snapshot=(OnlineArcadeBattleInfo)Call("BuildBattleSnapshot",b);
         using var clone=(OnlineArcadeBattleInfo)Call("CloneBattleSnapshot",snapshot);
         using var decoded=MemoryPackSerializer.Deserialize<OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(clone));
-        Require(decoded.ContentAreas.Count(a=>a.Kind==13)==passageBarrels+carriers.Length,"双人快照丢失通道桶或卸下桶");
+        Require(decoded.ContentAreas.Count(a=>a.Kind==13)==passageBarrels&&decoded.Enemies.Count(e=>e.SpecialKind==1)==carriers.Length,"双人快照丢失通道桶或持续载桶身份");
         Require(decoded.ContentAreas.Count(a=>a.Kind==11)==b.RoundLayout.Barrels.Count,"固定桶与动态桶混淆");
     }
     private static void EarlyDeathKeepsPurpleBlastAndBothPlayersSafe()

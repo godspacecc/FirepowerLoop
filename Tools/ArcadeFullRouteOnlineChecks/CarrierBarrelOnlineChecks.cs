@@ -2,12 +2,12 @@ using System.Reflection;
 using ET;
 using ET.Server;
 
-/// <summary>真实双人权威命中检查：背桶优先、爆炸安全、卸桶耐久及范围武器。</summary>
+/// <summary>真实双人权威命中检查：背桶优先、爆炸安全、持续背桶及范围武器。</summary>
 internal static class CarrierBarrelOnlineChecks
 {
     public static int Run(int maximum)
     {
-        var checks=new (string Name,Action Check)[]{("WeakShotHitsBarrelFirst",Weak), ("BreakOnceAndProtectBothPlayers",Break), ("DamagedDropKeepsHealth",Drop), ("ExplosionAndRayHitBarrelFirst",Area), ("OrdinaryEnemyStillTakesDamage",Ordinary)};
+        var checks=new (string Name,Action Check)[]{("WeakShotHitsBarrelFirst",Weak), ("BreakOnceAndProtectBothPlayers",Break), ("DamagedCarrierKeepsBarrel",Keep), ("ExplosionAndRayHitBarrelFirst",Area), ("OrdinaryEnemyStillTakesDamage",Ordinary)};
         if(maximum!=checks.Length)throw new ArgumentException("CarrierBarrelOnline requires maxTests=5");int failed=0;
         foreach(var check in checks)try{check.Check();Console.WriteLine("PASS CarrierBarrelOnline."+check.Name);}catch(Exception e){failed++;Console.WriteLine("FAIL CarrierBarrelOnline."+check.Name+": "+(e.InnerException??e));}
         Console.WriteLine($"{checks.Length-failed}/{checks.Length} passed");return failed==0?0:1;
@@ -35,7 +35,7 @@ internal static class CarrierBarrelOnlineChecks
         Shot(a,1);Require(e.CurrentHealth==hp-1&&a.Battle.DeathZones.Count(z=>z.Kind==14)==1,"body hit respawned barrel blast");
         Require(a.Battle.Players.Values.All(p=>p.CurrentHealth==p.MaxHealth),"barrel harmed a player");
     }
-    private static void Drop(){var(a,e)=Ready();Shot(a,1);a.Battle.ContentClock.Advance(6,false);Call("TickVortexBarrels",a.Battle,.01f);int id=a.Battle.DroppedBarrels.Single().Key;Require(e.SpecialKind==0&&a.Battle.GroundBarrelHealth[id]==a.Battle.RoundLayout.BarrelHealth-1,"unload repaired damaged barrel");}
+    private static void Keep(){var(a,e)=Ready();Shot(a,1);a.Battle.ContentClock.Advance(60,false);Call("TickVortexBarrels",a.Battle,.01f);Require(e.SpecialKind==1&&e.CarriedBarrelHealth==a.Battle.RoundLayout.BarrelHealth-1&&a.Battle.DroppedBarrels.Count==0,"carrier unloaded or repaired damaged barrel");}
     private static void Area()
     {
         var(a,e)=Ready();Call("DamageEnemiesInExplosionRadius",a,a.Battle,0f,0f,2f,1,1L);Require(e.CurrentHealth==1000&&e.CarriedBarrelHealth==a.Battle.RoundLayout.BarrelHealth-1,"blast bypassed barrel");

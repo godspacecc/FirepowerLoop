@@ -115,17 +115,16 @@ namespace Game.Tests
             Assert.That(runtime.Enemies.ContainsKey(7),Is.False);
         }
 
-        [Test] public void CarrierReleasesOneIndependentBarrelAndThenDiesNormally()
+        [Test] public void CarrierKeepsBarrelUntilDeathWithoutCreatingGroundBarrel()
         {
             Call("InitializeGroundBarrels",runtime);
             var carrier=new ArcadeEnemyRuntime{Id=8,Position=Vector2.zero,Health=100,MaxHealth=100,ContentSpecialKind=1};runtime.Enemies.Add(8,carrier);
-            runtime.ContentClock.Advance(20,false);Call("TickVortexBarrels",runtime,.1f);
-            Assert.That(Count,Is.EqualTo(3));Assert.That(carrier.ContentSpecialKind,Is.Zero);
-            Call("TickVortexBarrels",runtime,.1f);Assert.That(Count,Is.EqualTo(3),"同一载体只放一桶");
+            int initial=Count;
+            runtime.ContentClock.Advance(120,false);Call("TickVortexBarrels",runtime,.1f);
+            Assert.That(Count,Is.EqualTo(initial));Assert.That(carrier.ContentSpecialKind,Is.EqualTo(1));
             int areas=runtime.ContentAreas.Count;Call("OnRoundEnemyKilled",runtime,carrier,false);
-            Assert.That(runtime.ContentAreas.Count,Is.EqualTo(areas),"放桶后死亡不能再次爆炸");
-            Call("AppendGroundBarrelSnapshots",runtime);Assert.That(runtime.ContentPresentationSnapshots.Any(p=>p.Kind==13),Is.True);
-            Call("DetonateGroundBarrel",runtime,2);Assert.That(runtime.DestroyedGroundBarrelIds,Is.Empty,"动态桶不污染预置桶恢复索引");
+            Assert.That(runtime.ContentAreas.Count,Is.EqualTo(areas+1),"一直背桶的载体死亡仍结算既有爆炸");
+            Assert.That(Count,Is.EqualTo(initial));
         }
 
         [Test] public void PurpleExplosionStillProjectsWhenBarrelEndsTheWave()
@@ -164,13 +163,13 @@ namespace Game.Tests
             Assert.That(runtime.ContentPresentationSnapshots.Count(a=>a.Kind==14),Is.EqualTo(1),"Boss死亡清理只能停危险，不能吞掉已结算爆炸");
         }
 
-        [Test] public void AccumulatedBarrelsNeverPreventLaterCarriersFromReleasing()
+        [Test] public void ManyCarriersNeverReleaseExtraGroundBarrels()
         {
             Call("InitializeGroundBarrels",runtime);
             for(int id=1;id<=30;id++)runtime.Enemies.Add(id,new ArcadeEnemyRuntime{Id=id,Health=100,MaxHealth=100,ContentSpecialKind=1});
             runtime.ContentClock.Advance(20,false);Call("TickVortexBarrels",runtime,.1f);
-            Assert.That(Count,Is.EqualTo(Layout.Barrels.Count+30));
-            Assert.That(runtime.Enemies.Values.All(e=>e.ContentSpecialKind==0),Is.True,"存量桶不能阻止到时卸桶");
+            Assert.That(Count,Is.EqualTo(Layout.Barrels.Count));
+            Assert.That(runtime.Enemies.Values.All(e=>e.ContentSpecialKind==1),Is.True,"所有载体均持续背桶");
         }
 
         [Test] public void VortexPullsDropsAndConsumesWithoutAwardOrRefund()

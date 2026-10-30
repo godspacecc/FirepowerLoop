@@ -1,0 +1,4 @@
+PASS DockBarrelOnline.FourRoundsSpawnCarriers
+PASS DockBarrelOnline.NaturalCarriersKeepBarrelsAndSerialize
+PASS DockBarrelOnline.EarlyDeathKeepsPurpleBlastAndBothPlayersSafe
+3/3 passed

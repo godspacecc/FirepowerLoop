@@ -23,7 +23,7 @@ internal static class DockSeaEntryOnlineChecks
             ("ActivePathCannotAttack",Path),("StunHerdAndStormFreezeAge",ControlFreeze),
             ("DisconnectLoadingAndTransitionFreeze",BattleFreeze),("FinishFrameThenResumePursuit",Finish),
             ("CrowdingAndPushPreservePathButDamage",Push),("SnapshotCloneAndCodecKeepTerminalState",Snapshot),
-            ("CarrierArmorDropAndExplosionRemain",Carrier)};
+            ("CarrierArmorPersistsAndExplosionRemains",Carrier)};
         int failures=0;
         foreach(var (name,check) in checks)
             try{check();Console.WriteLine("PASS DockSeaEntryOnline."+name);}
@@ -38,7 +38,7 @@ internal static class DockSeaEntryOnlineChecks
         var actor=new OnlineArcadeRunActor{Record=record,Battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false)};var b=actor.Battle;
         foreach(var p in b.Players.Values){p.ReadyRoundGeneration=b.RoundGeneration;p.PositionX=0;p.PositionZ=-4.1f;p.CurrentHealth=p.MaxHealth=100;}
         b.SpawnQueue.Clear();b.SpawnQueue.Add("enemy.arcade.basic");b.SpawnQueueIndex=0;b.SpawnedInWave=sequence;b.NextSpawnAt=0;
-        Require((bool)Call("SpawnQueuedEnemy",b,10000L,passage),"real queued spawn failed");
+        Require((bool)Call("SpawnQueuedEnemy",b,10000L,passage,null),"real queued spawn failed");
         var enemy=b.Enemies.Values.Single();enemy.CurrentHealth=enemy.MaxHealth=1000;return(actor,enemy);
     }
     // 反射只兼容实施前的 RED；断言消费真实生成敌人和协议快照，不根据源码文本判断。
@@ -129,7 +129,7 @@ internal static class DockSeaEntryOnlineChecks
         var(rocketActor,rocketEnemy)=Spawn();Shot(rocketActor,rocketEnemy,10,"arcade.weapon.rocket",2);
         Require(rocketActor.Battle.Projectiles.ContainsKey(900)&&rocketActor.Battle.Projectiles[900].TrackingEnemyId==0&&rocketEnemy.CurrentHealth==1000,"purple rocket exploded on or tracked water enemy");
         e.ContentStunUntil=100;Tick(a,1);b.ContentClock.Advance(5.01f,false);Call("TickVortexBarrels",b,.01f);
-        Require(Read<float>(e,"Age")==0&&e.SpecialKind==0&&b.DroppedBarrels.Count==1&&b.GroundBarrelHealth.Values.All(h=>h==b.RoundLayout.BarrelHealth),"frozen entry paused five-second unload or changed barrel health");
+        Require(Read<float>(e,"Age")==0&&e.SpecialKind==1&&b.DroppedBarrels.Count==0&&e.CarriedBarrelHealth==barrel,"frozen entry unloaded or changed barrel health");
         var(a2,e2)=Spawn(2,1);foreach(var p in a2.Battle.Players.Values){p.PositionX=e2.PositionX;p.PositionZ=e2.PositionZ;}
         Tick(a2,ArcadeDockSeaEntryRules.ClimbSeconds);Shot(a2,e2,10000);Require(e2.SpecialKind==0&&a2.Battle.DeathZones.Count(z=>z.Kind==14)==1&&a2.Battle.Players.Values.All(p=>p.CurrentHealth==100),"landed barrel blast altered player safety or once-only rule");
     }

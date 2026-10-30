@@ -56,19 +56,11 @@ namespace Game
                 r.ContentPresentationSnapshots.Add(new ArcadeContentAreaSnapshot(-10000-pair.Key,pair.Key<RoundLayout(r).Barrels.Count?11:13,pair.Value.x,pair.Value.y,ProjectileHitRadius,false));
         }
 
-        /// <summary>活动战斗中只放一次桶；桶与掉落实体均由本地图拥有，暂停和奖励房不推进。</summary>
+        /// <summary>背桶保持在载体上直到击破；仅推进既有地面桶吸物，暂停和奖励房不推进。</summary>
         private void TickVortexBarrels(ArcadeCombatRuntime r,float seconds)
         {
             if(!RoundContentActive(r)||seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return;
             var layout=RoundLayout(r);
-            foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
-                if(enemy.ContentSpecialKind==1&&enemy.Health>0&&r.ContentClock.Elapsed-enemy.ContentBornAt>=layout.BarrelDropSeconds)
-                {
-                    int id=r.NextGroundBarrelId++;r.GroundBarrels.Add(id,ContentPosition(r,enemy.Position));
-                    if(enemy.CarriedBarrelHealth>0)r.GroundBarrelHealth[id]=enemy.CarriedBarrelHealth;
-                    enemy.CarriedBarrelHealth=0;
-                    enemy.ContentSpecialKind=0;enemy.ContentWarning=false;
-                }
             foreach(var drop in r.Drops.Values.ToArray())
             {
                 if(drop.DeliveryRemainingSeconds>0)continue;
@@ -95,7 +87,8 @@ namespace Game
                 if(TryGetSegmentObstacleEntry(from,to,projectile.EvolutionHitRadius,obstacle,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var enemy in r.Enemies.Values)
-                if(enemy.Health>0 && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
+                // 与后续伤害目标筛选一致：海中不可攻击的敌人不能截停弹丸。
+                if(enemy.Health>0 && enemy.DockSeaEntry.CanBeAttacked && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
                     catalog.Rule.EnemyContactRadius+ProjectileHitRadius+projectile.EvolutionHitRadius,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var crate in r.Crates.Values)

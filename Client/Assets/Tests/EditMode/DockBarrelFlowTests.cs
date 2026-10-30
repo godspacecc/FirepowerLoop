@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Luban;
+using FirepowerLoop.Arcade;
 using NUnit.Framework;
 using QFramework;
 using UnityEngine;
@@ -36,7 +37,7 @@ namespace Game.Tests
             runtime.WaveIndex=wave;runtime.Enemies.Clear();runtime.SpawnQueue.Clear();Call("InitializeRoundContent",runtime);
             var arena=catalog.Arenas.Single(a=>a.ArenaNumber==21);var group=catalog.EnemyGroups.Single(g=>g.Id==arena.WaveGroupIds[wave]);Set("group",group);
             foreach(var member in group.Members)for(int i=0;i<member.Count;i++)runtime.SpawnQueue.Enqueue(member.EnemyId);
-            int budget=runtime.SpawnQueue.Count;while(runtime.SpawnQueue.Count>0)Call("SpawnQueuedEnemy",runtime);
+            int budget=runtime.SpawnQueue.Count;while(runtime.SpawnQueue.Count>0)Call("SpawnQueuedEnemy",runtime,null);
             Assert.That(runtime.Enemies.Count,Is.EqualTo(budget),"载桶只能替换既有出生预算");return budget;
         }
         [Test] public void AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget()
@@ -47,7 +48,7 @@ namespace Game.Tests
                 Assert.That(count*2,Is.EqualTo(budget),"码头第"+(wave+1)+"轮载桶敌人必须占实际出生预算的50%");
             }
         }
-        [Test] public void NaturallySpawnedCarriersReleaseOnceAfterActiveLifetime()
+        [Test] public void NaturallySpawnedCarriersKeepBarrelsAfterActiveLifetime()
         {
             SpawnRound(1);var carriers=runtime.Enemies.Values.Where(e=>e.ContentSpecialKind==1).ToArray();
             Assert.That(carriers.Length,Is.GreaterThan(0));int initial=runtime.GroundBarrels.Count;
@@ -55,7 +56,8 @@ namespace Game.Tests
             runtime.ContentClock.Advance(layout.BarrelDropSeconds-.01f,false);Call("TickVortexBarrels",runtime,.01f);
             Assert.That(runtime.GroundBarrels.Count,Is.EqualTo(initial));
             runtime.ContentClock.Advance(.02f,false);Call("TickVortexBarrels",runtime,.02f);Call("TickVortexBarrels",runtime,.02f);
-            Assert.That(runtime.GroundBarrels.Count,Is.EqualTo(initial+carriers.Length));Assert.That(carriers.All(e=>e.ContentSpecialKind==0),Is.True);
+            runtime.ContentClock.Advance(120,false);Call("TickVortexBarrels",runtime,.1f);
+            Assert.That(runtime.GroundBarrels.Count,Is.EqualTo(initial));Assert.That(carriers.All(e=>e.ContentSpecialKind==1),Is.True);
         }
         [Test] public void EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel()
         {
@@ -83,14 +85,35 @@ namespace Game.Tests
             int before=carrier.Health;FireAtCarrier(1);Assert.That(carrier.Health,Is.EqualTo(before-1));
             Assert.That(runtime.ContentAreas.Count(a=>a.Kind==14),Is.EqualTo(1));
         }
-        /// <summary>卸桶后沿用剩余耐久，不能自动恢复为满耐久地面桶。</summary>
-        [Test] public void DamagedCarrierDropsBarrelWithRemainingHealth()
+        /// <summary>背桶不再到时卸下，已承受的伤害不会随等待恢复。</summary>
+        [Test] public void DamagedCarrierKeepsBarrelAndRemainingHealth()
         {
             var carrier=PrepareCarrier();FireAtCarrier(1);
-            runtime.ContentClock.Advance(6,false);Call("TickVortexBarrels",runtime,.01f);
-            Assert.That(carrier.ContentSpecialKind,Is.Zero);int id=runtime.GroundBarrels.Single().Key;
+            runtime.ContentClock.Advance(120,false);Call("TickVortexBarrels",runtime,.1f);
+            Assert.That(carrier.ContentSpecialKind,Is.EqualTo(1));
+            Assert.That(runtime.GroundBarrels,Is.Empty);
             var layout=catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1);
-            Assert.That(runtime.GroundBarrelHealth[id],Is.EqualTo(layout.BarrelHealth-1));
+            Assert.That(carrier.CarriedBarrelHealth,Is.EqualTo(layout.BarrelHealth-1));
+        }
+        /// <summary>海中不可攻击敌人不截停射向后方地面桶的子弹，也不受到伤害。</summary>
+        [Test] public void SeaCarrierDoesNotTrapProjectileBeforeGroundBarrel()
+        {
+            var carrier=PrepareCarrier();
+            carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Age=5f};
+            runtime.GroundBarrels.Add(100,new Vector2(1.2f,0));
+            var shot=new ArcadeProjectileRuntime{Id=900,Position=Vector2.zero,Velocity=Vector2.right*2,RemainingSeconds=3,Damage=36,FromPlayerWeapon=true,RemainingHits=1};
+            runtime.Projectiles.Add(shot.Id,shot);Call("TickProjectiles",runtime,.5f);
+            Assert.That(runtime.Projectiles,Is.Empty,"命中地面桶后必须消费弹丸，不能停在海中敌人上");
+            Assert.That(runtime.GroundBarrelHealth[100],Is.EqualTo(4));
+            Assert.That(carrier.Health,Is.EqualTo(1000));Assert.That(carrier.CarriedBarrelHealth,Is.Zero);
+        }
+        /// <summary>已登岸背桶与普通载体一致，基础枪两发打爆40耐久，弹丸立即消费。</summary>
+        [Test] public void LandedSeaCarrierBarrelBreaksWithTwoBasicShots()
+        {
+            var carrier=PrepareCarrier();carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Age=ArcadeDockSeaEntryRules.ClimbSeconds};
+            FireAtCarrier(36);Assert.That(carrier.CarriedBarrelHealth,Is.EqualTo(4));Assert.That(runtime.Projectiles,Is.Empty);
+            FireAtCarrier(36);Assert.That(carrier.ContentSpecialKind,Is.Zero);Assert.That(runtime.Projectiles,Is.Empty);
+            Assert.That(runtime.ContentAreas.Count(a=>a.Kind==14),Is.EqualTo(1));
         }
         private ArcadeEnemyRuntime PrepareCarrier()
         {

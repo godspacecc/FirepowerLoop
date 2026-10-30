@@ -1,0 +1,11 @@
+FAIL DockBarrel.WaterEnemyDoesNotBlockGroundBarrel: System.InvalidOperationException: 海中敌人截住射向后方40耐久桶的36伤害子弹
+   at DockBarrelChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 88
+   at DockBarrelChecks.Water() in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 53
+   at DockBarrelChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 23
+PASS DockBarrel.LandedCarrierBreaksAfterTwoShots
+FAIL DockBarrel.CarrierKeepsDamagedBarrel: System.InvalidOperationException: 时间到后卸桶或恢复耐久
+   at DockBarrelChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 88
+   at DockBarrelChecks.Persistent() in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 72
+   at DockBarrelChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockBarrelChecks\Program.cs:line 23
+PASS DockBarrel.OrdinaryEnemyStillBlocksGroundBarrel
+2/4 passed
