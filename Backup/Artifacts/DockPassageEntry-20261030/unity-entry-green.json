@@ -1,0 +1,63 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":8,\"PassedTests\":8,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:08.4105506\"},\"Results\":[{\"Name\":\"Game.Tests.DockPassageEntryTests.BothPassagesLetEveryProjectileContinue\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0910000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.BothPassagesRejectDamageBeforeEnteringDeck\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8870000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.EnteredCarrierBarrelBreaksWithTwoShots\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8290000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.EntryCannotAttackEvenWithPlayerWithinReach\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8960000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.EntryFreezesAndResumesWithoutLosingProtection\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8580000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.KnockbackAndCrowdingPreserveEntryPath\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8750000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.PoolResetRemovesEntryProtection\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9400000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.WalkingInsideUnlocksDamagePermanently\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9290000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 8,
+        "PassedTests": 8,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:08.4105506"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.BothPassagesLetEveryProjectileContinue",
+          "Status": "Passed",
+          "Duration": "00:00:01.0910000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.BothPassagesRejectDamageBeforeEnteringDeck",
+          "Status": "Passed",
+          "Duration": "00:00:00.8870000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.EnteredCarrierBarrelBreaksWithTwoShots",
+          "Status": "Passed",
+          "Duration": "00:00:00.8290000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.EntryCannotAttackEvenWithPlayerWithinReach",
+          "Status": "Passed",
+          "Duration": "00:00:00.8960000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.EntryFreezesAndResumesWithoutLosingProtection",
+          "Status": "Passed",
+          "Duration": "00:00:00.8580000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.KnockbackAndCrowdingPreserveEntryPath",
+          "Status": "Passed",
+          "Duration": "00:00:00.8750000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.PoolResetRemovesEntryProtection",
+          "Status": "Passed",
+          "Duration": "00:00:00.9400000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.WalkingInsideUnlocksDamagePermanently",
+          "Status": "Passed",
+          "Duration": "00:00:00.9290000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.3925640\"},\"Results\":[{\"Name\":\"Game.Tests.DockPassageEntryTests.KnockbackAndCrowdingPreserveEntryPath\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.2680000\",\"Message\":\"  Expected: (-17.00, 4.00)\\r\\n  But was:  (-16.68, 4.00)\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.3925640"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.KnockbackAndCrowdingPreserveEntryPath",
+          "Status": "Failed",
+          "Duration": "00:00:01.2680000",
+          "Message": "  Expected: (-17.00, 4.00)\r\n  But was:  (-16.68, 4.00)\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

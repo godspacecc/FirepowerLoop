@@ -8,7 +8,7 @@ namespace Game
         /// <summary>武器先消耗背桶耐久；破桶先清身份再结算原有紫爆，溢出弹伤不穿给载体。</summary>
         private bool TryDamageCarrierBarrel(ArcadeCombatRuntime r,ArcadeEnemyRuntime enemy,int damage)
         {
-            if (!enemy.DockSeaEntry.CanBeAttacked) return false;
+            if (!enemy.CanBeAttacked) return false;
             if(enemy.ContentSpecialKind!=1||enemy.Health<=0||damage<=0||!RoundContentActive(r))return false;
             int health=enemy.CarriedBarrelHealth>0?enemy.CarriedBarrelHealth:RoundLayout(r).BarrelHealth;
             enemy.CarriedBarrelHealth=Math.Max(0,health-damage);

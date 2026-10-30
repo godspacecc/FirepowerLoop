@@ -1,0 +1,13 @@
+PASS DockPassageEntryOnline.BothPassagesImmune
+PASS DockPassageEntryOnline.BulletAndEvolvedPassThrough
+PASS DockPassageEntryOnline.CarrierAndArmorPreserved
+PASS DockPassageEntryOnline.WalkThenVulnerableOnlyOnce
+PASS DockPassageEntryOnline.RangedCannotAttackAtEntrance
+FAIL DockPassageEntryOnline.FreezeAndResume: System.InvalidOperationException: invalid delta X: expected -17, got -17.935001
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 125
+   at DockPassageEntryOnlineChecks.Near(Single actual, Single expected, String label) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 124
+   at DockPassageEntryOnlineChecks.Freeze() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 87
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 27
+PASS DockPassageEntryOnline.PushAndCrowdingCannotMoveEntrance
+PASS DockPassageEntryOnline.SeaRouteStillProtected
+7/8 passed

@@ -1623,6 +1623,7 @@ namespace ET.Server
             };
             InitializeEnemyContent(battle,enemy);
             InitializeDockSeaEntry(battle,enemy,passage);
+            InitializeDockPassageEntry(battle,enemy,passage);
             battle.Enemies.Add(runtimeId, enemy);
             if (battle.IsFinalBoss && battle.FinalBossEnemyId == 0) battle.FinalBossEnemyId = runtimeId;
             battle.SpawnedInWave++;
@@ -1765,6 +1766,7 @@ namespace ET.Server
                 }
 
                 if(TickDockSeaEntry(battle,enemy,deltaSeconds)){changed=true;continue;}
+                if(TickDockPassageEntry(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(TickNextStageEnemy(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
                 {CancelMeleeWindup(enemy,true);continue;}
@@ -2312,7 +2314,7 @@ namespace ET.Server
                     foreach (long enemyId in battle.EnemyIterationIds)
                     {
                         if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy)) continue;
-                        if (!enemy.DockSeaEntry.CanBeAttacked) continue;
+                        if (!enemy.CanBeAttacked) continue;
                         float hitRadius = rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius;
                         if (DistanceSquared(projectile.PositionX, projectile.PositionZ, enemy.PositionX, enemy.PositionZ) > hitRadius * hitRadius)
                             continue;
@@ -2405,7 +2407,7 @@ namespace ET.Server
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
                 // 海中进场固定路径仍接受原伤害；站稳后恢复既有击退与岸线约束。
-                if(!enemy.DockSeaEntry.Active)
+                if(!(enemy.DockSeaEntry.Active||enemy.DockPassageEntering))
                 {
                     ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
                         rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
@@ -2551,7 +2553,7 @@ namespace ET.Server
             });
         }
 
-        /// <summary>消耗个人炸弹并清除当前已生成敌人；每个敌人仍走统一死亡掉落规则。</summary>
+        /// <summary>消耗个人炸弹并清除已完成入场的普通敌人；每个敌人仍走统一死亡掉落规则。</summary>
         private static void UseBomb(this OnlineArcadeRunActor self, OnlineArcadeBattleRuntime battle,
             OnlineArcadeBattlePlayerRuntime player)
         {
@@ -2570,7 +2572,7 @@ namespace ET.Server
             battle.EnemyIterationIds.AddRange(battle.Enemies.Keys);
             battle.EnemyIterationIds.Sort();
             foreach (long enemyId in battle.EnemyIterationIds)
-                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
+                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemy.CanBeAttacked && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
                 {
                     enemy.LastDamagePlayerId = player.PlayerId;
                     self.KillEnemyWithImpact(battle, enemy, false, true, player.PositionX, player.PositionZ);
@@ -3167,7 +3169,7 @@ namespace ET.Server
             {
                 OnlineArcadeEnemyRuntime left = battle.Enemies[battle.EnemyIterationIds[leftIndex]];
                 OnlineArcadeEnemyRuntime right = battle.Enemies[battle.EnemyIterationIds[rightIndex]];
-                if(left.DockSeaEntry.Active||right.DockSeaEntry.Active||left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
+                if((left.DockSeaEntry.Active||left.DockPassageEntering)||(right.DockSeaEntry.Active||right.DockPassageEntering)||left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
                 float offsetX = right.PositionX - left.PositionX;
                 float offsetZ = right.PositionZ - left.PositionZ;
                 float distanceSquared = offsetX * offsetX + offsetZ * offsetZ;

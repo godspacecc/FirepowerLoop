@@ -83,7 +83,7 @@ namespace ET.Server
                 {blockerEntry=entry;blocked=true;}
             foreach(var enemy in b.Enemies.Values)
                 // 海中与攀爬中的敌人尚不可命中，不能先截断弹道再被后续伤害入口跳过。
-                if(enemy.CurrentHealth>0&&enemy.DockSeaEntry.CanBeAttacked&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
+                if(enemy.CurrentHealth>0&&enemy.CanBeAttacked&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
                     GroundCircleEntry(ax,ay,bx,by,enemy.PositionX,enemy.PositionZ,
                         ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}

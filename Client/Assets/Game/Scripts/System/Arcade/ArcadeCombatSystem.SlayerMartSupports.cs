@@ -116,7 +116,7 @@ namespace Game
                         runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter))continue;
                     DamageEnemy(enemy,definition.Damage);
                     if(enemy.Health<=0){KillEnemy(runtime,enemy);continue;}
-                    if(enemy.DockSeaEntry.Active||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||enemy.IsBossPresentation||!string.IsNullOrEmpty(enemy.BossId)||enemy.Speed<=0)continue;
+                    if(enemy.DockSeaEntry.Active||enemy.DockPassageEntering||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||enemy.IsBossPresentation||!string.IsNullOrEmpty(enemy.BossId)||enemy.Speed<=0)continue;
                     var offset=enemy.Position-runtime.PlayerPosition;var direction=offset.sqrMagnitude<.000001f?Vector2.up:offset.normalized;
                     var next=enemy.Position+direction*slayerMartConfig.Parameter("support.orbKnockback");
                     next=ResolveEnemyPosition(enemy.Position,next,catalog.Rule.EnemyContactRadius,ArenaHalfWidth,ArenaHalfHeight,

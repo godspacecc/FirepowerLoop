@@ -27,7 +27,7 @@ namespace Game
         /// <summary>先执行特殊受击状态，再读取生命扣除护甲后的伤害，避免复合赋值覆盖人偶阶段。</summary>
         private void DamageEnemy(ArcadeEnemyRuntime enemy, int damage)
         {
-            if (!enemy.DockSeaEntry.CanBeAttacked) return;
+            if (!enemy.CanBeAttacked) return;
             long before=(long)enemy.Health+enemy.ArmorHealth;
             int resolved = RoundIncomingDamage(enemy, damage);
             enemy.Health -= ArcadeBabylonRules.Absorb(ref enemy.ArmorHealth, resolved);

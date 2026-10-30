@@ -1,0 +1,58 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":6,\"PassedTests\":1,\"FailedTests\":5,\"SkippedTests\":0,\"Duration\":\"00:00:07.7958278\"},\"Results\":[{\"Name\":\"Game.Tests.DockPassageEntryTests.BothPassagesLetEveryProjectileContinue\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.6220000\",\"Message\":\"  basic\\u4E0D\\u80FD\\u4F24\\u5BB3\\u901A\\u9053\\u5185\\u654C\\u4EBA\\r\\n  Expected: 1000\\r\\n  But was:  990\\r\\n\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.BothPassagesRejectDamageBeforeEnteringDeck\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.9140000\",\"Message\":\"  Expected: 20\\r\\n  But was:  0\\r\\n\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.EntryCannotAttackEvenWithPlayerWithinReach\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.9350000\",\"Message\":\"  Expected: 0\\r\\n  But was:  1\\r\\n\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.EntryFreezesAndResumesWithoutLosingProtection\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.9400000\",\"Message\":\"  Expected: 112\\r\\n  But was:  111\\r\\n\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.PoolResetRemovesEntryProtection\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8840000\"},{\"Name\":\"Game.Tests.DockPassageEntryTests.WalkingInsideUnlocksDamagePermanently\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.8810000\",\"Message\":\"  Expected: in range (-13.051,11.051)\\r\\n  But was:  -17.0f\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 6,
+        "PassedTests": 1,
+        "FailedTests": 5,
+        "SkippedTests": 0,
+        "Duration": "00:00:07.7958278"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.BothPassagesLetEveryProjectileContinue",
+          "Status": "Failed",
+          "Duration": "00:00:01.6220000",
+          "Message": "  basic不能伤害通道内敌人\r\n  Expected: 1000\r\n  But was:  990\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.BothPassagesRejectDamageBeforeEnteringDeck",
+          "Status": "Failed",
+          "Duration": "00:00:00.9140000",
+          "Message": "  Expected: 20\r\n  But was:  0\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.EntryCannotAttackEvenWithPlayerWithinReach",
+          "Status": "Failed",
+          "Duration": "00:00:00.9350000",
+          "Message": "  Expected: 0\r\n  But was:  1\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.EntryFreezesAndResumesWithoutLosingProtection",
+          "Status": "Failed",
+          "Duration": "00:00:00.9400000",
+          "Message": "  Expected: 112\r\n  But was:  111\r\n"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.PoolResetRemovesEntryProtection",
+          "Status": "Passed",
+          "Duration": "00:00:00.8840000"
+        },
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.WalkingInsideUnlocksDamagePermanently",
+          "Status": "Failed",
+          "Duration": "00:00:00.8810000",
+          "Message": "  Expected: in range (-13.051,11.051)\r\n  But was:  -17.0f\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

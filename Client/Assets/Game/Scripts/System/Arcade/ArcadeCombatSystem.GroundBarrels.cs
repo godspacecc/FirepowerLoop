@@ -88,7 +88,7 @@ namespace Game
                 {first=entry;blocked=true;}
             foreach(var enemy in r.Enemies.Values)
                 // 与后续伤害目标筛选一致：海中不可攻击的敌人不能截停弹丸。
-                if(enemy.Health>0 && enemy.DockSeaEntry.CanBeAttacked && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
+                if(enemy.Health>0 && enemy.CanBeAttacked && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
                     catalog.Rule.EnemyContactRadius+ProjectileHitRadius+projectile.EvolutionHitRadius,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var crate in r.Crates.Values)

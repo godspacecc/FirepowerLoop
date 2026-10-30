@@ -1,0 +1,13 @@
+PASS DockPassageEntryOnline.BothPassagesImmune
+PASS DockPassageEntryOnline.BulletAndEvolvedPassThrough
+PASS DockPassageEntryOnline.CarrierAndArmorPreserved
+PASS DockPassageEntryOnline.WalkThenVulnerableOnlyOnce
+PASS DockPassageEntryOnline.RangedCannotAttackAtEntrance
+PASS DockPassageEntryOnline.FreezeAndResume
+PASS DockPassageEntryOnline.PushAndCrowdingCannotMoveEntrance
+PASS DockPassageEntryOnline.SeaRouteStillProtected
+FAIL DockPassageEntryOnline.BombRespectsEntryProtection: System.InvalidOperationException: bomb killed enemy before entry completed
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 149
+   at DockPassageEntryOnlineChecks.Bomb() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 129
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 27
+8/9 passed

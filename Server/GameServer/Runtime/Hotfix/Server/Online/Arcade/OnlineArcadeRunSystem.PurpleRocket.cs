@@ -8,7 +8,7 @@ namespace ET.Server
     {
         /// <summary>与单人相同的距离/身份顺序，目标失效才重新选敌。</summary>
         private static OnlineArcadeEnemyRuntime[] RocketTargets(OnlineArcadeBattleRuntime b,float x,float z)=>b.Enemies.Values
-            .Where(e=>e.CurrentHealth>0&&e.DockSeaEntry.CanBeAttacked&&DistanceSquared(x,z,e.PositionX,e.PositionZ)<=ServerConfig.Instance.WeaponUpgrade.PurpleRocketRange*ServerConfig.Instance.WeaponUpgrade.PurpleRocketRange)
+            .Where(e=>e.CurrentHealth>0&&e.CanBeAttacked&&DistanceSquared(x,z,e.PositionX,e.PositionZ)<=ServerConfig.Instance.WeaponUpgrade.PurpleRocketRange*ServerConfig.Instance.WeaponUpgrade.PurpleRocketRange)
             .OrderBy(e=>DistanceSquared(x,z,e.PositionX,e.PositionZ)).ThenBy(e=>e.RuntimeId).ToArray();
 
         /// <summary>紫火箭完整扫掠；不复用敌方追玩家的追踪入口，寿命耗尽无爆炸。</summary>
@@ -19,7 +19,7 @@ namespace ET.Server
             float active=Math.Min(seconds,Math.Max(0,p.RemainingSeconds));
             if(active<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
             var tuning=ServerConfig.Instance.WeaponUpgrade;var rule=ServerConfig.Instance.ArcadeRule;
-            if(!b.Enemies.TryGetValue(p.TrackingEnemyId,out var target)||target.CurrentHealth<=0||!target.DockSeaEntry.CanBeAttacked||
+            if(!b.Enemies.TryGetValue(p.TrackingEnemyId,out var target)||target.CurrentHealth<=0||!target.CanBeAttacked||
                 DistanceSquared(p.PositionX,p.PositionZ,target.PositionX,target.PositionZ)>tuning.PurpleRocketRange*tuning.PurpleRocketRange)
             {target=RocketTargets(b,p.PositionX,p.PositionZ).FirstOrDefault();p.TrackingEnemyId=target?.RuntimeId??0;}
             if(target!=null)ArcadeRoundContentRules.SteerTowards(p.VelocityX,p.VelocityZ,target.PositionX-p.PositionX,target.PositionZ-p.PositionZ,
@@ -28,7 +28,7 @@ namespace ET.Server
             foreach(var wall in ProjectileObstaclesFor(b))
                 if(TryGetSegmentObstacleEntry(ax,az,bx,bz,0,wall,out float entry)&&entry<=first){first=entry;hit=true;}
             foreach(var enemy in b.Enemies.Values.OrderBy(e=>e.RuntimeId))
-                if(enemy.CurrentHealth>0&&enemy.DockSeaEntry.CanBeAttacked&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(!hit||entry<first))
+                if(enemy.CurrentHealth>0&&enemy.CanBeAttacked&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(!hit||entry<first))
                 {first=entry;hit=true;crateId=-1;}
             foreach(var crate in b.Crates.Values.OrderBy(c=>c.Definition.Id))
             {

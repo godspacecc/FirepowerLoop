@@ -23,6 +23,16 @@ namespace FirepowerLoop.Arcade
     public static class ArcadeDockSeaEntryRules
     {
         public const float ClimbSeconds = 5.75f, TotalSeconds = 6.75f;
+        /// <summary>码头左桥和上方通道须走入正式主平台；与既有码头网格中心(-1,0)、尺寸26×23一致。</summary>
+        public static bool TryGetDeckEntryTarget(string theme, int passage, float x, float y, float radius, out ArcadeRegionPoint target)
+        {
+            target = default;
+            if (theme != "docks" || passage < 0 || passage > 1 || !Finite(x) || !Finite(y) || !Finite(radius) || radius <= 0) return false;
+            target = new ArcadeRegionPoint(Math.Max(-14f + radius, Math.Min(12f - radius, x)),
+                Math.Max(-11.5f + radius, Math.Min(11.5f - radius, y)));
+            return true;
+        }
+
         /// <summary>原第三通道预算，三条车道与采用版同源。</summary>
         public static bool TryStart(string theme, int passage, int sequence, out ArcadeDockSeaEntryState state)
         {

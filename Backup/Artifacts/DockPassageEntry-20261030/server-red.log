@@ -1,0 +1,31 @@
+FAIL DockPassageEntryOnline.BothPassagesImmune: System.InvalidOperationException: entrance accepted damage
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Immune() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 53
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.BulletAndEvolvedPassThrough: System.InvalidOperationException: entrance intercepted
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Projectiles() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 59
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.CarrierAndArmorPreserved: System.InvalidOperationException: entrance lost barrel or armor
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Carrier() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 65
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.WalkThenVulnerableOnlyOnce: System.InvalidOperationException: early walk vulnerable
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Finish() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 72
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.RangedCannotAttackAtEntrance: System.InvalidOperationException: entrance attacked
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Ranged() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 83
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.FreezeAndResume: System.InvalidOperationException: frozen entry lost immunity
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Freeze() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 91
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+FAIL DockPassageEntryOnline.PushAndCrowdingCannotMoveEntrance: System.InvalidOperationException: knockback X: expected -17, got -14.999998
+   at DockPassageEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 121
+   at DockPassageEntryOnlineChecks.Near(Single actual, Single expected, String label) in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 120
+   at DockPassageEntryOnlineChecks.Push() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 99
+   at DockPassageEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockPassageEntryOnlineChecks\Program.cs:line 28
+PASS DockPassageEntryOnline.SeaRouteStillProtected
+1/8 passed

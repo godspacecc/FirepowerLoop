@@ -41,7 +41,7 @@ namespace Game.Tests
         {
             runtime.IslandEntryBatch = passage;
             runtime.SpawnQueue.Enqueue("enemy.arcade.zombie.shambler");
-            Assert.That(Call("SpawnQueuedEnemy", runtime), Is.True);
+            Assert.That(Call("SpawnQueuedEnemy", runtime, null), Is.True);
             return runtime.Enemies.Values.OrderBy(e => e.Id).Last();
         }
         [Test] public void RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck()

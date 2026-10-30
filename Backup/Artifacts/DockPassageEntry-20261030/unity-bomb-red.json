@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.4014216\"},\"Results\":[{\"Name\":\"Game.Tests.DockPassageEntryTests.BombOnlyClearsEnemiesThatHaveEntered\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.3520000\",\"Message\":\"  \\u672A\\u5165\\u573A\\u76EE\\u6807\\u4E0D\\u80FD\\u88AB\\u70B8\\u5F39\\u63D0\\u524D\\u6E05\\u9664\\r\\n  Expected: True\\r\\n  But was:  False\\r\\n\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Failed",
+        "TotalTests": 1,
+        "PassedTests": 0,
+        "FailedTests": 1,
+        "SkippedTests": 0,
+        "Duration": "00:00:02.4014216"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockPassageEntryTests.BombOnlyClearsEnemiesThatHaveEntered",
+          "Status": "Failed",
+          "Duration": "00:00:01.3520000",
+          "Message": "  未入场目标不能被炸弹提前清除\r\n  Expected: True\r\n  But was:  False\r\n"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
