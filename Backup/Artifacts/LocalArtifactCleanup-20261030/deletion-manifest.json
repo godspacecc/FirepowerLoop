@@ -1,0 +1,7358 @@
+[
+  {
+    "path": "Server/AccountFoundation/obj",
+    "kind": "directory",
+    "files": 33,
+    "bytes": 219900
+  },
+  {
+    "path": "Server/AccountFoundation/bin",
+    "kind": "directory",
+    "files": 6,
+    "bytes": 121730
+  },
+  {
+    "path": "Tools/ArcadeHitGeometryChecks/bin",
+    "kind": "directory",
+    "files": 5,
+    "bytes": 179581
+  },
+  {
+    "path": "Tools/ArcadeHitGeometryChecks/obj",
+    "kind": "directory",
+    "files": 20,
+    "bytes": 202809
+  },
+  {
+    "path": "Tools/ArcadeOutsideRouteChecks/bin",
+    "kind": "directory",
+    "files": 73,
+    "bytes": 37370390
+  },
+  {
+    "path": "Tools/ArcadeOutsideEntryChecks/bin",
+    "kind": "directory",
+    "files": 5,
+    "bytes": 185756
+  },
+  {
+    "path": "Tools/ArcadeOutsideEntryChecks/obj",
+    "kind": "directory",
+    "files": 20,
+    "bytes": 211435
+  },
+  {
+    "path": "Tools/ArcadeOutsideRouteChecks/obj",
+    "kind": "directory",
+    "files": 22,
+    "bytes": 383341
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/snapshot",
+    "kind": "directory",
+    "files": 1909,
+    "bytes": 286454583
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/pose-checks/obj",
+    "kind": "directory",
+    "files": 20,
+    "bytes": 207754
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/pose-checks/bin",
+    "kind": "directory",
+    "files": 5,
+    "bytes": 183801
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-runtime/Bin",
+    "kind": "directory",
+    "files": 52,
+    "bytes": 31535479
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/geometry-checks/bin",
+    "kind": "directory",
+    "files": 5,
+    "bytes": 179661
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/geometry-checks/obj",
+    "kind": "directory",
+    "files": 20,
+    "bytes": 202798
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/verification-tree",
+    "kind": "directory",
+    "files": 3017,
+    "bytes": 161874024
+  },
+  {
+    "path": "Backup/Artifacts/NetworkAlignment-20261030/native-runtime/Config",
+    "kind": "directory",
+    "files": 38,
+    "bytes": 2183922
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/config-hit-checks/obj",
+    "kind": "directory",
+    "files": 20,
+    "bytes": 208296
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/config-hit-checks/bin",
+    "kind": "directory",
+    "files": 5,
+    "bytes": 184171
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/dock-spatial-checks/bin",
+    "kind": "directory",
+    "files": 73,
+    "bytes": 37365715
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/dock-spatial-checks/obj",
+    "kind": "directory",
+    "files": 22,
+    "bytes": 370192
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/spatial-continuation/bin",
+    "kind": "directory",
+    "files": 73,
+    "bytes": 37368911
+  },
+  {
+    "path": "Backup/Artifacts/EnemyOutsideEntry-20261030/spatial-continuation/obj",
+    "kind": "directory",
+    "files": 22,
+    "bytes": 374375
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/runtime/Bin",
+    "kind": "directory",
+    "files": 52,
+    "bytes": 31535479
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/runtime/Bin",
+    "kind": "directory",
+    "files": 52,
+    "bytes": 31536527
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-125141-8900eb1b/runtime/Config",
+    "kind": "directory",
+    "files": 38,
+    "bytes": 2183922
+  },
+  {
+    "path": "Backup/Artifacts/AccountFoundation-20261030-124546-9662c40a/runtime/Config",
+    "kind": "directory",
+    "files": 38,
+    "bytes": 2183922
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720445
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720670
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720118
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720379
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720339
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720283
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720245
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720845
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721308
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720854
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721297
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721044
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720449
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720137
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720607
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719915
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719967
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720217
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720104
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720331
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720619
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719000
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719403
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718701
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719335
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718948
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718631
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718963
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718695
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718963
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718838
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718569
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719380
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718245
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718849
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718507
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718732
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718427
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718610
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719277
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719449
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719952
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718929
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719951
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719776
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720331
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720423
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720247
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719236
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719927
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719778
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719957
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720731
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719852
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720223
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719895
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720406
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719931
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719894
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719818
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719832
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720058
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719633
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719474
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720028
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719870
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720243
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720097
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720219
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720458
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720524
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719461
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720005
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720211
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720200
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720611
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719847
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720091
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720198
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720004
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720319
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719445
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718640
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718904
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719145
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719137
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719048
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718931
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719557
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719639
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718968
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719853
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719206
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719546
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718763
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718423
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718618
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719090
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718767
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718860
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719610
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719256
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718812
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719105
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719559
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719718
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720474
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720412
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719750
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719937
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719804
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720020
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719827
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719330
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719159
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719856
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718955
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719048
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718949
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719348
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718540
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719267
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718799
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718533
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718997
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719335
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719294
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719528
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719367
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719753
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719743
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719793
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719969
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720365
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719804
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720290
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719973
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719427
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/140.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720392
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/141.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719718
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/142.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719832
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/143.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719346
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/144.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719295
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/145.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718756
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/146.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719099
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/147.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719432
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/148.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718834
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/149.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719675
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/150.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719105
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/151.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719975
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/152.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719680
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/153.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719723
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/154.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719316
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/155.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718955
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/156.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719559
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/157.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720073
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/158.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720142
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/159.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719824
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/160.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720305
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/161.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720673
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/162.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719539
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/163.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720604
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/164.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720203
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/165.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719923
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/166.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719489
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/167.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719860
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/168.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719192
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/169.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719268
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/170.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719270
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/171.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719669
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/172.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719614
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/173.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 720256
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/174.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719595
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/175.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719157
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/176.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719641
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/177.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 718644
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/178.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719400
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/179.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 719826
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1141664
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1141589
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1141968
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1141199
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1140366
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139663
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139308
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138628
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138325
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139168
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139047
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138934
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137280
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137132
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137208
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136358
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136889
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137098
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137634
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136589
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137155
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138345
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137289
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136127
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135998
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135047
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134772
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135780
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135582
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136066
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135968
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135696
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135986
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137065
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135267
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134857
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135253
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135235
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135455
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136314
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136111
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136830
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135124
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134876
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135252
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135565
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134561
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134826
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135258
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135107
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135593
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136452
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136925
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137909
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137898
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137867
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138191
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137618
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139400
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138388
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139415
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1137506
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138091
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138847
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138499
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139171
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1139172
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138476
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1138205
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136918
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136604
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136873
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136412
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136490
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136505
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1136956
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135642
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135845
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135924
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134688
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134993
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135218
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135519
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133933
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134640
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134175
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134028
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134381
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133490
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134131
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133320
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133169
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133475
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132666
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132997
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132613
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131953
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133286
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133093
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132169
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132278
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131564
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131522
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131199
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131260
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130427
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130951
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131347
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131468
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131247
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131092
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130382
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130405
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130703
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130967
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130298
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130441
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1129982
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130827
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130517
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130364
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130302
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130722
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131645
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130513
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1130815
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1131390
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132234
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132746
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132428
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1132675
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133319
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133817
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1133418
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134698
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134897
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1134627
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135498
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-0-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1135822
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054896
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056017
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055835
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055070
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055636
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056335
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056014
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056768
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1057064
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056203
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055665
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1056706
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055109
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054995
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055408
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054601
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053816
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054081
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054073
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055207
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054122
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053430
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053632
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053598
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053174
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053521
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052416
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052855
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052695
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052646
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052387
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052495
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052325
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052649
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051224
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050729
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051427
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051704
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051205
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050282
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050751
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051419
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050526
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049486
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050013
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049831
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048378
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049082
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049403
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049398
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049094
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049165
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049664
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050193
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049597
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050572
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049965
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050480
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050497
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050195
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051106
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048080
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047663
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048901
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049270
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050150
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050750
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051100
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052204
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051665
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052253
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052389
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052154
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052009
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052364
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052258
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052626
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052414
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051750
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052877
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052304
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052836
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052755
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053358
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052906
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054034
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053933
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1055149
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054756
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054906
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054734
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053809
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054631
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054061
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053798
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053723
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053598
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053837
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054222
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053797
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053339
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053686
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054032
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053501
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053619
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053368
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053281
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1054158
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052343
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052773
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052642
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1053525
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052493
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052577
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052668
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1052695
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051523
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051072
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050450
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051835
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1051718
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050552
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050461
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050016
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049631
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049533
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049017
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048661
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047714
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047973
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048038
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047811
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047987
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048015
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046770
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048071
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048238
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049133
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047827
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-1-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049043
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046589
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046524
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046790
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047003
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046571
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046511
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046877
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047088
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047242
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047193
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047504
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047810
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048089
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047644
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047572
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048193
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048663
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048763
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048591
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048357
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048566
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049515
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050274
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048506
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048186
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048739
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048157
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047707
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047206
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046764
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047462
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047113
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047595
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047466
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047424
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047627
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049528
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050574
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050295
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049924
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049821
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049589
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049392
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050702
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050507
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050649
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050472
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049973
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050232
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1050144
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049761
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049253
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049394
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1049599
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047933
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048453
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047777
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047870
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047104
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046948
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046297
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044486
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044715
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044835
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045344
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045048
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045688
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045790
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046511
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047097
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047573
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048244
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047176
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047017
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047113
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046401
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046427
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045801
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045130
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045405
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045217
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045242
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045127
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044793
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044384
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044140
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044502
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043867
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043845
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044471
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043634
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044315
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043406
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044138
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043286
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043439
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043389
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043395
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043485
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044113
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044347
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1043864
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044127
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044671
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1044945
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045759
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045294
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045248
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046110
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1045995
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046595
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046720
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046764
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047497
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048291
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047998
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048044
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048546
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048138
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048339
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1048024
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047204
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047375
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047593
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046720
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047440
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047243
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047930
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047767
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047050
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1047052
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046840
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046934
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046405
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046867
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046635
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046911
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046518
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046479
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideApplied-20261030/frames/detail-2-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1046688
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721912
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721869
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722245
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722131
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721916
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722229
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721858
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721920
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721770
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721850
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721344
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722042
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721538
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721359
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721764
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721450
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721384
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721537
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721554
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721831
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722096
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721782
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722123
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721758
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721750
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721961
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721923
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721958
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721772
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722048
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721693
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721852
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721882
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721870
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721766
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721837
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721930
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721861
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721860
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721982
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721991
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721735
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721783
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721753
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721971
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721602
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721797
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721836
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721641
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721727
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721820
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721876
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721832
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721945
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721712
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721638
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721749
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721697
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721786
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721618
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721654
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721769
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721579
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721651
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721692
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721599
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721639
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721685
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721653
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721739
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721693
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721649
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721665
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721706
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721774
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721671
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721648
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721671
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721661
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721759
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721738
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721657
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721641
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721739
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721665
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721623
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721696
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721764
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721810
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721774
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721764
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721843
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721874
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721921
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721900
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721995
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721847
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721819
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722031
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721915
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721802
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721968
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722039
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722014
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722129
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722060
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722162
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721874
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721977
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722033
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721952
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721980
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722151
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722051
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722024
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722113
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722086
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722147
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722343
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722125
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722072
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722295
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722223
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722280
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722192
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722119
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722368
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722234
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722164
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722388
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722407
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722175
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722187
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722296
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722368
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722312
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/140.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722293
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/141.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722268
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/142.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722316
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/143.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722224
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/144.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722197
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/145.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722230
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/146.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722279
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/147.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722271
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/148.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722148
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/149.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722245
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/150.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722249
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/151.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722116
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/152.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722325
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/153.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722238
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/154.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722280
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/155.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722236
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/156.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722363
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/157.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722208
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/158.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722251
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/159.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722175
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/160.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722411
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/161.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722219
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/162.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722194
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/163.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722095
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/164.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722020
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/165.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722055
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/166.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722148
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/167.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722077
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/168.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722082
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/169.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722159
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/170.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722139
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/171.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722165
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/172.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722088
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/173.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 722042
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/174.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721866
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/175.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721839
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/176.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721885
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/177.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721667
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/178.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721721
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/179.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 721774
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159706
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160052
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160227
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1161421
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1161297
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160892
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160663
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160638
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159805
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160054
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159885
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158603
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159176
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159222
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159547
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159467
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1160117
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159666
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159633
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159768
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159835
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159735
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159036
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159323
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158823
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159465
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159232
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158977
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159229
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159204
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159257
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158946
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158936
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158518
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158888
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159237
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159335
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159464
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159316
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1159354
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158863
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158675
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158395
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158208
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158361
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157876
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158096
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158162
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158298
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158285
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158090
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158114
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158424
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158204
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158157
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1158166
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157872
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157882
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157745
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157560
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156299
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156237
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156334
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156222
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156098
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156171
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156239
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156329
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156577
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156678
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1157112
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156707
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156639
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156410
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156321
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156122
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156162
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156142
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155923
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156067
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156350
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156145
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156563
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156053
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155900
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155862
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156258
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155677
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155685
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156078
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155937
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155986
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155528
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155503
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155391
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155339
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155291
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155354
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155358
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155365
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155624
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155769
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155347
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155616
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155649
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155722
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155711
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155744
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155720
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155749
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155785
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155717
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155658
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155675
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155690
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155748
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155520
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155708
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155923
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156084
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155620
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155693
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155686
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155846
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155884
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155997
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156268
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156156
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156253
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155906
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156578
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156322
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156326
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156203
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155908
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156151
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1156281
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-0-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1155620
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097712
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099041
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098432
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097884
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098175
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097975
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098776
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099740
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099448
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099613
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099610
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1099872
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098173
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097830
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098491
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097611
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097331
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097410
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097490
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097921
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097483
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097137
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097335
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097174
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097134
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097068
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097432
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096930
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097429
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096943
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097072
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097292
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097221
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096534
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096629
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097189
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097359
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097636
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097324
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097300
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097200
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097046
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096930
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097374
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097185
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097112
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097190
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097591
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097356
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097652
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098328
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098198
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097919
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097817
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1098264
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097646
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097986
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097934
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097699
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1097064
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1094540
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095162
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095210
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095511
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096014
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095646
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095922
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096177
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096558
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096581
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096515
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096524
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096505
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096456
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096225
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096156
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096257
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095550
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1096147
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095887
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095798
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095686
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095402
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095252
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095634
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095421
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095013
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095577
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095252
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1095286
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1094641
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1094456
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1094062
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093639
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093446
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093684
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093731
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093743
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093373
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093674
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093965
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093831
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1094062
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093730
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093285
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093816
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092878
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093010
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093426
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093962
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093819
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093741
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093299
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093268
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092925
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092761
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092775
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093384
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093295
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093015
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092954
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093331
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092758
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092687
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092706
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092650
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092771
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092620
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092756
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092842
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092983
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093157
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092574
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093039
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093130
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093011
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1093069
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-1-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1092960
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-000.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118505
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-001.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118612
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-002.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118564
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-003.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119100
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-004.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119013
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-005.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119108
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-006.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118611
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-007.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118338
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-008.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118215
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-009.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118556
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-010.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118127
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-011.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118116
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-012.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117674
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-013.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117588
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-014.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117599
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-015.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117940
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-016.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118003
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-017.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118585
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-018.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119269
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-019.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119436
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-020.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119348
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-021.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119875
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-022.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120522
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-023.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120468
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-024.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120404
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-025.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120264
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-026.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120069
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-027.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120603
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-028.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119700
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-029.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120017
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-030.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120430
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-031.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120117
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-032.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120673
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-033.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1121495
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-034.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119603
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-035.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119604
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-036.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119443
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-037.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120232
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-038.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120318
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-039.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120480
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-040.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120432
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-041.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119831
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-042.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119593
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-043.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119833
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-044.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120148
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-045.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119732
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-046.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119325
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-047.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119350
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-048.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119763
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-049.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120133
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-050.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119946
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-051.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119993
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-052.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120052
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-053.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120429
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-054.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120147
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-055.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1120665
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-056.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119720
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-057.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119845
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-058.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119272
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-059.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118974
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-060.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1119091
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-061.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117069
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-062.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117119
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-063.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117585
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-064.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117816
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-065.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117806
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-066.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117774
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-067.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118169
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-068.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117759
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-069.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118039
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-070.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118397
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-071.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118505
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-072.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118504
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-073.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118249
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-074.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118134
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-075.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118304
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-076.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1118237
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-077.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117658
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-078.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117313
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-079.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117598
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-080.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117436
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-081.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117279
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-082.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117078
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-083.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117323
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-084.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117109
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-085.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117235
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-086.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116987
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-087.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116939
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-088.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117135
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-089.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117171
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-090.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117177
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-091.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1117133
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-092.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116697
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-093.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116822
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-094.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116292
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-095.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115847
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-096.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116060
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-097.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115894
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-098.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115827
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-099.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115802
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-100.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115920
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-101.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115750
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-102.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115876
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-103.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115952
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-104.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115787
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-105.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115656
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-106.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115919
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-107.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115976
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-108.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115862
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-109.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116027
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-110.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115833
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-111.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115813
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-112.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116061
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-113.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116035
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-114.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115697
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-115.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115783
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-116.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115529
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-117.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116575
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-118.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116560
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-119.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116159
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-120.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115553
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-121.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115455
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-122.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115419
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-123.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115463
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-124.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115598
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-125.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115748
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-126.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115772
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-127.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1116196
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-128.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115864
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-129.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115914
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-130.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115913
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-131.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115759
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-132.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115925
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-133.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115549
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-134.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115956
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-135.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115621
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-136.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115696
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-137.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115463
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-138.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115418
+  },
+  {
+    "path": "Backup/Artifacts/DockThreeSideEntry-20261030/frames/detail-2-139.png",
+    "kind": "file",
+    "files": 1,
+    "bytes": 1115508
+  }
+]
