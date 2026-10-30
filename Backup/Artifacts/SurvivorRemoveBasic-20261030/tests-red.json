@@ -1,0 +1,56 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 8,
+      "PassedTests": 6,
+      "FailedTests": 2,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.7869687"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.InvalidTimeAndRandomInputAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.3080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.OnlyApprovedEnemiesAndFastMultipliersRemain",
+        "Status": "Failed",
+        "Duration": "00:00:00.0610000",
+        "Message": "  Expected: equivalent to < \"enemy.arcade.zombie.shambler\", \"enemy.arcade.zombie.gaunt\" >\r\n  But was:  < \"enemy.arcade.basic\", \"enemy.arcade.zombie.shambler\", \"enemy.arcade.zombie.gaunt\" >\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.0f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Failed",
+        "Duration": "00:00:00.0200000",
+        "Message": "  Expected string length 28 but was 18. Strings differ at index 13.\r\n  Expected: \"enemy.arcade.zombie.shambler\"\r\n  But was:  \"enemy.arcade.basic\"\r\n  ------------------------^\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(119.99d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(120.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(240.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(360.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      }
+    ]
+  }
+}

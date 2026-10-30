@@ -21,7 +21,7 @@ namespace Game.Tests
         private static object Select(object pool,double seconds,float roll)
             =>pool.GetType().GetMethod("Select").Invoke(pool,new object[]{seconds,roll});
         private static T Value<T>(object row,string name)=>(T)row.GetType().GetProperty(name).GetValue(row);
-        [TestCase(0d,0f,"enemy.arcade.basic")]
+        [TestCase(0d,0f,"enemy.arcade.zombie.shambler")]
         [TestCase(0d,.99f,"enemy.arcade.zombie.shambler")]
         [TestCase(119.99d,.99f,"enemy.arcade.zombie.shambler")]
         [TestCase(120d,.99f,"enemy.arcade.zombie.gaunt")]
@@ -34,7 +34,7 @@ namespace Game.Tests
             var pool=Load();var fast=Select(pool,120,.99f);
             var entries=(System.Collections.IEnumerable)pool.GetType().GetProperty("Entries").GetValue(pool);
             var ids=entries.Cast<object>().Select(e=>Value<string>(e,"EnemyId")).ToArray();
-            Assert.That(ids,Is.EquivalentTo(new[]{"enemy.arcade.basic","enemy.arcade.zombie.shambler","enemy.arcade.zombie.gaunt"}));
+            Assert.That(ids,Is.EquivalentTo(new[]{"enemy.arcade.zombie.shambler","enemy.arcade.zombie.gaunt"}));
             Assert.That(Value<float>(fast,"HealthMultiplier"),Is.LessThan(1));
             Assert.That(Value<float>(fast,"SpeedMultiplier"),Is.GreaterThan(1));
         }

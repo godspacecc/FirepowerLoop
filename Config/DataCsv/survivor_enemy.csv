@@ -1,5 +1,4 @@
 ##var,Id,EnemyId,UnlockSeconds,Weight,HealthMultiplier,DamageMultiplier,SpeedMultiplier
 ##type,string,string#ref=TbEnemy,float,int,float,float,float
-,basic,enemy.arcade.basic,0,60,1,1,1
 ,shambler,enemy.arcade.zombie.shambler,0,40,1,1,1
 ,gaunt,enemy.arcade.zombie.gaunt,120,25,0.55,1,1.7
