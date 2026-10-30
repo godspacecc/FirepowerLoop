@@ -34,11 +34,11 @@ namespace Game.Editor
         internal static bool HasActiveWorkflow => s_isBuilding ||
             !string.IsNullOrEmpty(SessionState.GetString(PendingWorkflowKey, ""));
 
-        [MenuItem("Tools/打包/Android/完整包", false, 150)]
+        [MenuItem("Tools/打包/Android/完整打包", false, 150)]
         private static void BuildLatestMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog(
-                    "Android 完整包",
+                    "Android 完整打包",
                     "生成带完整资源的 Development APK。启动先联网更新，失败时依次尝试已成功缓存和内置资源。需要时会切换到 Android，并等待脚本重载后继续。",
                     "开始打包",
                     "取消"))
@@ -366,9 +366,9 @@ namespace Game.Editor
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 string compilationFingerprint = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, false));
-                timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
+                // HybridCLR专用构建负责生成裁剪AOT，无需先生成额外APK。
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
+                timing.Run("ValidateGeneratedAot", ValidateAndroidAotOutput);
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
@@ -383,16 +383,23 @@ namespace Game.Editor
                 AndroidQuickBuildUtility.Validate(inputs);
                 AndroidQuickBuildUtility.ValidateApkResources(context.FinalApkPath, YooAssetBuildUtility.GetStreamingAssetsDirectory());
                 finalApkValidated = true;
+                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "HostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory));
                 timing.Run("CopyPlayerGuide", () => context.CopyPlayerGuide(PlayerGuidePath, PlayerGuideFileName));
                 timing.Run("CleanupPreparatoryPlayer", context.CleanupPreparatoryDirectory);
-                timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "HostBase", package.OutputPackageDirectory, context.FinalApkPath, true, context.BootFingerprint, inputs.AotDirectory));
 
-                string appUpdatePath = timing.Run("PublishAndroidApk", () => PublishCompleteApk(context.FinalApkPath, appVersion));
+                Debug.Log($"[AndroidBuildUtility] APK已生成并保存成功记录，尚未发布：{context.FinalApkPath}");
+                // 明确发布本次资源，禁止从最近目录猜测APK对应的资源版本。
+                var publish = timing.Run("PublishAndroidResources", () =>
+                    ResourceServerPublishUtility.PublishOrUpdateAndroidPackage(inputs.PackageDirectory, inputs.Version));
+                if (!publish.Success) throw new InvalidOperationException(publish.Error);
+                timing.Run("ValidatePublishedResources", () => ValidateQuickPublishedResources(publish.BundleDirectory, inputs));
+                string appUpdatePath = timing.Run("PublishAndroidApk", () => AndroidApkPublishUtility.Publish(
+                    context.FinalApkPath, publish.BundleDirectory, appVersion, PlayerSettings.Android.bundleVersionCode));
 
                 Debug.Log(
                     $"[AndroidBuildUtility] Android 完整包完成：Version={version}，AppVersion={appVersion}，APK={context.FinalApkPath}，" +
                     $"Size={new FileInfo(context.FinalApkPath).Length}，DLLs={copied.Count}，整包更新={appUpdatePath}\n{timing.BuildSummary()}");
-                OfferStartServer("Android 完整包成功", $"APK: {context.FinalApkPath}\n应用版本: {appVersion}\n资源版本: {version}\n整包更新: {appUpdatePath}\n\n启动先联网更新，失败时尝试已成功缓存和内置资源；后续代码与资源可走 Host 更新。");
+                OfferStartServer("Android 完整打包成功", $"APK: {context.FinalApkPath}\n应用版本: {appVersion}\n资源版本: {version}\n整包更新: {appUpdatePath}\n\n启动先联网更新，失败时尝试已成功缓存和内置资源；后续代码与资源可走 Host 更新。");
             }
             catch (Exception exception)
             {
@@ -401,8 +408,10 @@ namespace Game.Editor
                 Debug.LogError(
                     $"[AndroidBuildUtility] Android 完整包在阶段 {timing.CurrentStage ?? "（无）"} 失败：{exception.Message}\n" +
                     timing.BuildSummary());
-                ShowDialog("Android 完整包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
-                    finalApkValidated ? context.FinalApkPath : null));
+                ShowDialog("Android 完整打包失败", BuildWorkflowUtility.FormatFailure(timing, exception.Message,
+                    finalApkValidated ? context.FinalApkPath : null) +
+                    (finalApkValidated ? "\nAPK已保留；修复失败步骤后补做成功记录、说明复制或同版本资源/APK发布，无需重打APK。" :
+                        "\n若代码和资源准备已完成且输入未变，可用复用全部打包重试；准备记录不可用时重新完整打包。"));
                 throw;
             }
             finally

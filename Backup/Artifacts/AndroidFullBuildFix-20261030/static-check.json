@@ -1,0 +1,13 @@
+{
+  "checkedFiles": [
+    "Client/Assets/Editor/Build/AndroidBuildUtility.cs",
+    "Client/Assets/Editor/Build/AndroidBootBuildGuard.cs",
+    "Client/Assets/Editor/Build/AndroidQuickBuildUtility.cs",
+    "Client/Assets/Tests/EditMode/Flow/AndroidBootBuildGuardTests.cs"
+  ],
+  "sourceAssertionsPassed": true,
+  "startupAndLaterMethodsUnchanged": true,
+  "unityCompilationRun": false,
+  "unityTestsRun": false,
+  "playerBuildRun": false
+}

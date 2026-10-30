@@ -64,14 +64,14 @@ namespace Game.Tests
             }
             var error = Assert.Throws<InvalidOperationException>(() => Validate(CreateState(fingerprint)));
             Assert.That(error.Message, Does.Contain("Boot"));
-            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整包"));
+            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整打包"));
         }
 
         [Test]
         public void ExistingHostWithoutFingerprintRequiresFirstPackage()
         {
             var error = Assert.Throws<InvalidOperationException>(() => Validate(CreateState(null)));
-            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整包"));
+            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整打包"));
         }
 
         [Test]
@@ -100,7 +100,7 @@ namespace Game.Tests
             if (missing == "scene") File.Delete(sceneFile);
             else Directory.Move(Path.Combine(root, "Assets/Boot"), Path.Combine(root, "Assets/Boot-removed"));
             var error = Assert.Throws<InvalidOperationException>(() => Validate(CreateState(fingerprint)));
-            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整包"));
+            Assert.That(error.Message, Does.Contain("Tools/打包/Android/完整打包"));
         }
 
         private static Type EditorType(string name)
