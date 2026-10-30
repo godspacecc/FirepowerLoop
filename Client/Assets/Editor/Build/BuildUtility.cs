@@ -308,27 +308,33 @@ namespace Game.Editor
         {
             try
             {
-                string packageRoot = YooAssetBuildUtility.GetPackageRoot(BuildTarget.StandaloneWindows64);
-                if (!YooAssetBuildUtility.TryFindLatestValidPackage(
-                        packageRoot,
-                        out string dir,
-                        out string version,
-                        out string error))
-                    throw new InvalidOperationException($"查找最新资源包失败：{error}");
-
-                // 优先运行含安装包路由的发布目录，避免新 Player 发布后仍启动资源专用服务。
+                string dir;
+                string version;
+                string source;
+                // 发布目录的版本必须从自身读取，不能与后来构建但尚未发布的版本混用。
                 string releaseRoot = Path.Combine(Directory.GetParent(Application.dataPath).Parent.FullName, "Release", "ResourceServer");
                 if (ResourceServerPublishUtility.TryFindLatestBundle(releaseRoot, out string bundle, out _))
                 {
-                    string published = Path.Combine(bundle, "ResourceFiles");
-                    ValidatePackageOrThrow(published, version);
-                    dir = published;
+                    dir = Path.Combine(bundle, "ResourceFiles");
+                    version = File.ReadAllText(Path.Combine(dir, "DefaultPackage.version")).Trim();
+                    source = "已发布资源";
                 }
+                else
+                {
+                    string packageRoot = YooAssetBuildUtility.GetPackageRoot(BuildTarget.StandaloneWindows64);
+                    if (!YooAssetBuildUtility.TryFindLatestValidPackage(packageRoot, out dir, out version, out string error))
+                        throw new InvalidOperationException($"未找到发布目录，查找构建资源也失败：{error}");
+                    source = "临时资源服务（最新构建资源，尚未发布）";
+                }
+                // 在停止原服务或启动新进程之前核对全部下载资源；损坏发布目录不静默降级。
+                PcBuiltinResourceValidator.CaptureRemote(dir, version);
                 var result = LocalResourceServerUtility.StartAndProbe(dir, version);
                 if (!result.Success)
                     throw new InvalidOperationException($"资源服启动失败：{result.Error}");
 
-                Debug.Log($"[BuildUtility] 资源服已启动：版本={version}，资源目录={dir}，地址={result.BaseUrl}");
+                string message = $"来源：{source}\n版本：{version}\n资源目录：{dir}\n地址：{result.BaseUrl}";
+                Debug.Log("[BuildUtility] 资源服已启动：" + message);
+                ShowDialog("PC资源服已启动", message);
             }
             catch (Exception e)
             {
