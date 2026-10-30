@@ -15,23 +15,81 @@ namespace Game
         private static readonly Regex PlaceholderRegex =
             new Regex(@"\{(\d+)(?:[^}]*)?\}", RegexOptions.Compiled);
 
+        /// <summary>手动生成入口统一报告失败；供其他工具调用的入口会传播异常。</summary>
         [MenuItem("Tools/本地化/生成文本常量", false, 321)]
         public static void GenerateTexts()
         {
             try
             {
-                var state = LocalizationJsonEditorUtility.LoadStateFromProject();
-                var source = GenerateSource(
-                    state.ToJsonByLanguage(),
-                    state.DefaultLanguageCode,
-                    state.CommentLanguageCode);
-                File.WriteAllText(LocalizationEditorPaths.GeneratedTextsPath, source, Encoding.UTF8);
-                AssetDatabase.Refresh();
-                Debug.Log($"[本地化] 已生成：{LocalizationEditorPaths.GeneratedTextsPath}");
+                bool changed = GenerateTextsOrThrow();
+                Debug.Log(changed
+                    ? $"[本地化] 已生成：{LocalizationEditorPaths.GeneratedTextsPath}"
+                    : "[本地化] 文本常量内容未变化，已跳过写入和刷新。");
             }
-            catch (InvalidDataException exception)
+            catch (Exception exception)
             {
-                Debug.LogError($"[本地化] 无法生成文本常量：{exception.Message}");
+                Debug.LogError($"[本地化] 无法完成文本常量生成：{exception.Message}");
+            }
+        }
+
+        /// <summary>校验原始语言表并安全写入；失败抛给调用方，返回值表示文件是否更新。</summary>
+        public static bool GenerateTextsOrThrow()
+        {
+            var state = LocalizationJsonEditorUtility.LoadStateFromProject();
+            // 校验磁盘原始表，避免编辑器合并行时补空值掩盖缺键或无效JSON。
+            var jsonByLanguage = new Dictionary<string, string>(StringComparer.Ordinal);
+            foreach (var language in state.Languages)
+            {
+                LocalizationJsonEditorUtility.ValidateLanguageCode(language.Code);
+                string path = Path.Combine(LocalizationEditorPaths.ConfigFolder, language.Code + ".json");
+                jsonByLanguage.Add(language.Code, File.ReadAllText(path));
+            }
+            var report = LocalizationValidator.ValidateJsonTables(jsonByLanguage);
+            if (!report.IsValid)
+                throw new InvalidDataException(string.Join("\n", report.Issues.Select(issue => issue.ToString())));
+
+            string source = GenerateSource(jsonByLanguage, state.DefaultLanguageCode, state.CommentLanguageCode);
+            if (!WriteSourceIfChanged(LocalizationEditorPaths.GeneratedTextsPath, source))
+                return false;
+            try
+            {
+                AssetDatabase.Refresh();
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException("生成文件已更新，但Unity资源刷新失败；请检查编辑器状态。", exception);
+            }
+            return true;
+        }
+
+        /// <summary>先写同目录临时文件再原子替换；写入失败不截断旧文件，不触碰meta。</summary>
+        private static bool WriteSourceIfChanged(string targetPath, string source)
+        {
+            if (File.Exists(targetPath) && string.Equals(File.ReadAllText(targetPath), source, StringComparison.Ordinal))
+                return false;
+
+            string temporaryPath = targetPath + "." + Guid.NewGuid().ToString("N") + ".tmp";
+            try
+            {
+                File.WriteAllText(temporaryPath, source, Encoding.UTF8);
+                if (File.Exists(targetPath))
+                    File.Replace(temporaryPath, targetPath, null);
+                else
+                    File.Move(temporaryPath, targetPath);
+                return true;
+            }
+            finally
+            {
+                // 清理失败单独提示，不能覆盖写入原始异常或误报已替换文件未更新。
+                try
+                {
+                    if (File.Exists(temporaryPath))
+                        File.Delete(temporaryPath);
+                }
+                catch (Exception exception)
+                {
+                    Debug.LogWarning($"[本地化] 临时文件清理失败：{temporaryPath}；{exception.Message}");
+                }
             }
         }
 

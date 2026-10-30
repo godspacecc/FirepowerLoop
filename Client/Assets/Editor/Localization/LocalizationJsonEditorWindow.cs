@@ -158,8 +158,16 @@ namespace Game
                 File.WriteAllText(GetLanguageAssetPath(pair.Key), pair.Value, Encoding.UTF8);
             }
 
-            AssetDatabase.Refresh();
-            LocalizationTextGenerator.GenerateTexts();
+            // 语言文件已落盘；后续失败需如实报告阶段，不能声称代码已生成。
+            try
+            {
+                AssetDatabase.Refresh();
+                LocalizationTextGenerator.GenerateTextsOrThrow();
+            }
+            catch (Exception exception)
+            {
+                throw new InvalidOperationException($"文本表已保存，但文本常量同步未完成：{exception.Message}", exception);
+            }
         }
 
         public static string BuildLanguagesJson(LocalizationJsonEditorState state)
@@ -785,7 +793,7 @@ namespace Game
             {
                 LocalizationJsonEditorUtility.RefreshMemberNames(state.Rows);
                 LocalizationJsonEditorUtility.SaveStateToProject(state);
-                status = $"已保存 {state.Languages.Count} 种语言，{state.Rows.Count} 条文本，并重新生成 TextsGenerated.cs。";
+                status = $"已保存 {state.Languages.Count} 种语言，{state.Rows.Count} 条文本，文本常量已同步（内容相同时不重写）。";
             }
             catch (Exception exception)
             {
