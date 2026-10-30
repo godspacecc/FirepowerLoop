@@ -1,0 +1,11 @@
+FAIL OutsideStartPreserved: Assertion failed
+FAIL ContinuousApproach: Assertion failed
+FAIL CompletionFrameOwned: Assertion failed
+FAIL OvershootStopsAtEntry: Assertion failed
+FAIL ZeroTimeFreezes: Assertion failed
+FAIL InvalidTimeRejected: Assertion failed
+FAIL InvalidSpeedRejected: Assertion failed
+PASS InvalidStartRejected
+FAIL DiagonalAndSplitSteps: Assertion failed
+PASS InactiveStateNoOwnership
+Scoped checks: 10; passed: 2; failed: 8; includePassingTests=true

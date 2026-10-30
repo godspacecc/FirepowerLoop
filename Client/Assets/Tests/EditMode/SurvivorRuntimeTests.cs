@@ -37,6 +37,27 @@ namespace Game.Tests
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
+        [Test] public void OutsideSpawnRejectsInvalidRouteWithoutCreatingEnemy()
+        {
+            // 海岛特殊布局不属于幸存者普通通道配置，模拟准备后配置失效。
+            Set("layout",Get<ArcadeConfigCatalogDefinition>("catalog").RoundLayouts.First(x=>x.ArenaConfigNumber==1));
+            Call("Spawn");
+            Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
+            Assert.That(model.Paused,Is.True);Assert.That(system.LastError,Does.Contain("场外通道"));
+            Assert.That(model.ResultSnapshot,Is.Null,"配置故障不能伪造失败结算");
+            Call("Tick");Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
+        }
+        [Test] public void OutsideSpawnPauseAndEarlyKillLandExperienceInsideEntry()
+        {
+            Call("Spawn");var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var enemy=enemies.Values.Single();
+            Assert.That(enemy.OutsideEntry.Active,Is.True);Assert.That(enemy.Position.x,Is.LessThan(-30.5f));
+            var start=enemy.Position;system.SetPaused(true);Call("Tick");Assert.That(enemy.Position,Is.EqualTo(start));
+            var bullets=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+            bullets.Add(500,new ArcadeProjectileRuntime{Id=500,Position=start-Vector2.right,Velocity=Vector2.right*10,Damage=enemy.Health,RemainingSeconds=1});
+            Call("AdvanceBullets",.1f);Assert.That(enemies,Is.Empty);Assert.That(model.Kills,Is.EqualTo(1));
+            var drops=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
+            Assert.That(drops.Values.Single().Position,Is.EqualTo(new Vector2(enemy.OutsideEntry.TargetX,enemy.OutsideEntry.TargetZ)));
+        }
         [Test] public void PauseFreezesClockEnemiesAndInputPresentation()
         {
             system.SetPaused(true);var before=Get<Vector2>("player");Call("Tick");Assert.That(model.State.ElapsedSeconds,Is.Zero);Assert.That(Get<Vector2>("player"),Is.EqualTo(before));Assert.That(view.PlayerWrites,Is.Zero);Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);

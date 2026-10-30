@@ -82,10 +82,10 @@ namespace ET.Server
                 if(TryGetSegmentObstacleEntry(ax,ay,bx,by,shot.EvolutionHitRadius,obstacle,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var enemy in b.Enemies.Values)
-                // 海中与攀爬中的敌人尚不可命中，不能先截断弹道再被后续伤害入口跳过。
+                // 码头身体按三维扫掠排序，只有真正相交才截停弹道。
                 if(enemy.CurrentHealth>0&&enemy.CanBeAttacked&&!shot.HitEnemyIds.Contains(enemy.RuntimeId)&&
-                    GroundCircleEntry(ax,ay,bx,by,enemy.PositionX,enemy.PositionZ,
-                        ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
+                    TryEnemySweep(enemy,ax,ay,bx,by,
+                        ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+shot.EvolutionHitRadius,shot.EvolutionHitRadius,out float entry)&&entry<=blockerEntry)
                 {blockerEntry=entry;blocked=true;}
             foreach(var crate in b.Crates.Values)
                 if(crate.Health>0&&GroundCircleEntry(ax,ay,bx,by,crate.Definition.X,crate.Definition.Y,

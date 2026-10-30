@@ -1,0 +1,59 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 9,
+      "PassedTests": 9,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:11.9513231"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.AllFourDockRoundsActuallySpawnCarriersWithinExistingBudget",
+        "Status": "Passed",
+        "Duration": "00:00:01.3200000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.BreakingBarrelExplodesOnceThenBodyTakesLaterShots",
+        "Status": "Passed",
+        "Duration": "00:00:01.2270000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.DamagedCarrierKeepsBarrelAndRemainingHealth",
+        "Status": "Passed",
+        "Duration": "00:00:01.0400000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.EarlyCarrierDeathPublishesPurpleExplosionInsteadOfDroppedBarrel",
+        "Status": "Passed",
+        "Duration": "00:00:01.0150000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.ExplosionAndRayUseBarrelFirstAndResetClearsDurability",
+        "Status": "Passed",
+        "Duration": "00:00:01.0410000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.LandedSeaCarrierBarrelBreaksWithTwoBasicShots",
+        "Status": "Passed",
+        "Duration": "00:00:00.9620000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.NaturallySpawnedCarriersKeepBarrelsAfterActiveLifetime",
+        "Status": "Passed",
+        "Duration": "00:00:01.5190000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.SeaCarrierDoesNotTrapProjectileBeforeGroundBarrel",
+        "Status": "Passed",
+        "Duration": "00:00:01.0240000"
+      },
+      {
+        "Name": "Game.Tests.DockBarrelFlowTests.WeaponHitsBarrelBeforeCarrierBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.0050000"
+      }
+    ]
+  }
+}

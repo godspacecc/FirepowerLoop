@@ -267,8 +267,10 @@ namespace ET.Server
         public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
         /// <summary>码头三路海中靠近与攀爬的瞬时权威状态；终态保留来源，不进入轮前存档。</summary>
         public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry;
-        /// <summary>所有命中与锁定入口共用，入场途中不阻挡弹丸或消耗耐久。</summary>
-        public bool CanBeAttacked => DockSeaEntry.CanBeAttacked;
+        /// <summary>服务端权威普通入场轨迹；客户端直接显示广播位置。</summary>
+        public FirepowerLoop.Arcade.ArcadeOutsideEntryState OutsideEntry;
+        /// <summary>存活资格不包含入场时间；攻击入口按实际身体进行空间判定。</summary>
+        public bool CanBeAttacked => CurrentHealth > 0;
         /// <summary>敌人受牛撞后的活动状态，阻止移动和攻击直到恢复。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>每名玩家残火的独立接触时间；来源消失或离开覆盖后清理。</summary>

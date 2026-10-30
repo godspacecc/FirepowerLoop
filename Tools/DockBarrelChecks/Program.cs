@@ -34,7 +34,7 @@ internal static class DockBarrelChecks
         var actor = new OnlineArcadeRunActor { Record=record, Battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false) };
         var b=actor.Battle;
         foreach (var p in b.Players.Values) { p.ReadyRoundGeneration=b.RoundGeneration; p.PositionX=0; p.PositionZ=-4; }
-        b.SpawnQueue.Clear(); b.SpawnQueue.Add("enemy.arcade.basic"); b.SpawnQueueIndex=0; b.SpawnedInWave=1; b.NextSpawnAt=0;
+        b.SpawnQueue.Clear(); b.SpawnQueue.Add("enemy.arcade.zombie.shambler"); b.SpawnQueueIndex=0; b.SpawnedInWave=1; b.NextSpawnAt=0;
         Require((bool)Call("SpawnQueuedEnemy",b,10000L,2,null), "海路真实出生失败");
         var enemy=b.Enemies.Values.Single(); Require(enemy.SpecialKind==1&&enemy.DockSeaEntry.Started,"海路载桶身份丢失");
         enemy.CurrentHealth=enemy.MaxHealth=1000;
@@ -58,16 +58,16 @@ internal static class DockBarrelChecks
     {
         var(a,e)=Ready(); Call("TickEnemies",a,a.Battle,ArcadeDockSeaEntryRules.ClimbSeconds);
         Require(e.DockSeaEntry.CanBeAttacked&&a.Battle.RoundLayout.BarrelHealth==40,"登岸或正式40耐久前提失败");
-        Shot(a,e.PositionX-1,e.PositionZ,1,36);
+        ShotCarrier(a,e,36);
         Require(e.SpecialKind==1&&e.CarriedBarrelHealth==4&&e.CurrentHealth==1000,"第一发未先扣背桶");
-        Shot(a,e.PositionX-1,e.PositionZ,1,36);
+        ShotCarrier(a,e,36);
         Require(e.SpecialKind==0&&e.CarriedBarrelHealth==0&&a.Battle.DeathZones.Count(z=>z.Kind==14)==1,"第二发未独立引爆背桶");
         Require(a.Battle.Players.Values.All(p=>p.CurrentHealth==p.MaxHealth),"背桶爆炸误伤玩家");
     }
     private static void Persistent()
     {
         var(a,e)=Ready(); Call("TickEnemies",a,a.Battle,ArcadeDockSeaEntryRules.ClimbSeconds);
-        Shot(a,e.PositionX-1,e.PositionZ,1,36);
+        ShotCarrier(a,e,36);
         a.Battle.ContentClock.Advance(60,false); Call("TickVortexBarrels",a.Battle,1f);
         Require(e.SpecialKind==1&&e.CarriedBarrelHealth==4&&a.Battle.DroppedBarrels.Count==0,"时间到后卸桶或恢复耐久");
     }
@@ -76,6 +76,15 @@ internal static class DockBarrelChecks
         var(a,e)=Ready(); e.DockSeaEntry=default; e.SpecialKind=0; e.PositionX=0; e.PositionZ=0;
         a.Battle.DroppedBarrels.Add(100,new ArcadeRegionPoint(2,0)); Shot(a,-2,0,5,36);
         Require(e.CurrentHealth==964&&!a.Battle.GroundBarrelHealth.ContainsKey(100)&&a.Battle.Projectiles.Count==0,"正常敌人未挡住后方桶弹道");
+    }
+    /// <summary>沿身体局部横向完整穿过，避免把两腿间空隙当作应命中。</summary>
+    private static void ShotCarrier(OnlineArcadeRunActor actor,OnlineArcadeEnemyRuntime enemy,int damage)
+    {
+        var forward=ArcadeDockSeaEntryRules.Forward(enemy.DockSeaEntry);
+        actor.Battle.Projectiles.Add(900,new OnlineArcadeProjectileRuntime{RuntimeId=900,OwnerPlayerId=1,FromPlayerWeapon=true,
+            PositionX=enemy.PositionX-forward.Y,PositionZ=enemy.PositionZ+forward.X,VelocityX=forward.Y*2,VelocityZ=-forward.X*2,
+            RemainingSeconds=3,RemainingHits=1,Damage=damage});
+        Call("TickProjectiles",actor,actor.Battle,1f);
     }
     /// <summary>实际弹丸更新；每次只发一颗36伤害普通弹，命中后允许复用测试身份。</summary>
     private static void Shot(OnlineArcadeRunActor a,float x,float z,float velocity,int damage)

@@ -1,0 +1,9 @@
+FAIL HeightDependent: Production pose sequence missing
+FAIL FacingDependent: Production pose sequence missing
+FAIL InterpolatedPose: Production pose sequence missing
+FAIL FrozenRepeat: Production pose sequence missing
+FAIL StartInside: Production pose sequence missing
+FAIL MultipleEarliest: Production pose sequence missing
+FAIL ClampAndOverlap: Production pose sequence missing
+FAIL RejectBadData: Production pose sequence missing
+ArcadeHitPoseChecks: 0/8 passed

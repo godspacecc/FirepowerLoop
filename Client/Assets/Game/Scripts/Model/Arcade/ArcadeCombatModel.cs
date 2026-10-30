@@ -17,8 +17,10 @@ namespace Game
     {
         /// <summary>码头海路活动状态，回池清零。</summary>
         public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry;
-        /// <summary>所有命中与锁定入口共用，入场途中不阻挡弹丸或消耗耐久。</summary>
-        public bool CanBeAttacked => DockSeaEntry.CanBeAttacked;
+        /// <summary>普通敌人的场外接近状态，回池清零，不改变受伤资格。</summary>
+        public FirepowerLoop.Arcade.ArcadeOutsideEntryState OutsideEntry;
+        /// <summary>存活目标资格；身体是否与攻击相交由各空间命中入口裁决。</summary>
+        public bool CanBeAttacked => Health > 0;
         /// <summary>当前地图特色敌人的现身及一次重生状态，不写入轮前存档。</summary>
         public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
         /// <summary>当前地图牛撞的权威飞行与落地僵直；对象回池必须归零。</summary>
@@ -80,7 +82,7 @@ namespace Game
         /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
         public void Reset()
         {
-            DockSeaEntry = default;
+            DockSeaEntry = default;OutsideEntry=default;
             StageEnemy=default;
             EvolutionBurnContactSeconds=0;
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;

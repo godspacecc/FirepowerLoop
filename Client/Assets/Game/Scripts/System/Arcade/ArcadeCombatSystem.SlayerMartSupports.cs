@@ -56,8 +56,9 @@ namespace Game
             foreach(var enemy in runtime.Enemies.Values.ToArray())
             {
                 string target=runtime.ArenaNumber+":"+runtime.WaveIndex+":"+runtime.IsChallenge+":"+enemy.Id;
+                if(enemy.DockSeaEntry.Active && !ArcadeSlayerMartSupportRules.Bodies(state,item,runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter).Any(body=>EnemyInHitSphere(enemy,new Vector2(body.X,body.Y),slayerMartConfig.Parameter("support.contactRadius"))))continue;
                 if(!ArcadeSlayerMartSupportRules.TryContact(state,item,target,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,
-                    runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter))continue;
+                    runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter,enemy.DockSeaEntry.Active))continue;
                 DamageEnemy(enemy,powerup.Definition.Damage);if(enemy.Health<=0)KillEnemy(runtime,enemy);
             }
             return true;
@@ -112,11 +113,12 @@ namespace Game
                 {
                     if(enemy.StageEnemy.Phase!=0)continue;
                     string targetKey=runtime.ArenaNumber+":"+runtime.WaveIndex+":"+runtime.IsChallenge+":"+enemy.Id;
-                    if(!ArcadeSlayerMartSupportRules.TryContact(state,item,targetKey,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,
-                        runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter))continue;
+                    if(enemy.DockSeaEntry.Active && !ArcadeSlayerMartSupportRules.Bodies(state,item,runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter).Any(body=>EnemyInHitSphere(enemy,new Vector2(body.X,body.Y),slayerMartConfig.Parameter("support.contactRadius"))))continue;
+                if(!ArcadeSlayerMartSupportRules.TryContact(state,item,targetKey,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,
+                        runtime.PlayerPosition.x,runtime.PlayerPosition.y,slayerMartConfig.Supports,slayerMartConfig.Parameter,enemy.DockSeaEntry.Active))continue;
                     DamageEnemy(enemy,definition.Damage);
                     if(enemy.Health<=0){KillEnemy(runtime,enemy);continue;}
-                    if(enemy.DockSeaEntry.Active||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||enemy.IsBossPresentation||!string.IsNullOrEmpty(enemy.BossId)||enemy.Speed<=0)continue;
+                    if(enemy.OutsideEntry.Active||enemy.DockSeaEntry.Active||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||enemy.IsBossPresentation||!string.IsNullOrEmpty(enemy.BossId)||enemy.Speed<=0)continue;
                     var offset=enemy.Position-runtime.PlayerPosition;var direction=offset.sqrMagnitude<.000001f?Vector2.up:offset.normalized;
                     var next=enemy.Position+direction*slayerMartConfig.Parameter("support.orbKnockback");
                     next=ResolveEnemyPosition(enemy.Position,next,catalog.Rule.EnemyContactRadius,ArenaHalfWidth,ArenaHalfHeight,

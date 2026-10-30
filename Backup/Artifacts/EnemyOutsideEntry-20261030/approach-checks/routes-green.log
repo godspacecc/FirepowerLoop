@@ -1,0 +1,6 @@
+PASS OutsideRoutes.FarmFourDirections
+PASS OutsideRoutes.AllOrdinaryLayouts
+PASS OutsideRoutes.SpecialMapsPreserved
+PASS OutsideRoutes.OnlyVerifiedMouthCaps
+PASS OutsideRoutes.InvalidIndicesRejected
+PASS OutsideRoutes.SolidWallSweepRejected

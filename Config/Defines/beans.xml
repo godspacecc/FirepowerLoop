@@ -464,6 +464,8 @@
         <var name="WeaponSpawnFirstDelayMax" type="float"/>
         <!-- 海岛分段入场的活动秒数；不是方向预警时间。 -->
         <var name="EntrySegmentSeconds" type="float"/>
+        <!-- 普通敌人场外接近距离；零保留现有特殊入场。 -->
+        <var name="OutsideEntryDistance" type="float"/>
         <!-- 仅限制人物行走的阻挡索引，弹丸可穿过；索引从零开始。 -->
         <var name="MovementOnlyObstacleIndices" type="(array#sep=;),int"/>
     </bean>
@@ -669,5 +671,13 @@
         <var name="Range" type="float"/>
         <var name="ProjectileSpeed" type="float"/>
         <var name="ProjectileLifetimeSeconds" type="float"/>
+    </bean>
+    <!-- 正式骨骼胶囊采样：帧→胶囊→两端点与半径，双端共用，不以计时免伤替代空间命中。 -->
+    <bean name="ArcadeDockHitPoseConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="IntervalSeconds" type="float"/>
+        <var name="FrameCount" type="int"/>
+        <var name="CapsuleCount" type="int"/>
+        <var name="Data" type="string"/>
     </bean>
 </beans>

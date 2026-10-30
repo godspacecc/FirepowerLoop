@@ -28,7 +28,7 @@ namespace Game
                 if(TryGetSegmentObstacleEntry(from,to,0,wall,out float entry)&&entry<=first)
                 {first=entry;kind=1;}
             foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
-                if(enemy.Health>0&&enemy.CanBeAttacked&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
+                if(enemy.Health>0&&enemy.CanBeAttacked&&TryEnemySweep(enemy,from,to,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,p.EvolutionHitRadius,out float entry)&&(kind==0||entry<first))
                 {first=entry;kind=2;target=enemy;}
             foreach(var crate in r.Crates.Values.OrderBy(c=>c.Definition.Id))
                 if(crate.Health>0&&TryGroundBarrelEntry(from,to,new Vector2(crate.Definition.X,crate.Definition.Y),crate.Definition.Radius+ProjectileHitRadius,out float entry)&&(kind==0||entry<first))
@@ -50,7 +50,7 @@ namespace Game
         private void HitPurpleRay(ArcadeCombatRuntime r,ArcadeProjectileRuntime p,ArcadeEnemyRuntime primary)
         {
             var tuning=catalog.Rule.WeaponUpgrade;var origin=primary.Position;int damage=p.Damage;
-            var others=r.Enemies.Values.Where(e=>e.Health>0&&e.CanBeAttacked&&e.Id!=primary.Id&&(e.Position-origin).sqrMagnitude<=tuning.PurpleRayChainRange*tuning.PurpleRayChainRange)
+            var others=r.Enemies.Values.Where(e=>e.Health>0&&CanAimAtEnemy(e,origin)&&e.Id!=primary.Id&&(e.Position-origin).sqrMagnitude<=tuning.PurpleRayChainRange*tuning.PurpleRayChainRange)
                 .OrderBy(e=>(e.Position-origin).sqrMagnitude).ThenBy(e=>e.Id).Take(tuning.PurpleRayChainCount).ToArray();
             foreach(var enemy in new[]{primary}.Concat(others))
             {

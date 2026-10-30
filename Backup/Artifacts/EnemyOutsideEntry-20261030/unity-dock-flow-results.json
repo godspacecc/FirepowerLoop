@@ -1,0 +1,89 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 15,
+      "PassedTests": 15,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:17.5466218"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.AllThreePassagesStartAtSeaAndReachWalkableDeck",
+        "Status": "Passed",
+        "Duration": "00:00:01.2900000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit",
+        "Status": "Passed",
+        "Duration": "00:00:01.0410000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.ConfirmedDamage_IsNotRejectedByEntryAge(0.0f)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9720000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.ConfirmedDamage_IsNotRejectedByEntryAge(2.1f)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0130000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.ConfirmedDamage_IsNotRejectedByEntryAge(3.4f)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0900000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.ConfirmedDamage_IsNotRejectedByEntryAge(5.74f)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0190000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands",
+        "Status": "Passed",
+        "Duration": "00:00:01.1410000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen",
+        "Status": "Passed",
+        "Duration": "00:00:01.0270000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking",
+        "Status": "Passed",
+        "Duration": "00:00:01.1850000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge",
+        "Status": "Passed",
+        "Duration": "00:00:01.2390000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"basic\",0)",
+        "Status": "Passed",
+        "Duration": "00:00:01.2200000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"rocket\",2)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0740000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"raygun\",2)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9720000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"grenade\",2)",
+        "Status": "Passed",
+        "Duration": "00:00:01.0830000"
+      },
+      {
+        "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"piercing\",2)",
+        "Status": "Passed",
+        "Duration": "00:00:00.9780000"
+      }
+    ]
+  }
+}

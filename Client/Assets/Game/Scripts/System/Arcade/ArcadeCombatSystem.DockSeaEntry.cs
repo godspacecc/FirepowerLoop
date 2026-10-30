@@ -15,7 +15,7 @@ namespace Game
             var start = ArcadeDockSeaEntryRules.Position(enemy.DockSeaEntry);
             enemy.Position = new Vector2(start.X, start.Y);
         }
-        /// <summary>进场不追击/攻击；受控保持姿态，登台前免受攻击，登台后沿原伤害路径结算。</summary>
+        /// <summary>进场不追击或主动攻击；受控时冻结姿态，受伤始终由实际身体与攻击相交决定。</summary>
         private bool TickDockSeaEntry(ArcadeCombatRuntime runtime, ArcadeEnemyRuntime enemy, float seconds)
         {
             if (!enemy.DockSeaEntry.Active) return false;

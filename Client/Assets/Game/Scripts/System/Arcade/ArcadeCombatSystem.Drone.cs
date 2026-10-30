@@ -19,7 +19,7 @@ namespace Game
             else if(powerup.ExtraDrone==null&&state.Phase==ArcadeDronePhase.Following&&state.RemainingSeconds>0)
                 powerup.ExtraDrone=new ArcadeDroneState{RemainingSeconds=state.RemainingSeconds,FireCooldownSeconds=state.FireCooldownSeconds,
                     X=runtime.PlayerPosition.x-tuning.OffsetX,Z=runtime.PlayerPosition.y+tuning.OffsetZ};
-            var targets=runtime.Enemies.Values.Where(e=>e.Health>0).Select(e=>new ArcadeDroneTarget(e.Id,e.Position.x,e.Position.y)).ToArray();
+            var targets=runtime.Enemies.Values.Where(e=>e.Health>0&&CanAimAtEnemy(e,new Vector2(state.X,state.Z))).Select(e=>new ArcadeDroneTarget(e.Id,e.Position.x,e.Position.y)).ToArray();
             bool canAct=runtime.PlayerHealth>0&&runtime.RespawnRemaining<=0&&!runtime.InTreasureRoom&&!runtime.AwaitingExit&&!runtime.IslandRoundAwaitingExit&&!runtime.WaveClearAwarded;
             var step=StepDroneUnit(runtime,powerup,state,targets,tier,deltaTime,canAct,1,0);
             if(powerup.ExtraDrone!=null)

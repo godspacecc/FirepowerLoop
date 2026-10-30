@@ -56,7 +56,7 @@ namespace ET.Server
                 {
                     for(int tick=0;tick<ticks;tick++)foreach(var enemy in battle.Enemies.Values.ToArray())
                     {
-                        if(DistanceSquared(player.PositionX,player.PositionZ,enemy.PositionX,enemy.PositionZ)>radius*radius)continue;
+                        if(!EnemyInHitSphere(enemy,player.PositionX,player.PositionZ,radius))continue;
                         enemy.LastDamagePlayerId=player.PlayerId;
                         DamageEnemy(battle,enemy,(int)config.Parameter("storm.damage"));
                         if(enemy.CurrentHealth<=0)actor.KillEnemy(battle,enemy);

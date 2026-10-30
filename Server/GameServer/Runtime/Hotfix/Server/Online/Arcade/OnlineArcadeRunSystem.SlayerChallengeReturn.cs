@@ -31,7 +31,7 @@ namespace ET.Server
             if(!hazardKill&&battle.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Collecting&&battle.Drops.Count<ServerConfig.Instance.ArcadeRule.MaxDrops)
             {
                 long id=battle.NextDropRuntimeId++;battle.Drops.Add(id,new OnlineArcadeDropRuntime{RuntimeId=id,
-                    DropConfigId=ServerConfig.Instance.SlayerChallenge.CoinDropId,PositionX=enemy.PositionX,PositionZ=enemy.PositionZ});
+                    DropConfigId=ServerConfig.Instance.SlayerChallenge.CoinDropId,PositionX=enemy.OutsideEntry.Active?enemy.OutsideEntry.TargetX:enemy.PositionX,PositionZ=enemy.OutsideEntry.Active?enemy.OutsideEntry.TargetZ:enemy.PositionZ});
             }
             return true;
         }

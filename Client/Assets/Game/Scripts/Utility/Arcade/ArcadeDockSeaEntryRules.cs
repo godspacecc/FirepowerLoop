@@ -12,8 +12,8 @@ namespace FirepowerLoop.Arcade
         /// <summary>活动年龄与固定车道，不由客户端播放时钟推进。</summary>
         public float Age, Lane;
         public bool Active => Started && Age < ArcadeDockSeaEntryRules.TotalSeconds;
-        /// <summary>游近及抓边攀爬时不接受攻击；双脚登台后即恢复，不额外等待站稳步进。</summary>
-        public bool CanBeAttacked => !Started || Age >= ArcadeDockSeaEntryRules.ClimbSeconds;
+        /// <summary>入场动作不授予免伤；生命资格和攻击形状由战斗入口裁决。</summary>
+        public bool CanBeAttacked => true;
     }
     /// <summary>已采用艺术路径；X用于战斗位置，高度和倾斜只供表现。</summary>
     public readonly struct ArcadeDockSeaEntryPose

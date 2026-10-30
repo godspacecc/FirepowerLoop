@@ -1,0 +1,13 @@
+PASS SideEarliest
+PASS UnderwaterMiss
+PASS SphereRadius
+PASS Tangent
+PASS LongSegment
+PASS StartInside
+PASS ZeroSweepMiss
+PASS ZeroCapsule
+PASS TiltedCapsule
+PASS AxialCap
+PASS InvalidFinite
+PASS OverlapBoundary
+ArcadeHitGeometryChecks: 12/12 passed

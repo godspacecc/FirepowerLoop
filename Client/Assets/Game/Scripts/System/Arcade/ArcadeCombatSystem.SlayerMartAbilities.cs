@@ -76,7 +76,7 @@ namespace Game
             {
                 for(int tick=0;tick<ticks;tick++)foreach(var enemy in runtime.Enemies.Values.ToArray())
                 {
-                    if((enemy.Position-runtime.PlayerPosition).sqrMagnitude>radius*radius)continue;
+                    if(!EnemyInHitSphere(enemy,runtime.PlayerPosition,radius))continue;
                     DamageEnemy(enemy,(int)slayerMartConfig.Parameter("storm.damage"));
                     if(enemy.Health<=0)KillEnemy(runtime,enemy);
                 }

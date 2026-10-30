@@ -91,12 +91,12 @@ namespace FirepowerLoop.Arcade
     /// <summary>能力仅依据发射快照，支援与敌弹不能获得紫级武器特技。</summary>
     public static class ArcadeWeaponEvolutionRules
     {
-        /// <summary>每个敌人与玩家来源共用接触时钟，按真实跳伤时刻取覆盖区域最大值，重叠不叠伤。</summary>
-        public static int BurningDamage(IReadOnlyList<ArcadeWeaponBurnArea> areas,long owner,float x,float z,ref float contact,float seconds,ArcadeWeaponEvolutionTuning t)
+        /// <summary>每个敌人与玩家来源共用接触时钟；spatiallyValidated 仅接受调用方已逐区域三维验证的集合，不再用根节点重筛。</summary>
+        public static int BurningDamage(IReadOnlyList<ArcadeWeaponBurnArea> areas,long owner,float x,float z,ref float contact,float seconds,ArcadeWeaponEvolutionTuning t,bool spatiallyValidated=false)
         {
             float active=0;double radiusSquared=t.FlameGroundRadius*t.FlameGroundRadius;
             foreach(var area in areas)
-                if(area.OwnerId==owner&&(area.X-x)*(area.X-x)+(area.Z-z)*(area.Z-z)<=radiusSquared)
+                if(area.OwnerId==owner&&(spatiallyValidated||(area.X-x)*(area.X-x)+(area.Z-z)*(area.Z-z)<=radiusSquared))
                     active=Math.Max(active,Math.Min(seconds,area.RemainingSeconds));
             if(active<=0){contact=0;return 0;}
             float prior=contact;contact+=active;int ticks=(int)Math.Floor((contact+.000001f)/t.FlameGroundTickSeconds);long total=0;
@@ -105,7 +105,7 @@ namespace FirepowerLoop.Arcade
                 float time=i*t.FlameGroundTickSeconds-prior;int damage=0;
                 foreach(var area in areas)
                     if(area.OwnerId==owner&&area.RemainingSeconds+.000001f>=time&&
-                        (area.X-x)*(area.X-x)+(area.Z-z)*(area.Z-z)<=radiusSquared)damage=Math.Max(damage,area.Damage);
+                        (spatiallyValidated||(area.X-x)*(area.X-x)+(area.Z-z)*(area.Z-z)<=radiusSquared))damage=Math.Max(damage,area.Damage);
                 total+=damage;
             }
             // 长帧后半段若火已熄灭，也存在真实空窗；下一团火不能继承前半帧的接触蓄积。

@@ -55,6 +55,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         WeaponSpawnFirstDelayMin = _buf.ReadFloat();
         WeaponSpawnFirstDelayMax = _buf.ReadFloat();
         EntrySegmentSeconds = _buf.ReadFloat();
+        OutsideEntryDistance = _buf.ReadFloat();
         {int __n0 = _buf.ReadSize(); MovementOnlyObstacleIndices = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); MovementOnlyObstacleIndices[__index0] = __e0;}}
     }
 
@@ -103,6 +104,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
     public readonly float WeaponSpawnFirstDelayMin;
     public readonly float WeaponSpawnFirstDelayMax;
     public readonly float EntrySegmentSeconds;
+    public readonly float OutsideEntryDistance;
     public readonly int[] MovementOnlyObstacleIndices;
    
     public const int __ID__ = -1832003478;
@@ -159,6 +161,7 @@ public sealed partial class ArcadeRoundLayoutConfig : Luban.BeanBase
         + "WeaponSpawnFirstDelayMin:" + WeaponSpawnFirstDelayMin + ","
         + "WeaponSpawnFirstDelayMax:" + WeaponSpawnFirstDelayMax + ","
         + "EntrySegmentSeconds:" + EntrySegmentSeconds + ","
+        + "OutsideEntryDistance:" + OutsideEntryDistance + ","
         + "MovementOnlyObstacleIndices:" + Luban.StringUtil.CollectionToString(MovementOnlyObstacleIndices) + ","
         + "}";
     }

@@ -244,7 +244,7 @@ namespace Game
         {
             foreach(var e in r.Enemies.Values.ToArray())
             {
-                if(!r.Enemies.ContainsKey(e.Id) || Vector2.Distance(center,e.Position)>radius+catalog.Rule.EnemyContactRadius ||
+                if(!r.Enemies.ContainsKey(e.Id) || (e.DockSeaEntry.Active ? !EnemyInHitSphere(e,center,radius) : Vector2.Distance(center,e.Position)>radius+catalog.Rule.EnemyContactRadius) ||
                     !r.ContentClock.TryHit(200000L+e.Id,ContentTuning(r).SkillWarning))continue;
                 DamageEnemy(e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.Health<=0)KillEnemyWithImpact(r,e,true,explosive,center);
                 if(this.GetModel<ArcadeCombatModel>().Runtime!=r || catalog==null)return;
@@ -351,7 +351,7 @@ namespace Game
                 e.MeleeWindupSeconds=d.TelegraphSeconds;
                 e.MaxHealth=e.Health=Mathf.Max(1,Mathf.RoundToInt(d.MaxHP*source.HealthMultiplier));e.Damage=Mathf.Max(1,Mathf.RoundToInt(d.AttackDamage*source.DamageMultiplier));
                 e.Speed=Mathf.Max(.1f,d.MoveSpeed*source.SpeedMultiplier);e.AttackRange=Mathf.Max(.7f,d.AttackRange);e.AttackInterval=Mathf.Max(.25f,d.AttackCooldownSeconds);
-                AssignRoundEnemyContent(r,e);r.Enemies.Add(e.Id,e);
+                AssignRoundEnemyContent(r,e);InitializeOutsideEntry(r,e);r.Enemies.Add(e.Id,e);
             }
         }
         /// <summary>统一弹丸预算入口成功分配实体后，才追加追踪/减速逻辑。</summary>

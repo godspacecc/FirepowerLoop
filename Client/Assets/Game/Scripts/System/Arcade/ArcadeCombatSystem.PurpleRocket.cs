@@ -9,7 +9,7 @@ namespace Game
     {
         /// <summary>发射时按距离/稳定身份分配目标；目标失效后才重新选敌，不追玩家。</summary>
         private ArcadeEnemyRuntime[] RocketTargets(ArcadeCombatRuntime r,Vector2 position)=>r.Enemies.Values
-            .Where(e=>e.Health>0&&e.CanBeAttacked&&(e.Position-position).sqrMagnitude<=catalog.Rule.WeaponUpgrade.PurpleRocketRange*catalog.Rule.WeaponUpgrade.PurpleRocketRange)
+            .Where(e=>e.Health>0&&CanAimAtEnemy(e,position)&&(e.Position-position).sqrMagnitude<=catalog.Rule.WeaponUpgrade.PurpleRocketRange*catalog.Rule.WeaponUpgrade.PurpleRocketRange)
             .OrderBy(e=>(e.Position-position).sqrMagnitude).ThenBy(e=>e.Id).ToArray();
 
         /// <summary>紫火箭拥有独立扫掠命中，长帧不能越过敌人/墙/箱；寿命只允许实际余下飞行时间。</summary>
@@ -20,7 +20,7 @@ namespace Game
             float active=Mathf.Min(seconds,Mathf.Max(0,p.RemainingSeconds));
             if(active<=0){RemoveProjectile(r,p.Id);return true;}
             var tuning=catalog.Rule.WeaponUpgrade;
-            if(!r.Enemies.TryGetValue(p.TrackingEnemyId,out var target)||target.Health<=0||!target.CanBeAttacked||
+            if(!r.Enemies.TryGetValue(p.TrackingEnemyId,out var target)||target.Health<=0||!CanAimAtEnemy(target,p.Position)||
                 (target.Position-p.Position).sqrMagnitude>tuning.PurpleRocketRange*tuning.PurpleRocketRange)
             {target=RocketTargets(r,p.Position).FirstOrDefault();p.TrackingEnemyId=target?.Id??0;}
             if(target!=null)
@@ -33,7 +33,7 @@ namespace Game
             foreach(var wall in ProjectileObstaclesFor(r))
                 if(TryGetSegmentObstacleEntry(from,to,0,wall,out float entry)&&entry<=first){first=entry;hit=true;}
             foreach(var enemy in r.Enemies.Values.OrderBy(e=>e.Id))
-                if(enemy.Health>0&&enemy.CanBeAttacked&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&(!hit||entry<first))
+                if(enemy.Health>0&&enemy.CanBeAttacked&&TryEnemySweep(enemy,from,to,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,p.EvolutionHitRadius,out float entry)&&(!hit||entry<first))
                 {first=entry;hit=true;crateId=-1;}
             foreach(var crate in r.Crates.Values.OrderBy(c=>c.Definition.Id))
             {

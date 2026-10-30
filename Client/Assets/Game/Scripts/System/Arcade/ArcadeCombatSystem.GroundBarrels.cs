@@ -87,9 +87,9 @@ namespace Game
                 if(TryGetSegmentObstacleEntry(from,to,projectile.EvolutionHitRadius,obstacle,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var enemy in r.Enemies.Values)
-                // 与后续伤害目标筛选一致：海中不可攻击的敌人不能截停弹丸。
-                if(enemy.Health>0 && enemy.CanBeAttacked && !projectile.HitEnemyIds.Contains(enemy.Id) && TryGroundBarrelEntry(from,to,enemy.Position,
-                    catalog.Rule.EnemyContactRadius+ProjectileHitRadius+projectile.EvolutionHitRadius,out var entry) && entry<=first)
+                // 按同一三维身体精查排序，水下身体不能凭二维根节点截停弹丸。
+                if(enemy.Health>0 && enemy.CanBeAttacked && !projectile.HitEnemyIds.Contains(enemy.Id) && TryEnemySweep(enemy,from,to,
+                    catalog.Rule.EnemyContactRadius+ProjectileHitRadius+projectile.EvolutionHitRadius,projectile.EvolutionHitRadius,out var entry) && entry<=first)
                 {first=entry;blocked=true;}
             foreach(var crate in r.Crates.Values)
             {

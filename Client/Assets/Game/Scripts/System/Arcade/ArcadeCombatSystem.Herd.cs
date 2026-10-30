@@ -24,7 +24,7 @@ namespace Game
             foreach(var enemy in r.Enemies.Values)
             {
                 travel=ArcadeHerdImpactRules.Step(ref enemy.HerdImpact,dt);
-                if(travel>0&&!enemy.DockSeaEntry.Active)enemy.Position=MoveHerdTarget(r,enemy.Position,new Vector2(enemy.HerdImpact.DirectionX,enemy.HerdImpact.DirectionZ)*travel,catalog.Rule.EnemyContactRadius);
+                if(travel>0&&!enemy.DockSeaEntry.Active&&!enemy.OutsideEntry.Active)enemy.Position=MoveHerdTarget(r,enemy.Position,new Vector2(enemy.HerdImpact.DirectionX,enemy.HerdImpact.DirectionZ)*travel,catalog.Rule.EnemyContactRadius);
             }
         }
         /// <summary>短步推进平面落点，长帧击飞也不能穿过场内墙或离开地图。</summary>
@@ -78,7 +78,9 @@ namespace Game
                 if(this.GetModel<ArcadeCombatModel>().Runtime!=r||catalog==null||!RoundContentActive(r))return;
                 foreach(var enemy in r.Enemies.Values.ToArray())
                 {
-                    if(enemy.DockSeaEntry.Active||!r.Enemies.ContainsKey(enemy.Id)||!ArcadeHerdRules.TryContact(cow,sweep,r.HerdMapId,enemy.Id,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,enemy.Health>0))continue;
+                    // 码头身体先做三维牛身扫掠，再登记本次冲撞，不能按入场身份免伤。
+                    if(enemy.DockSeaEntry.Active&&!TryEnemySweep(enemy,new UnityEngine.Vector2(sweep.FromX,sweep.FromZ),new UnityEngine.Vector2(sweep.ToX,sweep.ToZ),0,sweep.Radius,out _))continue;
+                    if(!r.Enemies.ContainsKey(enemy.Id)||!ArcadeHerdRules.TryContact(cow,sweep,r.HerdMapId,enemy.Id,enemy.Position.x,enemy.Position.y,catalog.Rule.EnemyContactRadius,enemy.Health>0,enemy.DockSeaEntry.Active))continue;
                     DamageEnemy(enemy,ArcadeRoundContentRules.Damage(enemy.MaxHealth,stage.HerdEnemyDamage));
                     if(enemy.Health<=0)KillEnemyWithReaction(r,enemy,true,false,enemy.Position-new UnityEngine.Vector2(cow.DirectionX,cow.DirectionZ),ArcadeDeathImpactRules.Herd);
                     else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy,true);

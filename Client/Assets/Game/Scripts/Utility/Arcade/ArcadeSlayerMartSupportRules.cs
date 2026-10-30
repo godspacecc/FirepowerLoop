@@ -146,14 +146,14 @@ namespace FirepowerLoop.Arcade
             {double angle=instance.Phase+index*Math.PI;result[index]=new ArcadeSlayerMartPoint(ownerX+(float)Math.Cos(angle)*radius,ownerY+(float)Math.Sin(angle)*radius);}
             return result;
         }
-        /// <summary>只检查真实接触体，同组合对同一地图目标共享命中周期。</summary>
+        /// <summary>同组合对同一目标共享周期；spatiallyValidated 仅接受上游真实三维接触，不再按根节点重筛。</summary>
         public static bool TryContact(ArcadeSlayerMartPlayer player,ArcadeSlayerMartEffectInstance instance,string targetKey,float targetX,float targetY,float enemyRadius,
-            float ownerX,float ownerY,ArcadeSlayerMartSupportCatalog catalog,Func<string,float> parameter)
+            float ownerX,float ownerY,ArcadeSlayerMartSupportCatalog catalog,Func<string,float> parameter,bool spatiallyValidated=false)
         {
             if(instance.RemainingSeconds<=0||string.IsNullOrWhiteSpace(targetKey)||(instance.Kind!=SlayerMartSupportKind.Orb&&instance.Kind!=SlayerMartSupportKind.Saw)||
                 player.SupportHits.Any(p=>p.GroupId==instance.GroupId&&p.TargetKey==targetKey&&p.RemainingSeconds>0))return false;
             double radius=parameter("support.contactRadius")+Math.Max(0,enemyRadius);
-            bool touches=Bodies(player,instance,ownerX,ownerY,catalog,parameter).Any(p=>(double)(p.X-targetX)*(p.X-targetX)+(double)(p.Y-targetY)*(p.Y-targetY)<=radius*radius);
+            bool touches=spatiallyValidated||Bodies(player,instance,ownerX,ownerY,catalog,parameter).Any(p=>(double)(p.X-targetX)*(p.X-targetX)+(double)(p.Y-targetY)*(p.Y-targetY)<=radius*radius);
             if(!touches)return false;
             player.SupportHits.Add(new ArcadeSlayerMartSupportHit{GroupId=instance.GroupId,TargetKey=targetKey,RemainingSeconds=catalog.Get(instance.Kind).Interval});return true;
         }

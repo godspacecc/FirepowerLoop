@@ -1,0 +1,6 @@
+PASS PiercingRetainsRemainingTravel
+PASS PiercingHitsSecondBodySameFrame
+PASS BurningValidatedBodyPreservesTicks
+PASS HerdValidatedContactStillDeduplicates
+PASS SupportValidatedContactStillCoolsDown
+ArcadeSpatialContinuationChecks: 5/5 passed

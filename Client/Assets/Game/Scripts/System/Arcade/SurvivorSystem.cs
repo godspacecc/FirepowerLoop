@@ -60,6 +60,9 @@ namespace Game
                 droneVisual=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,support.ActiveVisualPrefabAddress,false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
                 dropVisual=catalog.Drops.Single(x=>x.Id=="arcade.drop.gold.small");
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
+                // 在交接战场前验证所有入口，不允许运行中退回入口补生。
+                for(int i=0;i<layout.Entries.Count;i++)if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryStart(layout,i,HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,out _))
+                    throw new InvalidOperationException("幸存者入口没有合法场外通道，请检查地图配置");
                 store=new SurvivorResultFileStore(1);
                 return store.TryRead(out _,out error);
             }catch(Exception ex){error=ex.Message;return false;}
@@ -166,9 +169,9 @@ namespace Game
             player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
-            if(spawnClock<=0){Spawn();spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
+            if(spawnClock<=0){Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             navigation.SetTarget(player);
-            foreach(var e in enemies.Values){e.Position=navigation.Move(e.Position,player,e.Speed*dt);if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius){m.Health=Math.Max(0,m.Health-e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}}
+            foreach(var e in enemies.Values){if(FirepowerLoop.Arcade.ArcadeOutsideEntryRules.Advance(ref e.OutsideEntry,dt,e.Speed,out var entryPosition))e.Position=new Vector2(entryPosition.X,entryPosition.Y);else e.Position=navigation.Move(e.Position,player,e.Speed*dt);if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius){m.Health=Math.Max(0,m.Health-e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}}
             Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             Offer();view.SetPlayer(player,facing,true,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
@@ -184,10 +187,19 @@ namespace Game
         {
             if(SurvivorCombatRules.SpawnBudget(enemies.Count,config.MaxAliveEnemies,1)==0)return;
             for(int attempt=0;attempt<layout.Entries.Count;attempt++){
-                var entry=layout.Entries[spawnIndex];spawnIndex=(spawnIndex+1)%layout.Entries.Count;
-                var position=Resolve(new Vector2(entry.X,entry.Y),catalog.Rule.EnemyContactRadius);if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
+                spawnIndex=(spawnIndex+1)%layout.Entries.Count;
+                // 幸存者使用同一配置走廊，入场完成后才交给场内距离场。
+                if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryStart(layout,(spawnIndex+layout.Entries.Count-1)%layout.Entries.Count,
+                    HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,out var outsideEntry))
+                {
+                    // 准备后配置失效也不能静默在入口补生，冻结本局并保留明确故障。
+                    LastError="幸存者入口没有合法场外通道，请检查地图配置";
+                    Model.Paused=true;input.Disable();Publish();return;
+                }
+                var position=new Vector2(outsideEntry.StartX,outsideEntry.StartZ);
+                if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
                 double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,enemyConfig.MaxHP*(1+minutes*config.EnemyHealthGrowthPerMinute));
-                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=config.EnemyId,Position=position,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,enemyConfig.AttackDamage*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=enemyConfig.MoveSpeed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
+                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=config.EnemyId,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,enemyConfig.AttackDamage*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=enemyConfig.MoveSpeed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
             }
         }
         /// <summary>只对射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
@@ -225,7 +237,7 @@ namespace Game
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(Vector2.Distance(e.Position,old+segment*t)>catalog.Rule.EnemyContactRadius)continue;
                     e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;Model.Score=Math.Min(long.MaxValue-config.ScorePerKill,Model.Score)+config.ScorePerKill;
-                        if(drops.Count<config.MaxDrops)drops.Add(++identity,(e.Position,config.ExperiencePerKill));else {int id=drops.OrderBy(x=>(x.Value.Position-e.Position).sqrMagnitude).First().Key;var d=drops[id];drops[id]=(d.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,d.Experience)+config.ExperiencePerKill);}}
+                        if(drops.Count<config.MaxDrops)drops.Add(++identity,(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position,config.ExperiencePerKill));else {int id=drops.OrderBy(x=>(x.Value.Position-e.Position).sqrMagnitude).First().Key;var d=drops[id];drops[id]=(d.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,d.Experience)+config.ExperiencePerKill);}}
                     break;
                 }
                 if(remove){bullets.Remove(b.Id);view.RemoveProjectile(b.Id);}

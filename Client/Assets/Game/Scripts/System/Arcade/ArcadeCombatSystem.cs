@@ -401,6 +401,10 @@ namespace Game
                 ? catalog.Arenas.First(value => value.ArenaNumber == run.ArenaConfigNumber)
                 : catalog.Arenas[ResolveConfiguredArenaIndex(run.NextArenaNumber, catalog.Arenas.Count)];
             if(run.IsCasualRoute)arena=arena.WithRouteVersion(run.CasualRouteVersion);
+            // 进入码头前验证全部正式身体，避免第一发子弹才发现缺失配置。
+            if(catalog.RoundLayouts.Any(layout=>layout.ArenaConfigNumber==arena.ArenaNumber&&layout.ThemeKey=="docks"))
+                foreach(var model in new[]{"ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeZombieBloated"})
+                    if(!provider.TryGetDockHitPose("Prefabs/Characters/"+model,out _,out error)) { RejectArenaEntry(error); return; }
             challenge = default;
             if (isChallenge)
             {
@@ -431,6 +435,7 @@ namespace Game
                 Dashes = ReadAmount(run.EmergencyResources, ArcadeRunDefaults.DashResourceId),
                 WaveIndex = -1
             };
+            if(!ValidateOutsideFallback(runtime)){RejectArenaEntry("敌人入口没有合法场外通道，请检查地图配置");return;}
             runtime.PlayerHealth = runtime.PlayerMaxHealth;
             if (!isChallenge)
                 foreach (var definition in arena.Hazards)
@@ -895,6 +900,7 @@ namespace Game
             }
             AssignRoundEnemyContent(runtime, enemy);
             InitializeDockSeaEntry(runtime, enemy);
+            InitializeOutsideEntry(runtime, enemy);
             if (isFinalBossEnemy && UsesContentRounds(runtime)) enemy.ContentBossKind = 4;
             runtime.Enemies.Add(enemy.Id, enemy);
             if (isFinalBossEnemy)
@@ -915,6 +921,7 @@ namespace Game
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
                 if (TickDockSeaEntry(runtime, enemy, deltaTime)) continue;
+                if (TickOutsideEntry(runtime, enemy, deltaTime)) continue;
                 enemy.MeleeRecoveryRemaining = Mathf.Max(0, enemy.MeleeRecoveryRemaining - deltaTime);
                 if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy,true);continue;}
                 if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy,true);continue;}
@@ -1111,6 +1118,16 @@ namespace Game
                     if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime || catalog == null) return;
                     continue;
                 }
+                // 先截到最早的真实码头身体，避免后方墙体或帧末到期抢先消费弹丸。
+                if (!projectile.Hostile)
+                {
+                    var sweepEnd = priorPosition + projectile.Velocity * Mathf.Min(deltaTime, Mathf.Max(0, projectile.RemainingSeconds + deltaTime));
+                    float dockFirst = float.PositiveInfinity;
+                    foreach (var candidate in runtime.Enemies.Values)
+                        if (candidate.CanBeAttacked && candidate.DockSeaEntry.Active && !projectile.HitEnemyIds.Contains(candidate.Id) &&
+                            TryEnemySweep(candidate, priorPosition, sweepEnd, 0, projectile.EvolutionHitRadius, out float dockEntry)) dockFirst = Mathf.Min(dockFirst, dockEntry);
+                    if (!float.IsInfinity(dockFirst)) { projectile.Position = Vector2.Lerp(priorPosition, sweepEnd, Mathf.Min(1,dockFirst+.000001f)); expired = false; }
+                }
                 var hitObstacle = IsInsideObstacle(projectile.Position, 0f, ProjectileObstaclesFor(runtime));
                 float firstHit = 1f;
                 foreach (var obstacle in ProjectileObstaclesFor(runtime))
@@ -1159,7 +1176,7 @@ namespace Game
                     {
                         if (!runtime.Enemies.TryGetValue(enemyIterationIds[enemyIndex], out var enemy)) continue;
                         if (!enemy.CanBeAttacked) continue;
-                        if (Vector2.Distance(projectile.Position, enemy.Position) > catalog.Rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius) continue;
+                        if (enemy.DockSeaEntry.Active ? !TryEnemySweep(enemy, priorPosition, projectile.Position, 0, projectile.EvolutionHitRadius, out _) : Vector2.Distance(projectile.Position, enemy.Position) > catalog.Rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius) continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
                             PlayWeaponProjectileExplosion(projectile);
@@ -1218,7 +1235,7 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
-                    !IsWithinExplosion(center, enemy.Position, radius)) continue;
+                    !EnemyInHitSphere(enemy, center, radius)) continue;
                 if(TryDamageCarrierBarrel(runtime,enemy,damage))continue;
                 DamageEnemy(enemy, damage);
                 if (enemy.Health <= 0) KillEnemyWithReaction(runtime, enemy, false, explosive, center, impactKind);
@@ -1232,12 +1249,12 @@ namespace Game
             for (var index = 0; index < enemyIterationIds.Count; index++)
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||enemy.StageEnemy.Phase!=0||
-                    !IsWithinExplosion(center, enemy.Position, radius)) continue;
+                    !EnemyInHitSphere(enemy, center, radius)) continue;
                 var direction = enemy.Position - center;
                 if (direction.sqrMagnitude < 0.001f) direction = Vector2.up;
                 var displaced = enemy.Position + direction.normalized * knockbackDistance;
                 // 未上岸的敌人仍可受击，但不能因通用击退夹取瞬间跳到岸内。
-                if (!enemy.DockSeaEntry.Active)
+                if (!enemy.DockSeaEntry.Active && !enemy.OutsideEntry.Active)
                     enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
                         ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
                 DamageEnemy(enemy, damage);
@@ -1245,11 +1262,11 @@ namespace Game
             }
         }
 
-        private static bool HasEnemyInRadius(ArcadeCombatRuntime runtime, Vector2 center, float radius)
+        private bool HasEnemyInRadius(ArcadeCombatRuntime runtime, Vector2 center, float radius)
         {
             var squaredRadius = radius * radius;
             foreach (var enemy in runtime.Enemies.Values)
-                if ((enemy.Position - center).sqrMagnitude <= squaredRadius) return true;
+                if (EnemyInHitSphere(enemy, center, radius)) return true;
             return false;
         }
 
@@ -1631,6 +1648,7 @@ namespace Game
                 for (var index = 0; index < enemyIterationIds.Count; index++)
                 {
                     if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) ||
+                        !EnemyInHitSphere(enemy,runtime.PlayerPosition,weapon.MeleeRange) ||
                         !IsWithinMeleeStrike(runtime.PlayerPosition, runtime.AimDirection, enemy.Position,
                             weapon.MeleeRange, weapon.MeleeArcDegrees) ||
                         SegmentCrossesObstacle(runtime.PlayerPosition, enemy.Position, 0f,
@@ -1722,6 +1740,7 @@ namespace Game
             CopyKeys(runtime.Enemies, enemyIterationIds);
             for (var index = 0; index < enemyIterationIds.Count; index++)
                 if (runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy) &&
+                    /* 全屏清场是规则伤害，不做球形或入场高度排除。 */
                     enemy.CanBeAttacked && enemy.Id != runtime.FinalBossEnemyId && enemy.Id != runtime.ContentBossEnemyId)
                     KillEnemyWithImpact(runtime, enemy, false, true, runtime.PlayerPosition);
             PublishHud(runtime);
@@ -1942,7 +1961,7 @@ namespace Game
             }
             foreach (var hazard in runtime.Hazards) hazard.ForgetTarget(enemy.Id);
             view?.RemoveEnemy(enemy.Id, true, enemy.Position - origin, explosive, !hazardKill&&!explosive&&enemy.LastDamageWasFlame, impactKind);
-            var deathPosition = IslandPosition(runtime, enemy.Position, catalog.Rule.PlayerRadius);
+            var deathPosition = IslandPosition(runtime, OutsideEntryDropPosition(enemy), catalog.Rule.PlayerRadius);
             if (!hazardKill && !runtime.IsChallenge && runtime.Drops.Count < catalog.Rule.MaxDrops &&
                 UnityRandom(0f, 1f) < ArcadeEnemyDropRules.Chance(catalog.Rule.DropChance, enemy.MaxHealth, enemy.Damage,
                     catalog.Rule.EnemyDropHealthUnit, catalog.Rule.EnemyDropDamageUnit, catalog.Rule.EnemyDropMaxChance))
@@ -2510,7 +2529,7 @@ namespace Game
         {
             crowdingEnemies.Clear();
             foreach (var enemy in runtime.Enemies.Values)
-                if(enemy.StageEnemy.Phase==0 && !enemy.DockSeaEntry.Active)crowdingEnemies.Add(enemy);
+                if(enemy.StageEnemy.Phase==0 && !enemy.DockSeaEntry.Active && !enemy.OutsideEntry.Active)crowdingEnemies.Add(enemy);
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();

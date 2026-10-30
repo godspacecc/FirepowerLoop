@@ -1,0 +1,13 @@
+FAIL SideEarliest: Production geometry is missing
+FAIL UnderwaterMiss: Production geometry is missing
+FAIL SphereRadius: Production geometry is missing
+FAIL Tangent: Production geometry is missing
+FAIL LongSegment: Production geometry is missing
+FAIL StartInside: Production geometry is missing
+FAIL ZeroSweepMiss: Production geometry is missing
+FAIL ZeroCapsule: Production geometry is missing
+FAIL TiltedCapsule: Production geometry is missing
+FAIL AxialCap: Production geometry is missing
+FAIL InvalidFinite: Production geometry is missing
+FAIL OverlapBoundary: Production geometry is missing
+ArcadeHitGeometryChecks: 0/12 passed

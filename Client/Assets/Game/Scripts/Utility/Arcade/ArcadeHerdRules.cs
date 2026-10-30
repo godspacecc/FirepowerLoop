@@ -148,12 +148,12 @@ namespace FirepowerLoop.Arcade
             if(state.Travelled>=tuning.Distance)state.Phase=ArcadeHerdPhase.Expired;
             return new ArcadeHerdSweep(state.MapInstanceId,state.Id,state.StepVersion,ax,az,bx,bz,tuning.Radius);
         }
-        /// <summary>扫掠胶囊包含端帽，单次冲撞每目标只登记一次；真实伤害仍走战斗系统保护与死亡结算。</summary>
-        public static bool TryContact(ArcadeHerdState state,ArcadeHerdSweep sweep,long currentMap,long targetId,float x,float z,float radius,bool alive)
+        /// <summary>扫掠胶囊包含端帽，单次冲撞每目标只登记一次；spatiallyValidated 仅用于已完成三维相交的身体，仍校验地图与步骤身份。</summary>
+        public static bool TryContact(ArcadeHerdState state,ArcadeHerdSweep sweep,long currentMap,long targetId,float x,float z,float radius,bool alive,bool spatiallyValidated=false)
         {
             if(state==null||!alive||targetId==0||currentMap<=0||!sweep.Active||state.MapInstanceId!=currentMap||
                 sweep.MapInstanceId!=currentMap||sweep.ChargeId!=state.Id||sweep.Version!=state.StepVersion)return false;
-            return ArcadeRoundContentRules.TouchesSegment(x,z,radius,sweep.FromX,sweep.FromZ,sweep.ToX,sweep.ToZ,sweep.Radius)&&state.Contacts.Add(targetId);
+            return (spatiallyValidated||ArcadeRoundContentRules.TouchesSegment(x,z,radius,sweep.FromX,sweep.FromZ,sweep.ToX,sweep.ToZ,sweep.Radius))&&state.Contacts.Add(targetId);
         }
         /// <summary>切图或拥有者释放立即使已有扫掠失效，不把半次冲撞带到新地图。</summary>
         public static void Cancel(ArcadeHerdState state)

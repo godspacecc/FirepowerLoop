@@ -6,6 +6,9 @@ namespace Game
 {
     public interface IRuntimeConfigProvider : IUtility
     {
+        /// <summary>读取正式入场动作的身体体积；缺失时明确拒绝几何命中，不能退回计时无敌。</summary>
+        bool TryGetDockHitPose(string prefabAddress,out FirepowerLoop.Arcade.ArcadeHitPoseSequence value,out string error)
+        {value=null;error="码头身体碰撞配置不可用";return false;}
         /// <summary>区分必须提供正式商店配置的数据源与旧测试提供者，避免配置读取失败时静默降级。</summary>
         bool HasSlayerMartConfiguration => false;
         /// <summary>首批Slayer只读规则；缺配置拒绝进入，不在旧提供者伪造默认值。</summary>

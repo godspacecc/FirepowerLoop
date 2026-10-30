@@ -1,0 +1,5 @@
+PASS DockBarrel.WaterEnemyDoesNotBlockGroundBarrel
+PASS DockBarrel.LandedCarrierBreaksAfterTwoShots
+PASS DockBarrel.CarrierKeepsDamagedBarrel
+PASS DockBarrel.OrdinaryEnemyStillBlocksGroundBarrel
+4/4 passed

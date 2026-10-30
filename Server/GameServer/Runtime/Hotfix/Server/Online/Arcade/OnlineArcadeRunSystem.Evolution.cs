@@ -22,7 +22,7 @@ namespace ET.Server
                 if(crate.Health>0&&GroundCircleEntry(ax,az,bx,bz,crate.Definition.X,crate.Definition.Y,crate.Definition.Radius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=crate.Definition.Id;}
             foreach(var enemy in b.Enemies.Values)
-                if(enemy.CurrentHealth>0&&enemy.CanBeAttacked&&GroundCircleEntry(ax,az,bx,bz,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
+                if(enemy.CurrentHealth>0&&enemy.CanBeAttacked&&TryEnemySweep(enemy,ax,az,bx,bz,ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius,p.EvolutionHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=-1;}
             float endX=ax+(bx-ax)*first,endZ=az+(bz-az)*first;p.PositionX=endX;p.PositionZ=endZ;
             if(active>0&&self.TryHitGroundBarrel(b,p,ax,az,endX,endZ))
@@ -41,7 +41,10 @@ namespace ET.Server
         /// <summary>按真实扫掠距离处理前排击杀贯穿及宽束，障碍优先，命中身份去重。</summary>
         private static bool TickPurpleLine(this OnlineArcadeRunActor self,OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime p,float seconds)
         {
-            bool basic=IsPurpleEvolution(p,"basic");if(!basic&&!IsPurpleEvolution(p,"piercing"))return false;
+            bool basic=IsPurpleEvolution(p,"basic");
+            // 同一条完整扫掠处理普通贯穿和击杀继续，接触不能丢掉剩余帧行程。
+            bool dockSweep=p.OwnerPlayerId!=0&&!IsExplosiveBehavior(p.Behavior)&&!IsPurpleEvolution(p,"raygun")&&!IsPurpleEvolution(p,"rocket")&&b.Enemies.Values.Any(e=>e.DockSeaEntry.Active);
+            if(!basic&&!IsPurpleEvolution(p,"piercing")&&!dockSweep)return false;
             if(seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return true;
             float active=Math.Min(seconds,Math.Max(0,p.RemainingSeconds));if(active<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
             float fromX=p.PositionX,fromZ=p.PositionZ,toX=fromX+p.VelocityX*active,toZ=fromZ+p.VelocityZ*active,block=1;
@@ -53,19 +56,26 @@ namespace ET.Server
                 {block=entry;blocked=true;crateId=crate.Definition.Id;}
             p.PositionX=fromX+(toX-fromX)*block;p.PositionZ=fromZ+(toZ-fromZ)*block;
             if(self.TryHitGroundBarrel(b,p,fromX,fromZ,p.PositionX,p.PositionZ)){b.Projectiles.Remove(p.RuntimeId);return true;}
+            if(dockSweep&&!blocked)AddWeaponBurnArea(b,p);
             float radius=ServerConfig.Instance.ArcadeRule.EnemyContactRadius+ProjectileHitRadius+p.EvolutionHitRadius;
             var hits=b.Enemies.Values.Where(e=>e.CurrentHealth>0&&e.CanBeAttacked&&!p.HitEnemyIds.Contains(e.RuntimeId))
-                .Select(e=>new {Enemy=e,Entry=GroundCircleEntry(fromX,fromZ,toX,toZ,e.PositionX,e.PositionZ,radius,out float f)?f:float.PositiveInfinity})
+                .Select(e=>new {Enemy=e,Entry=TryEnemySweep(e,fromX,fromZ,toX,toZ,radius,p.EvolutionHitRadius,out float f)?f:float.PositiveInfinity})
                 .Where(h=>h.Entry<=block&&(!blocked||h.Entry<block)).OrderBy(h=>h.Entry).ThenBy(h=>h.Enemy.RuntimeId).ToArray();
             foreach(var hit in hits)
             {
                 var enemy=hit.Enemy;if(!b.Enemies.ContainsKey(enemy.RuntimeId)||!TryRegisterProjectileHit(p,enemy.RuntimeId))continue;
                 p.PositionX=fromX+(toX-fromX)*hit.Entry;p.PositionZ=fromZ+(toZ-fromZ)*hit.Entry;
                 enemy.LastDamagePlayerId=p.OwnerPlayerId;
+                if(dockSweep){RecordWeaponFeedback(b,p,1,enemy.PositionX,enemy.PositionZ);PushPurpleShotgun(b,p,enemy.PositionX,enemy.PositionZ);}
                 if(self.TryDamageCarrierBarrel(b,enemy,p.Damage,p.OwnerPlayerId)){b.Projectiles.Remove(p.RuntimeId);return true;}
-                DamageEnemy(b,enemy,p.Damage);bool killed=enemy.CurrentHealth<=0;
-                if(killed)self.KillEnemy(b,enemy);
-                if((basic&&!killed)||p.RemainingHits<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
+                if(p.FromPlayerWeapon&&p.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(b,enemy,p.Damage);else DamageEnemy(b,enemy,p.Damage);
+                bool killed=enemy.CurrentHealth<=0;
+                if(killed)
+                {
+                    int impact=ArcadeDeathImpactRules.FromProjectile(p.SourceWeaponId,p.FromPlayerWeapon,false,DistanceSquared(enemy.PositionX,enemy.PositionZ,p.SourcePositionX,p.SourcePositionZ));
+                    if(dockSweep&&impact==ArcadeDeathImpactRules.CloseShotgun)self.KillEnemyWithReaction(b,enemy,false,false,enemy.PositionX-p.VelocityX,enemy.PositionZ-p.VelocityZ,impact);else self.KillEnemy(b,enemy);
+                }
+                if((basic&&!killed)||(!basic&&p.Behavior!=ArcadeWeaponBehavior.Piercing)||p.RemainingHits<=0){b.Projectiles.Remove(p.RuntimeId);return true;}
                 float endX=fromX+(toX-fromX)*block,endZ=fromZ+(toZ-fromZ)*block;
                 if(self.TryHitGroundBarrel(b,p,p.PositionX,p.PositionZ,endX,endZ)){b.Projectiles.Remove(p.RuntimeId);return true;}
             }
@@ -81,7 +91,7 @@ namespace ET.Server
             var t=ServerConfig.Instance.WeaponUpgrade.Evolution;var rule=ServerConfig.Instance.ArcadeRule;
             foreach(var enemy in b.Enemies.Values)
             {
-                if((enemy.DockSeaEntry.Active)||enemy.StageEnemy.Phase>0||enemy.CurrentHealth<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.RuntimeId)||DistanceSquared(cx,cz,enemy.PositionX,enemy.PositionZ)>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
+                if(enemy.OutsideEntry.Active||enemy.DockSeaEntry.Active||enemy.StageEnemy.Phase>0||enemy.CurrentHealth<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.RuntimeId)||DistanceSquared(cx,cz,enemy.PositionX,enemy.PositionZ)>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
                 p.EvolutionPushedEnemyIds.Add(enemy.RuntimeId);
                 float dx=enemy.PositionX-p.SourcePositionX,dz=enemy.PositionZ-p.SourcePositionZ;
                 float length=MathF.Sqrt(dx*dx+dz*dz);if(length<.00001f){dx=p.VelocityX;dz=p.VelocityZ;length=MathF.Sqrt(dx*dx+dz*dz);}
@@ -116,7 +126,8 @@ namespace ET.Server
                 foreach(long owner in owners)
                 {
                     enemy.EvolutionBurnContactSeconds.TryGetValue(owner,out float contact);
-                    int damage=ArcadeWeaponEvolutionRules.BurningDamage(b.WeaponBurnAreas,owner,enemy.PositionX,enemy.PositionZ,ref contact,seconds,t);
+                    var touchingAreas=enemy.DockSeaEntry.Active ? b.WeaponBurnAreas.Where(a=>EnemyInHitSphere(enemy,a.X,a.Z,t.FlameGroundRadius)).ToArray() : b.WeaponBurnAreas.ToArray();
+                    int damage=ArcadeWeaponEvolutionRules.BurningDamage(touchingAreas,owner,enemy.PositionX,enemy.PositionZ,ref contact,seconds,t,enemy.DockSeaEntry.Active);
                     enemy.EvolutionBurnContactSeconds[owner]=contact;
                     if(damage<=0)continue;enemy.LastDamagePlayerId=owner;
                     if(self.TryDamageCarrierBarrel(b,enemy,damage,owner))continue;

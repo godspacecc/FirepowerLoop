@@ -1,0 +1,6 @@
+FAIL OutsideRoutes.FarmFourDirections: Assertion failed
+FAIL OutsideRoutes.AllOrdinaryLayouts: Assertion failed
+PASS OutsideRoutes.SpecialMapsPreserved
+FAIL OutsideRoutes.OnlyVerifiedMouthCaps: Assertion failed
+PASS OutsideRoutes.InvalidIndicesRejected
+FAIL OutsideRoutes.SolidWallSweepRejected: Assertion failed

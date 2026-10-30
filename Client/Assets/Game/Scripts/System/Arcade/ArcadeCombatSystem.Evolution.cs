@@ -46,7 +46,7 @@ namespace Game
                 if(crate.Health>0&&TryGroundBarrelEntry(from,to,new Vector2(crate.Definition.X,crate.Definition.Y),crate.Definition.Radius+ProjectileHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=crate.Definition.Id;}
             foreach(var enemy in r.Enemies.Values)
-                if(enemy.Health>0&&enemy.CanBeAttacked&&TryGroundBarrelEntry(from,to,enemy.Position,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,out float entry)&&entry<first)
+                if(enemy.Health>0&&enemy.CanBeAttacked&&TryEnemySweep(enemy,from,to,catalog.Rule.EnemyContactRadius+ProjectileHitRadius,p.EvolutionHitRadius,out float entry)&&entry<first)
                 {first=entry;hit=true;crateId=-1;}
             var end=Vector2.Lerp(from,to,first);p.Position=end;
             if(active>0&&TryHitGroundBarrel(r,p,from,end)){RemoveProjectile(r,id);return true;}
@@ -63,7 +63,9 @@ namespace Game
         private bool TickPurpleLine(ArcadeCombatRuntime r,ArcadeProjectileRuntime p,float seconds)
         {
             bool basic=IsPurpleEvolution(p,"basic");
-            if(!basic&&!IsPurpleEvolution(p,"piercing"))return false;
+            // 码头存在时普通非爆炸弹也走完整排序扫掠，贯穿接触后继续同帧剩余行程。
+            bool dockSweep=!p.Hostile&&!IsExplosiveBehavior(p.Behavior)&&!IsPurpleEvolution(p,"raygun")&&!IsPurpleEvolution(p,"rocket")&&r.Enemies.Values.Any(e=>e.DockSeaEntry.Active);
+            if(!basic&&!IsPurpleEvolution(p,"piercing")&&!dockSweep)return false;
             if(seconds<=0||float.IsNaN(seconds)||float.IsInfinity(seconds))return true;
             float active=Mathf.Min(seconds,Mathf.Max(0,p.RemainingSeconds));
             if(active<=0){RemoveProjectile(r,p.Id);return true;}
@@ -75,19 +77,27 @@ namespace Game
                 {block=entry;blocked=true;crateId=crate.Definition.Id;}
             var end=Vector2.Lerp(from,to,block);p.Position=end;
             if(TryHitGroundBarrel(r,p,from,end)){RemoveProjectile(r,p.Id);return true;}
+            if(dockSweep&&!blocked)AddWeaponBurnArea(r,p);
             float radius=catalog.Rule.EnemyContactRadius+ProjectileHitRadius+p.EvolutionHitRadius;
             var hits=r.Enemies.Values.Where(e=>e.Health>0&&e.CanBeAttacked&&!p.HitEnemyIds.Contains(e.Id))
-                .Select(e=>new {Enemy=e,Entry=TryGroundBarrelEntry(from,to,e.Position,radius,out float f)?f:float.PositiveInfinity})
+                .Select(e=>new {Enemy=e,Entry=TryEnemySweep(e,from,to,radius,p.EvolutionHitRadius,out float f)?f:float.PositiveInfinity})
                 .Where(h=>h.Entry<=block&&(!blocked||h.Entry<block)).OrderBy(h=>h.Entry).ThenBy(h=>h.Enemy.Id).ToArray();
             foreach(var hit in hits)
             {
                 var enemy=hit.Enemy;if(!r.Enemies.ContainsKey(enemy.Id)||!TryRegisterProjectileHit(p,enemy.Id))continue;
                 p.Position=Vector2.Lerp(from,to,hit.Entry);
+                if(dockSweep)PushPurpleShotgun(r,p,enemy.Position);
                 if(TryDamageCarrierBarrel(r,enemy,p.Damage)){RemoveProjectile(r,p.Id);return true;}
-                DamageEnemy(enemy,p.Damage);bool killed=enemy.Health<=0;
-                if(killed)KillEnemy(r,enemy);
+                if(p.FromPlayerWeapon&&p.SourceWeaponId=="arcade.weapon.flamethrower")DamageEnemyFromFlame(enemy,p.Damage);else DamageEnemy(enemy,p.Damage);
+                bool killed=enemy.Health<=0;
+                if(dockSweep&&(p.SourceWeaponId=="arcade.weapon.basic"||p.SourceWeaponId=="arcade.weapon.rapid"||p.SourceWeaponId=="arcade.weapon.spread"))view.PlayImpactSound(enemy.Position,false);
+                if(killed)
+                {
+                    int impact=ArcadeDeathImpactRules.FromProjectile(p.SourceWeaponId,p.FromPlayerWeapon,false,(enemy.Position-p.SourcePosition).sqrMagnitude);
+                    if(dockSweep&&impact==ArcadeDeathImpactRules.CloseShotgun)KillEnemyWithReaction(r,enemy,false,false,enemy.Position-p.Velocity,impact);else KillEnemy(r,enemy);
+                }
                 if(r.CompletionSubmitted||catalog==null)return true;
-                if((basic&&!killed)||p.RemainingHits<=0){RemoveProjectile(r,p.Id);return true;}
+                if((basic&&!killed)||(!basic&&p.Behavior!=global::ArcadeWeaponBehavior.Piercing)||p.RemainingHits<=0){RemoveProjectile(r,p.Id);return true;}
                 if(TryHitGroundBarrel(r,p,p.Position,end)){RemoveProjectile(r,p.Id);return true;}
             }
             p.Position=end;p.RemainingSeconds-=active;
@@ -104,7 +114,7 @@ namespace Game
             var t=catalog.Rule.WeaponUpgrade.Evolution;
             foreach(var enemy in r.Enemies.Values)
             {
-                if(enemy.StageEnemy.Phase>0||enemy.DockSeaEntry.Active||enemy.Health<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.Id)||
+                if(enemy.StageEnemy.Phase>0||enemy.OutsideEntry.Active||enemy.DockSeaEntry.Active||enemy.Health<=0||p.EvolutionPushedEnemyIds==null||p.EvolutionPushedEnemyIds.Contains(enemy.Id)||
                     (enemy.Position-center).sqrMagnitude>t.ShotgunPushRadius*t.ShotgunPushRadius)continue;
                 p.EvolutionPushedEnemyIds.Add(enemy.Id);
                 var direction=enemy.Position-p.SourcePosition;
@@ -138,8 +148,9 @@ namespace Game
             var t=catalog.Rule.WeaponUpgrade.Evolution;
             foreach(var enemy in r.Enemies.Values.ToArray())
             {
-                int damage=ArcadeWeaponEvolutionRules.BurningDamage(r.WeaponBurnAreas,0,enemy.Position.x,enemy.Position.y,
-                    ref enemy.EvolutionBurnContactSeconds,seconds,t);
+                var touchingAreas=enemy.DockSeaEntry.Active ? r.WeaponBurnAreas.Where(a=>EnemyInHitSphere(enemy,new Vector2(a.X,a.Z),t.FlameGroundRadius)).ToArray() : r.WeaponBurnAreas.ToArray();
+                int damage=ArcadeWeaponEvolutionRules.BurningDamage(touchingAreas,0,enemy.Position.x,enemy.Position.y,
+                    ref enemy.EvolutionBurnContactSeconds,seconds,t,enemy.DockSeaEntry.Active);
                 if(damage<=0)continue;
                 if(TryDamageCarrierBarrel(r,enemy,damage))continue;
                 DamageEnemyFromFlame(enemy,damage);

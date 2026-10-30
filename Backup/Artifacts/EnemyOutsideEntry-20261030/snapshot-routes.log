@@ -1,0 +1,10 @@
+PASS OutsideRoutes.FarmFourDirections
+PASS OutsideRoutes.AllOrdinaryLayouts
+PASS OutsideRoutes.SpecialMapsPreserved
+PASS OutsideRoutes.OnlyVerifiedMouthCaps
+PASS OutsideRoutes.InvalidIndicesRejected
+PASS OutsideRoutes.FallbackFindsOpenSide
+PASS OutsideRoutes.FallbackClosedArenaRejected
+PASS OutsideRoutes.SpecialArrivalNotCarrierIdentity
+PASS OutsideRoutes.ServerInitializesAndFreezes
+PASS OutsideRoutes.SolidWallSweepRejected

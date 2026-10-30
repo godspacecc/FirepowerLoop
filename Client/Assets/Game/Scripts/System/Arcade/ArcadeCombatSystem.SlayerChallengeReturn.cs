@@ -23,7 +23,7 @@ namespace Game
             if(runtime.SlayerChallenge==null)return false;
             if(!hazardKill&&runtime.SlayerChallenge.Phase==ArcadeSlayerChallengePhase.Collecting&&runtime.Drops.Count<catalog.Rule.MaxDrops)
             {
-                var drop=runtimePool.RentDrop();drop.Id=runtime.NextEntityId++;drop.Position=enemy.Position;
+                var drop=runtimePool.RentDrop();drop.Id=runtime.NextEntityId++;drop.Position=OutsideEntryDropPosition(enemy);
                 drop.Definition=catalog.Drops.Single(p=>p.Id==slayerChallengeConfig.CoinDropId);runtime.Drops.Add(drop.Id,drop);
             }
             view?.RemoveEnemy(enemy.Id,true,enemy.Position-runtime.PlayerPosition,false,!hazardKill&&enemy.LastDamageWasFlame);runtimePool.Return(enemy);return true;

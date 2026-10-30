@@ -45,6 +45,7 @@ namespace FirepowerLoop.Arcade
             WeaponSpawnDelayMin=row.WeaponSpawnDelayMin;WeaponSpawnDelayMax=row.WeaponSpawnDelayMax;
             WeaponSpawnFirstDelayMin=row.WeaponSpawnFirstDelayMin;WeaponSpawnFirstDelayMax=row.WeaponSpawnFirstDelayMax;
             EntrySegmentSeconds=row.EntrySegmentSeconds;
+            OutsideEntryDistance=row.OutsideEntryDistance;
             SpecialKind=row.SpecialKind;EventKind=row.EventKind;BossKind=row.BossKind;SpecialRatio=row.SpecialRatio;
             EnemyHealthScale=row.EnemyHealthScale;EnemySpeedScale=row.EnemySpeedScale;SkillPeriod=row.SkillPeriod;
             SkillWarning=row.SkillWarning;SkillMagnitude=row.SkillMagnitude;EventPeriod=row.EventPeriod;
@@ -65,6 +66,8 @@ namespace FirepowerLoop.Arcade
         public int ExitCount => ArenaConfigNumber == 1 ? ArcadeIslandRegion.PassageCount : ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries.Count : ExitDirectionCount;
         /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
         public float EntrySegmentSeconds { get; }
+        /// <summary>普通敌人场外起点距场地边界的米数；特殊地图为零。</summary>
+        public float OutsideEntryDistance { get; }
         /// <summary>在真实通道外生成，保留横向车道；不把入口投影到战斗区内。</summary>
         public ArcadeRegionPoint GetPassageSpawn(int index, int sequence, float halfWidth, float halfHeight, float approachDistance)
         {
@@ -167,6 +170,7 @@ namespace FirepowerLoop.Arcade
                 p.EventPeriod<=0 || p.EventWarning<=0 || p.EventWarning>=p.EventPeriod || p.EventRadius<=0 || p.EventDamage<0 || p.EventDamage>1 || p.EventMoveSpeed<0 ||
                 p.Obstacles.Any(o=>!Finite(o.X)||!Finite(o.Y)||!Finite(o.HalfWidth)||!Finite(o.HalfHeight)||o.HalfWidth<=0||o.HalfHeight<=0) ||
                 p.Entries.Any(e=>!Finite(e.X)||!Finite(e.Y)) ||
+                !Finite(p.OutsideEntryDistance)||p.OutsideEntryDistance<0 ||
                 !Finite(p.EntrySegmentSeconds)||p.EntrySegmentSeconds<=0 ||
                 p.WeaponSpawnCount<0 || p.WeaponSpawnCount>p.WeaponSpawnPoints.Count ||
                 !Finite(p.WeaponSpawnDelayMin)||!Finite(p.WeaponSpawnDelayMax)||p.WeaponSpawnDelayMin<=0||p.WeaponSpawnDelayMax<p.WeaponSpawnDelayMin ||

@@ -18,7 +18,7 @@ namespace ET.Server
             else if(powerup.ExtraDrone==null&&state.Phase==ArcadeDronePhase.Following&&state.RemainingSeconds>0)
                 powerup.ExtraDrone=new ArcadeDroneState{RemainingSeconds=state.RemainingSeconds,FireCooldownSeconds=state.FireCooldownSeconds,
                     X=player.PositionX-tuning.OffsetX,Z=player.PositionZ+tuning.OffsetZ};
-            var targets=battle.Enemies.Values.Where(e=>e.CurrentHealth>0).Select(e=>new ArcadeDroneTarget(e.RuntimeId,e.PositionX,e.PositionZ)).ToArray();
+            var targets=battle.Enemies.Values.Where(e=>e.CurrentHealth>0&&CanAimAtEnemy(e,state.X,state.Z)).Select(e=>new ArcadeDroneTarget(e.RuntimeId,e.PositionX,e.PositionZ)).ToArray();
             bool canAct=player.Alive&&!player.InTreasureRoom&&player.RespawnSeconds<=0&&!battle.AwaitingExit&&!battle.WaveClearAwarded;
             var step=self.StepDroneUnit(battle,player,powerup,state,targets,tier,seconds,canAct,1,0);
             if(powerup.ExtraDrone!=null)self.StepDroneUnit(battle,player,powerup,powerup.ExtraDrone,targets,tier,seconds,canAct,-1,step.TargetId);

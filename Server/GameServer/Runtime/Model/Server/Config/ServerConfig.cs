@@ -7,7 +7,7 @@ using Luban;
 
 namespace ET
 {
-    public sealed class ServerConfig : Singleton<ServerConfig>, ISingletonAwake<string>
+    public sealed partial class ServerConfig : Singleton<ServerConfig>, ISingletonAwake<string>
     {
         private Tables tables;
         private readonly Dictionary<int, UnitConfig> units = new();

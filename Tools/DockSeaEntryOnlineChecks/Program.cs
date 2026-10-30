@@ -39,7 +39,7 @@ internal static class DockSeaEntryOnlineChecks
             Players=new(){new(){PlayerId=1,Lives=3,Ready=true,WeaponId=rule.BaseWeaponId},new(){PlayerId=2,Lives=3,Ready=true,WeaponId=rule.BaseWeaponId}}};
         var actor=new OnlineArcadeRunActor{Record=record,Battle=OnlineArcadeRunActorSystem.PrepareBattle(record,false)};var b=actor.Battle;
         foreach(var p in b.Players.Values){p.ReadyRoundGeneration=b.RoundGeneration;p.PositionX=0;p.PositionZ=-4.1f;p.CurrentHealth=p.MaxHealth=100;}
-        b.SpawnQueue.Clear();b.SpawnQueue.Add("enemy.arcade.basic");b.SpawnQueueIndex=0;b.SpawnedInWave=sequence;b.NextSpawnAt=0;
+        b.SpawnQueue.Clear();b.SpawnQueue.Add("enemy.arcade.zombie.shambler");b.SpawnQueueIndex=0;b.SpawnedInWave=sequence;b.NextSpawnAt=0;
         Require((bool)Call("SpawnQueuedEnemy",b,10000L,passage,null),"real queued spawn failed");
         var enemy=b.Enemies.Values.Single();Require(ArcadeDockSeaEntryRules.Valid(enemy.DockSeaEntry),"real spawn produced invalid sea-entry state");enemy.CurrentHealth=enemy.MaxHealth=1000;return(actor,enemy);
     }
@@ -98,7 +98,7 @@ internal static class DockSeaEntryOnlineChecks
             var(waterActor,waterEnemy)=Spawn();waterEnemy.SpecialKind=0;waterEnemy.ArmorHealth=20;Tick(waterActor,age);
             Call("DamageEnemy",waterActor.Battle,waterEnemy,10);
             Call("DamageEnemyFromFlame",waterActor.Battle,waterEnemy,10);
-            Require(waterEnemy.CurrentHealth==1000&&waterEnemy.ArmorHealth==20&&waterEnemy.FlameHitRemainingSeconds==0,"water/climbing enemy accepted damage");
+            Require(waterEnemy.CurrentHealth==1000&&waterEnemy.ArmorHealth==0&&waterEnemy.FlameHitRemainingSeconds>0,"confirmed damage must not acquire time immunity");
         }
         var(a,e)=Spawn();var b=a.Battle;e.SpecialKind=0;Tick(a,5.75f);float x=e.PositionX,z=e.PositionZ;
         var other=new OnlineArcadeEnemyRuntime{RuntimeId=999,PositionX=x+.01f,PositionZ=z,CurrentHealth=1000};b.Enemies.Add(999,other);b.EnemyIterationIds.Add(999);
@@ -146,7 +146,7 @@ internal static class DockSeaEntryOnlineChecks
         actor.Battle.EnemyIterationIds.Clear();actor.Battle.EnemyIterationIds.AddRange(actor.Battle.Enemies.Keys);
         actor.Battle.Projectiles.Add(900,new OnlineArcadeProjectileRuntime{RuntimeId=900,OwnerPlayerId=1,FromPlayerWeapon=true,
             SourceWeaponId=weapon,WeaponPowerLevel=level,TrackingEnemyId=enemy.RuntimeId,
-            PositionX=enemy.PositionX-1,PositionZ=enemy.PositionZ,VelocityX=1,RemainingSeconds=3,RemainingHits=1,Damage=damage});
+            PositionX=enemy.PositionX-ArcadeDockSeaEntryRules.Forward(enemy.DockSeaEntry).Y,PositionZ=enemy.PositionZ+ArcadeDockSeaEntryRules.Forward(enemy.DockSeaEntry).X,VelocityX=ArcadeDockSeaEntryRules.Forward(enemy.DockSeaEntry).Y*2,VelocityZ=-ArcadeDockSeaEntryRules.Forward(enemy.DockSeaEntry).X*2,RemainingSeconds=3,RemainingHits=1,Damage=damage});
         Call("TickProjectiles",actor,actor.Battle,1f);
     }
     private static object Call(string name,params object[] args)=>typeof(OnlineArcadeRunActorSystem).GetMethod(name,BindingFlags.Static|BindingFlags.NonPublic|BindingFlags.Public)!.Invoke(null,args)!;

@@ -95,11 +95,11 @@ namespace Game.Tests
             var layout=catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1);
             Assert.That(carrier.CarriedBarrelHealth,Is.EqualTo(layout.BarrelHealth-1));
         }
-        /// <summary>海中不可攻击敌人不截停射向后方地面桶的子弹，也不受到伤害。</summary>
+        /// <summary>身体尚在弹道下方的敌人不截停射向后方地面桶的子弹。</summary>
         [Test] public void SeaCarrierDoesNotTrapProjectileBeforeGroundBarrel()
         {
             var carrier=PrepareCarrier();
-            carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Age=5f};
+            carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Age=0f};
             runtime.GroundBarrels.Add(100,new Vector2(1.2f,0));
             var shot=new ArcadeProjectileRuntime{Id=900,Position=Vector2.zero,Velocity=Vector2.right*2,RemainingSeconds=3,Damage=36,FromPlayerWeapon=true,RemainingHits=1};
             runtime.Projectiles.Add(shot.Id,shot);Call("TickProjectiles",runtime,.5f);
@@ -110,7 +110,7 @@ namespace Game.Tests
         /// <summary>已登岸背桶与普通载体一致，基础枪两发打爆40耐久，弹丸立即消费。</summary>
         [Test] public void LandedSeaCarrierBarrelBreaksWithTwoBasicShots()
         {
-            var carrier=PrepareCarrier();carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Age=ArcadeDockSeaEntryRules.ClimbSeconds};
+            var carrier=PrepareCarrier();carrier.DockSeaEntry=new ArcadeDockSeaEntryState{Started=true,Direction=2,Age=ArcadeDockSeaEntryRules.ClimbSeconds};
             FireAtCarrier(36);Assert.That(carrier.CarriedBarrelHealth,Is.EqualTo(4));Assert.That(runtime.Projectiles,Is.Empty);
             FireAtCarrier(36);Assert.That(carrier.ContentSpecialKind,Is.Zero);Assert.That(runtime.Projectiles,Is.Empty);
             Assert.That(runtime.ContentAreas.Count(a=>a.Kind==14),Is.EqualTo(1));
@@ -120,7 +120,7 @@ namespace Game.Tests
             SpawnRound(0);runtime.Enemies.Clear();runtime.GroundBarrels.Clear();runtime.GroundBarrelHealth.Clear();runtime.Projectiles.Clear();
             Set("contentObstacleIdentity",catalog.RoundLayouts.Single(a=>a.ArenaConfigNumber==21&&a.RoundNumber==1).Id);
             Set("contentRoundObstacles",Array.Empty<ArcadeObstacleDefinition>());
-            var enemy=new ArcadeEnemyRuntime{Id=700,Position=Vector2.zero,Health=1000,MaxHealth=1000,ContentSpecialKind=1};runtime.Enemies.Add(enemy.Id,enemy);return enemy;
+            var enemy=new ArcadeEnemyRuntime{Id=700,ConfigId="enemy.arcade.zombie.shambler",Position=Vector2.zero,Health=1000,MaxHealth=1000,ContentSpecialKind=1};runtime.Enemies.Add(enemy.Id,enemy);return enemy;
         }
         /// <summary>范围武器与紫射线也先命中桶，回池清除耐久镜像。</summary>
         [Test] public void ExplosionAndRayUseBarrelFirstAndResetClearsDurability()

@@ -239,7 +239,7 @@ namespace ET.Server
         private static void DamageContentExplosionEnemies(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float x,float y,float radius,float ratio,long ownerPlayerId=0)
             => DamageContentEnemiesInArea(actor,b,x,y,radius,ratio,ownerPlayerId,true);
         private static void DamageContentEnemiesInArea(OnlineArcadeRunActor actor,OnlineArcadeBattleRuntime b,float x,float y,float radius,float ratio,long ownerPlayerId,bool explosive)
-        {foreach(var e in b.Enemies.Values.ToArray())if(ArcadeRoundContentRules.TouchesCircle(e.PositionX,e.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,x,y,radius))
+        {foreach(var e in b.Enemies.Values.ToArray())if(e.DockSeaEntry.Active ? EnemyInHitSphere(e,x,y,radius) : ArcadeRoundContentRules.TouchesCircle(e.PositionX,e.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,x,y,radius))
             {if(ownerPlayerId>0)e.LastDamagePlayerId=ownerPlayerId;DamageEnemy(b,e,ArcadeRoundContentRules.Damage(e.MaxHealth,ratio));if(e.CurrentHealth<=0)actor.KillEnemyWithImpact(b,e,true,explosive,x,y);}}
 
         /// <summary>Guardian五弹扇面、ZRex锁位喷发/孢子、Mega四线/八弹/增援；最终Boss交还既有配置技能。</summary>
@@ -318,7 +318,7 @@ namespace ET.Server
                     MaxHealth=Math.Max(1,(int)Math.Round(source.MaxHP*group.HealthMultiplier)),Damage=Math.Max(1,(int)Math.Round(source.AttackDamage*group.DamageMultiplier)),
                     MoveSpeed=Math.Max(.1f,source.MoveSpeed*group.SpeedMultiplier),AttackKind=source.AttackKind,AttackRange=Math.Max(.7f,source.AttackRange),
                     AttackIntervalSeconds=Math.Max(.25f,source.AttackCooldownSeconds),ProjectileConfigId=source.ProjectileConfigId,WaveNumber=b.WaveIndex+1};
-                InitializeEnemyContent(b,enemy);b.Enemies.Add(id,enemy);
+                InitializeEnemyContent(b,enemy);InitializeOutsideEntry(b,enemy,i%b.RoundLayout.Entries.Count);b.Enemies.Add(id,enemy);
             }
         }
         private static void TickTrackingProjectile(OnlineArcadeBattleRuntime b,OnlineArcadeProjectileRuntime shot,float delta)
@@ -341,7 +341,7 @@ namespace ET.Server
                 foreach(long targetId in b.Enemies.Keys.OrderBy(id=>id).ToArray())
                 {
                     if(!b.Enemies.TryGetValue(targetId,out var target) ||
-                        DistanceSquared(e.PositionX,e.PositionZ,target.PositionX,target.PositionZ)>radius*radius ||
+                        !EnemyInHitSphere(target,e.PositionX,e.PositionZ,radius) ||
                         !b.ContentClock.TryHit(200000L+targetId,p.SkillWarning))continue;
                     target.LastDamagePlayerId=e.LastDamagePlayerId;
                     DamageEnemy(b,target,ArcadeRoundContentRules.Damage(target.MaxHealth,p.EventDamage));
@@ -444,7 +444,7 @@ namespace ET.Server
                     if(contact&&zone.Clock.TryHit(player.PlayerId,p.EventWarning))actor.ContentDamagePlayer(b,player,ArcadeRoundContentRules.Damage(player.MaxHealth,zone.DamageRatio));
                 }
                 if(zone.EnemyDamage)foreach(var enemy in b.Enemies.Values.ToArray())
-                    if(ArcadeRoundContentRules.TouchesCircle(enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,zone.X,zone.Y,radius)&&zone.Clock.TryHit(-enemy.RuntimeId,p.EventWarning))
+                    if((enemy.DockSeaEntry.Active ? EnemyInHitSphere(enemy,zone.X,zone.Y,radius) : ArcadeRoundContentRules.TouchesCircle(enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,zone.X,zone.Y,radius))&&zone.Clock.TryHit(-enemy.RuntimeId,p.EventWarning))
                     {DamageEnemy(b,enemy,ArcadeRoundContentRules.Damage(enemy.MaxHealth,zone.DamageRatio));if(enemy.CurrentHealth<=0)actor.KillEnemy(b,enemy,true);}
             }
             return true;

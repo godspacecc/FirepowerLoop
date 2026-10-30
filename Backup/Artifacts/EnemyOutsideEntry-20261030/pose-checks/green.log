@@ -1,0 +1,9 @@
+PASS HeightDependent
+PASS FacingDependent
+PASS InterpolatedPose
+PASS FrozenRepeat
+PASS StartInside
+PASS MultipleEarliest
+PASS ClampAndOverlap
+PASS RejectBadData
+ArcadeHitPoseChecks: 8/8 passed

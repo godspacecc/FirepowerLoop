@@ -1235,6 +1235,10 @@ namespace ET.Server
             if (!string.Equals(record.ConfigFingerprint, rule.ConfigFingerprint, StringComparison.Ordinal))
                 throw new RpcException(ErrorCode.ERR_OnlineRoomVersionMismatch, "街机配置版本与服务器不一致");
             ArcadeArenaConfig arena = record.IsCasualRoute?ResolveArena(record.ArenaConfigNumber):ResolveSequentialArena(record.NextArena);
+            // 正式码头战斗创建前一次验证三模型，不允许中途以缺数据伪装未命中。
+            if(ServerConfig.Instance.Tables.TbArcadeRoundLayout.DataList.Any(layout=>layout.ArenaConfigNumber==arena.ArenaNumber&&layout.ThemeKey=="docks"))
+                foreach(var model in new[]{"ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeZombieBloated"})
+                    if(!ServerConfig.Instance.TryGetDockHitPose("Prefabs/Characters/"+model,out _,out var poseError))throw new InvalidOperationException(poseError);
             ArcadeChallengeConfig challengeConfig = challenge
                 ? ServerConfig.Instance.Tables.TbArcadeChallenge.GetOrDefault(record.ChallengeId)
                 : null;
@@ -1279,6 +1283,7 @@ namespace ET.Server
                 });
             }
             PrepareWave(battle, arena, challenge ? 0 : Math.Max(0, record.RoundNumber - 1));
+            if(!ValidateOutsideFallback(battle))throw new RpcException(ErrorCode.ERR_OnlineArcadeStateInvalid,"敌人入口没有合法场外通道，请检查地图配置");
             if (!challenge && battle.RoundLayout != null)
             {
                 if (!string.IsNullOrEmpty(record.RoundLayoutId) &&
@@ -1623,6 +1628,7 @@ namespace ET.Server
             };
             InitializeEnemyContent(battle,enemy);
             InitializeDockSeaEntry(battle,enemy,passage);
+            InitializeOutsideEntry(battle,enemy,passage);
             battle.Enemies.Add(runtimeId, enemy);
             if (battle.IsFinalBoss && battle.FinalBossEnemyId == 0) battle.FinalBossEnemyId = runtimeId;
             battle.SpawnedInWave++;
@@ -1765,6 +1771,7 @@ namespace ET.Server
                 }
 
                 if(TickDockSeaEntry(battle,enemy,deltaSeconds)){changed=true;continue;}
+                if(TickOutsideEntry(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(TickNextStageEnemy(battle,enemy,deltaSeconds)){changed=true;continue;}
                 if(enemy.HerdImpact.Active||enemy.ContentStunUntil>battle.ContentClock.Elapsed||SlayerMartStormSpeed(battle,enemy)==0)
                 {CancelMeleeWindup(enemy,true);continue;}
@@ -2164,6 +2171,7 @@ namespace ET.Server
                 foreach (long enemyId in battle.EnemyIterationIds)
                 {
                     if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) ||
+                        !EnemyInHitSphere(enemy,player.PositionX,player.PositionZ,weapon.MeleeRange) ||
                         !IsWithinMeleeStrike(player.PositionX, player.PositionZ, aimX, aimZ,
                             enemy.PositionX, enemy.PositionZ, weapon.MeleeRange, weapon.MeleeArcDegrees) ||
                         SegmentCrossesObstacle(player.PositionX, player.PositionZ, enemy.PositionX,
@@ -2274,8 +2282,20 @@ namespace ET.Server
                     if(IsExplosiveBehavior(projectile.Behavior))self.DamageEnemiesInProjectileExplosion(battle, projectile);
                     battle.Projectiles.Remove(projectileId);changed=true;continue;
                 }
-                bool wallCrossed=ClipShotToWall(battle,projectile,priorX,priorZ);
                 bool expired = projectile.RemainingSeconds <= 0f;
+                // 先截到实际码头身体，后方墙或帧末到期不能抢先吞掉接触。
+                if (projectile.OwnerPlayerId != 0)
+                {
+                    float active = Math.Min(deltaSeconds, Math.Max(0, projectile.RemainingSeconds + deltaSeconds));
+                    float endX = priorX + projectile.VelocityX * active, endZ = priorZ + projectile.VelocityZ * active;
+                    float dockFirst = float.PositiveInfinity;
+                    foreach (var candidate in battle.Enemies.Values)
+                        if (candidate.CanBeAttacked && candidate.DockSeaEntry.Active && !projectile.HitEnemyIds.Contains(candidate.RuntimeId) &&
+                            TryEnemySweep(candidate,priorX,priorZ,endX,endZ,0,projectile.EvolutionHitRadius,out float dockEntry)) dockFirst=Math.Min(dockFirst,dockEntry);
+                    if (!float.IsInfinity(dockFirst))
+                    { float fraction=Math.Min(1,dockFirst+.000001f);projectile.PositionX=priorX+(endX-priorX)*fraction;projectile.PositionZ=priorZ+(endZ-priorZ)*fraction;expired=false; }
+                }
+                bool wallCrossed=ClipShotToWall(battle,projectile,priorX,priorZ);
                 bool hitObstacle = wallCrossed || InsideObstacle(projectile.PositionX, projectile.PositionZ, 0f, ProjectileObstaclesFor(battle));
                 if(!expired&&hitObstacle&&HasBulletImpactFeedback(projectile))
                     RecordWeaponFeedback(battle,projectile,2,projectile.PositionX,projectile.PositionZ);
@@ -2314,7 +2334,7 @@ namespace ET.Server
                         if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy)) continue;
                         if (!enemy.CanBeAttacked) continue;
                         float hitRadius = rule.EnemyContactRadius + ProjectileHitRadius + projectile.EvolutionHitRadius;
-                        if (DistanceSquared(projectile.PositionX, projectile.PositionZ, enemy.PositionX, enemy.PositionZ) > hitRadius * hitRadius)
+                        if (enemy.DockSeaEntry.Active ? !TryEnemySweep(enemy, priorX, priorZ, projectile.PositionX, projectile.PositionZ, 0, projectile.EvolutionHitRadius, out _) : DistanceSquared(projectile.PositionX, projectile.PositionZ, enemy.PositionX, enemy.PositionZ) > hitRadius * hitRadius)
                             continue;
                         if (IsExplosiveBehavior(projectile.Behavior))
                         {
@@ -2379,7 +2399,7 @@ namespace ET.Server
             foreach (long enemyId in battle.EnemyIterationIds)
             {
                 if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) ||
-                    DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
+                    !EnemyInHitSphere(enemy, centerX, centerZ, radius)) continue;
                 enemy.LastDamagePlayerId = ownerPlayerId;
                 if(self.TryDamageCarrierBarrel(battle,enemy,damage,ownerPlayerId))continue;
                 DamageEnemy(battle, enemy, damage);
@@ -2397,7 +2417,7 @@ namespace ET.Server
             foreach (long enemyId in battle.EnemyIterationIds)
             {
                 if (!battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) || enemy.StageEnemy.Phase>0 ||
-                    DistanceSquared(centerX, centerZ, enemy.PositionX, enemy.PositionZ) > radiusSquared) continue;
+                    !EnemyInHitSphere(enemy, centerX, centerZ, radius)) continue;
                 float offsetX = enemy.PositionX - centerX;
                 float offsetZ = enemy.PositionZ - centerZ;
                 float length = MathF.Sqrt(offsetX * offsetX + offsetZ * offsetZ);
@@ -2405,7 +2425,7 @@ namespace ET.Server
                 float nextX = enemy.PositionX + offsetX / length * knockbackDistance;
                 float nextZ = enemy.PositionZ + offsetZ / length * knockbackDistance;
                 // 海中进场固定路径仍接受原伤害；站稳后恢复既有击退与岸线约束。
-                if(!enemy.DockSeaEntry.Active)
+                if(!enemy.DockSeaEntry.Active&&!enemy.OutsideEntry.Active)
                 {
                     ResolveBattleEnemyPosition(battle,ref nextX, ref nextZ, enemy.PositionX, enemy.PositionZ,
                         rule.EnemyContactRadius, rule, EffectiveObstacles(battle), IslandFor(battle), arena.EnemySeaApproachDistance);
@@ -2546,8 +2566,8 @@ namespace ET.Server
             {
                 RuntimeId = runtimeId,
                 DropConfigId = selected.Id,
-                PositionX = dropPosition?.X ?? enemy.PositionX,
-                PositionZ = dropPosition?.Y ?? enemy.PositionZ,
+                PositionX = enemy.OutsideEntry.Active ? enemy.OutsideEntry.TargetX : dropPosition?.X ?? enemy.PositionX,
+                PositionZ = enemy.OutsideEntry.Active ? enemy.OutsideEntry.TargetZ : dropPosition?.Y ?? enemy.PositionZ,
             });
         }
 
@@ -2570,7 +2590,7 @@ namespace ET.Server
             battle.EnemyIterationIds.AddRange(battle.Enemies.Keys);
             battle.EnemyIterationIds.Sort();
             foreach (long enemyId in battle.EnemyIterationIds)
-                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && enemy.CanBeAttacked && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
+                if (battle.Enemies.TryGetValue(enemyId, out OnlineArcadeEnemyRuntime enemy) && /* 全屏清场是规则伤害，不按入场高度排除。 */ enemy.CanBeAttacked && enemyId != battle.FinalBossEnemyId && enemy.ContentBossKind == 0)
                 {
                     enemy.LastDamagePlayerId = player.PlayerId;
                     self.KillEnemyWithImpact(battle, enemy, false, true, player.PositionX, player.PositionZ);
@@ -3167,7 +3187,7 @@ namespace ET.Server
             {
                 OnlineArcadeEnemyRuntime left = battle.Enemies[battle.EnemyIterationIds[leftIndex]];
                 OnlineArcadeEnemyRuntime right = battle.Enemies[battle.EnemyIterationIds[rightIndex]];
-                if(left.DockSeaEntry.Active||right.DockSeaEntry.Active||left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
+                if(left.OutsideEntry.Active||right.OutsideEntry.Active||left.DockSeaEntry.Active||right.DockSeaEntry.Active||left.StageEnemy.Phase>0||right.StageEnemy.Phase>0)continue;
                 float offsetX = right.PositionX - left.PositionX;
                 float offsetZ = right.PositionZ - left.PositionZ;
                 float distanceSquared = offsetX * offsetX + offsetZ * offsetZ;

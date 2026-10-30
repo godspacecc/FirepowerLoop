@@ -1,0 +1,7 @@
+PASS EarlyBodyMiss
+PASS LateBodyHit
+PASS ReverseAndFrozen
+PASS NoTimeImmunity
+PASS MissingPoseFailsExplicitly
+PASS NormalEnemyLegacyCircle
+ArcadeDockSpatialChecks: 6/6 passed

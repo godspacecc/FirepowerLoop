@@ -46,6 +46,7 @@ public partial class Tables
     public TbSurvivorRule TbSurvivorRule {get; }
     public TbSurvivorUpgrade TbSurvivorUpgrade {get; }
     public TbSurvivorWeaponLevel TbSurvivorWeaponLevel {get; }
+    public TbArcadeDockHitPose TbArcadeDockHitPose {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -82,6 +83,7 @@ public partial class Tables
         TbSurvivorRule = new TbSurvivorRule(loader("tbsurvivorrule"));
         TbSurvivorUpgrade = new TbSurvivorUpgrade(loader("tbsurvivorupgrade"));
         TbSurvivorWeaponLevel = new TbSurvivorWeaponLevel(loader("tbsurvivorweaponlevel"));
+        TbArcadeDockHitPose = new TbArcadeDockHitPose(loader("tbarcadedockhitpose"));
         ResolveRef();
     }
     
@@ -120,6 +122,7 @@ public partial class Tables
         TbSurvivorRule.ResolveRef(this);
         TbSurvivorUpgrade.ResolveRef(this);
         TbSurvivorWeaponLevel.ResolveRef(this);
+        TbArcadeDockHitPose.ResolveRef(this);
     }
 }
 

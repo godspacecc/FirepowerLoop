@@ -1,0 +1,7 @@
+PASS ThreeModels
+PASS SampleDimensions
+PASS EarlyBulletPassesAbove
+PASS LateBulletHits
+PASS SameAgeDifferentHeight
+PASS RealSampleInterpolation
+ArcadeHitConfigChecks: 6/6 passed

@@ -36,7 +36,7 @@ namespace ET.Server
             foreach(var e in b.Enemies.Values)
             {
                 float travel=ArcadeHerdImpactRules.Step(ref e.HerdImpact,seconds);
-                if(travel<=0||e.DockSeaEntry.Active)continue;
+                if(travel<=0||e.DockSeaEntry.Active||e.OutsideEntry.Active)continue;
                 float x=e.PositionX+e.HerdImpact.DirectionX*travel,z=e.PositionZ+e.HerdImpact.DirectionZ*travel;
                 ResolveBattlePosition(b,ref x,ref z,e.PositionX,e.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,EffectiveObstacles(b),IslandFor(b));
                 e.PositionX=x;e.PositionZ=z;
@@ -70,7 +70,9 @@ namespace ET.Server
                 if(!RoundContentActive(b))return;
                 foreach(var enemy in b.Enemies.Values.ToArray())
                 {
-                    if(enemy.DockSeaEntry.Active||!b.Enemies.ContainsKey(enemy.RuntimeId)||!ArcadeHerdRules.TryContact(cow,sweep,b.RoundGeneration,enemy.RuntimeId,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,enemy.CurrentHealth>0))continue;
+                    // 三维牛身扫掠先于接触去重；入场状态本身不排除受伤。
+                    if(enemy.DockSeaEntry.Active&&!TryEnemySweep(enemy,sweep.FromX,sweep.FromZ,sweep.ToX,sweep.ToZ,0,sweep.Radius,out _))continue;
+                    if(!b.Enemies.ContainsKey(enemy.RuntimeId)||!ArcadeHerdRules.TryContact(cow,sweep,b.RoundGeneration,enemy.RuntimeId,enemy.PositionX,enemy.PositionZ,ServerConfig.Instance.ArcadeRule.EnemyContactRadius,enemy.CurrentHealth>0,enemy.DockSeaEntry.Active))continue;
                     DamageEnemy(b,enemy,ArcadeRoundContentRules.Damage(enemy.MaxHealth,stage.HerdEnemyDamage));
                     if(enemy.CurrentHealth<=0)actor.KillEnemyWithReaction(b,enemy,true,false,enemy.PositionX-cow.DirectionX,enemy.PositionZ-cow.DirectionZ,ArcadeDeathImpactRules.Herd);
                     else if(ArcadeHerdImpactRules.Begin(ref enemy.HerdImpact,cow.DirectionX,cow.DirectionZ))CancelMeleeWindup(enemy,true);

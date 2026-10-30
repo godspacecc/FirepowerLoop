@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Luban配置含任意字节，不允许自动换行转换。
+*.bytes -text

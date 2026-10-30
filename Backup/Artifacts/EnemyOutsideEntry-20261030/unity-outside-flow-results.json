@@ -1,0 +1,29 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 3,
+      "PassedTests": 3,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:05.3376467"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.OutsideEntryFlowTests.ChallengeFallbackUsesRealSpawnAndKeepsSpecialArrival",
+        "Status": "Passed",
+        "Duration": "00:00:01.4120000"
+      },
+      {
+        "Name": "Game.Tests.OutsideEntryFlowTests.FreezeCrowdingAndDamageDoNotClampOutside",
+        "Status": "Passed",
+        "Duration": "00:00:00.9620000"
+      },
+      {
+        "Name": "Game.Tests.OutsideEntryFlowTests.RealSpawnContinuousMovementAndPoolReset",
+        "Status": "Passed",
+        "Duration": "00:00:01.0800000"
+      }
+    ]
+  }
+}
