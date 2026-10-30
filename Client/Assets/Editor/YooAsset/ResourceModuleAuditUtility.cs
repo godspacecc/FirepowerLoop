@@ -37,61 +37,6 @@ namespace Game.Editor
             StartupTag
         };
 
-        [MenuItem("Tools/打包/资源/构建 PC 模块测量包", false, 189)]
-        private static void BuildWindowsMeasurementPackageMenu()
-        {
-            BuildMeasurementPackage(BuildTargetGroup.Standalone, BuildTarget.StandaloneWindows64);
-        }
-
-        /// <summary>
-        /// 手动触发指定平台的纯资源构建；必要时切换平台，但不构建 Player 也不发布产物。
-        /// </summary>
-        private static void BuildMeasurementPackage(BuildTargetGroup targetGroup, BuildTarget target)
-        {
-            if (!EditorUtility.DisplayDialog(
-                    "构建模块测量包",
-                    $"将自动切换到 {target}，然后只构建 YooAsset 远端资源包。" +
-                    "\n不构建 Player，也不发布到资源服务器。\n\n是否继续？",
-                    "构建",
-                    "取消"))
-            {
-                return;
-            }
-
-            if (!BuildPipeline.IsBuildTargetSupported(targetGroup, target))
-            {
-                string error = $"当前 Unity 未安装或不支持 {target} 构建模块。";
-                Debug.LogError($"[ResourceModuleAudit] {error}");
-                EditorUtility.DisplayDialog("模块测量包构建失败", error, "确定");
-                return;
-            }
-
-            if (EditorUserBuildSettings.activeBuildTarget != target &&
-                !EditorUserBuildSettings.SwitchActiveBuildTarget(targetGroup, target))
-            {
-                string error = $"无法自动切换到 {target}。";
-                Debug.LogError($"[ResourceModuleAudit] {error}");
-                EditorUtility.DisplayDialog("模块测量包构建失败", error, "确定");
-                return;
-            }
-
-            // 测量版本只用于区分本地报告，不参与运行时版本策略。
-            string version = DateTime.Now.ToString("yyyyMMddHHmmss");
-            YooAssetBuildUtility.BuildResult buildResult = YooAssetBuildUtility.BuildDefaultPackage(version, false);
-            if (!buildResult.Success)
-            {
-                string error = buildResult.Error ?? "未知错误";
-                Debug.LogError($"[ResourceModuleAudit] 模块测量包构建失败：{error}");
-                EditorUtility.DisplayDialog("模块测量包构建失败", error, "确定");
-                return;
-            }
-
-            string message = $"构建完成：{buildResult.OutputPackageDirectory}\n\n" +
-                             "模块体积已输出到 Console，也可再执行“分析最新模块体积”。";
-            Debug.Log($"[ResourceModuleAudit] {message}");
-            EditorUtility.DisplayDialog("模块测量包构建完成", message, "确定");
-        }
-
         [MenuItem("Tools/打包/资源/分析最新模块体积", false, 190)]
         private static void AnalyzeLatestReportMenu()
         {
