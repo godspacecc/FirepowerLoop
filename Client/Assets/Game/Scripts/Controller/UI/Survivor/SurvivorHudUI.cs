@@ -9,7 +9,6 @@ namespace Game
     {
         public Button BtnPause;
         public Slider ExperienceBar;
-        public TextMeshProUGUI ExperienceText;
         public Slider HealthBar;
         public TextMeshProUGUI HealthText;
         public RectTransform JoystickLayoutArea;
@@ -18,5 +17,6 @@ namespace Game
         public CanvasGroup MoveOpacity;
         public TextMeshProUGUI ScoreText;
         public TextMeshProUGUI TimeText;
+        public CustomListView WeaponSlots;
     }
 }

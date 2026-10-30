@@ -69,6 +69,32 @@ namespace Game
             return (int[])offer.Clone();
         }
 
+        /// <summary>按配置权重无放回抽取；首次保底仅影响新一轮候选，已展示选择保持稳定。</summary>
+        public int[] OfferWeighted(int[] eligibleIds,int[] weights,int seed,int preferredId)
+        {
+            if(Finished || PendingChoices==0)return Array.Empty<int>();
+            if(offer.Length==3)return (int[])offer.Clone();
+            if(eligibleIds==null || weights==null || eligibleIds.Length!=weights.Length)throw new ArgumentException("候选与权重必须对应");
+            var candidates=new List<(int Id,int Weight)>();
+            var seen=new HashSet<int>();
+            for(int i=0;i<eligibleIds.Length;i++)
+            {
+                if(eligibleIds[i]<=0 || weights[i]<=0 || !seen.Add(eligibleIds[i]))throw new ArgumentException("候选编号和权重必须为正且不重复");
+                candidates.Add((eligibleIds[i],weights[i]));
+            }
+            if(candidates.Count<3)return Array.Empty<int>();
+            var chosen=new List<int>();var random=new Random(seed);
+            int preferred=candidates.FindIndex(x=>x.Id==preferredId);
+            if(preferred>=0){chosen.Add(preferredId);candidates.RemoveAt(preferred);}
+            while(chosen.Count<3)
+            {
+                long total=candidates.Sum(x=>(long)x.Weight);double roll=random.NextDouble()*total;
+                int index=0;while(index<candidates.Count-1&&roll>=candidates[index].Weight){roll-=candidates[index].Weight;index++;}
+                chosen.Add(candidates[index].Id);candidates.RemoveAt(index);
+            }
+            offer=chosen.ToArray();return (int[])offer.Clone();
+        }
+
         /// <summary>选择事务以版本防连点；只允许当前真实选项，每次消耗一个升级机会。</summary>
         public bool Choose(int revision,int upgradeId)
         {

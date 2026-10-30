@@ -904,5 +904,13 @@
   "ui.survivor.hud.experience": "等级 {0}    经验  {1} / {2}",
   "ui.survivor.result.score": "本局分数  {0}",
   "ui.survivor.result.retry": "保存失败：{0}。点击再来一局或返回主菜单重试。",
-  "ui.survivor.upgrade.progress": "等级 {0} → {1}\n累计效果 {2} → {3}"
+  "ui.survivor.upgrade.progress": "等级 {0} → {1}\n累计效果 {2} → {3}",
+  "ui.survivor.weapon.Rifle": "基础步枪",
+  "ui.survivor.weapon.Drone": "无人机",
+  "ui.survivor.weapon.empty": "空武器槽",
+  "ui.survivor.weapon.slot": "{0}  Lv.{1}",
+  "ui.survivor.weapon.acquire": "获得{0}",
+  "ui.survivor.weapon.upgrade": "提升{0}等级",
+  "ui.survivor.weapon.acquire_detail": "Lv.1 · 占用 1 个武器槽\n伤害 {0}\n射击间隔 {1} 秒",
+  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\n伤害 {2} → {3}\n射击间隔 {4} → {5} 秒"
 }

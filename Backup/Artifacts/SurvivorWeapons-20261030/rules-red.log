@@ -1,0 +1,8 @@
+FAIL 1: missing SurvivorLoadout
+FAIL 2: missing SurvivorLoadout
+FAIL 3: missing SurvivorLoadout
+FAIL 4: missing SurvivorLoadout
+FAIL 5: missing SurvivorLoadout
+FAIL 6: missing SurvivorLoadout
+FAIL 7: missing OfferWeighted
+0/7 passed; standalone pure C# checks, not Unity tests

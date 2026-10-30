@@ -1,0 +1,6 @@
+RulesCheck/bin/
+RulesCheck/obj/
+frames/
+update_config.py
+update_localization.py
+finalize_docs.py

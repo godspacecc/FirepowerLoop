@@ -27,6 +27,14 @@ namespace Game
     {
         /// <summary>规则状态仅由幸存者系统写入。</summary>
         internal SurvivorRunState State;
+        /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
+        internal SurvivorLoadout Loadout;
+        /// <summary>界面只读查询武器等级。</summary>
+        public int WeaponLevel(string kind)=>Loadout?.LevelOf(kind)??0;
+        /// <summary>包含主武器的总槽数与当前占用。</summary>
+        public int WeaponSlotCapacity=>Loadout?.Capacity??0;
+        public int UsedWeaponSlots=>Loadout?.UsedSlots??0;
+        public string[] EquippedWeapons=>Loadout?.Weapons??Array.Empty<string>();
         /// <summary>界面展示值由系统事务提交。</summary>
         internal bool Active, Paused;
         internal int Health, MaximumHealth, Kills;

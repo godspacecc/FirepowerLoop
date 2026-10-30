@@ -16,7 +16,10 @@ namespace Game.Tests
             var provider = new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetSurvivor(out var config, out var error), Is.True, error);
             Assert.That(config.LayoutId, Is.EqualTo("arena.22.round.1"));
-            Assert.That(config.Upgrades.Count, Is.EqualTo(5));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(7));
+            Assert.That(config.WeaponSlots, Is.EqualTo(3));
+            Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
+            Assert.That(config.WeaponLevel("Drone",2).Damage, Is.GreaterThan(config.WeaponLevel("Drone",1).Damage));
             Assert.That(config.MinimumSpawnIntervalSeconds, Is.LessThanOrEqualTo(config.SpawnIntervalSeconds));
         }
         [Test] public void MissingTablesReturnsActionableFailure()

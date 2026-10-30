@@ -16,6 +16,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     public SurvivorUpgradeConfig(ByteBuf _buf) 
     {
         Id = _buf.ReadString();
+        Weight = _buf.ReadInt();
         Kind = _buf.ReadString();
         AmountPerLevel = _buf.ReadFloat();
         MaximumBonus = _buf.ReadFloat();
@@ -28,6 +29,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     }
 
     public readonly string Id;
+    public readonly int Weight;
     public readonly string Kind;
     public readonly float AmountPerLevel;
     public readonly float MaximumBonus;
@@ -44,6 +46,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     {
         return "{ "
         + "Id:" + Id + ","
+        + "Weight:" + Weight + ","
         + "Kind:" + Kind + ","
         + "AmountPerLevel:" + AmountPerLevel + ","
         + "MaximumBonus:" + MaximumBonus + ","
@@ -51,3 +54,6 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         + "}";
     }
 }
+
+
+

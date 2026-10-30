@@ -15,6 +15,10 @@ namespace Game
         private ArcadeRoundLayoutParameters layout;
         private EnemyConfigDefinition enemyConfig;
         private ArcadeWeaponDefinition weapon;
+        /// <summary>无人机只复用既有表现配置，计时和伤害由幸存者独立规则拥有。</summary>
+        private ArcadePowerupDefinition droneVisual;
+        private Vector2 dronePosition,droneFacing=Vector2.up;
+        private float droneFireClock;
         private ArcadeDropDefinition dropVisual;
         private ArcadeObstacleDefinition[] obstacles;
         private IArcadeCombatViewPort view;
@@ -50,6 +54,8 @@ namespace Game
                 if(!provider.TryGetSurvivor(out config,out error)||!provider.TryGetArcadeCatalog(out catalog,out error)||!provider.TryGetEnemy(config.EnemyId,out enemyConfig,out error))return false;
                 layout=catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId);
                 weapon=catalog.Weapons.Single(x=>x.Id==config.WeaponId);
+                var support=catalog.SupportVisuals.Single(x=>x.ProductId=="arcade.support.drone");
+                droneVisual=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,support.ActiveVisualPrefabAddress,false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
                 dropVisual=catalog.Drops.Single(x=>x.Id=="arcade.drop.gold.small");
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
                 store=new SurvivorResultFileStore(1);
@@ -63,15 +69,17 @@ namespace Game
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
             if(!TryPrepare(out error))return false;
             Stop();var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
+            m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
             navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);spawnIndex=0;
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
+            dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
             try{ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();Model.Active=false;Model.Paused=false;Model.Choices=Array.Empty<int>();}
+        public void Stop(){input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.Choices=Array.Empty<int>();}
         /// <summary>失败可以用同一结果重试，不覆盖本局统计。</summary>
         public bool TryFinish(out string error)
         {
@@ -90,15 +98,42 @@ namespace Game
             return true;
         }
         public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升",_=>"强化"};}
+        /// <summary>武器卡片读当前及下一等级，未获取时当前参数为空。</summary>
+        public bool TryGetWeaponUpgrade(int id,out string kind,out int level,out SurvivorWeaponLevelDefinition current,out SurvivorWeaponLevelDefinition next)
+        {
+            kind=null;level=0;current=next=null;
+            if(config==null||Model.Loadout==null||id<1||id>config.Upgrades.Count||!config.Upgrades[id-1].IsWeapon)return false;
+            kind=config.Upgrades[id-1].Kind;level=Model.Loadout.LevelOf(kind);
+            if(!Model.Loadout.CanUpgrade(kind,config.MaximumWeaponLevel(kind)))return false;
+            current=level>0?config.WeaponLevel(kind,level):null;next=config.WeaponLevel(kind,level+1);return true;
+        }
         /// <summary>菜单暂停不清空升级队列，恢复时仍先完成升级。</summary>
         public void SetPaused(bool paused){if(!Model.Active||Model.State.Finished)return;menuPaused=paused;Model.Paused=paused||Model.State.PendingChoices>0;Publish();}
         public bool Choose(int revision,int upgradeId)
         {
-            var m=Model;if(!m.Active||!m.State.Choose(revision,upgradeId))return false;
+            var m=Model;if(!m.Active||config==null||upgradeId<1||upgradeId>config.Upgrades.Count)return false;
+            var definition=config.Upgrades[upgradeId-1];
+            if(definition.IsWeapon&&(m.Loadout==null||!m.Loadout.CanUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind))))return false;
+            if(!m.State.Choose(revision,upgradeId))return false;
+            if(definition.IsWeapon)
+            {
+                // 首次获取从当前玩家身边出现；升级不重置正在飞行的无人机。
+                if(definition.Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0){dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=facing;droneFireClock=0;}
+                m.Loadout.TryUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind));
+            }
             int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
         }
         private double Bonus(string kind){double value=0;for(int i=0;i<config.Upgrades.Count;i++)if(config.Upgrades[i].Kind==kind)value+=config.Upgrades[i].BonusAtLevel(Model.State.UpgradeLevel(i+1));return value;}
-        private void Offer(){var m=Model;m.Choices=m.State.Offer(Enumerable.Range(1,config.Upgrades.Count).Where(id=>config.Upgrades[id-1].MaxLevel==0||m.State.UpgradeLevel(id)<config.Upgrades[id-1].MaxLevel).ToArray(),unchecked((int)runId+m.State.ChoiceRevision));m.Paused=menuPaused||m.State.PendingChoices>0;}
+        /// <summary>已有武器只提供升级，满槽/满级过滤；首次选择保底无人机。</summary>
+        private void Offer()
+        {
+            var m=Model;var ids=Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
+                var u=config.Upgrades[id-1];return u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel;
+            }).ToArray();
+            int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
+            m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
+            m.Paused=menuPaused||m.State.PendingChoices>0;
+        }
         private Vector2 Resolve(Vector2 position,float radius)=>ArcadeCombatSystem.ResolvePosition(position,radius,HalfWidth,HalfHeight,obstacles);
         private void Publish(){this.SendEvent<SurvivorChangedEvent>();}
         /// <summary>暂停时不推进敌人、子弹、刷怪或升级时钟。</summary>
@@ -115,11 +150,13 @@ namespace Game
             if(spawnClock<=0){Spawn();spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             navigation.SetTarget(player);
             foreach(var e in enemies.Values){e.Position=navigation.Move(e.Position,player,e.Speed*dt);if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius){m.Health=Math.Max(0,m.Health-e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}}
-            Fire();AdvanceBullets(dt);
+            Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             Offer();view.SetPlayer(player,facing,true,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             foreach(var e in enemies.Values)view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth);
-            foreach(var b in bullets.Values)view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
+            foreach(var b in bullets.Values)
+                if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
+                else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
             foreach(var d in drops)view.SetDrop(d.Key,dropVisual,d.Value.Position);
             if(m.Health<=0)TryFinish(out _);else Publish();
         }
@@ -138,9 +175,25 @@ namespace Game
         private void Fire()
         {
             if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;var candidates=enemies.Values.ToArray();
-            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,config.AimRange,candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>!Blocked(player,e.Position)).ToArray());
-            if(target==0)return;facing=(enemies[(int)target].Position-player).normalized;fireClock=weapon.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
-            var b=new ArcadeProjectileRuntime{Id=++identity,Position=player,Velocity=facing*weapon.ProjectileSpeed,Damage=(int)Math.Min(int.MaxValue,weapon.Damage*(1+Bonus("Damage"))),RemainingSeconds=weapon.ProjectileLifetimeSeconds};bullets.Add(b.Id,b);view.SetPlayerFireSequence(++fireSequence,fireClock);
+            var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
+            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>!Blocked(player,e.Position)).ToArray());
+            if(target==0)return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
+            Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
+        }
+        /// <summary>常驻无人机优先保护玩家附近目标；升级暂停和结算时此入口不执行。</summary>
+        private void TickDrone(float dt)
+        {
+            int levelNumber=Model.Loadout?.LevelOf("Drone")??0;if(levelNumber==0)return;
+            var level=config.WeaponLevel("Drone",levelNumber);droneFireClock-=dt;
+            dronePosition=Vector2.Lerp(dronePosition,player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ),1-Mathf.Exp(-12*dt));
+            var target=enemies.Values.Where(e=>e.Health>0&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
+            if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&bullets.Count<config.MaxProjectiles){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
+            view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
+        }
+        /// <summary>全部武器共享弹丸预算及命中入口，弹丸保留发射时伤害。</summary>
+        private void Shoot(Vector2 origin,Vector2 direction,SurvivorWeaponLevelDefinition level,string kind)
+        {
+            var b=new ArcadeProjectileRuntime{Id=++identity,Position=origin,Velocity=direction*level.ProjectileSpeed,Damage=(int)Math.Min(int.MaxValue,level.Damage*(1+Bonus("Damage"))),RemainingSeconds=level.ProjectileLifetimeSeconds,SourceWeaponId=kind=="Drone"?"survivor.drone":config.WeaponId};bullets.Add(b.Id,b);
         }
         /// <summary>步进弹丸线段检查实体阻挡，防止穿越农场围栏。</summary>
         private bool Blocked(Vector2 from,Vector2 to){int steps=Math.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/.1f));for(int i=0;i<=steps;i++){var p=Vector2.Lerp(from,to,(float)i/steps);foreach(var o in obstacles)if(o.BlocksProjectiles&&Mathf.Abs(p.x-o.Center.x)<=o.HalfExtents.x&&Mathf.Abs(p.y-o.Center.y)<=o.HalfExtents.y)return true;}return false;}

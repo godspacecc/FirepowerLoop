@@ -102,5 +102,37 @@
   "ui.survivor.upgrade.progress": {
     "en-US": "Level {0} → {1}\nTotal bonus {2} → {3}",
     "zh-CN": "等级 {0} → {1}\n累计效果 {2} → {3}"
+  },
+  "ui.survivor.weapon.Rifle": {
+    "zh-CN": "基础步枪",
+    "en-US": "Basic Rifle"
+  },
+  "ui.survivor.weapon.Drone": {
+    "zh-CN": "无人机",
+    "en-US": "Drone"
+  },
+  "ui.survivor.weapon.empty": {
+    "zh-CN": "空武器槽",
+    "en-US": "Empty Slot"
+  },
+  "ui.survivor.weapon.slot": {
+    "zh-CN": "{0}  Lv.{1}",
+    "en-US": "{0}  Lv.{1}"
+  },
+  "ui.survivor.weapon.acquire": {
+    "zh-CN": "获得{0}",
+    "en-US": "Acquire {0}"
+  },
+  "ui.survivor.weapon.upgrade": {
+    "zh-CN": "提升{0}等级",
+    "en-US": "Upgrade {0}"
+  },
+  "ui.survivor.weapon.acquire_detail": {
+    "zh-CN": "Lv.1 · 占用 1 个武器槽\n伤害 {0}\n射击间隔 {1} 秒",
+    "en-US": "Lv.1 · Uses 1 weapon slot\nDamage {0}\nFire interval {1}s"
+  },
+  "ui.survivor.weapon.upgrade_detail": {
+    "zh-CN": "Lv.{0} → Lv.{1}\n伤害 {2} → {3}\n射击间隔 {4} → {5} 秒",
+    "en-US": "Lv.{0} → Lv.{1}\nDamage {2} → {3}\nFire interval {4} → {5}s"
   }
 }

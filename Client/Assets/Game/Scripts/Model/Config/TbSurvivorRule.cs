@@ -46,3 +46,6 @@ public partial class TbSurvivorRule
     }
 
 }
+
+
+

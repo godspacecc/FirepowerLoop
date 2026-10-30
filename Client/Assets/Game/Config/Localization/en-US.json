@@ -904,5 +904,13 @@
   "ui.survivor.hud.experience": "Level {0}    XP  {1} / {2}",
   "ui.survivor.result.score": "Run Score  {0}",
   "ui.survivor.result.retry": "Save failed: {0}. Select Play Again or Main Menu to retry.",
-  "ui.survivor.upgrade.progress": "Level {0} → {1}\nTotal bonus {2} → {3}"
+  "ui.survivor.upgrade.progress": "Level {0} → {1}\nTotal bonus {2} → {3}",
+  "ui.survivor.weapon.Rifle": "Basic Rifle",
+  "ui.survivor.weapon.Drone": "Drone",
+  "ui.survivor.weapon.empty": "Empty Slot",
+  "ui.survivor.weapon.slot": "{0}  Lv.{1}",
+  "ui.survivor.weapon.acquire": "Acquire {0}",
+  "ui.survivor.weapon.upgrade": "Upgrade {0}",
+  "ui.survivor.weapon.acquire_detail": "Lv.1 · Uses 1 weapon slot\nDamage {0}\nFire interval {1}s",
+  "ui.survivor.weapon.upgrade_detail": "Lv.{0} → Lv.{1}\nDamage {2} → {3}\nFire interval {4} → {5}s"
 }

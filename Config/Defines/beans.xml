@@ -627,6 +627,7 @@
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorRuleConfig" group="e">
         <var name="Id" type="string"/>
+        <var name="WeaponSlots" type="int"/>
         <var name="LayoutId" type="string#ref=TbArcadeRoundLayout"/>
         <var name="EnemyId" type="string#ref=TbEnemy"/>
         <var name="WeaponId" type="string#ref=TbArcadeWeapon"/>
@@ -652,9 +653,21 @@
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorUpgradeConfig" group="e">
         <var name="Id" type="string"/>
+        <var name="Weight" type="int"/>
         <var name="Kind" type="string"/>
         <var name="AmountPerLevel" type="float"/>
         <var name="MaximumBonus" type="float"/>
         <var name="MaxLevel" type="int"/>
+    </bean>
+    <!-- 幸存者独立武器逐级参数，不改变闯关限时支援。 -->
+    <bean name="SurvivorWeaponLevelConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Kind" type="string"/>
+        <var name="Level" type="int"/>
+        <var name="Damage" type="int"/>
+        <var name="FireIntervalSeconds" type="float"/>
+        <var name="Range" type="float"/>
+        <var name="ProjectileSpeed" type="float"/>
+        <var name="ProjectileLifetimeSeconds" type="float"/>
     </bean>
 </beans>

@@ -8,11 +8,17 @@ namespace Game
         private SurvivorHudUI UI => (SurvivorHudUI)BaseUI;
         /// <summary>可见期更新与事件订阅由同一开关成对释放。</summary>
         private bool joystickRegistered;
+        /// <summary>列表绑定只读取当前装备快照，空槽与已有武器共用同一Box。</summary>
+        private string[] weaponKinds=System.Array.Empty<string>();
         public override bool BlocksGame => false;
         public override UILayer Layer() => UILayer.HUD;
         protected override string Path() => "Survivor/SurvivorHud";
         protected override void OnInit()
         {
+            UI.WeaponSlots.AddItemRefreshListener((item,index)=>{
+                var box=item.GetComponent<SurvivorWeaponSlotBoxUI>();
+                box.NameText.text=index<weaponKinds.Length?Loc.T("ui.survivor.weapon.slot",Loc.T("ui.survivor.weapon."+weaponKinds[index]),this.GetModel<SurvivorModel>().WeaponLevel(weaponKinds[index])):Loc.T("ui.survivor.weapon.empty");
+            });
             this.RegisterEvent<MobileInputModeChangedEvent>(_=>{if(IsShow())RefreshJoystick();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_=>{if(IsShow())RefreshJoystick();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             UI.BtnPause.onClick.AddListener(() => this.GetSystem<HotKeySystem>().TryExecuteAction(HotKeyActionIds.TogglePause));
@@ -54,10 +60,11 @@ namespace Game
             UI.HealthText.text=Loc.T("ui.survivor.hud.health",s.Health,s.MaximumHealth);
             UI.TimeText.text=Loc.T("ui.survivor.time",FormatTime(s.SurvivalSeconds));
             UI.ScoreText.text=Loc.T("ui.survivor.hud.score",s.Score.ToString("N0"));
-            UI.ExperienceText.text=Loc.T("ui.survivor.hud.experience",s.Level,s.Experience,s.RequiredExperience);
             UI.HealthBar.value=s.MaximumHealth>0?Mathf.Clamp01((float)s.Health/s.MaximumHealth):0;
             UI.ExperienceBar.value=s.RequiredExperience>0?Mathf.Clamp01((float)s.Experience/s.RequiredExperience):0;
             UI.BtnPause.interactable=!s.Paused;
+            var model=this.GetModel<SurvivorModel>();weaponKinds=model.EquippedWeapons;
+            UI.WeaponSlots.totalCount=model.WeaponSlotCapacity;UI.WeaponSlots.RefreshCells();
         }
         /// <summary>使用累计分钟，不在一小时后回绕。</summary>
         internal static string FormatTime(double seconds){long t=(long)System.Math.Max(0,seconds);return $"{t/60:00}:{t%60:00}";}

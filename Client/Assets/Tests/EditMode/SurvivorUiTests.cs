@@ -30,6 +30,25 @@ namespace Game.Tests
             Assert.That(new SurvivorHudUICtrl().BlocksGame,Is.False);
             Assert.That(new SurvivorResultUICtrl().BlocksGame,Is.True);
         }
+        [Test] public void WeaponSlotsStayAboveTextFreeBottomExperienceAcrossAspectRatios()
+        {
+            var source=Bound<SurvivorHudUI>(Root+"SurvivorHud.prefab");
+            var box=Bound<SurvivorWeaponSlotBoxUI>(Root+"Box/SurvivorWeaponSlot.prefab");Assert.That(source.WeaponSlots.itemPrefab,Is.EqualTo(box.gameObject));
+            Assert.That(source.transform.Find("ExperiencePanel"),Is.Null);Assert.That(typeof(SurvivorHudUI).GetField("ExperienceText"),Is.Null);
+            var instance=Object.Instantiate(source.gameObject);
+            try
+            {
+                var ui=instance.GetComponent<SurvivorHudUI>();var root=(RectTransform)instance.transform;
+                foreach(int width in new[]{1440,1920,2340})
+                {
+                    root.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal,width);root.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,1080);
+                    Canvas.ForceUpdateCanvases();var xp=new Vector3[4];var slots=new Vector3[4];var bounds=new Vector3[4];
+                    ((RectTransform)ui.ExperienceBar.transform).GetWorldCorners(xp);((RectTransform)ui.WeaponSlots.transform).GetWorldCorners(slots);root.GetWorldCorners(bounds);
+                    Assert.That(xp[0].y,Is.EqualTo(bounds[0].y).Within(.1f));Assert.That(xp[1].y,Is.LessThan(slots[0].y));
+                    Assert.That(xp[0].x,Is.EqualTo(bounds[0].x).Within(.1f));Assert.That(xp[2].x,Is.EqualTo(bounds[2].x).Within(.1f));
+                }
+            }finally{Object.DestroyImmediate(instance);}
+        }
         [Test] public void TextOwnership_DynamicFieldsHaveNoLocalizedTextAndFixedTextUsesKeys()
         {
             foreach(var path in new[]{Root+"SurvivorHud.prefab",Root+"SurvivorResult.prefab",Root+"SurvivorUpgrade.prefab",Root+"Box/SurvivorUpgrade.prefab"})

@@ -33,7 +33,7 @@ namespace Game.Tests
             Assert.That(provider.TryGetSurvivor(out config,out var error),Is.True,error);Assert.That(provider.TryGetArcadeCatalog(out var catalog,out error),Is.True,error);Assert.That(provider.TryGetEnemy(config.EnemyId,out var enemy,out error),Is.True,error);
             system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(architecture);view=new TestView();input=new PlayerInputCtrl();root=Path.Combine(Path.GetTempPath(),"SurvivorRuntimeTests-"+Guid.NewGuid().ToString("N"));
             Set("config",config);Set("catalog",catalog);Set("layout",catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId));Set("weapon",catalog.Weapons.Single(x=>x.Id==config.WeaponId));Set("enemyConfig",enemy);Set("obstacles",Array.Empty<ArcadeObstacleDefinition>());Set("view",view);Set("input",input);Set("store",new SurvivorResultFileStore(1,root));Set("runId",123L);
-            model.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);model.Active=true;model.Health=model.MaximumHealth=config.PlayerMaxHealth;
+            model.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);model.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");model.Active=true;model.Health=model.MaximumHealth=config.PlayerMaxHealth;
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
@@ -50,6 +50,40 @@ namespace Game.Tests
         [Test] public void ConsecutiveLevelsRequireSeparateVersionedChoices()
         {
             model.State.AddExperience(config.InitialExperienceThreshold*2L+config.ExperienceThresholdGrowth);Call("Offer");Assert.That(model.State.PendingChoices,Is.EqualTo(2));int revision=model.Snapshot.ChoiceRevision,id=model.UpgradeChoices[0];Assert.That(system.Choose(revision,id),Is.True);Assert.That(model.Paused,Is.True);Assert.That(system.Choose(revision,id),Is.False);Assert.That(system.Choose(model.Snapshot.ChoiceRevision,model.UpgradeChoices[0]),Is.True);Assert.That(model.Paused,Is.False);
+        }
+        [Test] public void FirstUpgradeAcquiresDroneAndNextChoiceUpgradesSameSlot()
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="Drone");
+            model.State.AddExperience(config.InitialExperienceThreshold);Call("Offer");Assert.That(model.UpgradeChoices,Does.Contain(id));
+            Assert.That(system.Choose(0,id),Is.True);Assert.That(model.WeaponLevel("Drone"),Is.EqualTo(1));Assert.That(model.UsedWeaponSlots,Is.EqualTo(2));
+            Assert.That(system.TryGetWeaponUpgrade(id,out var kind,out var level,out var current,out var next),Is.True);Assert.That(level,Is.EqualTo(1));Assert.That(next.Damage,Is.GreaterThan(current.Damage));
+            model.State.AddExperience(model.State.RequiredExperience);model.State.OfferWeighted(new[]{id,1,2},new[]{1,1,1},1,id);
+            Assert.That(system.Choose(1,id),Is.True);Assert.That(model.WeaponLevel("Drone"),Is.EqualTo(2));Assert.That(model.UsedWeaponSlots,Is.EqualTo(2));Assert.That(system.Choose(1,id),Is.False);
+        }
+        [Test] public void MaxLevelDroneIsRemovedFromCandidates()
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="Drone");
+            for(int i=0;i<5;i++)model.Loadout.TryUpgrade("Drone",5);
+            model.State.AddExperience(config.InitialExperienceThreshold);Call("Offer");Assert.That(model.UpgradeChoices,Has.No.Member(id));Assert.That(system.Choose(0,id),Is.False);
+        }
+        [Test] public void NewlyAcquiredDroneStartsBesideCurrentPlayer()
+        {
+            var player=new Vector2(12,-8);Set("player",player);Set("dronePosition",new Vector2(-20,20));
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="Drone");
+            model.State.AddExperience(config.InitialExperienceThreshold);Call("Offer");Assert.That(system.Choose(0,id),Is.True);
+            var tuning=Get<ArcadeConfigCatalogDefinition>("catalog").Rule.Drone;
+            Assert.That(Get<Vector2>("dronePosition"),Is.EqualTo(player+new Vector2(tuning.OffsetX,tuning.OffsetZ)));
+        }
+        [Test] public void DroneFiresAtPlayerThreatAndSharesProjectileBudget()
+        {
+            model.Loadout.TryUpgrade("Drone",5);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            enemies.Add(201,new ArcadeEnemyRuntime{Id=201,Health=100,Position=new Vector2(0,2)});
+            enemies.Add(202,new ArcadeEnemyRuntime{Id=202,Health=100,Position=new Vector2(4,0)});
+            Set("dronePosition",new Vector2(4,0));Call("TickDrone",.01f);
+            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");Assert.That(shots.Count,Is.EqualTo(1));var shot=shots.Values.Single();Assert.That(shot.SourceWeaponId,Is.EqualTo("survivor.drone"));Assert.That(shot.Velocity.x,Is.LessThan(0));Assert.That(shot.Velocity.y,Is.GreaterThan(0));
+            for(int i=shots.Count;i<config.MaxProjectiles;i++)shots.Add(1000+i,new ArcadeProjectileRuntime());
+            Set("droneFireClock",0f);Call("TickDrone",.01f);Assert.That(shots.Count,Is.EqualTo(config.MaxProjectiles));
         }
         [Test] public void UpgradeSelectionDoesNotDismissMenuPause()
         {

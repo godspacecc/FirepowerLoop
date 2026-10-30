@@ -1,0 +1,2 @@
+droneLevel=2; usedSlots=2; pausedTime=88.1275726957247; kills=71
+newRun active=True, rifle=1, drone=0, used=1
