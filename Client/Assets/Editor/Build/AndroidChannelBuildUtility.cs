@@ -202,24 +202,44 @@ namespace Game.Editor
             return json;
         }
 
-        [MenuItem("Tools/打包/Android/检查工具/检查现有APK（渠道候选，不打包）", false, 212)]
+        [MenuItem("Tools/打包/Android/检查工具/检查渠道包", false, 212)]
         private static void InspectChannelMenu() => InspectMenu(true);
 
         [MenuItem("Tools/打包/Android/检查工具/检查现有APK（纯离线单机，不打包）", false, 213)]
         private static void InspectOfflineMenu() => InspectMenu(true, true);
 
+        /// <summary>选择已有APK；联网渠道使用统一目录及明确结果提示，离线入口暂沿用原交互。</summary>
         private static void InspectMenu(bool channel, bool offline = false)
         {
-            string apk = EditorUtility.OpenFilePanel("选择已有 APK", "", "apk");
+            bool channelInspection = channel && !offline;
+            string project = Directory.GetParent(Application.dataPath).FullName;
+            string initialDirectory = Path.Combine(project, "Build", "Android");
+            while (!Directory.Exists(initialDirectory) && initialDirectory != project)
+                initialDirectory = Path.GetDirectoryName(initialDirectory);
+            string apk = EditorUtility.OpenFilePanel("选择已有 APK", channelInspection ? initialDirectory : "", "apk");
             if (string.IsNullOrEmpty(apk)) return;
-            string output = EditorUtility.SaveFilePanel("保存只读检查报告", Path.GetDirectoryName(apk), Path.GetFileNameWithoutExtension(apk) + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmssfff") + "-check", "json");
+            string output = channelInspection
+                ? Path.Combine(Directory.GetParent(project).FullName, "Backup", "Artifacts",
+                    "AndroidChannelInspection-" + DateTime.Now.ToString("yyyyMMdd-HHmmssfff") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8), "channel-apk-check.json")
+                : EditorUtility.SaveFilePanel("保存只读检查报告", Path.GetDirectoryName(apk), Path.GetFileNameWithoutExtension(apk) + "-" + DateTime.Now.ToString("yyyyMMdd-HHmmssfff") + "-check", "json");
             if (string.IsNullOrEmpty(output)) return;
             try
             {
                 var result = JObject.Parse(offline ? InspectOfflineAndSave(apk, output) : InspectAndSave(apk, output, channel));
                 UnityEngine.Debug.Log("[AndroidChannelBuildUtility] APK 技术检查 " + ((bool)result["passed"] ? "通过" : "未通过") + "，报告：" + output + "；未执行打包或发布。");
+                if (channelInspection && EditorUtility.DisplayDialog("检查渠道包",
+                        ((bool)result["passed"] ? "技术检查通过。" : "技术检查未通过，请查看报告中的失败项。") +
+                        "\n报告：" + output + "\n未检查完整游戏资源，不代表真机或渠道验收通过。",
+                        "查看报告位置", "关闭"))
+                    EditorUtility.RevealInFinder(output);
             }
-            catch (Exception exception) { UnityEngine.Debug.LogError("[AndroidChannelBuildUtility] APK 检查失败：" + exception.Message); }
+            catch (Exception exception)
+            {
+                UnityEngine.Debug.LogError("[AndroidChannelBuildUtility] APK 检查失败：" + exception.Message);
+                if (channelInspection)
+                    EditorUtility.DisplayDialog("检查渠道包失败", exception.Message +
+                        (File.Exists(output) ? "\n已保存报告：" + output : "\n未生成完整检查报告。修复检查工具或配置后可重查同一APK。"), "关闭");
+            }
         }
 
         private static JObject ReadConfig(ZipArchive archive, string name)
