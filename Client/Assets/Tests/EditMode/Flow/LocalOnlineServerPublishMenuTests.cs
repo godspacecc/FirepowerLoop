@@ -12,7 +12,7 @@ namespace Game.Tests
 {
     public sealed class LocalOnlineServerPublishMenuTests
     {
-        private const string PublishMenuPath = "Tools/游戏服务器/发布联机服务器";
+        private const string PublishMenuPath = "Tools/游戏服务器/生成联机服务器包";
         private const string LocalStartMenuPath = "Tools/游戏服务器/启动本地联机服务器";
 
         private Type MenuType => RequiredType("Game.Editor.LocalOnlineServerPublishMenu");
@@ -108,7 +108,7 @@ namespace Game.Tests
             Assert.That(batch, Does.Not.Contain("set \"GAME_SERVER_ROOT=%~dp0\""));
             Assert.That(batch, Does.Contain("Tools\\start-local-online-server.ps1"));
             Assert.That(batch, Does.Contain("-GameServerRoot"));
-            Assert.That(batch, Does.Contain("-Port 31001"));
+            Assert.That(batch, Does.Contain("-Port 31011"));
             Assert.That(batch, Does.Contain("powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File"));
             Assert.That(batch, Does.Contain("%ERRORLEVEL%"));
             Assert.That(batch, Does.Contain("exit /b"));
@@ -151,12 +151,12 @@ namespace Game.Tests
         }
 
         [Test]
-        public void PublishScriptCleansOnlyValidatedWinX64Outputs()
+        public void PublishScriptCleansOnlyValidatedTransactionDirectories()
         {
             string script = ReadPublishScript();
 
             Assert.That(script, Does.Contain("Assert-ChildPath"));
-            Assert.That(script, Does.Contain("Remove-PublishOutputs"));
+            Assert.That(script, Does.Contain("Remove-TransactionDirectory"));
             Assert.That(script, Does.Contain("Remove-Item"));
             Assert.That(script, Does.Contain("$Context.Bin"));
             Assert.That(script, Does.Contain("$Context.Config"));
@@ -203,7 +203,7 @@ namespace Game.Tests
             Assert.That(script, Does.Contain("[System.IO.FileShare]::None"));
             Assert.That(script, Does.Contain("finally"));
             Assert.That(script, Does.Contain("$LASTEXITCODE -ne 0"));
-            Assert.That(script, Does.Contain("$script:rebuildStarted"));
+            Assert.That(script, Does.Contain("$script:replacementStarted"));
             Assert.That(script, Does.Contain("Read-Host"));
             Assert.That(script, Does.Contain("按 Enter"));
             Assert.That(script, Does.Contain("exit $script:exitCode"));
@@ -221,7 +221,7 @@ namespace Game.Tests
             Assert.That(script, Does.Contain("PublishedLauncher"));
             Assert.That(script, Does.Contain("PublishedStartBat"));
             Assert.That(script, Does.Contain("New-Item -ItemType Directory -Force -Path $safeTools"));
-            Assert.That(script, Does.Contain("$script:rebuildStarted = $true"));
+            Assert.That(script, Does.Contain("$script:replacementStarted = $true"));
         }
 
         [Test]
@@ -274,9 +274,9 @@ namespace Game.Tests
 
             AssertUtf8Bom(PublishScriptPath());
             AssertUtf8Bom(LauncherScriptPath());
-            Assert.That(publish, Does.Contain("正在准备 Windows 联机服务器发布"));
-            Assert.That(publish, Does.Contain("发布成功"));
-            Assert.That(publish, Does.Contain("发布失败"));
+            Assert.That(publish, Does.Contain("正在准备 Windows 联机服务器包"));
+            Assert.That(publish, Does.Contain("联机服务器包生成成功"));
+            Assert.That(publish, Does.Contain("联机服务器包生成失败"));
             Assert.That(publish, Does.Contain(".NET 8 Runtime"));
             Assert.That(publish, Does.Contain("App.dll"));
             Assert.That(launcher, Does.Contain("[本地联机服务器]"));
@@ -289,7 +289,7 @@ namespace Game.Tests
             Assert.That(launcher, Does.Contain("OnlineLocal"));
             Assert.That(launcher, Does.Contain("PID"));
             Assert.That(launcher, Does.Contain("ExitCode"));
-            Assert.That(launcher, Does.Contain("同一 Wi-Fi 安卓地址"));
+            Assert.That(launcher, Does.Contain("局域网客户端联机地址"));
             Assert.That(launcher, Does.Contain("0.0.0.0"));
             Assert.That(launcher, Does.Contain("TCP"));
         }
@@ -304,7 +304,7 @@ namespace Game.Tests
             Assert.That(script, Does.Not.Contain("Start-Process"));
             Assert.That(script, Does.Not.Contain("App.dll --AppType"));
             Assert.That(script, Does.Not.Contain("Logs"));
-            Assert.That(script, Does.Not.Contain("Store"));
+            Assert.That(script, Does.Contain("$script:managedNames = @('Bin', 'Config', 'Tools', '启动联机服务器.bat', '局域网部署说明.md')"));
             Assert.That(script, Does.Not.Contain("Publish-linux"));
         }
 

@@ -1,0 +1,17 @@
+{
+  "Baseline": "6c3b8920",
+  "UnchangedFunctions": [
+    "Resolve-AndValidateContext",
+    "Invoke-WindowsPublish",
+    "Copy-PublishConfig",
+    "Copy-DeploymentLaunchers",
+    "Validate-PublishOutput",
+    "Acquire-PublishLock",
+    "Release-PublishLock",
+    "Assert-ChildPath"
+  ],
+  "StaticSourceChecks": "passed",
+  "PublishScriptExecuted": false,
+  "RuntimeRollbackVerified": false,
+  "UnityTestsRun": false
+}

@@ -6,7 +6,10 @@
 $ErrorActionPreference = "Stop"
 $script:publishLock = $null
 $script:exitCode = 1
-$script:rebuildStarted = $false
+# 只替换可重建产物，运行数据和其他文件始终留在正式目录。
+$script:managedNames = @('Bin', 'Config', 'Tools', '启动联机服务器.bat', '局域网部署说明.md')
+$script:stageContext = $null
+$script:replacementStarted = $false
 
 function Convert-ToFullPath {
     param([Parameter(Mandatory = $true)][string]$Path)
@@ -151,26 +154,149 @@ function Release-PublishLock {
     }
 }
 
-function Remove-PublishOutputs {
-    param([Parameter(Mandatory = $true)]$Context)
-
-    # Store 是发布根的运行数据，重建只清理可重建的程序与工具目录。
-    foreach ($directory in @($Context.Bin, $Context.Config, $Context.Tools)) {
-        $safeDirectory = Assert-ChildPath -Path $directory -ExpectedParent $Context.PublishRoot
-        if (Test-Path -LiteralPath $safeDirectory -PathType Container) {
-            Remove-Item -LiteralPath $safeDirectory -Recurse -Force
+# 拒绝经目录联接或符号链接修改其他位置；移动、递归清理前均调用。
+function Assert-PlainTree {
+    param([Parameter(Mandatory = $true)][string]$Path)
+    $cursor = Convert-ToFullPath $Path
+    while ($cursor) {
+        if (Test-Path -LiteralPath $cursor) {
+            $item = Get-Item -LiteralPath $cursor -Force
+            if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                throw "拒绝修改包含链接的路径：$cursor"
+            }
+        }
+        $cursor = Split-Path -Parent $cursor
+    }
+    if (Test-Path -LiteralPath $Path -PathType Container) {
+        foreach ($item in Get-ChildItem -LiteralPath $Path -Force -Recurse) {
+            if ($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+                throw "拒绝修改包含链接的目录：$($item.FullName)"
+            }
         }
     }
+}
 
-    $safeStartBat = Assert-ChildPath -Path $Context.PublishedStartBat -ExpectedParent $Context.PublishRoot
-    if (Test-Path -LiteralPath $safeStartBat -PathType Leaf) {
-        Remove-Item -LiteralPath $safeStartBat -Force
-    }
+# 复用源配置，仅把产物路径映射到本次独立临时目录。
+function New-OutputContext {
+    param($Context, [string]$OutputRoot)
+    $copy = $Context.PSObject.Copy()
+    $copy.PublishRoot = Convert-ToFullPath $OutputRoot
+    $copy.Bin = Join-Path $copy.PublishRoot 'Bin'
+    $copy.Config = Join-Path $copy.PublishRoot 'Config'
+    $copy.Tools = Join-Path $copy.PublishRoot 'Tools'
+    $copy.PublishedStartBat = Join-Path $copy.PublishRoot '启动联机服务器.bat'
+    $copy.PublishedLauncher = Join-Path $copy.Tools 'start-local-online-server.ps1'
+    $copy.PublishedDiagnosticStats = Join-Path $copy.Tools 'get-diagnostic-stats.ps1'
+    $copy.PublishedDeploymentGuide = Join-Path $copy.PublishRoot '局域网部署说明.md'
+    return $copy
+}
 
-    $safeDeploymentGuide = Assert-ChildPath -Path $Context.PublishedDeploymentGuide -ExpectedParent $Context.PublishRoot
-    if (Test-Path -LiteralPath $safeDeploymentGuide -PathType Leaf) {
-        Remove-Item -LiteralPath $safeDeploymentGuide -Force
+# 记录受管产物的结构与文件哈希，也能核对不完整旧包的原貌。
+function Get-OutputSnapshot {
+    param([string]$Root)
+    $records = [System.Collections.Generic.List[string]]::new()
+    foreach ($name in $script:managedNames) {
+        $path = Assert-ChildPath -Path (Join-Path $Root $name) -ExpectedParent $Root
+        Assert-PlainTree -Path $path
+        if (-not (Test-Path -LiteralPath $path)) {
+            $records.Add("M|$name")
+            continue
+        }
+        $items = @(Get-Item -LiteralPath $path -Force)
+        if ($items[0].PSIsContainer) {
+            $items += @(Get-ChildItem -LiteralPath $path -Force -Recurse)
+        }
+        foreach ($item in $items) {
+            $relative = $item.FullName.Substring($Root.TrimEnd('\').Length + 1)
+            if ($item.PSIsContainer) { $records.Add("D|$relative") }
+            else {
+                $hash = (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash
+                $records.Add("F|$relative|$hash")
+            }
+        }
     }
+    return (($records | Sort-Object) -join "`n")
+}
+
+# 范围与链接检查通过后移动单项；目标存在则失败，禁止嵌套或覆盖。
+function Move-OutputEntry {
+    param([string]$SourceRoot, [string]$TargetRoot, [string]$Name)
+    $source = Assert-ChildPath -Path (Join-Path $SourceRoot $Name) -ExpectedParent $SourceRoot
+    $target = Assert-ChildPath -Path (Join-Path $TargetRoot $Name) -ExpectedParent $TargetRoot
+    Assert-PlainTree -Path $source
+    Assert-PlainTree -Path $target
+    if (Test-Path -LiteralPath $target) { throw "移动目标已存在，拒绝覆盖：$target" }
+    if (Test-Path -LiteralPath $source -PathType Container) {
+        [System.IO.Directory]::Move($source, $target)
+    }
+    else { [System.IO.File]::Move($source, $target) }
+}
+
+# 只清理本次临时或已确认可删除的备份目录，不清理正式发布根目录。
+function Remove-TransactionDirectory {
+    param([string]$Path, [string]$PublishParent)
+    $safePath = Assert-ChildPath -Path $Path -ExpectedParent $PublishParent
+    $name = Split-Path -Leaf $safePath
+    if ($name -notmatch '^\.win-x64-(new|backup)-[0-9a-f]{32}$') {
+        throw "拒绝清理非事务目录：$safePath"
+    }
+    Assert-PlainTree -Path $safePath
+    if (Test-Path -LiteralPath $safePath) { Remove-Item -LiteralPath $safePath -Recurse -Force }
+}
+
+# 全部生成检查通过后才替换；失败则逆序恢复并核对旧快照。
+function Install-PublishOutput {
+    param($Context, $Stage, [string]$BackupRoot)
+    $parent = Split-Path -Parent $Context.PublishRoot
+    $expectedNew = Get-OutputSnapshot -Root $Stage.PublishRoot
+    $expectedOld = Get-OutputSnapshot -Root $Context.PublishRoot
+    Assert-PlainTree -Path $Context.PublishRoot
+    $safeBackup = Assert-ChildPath -Path $BackupRoot -ExpectedParent $parent
+    Assert-PlainTree -Path $safeBackup
+    New-Item -ItemType Directory -Path $safeBackup | Out-Null
+    # 保留恢复依据；强制关窗后，下次生成拒绝覆盖未处理的备份。
+    @{ OriginalSnapshot = $expectedOld; Target = $Context.PublishRoot; Stage = $Stage.PublishRoot } |
+        ConvertTo-Json | Set-Content -LiteralPath (Join-Path $safeBackup 'recovery-info.json') -Encoding UTF8
+    $saved = [System.Collections.Generic.List[string]]::new()
+    $installed = [System.Collections.Generic.List[string]]::new()
+    $script:replacementStarted = $true
+    try {
+        New-Item -ItemType Directory -Force -Path $Context.PublishRoot | Out-Null
+        foreach ($name in $script:managedNames) {
+            if (Test-Path -LiteralPath (Join-Path $Context.PublishRoot $name)) {
+                Move-OutputEntry -SourceRoot $Context.PublishRoot -TargetRoot $safeBackup -Name $name
+                $saved.Add($name)
+            }
+            Move-OutputEntry -SourceRoot $Stage.PublishRoot -TargetRoot $Context.PublishRoot -Name $name
+            $installed.Add($name)
+        }
+        Validate-PublishOutput -Context $Context
+        if ((Get-OutputSnapshot -Root $Context.PublishRoot) -cne $expectedNew) {
+            throw '替换后的程序与本次临时包不一致。'
+        }
+    }
+    catch {
+        $replaceError = $_.Exception.Message
+        try {
+            for ($i = $installed.Count - 1; $i -ge 0; $i--) {
+                Move-OutputEntry -SourceRoot $Context.PublishRoot -TargetRoot $Stage.PublishRoot -Name $installed[$i]
+            }
+            for ($i = $saved.Count - 1; $i -ge 0; $i--) {
+                Move-OutputEntry -SourceRoot $safeBackup -TargetRoot $Context.PublishRoot -Name $saved[$i]
+            }
+            if ((Get-OutputSnapshot -Root $Context.PublishRoot) -cne $expectedOld) {
+                throw '恢复内容与替换前快照不一致。'
+            }
+        }
+        catch {
+            throw "替换失败：$replaceError；无法确认旧包恢复：$($_.Exception.Message)。请勿启动或再次覆盖正式包。正式目录：$($Context.PublishRoot)；备份：$safeBackup；临时包：$($Stage.PublishRoot)"
+        }
+        try { Remove-TransactionDirectory -Path $safeBackup -PublishParent $parent }
+        catch { Write-Warning "旧产物已恢复，但备份清理失败，请核对后手动清理：$safeBackup。$($_.Exception.Message)" }
+        throw "替换失败：$replaceError；已按快照恢复替换前产物（首次生成则恢复为无产物）。修复后可重试。"
+    }
+    try { Remove-TransactionDirectory -Path $safeBackup -PublishParent $parent }
+    catch { Write-Warning "新包已生成并核对，但旧备份清理失败，请核对后手动清理：$safeBackup。$($_.Exception.Message)" }
 }
 
 function Invoke-WindowsPublish {
@@ -260,49 +386,57 @@ function Validate-PublishOutput {
 }
 
 try {
-    Write-Host "正在准备 Windows 联机服务器发布..."
+    Write-Host "正在准备 Windows 联机服务器包..."
+    Write-Host "请先停止使用正式包的服务器；本工具不会自动停服。"
     $context = Resolve-AndValidateContext -Root $GameServerRoot
+    $parent = Split-Path -Parent $context.PublishRoot
+    Assert-PlainTree -Path $parent
     $script:publishLock = Acquire-PublishLock -LockPath $context.LockPath
+    $pendingBackups = @(Get-ChildItem -LiteralPath $parent -Force -Filter '.win-x64-backup-*')
+    if ($pendingBackups.Count -gt 0) {
+        throw "存在未处理的备份，请先核对正式包与备份、完成恢复或清理后重试：$($pendingBackups.FullName -join '；')"
+    }
+    $batch = [Guid]::NewGuid().ToString('N')
+    $stageRoot = Assert-ChildPath -Path (Join-Path $parent ".win-x64-new-$batch") -ExpectedParent $parent
+    $backupRoot = Assert-ChildPath -Path (Join-Path $parent ".win-x64-backup-$batch") -ExpectedParent $parent
+    New-Item -ItemType Directory -Path $stageRoot | Out-Null
+    $script:stageContext = New-OutputContext -Context $context -OutputRoot $stageRoot
 
-    Remove-PublishOutputs -Context $context
-    $script:rebuildStarted = $true
-
-    Invoke-WindowsPublish -Context $context
-    Copy-PublishConfig -Context $context
-    Copy-DeploymentLaunchers -Context $context
-    Validate-PublishOutput -Context $context
+    Invoke-WindowsPublish -Context $script:stageContext
+    Copy-PublishConfig -Context $script:stageContext
+    Copy-DeploymentLaunchers -Context $script:stageContext
+    Validate-PublishOutput -Context $script:stageContext
+    Install-PublishOutput -Context $context -Stage $script:stageContext -BackupRoot $backupRoot
 
     Write-Host ""
-    Write-Host "发布成功。"
-    Write-Host "目标目录名：win-x64"
+    Write-Host "联机服务器包生成成功，正式产物已核对。"
+    Write-Host "完整目录：$($context.PublishRoot)"
     Write-Host "运行环境要求：目标设备需安装兼容的 .NET 8 Runtime。"
-    Write-Host "完整发布目录：$($context.PublishRoot)"
-    Write-Host "部署后请双击 启动联机服务器.bat 启动；不会自动运行 App.exe 或 dotnet App.dll。"
+    Write-Host "部署整个目录后双击 启动联机服务器.bat；本工具不上传、不自动启动服务器。"
+    Write-Host "Store 运行数据及其他非受管文件保持原位；请勿在正式包运行期间替换程序。"
     $script:exitCode = 0
 }
 catch {
     Write-Host ""
-    Write-Host "发布失败。"
+    Write-Host "联机服务器包生成失败。"
     Write-Host $_.Exception.Message
-    if ($script:rebuildStarted -and $null -ne $context) {
-        try {
-            Remove-PublishOutputs -Context $context
-        }
-        catch {
-            Write-Host "清理本次不完整发布失败：$($_.Exception.Message)"
-        }
+    if (-not $script:replacementStarted) {
+        Write-Host "未进入正式包替换，本次未修改旧产物；若有上次遗留备份，应先核对恢复状态。"
     }
     $script:exitCode = 1
 }
 finally {
+    # 恢复未确认时保留临时包与备份，避免丢失后续人工恢复所需文件。
+    if ($null -ne $script:stageContext) {
+        if (-not (Test-Path -LiteralPath $backupRoot)) {
+            try { Remove-TransactionDirectory -Path $script:stageContext.PublishRoot -PublishParent $parent }
+            catch { Write-Warning "临时目录清理失败：$($script:stageContext.PublishRoot)。$($_.Exception.Message)" }
+        }
+        else { Write-Host "已保留备份及临时目录供核对：$backupRoot；$($script:stageContext.PublishRoot)" }
+    }
     Release-PublishLock
     Write-Host ""
-    if ($script:exitCode -eq 0) {
-        Read-Host "按 Enter 关闭发布窗口"
-    }
-    else {
-        Write-Host "ExitCode=$script:exitCode"
-        Read-Host "按 Enter 关闭失败的发布窗口"
-    }
+    Write-Host "ExitCode=$script:exitCode"
+    Read-Host "按 Enter 关闭窗口；修复失败原因后重新点击生成入口重试"
     exit $script:exitCode
 }

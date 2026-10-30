@@ -10,7 +10,7 @@ namespace Game.Editor
 {
     public static class LocalOnlineServerPublishMenu
     {
-        internal const string MenuPath = "Tools/游戏服务器/发布联机服务器";
+        internal const string MenuPath = "Tools/游戏服务器/生成联机服务器包";
         internal const string ScriptRelativePath = "Server/GameServer/Publish-win-x64.ps1";
 
         [MenuItem(MenuPath, false, 211)]
@@ -19,7 +19,7 @@ namespace Game.Editor
             var paths = ResolvePaths(Application.dataPath);
             if (!TryValidatePrerequisites(paths, out string error))
             {
-                ShowDialog("联机服务器发布失败", error);
+                ShowDialog("联机服务器包生成失败", error);
                 return;
             }
 
@@ -28,15 +28,15 @@ namespace Game.Editor
                 using (var process = new Process { StartInfo = CreatePowerShellStartInfo(paths) })
                 {
                     if (!process.Start())
-                        throw new InvalidOperationException("PowerShell 发布窗口创建失败。");
+                        throw new InvalidOperationException("PowerShell 生成窗口创建失败。");
                 }
 
-                Debug.Log($"[LocalOnlineServerPublish] 已打开 Windows 联机服务器发布窗口：GameServer={paths.GameServerRoot}");
+                Debug.Log($"[LocalOnlineServerPublish] 已打开 Windows 联机服务器包生成窗口，请在窗口查看最终结果：GameServer={paths.GameServerRoot}");
             }
             catch (Exception e)
             {
-                Debug.LogError($"[LocalOnlineServerPublish] 发布窗口创建失败：{e.Message}");
-                ShowDialog("联机服务器发布失败", $"{e.Message}\n\n游戏服务器: {paths.GameServerRoot}\n发布脚本: {paths.ScriptPath}");
+                Debug.LogError($"[LocalOnlineServerPublish] 生成窗口创建失败：{e.Message}");
+                ShowDialog("联机服务器包生成失败", $"{e.Message}\n\n游戏服务器: {paths.GameServerRoot}\n生成脚本: {paths.ScriptPath}");
             }
         }
 

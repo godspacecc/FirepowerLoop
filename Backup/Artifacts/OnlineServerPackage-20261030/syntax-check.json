@@ -1,0 +1,9 @@
+{
+  "UnityCompilationRun": false,
+  "CheckedFiles": [
+    "Client/Assets/Editor/GameServer/LocalOnlineServerPublishMenu.cs",
+    "Client/Assets/Tests/EditMode/Flow/LocalOnlineServerPublishMenuTests.cs"
+  ],
+  "SyntaxErrors": [],
+  "UnityTestsRun": false
+}
