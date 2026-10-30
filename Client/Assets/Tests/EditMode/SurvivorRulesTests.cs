@@ -21,6 +21,15 @@ namespace Game.Tests
             Assert.That(type,Is.Not.Null,"缺少自动瞄准及无尽刷怪规则");
             return type.GetMethod(name).Invoke(null,args);
         }
+        [Test] public void ExperienceDropHonorsProbabilityBoundaries()
+        {
+            Assert.That(Rule("ShouldDropExperience",1f,0f),Is.True);
+            Assert.That(Rule("ShouldDropExperience",1f,.999999f),Is.True);
+            Assert.That(Rule("ShouldDropExperience",0f,0f),Is.False);
+            Assert.That(Rule("ShouldDropExperience",.5f,.499f),Is.True);
+            Assert.That(Rule("ShouldDropExperience",.5f,.5f),Is.False);
+            Assert.That(Rule("ShouldDropExperience",float.NaN,.1f),Is.False);
+        }
         [Test] public void AimChoosesNearestAttackableAndStableTie()
         {
             Assert.That(Rule("SelectTarget",0f,0f,10f,new long[]{9,3,2,1},new float[]{1,2,-2,3},new float[]{0,0,0,0},new bool[]{false,true,true,true}),Is.EqualTo(2L));

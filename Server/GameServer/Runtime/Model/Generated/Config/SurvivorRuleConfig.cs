@@ -38,6 +38,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         InitialExperienceThreshold = _buf.ReadInt();
         ExperienceThresholdGrowth = _buf.ReadInt();
         ExperiencePerKill = _buf.ReadInt();
+        ExperienceDropChance = _buf.ReadFloat();
+        ExperienceVisualPrefabName = _buf.ReadString();
         ScorePerKill = _buf.ReadInt();
         PickupRadius = _buf.ReadFloat();
         MinimumSpawnDistance = _buf.ReadFloat();
@@ -71,6 +73,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly int InitialExperienceThreshold;
     public readonly int ExperienceThresholdGrowth;
     public readonly int ExperiencePerKill;
+    public readonly float ExperienceDropChance;
+    public readonly string ExperienceVisualPrefabName;
     public readonly int ScorePerKill;
     public readonly float PickupRadius;
     public readonly float MinimumSpawnDistance;
@@ -108,6 +112,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "InitialExperienceThreshold:" + InitialExperienceThreshold + ","
         + "ExperienceThresholdGrowth:" + ExperienceThresholdGrowth + ","
         + "ExperiencePerKill:" + ExperiencePerKill + ","
+        + "ExperienceDropChance:" + ExperienceDropChance + ","
+        + "ExperienceVisualPrefabName:" + ExperienceVisualPrefabName + ","
         + "ScorePerKill:" + ScorePerKill + ","
         + "PickupRadius:" + PickupRadius + ","
         + "MinimumSpawnDistance:" + MinimumSpawnDistance + ","

@@ -19,7 +19,8 @@ namespace Game
         private ArcadePowerupDefinition droneVisual;
         private Vector2 dronePosition,droneFacing=Vector2.up;
         private float droneFireClock;
-        private ArcadeDropDefinition dropVisual;
+        /// <summary>本局经验掉落独立随机流，不影响刷怪或强化候选。</summary>
+        private readonly System.Random experienceRandom=new System.Random();
         private ArcadeObstacleDefinition[] obstacles;
         private IArcadeCombatViewPort view;
         private PlayerInputCtrl input;
@@ -58,7 +59,7 @@ namespace Game
                 weapon=catalog.Weapons.Single(x=>x.Id==config.WeaponId);
                 var support=catalog.SupportVisuals.Single(x=>x.ProductId=="arcade.support.drone");
                 droneVisual=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,support.ActiveVisualPrefabAddress,false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
-                dropVisual=catalog.Drops.Single(x=>x.Id=="arcade.drop.gold.small");
+                // 经验模型由幸存者独立配置提供，不再借用金币掉落。
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
                 // 在交接战场前验证所有入口，不允许运行中退回入口补生。
                 for(int i=0;i<layout.Entries.Count;i++)if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryStart(layout,i,HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,out _))
@@ -179,7 +180,7 @@ namespace Game
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
                 else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
-            foreach(var d in drops)view.SetDrop(d.Key,dropVisual,d.Value.Position);
+            foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
             if(m.Health<=0)TryFinish(out _);else Publish();
         }
         /// <summary>按入口轮转与存活预算生成敌人，避免贴身生成。</summary>
@@ -237,7 +238,8 @@ namespace Game
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(Vector2.Distance(e.Position,old+segment*t)>catalog.Rule.EnemyContactRadius)continue;
                     e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;Model.Score=Math.Min(long.MaxValue-config.ScorePerKill,Model.Score)+config.ScorePerKill;
-                        if(drops.Count<config.MaxDrops)drops.Add(++identity,(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position,config.ExperiencePerKill));else {int id=drops.OrderBy(x=>(x.Value.Position-e.Position).sqrMagnitude).First().Key;var d=drops[id];drops[id]=(d.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,d.Experience)+config.ExperiencePerKill);}}
+                        if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f))) {
+                        if(drops.Count<config.MaxDrops)drops.Add(++identity,(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position,config.ExperiencePerKill));else {int id=drops.OrderBy(x=>(x.Value.Position-e.Position).sqrMagnitude).First().Key;var d=drops[id];drops[id]=(d.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,d.Experience)+config.ExperiencePerKill);}}}
                     break;
                 }
                 if(remove){bullets.Remove(b.Id);view.RemoveProjectile(b.Id);}

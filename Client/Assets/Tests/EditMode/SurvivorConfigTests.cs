@@ -22,6 +22,24 @@ namespace Game.Tests
             Assert.That(config.WeaponLevel("Drone",2).Damage, Is.GreaterThan(config.WeaponLevel("Drone",1).Damage));
             Assert.That(config.MinimumSpawnIntervalSeconds, Is.LessThanOrEqualTo(config.SpawnIntervalSeconds));
         }
+        [Test] public void ExperienceUsesDedicatedCrystalAndGuaranteedDrop()
+        {
+            var config=SurvivorConfiguration.FromTables(Load());
+            Assert.That(config.ExperienceDropChance,Is.EqualTo(1f));
+            Assert.That(config.ExperienceVisualPrefabName,Is.EqualTo("SurvivorExperienceCrystal"));
+            Assert.That(config.ExperienceVisualPrefabAddress,Is.EqualTo("Prefabs/SceneObjects/SurvivorExperienceCrystal"));
+            var prefab=UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/"+config.ExperienceVisualPrefabAddress+".prefab");
+            Assert.That(prefab,Is.Not.Null);Assert.That(prefab.GetComponentInChildren<MeshFilter>().sharedMesh,Is.Not.Null);
+            Assert.That(prefab.GetComponentInChildren<MeshRenderer>().sharedMaterial,Is.Not.Null);
+            Assert.That(prefab.GetComponentInChildren<MeshFilter>().sharedMesh.bounds.size.y,Is.EqualTo(.5f).Within(.001f));
+        }
+        [TestCase(-.1f)] [TestCase(1.1f)] [TestCase(float.NaN)]
+        public void InvalidExperienceChanceIsRejected(float chance)
+        {
+            var tables=Load();var row=tables.TbSurvivorRule.DataList[0];
+            typeof(global::SurvivorRuleConfig).GetField("ExperienceDropChance").SetValue(row,chance);
+            Assert.Throws<ArgumentException>(()=>SurvivorConfiguration.FromTables(tables));
+        }
         [Test] public void MissingTablesReturnsActionableFailure()
         {
             var provider = new LubanRuntimeConfigProvider(() => null);

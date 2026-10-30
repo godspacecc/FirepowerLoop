@@ -158,6 +158,14 @@ namespace Game.Tests
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=1,MaxHealth=1,Position=new Vector2(1,0)});
             Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Add(902,new ArcadeProjectileRuntime{Id=902,Position=Vector2.zero,Velocity=new Vector2(20,0),Damage=1,RemainingSeconds=1});Call("AdvanceBullets",.05f);
         }
+        [Test] public void ZeroExperienceChanceKeepsKillAndScoreWithoutDrop()
+        {
+            typeof(SurvivorConfiguration).GetProperty("ExperienceDropChance").SetValue(config,0f);
+            KillOne();
+            Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.EqualTo(config.ScorePerKill));
+            Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops"),Is.Empty);
+            Assert.That(model.State.Experience,Is.Zero);
+        }
         [Test] public void KillCreatesExperienceOnGroundWithoutRemoteCollection()
         {
             KillOne();Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.EqualTo(config.ScorePerKill));Assert.That(model.State.Experience,Is.Zero);Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Experience,Is.EqualTo(config.ExperiencePerKill));

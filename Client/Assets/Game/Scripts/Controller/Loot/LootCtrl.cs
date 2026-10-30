@@ -237,9 +237,14 @@ namespace Game
             var loadedAddresses = new HashSet<string>(StringComparer.Ordinal);
             if (provider.TryGetArcadeCatalog(out var catalog, out configError))
             {
+                var visualAddresses = new List<string>();
                 for (var index = 0; index < catalog.Drops.Count; index++)
+                    visualAddresses.Add(catalog.Drops[index].VisualPrefabAddress);
+                // 经验使用独立模型，但仍纳入同一地图资源准备与回滚事务。
+                if (provider.TryGetSurvivor(out var survivor, out _))
+                    visualAddresses.Add(survivor.ExperienceVisualPrefabAddress);
+                foreach (var address in visualAddresses)
                 {
-                    var address = catalog.Drops[index].VisualPrefabAddress;
                     if (string.IsNullOrWhiteSpace(address) || !loadedAddresses.Add(address))
                         continue;
                     var visualConfig = new LootConfigDefinition(ArcadeVisualCacheKey(address), address, config.ItemId, config.Amount);

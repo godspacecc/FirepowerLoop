@@ -647,6 +647,9 @@
         <var name="InitialExperienceThreshold" type="int"/>
         <var name="ExperienceThresholdGrowth" type="int"/>
         <var name="ExperiencePerKill" type="int"/>
+        <!-- 幸存者独立经验掉率及地面模型，不复用金币身份。 -->
+        <var name="ExperienceDropChance" type="float"/>
+        <var name="ExperienceVisualPrefabName" type="string"/>
         <var name="ScorePerKill" type="int"/>
         <var name="PickupRadius" type="float"/>
         <var name="MinimumSpawnDistance" type="float"/>

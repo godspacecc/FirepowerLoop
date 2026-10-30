@@ -34,6 +34,10 @@ namespace Game
         public static int SpawnBudget(int alive,int maximum,int requested)
             =>alive<0 || maximum<=0 || requested<=0 || alive>=maximum?0:Math.Min(maximum-alive,requested);
 
+        /// <summary>按配置概率判定经验掉落；随机样本范围为[0,1)，无效输入拒绝掉落。</summary>
+        public static bool ShouldDropExperience(float chance,float sample)
+            => Finite(chance) && chance>=0 && chance<=1 && Finite(sample) && sample>=0 && sample<1 && sample<chance;
+
         private static bool Finite(float value)=>!float.IsNaN(value)&&!float.IsInfinity(value);
     }
 }

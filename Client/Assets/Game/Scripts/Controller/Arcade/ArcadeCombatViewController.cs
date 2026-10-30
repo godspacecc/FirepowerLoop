@@ -115,6 +115,8 @@ namespace Game
             bool fromPlayerWeapon) => SetProjectile(id, hostile, position, direction, visualResourceName);
         void RemoveProjectile(int id);
         void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position);
+        /// <summary>只呈现经验地面模型与数量，结算由幸存者系统裁决。</summary>
+        void SetExperienceDrop(int id,string visualPrefabName,Vector2 position,long experience) { }
         void RemoveDrop(int id);
         /// <summary>切关黑幕只控制可见性；地图事务须等待遮挡后才替换世界。</summary>
         void BeginRoundTransition() { }
@@ -759,6 +761,13 @@ namespace Game
             if (lootPresentation == null || mapRoot == null) return;
             lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(position, 0.3f)),
                 ResolveDropDisplayName(definition), definition.Amount, definition.VisualPrefabAddress, out _);
+        }
+
+        /// <summary>经验独立显示名称和模型，不经过金币产品身份。</summary>
+        public void SetExperienceDrop(int id,string visualPrefabName,Vector2 position,long experience)
+        {
+            if (lootPresentation == null || mapRoot == null) return;
+            lootPresentation.TrySetDrop(id,mapRoot.TransformPoint(World(position,.3f)),"经验",(int)Math.Min(int.MaxValue,experience),visualPrefabName,out _);
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);

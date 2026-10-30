@@ -1,0 +1,30 @@
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using System.IO;
+public class Script {
+ public static object Main() {
+  var scene=EditorSceneManager.NewPreviewScene();
+  var root=new GameObject("ExperienceCandidatePreview");SceneManager.MoveGameObjectToScene(root,scene);
+  var mesh=new Mesh(); var mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));
+  RenderTexture rt=null; Texture2D image=null;
+  try {
+   var player=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);
+   player.transform.position=new Vector3(-.8f,0,0);
+   foreach(var b in player.GetComponentsInChildren<MonoBehaviour>(true))Object.DestroyImmediate(b);
+   var gem=new GameObject("CandidateExperienceCrystal");gem.transform.SetParent(root.transform);gem.transform.position=new Vector3(.8f,.32f,0);
+   var top=new Vector3(0,.25f,0);var bottom=new Vector3(0,-.25f,0);var ring=new[]{new Vector3(.18f,0,0),new Vector3(0,0,.18f),new Vector3(-.18f,0,0),new Vector3(0,0,-.18f)};
+   var vertices=new System.Collections.Generic.List<Vector3>();var triangles=new System.Collections.Generic.List<int>();
+   for(int i=0;i<4;i++){vertices.Add(top);vertices.Add(ring[(i+1)%4]);vertices.Add(ring[i]);vertices.Add(bottom);vertices.Add(ring[i]);vertices.Add(ring[(i+1)%4]);}
+   for(int i=0;i<vertices.Count;i++)triangles.Add(i);mesh.SetVertices(vertices);mesh.SetTriangles(triangles,0);mesh.RecalculateNormals();
+   gem.AddComponent<MeshFilter>().sharedMesh=mesh;mat.color=new Color(.05f,.8f,1f);mat.SetFloat("_Smoothness",.35f);gem.AddComponent<MeshRenderer>().sharedMaterial=mat;
+   var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.SetParent(root.transform);floor.transform.position=new Vector3(0,-.12f,0);floor.transform.localScale=new Vector3(5,.1f,3);
+   var floorMat=new Material(mat);floorMat.color=new Color(.12f,.17f,.2f);floor.GetComponent<Renderer>().sharedMaterial=floorMat;
+   var light=new GameObject("Light");light.transform.SetParent(root.transform);light.transform.rotation=Quaternion.Euler(45,-35,0);light.AddComponent<Light>().type=LightType.Directional;light.GetComponent<Light>().intensity=1.8f;
+   var camObj=new GameObject("Camera");camObj.transform.SetParent(root.transform);var cam=camObj.AddComponent<Camera>();cam.cameraType=CameraType.Preview;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.055f,.075f,.1f);cam.orthographic=true;cam.orthographicSize=1.65f;cam.transform.position=new Vector3(2.8f,3.2f,-5);cam.transform.LookAt(new Vector3(0,.7f,0));cam.scene=scene;
+   rt=new RenderTexture(1200,800,24);cam.targetTexture=rt;cam.Render();RenderTexture.active=rt;image=new Texture2D(1200,800,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,1200,800),0,0);image.Apply();
+   string path="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorExperience-20261030/experience-candidate.png";Directory.CreateDirectory(Path.GetDirectoryName(path));File.WriteAllBytes(path,image.EncodeToPNG());Object.DestroyImmediate(floorMat);return path;
+  } finally {RenderTexture.active=null;if(rt!=null)Object.DestroyImmediate(rt);if(image!=null)Object.DestroyImmediate(image);EditorSceneManager.ClosePreviewScene(scene);Object.DestroyImmediate(mat);Object.DestroyImmediate(mesh);}
+ }
+}

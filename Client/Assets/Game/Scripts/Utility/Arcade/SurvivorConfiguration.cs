@@ -50,6 +50,12 @@ namespace FirepowerLoop.Arcade
         public int ExperienceThresholdGrowth { get; private set; }
         /// <summary>来自幸存者权威规则表的 ExperiencePerKill。</summary>
         public int ExperiencePerKill { get; private set; }
+        /// <summary>经验掉率，0不掉落、1必掉。</summary>
+        public float ExperienceDropChance { get; private set; }
+        /// <summary>经验专用地面模型资源名，与金币表现独立。</summary>
+        public string ExperienceVisualPrefabName { get; private set; }
+        /// <summary>按场景物体资源约定解析后的经验模型逻辑地址。</summary>
+        public string ExperienceVisualPrefabAddress { get; private set; }
         /// <summary>来自幸存者权威规则表的 ScorePerKill。</summary>
         public int ScorePerKill { get; private set; }
         /// <summary>来自幸存者权威规则表的 PickupRadius。</summary>
@@ -84,6 +90,10 @@ namespace FirepowerLoop.Arcade
             if (float.IsNaN(r.MinimumSpawnDistance) || float.IsInfinity(r.MinimumSpawnDistance) || r.MinimumSpawnDistance <= 0) throw new ArgumentException("幸存者 MinimumSpawnDistance 必须为有限正数");
             if (float.IsNaN(r.AimRange) || float.IsInfinity(r.AimRange) || r.AimRange <= 0) throw new ArgumentException("幸存者 AimRange 必须为有限正数");
             if (r.MinimumSpawnIntervalSeconds > r.SpawnIntervalSeconds || tables.TbArcadeRoundLayout.GetOrDefault(r.LayoutId) == null || tables.TbEnemy.GetOrDefault(r.EnemyId) == null || tables.TbArcadeWeapon.GetOrDefault(r.WeaponId) == null) throw new ArgumentException("幸存者引用或出生间隔无效");
+            if (float.IsNaN(r.ExperienceDropChance) || float.IsInfinity(r.ExperienceDropChance) || r.ExperienceDropChance < 0 || r.ExperienceDropChance > 1)
+                throw new ArgumentException("幸存者经验掉率必须在0到1之间");
+            if (!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.ExperienceVisualPrefabName,false,out var experienceAddress,out var experienceError))
+                throw new ArgumentException("幸存者经验模型无效："+experienceError);
             var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight)).ToArray();
             if (upgrades.Select(x => x.Kind).Distinct().Count() != upgrades.Length || upgrades.Count(x => x.MaxLevel == 0) < 3) throw new ArgumentException("幸存者需要至少三种无限强化且类型不重复");
             if(r.WeaponSlots<1||r.WeaponSlots>3)throw new ArgumentException("幸存者武器槽必须为1至3");
@@ -116,6 +126,9 @@ namespace FirepowerLoop.Arcade
                 InitialExperienceThreshold = r.InitialExperienceThreshold,
                 ExperienceThresholdGrowth = r.ExperienceThresholdGrowth,
                 ExperiencePerKill = r.ExperiencePerKill,
+                ExperienceDropChance = r.ExperienceDropChance,
+                ExperienceVisualPrefabName = r.ExperienceVisualPrefabName,
+                ExperienceVisualPrefabAddress = experienceAddress,
                 ScorePerKill = r.ScorePerKill,
                 PickupRadius = r.PickupRadius,
                 MinimumSpawnDistance = r.MinimumSpawnDistance,
