@@ -202,10 +202,10 @@ namespace Game.Editor
             return json;
         }
 
-        [MenuItem("Tools/打包/Android/检查工具/检查渠道包", false, 212)]
+        [MenuItem("Tools/打包/Android/渠道发行/检查渠道包", false, 191)]
         private static void InspectChannelMenu() => InspectMenu(true);
 
-        [MenuItem("Tools/打包/Android/检查工具/检查现有APK（纯离线单机，不打包）", false, 213)]
+        [MenuItem("Tools/打包/Android/渠道发行/检查单机包", false, 193)]
         private static void InspectOfflineMenu() => InspectMenu(true, true);
 
         /// <summary>选择已有APK；联网渠道使用统一目录及明确结果提示，离线入口暂沿用原交互。</summary>

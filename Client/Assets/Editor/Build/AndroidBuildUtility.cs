@@ -85,7 +85,7 @@ namespace Game.Editor
                 BuildChannelCandidateBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/打单机包", false, 191)]
+        [MenuItem("Tools/打包/Android/渠道发行/打单机包", false, 192)]
         private static void BuildOfflineSinglePlayerCandidateMenu()
         {
             if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 打单机包",
