@@ -47,6 +47,54 @@ namespace Game.Tests
             Assert.That(model.ResultSnapshot,Is.Null,"配置故障不能伪造失败结算");
             Call("Tick");Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
         }
+        [TestCase(false)] [TestCase(true)]
+        public void SpawnCameraCheckIncludesBodyAndScreenMargin(bool orthographic)
+        {
+            var cameraObject=new GameObject("SpawnCameraTest");var map=new GameObject("SpawnMapTest");
+            try
+            {
+                var camera=cameraObject.AddComponent<Camera>();camera.enabled=true;camera.orthographic=orthographic;
+                camera.orthographicSize=10;camera.fieldOfView=90;camera.aspect=1;
+                camera.transform.position=new Vector3(0,10,0);camera.transform.rotation=Quaternion.Euler(90,0,0);
+                var method=typeof(ArcadeCombatViewController).GetMethod("IsSpawnHiddenByCamera",BindingFlags.Static|BindingFlags.NonPublic);
+                bool Hidden(Vector2 p)=>(bool)method.Invoke(null,new object[]{camera,map.transform,p,.5f,new Plane[6]});
+                Assert.That(Hidden(Vector2.zero),Is.False);
+                Assert.That(Hidden(new Vector2(10.6f,0)),Is.False,"画面边缘外仍保留身体与镜头移动余量");
+                Assert.That(Hidden(new Vector2(20,0)),Is.True);
+                map.transform.position=Vector3.right*40;Assert.That(Hidden(Vector2.zero),Is.True,"应使用正式地图世界变换");
+                Assert.That((bool)method.Invoke(null,new object[]{null,map.transform,Vector2.zero,.5f,new Plane[6]}),Is.False);
+            }
+            finally{UnityEngine.Object.DestroyImmediate(cameraObject);UnityEngine.Object.DestroyImmediate(map);}
+        }
+        [Test] public void HiddenLaneExtensionRejectsWallBeyondOriginalSpawn()
+        {
+            var layout=Get<ArcadeRoundLayoutParameters>("layout");
+            var stage=Get<ArcadeConfigCatalogDefinition>("catalog").EarlyStages.Single(x=>x.ArenaConfigNumber==layout.ArenaConfigNumber);
+            Assert.That(ArcadeOutsideRouteRules.TryStart(layout,0,stage.HalfWidth,stage.HalfHeight,.5f,out var entry),Is.True);
+            var dx=(entry.StartX-entry.TargetX)/entry.Distance;var dz=(entry.StartZ-entry.TargetZ)/entry.Distance;
+            var clone=(ArcadeRoundLayoutParameters)typeof(object).GetMethod("MemberwiseClone",Flags).Invoke(layout,null);
+            var wall=new ArcadeLayoutObstacle(entry.StartX+dx*3,entry.StartZ+dz*3,1,1);
+            typeof(ArcadeRoundLayoutParameters).GetField("<Obstacles>k__BackingField",Flags).SetValue(clone,layout.Obstacles.Concat(new[]{wall}).ToArray());
+            Assert.That(ArcadeOutsideRouteRules.TryExtendToHidden(clone,entry,.5f,(x,z)=>Mathf.Abs(x)>60||Mathf.Abs(z)>60,out _),Is.False);
+        }
+        [Test] public void SpawnExtendsExistingLaneUntilOutsideCamera()
+        {
+            view.SpawnHidden=p=>Mathf.Abs(p.x)>45||Mathf.Abs(p.y)>45;
+            Call("Spawn");var enemy=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
+            Assert.That(view.SpawnHidden(enemy.Position),Is.True,"场地外不等于镜头外");
+            Assert.That(enemy.OutsideEntry.Active,Is.True);
+            var start=enemy.Position;var state=enemy.OutsideEntry;
+            Assert.That(ArcadeOutsideEntryRules.Advance(ref state,.1f,enemy.Speed,out var next),Is.True);
+            Assert.That(Vector2.Distance(start,new Vector2(next.X,next.Y)),Is.EqualTo(enemy.Speed*.1f).Within(.001f));
+            Assert.That(state.TargetX,Is.EqualTo(enemy.OutsideEntry.TargetX));
+            Assert.That(state.TargetZ,Is.EqualTo(enemy.OutsideEntry.TargetZ));
+        }
+        [Test] public void VisibleSpawnWithoutHiddenLaneWaitsWithoutPausingRun()
+        {
+            view.SpawnHidden=p=>false;Call("Spawn");
+            Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
+            Assert.That(model.Paused,Is.False);Assert.That(system.LastError,Is.Null);
+        }
         [Test] public void OutsideSpawnPauseAndEarlyKillLandExperienceInsideEntry()
         {
             Call("Spawn");var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var enemy=enemies.Values.Single();
@@ -194,6 +242,8 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public Func<Vector2,bool> SpawnHidden=p=>true;
+            public bool IsArenaSpawnHidden(Vector2 position,float radius)=>SpawnHidden(position);
             public bool TargetVisible=true;
             public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
             public bool Ready=true;

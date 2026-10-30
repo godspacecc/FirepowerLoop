@@ -19,6 +19,23 @@ namespace FirepowerLoop.Arcade
                 if(!IsPlayerMouthCap(layout,obstacle)&&Intersects(x,z,entry.X,entry.Y,obstacle,radius))return false;
             return ArcadeOutsideEntryRules.TryStart(x,z,entry.X,entry.Y,out state);
         }
+        /// <summary>幸存者沿原走廊向外寻找不可见起点；有界尝试，遇到实体阻挡则拒绝，不跨墙补生。</summary>
+        public static bool TryExtendToHidden(ArcadeRoundLayoutParameters layout,ArcadeOutsideEntryState original,float radius,
+            Func<float,float,bool> isHidden,out ArcadeOutsideEntryState state)
+        {
+            state=default;
+            if(layout==null||isHidden==null||!original.Active||original.Distance<=0||radius<=0)return false;
+            float dx=(original.StartX-original.TargetX)/original.Distance,dz=(original.StartZ-original.TargetZ)/original.Distance;
+            float step=Math.Max(1,layout.OutsideEntryDistance);
+            for(int i=0;i<64;i++)
+            {
+                float x=original.StartX+dx*step*i,z=original.StartZ+dz*step*i;
+                foreach(var obstacle in layout.Obstacles)
+                    if(!IsPlayerMouthCap(layout,obstacle)&&Intersects(x,z,original.TargetX,original.TargetZ,obstacle,radius))return false;
+                if(isHidden(x,z))return ArcadeOutsideEntryRules.TryStart(x,z,original.TargetX,original.TargetZ,out state);
+            }
+            return false;
+        }
         /// <summary>旧顺序与挑战按真实阻挡寻找合法边缘走廊，先尝试原出生方向，再扫描四边；不忽略任何实体。</summary>
         public static bool TryStartFallback(ArcadeRoundLayoutParameters tuning,float preferredX,float preferredZ,float halfWidth,float halfHeight,
             float radius,System.Collections.Generic.IReadOnlyList<ArcadeLayoutObstacle> obstacles,out ArcadeOutsideEntryState state)

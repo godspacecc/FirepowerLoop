@@ -197,6 +197,9 @@ namespace Game
                     LastError="幸存者入口没有合法场外通道，请检查地图配置";
                     Model.Paused=true;input.Disable();Publish();return;
                 }
+                // 场地边界之外仍可能入镜，沿同一安全走廊后移；无不可见起点时尝试下一入口。
+                if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryExtendToHidden(layout,outsideEntry,catalog.Rule.EnemyContactRadius,
+                    (x,z)=>view.IsArenaSpawnHidden(new Vector2(x,z),catalog.Rule.EnemyContactRadius),out outsideEntry))continue;
                 var position=new Vector2(outsideEntry.StartX,outsideEntry.StartZ);
                 if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
                 double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,enemyConfig.MaxHP*(1+minutes*config.EnemyHealthGrowthPerMinute));

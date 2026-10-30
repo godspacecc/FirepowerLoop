@@ -13,6 +13,8 @@ namespace Game
         bool IsActive { get; }
         /// <summary>自动武器只锁定已进入画面的目标；端口未提供可见性时安全停火。</summary>
         bool IsArenaTargetVisible(Vector2 position) => false;
+        /// <summary>出生体积完全在扩大的相机视锥外才允许生成；未知镜头时安全等待。</summary>
+        bool IsArenaSpawnHidden(Vector2 position,float radius) => false;
         /// <summary>相机准备事务不拥有时长；未支持的表现端口拒绝进入。</summary>
         void Begin(int arenaNumber, float arenaHalfWidth, float arenaHalfHeight,
             IReadOnlyList<ArcadeObstacleDefinition> obstacles);
@@ -610,6 +612,29 @@ namespace Game
             PlayBombVisual(position);
             var worldPosition = mapRoot.TransformPoint(new Vector3(position.x, 0.75f, position.y));
             Game.Interface.GetSystem<AudioSystem>()?.PlaySoundAt("ArcadeBombExplosion", worldPosition, 40f, 30);
+        }
+
+        /// <summary>出生可见性只读缓存，避免搜索远端通道时反复分配视锥平面。</summary>
+        private readonly Plane[] spawnFrustumPlanes=new Plane[6];
+
+        /// <summary>按完整身体包围盒判断画面外出生，视锥四边额外扩大10%，涵盖镜头本帧移动余量。</summary>
+        public bool IsArenaSpawnHidden(Vector2 position,float radius)
+            => IsSpawnHiddenByCamera(Camera.main,mapRoot,position,radius,spawnFrustumPlanes);
+
+        /// <summary>只读相机与地图矩阵计算，独立于场景装配，便于验证镜头边缘和无相机情况。</summary>
+        private static bool IsSpawnHiddenByCamera(Camera camera,Transform mapRoot,Vector2 position,float radius,Plane[] planes)
+        {
+            if(mapRoot==null||camera==null||!camera.isActiveAndEnabled||radius<=0)return false;
+            var projection=Matrix4x4.Scale(new Vector3(1f/1.2f,1f/1.2f,1))*camera.projectionMatrix;
+            GeometryUtility.CalculateFrustumPlanes(projection*camera.worldToCameraMatrix,planes);
+            // 普通幸存者敌人以地面到3米的保守体积计算，避免只检测脚底而让头部在画面内冒出。
+            var center=mapRoot.TransformPoint(new Vector3(position.x,1.5f,position.y));
+            var a=mapRoot.TransformVector(new Vector3(radius,0,0));
+            var b=mapRoot.TransformVector(new Vector3(0,1.5f,0));
+            var c=mapRoot.TransformVector(new Vector3(0,0,radius));
+            var extents=new Vector3(Mathf.Abs(a.x)+Mathf.Abs(b.x)+Mathf.Abs(c.x),
+                Mathf.Abs(a.y)+Mathf.Abs(b.y)+Mathf.Abs(c.y),Mathf.Abs(a.z)+Mathf.Abs(b.z)+Mathf.Abs(c.z));
+            return !GeometryUtility.TestPlanesAABB(planes,new Bounds(center,extents*2));
         }
 
         /// <summary>按正式战场坐标投影目标身体，画面四边留出5%余量，避免刚露边就被击杀。</summary>
