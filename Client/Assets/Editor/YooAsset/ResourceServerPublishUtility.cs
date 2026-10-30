@@ -72,9 +72,9 @@ namespace Game.Editor
         public static ResourceServerPublishResult UpdateLatestBundle()
         {
             var workspaceRoot = GetWorkspaceRoot();
-            return Update(
+            return UpdatePackage(
                 Path.Combine(workspaceRoot, "Client", "Bundles", "StandaloneWindows64", PackageName),
-                Path.Combine(workspaceRoot, "Release", "ResourceServer"));
+                Path.Combine(workspaceRoot, "Release", "ResourceServer"), null, verifyCompleteResources: true);
         }
 
         /// <summary>
@@ -284,7 +284,8 @@ namespace Game.Editor
         private static ResourceServerPublishResult UpdatePackage(
             string packageRoot,
             string releaseRoot,
-            string requiredVersion)
+            string requiredVersion,
+            bool verifyCompleteResources = false)
         {
             string source = null;
             string bundle = null;
@@ -309,6 +310,9 @@ namespace Game.Editor
                     return Fail(UpdateOperation, "验证旧资源", resourceFiles, bundle, "旧 ResourceFiles 校验失败，阻止更新");
                 }
 
+                // 手动PC更新保留旧资源完整内容证据，供替换失败后的恢复核对。
+                var previousSnapshot = verifyCompleteResources ? PcBuiltinResourceValidator.CaptureRemote(resourceFiles, previousVersion) : null;
+
                 if (!TryFindPackage(packageRoot, requiredVersion, out source, out var version, out var findError))
                 {
                     return Fail(UpdateOperation, "查找资源", packageRoot, bundle,
@@ -322,6 +326,7 @@ namespace Game.Editor
                     return Fail(UpdateOperation, "验证新资源", source, bundle, "新 Host 资源校验失败");
                 }
 
+                var snapshot = verifyCompleteResources ? PcBuiltinResourceValidator.CaptureRemote(source, version) : null;
                 var suffix = Guid.NewGuid().ToString("N");
                 newDirectory = FullPath(Path.Combine(bundle, $".ResourceFiles_{suffix}.new"));
                 backupDirectory = FullPath(Path.Combine(bundle, $".ResourceFiles_{suffix}.backup"));
@@ -333,11 +338,16 @@ namespace Game.Editor
                     throw new InvalidOperationException("新资源临时目录校验失败");
                 }
 
+                // 先核对复制前后的源、副本和旧目录，再进入目录替换事务。
+                snapshot?.ValidateDirectory(source);
+                snapshot?.ValidateDirectory(newDirectory);
+                previousSnapshot?.ValidateDirectory(resourceFiles);
                 Directory.Move(resourceFiles, backupDirectory);
                 try
                 {
                     BeforeCommitUpdateForTests?.Invoke(bundle);
                     Directory.Move(newDirectory, resourceFiles);
+                    snapshot?.ValidateDirectory(resourceFiles);
                     if (!YooAssetBuildUtility.ValidateBuildResult(resourceFiles, version))
                     {
                         throw new InvalidOperationException("正式 ResourceFiles 替换后校验失败");
@@ -345,7 +355,15 @@ namespace Game.Editor
                 }
                 catch (Exception commitException)
                 {
-                    RestoreBackup(resourceFiles, backupDirectory, previousVersion);
+                    try
+                    {
+                        RestoreBackup(resourceFiles, backupDirectory, previousVersion);
+                        previousSnapshot?.ValidateDirectory(resourceFiles);
+                    }
+                    catch (Exception restoreException)
+                    {
+                        throw new InvalidOperationException($"替换失败且无法确认旧资源已完整恢复，请人工检查：{resourceFiles}；备份位置（若仍存在）：{backupDirectory}。替换原因：{commitException.Message}；恢复原因：{restoreException.Message}", restoreException);
+                    }
                     CleanupKnownTemp(newDirectory, bundle);
                     throw new InvalidOperationException($"替换失败，已恢复旧资源。原始原因：{commitException.Message}");
                 }

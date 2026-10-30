@@ -886,7 +886,11 @@ namespace Game.Editor
             if (!result.Success)
             {
                 Debug.LogError($"[BuildUtility] {result.Operation}失败：{result.Error}");
-                ShowDialog($"{result.Operation}失败", result.Error);
+                if (result.Operation == "更新资源服" && result.ResourceFilesSucceeded)
+                    ShowDialog("资源已更新，后续同步未完成",
+                        $"旧版本：{result.PreviousVersion}\n当前资源版本：{result.Version}\n目录：{result.BundleDirectory}\n{result.Error}\n\n资源没有回退，已有安装器保留。请修复报错的支持文件或公告配置，再补做同步；重试前确认最新构建资源仍是本次版本。");
+                else
+                    ShowDialog($"{result.Operation}失败", result.Error);
                 return;
             }
 
@@ -896,7 +900,7 @@ namespace Game.Editor
                 var title = unchanged ? "资源版本未变化，已重新校验并替换" : "资源服更新成功";
                 ShowDialog(
                     title,
-                    $"旧版本: {result.PreviousVersion}\n新版本: {result.Version}\n发布包: {result.BundleDirectory}\n\n请停止服务器、整体替换 ResourceFiles、重新启动。");
+                    $"旧版本: {result.PreviousVersion}\n新版本: {result.Version}\n发布包: {result.BundleDirectory}\n\n本地目录已更新，已有安装器保留；未上传公网或自动重启。部署到其他设备时应停止目标服务，同步资源、支持文件及公告后重启。");
                 return;
             }
 
