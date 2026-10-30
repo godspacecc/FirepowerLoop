@@ -66,26 +66,9 @@ namespace Game.Editor
             if (!Directory.Exists(aotDir))
                 throw new DirectoryNotFoundException($"AOT 目录不存在: {aotDir}");
 
-            PrepareDllTargetDirectory();
-            CopyGameDll(hotUpdateDir);
-
-            var copiedAot = new List<string>();
-            foreach (string dllName in aotAssemblies)
-            {
-                string sourcePath = Path.Combine(aotDir, dllName);
-                if (!File.Exists(sourcePath))
-                {
-                    string hint = requireExistingPlayerAot
-                        ? "请先执行最新代码资源完整打包以生成完整 Player 的 AOT DLL。"
-                        : "请检查 HybridCLR 生成和预备 Player 是否成功。";
-                    throw new FileNotFoundException($"AOT DLL 不存在: {sourcePath}\n{hint}");
-                }
-
-                File.Copy(sourcePath, Path.Combine(DLLS_TARGET_DIR, dllName + ".bytes"), true);
-                copiedAot.Add(dllName);
-            }
-
-            GenerateAotListFile(copiedAot);
+            // 发布前统一检查所有源文件，避免缺少 AOT 时破坏上次产物。
+            var copiedAot = aotAssemblies;
+            PublishDllFiles(hotUpdateDir, aotDir, copiedAot.ToArray(), DLLS_TARGET_DIR);
             AssetDatabase.Refresh();
 
             var allCopied = new List<string> { "Game.dll" };
@@ -105,18 +88,7 @@ namespace Game.Editor
             if (aotAssemblies.Count == 0)
                 throw new InvalidOperationException($"AOT 基线清单为空: {baselineRuntimeListPath}");
 
-            PrepareDllTargetDirectory();
-            CopyGameDll(GetHotUpdateDllDirectory(target));
-
-            foreach (string dllName in aotAssemblies)
-            {
-                string sourcePath = Path.Combine(baselineAotDirectory, dllName);
-                if (!File.Exists(sourcePath))
-                    throw new FileNotFoundException($"AOT 基线缺少 DLL: {sourcePath}");
-                File.Copy(sourcePath, Path.Combine(DLLS_TARGET_DIR, dllName + ".bytes"), true);
-            }
-
-            GenerateAotListFile(aotAssemblies);
+            PublishDllFiles(GetHotUpdateDllDirectory(target), baselineAotDirectory, aotAssemblies.ToArray(), DLLS_TARGET_DIR);
             AssetDatabase.Refresh();
 
             var allCopied = new List<string> { "Game.dll" };
@@ -181,23 +153,43 @@ namespace Game.Editor
             return Path.GetFullPath(Path.Combine(projectPath, "HybridCLRData", "HotUpdateDlls", target.ToString()));
         }
 
-        private static void PrepareDllTargetDirectory()
+        /// <summary>
+        /// 发布 DLL 内容并保留现用资源的 meta；专用 DLL 目录内的 .dll.bytes 为生成产物。
+        /// 完整预检源文件后才更改输出，退役 DLL 连同 meta 删除，无关文件保持原样。
+        /// </summary>
+        internal static void PublishDllFiles(string hotUpdateDir, string aotDir, string[] aotAssemblies, string targetDirectory)
         {
-            if (!Directory.Exists(DLLS_TARGET_DIR))
-                Directory.CreateDirectory(DLLS_TARGET_DIR);
+            var normalized = NormalizeDllList(aotAssemblies).ToArray();
+            if (normalized.Length == 0)
+                throw new InvalidOperationException("AOT 清单为空。");
+            var sources = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Game.dll.bytes", Path.Combine(hotUpdateDir, "Game.dll") }
+            };
+            foreach (string dllName in normalized)
+            {
+                // 清单条目必须是简单文件名，不能把发布写入目标目录之外。
+                if (dllName.IndexOfAny(new[] { '/', '\\', ':' }) >= 0)
+                    throw new InvalidOperationException($"AOT DLL 名称无效: {dllName}");
+                sources.Add(dllName + ".bytes", Path.Combine(aotDir, dllName));
+            }
+            foreach (string source in sources.Values)
+                if (!File.Exists(source))
+                    throw new FileNotFoundException($"DLL 不存在: {source}，请检查 HybridCLR 生成或 Player AOT 基线。", source);
 
-            foreach (string file in Directory.GetFiles(DLLS_TARGET_DIR, "*.bytes"))
-                File.Delete(file);
-            foreach (string file in Directory.GetFiles(DLLS_TARGET_DIR, "*.bytes.meta"))
-                File.Delete(file);
-        }
+            Directory.CreateDirectory(targetDirectory);
+            foreach (var source in sources)
+                File.Copy(source.Value, Path.Combine(targetDirectory, source.Key), true);
+            File.WriteAllLines(Path.Combine(targetDirectory, AOT_LIST_FILE), normalized, Utf8NoBom);
 
-        private static void CopyGameDll(string hotUpdateDir)
-        {
-            string source = Path.Combine(hotUpdateDir, "Game.dll");
-            if (!File.Exists(source))
-                throw new FileNotFoundException($"Game.dll 不存在: {source}");
-            File.Copy(source, Path.Combine(DLLS_TARGET_DIR, "Game.dll.bytes"), true);
+            foreach (string file in Directory.GetFiles(targetDirectory))
+            {
+                string name = Path.GetFileName(file);
+                string assetName = name.EndsWith(".meta", StringComparison.OrdinalIgnoreCase)
+                    ? name.Substring(0, name.Length - 5) : name;
+                if (assetName.EndsWith(".dll.bytes", StringComparison.OrdinalIgnoreCase) && !sources.ContainsKey(assetName))
+                    File.Delete(file);
+            }
         }
 
         private static IEnumerable<string> NormalizeDllList(IEnumerable<string> values)
@@ -235,12 +227,6 @@ namespace Game.Editor
                 .ToList();
         }
 
-        private static void GenerateAotListFile(IEnumerable<string> aotAssemblies)
-        {
-            string listPath = Path.Combine(DLLS_TARGET_DIR, AOT_LIST_FILE);
-            File.WriteAllLines(listPath, aotAssemblies, Utf8NoBom);
-            Debug.Log($"[HybridCLRBuildUtility] 已生成 {AOT_LIST_FILE}");
-        }
     }
 }
 #endif

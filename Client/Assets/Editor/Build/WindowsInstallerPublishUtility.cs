@@ -45,9 +45,11 @@ namespace Game.Editor
                 if (!publish.Success || publish.Version != resourceVersion)
                     throw new InvalidOperationException("资源服同步失败或资源版本不一致：" + publish.Error);
                 PublishGenerated(output, publish.BundleDirectory);
+                UnityEngine.Debug.Log($"[WindowsInstaller] 安装器发布成功：{output}，资源服={publish.BundleDirectory}");
                 return Path.Combine(publish.BundleDirectory, "ResourceFiles");
             }
-            catch (Exception e) { throw new InvalidOperationException("安装器已生成，发布失败，保留于：" + output + "\n" + e.Message, e); }
+            catch (Exception e) { throw new InvalidOperationException("安装器已生成，发布失败；Player 保留于：" + player + "；安装器保留于：" + output +
+                "\n确认同版本资源服包同步成功后，可使用 PublishGenerated 补做发布，无需重新构建 Player 或安装器。\n" + e.Message, e); }
         }
 
         /// <summary>只生成并验证安装器，不复制资源服、不发布更新、不启动任何服务。</summary>
@@ -64,11 +66,13 @@ namespace Game.Editor
                 var identity = JsonUtility.FromJson<WindowsUpdateManifest>(File.ReadAllText(Path.Combine(
                     Path.GetDirectoryName(player), "FirepowerLoop_Data", "StreamingAssets", "windows-release.json")));
                 ValidateInstaller(output, identity.releaseNumber);
+                UnityEngine.Debug.Log($"[WindowsInstaller] 安装器生成成功：{output}（尚未发布）");
                 return output;
             }
             catch (Exception e)
             {
-                throw new InvalidOperationException("Player 已生成，安装器或发布步骤失败，产物保留于：" + output + "\n" + e.Message, e);
+                throw new InvalidOperationException("Player 已生成，安装器生成失败；Player 保留于：" + player + "；未完成安装器产物保留于：" + output +
+                    "\n修复安装器错误后，可使用 GenerateOnly 对该 Player 补做安装器，再同步资源服并发布。\n" + e.Message, e);
             }
         }
 

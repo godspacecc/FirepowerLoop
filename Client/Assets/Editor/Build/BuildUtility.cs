@@ -104,7 +104,8 @@ namespace Game.Editor
                 BuildTarget target = BuildTarget.StandaloneWindows64;
 
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(target));
-                timing.Run("BuildPreparatoryPlayer", BuildPreparatoryPlayer);
+                // GeneratePostPlayer 内部 StripAOTDll 已执行必要构建，此处只保留独立播放器设置。
+                ConfigureStandalonePlayerBuild();
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(target));
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(target, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
@@ -112,15 +113,18 @@ namespace Game.Editor
                 string version = CreateVersion();
                 var package = timing.Run("BuildDefaultPackage", () => BuildPackageOrThrow(version, true));
                 timing.Run("ValidateBuiltinPackage", () => ValidatePackageOrThrow(package.OutputPackageDirectory, version));
-                timing.Run("CleanupPreparatoryPlayer", CleanupPreparatoryPlayer);
+                // 构建前冻结内置资源，构建后核对实际 Player，避免把旧资源包误认成本轮结果。
+                var builtinSnapshot = timing.Run("CaptureBuiltinPackage", () =>
+                    PcBuiltinResourceValidator.Capture(YooAssetBuildUtility.GetStreamingAssetsDirectory(), version));
                 string player = timing.Run("BuildWindowsPlayer", BuildWindowsPlayer);
-                timing.Run("ValidatePlayerAndBuiltin", () => ValidatePlayerAndBuiltin(player, version));
+                timing.Run("ValidatePlayerAndBuiltin", () => builtinSnapshot.ValidatePlayer(player));
 
                 SaveSuccessfulState(version, "Full", package.OutputPackageDirectory, player, updateAot: true, updateHost: false);
-                Debug.Log($"[BuildUtility] 完整打包完成：Version={version}，Player={player}，DLLs={copied.Count}");
+                Debug.Log($"[BuildUtility] Player 构建成功（已保存，可补做安装器与发布）：Version={version}，Player={player}，DLLs={copied.Count}");
                 string serverResources = timing.Run("GenerateAndPublishInstaller", () => WindowsInstallerPublishUtility.GenerateAndPublish(player, version, compiler));
+                Debug.Log($"[BuildUtility] 完整打包完成：Version={version}，Player={player}，资源服={serverResources}");
                 OfferStartServer(version, serverResources, "安装包发布成功", timing);
-            }, cleanupPrepPlayer: true);
+            }, cleanupPrepPlayer: false);
         }
 
         /// <summary>
