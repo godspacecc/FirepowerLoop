@@ -1,0 +1,3 @@
+normalEntry=True;elapsed=1.09527150192298
+lostWorldPaused=True;dialog=True;error=幸存者战场已失效，请返回主菜单重新进入
+returnMenu=True;active=False;result=False

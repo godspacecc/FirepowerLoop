@@ -35,6 +35,8 @@ namespace Game
         private int spawnIndex;
         private long runId;
         private bool ownsView,saved;
+        /// <summary>入口确认完整战场后才提交；用于区分正常等待和开局后的场地丢失。</summary>
+        private bool battlePrepared;
         // 菜单暂停独立于升级暂停，选择强化不能解除菜单暂停。
         private bool menuPaused;
         public string LastError {get;private set;}
@@ -79,7 +81,14 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.Choices=Array.Empty<int>();}
+        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.Choices=Array.Empty<int>();}
+        /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
+        public void ConfirmBattlePrepared()
+        {
+            if(!Model.Active||view==null||!view.IsActive||!view.IsRoundLayoutReady||!string.IsNullOrEmpty(view.RoundLayoutLoadError))
+                throw new InvalidOperationException(view?.RoundLayoutLoadError??"幸存者战场尚未准备完成");
+            battlePrepared=true;
+        }
         /// <summary>失败可以用同一结果重试，不覆盖本局统计。</summary>
         public bool TryFinish(out string error)
         {
@@ -140,6 +149,16 @@ namespace Game
         private void Tick()
         {
             var m=Model;if(!m.Active||m.State.Finished)return;
+            if(battlePrepared&&(!view.IsActive||!view.IsRoundLayoutReady||!string.IsNullOrEmpty(view.RoundLayoutLoadError)))
+            {
+                // 已交接场地失效不能永久静默等待，也不把加载故障保存为一局结算。
+                if(string.IsNullOrEmpty(LastError))
+                {
+                    LastError=view.RoundLayoutLoadError??"幸存者战场已失效，请返回主菜单重新进入";
+                    m.Paused=true;input.Disable();Publish();
+                }
+                return;
+            }
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)){if(LastError!=view.RoundLayoutLoadError){LastError=view.RoundLayoutLoadError;m.Paused=true;Publish();}return;}
             if(!view.IsRoundLayoutReady||m.Paused||this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen)return;
             if(Time.deltaTime<=0)return;

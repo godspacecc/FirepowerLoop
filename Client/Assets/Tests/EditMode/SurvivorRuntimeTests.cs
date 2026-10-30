@@ -41,6 +41,32 @@ namespace Game.Tests
         {
             system.SetPaused(true);var before=Get<Vector2>("player");Call("Tick");Assert.That(model.State.ElapsedSeconds,Is.Zero);Assert.That(Get<Vector2>("player"),Is.EqualTo(before));Assert.That(view.PlayerWrites,Is.Zero);Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
         }
+        [Test] public void LostPreparedBattleReportsFailureOnceInsteadOfSilentlyFreezing()
+        {
+            var commit=typeof(SurvivorSystem).GetMethod("ConfirmBattlePrepared");
+            Assert.That(commit,Is.Not.Null,"缺少准备完成交接");
+            commit.Invoke(system,null);
+            int changes=0;architecture.RegisterEvent<SurvivorChangedEvent>(_=>changes++);
+            view.Ready=false;
+            Call("Tick");Call("Tick");
+            Assert.That(model.Paused,Is.True);
+            Assert.That(system.LastError,Does.Contain("战场"));
+            Assert.That(changes,Is.EqualTo(1));
+            Assert.That(model.State.ElapsedSeconds,Is.Zero);
+            Assert.That(Directory.Exists(root),Is.False,"准备故障不能伪造结算存档");
+        }
+        [Test] public void InitialPreparationWaitDoesNotReportLostBattle()
+        {
+            view.Ready=false;Call("Tick");
+            Assert.That(system.LastError,Is.Null);
+            Assert.That(model.Paused,Is.False);
+        }
+        [Test] public void UnreadyBattleCannotCommitPreparation()
+        {
+            view.Ready=false;
+            Assert.Throws<InvalidOperationException>(()=>system.ConfirmBattlePrepared());
+            Assert.That(model.State.ElapsedSeconds,Is.Zero);
+        }
         [Test] public void FarmEntryUsesItsConfiguredArenaBounds()
         {
             var position = new Vector2(-28, -14);
@@ -128,6 +154,8 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool Ready=true;
+            public bool IsRoundLayoutReady=>Ready;
             public int PlayerWrites,Ends;
             public bool IsActive=>true;
             public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}

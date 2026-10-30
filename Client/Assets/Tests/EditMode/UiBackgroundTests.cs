@@ -65,6 +65,16 @@ namespace Game.Tests
             Assert.That(method,Is.Not.Null,"缺少幸存者独立加载背景入口");
             return (int)method.Invoke(controller,null);
         }
+        [Test] public void SurvivorMapCompletionCannotClosePendingBattlePreparation()
+        {
+            int menu=BeginSurvivor(),battle=BeginSurvivor();
+            architecture.SendEvent(new MapLoadingStartedEvent(MapIds.Arcade));
+            architecture.SendEvent(new MapLoadingCompletedEvent(MapIds.Arcade));
+            controller.EndEntryPreparation(menu);
+            Assert.That(controller.IsShow(),Is.True,"基础地图完成及旧菜单释放均不能关闭战场准备遮罩");
+            controller.EndEntryPreparation(battle);
+            Assert.That(controller.IsShow(),Is.False);
+        }
         [Test] public void SurvivorArtworkOverridesResidualRunThroughoutPreparation()
         {
             SetRun(20);BeginSurvivor();AssertImage("survivor-loading");

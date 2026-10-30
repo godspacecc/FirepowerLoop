@@ -10,6 +10,8 @@ namespace Game
     {
         /// <summary>串行化开局和退出，生命周期结束取消所有未完成入口。</summary>
         private bool busy;
+        /// <summary>同一场地故障只展示一次；返回失败时可重新提供退出操作。</summary>
+        private string shownBattleError;
         private readonly CancellationTokenSource lifetime = new CancellationTokenSource();
 
         protected override void OnInit()
@@ -36,6 +38,7 @@ namespace Game
             var system = this.GetSystem<SurvivorSystem>();
             if (!system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
             busy = true;
+            shownBattleError = null;
             bool entered = false;
             LoadingUICtrl loading=null;
             int loadingRequest=0;
@@ -61,7 +64,9 @@ namespace Game
                         throw new TimeoutException("草地战场准备超时，请重试");
                     await UniTask.NextFrame(linked.Token);
                 }
-                this.GetSystem<AppStateSystem>().TryTransition(AppState.Playing);
+                system.ConfirmBattlePrepared();
+                if (!this.GetSystem<AppStateSystem>().TryTransition(AppState.Playing))
+                    throw new InvalidOperationException("幸存者战场无法进入可操作状态");
                 UIHelper.ShowUI<SurvivorHudUICtrl>();
                 return ArcadeSceneFlowResult.Ok();
             }
@@ -109,6 +114,12 @@ namespace Game
         private void RefreshPresentation()
         {
             var model = this.GetModel<SurvivorModel>();
+            var error = this.GetSystem<SurvivorSystem>().LastError;
+            if (model.Snapshot.Active && !model.Snapshot.Finished && !busy && !string.IsNullOrEmpty(error))
+            {
+                ShowBattleFailure(error);
+                return;
+            }
             if (model.Snapshot.Active && model.Snapshot.Finished && !busy)
             {
                 UIHelper.HideUI<SurvivorUpgradeUICtrl>();
@@ -120,6 +131,36 @@ namespace Game
             if (model.Snapshot.Active && model.UpgradeChoices.Length == 3 &&
                 UIHelper.GetUICtrl<SurvivorUpgradeUICtrl>()?.IsShow() != true)
                 UIHelper.ShowUI<SurvivorUpgradeUICtrl>();
+        }
+
+        /// <summary>复用现有错误弹窗；损坏现场提供返回入口，不允许继续静默暂停。</summary>
+        private void ShowBattleFailure(string error)
+        {
+            if (shownBattleError == error) return;
+            shownBattleError = error;
+            Log.Error("[SurvivorSceneFlowSystem] 战场失效：" + error);
+            Notify.ShowMessage(Texts.SaveErrorLoadFailed, error,
+                new System.Collections.Generic.List<MessageButtonConfig> {
+                    new MessageButtonConfig { ButtonText = Texts.CommonConfirm,
+                        Role = MessageButtonRole.Confirm, OnClick = () => ReturnFromFailedBattleAsync().Forget() }
+                });
+        }
+
+        /// <summary>故障退出只卸载无效现场；不伪造死亡、放弃结果或触碰闯关存档。</summary>
+        private async UniTask ReturnFromFailedBattleAsync()
+        {
+            if (busy) return;
+            busy = true;
+            try
+            {
+                var result = await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(showFailureDialog: false);
+                if (!result.Success) { shownBattleError = null; ShowBattleFailure(result.Error); return; }
+                this.GetSystem<SurvivorSystem>().Stop();
+                UIHelper.HideUI<SurvivorUpgradeUICtrl>();
+                UIHelper.HideUI<SurvivorHudUICtrl>();
+            }
+            catch (Exception exception) { shownBattleError = null; ShowBattleFailure(exception.Message); }
+            finally { busy = false; }
         }
     }
 }
