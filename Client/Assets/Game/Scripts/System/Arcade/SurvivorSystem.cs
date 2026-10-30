@@ -151,6 +151,10 @@ namespace Game
         private void Publish(){this.SendEvent<SurvivorChangedEvent>();}
         /// <summary>暂停时不推进敌人、子弹、刷怪或升级时钟。</summary>
         private void Tick()
+            => TickFrame(Time.deltaTime);
+
+        /// <summary>按本帧实际时间推进；单独接收时间以便在非运行态准确验证移动及暂停规则。</summary>
+        private void TickFrame(float frameSeconds)
         {
             var m=Model;if(!m.Active||m.State.Finished)return;
             if(battlePrepared&&(!view.IsActive||!view.IsRoundLayoutReady||!string.IsNullOrEmpty(view.RoundLayoutLoadError)))
@@ -165,8 +169,8 @@ namespace Game
             }
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)){if(LastError!=view.RoundLayoutLoadError){LastError=view.RoundLayoutLoadError;m.Paused=true;Publish();}return;}
             if(!view.IsRoundLayoutReady||m.Paused||this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen)return;
-            if(Time.deltaTime<=0)return;
-            float dt=Mathf.Min(Time.deltaTime,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
+            if(frameSeconds<=0)return;
+            float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
             player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
@@ -175,7 +179,7 @@ namespace Game
             foreach(var e in enemies.Values){if(FirepowerLoop.Arcade.ArcadeOutsideEntryRules.Advance(ref e.OutsideEntry,dt,e.Speed,out var entryPosition))e.Position=new Vector2(entryPosition.X,entryPosition.Y);else e.Position=navigation.Move(e.Position,player,e.Speed*dt);if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius){m.Health=Math.Max(0,m.Health-e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}}
             Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
-            Offer();view.SetPlayer(player,facing,true,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
+            Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             foreach(var e in enemies.Values)view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth);
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);

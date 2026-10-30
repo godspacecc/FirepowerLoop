@@ -1,0 +1,414 @@
+{
+  "redMovement": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:02.8227597\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorRuntimeTests.MovementTickDoesNotClearAnimationWithSecondMove\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.7040000\",\"Message\":\"  \\u540C\\u5E27\\u7B2C\\u4E8C\\u6B21\\u96F6\\u4F4D\\u79FB\\u4F1A\\u6E05\\u7A7A\\u817F\\u90E8\\u52A8\\u753B\\u901F\\u5EA6\\r\\n  Expected: 1\\r\\n  But was:  2\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.8227597"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.MovementTickDoesNotClearAnimationWithSecondMove",
+            "Status": "Failed",
+            "Duration": "00:00:01.7040000",
+            "Message": "  同帧第二次零位移会清空腿部动画速度\r\n  Expected: 1\r\n  But was:  2\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "redExperience": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":1,\"PassedTests\":0,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:00:01.1292861\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorConfigTests.LevelCostsStartAtTenAndGrowByFive\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0460000\",\"Message\":\"  Expected: 10\\r\\n  But was:  5\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 1,
+          "PassedTests": 0,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.1292861"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.LevelCostsStartAtTenAndGrowByFive",
+            "Status": "Failed",
+            "Duration": "00:00:00.0460000",
+            "Message": "  Expected: 10\r\n  But was:  5\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "config": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":10,\"PassedTests\":10,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.4770497\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorConfigTests.ExperienceUsesDedicatedCrystalAndGuaranteedDrop\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0210000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(-0.1f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(1.1f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(float.NaN)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.LevelCostsStartAtTenAndGrowByFive\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0140000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.LimitedChoicesStopAtConfiguredLevel\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.LoadsIndependentConfigurationBeforeArcadeCatalog\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.MissingTablesReturnsActionableFailure\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0020000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.ThreeUnlimitedChoicesRemainMonotonicWithinBounds\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.SurvivorConfigTests.UnknownAndNonFiniteUpgradeDefinitionsAreRejected\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0010000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 10,
+          "PassedTests": 10,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.4770497"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.ExperienceUsesDedicatedCrystalAndGuaranteedDrop",
+            "Status": "Passed",
+            "Duration": "00:00:00.0210000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(-0.1f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0100000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(1.1f)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(float.NaN)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.LevelCostsStartAtTenAndGrowByFive",
+            "Status": "Passed",
+            "Duration": "00:00:00.0140000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.LimitedChoicesStopAtConfiguredLevel",
+            "Status": "Passed",
+            "Duration": "00:00:00.0100000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.LoadsIndependentConfigurationBeforeArcadeCatalog",
+            "Status": "Passed",
+            "Duration": "00:00:00.0100000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.MissingTablesReturnsActionableFailure",
+            "Status": "Passed",
+            "Duration": "00:00:00.0020000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.ThreeUnlimitedChoicesRemainMonotonicWithinBounds",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorConfigTests.UnknownAndNonFiniteUpgradeDefinitionsAreRejected",
+            "Status": "Passed",
+            "Duration": "00:00:00.0010000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "runtime": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":30,\"PassedTests\":30,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:42.5160692\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorRuntimeTests.AutoWeaponsWaitUntilTargetIsVisible\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.6040000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.ConsecutiveLevelsRequireSeparateVersionedChoices\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2980000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.DeathSavesIndependentResultAndRetryIsIdempotent\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.7550000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.DroneFiresAtPlayerThreatAndSharesProjectileBudget\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2160000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.ExactOverlapKeepsOneDropWithAllExperience\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1510000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.ExperiencePresentationSendsNoNameOrQuantityLabel\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2870000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.FarmEntryUsesItsConfiguredArenaBounds\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2170000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.FirstUpgradeAcquiresDroneAndNextChoiceUpgradesSameSlot\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1980000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.FullDropBudgetMergesExperienceWithoutLoss\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2060000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.HealthUpgradeAddsOnlyNewCapacityWithoutFullHeal\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2130000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.HiddenLaneExtensionRejectsWallBeyondOriginalSpawn\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.4220000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.InitialPreparationWaitDoesNotReportLostBattle\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.5490000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.KillCreatesExperienceOnGroundWithoutRemoteCollection\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2750000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.LostPreparedBattleReportsFailureOnceInsteadOfSilentlyFreezing\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1590000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.MaxLevelDroneIsRemovedFromCandidates\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1980000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.MovementTickDoesNotClearAnimationWithSecondMove\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0970000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.NearbyDistinctDropsRemainSeparate\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1940000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.NewlyAcquiredDroneStartsBesideCurrentPlayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1620000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.OutsideSpawnPauseAndEarlyKillLandExperienceInsideEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.6550000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.OutsideSpawnRejectsInvalidRouteWithoutCreatingEnemy\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1250000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.PauseFreezesClockEnemiesAndInputPresentation\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1290000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.QuitSavesAbandonedSurvivorBeforeAllowingApplicationExit\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2160000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2490000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2690000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.SpawnExtendsExistingLaneUntilOutsideCamera\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3600000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.StopReleasesOwnedViewAndPreservesArcadeRun\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1810000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.UnreadyBattleCannotCommitPreparation\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1840000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.UpgradeSelectionDoesNotDismissMenuPause\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2220000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.VisibleSpawnWithoutHiddenLaneWaitsWithoutPausingRun\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2440000\"},{\"Name\":\"Game.Tests.SurvivorRuntimeTests.ZeroExperienceChanceKeepsKillAndScoreWithoutDrop\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1360000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 30,
+          "PassedTests": 30,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:42.5160692"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.AutoWeaponsWaitUntilTargetIsVisible",
+            "Status": "Passed",
+            "Duration": "00:00:01.6040000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.ConsecutiveLevelsRequireSeparateVersionedChoices",
+            "Status": "Passed",
+            "Duration": "00:00:01.2980000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.DeathSavesIndependentResultAndRetryIsIdempotent",
+            "Status": "Passed",
+            "Duration": "00:00:01.7550000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.DroneFiresAtPlayerThreatAndSharesProjectileBudget",
+            "Status": "Passed",
+            "Duration": "00:00:01.2160000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.ExactOverlapKeepsOneDropWithAllExperience",
+            "Status": "Passed",
+            "Duration": "00:00:01.1510000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.ExperiencePresentationSendsNoNameOrQuantityLabel",
+            "Status": "Passed",
+            "Duration": "00:00:01.2870000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.FarmEntryUsesItsConfiguredArenaBounds",
+            "Status": "Passed",
+            "Duration": "00:00:01.2170000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.FirstUpgradeAcquiresDroneAndNextChoiceUpgradesSameSlot",
+            "Status": "Passed",
+            "Duration": "00:00:01.1980000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.FullDropBudgetMergesExperienceWithoutLoss",
+            "Status": "Passed",
+            "Duration": "00:00:01.2060000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.HealthUpgradeAddsOnlyNewCapacityWithoutFullHeal",
+            "Status": "Passed",
+            "Duration": "00:00:01.2130000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.HiddenLaneExtensionRejectsWallBeyondOriginalSpawn",
+            "Status": "Passed",
+            "Duration": "00:00:01.4220000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.InitialPreparationWaitDoesNotReportLostBattle",
+            "Status": "Passed",
+            "Duration": "00:00:01.5490000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.KillCreatesExperienceOnGroundWithoutRemoteCollection",
+            "Status": "Passed",
+            "Duration": "00:00:01.2750000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.LostPreparedBattleReportsFailureOnceInsteadOfSilentlyFreezing",
+            "Status": "Passed",
+            "Duration": "00:00:01.1590000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.MaxLevelDroneIsRemovedFromCandidates",
+            "Status": "Passed",
+            "Duration": "00:00:01.1980000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.MovementTickDoesNotClearAnimationWithSecondMove",
+            "Status": "Passed",
+            "Duration": "00:00:01.0970000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.NearbyDistinctDropsRemainSeparate",
+            "Status": "Passed",
+            "Duration": "00:00:01.1940000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.NewlyAcquiredDroneStartsBesideCurrentPlayer",
+            "Status": "Passed",
+            "Duration": "00:00:01.1620000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.OutsideSpawnPauseAndEarlyKillLandExperienceInsideEntry",
+            "Status": "Passed",
+            "Duration": "00:00:01.6550000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.OutsideSpawnRejectsInvalidRouteWithoutCreatingEnemy",
+            "Status": "Passed",
+            "Duration": "00:00:01.1250000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.PauseFreezesClockEnemiesAndInputPresentation",
+            "Status": "Passed",
+            "Duration": "00:00:01.1290000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.QuitSavesAbandonedSurvivorBeforeAllowingApplicationExit",
+            "Status": "Passed",
+            "Duration": "00:00:01.2160000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(False)",
+            "Status": "Passed",
+            "Duration": "00:00:01.2490000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(True)",
+            "Status": "Passed",
+            "Duration": "00:00:01.2690000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.SpawnExtendsExistingLaneUntilOutsideCamera",
+            "Status": "Passed",
+            "Duration": "00:00:01.3600000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.StopReleasesOwnedViewAndPreservesArcadeRun",
+            "Status": "Passed",
+            "Duration": "00:00:01.1810000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.UnreadyBattleCannotCommitPreparation",
+            "Status": "Passed",
+            "Duration": "00:00:01.1840000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.UpgradeSelectionDoesNotDismissMenuPause",
+            "Status": "Passed",
+            "Duration": "00:00:01.2220000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.VisibleSpawnWithoutHiddenLaneWaitsWithoutPausingRun",
+            "Status": "Passed",
+            "Duration": "00:00:01.2440000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorRuntimeTests.ZeroExperienceChanceKeepsKillAndScoreWithoutDrop",
+            "Status": "Passed",
+            "Duration": "00:00:01.1360000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "animation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":17,\"PassedTests\":17,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:02.2712789\"},\"Results\":[{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.4740000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0150000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.basic\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0320000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rapid\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0220000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.spread\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.piercing\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0270000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.raygun\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0240000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rocket\\u0022,False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0200000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.basic\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0290000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\\u0022arcade.weapon.rapid\\u0022,True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0220000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022switch\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022hurt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\\u0022death\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\\u0022weapon.greatsword\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\\u0022weapon.short-sword\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.MovingGunUsesConfiguredFirePoseOnGunLayer\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0110000\"},{\"Name\":\"Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 17,
+          "PassedTests": 17,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:02.2712789"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtAfterWeaponChangesOnlyTintsVisibleBody",
+            "Status": "Passed",
+            "Duration": "00:00:00.4740000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ArcadeHurtKeepsRunningAndGunfireUntilDeath",
+            "Status": "Passed",
+            "Duration": "00:00:00.0150000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0320000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0220000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.spread\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0240000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.piercing\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0270000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.raygun\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0240000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rocket\",False)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0200000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.basic\",True)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0290000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ContinuousGunfireKeepsLocomotionOnBaseLayer(\"arcade.weapon.rapid\",True)",
+            "Status": "Passed",
+            "Duration": "00:00:00.0220000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"switch\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"hurt\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0070000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.InterruptionsRemoveGunOverlay(\"death\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0060000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.greatsword\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0100000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.MeleeStillUsesFullBodyAttackWhileMoving(\"weapon.short-sword\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.MovingGunUsesConfiguredFirePoseOnGunLayer",
+            "Status": "Passed",
+            "Duration": "00:00:00.0110000"
+          },
+          {
+            "Name": "Game.Tests.GunLocomotionAnimationTests.ReloadRemovesPendingGunOverlay",
+            "Status": "Passed",
+            "Duration": "00:00:00.0080000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  }
+}

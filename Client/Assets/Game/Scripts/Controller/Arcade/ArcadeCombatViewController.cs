@@ -73,6 +73,8 @@ namespace Game
         bool TryScreenToArena(Vector2 screenPosition, out Vector2 position);
         bool TryGetPlayerPosition(out Vector2 position) { position = default; return false; }
         void SetPlayer(Vector2 position, Vector2 facing, bool visible, bool invulnerable);
+        /// <summary>移动结算后只刷新朝向和保护状态，不再次驱动位移或清空腿部动画。</summary>
+        void SetPlayerCombatState(Vector2 facing,bool invulnerable) { }
         /// <summary>可救援标记只读取服务器状态，本机为零号，队友使用玩家 ID。</summary>
         void SetPlayerRescue(long playerId,bool active) { }
         /// <summary>只读有效冲刺状态；零号为本机，正数为联机队友，不从无敌或移速推断。</summary>
@@ -512,6 +514,15 @@ namespace Game
             playerMotor.Move(target - playerMotor.Position - mapRoot.up * PlayerGroundContactDistance);
             if (facing.sqrMagnitude > 0.001f)
                 playerMotor.FaceDirection(mapRoot.TransformDirection(new Vector3(facing.x, 0f, facing.y)));
+        }
+
+        /// <summary>保留本帧实际移动速度，仅应用射击转向和最新无敌保护。</summary>
+        public void SetPlayerCombatState(Vector2 facing,bool invulnerable)
+        {
+            if(playerMotor==null||!playerMotor.IsValid||mapRoot==null)return;
+            playerMotor.SetArcadeProtectionActive(invulnerable);
+            if(facing.sqrMagnitude>.001f)
+                playerMotor.FaceDirection(mapRoot.TransformDirection(new Vector3(facing.x,0,facing.y)));
         }
 
         public void SetPlayerWeapon(string weaponId)

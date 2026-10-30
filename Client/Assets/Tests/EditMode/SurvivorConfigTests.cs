@@ -40,6 +40,16 @@ namespace Game.Tests
             typeof(global::SurvivorRuleConfig).GetField("ExperienceDropChance").SetValue(row,chance);
             Assert.Throws<ArgumentException>(()=>SurvivorConfiguration.FromTables(tables));
         }
+        [Test] public void LevelCostsStartAtTenAndGrowByFive()
+        {
+            var config=SurvivorConfiguration.FromTables(Load());
+            var state=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
+            Assert.That(state.RequiredExperience,Is.EqualTo(10));
+            state.AddExperience(9);Assert.That(state.Level,Is.EqualTo(1));
+            state.AddExperience(1);Assert.That(state.Level,Is.EqualTo(2));Assert.That(state.RequiredExperience,Is.EqualTo(15));
+            state.AddExperience(15);Assert.That(state.Level,Is.EqualTo(3));Assert.That(state.RequiredExperience,Is.EqualTo(20));
+            Assert.That(config.ExperiencePerKill,Is.EqualTo(1));Assert.That(config.ExperienceDropChance,Is.EqualTo(1));
+        }
         [Test] public void MissingTablesReturnsActionableFailure()
         {
             var provider = new LubanRuntimeConfigProvider(() => null);

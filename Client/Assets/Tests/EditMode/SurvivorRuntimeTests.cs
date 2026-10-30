@@ -106,6 +106,19 @@ namespace Game.Tests
             var drops=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
             Assert.That(drops.Values.Single().Position,Is.EqualTo(new Vector2(enemy.OutsideEntry.TargetX,enemy.OutsideEntry.TargetZ)));
         }
+        [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
+        {
+            UIHelper.ResetForTests();
+            architecture.RegisterModel(new AppStateModel());
+            architecture.GetModel<AppStateModel>().CurrentState.Value=AppState.Playing;
+            Set("navigation",new SurvivorNavigation(30.5f,30.5f,.5f,Array.Empty<ArcadeObstacleDefinition>()));
+            Set("spawnClock",100f);
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.right);
+            Call("TickFrame",.02f);
+            Assert.That(Get<Vector2>("player").x,Is.GreaterThan(0));
+            Assert.That(view.PlayerWrites,Is.EqualTo(1),"同帧第二次零位移会清空腿部动画速度");
+            Assert.That(view.CombatPoseWrites,Is.EqualTo(1),"末尾仍需刷新本帧射击朝向和保护状态");
+        }
         [Test] public void PauseFreezesClockEnemiesAndInputPresentation()
         {
             system.SetPaused(true);var before=Get<Vector2>("player");Call("Tick");Assert.That(model.State.ElapsedSeconds,Is.Zero);Assert.That(Get<Vector2>("player"),Is.EqualTo(before));Assert.That(view.PlayerWrites,Is.Zero);Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
@@ -284,12 +297,13 @@ namespace Game.Tests
             public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
-            public int PlayerWrites,Ends;
+            public int PlayerWrites,CombatPoseWrites,Ends;
             public bool IsActive=>true;
             public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}
             public void End(){Ends++;}
             public bool TryScreenToArena(Vector2 s,out Vector2 p){p=default;return false;}
             public void SetPlayer(Vector2 p,Vector2 f,bool v,bool i){PlayerWrites++;}
+            public void SetPlayerCombatState(Vector2 facing,bool invulnerable){CombatPoseWrites++;}
             public void SetPlayerHealth(int c,int m){}
             public void SetEnemy(int id,string c,Vector2 p,int hp,int max,bool t=false,int seq=0,bool bar=false){}
             public void RemoveEnemy(int id,bool death=false){}
