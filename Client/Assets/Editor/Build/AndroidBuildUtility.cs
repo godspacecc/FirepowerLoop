@@ -1248,11 +1248,12 @@ namespace Game.Editor
                     EditorUserBuildSettings.buildAppBundle);
             }
 
+            /// <summary>测试构建保持开发模式，使用进入构建前用户选择的调试与Profiler开关。</summary>
             public void ApplyTestBuildOptions()
             {
                 EditorUserBuildSettings.development = true;
-                EditorUserBuildSettings.allowDebugging = false;
-                EditorUserBuildSettings.connectProfiler = false;
+                EditorUserBuildSettings.allowDebugging = _allowDebugging;
+                EditorUserBuildSettings.connectProfiler = _connectProfiler;
                 EditorUserBuildSettings.buildAppBundle = false;
             }
 

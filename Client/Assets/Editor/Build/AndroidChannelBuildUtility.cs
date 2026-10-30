@@ -25,9 +25,20 @@ namespace Game.Editor
         /// <summary>渠道公开证书策略独立于内部测试白名单，不包含私钥或密码。</summary>
         public const string SigningPolicyVariable = "FIREPOWER_ANDROID_CHANNEL_SIGNING_POLICY";
 
-        /// <summary>内部入口保持 Development；渠道入口禁止调试及自动连接 Profiler。</summary>
-        public static BuildOptions BuildOptionsFor(bool channel) => BuildOptions.CompressWithLz4 |
-            (channel ? BuildOptions.None : BuildOptions.Development);
+        /// <summary>测试包保持 Development 并沿用用户调试选项；正式渠道及单机包不携带调试标记。</summary>
+        public static BuildOptions BuildOptionsFor(bool channel)
+        {
+            var options = BuildOptions.CompressWithLz4;
+            if (channel)
+                return options;
+
+            options |= BuildOptions.Development;
+            if (EditorUserBuildSettings.allowDebugging)
+                options |= BuildOptions.AllowDebugging;
+            if (EditorUserBuildSettings.connectProfiler)
+                options |= BuildOptions.ConnectWithProfiler;
+            return options;
+        }
 
         /// <summary>依据已读取的 APK 事实生成逐项报告，供真实包检查和限定策略测试共同使用。</summary>
         public static string Evaluate(string factsJson, bool channel, string expectedCertificate) =>
