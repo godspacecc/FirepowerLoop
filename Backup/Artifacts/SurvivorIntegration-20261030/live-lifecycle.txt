@@ -1,0 +1,3 @@
+pauseFrozen=True finished=True outcome=failed resultUI=True
+restart active=True level=1 score=0 health=100
+returned=True active=False menu=True

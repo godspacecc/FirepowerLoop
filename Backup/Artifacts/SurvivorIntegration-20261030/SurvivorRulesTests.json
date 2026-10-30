@@ -1,0 +1,79 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 13,
+      "PassedTests": 13,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.3071659"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.AimChoosesNearestAttackableAndStableTie",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.AimIncludesExactRangeBoundary",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.AimRejectsOutsideRangeAndInvalidPositions",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.DeathEndsClockExperienceAndSelectionOnce",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.ExperienceCarriesAcrossQueuedLevels",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.InvalidTimeAndNegativeExperienceCannotMutate",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.OfferRequiresThreeDistinctValidIds",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.PauseAndUpgradeStopClock",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.RepeatedOfferKeepsSameRevisionAndContents",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.SpawnBudgetNeverExceedsAliveCap",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.SpawnIntervalGetsHarderButKeepsConfiguredFloor",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.UnknownChoiceLeavesOfferAndExperienceIntact",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRulesTests.UpgradeSelectionIsVersionedAndCannotConsumeTwice",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      }
+    ]
+  }
+}

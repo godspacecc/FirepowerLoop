@@ -40,4 +40,6 @@
     <table name="TbArcadeWeaponUpgrade" value="ArcadeWeaponUpgradeConfig" input="arcade_weapon_upgrade.csv" group="e"/>
     <table name="TbArcadeEarlyStage" value="ArcadeEarlyStageConfig" input="arcade_early_stage.csv" group="e"/>
     <table name="TbArcadeScoreShop" value="ArcadeScoreShopConfig" input="arcade_score_shop.csv" group="e"/>
+    <table name="TbSurvivorRule" value="SurvivorRuleConfig" input="survivor_rule.csv" group="e"/>
+    <table name="TbSurvivorUpgrade" value="SurvivorUpgradeConfig" input="survivor_upgrade.csv" group="e"/>
 </tables>

@@ -15,6 +15,9 @@ namespace Game
 
         public static bool TryPrepareQuit(IArchitecture architecture)
         {
+            // 幸存者只保存结束结果；失败阻止退出，保留结果界面的重试机会。
+            if (architecture?.GetModel<SurvivorModel>()?.Snapshot.Active == true &&
+                !architecture.GetSystem<SurvivorSystem>().TryFinish(out _)) return false;
             var runs = architecture?.GetSystem<ArcadeRunSystem>();
             if (runs?.IsSavingResult != true) return true;
             if (!ReferenceEquals(waitingArchitecture, architecture))

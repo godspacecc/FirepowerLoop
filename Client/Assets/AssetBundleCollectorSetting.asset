@@ -247,6 +247,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData: 
+      - CollectPath: Assets/Game/Prefabs/UI/Survivor
+        CollectorGUID: 34ad826327472b248b9e2d04bd938b01
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: startup;arcade
+        UserData:
     - GroupName: PrefabsCharacters
       GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
       AssetTags: 
@@ -869,19 +877,6 @@ MonoBehaviour:
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
         AssetTags: startup
-        UserData: 
-    - GroupName: PrefabsEffects
-      GroupDesc: "\u7279\u6548\u9884\u5236\u4F53"
-      AssetTags: 
-      ActiveRuleName: EnableGroup
-      Collectors:
-      - CollectPath: Assets/Game/Prefabs/Effects
-        CollectorGUID: 13781f69acfcb5144919666fc1ee2ab7
-        CollectorType: 0
-        AddressRuleName: AddressByGameRelativePathNoExtension
-        PackRuleName: PackDirectory
-        FilterRuleName: CollectAll
-        AssetTags: arcade;arcade-online
         UserData: 
     - GroupName: Music
       GroupDesc: "\u97F3\u4E50\u8D44\u6E90"

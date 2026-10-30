@@ -1,0 +1,44 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 6,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.4680368"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.CorruptFileIsRejectedWithoutOverwrite",
+        "Status": "Passed",
+        "Duration": "00:00:00.1280000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.FailedWriteRetainsPreviousResultAndAllowsRetry",
+        "Status": "Passed",
+        "Duration": "00:00:00.0460000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.InvalidResultPreservesOldFile",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.MissingFileReturnsEmpty",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.RetryOldRunDoesNotReplaceLatest",
+        "Status": "Passed",
+        "Duration": "00:00:00.0150000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorResultFileStoreTests.RoundTripPreservesResultAndArcadeFile",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      }
+    ]
+  }
+}

@@ -44,6 +44,7 @@ namespace Game
         {
             ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OnNewGameClick);
+            BindMenuButton(UI.BtnSurvivor, () => StartSurvivorAsync().Forget());
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             BindMenuButton(UI.BtnContinue, OnContinueClick);
@@ -132,6 +133,7 @@ namespace Game
                 UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
             UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
             UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
+            UI.BtnSurvivor.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
             UI.BtnOnline.interactable = !startingRun;
@@ -162,6 +164,41 @@ namespace Game
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
         }
 
+        /// <summary>幸存者入口先准备资源；失败恢复菜单，不读取或覆盖闯关存档。</summary>
+        private async UniTask StartSurvivorAsync()
+        {
+            if (startingRun) return;
+            startingRun = true;
+            RefreshSaveButtons();
+            var owner = BaseUI;
+            int generation = ++startGeneration;
+            bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
+            try
+            {
+                startLoading = UIHelper.ShowUI<LoadingUICtrl>();
+                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
+                var preparation = this.GetUtility<IGameplayResourcePreparation>();
+                if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
+                await UniTask.NextFrame();
+                if (!IsCurrent()) return;
+                var result = await this.GetSystem<SurvivorSceneFlowSystem>().StartAsync();
+                if (!result.Success) Notify.ShowFloatTips(result.Error);
+            }
+            catch (Exception exception)
+            {
+                Log.Error($"[StartUICtrl] 幸存者开局失败：{exception}");
+                if (IsCurrent()) Notify.ShowFloatTips(Loc.T("ui.survivor.error.open"));
+            }
+            finally
+            {
+                if (IsCurrent())
+                {
+                    ReleaseStartLoading();
+                    startingRun = false;
+                    RefreshSaveButtons();
+                }
+            }
+        }
         private void OnNewGameClick()
         {
             StartSinglePlayerAsync().Forget();

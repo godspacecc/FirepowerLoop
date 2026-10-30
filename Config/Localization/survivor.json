@@ -1,0 +1,106 @@
+{
+  "ui.survivor.arcade": {
+    "zh-CN": "闯关模式",
+    "en-US": "Arcade Mode"
+  },
+  "ui.survivor.mode": {
+    "zh-CN": "幸存者模式",
+    "en-US": "Survivor Mode"
+  },
+  "ui.survivor.select": {
+    "zh-CN": "选择",
+    "en-US": "Select"
+  },
+  "ui.survivor.level_up": {
+    "zh-CN": "等级提升",
+    "en-US": "Level Up"
+  },
+  "ui.survivor.choose": {
+    "zh-CN": "选择一项强化",
+    "en-US": "Choose an Upgrade"
+  },
+  "ui.survivor.paused": {
+    "zh-CN": "战斗已暂停",
+    "en-US": "Battle Paused"
+  },
+  "ui.survivor.error.open": {
+    "en-US": "Could not start Survivor Mode. Please retry.",
+    "zh-CN": "进入幸存者模式失败，请重试"
+  },
+  "ui.survivor.upgrade.1.title": {
+    "en-US": "Damage Up",
+    "zh-CN": "火力提升"
+  },
+  "ui.survivor.upgrade.1.detail": {
+    "en-US": "Increase bullet damage",
+    "zh-CN": "提高子弹伤害"
+  },
+  "ui.survivor.upgrade.2.title": {
+    "en-US": "Fire Rate Up",
+    "zh-CN": "射速提升"
+  },
+  "ui.survivor.upgrade.2.detail": {
+    "en-US": "Fire automatically more often",
+    "zh-CN": "缩短自动射击间隔"
+  },
+  "ui.survivor.upgrade.3.title": {
+    "en-US": "Health Up",
+    "zh-CN": "生命提升"
+  },
+  "ui.survivor.upgrade.3.detail": {
+    "en-US": "Increase maximum health",
+    "zh-CN": "提高生命上限"
+  },
+  "ui.survivor.upgrade.4.title": {
+    "en-US": "Move Speed Up",
+    "zh-CN": "移速提升"
+  },
+  "ui.survivor.upgrade.4.detail": {
+    "en-US": "Move faster",
+    "zh-CN": "提高移动速度"
+  },
+  "ui.survivor.upgrade.5.title": {
+    "en-US": "Pickup Range Up",
+    "zh-CN": "拾取提升"
+  },
+  "ui.survivor.upgrade.5.detail": {
+    "en-US": "Collect experience from farther away",
+    "zh-CN": "扩大经验拾取范围"
+  },
+  "ui.survivor.result.title": {
+    "en-US": "Run Complete",
+    "zh-CN": "本局结束"
+  },
+  "ui.survivor.restart": {
+    "en-US": "Play Again",
+    "zh-CN": "再来一局"
+  },
+  "ui.survivor.hud.health": {
+    "en-US": "Health  {0} / {1}",
+    "zh-CN": "生命  {0} / {1}"
+  },
+  "ui.survivor.time": {
+    "en-US": "Survival Time  {0}",
+    "zh-CN": "生存时间  {0}"
+  },
+  "ui.survivor.hud.score": {
+    "en-US": "Score  {0}",
+    "zh-CN": "分数  {0}"
+  },
+  "ui.survivor.hud.experience": {
+    "en-US": "Level {0}    XP  {1} / {2}",
+    "zh-CN": "等级 {0}    经验  {1} / {2}"
+  },
+  "ui.survivor.result.score": {
+    "en-US": "Run Score  {0}",
+    "zh-CN": "本局分数  {0}"
+  },
+  "ui.survivor.result.retry": {
+    "en-US": "Save failed: {0}. Select Play Again or Main Menu to retry.",
+    "zh-CN": "保存失败：{0}。点击再来一局或返回主菜单重试。"
+  },
+  "ui.survivor.upgrade.progress": {
+    "en-US": "Level {0} → {1}\nTotal bonus {2} → {3}",
+    "zh-CN": "等级 {0} → {1}\n累计效果 {2} → {3}"
+  }
+}

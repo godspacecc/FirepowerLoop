@@ -624,4 +624,37 @@
         <var name="DropId" type="string"/>
         <var name="ScoreCost" type="int"/>
     </bean>
+    <!-- 独立幸存者规则，数值仅以本表为权威。 -->
+    <bean name="SurvivorRuleConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="LayoutId" type="string#ref=TbArcadeRoundLayout"/>
+        <var name="EnemyId" type="string#ref=TbEnemy"/>
+        <var name="WeaponId" type="string#ref=TbArcadeWeapon"/>
+        <var name="PlayerMaxHealth" type="int"/>
+        <var name="PlayerMoveSpeed" type="float"/>
+        <var name="SpawnIntervalSeconds" type="float"/>
+        <var name="MinimumSpawnIntervalSeconds" type="float"/>
+        <var name="SpawnIntervalReductionPerMinute" type="float"/>
+        <var name="EnemyHealthGrowthPerMinute" type="float"/>
+        <var name="EnemyDamageGrowthPerMinute" type="float"/>
+        <var name="EnemySpeedGrowthPerMinute" type="float"/>
+        <var name="MaxAliveEnemies" type="int"/>
+        <var name="MaxProjectiles" type="int"/>
+        <var name="MaxDrops" type="int"/>
+        <var name="InitialExperienceThreshold" type="int"/>
+        <var name="ExperienceThresholdGrowth" type="int"/>
+        <var name="ExperiencePerKill" type="int"/>
+        <var name="ScorePerKill" type="int"/>
+        <var name="PickupRadius" type="float"/>
+        <var name="MinimumSpawnDistance" type="float"/>
+        <var name="AimRange" type="float"/>
+    </bean>
+    <!-- 独立幸存者规则，数值仅以本表为权威。 -->
+    <bean name="SurvivorUpgradeConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="Kind" type="string"/>
+        <var name="AmountPerLevel" type="float"/>
+        <var name="MaximumBonus" type="float"/>
+        <var name="MaxLevel" type="int"/>
+    </bean>
 </beans>

@@ -332,6 +332,8 @@ namespace Game
 
         private void OnRunChanged(ArcadeRunChangedEvent evt)
         {
+            // 幸存者持有共用表现端口时，闯关菜单读取不得清掉其现场。
+            if (this.GetModel<SurvivorModel>()?.Snapshot.Active == true) return;
             if ((evt.Phase == ArcadeRunPhase.Arena || evt.Phase == ArcadeRunPhase.Challenge) && evt.Snapshot != null)
             {
                 if (!this.GetModel<ArcadeCombatModel>().IsActive)

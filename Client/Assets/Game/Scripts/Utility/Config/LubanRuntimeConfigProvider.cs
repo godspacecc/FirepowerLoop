@@ -300,6 +300,14 @@ namespace Game
             return true;
         }
 
+        /// <summary>幸存者独立加载，配置错误回传开局流程，不写入闯关状态。</summary>
+        public bool TryGetSurvivor(out FirepowerLoop.Arcade.SurvivorConfiguration value, out string error)
+        {
+            value = null;
+            try { value = FirepowerLoop.Arcade.SurvivorConfiguration.FromTables(cachedTables ?? tablesFactory()); error = null; return true; }
+            catch (Exception exception) { error = "幸存者配置无效: " + exception.Message; return false; }
+        }
+
         public bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
         {value=null;if(!EnsureValid(out error))return false;value=slayerChallenge;return value!=null;}
 

@@ -12,6 +12,7 @@ namespace Game
         public Button BtnNewGame;
         public Button BtnOnline;
         public Button BtnSetting;
+        public Button BtnSurvivor;
         public RectTransform ButtonGroup;
         public RedPointView UpdateRedPoint;
         public TextMeshProUGUI UpdateStatusText;

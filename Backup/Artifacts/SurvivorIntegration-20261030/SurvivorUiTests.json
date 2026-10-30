@@ -1,0 +1,44 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 6,
+      "PassedTests": 6,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.7338383"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorUiTests.HudAndResult_HaveAllGeneratedReferences",
+        "Status": "Passed",
+        "Duration": "00:00:00.1470000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorUiTests.HudBars_FillStaysInsideTrack",
+        "Status": "Passed",
+        "Duration": "00:00:00.0510000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorUiTests.MobileMoveJoystick_KeepsArcadeSourceLayout",
+        "Status": "Passed",
+        "Duration": "00:00:00.2160000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorUiTests.Start_HasBoundSurvivorEntry",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorUiTests.TextOwnership_DynamicFieldsHaveNoLocalizedTextAndFixedTextUsesKeys",
+        "Status": "Passed",
+        "Duration": "00:00:00.0270000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorUiTests.Upgrade_ReferencesExternalGeneratedBox",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      }
+    ]
+  }
+}

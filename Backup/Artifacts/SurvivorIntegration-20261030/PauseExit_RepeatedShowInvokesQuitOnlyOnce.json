@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 1,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.5973869"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.PauseUiFlowTests.PauseExit_RepeatedShowInvokesQuitOnlyOnce",
+        "Status": "Passed",
+        "Duration": "00:00:00.3800000"
+      }
+    ]
+  }
+}

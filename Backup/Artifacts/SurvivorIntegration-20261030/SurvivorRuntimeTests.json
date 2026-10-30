@@ -1,0 +1,64 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 10,
+      "PassedTests": 10,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:12.9443371"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ConsecutiveLevelsRequireSeparateVersionedChoices",
+        "Status": "Passed",
+        "Duration": "00:00:01.3960000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.DeathSavesIndependentResultAndRetryIsIdempotent",
+        "Status": "Passed",
+        "Duration": "00:00:01.2220000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.FarmEntryUsesItsConfiguredArenaBounds",
+        "Status": "Passed",
+        "Duration": "00:00:01.6230000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.FullDropBudgetMergesExperienceWithoutLoss",
+        "Status": "Passed",
+        "Duration": "00:00:01.0220000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.HealthUpgradeAddsOnlyNewCapacityWithoutFullHeal",
+        "Status": "Passed",
+        "Duration": "00:00:00.9930000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.KillCreatesExperienceOnGroundWithoutRemoteCollection",
+        "Status": "Passed",
+        "Duration": "00:00:01.1050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.PauseFreezesClockEnemiesAndInputPresentation",
+        "Status": "Passed",
+        "Duration": "00:00:01.0250000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.QuitSavesAbandonedSurvivorBeforeAllowingApplicationExit",
+        "Status": "Passed",
+        "Duration": "00:00:01.1170000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.StopReleasesOwnedViewAndPreservesArcadeRun",
+        "Status": "Passed",
+        "Duration": "00:00:01.0590000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.UpgradeSelectionDoesNotDismissMenuPause",
+        "Status": "Passed",
+        "Duration": "00:00:01.1190000"
+      }
+    ]
+  }
+}

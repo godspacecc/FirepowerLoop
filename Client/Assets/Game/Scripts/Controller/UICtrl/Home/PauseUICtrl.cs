@@ -80,6 +80,7 @@ namespace Game
         private void OpenOnlineOrLeaveArcade()
         {
             if (leavingMap) return;
+            if (this.GetModel<SurvivorModel>().Snapshot.Active) { LeaveSurvivorAsync().Forget(); return; }
             if (!IsArcadeMap) { UIHelper.ShowUI<OnlineLoginUICtrl>(); return; }
             var run = this.GetModel<ArcadeRunModel>()?.Current;
             if (run?.IslandRoundCheckpoint == null && run?.RoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
@@ -100,7 +101,28 @@ namespace Game
                 });
         }
 
-        /// <summary>离开只返回主菜单并恢复已有安全节点，不结算或删除存档；失败可在原暂停菜单重试。</summary>
+        /// <summary>幸存者退出走独立地图事务，绝不回滚或保存闯关安全节点。</summary>
+        private async UniTask LeaveSurvivorAsync()
+        {
+            if (leavingMap) return;
+            var owner = UI;
+            leavingMap = true;
+            RefreshOnlineAction();
+            try
+            {
+                var result = await this.GetSystem<SurvivorSceneFlowSystem>().ReturnToMenuAsync();
+                if (!result.Success)
+                {
+                    if (owner != null && owner == UI && this.GetModel<SurvivorModel>().Snapshot.Active) Show();
+                    Notify.ShowFloatTips(result.Error);
+                }
+            }
+            finally
+            {
+                leavingMap = false;
+                if (owner != null && owner == UI && IsShow()) RefreshOnlineAction();
+            }
+        }
         private async UniTask LeaveArcadeAsync()
         {
             if (leavingMap || !IsArcadeMap) return;

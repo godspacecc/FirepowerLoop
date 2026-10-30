@@ -77,7 +77,7 @@ namespace Game
         }
 
         /// <summary>释放街机地图并回到主界面；本局文件由街机事务独立管理。</summary>
-        public async UniTask<ArcadeSceneFlowResult> ReturnToMainMenuAsync(CancellationToken cancellationToken = default)
+        public async UniTask<ArcadeSceneFlowResult> ReturnToMainMenuAsync(CancellationToken cancellationToken = default, bool showFailureDialog = true)
         {
             if (busy) return ArcadeSceneFlowResult.Fail("街机场景正在切换");
             busy = true;
@@ -87,7 +87,7 @@ namespace Game
                 var result = await this.GetSystem<MapSceneSystem>().UnloadCurrentMapAsync(cancellationToken);
                 if (!result.Success)
                 {
-                    Notify.ShowMessage(Texts.SaveErrorLoadFailed, Loc.T("ui.arcade.menu.failed"),
+                    if (showFailureDialog) Notify.ShowMessage(Texts.SaveErrorLoadFailed, Loc.T("ui.arcade.menu.failed"),
                         new System.Collections.Generic.List<MessageButtonConfig> {
                             new MessageButtonConfig { ButtonText = Loc.T("ui.arcade.retry"),
                                 Role = MessageButtonRole.Confirm, OnClick = () => ReturnToMainMenuAsync().Forget() } });

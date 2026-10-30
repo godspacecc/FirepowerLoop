@@ -43,6 +43,8 @@ public partial class Tables
     public TbArcadeWeaponUpgrade TbArcadeWeaponUpgrade {get; }
     public TbArcadeEarlyStage TbArcadeEarlyStage {get; }
     public TbArcadeScoreShop TbArcadeScoreShop {get; }
+    public TbSurvivorRule TbSurvivorRule {get; }
+    public TbSurvivorUpgrade TbSurvivorUpgrade {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -76,6 +78,8 @@ public partial class Tables
         TbArcadeWeaponUpgrade = new TbArcadeWeaponUpgrade(loader("tbarcadeweaponupgrade"));
         TbArcadeEarlyStage = new TbArcadeEarlyStage(loader("tbarcadeearlystage"));
         TbArcadeScoreShop = new TbArcadeScoreShop(loader("tbarcadescoreshop"));
+        TbSurvivorRule = new TbSurvivorRule(loader("tbsurvivorrule"));
+        TbSurvivorUpgrade = new TbSurvivorUpgrade(loader("tbsurvivorupgrade"));
         ResolveRef();
     }
     
@@ -111,6 +115,8 @@ public partial class Tables
         TbArcadeWeaponUpgrade.ResolveRef(this);
         TbArcadeEarlyStage.ResolveRef(this);
         TbArcadeScoreShop.ResolveRef(this);
+        TbSurvivorRule.ResolveRef(this);
+        TbSurvivorUpgrade.ResolveRef(this);
     }
 }
 

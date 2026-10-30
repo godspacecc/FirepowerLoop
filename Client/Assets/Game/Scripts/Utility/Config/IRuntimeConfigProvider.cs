@@ -16,6 +16,10 @@ namespace Game
         bool TryGetSlayerMart(out FirepowerLoop.Arcade.ArcadeSlayerMartConfiguration value,out string error)
         { value=null;error="SlayerMart配置不可用";return false; }
 
+        /// <summary>独立幸存者规则，旧提供者缺配置明确拒绝。</summary>
+        bool TryGetSurvivor(out FirepowerLoop.Arcade.SurvivorConfiguration value, out string error)
+        { value = null; error = "幸存者配置不可用"; return false; }
+
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {
             value = default;

@@ -1,0 +1,2 @@
+natural elapsed=14.5961305028759 kills=6 score=60 health=100
+keyboard move=5.511919
