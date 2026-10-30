@@ -85,12 +85,12 @@ namespace Game.Editor
                 BuildChannelCandidateBatch();
         }
 
-        [MenuItem("Tools/打包/Android/渠道发行/单机首发候选包完整打包", false, 191)]
+        [MenuItem("Tools/打包/Android/渠道发行/打单机包", false, 191)]
         private static void BuildOfflineSinglePlayerCandidateMenu()
         {
-            if (Application.isBatchMode || EditorUtility.DisplayDialog("纯离线单机首发",
+            if (Application.isBatchMode || EditorUtility.DisplayDialog("Android 打单机包",
                     "使用独立正式签名和完整内置资源；关闭联机、诊断上传与在线更新，移除联网及自有安装更新权限。不会发布服务器或提交商店。",
-                    "开始单机候选包打包", "取消"))
+                    "开始打单机包", "取消"))
                 BuildOfflineSinglePlayerCandidateBatch();
         }
 
@@ -286,14 +286,14 @@ namespace Game.Editor
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
-                // 本轮只精简联网渠道入口，纯离线候选保留原流程，另行审阅。
-                if (!channel || offlineSinglePlayer)
+                // 正式渠道与单机包均使用专用裁剪构建生成AOT，无需额外预备APK。
+                if (!channel)
                 {
                     timing.Run("BuildPreparatoryPlayer", () => BuildPlayer(context.PreparatoryApkPath, true, channel, offlineSinglePlayer));
                     timing.Run("ValidatePreparatoryAot", ValidateAndroidAotOutput);
                 }
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
-                if (channel && !offlineSinglePlayer) timing.Run("ValidateGeneratedAot", ValidateAndroidAotOutput);
+                if (channel) timing.Run("ValidateGeneratedAot", ValidateAndroidAotOutput);
                 var copied = timing.Run("CopyGeneratedDlls", () => HybridCLRBuildUtility.CopyGeneratedDlls(BuildTarget.Android, false));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
@@ -301,7 +301,7 @@ namespace Game.Editor
                 var package = timing.Run("BuildAndroidBuiltinPackage", () => BuildPackageOrThrow(version));
                 timing.Run("ValidateAndroidBuiltinPackage", () => ValidateBuiltinPackage(package.OutputPackageDirectory, version));
                 // 构建前冻结完整内置资源，防止最终APK与构建后的可变目录一起漂移。
-                var builtinSnapshot = channel && !offlineSinglePlayer
+                var builtinSnapshot = channel
                     ? timing.Run("CaptureChannelBuiltin", () => PcBuiltinResourceValidator.Capture(YooAssetBuildUtility.GetStreamingAssetsDirectory(), version))
                     : null;
                 string appVersion = timing.Run("BuildFinalApk", () =>
@@ -318,9 +318,9 @@ namespace Game.Editor
                 }
                 if (channel)
                 {
-                    string reportDirectory = offlineSinglePlayer ? context.BatchDirectory : Path.Combine(
+                    string reportDirectory = Path.Combine(
                         Directory.GetParent(Application.dataPath).Parent.FullName, "Backup", "Artifacts",
-                        "AndroidChannelBuild-" + Path.GetFileName(context.BatchDirectory));
+                        (offlineSinglePlayer ? "AndroidSinglePlayerBuild-" : "AndroidChannelBuild-") + Path.GetFileName(context.BatchDirectory));
                     string reportPath = Path.Combine(reportDirectory, offlineSinglePlayer ? "offline-apk-check.json" : "channel-apk-check.json");
                     string report = timing.Run("InspectChannelApk", () => offlineSinglePlayer ? AndroidChannelBuildUtility.InspectOfflineAndSave(context.FinalApkPath, reportPath) :
                         AndroidChannelBuildUtility.InspectAndSave(context.FinalApkPath, reportPath, true));
@@ -352,7 +352,7 @@ namespace Game.Editor
                     "Android 构建失败",
                     BuildWorkflowUtility.FormatFailure(timing, exception.Message,
                         finalApkValidated ? context.FinalApkPath : null) +
-                    (channel && !offlineSinglePlayer && finalApkValidated
+                    (channel && finalApkValidated
                         ? "\nAPK保留供排查，不代表全部检查通过。资源、签名或配置不正确须重打；仅检查工具或证书策略配置错误可修复后检查现有APK。"
                         : ""));
                 throw;
