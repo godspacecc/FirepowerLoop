@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>独立幸存者战斗权威；不进入闯关节点和存档事务。</summary>
-    public sealed class SurvivorSystem : AbstractSystem
+    public sealed partial class SurvivorSystem : AbstractSystem
     {
         // 本局依赖及运行实体只由本系统创建和释放。
         private SurvivorConfiguration config;
@@ -55,6 +55,7 @@ namespace Game
             try {
                 var provider=this.GetUtility<IRuntimeConfigProvider>();
                 if(!provider.TryGetSurvivor(out config,out error)||!provider.TryGetArcadeCatalog(out catalog,out error)||!provider.TryGetEnemy(config.EnemyId,out enemyConfig,out error))return false;
+                if(!PrepareEnemyRoster(out error))return false;
                 layout=catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId);
                 weapon=catalog.Weapons.Single(x=>x.Id==config.WeaponId);
                 var support=catalog.SupportVisuals.Single(x=>x.ProductId=="arcade.support.drone");
@@ -176,11 +177,16 @@ namespace Game
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
             if(spawnClock<=0){Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             navigation.SetTarget(player);
-            foreach(var e in enemies.Values){if(FirepowerLoop.Arcade.ArcadeOutsideEntryRules.Advance(ref e.OutsideEntry,dt,e.Speed,out var entryPosition))e.Position=new Vector2(entryPosition.X,entryPosition.Y);else e.Position=navigation.Move(e.Position,player,e.Speed*dt);if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius){m.Health=Math.Max(0,m.Health-e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}}
+            TickEnemies(dt);
             Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
-            foreach(var e in enemies.Values)view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth);
+            foreach(var e in enemies.Values)
+            {
+                view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
+                if(FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
+                    view.SetEnemyMelee(e.Id,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining,(player-e.Position).normalized);
+            }
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
                 else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
@@ -191,6 +197,9 @@ namespace Game
         private void Spawn()
         {
             if(SurvivorCombatRules.SpawnBudget(enemies.Count,config.MaxAliveEnemies,1)==0)return;
+            if(enemyRoster==null&&!PrepareEnemyRoster(out var rosterError)){LastError=rosterError;Model.Paused=true;input.Disable();Publish();return;}
+            var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
+            var selected=enemyConfigs[choice.EnemyId];
             for(int attempt=0;attempt<layout.Entries.Count;attempt++){
                 spawnIndex=(spawnIndex+1)%layout.Entries.Count;
                 // 幸存者使用同一配置走廊，入场完成后才交给场内距离场。
@@ -206,8 +215,8 @@ namespace Game
                     (x,z)=>view.IsArenaSpawnHidden(new Vector2(x,z),catalog.Rule.EnemyContactRadius),out outsideEntry))continue;
                 var position=new Vector2(outsideEntry.StartX,outsideEntry.StartZ);
                 if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
-                double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,enemyConfig.MaxHP*(1+minutes*config.EnemyHealthGrowthPerMinute));
-                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=config.EnemyId,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,enemyConfig.AttackDamage*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=enemyConfig.MoveSpeed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
+                double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,selected.MaxHP*choice.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute));
+                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
             }
         }
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>

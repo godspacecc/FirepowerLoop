@@ -361,6 +361,12 @@ namespace Game
                 foreach (var member in group.Members)
                     if (!string.IsNullOrWhiteSpace(member.EnemyId))
                         enemyIds.Add(member.EnemyId);
+            // 独立模式敌池同样属于入场准备，不能依赖它恰好出现在闯关敌群里。
+            if(provider.HasSurvivorEnemyRoster)
+            {
+                if(!provider.TryGetSurvivorEnemyRoster(out var roster,out var rosterError))return FailPrepared(rosterError);
+                foreach(var entry in roster.Entries)enemyIds.Add(entry.EnemyId);
+            }
             foreach (var enemyId in enemyIds)
             {
                 if (!provider.TryGetEnemy(enemyId, out var config, out var configError))

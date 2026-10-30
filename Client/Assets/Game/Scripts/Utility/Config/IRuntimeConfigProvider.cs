@@ -23,6 +23,11 @@ namespace Game
         bool TryGetSurvivor(out FirepowerLoop.Arcade.SurvivorConfiguration value, out string error)
         { value = null; error = "幸存者配置不可用"; return false; }
 
+        /// <summary>正式数据源要求完整敌池；旧提供者不伪造新配置。</summary>
+        bool HasSurvivorEnemyRoster => false;
+        bool TryGetSurvivorEnemyRoster(out SurvivorEnemyRoster value,out string error)
+        {value=null;error="幸存者敌池配置不可用";return false;}
+
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {
             value = default;

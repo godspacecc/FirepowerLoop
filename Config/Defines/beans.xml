@@ -683,4 +683,14 @@
         <var name="CapsuleCount" type="int"/>
         <var name="Data" type="string"/>
     </bean>
+    <!-- 幸存者独立敌池：只覆盖本模式倍率，不修改闯关敌人原值。 -->
+    <bean name="SurvivorEnemyConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="EnemyId" type="string#ref=TbEnemy"/>
+        <var name="UnlockSeconds" type="float"/>
+        <var name="Weight" type="int"/>
+        <var name="HealthMultiplier" type="float"/>
+        <var name="DamageMultiplier" type="float"/>
+        <var name="SpeedMultiplier" type="float"/>
+    </bean>
 </beans>

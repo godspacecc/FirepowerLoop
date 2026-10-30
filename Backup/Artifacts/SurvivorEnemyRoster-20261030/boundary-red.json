@@ -1,0 +1,35 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 4,
+      "PassedTests": 3,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:06.5829899"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApproachingExactMeleeBoundaryStillStartsAndHits",
+        "Status": "Failed",
+        "Duration": "00:00:01.6200000",
+        "Message": "  浮点边界不能让敌人永久站住\r\n  Expected: True\r\n  But was:  False\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HiddenSpawnFailureAndAliveBudgetDoNotCreateEnemies",
+        "Status": "Passed",
+        "Duration": "00:00:01.3330000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnUsesUnlockedRosterAndPerModeStats",
+        "Status": "Passed",
+        "Duration": "00:00:01.2020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ZombieGrabDamagesAfterWindupAndCancelsOutOfRange",
+        "Status": "Passed",
+        "Duration": "00:00:01.1500000"
+      }
+    ]
+  }
+}

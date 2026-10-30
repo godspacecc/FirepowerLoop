@@ -1,0 +1,39 @@
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using System.IO;using Game;
+public class Script {public static object Main(){
+var scene=EditorSceneManager.NewPreviewScene();var root=new GameObject("SurvivorEnemyCandidatePreview");SceneManager.MoveGameObjectToScene(root,scene);root.SetActive(false);RenderTexture rt=null;Material mat=null;
+try{
+string[] names={"GrayboxPlayer","ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeEnemyArcher","ArcadeEnemyBrute"};
+var actors=new GameObject[5];var anims=new Animator[5];var bounds=new string[5];var localPositions=new Vector3[5];var localRotations=new Quaternion[5];
+for(int i=0;i<5;i++){
+actors[i]=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/"+names[i]+".prefab"),root.transform);
+actors[i].transform.position=new Vector3((i-2)*2.5f,0,0);actors[i].transform.rotation=Quaternion.Euler(0,155,0);
+foreach(var b in actors[i].GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+foreach(var nav in actors[i].GetComponentsInChildren<UnityEngine.AI.NavMeshAgent>(true))nav.enabled=false;
+foreach(var canvas in actors[i].GetComponentsInChildren<Canvas>(true))canvas.gameObject.SetActive(false);
+anims[i]=actors[i].GetComponentInChildren<Animator>(true);anims[i].enabled=true;anims[i].cullingMode=AnimatorCullingMode.AlwaysAnimate;
+}
+root.SetActive(true);
+for(int i=0;i<5;i++){
+if(i==0){var presenter=actors[i].GetComponent<CharacterWeaponPresenter>();if(!presenter.SetWeaponId("arcade.weapon.basic"))throw new System.Exception(presenter.LastError);anims[i]=presenter.BodyAnimator;anims[i].enabled=true;anims[i].cullingMode=AnimatorCullingMode.AlwaysAnimate;var view=actors[i].GetComponent<PlayerView>();view.SetSharedWeaponAnimationActive(true);view.SetArcadePresentationActive(true);}
+else {var view=actors[i].GetComponent<EnemyView>();view.SetPresentationVariant(1);view.SetWeaponPresentation(1);}
+anims[i].applyRootMotion=false;anims[i].Rebind();anims[i].Update(0);localPositions[i]=anims[i].transform.localPosition;localRotations[i]=anims[i].transform.localRotation;
+var bb=new Bounds(actors[i].transform.position,Vector3.zero);foreach(var renderer in actors[i].GetComponentsInChildren<Renderer>())bb.Encapsulate(renderer.bounds);bounds[i]=names[i]+" bounds="+bb.size;
+}
+var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.transform.SetParent(root.transform);floor.transform.position=new Vector3(0,-.12f,0);floor.transform.localScale=new Vector3(16,.1f,5);mat=new Material(Shader.Find("Universal Render Pipeline/Lit"));mat.color=new Color(.13f,.18f,.21f);floor.GetComponent<Renderer>().sharedMaterial=mat;
+var lo=new GameObject("Light");lo.transform.SetParent(root.transform);lo.transform.rotation=Quaternion.Euler(40,-30,0);lo.AddComponent<Light>().type=LightType.Directional;lo.GetComponent<Light>().intensity=1.8f;
+var co=new GameObject("Camera");co.transform.SetParent(root.transform);var cam=co.AddComponent<Camera>();cam.cameraType=CameraType.Preview;cam.scene=scene;cam.orthographic=true;cam.orthographicSize=3.6f;cam.transform.position=new Vector3(0,5,-11);cam.transform.LookAt(new Vector3(0,1,0));cam.backgroundColor=new Color(.055f,.075f,.1f);cam.clearFlags=CameraClearFlags.SolidColor;rt=new RenderTexture(1200,600,24);cam.targetTexture=rt;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorEnemyRoster-20261030/frames";Directory.CreateDirectory(dir);
+for(int f=0;f<60;f++){
+for(int i=0;i<5;i++){
+if(i==0){var v=actors[i].GetComponent<PlayerView>();v.SetMovementSpeed(f<36?2.2f:0);v.SetMovementDirection(Vector3.forward);if(f>=36&&f%5==0)v.PlayProjectileFireFeedback();}
+else {anims[i].SetFloat("MoveSpeed",f<36?(i==2?3.06f:2.2f):0);anims[i].Play(f<36?"Base Layer.Run":(i==1||i==2||i==3)?"Base Layer.Idle":"Base Layer.Attack",0,(f<36?f:f-36)/12f);}
+
+anims[i].Update(i==0?1f/12:0);if(i>0){anims[i].transform.localPosition=localPositions[i];anims[i].transform.localRotation=localRotations[i];}
+if(i==1||i==2){var ev=actors[i].GetComponent<EnemyView>();ev.TickCombatFeedback(1f/12);float phase=((f-36)%12)/12f;ev.SetMeleeAttack(.4f,f>=36&&phase<.4f?.4f-phase:0,f>=36&&phase>=.4f?.95f-phase:0,actors[i].transform.forward);ev.LateTickCombatFeedback();}
+actors[i].transform.position=new Vector3((i-2)*2.5f,0,f<36?Mathf.Sin(f/36f*Mathf.PI)*.35f:0);
+}
+cam.Render();RenderTexture.active=rt;var tex=new Texture2D(1200,600,TextureFormat.RGB24,false);tex.ReadPixels(new Rect(0,0,1200,600),0,0);tex.Apply();File.WriteAllBytes(Path.Combine(dir,f.ToString("D3")+".png"),tex.EncodeToPNG());Object.DestroyImmediate(tex);
+}
+return bounds;
+}finally{RenderTexture.active=null;if(rt!=null)Object.DestroyImmediate(rt);EditorSceneManager.ClosePreviewScene(scene);if(mat!=null)Object.DestroyImmediate(mat);}
+}}

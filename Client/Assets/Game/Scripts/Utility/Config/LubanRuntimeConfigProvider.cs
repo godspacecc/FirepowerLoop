@@ -308,6 +308,15 @@ namespace Game
             catch (Exception exception) { error = "幸存者配置无效: " + exception.Message; return false; }
         }
 
+        public bool HasSurvivorEnemyRoster => true;
+        /// <summary>每次创建本局敌池，不能把上一局成功出生的精英时钟缓存到下一局。</summary>
+        public bool TryGetSurvivorEnemyRoster(out SurvivorEnemyRoster value,out string error)
+        {
+            value=null;
+            try{value=SurvivorEnemyRoster.FromTables(cachedTables??tablesFactory());error=null;return true;}
+            catch(Exception exception){error="幸存者敌池无效: "+exception.Message;return false;}
+        }
+
         public bool TryGetSlayerChallenge(out FirepowerLoop.Arcade.ArcadeSlayerChallengeConfiguration value,out string error)
         {value=null;if(!EnsureValid(out error))return false;value=slayerChallenge;return value!=null;}
 

@@ -44,4 +44,5 @@
     <table name="TbSurvivorUpgrade" value="SurvivorUpgradeConfig" input="survivor_upgrade.csv" group="e"/>
     <table name="TbSurvivorWeaponLevel" value="SurvivorWeaponLevelConfig" input="survivor_weapon_level.csv" group="e"/>
     <table name="TbArcadeDockHitPose" value="ArcadeDockHitPoseConfig" input="arcade_dock_hit_pose.csv" group="e"/>
+    <table name="TbSurvivorEnemy" value="SurvivorEnemyConfig" input="survivor_enemy.csv" group="e"/>
 </tables>

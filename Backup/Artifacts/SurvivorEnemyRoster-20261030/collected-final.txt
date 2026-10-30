@@ -1,0 +1,4 @@
+tbsurvivorenemy.bytes | Assets/Game/Config/tbsurvivorenemy.bytes | startup | sourceDependencies=1
+Prefabs/Characters/ArcadeZombieShambler | Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab | arcade | sourceDependencies=60
+Prefabs/Characters/ArcadeZombieGaunt | Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab | arcade | sourceDependencies=60
+Prefabs/Characters/ArcadeEnemyBasic | Assets/Game/Prefabs/Characters/ArcadeEnemyBasic.prefab | arcade | sourceDependencies=171

@@ -104,6 +104,21 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>独立敌池及它实际请求的两类僵尸必须进入正式收集，不能只查闯关表。</summary>
+        [Test] public void SurvivorRosterDependenciesAreCollectedBeforeEntry()
+        {
+            AssertTags("tbsurvivorenemy.bytes","startup");
+            var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes("Assets/Game/Config/"+n+".bytes"))));
+            Assert.That(provider.TryGetSurvivorEnemyRoster(out var roster,out var error),Is.True,error);
+            var assets=CollectAssets().Cast<object>().ToDictionary(a=>(string)Read(a,"Address"),StringComparer.Ordinal);
+            foreach(var row in roster.Entries)
+            {
+                Assert.That(provider.TryGetEnemy(row.EnemyId,out var enemy,out error),Is.True,error);
+                Assert.That(assets.ContainsKey(enemy.PrefabAddress),Is.True,enemy.PrefabAddress);
+                Assert.That(Tags(assets[enemy.PrefabAddress]),Does.Contain("arcade"));
+            }
+        }
+
         private static void AssertTags(string address, string tag) => Assert.That(Tags(Find(address)), Does.Contain(tag), address);
         private static object Read(object asset, string name) => asset.GetType().GetProperty(name).GetValue(asset);
         private static IEnumerable Tags(object asset) => (IEnumerable)Read(asset, "AssetTags");
