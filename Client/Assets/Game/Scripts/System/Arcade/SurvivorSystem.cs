@@ -202,12 +202,12 @@ namespace Game
                 var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=config.EnemyId,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,enemyConfig.AttackDamage*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=enemyConfig.MoveSpeed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
             }
         }
-        /// <summary>只对射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
+        /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
         private void Fire()
         {
             if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;var candidates=enemies.Values.ToArray();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
-            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>!Blocked(player,e.Position)).ToArray());
+            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>view.IsArenaTargetVisible(e.Position)&&!Blocked(player,e.Position)).ToArray());
             if(target==0)return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
@@ -217,7 +217,7 @@ namespace Game
             int levelNumber=Model.Loadout?.LevelOf("Drone")??0;if(levelNumber==0)return;
             var level=config.WeaponLevel("Drone",levelNumber);droneFireClock-=dt;
             dronePosition=Vector2.Lerp(dronePosition,player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ),1-Mathf.Exp(-12*dt));
-            var target=enemies.Values.Where(e=>e.Health>0&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
+            var target=enemies.Values.Where(e=>e.Health>0&&view.IsArenaTargetVisible(e.Position)&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
             if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&bullets.Count<config.MaxProjectiles){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
             view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
         }

@@ -142,6 +142,17 @@ namespace Game.Tests
             while(true){model.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);model.State.AddExperience(config.InitialExperienceThreshold);if(model.State.Offer(eligible,seed++).Contains(id))break;Assert.That(seed,Is.LessThan(100));}
             Assert.That(system.Choose(0,id),Is.True);Assert.That(model.Health,Is.EqualTo(20+model.MaximumHealth-config.PlayerMaxHealth));Assert.That(model.Health,Is.LessThan(model.MaximumHealth));
         }
+        [Test] public void AutoWeaponsWaitUntilTargetIsVisible()
+        {
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=100,MaxHealth=100,Position=new Vector2(2,0)});
+            model.Loadout.TryUpgrade("Drone",5);
+            Set("droneVisual",new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,"",false,Vector3.zero,0,0,0,0,0,0));
+            var bullets=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+            view.TargetVisible=false;Call("Fire");Call("TickDrone",.01f);
+            Assert.That(bullets,Is.Empty,"看不到敌人时两种自动武器都应等待");
+            view.TargetVisible=true;Call("Fire");Call("TickDrone",.01f);
+            Assert.That(bullets.Count,Is.EqualTo(2),"进入画面后步枪和无人机都应恢复攻击");
+        }
         private void KillOne()
         {
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=1,MaxHealth=1,Position=new Vector2(1,0)});
@@ -175,6 +186,8 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool TargetVisible=true;
+            public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
             public int PlayerWrites,Ends;

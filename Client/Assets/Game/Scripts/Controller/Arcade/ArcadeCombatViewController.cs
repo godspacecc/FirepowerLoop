@@ -11,6 +11,8 @@ namespace Game
     public interface IArcadeCombatViewPort : IUtility
     {
         bool IsActive { get; }
+        /// <summary>自动武器只锁定已进入画面的目标；端口未提供可见性时安全停火。</summary>
+        bool IsArenaTargetVisible(Vector2 position) => false;
         /// <summary>相机准备事务不拥有时长；未支持的表现端口拒绝进入。</summary>
         void Begin(int arenaNumber, float arenaHalfWidth, float arenaHalfHeight,
             IReadOnlyList<ArcadeObstacleDefinition> obstacles);
@@ -606,6 +608,16 @@ namespace Game
             PlayBombVisual(position);
             var worldPosition = mapRoot.TransformPoint(new Vector3(position.x, 0.75f, position.y));
             Game.Interface.GetSystem<AudioSystem>()?.PlaySoundAt("ArcadeBombExplosion", worldPosition, 40f, 30);
+        }
+
+        /// <summary>按正式战场坐标投影目标身体，画面四边留出5%余量，避免刚露边就被击杀。</summary>
+        public bool IsArenaTargetVisible(Vector2 position)
+        {
+            var camera = Camera.main;
+            if (mapRoot == null || camera == null || !camera.isActiveAndEnabled) return false;
+            var point = camera.WorldToViewportPoint(mapRoot.TransformPoint(new Vector3(position.x, .8f, position.y)));
+            return point.z >= camera.nearClipPlane && point.z <= camera.farClipPlane &&
+                point.x >= .05f && point.x <= .95f && point.y >= .05f && point.y <= .95f;
         }
 
         public bool TryGetPlayerPosition(out Vector2 position)
