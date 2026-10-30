@@ -50,7 +50,7 @@ namespace Game
 
     public sealed class LocalizedTextScannerWindow : EditorWindow
     {
-        private const string MenuPath = "Tools/本地化/扫描本地化文本";
+        private const string MenuPath = "Tools/本地化/检查界面本地化";
         private const string DefaultLanguageCode = "zh-CN";
         private static readonly Regex CSharpStringRegex =
             new Regex("\"(?<text>(?:\\\\.|[^\"\\\\])*)\"", RegexOptions.Compiled);
@@ -59,11 +59,13 @@ namespace Game
 
         private readonly List<LocalizedTextScanCandidate> candidates = new List<LocalizedTextScanCandidate>();
         private Vector2 scrollPosition;
+        // 明确区分尚未检查、运行态阻止、失败及完整检查结果。
+        private string scanStatus = "尚未检查";
 
         [MenuItem(MenuPath)]
         public static void Open()
         {
-            var window = GetWindow<LocalizedTextScannerWindow>("多语言文本扫描");
+            var window = GetWindow<LocalizedTextScannerWindow>("检查界面本地化");
             window.Scan();
         }
 
@@ -127,21 +129,19 @@ namespace Game
         private void OnGUI()
         {
             EditorGUILayout.BeginHorizontal();
-            if (GUILayout.Button("扫描", GUILayout.Width(96f)))
+            using (new EditorGUI.DisabledScope(EditorApplication.isPlayingOrWillChangePlaymode))
             {
-                Scan();
+                if (GUILayout.Button("检查", GUILayout.Width(96f)))
+                    Scan();
             }
-
-            if (GUILayout.Button("加入多语言组件到选中项", GUILayout.Width(180f)))
-            {
-                AddSelectedComponentTexts();
-            }
+            EditorGUILayout.LabelField(scanStatus);
 
             GUILayout.Label($"候选 {candidates.Count} 条");
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.HelpBox(
-                "场景和 Prefab TMP 文本可一键加入 LocalizedText 组件。代码字符串只作为报告显示，需要后续改为 Loc.T(...)。",
+                "只读检查：当前已打开场景的 TMP UI 文本、Assets/Game/Prefabs/UI 下的 Prefab，以及 Assets/Game/Scripts 下代码。\n" +
+                "代码中文由简单正则提取，可能包括日志和注释，仅作人工排查线索；候选包含正常的可读 Key，不等于错误数量。运行中不能检查。",
                 MessageType.Info);
 
             scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
@@ -157,9 +157,8 @@ namespace Game
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
-            candidate.Selected = EditorGUILayout.Toggle(candidate.Selected, GUILayout.Width(20f));
             GUILayout.Label(candidate.Source.ToString(), GUILayout.Width(52f));
-                    GUILayout.Label(candidate.CanAddComponent ? "可加入" : GetStatus(candidate), GUILayout.Width(96f));
+            GUILayout.Label(GetStatus(candidate), GUILayout.Width(96f));
             EditorGUILayout.EndHorizontal();
 
             EditorGUILayout.LabelField("文本", candidate.Text);
@@ -172,42 +171,32 @@ namespace Game
             EditorGUILayout.EndVertical();
         }
 
+        /// <summary>只读收集完整结果；运行态不执行，异常时丢弃部分结果以免误认为检查完成。</summary>
         private void Scan()
         {
             candidates.Clear();
-            candidates.AddRange(ScanOpenSceneObjects());
-            candidates.AddRange(ScanPrefabAssets());
-            candidates.AddRange(ScanCodeStrings());
-            Repaint();
-            Debug.Log($"[LocalizedTextScanner] 扫描完成，候选 {candidates.Count} 条。");
-        }
-
-        private void AddSelectedComponentTexts()
-        {
-            var changedCount = 0;
-            foreach (var candidate in candidates.Where(candidate => candidate.Selected && candidate.CanAddComponent))
+            scrollPosition = Vector2.zero;
+            if (EditorApplication.isPlayingOrWillChangePlaymode)
             {
-                if (candidate.Source == LocalizedTextScanSource.Scene)
-                {
-                    if (AddComponentOwnedText(candidate.SceneText, DefaultLanguageCode))
-                    {
-                        changedCount++;
-                    }
-
-                    continue;
-                }
-
-                if (candidate.Source == LocalizedTextScanSource.Prefab &&
-                    AddComponentOwnedTextToPrefab(candidate.AssetPath, candidate.ObjectPath, DefaultLanguageCode))
-                {
-                    changedCount++;
-                }
+                scanStatus = "检查未执行：请退出运行模式后重试。";
+                Repaint();
+                return;
             }
-
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-            Scan();
-            Debug.Log($"[LocalizedTextScanner] 已加入或更新 {changedCount} 处 LocalizedText 组件。");
+            try
+            {
+                candidates.AddRange(ScanOpenSceneObjects());
+                candidates.AddRange(ScanPrefabAssets());
+                candidates.AddRange(ScanCodeStrings());
+                scanStatus = $"检查完成，候选 {candidates.Count} 条，请逐项核查。";
+                Debug.Log($"[LocalizedTextScanner] {scanStatus}");
+            }
+            catch (Exception exception)
+            {
+                candidates.Clear();
+                scanStatus = $"检查失败，结果已清空：{exception.Message}";
+                Debug.LogError($"[LocalizedTextScanner] {scanStatus}");
+            }
+            Repaint();
         }
 
         private static IReadOnlyList<LocalizedTextScanCandidate> ScanOpenSceneObjects()
@@ -236,9 +225,7 @@ namespace Game
             {
                 var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
                 if (prefab == null)
-                {
-                    continue;
-                }
+                    throw new InvalidDataException($"无法读取Prefab：{prefabPath}");
 
                 foreach (var text in prefab.GetComponentsInChildren<TextMeshProUGUI>(true))
                 {
@@ -398,27 +385,6 @@ namespace Game
             return true;
         }
 
-        private static bool AddComponentOwnedTextToPrefab(string prefabPath, string objectPath, string languageCode)
-        {
-            var prefabRoot = PrefabUtility.LoadPrefabContents(prefabPath);
-            try
-            {
-                var target = FindTransformByPath(prefabRoot.transform, objectPath);
-                var text = target != null ? target.GetComponent<TextMeshProUGUI>() : null;
-                if (!AddComponentOwnedText(text, languageCode))
-                {
-                    return false;
-                }
-
-                PrefabUtility.SaveAsPrefabAsset(prefabRoot, prefabPath);
-                return true;
-            }
-            finally
-            {
-                PrefabUtility.UnloadPrefabContents(prefabRoot);
-            }
-        }
-
         private static string GetTransformPath(Transform root, Transform target)
         {
             var parts = new Stack<string>();
@@ -437,28 +403,6 @@ namespace Game
             return string.Join("/", parts);
         }
 
-        private static Transform FindTransformByPath(Transform root, string path)
-        {
-            if (root == null || string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
-
-            var parts = path.Split('/');
-            var current = root;
-            var startIndex = parts.Length > 0 && parts[0] == root.name ? 1 : 0;
-            for (var index = startIndex; index < parts.Length; index++)
-            {
-                current = current.Find(parts[index]);
-                if (current == null)
-                {
-                    return null;
-                }
-            }
-
-            return current;
-        }
-
         private static string GetStatus(LocalizedTextScanCandidate candidate)
         {
             if (candidate.Source == LocalizedTextScanSource.Code)
@@ -472,7 +416,7 @@ namespace Game
                 case LocalizedTextScanStatus.ReadableKeyMode: return "可读 Key";
                 case LocalizedTextScanStatus.PreviewTextMismatch: return "预览不一致";
                 case LocalizedTextScanStatus.KeyModeInvalid: return "Key 模式异常";
-                case LocalizedTextScanStatus.ChineseText: return candidate.HasLocalizedText ? "已有组件" : "不可加入";
+                case LocalizedTextScanStatus.ChineseText: return candidate.HasLocalizedText ? "已有组件" : "中文待核查";
                 default: return "不可加入";
             }
         }
