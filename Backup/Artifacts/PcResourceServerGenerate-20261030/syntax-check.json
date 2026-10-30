@@ -1,0 +1,10 @@
+{
+  "CheckedFiles": [
+    "Client/Assets/Editor/Build/BuildUtility.cs",
+    "Client/Assets/Editor/YooAsset/ResourceServerPublishUtility.cs",
+    "Client/Assets/Tests/EditMode/Flow/ResourceServerPublishTests.cs"
+  ],
+  "UnityTestsRun": false,
+  "SyntaxErrors": [],
+  "UnityCompilationRun": false
+}

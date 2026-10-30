@@ -75,7 +75,7 @@ namespace Game.Editor
             StartResourceServerFromLatestPackage();
         }
 
-        [MenuItem("Tools/服务器/PC/发布资源服", false, 201)]
+        [MenuItem("Tools/服务器/PC/生成资源服", false, 201)]
         private static void PublishResourceServerMenu()
         {
             var result = ResourceServerPublishUtility.PublishLatestValidPackage();
@@ -901,8 +901,8 @@ namespace Game.Editor
             }
 
             ShowDialog(
-                "资源服发布成功",
-                $"版本: {result.Version}\n源资源: {result.SourcePackageDirectory}\n发布包: {result.BundleDirectory}\n\n请复制整个包到服务器设备并双击启动。");
+                "资源服生成成功",
+                $"版本: {result.Version}\n源资源: {result.SourcePackageDirectory}\n输出目录: {result.BundleDirectory}\n\n仅生成本地资源和服务脚本，未启动、未上传公网；不会继承旧目录的游戏安装器。需要整包更新时，请另行发布匹配安装器。");
         }
 
         private static string CreateVersion()

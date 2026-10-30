@@ -60,11 +60,13 @@ namespace Game.Editor
         public static ResourceServerPublishResult PublishLatestValidPackage()
         {
             var workspaceRoot = GetWorkspaceRoot();
-            return Publish(
+            var result = PublishPackage(
                 Path.Combine(workspaceRoot, "Client", "Bundles", "StandaloneWindows64", PackageName),
                 Path.Combine(workspaceRoot, "Server", "ResourceServer"),
                 Path.Combine(workspaceRoot, "Release", "ResourceServer"),
-                DateTime.Now);
+                DateTime.Now, null, verifyCompleteResources: true);
+            result.Operation = "生成资源服";
+            return result;
         }
 
         public static ResourceServerPublishResult UpdateLatestBundle()
@@ -198,7 +200,8 @@ namespace Game.Editor
             string templateRoot,
             string releaseRoot,
             DateTime timestamp,
-            string requiredVersion)
+            string requiredVersion,
+            bool verifyCompleteResources = false)
         {
             string source = null;
             string target = null;
@@ -227,6 +230,8 @@ namespace Game.Editor
                     return Fail(PublishOperation, "验证源资源", source, releaseRoot, "源 Host 资源校验失败");
                 }
 
+                // PC手动生成入口冻结完整源资源；其他既有入口保持当前校验策略。
+                var snapshot = verifyCompleteResources ? PcBuiltinResourceValidator.CaptureRemote(source, version) : null;
                 Directory.CreateDirectory(releaseRoot);
                 target = FullPath(Path.Combine(releaseRoot, $"ResourceServerBundle_{timestamp:yyyyMMdd_HHmmss}"));
                 EnsureWithin(target, releaseRoot, "发布包目录");
@@ -249,6 +254,9 @@ namespace Game.Editor
 
                 ValidateTemplate(temp);
                 ValidateNoticeFile(Path.Combine(temp, "Notices", "resource-update-notices.json"));
+                // 提交正式目录前核对源与副本，发现缺包、损坏或复制期间变化就清理临时目录。
+                snapshot?.ValidateDirectory(source);
+                snapshot?.ValidateDirectory(tempResources);
                 Directory.Move(temp, target);
                 temp = null;
 

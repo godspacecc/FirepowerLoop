@@ -651,7 +651,7 @@ namespace Game.Tests
             var publishSource = File.ReadAllText(Path.Combine(WorkspaceRoot, "Client/Assets/Editor/YooAsset/ResourceServerPublishUtility.cs"));
 
             Assert.That(buildSource, Does.Contain("Tools/服务器/PC/启动资源服"));
-            Assert.That(buildSource, Does.Contain("Tools/服务器/PC/发布资源服"));
+            Assert.That(buildSource, Does.Contain("Tools/服务器/PC/生成资源服"));
             Assert.That(buildSource, Does.Contain("Tools/服务器/PC/更新资源服"));
             Assert.That(buildSource, Does.Contain("ResourceServerPublishUtility.PublishLatestValidPackage"));
             Assert.That(buildSource, Does.Contain("ResourceServerPublishUtility.UpdateLatestBundle"));
