@@ -998,11 +998,17 @@ namespace Game.Editor
                 string message = $"版本: {result.Version}\n目录: {result.BundleDirectory}";
                 if (result.Operation == "生成资源服")
                     message += $"\n源资源: {result.SourcePackageDirectory}\n\n仅生成本地资源和服务脚本，未启动、未上传公网；不会继承旧目录的APK更新文件。需要整包更新时，请另行发布匹配APK。";
+                if (result.Operation == "更新资源服")
+                    message += $"\n旧版本: {result.PreviousVersion}\n\n本地资源、支持文件和公告已同步，已有APK更新文件保留；未上传公网或自动重启服务。";
                 ShowDialog(result.Operation + "成功", message);
                 return;
             }
 
-            ShowDialog(result.Operation + "失败", result.Error ?? "未知错误");
+            if (result.Operation == "更新资源服" && result.ResourceFilesSucceeded)
+                ShowDialog("资源已更新，后续同步未完成",
+                    $"旧版本：{result.PreviousVersion}\n当前资源版本：{result.Version}\n目录：{result.BundleDirectory}\n{result.Error}\n\n资源没有回退，已有APK更新文件保留。请修复报错的支持文件或公告配置，再补做同步；重试前确认最新构建资源仍是本次版本。");
+            else
+                ShowDialog(result.Operation + "失败", result.Error ?? "未知错误");
         }
 
         /// <summary>先完成只读前置检查；切平台时登记请求并退出当前调用栈，同平台才创建构建上下文。</summary>

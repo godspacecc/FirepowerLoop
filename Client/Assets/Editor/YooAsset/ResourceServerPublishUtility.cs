@@ -112,9 +112,9 @@ namespace Game.Editor
         public static ResourceServerPublishResult UpdateLatestAndroidBundle()
         {
             var workspaceRoot = GetWorkspaceRoot();
-            return Update(
+            return UpdatePackage(
                 Path.Combine(workspaceRoot, "Client", "Bundles", "Android", PackageName),
-                Path.Combine(workspaceRoot, "Release", "ResourceServer", "Android"));
+                Path.Combine(workspaceRoot, "Release", "ResourceServer", "Android"), null, verifyCompleteResources: true);
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace Game.Editor
                     return Fail(UpdateOperation, "验证旧资源", resourceFiles, bundle, "旧 ResourceFiles 校验失败，阻止更新");
                 }
 
-                // 手动PC更新保留旧资源完整内容证据，供替换失败后的恢复核对。
+                // 手动更新保留旧资源完整内容证据，供替换失败后的恢复核对。
                 var previousSnapshot = verifyCompleteResources ? PcBuiltinResourceValidator.CaptureRemote(resourceFiles, previousVersion) : null;
 
                 if (!TryFindPackage(packageRoot, requiredVersion, out source, out var version, out var findError))
