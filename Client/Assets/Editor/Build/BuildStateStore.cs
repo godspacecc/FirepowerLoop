@@ -86,6 +86,8 @@ namespace Game.Editor
         public long CompletedUtcTicks;
         /// <summary>成功 APK 对应的 Boot 输入指纹；资源更新不得覆盖该宿主基线。</summary>
         public string BootFingerprint;
+        /// <summary>成功Android APK的内容指纹，绑定冻结资料；旧记录缺失时禁止热更新。</summary>
+        public string AndroidApkFingerprint;
     }
 
     /// <summary>

@@ -47,7 +47,7 @@ namespace Game.Editor
             }
         }
 
-        [MenuItem("Tools/打包/Android/Host代码+资源更新", false, 153)]
+        [MenuItem("Tools/打包/Android/构建热更新（代码+资源）", false, 153)]
         private static void BuildHostUpdateMenu()
         {
             BuildHostCodeAndResourcesBatch();
@@ -525,6 +525,7 @@ namespace Game.Editor
 
             var timing = new BuildStageTiming("Android Host 代码+资源更新");
             string retainedPackageDirectory = null;
+            var previous = AndroidEditorOptions.Capture();
             try
             {
                 BuildState state = timing.Run("LoadAndroidHostState", LoadStateOrThrow);
@@ -533,33 +534,47 @@ namespace Game.Editor
                 timing.Run("EnsureAndroidBuildTarget", EnsureAndroidBuildTarget);
                 timing.Run("ValidateAndroidEnvironment", ValidateAndroidEnvironment);
                 timing.Run("ValidateAndroidHostConfig", ValidateAndroidHostConfig);
-                timing.Run("ValidateAndroidAotBaseline", () => ValidateAndroidAotBaseline(state));
+                previous.ApplyTestBuildOptions();
+                var baseline = timing.Run("ValidateApkBaseline", () => AndroidQuickBuildUtility.LoadForHotUpdate(state));
+                string compilationInputs = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
 
                 timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(BuildTarget.Android));
+                string game = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "HybridCLRData", "HotUpdateDlls", "Android", "Game.dll");
+                timing.Run("ValidateGameCompatibility", () => AndroidQuickAotUtility.ValidateGame(
+                    Path.Combine(baseline.AotDirectory, "baseline-game.bytes"), game));
                 var copied = timing.Run("CopyGeneratedDllsFromBaseline", () =>
                     HybridCLRBuildUtility.CopyGeneratedDllsFromBaseline(
                         BuildTarget.Android,
-                        state.LastAndroidAotBaseline.AotDirectory,
-                        state.LastAndroidAotBaseline.RuntimeListPath));
+                        baseline.AotDirectory,
+                        Path.Combine(baseline.AotDirectory, "runtime-list.bytes")));
                 timing.Run("ValidateGeneratedDlls", HybridCLRBuildUtility.ValidateGeneratedDlls);
 
+                string generatedInputs = AndroidQuickBuildUtility.CaptureGeneratedFingerprint();
                 string version = BuildWorkflowUtility.CreateResourceVersion(DateTime.Now);
                 var package = timing.Run("BuildAndroidHostPackage", () => BuildPackageOrThrow(version, false));
-                timing.Run("ValidateAndroidHostPackage", () => ValidateHostPackage(package.OutputPackageDirectory, version));
+                var resources = timing.Run("ValidateCompleteRemotePackage", () => PcBuiltinResourceValidator.CaptureRemote(package.OutputPackageDirectory, version));
                 retainedPackageDirectory = package.OutputPackageDirectory;
                 // 长流程中 Boot 可能被编辑；发布前复核，不能推广与宿主不兼容的资源版本。
                 timing.Run("RevalidateAndroidBootBaselineBeforePublish", () => AndroidBootBuildGuard.ValidateBeforeHotUpdate(
                     state, Directory.GetParent(Application.dataPath).FullName));
+                timing.Run("RevalidateApkBaseline", () => AndroidQuickBuildUtility.LoadForHotUpdate(state));
+                if (compilationInputs != AndroidQuickBuildUtility.CaptureCompilationFingerprint() ||
+                    generatedInputs != AndroidQuickBuildUtility.CaptureGeneratedFingerprint())
+                    throw new InvalidOperationException("热更新期间代码或生成资料变化，请重新生成热更新。");
+                resources.ValidateDirectory(package.OutputPackageDirectory);
                 timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "Host", package.OutputPackageDirectory, null, false));
 
                 if (CiBuildSession.Current != null) { CiBuildSession.Current.Capture(version, package.OutputPackageDirectory); return; }
-                var publish = timing.Run("PublishAndroidResourceServer", ResourceServerPublishUtility.PublishOrUpdateLatestAndroidPackage);
+                var publish = timing.Run("PublishAndroidResourceServer", () =>
+                    ResourceServerPublishUtility.PublishOrUpdateAndroidPackage(package.OutputPackageDirectory, version));
                 if (!publish.Success)
                 {
                     ShowDialog("Android Host 更新已生成，资源服同步失败",
                         BuildWorkflowUtility.FormatFailure(timing, publish.Error, package.OutputPackageDirectory));
                     return;
                 }
+
+                timing.Run("ValidatePublishedResources", () => resources.ValidateDirectory(Path.Combine(publish.BundleDirectory, "ResourceFiles")));
 
                 Debug.Log($"[AndroidBuildUtility] Android Host 更新完成：Version={version}，DLLs={copied.Count}，ResourceServer={publish.BundleDirectory}\n{timing.BuildSummary()}");
                 StartPublishedResourceServer(publish.BundleDirectory, version, timing);
@@ -575,6 +590,7 @@ namespace Game.Editor
             }
             finally
             {
+                previous.Restore();
                 EditorUtility.ClearProgressBar();
                 EndBuild();
             }
@@ -814,7 +830,7 @@ namespace Game.Editor
                 {
                     BuildTarget = BuildTarget.Android.ToString(),
                     AotDirectory = aotDirectory ?? HybridCLRBuildUtility.GetAotDirectory(BuildTarget.Android),
-                    RuntimeListPath = HybridCLRBuildUtility.GetRuntimeListPath(),
+                    RuntimeListPath = string.IsNullOrEmpty(aotDirectory) ? HybridCLRBuildUtility.GetRuntimeListPath() : Path.Combine(aotDirectory, "runtime-list.bytes"),
                     GameDllDirectory = gameDllDirectory,
                     CompletedUtcTicks = completedUtcTicks
                 };
@@ -836,7 +852,8 @@ namespace Game.Editor
                     Version = version,
                     BuildKind = buildKind,
                     CompletedUtcTicks = completedUtcTicks,
-                    BootFingerprint = bootFingerprint
+                    BootFingerprint = bootFingerprint,
+                    AndroidApkFingerprint = AndroidQuickBuildUtility.FingerprintFiles(new[] { playerPath })
                 };
             }
 

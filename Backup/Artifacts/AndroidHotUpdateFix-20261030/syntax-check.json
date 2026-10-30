@@ -1,0 +1,11 @@
+{
+  "UnityCompilationRun": false,
+  "UnityTestsRun": false,
+  "CheckedFiles": [
+    "Client/Assets/Editor/Build/AndroidBuildUtility.cs",
+    "Client/Assets/Editor/Build/AndroidQuickBuildUtility.cs",
+    "Client/Assets/Editor/Build/BuildStateStore.cs",
+    "Client/Assets/Tests/EditMode/Flow/AndroidHostBuildTests.cs"
+  ],
+  "SyntaxErrors": []
+}

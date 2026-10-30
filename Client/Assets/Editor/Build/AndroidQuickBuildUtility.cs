@@ -135,6 +135,30 @@ namespace Game.Editor
             return saved;
         }
 
+        /// <summary>按成功APK绑定的不可变记录加载热更新基线，不使用可能来自失败构建的最新准备索引。</summary>
+        public static AndroidQuickBuildInputs LoadForHotUpdate(BuildState state)
+        {
+            var player = state?.LastAndroidPlayer;
+            var aot = state?.LastAndroidAotBaseline;
+            if (player == null || aot == null || string.IsNullOrEmpty(player.AndroidApkFingerprint) ||
+                !File.Exists(player.PlayerPath) || string.IsNullOrEmpty(aot.AotDirectory))
+                throw new InvalidOperationException("缺少与成功APK绑定的可信基线。" + RebuildHint);
+            if (player.AndroidApkFingerprint != FingerprintFiles(new[] { player.PlayerPath }))
+                throw new InvalidOperationException("成功APK已被替换或损坏。" + RebuildHint);
+            string record = aot.AotDirectory + ".json";
+            if (!File.Exists(record)) throw new InvalidOperationException("APK准备记录原件缺失。" + RebuildHint);
+            var saved = JsonUtility.FromJson<AndroidQuickBuildInputs>(File.ReadAllText(record));
+            if (saved == null || saved.Version != player.Version || saved.Kind != player.BuildKind ||
+                saved.AotDirectory != aot.AotDirectory || saved.BootFingerprint != player.BootFingerprint)
+                throw new InvalidOperationException("APK与准备资料不属于同一批次。" + RebuildHint);
+            ValidateRecord(saved);
+            if (saved.UnityVersion != Application.unityVersion || saved.SettingsFingerprint != SettingsFingerprint() ||
+                saved.HostFingerprint != AndroidQuickAotUtility.HostFingerprint() ||
+                saved.FrozenFingerprint != FingerprintFiles(Directory.GetFiles(saved.AotDirectory)))
+                throw new InvalidOperationException("宿主代码、插件、设置、桥接或冻结资料已变化。" + RebuildHint);
+            return saved;
+        }
+
         /// <summary>在本轮 Game DLL 编译前登记手写输入，正常生成的 HybridCLR 文件单独在资源完成后登记。</summary>
         public static string CaptureCompilationFingerprint() => FingerprintFiles(RuntimeInputs()
             .Where(path => !IsGeneratedSource(path)).ToArray()) + "|" + SettingsFingerprint();

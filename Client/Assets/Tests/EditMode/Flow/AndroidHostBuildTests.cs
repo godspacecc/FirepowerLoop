@@ -67,9 +67,9 @@ namespace Game.Tests
 
             Assert.That(body, Does.Contain("CompileHotUpdateDll(BuildTarget.Android)"));
             Assert.That(body, Does.Contain("CopyGeneratedDllsFromBaseline"));
-            Assert.That(body, Does.Contain("state.LastAndroidAotBaseline"));
+            Assert.That(body, Does.Contain("AndroidQuickBuildUtility.LoadForHotUpdate(state)"));
             Assert.That(body, Does.Contain("BuildPackageOrThrow(version, false)"));
-            Assert.That(body, Does.Contain("PublishOrUpdateLatestAndroidPackage"));
+            Assert.That(body, Does.Contain("PublishOrUpdateAndroidPackage(package.OutputPackageDirectory, version)"));
             Assert.That(body, Does.Not.Contain("BuildPlayer("));
             // 按菜单约定自动启动本次发布包，成功时不弹出启动选择。
             Assert.That(body, Does.Contain("StartPublishedResourceServer(publish.BundleDirectory, version, timing)"));
