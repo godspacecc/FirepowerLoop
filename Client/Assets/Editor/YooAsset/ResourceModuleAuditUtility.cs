@@ -37,12 +37,6 @@ namespace Game.Editor
             StartupTag
         };
 
-        [MenuItem("Tools/打包/资源/构建 Android 模块测量包", false, 188)]
-        private static void BuildAndroidMeasurementPackageMenu()
-        {
-            BuildMeasurementPackage(BuildTargetGroup.Android, BuildTarget.Android);
-        }
-
         [MenuItem("Tools/打包/资源/构建 PC 模块测量包", false, 189)]
         private static void BuildWindowsMeasurementPackageMenu()
         {
