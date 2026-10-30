@@ -94,7 +94,7 @@ namespace ET.Server
                             owner.PositionX,owner.PositionZ,config.Supports,config.Parameter))continue;
                         enemy.LastDamagePlayerId=owner.PlayerId;DamageEnemy(battle,enemy,definition.Damage);changed=true;
                         if(enemy.CurrentHealth<=0){actor.KillEnemy(battle,enemy);continue;}
-                        if((enemy.DockSeaEntry.Active||enemy.DockPassageEntering)||enemy.StageEnemy.Phase>0||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||!string.IsNullOrEmpty(enemy.BossId)||enemy.MoveSpeed<=0)continue;
+                        if((enemy.DockSeaEntry.Active)||enemy.StageEnemy.Phase>0||item.Kind!=SlayerMartSupportKind.Orb||enemy.ContentBossKind>0||!string.IsNullOrEmpty(enemy.BossId)||enemy.MoveSpeed<=0)continue;
                         float dx=enemy.PositionX-owner.PositionX,dz=enemy.PositionZ-owner.PositionZ,length=Math.Max(.001f,MathF.Sqrt(dx*dx+dz*dz));
                         if(dx==0&&dz==0){dz=1;length=1;}
                         float push=config.Parameter("support.orbKnockback");

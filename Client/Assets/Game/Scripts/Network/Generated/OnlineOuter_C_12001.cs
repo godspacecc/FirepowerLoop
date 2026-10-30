@@ -1788,6 +1788,12 @@ namespace ET
         [MemoryPackOrder(33)]
         public float ContentFacingZ { get; set; }
 
+        /// <summary>
+        /// 三方向海路：0右、1左、2上；默认值沿用既有右路方向。
+        /// </summary>
+        [MemoryPackOrder(34)]
+        public int DockSeaEntryDirection { get; set; }
+
         public override void Dispose()
         {
             if (!this.IsFromPool)
@@ -1829,6 +1835,7 @@ namespace ET
             this.ContentAge = default;
             this.ContentFacingX = default;
             this.ContentFacingZ = default;
+            this.DockSeaEntryDirection = default;
 
             ObjectPool.Instance.Recycle(this);
         }

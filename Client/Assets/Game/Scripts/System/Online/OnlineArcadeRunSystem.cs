@@ -467,7 +467,7 @@ namespace Game
                     enemy.PositionZ, enemy.CurrentHealth, enemy.MaxHealth, enemy.TargetPlayerId, enemy.WaveNumber,
                     enemy.BossId, (ArcadeBossPhase)enemy.BossPhase, enemy.BossPhaseSeconds, enemy.ArmorHealth, enemy.SpecialKind, enemy.ContentBossKind, enemy.ContentWarning,enemy.FlameHitRemainingSeconds,new FirepowerLoop.Arcade.ArcadeHerdImpactState{Remaining=enemy.HerdImpactRemaining,DirectionX=enemy.HerdImpactDirectionX,DirectionZ=enemy.HerdImpactDirectionZ},
                     new FirepowerLoop.Arcade.ArcadeStageEnemyState{Phase=enemy.StageEnemyPhase,Age=enemy.StageEnemyAge,OriginX=enemy.StageEnemyOriginX,OriginY=enemy.StageEnemyOriginZ,RevivesRemaining=enemy.StageEnemyRevives},enemy.AttackSequence,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,
-                    new FirepowerLoop.Arcade.ArcadeDockSeaEntryState{Started=enemy.DockSeaEntryStarted,Age=enemy.DockSeaEntryAge,Lane=enemy.DockSeaEntryLane},enemy.ContentAge,enemy.ContentFacingX,enemy.ContentFacingZ));
+                    new FirepowerLoop.Arcade.ArcadeDockSeaEntryState{Started=enemy.DockSeaEntryStarted,Age=enemy.DockSeaEntryAge,Lane=enemy.DockSeaEntryLane,Direction=enemy.DockSeaEntryDirection},enemy.ContentAge,enemy.ContentFacingX,enemy.ContentFacingZ));
             List<OnlineArcadeProjectileSnapshot> projectiles = new(source.Projectiles.Count);
             foreach (OnlineArcadeProjectileInfo projectile in source.Projectiles)
                 projectiles.Add(new OnlineArcadeProjectileSnapshot(projectile.RuntimeId, projectile.OwnerPlayerId,

@@ -1,0 +1,11 @@
+CSV changes only: arena.21.round.1, arena.21.round.2, arena.21.round.3, arena.21.round.4
+Obstacle 25: -17.245|0|3.245|19.49 => X[-20.49,-14], Y[-19.49,19.49]
+Obstacle 26: 0|15.495|20.49|3.995 => X[-20.49,20.49], Y[11.5,19.49]
+Both new obstacles MovementOnly; existing 25 obstacles, movement flags and Version=1 preserved.
+arena.21.round.1: all 11 configured landmarks connected at 1.1m clearance; all 9 three-side landing samples clear at 0.95m radius; left/top/right exterior scan blocked at 0.55m radius.
+arena.21.round.2: all 11 configured landmarks connected at 1.1m clearance; all 9 three-side landing samples clear at 0.95m radius; left/top/right exterior scan blocked at 0.55m radius.
+arena.21.round.3: all 11 configured landmarks connected at 1.1m clearance; all 9 three-side landing samples clear at 0.95m radius; left/top/right exterior scan blocked at 0.55m radius.
+arena.21.round.4: all 11 configured landmarks connected at 1.1m clearance; all 9 three-side landing samples clear at 0.95m radius; left/top/right exterior scan blocked at 0.55m radius.
+ExitX/Y legacy values remain 0/16; runtime GetExitPosition for arena21 uses Entries, so actual three exits are updated entry positions.
+Known retained south boat approach: (6,-12) is walkable outside main rectangle; existing Deck(6,-12,2.5,2.2) is out of current left/top removal scope. This is reported to root for scope decision.
+This is source geometry audit only; formal runtime validation remains with root agent.

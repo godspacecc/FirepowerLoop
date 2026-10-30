@@ -199,7 +199,7 @@ public static class RemainingStagesPreview
             foreach(var mesh in Meshes)if(mesh!=null&&!EditorUtility.IsPersistent(mesh))Object.DestroyImmediate(mesh);Meshes.Clear();foreach(var shader in Shaders)if(shader!=null&&!EditorUtility.IsPersistent(shader))Object.DestroyImmediate(shader);Shaders.Clear();
         }
     }
-    /// <summary>已采用撤板仅移除东侧低位通道，保留水面、立柱及高位栏杆；合并网格已在码头局部空间。</summary>
+    /// <summary>已采用三路撤桥：右侧沿既有低位裁剪，左／上外伸通道按三路候选移除；水面保留。</summary>
     static int RemoveConfirmedDockRightPassage(Mesh combined,bool water)
     {
         if(water)return 0;
@@ -212,7 +212,9 @@ public static class RemainingStagesPreview
                 var a=vertices[triangles[i]];var b=vertices[triangles[i+1]];var c=vertices[triangles[i+2]];
                 bool right=Mathf.Min(a.x,Mathf.Min(b.x,c.x))>=11.999f&&Mathf.Max(a.x,Mathf.Max(b.x,c.x))>12.001f;
                 bool deck=Mathf.Max(a.y,Mathf.Max(b.y,c.y))<.07f;
-                if(right&&deck)removed++;else{keep.Add(triangles[i]);keep.Add(triangles[i+1]);keep.Add(triangles[i+2]);}
+                bool left=Mathf.Max(a.x,Mathf.Max(b.x,c.x))<=-13.999f&&Mathf.Min(a.x,Mathf.Min(b.x,c.x))<-14.001f;
+                bool top=Mathf.Min(a.z,Mathf.Min(b.z,c.z))>=11.499f&&Mathf.Max(a.z,Mathf.Max(b.z,c.z))>11.501f;
+                if(right&&deck||left||top)removed++;else{keep.Add(triangles[i]);keep.Add(triangles[i+1]);keep.Add(triangles[i+2]);}
             }
             combined.SetTriangles(keep,sub,false);
         }

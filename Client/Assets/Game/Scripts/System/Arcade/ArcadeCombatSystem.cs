@@ -915,7 +915,6 @@ namespace Game
             {
                 if (!runtime.Enemies.TryGetValue(enemyIterationIds[index], out var enemy)) continue;
                 if (TickDockSeaEntry(runtime, enemy, deltaTime)) continue;
-                if (TickDockPassageEntry(runtime, enemy, deltaTime)) continue;
                 enemy.MeleeRecoveryRemaining = Mathf.Max(0, enemy.MeleeRecoveryRemaining - deltaTime);
                 if(enemy.HerdImpact.Active){CancelMeleeWindup(enemy,true);continue;}
                 if(SlayerMartStormSpeed(runtime,enemy)==0){CancelMeleeWindup(enemy,true);continue;}
@@ -1238,7 +1237,7 @@ namespace Game
                 if (direction.sqrMagnitude < 0.001f) direction = Vector2.up;
                 var displaced = enemy.Position + direction.normalized * knockbackDistance;
                 // 未上岸的敌人仍可受击，但不能因通用击退夹取瞬间跳到岸内。
-                if (!enemy.DockSeaEntry.Active && !enemy.DockPassageEntering)
+                if (!enemy.DockSeaEntry.Active)
                     enemy.Position = ResolveEnemyPosition(enemy.Position, displaced, catalog.Rule.EnemyContactRadius,
                         ArenaHalfWidth, ArenaHalfHeight, ObstaclesFor(runtime), IslandFor(runtime), arena.Opening.EnemySeaApproachDistance);
                 DamageEnemy(enemy, damage);
@@ -2511,7 +2510,7 @@ namespace Game
         {
             crowdingEnemies.Clear();
             foreach (var enemy in runtime.Enemies.Values)
-                if(enemy.StageEnemy.Phase==0 && !enemy.DockSeaEntry.Active && !enemy.DockPassageEntering)crowdingEnemies.Add(enemy);
+                if(enemy.StageEnemy.Phase==0 && !enemy.DockSeaEntry.Active)crowdingEnemies.Add(enemy);
             if (crowdingEnemies.Count < 2) return;
             crowdingEnemies.Sort(CompareEnemyIds);
             crowdingPositions.Clear();

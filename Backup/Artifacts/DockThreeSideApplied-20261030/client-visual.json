@@ -1,0 +1,88 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":13,\"PassedTests\":13,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:05.0454597\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.5190000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(0)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0100000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(1)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0060000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0050000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateCarrierBindsToSameRestMountAndImmediatelyFollowsClimb\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0370000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Shambler\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0090000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Gaunt\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3430000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\\u0022Bloated\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.3430000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.8130000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0230000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0080000\"},{\"Name\":\"Game.Tests.DockSeaEntryVisualTests.RippleMeshIsReusedAndReleasedWithoutOwningSharedMaterial\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0820000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 13,
+        "PassedTests": 13,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:05.0454597"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb",
+          "Status": "Passed",
+          "Duration": "00:00:00.5190000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(0)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0100000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(1)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.EveryDirectionClimbsFacingItsOwnEdge(2)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0060000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.InvalidAgeCannotShiftVisualRoot",
+          "Status": "Passed",
+          "Duration": "00:00:00.0050000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateCarrierBindsToSameRestMountAndImmediatelyFollowsClimb",
+          "Status": "Passed",
+          "Duration": "00:00:00.0370000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Shambler\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.0090000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Gaunt\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.3430000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.LateJoinSamplesCurrentClimbWithoutMovingCombatRoot(\"Bloated\")",
+          "Status": "Passed",
+          "Duration": "00:00:00.3430000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.8130000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(False)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0230000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.ReuseAfterHideOrDeathRestoresVisualRoot(True)",
+          "Status": "Passed",
+          "Duration": "00:00:00.0080000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryVisualTests.RippleMeshIsReusedAndReleasedWithoutOwningSharedMaterial",
+          "Status": "Passed",
+          "Duration": "00:00:00.0820000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

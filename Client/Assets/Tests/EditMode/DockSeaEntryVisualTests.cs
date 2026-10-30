@@ -39,6 +39,18 @@ namespace Game.Tests
             var upper = lower.parent; var foot = lower.GetComponentsInChildren<Transform>().Single(t => t.name == "Foot.L");
             Assert.That(180 - Vector3.Angle(upper.position - lower.position, foot.position - lower.position), Is.GreaterThan(15), "抓边时腿部应实际收膝");
         }
+        /// <summary>三方向均面向平台收膝攀爬，非法方向或中途换方向不能跳岸。</summary>
+        [TestCase(0)] [TestCase(1)] [TestCase(2)]
+        public void EveryDirectionClimbsFacingItsOwnEdge(int direction)
+        {
+            Spawn();var state=new ArcadeDockSeaEntryState{Started=true,Age=3.4f,Lane=-4.1f,Direction=direction};
+            var forward=ArcadeDockSeaEntryRules.Forward(state);var aim=new Vector3(forward.X,0,forward.Y);
+            view.SetDockSeaEntry(state,aim,Vector3.up);view.LateTickCombatFeedback();
+            Assert.That(Vector3.Dot(actor.transform.forward,aim),Is.GreaterThan(.999f));
+            Assert.That(view.Animator.enabled,Is.False);Assert.That(Quaternion.Angle(visual.localRotation,Quaternion.identity),Is.GreaterThan(30));
+            var before=actor.transform.rotation;state.Direction=(direction+1)%3;state.Age=4f;
+            view.SetDockSeaEntry(state,-aim,Vector3.up);view.LateTickCombatFeedback();Assert.That(Quaternion.Angle(before,actor.transform.rotation),Is.LessThan(.01f));
+        }
         [Test] public void DuplicateOlderAndLocalTicksCannotAdvanceOrAccumulateClimb()
         {
             Spawn(); State(3.4f); view.LateTickCombatFeedback();
@@ -82,13 +94,14 @@ namespace Game.Tests
         [Test] public void ProtocolRoundTripAndReadonlyCopyPreserveCurrentEntry()
         {
             var message = new ET.OnlineArcadeBattleInfo();
-            message.Enemies.Add(new ET.OnlineArcadeEnemyInfo { RuntimeId = 4, EnemyConfigId = "enemy.arcade.zombie.shambler", DockSeaEntryStarted = true, DockSeaEntryAge = 4.2f, DockSeaEntryLane = -4.1f });
+            message.Enemies.Add(new ET.OnlineArcadeEnemyInfo { RuntimeId = 4, EnemyConfigId = "enemy.arcade.zombie.shambler", DockSeaEntryStarted = true, DockSeaEntryAge = 4.2f, DockSeaEntryLane = -4.1f, DockSeaEntryDirection = 2 });
             var decoded = MemoryPackSerializer.Deserialize<ET.OnlineArcadeBattleInfo>(MemoryPackSerializer.Serialize(message));
             var copy = (OnlineArcadeBattleSnapshot)typeof(OnlineArcadeRunSystem).GetMethod("CopyBattle", BindingFlags.NonPublic | BindingFlags.Static).Invoke(null, new object[] { decoded });
             decoded.Enemies[0].DockSeaEntryAge = 0;
             Assert.That(copy.Enemies[0].DockSeaEntry.Started, Is.True);
             Assert.That(copy.Enemies[0].DockSeaEntry.Age, Is.EqualTo(4.2f));
             Assert.That(copy.Enemies[0].DockSeaEntry.Lane, Is.EqualTo(-4.1f));
+            Assert.That(copy.Enemies[0].DockSeaEntry.Direction,Is.EqualTo(2));
         }
         [Test] public void RippleMeshIsReusedAndReleasedWithoutOwningSharedMaterial()
         {

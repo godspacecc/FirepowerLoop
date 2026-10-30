@@ -22,10 +22,8 @@ namespace Game
         /// <summary>消费单调递增的权威进度；重连直达当前姿态，不靠本地时钟补播或重新进海。</summary>
         public void SetDockSeaEntry(ArcadeDockSeaEntryState state, Vector3 forward, Vector3 up)
         {
-            if (animationDead || isCorpse || !state.Started || !DockFinite(state.Age) ||
-                state.Age < 0 || state.Age > ArcadeDockSeaEntryRules.TotalSeconds ||
-                !DockFinite(state.Lane) || Mathf.Min(Mathf.Abs(state.Lane + 3),
-                    Mathf.Min(Mathf.Abs(state.Lane + 4.1f), Mathf.Abs(state.Lane + 5.2f))) > .001f ||
+            if (animationDead || isCorpse || !state.Started || !ArcadeDockSeaEntryRules.Valid(state) ||
+                dockSeaEntry.Started && state.Direction != dockSeaEntry.Direction ||
                 dockSeaEntry.Started && state.Age < dockSeaEntry.Age ||
                 !DockFinite(forward.sqrMagnitude) || !DockFinite(up.sqrMagnitude) ||
                 forward.sqrMagnitude < .001f || up.sqrMagnitude < .001f) return;

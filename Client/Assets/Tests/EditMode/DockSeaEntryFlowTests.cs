@@ -44,7 +44,7 @@ namespace Game.Tests
             Assert.That(Call("SpawnQueuedEnemy", runtime, null), Is.True);
             return runtime.Enemies.Values.OrderBy(e => e.Id).Last();
         }
-        [Test] public void RightPassageStartsAtSeaWhileOtherPassagesStayOnDeck()
+        [Test] public void AllThreePassagesStartAtSeaAndReachWalkableDeck()
         {
             var right = Spawn(2);
             Assert.That(right.Position.x, Is.EqualTo(18.3f).Within(.001f), "右路应从采用版海面位置开始，不能仍直接刷在旧木通道");
@@ -53,7 +53,10 @@ namespace Game.Tests
             foreach (int passage in new[] { 0, 1 })
             {
                 var other = Spawn(passage);
-                Assert.That(layout.IsWalkable(other.Position.x, other.Position.y, catalog.Rule.EnemyContactRadius, 20.5f, 19.5f), Is.True);
+                Assert.That(other.DockSeaEntry.Started,Is.True,"左、上方也必须从海里爬上来");
+                Assert.That(layout.IsWalkable(other.Position.x,other.Position.y,catalog.Rule.EnemyContactRadius,20.5f,19.5f),Is.False);
+                Call("TickDockSeaEntry",runtime,other,6.75f);
+                Assert.That(layout.IsWalkable(other.Position.x,other.Position.y,catalog.Rule.EnemyContactRadius,20.5f,19.5f),Is.True);
             }
             Assert.That(runtime.Enemies.Count, Is.EqualTo(3), "上岸只能改变原出生方式，不能额外生成敌人");
         }

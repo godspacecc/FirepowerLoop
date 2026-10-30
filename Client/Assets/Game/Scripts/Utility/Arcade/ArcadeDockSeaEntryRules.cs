@@ -2,11 +2,13 @@ using System;
 
 namespace FirepowerLoop.Arcade
 {
-    /// <summary>右侧海中进场的瞬时权威状态，随敌人进入快照，不进入轮前节点。</summary>
+    /// <summary>三方向海中进场的瞬时权威状态，随敌人进入快照，不进入轮前节点。</summary>
     public struct ArcadeDockSeaEntryState
     {
         /// <summary>保留来源身份，完成后不让迟到快照重新开始动作。</summary>
         public bool Started;
+        /// <summary>0右、1左、2上；零值保留旧右路语义，快照与重连必须携带方向。</summary>
+        public int Direction;
         /// <summary>活动年龄与固定车道，不由客户端播放时钟推进。</summary>
         public float Age, Lane;
         public bool Active => Started && Age < ArcadeDockSeaEntryRules.TotalSeconds;
@@ -19,26 +21,31 @@ namespace FirepowerLoop.Arcade
         public readonly float X, Height, Tilt;
         public ArcadeDockSeaEntryPose(float x, float height, float tilt) { X = x; Height = height; Tilt = tilt; }
     }
-    /// <summary>单人与服务器共用已确认的右路、抓边/登台时间和站稳位置。</summary>
+    /// <summary>单人与服务器共用已采用三路的抓边/登台时间和站稳位置。</summary>
     public static class ArcadeDockSeaEntryRules
     {
         public const float ClimbSeconds = 5.75f, TotalSeconds = 6.75f;
-        /// <summary>码头左桥和上方通道须走入正式主平台；与既有码头网格中心(-1,0)、尺寸26×23一致。</summary>
-        public static bool TryGetDeckEntryTarget(string theme, int passage, float x, float y, float radius, out ArcadeRegionPoint target)
+        /// <summary>将已采用的右路平面轨迹旋转到左／上岸沿，高度与骨骼动作保持同源。</summary>
+        public static ArcadeRegionPoint Position(ArcadeDockSeaEntryState state)
         {
-            target = default;
-            if (theme != "docks" || passage < 0 || passage > 1 || !Finite(x) || !Finite(y) || !Finite(radius) || radius <= 0) return false;
-            target = new ArcadeRegionPoint(Math.Max(-14f + radius, Math.Min(12f - radius, x)),
-                Math.Max(-11.5f + radius, Math.Min(11.5f - radius, y)));
-            return true;
+            float x = Sample(state.Age).X;
+            return state.Direction == 1 ? new ArcadeRegionPoint(-2f-x,-state.Lane) :
+                state.Direction == 2 ? new ArcadeRegionPoint(-state.Lane-2.2f,x-.5f) : new ArcadeRegionPoint(x,state.Lane);
         }
+        /// <summary>面向对应平台内侧，返回平面单位向量供地图根投影。</summary>
+        public static ArcadeRegionPoint Forward(ArcadeDockSeaEntryState state) => state.Direction == 1 ?
+            new ArcadeRegionPoint(1,0) : state.Direction == 2 ? new ArcadeRegionPoint(0,-1) : new ArcadeRegionPoint(-1,0);
+        /// <summary>拒绝无效方向和车道，避免错误快照把演员投影到其它岸沿。</summary>
+        public static bool Valid(ArcadeDockSeaEntryState state) => state.Direction >= 0 && state.Direction <= 2 &&
+            Finite(state.Age) && state.Age >= 0 && state.Age <= TotalSeconds && Finite(state.Lane) &&
+            Math.Min(Math.Abs(state.Lane+3),Math.Min(Math.Abs(state.Lane+4.1f),Math.Abs(state.Lane+5.2f))) <= .001f;
 
-        /// <summary>原第三通道预算，三条车道与采用版同源。</summary>
+        /// <summary>保留三路原出生预算，每路三条车道与采用版同源。</summary>
         public static bool TryStart(string theme, int passage, int sequence, out ArcadeDockSeaEntryState state)
         {
             state = default;
-            if (theme != "docks" || passage != 2) return false;
-            state = new ArcadeDockSeaEntryState { Started = true, Lane = -3f - (int)((uint)sequence % 3) * 1.1f };
+            if (theme != "docks" || (passage < 0 || passage > 2)) return false;
+            state = new ArcadeDockSeaEntryState { Started = true, Direction = passage == 0 ? 1 : passage == 1 ? 2 : 0, Lane = -3f - (int)((uint)sequence % 3) * 1.1f };
             return true;
         }
         /// <summary>完成帧仍占用进场，下一活动帧才追击；无效/零时间不消耗动作。</summary>

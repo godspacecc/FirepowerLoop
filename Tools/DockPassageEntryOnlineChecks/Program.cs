@@ -12,14 +12,14 @@ World.Instance.AddSingleton(ServerConfig.CreateForValidation("OnlineLocal",n=>Fi
 World.Instance.AddSingleton<TimeInfo>();World.Instance.AddSingleton<ObjectPool>();
 return DockPassageEntryOnlineChecks.Run();
 
-/// <summary>从真实双人战斗、出生、伤害与移动入口检查左桥和上通道入场，不读取玩家存档或启动监听。</summary>
+/// <summary>从真实双人战斗、出生、伤害与移动入口检查三方向海中攀爬入场，不读取玩家存档或启动监听。</summary>
 internal static class DockPassageEntryOnlineChecks
 {
     public static int Run()
     {
         var checks=new (string Name,Action Check)[]{
-            ("BothPassagesImmune",Immune),("BulletAndEvolvedPassThrough",Projectiles),
-            ("CarrierAndArmorPreserved",Carrier),("WalkThenVulnerableOnlyOnce",Finish),
+            ("AllPassagesImmune",Immune),("BulletAndEvolvedPassThrough",Projectiles),
+            ("CarrierAndArmorPreserved",Carrier),("ClimbThenVulnerableOnlyOnce",Finish),
             ("RangedCannotAttackAtEntrance",Ranged),("FreezeAndResume",Freeze),
             ("PushAndCrowdingCannotMoveEntrance",Push),("SeaRouteStillProtected",Sea),("BombRespectsEntryProtection",Bomb)};
         int failures=0;
@@ -42,38 +42,36 @@ internal static class DockPassageEntryOnlineChecks
     private static void Tick(OnlineArcadeRunActor a,float seconds)=>Call("TickEnemies",a,a.Battle,seconds);
     private static void Immune()
     {
-        foreach(int passage in new[]{0,1})for(int round=1;round<=4;round++)
+        foreach(int passage in new[]{0,1,2})for(int round=1;round<=4;round++)
         {var(a,e)=Spawn(passage,0,round);e.SpecialKind=0;e.ArmorHealth=20;
          Call("DamageEnemy",a.Battle,e,10);Call("DamageEnemyFromFlame",a.Battle,e,10);
          Require(e.CurrentHealth==1000&&e.ArmorHealth==20&&e.FlameHitRemainingSeconds==0,"entrance accepted damage");}
     }
     private static void Projectiles()
     {
-        foreach(int passage in new[]{0,1})foreach(var weapon in new[]{"","arcade.weapon.rocket","arcade.weapon.ray","arcade.weapon.spread"})
+        foreach(int passage in new[]{0,1,2})foreach(var weapon in new[]{"","arcade.weapon.rocket","arcade.weapon.ray","arcade.weapon.spread"})
         {var(a,e)=Spawn(passage);Shot(a,e,10,weapon,weapon==""?0:2);
          Require(e.CurrentHealth==1000&&a.Battle.Projectiles.ContainsKey(900),"entrance intercepted "+weapon);}
     }
     private static void Carrier()
     {
-        foreach(int passage in new[]{0,1})
+        foreach(int passage in new[]{0,1,2})
         {var(a,e)=Spawn(passage,1);e.SpecialKind=1;e.CarriedBarrelHealth=100;e.ArmorHealth=20;
          Shot(a,e,1000);Require(e.CarriedBarrelHealth==100&&e.CurrentHealth==1000&&e.ArmorHealth==20&&e.SpecialKind==1,"entrance lost barrel or armor");}
     }
     private static void Finish()
     {
-        foreach(int passage in new[]{0,1})
-        {var(a,e)=Spawn(passage);e.SpecialKind=0;e.MoveSpeed=3;float x=e.PositionX,z=e.PositionZ;
-         Tick(a,.1f);Require(Math.Abs(e.PositionX-x)+Math.Abs(e.PositionZ-z)>.01f,"did not walk from entrance");
-         Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==1000,"early walk vulnerable");
-         for(int i=0;i<100&&e.CurrentHealth==1000;i++){Tick(a,.1f);Call("DamageEnemy",a.Battle,e,1);}
-         Require(e.CurrentHealth==999,"never became vulnerable on deck");
-         float r=ServerConfig.Instance.ArcadeRule.EnemyContactRadius;
-         Require(e.PositionX>=-14+r-.002f&&e.PositionX<=12-r+.002f&&e.PositionZ>=-11.5f+r-.002f&&e.PositionZ<=11.5f-r+.002f,"unlocked outside main deck");
-         e.PositionX=x;e.PositionZ=z;Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==998,"returned to entrance and regained immunity");}
+        foreach(int passage in new[]{0,1,2})
+        {var(a,e)=Spawn(passage);e.SpecialKind=0;e.MoveSpeed=3;
+         Tick(a,5.74f);Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==1000,"climbing vulnerable too early");
+         Tick(a,.01f);Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==999,"climb never became vulnerable");
+         Tick(a,1f);Require(!e.DockSeaEntry.Active,"never finished standing");float x=e.PositionX,z=e.PositionZ;
+         Tick(a,.1f);Require(Math.Abs(e.PositionX-x)+Math.Abs(e.PositionZ-z)>.01f,"landed enemy did not pursue");
+         Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==998,"landed enemy regained immunity");}
     }
     private static void Ranged()
     {
-        foreach(int passage in new[]{0,1})
+        foreach(int passage in new[]{0,1,2})
         {var(a,e)=Spawn(passage);e.MoveSpeed=3;e.AttackRange=100;e.AttackCooldownSeconds=0;e.SpecialKind=0;e.AttackKind=EnemyAttackKind.Projectile;e.ProjectileConfigId=ServerConfig.Instance.Tables.TbEnemy.DataList.First(c=>c.AttackKind==EnemyAttackKind.Projectile).ProjectileConfigId;
          Tick(a,.1f);Require(a.Battle.Projectiles.Count==0&&e.AttackSequence==0&&a.Battle.Players.Values.All(p=>p.CurrentHealth==100),"entrance attacked");
          Tick(a,100f);Require(a.Battle.Projectiles.Count==0&&e.AttackSequence==0,"finish frame attacked");
@@ -81,10 +79,10 @@ internal static class DockPassageEntryOnlineChecks
     }
     private static void Freeze()
     {
-        foreach(int passage in new[]{0,1})
+        foreach(int passage in new[]{0,1,2})
         {var(a,e)=Spawn(passage);e.SpecialKind=0;float x=e.PositionX,z=e.PositionZ;
          foreach(float delta in new[]{0f,-1f,float.NaN,float.PositiveInfinity,float.NegativeInfinity})
-         {Call("TickDockPassageEntry",a.Battle,e,delta);Near(e.PositionX,x,"invalid delta X");Near(e.PositionZ,z,"invalid delta Z");Require(e.DockPassageEntering,"invalid delta ended entry");}
+         {Call("TickDockSeaEntry",a.Battle,e,delta);Near(e.PositionX,x,"invalid delta X");Near(e.PositionZ,z,"invalid delta Z");Require(e.DockSeaEntry.Active,"invalid delta ended entry");}
          e.ContentStunUntil=100;Tick(a,1);Near(e.PositionX,x,"frozen X");Near(e.PositionZ,z,"frozen Z");
          Call("DamageEnemy",a.Battle,e,1);Require(e.CurrentHealth==1000,"frozen entry lost immunity");
          e.ContentStunUntil=0;e.HerdImpact=new ArcadeHerdImpactState{Remaining=1,DirectionX=1};
@@ -97,7 +95,7 @@ internal static class DockPassageEntryOnlineChecks
     }
     private static void Push()
     {
-        foreach(int passage in new[]{0,1})
+        foreach(int passage in new[]{0,1,2})
         {var(a,e)=Spawn(passage);e.SpecialKind=0;float x=e.PositionX,z=e.PositionZ;var b=a.Battle;
          b.EnemyIterationIds.Add(e.RuntimeId);Call("DamageAndKnockbackEnemies",a,b,x-1,z,2f,10,2f,1L);
          Near(e.PositionX,x,"knockback X");Near(e.PositionZ,z,"knockback Z");Require(e.CurrentHealth==1000,"knockback damage");
@@ -119,7 +117,7 @@ internal static class DockPassageEntryOnlineChecks
             if(passage!=0)protectedIds.Add(latest.RuntimeId);
             else
             {
-                Call("TickDockPassageEntry",b,latest,100f);
+                Call("TickDockSeaEntry",b,latest,100f);
                 Require(latest.CanBeAttacked,"bomb fixture enemy never entered deck");
             }
         }

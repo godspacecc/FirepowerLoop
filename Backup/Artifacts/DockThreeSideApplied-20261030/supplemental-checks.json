@@ -1,0 +1,48 @@
+{
+  "roundLayout": {
+    "testClass": "ArcadeRoundLayoutTests",
+    "testMode": "EditMode",
+    "maxTests": 5,
+    "includePassingTests": true,
+    "passed": 5,
+    "failed": 0
+  },
+  "dockVisual": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":3,\"PassedTests\":3,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:01.3660661\"},\"Results\":[{\"Name\":\"Game.Tests.ArcadeDocksVisualTests.ConfirmedDockHasNoActorsCollidersOrBusinessScripts\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0570000\"},{\"Name\":\"Game.Tests.ArcadeDocksVisualTests.EntireDockFollowsOwningMapTransform\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"},{\"Name\":\"Game.Tests.ArcadeDocksVisualTests.EveryMeshMaterialTextureAndShaderIsPersistedWithoutBackupLibraryDependency\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.1570000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 3,
+          "PassedTests": 3,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.3660661"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.ArcadeDocksVisualTests.ConfirmedDockHasNoActorsCollidersOrBusinessScripts",
+            "Status": "Passed",
+            "Duration": "00:00:00.0570000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDocksVisualTests.EntireDockFollowsOwningMapTransform",
+            "Status": "Passed",
+            "Duration": "00:00:00.0040000"
+          },
+          {
+            "Name": "Game.Tests.ArcadeDocksVisualTests.EveryMeshMaterialTextureAndShaderIsPersistedWithoutBackupLibraryDependency",
+            "Status": "Passed",
+            "Duration": "00:00:00.1570000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  }
+}

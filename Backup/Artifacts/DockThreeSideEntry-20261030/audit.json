@@ -1,0 +1,11 @@
+{
+  "frames": 600,
+  "fps": 20,
+  "seconds": 30,
+  "width": 1280,
+  "height": 720,
+  "decode": "passed",
+  "formal_files_checked": 143,
+  "formal_files_changed": [],
+  "source": "temporary scene clones and reused approved animations; three route transforms are preview only, not natural gameplay"
+}

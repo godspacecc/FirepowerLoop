@@ -17,12 +17,8 @@ namespace Game
     {
         /// <summary>码头海路活动状态，回池清零。</summary>
         public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry;
-        /// <summary>左桥/上通道入场保护，首次完整走入主平台后解除，回池清零。</summary>
-        public bool DockPassageEntering;
-        /// <summary>当前入口在主平台内的落点，仅权威移动使用，不进入存档。</summary>
-        public FirepowerLoop.Arcade.ArcadeRegionPoint DockPassageTarget;
         /// <summary>所有命中与锁定入口共用，入场途中不阻挡弹丸或消耗耐久。</summary>
-        public bool CanBeAttacked => !DockPassageEntering && DockSeaEntry.CanBeAttacked;
+        public bool CanBeAttacked => DockSeaEntry.CanBeAttacked;
         /// <summary>当前地图特色敌人的现身及一次重生状态，不写入轮前存档。</summary>
         public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
         /// <summary>当前地图牛撞的权威飞行与落地僵直；对象回池必须归零。</summary>
@@ -85,7 +81,6 @@ namespace Game
         public void Reset()
         {
             DockSeaEntry = default;
-            DockPassageEntering = false; DockPassageTarget = default;
             StageEnemy=default;
             EvolutionBurnContactSeconds=0;
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;

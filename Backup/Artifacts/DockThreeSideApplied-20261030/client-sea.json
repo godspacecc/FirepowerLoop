@@ -1,0 +1,98 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":15,\"PassedTests\":15,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:22.2083437\"},\"Results\":[{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.AllThreePassagesStartAtSeaAndReachWalkableDeck\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2270000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(0.0f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0800000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(2.1f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9520000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(3.4f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0100000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(5.74f)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0200000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1080000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0140000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9650000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9890000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9920000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\\u0022basic\\u0022,0)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.2020000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\\u0022rocket\\u0022,2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0530000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\\u0022raygun\\u0022,2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9440000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\\u0022grenade\\u0022,2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0230000\"},{\"Name\":\"Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\\u0022piercing\\u0022,2)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.9620000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 15,
+        "PassedTests": 15,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:22.2083437"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.AllThreePassagesStartAtSeaAndReachWalkableDeck",
+          "Status": "Passed",
+          "Duration": "00:00:01.2270000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(0.0f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0800000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(2.1f)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9520000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(3.4f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0100000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.BeforeLanding_RejectsAllIncomingDamage(5.74f)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0200000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CompletionIsWalkableAndNextFrameResumesPursuit",
+          "Status": "Passed",
+          "Duration": "00:00:01.1080000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.CrowdingAndHandgloveKeepPathWhileDamageStillLands",
+          "Status": "Passed",
+          "Duration": "00:00:01.0140000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RemovedRightWalkwayRejectsPlayersWhileKeepingProjectilesOpen",
+          "Status": "Passed",
+          "Duration": "00:00:00.9650000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.RightPassageProgressUsesActiveSecondsWithoutAttacking",
+          "Status": "Passed",
+          "Duration": "00:00:00.9890000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.StunAndHerdFreezeThenResumeFromSameAge",
+          "Status": "Passed",
+          "Duration": "00:00:00.9920000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"basic\",0)",
+          "Status": "Passed",
+          "Duration": "00:00:01.2020000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"rocket\",2)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0530000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"raygun\",2)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9440000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"grenade\",2)",
+          "Status": "Passed",
+          "Duration": "00:00:01.0230000"
+        },
+        {
+          "Name": "Game.Tests.DockSeaEntryFlowTests.WaterEnemy_DoesNotConsumePlayerProjectile(\"piercing\",2)",
+          "Status": "Passed",
+          "Duration": "00:00:00.9620000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

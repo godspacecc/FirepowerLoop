@@ -1,0 +1,13 @@
+PASS DockSeaEntryOnline.FourRoundsRightEntryAndLanes
+FAIL DockSeaEntryOnline.OtherPassagesAlsoClimb: System.InvalidOperationException: left/top passage missing sea path
+   at DockSeaEntryOnlineChecks.Require(Boolean value, String message) in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 150
+   at DockSeaEntryOnlineChecks.OtherPassages() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 57
+   at DockSeaEntryOnlineChecks.Run() in E:\GitHub\FirepowerLoop\Tools\DockSeaEntryOnlineChecks\Program.cs:line 29
+PASS DockSeaEntryOnline.ActivePathCannotAttack
+PASS DockSeaEntryOnline.StunHerdAndStormFreezeAge
+PASS DockSeaEntryOnline.DisconnectLoadingAndTransitionFreeze
+PASS DockSeaEntryOnline.FinishFrameThenResumePursuit
+PASS DockSeaEntryOnline.CrowdingAndPushPreservePathButDamage
+PASS DockSeaEntryOnline.SnapshotCloneAndCodecKeepTerminalState
+PASS DockSeaEntryOnline.CarrierArmorPersistsAndExplosionRemains
+8/9 passed

@@ -265,14 +265,10 @@ namespace ET.Server
         public int AttackSequence;
         /// <summary>墓穴、乌鸦现身与一次蓝影换位的当前活动阶段，不进入轮前存档。</summary>
         public FirepowerLoop.Arcade.ArcadeStageEnemyState StageEnemy;
-        /// <summary>码头右路海中靠近与攀爬的瞬时权威状态；终态保留来源，不进入轮前存档。</summary>
+        /// <summary>码头三路海中靠近与攀爬的瞬时权威状态；终态保留来源，不进入轮前存档。</summary>
         public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry;
-        /// <summary>码头左桥与上方通道首次步行入场；抵达主平台后永久结束。</summary>
-        public bool DockPassageEntering;
-        /// <summary>出生时确定的主平台落脚点，不随玩家或击退改变。</summary>
-        public FirepowerLoop.Arcade.ArcadeRegionPoint DockPassageTarget;
-        /// <summary>全部伤害与弹丸接触共用的码头入场判定。</summary>
-        public bool CanBeAttacked => !DockPassageEntering && DockSeaEntry.CanBeAttacked;
+        /// <summary>所有命中与锁定入口共用，入场途中不阻挡弹丸或消耗耐久。</summary>
+        public bool CanBeAttacked => DockSeaEntry.CanBeAttacked;
         /// <summary>敌人受牛撞后的活动状态，阻止移动和攻击直到恢复。</summary>
         public FirepowerLoop.Arcade.ArcadeHerdImpactState HerdImpact;
         /// <summary>每名玩家残火的独立接触时间；来源消失或离开覆盖后清理。</summary>

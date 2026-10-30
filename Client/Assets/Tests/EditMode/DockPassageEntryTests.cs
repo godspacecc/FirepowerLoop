@@ -47,7 +47,7 @@ namespace Game.Tests
         /// <summary>任何方向在通道内都不能被普通、范围或火焰伤害提前消耗生命、护甲和背桶。</summary>
         [Test] public void BothPassagesRejectDamageBeforeEnteringDeck()
         {
-            foreach(int passage in new[]{0,1})
+            foreach(int passage in new[]{0,1,2})
             {
                 var e=Spawn(passage);e.Health=e.MaxHealth=1000;e.ArmorHealth=20;e.ContentSpecialKind=1;
                 Call("DamageEnemy",e,10);Call("DamageEnemyFromFlame",e,10);
@@ -60,7 +60,7 @@ namespace Game.Tests
         /// <summary>真实普通及进化弹丸可穿过入场敌人，追踪弹不锁定它们。</summary>
         [Test] public void BothPassagesLetEveryProjectileContinue()
         {
-            foreach(int passage in new[]{0,1})foreach(string weapon in new[]{"basic","rocket","raygun","grenade","piercing"})
+            foreach(int passage in new[]{0,1,2})foreach(string weapon in new[]{"basic","rocket","raygun","grenade","piercing"})
             {
                 runtime.Enemies.Clear();runtime.Projectiles.Clear();var e=Spawn(passage);e.ContentSpecialKind=0;e.Health=1000;
                 runtime.Projectiles.Add(900,new ArcadeProjectileRuntime{Id=900,FromPlayerWeapon=true,SourceWeaponId="arcade.weapon."+weapon,
@@ -74,13 +74,14 @@ namespace Game.Tests
             }
         }
         /// <summary>真实活动移动跨过主平台边界后立刻恢复伤害；随后被推回通道不能重新无敌。</summary>
-        [Test] public void WalkingInsideUnlocksDamagePermanently()
+        [Test] public void ClimbingInsideUnlocksDamagePermanently()
         {
-            foreach(int passage in new[]{0,1})
+            foreach(int passage in new[]{0,1,2})
             {
                 runtime.Enemies.Clear();var e=Spawn(passage);e.ContentSpecialKind=0;e.Health=e.MaxHealth=1000;
                 Vector2 entry=e.Position;runtime.PlayerPosition=entry; // 玩家堵入口也不能让入场敌人停下互相无敌。
-                for(int i=0;i<160;i++){Call("TickEnemies",runtime,.1f);Call("DamageEnemy",e,1);if(e.Health<1000)break;}
+                for(int i=0;i<160&&e.DockSeaEntry.Active;i++)Call("TickEnemies",runtime,.1f);
+                Call("DamageEnemy",e,1);
                 Assert.That(e.Health,Is.EqualTo(999),"入场后应解除免疫");e.Health=1000;
                 float radius=catalog.Rule.EnemyContactRadius;
                 Assert.That(e.Position.x,Is.InRange(-14+radius-.001f,12-radius+.001f));
@@ -92,7 +93,7 @@ namespace Game.Tests
         /// <summary>近战或远程玩家贴入口时，入场敌人先走入平台，不能站在免疫区输出。</summary>
         [Test] public void EntryCannotAttackEvenWithPlayerWithinReach()
         {
-            foreach(int passage in new[]{0,1})foreach(var kind in new[]{global::EnemyAttackKind.Projectile,global::EnemyAttackKind.Melee})
+            foreach(int passage in new[]{0,1,2})foreach(var kind in new[]{global::EnemyAttackKind.Projectile,global::EnemyAttackKind.Melee})
             {
                 runtime.Enemies.Clear();runtime.Projectiles.Clear();runtime.PlayerHealth=100;
                 var e=Spawn(passage);e.ContentSpecialKind=0;e.AttackKind=kind;e.AttackRange=100;e.AttackCooldown=0;e.MeleeWindupSeconds=0;
@@ -103,11 +104,11 @@ namespace Game.Tests
         /// <summary>零时间及受控期间保持入场位置，恢复后继续向平台移动。</summary>
         [Test] public void EntryFreezesAndResumesWithoutLosingProtection()
         {
-            foreach(int passage in new[]{0,1})
+            foreach(int passage in new[]{0,1,2})
             {
                 runtime.Enemies.Clear();var e=Spawn(passage);e.ContentSpecialKind=0;var position=e.Position;
                 foreach(float dt in new[]{0f,-1f,float.NaN,float.PositiveInfinity,float.NegativeInfinity})
-                {Call("TickDockPassageEntry",runtime,e,dt);Assert.That(e.Position,Is.EqualTo(position));}
+                {Call("TickDockSeaEntry",runtime,e,dt);Assert.That(e.Position,Is.EqualTo(position));}
                 e.ContentStunUntil=10;Call("TickEnemies",runtime,.5f);Assert.That(e.Position,Is.EqualTo(position));
                 e.ContentStunUntil=0;e.HerdImpact=new ArcadeHerdImpactState{Remaining=1};Call("TickEnemies",runtime,.5f);Assert.That(e.Position,Is.EqualTo(position));
                 e.HerdImpact=default;Call("TickEnemies",runtime,.1f);Assert.That(Vector2.Distance(e.Position,position),Is.GreaterThan(.001f));
@@ -117,7 +118,7 @@ namespace Game.Tests
         /// <summary>范围击退与拥挤解算不能把入场敌人提前推入场地或偏离通道。</summary>
         [Test] public void KnockbackAndCrowdingPreserveEntryPath()
         {
-            foreach(int passage in new[]{0,1})
+            foreach(int passage in new[]{0,1,2})
             {
                 runtime.Enemies.Clear();var e=Spawn(passage);e.ContentSpecialKind=0;e.Health=1000;var position=e.Position;
                 Call("DamageAndKnockbackEnemies",runtime,position-Vector2.right,2f,10,10f);
@@ -130,12 +131,12 @@ namespace Game.Tests
         /// <summary>解除入场保护后，真实武器依旧先打背桶，两发基础弹独立爆桶。</summary>
         [Test] public void EnteredCarrierBarrelBreaksWithTwoShots()
         {
-            foreach(int passage in new[]{0,1})
+            foreach(int passage in new[]{0,1,2})
             {
                 runtime.Enemies.Clear();runtime.Projectiles.Clear();var e=Spawn(passage);e.ContentSpecialKind=1;e.Health=e.MaxHealth=1000;
                 runtime.PlayerPosition=Vector2.zero;
-                for(int i=0;i<160&&e.DockPassageEntering;i++)Call("TickEnemies",runtime,.1f);
-                Assert.That(e.DockPassageEntering,Is.False);
+                for(int i=0;i<160&&e.DockSeaEntry.Active;i++)Call("TickEnemies",runtime,.1f);
+                Assert.That(e.DockSeaEntry.Active,Is.False);
                 for(int shot=0;shot<2;shot++)
                 {
                     runtime.Projectiles.Add(900,new ArcadeProjectileRuntime{Id=900,FromPlayerWeapon=true,Position=e.Position,
@@ -151,8 +152,8 @@ namespace Game.Tests
         {
             var protectedIds=new[]{Spawn(0).Id,Spawn(1).Id,Spawn(2).Id};
             var ordinary=Spawn(0);ordinary.ContentSpecialKind=0;
-            for(int i=0;i<160&&ordinary.DockPassageEntering;i++)Call("TickDockPassageEntry",runtime,ordinary,.1f);
-            Assert.That(ordinary.DockPassageEntering,Is.False);int ordinaryId=ordinary.Id;
+            for(int i=0;i<160&&ordinary.DockSeaEntry.Active;i++)Call("TickDockSeaEntry",runtime,ordinary,.1f);
+            Assert.That(ordinary.DockSeaEntry.Active,Is.False);int ordinaryId=ordinary.Id;
             runtime.Bombs=1;Call("UseBomb",runtime);
             Assert.That(runtime.Bombs,Is.Zero);Assert.That(runtime.Enemies.ContainsKey(ordinaryId),Is.False);
             foreach(int id in protectedIds)Assert.That(runtime.Enemies.ContainsKey(id),Is.True,"未入场目标不能被炸弹提前清除");

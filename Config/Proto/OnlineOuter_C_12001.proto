@@ -462,6 +462,8 @@ message OnlineArcadeEnemyInfo
 	float ContentAge = 32;
 	float ContentFacingX = 33;
 	float ContentFacingZ = 34;
+	// 三方向海路：0右、1左、2上；默认值沿用既有右路方向。
+	int32 DockSeaEntryDirection = 35;
 }
 
 // Opcode 12082

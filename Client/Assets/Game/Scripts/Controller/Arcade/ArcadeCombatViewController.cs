@@ -668,7 +668,9 @@ namespace Game
 
         public void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state)
         {
-            if(mapRoot!=null)enemyPresentation?.SetDockSeaEntry(id,state,mapRoot.TransformDirection(Vector3.left),mapRoot.up);
+            if(mapRoot==null)return;
+            var direction=FirepowerLoop.Arcade.ArcadeDockSeaEntryRules.Forward(state);
+            enemyPresentation?.SetDockSeaEntry(id,state,mapRoot.TransformDirection(new Vector3(direction.X,0,direction.Y)),mapRoot.up);
         }
 
         public void RemoveEnemy(int id, bool playDeath = false)
