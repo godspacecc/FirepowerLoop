@@ -1,0 +1,10 @@
+{
+  "SyntaxErrors": [],
+  "UnityTestsRun": false,
+  "CheckedFiles": [
+    "Client/Assets/Editor/GameServer/LocalOnlineServerMenu.cs",
+    "Client/Assets/Tests/EditMode/Flow/LocalOnlineServerMenuTests.cs",
+    "Client/Assets/Tests/EditMode/Flow/LocalOnlineServerPublishMenuTests.cs"
+  ],
+  "UnityCompilationRun": false
+}

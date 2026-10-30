@@ -16,7 +16,7 @@ namespace Game.Tests
 {
     public sealed class LocalOnlineServerMenuTests
     {
-        private const string MenuPath = "Tools/游戏服务器/启动本地联机服务";
+        private const string MenuPath = "Tools/游戏服务器/启动本地联机服务器";
 
         private Type MenuType => RequiredType("Game.Editor.LocalOnlineServerMenu");
         private Type StateType => RequiredType("Game.Editor.LocalOnlineServerProcessState");

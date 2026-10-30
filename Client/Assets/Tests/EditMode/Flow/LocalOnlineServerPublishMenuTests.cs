@@ -13,7 +13,7 @@ namespace Game.Tests
     public sealed class LocalOnlineServerPublishMenuTests
     {
         private const string PublishMenuPath = "Tools/游戏服务器/发布联机服务器";
-        private const string LocalStartMenuPath = "Tools/游戏服务器/启动本地联机服务";
+        private const string LocalStartMenuPath = "Tools/游戏服务器/启动本地联机服务器";
 
         private Type MenuType => RequiredType("Game.Editor.LocalOnlineServerPublishMenu");
 

@@ -14,7 +14,7 @@ namespace Game.Editor
 {
     public static class LocalOnlineServerMenu
     {
-        internal const string MenuPath = "Tools/游戏服务器/启动本地联机服务";
+        internal const string MenuPath = "Tools/游戏服务器/启动本地联机服务器";
         internal const int Port = 31011;
         internal const string ScriptRelativePath = "Server/GameServer/Tools/start-local-online-server.ps1";
         internal const string AppRelativePath = "Server/GameServer/Bin/App.dll";
@@ -34,7 +34,7 @@ namespace Game.Editor
             var decision = CreateLaunchDecision(paths, IsPortInUse);
             if (decision.Kind == LocalOnlineServerLaunchDecisionKind.AlreadyStarted)
             {
-                ShowDialog("本地联机服务已经启动", "本地联机服务已经启动，请在现有服务器窗口中控制。");
+                ShowDialog("本地联机服务器启动窗口已打开", decision.Message);
                 return;
             }
 
@@ -141,7 +141,7 @@ namespace Game.Editor
             {
                 LocalOnlineServerProcessSnapshot snapshot = getProcessSnapshot(state.ProcessId);
                 if (IsOwnedProcess(state, snapshot, paths.ScriptPath, paths.GameServerRoot))
-                    return LocalOnlineServerLaunchDecision.AlreadyStarted("本地联机服务已经启动，请在现有服务器窗口中控制。");
+                    return LocalOnlineServerLaunchDecision.AlreadyStarted("启动窗口已打开，不代表服务器已运行。请在现有窗口查看编译结果与运行状态；失败原因处理后按 R 重试，按 Ctrl+C 停止并退出。");
 
                 DeleteState(paths.StatePath);
             }
