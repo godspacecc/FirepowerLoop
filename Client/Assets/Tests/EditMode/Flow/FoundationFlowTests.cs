@@ -86,7 +86,7 @@ namespace Game.Tests
                 "Tools/打包/PC/快速打包/复用 AOT 打包",
                 "Tools/打包/PC/完整打包",
                 "Tools/打包/PC/启动包（首次下载资源）",
-                "Tools/打包/PC/辅助工具/为已有Player生成当前用户安装器"
+                "Tools/打包/PC/快速打包/生成安装器"
             }.OrderBy(x => x).ToArray();
 
             CollectionAssert.AreEqual(expected, packagingMenus);
@@ -95,14 +95,17 @@ namespace Game.Tests
 
         [TestCase("PC")]
         [TestCase("Android")]
-        public void QuickPackagingMenusExposeOnlyTwoReuseLevels(string platform)
+        public void QuickPackagingMenusExposeTwoReuseLevelsAndPcInstaller(string platform)
         {
             string prefix = "Tools/打包/" + platform + "/快速打包/";
             var menus = TypeCache.GetMethodsWithAttribute<MenuItem>()
                 .SelectMany(method => method.GetCustomAttributes(typeof(MenuItem), false).Cast<MenuItem>())
                 .Where(menu => !menu.validate && menu.menuItem.StartsWith(prefix))
                 .Select(menu => menu.menuItem.Substring(prefix.Length)).ToArray();
-            CollectionAssert.AreEquivalent(new[] { "复用 AOT 打包", "复用全部打包" }, menus);
+            var expected = platform == "PC"
+                ? new[] { "复用 AOT 打包", "复用全部打包", "生成安装器" }
+                : new[] { "复用 AOT 打包", "复用全部打包" };
+            CollectionAssert.AreEquivalent(expected, menus);
         }
 
         [Test]

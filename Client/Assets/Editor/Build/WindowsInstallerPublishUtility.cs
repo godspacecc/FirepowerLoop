@@ -58,12 +58,19 @@ namespace Game.Editor
                 "\n确认同版本资源服包同步成功后，可使用 PublishGenerated 补做发布，无需重新构建 Player 或安装器。\n" + e.Message, e); }
         }
 
+        /// <summary>统一自动打包与手动补做的输出位置，每次生成独立批次路径。</summary>
+        internal static string CreateOutputDirectory()
+        {
+            string repo = Directory.GetParent(Application.dataPath).Parent.FullName;
+            return Path.Combine(repo, "Release", "WindowsInstaller", "Installer_" +
+                DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8));
+        }
+
         /// <summary>只生成并验证安装器，不复制资源服、不发布更新、不启动任何服务。</summary>
         public static string GenerateOnly(string player, string compiler)
         {
             string repo = Directory.GetParent(Application.dataPath).Parent.FullName;
-            string output = Path.Combine(repo, "Release", "WindowsInstaller", "Installer_" +
-                DateTime.Now.ToString("yyyyMMdd_HHmmss") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8));
+            string output = CreateOutputDirectory();
             try
             {
                 RunScript(Path.Combine(repo, "Tools", "WindowsInstaller", "build_installer.ps1"),
