@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Boot;
 using Cysharp.Threading.Tasks;
@@ -43,12 +43,14 @@ namespace Game
         protected override void OnInit()
         {
             ApplyReleaseVisibility(UI);
-            BindMenuButton(UI.BtnNewGame, OnNewGameClick);
+            BindMenuButton(UI.BtnNewGame, OpenArcadeMode);
+            BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
+            BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            BindMenuButton(UI.BtnContinue, OnContinueClick);
+            BindMenuButton(UI.BtnContinue, OpenArcadeMode);
             if (UI.BtnOnline != null)
             {
                 BindMenuButton(UI.BtnOnline, OnOnlineClick);
@@ -91,9 +93,10 @@ namespace Game
 
         protected override void OnShow()
         {
+            startingRun = false;
+            CloseArcadeMode();
             ApplyReleaseVisibility(UI);
             startGeneration++;
-            startingRun = false;
             var appState = this.GetModel<AppStateModel>().CurrentState.Value;
             if (appState != AppState.Paused)
             {
@@ -134,6 +137,9 @@ namespace Game
                 UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
             UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
             UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
+            UI.BtnArcadeSolo.interactable = !startingRun;
+            UI.BtnArcadeBack.interactable = !startingRun;
+            UI.ArcadeSoloText.text = Loc.T(pending.Status == SaveFileStatus.Missing ? "ui.start.new_game" : pending.IsValid && string.IsNullOrEmpty(pending.Data.Outcome) ? "ui.arcade.resume" : "ui.start.continue");
             UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
@@ -224,6 +230,23 @@ namespace Game
                 error == "wallet.read_failed" ? "read_failed" :
                 error == "character.not_owned" ? "not_owned" : "error";
             return Loc.T("ui.character." + key);
+        }
+
+        /// <summary>闯关入口只展示模式选择，不创建存档或启动地图准备。</summary>
+        private void OpenArcadeMode()
+        {
+            if (startingRun) return;
+            RefreshSaveButtons();
+            UI.MainMenuPanel.SetActive(false);
+            UI.ArcadeModePanel.SetActive(true);
+        }
+
+        /// <summary>返回主菜单保留所有单人进度，开局准备中拒绝离开。</summary>
+        private void CloseArcadeMode()
+        {
+            if (startingRun) return;
+            UI.ArcadeModePanel.SetActive(false);
+            UI.MainMenuPanel.SetActive(true);
         }
 
         private void OnNewGameClick()

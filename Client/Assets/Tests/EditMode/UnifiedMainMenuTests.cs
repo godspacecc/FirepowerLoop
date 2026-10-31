@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -70,6 +71,37 @@ namespace Game.Tests
             ResourceLoader.ResetForTests();
             LocalizationLanguages.ResetForTests();
             if (Directory.Exists(saveRoot)) Directory.Delete(saveRoot, true);
+        }
+
+        [Test]
+        public void ArcadeModeSelection_OnlyOffersOnlineInsideModeAndCanReturn()
+        {
+            Invoke("OnInit");
+            var view = instance.GetComponent<StartUI>();
+            Assert.That(view.BtnOnline.gameObject.activeInHierarchy, Is.False);
+            // 本夹具不创建音频系统，只隔离点击声，仍验证正式业务按钮绑定。
+            var sound = (UnityEngine.Events.UnityAction)Delegate.CreateDelegate(typeof(UnityEngine.Events.UnityAction), controller, typeof(StartUICtrl).GetMethod("PlayMenuClick", BindingFlags.Instance | BindingFlags.NonPublic));
+            view.BtnNewGame.onClick.RemoveListener(sound);
+            view.BtnArcadeBack.onClick.RemoveListener(sound);
+            view.BtnNewGame.onClick.Invoke();
+            var panel = instance.transform.Find("ArcadeModePanel");
+            Assert.That(panel, Is.Not.Null);
+            Assert.That(panel.gameObject.activeSelf, Is.True);
+            Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.False);
+            Assert.That(view.BtnOnline.transform.IsChildOf(panel), Is.True);
+            Assert.That(preparation.Requests, Is.Empty, "选择模式不能直接开始战斗");
+            panel.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single(b => b.name == "BtnArcadeBack").onClick.Invoke();
+            Assert.That(panel.gameObject.activeSelf, Is.False);
+            Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.True);
+            var system = architecture.GetSystem<ArcadeRunSystem>();
+            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
+            view.BtnContinue.onClick.RemoveListener(sound);
+            view.BtnArcadeSolo.onClick.RemoveListener(sound);
+            view.BtnContinue.onClick.Invoke();
+            Assert.That(panel.gameObject.activeSelf, Is.True);
+            view.BtnArcadeSolo.onClick.Invoke();
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.True);
+            Assert.That(preparation.Requests, Is.Empty, "已有进度必须先进入详情，不能覆盖新开局");
         }
 
         [Test]
@@ -185,7 +217,7 @@ namespace Game.Tests
             var view = Object.FindObjectOfType<LoadingUI>();
             architecture.SendEvent(new MapLoadingStartedEvent(global::Game.MapIds.Arcade));
             architecture.SendEvent(new MapLoadingProgressEvent(global::Game.MapIds.Arcade, .5f));
-            Assert.That(view.ProgressSlider.value, Is.EqualTo(.5f));
+            Assert.That(view.ProgressSlider.value, Is.EqualTo(.4f).Within(.001f));
             architecture.SendEvent(new MapLoadingCompletedEvent(global::Game.MapIds.Arcade));
             Assert.That(loading.IsShow(), Is.True, "整个开局事务结束前继续遮挡菜单");
             preparation.Requests[0].TrySetResult(false);

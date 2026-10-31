@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -28,14 +28,16 @@ namespace Game.Tests
             {
                 var ui = root.GetComponent<StartUI>();
                 ui.BtnNewGame.gameObject.SetActive(false);
+                ui.BtnSurvivor.gameObject.SetActive(false);
+                ui.BtnShop.gameObject.SetActive(false);
                 ui.BtnContinue.gameObject.SetActive(true);
                 AssertSelected(ui, ui.BtnContinue);
                 var pointer = new PointerEventData(events.GetComponent<EventSystem>());
-                ExecuteEvents.Execute(ui.BtnOnline.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
-                AssertSelected(ui, ui.BtnOnline);
+                ExecuteEvents.Execute(ui.BtnExit.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
+                AssertSelected(ui, ui.BtnExit);
                 ExecuteEvents.Execute(ui.BtnSetting.gameObject, new BaseEventData(events.GetComponent<EventSystem>()), ExecuteEvents.selectHandler);
-                AssertSelected(ui, ui.BtnOnline);
-                ExecuteEvents.Execute(ui.BtnOnline.gameObject, pointer, ExecuteEvents.pointerExitHandler);
+                AssertSelected(ui, ui.BtnExit);
+                ExecuteEvents.Execute(ui.BtnExit.gameObject, pointer, ExecuteEvents.pointerExitHandler);
                 AssertSelected(ui, null);
                 ExecuteEvents.Execute(ui.BtnSetting.gameObject, new BaseEventData(events.GetComponent<EventSystem>()), ExecuteEvents.selectHandler);
                 AssertSelected(ui, ui.BtnSetting);
@@ -70,11 +72,13 @@ namespace Game.Tests
             {
                 var ui = root.GetComponent<StartUI>();
                 ui.BtnNewGame.gameObject.SetActive(false);
+                ui.BtnSurvivor.gameObject.SetActive(false);
+                ui.BtnShop.gameObject.SetActive(false);
                 ui.BtnContinue.gameObject.SetActive(true);
                 var system = events.GetComponent<EventSystem>();
                 ExecuteEvents.Execute(ui.BtnContinue.gameObject, new BaseEventData(system), ExecuteEvents.selectHandler);
                 var pointer = new PointerEventData(system);
-                foreach (var button in new[] { ui.BtnOnline, ui.BtnSetting, ui.BtnContinue })
+                foreach (var button in new[] { ui.BtnExit, ui.BtnSetting, ui.BtnContinue })
                 {
                     ExecuteEvents.Execute(button.gameObject, pointer, ExecuteEvents.pointerEnterHandler);
                     AssertSelected(ui, button);
@@ -89,7 +93,7 @@ namespace Game.Tests
 
         private static void AssertSelected(StartUI ui, Button selected)
         {
-            foreach (var button in new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnOnline, ui.BtnSetting, ui.BtnExit })
+            foreach (var button in new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnExit, ui.BtnSetting })
             {
                 var marker = button.transform.Find("PrimaryMark");
                 Assert.That(marker, Is.Not.Null, button.name + " missing selection mark");
@@ -107,7 +111,7 @@ namespace Game.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             var ui = prefab.GetComponent<StartUI>();
             Assert.That(ui.ButtonGroup.GetComponentsInChildren<Button>(true).Select(b => b.name),
-                Is.EqualTo(new[] { "BtnNewGame", "BtnContinue", "BtnOnline", "BtnSetting", "BtnExit" }));
+                Is.EqualTo(new[] { "BtnNewGame", "BtnSurvivor", "BtnShop", "BtnContinue", "BtnSetting", "BtnExit" }));
             Assert.That(ui.BtnCheckUpdate.transform.IsChildOf(ui.ButtonGroup), Is.False);
             Assert.That(ui.BtnExit.transform.IsChildOf(ui.ButtonGroup), Is.True);
             Assert.That(ui.VersionText.rectTransform.anchorMin.x, Is.EqualTo(0f));
@@ -145,6 +149,8 @@ namespace Game.Tests
             var loader = new RecordingLoader();
             ResourceLoader.SetLoaderForTests(loader);
             var audioRoot = CreateAudioBindings();
+            // 菜单初始化检查存档，音效测试使用独立空目录，不能读取玩家进度。
+            Game.Interface.GetSystem<ArcadeRunSystem>().ConfigureForTests(System.IO.Path.Combine(Application.temporaryCachePath, "MenuSound-" + Guid.NewGuid().ToString("N")));
             var root = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath));
             try
             {
@@ -153,7 +159,7 @@ namespace Game.Tests
                 typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, ui);
                 typeof(StartUICtrl).GetMethod("OnInit", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, null);
                 var buttons = new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnOnline, ui.BtnCheckUpdate, ui.BtnSetting, ui.BtnExit };
-                var methods = new[] { "OnNewGameClick", "OnContinueClick", "OnOnlineClick", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
+                var methods = new[] { "OpenArcadeMode", "OpenArcadeMode", "OnOnlineClick", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
                 int businessCalls = 0;
                 for (int i = 0; i < buttons.Length; i++)
                 {

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Game.Tests
                 { "Panel/TitleText", Fixed("ui.start.title", "ANOTHER\nDAY") },
                 { "Panel/ButtonGroup/BtnNewGame/Text", Fixed("ui.start.new_game", "新游戏") },
                 { "Panel/ButtonGroup/BtnContinue/Text", Fixed("ui.start.continue", "继续游戏") },
-                { "Panel/ButtonGroup/BtnOnline/BtnOnlineText", Fixed("ui.start.online", "联机游戏") },
+                { "ArcadeModePanel/ButtonGroup/BtnOnline/BtnOnlineText", Fixed("ui.start.online", "联机游戏") },
                 { "BtnCheckUpdate/Text", Fixed("ui.start.check_update", "检查更新") },
                 { "Panel/ButtonGroup/BtnSetting/Text", Fixed("ui.start.settings", "设置") },
                 { "BtnExit/Text", Fixed("ui.start.exit", "退出游戏") }

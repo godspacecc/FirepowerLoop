@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using Boot;
 using System.IO;
@@ -1122,6 +1122,16 @@ namespace Game.Tests
             startUi.BtnNewGame = CreateButton(root.transform, "BtnNewGame", out _);
             startUi.BtnContinue = CreateButton(root.transform, "BtnContinue", out _);
             startUi.BtnOnline = CreateButton(root.transform, "BtnOnline", out _);
+            startUi.MainMenuPanel = panel;
+            startUi.ArcadeModePanel = new GameObject("ArcadeModePanel", typeof(RectTransform));
+            startUi.ArcadeModePanel.transform.SetParent(root.transform, false);
+            startUi.ArcadeModePanel.SetActive(false);
+            startUi.BtnArcadeSolo = CreateButton(startUi.ArcadeModePanel.transform, "BtnArcadeSolo", out _);
+            startUi.ArcadeSoloText = startUi.BtnArcadeSolo.GetComponentInChildren<TextMeshProUGUI>(true);
+            startUi.BtnArcadeBack = CreateButton(startUi.ArcadeModePanel.transform, "BtnArcadeBack", out _);
+            startUi.BtnOnline.transform.SetParent(startUi.ArcadeModePanel.transform, false);
+            startUi.BtnShop = CreateButton(root.transform, "BtnShop", out _);
+            startUi.BtnSurvivor = CreateButton(root.transform, "BtnSurvivor", out _);
             startUi.BtnCheckUpdate = CreateButton(root.transform, "BtnCheckUpdate", out _);
             startUi.BtnSetting = CreateButton(root.transform, "BtnSetting", out _);
             startUi.BtnExit = CreateButton(root.transform, "BtnExit", out _);

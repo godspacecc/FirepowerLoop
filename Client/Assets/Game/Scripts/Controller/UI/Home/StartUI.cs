@@ -18,5 +18,10 @@ namespace Game
         public TextMeshProUGUI UpdateStatusText;
         public TextMeshProUGUI VersionText;
         public Button BtnShop;
+        public GameObject MainMenuPanel;
+        public GameObject ArcadeModePanel;
+        public Button BtnArcadeSolo;
+        public Button BtnArcadeBack;
+        public TextMeshProUGUI ArcadeSoloText;
     }
 }

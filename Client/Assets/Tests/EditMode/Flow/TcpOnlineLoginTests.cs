@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -834,7 +834,8 @@ namespace Game.Tests
             Assert.That(onlineText.GetComponent<TMP_Text>(), Is.Not.Null);
             // 首页可独立添加其它功能；此处只核对既有联机导航仍可用。
 
-            string[] expected = { "BtnNewGame", "BtnContinue", "BtnOnline", "BtnSetting" };
+            Assert.That(ui.BtnOnline.transform.IsChildOf(ui.ArcadeModePanel.transform), Is.True);
+            string[] expected = { "BtnNewGame", "BtnContinue", "BtnSetting" };
             string[] actual = Enumerable.Range(0, ui.ButtonGroup.childCount)
                 .Select(index => ui.ButtonGroup.GetChild(index).name)
                 .Where(name => name.StartsWith("Btn"))
