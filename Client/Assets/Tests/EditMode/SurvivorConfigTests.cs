@@ -30,8 +30,11 @@ namespace Game.Tests
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
-            Assert.That(config.Upgrades.Count, Is.EqualTo(7));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(9));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
+            Assert.That(config.RifleMagazineCapacity,Is.EqualTo(30));Assert.That(config.RifleReloadSeconds,Is.EqualTo(2f));Assert.That(config.RifleMinimumReloadSeconds,Is.EqualTo(1f));
+            var magazine=config.Upgrades.Single(x=>x.Kind=="Magazine");
+            Assert.That(magazine.BonusAtLevel(1),Is.EqualTo(.1).Within(.000001));Assert.That(magazine.BonusAtLevel(10),Is.EqualTo(1).Within(.000001));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
             Assert.That(config.WeaponLevel("Drone",2).Damage, Is.GreaterThan(config.WeaponLevel("Drone",1).Damage));
             Assert.That(config.MinimumSpawnIntervalSeconds, Is.LessThanOrEqualTo(config.SpawnIntervalSeconds));
@@ -73,7 +76,7 @@ namespace Game.Tests
         [Test] public void ThreeUnlimitedChoicesRemainMonotonicWithinBounds()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            var unlimited = config.Upgrades.Where(x => x.MaxLevel == 0).ToArray();
+            var unlimited = config.Upgrades.Where(x => x.MaxLevel == 0 && x.Kind!="Magazine").ToArray();
             Assert.That(unlimited.Length, Is.GreaterThanOrEqualTo(3));
             foreach (var option in unlimited)
             {

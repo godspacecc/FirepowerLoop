@@ -27,6 +27,13 @@ namespace Game
     {
         /// <summary>规则状态仅由幸存者系统写入。</summary>
         internal SurvivorRunState State;
+        /// <summary>本局步枪弹夹与已开始的换弹事务，仅由幸存者系统推进。</summary>
+        internal int RifleRounds, RifleCapacity;
+        internal float RifleReloadRemaining, RifleReloadDuration;
+        /// <summary>供既有界面或检查读取的弹量快照，不暴露可写字段。</summary>
+        public int RifleAmmo => RifleRounds;
+        public int RifleMagazineSize => RifleCapacity;
+        public float RifleReloadTimeRemaining => RifleReloadRemaining;
         /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
         internal SurvivorLoadout Loadout;
         /// <summary>界面只读查询武器等级。</summary>

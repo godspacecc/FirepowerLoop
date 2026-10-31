@@ -16,6 +16,10 @@ namespace FirepowerLoop.Arcade
         public string WeaponId { get; private set; }
         /// <summary>包含初始步枪的本局总武器槽数。</summary>
         public int WeaponSlots { get; private set; }
+        /// <summary>步枪基础弹夹容量及自动换弹时长，数值来自权威规则表。</summary>
+        public int RifleMagazineCapacity { get; private set; }
+        public float RifleReloadSeconds { get; private set; }
+        public float RifleMinimumReloadSeconds { get; private set; }
         /// <summary>独立武器逐级参数；不复用闯关限时效果的计时。</summary>
         public IReadOnlyList<SurvivorWeaponLevelDefinition> WeaponLevels { get; private set; }
         /// <summary>只允许读取表中真实存在的武器等级。</summary>
@@ -71,6 +75,8 @@ namespace FirepowerLoop.Arcade
         {
             if (tables == null || tables.TbSurvivorRule.DataList.Count != 1) throw new ArgumentException("幸存者规则必须恰好一行");
             var r = tables.TbSurvivorRule.DataList[0];
+            if(r.RifleMagazineCapacity<=0 || new[]{r.RifleReloadSeconds,r.RifleMinimumReloadSeconds}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<=0) || r.RifleMinimumReloadSeconds>r.RifleReloadSeconds)
+                throw new ArgumentException("步枪弹夹容量与换弹时长配置无效");
             if (float.IsNaN(r.PlayerMaxHealth) || float.IsInfinity(r.PlayerMaxHealth) || r.PlayerMaxHealth <= 0) throw new ArgumentException("幸存者 PlayerMaxHealth 必须为有限正数");
             if (float.IsNaN(r.PlayerMoveSpeed) || float.IsInfinity(r.PlayerMoveSpeed) || r.PlayerMoveSpeed <= 0) throw new ArgumentException("幸存者 PlayerMoveSpeed 必须为有限正数");
             if (float.IsNaN(r.SpawnIntervalSeconds) || float.IsInfinity(r.SpawnIntervalSeconds) || r.SpawnIntervalSeconds <= 0) throw new ArgumentException("幸存者 SpawnIntervalSeconds 必须为有限正数");
@@ -108,6 +114,9 @@ namespace FirepowerLoop.Arcade
             return new SurvivorConfiguration {
                 Id = r.Id,
                 WeaponSlots=r.WeaponSlots,
+                RifleMagazineCapacity=r.RifleMagazineCapacity,
+                RifleReloadSeconds=r.RifleReloadSeconds,
+                RifleMinimumReloadSeconds=r.RifleMinimumReloadSeconds,
                 WeaponLevels=Array.AsReadOnly(weaponLevels),
                 LayoutId = r.LayoutId,
                 EnemyId = r.EnemyId,
@@ -160,13 +169,15 @@ namespace FirepowerLoop.Arcade
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<=0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<=0) throw new ArgumentException("幸存者强化配置无效");
             Id = id; Kind = kind; AmountPerLevel = amountPerLevel; MaximumBonus = maximumBonus; MaxLevel = maxLevel;Weight=weight;
         }
         /// <summary>返回累计加成；伤害/射速/移速为比例，生命/拾取为绝对值。</summary>
         public double BonusAtLevel(int level)
         {
             double count = Math.Max(0, level);
+            // 弹夹按基础容量百分比逐层累加，不能套用无限属性的渐近算法。
+            if(Kind=="Magazine")return Math.Min(MaximumBonus,count*AmountPerLevel);
             return MaxLevel == 0 ? MaximumBonus * count / (MaximumBonus / AmountPerLevel + count) : Math.Min(MaximumBonus, Math.Min(MaxLevel, count) * AmountPerLevel);
         }
     }

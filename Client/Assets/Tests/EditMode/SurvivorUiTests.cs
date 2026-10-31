@@ -9,6 +9,22 @@ namespace Game.Tests
     public sealed class SurvivorUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Survivor/";
+        /// <summary>新强化只复用既有卡片，实际容量与换弹单位必须完整放入说明区。</summary>
+        [Test] public void RifleUpgradeTextFitsExistingCard()
+        {
+            var instance=Object.Instantiate(Bound<SurvivorUpgradeBoxUI>(Root+"Box/SurvivorUpgrade.prefab").gameObject);
+            try
+            {
+                var text=instance.GetComponent<SurvivorUpgradeBoxUI>().DetailText;
+                foreach(var language in new[]{"zh-CN","en-US"})
+                {
+                    Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
+                    Assert.That(table["ui.survivor.upgrade.8.title"],Is.Not.Empty);Assert.That(table["ui.survivor.upgrade.9.title"],Is.Not.Empty);
+                    foreach(var value in new[]{string.Format(table["ui.survivor.upgrade.magazine_detail"],"30","33","3"),string.Format(table["ui.survivor.upgrade.reload_detail"],"2","1.8","0.2")})
+                        Assert.That(text.GetPreferredValues(value,text.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(text.rectTransform.rect.height),value);
+                }
+            }finally{Object.DestroyImmediate(instance);}
+        }
         /// <summary>已发布的拾取文案带实际距离和单位，并能放入现有卡片说明区域。</summary>
         [Test] public void PickupDetailsFitExistingCardInBothLanguages()
         {

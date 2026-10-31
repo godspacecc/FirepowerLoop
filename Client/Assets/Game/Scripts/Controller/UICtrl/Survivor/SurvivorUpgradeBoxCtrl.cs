@@ -22,6 +22,9 @@ namespace Game
             // 拾取显示实际半径和本次增量，避免把累计加成误读成最终距离。
             if(valid&&system.TryGetPickupUpgradeDetails(id,out var radius,out var nextRadius))
                 view.DetailText.text=Loc.T("ui.survivor.upgrade.pickup_detail",Format(radius),Format(nextRadius),Format(nextRadius-radius));
+            // 使用原有卡片展示新强化的实际发数/秒数，不增加战斗HUD。
+            if(valid&&system.TryGetRifleUpgradeDetails(id,out bool magazine,out var rifleCurrent,out var rifleNext))
+                view.DetailText.text=Loc.T(magazine?"ui.survivor.upgrade.magazine_detail":"ui.survivor.upgrade.reload_detail",Format(rifleCurrent),Format(rifleNext),Format(Math.Abs(rifleNext-rifleCurrent)));
             view.BtnSelect.interactable = valid;
             view.BtnSelect.onClick.RemoveAllListeners();
             view.BtnSelect.onClick.AddListener(() => choose(revision, id));

@@ -918,5 +918,9 @@
   "ui.online.error.locked": "This account is temporarily locked. Please try again later.",
   "ui.online.error.disabled": "This account is disabled.",
   "ui.online.error.banned": "This account is banned.",
-  "ui.survivor.upgrade.pickup_detail": "Pickup radius: {0} m → {1} m\nIncrease: {2} m"
+  "ui.survivor.upgrade.pickup_detail": "Pickup radius: {0} m → {1} m\nIncrease: {2} m",
+  "ui.survivor.upgrade.8.title": "Magazine capacity",
+  "ui.survivor.upgrade.9.title": "Faster reload",
+  "ui.survivor.upgrade.magazine_detail": "Magazine: {0} → {1} rounds\n+{2} rounds (10% of base capacity)",
+  "ui.survivor.upgrade.reload_detail": "Reload: {0} s → {1} s\nReduction: {2} s"
 }

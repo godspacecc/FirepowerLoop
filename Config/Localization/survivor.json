@@ -103,6 +103,22 @@
     "en-US": "Pickup radius: {0} m → {1} m\nIncrease: {2} m",
     "zh-CN": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
   },
+  "ui.survivor.upgrade.8.title": {
+    "zh-CN": "弹夹容量提升",
+    "en-US": "Magazine capacity"
+  },
+  "ui.survivor.upgrade.9.title": {
+    "zh-CN": "换弹加速",
+    "en-US": "Faster reload"
+  },
+  "ui.survivor.upgrade.magazine_detail": {
+    "zh-CN": "弹夹容量：{0} 发 → {1} 发\n本次增加 {2} 发（基础容量的10%）",
+    "en-US": "Magazine: {0} → {1} rounds\n+{2} rounds (10% of base capacity)"
+  },
+  "ui.survivor.upgrade.reload_detail": {
+    "zh-CN": "换弹时间：{0} 秒 → {1} 秒\n本次缩短 {2} 秒",
+    "en-US": "Reload: {0} s → {1} s\nReduction: {2} s"
+  },
   "ui.survivor.upgrade.progress": {
     "en-US": "Level {0} → {1}\nTotal bonus {2} → {3}",
     "zh-CN": "等级 {0} → {1}\n累计效果 {2} → {3}"

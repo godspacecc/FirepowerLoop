@@ -37,6 +37,59 @@ namespace Game.Tests
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
+        /// <summary>步枪打空30发后停火，换弹完成才重新发射，备弹不限制循环。</summary>
+        [Test] public void RifleWaitsForAutomaticReloadAfterThirtyRounds()
+        {
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=100,Position=new Vector2(2,0)});
+            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+            for(int i=0;i<31;i++){Set("fireClock",0f);Call("Fire");}
+            Assert.That(shots.Count,Is.EqualTo(30),"空弹夹必须停火");
+            Call("AdvanceRifleReload",1f);Set("fireClock",0f);Call("Fire");Assert.That(shots.Count,Is.EqualTo(30));
+            Call("AdvanceRifleReload",1f);Set("fireClock",0f);Call("Fire");Assert.That(shots.Count,Is.EqualTo(31));
+        }
+        /// <summary>通过真实选择事务取得指定强化，避免直接改内部层数。</summary>
+        private int SelectMagazineUpgrade(string kind)
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind==kind);
+            model.State.AddExperience(model.State.RequiredExperience);model.State.Offer(new[]{id,1,2},17);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.True);return id;
+        }
+        [Test] public void MagazineUpgradeAddsThreeRoundsWithoutRefillingCurrentMagazine()
+        {
+            Call("EnsureRifleMagazine");for(int i=0;i<8;i++)Assert.That(Call("TryConsumeRifleRound"),Is.True);
+            int id=SelectMagazineUpgrade("Magazine");SelectMagazineUpgrade("Magazine");
+            Assert.That(model.RifleAmmo,Is.EqualTo(22));Assert.That(model.RifleMagazineSize,Is.EqualTo(36));
+            Assert.That(system.TryGetRifleUpgradeDetails(id,out var magazine,out var current,out var next),Is.True);
+            Assert.That(magazine,Is.True);Assert.That(current,Is.EqualTo(36));Assert.That(next,Is.EqualTo(39));
+            for(int i=0;i<22;i++)Call("TryConsumeRifleRound");Call("AdvanceRifleReload",2f);Assert.That(model.RifleAmmo,Is.EqualTo(36));
+        }
+        [Test] public void ReloadUpgradeKeepsActiveTimerAndStopsAtOneSecond()
+        {
+            for(int i=0;i<30;i++)Call("TryConsumeRifleRound");Call("AdvanceRifleReload",.5f);
+            int id=SelectMagazineUpgrade("Reload");Assert.That(model.RifleReloadTimeRemaining,Is.EqualTo(1.5f));
+            for(int i=0;i<4;i++)SelectMagazineUpgrade("Reload");
+            Assert.That(system.TryGetRifleUpgradeDetails(id,out _,out var current,out _),Is.True);Assert.That(current,Is.EqualTo(1));
+            Call("AdvanceRifleReload",1.5f);for(int i=0;i<30;i++)Call("TryConsumeRifleRound");Assert.That(model.RifleReloadTimeRemaining,Is.EqualTo(1f));
+            model.State.AddExperience(model.State.RequiredExperience);Call("Offer");Assert.That(model.UpgradeChoices,Has.No.Member(id));
+        }
+        [Test] public void ReloadFreezesDuringPauseAndResetsForNewRun()
+        {
+            UIHelper.ResetForTests();architecture.RegisterModel(new AppStateModel());architecture.GetModel<AppStateModel>().CurrentState.Value=AppState.Playing;
+            Set("navigation",new SurvivorNavigation(30.5f,30.5f,.5f,Array.Empty<ArcadeObstacleDefinition>()));Set("spawnClock",100f);
+            for(int i=0;i<30;i++)Call("TryConsumeRifleRound");system.SetPaused(true);Call("TickFrame",.05f);Assert.That(model.RifleReloadTimeRemaining,Is.EqualTo(2f));
+            system.SetPaused(false);Call("TickFrame",.05f);Assert.That(model.RifleReloadTimeRemaining,Is.LessThan(2f));
+            system.Stop();Assert.That(model.RifleAmmo,Is.Zero);Assert.That(model.RifleReloadTimeRemaining,Is.Zero);
+            model.State=new SurvivorRunState(10,5);Call("EnsureRifleMagazine");Assert.That(model.RifleAmmo,Is.EqualTo(30));
+        }
+        [Test] public void MissingTargetAndProjectileBudgetDoNotConsumeAmmoAndDroneKeepsFiring()
+        {
+            Call("EnsureRifleMagazine");Call("Fire");Assert.That(model.RifleAmmo,Is.EqualTo(30));
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=100,Position=new Vector2(2,0)});
+            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");for(int i=0;i<config.MaxProjectiles;i++)shots.Add(1000+i,new ArcadeProjectileRuntime());
+            Call("Fire");Assert.That(model.RifleAmmo,Is.EqualTo(30));shots.Clear();
+            for(int i=0;i<30;i++)Call("TryConsumeRifleRound");model.Loadout.TryUpgrade("Drone",5);Call("TickDrone",.01f);
+            Assert.That(shots.Values.Single().SourceWeaponId,Is.EqualTo("survivor.drone"));Assert.That(model.RifleAmmo,Is.Zero);
+        }
         /// <summary>拾取卡展示包含基础半径的真实数值，后续升级持续累加。</summary>
         [Test] public void PickupUpgradeDetailsIncludeBaseRadiusAndCurrentLevels()
         {

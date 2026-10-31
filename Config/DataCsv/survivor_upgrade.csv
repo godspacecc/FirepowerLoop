@@ -7,3 +7,5 @@
 ,10,survivor.pickup,Pickup,0.25,3,12
 ,12,survivor.rifle,Rifle,1,5,4
 ,15,survivor.drone,Drone,1,5,5
+,10,survivor.magazine,Magazine,0.1,2147483647,0
+,10,survivor.reload,Reload,0.2,1,5

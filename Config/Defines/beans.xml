@@ -654,6 +654,10 @@
         <var name="PickupRadius" type="float"/>
         <var name="MinimumSpawnDistance" type="float"/>
         <var name="AimRange" type="float"/>
+        <!-- 步枪弹夹与无限备弹自动换弹参数。 -->
+        <var name="RifleMagazineCapacity" type="int"/>
+        <var name="RifleReloadSeconds" type="float"/>
+        <var name="RifleMinimumReloadSeconds" type="float"/>
     </bean>
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorUpgradeConfig" group="e">

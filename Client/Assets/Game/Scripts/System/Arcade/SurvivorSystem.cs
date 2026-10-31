@@ -76,7 +76,7 @@ namespace Game
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
             if(!TryPrepare(out error))return false;
             Stop();var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
-            m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");
+            m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
             navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();spawnIndex=0;
@@ -86,7 +86,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();sizedNavigation.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.Choices=Array.Empty<int>();}
+        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();sizedNavigation.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -118,7 +118,7 @@ namespace Game
             if(!TryGetUpgradeDetails(id,out _,out var currentBonus,out var nextBonus,out _)||config.Upgrades[id-1].Kind!="Pickup")return false;
             currentRadius=config.PickupRadius+Bonus("Pickup");nextRadius=currentRadius+nextBonus-currentBonus;return true;
         }
-        public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升",_=>"强化"};}
+        public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升","Magazine"=>"弹夹容量提升","Reload"=>"换弹加速",_=>"强化"};}
         /// <summary>武器卡片读当前及下一等级，未获取时当前参数为空。</summary>
         public bool TryGetWeaponUpgrade(int id,out string kind,out int level,out SurvivorWeaponLevelDefinition current,out SurvivorWeaponLevelDefinition next)
         {
@@ -142,7 +142,7 @@ namespace Game
                 if(definition.Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0){dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=facing;droneFireClock=0;}
                 m.Loadout.TryUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind));
             }
-            int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
+            UpdateRifleCapacity();int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
         }
         private double Bonus(string kind){double value=0;for(int i=0;i<config.Upgrades.Count;i++)if(config.Upgrades[i].Kind==kind)value+=config.Upgrades[i].BonusAtLevel(Model.State.UpgradeLevel(i+1));return value;}
         /// <summary>已有武器只提供升级，满槽/满级过滤；首次选择保底无人机。</summary>
@@ -185,7 +185,7 @@ namespace Game
             if(spawnClock<=0){Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             navigation.SetTarget(player);
             TickEnemies(dt);
-            Fire();TickDrone(dt);AdvanceBullets(dt);
+            AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             foreach(var e in enemies.Values)
@@ -236,7 +236,7 @@ namespace Game
             if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;var candidates=enemies.Values.ToArray();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
             long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>view.IsArenaTargetVisible(e.Position)&&!Blocked(player,e.Position)).ToArray());
-            if(target==0)return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
+            if(target==0||!TryConsumeRifleRound())return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
         /// <summary>常驻无人机优先保护玩家附近目标；升级暂停和结算时此入口不执行。</summary>

@@ -918,5 +918,9 @@
   "ui.online.error.locked": "账号暂时锁定，请稍后再试",
   "ui.online.error.disabled": "账号已停用",
   "ui.online.error.banned": "账号已封禁",
-  "ui.survivor.upgrade.pickup_detail": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
+  "ui.survivor.upgrade.pickup_detail": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米",
+  "ui.survivor.upgrade.8.title": "弹夹容量提升",
+  "ui.survivor.upgrade.9.title": "换弹加速",
+  "ui.survivor.upgrade.magazine_detail": "弹夹容量：{0} 发 → {1} 发\n本次增加 {2} 发（基础容量的10%）",
+  "ui.survivor.upgrade.reload_detail": "换弹时间：{0} 秒 → {1} 秒\n本次缩短 {2} 秒"
 }
