@@ -87,13 +87,11 @@ namespace Game
 
         public static LocalizationJsonEditorState LoadStateFromProject()
         {
-            var languagesJson = LoadAssetText(LanguageConfigPath);
-            var languageConfig = ParseLanguageConfig(languagesJson);
-            var jsonByLanguage = languageConfig.Languages.ToDictionary(
-                language => language.Code,
-                language => LoadAssetText(GetLanguageAssetPath(language.Code)),
-                StringComparer.Ordinal);
-            return LoadState(languagesJson, jsonByLanguage);
+            var tables = LocalizationValidatorMenu.LoadJsonTables();
+            foreach (var pair in tables)
+                if (!RuntimeJson.TryParseStringTable(pair.Value, out _))
+                    throw new InvalidDataException($"语言文件JSON无效：{pair.Key}.json");
+            return LoadState(File.ReadAllText(LanguageConfigPath), tables);
         }
 
         public static LocalizationJsonEditorState LoadStateForTests(
@@ -143,6 +141,12 @@ namespace Game
 
         public static void SaveStateToProject(LocalizationJsonEditorState state)
         {
+            SaveStateWithSnapshot(state, CaptureDiskSnapshot());
+        }
+
+        /// <summary>窗口传入载入时基线，准备文件后再次核对，避免覆盖准备期间的外部变更。</summary>
+        public static void SaveStateWithSnapshot(LocalizationJsonEditorState state, string expectedSnapshot)
+        {
             ValidateStateForSave(state);
             var jsonByLanguage = state.ToJsonByLanguage();
             var report = LocalizationValidator.ValidateJsonTables(jsonByLanguage);
@@ -151,12 +155,9 @@ namespace Game
                 throw new InvalidDataException(string.Join("\n", report.Issues.Select(issue => issue.ToString())));
             }
 
-            Directory.CreateDirectory(LocalizationAssetRoot);
-            File.WriteAllText(LanguageConfigPath, BuildLanguagesJson(state), Encoding.UTF8);
-            foreach (var pair in jsonByLanguage)
-            {
-                File.WriteAllText(GetLanguageAssetPath(pair.Key), pair.Value, Encoding.UTF8);
-            }
+            var files = jsonByLanguage.ToDictionary(pair => GetLanguageAssetPath(pair.Key), pair => pair.Value, StringComparer.Ordinal);
+            files.Add(LanguageConfigPath, BuildLanguagesJson(state));
+            WriteLanguageFiles(files, expectedSnapshot);
 
             // 语言文件已落盘；后续失败需如实报告阶段，不能声称代码已生成。
             try
@@ -167,6 +168,73 @@ namespace Game
             catch (Exception exception)
             {
                 throw new InvalidOperationException($"文本表已保存，但文本常量同步未完成：{exception.Message}", exception);
+            }
+        }
+
+        /// <summary>保存前比较全部语言JSON的字节快照，包含未启用语言，防止覆盖外部修改。</summary>
+        public static string CaptureDiskSnapshot()
+        {
+            if (!Directory.Exists(LocalizationAssetRoot))
+                throw new DirectoryNotFoundException(LocalizationAssetRoot);
+            var snapshot = new JObject();
+            foreach (string path in Directory.GetFiles(LocalizationAssetRoot, "*.json").OrderBy(path => path, StringComparer.Ordinal))
+                snapshot[path] = Convert.ToBase64String(File.ReadAllBytes(path));
+            return snapshot.ToString(Newtonsoft.Json.Formatting.None);
+        }
+
+        /// <summary>先准备所有临时文件，再替换；异常时逆序恢复已替换项并报告恢复失败。</summary>
+        private static void WriteLanguageFiles(Dictionary<string, string> files, string expectedSnapshot)
+        {
+            var originals = new Dictionary<string, byte[]>(StringComparer.Ordinal);
+            var temporary = new Dictionary<string, string>(StringComparer.Ordinal);
+            var written = new List<string>();
+            try
+            {
+                foreach (var pair in files)
+                {
+                    originals[pair.Key] = File.Exists(pair.Key) ? File.ReadAllBytes(pair.Key) : null;
+                    string temp = pair.Key + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                    temporary.Add(pair.Key, temp);
+                    File.WriteAllText(temp, pair.Value, Encoding.UTF8);
+                }
+                if (expectedSnapshot != CaptureDiskSnapshot())
+                    throw new IOException("准备保存期间磁盘文件发生变化，已取消写入。");
+                foreach (var pair in temporary)
+                {
+                    if (File.Exists(pair.Key)) File.Replace(pair.Value, pair.Key, null);
+                    else File.Move(pair.Value, pair.Key);
+                    written.Add(pair.Key);
+                }
+            }
+            catch (Exception exception)
+            {
+                var failures = new List<string>();
+                foreach (string path in written.AsEnumerable().Reverse())
+                {
+                    try
+                    {
+                        if (originals[path] == null) File.Delete(path);
+                        else
+                        {
+                            File.WriteAllBytes(temporary[path], originals[path]);
+                            if (File.Exists(path)) File.Replace(temporary[path], path, null);
+                            else File.Move(temporary[path], path);
+                            if (!File.ReadAllBytes(path).SequenceEqual(originals[path]))
+                                throw new IOException("恢复后内容不一致");
+                        }
+                    }
+                    catch (Exception recovery) { failures.Add(path + "：" + recovery.Message); }
+                }
+                throw new IOException("语言文件保存失败：" + exception.Message +
+                    (failures.Count == 0 ? "；已恢复本次已替换项。" : "；恢复未完成：" + string.Join("；", failures)), exception);
+            }
+            finally
+            {
+                foreach (string temp in temporary.Values)
+                {
+                    try { if (File.Exists(temp)) File.Delete(temp); }
+                    catch (Exception exception) { Debug.LogWarning($"[本地化] 临时文件未清理：{temp}；{exception.Message}"); }
+                }
             }
         }
 
@@ -526,6 +594,10 @@ namespace Game
         private string newLanguageCode = string.Empty;
         private string newLanguageLabel = string.Empty;
         private string status = string.Empty;
+        // 草稿与磁盘基线分别记录；SessionState跨窗口关闭和脚本重载保留，退出Unity后不保留。
+        private string diskBaseline;
+        private string cleanDraft;
+        private string DraftKey => "FirepowerLoop.LocalizationDraft." + Application.dataPath;
 
         [MenuItem(MenuPath)]
         public static void Open()
@@ -538,7 +610,7 @@ namespace Game
         private static void ConfigureWindowForOpen(LocalizationJsonEditorWindow window)
         {
             var minimumSize = new Vector2(WindowMinWidth, WindowMinHeight);
-            window.titleContent = new GUIContent("本地化 JSON");
+            window.titleContent = new GUIContent("多语言文本编辑器");
             window.minSize = minimumSize;
 
             var currentPosition = window.position;
@@ -556,21 +628,74 @@ namespace Game
 
         private void OnEnable()
         {
+            string cached = SessionState.GetString(DraftKey, string.Empty);
+            if (!string.IsNullOrEmpty(cached))
+            {
+                try
+                {
+                    var draft = JObject.Parse(cached);
+                    diskBaseline = draft.Value<string>("baseline");
+                    cleanDraft = draft.Value<string>("clean");
+                    var data = (JObject)draft["data"];
+                    var languages = ((JArray)data["languages"]).Select(item => new LocalizationJsonLanguage(item.Value<string>("code"), item.Value<string>("label"))).ToList();
+                    var rows = new List<LocalizationJsonRow>();
+                    foreach (JObject item in (JArray)data["rows"])
+                    {
+                        var row = new LocalizationJsonRow(item.Value<string>("key"));
+                        foreach (var text in ((JObject)item["texts"]).Properties()) row.SetText(text.Name, text.Value.Value<string>());
+                        rows.Add(row);
+                    }
+                    state = new LocalizationJsonEditorState(languages, rows, data.Value<string>("default"), data.Value<string>("comment"));
+                    LocalizationJsonEditorUtility.RefreshMemberNames(rows);
+                    status = "已恢复本次Unity会话的未保存草稿；保存前将检查外部变化。";
+                    return;
+                }
+                catch (Exception exception) { status = "失败：草稿恢复失败，请重载磁盘文件。" + exception.Message; return; }
+            }
             Reload();
         }
+
+        /// <summary>完整序列化草稿，保留尚未通过校验的空键或重复键，不写正式文件。</summary>
+        private JObject DraftData()
+        {
+            return new JObject {
+                ["languages"] = new JArray(state.Languages.Select(item => new JObject { ["code"] = item.Code, ["label"] = item.Label })),
+                ["rows"] = new JArray(state.Rows.Select(row => new JObject { ["key"] = row.Key, ["texts"] = JObject.FromObject(row.Texts) })),
+                ["default"] = state.DefaultLanguageCode, ["comment"] = state.CommentLanguageCode
+            };
+        }
+
+        /// <summary>标记并缓存未保存草稿；不将运行时缓存当作跨Unity退出的备份。</summary>
+        private void PersistDraft()
+        {
+            if (state == null) return;
+            var data = DraftData();
+            bool dirty = data.ToString(Newtonsoft.Json.Formatting.None) != cleanDraft;
+            titleContent = new GUIContent("多语言文本编辑器" + (dirty ? " *" : ""));
+            if (!dirty) { SessionState.EraseString(DraftKey); return; }
+            SessionState.SetString(DraftKey, new JObject { ["baseline"] = diskBaseline, ["clean"] = cleanDraft, ["data"] = data }.ToString(Newtonsoft.Json.Formatting.None));
+        }
+
+        private void OnDisable() { PersistDraft(); }
 
         private void OnGUI()
         {
             if (state == null)
             {
-                Reload();
+                EditorGUILayout.HelpBox(status, MessageType.Error);
+                if (GUILayout.Button("重新加载磁盘文件")) Reload();
+                return;
             }
-
+            try
+            {
             DrawToolbar();
+            if (state == null) return;
             DrawLanguageBar();
             DrawAddKeyBar();
             DrawTable();
             DrawStatusBar();
+            }
+            finally { PersistDraft(); }
         }
 
         private void DrawToolbar()
@@ -579,6 +704,7 @@ namespace Game
             if (GUILayout.Button("重载", EditorStyles.toolbarButton, GUILayout.Width(60f)))
             {
                 Reload();
+                if (state == null) { EditorGUILayout.EndHorizontal(); return; }
             }
 
             if (GUILayout.Button("保存", EditorStyles.toolbarButton, GUILayout.Width(60f)))
@@ -727,7 +853,7 @@ namespace Game
 
                 newLanguageCode = string.Empty;
                 newLanguageLabel = string.Empty;
-                status = $"已添加语言 {code}，默认复制 {state.DefaultLanguageCode} 文本。";
+                status = $"已添加语言 {code}，复制了 {state.DefaultLanguageCode} 文本作为待翻译内容，尚未完成翻译。";
             }
             catch (Exception exception)
             {
@@ -743,7 +869,7 @@ namespace Game
                 state.CommentLanguageCode = state.DefaultLanguageCode;
             }
 
-            status = $"已从语言列表移除 {code}。保存后运行时不会再列出它。";
+            status = $"已从语言列表移除 {code}。保存后运行时不会再列出它，原语言文件保留。";
         }
 
         private void AddKey()
@@ -774,16 +900,28 @@ namespace Game
             status = $"已添加 key：{key}";
         }
 
+        /// <summary>有草稿时先确认；严格加载失败后停止编辑，不回退为空表。</summary>
         private void Reload()
         {
+            if ((!string.IsNullOrEmpty(SessionState.GetString(DraftKey, string.Empty)) ||
+                 (state != null && DraftData().ToString(Newtonsoft.Json.Formatting.None) != cleanDraft)) &&
+                !EditorUtility.DisplayDialog("重载文本表", "重载成功后将丢弃未保存草稿，是否继续？", "重载", "取消")) return;
             try
             {
-                state = LocalizationJsonEditorUtility.LoadStateFromProject();
-                status = $"已载入 {state.Languages.Count} 种语言，{state.Rows.Count} 条文本。";
+                string before = LocalizationJsonEditorUtility.CaptureDiskSnapshot();
+                var loaded = LocalizationJsonEditorUtility.LoadStateFromProject();
+                if (before != LocalizationJsonEditorUtility.CaptureDiskSnapshot()) throw new IOException("加载期间语言文件发生变化，请重试。");
+                state = loaded;
+                diskBaseline = before;
+                cleanDraft = DraftData().ToString(Newtonsoft.Json.Formatting.None);
+                SessionState.EraseString(DraftKey);
+                status = $"已载入 {state.Languages.Count} 种语言，{state.Rows.Count} 条文本。草稿仅在本次Unity会话内保留，退出前请保存。";
             }
             catch (Exception exception)
             {
-                status = $"失败：{exception.Message}";
+                PersistDraft();
+                state = null;
+                status = $"失败：加载未完成，已停止编辑；已有缓存草稿仍保留。{exception.Message}";
             }
         }
 
@@ -792,7 +930,12 @@ namespace Game
             try
             {
                 LocalizationJsonEditorUtility.RefreshMemberNames(state.Rows);
-                LocalizationJsonEditorUtility.SaveStateToProject(state);
+                if (diskBaseline == null || diskBaseline != LocalizationJsonEditorUtility.CaptureDiskSnapshot())
+                    throw new IOException("磁盘语言文件已被外部修改，未写入；草稿仍保留，请核对并重载后重新应用修改。");
+                LocalizationJsonEditorUtility.SaveStateWithSnapshot(state, diskBaseline);
+                diskBaseline = LocalizationJsonEditorUtility.CaptureDiskSnapshot();
+                cleanDraft = DraftData().ToString(Newtonsoft.Json.Formatting.None);
+                SessionState.EraseString(DraftKey);
                 status = $"已保存 {state.Languages.Count} 种语言，{state.Rows.Count} 条文本，文本常量已同步（内容相同时不重写）。";
             }
             catch (Exception exception)
