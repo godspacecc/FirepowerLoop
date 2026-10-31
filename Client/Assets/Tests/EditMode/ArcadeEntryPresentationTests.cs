@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 using System.Reflection;
 using System;
 using System.Collections.Generic;
@@ -195,6 +195,57 @@ namespace Game.Tests
                 Assert.That(errors, Is.Empty);
             }
             finally { preparation.CompleteAll(); if (instance != null) Object.DestroyImmediate(instance); }
+        }
+
+        [TestCase("entryPreparing")]
+        [TestCase("arcadePreparationActive")]
+        [TestCase("mapLoadingActive")]
+        public void LoadingCompletionWaitsForEveryOwner(string owner)
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Common/Loading.prefab"));
+            try
+            {
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                var ctrl = new LoadingUICtrl();
+                var ui = instance.GetComponent<LoadingUI>();
+                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(ctrl, ui);
+                typeof(LoadingUICtrl).GetField(owner, flags).SetValue(ctrl, true);
+                typeof(LoadingUICtrl).GetMethod("SetMapProgress", flags).Invoke(ctrl, new object[] { 1f });
+                Assert.That(ui.PercentText.text, Is.Not.EqualTo("100%"), "准备所有者未释放时不能显示完成");
+                Assert.That(ui.ProgressSlider.gameObject.activeSelf, Is.True, "后续准备仍纳入同一进度条");
+                typeof(LoadingUICtrl).GetField(owner, flags).SetValue(ctrl, false);
+                typeof(LoadingUICtrl).GetMethod("SetMapProgress", flags).Invoke(ctrl, new object[] { 1f });
+                Assert.That(ui.PercentText.text, Is.EqualTo("100%"));
+            }
+            finally { Object.DestroyImmediate(instance); }
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void LoadingEntryStagesIgnoreOldRequestsAndOnlyCompleteOnSuccess(bool succeeded)
+        {
+            var instance = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Common/Loading.prefab"));
+            try
+            {
+                var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                var ctrl = new LoadingUICtrl();
+                var ui = instance.GetComponent<LoadingUI>();
+                typeof(BaseUICtrl).GetField("BaseUI", flags).SetValue(ctrl, ui);
+                typeof(LoadingUICtrl).GetField("entryPreparing", flags).SetValue(ctrl, true);
+                typeof(LoadingUICtrl).GetField("entryRequestId", flags).SetValue(ctrl, 2);
+                typeof(LoadingUICtrl).GetField("mapProgress", flags).SetValue(ctrl, 1f);
+                ctrl.ReportEntryPreparation(2, .85f, "ui.arcade.island.loading");
+                Assert.That(ui.PercentText.text, Is.EqualTo("85%"));
+                ctrl.ReportEntryPreparation(1, .99f, "ui.loading.stage.Scene");
+                ctrl.EndEntryPreparation(1);
+                Assert.That(ui.PercentText.text, Is.EqualTo("85%"));
+                ctrl.ReportEntryPreparation(2, .95f, "ui.loading.stage.Activate");
+                Assert.That(ui.PercentText.text, Is.EqualTo("95%"));
+                Assert.That(ui.MessageText.text, Is.EqualTo(Loc.T("ui.loading.stage.Activate")));
+                ctrl.EndEntryPreparation(2, succeeded);
+                Assert.That(ui.PercentText.text == "100%", Is.EqualTo(succeeded));
+            }
+            finally { Object.DestroyImmediate(instance); }
         }
 
         private static ArcadeResumeUICtrl BindVisible(GameObject instance)

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Globalization;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -62,17 +62,25 @@ namespace Game
         /// <summary>初始安全节点落盘后切换正式街机地图；任一步失败保留节点并返回主界面供重试。</summary>
         internal static async UniTask EnterNewRunAsync(ArcadeRunSystem system)
         {
-            var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
-            var mapResult = await flow.EnterArenaMapAsync();
-            if (mapResult.Success && TryEnterArena(system, out var error))
+            var loading = UIHelper.ShowUI<LoadingUICtrl>();
+            int loadingRequest = loading.BeginEntryPreparation(MapIds.Arcade);
+            bool ready = false;
+            try
             {
-                UIHelper.HideUI<StartUICtrl>();
-                UIHelper.ShowUI<ArcadeHudUICtrl>();
-                return;
+                var flow = Game.Interface.GetSystem<ArcadeSceneFlowSystem>();
+                var mapResult = await flow.EnterArenaMapAsync();
+                if (mapResult.Success && TryEnterArena(system, out var error))
+                {
+                    UIHelper.HideUI<StartUICtrl>();
+                    UIHelper.ShowUI<ArcadeHudUICtrl>();
+                    ready = true;
+                    return;
+                }
+                // 已落盘的新局也属于玩家进度；失败只返回菜单，绝不自动放弃或覆盖。
+                await flow.ReturnToMainMenuAsync();
+                ReportNewRunFailure(mapResult.Success ? Game.Interface.GetSystem<ArcadeCombatSystem>().LastEntryError : mapResult.Error);
             }
-            // 已落盘的新局也属于玩家进度；失败只返回菜单，绝不自动放弃或覆盖。
-            await flow.ReturnToMainMenuAsync();
-            ReportNewRunFailure(mapResult.Success ? Game.Interface.GetSystem<ArcadeCombatSystem>().LastEntryError : mapResult.Error);
+            finally { loading.EndEntryPreparation(loadingRequest, ready); }
         }
 
         internal static string RollbackNewRun(ArcadeRunSystem system, string entryError)
@@ -263,6 +271,9 @@ namespace Game
             int generation = ++operationGeneration;
             bool IsCurrent() => generation == operationGeneration && owner != null &&
                 ReferenceEquals(owner, BaseUI) && IsShow();
+            LoadingUICtrl loading = null;
+            int loadingRequest = 0;
+            bool ready = false;
             try
             {
                 var preparation = this.GetUtility<IGameplayResourcePreparation>();
@@ -274,6 +285,8 @@ namespace Game
                     Set(UI.TextMessage, Loc.T("ui.arcade.no_pending_run"));
                     return;
                 }
+                loading = UIHelper.ShowUI<LoadingUICtrl>();
+                loadingRequest = loading.BeginEntryPreparation(MapIds.Arcade);
                 var mapResult = await this.GetSystem<ArcadeSceneFlowSystem>().EnterArenaMapAsync();
                 if (!mapResult.Success)
                 {
@@ -289,6 +302,7 @@ namespace Game
                 if (IsCurrent()) Hide();
                 UIHelper.HideUI<StartUICtrl>();
                 UIHelper.ShowUI<ArcadeHudUICtrl>();
+                ready = true;
             }
             catch (Exception exception)
             {
@@ -297,6 +311,7 @@ namespace Game
             }
             finally
             {
+                loading?.EndEntryPreparation(loadingRequest, ready);
                 // 仅当前可见请求恢复交互；旧回调不能清除重开窗口中新请求的等待状态。
                 if (IsCurrent())
                 {

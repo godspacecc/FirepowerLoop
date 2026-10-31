@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
@@ -302,7 +302,7 @@ namespace Game
                 context = MapPreparationContext.CreateArcade(mapId, nextMapInstanceId++, candidateHandle.Context, spawns);
                 ReportStage(MapLoadingStage.Players);
                 ReportProgress(.85f);
-                var prepare = await PrepareControllers(context, token);
+                var prepare = await PrepareControllers(context, token, ReportProgress);
                 preparedCount = prepare.PreparedCount;
                 if (!prepare.Result.Success || token.IsCancellationRequested || requestGeneration != generation)
                 {
@@ -508,17 +508,20 @@ namespace Game
             }
         }
 
-        private async UniTask<(MapControllerResult Result, int PreparedCount)> PrepareControllers(MapPreparationContext context, CancellationToken token)
+        private async UniTask<(MapControllerResult Result, int PreparedCount)> PrepareControllers(MapPreparationContext context, CancellationToken token, Action<float> reportProgress)
         {
             var arcadeProjectiles = await projectileCtrl.PrepareMapAsync(context, token);
             if (!arcadeProjectiles.Success)
                 return (arcadeProjectiles, 0);
+            reportProgress(.875f);
             var arcadePlayer = await playerCtrl.PrepareMapAsync(context, token);
             if (!arcadePlayer.Success)
                 return (arcadePlayer, 1);
+            reportProgress(.9f);
             var arcadeEnemies = await enemyCtrl.PrepareMapAsync(context, token);
             if (!arcadeEnemies.Success)
                 return (arcadeEnemies, 2);
+            reportProgress(.925f);
             var arcadeLoot = await lootCtrl.PrepareMapAsync(context, token);
             return arcadeLoot.Success ? (MapControllerResult.Ok(), 4) : (arcadeLoot, 3);
         }

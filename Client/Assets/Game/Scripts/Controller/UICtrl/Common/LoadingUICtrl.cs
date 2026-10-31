@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using QFramework;
@@ -22,6 +22,9 @@ namespace Game
         private bool entryPreparing;
         /// <summary>隔离旧入口的异步清理，避免关闭后来发起的加载请求。</summary>
         private int entryRequestId;
+        /// <summary>场景之外的实际入场步骤进度与提示；只接受当前入口令牌。</summary>
+        private float entryProgress;
+        private string entryStageKey;
         /// <summary>入口准备期固定幸存者身份，不能借用残留闯关或联机存档选图。</summary>
         private bool survivorEntryArtwork;
         /// <summary>基础场景完成后的地图内容、相机与安全节点准备，独立于场景加载进度。</summary>
@@ -115,6 +118,7 @@ namespace Game
                 mapLoadingStartedAt = DateTime.Now;
             }
             arcadePreparationActive = true;
+            entryProgress = Mathf.Max(entryProgress, .9f);
             arcadePreparationFailed = evt.Snapshot.CanRetryCompletion;
             mapFailureReason = evt.Snapshot.IslandPreparationError;
             mapError = arcadePreparationFailed ? FormatMapFailure() : null;
@@ -223,6 +227,8 @@ namespace Game
 
         private void RenderMapStage()
         {
+            if (entryPreparing && !mapLoadingActive && !string.IsNullOrEmpty(entryStageKey))
+            { UI.MessageText.text = Loc.T(entryStageKey); return; }
             if (arcadePreparationActive) { UI.MessageText.text = Loc.T("ui.arcade.island.loading"); return; }
             if(!mapStage.HasValue){UI.MessageText.text=Loc.T("ui.loading.scene_status");return;}
             UI.MessageText.text=Loc.T("ui.loading.stage."+mapStage.Value);
@@ -239,6 +245,7 @@ namespace Game
             mapLoadingActive = true;
             baseMapLoading = false;
             mapProgress = 0f;
+            entryProgress = 0f;
             mapError = null;
             if (downloadActive) downloadDismissed = true;
             displayMode = DisplayMode.Map;
@@ -260,17 +267,30 @@ namespace Game
         {
             survivorEntryArtwork=survivor;
             entryPreparing = true;
+            entryProgress = 0f;
+            entryStageKey = "ui.optional.expedition.preparing";
             int requestId = ++entryRequestId;
             OnLoadingStarted(new MapLoadingStartedEvent(mapId));
             mapLoadingActive = false;
             return requestId;
         }
 
+        /// <summary>真实步骤完成后推进入口进度；旧令牌和无效数值不得覆盖新请求。</summary>
+        public void ReportEntryPreparation(int requestId, float progress, string stageKey)
+        {
+            if (!entryPreparing || requestId != entryRequestId || float.IsNaN(progress) || float.IsInfinity(progress)) return;
+            entryProgress = Mathf.Max(entryProgress, Mathf.Clamp(progress, 0f, .99f));
+            entryStageKey = stageKey;
+            if (UI != null) RefreshPresentation();
+        }
+
         /// <summary>仅释放对应入口的遮罩；地图失败详情保留，玩家可返回原菜单重试。</summary>
-        public void EndEntryPreparation(int requestId)
+        public void EndEntryPreparation(int requestId, bool succeeded = true)
         {
             if (!entryPreparing || requestId != entryRequestId) return;
             entryPreparing = false;
+            // 失败清理不冒充成功：可以返回菜单，但不能补出100%。
+            if (!succeeded) mapProgress = Mathf.Min(mapProgress, .99f);
             if(!mapLoadingActive&&string.IsNullOrEmpty(mapError))survivorEntryArtwork=false;
             if (UI == null) return;
             RefreshPresentation();
@@ -282,6 +302,12 @@ namespace Game
             if (evt.MapId != loadingMapId) return;
             if(mapStage.HasValue)RenderMapStage();
             mapLoadingActive = false;
+            mapProgress = 1f;
+            if (entryPreparing)
+            {
+                entryProgress = Mathf.Max(entryProgress, .8f);
+                entryStageKey = "ui.arcade.island.loading";
+            }
             if (!arcadePreparationActive) mapError = null;
             if(!entryPreparing&&string.IsNullOrEmpty(mapError))survivorEntryArtwork=false;
             if (displayMode == DisplayMode.ResourceDownload) return;
@@ -318,11 +344,16 @@ namespace Game
         private void SetMapProgress(float value)
         {
             var progress = UnityEngine.Mathf.Clamp01(value);
-            // 场景百分比不能代表后续内容与安全节点进度；此阶段只展示真实等待状态。
-            UI.ProgressSlider.gameObject.SetActive(!arcadePreparationActive);
-            UI.PercentText.gameObject.SetActive(!arcadePreparationActive);
+            // 地图占前80%，后续场地和入口持有者全部释放才允许100%；不按时间伪推进。
+            if (!CanHide() || !string.IsNullOrEmpty(mapError))
+                progress = Mathf.Min(.99f, Mathf.Max(progress * .8f, entryProgress,
+                    arcadePreparationActive ? .9f : 0f));
+            UI.ProgressSlider.gameObject.SetActive(true);
+            UI.PercentText.gameObject.SetActive(true);
             UI.ProgressSlider.value = progress;
-            UI.PercentText.text = $"{(int)(progress * 100f)}%";
+            // 消除阶段常量的浮点截断误差，未完成仍严格小于100%。
+            int percent = progress >= 1f ? 100 : Mathf.Min(99, Mathf.FloorToInt(progress * 100f + .0001f));
+            UI.PercentText.text = $"{percent}%";
             RenderMapStage();
         }
 

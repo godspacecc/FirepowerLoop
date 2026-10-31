@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using QFramework;
@@ -40,6 +40,7 @@ namespace Game
             busy = true;
             shownBattleError = null;
             bool entered = false;
+            bool ready = false;
             LoadingUICtrl loading=null;
             int loadingRequest=0;
             using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, lifetime.Token);
@@ -52,8 +53,10 @@ namespace Game
                 if (!result.Success) return result;
                 entered = true;
                 linked.Token.ThrowIfCancellationRequested();
+                loading.ReportEntryPreparation(loadingRequest, .82f, "ui.loading.stage.Players");
                 if (!system.TryStart(out error)) throw new InvalidOperationException(error);
                 // 场景句柄就绪并不等于农场资源就绪；错误仍属于这次入场事务。
+                loading.ReportEntryPreparation(loadingRequest, .85f, "ui.arcade.island.loading");
                 var view = this.GetUtility<IArcadeCombatViewPort>();
                 float deadline = UnityEngine.Time.realtimeSinceStartup + 30f;
                 while (!view.IsRoundLayoutReady)
@@ -64,10 +67,12 @@ namespace Game
                         throw new TimeoutException("草地战场准备超时，请重试");
                     await UniTask.NextFrame(linked.Token);
                 }
+                loading.ReportEntryPreparation(loadingRequest, .95f, "ui.loading.stage.Activate");
                 system.ConfirmBattlePrepared();
                 if (!this.GetSystem<AppStateSystem>().TryTransition(AppState.Playing))
                     throw new InvalidOperationException("幸存者战场无法进入可操作状态");
                 UIHelper.ShowUI<SurvivorHudUICtrl>();
+                ready = true;
                 return ArcadeSceneFlowResult.Ok();
             }
             catch (Exception exception)
@@ -77,7 +82,7 @@ namespace Game
                     await this.GetSystem<ArcadeSceneFlowSystem>().ReturnToMainMenuAsync(showFailureDialog: false);
                 return ArcadeSceneFlowResult.Fail(exception is OperationCanceledException ? "幸存者开局已取消" : exception.Message);
             }
-            finally { loading?.EndEntryPreparation(loadingRequest);busy = false; }
+            finally { loading?.EndEntryPreparation(loadingRequest, ready);busy = false; }
         }
 
         /// <summary>保存结果成功后才释放现场；失败保留已结束结果供再次退出重试。</summary>
