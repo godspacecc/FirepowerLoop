@@ -53,5 +53,38 @@ namespace Game.Tests
             Assert.That(Value<string>(Select(pool,239.99,.99f),"EnemyId"),Is.EqualTo("enemy.arcade.zombie.gaunt"));
             Assert.That(Value<string>(heavy,"EnemyId"),Is.EqualTo("enemy.arcade.zombie.bloated"));
         }
+        /// <summary>均匀抽样覆盖整个概率区间，精确验证各时间段的实际抽取比例。</summary>
+        [TestCase(0d,100,0,0)]
+        [TestCase(119.999d,100,0,0)]
+        [TestCase(120d,60,40,0)]
+        [TestCase(239.999d,60,40,0)]
+        [TestCase(240d,50,35,15)]
+        [TestCase(359.999d,50,35,15)]
+        [TestCase(360d,35,40,25)]
+        [TestCase(479.999d,35,40,25)]
+        [TestCase(480d,20,45,35)]
+        [TestCase(599.999d,20,45,35)]
+        [TestCase(600d,10,50,40)]
+        [TestCase(36000d,10,50,40)]
+        public void TimePhasesProduceApprovedMix(double seconds,int normal,int fast,int heavy)
+        {
+            var pool=Load();var counts=new int[3];
+            for(int i=0;i<1000;i++)
+            {
+                string id=Value<string>(Select(pool,seconds,(i+.5f)/1000),"EnemyId");
+                counts[id=="enemy.arcade.zombie.shambler"?0:id=="enemy.arcade.zombie.gaunt"?1:2]++;
+            }
+            Assert.That(counts,Is.EqualTo(new[]{normal*10,fast*10,heavy*10}));
+        }
+        [TestCase(0)] [TestCase(-1)] [TestCase(101)]
+        public void BrokenPhasePercentagesRejectEntry(int normalPercent)
+        {
+            var tables=new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))));
+            var row=tables.TbSurvivorEnemy.DataList[0];var field=row.GetType().GetField("PhaseWeights");
+            Assert.That(field,Is.Not.Null,"缺少权威分时比例配置");
+            ((int[])field.GetValue(row))[0]=normalPercent;
+            var type=typeof(SurvivorSystem).Assembly.GetType("Game.SurvivorEnemyRoster");
+            Assert.That(()=>type.GetMethod("FromTables").Invoke(null,new object[]{tables}),Throws.TypeOf<TargetInvocationException>().With.InnerException.TypeOf<ArgumentException>());
+        }
     }
 }

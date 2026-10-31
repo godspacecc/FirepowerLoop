@@ -1,0 +1,147 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 24,
+      "PassedTests": 11,
+      "FailedTests": 13,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.4301729"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.ApprovedProportionsAndHeavyUnlockComeFromModeConfig",
+        "Status": "Passed",
+        "Duration": "00:00:00.4150000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0160000",
+        "Message": "  缺少权威分时比例配置\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(-1)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0080000",
+        "Message": "  缺少权威分时比例配置\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(101)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0080000",
+        "Message": "  缺少权威分时比例配置\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.InvalidTimeAndRandomInputAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.1810000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.OnlyApprovedEnemiesAndFastMultipliersRemain",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(0.0d,100,0,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0150000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(119.999d,100,0,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(120.0d,60,40,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0150000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 600\r\n  But was:  615\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(239.999d,60,40,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0120000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 600\r\n  But was:  615\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(240.0d,50,35,15)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0130000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 500\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(359.999d,50,35,15)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0200000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 500\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(360.0d,35,40,25)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0270000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 350\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(479.999d,35,40,25)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0310000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 350\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(480.0d,20,45,35)",
+        "Status": "Failed",
+        "Duration": "00:00:00.1070000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 200\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(599.999d,20,45,35)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0800000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 200\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(600.0d,10,50,40)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0210000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 100\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(36000.0d,10,50,40)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0180000",
+        "Message": "  Expected and actual are both <System.Int32[3]>\r\n  Values differ at index [0]\r\n  Expected: 100\r\n  But was:  533\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.0f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(119.99d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0170000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(120.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(240.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(360.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      }
+    ]
+  }
+}

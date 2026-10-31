@@ -1,0 +1,89 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 15,
+      "PassedTests": 15,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:25.6192028"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApproachingExactMeleeBoundaryStillStartsAndHits",
+        "Status": "Passed",
+        "Duration": "00:00:02.1270000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3580000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.8370000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3270000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.GroundSpawnIgnoresHiddenLaneAndFormerAliveLimit",
+        "Status": "Passed",
+        "Duration": "00:00:01.3770000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HeavySpawnUsesHighHealthSlowSpeedAndLargeBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.3890000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.LargeBodyCannotUseNarrowGapThatSmallBodyCanTraverse",
+        "Status": "Passed",
+        "Duration": "00:00:01.4880000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.NewPhaseOnlyChangesNewSpawns",
+        "Status": "Passed",
+        "Duration": "00:00:01.3690000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ProjectileHitsEnlargedBodyBeyondOrdinaryRadius",
+        "Status": "Passed",
+        "Duration": "00:00:01.3820000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.RealFrameProjectsHeavyScaleAndChecksFullSpawnBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.5690000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.0d,0.0d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.7880000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.7d,0.35d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.3710000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.999d,0.999d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.4760000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnUsesUnlockedRosterAndPerModeStats",
+        "Status": "Passed",
+        "Duration": "00:00:02.1660000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ZombieGrabDamagesAfterWindupAndCancelsOutOfRange",
+        "Status": "Passed",
+        "Duration": "00:00:01.8730000"
+      }
+    ]
+  }
+}

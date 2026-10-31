@@ -38,12 +38,13 @@ namespace Game.Tests
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();}
         private void Prepare(){Assert.That(Call("PrepareEnemyRoster",new object[]{null}),Is.True);}
         /// <summary>同一敌种在4分钟与60分钟出生时，生命、伤害和移速均不增长。</summary>
-        [TestCase(0d)] [TestCase(.7d)] [TestCase(.999d)]
-        public void SpawnStatsStayFixedOverSurvivalTime(double sample)
+        [TestCase(0d,0d)] [TestCase(.7d,.35d)] [TestCase(.999d,.999d)]
+        public void SpawnStatsStayFixedOverSurvivalTime(double sample,double lateSample)
         {
             Prepare();Set("enemyRandom",new SampleRandom(sample));model.State.Advance(240,false);Call("Spawn");
             var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var early=enemies.Values.Single();
-            model.State.Advance(3360,false);Call("Spawn");var late=enemies.Values.Single(e=>e.Id!=early.Id);
+            // 后期抽取比例改变，使用同一敌种在对应概率区间中的样本比较属性。
+            model.State.Advance(3360,false);Set("enemyRandom",new SampleRandom(lateSample));Call("Spawn");var late=enemies.Values.Single(e=>e.Id!=early.Id);
             Assert.That(late.ConfigId,Is.EqualTo(early.ConfigId));
             Assert.That(late.MaxHealth,Is.EqualTo(early.MaxHealth));
             Assert.That(late.Damage,Is.EqualTo(early.Damage));
@@ -55,6 +56,18 @@ namespace Game.Tests
             private readonly double sample;
             public SampleRandom(double sample){this.sample=sample;}
             public override double NextDouble()=>sample;
+        }
+        /// <summary>同一随机位置后期可选到进阶敌人，但不能改写已存活的普通丧尸。</summary>
+        [Test] public void NewPhaseOnlyChangesNewSpawns()
+        {
+            Prepare();Set("enemyRandom",new SampleRandom(.35d));Call("Spawn");
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var old=enemies.Values.Single();
+            var before=(old.ConfigId,old.MaxHealth,old.Damage,old.Speed);
+            Assert.That(old.ConfigId,Is.EqualTo("enemy.arcade.zombie.shambler"));
+            model.State.Advance(600,false);Call("Spawn");
+            var added=enemies.Values.Single(e=>e.Id!=old.Id);
+            Assert.That(added.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));
+            Assert.That((old.ConfigId,old.MaxHealth,old.Damage,old.Speed),Is.EqualTo(before));
         }
         [Test] public void SpawnUsesUnlockedRosterAndPerModeStats()
         {

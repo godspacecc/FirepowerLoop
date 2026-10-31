@@ -1,0 +1,134 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 24,
+      "PassedTests": 24,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.9443987"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.ApprovedProportionsAndHeavyUnlockComeFromModeConfig",
+        "Status": "Passed",
+        "Duration": "00:00:00.1130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.1960000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.BrokenPhasePercentagesRejectEntry(101)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.InvalidTimeAndRandomInputAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.0090000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.OnlyApprovedEnemiesAndFastMultipliersRemain",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(0.0d,100,0,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0160000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(119.999d,100,0,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(120.0d,60,40,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(239.999d,60,40,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(240.0d,50,35,15)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(359.999d,50,35,15)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(360.0d,35,40,25)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(479.999d,35,40,25)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0130000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(480.0d,20,45,35)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(599.999d,20,45,35)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(600.0d,10,50,40)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0190000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.TimePhasesProduceApprovedMix(36000.0d,10,50,40)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0320000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.0f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0830000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(119.99d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(120.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(240.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(360.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      }
+    ]
+  }
+}

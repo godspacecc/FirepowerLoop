@@ -692,7 +692,9 @@
         <var name="Id" type="string"/>
         <var name="EnemyId" type="string#ref=TbEnemy"/>
         <var name="UnlockSeconds" type="float"/>
-        <var name="Weight" type="int"/>
+        <!-- 从0秒开始每档持续PhaseSeconds，最后一档永久保持。 -->
+        <var name="PhaseSeconds" type="float"/>
+        <var name="PhaseWeights" type="(array#sep=;),int"/>
         <var name="HealthMultiplier" type="float"/>
         <var name="DamageMultiplier" type="float"/>
         <var name="SpeedMultiplier" type="float"/>

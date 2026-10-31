@@ -20,7 +20,8 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         EnemyId = _buf.ReadString();
         EnemyId_Ref = null;
         UnlockSeconds = _buf.ReadFloat();
-        Weight = _buf.ReadInt();
+        PhaseSeconds = _buf.ReadFloat();
+        {int __n0 = _buf.ReadSize(); PhaseWeights = new int[__n0];for(var __index0 = 0 ; __index0 < __n0 ; __index0++) { int __e0;__e0 = _buf.ReadInt(); PhaseWeights[__index0] = __e0;}}
         HealthMultiplier = _buf.ReadFloat();
         DamageMultiplier = _buf.ReadFloat();
         SpeedMultiplier = _buf.ReadFloat();
@@ -39,7 +40,8 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly string EnemyId;
     public EnemyConfig EnemyId_Ref;
     public readonly float UnlockSeconds;
-    public readonly int Weight;
+    public readonly float PhaseSeconds;
+    public readonly int[] PhaseWeights;
     public readonly float HealthMultiplier;
     public readonly float DamageMultiplier;
     public readonly float SpeedMultiplier;
@@ -62,7 +64,8 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "Id:" + Id + ","
         + "EnemyId:" + EnemyId + ","
         + "UnlockSeconds:" + UnlockSeconds + ","
-        + "Weight:" + Weight + ","
+        + "PhaseSeconds:" + PhaseSeconds + ","
+        + "PhaseWeights:" + Luban.StringUtil.CollectionToString(PhaseWeights) + ","
         + "HealthMultiplier:" + HealthMultiplier + ","
         + "DamageMultiplier:" + DamageMultiplier + ","
         + "SpeedMultiplier:" + SpeedMultiplier + ","
