@@ -157,10 +157,10 @@ namespace Boot.UI
         }
 
         private bool IsCurrent(int generation) => this && _opened && generation == _generation;
-        /// <summary>纯离线首发隐藏服务器编辑入口；其它模式仍由启动阶段决定可用性。</summary>
+        /// <summary>只有资源启动失败且可编辑时显示入口；正常加载、重试和纯离线模式隐藏。</summary>
         private void SetAvailability(bool available)
         {
-            _entryButton.gameObject.SetActive(!ClientReleasePolicy.OfflineSinglePlayer);
+            _entryButton.gameObject.SetActive(available && _launcher.ShouldShowResourceServer);
             _entryButton.interactable = available;
         }
         private void SetReading(bool reading)

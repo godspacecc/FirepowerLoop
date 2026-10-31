@@ -55,17 +55,28 @@ namespace Game.Tests.Flow
         }
 
         [Test]
-        public void EntrySurvivesBusyAndFailureAndOpensBoundInput()
+        public void EntryOnlyAppearsAfterFailureAndHidesOnRetry()
         {
             var view = _editor.transform.parent.GetComponentInChildren<HotUpdateView>(true);
             view.RenderBusy("启动中");
+            Assert.That(Get<Button>("_entryButton").gameObject.activeInHierarchy, Is.False);
+            typeof(Launcher).GetMethod("ShowFailure", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(_launcher, new object[] { BootFailure.Create(BootFailureCode.PackageVersionRequestFailed,
+                    BootFailureStage.ResourceVersion) });
             Assert.That(Get<Button>("_entryButton").gameObject.activeInHierarchy, Is.True);
-            view.RenderFailure(BootFailure.Create(BootFailureCode.PackageVersionRequestFailed,
-                BootFailureStage.ResourceVersion));
+            Assert.That(Get<Button>("_entryButton").transform.parent.name, Is.EqualTo("ButtonArea"));
+            Assert.That(Get<Button>("_entryButton").GetComponentInChildren<Text>().text, Is.EqualTo("重设服务器"));
             Assert.That(Get<Button>("_entryButton").interactable, Is.True);
             Open();
             Assert.That(Get<GameObject>("_editorPanel").activeSelf, Is.True);
             Assert.That(Get<InputField>("_addressInput").text, Is.EqualTo("http://192.168.2.100:8000"));
+            Get<Button>("_cancelButton").onClick.Invoke();
+            var gate = new UniTaskCompletionSource<string>();
+            ResourceBoot.TestRawInitializationOutcome = () => gate.Task;
+            _launcher.OnRetryClicked();
+            Assert.That(Get<Button>("_entryButton").gameObject.activeInHierarchy, Is.False);
+            gate.TrySetResult("resource-download-failed");
+            Assert.That(Get<Button>("_entryButton").gameObject.activeInHierarchy, Is.True);
         }
 
         [Test]
@@ -152,6 +163,17 @@ namespace Game.Tests.Flow
             Assert.That(Get<GameObject>("_editorPanel").activeSelf, Is.True);
             Assert.That(ResourceServerPreference.TryLoad(_root, out string address, out _), Is.True);
             Assert.That(address, Is.EqualTo("http://192.168.2.112:8000"));
+        }
+
+        [TestCase(BootFailureCode.BuiltinResourceInvalid)]
+        [TestCase(BootFailureCode.AotMetadataRejected)]
+        [TestCase(BootFailureCode.UnexpectedException)]
+        [TestCase(BootFailureCode.MainSceneLoadFailed)]
+        public void NonServerFailureHidesResetEntry(BootFailureCode code)
+        {
+            typeof(Launcher).GetMethod("ShowFailure", BindingFlags.Instance | BindingFlags.NonPublic)
+                .Invoke(_launcher, new object[] { BootFailure.Create(code, BootFailureStage.ResourceValidation) });
+            Assert.That(Get<Button>("_entryButton").gameObject.activeInHierarchy, Is.False);
         }
 
         private void Open() => ((UniTask)Call("OpenEditorAsync")).GetAwaiter().GetResult();

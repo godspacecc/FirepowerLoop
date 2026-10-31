@@ -40,6 +40,13 @@ namespace Boot
 
         public bool CanEditResourceServer => !ClientReleasePolicy.OfflineSinglePlayer && _resourceServerAvailable && !_resourceServerRestartRequested &&
             (!_resourceBoot || !_resourceBoot.IsApkUpdateActive);
+        /// <summary>仅在资源阶段失败且允许编辑时显示恢复入口，正常启动不打扰玩家。</summary>
+        public bool ShouldShowResourceServer => CanEditResourceServer && _currentFailure != null &&
+            (_currentFailure.Code == BootFailureCode.BootstrapConfigInvalid ||
+             _currentFailure.Code == BootFailureCode.HostInitializationFailed ||
+             _currentFailure.Code == BootFailureCode.PackageVersionRequestFailed ||
+             _currentFailure.Code == BootFailureCode.PackageManifestUpdateFailed ||
+             _currentFailure.Code == BootFailureCode.ResourceDownloadFailed);
         public event Action<bool> ResourceServerAvailabilityChanged;
         private StartupTerminalState _terminalState = StartupTerminalState.Running;
 
@@ -377,6 +384,7 @@ namespace Boot
             Debug.LogWarning($"[Launcher] 启动失败：{_currentFailure.Code}");
             _updateView.gameObject.SetActive(true);
             _updateView.RenderFailure(_currentFailure);
+            ResourceServerAvailabilityChanged?.Invoke(CanEditResourceServer);
         }
 
         /// <summary>在显示失败页前保存最近一次支持信息；持久化失败不得改变原失败语义。</summary>

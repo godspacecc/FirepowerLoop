@@ -1351,6 +1351,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1109946510}
+  - {fileID: 914399473}
   - {fileID: 578417900}
   - {fileID: 1887774775}
   m_Father: {fileID: 332840567}
@@ -1404,7 +1405,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &914399473
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1418,13 +1419,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1331179973}
-  m_Father: {fileID: 2129178559}
+  m_Father: {fileID: 836644162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 48, y: 20}
-  m_SizeDelta: {x: 240, y: 48}
-  m_Pivot: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 160, y: 40}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &914399474
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1482,7 +1483,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16, g: 0.23, b: 0.3, a: 1}
+  m_Color: {r: 0.25, g: 0.31, b: 0.37, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2469,7 +2470,7 @@ MonoBehaviour:
   m_Name:
   m_EditorClassIdentifier:
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.96, g: 0.91, b: 0.82, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2478,7 +2479,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 22
+    m_FontSize: 18
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 10
@@ -2489,7 +2490,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: "\u8D44\u6E90\u670D\u52A1\u5668"
+  m_Text: "\u91CD\u8BBE\u670D\u52A1\u5668"
 --- !u!222 &1331179975
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4282,7 +4283,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 914399473}
   - {fileID: 1809660716}
   m_Father: {fileID: 1215424044}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
