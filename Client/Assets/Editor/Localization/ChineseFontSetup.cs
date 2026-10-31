@@ -366,24 +366,6 @@ namespace Game
             }
         }
 
-        [MenuItem("Tools/本地化/应用中文 TMP 字体", false, 327)]
-        public static void ApplyChineseTmpFont()
-        {
-            var fontAsset = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontAssetPath);
-            if (fontAsset == null)
-            {
-                Debug.LogError($"[本地化] 缺少 TMP 字体资源：{FontAssetPath}");
-                return;
-            }
-
-            foreach (var text in UnityEngine.Object.FindObjectsByType<TMP_Text>(FindObjectsInactive.Include, FindObjectsSortMode.None))
-            {
-                Undo.RecordObject(text, "应用中文 TMP 字体");
-                text.font = fontAsset;
-                EditorUtility.SetDirty(text);
-            }
-        }
-
         public static string NormalizeCharset(string source)
         {
             return string.Concat(EnumerateCodePoints(source)
