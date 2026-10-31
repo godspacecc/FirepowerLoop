@@ -44,6 +44,9 @@ namespace Game
         void SetOpening(FirepowerLoop.Arcade.ArcadeOpeningParameters parameters, bool fireActive) { }
         /// <summary>按权威布局准备当前轮，资源就绪后才允许规则开始活动。</summary>
         void SetRoundLayout(FirepowerLoop.Arcade.ArcadeRoundLayoutParameters layout) { }
+        /// <summary>幸存者使用独立的采用环境；必须在Begin后、布局加载前配置。</summary>
+        void SetSurvivorEnvironment(string address) { }
+
         bool IsRoundLayoutReady => true;
         string RoundLayoutLoadError => null;
         /// <summary>投影环境活动时钟及区域，伤害仍由单人或服务器裁决。</summary>
@@ -347,6 +350,7 @@ namespace Game
         public void End()
         {
             ReleaseSurvivorDayNight();
+            survivorEnvironmentAddress=null;
             enemyPresentation?.SetHerdActivityPaused(false);
             earlyStage=null;
             ReleaseElectricTowerFeedback();

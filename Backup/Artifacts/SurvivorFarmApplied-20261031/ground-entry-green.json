@@ -1,0 +1,84 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 14,
+      "PassedTests": 14,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:22.0607023"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.CrawlPreventsMeleeUntilStandingAndProjectsAuthorityAge",
+        "Status": "Passed",
+        "Duration": "00:00:02.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.DeathKeepsPoseAndMapSoilOutlivesActor",
+        "Status": "Passed",
+        "Duration": "00:00:01.6990000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.ExposedClimbingBodyCanBeHitBeforeStanding",
+        "Status": "Passed",
+        "Duration": "00:00:01.6100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.2400000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3430000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.HeavyCrawlUsesApprovedTiming",
+        "Status": "Passed",
+        "Duration": "00:00:01.2120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.HitFeedbackDoesNotTintAttachedScenery",
+        "Status": "Passed",
+        "Duration": "00:00:01.2450000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.MapCleanupReleasesSoilAndDuplicateProjectionDoesNotReplay",
+        "Status": "Passed",
+        "Duration": "00:00:01.2440000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.NavigationRejectsWalkableButDisconnectedSpawnFloor",
+        "Status": "Passed",
+        "Duration": "00:00:01.2010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.PausedFrameFreezesCrawlAgeAndPosition",
+        "Status": "Passed",
+        "Duration": "00:00:01.6460000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.StandingKillLeavesExperienceAtReachableFloor",
+        "Status": "Passed",
+        "Duration": "00:00:01.7190000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.UndergroundBodyDoesNotBlockBulletOrGiveEarlyExperience",
+        "Status": "Passed",
+        "Duration": "00:00:01.5680000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.VisibleSpawnUsesReachableFarmFloorAndSafeDistance",
+        "Status": "Passed",
+        "Duration": "00:00:01.5880000"
+      }
+    ]
+  }
+}

@@ -862,6 +862,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab
+        CollectorGUID: 3555341a889c2454986cd8349fc6d591
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab
         CollectorGUID: 8ca247d77a48b4f47812bc1044f39dd0
         CollectorType: 0

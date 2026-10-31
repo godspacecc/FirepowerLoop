@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.5102387"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.FarmAddressAndLayoutTableAreCollectedForEntry",
+        "Status": "Failed",
+        "Duration": "00:00:00.2520000",
+        "Message": "  Prefabs/SceneObjects/SurvivorFarmVisual\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

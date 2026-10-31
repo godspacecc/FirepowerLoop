@@ -15,10 +15,12 @@
 
 | 目标 | 生成 C# | 生成 bytes | 表数 |
 | --- | --- | --- | --- |
-| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 35 |
-| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 30 |
+| 客户端 | `Client/Assets/Game/Scripts/Model/Config/` | `Client/Assets/Game/Config/` | 41 |
+| 服务端 | `Server/GameServer/Runtime/Model/Generated/Config/` | `Server/GameServer/Config/Luban/` | 37 |
 
-共 41 张源表。`c` 组提供客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 22 张双端街机规则表及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
+共 47 张源表。`c` 组提供 10 张客户端共用物品、武器、表现、地图、出生点、玩家、掉落与诊断命令；`e` 组提供 31 张双端街机、幸存者及敌人与投射物配置；`s` 组保留 6 张服务器基础设施表。基地、远征、撤离、制造、文明、临时建筑和开放世界配置已移除，服务器启动表不再启动 OnlineWorld。
+
+幸存者采用版农场由 `survivor_map_layout.csv` 独立保存布局，复用轮级布局数据类型但不加入普通闯关目录；`survivor_rule.LayoutId` 引用该表，`EnvironmentPrefabName` 解析为采用版环境地址。普通 `arcade_round_layout` 的四轮农场保持原样。制作入口 `Tools/Unity/SurvivorFarmBake.cs` 从已采用几何整理足迹写入该权威CSV；运行配置仍只经 `Config/gen.bat` 双端生成。
 
 `arcade_round_layout.Barrels` 复用入口点坐标格式 `x|y;x|y`，为空表示本图没有预置可射桶。当前仅 Barrage（配置 3）四图各有两个，数组零基索引与地图 ID、Version 共同确定桶身份；该主题布局版本为 2，其余主题仍为 1。桶位由共享参数校验有限数、地标和障碍重叠，并按实际场地尺寸验证可达性。
 

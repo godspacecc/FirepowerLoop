@@ -1,0 +1,89 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 15,
+      "PassedTests": 15,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.4607472"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.ConfigurationAllowsTwoUnlimitedChoicesAndNoRifleUpgrade",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.ExperienceUsesDedicatedCrystalAndGuaranteedDrop",
+        "Status": "Passed",
+        "Duration": "00:00:00.0170000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(-0.1f)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(1.1f)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.InvalidExperienceChanceIsRejected(float.NaN)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.LevelCostsStartAtTenAndGrowByFive",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.LimitedChoicesStopAtConfiguredLevel",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.LoadsIndependentConfigurationBeforeArcadeCatalog",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.MissingTablesReturnsActionableFailure",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.ThreeUnlimitedChoicesRemainMonotonicWithinBounds",
+        "Status": "Passed",
+        "Duration": "00:00:00.0240000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.TimeGrowthAllowsZeroAndRejectsInvalidValues(\"EnemyHealthGrowthPerMinute\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.TimeGrowthAllowsZeroAndRejectsInvalidValues(\"EnemyDamageGrowthPerMinute\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.TimeGrowthAllowsZeroAndRejectsInvalidValues(\"EnemySpeedGrowthPerMinute\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.UnknownAndNonFiniteUpgradeDefinitionsAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorConfigTests.UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling",
+        "Status": "Passed",
+        "Duration": "00:00:00.0110000"
+      }
+    ]
+  }
+}

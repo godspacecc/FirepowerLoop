@@ -1,0 +1,64 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 10,
+      "PassedTests": 10,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:13.8043085"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.DockUsesConfirmedPrefabAndReleasesItsHandleOnce",
+        "Status": "Passed",
+        "Duration": "00:00:02.3310000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.ExpandedFarmHasPhysicalGroundSupportAndNoTemporaryObstacleArtRequest",
+        "Status": "Passed",
+        "Duration": "00:00:01.0480000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.FailedResourceKeepsMapUnreadyAndSameLayoutCanRetry",
+        "Status": "Passed",
+        "Duration": "00:00:01.2070000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.FarmWaitsForEnvironmentAndCowBeforePublishingReadiness",
+        "Status": "Passed",
+        "Duration": "00:00:01.3830000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.HerdSnapshotWaitsForTemplateAndRebindsAfterHiddenMap",
+        "Status": "Passed",
+        "Duration": "00:00:01.0480000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.LateCallbacksCannotRestoreReleasedMap",
+        "Status": "Passed",
+        "Duration": "00:00:00.9650000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.NewMapReplacesOldInvisibleWallsAndRestoresTheirOriginalEnabledState",
+        "Status": "Passed",
+        "Duration": "00:00:01.0630000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.OldMapHerdSnapshotCannotReplaceCurrentCows",
+        "Status": "Passed",
+        "Duration": "00:00:00.9620000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.SurvivorLateCallbackAndFailedRetryKeepOwnershipAndClearOverrideOnEnd",
+        "Status": "Passed",
+        "Duration": "00:00:01.2560000"
+      },
+      {
+        "Name": "Game.Tests.ArcadeEarlyStageLoadingTests.SurvivorWaitsForOwnFarmAndReleasesSingleEnvironmentHandle",
+        "Status": "Passed",
+        "Duration": "00:00:00.9890000"
+      }
+    ]
+  }
+}

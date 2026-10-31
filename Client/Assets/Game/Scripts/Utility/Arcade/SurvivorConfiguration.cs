@@ -30,6 +30,10 @@ namespace FirepowerLoop.Arcade
         public int HordeSpawnAttempts { get; private set; }
         /// <summary>来自幸存者权威规则表的 LayoutId。</summary>
         public string LayoutId { get; private set; }
+        /// <summary>幸存者独立采用布局；不修改普通闯关的同号农场。</summary>
+        public ArcadeRoundLayoutParameters Layout { get; private set; }
+        /// <summary>采用版场地由现有地图准备事务异步加载。</summary>
+        public string EnvironmentPrefabAddress { get; private set; }
         /// <summary>来自幸存者权威规则表的 EnemyId。</summary>
         public string EnemyId { get; private set; }
         /// <summary>来自幸存者权威规则表的 WeaponId。</summary>
@@ -123,7 +127,10 @@ namespace FirepowerLoop.Arcade
             if (float.IsNaN(r.PickupRadius) || float.IsInfinity(r.PickupRadius) || r.PickupRadius <= 0) throw new ArgumentException("幸存者 PickupRadius 必须为有限正数");
             if (float.IsNaN(r.MinimumSpawnDistance) || float.IsInfinity(r.MinimumSpawnDistance) || r.MinimumSpawnDistance <= 0) throw new ArgumentException("幸存者 MinimumSpawnDistance 必须为有限正数");
             if (float.IsNaN(r.AimRange) || float.IsInfinity(r.AimRange) || r.AimRange <= 0) throw new ArgumentException("幸存者 AimRange 必须为有限正数");
-            if (r.MinimumSpawnIntervalSeconds > r.SpawnIntervalSeconds || tables.TbArcadeRoundLayout.GetOrDefault(r.LayoutId) == null || tables.TbEnemy.GetOrDefault(r.EnemyId) == null || tables.TbArcadeWeapon.GetOrDefault(r.WeaponId) == null) throw new ArgumentException("幸存者引用或出生间隔无效");
+            if (r.MinimumSpawnIntervalSeconds > r.SpawnIntervalSeconds || tables.TbSurvivorMapLayout.GetOrDefault(r.LayoutId) == null || tables.TbEnemy.GetOrDefault(r.EnemyId) == null || tables.TbArcadeWeapon.GetOrDefault(r.WeaponId) == null) throw new ArgumentException("幸存者引用或出生间隔无效");
+            var layout=ArcadeRoundLayoutParameters.FromConfig(tables.TbSurvivorMapLayout.Get(r.LayoutId));
+            if(!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.EnvironmentPrefabName,false,out var environmentAddress,out var environmentError))
+                throw new ArgumentException("幸存者场地资源无效："+environmentError);
             if (float.IsNaN(r.ExperienceDropChance) || float.IsInfinity(r.ExperienceDropChance) || r.ExperienceDropChance < 0 || r.ExperienceDropChance > 1)
                 throw new ArgumentException("幸存者经验掉率必须在0到1之间");
             if (!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.ExperienceVisualPrefabName,false,out var experienceAddress,out var experienceError))
@@ -159,6 +166,8 @@ namespace FirepowerLoop.Arcade
                 RifleMinimumReloadSeconds=r.RifleMinimumReloadSeconds,
                 WeaponLevels=Array.AsReadOnly(weaponLevels),
                 LayoutId = r.LayoutId,
+                Layout=layout,
+                EnvironmentPrefabAddress=environmentAddress,
                 EnemyId = r.EnemyId,
                 WeaponId = r.WeaponId,
                 PlayerMaxHealth = r.PlayerMaxHealth,

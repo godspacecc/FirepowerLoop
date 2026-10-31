@@ -1,0 +1,3 @@
+farm-reference-angle.png mean_rgb_error=[0.012466875, 0.00708, 0.003090625] changed_bbox=(214, 538, 339, 581)
+farm-overview.png mean_rgb_error=[0.010283522727272728, 0.006469886363636363, 0.0025636363636363634] changed_bbox=(126, 57, 1497, 1076)
+farm-player-scale.png mean_rgb_error=[0.0081975, 0.00514375, 0.00153625] changed_bbox=(4, 8, 1586, 1000)

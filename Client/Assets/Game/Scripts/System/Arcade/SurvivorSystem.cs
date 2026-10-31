@@ -55,7 +55,7 @@ namespace Game
                 var provider=this.GetUtility<IRuntimeConfigProvider>();
                 if(!provider.TryGetSurvivor(out config,out error)||!provider.TryGetArcadeCatalog(out catalog,out error)||!provider.TryGetEnemy(config.EnemyId,out enemyConfig,out error))return false;
                 if(!PrepareEnemyRoster(out error))return false;
-                layout=catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId);
+                layout=config.Layout;
                 weapon=catalog.Weapons.Single(x=>x.Id==config.WeaponId);
                 var support=catalog.SupportVisuals.Single(x=>x.ProductId=="arcade.support.drone");
                 droneVisual=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,support.ActiveVisualPrefabAddress,false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
@@ -89,7 +89,7 @@ namespace Game
             pickupNavigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.PlayerRadius,obstacles);
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
-            try{this.SendEvent<SurvivorCharacterApplyEvent>();ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
+            try{this.SendEvent<SurvivorCharacterApplyEvent>();ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>

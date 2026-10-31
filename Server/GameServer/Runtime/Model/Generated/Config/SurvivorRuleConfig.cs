@@ -46,6 +46,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         RifleMagazineCapacity = _buf.ReadInt();
         RifleReloadSeconds = _buf.ReadFloat();
         RifleMinimumReloadSeconds = _buf.ReadFloat();
+        EnvironmentPrefabName = _buf.ReadString();
         HordeGridSize = _buf.ReadInt();
         HordeSeedCount = _buf.ReadInt();
         HordeWaveCount = _buf.ReadInt();
@@ -93,6 +94,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly int RifleMagazineCapacity;
     public readonly float RifleReloadSeconds;
     public readonly float RifleMinimumReloadSeconds;
+    public readonly string EnvironmentPrefabName;
     public readonly int HordeGridSize;
     public readonly int HordeSeedCount;
     public readonly int HordeWaveCount;
@@ -109,7 +111,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
 
     public  void ResolveRef(Tables tables)
     {
-        LayoutId_Ref = tables.TbArcadeRoundLayout.GetOrDefault(LayoutId);
+        LayoutId_Ref = tables.TbSurvivorMapLayout.GetOrDefault(LayoutId);
         EnemyId_Ref = tables.TbEnemy.GetOrDefault(EnemyId);
         WeaponId_Ref = tables.TbArcadeWeapon.GetOrDefault(WeaponId);
     }
@@ -144,6 +146,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "RifleMagazineCapacity:" + RifleMagazineCapacity + ","
         + "RifleReloadSeconds:" + RifleReloadSeconds + ","
         + "RifleMinimumReloadSeconds:" + RifleMinimumReloadSeconds + ","
+        + "EnvironmentPrefabName:" + EnvironmentPrefabName + ","
         + "HordeGridSize:" + HordeGridSize + ","
         + "HordeSeedCount:" + HordeSeedCount + ","
         + "HordeWaveCount:" + HordeWaveCount + ","

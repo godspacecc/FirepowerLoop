@@ -32,7 +32,7 @@ namespace Game.Tests
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out error),Is.True,error);
             system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(architecture);input=new PlayerInputCtrl();
             Set("input",input);Set("view",new View());Set("config",config);Set("catalog",catalog);
-            Set("layout",catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId));Set("obstacles",Array.Empty<ArcadeObstacleDefinition>());
+            Set("layout",config.Layout);Set("obstacles",Array.Empty<ArcadeObstacleDefinition>());
             model.State=new SurvivorRunState(10,5);model.Active=true;model.Health=model.MaximumHealth=100;
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();}

@@ -630,7 +630,7 @@
     <bean name="SurvivorRuleConfig" group="e">
         <var name="Id" type="string"/>
         <var name="WeaponSlots" type="int"/>
-        <var name="LayoutId" type="string#ref=TbArcadeRoundLayout"/>
+        <var name="LayoutId" type="string#ref=TbSurvivorMapLayout"/>
         <var name="EnemyId" type="string#ref=TbEnemy"/>
         <var name="WeaponId" type="string#ref=TbArcadeWeapon"/>
         <var name="PlayerMaxHealth" type="int"/>
@@ -657,6 +657,8 @@
         <var name="RifleMagazineCapacity" type="int"/>
         <var name="RifleReloadSeconds" type="float"/>
         <var name="RifleMinimumReloadSeconds" type="float"/>
+        <!-- 幸存者采用版环境独立寻址，不替换普通闯关农场。 -->
+        <var name="EnvironmentPrefabName" type="string"/>
         <!-- 尸潮分布及分帧预算；不设置存活总上限。 -->
         <var name="HordeGridSize" type="int"/>
         <var name="HordeSeedCount" type="int"/>

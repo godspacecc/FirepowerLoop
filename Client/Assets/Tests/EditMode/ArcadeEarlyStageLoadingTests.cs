@@ -36,6 +36,27 @@ namespace Game.Tests
             Assert.That(root.GetComponentsInChildren<MeshRenderer>(true).Length,Is.GreaterThanOrEqualTo(10));Assert.That(root.GetComponentsInChildren<Collider>(true),Is.Empty);
             Assert.That(root.GetComponentsInChildren<Transform>(true).Any(t=>t.name=="ThemeDecor"),Is.False);
         }
+        /// <summary>幸存者只等待自己的已采用环境，不再预载普通农场牛群。</summary>
+        [Test] public void SurvivorWaitsForOwnFarmAndReleasesSingleEnvironmentHandle()
+        {
+            var config=SurvivorConfiguration.FromTables(new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
+            var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);
+            typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
+            Assert.That(loader.Pending.Count,Is.EqualTo(1));Assert.That(loader.Paths.Single(),Is.EqualTo(config.EnvironmentPrefabAddress));Assert.That(view.IsRoundLayoutReady,Is.False);
+            loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);Assert.That(root.GetComponentsInChildren<MeshRenderer>(true).Length,Is.EqualTo(16));
+            Assert.That(root.GetComponentsInChildren<ArcadeHerdVisual>(true),Is.Empty);Release();Assert.That(loader.Released.Count,Is.EqualTo(1));
+        }
+        /// <summary>晚回调不复活旧场地；失败重试仍请求同一采用资源，结束时清除模式覆盖。</summary>
+        [Test] public void SurvivorLateCallbackAndFailedRetryKeepOwnershipAndClearOverrideOnEnd()
+        {
+            var config=SurvivorConfiguration.FromTables(new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));
+            var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);
+            typeof(ArcadeCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(config.Layout);
+            Release();loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.False);Assert.That(root.transform.childCount,Is.Zero);
+            view.SetRoundLayout(config.Layout);LogAssert.Expect(LogType.Error,new System.Text.RegularExpressions.Regex(".*已确认场地准备失败.*"));loader.Finish(1,true);
+            view.SetRoundLayout(config.Layout);Assert.That(loader.Paths.All(p=>p==config.EnvironmentPrefabAddress),Is.True);loader.Finish(2);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
+            view.End();Assert.That(typeof(ArcadeCombatViewController).GetField("survivorEnvironmentAddress",Hidden).GetValue(view),Is.Null);Assert.That(loader.Released.Count,Is.EqualTo(3));
+        }
         [Test] public void DockUsesConfirmedPrefabAndReleasesItsHandleOnce()
         {
             Start(21);Assert.That(loader.Pending.Count,Is.EqualTo(1));loader.Finish(0);Assert.That(view.IsRoundLayoutReady,Is.True,view.RoundLayoutLoadError);
@@ -94,9 +115,10 @@ namespace Game.Tests
         private sealed class Loader:IResourceLoader
         {
             public readonly List<Action<bool>> Pending=new();public readonly HashSet<object> Released=new();
+            public readonly List<string> Paths=new();
             public T LoadAsset<T>(string path) where T:UnityEngine.Object=>throw new InvalidOperationException("unexpected synchronous load");
             public ResourceLoadHandle LoadAssetAsync<T>(string path,Action<T> complete) where T:UnityEngine.Object
-            {var identity=new object();Pending.Add(fail=>complete(fail?null:AssetDatabase.LoadAssetAtPath<T>("Assets/Game/"+path+".prefab")));return new ResourceLoadHandle(identity);}
+            {Paths.Add(path);var identity=new object();Pending.Add(fail=>complete(fail?null:AssetDatabase.LoadAssetAtPath<T>("Assets/Game/"+path+".prefab")));return new ResourceLoadHandle(identity);}
             public void Release(ResourceLoadHandle handle){Assert.That(Released.Add(handle.RawHandle),Is.True,"same handle released twice");}
             public void Finish(int index,bool fail=false)=>Pending[index](fail);
         }

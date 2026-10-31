@@ -13,6 +13,14 @@ namespace Game
         private ArcadeEarlyStageParameters earlyStage;
         private EarlyStageLoad earlyStageLoad;
         private GameObject earlyHerdTemplate;
+        /// <summary>仅当前幸存者现场生效，End清除，仍使用现有候选及句柄所有权。</summary>
+        private string survivorEnvironmentAddress;
+        public void SetSurvivorEnvironment(string address)
+        {
+            if(root==null||roundContentRoot!=null||earlyStageLoad!=null)throw new InvalidOperationException("幸存者场地必须在布局加载前指定");
+            if(string.IsNullOrWhiteSpace(address))throw new ArgumentException("幸存者场地地址缺失");
+            survivorEnvironmentAddress=address;
+        }
         /// <summary>仅暂时接管旧静态底图的外壁，不触碰本轮动态碰撞或永久修改场景。</summary>
         private readonly Dictionary<Collider,bool> earlyBaseWalls=new();
         private void HideEarlyStageBaseWalls()
@@ -41,19 +49,21 @@ namespace Game
         private async UniTaskVoid LoadConfirmedEarlyStage(ArcadeRoundLayoutParameters layout)
         {
             var state=new EarlyStageLoad{Owner=root,Round=roundContentRoot};earlyStageLoad=state;var stage=earlyStage;
+            bool hasHerd=stage.HerdCount>0&&string.IsNullOrEmpty(survivorEnvironmentAddress);
+            string environmentAddress=survivorEnvironmentAddress??stage.EnvironmentAddress;
             var environment=new UniTaskCompletionSource<GameObject>();var herd=new UniTaskCompletionSource<GameObject>();
             try
             {
-                state.EnvironmentHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.EnvironmentAddress,p=>environment.TrySetResult(p));
-                if(stage.HerdCount>0)state.HerdHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.HerdAddress,p=>herd.TrySetResult(p));
+                state.EnvironmentHandle=ResourceLoader.LoadAssetAsync<GameObject>(environmentAddress,p=>environment.TrySetResult(p));
+                if(hasHerd)state.HerdHandle=ResourceLoader.LoadAssetAsync<GameObject>(stage.HerdAddress,p=>herd.TrySetResult(p));
                 var stageTemplates=LoadNextStageTemplates(state,stage.ArenaConfigNumber);
                 var prefab=await environment.Task;
-                var cow=stage.HerdCount>0?await herd.Task:null;
+                var cow=hasHerd?await herd.Task:null;
                 await stageTemplates;
                 if(!EarlyStageLoadIsCurrent(state))return;
                 if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Length>0||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
-                if(stage.HerdCount>0&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
+                if(hasHerd&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
                 ValidateFourRoundEnvironment(prefab,stage,layout);
                 var instance=UnityEngine.Object.Instantiate(prefab,roundEnvironmentRoot.transform,false);instance.name="ConfirmedEarlyEnvironment";instance.SetActive(false);
                 if(UsesFourRoundEnvironment(stage.ArenaConfigNumber))

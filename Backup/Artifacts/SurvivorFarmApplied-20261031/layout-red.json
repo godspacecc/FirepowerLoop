@@ -1,0 +1,43 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 5,
+      "PassedTests": 1,
+      "FailedTests": 4,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.8903855"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.ApprovedFarmUsesOwnLayoutAndEnvironment",
+        "Status": "Failed",
+        "Duration": "00:00:00.3220000",
+        "Message": "  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.BarnsHayAndTreeTrunksHaveRealFootprints",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  幸存者必须拥有独立的采用版地图布局\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.FormalFarmIsStaticAndFootprintsMatchEveryAuthorityObstacle",
+        "Status": "Failed",
+        "Duration": "00:00:00.0020000",
+        "Message": "  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.OrdinaryFarmRetainsOriginalCrossWalls",
+        "Status": "Passed",
+        "Duration": "00:00:00.1730000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorFarmLayoutTests.StoneWallsBlockMovementAndBulletsWhileGapsConnectFarm",
+        "Status": "Failed",
+        "Duration": "00:00:00.0010000",
+        "Message": "  幸存者必须拥有独立的采用版地图布局\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

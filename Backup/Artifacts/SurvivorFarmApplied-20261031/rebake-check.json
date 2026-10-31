@@ -1,0 +1,21 @@
+{
+  "checked": 67,
+  "changed": [
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\AgedTimber.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\BarnInterior.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\DistantBlueRidges.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\FarmPlaster.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\GoldenHay.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\GrassBlades.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\MutedGrass.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\OliveFoliage.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\OliveFoliageLight.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\OliveMeadow.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\PaleMeadow.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\StoneA.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\StoneB.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\StoneC.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\WarmEarth.mat",
+    "Client\\Assets\\Game\\Art\\Survivor\\Farm\\WeatheredBoards.mat"
+  ]
+}

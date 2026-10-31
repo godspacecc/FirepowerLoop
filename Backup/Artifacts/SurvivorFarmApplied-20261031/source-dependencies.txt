@@ -1,0 +1,36 @@
+Source collector only: BeginCollect(DefaultPackage,false,false); no build.
+Prefabs/SceneObjects/SurvivorFarmVisual | assets_game_prefabs_sceneobjects_survivorfarmvisual.bundle | tags=arcade | dependencies=33 | expected art dependencies=32
+tbsurvivormaplayout.bytes | assets_game_config.bundle | tags=startup
+Assets/Game/Art/Survivor/Farm/GoldenHay.mat
+Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_GoldenHay.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_OliveMeadow.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_WarmEarth.asset
+Assets/Game/Art/Survivor/Farm/GrassBlades.mat
+Assets/Game/Art/Survivor/Farm/BarnInterior.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_FarmPlaster.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_StoneA.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_OliveFoliage.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_WeatheredBoards.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_AgedTimber.asset
+Assets/Game/Art/Survivor/Farm/DistantBlueRidges.mat
+Assets/Game/Art/Survivor/Farm/WeatheredBoards.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_StoneC.asset
+Assets/Game/Art/Survivor/Farm/StoneC.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_BarnInterior.asset
+Assets/Game/Art/Survivor/Farm/OliveMeadow.mat
+Assets/Game/Art/Survivor/Farm/StoneB.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_GrassBlades.asset
+Assets/Game/Art/Survivor/Farm/StoneA.mat
+Assets/Game/Art/Survivor/Farm/AgedTimber.mat
+Assets/Game/Art/Survivor/Farm/MutedGrass.mat
+Assets/Game/Art/Survivor/Farm/OliveFoliage.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_MutedGrass.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_PaleMeadow.asset
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_OliveFoliageLight.asset
+Assets/Game/Art/Survivor/Farm/FarmPlaster.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_DistantBlueRidges.asset
+Assets/Game/Art/Survivor/Farm/PaleMeadow.mat
+Assets/Game/Art/Survivor/Farm/OliveFoliageLight.mat
+Assets/Game/Art/Survivor/Farm/WarmEarth.mat
+Assets/Game/Art/Survivor/Farm/SurvivorFarm_StoneB.asset

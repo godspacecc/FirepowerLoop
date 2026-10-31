@@ -47,6 +47,7 @@ public partial class Tables
     public TbArcadeEarlyStage TbArcadeEarlyStage {get; }
     public TbArcadeScoreShop TbArcadeScoreShop {get; }
     public TbSurvivorRule TbSurvivorRule {get; }
+    public TbSurvivorMapLayout TbSurvivorMapLayout {get; }
     public TbSurvivorUpgrade TbSurvivorUpgrade {get; }
     public TbSurvivorWeaponLevel TbSurvivorWeaponLevel {get; }
     public TbArcadeDockHitPose TbArcadeDockHitPose {get; }
@@ -90,6 +91,7 @@ public partial class Tables
         TbArcadeEarlyStage = new TbArcadeEarlyStage(loader("tbarcadeearlystage"));
         TbArcadeScoreShop = new TbArcadeScoreShop(loader("tbarcadescoreshop"));
         TbSurvivorRule = new TbSurvivorRule(loader("tbsurvivorrule"));
+        TbSurvivorMapLayout = new TbSurvivorMapLayout(loader("tbsurvivormaplayout"));
         TbSurvivorUpgrade = new TbSurvivorUpgrade(loader("tbsurvivorupgrade"));
         TbSurvivorWeaponLevel = new TbSurvivorWeaponLevel(loader("tbsurvivorweaponlevel"));
         TbArcadeDockHitPose = new TbArcadeDockHitPose(loader("tbarcadedockhitpose"));
@@ -135,6 +137,7 @@ public partial class Tables
         TbArcadeEarlyStage.ResolveRef(this);
         TbArcadeScoreShop.ResolveRef(this);
         TbSurvivorRule.ResolveRef(this);
+        TbSurvivorMapLayout.ResolveRef(this);
         TbSurvivorUpgrade.ResolveRef(this);
         TbSurvivorWeaponLevel.ResolveRef(this);
         TbArcadeDockHitPose.ResolveRef(this);
