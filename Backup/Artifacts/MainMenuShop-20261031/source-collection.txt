@@ -1,0 +1,1 @@
+Prefabs/UI/Home/MainMenuShop | Assets/Game/Prefabs/UI/Home/MainMenuShop.prefab | startup

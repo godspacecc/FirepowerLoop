@@ -178,5 +178,17 @@
   "ui.survivor.gold.error": {
     "zh-CN": "金币读取失败：{0}",
     "en-US": "Unable to read gold: {0}"
+  },
+  "ui.shop.title": {
+    "zh-CN": "商店",
+    "en-US": "Shop"
+  },
+  "ui.shop.empty": {
+    "zh-CN": "商品暂未开放",
+    "en-US": "Products coming soon"
+  },
+  "ui.shop.balance": {
+    "zh-CN": "金币  {0}",
+    "en-US": "Gold  {0}"
   }
 }

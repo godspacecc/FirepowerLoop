@@ -1,0 +1,43 @@
+{
+  "source": "MCP tests_run structuredContent (copied from actual tool responses)",
+  "runs": [
+    {
+      "testClass": "MainMenuShopTests",
+      "maxTests": 1,
+      "includePassingTests": true,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "Duration": "00:00:01.2021497"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MainMenuShopTests.ShopHasGeneratedReferencesAndMenuEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    },
+    {
+      "testClass": "MainMenuShopInteractionTests",
+      "maxTests": 1,
+      "includePassingTests": true,
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "Duration": "00:00:06.6961194"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.MainMenuShopInteractionTests.ReopenLanguageAndCorruptWalletAreReadOnly",
+          "Status": "Passed",
+          "Duration": "00:00:04.5400000"
+        }
+      ]
+    }
+  ]
+}

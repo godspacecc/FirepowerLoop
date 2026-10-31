@@ -928,5 +928,8 @@
   "ui.survivor.gold.future": "Gold will be used for future permanent upgrades.",
   "ui.survivor.gold.back": "Back",
   "ui.survivor.gold.start": "Start Survival",
-  "ui.survivor.gold.error": "Unable to read gold: {0}"
+  "ui.survivor.gold.error": "Unable to read gold: {0}",
+  "ui.shop.title": "Shop",
+  "ui.shop.empty": "Products coming soon",
+  "ui.shop.balance": "Gold  {0}"
 }

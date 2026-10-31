@@ -928,5 +928,8 @@
   "ui.survivor.gold.future": "金币将用于后续开放的局外成长。",
   "ui.survivor.gold.back": "返回",
   "ui.survivor.gold.start": "开始生存",
-  "ui.survivor.gold.error": "金币读取失败：{0}"
+  "ui.survivor.gold.error": "金币读取失败：{0}",
+  "ui.shop.title": "商店",
+  "ui.shop.empty": "商品暂未开放",
+  "ui.shop.balance": "金币  {0}"
 }

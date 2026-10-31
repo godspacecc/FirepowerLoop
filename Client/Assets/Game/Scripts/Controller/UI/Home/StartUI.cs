@@ -17,5 +17,6 @@ namespace Game
         public RedPointView UpdateRedPoint;
         public TextMeshProUGUI UpdateStatusText;
         public TextMeshProUGUI VersionText;
+        public Button BtnShop;
     }
 }

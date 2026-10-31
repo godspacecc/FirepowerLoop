@@ -44,7 +44,8 @@ namespace Game
         {
             ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OnNewGameClick);
-            BindMenuButton(UI.BtnSurvivor, () => UIHelper.ShowUI<SurvivorEntryUICtrl>().Configure(() => StartSurvivorAsync().Forget()));
+            BindMenuButton(UI.BtnSurvivor, () => StartSurvivorAsync().Forget());
+            BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             BindMenuButton(UI.BtnContinue, OnContinueClick);
@@ -133,6 +134,7 @@ namespace Game
                 UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
             UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
             UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
+            UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
@@ -283,6 +285,13 @@ namespace Game
             if (ClientReleasePolicy.OfflineSinglePlayer) return;
             if (startingRun) return;
             OnlineLoginUICtrl.ShowForArcadeLobby();
+        }
+
+        /// <summary>只在开始页有效且未开局时打开只读商店。</summary>
+        private void OnShopClick()
+        {
+            if (startingRun || !IsShow()) return;
+            UIHelper.ShowUI<MainMenuShopUICtrl>();
         }
 
         private void OnSettingClick()

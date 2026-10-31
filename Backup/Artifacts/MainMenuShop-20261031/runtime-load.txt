@@ -1,0 +1,1 @@
+loader=Game.YooAssetResourceLoader; address=Prefabs/UI/Home/MainMenuShop; asset=MainMenuShop; async handle explicitly released
