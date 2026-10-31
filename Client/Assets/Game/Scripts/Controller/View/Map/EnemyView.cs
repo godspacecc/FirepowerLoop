@@ -203,6 +203,7 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            ResetGroundEntry();
             ResetDockSeaEntry();
             ResetMeleeAttack();
             corpseFade?.Reset();
@@ -428,6 +429,7 @@ namespace Game
 
         private void OnDisable()
         {
+            ResetGroundEntry();
             ResetDockSeaEntry();
             ResetHerdImpact();
             corpseFade?.Reset();
@@ -744,6 +746,7 @@ namespace Game
         /// <summary>开始死亡表现并返回建议保留时长；无 Animator 时由调用方立即回收。</summary>
         public bool TryPlayDeathAnimation(out float durationSeconds)
         {
+            StopGroundEntryForDeath();
             StopDockSeaEntryForDeath();
             ResetMeleeAttack();
             durationSeconds = 0f;
@@ -769,7 +772,8 @@ namespace Game
         /// <summary>消费最终伤害的力度类别，沿用尸体寿命、碰撞关闭与统一物理预算。</summary>
         public bool TryPlayPhysicalDeathWithImpact(Vector3 direction, bool explosive, int impactKind, out float durationSeconds)
         {
-            bool preserveSampledPose = dockSampling;
+            bool preserveSampledPose = dockSampling||groundSampling;
+            StopGroundEntryForDeath();
             StopDockSeaEntryForDeath();
             ResetMeleeAttack();
             var continuation=herdImpact;var continuedDirection=herdDirection;
@@ -791,9 +795,9 @@ namespace Game
         }
 
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
-        public void LateTickCombatFeedback(){ApplyDockSeaEntry();PhysicalReaction?.LateTick();if(!dockSampling){ApplyMeleeAttack();ApplyHerdImpact();}}
+        public void LateTickCombatFeedback(){ApplyDockSeaEntry();ApplyGroundEntry();PhysicalReaction?.LateTick();if(!dockSampling&&!groundSampling){ApplyMeleeAttack();ApplyHerdImpact();}}
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){ResetGroundEntry();ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
         public bool IsHerdCorpse=>PhysicalReaction?.IsHerdDeath==true;
 
         /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>
@@ -810,6 +814,7 @@ namespace Game
         /// <summary>地图释放先归还实例持有的临时材质；编辑态隔离预览同样可显式释放。</summary>
         public void ReleasePresentationResources()
         {
+            ReleaseGroundEntryResources();
             ReleaseDockSeaEntryResources();
             corpseFade?.Dispose();
             corpseFade = null;

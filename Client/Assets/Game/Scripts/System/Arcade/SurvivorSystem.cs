@@ -31,9 +31,8 @@ namespace Game
         private Vector2 player, facing=Vector2.up;
         private float spawnClock,fireClock,hurtClock;
         private int identity,fireSequence;
-        /// <summary>全敌人共享农场距离场，入口轮流生成以覆盖各个方向。</summary>
+        /// <summary>全敌人共享农场距离场，场内爬出后沿同一静态障碍追击。</summary>
         private SurvivorNavigation navigation;
-        private int spawnIndex;
         private long runId;
         private bool ownsView,saved;
         /// <summary>入口确认完整战场后才提交；用于区分正常等待和开局后的场地丢失。</summary>
@@ -62,9 +61,7 @@ namespace Game
                 droneVisual=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,support.ActiveVisualPrefabAddress,false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
                 // 经验模型由幸存者独立配置提供，不再借用金币掉落。
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
-                // 在交接战场前验证所有入口，不允许运行中退回入口补生。
-                for(int i=0;i<layout.Entries.Count;i++)if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryStart(layout,i,HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,out _))
-                    throw new InvalidOperationException("幸存者入口没有合法场外通道，请检查地图配置");
+                // 幸存者场内爬出不再依赖场外入口；地图障碍仍以同一权威布局为准。
                 store=new SurvivorResultFileStore(1);
                 return store.TryRead(out _,out error);
             }catch(Exception ex){error=ex.Message;return false;}
@@ -79,14 +76,14 @@ namespace Game
             m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
-            navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();spawnIndex=0;
+            navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
             try{ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();sizedNavigation.Clear();Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -192,7 +189,8 @@ namespace Game
             {
                 view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
                 view.SetEnemyScale(e.Id,Shape(e.ConfigId)?.VisualScale??Vector3.one);
-                if(FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
+                view.SetEnemyGroundEntry(e.Id,e.GroundEntry);
+                if(!e.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
                     view.SetEnemyMelee(e.Id,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining,(player-e.Position).normalized);
             }
             foreach(var b in bullets.Values)
@@ -201,33 +199,19 @@ namespace Game
             foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
             if(m.Health<=0)TryFinish(out _);else Publish();
         }
-        /// <summary>按入口轮转持续生成敌人，不限制存活数量，避免贴身生成。</summary>
+        /// <summary>从玩家所在可达地面爬出，不限制存活数量；没有安全落点时等待下一次刷新。</summary>
         private void Spawn()
         {
             if(enemyRoster==null&&!PrepareEnemyRoster(out var rosterError)){LastError=rosterError;Model.Paused=true;input.Disable();Publish();return;}
             var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
             var selected=enemyConfigs[choice.EnemyId];
             float radius=catalog.Rule.EnemyContactRadius*choice.BodyRadiusMultiplier;
-            for(int attempt=0;attempt<layout.Entries.Count;attempt++){
-                spawnIndex=(spawnIndex+1)%layout.Entries.Count;
-                // 幸存者使用同一配置走廊，入场完成后才交给场内距离场。
-                if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryStart(layout,(spawnIndex+layout.Entries.Count-1)%layout.Entries.Count,
-                    HalfWidth,HalfHeight,radius,out var outsideEntry))
-                {
-                    // 大体型走不通时尝试其它入口，不因某条窄路冻结本局。
-                    if(radius>catalog.Rule.EnemyContactRadius+.0001f)continue;
-                    // 准备后配置失效也不能静默在入口补生，冻结本局并保留明确故障。
-                    LastError="幸存者入口没有合法场外通道，请检查地图配置";
-                    Model.Paused=true;input.Disable();Publish();return;
-                }
-                // 场地边界之外仍可能入镜，沿同一安全走廊后移；无不可见起点时尝试下一入口。
-                if(!FirepowerLoop.Arcade.ArcadeOutsideRouteRules.TryExtendToHidden(layout,outsideEntry,radius,
-                    (x,z)=>view.IsArenaSpawnHidden(new Vector2(x,z),radius),out outsideEntry))continue;
-                var position=new Vector2(outsideEntry.StartX,outsideEntry.StartZ);
-                if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
+            if(!TryGroundSpawn(radius,out var groundEntry))return;
+            {
+                var position=SurvivorGroundEntryRules.Position(groundEntry);
                 // 倍率乘积先取最近整数，避免0.9的浮点误差把90血截成89。
                 double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,Math.Round(selected.MaxHP*choice.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute),MidpointRounding.AwayFromZero));
-                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
+                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,GroundEntry=groundEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);
             }
         }
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
@@ -235,7 +219,7 @@ namespace Game
         {
             if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;var candidates=enemies.Values.ToArray();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
-            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>view.IsArenaTargetVisible(e.Position)&&!Blocked(player,e.Position)).ToArray());
+            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>view.IsArenaTargetVisible(e.Position)&&!Blocked(player,e.Position)&&CanAimGroundBody(e,player,.75f)).ToArray());
             if(target==0||!TryConsumeRifleRound())return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
@@ -245,7 +229,7 @@ namespace Game
             int levelNumber=Model.Loadout?.LevelOf("Drone")??0;if(levelNumber==0)return;
             var level=config.WeaponLevel("Drone",levelNumber);droneFireClock-=dt;
             dronePosition=Vector2.Lerp(dronePosition,player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ),1-Mathf.Exp(-12*dt));
-            var target=enemies.Values.Where(e=>e.Health>0&&view.IsArenaTargetVisible(e.Position)&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
+            var target=enemies.Values.Where(e=>e.Health>0&&view.IsArenaTargetVisible(e.Position)&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)&&CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
             if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&bullets.Count<config.MaxProjectiles){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
             view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
         }
@@ -277,10 +261,10 @@ namespace Game
                 var old=b.Position;b.Position+=b.Velocity*dt;b.RemainingSeconds-=dt;bool remove=b.RemainingSeconds<=0||Blocked(old,b.Position);
                 if(!remove)foreach(var e in enemies.Values.ToArray()){
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
-                    if(Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
+                    if(e.GroundEntry.Active?!TryGroundBodySweep(e,old,b.Position,b.SourceWeaponId=="survivor.drone"?droneVisual.VisualOffset.y:.75f,out _):Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
                     e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;Model.Score=Math.Min(long.MaxValue-config.ScorePerKill,Model.Score)+config.ScorePerKill;
                         if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))
-                            AddExperienceDrop(e.OutsideEntry.Active?new Vector2(e.OutsideEntry.TargetX,e.OutsideEntry.TargetZ):e.Position);}
+                            AddExperienceDrop(e.Position);}
                     break;
                 }
                 if(remove){bullets.Remove(b.Id);view.RemoveProjectile(b.Id);}

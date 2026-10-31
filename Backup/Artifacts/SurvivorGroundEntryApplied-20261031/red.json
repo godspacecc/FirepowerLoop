@@ -1,0 +1,62 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 8,
+      "PassedTests": 0,
+      "FailedTests": 8,
+      "SkippedTests": 0,
+      "Duration": "00:00:13.1895987"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.CrawlPreventsMeleeUntilStandingAndProjectsAuthorityAge",
+        "Status": "Failed",
+        "Duration": "00:00:01.9380000",
+        "Message": "System.InvalidOperationException : Sequence contains no elements"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Shambler\")",
+        "Status": "Failed",
+        "Duration": "00:00:01.7150000",
+        "Message": "  正式View尚未接入爬出动作\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Gaunt\")",
+        "Status": "Failed",
+        "Duration": "00:00:01.2560000",
+        "Message": "  正式View尚未接入爬出动作\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Bloated\")",
+        "Status": "Failed",
+        "Duration": "00:00:01.3090000",
+        "Message": "  正式View尚未接入爬出动作\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.PausedFrameFreezesCrawlAgeAndPosition",
+        "Status": "Failed",
+        "Duration": "00:00:01.1440000",
+        "Message": "System.InvalidOperationException : Sequence contains no elements"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.StandingKillLeavesExperienceAtReachableFloor",
+        "Status": "Failed",
+        "Duration": "00:00:01.0960000",
+        "Message": "System.InvalidOperationException : Sequence contains no elements"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.UndergroundBodyDoesNotBlockBulletOrGiveEarlyExperience",
+        "Status": "Failed",
+        "Duration": "00:00:01.2780000",
+        "Message": "System.InvalidOperationException : Sequence contains no elements"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.VisibleSpawnUsesReachableFarmFloorAndSafeDistance",
+        "Status": "Failed",
+        "Duration": "00:00:01.2480000",
+        "Message": "  Expected: 80\r\n  But was:  0\r\n"
+      }
+    ]
+  }
+}

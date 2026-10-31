@@ -1,0 +1,54 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 8,
+      "PassedTests": 8,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:14.0956388"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.CrawlPreventsMeleeUntilStandingAndProjectsAuthorityAge",
+        "Status": "Passed",
+        "Duration": "00:00:01.9330000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.6230000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3470000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.4060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.PausedFrameFreezesCrawlAgeAndPosition",
+        "Status": "Passed",
+        "Duration": "00:00:01.7800000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.StandingKillLeavesExperienceAtReachableFloor",
+        "Status": "Passed",
+        "Duration": "00:00:01.6010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.UndergroundBodyDoesNotBlockBulletOrGiveEarlyExperience",
+        "Status": "Passed",
+        "Duration": "00:00:01.5890000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.VisibleSpawnUsesReachableFarmFloorAndSafeDistance",
+        "Status": "Passed",
+        "Duration": "00:00:01.5500000"
+      }
+    ]
+  }
+}

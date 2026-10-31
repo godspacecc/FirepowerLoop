@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 1,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:04.8972192"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.GameplayResourceDistributionTests.SurvivorRosterDependenciesAreCollectedBeforeEntry",
+        "Status": "Passed",
+        "Duration": "00:00:03.4050000"
+      }
+    ]
+  }
+}

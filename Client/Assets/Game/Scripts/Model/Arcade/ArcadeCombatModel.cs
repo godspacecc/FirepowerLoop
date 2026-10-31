@@ -19,6 +19,8 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeDockSeaEntryState DockSeaEntry;
         /// <summary>普通敌人的场外接近状态，回池清零，不改变受伤资格。</summary>
         public FirepowerLoop.Arcade.ArcadeOutsideEntryState OutsideEntry;
+        /// <summary>幸存者场内爬出进度，其他玩法保持零值。</summary>
+        public SurvivorGroundEntryState GroundEntry;
         /// <summary>存活目标资格；身体是否与攻击相交由各空间命中入口裁决。</summary>
         public bool CanBeAttacked => Health > 0;
         /// <summary>当前地图特色敌人的现身及一次重生状态，不写入轮前存档。</summary>
@@ -82,7 +84,7 @@ namespace Game
         /// <summary>归还规则对象池前清除身份与战斗状态，避免下一个实体继承旧值。</summary>
         public void Reset()
         {
-            DockSeaEntry = default;OutsideEntry=default;
+            DockSeaEntry = default;OutsideEntry=default;GroundEntry=default;
             StageEnemy=default;
             EvolutionBurnContactSeconds=0;
             FlameHitRemainingSeconds=0;LastDamageWasFlame=false;

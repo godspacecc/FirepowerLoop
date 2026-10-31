@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 1,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:03.8378937"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.ExposedClimbingBodyCanBeHitBeforeStanding",
+        "Status": "Passed",
+        "Duration": "00:00:02.6470000"
+      }
+    ]
+  }
+}

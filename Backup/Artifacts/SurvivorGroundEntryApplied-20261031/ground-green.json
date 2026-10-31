@@ -1,0 +1,69 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 11,
+      "PassedTests": 11,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:20.9217206"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.CrawlPreventsMeleeUntilStandingAndProjectsAuthorityAge",
+        "Status": "Passed",
+        "Duration": "00:00:02.9070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.DeathKeepsCrawlingPoseAndSoilMeshIsReused",
+        "Status": "Passed",
+        "Duration": "00:00:01.5550000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.ExposedClimbingBodyCanBeHitBeforeStanding",
+        "Status": "Passed",
+        "Duration": "00:00:01.7450000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.1340000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.4290000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.FormalActorSamplesChangingArmsAndKneesAndResets(\"Bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.5100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.NavigationRejectsWalkableButDisconnectedSpawnFloor",
+        "Status": "Passed",
+        "Duration": "00:00:01.3640000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.PausedFrameFreezesCrawlAgeAndPosition",
+        "Status": "Passed",
+        "Duration": "00:00:01.7180000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.StandingKillLeavesExperienceAtReachableFloor",
+        "Status": "Passed",
+        "Duration": "00:00:01.7480000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.UndergroundBodyDoesNotBlockBulletOrGiveEarlyExperience",
+        "Status": "Passed",
+        "Duration": "00:00:01.8870000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorGroundEntryTests.VisibleSpawnUsesReachableFarmFloorAndSafeDistance",
+        "Status": "Passed",
+        "Duration": "00:00:01.7250000"
+      }
+    ]
+  }
+}

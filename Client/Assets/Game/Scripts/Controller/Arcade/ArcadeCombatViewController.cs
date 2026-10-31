@@ -45,6 +45,8 @@ namespace Game
         void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
         /// <summary>幸存者实例体型与攻击快照独立，不修改源Prefab。</summary>
         void SetEnemyScale(int id,Vector3 scale) { }
+        /// <summary>消费幸存者场内爬出进度，不在表现层推进计时。</summary>
+        void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state) { }
         void SetHerdActivityPaused(bool paused) { }
         /// <summary>只接收权威实际掉血的牛撞，致死也播放一次短反馈，不由模型接触推算。</summary>
         void PlayHerdContact(Vector2 position) { }
@@ -720,6 +722,11 @@ namespace Game
 
         /// <summary>把已提交的模式体型交给实例拥有者，不改共用Prefab。</summary>
         public void SetEnemyScale(int id,Vector3 scale) => enemyPresentation?.SetPresentationScale(id,scale);
+        public void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state)
+        {
+            if(mapRoot==null||!state.Started)return;
+            enemyPresentation?.SetGroundEntry(id,state,mapRoot.TransformDirection(new Vector3(state.ForwardX,0,state.ForwardZ)),mapRoot.up);
+        }
 
         public void SetEnemyDockSeaEntry(int id,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state)
         {

@@ -1,0 +1,199 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 37,
+      "PassedTests": 37,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:47.0338918"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.AutoWeaponsWaitUntilTargetIsVisible",
+        "Status": "Passed",
+        "Duration": "00:00:01.3480000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ConsecutiveLevelsRequireSeparateVersionedChoices",
+        "Status": "Passed",
+        "Duration": "00:00:01.2780000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.DeathSavesIndependentResultAndRetryIsIdempotent",
+        "Status": "Passed",
+        "Duration": "00:00:01.3400000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.DroneFiresAtPlayerThreatAndSharesProjectileBudget",
+        "Status": "Passed",
+        "Duration": "00:00:01.1600000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ExactOverlapKeepsOneDropWithAllExperience",
+        "Status": "Passed",
+        "Duration": "00:00:01.2790000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ExperiencePresentationSendsNoNameOrQuantityLabel",
+        "Status": "Passed",
+        "Duration": "00:00:01.3530000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.FarmEntryUsesItsConfiguredArenaBounds",
+        "Status": "Passed",
+        "Duration": "00:00:01.1700000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.FirstUpgradeAcquiresDroneAndNextChoiceUpgradesSameSlot",
+        "Status": "Passed",
+        "Duration": "00:00:01.1870000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.FullDropBudgetMergesExperienceWithoutLoss",
+        "Status": "Passed",
+        "Duration": "00:00:01.7590000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.GroundSpawnKeepsEnemyInsideFarmEvenWhenCameraSeesIt",
+        "Status": "Passed",
+        "Duration": "00:00:01.3220000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.GroundSpawnPauseAndStandingKillLandExperienceInsideFarm",
+        "Status": "Passed",
+        "Duration": "00:00:01.3840000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.GroundSpawnWithNoWalkableFloorWaitsWithoutFailingRun",
+        "Status": "Passed",
+        "Duration": "00:00:01.3020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.HealthUpgradeAddsOnlyNewCapacityWithoutFullHeal",
+        "Status": "Passed",
+        "Duration": "00:00:01.1680000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.HiddenLaneExtensionRejectsWallBeyondOriginalSpawn",
+        "Status": "Passed",
+        "Duration": "00:00:01.2440000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.InitialPreparationWaitDoesNotReportLostBattle",
+        "Status": "Passed",
+        "Duration": "00:00:01.2080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.KillCreatesExperienceOnGroundWithoutRemoteCollection",
+        "Status": "Passed",
+        "Duration": "00:00:01.1380000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.LostPreparedBattleReportsFailureOnceInsteadOfSilentlyFreezing",
+        "Status": "Passed",
+        "Duration": "00:00:01.2240000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.MagazineUpgradeAddsThreeRoundsWithoutRefillingCurrentMagazine",
+        "Status": "Passed",
+        "Duration": "00:00:01.2210000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.MaxLevelDroneIsRemovedFromCandidates",
+        "Status": "Passed",
+        "Duration": "00:00:01.1120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.MissingTargetAndProjectileBudgetDoNotConsumeAmmoAndDroneKeepsFiring",
+        "Status": "Passed",
+        "Duration": "00:00:01.2020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.MovementTickDoesNotClearAnimationWithSecondMove",
+        "Status": "Passed",
+        "Duration": "00:00:01.0790000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.NearbyDistinctDropsRemainSeparate",
+        "Status": "Passed",
+        "Duration": "00:00:01.2070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.NewlyAcquiredDroneStartsBesideCurrentPlayer",
+        "Status": "Passed",
+        "Duration": "00:00:01.1360000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.PauseFreezesClockEnemiesAndInputPresentation",
+        "Status": "Passed",
+        "Duration": "00:00:01.1660000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.PickupUpgradeDetailsIncludeBaseRadiusAndCurrentLevels",
+        "Status": "Passed",
+        "Duration": "00:00:01.2680000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.QuitSavesAbandonedSurvivorBeforeAllowingApplicationExit",
+        "Status": "Passed",
+        "Duration": "00:00:01.2320000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ReloadFreezesDuringPauseAndResetsForNewRun",
+        "Status": "Passed",
+        "Duration": "00:00:01.1910000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ReloadUpgradeKeepsActiveTimerAndStopsAtOneSecond",
+        "Status": "Passed",
+        "Duration": "00:00:01.1720000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.RifleWaitsForAutomaticReloadAfterThirtyRounds",
+        "Status": "Passed",
+        "Duration": "00:00:01.1370000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(False)",
+        "Status": "Passed",
+        "Duration": "00:00:01.1480000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.SpawnCameraCheckIncludesBodyAndScreenMargin(True)",
+        "Status": "Passed",
+        "Duration": "00:00:01.1470000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.SpawnContinuesBeyondFormerAliveLimit",
+        "Status": "Passed",
+        "Duration": "00:00:01.2760000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.StopReleasesOwnedViewAndPreservesArcadeRun",
+        "Status": "Passed",
+        "Duration": "00:00:01.1300000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.UnreadyBattleCannotCommitPreparation",
+        "Status": "Passed",
+        "Duration": "00:00:01.1550000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.UpgradeSelectionDoesNotDismissMenuPause",
+        "Status": "Passed",
+        "Duration": "00:00:01.2040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.VisibleGroundSpawnDoesNotNeedHiddenOutsideLane",
+        "Status": "Passed",
+        "Duration": "00:00:01.3690000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRuntimeTests.ZeroExperienceChanceKeepsKillAndScoreWithoutDrop",
+        "Status": "Passed",
+        "Duration": "00:00:01.1730000"
+      }
+    ]
+  }
+}

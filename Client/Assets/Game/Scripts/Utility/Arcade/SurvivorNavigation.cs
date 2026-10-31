@@ -92,6 +92,8 @@ namespace Game
                 if((links&4)!=0)Visit(at,at-columns,ref tail);if((links&8)!=0)Visit(at,at+columns,ref tail);}
         }
         private void Visit(int from,int to,ref int tail){if(distance[to]>=0)return;distance[to]=distance[from]+1;queue[tail++]=to;}
+        /// <summary>出生与掉落必须连到玩家所在分区，不能只检查地面没有障碍。</summary>
+        public bool IsReachable(Vector2 position)=>goal>=0&&Clear(position)&&Nearest(position,true)>=0;
         /// <summary>沿可见的下降格移动，限制本帧步长；直达目标时不再绕格。</summary>
         public Vector2 Move(Vector2 position,Vector2 target,float amount)
         {

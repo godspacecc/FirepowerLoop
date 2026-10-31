@@ -1,0 +1,103 @@
+using System;using Object=UnityEngine.Object;
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using System.IO;using System.Linq;using System.Collections.Generic;
+public class Script{
+    private static void CreateSkinProxies(Actor actor, List<Object> owned)
+    {
+        foreach (var source in actor.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!source.enabled || !source.gameObject.activeInHierarchy || source.sharedMesh == null || source.bones.Length == 0) continue;
+            var original = source.sharedMesh;
+            var output = Object.Instantiate(original); output.name = "TEMP_FormalSampledSkin"; owned.Add(output);
+            var proxy = new GameObject("TEMP_FormalSampledSkin", typeof(MeshFilter), typeof(MeshRenderer)); proxy.transform.SetParent(source.transform, false);
+            proxy.GetComponent<MeshFilter>().sharedMesh = output; proxy.GetComponent<MeshRenderer>().sharedMaterials = source.sharedMaterials;
+            var skin = new Skin { Source = source, Output = output, Vertices = original.vertices, Normals = original.normals,
+                Weights = original.boneWeights, Bindposes = original.bindposes, Bones = source.bones };
+            if (skin.Weights.Length != skin.Vertices.Length || skin.Normals.Length != skin.Vertices.Length || skin.Bindposes.Length != skin.Bones.Length)
+                throw new InvalidOperationException("正式蒙皮数据不完整：" + source.name);
+            skin.Positions = new Vector3[skin.Vertices.Length]; skin.Directions = new Vector3[skin.Vertices.Length]; skin.Matrices = new Matrix4x4[skin.Bones.Length];
+            actor.Skins.Add(skin); source.enabled = false;
+        }
+        if (actor.Skins.Count == 0) throw new InvalidOperationException("正式演员缺少可采样蒙皮：" + actor.Root.name);
+    }
+
+    private static void UpdateSkin(Skin skin)
+    {
+        for (int i = 0; i < skin.Bones.Length; i++) skin.Matrices[i] = skin.Source.transform.worldToLocalMatrix * skin.Bones[i].localToWorldMatrix * skin.Bindposes[i];
+        for (int i = 0; i < skin.Vertices.Length; i++)
+        {
+            var weight = skin.Weights[i]; var vertex = skin.Vertices[i]; var normal = skin.Normals[i]; var matrices = skin.Matrices;
+            skin.Positions[i] = matrices[weight.boneIndex0].MultiplyPoint3x4(vertex) * weight.weight0 + matrices[weight.boneIndex1].MultiplyPoint3x4(vertex) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyPoint3x4(vertex) * weight.weight2 + matrices[weight.boneIndex3].MultiplyPoint3x4(vertex) * weight.weight3;
+            skin.Directions[i] = (matrices[weight.boneIndex0].MultiplyVector(normal) * weight.weight0 + matrices[weight.boneIndex1].MultiplyVector(normal) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyVector(normal) * weight.weight2 + matrices[weight.boneIndex3].MultiplyVector(normal) * weight.weight3).normalized;
+        }
+        skin.Output.vertices = skin.Positions; skin.Output.normals = skin.Directions; skin.Output.RecalculateBounds();
+    }
+
+
+private sealed class Actor {public GameObject Root; public readonly List<Skin> Skins=new List<Skin>();}
+    private sealed class Skin
+    {
+        public SkinnedMeshRenderer Source;
+        public Mesh Output;
+        public Vector3[] Vertices, Normals, Positions, Directions;
+        public BoneWeight[] Weights;
+        public Matrix4x4[] Bindposes, Matrices;
+        public Transform[] Bones;
+    }
+
+
+static List<Object> owned=new List<Object>();static Transform root;static System.Random rng=new System.Random(72);
+static Material Mat(string name,Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.name=name;m.color=c;m.SetFloat("_Smoothness",.05f);owned.Add(m);return m;}
+static GameObject Cube(string name,Vector3 p,Vector3 scale,Material m){var g=GameObject.CreatePrimitive(PrimitiveType.Cube);g.name=name;g.transform.SetParent(root);g.transform.position=p;g.transform.localScale=scale;g.GetComponent<Renderer>().sharedMaterial=m;return g;}
+static Mesh StoneMesh(){float t=(1+Mathf.Sqrt(5))/2;var vs=new[]{new Vector3(-1,t,0),new Vector3(1,t,0),new Vector3(-1,-t,0),new Vector3(1,-t,0),new Vector3(0,-1,t),new Vector3(0,1,t),new Vector3(0,-1,-t),new Vector3(0,1,-t),new Vector3(t,0,-1),new Vector3(t,0,1),new Vector3(-t,0,-1),new Vector3(-t,0,1)};int[] ts={0,11,5,0,5,1,0,1,7,0,7,10,0,10,11,1,5,9,5,11,4,11,10,2,10,7,6,7,1,8,3,9,4,3,4,2,3,2,6,3,6,8,3,8,9,4,9,5,2,4,11,6,2,10,8,6,7,9,8,1};var v=new Vector3[ts.Length];for(int i=0;i<v.Length;i++)v[i]=vs[ts[i]].normalized;var mesh=new Mesh();mesh.vertices=v;mesh.triangles=Enumerable.Range(0,v.Length).ToArray();mesh.RecalculateNormals();mesh.RecalculateBounds();owned.Add(mesh);return mesh;}
+static GameObject Lump(string name,Mesh mesh,Vector3 p,Vector3 scale,Material m){var g=new GameObject(name);g.transform.SetParent(root);g.transform.position=p;g.transform.localScale=scale;g.AddComponent<MeshFilter>().sharedMesh=mesh;g.AddComponent<MeshRenderer>().sharedMaterial=m;return g;}
+static void Wall(Mesh mesh,float start,float end,float z,Material[] stones){for(float x=start;x<end;x+=1.5f)for(int row=0;row<2;row++){var g=Lump("BrokenStoneWall",mesh,new Vector3(x+(row==0?0:.25f),.4f+row*.62f,z),new Vector3(.95f,.5f,.68f),stones[(int)(x-start+row)%stones.Length]);g.transform.rotation=Quaternion.Euler(0,(float)rng.NextDouble()*25,0);}}
+static void Fence(float x,float z,int count,Material wood){for(int i=0;i<=count;i++)Cube("FencePost",new Vector3(x+i*2.4f,.8f,z),new Vector3(.25f,1.6f,.25f),wood);for(int i=0;i<count;i++)foreach(float y in new[]{.6f,1.15f})Cube("FenceRail",new Vector3(x+i*2.4f+1.2f,y,z),new Vector3(2.5f,.18f,.17f),wood);}
+static void Capture(Camera camera,string path,int w,int h){var rt=new RenderTexture(w,h,24);Texture2D image=null;try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image=new Texture2D(w,h,TextureFormat.RGB24,false);image.ReadPixels(new Rect(0,0,w,h),0,0);image.Apply();File.WriteAllBytes(path,image.EncodeToPNG());}finally{RenderTexture.active=null;camera.targetTexture=null;if(image!=null)Object.DestroyImmediate(image);Object.DestroyImmediate(rt);}}
+public static object Main(){var scene=EditorSceneManager.NewPreviewScene();var holder=new GameObject("LoadingArtworkFarmCandidate");root=holder.transform;SceneManager.MoveGameObjectToScene(holder,scene);try{
+var mesh=StoneMesh();var grass=Mat("MutedGrass",new Color(.42f,.48f,.22f));var dirt=Mat("WarmEarth",new Color(.47f,.37f,.20f));var wood=Mat("AgedTimber",new Color(.35f,.24f,.13f));var hay=Mat("GoldenHay",new Color(.72f,.56f,.22f));var cream=Mat("FarmPlaster",new Color(.64f,.60f,.43f));var foliage=Mat("OliveFoliage",new Color(.30f,.39f,.16f));var foliage2=Mat("OliveFoliageLight",new Color(.43f,.49f,.22f));var stone=new[]{Mat("StoneA",new Color(.40f,.42f,.36f)),Mat("StoneB",new Color(.48f,.49f,.42f)),Mat("StoneC",new Color(.34f,.38f,.34f))};
+Cube("WalkableFarmGround",new Vector3(0,-1.01f,0),new Vector3(70,2,70),grass);
+for(int i=0;i<95;i++){float x=(float)rng.NextDouble()*60-30,z=(float)rng.NextDouble()*60-30;Lump("GrassEarthPatch",mesh,new Vector3(x,.005f,z),new Vector3(1.2f+(float)rng.NextDouble()*1.4f,.035f,.9f+(float)rng.NextDouble()),i%3==0?foliage2:dirt);}
+for(int i=0;i<18;i++){float x=-31+i*3.7f;Lump("WornFarmTrack",mesh,new Vector3(x,.025f,-4+Mathf.Sin(i*.4f)*2),new Vector3(3.1f,.04f,2.6f),dirt);}
+Wall(mesh,-29,-15,5,stone);Wall(mesh,-9,5,5,stone);Wall(mesh,15,29,5,stone);Wall(mesh,-31,-22,-18,stone);Wall(mesh,21,30,-19,stone);
+Fence(-26,-25,4,wood);Fence(15,-24,5,wood);Fence(-6,24,6,wood);
+foreach(var p in new[]{new Vector3(-23,0,20),new Vector3(20,0,21)}){Cube("BarnWalls",p+new Vector3(0,1.8f,0),new Vector3(6,3.6f,4.5f),cream);Cube("BarnDoor",p+new Vector3(0,1.2f,-2.27f),new Vector3(1.8f,2.4f,.15f),wood);var roof1=Cube("BarnRoof",p+new Vector3(-1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof1.transform.rotation=Quaternion.Euler(0,0,25);var roof2=Cube("BarnRoof",p+new Vector3(1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof2.transform.rotation=Quaternion.Euler(0,0,-25);}
+foreach(var p in new[]{new Vector3(-24,.8f,13),new Vector3(-21,.8f,13),new Vector3(22,.8f,-15),new Vector3(25,.8f,-15),new Vector3(-22,.8f,-24)}){var g=GameObject.CreatePrimitive(PrimitiveType.Cylinder);g.name="RoundHayBale";g.transform.SetParent(root);g.transform.position=p;g.transform.rotation=Quaternion.Euler(90,0,0);g.transform.localScale=new Vector3(2,1.4f,2);g.GetComponent<Renderer>().sharedMaterial=hay;}
+for(int i=0;i<24;i++){float angle=i*Mathf.PI*2/24;float x=Mathf.Cos(angle)*(32+(i%3)),z=Mathf.Sin(angle)*(32+(i%4));Cube("TreeTrunk",new Vector3(x,1.8f,z),new Vector3(.65f,3.6f,.65f),wood);Lump("TreeCrown",mesh,new Vector3(x,4.5f,z),new Vector3(2.4f,3,2.2f),i%2==0?foliage:foliage2);Lump("TreeCrownSide",mesh,new Vector3(x+.9f,3.8f,z-.5f),new Vector3(1.7f,1.9f,1.8f),foliage);}
+for(int i=0;i<7;i++)Lump("DistantRollingHill",mesh,new Vector3(-55+i*18,3,65),new Vector3(20,10+(i%3)*3,18),stone[i%3]);
+root.Find("WalkableFarmGround").localScale=new Vector3(180,2,200);root.Find("WalkableFarmGround").position=new Vector3(0,-1.01f,35);
+var grassDetail=Mat("GrassBlades",new Color(.43f,.49f,.20f));var verticesDetail=new List<Vector3>();var trianglesDetail=new List<int>();for(int k=0;k<1700;k++){float x=(float)rng.NextDouble()*66-33,z=(float)rng.NextDouble()*66-33;for(int b=0;b<3;b++){float a=(float)rng.NextDouble()*Mathf.PI*2;var c=new Vector3(x,.02f,z);var side=new Vector3(Mathf.Cos(a)*.10f,0,Mathf.Sin(a)*.10f);int start=verticesDetail.Count;verticesDetail.Add(c-side);verticesDetail.Add(c+side);verticesDetail.Add(c+new Vector3(.06f,.18f+(float)rng.NextDouble()*.22f,.03f));trianglesDetail.Add(start);trianglesDetail.Add(start+2);trianglesDetail.Add(start+1);trianglesDetail.Add(start);trianglesDetail.Add(start+1);trianglesDetail.Add(start+2);}}
+var detailMesh=new Mesh();detailMesh.SetVertices(verticesDetail);detailMesh.SetTriangles(trianglesDetail,0);detailMesh.RecalculateNormals();detailMesh.RecalculateBounds();owned.Add(detailMesh);var details=new GameObject("TemporaryGrassDetail");details.transform.SetParent(root);details.AddComponent<MeshFilter>().sharedMesh=detailMesh;details.AddComponent<MeshRenderer>().sharedMaterial=grassDetail;
+for(int k=0;k<45;k++){float x=(float)rng.NextDouble()*58-29,z=(float)rng.NextDouble()*50-25;Lump("SmallFieldStone",mesh,new Vector3(x,.12f,z),new Vector3(.2f+(float)rng.NextDouble()*.4f,.18f,.24f),stone[k%3]);}
+var player=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root);player.transform.position=new Vector3(-1,0,-10);foreach(var b in player.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+var zombie=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),root);foreach(var b in zombie.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;var animator=zombie.GetComponentInChildren<Animator>(true);animator.Rebind();animator.Update(0);animator.enabled=false;var idle=animator.runtimeAnimatorController.animationClips.First(c=>c.name.EndsWith("|Idle"));var walk=animator.runtimeAnimatorController.animationClips.First(c=>c.name.Contains("GroundWalk"));
+var mark=Lump("DisturbedSoil",mesh,new Vector3(4,.03f,-7),new Vector3(.8f,.06f,.7f),dirt);var clods=new GameObject[10];for(int i=0;i<clods.Length;i++){float a=i*Mathf.PI*2/clods.Length;clods[i]=Lump("LooseSoil",mesh,new Vector3(4+Mathf.Cos(a)*.5f,.04f,-7+Mathf.Sin(a)*.5f),new Vector3(.12f,.1f,.14f),dirt);}
+var lightObject=new GameObject("PreviewLight");lightObject.transform.SetParent(root);lightObject.transform.rotation=Quaternion.Euler(45,-35,0);lightObject.AddComponent<Light>().type=LightType.Directional;lightObject.GetComponent<Light>().intensity=1.7f;lightObject.GetComponent<Light>().shadows=LightShadows.Soft;
+var cameraObject=new GameObject("Camera");cameraObject.transform.SetParent(root);var camera=cameraObject.AddComponent<Camera>();camera.scene=scene;camera.cameraType=CameraType.Preview;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.10f,.14f,.16f);camera.orthographic=false;camera.fieldOfView=52;camera.transform.position=new Vector3(-2,13,-35);camera.transform.LookAt(new Vector3(0,1,2));camera.backgroundColor=new Color(.55f,.63f,.59f);string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorGroundEntryApplied-20261031";Directory.CreateDirectory(dir);zombie.transform.position=new Vector3(4,-3,-7);Capture(camera,Path.Combine(dir,"farm-loading-style-candidate.png"),1400,1100);
+camera.orthographic=true;camera.orthographicSize=3.7f;camera.transform.position=new Vector3(0,7,-23);camera.transform.LookAt(new Vector3(1,.8f,-8));string frames=Path.Combine(dir,"frames");Directory.CreateDirectory(frames);var leg=animator.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="UpperLeg.L"||t.name=="Thigh_L"||t.name=="Thigh.L");var spine=animator.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="Torso");
+var climb=AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerDockSeaEntry.anim");
+var visual=animator.transform.parent;var rest=visual.localPosition;var restRot=visual.localRotation;var hips=animator.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Hips");
+var actor=new Actor{Root=zombie};CreateSkinProxies(actor,owned);
+var heroActor=new Actor{Root=player};var presenter=player.GetComponent<Game.CharacterWeaponPresenter>();if(presenter==null||!presenter.SetWeaponId("arcade.weapon.basic"))throw new InvalidOperationException("hero weapon");presenter.SetManualPoseSampling(true);var heroAnim=presenter.BodyAnimator;heroAnim.enabled=true;heroAnim.Rebind();heroAnim.Update(0);heroAnim.enabled=false;presenter.Current.Animations.Idle.Clip.SampleAnimation(heroAnim.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);CreateSkinProxies(heroActor,owned);foreach(var skin in heroActor.Skins)UpdateSkin(skin);
+var audit=new List<string>{"frame|time|localHand|localFoot|vertexMotionMax"};Vector3[] previous=null;
+for(int frame=0;frame<200;frame++){
+float time=frame<126?frame/20f:1.25f+(frame-126)/30f;
+var view=zombie.GetComponent<Game.EnemyView>();
+if(frame==0||frame==126){view.ResetPhysicalFeedback();view.BeginPresentationUse();view.SetNavigationEnabled(false);view.Animator.Rebind();view.Animator.Update(0);}
+var facing=new Vector2(-1,-.3f).normalized;
+var state=new Game.SurvivorGroundEntryState{Started=true,Age=Mathf.Min(time,Game.SurvivorGroundEntryRules.TotalSeconds),StartX=4,StartZ=-7,ForwardX=facing.x,ForwardZ=facing.y};
+var p=Game.SurvivorGroundEntryRules.Position(state);if(time>4.3f)p+=facing*((time-4.3f)*.9f);
+zombie.transform.position=new Vector3(p.x,0,p.y);
+if(time>4.3f)walk.SampleAnimation(animator.gameObject,time-4.3f);
+view.SetGroundEntry(state,new Vector3(facing.x,0,facing.y),Vector3.up);view.LateTickCombatFeedback();
+mark.SetActive(false);foreach(var clod in clods)clod.SetActive(false);
+foreach(var skin in actor.Skins)UpdateSkin(skin);
+float maxDelta=0;var current=actor.Skins[0].Positions;if(previous!=null)for(int k=0;k<current.Length;k++)maxDelta=Mathf.Max(maxDelta,Vector3.Distance(current[k],previous[k]));previous=(Vector3[])current.Clone();
+var hand=animator.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="Hand.L");var foot=animator.GetComponentsInChildren<Transform>(true).FirstOrDefault(t=>t.name=="Foot.L");
+audit.Add(frame+"|"+time+"|"+(hand==null?"missing":zombie.transform.InverseTransformPoint(hand.position).ToString("F4"))+"|"+(foot==null?"missing":zombie.transform.InverseTransformPoint(foot.position).ToString("F4"))+"|"+maxDelta);
+if(frame>=126){camera.orthographicSize=2.35f;camera.transform.position=new Vector3(3,3,-15);camera.transform.LookAt(new Vector3(2.7f,.6f,-7));}
+Capture(camera,Path.Combine(frames,frame.ToString("D3")+".png"),1100,700);
+}
+File.WriteAllLines(Path.Combine(dir,"pose-audit.tsv"),audit);return dir;
+}finally{EditorSceneManager.ClosePreviewScene(scene);foreach(var o in owned)if(o!=null)Object.DestroyImmediate(o);owned.Clear();}}}

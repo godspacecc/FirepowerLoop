@@ -238,6 +238,8 @@ namespace Game
 
         public void SetDockSeaEntry(int runtimeId,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state,Vector3 forward,Vector3 up)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetDockSeaEntry(state,forward,up);}
+        public void SetGroundEntry(int runtimeId,SurvivorGroundEntryState state,Vector3 forward,Vector3 up)
+        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetGroundEntry(state,forward,up);}
 
         /// <summary>把当前攻击阶段交给正式模型；异步未就绪时等待下一帧投影。</summary>
         public void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction)
@@ -364,6 +366,7 @@ namespace Game
             if (provider == null || !provider.TryGetArcadeCatalog(out var catalog, out catalogError))
                 return FailPrepared("敌人准备失败：" + (catalogError ?? "街机配置不可用"));
             var enemyIds = new HashSet<string>(StringComparer.Ordinal);
+            var survivorIds = new HashSet<string>(StringComparer.Ordinal);
             foreach (var group in catalog.EnemyGroups)
                 foreach (var member in group.Members)
                     if (!string.IsNullOrWhiteSpace(member.EnemyId))
@@ -372,7 +375,7 @@ namespace Game
             if(provider.HasSurvivorEnemyRoster)
             {
                 if(!provider.TryGetSurvivorEnemyRoster(out var roster,out var rosterError))return FailPrepared(rosterError);
-                foreach(var entry in roster.Entries)enemyIds.Add(entry.EnemyId);
+                foreach(var entry in roster.Entries){enemyIds.Add(entry.EnemyId);survivorIds.Add(entry.EnemyId);}
             }
             foreach (var enemyId in enemyIds)
             {
@@ -381,8 +384,9 @@ namespace Game
                 var prefabResult = await LoadEnemyPrefabAsync(config, cancellationToken);
                 if (!prefabResult.Success)
                     return FailPrepared(prefabResult.Error);
-                if (!ValidatePrefab(prefabResult.Prefab, out _, out var prefabError))
+                if (!ValidatePrefab(prefabResult.Prefab, out var readyView, out var prefabError))
                     return FailPrepared(prefabError);
+                if(survivorIds.Contains(enemyId)&&!readyView.ValidateGroundEntry(out var groundError))return FailPrepared(groundError);
             }
 
             arcadeCandidateRoot = context.Scene.DynamicObjectRoot;

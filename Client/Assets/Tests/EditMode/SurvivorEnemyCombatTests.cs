@@ -76,11 +76,11 @@ namespace Game.Tests
             Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(90));
             Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f).Within(.001));Assert.That(e.Damage,Is.EqualTo(12));
         }
-        /// <summary>无隐藏出生点时不生成；已有敌人达到旧上限时仍可生成。</summary>
-        [Test] public void HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies()
+        /// <summary>爬出不依赖隐藏出生点；已有敌人达到旧上限时仍可生成。</summary>
+        [Test] public void GroundSpawnIgnoresHiddenLaneAndFormerAliveLimit()
         {
             Prepare();Set("view",new View{Hidden=false});Call("Spawn");
-            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.That(enemies,Is.Empty);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.That(enemies.Count,Is.EqualTo(1));enemies.Clear();
             Set("view",new View());for(int i=0;i<config.MaxAliveEnemies;i++)enemies.Add(1000+i,new ArcadeEnemyRuntime());
             Call("Spawn");Assert.That(enemies.Count,Is.EqualTo(config.MaxAliveEnemies+1));
         }
@@ -132,7 +132,8 @@ namespace Game.Tests
             model.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");model.State.Advance(240,false);Set("enemyRandom",new FixedRandom());
             var port=new View{Visible=false};Set("view",port);Call("TickFrame",.01f);
             Assert.That(port.Scale,Is.EqualTo(new Vector3(1.5f,1.2f,1.4f)),"正式帧必须投影采用体型");
-            Assert.That(port.SpawnRadius,Is.EqualTo(catalog.Rule.EnemyContactRadius*1.5f));
+            Assert.That(port.GroundStarted,Is.True,"正式帧必须提交爬出状态");
+            Assert.That(Call("EnemyRadius",Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single()),Is.EqualTo(catalog.Rule.EnemyContactRadius*1.5f));
         }
         [Test] public void ProjectileHitsEnlargedBodyBeyondOrdinaryRadius()
         {
@@ -155,6 +156,8 @@ namespace Game.Tests
         {
             public bool Hidden=true,Visible=true;
             public float SpawnRadius;public Vector3 Scale;
+            public bool GroundStarted;
+            public void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state){GroundStarted=state.Started;}
             public bool IsArenaSpawnHidden(Vector2 p,float r){SpawnRadius=r;return Hidden;}
             public void SetEnemyScale(int id,Vector3 scale){Scale=scale;}
             public bool IsArenaTargetVisible(Vector2 p)=>Visible;

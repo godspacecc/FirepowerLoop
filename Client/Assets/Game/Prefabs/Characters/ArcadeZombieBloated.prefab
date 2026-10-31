@@ -2698,6 +2698,8 @@ MonoBehaviour:
   dockSeaEntryClip: {fileID: 7400000, guid: 88560b35bf1f4824ca90e127636e7565, type: 2}
   dockSeaEntryRippleMaterial: {fileID: 2100000, guid: 70e2eaf89c39419408159d6e5a9e5e36,
     type: 2}
+  groundEntrySoilMaterial: {fileID: 2100000, guid: 0e788d1b81b5f9744b10de9942bb7490,
+    type: 2}
 --- !u!195 &757839347172597645
 NavMeshAgent:
   m_ObjectHideFlags: 0

@@ -112,15 +112,14 @@ namespace Game.Tests
             Assert.That(enemies.Count,Is.EqualTo(125),"不能因存活数量达到60而停止刷新");
             Assert.That(model.Paused,Is.False);
         }
-        [Test] public void OutsideSpawnRejectsInvalidRouteWithoutCreatingEnemy()
+        [Test] public void GroundSpawnWithNoWalkableFloorWaitsWithoutFailingRun()
         {
-            // 海岛特殊布局不属于幸存者普通通道配置，模拟准备后配置失效。
-            Set("layout",Get<ArcadeConfigCatalogDefinition>("catalog").RoundLayouts.First(x=>x.ArenaConfigNumber==1));
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(0,0,100,100,true)});
             Call("Spawn");
             Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
-            Assert.That(model.Paused,Is.True);Assert.That(system.LastError,Does.Contain("场外通道"));
+            Assert.That(model.Paused,Is.False);Assert.That(system.LastError,Is.Null);
             Assert.That(model.ResultSnapshot,Is.Null,"配置故障不能伪造失败结算");
-            Call("Tick");Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
+            Call("Spawn");Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
         }
         [TestCase(false)] [TestCase(true)]
         public void SpawnCameraCheckIncludesBodyAndScreenMargin(bool orthographic)
@@ -152,34 +151,32 @@ namespace Game.Tests
             typeof(ArcadeRoundLayoutParameters).GetField("<Obstacles>k__BackingField",Flags).SetValue(clone,layout.Obstacles.Concat(new[]{wall}).ToArray());
             Assert.That(ArcadeOutsideRouteRules.TryExtendToHidden(clone,entry,.5f,(x,z)=>Mathf.Abs(x)>60||Mathf.Abs(z)>60,out _),Is.False);
         }
-        [Test] public void SpawnExtendsExistingLaneUntilOutsideCamera()
+        [Test] public void GroundSpawnKeepsEnemyInsideFarmEvenWhenCameraSeesIt()
         {
             view.SpawnHidden=p=>Mathf.Abs(p.x)>45||Mathf.Abs(p.y)>45;
             Call("Spawn");var enemy=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
-            Assert.That(view.SpawnHidden(enemy.Position),Is.True,"场地外不等于镜头外");
-            Assert.That(enemy.OutsideEntry.Active,Is.True);
-            var start=enemy.Position;var state=enemy.OutsideEntry;
-            Assert.That(ArcadeOutsideEntryRules.Advance(ref state,.1f,enemy.Speed,out var next),Is.True);
-            Assert.That(Vector2.Distance(start,new Vector2(next.X,next.Y)),Is.EqualTo(enemy.Speed*.1f).Within(.001f));
-            Assert.That(state.TargetX,Is.EqualTo(enemy.OutsideEntry.TargetX));
-            Assert.That(state.TargetZ,Is.EqualTo(enemy.OutsideEntry.TargetZ));
+            Assert.That(view.SpawnHidden(enemy.Position),Is.False,"场内可见落点应通过爬出过程自然登场");
+            Assert.That(enemy.OutsideEntry.Active,Is.False);Assert.That(enemy.GroundEntry.Active,Is.True);
+            var state=enemy.GroundEntry;Assert.That(SurvivorGroundEntryRules.Advance(ref state,.1f),Is.True);
+            Assert.That(state.Age,Is.EqualTo(.1f));Assert.That(SurvivorGroundEntryRules.Position(state),Is.EqualTo(enemy.Position),"翻土提示期不移动");
         }
-        [Test] public void VisibleSpawnWithoutHiddenLaneWaitsWithoutPausingRun()
+        [Test] public void VisibleGroundSpawnDoesNotNeedHiddenOutsideLane()
         {
             view.SpawnHidden=p=>false;Call("Spawn");
-            Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"),Is.Empty);
+            Assert.That(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Count,Is.EqualTo(1));
             Assert.That(model.Paused,Is.False);Assert.That(system.LastError,Is.Null);
         }
-        [Test] public void OutsideSpawnPauseAndEarlyKillLandExperienceInsideEntry()
+        [Test] public void GroundSpawnPauseAndStandingKillLandExperienceInsideFarm()
         {
             Call("Spawn");var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var enemy=enemies.Values.Single();
-            Assert.That(enemy.OutsideEntry.Active,Is.True);Assert.That(enemy.Position.x,Is.LessThan(-30.5f));
+            Assert.That(enemy.GroundEntry.Active,Is.True);Assert.That(Mathf.Abs(enemy.Position.x),Is.LessThan(30.5f));
             var start=enemy.Position;system.SetPaused(true);Call("Tick");Assert.That(enemy.Position,Is.EqualTo(start));
             var bullets=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+            enemy.GroundEntry.Age=SurvivorGroundEntryRules.TotalSeconds;
             bullets.Add(500,new ArcadeProjectileRuntime{Id=500,Position=start-Vector2.right,Velocity=Vector2.right*10,Damage=enemy.Health,RemainingSeconds=1});
             Call("AdvanceBullets",.1f);Assert.That(enemies,Is.Empty);Assert.That(model.Kills,Is.EqualTo(1));
             var drops=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
-            Assert.That(drops.Values.Single().Position,Is.EqualTo(new Vector2(enemy.OutsideEntry.TargetX,enemy.OutsideEntry.TargetZ)));
+            Assert.That(drops.Values.Single().Position,Is.EqualTo(start));
         }
         [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
         {

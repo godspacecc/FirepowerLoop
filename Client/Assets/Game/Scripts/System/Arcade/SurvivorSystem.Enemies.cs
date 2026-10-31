@@ -51,18 +51,19 @@ namespace Game
             }
             enemyRoster=roster;enemyConfigs.Clear();sizedNavigation.Clear();
             foreach(var pair in configs)enemyConfigs.Add(pair.Key,pair.Value);
+            PrepareGroundHitPoses();
             return true;
         }
 
-        /// <summary>沿既有画面外通道入场；新增僵尸追到抓挠距离，前摇与收招时停步。</summary>
+        /// <summary>爬出阶段锁定路径；站稳后追到抓挠距离，前摇与收招时停步。</summary>
         private void TickEnemies(float dt)
         {
             // 每种体型每帧只更新一次目标格，不随敌人数量重复找格或重算。
             foreach(var field in sizedNavigation.Values)field.SetTarget(player);
             foreach(var e in enemies.Values)
             {
-                if(FirepowerLoop.Arcade.ArcadeOutsideEntryRules.Advance(ref e.OutsideEntry,dt,e.Speed,out var entryPosition))
-                {e.Position=new Vector2(entryPosition.X,entryPosition.Y);continue;}
+                if(SurvivorGroundEntryRules.Advance(ref e.GroundEntry,dt))
+                {e.Position=SurvivorGroundEntryRules.Position(e.GroundEntry);continue;}
                 bool configured=enemyConfigs.TryGetValue(e.ConfigId??string.Empty,out var definition)&&e.ConfigId!=config.EnemyId;
                 float distance=Vector2.Distance(e.Position,player);
                 if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*dt);

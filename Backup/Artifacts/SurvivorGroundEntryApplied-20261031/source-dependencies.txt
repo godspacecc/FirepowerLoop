@@ -1,0 +1,5 @@
+Actual source-only collector query: BeginCollect("DefaultPackage",false,false). No build entry called.
+Prefabs/Characters/ArcadeZombieShambler | arcade | 47 dependencies | Assets/Game/Art/Survivor/GroundEntry/SurvivorGroundSoil.mat; Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerDockSeaEntry.anim
+Prefabs/Characters/ArcadeZombieGaunt | arcade | 47 dependencies | Assets/Game/Art/Survivor/GroundEntry/SurvivorGroundSoil.mat; Assets/Game/Art/Enemies/Zombies/Civilian/GauntDockSeaEntry.anim
+Prefabs/Characters/ArcadeZombieBloated | arcade | 47 dependencies | Assets/Game/Art/Survivor/GroundEntry/SurvivorGroundSoil.mat; Assets/Game/Art/Enemies/Zombies/Civilian/BloatedDockSeaEntry.anim
+Runtime/published bundles were not built, refreshed, or verified.

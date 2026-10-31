@@ -104,7 +104,7 @@ namespace Game.Tests
             }
         }
 
-        /// <summary>独立敌池及它实际请求的两类僵尸必须进入正式收集，不能只查闯关表。</summary>
+        /// <summary>独立敌池实际地址及爬出依赖必须进入正式收集，不能只查闯关表。</summary>
         [Test] public void SurvivorRosterDependenciesAreCollectedBeforeEntry()
         {
             AssertTags("tbsurvivorenemy.bytes","startup");
@@ -116,6 +116,12 @@ namespace Game.Tests
                 Assert.That(provider.TryGetEnemy(row.EnemyId,out var enemy,out error),Is.True,error);
                 Assert.That(assets.ContainsKey(enemy.PrefabAddress),Is.True,enemy.PrefabAddress);
                 Assert.That(Tags(assets[enemy.PrefabAddress]),Does.Contain("arcade"));
+                var path=(string)Read(assets[enemy.PrefabAddress],"AssetInfo").GetType().GetField("AssetPath").GetValue(Read(assets[enemy.PrefabAddress],"AssetInfo"));
+                var prefab=AssetDatabase.LoadAssetAtPath<UnityEngine.GameObject>(path);
+                Assert.That(prefab.GetComponent<EnemyView>().ValidateGroundEntry(out error),Is.True,error);
+                var dependencies=AssetDatabase.GetDependencies(path,true);
+                Assert.That(dependencies,Does.Contain("Assets/Game/Art/Survivor/GroundEntry/SurvivorGroundSoil.mat"));
+                Assert.That(dependencies.Any(p=>p.EndsWith("DockSeaEntry.anim",StringComparison.Ordinal)),Is.True);
             }
         }
 

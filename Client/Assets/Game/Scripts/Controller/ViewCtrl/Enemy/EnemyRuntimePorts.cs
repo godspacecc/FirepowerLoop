@@ -42,6 +42,8 @@ namespace Game
         void SetHerdImpact(int runtimeId,FirepowerLoop.Arcade.ArcadeHerdImpactState state,Vector3 direction) { }
         /// <summary>同一地图中采样海中靠近/抓边/登台，方向由地图局部轴转换。</summary>
         void SetDockSeaEntry(int runtimeId,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state,Vector3 forward,Vector3 up) { }
+        /// <summary>幸存者独立爬出状态，仍由现有地图敌人池管理实例。</summary>
+        void SetGroundEntry(int runtimeId,SurvivorGroundEntryState state,Vector3 forward,Vector3 up) { }
         /// <summary>联机断线等待时冻结牛撞尸体的表现时钟。</summary>
         void SetHerdActivityPaused(bool paused) { }
         /// <summary>专属轮廓复用已预载敌人中的纯粒子模板，克隆由请求方地图根持有。</summary>
