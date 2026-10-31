@@ -54,6 +54,17 @@ namespace Game.Tests
         private void Set(string name,object value)=>typeof(SurvivorSystem).GetField(name,Flags).SetValue(system,value);
         private T Get<T>(string name)=>(T)typeof(SurvivorSystem).GetField(name,Flags).GetValue(system);
         private object Call(string name,params object[] args)=>typeof(SurvivorSystem).GetMethod(name,Flags).Invoke(system,args);
+        [Test] public void ReloadPresentationFollowsAuthorityAndClearsAtCompletion()
+        {
+            model.RifleCapacity=30;model.RifleRounds=0;model.RifleReloadDuration=2;model.RifleReloadRemaining=1.5f;
+            Call("Publish");Assert.That(view.ReloadVisible,Is.True);Assert.That(view.ReloadProgress,Is.EqualTo(.25f));
+            Assert.That(view.AmmoVisible,Is.True);Assert.That(view.AmmoCurrent,Is.Zero);Assert.That(view.AmmoCapacity,Is.EqualTo(30));
+            system.SetPaused(true);Assert.That(view.ReloadProgress,Is.EqualTo(.25f));
+            model.RifleReloadRemaining=0;model.RifleRounds=30;Call("Publish");Assert.That(view.ReloadVisible,Is.False);
+            Assert.That(view.AmmoCurrent,Is.EqualTo(30));
+            model.RifleReloadRemaining=1;model.Active=false;Call("Publish");Assert.That(view.ReloadVisible,Is.False);
+            Assert.That(view.AmmoVisible,Is.False);
+        }
         [SetUp] public void Setup()
         {
             architecture=new Game();model=new SurvivorModel();arcade=new ArcadeRunModel();architecture.RegisterModel(model);architecture.RegisterModel(arcade);architecture.RegisterModel(new MapSceneModel());
@@ -429,6 +440,12 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool ReloadVisible;
+            public bool AmmoVisible;
+            public int AmmoCurrent,AmmoCapacity;
+            public void SetPlayerAmmo(bool visible,int current,int capacity){AmmoVisible=visible;AmmoCurrent=current;AmmoCapacity=capacity;}
+            public float ReloadProgress;
+            public void SetPlayerReload(bool active,float progress){ReloadVisible=active;ReloadProgress=progress;}
             public Func<Vector2,bool> SpawnHidden=p=>true;
             public bool IsArenaSpawnHidden(Vector2 position,float radius)=>SpawnHidden(position);
             public bool TargetVisible=true;

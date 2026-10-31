@@ -1,0 +1,87 @@
+using System;
+using System.IO;
+using System.Linq;
+using Game;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using Object=UnityEngine.Object;
+
+/// <summary>隔离场景的武器槽与常驻无人机预览；不保存正式资源。</summary>
+public static class SurvivorReloadAppliedPreview
+{
+    static TMP_FontAsset font;
+    static Transform canvasRoot;
+    static void Label(Transform parent,string value,float x,float y,float w,float h,int size)
+    {
+        var go=new GameObject("PreviewLabel",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(parent,false);
+        var rt=(RectTransform)go.transform;rt.sizeDelta=new Vector2(w,h);rt.anchoredPosition=new Vector2(x,y);
+        var text=go.GetComponent<TextMeshProUGUI>();text.font=font;text.fontSize=size;text.text=value;text.alignment=TextAlignmentOptions.Center;
+    }
+    static GameObject Panel(Transform parent,float x,float y,float w,float h,Color color)
+    {
+        var go=new GameObject("PreviewPanel",typeof(RectTransform),typeof(Image));go.transform.SetParent(parent,false);
+        var rt=(RectTransform)go.transform;rt.sizeDelta=new Vector2(w,h);rt.anchoredPosition=new Vector2(x,y);go.GetComponent<Image>().color=color;return go;
+    }
+    static void Render(Camera camera,string path)
+    {
+        var old=RenderTexture.active;var rt=new RenderTexture(1280,720,24);var tex=new Texture2D(1280,720,TextureFormat.RGB24,false);
+        try{foreach(var t in canvasRoot.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;camera.targetTexture=rt;Canvas.ForceUpdateCanvases();foreach(var t in canvasRoot.GetComponentsInChildren<TMP_Text>())t.ForceMeshUpdate();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1280,720),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}
+        finally{camera.targetTexture=null;RenderTexture.active=old;Object.DestroyImmediate(tex);Object.DestroyImmediate(rt);}
+    }
+    public static string Run()
+    {
+        if(EditorApplication.isPlaying || !Application.dataPath.Replace('\\','/').Equals("E:/GitHub/FirepowerLoop/Client/Assets"))throw new Exception("工程或状态不符");
+        var previous=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+        var folder=Path.GetFullPath("../Backup/Artifacts/SurvivorReloadApplied-20261031");Directory.CreateDirectory(folder+"/frames");Material groundMaterial=null;
+        try
+        {
+            SceneManager.SetActiveScene(scene);
+            font=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Start.prefab").GetComponent<StartUI>().BtnNewGame.GetComponentInChildren<TMP_Text>(true).font;
+            var camera=new GameObject("PreviewCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.orthographicSize=2.6f;camera.transform.position=new Vector3(3,4,-5);camera.transform.LookAt(new Vector3(0,1,0));camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.13f,.18f,.15f);
+            var light=new GameObject("PreviewLight",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.transform.rotation=Quaternion.Euler(50,-25,0);light.intensity=1.4f;light.cullingMask=1<<31;
+            var plane=GameObject.CreatePrimitive(PrimitiveType.Plane);plane.transform.localScale=Vector3.one*3;
+            groundMaterial=new Material(Shader.Find("Universal Render Pipeline/Lit"));groundMaterial.SetColor("_BaseColor",new Color(.24f,.38f,.20f));plane.GetComponent<Renderer>().sharedMaterial=groundMaterial;
+            var player=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));
+            var playerAnimator=player.GetComponentsInChildren<Animator>(true).First(a=>a.name=="PlayerHumanoid");
+            var presenter=player.GetComponent<CharacterWeaponPresenter>();
+            if(!presenter.SetWeaponId("arcade.weapon.basic"))throw new Exception(presenter.LastError);
+            presenter.SetManualPoseSampling(true);
+            var profile=(CharacterAnimationProfile)typeof(CharacterWeaponPresenter).GetField("profile",System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance).GetValue(presenter);
+            var walk=AssetDatabase.LoadAllAssetsAtPath("Assets/Game/Art/Player/Animations/Mixamo/Imported/RifleReload.fbx").OfType<AnimationClip>().First(c=>!c.name.StartsWith("__"));
+            foreach(var go in new[]{player})foreach(var b in go.GetComponentsInChildren<MonoBehaviour>(true))if(!(b is UnityEngine.UI.Graphic)&&!(b is UnityEngine.UI.CanvasScaler))b.enabled=false;
+            var canvas=new GameObject("PreviewCanvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;canvasRoot=canvas.transform;
+            var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
+            Label(canvasRoot,"换弹动作与头顶弹药 HUD · 临时预览",0,460,1700,55,36);
+            Label(canvasRoot,"正式主角与现有换弹片段 · 示例弹量 · 非正式接入实拍",0,400,1800,45,24);
+            var panel=Panel(canvasRoot,0,220,190,50,Color.clear);
+            Label(panel.transform,"0 / 30",0,0,180,40,26);
+            var ammo=panel.GetComponentInChildren<TMP_Text>();panel.SetActive(false);
+            var track=Panel(panel.transform,0,-23,270,10,new Color(.15f,.2f,.22f));
+            var fill=Panel(track.transform,0,0,270,10,new Color(1,.7f,.2f));
+            var fr=(RectTransform)fill.transform;fr.anchorMin=fr.anchorMax=new Vector2(0,.5f);fr.pivot=new Vector2(0,.5f);fr.anchoredPosition=Vector2.zero;
+            Label(canvasRoot,"弹量耗尽 → 换弹进度 → 装填完成",0,-425,1500,65,32);
+            foreach(var root in scene.GetRootGameObjects())foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
+            foreach(var skin in player.GetComponentsInChildren<SkinnedMeshRenderer>(true))skin.updateWhenOffscreen=true;
+            for(int frame=0;frame<50;frame++)
+            {
+                float progress=Mathf.Clamp01((frame-8)/30f);
+                var total=profile.RifleReload.Clip.length+profile.RiflePullBolt.Clip.length;
+                var elapsed=progress*total;var definition=elapsed<profile.RifleReload.Clip.length?profile.RifleReload:profile.RiflePullBolt;
+                var phase=Mathf.Clamp01((elapsed<profile.RifleReload.Clip.length?elapsed:elapsed-profile.RifleReload.Clip.length)/definition.Clip.length);
+                definition.Clip.SampleAnimation(playerAnimator.gameObject,phase*definition.Clip.length);
+                presenter.ApplyOffhandGrip(definition,phase);
+                ammo.text=frame<8?"3 / 30":frame<39?"0 / 30":"30 / 30";
+                track.SetActive(false);
+                var pv=player.GetComponent<PlayerView>();pv.SetAmmoHud(true,frame<8?3:frame<39?0:30,30);if(frame>=8&&frame<39)pv.ShowActionProgress(progress,null);else pv.HideActionProgress();pv.FaceWorldHud(camera.transform.position,camera.transform.up);fr.sizeDelta=new Vector2(270*progress,10);
+                Render(camera,folder+"/frames/"+frame.ToString("000")+".png");
+                if(frame==23)Render(camera,folder+"/preview.png");
+            }
+            return folder;
+        }
+        finally{SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true);if(groundMaterial!=null)Object.DestroyImmediate(groundMaterial);}
+    }
+}

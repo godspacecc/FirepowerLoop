@@ -52,6 +52,8 @@ namespace Game
         void HideActionProgress()
         {
         }
+        /// <summary>角色头顶弹夹快照，仅控制表现。</summary>
+        void SetAmmoHud(bool visible,int current,int capacity) { }
         bool TryGetProjectileOrigin(Vector3 direction, out Vector3 origin);
         void FaceWorldHud(Vector3 cameraPosition, Vector3 cameraUp);
         void PlayAttackFeedback();

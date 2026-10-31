@@ -98,6 +98,9 @@ namespace Game
         [SerializeField]
         private UnitActionProgressView actionProgressView;
 
+        /// <summary>幸存者头顶纯数字弹量；固定排布保存在主角Prefab。</summary>
+        [SerializeField] private TMPro.TMP_Text ammoText;
+
         [SerializeField]
         private GameObject shortSwordObject;
 
@@ -360,6 +363,7 @@ namespace Game
                 ResetProjectileRecoil();
                 muzzleFlash?.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
                 HideActionProgress();
+                SetAmmoHud(false,0,0);
                 SetFlashlightActive(false);
             }
         }
@@ -592,6 +596,15 @@ namespace Game
         {
             FaceTransform(tiliRingCanvas != null ? tiliRingCanvas.transform : null, cameraPosition, cameraUp);
             actionProgressView?.FaceWorld(cameraPosition, cameraUp);
+            if(ammoText!=null&&ammoText.canvas!=null)FaceTransform(ammoText.canvas.transform,cameraPosition,cameraUp);
+        }
+
+        /// <summary>仅显示权威弹量与容量，不推进装填；隐藏不会影响现有换弹圈。</summary>
+        public void SetAmmoHud(bool visible,int current,int capacity)
+        {
+            if(ammoText==null)return;
+            ammoText.gameObject.SetActive(visible&&capacity>0);
+            if(visible&&capacity>0)ammoText.text=$"{current} / {capacity}";
         }
 
         public void ShowActionProgress(float progress01, string iconAddress)

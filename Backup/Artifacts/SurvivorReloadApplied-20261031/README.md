@@ -1,0 +1,13 @@
+# 幸存者换弹动作、进度圈与弹量HUD
+
+用户采用v2：只有当前弹量/容量白色数字，无黑底和“换弹中”；复用现有换弹动作/拉栓与环形进度。现已完成正式接入。
+
+权威SurvivorModel弹量/容量经SurvivorSystem.Publish和现有玩家表现端口投影；暂停不推进换弹。PlayerView负责文字与朝向，GrayboxPlayer预制World Space Canvas固定布局，默认隐藏。死亡、结算和End清理，不影响普通街机或远端玩家。
+
+验证：SurvivorAmmoHudTests最多1项先失败后通过；SurvivorRuntimeTests.ReloadPresentationFollowsAuthorityAndClearsAtCompletion最多1项通过；均EditMode、includePassingTests=true。覆盖真实主角数字/容量/隐藏/死亡及权威换弹进度/暂停/完成/失活。既有正式主角换弹层权重与进度清理检查见前批记录。静态独立复审无重要问题。
+
+applied.gif为正式Prefab与PlayerView接口的隔离回读，50张源帧，GIF合并相同帧后全部可解码；文字不再来自候选面板，关键画面已检查。演示状态由脚本驱动，非完整对局实录。截图标题沿用预览工具，不代表仍使用临时弹量UI。
+
+源收集：BeginCollect(DefaultPackage,true,false)精确地址Prefabs/Characters/GrayboxPlayer唯一，标签startup，224项源依赖，详见collection.txt。文字使用已有共享字体序列化依赖，不增加动态地址。ResourceBoot.StartupResourceTags包含startup/arcade；PlayerCtrl.PrepareMapAsync等待LoadPlayerPrefabAsync按配置PrefabAddress加载并持有缓存句柄，然后创建玩家。新增HUD随主角实例到达，无独立预加载。源验证不等于运行/发布包验证；未Player Build、未发布、未完整实机试玩。
+
+本任务所有已确认要求完成，提交推送结果以Git回执为准。

@@ -107,6 +107,10 @@ namespace Game
         /// <summary>普通枪弹实际撞障碍的接触反馈；不作为命中敌人或伤害事件。</summary>
         void PlayProjectileSurfaceImpact(Vector2 position, Vector2 incomingDirection) { }
         void SetPlayerHealth(int current, int maximum);
+        /// <summary>仅投影权威换弹状态，沿用主角动作与进度圈。</summary>
+        void SetPlayerReload(bool active, float progress) { }
+        /// <summary>幸存者弹夹快照，不改变其他模式的弹药规则。</summary>
+        void SetPlayerAmmo(bool visible,int current,int capacity) { }
         void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false);
         void RemoveEnemy(int id, bool playDeath = false);
@@ -371,6 +375,8 @@ namespace Game
             enemyPresentation?.ClearArcadeEnemies();
             projectilePresentation?.ClearArcadeProjectiles();
             lootPresentation?.ClearArcadeDrops();
+            playerMotor?.HideActionProgress();
+            playerMotor?.SetAmmoHud(false,0,0);
             playerMotor?.SetArcadeWeaponPresentation(null);
             playerMotor?.SetArcadePresentationActive(false);
             playerMotor = null;
@@ -533,6 +539,17 @@ namespace Game
             if(facing.sqrMagnitude>.001f)
                 playerMotor.FaceDirection(mapRoot.TransformDirection(new Vector3(facing.x,0,facing.y)));
         }
+
+        /// <summary>复用角色现有换弹动作及默认图标，不创建第二套计时或资源加载。</summary>
+        public void SetPlayerReload(bool active,float progress)
+        {
+            if(playerMotor==null||!playerMotor.IsValid)return;
+            if(active)playerMotor.ShowActionProgress(progress,null);
+            else playerMotor.HideActionProgress();
+        }
+
+        /// <summary>复用玩家端口的世界HUD，离场时由End清理。</summary>
+        public void SetPlayerAmmo(bool visible,int current,int capacity)=>playerMotor?.SetAmmoHud(visible,current,capacity);
 
         public void SetPlayerWeapon(string weaponId)
         {

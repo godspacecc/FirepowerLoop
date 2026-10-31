@@ -155,7 +155,15 @@ namespace Game
             m.Paused=menuPaused||m.State.PendingChoices>0;
         }
         private Vector2 Resolve(Vector2 position,float radius)=>ArcadeCombatSystem.ResolvePosition(position,radius,HalfWidth,HalfHeight,obstacles);
-        private void Publish(){this.SendEvent<SurvivorChangedEvent>();}
+        /// <summary>将权威换弹计时投影到既有角色进度圈与动作；暂停只重绘，不推进计时。</summary>
+        private void Publish()
+        {
+            var m=Model;
+            bool reloading=m.Active&&m.State!=null&&!m.State.Finished&&m.RifleReloadRemaining>0&&m.RifleReloadDuration>0;
+            view?.SetPlayerReload(reloading,reloading?Mathf.Clamp01(1-m.RifleReloadRemaining/m.RifleReloadDuration):0f);
+            view?.SetPlayerAmmo(m.Active&&m.State!=null&&!m.State.Finished&&m.Health>0,m.RifleRounds,m.RifleCapacity);
+            this.SendEvent<SurvivorChangedEvent>();
+        }
         /// <summary>暂停时不推进敌人、子弹、刷怪或升级时钟。</summary>
         private void Tick()
             => TickFrame(Time.deltaTime);

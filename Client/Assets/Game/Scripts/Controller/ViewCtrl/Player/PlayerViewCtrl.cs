@@ -147,6 +147,9 @@ namespace Game
             ViewRef?.HideActionProgress();
         }
 
+        /// <summary>把权威弹量转发到当前有效主角。</summary>
+        public void SetAmmoHud(bool visible,int current,int capacity)=>ViewRef?.SetAmmoHud(visible,current,capacity);
+
         public void SetWeaponPresentation(bool ranged, bool showShortSword, bool showBow)
         {
             ViewRef?.SetWeaponPresentation(ranged, showShortSword, showBow);
