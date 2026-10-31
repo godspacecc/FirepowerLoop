@@ -917,5 +917,6 @@
   "ui.online.error.rate_limited": "Too many requests. Please try again later.",
   "ui.online.error.locked": "This account is temporarily locked. Please try again later.",
   "ui.online.error.disabled": "This account is disabled.",
-  "ui.online.error.banned": "This account is banned."
+  "ui.online.error.banned": "This account is banned.",
+  "ui.survivor.upgrade.pickup_detail": "Pickup radius: {0} m → {1} m\nIncrease: {2} m"
 }

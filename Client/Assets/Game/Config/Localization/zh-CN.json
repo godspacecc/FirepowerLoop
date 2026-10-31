@@ -917,5 +917,6 @@
   "ui.online.error.rate_limited": "操作过于频繁，请稍后再试",
   "ui.online.error.locked": "账号暂时锁定，请稍后再试",
   "ui.online.error.disabled": "账号已停用",
-  "ui.online.error.banned": "账号已封禁"
+  "ui.online.error.banned": "账号已封禁",
+  "ui.survivor.upgrade.pickup_detail": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
 }

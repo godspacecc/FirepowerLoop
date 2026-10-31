@@ -19,6 +19,9 @@ namespace Game
             bool valid=system.TryGetUpgradeDetails(id,out int level,out double current,out double next,out bool percentage);
             string Format(double value)=>percentage?(value*100).ToString("0.#")+"%":value.ToString("0.##");
             view.DetailText.text=valid?Loc.T("ui.survivor.upgrade.progress",level,level+1,Format(current),Format(next)):string.Empty;
+            // 拾取显示实际半径和本次增量，避免把累计加成误读成最终距离。
+            if(valid&&system.TryGetPickupUpgradeDetails(id,out var radius,out var nextRadius))
+                view.DetailText.text=Loc.T("ui.survivor.upgrade.pickup_detail",Format(radius),Format(nextRadius),Format(nextRadius-radius));
             view.BtnSelect.interactable = valid;
             view.BtnSelect.onClick.RemoveAllListeners();
             view.BtnSelect.onClick.AddListener(() => choose(revision, id));

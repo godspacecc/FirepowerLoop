@@ -37,6 +37,20 @@ namespace Game.Tests
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
+        /// <summary>拾取卡展示包含基础半径的真实数值，后续升级持续累加。</summary>
+        [Test] public void PickupUpgradeDetailsIncludeBaseRadiusAndCurrentLevels()
+        {
+            int id=Array.FindIndex(config.Upgrades.ToArray(),x=>x.Kind=="Pickup")+1;
+            var method=typeof(SurvivorSystem).GetMethod("TryGetPickupUpgradeDetails");Assert.That(method,Is.Not.Null);
+            for(int level=0;level<12;level++)
+            {
+                object[] args={id,0d,0d};Assert.That(method.Invoke(system,args),Is.True);
+                Assert.That((double)args[1],Is.EqualTo(2+level*.25));Assert.That((double)args[2],Is.EqualTo(2+(level+1)*.25));
+                model.State.AddExperience(model.State.RequiredExperience);
+                model.State.Offer(new[]{id,1,2},17);Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
+            }
+            object[] other={1,0d,0d};Assert.That(method.Invoke(system,other),Is.False);
+        }
         /// <summary>幸存者敌人持续累积，超过旧的存活阈值仍按刷新节奏生成。</summary>
         [Test] public void SpawnContinuesBeyondFormerAliveLimit()
         {

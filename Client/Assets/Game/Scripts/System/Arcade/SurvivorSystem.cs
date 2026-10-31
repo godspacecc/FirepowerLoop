@@ -111,6 +111,13 @@ namespace Game
             percentage=definition.Kind=="Damage" || definition.Kind=="FireRate" || definition.Kind=="MoveSpeed";
             return true;
         }
+        /// <summary>拾取强化卡读取实际半径及下一层半径，与战斗拾取判定使用同一基础值和累计加成。</summary>
+        public bool TryGetPickupUpgradeDetails(int id,out double currentRadius,out double nextRadius)
+        {
+            currentRadius=nextRadius=0;
+            if(!TryGetUpgradeDetails(id,out _,out var currentBonus,out var nextBonus,out _)||config.Upgrades[id-1].Kind!="Pickup")return false;
+            currentRadius=config.PickupRadius+Bonus("Pickup");nextRadius=currentRadius+nextBonus-currentBonus;return true;
+        }
         public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升",_=>"强化"};}
         /// <summary>武器卡片读当前及下一等级，未获取时当前参数为空。</summary>
         public bool TryGetWeaponUpgrade(int id,out string kind,out int level,out SurvivorWeaponLevelDefinition current,out SurvivorWeaponLevelDefinition next)

@@ -99,6 +99,10 @@
     "en-US": "Save failed: {0}. Select Play Again or Main Menu to retry.",
     "zh-CN": "保存失败：{0}。点击再来一局或返回主菜单重试。"
   },
+  "ui.survivor.upgrade.pickup_detail": {
+    "en-US": "Pickup radius: {0} m → {1} m\nIncrease: {2} m",
+    "zh-CN": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
+  },
   "ui.survivor.upgrade.progress": {
     "en-US": "Level {0} → {1}\nTotal bonus {2} → {3}",
     "zh-CN": "等级 {0} → {1}\n累计效果 {2} → {3}"

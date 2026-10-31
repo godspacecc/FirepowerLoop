@@ -9,6 +9,27 @@ namespace Game.Tests
     public sealed class SurvivorUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Survivor/";
+        /// <summary>已发布的拾取文案带实际距离和单位，并能放入现有卡片说明区域。</summary>
+        [Test] public void PickupDetailsFitExistingCardInBothLanguages()
+        {
+            var source=Bound<SurvivorUpgradeBoxUI>(Root+"Box/SurvivorUpgrade.prefab");
+            var instance=Object.Instantiate(source.gameObject);
+            try
+            {
+                var text=instance.GetComponent<SurvivorUpgradeBoxUI>().DetailText;
+                foreach(var language in new[]{"zh-CN","en-US"})
+                {
+                    Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
+                    foreach(var current in new[]{2d,4.75d})
+                    {
+                        var value=string.Format(table["ui.survivor.upgrade.pickup_detail"],current.ToString("0.##"),(current+.25).ToString("0.##"),"0.25");
+                        Assert.That(value,Does.Contain(language=="zh-CN"?"米":" m"));Assert.That(value,Does.Contain("0.25"));
+                        var size=text.GetPreferredValues(value,text.rectTransform.rect.width,float.PositiveInfinity);
+                        Assert.That(size.y,Is.LessThanOrEqualTo(text.rectTransform.rect.height),value);
+                    }
+                }
+            }finally{Object.DestroyImmediate(instance);}
+        }
         [Test] public void Start_HasBoundSurvivorEntry()
         {
             var view=Bound<StartUI>("Assets/Game/Prefabs/UI/Home/Start.prefab");
