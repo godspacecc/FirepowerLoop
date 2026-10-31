@@ -36,7 +36,7 @@ namespace Game.Tests
             architecture.RegisterUtility<IRuntimeConfigProvider>(provider);Assert.That(provider.TryGetSurvivor(out config,out var error),Is.True,error);
             Assert.That(provider.TryGetArcadeCatalog(out catalog,out error),Is.True,error);
             system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(architecture);input=new PlayerInputCtrl();view=new View();
-            var layout=catalog.RoundLayouts.Single(x=>x.Id==config.LayoutId);
+            var layout=config.Layout;
             Set("config",config);Set("catalog",catalog);Set("layout",layout);Set("view",view);Set("input",input);
             Set("weapon",catalog.Weapons.Single(x=>x.Id==config.WeaponId));
             Set("obstacles",layout.Obstacles.Select(x=>new ArcadeObstacleDefinition(x.X,x.Y,x.HalfWidth,x.HalfHeight,x.BlocksProjectiles)).ToArray());
@@ -65,7 +65,7 @@ namespace Game.Tests
         }
         [Test] public void StandingKillLeavesExperienceAtReachableFloor()
         {
-            Call("Spawn");var e=Enemies.Values.Single();SetAge(e,4.3f);var p=e.Position;
+            Call("Spawn");var e=Enemies.Values.Single();SetAge(e,SurvivorGroundEntryRules.TotalSeconds);var p=e.Position;
             Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Add(1000,new ArcadeProjectileRuntime{Id=1000,Position=p-Vector2.right,Velocity=Vector2.right*40,Damage=10000,RemainingSeconds=2});
             Call("AdvanceBullets",.05f);Assert.That(Enemies,Is.Empty);Assert.That(model.Kills,Is.EqualTo(1));Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Position,Is.EqualTo(p));
         }
@@ -83,19 +83,32 @@ namespace Game.Tests
             var nav=new SurvivorNavigation(8,8,.5f,new[]{new ArcadeObstacleDefinition(0,0,.5f,9,true)});nav.SetTarget(new Vector2(-4,0));
             Assert.That(nav.IsReachable(new Vector2(4,0)),Is.False);Assert.That(nav.IsReachable(new Vector2(-4,0)),Is.True);
         }
-        [Test] public void DeathKeepsCrawlingPoseAndSoilMeshIsReused()
+        [Test] public void DeathKeepsPoseAndMapSoilOutlivesActor()
         {
-            var actor=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"));
-            try{
+            var map=new GameObject("GroundTestMap");var actor=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),map.transform);
+            var effects=new EnemyGroundEntryPresentation(map.transform);
+            try {
                 var v=actor.GetComponent<EnemyView>();v.BeginPresentationUse();v.SetNavigationEnabled(false);v.Animator.Rebind();v.Animator.Update(0);
-                var state=new SurvivorGroundEntryState{Started=true,Age=2.2f,ForwardZ=1};v.SetGroundEntry(state,Vector3.forward,Vector3.up);v.LateTickCombatFeedback();
-                var soil=actor.transform.Find("GroundEntrySoil");Assert.That(soil,Is.Not.Null);var mesh=soil.GetComponent<MeshFilter>().sharedMesh;var mat=soil.GetComponent<MeshRenderer>().sharedMaterial;
+                var state=new SurvivorGroundEntryState{Started=true,Age=1.85f,ForwardZ=1};v.SetGroundEntry(state,Vector3.forward,Vector3.up);v.LateTickCombatFeedback();effects.Sync(1,v,state,Vector3.forward,Vector3.up);
+                var soil=map.transform.Find("GroundEntrySoil");Assert.That(soil,Is.Not.Null);Assert.That(soil.IsChildOf(actor.transform),Is.False);
                 var visual=v.Animator.transform.parent;var position=visual.localPosition;var rotation=visual.localRotation;
-                Assert.That(v.TryPlayPhysicalDeath(Vector3.left,false,out _),Is.True);Assert.That(v.Animator.enabled,Is.False);Assert.That(soil.gameObject.activeSelf,Is.False);
+                Assert.That(v.TryPlayPhysicalDeath(Vector3.left,false,out _),Is.True);effects.Interrupt(1);
                 Assert.That(Vector3.Distance(position,visual.localPosition),Is.LessThan(.001f));Assert.That(Quaternion.Angle(rotation,visual.localRotation),Is.LessThan(.01f));
-                v.ResetPhysicalFeedback();v.BeginPresentationUse();v.SetGroundEntry(state,Vector3.forward,Vector3.up);v.LateTickCombatFeedback();Assert.That(soil.GetComponent<MeshFilter>().sharedMesh,Is.SameAs(mesh));
-                v.ReleasePresentationResources();Assert.That(mesh==null,Is.True);Assert.That(mat!=null,Is.True);
-            }finally{Object.DestroyImmediate(actor);}
+                var clod=soil.GetChild(2);var before=clod.position;effects.Tick(.1f,true);Assert.That(clod.position,Is.EqualTo(before));
+                v.ReleasePresentationResources();Object.DestroyImmediate(actor);Assert.That(soil!=null&&soil.gameObject.activeSelf,Is.True);
+                effects.Tick(.1f,false);Assert.That(clod.position,Is.Not.EqualTo(before));effects.Tick(8,false);Assert.That(soil==null,Is.True);
+            } finally {effects.Dispose();Object.DestroyImmediate(map);}
+        }
+        [Test] public void MapCleanupReleasesSoilAndDuplicateProjectionDoesNotReplay()
+        {
+            var map=new GameObject("GroundTestMap");var actor=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),map.transform);
+            var effects=new EnemyGroundEntryPresentation(map.transform);
+            try {var view=actor.GetComponent<EnemyView>();var state=new SurvivorGroundEntryState{Started=true,Age=2.2f,ForwardZ=1};
+                effects.Sync(1,view,state,Vector3.forward,Vector3.up);var soil=map.transform.Find("GroundEntrySoil");var origin=soil.position;
+                actor.transform.position=Vector3.one*5;effects.Sync(1,view,state,Vector3.forward,Vector3.up);Assert.That(soil.position,Is.EqualTo(origin));Assert.That(map.transform.childCount,Is.EqualTo(2));
+                var mesh=soil.GetComponentInChildren<MeshFilter>().sharedMesh;var material=soil.GetComponentInChildren<Renderer>().sharedMaterial;
+                effects.Dispose();Assert.That(soil==null&&mesh==null&&material==null,Is.True);
+            } finally {effects.Dispose();Object.DestroyImmediate(map);}
         }
         [TestCase("Shambler")][TestCase("Gaunt")][TestCase("Bloated")]
         public void FormalActorSamplesChangingArmsAndKneesAndResets(string kind)
@@ -108,10 +121,23 @@ namespace Game.Tests
                 var visual=v.Animator.transform.parent;var rest=visual.localPosition;var arm=actor.GetComponentsInChildren<Transform>().Single(t=>t.name=="UpperArm.L");var leg=actor.GetComponentsInChildren<Transform>().Single(t=>t.name=="LowerLeg.L");
                 method.Invoke(v,new[]{State(1.25f),Vector3.forward,Vector3.up});v.LateTickCombatFeedback();var a=arm.localRotation;var b=leg.localRotation;
                 method.Invoke(v,new[]{State(2.45f),Vector3.forward,Vector3.up});v.LateTickCombatFeedback();Assert.That(Quaternion.Angle(a,arm.localRotation),Is.GreaterThan(8));Assert.That(Quaternion.Angle(b,leg.localRotation),Is.GreaterThan(8));Assert.That(v.Animator.enabled,Is.False);
-                method.Invoke(v,new[]{State(4.3f),Vector3.forward,Vector3.up});v.LateTickCombatFeedback();Assert.That(v.Animator.enabled,Is.True);Assert.That(Vector3.Distance(rest,visual.localPosition),Is.LessThan(.001f));
+                method.Invoke(v,new[]{State(SurvivorGroundEntryRules.TotalSeconds),Vector3.forward,Vector3.up});v.LateTickCombatFeedback();Assert.That(v.Animator.enabled,Is.True);Assert.That(Vector3.Distance(rest,visual.localPosition),Is.LessThan(.001f));
                 v.ResetPhysicalFeedback();v.BeginPresentationUse();method.Invoke(v,new[]{State(1.25f),Vector3.forward,Vector3.up});v.LateTickCombatFeedback();Assert.That(v.Animator.enabled,Is.False,"回池后应允许下一只重新爬出");
             }finally{Object.DestroyImmediate(actor);}
         }
+        /// <summary>后来挂入的普通网格不属于身体，受击不应染色。</summary>
+        [Test] public void HitFeedbackDoesNotTintAttachedScenery()
+        {
+            var actor=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"));
+            try { var prop=GameObject.CreatePrimitive(PrimitiveType.Cube);prop.transform.SetParent(actor.transform,false);
+                var renderer=prop.GetComponent<Renderer>();var block=new MaterialPropertyBlock();block.SetColor("_BaseColor",Color.green);renderer.SetPropertyBlock(block);
+                actor.GetComponent<EnemyView>().PlayHitFeedback();renderer.GetPropertyBlock(block);
+                Assert.That(block.GetColor("_BaseColor"),Is.EqualTo(Color.green));
+            } finally {Object.DestroyImmediate(actor);}
+        }
+        /// <summary>正式时间轴与已确认的五点二秒分段爬出保持一致。</summary>
+        [Test] public void HeavyCrawlUsesApprovedTiming()
+        {Assert.That(SurvivorGroundEntryRules.TotalSeconds,Is.EqualTo(5.2f));Assert.That(SurvivorGroundEntryRules.ClipAge(1.6f),Is.EqualTo(2.9f).Within(.001));}
         private sealed class View:IArcadeCombatViewPort
         {
             public int HiddenQueries,GroundWrites;

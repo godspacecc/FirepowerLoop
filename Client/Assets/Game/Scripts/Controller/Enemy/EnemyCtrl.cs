@@ -40,6 +40,8 @@ namespace Game
         private readonly int explosionDeathBudget = Application.isMobilePlatform ? 6 : 12;
         /// <summary>跟随当前地图创建、隐藏清空和释放，资源依赖借用预载敌人Prefab。</summary>
         private EnemyExplosionDeathPresentation explosionDeaths;
+        /// <summary>地图持有翻土效果，演员回收不结束其寿命。</summary>
+        private EnemyGroundEntryPresentation groundEntries;
         public EnemyCtrl(IArchitecture architecture)
         {
             this.architecture = architecture;
@@ -111,6 +113,7 @@ namespace Game
             if (!activeState)
             {
                 explosionDeaths?.Clear();
+                groundEntries?.Clear();
                 foreach (var entry in dyingArcadeEnemies) RecycleArcadeEnemy(entry);
                 dyingArcadeEnemies.Clear();
             }
@@ -149,6 +152,7 @@ namespace Game
             if (current != null && !string.Equals(current.ConfigId, configId, StringComparison.Ordinal))
             {
                 RecycleArcadeEnemy(current);
+                groundEntries?.Interrupt(runtimeId);
                 arcadeEnemies.Remove(runtimeId);
                 current = null;
             }
@@ -192,7 +196,7 @@ namespace Game
                     view.SetNavigationEnabled(false);
                     view.SetHealthBarVisible(persistentHealthBar);
                     view.gameObject.SetActive(true);
-                    current = new ArcadeEnemyPresentationEntry(runtimeId, configId, view, maximumHealth, position, attackSequence, persistentHealthBar);
+                    current = new ArcadeEnemyPresentationEntry(runtimeId, configId, view, currentHealth, position, attackSequence, persistentHealthBar);
                     arcadeEnemies.Add(runtimeId, current);
                 }
                 catch (Exception exception)
@@ -239,7 +243,14 @@ namespace Game
         public void SetDockSeaEntry(int runtimeId,FirepowerLoop.Arcade.ArcadeDockSeaEntryState state,Vector3 forward,Vector3 up)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetDockSeaEntry(state,forward,up);}
         public void SetGroundEntry(int runtimeId,SurvivorGroundEntryState state,Vector3 forward,Vector3 up)
-        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetGroundEntry(state,forward,up);}
+        {
+            if(arcadeEnemies.TryGetValue(runtimeId,out var entry)&&arcadeRoot!=null)
+            {
+                entry.View?.SetGroundEntry(state,forward,up);
+                groundEntries ??= new EnemyGroundEntryPresentation(arcadeRoot);
+                groundEntries.Sync(runtimeId,entry.View,state,forward,up);
+            }
+        }
 
         /// <summary>把当前攻击阶段交给正式模型；异步未就绪时等待下一帧投影。</summary>
         public void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction)
@@ -306,6 +317,7 @@ namespace Game
         {
             if (!arcadeEnemies.TryGetValue(runtimeId, out var entry))
                 return;
+            groundEntries?.Interrupt(runtimeId);
             arcadeEnemies.Remove(runtimeId);
             if (playDeath && entry.View != null)
             {
@@ -348,6 +360,7 @@ namespace Game
         public void ClearArcadeEnemies()
         {
             explosionDeaths?.Clear();
+            groundEntries?.Clear();
             var values = new List<ArcadeEnemyPresentationEntry>(arcadeEnemies.Values);
             arcadeEnemies.Clear();
             for (var i = 0; i < values.Count; i++)
@@ -411,6 +424,7 @@ namespace Game
 
         private void RecycleArcadeEnemy(ArcadeEnemyPresentationEntry entry)
         {
+            if(entry!=null)groundEntries?.Interrupt(entry.RuntimeId);
             if (entry?.View == null)
                 return;
             entry.View.SetNavigationEnabled(false);
@@ -444,6 +458,7 @@ namespace Game
 
         private void ReleaseArcadePresentation()
         {
+            groundEntries?.Dispose();groundEntries=null;
             explosionDeaths?.Dispose();
             explosionDeaths = null;
             if (ragdollFloor != null)
@@ -729,6 +744,9 @@ namespace Game
         /// <summary>统一表现步进；参数同时用于正式生命周期和有界隔离检查。</summary>
         private void TickArcadeFeedback(float seconds,float now)
         {
+            // 幸存者升级暂停不一定切换AppState；同时遵守本模式暂停与既有活动门禁。
+            var survivor=architecture.GetModel<SurvivorModel>();
+            groundEntries?.Tick(seconds,herdActivityPaused||(survivor!=null&&survivor.Active&&survivor.Paused));
             explosionDeaths?.Tick(seconds);
             for (var i = dyingArcadeEnemies.Count - 1; i >= 0; i--)
             {

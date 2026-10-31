@@ -910,7 +910,12 @@ namespace Game
         /// <summary>在一段受击开始时保存现有覆盖；材质本色继续由各槽位独立提供。</summary>
         private void CaptureFeedbackColors()
         {
-            feedbackRenderers = Array.FindAll(GetComponentsInChildren<Renderer>(true),renderer=>!(renderer is ParticleSystemRenderer) && renderer != dockRippleRenderer);
+            // 仅使用Prefab明确登记的身体与衣服，附属效果从不参与受击颜色。
+            var bodies = new System.Collections.Generic.HashSet<Renderer>();
+            if (livingRenderers != null) foreach (var body in livingRenderers) if (body != null) bodies.Add(body);
+            if (presentationVariants != null) foreach (var body in presentationVariants) if (body != null) bodies.Add(body);
+            feedbackRenderers = new Renderer[bodies.Count];
+            bodies.CopyTo(feedbackRenderers);
             if (feedbackOriginalBlocks.Length != feedbackRenderers.Length)
             {
                 feedbackOriginalBlocks = new MaterialPropertyBlock[feedbackRenderers.Length];
