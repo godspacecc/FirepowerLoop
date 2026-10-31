@@ -500,6 +500,22 @@ namespace Game.Tests
             state.Add(0,kind,25,20,2,1);Call("TickHorde",.01f);var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(1,active.Count);
             var e=active.Values.Single();float before=e.Position.magnitude;Call("TickEnemies",.25f);Assert.Less(e.Position.magnitude,before);
         }
+        [Test] public void PursuitStartsEmptyWithoutPrepopulatedBirthRequests()
+        {
+            PrepareHordeCheck();Set("hordeInitialized",false);Call("TickHorde",.01f);
+            Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));
+            Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);Assert.AreEqual(0,view.Wakes);
+        }
+        [Test] public void PursuitBirthsAccumulateOverTimeWithoutOpeningBurst()
+        {
+            PrepareHordeCheck();Set("hordeInitialized",false);int previous=0;
+            for(int i=0;i<40;i++)
+            {
+                Call("TickHorde",.05f);int count=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Count;
+                Assert.LessOrEqual(count-previous,1);if(i<6)Assert.AreEqual(0,count);previous=count;
+            }
+            Assert.That(previous,Is.InRange(2,6));Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);
+        }
         private sealed class TestView:IArcadeCombatViewPort
         {
             public bool HordeEnabled;

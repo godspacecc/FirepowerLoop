@@ -64,13 +64,9 @@ namespace Game
             var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
             return (choice.EnemyId,enemyConfigs[choice.EnemyId].MoveSpeed*choice.SpeedMultiplier);
         }
-        /// <summary>地图分散铺怪只在首次有效战斗帧创建轻量记录；视野内不凭空补出站立敌人。</summary>
+        /// <summary>开局只启动出生计时，不预置敌人或积压请求；后续按时间逐只生成。</summary>
         private void InitializeHorde()
         {
-            foreach(var field in sizedNavigation.Values)field.SetTarget(player);
-            SurvivorHordeRules.Seed(horde,config.HordeGridSize,config.HordeGridSize,HalfWidth-2,HalfHeight-2,
-                player.x,player.y,config.MinimumSpawnDistance,config.HordeSeedCount,config.HordeSpawnAttempts,unchecked((int)runId),
-                (x,y)=>HordeFloor(x,y)&&view.IsArenaSpawnHidden(new Vector2(x,y),2),HordeChoice);
             hordeInitialized=true;hordeWaveClock=NextScatterInterval();
         }
         /// <summary>外围随机选择地图边缘方向，有限尝试；失败不积累集中补刷欠账。</summary>
