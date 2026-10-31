@@ -1,0 +1,70 @@
+{
+  "summary": {
+    "boundary_checks": 14,
+    "tracked_backup_files_preserved": 3438,
+    "missing_tracked": [],
+    "status_counts": {
+      " M": 2,
+      "MM": 1,
+      "??": 655
+    }
+  },
+  "checks": [
+    {
+      "path": "Backup/Artifacts/Check/.scratch/work.cs",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/frames/001.png",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/implemented-frames/001.png",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/commit-source/Client/Assets/x.cs.meta",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/task.index",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/bin/temp.dll",
+      "ignored": true
+    },
+    {
+      "path": "Backup/Artifacts/Check/preview.gif",
+      "ignored": false
+    },
+    {
+      "path": "Backup/Artifacts/Check/comparison.png",
+      "ignored": false
+    },
+    {
+      "path": "Backup/Artifacts/Check/README.md",
+      "ignored": false
+    },
+    {
+      "path": "Backup/Artifacts/Check/tests.json",
+      "ignored": false
+    },
+    {
+      "path": "Backup/Artifacts/Check/generation.log",
+      "ignored": false
+    },
+    {
+      "path": "Backup/Artifacts/Check/Preview.cs.txt",
+      "ignored": false
+    },
+    {
+      "path": "Client/Assets/Game/Art/Check.png",
+      "ignored": false
+    },
+    {
+      "path": "Client/Assets/Game/Art/Check.png.meta",
+      "ignored": false
+    }
+  ]
+}
