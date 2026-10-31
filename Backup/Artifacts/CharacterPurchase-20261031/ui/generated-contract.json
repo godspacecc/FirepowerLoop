@@ -1,0 +1,1 @@
+{"content":[{"type":"text","text":"System.Collections.Generic.List(System.String): name | typeName | value\n\"[0]\" | System.String | Home/MainMenuShop fields=11 all nonnull and match RC\n\"[1]\" | System.String | Survivor/SurvivorEntry fields=12 all nonnull and match RC\n\"[2]\" | System.String | Survivor/Box/CharacterCardBox fields=5 all nonnull and match RC"}],"isError":false}

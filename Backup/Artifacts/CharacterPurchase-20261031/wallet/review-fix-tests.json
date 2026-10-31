@@ -1,0 +1,48 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":5,\"PassedTests\":5,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:05.2512880\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.BalanceOverflowDoesNotOverwriteLedger\",\"Status\":\"Passed\",\"Duration\":\"00:00:02.9650000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.MissingV2PurchaseFieldsNeverOverwriteLedger\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0720000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.PickupPersistsExactlyOnceAcrossReopen\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0800000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.PurchaseMigratesAndPreservesReceipts\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0280000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.UnwritableDirectoryDoesNotReportSuccessfulGold\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0040000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 5,
+        "PassedTests": 5,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:05.2512880"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.BalanceOverflowDoesNotOverwriteLedger",
+          "Status": "Passed",
+          "Duration": "00:00:02.9650000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.MissingV2PurchaseFieldsNeverOverwriteLedger",
+          "Status": "Passed",
+          "Duration": "00:00:00.0720000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.PickupPersistsExactlyOnceAcrossReopen",
+          "Status": "Passed",
+          "Duration": "00:00:00.0800000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.PurchaseMigratesAndPreservesReceipts",
+          "Status": "Passed",
+          "Duration": "00:00:00.0280000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.UnwritableDirectoryDoesNotReportSuccessfulGold",
+          "Status": "Passed",
+          "Duration": "00:00:00.0040000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}

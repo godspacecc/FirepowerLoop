@@ -190,5 +190,53 @@
   "ui.shop.balance": {
     "zh-CN": "金币  {0}",
     "en-US": "Gold  {0}"
+  },
+  "ui.character.select_title": {
+    "zh-CN": "选择角色",
+    "en-US": "Choose Character"
+  },
+  "ui.character.select_help": {
+    "zh-CN": "未解锁角色可在商店购买。",
+    "en-US": "Unlock characters in the shop."
+  },
+  "ui.character.shop_help": {
+    "zh-CN": "购买后永久解锁，角色只有外观差异。",
+    "en-US": "Permanent unlock. Appearance only."
+  },
+  "ui.character.owned": {
+    "zh-CN": "已拥有",
+    "en-US": "Owned"
+  },
+  "ui.character.buy": {
+    "zh-CN": "{0} 金币 · 购买",
+    "en-US": "Buy · {0} Gold"
+  },
+  "ui.character.select": {
+    "zh-CN": "选择",
+    "en-US": "Select"
+  },
+  "ui.character.selected": {
+    "zh-CN": "已选择",
+    "en-US": "Selected"
+  },
+  "ui.character.locked": {
+    "zh-CN": "未解锁",
+    "en-US": "Locked"
+  },
+  "ui.character.error": {
+    "zh-CN": "操作失败，请返回后重试。",
+    "en-US": "Unable to complete. Return and retry."
+  },
+  "ui.character.insufficient": {
+    "zh-CN": "金币不足。",
+    "en-US": "Not enough gold."
+  },
+  "ui.character.read_failed": {
+    "zh-CN": "金币记录无法读取，请检查存档。",
+    "en-US": "Unable to read your gold record."
+  },
+  "ui.character.not_owned": {
+    "zh-CN": "尚未拥有此角色。",
+    "en-US": "Character not owned."
   }
 }

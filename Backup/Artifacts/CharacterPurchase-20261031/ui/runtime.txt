@@ -1,0 +1,11 @@
+loader=Game.YooAssetResourceLoader
+Prefabs/UI/Home/MainMenuShop loaded=True
+Prefabs/UI/Survivor/SurvivorEntry loaded=True
+Prefabs/UI/Survivor/Box/CharacterCardBox loaded=True
+tbsurvivorcharacter.bytes loaded=True
+StartAsync=True 
+start real PlayerCtrl appearance=1 scale=(1.00, 1.00, 1.00)
+RestartAsync=True 
+restart real PlayerCtrl appearance=1 scale=(1.00, 1.00, 1.00)
+Return=True 
+original stores restored; temporary ledger=C:\Users\ADMINI~1\AppData\Local\Temp\CharacterUiRuntime-c91cc3e585614460957b057873817f54

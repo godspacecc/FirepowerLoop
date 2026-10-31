@@ -21,6 +21,7 @@ namespace Game.Tests
             try
             {
                 var architecture=new Game();architectureField.SetValue(null,architecture);
+                architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(()=>new Tables(n=>new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))))));
                 var system=new SurvivorSystem();architecture.RegisterSystem(system);architecture.RegisterModel(new SurvivorModel());
                 var store=new SurvivorGoldFileStore(1,root);typeof(SurvivorSystem).GetField("goldStore",flags).SetValue(system,store);
                 Assert.That(store.TryBeginRun("test",out _,out var error),Is.True,error);Assert.That(store.TryCollect("test:1",out _,out error),Is.True,error);
@@ -29,6 +30,7 @@ namespace Game.Tests
                 instance=UnityEngine.Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/MainMenuShop.prefab"));
                 var ui=instance.GetComponent<MainMenuShopUI>();controller=new MainMenuShopUICtrl();typeof(BaseUICtrl).GetField("BaseUI",flags).SetValue(controller,ui);
                 controller.Show();
+                Assert.That(ui.Cards.totalCount, Is.EqualTo(5));
                 Assert.That(ui.BalanceText.text,Is.EqualTo("金币  1"));
                 ui.BtnClose.onClick.Invoke();Assert.That(controller.IsShow(),Is.False);
                 string path=Path.Combine(root,"Saves","survivor-gold-1.json");string good=File.ReadAllText(path);File.WriteAllText(path,"broken");

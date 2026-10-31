@@ -1,6 +1,9 @@
-using System;
+﻿using System;
 using System.IO;
+using System.Linq;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 namespace Game
 {
@@ -17,6 +20,9 @@ namespace Game
             [JsonProperty(Required=Required.Always)] public long Balance;
             [JsonProperty(Required=Required.Always)] public string ActiveRun="";
             [JsonProperty(Required=Required.Always)] public long Sequence;
+            /// <summary>V2累计支出与永久所有权，和余额一并提交。</summary>
+            public long Spent;
+            public List<string> OwnedProducts=new List<string>();
         }
         /// <summary>使用独立目录；测试可注入临时根目录。</summary>
         public SurvivorGoldFileStore(long playerId,string root=null)
@@ -51,6 +57,29 @@ namespace Game
                 d.Balance=checked(d.Balance+1);d.Sequence=seq;Write(d);balance=d.Balance;return true;
             }catch(Exception ex){error=ex.Message;return false;}}
         }
+        /// <summary>同一次读取返回余额及所有权副本，避免展示跨事务状态。</summary>
+        public bool TryReadSnapshot(out long balance,out string[] productIds,out string error)
+        {
+            lock(Gate){balance=0;productIds=Array.Empty<string>();error=null;try{var d=Read();balance=d.Balance;productIds=d.OwnedProducts.ToArray();return true;}catch(Exception){error="wallet.read_failed";return false;}}
+        }
+        /// <summary>返回所有权副本；坏档不伪造默认账本。</summary>
+        public bool TryReadOwned(out string[] productIds,out string error)
+        {
+            lock(Gate){productIds=Array.Empty<string>();error=null;try{productIds=Read().OwnedProducts.ToArray();return true;}catch(Exception ex){error=ex.Message;return false;}}
+        }
+        /// <summary>调用方必须从权威配置验证商品与价格；购买和扣款同文件原子提交。</summary>
+        public bool TryPurchase(string productId,long price,out long balance,out string error)
+        {
+            lock(Gate){balance=0;error=null;try{
+                if(string.IsNullOrWhiteSpace(productId)||productId.Length>96||price<=0){error="wallet.invalid_product";return false;}
+                var d=Read();balance=d.Balance;
+                if(d.OwnedProducts.Contains(productId))return true;
+                if(d.Balance<price){error="wallet.insufficient";return false;}
+                d.Spent=checked(d.Spent+price);d.Balance-=price;
+                d.OwnedProducts.Add(productId);d.Version=2;
+                Write(d);balance=d.Balance;return true;
+            }catch(Exception){error="wallet.transaction_failed";return false;}}
+        }
         /// <summary>先刷新临时文件到磁盘，再原子替换旧账本。</summary>
         private void Write(Document document)
         {
@@ -66,8 +95,19 @@ namespace Game
         private Document Read()
         {
             if(!File.Exists(path))return new Document();
-            var d=JsonConvert.DeserializeObject<Document>(File.ReadAllText(path));
-            if(d==null||d.Version!=1||d.Balance<0||d.Sequence<0||d.Sequence>d.Balance||d.ActiveRun==null||d.ActiveRun.Length>96||d.ActiveRun.Contains(":")||(d.ActiveRun.Length==0&&d.Sequence!=0))throw new InvalidDataException("幸存者金币文件无效");
+            var json=JObject.Parse(File.ReadAllText(path));
+            var d=json.ToObject<Document>();
+            // V2必须明确携带购买记录，不能把缺字段或类型转换当作空所有权覆盖。
+            if(d!=null&&d.Version==2&&(json["Spent"]?.Type!=JTokenType.Integer||
+                json["OwnedProducts"]?.Type!=JTokenType.Array||json["OwnedProducts"].Any(x=>x.Type!=JTokenType.String)))
+                throw new InvalidDataException("角色购买记录缺失或类型无效");
+            if(d==null||(d.Version!=1&&d.Version!=2)||d.Balance<0||d.Sequence<0||d.ActiveRun==null||d.ActiveRun.Length>96||d.ActiveRun.Contains(":")||(d.ActiveRun.Length==0&&d.Sequence!=0))throw new InvalidDataException("幸存者金币文件无效");
+            if(d.Spent<0||d.OwnedProducts==null||d.OwnedProducts.Any(x=>string.IsNullOrWhiteSpace(x)||x.Length>96)||d.OwnedProducts.Distinct(StringComparer.Ordinal).Count()!=d.OwnedProducts.Count)
+                throw new InvalidDataException("角色所有权文件无效");
+            // 旧格式禁止消费扩展；新格式以余额加累计消费校验领取水位，减法避免溢出。
+            if(d.Version==1&&(d.Sequence>d.Balance||d.Spent!=0||d.OwnedProducts.Count!=0)||
+                d.Version==2&&(d.Sequence>d.Balance&&d.Sequence-d.Balance>d.Spent||d.Spent==0&&d.OwnedProducts.Count!=0||d.Spent>0&&d.OwnedProducts.Count==0))
+                throw new InvalidDataException("金币消费记录无效");
             return d;
         }
     }

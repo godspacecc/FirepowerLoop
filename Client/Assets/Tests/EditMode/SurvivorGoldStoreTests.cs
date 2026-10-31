@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using NUnit.Framework;
 namespace Game.Tests
@@ -6,6 +6,56 @@ namespace Game.Tests
     /// <summary>独立金币文件的真实读写与重复领取边界。</summary>
     public sealed class SurvivorGoldStoreTests
     {
+        [Test] public void MissingV2PurchaseFieldsNeverOverwriteLedger()
+        {
+            var root=Path.Combine(Path.GetTempPath(),"CharacterPurchase-"+Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root,"Saves"));
+            try {
+                var path=Path.Combine(root,"Saves","survivor-gold-1.json");
+                foreach(var suffix in new[]{"",",\"Spent\":0",",\"OwnedProducts\":[]",",\"Spent\":\"0\",\"OwnedProducts\":[]",",\"Spent\":0,\"OwnedProducts\":[1]"}) {
+                    var json="{\"Version\":2,\"Balance\":100,\"ActiveRun\":\"run\",\"Sequence\":1"+suffix+"}";
+                    File.WriteAllText(path,json);
+                    var store=new SurvivorGoldFileStore(1,root);
+                    Assert.That(store.TryReadSnapshot(out _,out _,out _),Is.False,json);
+                    Assert.That(store.TryPurchase("shirt",50,out _,out _),Is.False,json);
+                    Assert.That(store.TryCollect("run:2",out _,out _),Is.False,json);
+                    Assert.That(File.ReadAllText(path),Is.EqualTo(json));
+                }
+            } finally { Directory.Delete(root,true); }
+        }
+        [Test] public void PurchaseMigratesAndPreservesReceipts()
+        {
+            var root=Path.Combine(Path.GetTempPath(),"CharacterPurchase-"+Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root,"Saves"));
+            try {
+                var path=Path.Combine(root,"Saves","survivor-gold-1.json");
+                File.WriteAllText(path,"{\"Version\":1,\"Balance\":50,\"ActiveRun\":\"run\",\"Sequence\":50}");
+                var store=new SurvivorGoldFileStore(1,root);
+                Assert.That(store.TryPurchase("shirt",50,out var balance,out var error),Is.True,error);
+                Assert.That(balance,Is.Zero);
+                var saved=File.ReadAllText(path);
+                Assert.That(store.TryPurchase("shirt",50,out balance,out error),Is.True,error);
+                Assert.That(File.ReadAllText(path),Is.EqualTo(saved));
+                Assert.That(store.TryReadOwned(out var owned,out error),Is.True,error);
+                Assert.That(owned,Is.EqualTo(new[]{"shirt"}));
+                Assert.That(store.TryCollect("run:50",out balance,out error),Is.True,error);
+                Assert.That(balance,Is.Zero);
+                Assert.That(store.TryCollect("run:51",out balance,out error),Is.True,error);
+                Assert.That(balance,Is.EqualTo(1));
+                saved=File.ReadAllText(path);
+                Assert.That(store.TryPurchase("coat",200,out balance,out error),Is.False);
+                Assert.That(store.TryPurchase("",1,out balance,out error),Is.False);
+                Assert.That(store.TryPurchase("coat",0,out balance,out error),Is.False);
+                Assert.That(File.ReadAllText(path),Is.EqualTo(saved));
+                using(var locked=new FileStream(path,FileMode.Open,FileAccess.Read,FileShare.Read))
+                    Assert.That(store.TryPurchase("cheap",1,out balance,out error),Is.False);
+                Assert.That(File.ReadAllText(path),Is.EqualTo(saved));
+                File.WriteAllText(path,"{\"Version\":1,\"Balance\":0,\"ActiveRun\":\"run\",\"Sequence\":50}");
+                saved=File.ReadAllText(path);
+                Assert.That(store.TryPurchase("shirt",1,out balance,out error),Is.False);
+                Assert.That(File.ReadAllText(path),Is.EqualTo(saved));
+            } finally { Directory.Delete(root,true); }
+        }
         [Test] public void UnwritableDirectoryDoesNotReportSuccessfulGold()
         {
             var root=Path.Combine(Path.GetTempPath(),"SurvivorGold-"+Guid.NewGuid().ToString("N"));Directory.CreateDirectory(root);

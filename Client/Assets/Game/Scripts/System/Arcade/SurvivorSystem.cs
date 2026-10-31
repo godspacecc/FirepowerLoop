@@ -62,8 +62,16 @@ namespace Game
                 // 经验模型由幸存者独立配置提供，不再借用金币掉落。
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
                 // 幸存者场内爬出不再依赖场外入口；地图障碍仍以同一权威布局为准。
-                store=new SurvivorResultFileStore(1);
-                return store.TryRead(out _,out error)&&TryReadGold(out _,out error);
+                store ??= new SurvivorResultFileStore(1);
+                if (!store.TryRead(out _, out error)) return false;
+                if (!TryReadGold(out _, out error))
+                {
+                    // 默认角色同样校验钱包；表现层只接收稳定错误码，不暴露存档解析细节。
+                    Log.Error($"[SurvivorSystem] 开局金币读取失败：{error}");
+                    error = "wallet.read_failed";
+                    return false;
+                }
+                return true;
             }catch(Exception ex){error=ex.Message;return false;}
         }
         /// <summary>地图已加载后创建本局；资源准备完成之前不推进时间。</summary>
@@ -71,17 +79,17 @@ namespace Game
         {
             if(Model.Active){error="幸存者局已经开始";return false;}
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
-            if(!TryPrepare(out error))return false;
+            if(!TryPrepare(out error)||!TrySelectCharacter(Model.SelectedCharacter,out error))return false;
             Stop();if(!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
             m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
-            m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
+            m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;m.RunCharacter=m.SelectedCharacter;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
             navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();
             // 拾取可达场也属于入口准备，不能等首批尸潮生成时在活动帧冷建整张网格。
             pickupNavigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.PlayerRadius,obstacles);
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
-            try{ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
+            try{this.SendEvent<SurvivorCharacterApplyEvent>();ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>

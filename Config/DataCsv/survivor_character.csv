@@ -1,0 +1,7 @@
+##var,Id,AppearanceId,Price,NameKey
+##type,string,int,long,string
+,survivor.character.1,1,50,ui.survivor.character.1
+,survivor.character.7,7,100,ui.survivor.character.7
+,survivor.character.3,3,150,ui.survivor.character.3
+,survivor.character.4,4,200,ui.survivor.character.4
+,survivor.character.9,9,300,ui.survivor.character.9

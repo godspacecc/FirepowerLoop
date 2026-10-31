@@ -6,6 +6,10 @@ namespace Game
 {
     public interface IRuntimeConfigProvider : IUtility
     {
+        /// <summary>正式永久角色目录；缺配置明确拒绝购买。</summary>
+        bool TryGetSurvivorCharacters(out SurvivorCharacterProduct[] products,out string error)
+        {products=null;error="character.config_failed";return false;}
+
         /// <summary>读取正式入场动作的身体体积；缺失时明确拒绝几何命中，不能退回计时无敌。</summary>
         bool TryGetDockHitPose(string prefabAddress,out FirepowerLoop.Arcade.ArcadeHitPoseSequence value,out string error)
         {value=null;error="码头身体碰撞配置不可用";return false;}

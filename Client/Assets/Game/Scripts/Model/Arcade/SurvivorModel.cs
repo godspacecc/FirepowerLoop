@@ -27,6 +27,9 @@ namespace Game
     {
         /// <summary>规则状态仅由幸存者系统写入。</summary>
         internal SurvivorRunState State;
+        /// <summary>菜单已验证选择和本局外观；Stop保留以支持重开。</summary>
+        public int SelectedCharacter {get;internal set;}
+        public int RunCharacter {get;internal set;}
         /// <summary>本局步枪弹夹与已开始的换弹事务，仅由幸存者系统推进。</summary>
         internal int RifleRounds, RifleCapacity;
         internal float RifleReloadRemaining, RifleReloadDuration;

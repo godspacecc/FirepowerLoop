@@ -25,9 +25,15 @@ namespace Game
         private bool released;
         private Camera cachedMainCamera;
         private IUnRegister testAppearanceChangedUnregister;
+        /// <summary>当前玩家的幸存者造型事件订阅，玩家销毁时注销。</summary>
+        private IUnRegister survivorAppearanceUnregister;
         public PlayerCtrl(IArchitecture architecture)
         {
             this.architecture = architecture;
+            survivorAppearanceUnregister=architecture.RegisterEvent<SurvivorCharacterApplyEvent>(_ => {
+                if(activePlayer==null||!activePlayer.ApplyTestAppearance(this.GetModel<SurvivorModel>().RunCharacter))
+                    throw new InvalidOperationException("character.appearance_failed");
+            });
             testAppearanceChangedUnregister = architecture.RegisterEvent<PlayerTestAppearanceChangedEvent>(_ => RefreshClothing());
         }
 
@@ -284,6 +290,8 @@ namespace Game
         public void ReleaseAll()
         {
             released = true;
+            survivorAppearanceUnregister?.UnRegister();
+            survivorAppearanceUnregister=null;
             testAppearanceChangedUnregister?.UnRegister();
             testAppearanceChangedUnregister = null;
             ReleaseStaged();
@@ -433,7 +441,7 @@ namespace Game
         {
             if (activePlayer == null)
                 return;
-            if (!activePlayer.ApplyTestAppearance(this.GetModel<TestCmdModel>().PlayerAppearanceIndex))
+            if (!activePlayer.ApplyTestAppearance((this.GetModel<SurvivorModel>().Snapshot.Active?this.GetModel<SurvivorModel>().RunCharacter:this.GetModel<TestCmdModel>().PlayerAppearanceIndex)))
                 Log.Error("[PlayerCtrl] 测试造型绑定缺失，保留原人物表现。");
         }
 

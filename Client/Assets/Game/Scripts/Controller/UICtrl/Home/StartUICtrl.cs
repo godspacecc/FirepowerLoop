@@ -44,7 +44,7 @@ namespace Game
         {
             ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OnNewGameClick);
-            BindMenuButton(UI.BtnSurvivor, () => StartSurvivorAsync().Forget());
+            BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -167,6 +167,18 @@ namespace Game
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
         }
 
+        /// <summary>每次从菜单进入都先选角；旧菜单会话的回调不能开局。</summary>
+        private void OpenCharacterSelection()
+        {
+            if (startingRun || !IsShow()) return;
+            var owner = BaseUI;
+            int generation = startGeneration;
+            UIHelper.ShowUI<SurvivorEntryUICtrl>().Configure(() => {
+                if (owner == null || !ReferenceEquals(owner, BaseUI) || !IsShow() || generation != startGeneration || startingRun) return;
+                StartSurvivorAsync().Forget();
+            });
+        }
+
         /// <summary>幸存者入口先准备资源；失败恢复菜单，不读取或覆盖闯关存档。</summary>
         private async UniTask StartSurvivorAsync()
         {
@@ -185,7 +197,7 @@ namespace Game
                 await UniTask.NextFrame();
                 if (!IsCurrent()) return;
                 var result = await this.GetSystem<SurvivorSceneFlowSystem>().StartAsync();
-                if (!result.Success) Notify.ShowFloatTips(result.Error);
+                if (!result.Success) Notify.ShowFloatTips(FormatSurvivorEntryError(result.Error));
             }
             catch (Exception exception)
             {
@@ -202,6 +214,18 @@ namespace Game
                 }
             }
         }
+        /// <summary>异步开局复验失败时翻译角色/钱包内部码，普通场景错误保留原说明。</summary>
+        internal static string FormatSurvivorEntryError(string error)
+        {
+            if (string.IsNullOrEmpty(error) ||
+                (!error.StartsWith("character.", StringComparison.Ordinal) && !error.StartsWith("wallet.", StringComparison.Ordinal)))
+                return error;
+            string key = error == "wallet.insufficient" ? "insufficient" :
+                error == "wallet.read_failed" ? "read_failed" :
+                error == "character.not_owned" ? "not_owned" : "error";
+            return Loc.T("ui.character." + key);
+        }
+
         private void OnNewGameClick()
         {
             StartSinglePlayerAsync().Forget();
@@ -287,11 +311,11 @@ namespace Game
             OnlineLoginUICtrl.ShowForArcadeLobby();
         }
 
-        /// <summary>只在开始页有效且未开局时打开只读商店。</summary>
+        /// <summary>只在开始页有效且未开局时打开角色商店。</summary>
         private void OnShopClick()
         {
             if (startingRun || !IsShow()) return;
-            UIHelper.ShowUI<MainMenuShopUICtrl>();
+            UIHelper.ShowUI<MainMenuShopUICtrl>().RefreshContent();
         }
 
         private void OnSettingClick()

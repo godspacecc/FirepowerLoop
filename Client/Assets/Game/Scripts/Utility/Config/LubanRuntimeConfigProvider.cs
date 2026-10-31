@@ -308,6 +308,23 @@ namespace Game
             catch (Exception exception) { error = "幸存者配置无效: " + exception.Message; return false; }
         }
 
+        /// <summary>从双端生成表映射不可变商品，拒绝不完整或重复身份。</summary>
+        public bool TryGetSurvivorCharacters(out SurvivorCharacterProduct[] products,out string error)
+        {
+            products=null;error="character.config_failed";
+            try {
+                var rows=(cachedTables??tablesFactory()).TbSurvivorCharacter.DataList;
+                var ids=new System.Collections.Generic.HashSet<string>();
+                var appearances=new System.Collections.Generic.HashSet<int>();
+                var result=new System.Collections.Generic.List<SurvivorCharacterProduct>();
+                foreach(var row in rows) {
+                    if(string.IsNullOrWhiteSpace(row.Id)||!ids.Add(row.Id)||row.AppearanceId<1||row.AppearanceId>9||!appearances.Add(row.AppearanceId)||row.Price<=0||string.IsNullOrWhiteSpace(row.NameKey))return false;
+                    result.Add(new SurvivorCharacterProduct(row.Id,row.AppearanceId,row.Price,row.NameKey,false));
+                }
+                if(result.Count==0)return false;
+                products=result.ToArray();error=null;return true;
+            } catch(Exception){return false;}
+        }
         public bool HasSurvivorEnemyRoster => true;
         /// <summary>每次创建本局敌池，不能把上一局成功出生的精英时钟缓存到下一局。</summary>
         public bool TryGetSurvivorEnemyRoster(out SurvivorEnemyRoster value,out string error)

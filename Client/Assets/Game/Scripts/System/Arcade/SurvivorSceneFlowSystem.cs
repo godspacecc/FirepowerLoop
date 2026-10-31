@@ -36,7 +36,7 @@ namespace Game
             if (this.GetModel<SurvivorModel>().Snapshot.Active)
                 return ArcadeSceneFlowResult.Fail("请先结束当前幸存者局");
             var system = this.GetSystem<SurvivorSystem>();
-            if (!system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
+            if (!system.TrySelectCharacter(this.GetModel<SurvivorModel>().SelectedCharacter,out error) || !system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
             busy = true;
             shownBattleError = null;
             bool entered = false;

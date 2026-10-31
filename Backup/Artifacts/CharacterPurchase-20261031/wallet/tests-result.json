@@ -1,0 +1,43 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":4,\"PassedTests\":4,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:06.0199309\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.BalanceOverflowDoesNotOverwriteLedger\",\"Status\":\"Passed\",\"Duration\":\"00:00:03.0090000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.PickupPersistsExactlyOnceAcrossReopen\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0960000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.PurchaseMigratesAndPreservesReceipts\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0500000\"},{\"Name\":\"Game.Tests.SurvivorGoldStoreTests.UnwritableDirectoryDoesNotReportSuccessfulGold\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0070000\"}]}}"
+    }
+  ],
+  "structuredContent": {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 4,
+        "PassedTests": 4,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:06.0199309"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.BalanceOverflowDoesNotOverwriteLedger",
+          "Status": "Passed",
+          "Duration": "00:00:03.0090000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.PickupPersistsExactlyOnceAcrossReopen",
+          "Status": "Passed",
+          "Duration": "00:00:00.0960000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.PurchaseMigratesAndPreservesReceipts",
+          "Status": "Passed",
+          "Duration": "00:00:00.0500000"
+        },
+        {
+          "Name": "Game.Tests.SurvivorGoldStoreTests.UnwritableDirectoryDoesNotReportSuccessfulGold",
+          "Status": "Passed",
+          "Duration": "00:00:00.0070000"
+        }
+      ]
+    }
+  },
+  "isError": false
+}
