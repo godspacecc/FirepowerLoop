@@ -900,9 +900,9 @@
   "ui.survivor.restart": "Play Again",
   "ui.survivor.hud.health": "Health  {0} / {1}",
   "ui.survivor.time": "Survival Time  {0}",
-  "ui.survivor.hud.score": "Score  {0}",
+  "ui.survivor.hud.score": "Run Gold  {0}",
   "ui.survivor.hud.experience": "Level {0}    XP  {1} / {2}",
-  "ui.survivor.result.score": "Run Score  {0}",
+  "ui.survivor.result.score": "Collected  {0}  /  Gold  {1}",
   "ui.survivor.result.retry": "Save failed: {0}. Select Play Again or Main Menu to retry.",
   "ui.survivor.upgrade.progress": "Level {0} → {1}\nTotal bonus {2} → {3}",
   "ui.survivor.weapon.Rifle": "Basic Rifle",
@@ -922,5 +922,11 @@
   "ui.survivor.upgrade.8.title": "Magazine capacity",
   "ui.survivor.upgrade.9.title": "Faster reload",
   "ui.survivor.upgrade.magazine_detail": "Magazine: {0} → {1} rounds\n+{2} rounds (10% of base capacity)",
-  "ui.survivor.upgrade.reload_detail": "Reload: {0} s → {1} s\nReduction: {2} s"
+  "ui.survivor.upgrade.reload_detail": "Reload: {0} s → {1} s\nReduction: {2} s",
+  "ui.survivor.gold.owned": "Gold",
+  "ui.survivor.gold.help": "Enemies may drop gold. Collected gold is kept permanently.",
+  "ui.survivor.gold.future": "Gold will be used for future permanent upgrades.",
+  "ui.survivor.gold.back": "Back",
+  "ui.survivor.gold.start": "Start Survival",
+  "ui.survivor.gold.error": "Unable to read gold: {0}"
 }

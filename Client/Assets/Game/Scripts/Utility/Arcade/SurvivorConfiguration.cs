@@ -60,8 +60,6 @@ namespace FirepowerLoop.Arcade
         public string ExperienceVisualPrefabName { get; private set; }
         /// <summary>按场景物体资源约定解析后的经验模型逻辑地址。</summary>
         public string ExperienceVisualPrefabAddress { get; private set; }
-        /// <summary>来自幸存者权威规则表的 ScorePerKill。</summary>
-        public int ScorePerKill { get; private set; }
         /// <summary>来自幸存者权威规则表的 PickupRadius。</summary>
         public float PickupRadius { get; private set; }
         /// <summary>来自幸存者权威规则表的 MinimumSpawnDistance。</summary>
@@ -91,7 +89,6 @@ namespace FirepowerLoop.Arcade
             if (float.IsNaN(r.InitialExperienceThreshold) || float.IsInfinity(r.InitialExperienceThreshold) || r.InitialExperienceThreshold <= 0) throw new ArgumentException("幸存者 InitialExperienceThreshold 必须为有限正数");
             if (float.IsNaN(r.ExperienceThresholdGrowth) || float.IsInfinity(r.ExperienceThresholdGrowth) || r.ExperienceThresholdGrowth <= 0) throw new ArgumentException("幸存者 ExperienceThresholdGrowth 必须为有限正数");
             if (float.IsNaN(r.ExperiencePerKill) || float.IsInfinity(r.ExperiencePerKill) || r.ExperiencePerKill <= 0) throw new ArgumentException("幸存者 ExperiencePerKill 必须为有限正数");
-            if (float.IsNaN(r.ScorePerKill) || float.IsInfinity(r.ScorePerKill) || r.ScorePerKill <= 0) throw new ArgumentException("幸存者 ScorePerKill 必须为有限正数");
             if (float.IsNaN(r.PickupRadius) || float.IsInfinity(r.PickupRadius) || r.PickupRadius <= 0) throw new ArgumentException("幸存者 PickupRadius 必须为有限正数");
             if (float.IsNaN(r.MinimumSpawnDistance) || float.IsInfinity(r.MinimumSpawnDistance) || r.MinimumSpawnDistance <= 0) throw new ArgumentException("幸存者 MinimumSpawnDistance 必须为有限正数");
             if (float.IsNaN(r.AimRange) || float.IsInfinity(r.AimRange) || r.AimRange <= 0) throw new ArgumentException("幸存者 AimRange 必须为有限正数");
@@ -138,7 +135,6 @@ namespace FirepowerLoop.Arcade
                 ExperienceDropChance = r.ExperienceDropChance,
                 ExperienceVisualPrefabName = r.ExperienceVisualPrefabName,
                 ExperienceVisualPrefabAddress = experienceAddress,
-                ScorePerKill = r.ScorePerKill,
                 PickupRadius = r.PickupRadius,
                 MinimumSpawnDistance = r.MinimumSpawnDistance,
                 AimRange = r.AimRange,

@@ -37,6 +37,43 @@ namespace Game.Tests
             arcade.CommitSafeNode(new ArcadeRunSaveData{RunId="unrelated-arcade",RemainingLives=3,NextArenaNumber=1});
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();if(Directory.Exists(root))Directory.Delete(root,true);}
+        /// <summary>已开局的账本不可替换时保留现场金币，恢复可写后冷却重试只提交一次。</summary>
+        [Test] public void GoldWriteFailureKeepsDropUntilCooldownRetrySucceeds()
+        {
+            var gold=new SurvivorGoldFileStore(1,root);Set("goldStore",gold);
+            Assert.That(typeof(SurvivorSystem).GetMethod("BeginGoldRun",Flags).Invoke(system,new object[]{null}),Is.True);
+            var coins=Get<Dictionary<int,Vector2>>("goldDrops");coins.Add(701,Vector2.zero);Set("player",Vector2.zero);
+            var path=Path.Combine(root,"Saves","survivor-gold-1.json");var previous=File.ReadAllText(path);
+            try
+            {
+                File.SetAttributes(path,FileAttributes.ReadOnly);
+                Assert.That(gold.TryCollect(Get<string>("goldRunToken")+":1",out _,out var error),Is.False,"必须制造实际落盘失败");
+                // 同一错误已经提示过，避免本测试启动无关的浮动提示资源加载。
+                typeof(SurvivorSystem).GetProperty("LastError").SetValue(system,error);
+                Call("TickGold",.1f);
+                Assert.That(coins.Count,Is.EqualTo(1));Assert.That(view.RemovedDrops,Is.Zero);
+                Assert.That(model.CollectedGold,Is.Zero);Assert.That(model.TotalGold,Is.Zero);
+                Assert.That(File.ReadAllText(path),Is.EqualTo(previous));
+            }
+            finally { File.SetAttributes(path,FileAttributes.Normal); }
+            Call("TickGold",1f);Assert.That(coins.Count,Is.EqualTo(1));Assert.That(view.RemovedDrops,Is.Zero);
+            Call("TickGold",1.1f);Call("TickGold",.1f);
+            Assert.That(coins,Is.Empty);Assert.That(view.RemovedDrops,Is.EqualTo(1));
+            Assert.That(model.CollectedGold,Is.EqualTo(1));Assert.That(model.TotalGold,Is.EqualTo(1));
+            Assert.That(gold.TryRead(out var balance,out var readError),Is.True,readError);Assert.That(balance,Is.EqualTo(1));
+        }
+        /// <summary>真实金币拾取落盘后才移除；重复Tick不能重复入账，重开保留余额。</summary>
+        [Test] public void GoldPickupPersistsBeforeRemovalAndNewRunKeepsBalance()
+        {
+            Set("goldStore",new SurvivorGoldFileStore(1,root));
+            var begin=typeof(SurvivorSystem).GetMethod("BeginGoldRun",Flags);
+            Assert.That(begin.Invoke(system,new object[]{null}),Is.True);
+            var coins=Get<Dictionary<int,Vector2>>("goldDrops");coins.Add(700,Vector2.zero);
+            Set("player",Vector2.zero);Call("TickGold",.1f);Call("TickGold",.1f);
+            Assert.That(coins,Is.Empty);Assert.That(model.CollectedGold,Is.EqualTo(1));Assert.That(model.TotalGold,Is.EqualTo(1));
+            Assert.That(new SurvivorGoldFileStore(1,root).TryRead(out var balance,out var error),Is.True,error);Assert.That(balance,Is.EqualTo(1));
+            Assert.That(begin.Invoke(system,new object[]{null}),Is.True);Assert.That(model.CollectedGold,Is.Zero);Assert.That(model.TotalGold,Is.EqualTo(1));
+        }
         /// <summary>步枪打空30发后停火，换弹完成才重新发射，备弹不限制循环。</summary>
         [Test] public void RifleWaitsForAutomaticReloadAfterThirtyRounds()
         {
@@ -331,13 +368,13 @@ namespace Game.Tests
         {
             typeof(SurvivorConfiguration).GetProperty("ExperienceDropChance").SetValue(config,0f);
             KillOne();
-            Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.EqualTo(config.ScorePerKill));
+            Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.Zero);
             Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops"),Is.Empty);
             Assert.That(model.State.Experience,Is.Zero);
         }
         [Test] public void KillCreatesExperienceOnGroundWithoutRemoteCollection()
         {
-            KillOne();Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.EqualTo(config.ScorePerKill));Assert.That(model.State.Experience,Is.Zero);Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Experience,Is.EqualTo(config.ExperiencePerKill));
+            KillOne();Assert.That(model.Kills,Is.EqualTo(1));Assert.That(model.Score,Is.Zero);Assert.That(model.State.Experience,Is.Zero);Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Experience,Is.EqualTo(config.ExperiencePerKill));
         }
         [Test] public void FullDropBudgetMergesExperienceWithoutLoss()
         {
@@ -369,7 +406,7 @@ namespace Game.Tests
             public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
-            public int PlayerWrites,CombatPoseWrites,Ends;
+            public int PlayerWrites,CombatPoseWrites,Ends,RemovedDrops;
             public bool IsActive=>true;
             public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}
             public void End(){Ends++;}
@@ -382,7 +419,7 @@ namespace Game.Tests
             public void SetProjectile(int id,bool h,Vector2 p,Vector2 d){}
             public void RemoveProjectile(int id){}
             public void SetDrop(int id,ArcadeDropDefinition d,Vector2 p){}
-            public void RemoveDrop(int id){}
+            public void RemoveDrop(int id){RemovedDrops++;}
             public void SetRemotePlayer(long id,Vector2 p,Vector2 f,bool v,bool i,int c,int m){}
             public void RemoveRemotePlayer(long id){}
             public void TickPlayerFeedback(float d){}

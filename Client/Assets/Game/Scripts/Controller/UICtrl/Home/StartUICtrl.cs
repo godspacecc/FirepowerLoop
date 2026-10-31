@@ -44,7 +44,7 @@ namespace Game
         {
             ApplyReleaseVisibility(UI);
             BindMenuButton(UI.BtnNewGame, OnNewGameClick);
-            BindMenuButton(UI.BtnSurvivor, () => StartSurvivorAsync().Forget());
+            BindMenuButton(UI.BtnSurvivor, () => UIHelper.ShowUI<SurvivorEntryUICtrl>().Configure(() => StartSurvivorAsync().Forget()));
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             BindMenuButton(UI.BtnContinue, OnContinueClick);

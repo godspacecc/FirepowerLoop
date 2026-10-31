@@ -63,7 +63,7 @@ namespace Game
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
                 // 幸存者场内爬出不再依赖场外入口；地图障碍仍以同一权威布局为准。
                 store=new SurvivorResultFileStore(1);
-                return store.TryRead(out _,out error);
+                return store.TryRead(out _,out error)&&TryReadGold(out _,out error);
             }catch(Exception ex){error=ex.Message;return false;}
         }
         /// <summary>地图已加载后创建本局；资源准备完成之前不推进时间。</summary>
@@ -72,7 +72,7 @@ namespace Game
             if(Model.Active){error="幸存者局已经开始";return false;}
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
             if(!TryPrepare(out error))return false;
-            Stop();var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
+            Stop();if(!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
             m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
@@ -83,7 +83,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -95,7 +95,7 @@ namespace Game
         public bool TryFinish(out string error)
         {
             error=null;var m=Model;if(m.State==null){error="当前没有幸存者局";return false;}
-            if(m.Result==null){m.State.Finish();m.Paused=true;input.Disable();m.Choices=Array.Empty<int>();m.Result=new SurvivorResultData{RunId=runId,Score=m.Score,SurvivalSeconds=m.State.ElapsedSeconds,Kills=m.Kills,Level=m.State.Level,Outcome=m.Health<=0?"failed":"abandoned"};}
+            if(m.Result==null){m.State.Finish();m.Paused=true;input.Disable();m.Choices=Array.Empty<int>();m.Result=new SurvivorResultData{RunId=runId,Score=0,Gold=m.RunGold,SurvivalSeconds=m.State.ElapsedSeconds,Kills=m.Kills,Level=m.State.Level,Outcome=m.Health<=0?"failed":"abandoned"};}
             if(!saved)saved=store.TrySave(m.Result,out error);LastError=error;Publish();return saved;
         }
         /// <summary>返回当前等级及下一等级的累计加成，只读查询供强化卡片展示。</summary>
@@ -184,7 +184,7 @@ namespace Game
             TickEnemies(dt);
             AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
-            Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
+            TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             foreach(var e in enemies.Values)
             {
                 view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
@@ -262,7 +262,7 @@ namespace Game
                 if(!remove)foreach(var e in enemies.Values.ToArray()){
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(e.GroundEntry.Active?!TryGroundBodySweep(e,old,b.Position,b.SourceWeaponId=="survivor.drone"?droneVisual.VisualOffset.y:.75f,out _):Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
-                    e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;Model.Score=Math.Min(long.MaxValue-config.ScorePerKill,Model.Score)+config.ScorePerKill;
+                    e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;TryDropGold(e);
                         if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))
                             AddExperienceDrop(e.Position);}
                     break;

@@ -84,16 +84,16 @@
     "zh-CN": "生存时间  {0}"
   },
   "ui.survivor.hud.score": {
-    "en-US": "Score  {0}",
-    "zh-CN": "分数  {0}"
+    "zh-CN": "本局金币  {0}",
+    "en-US": "Run Gold  {0}"
   },
   "ui.survivor.hud.experience": {
     "en-US": "Level {0}    XP  {1} / {2}",
     "zh-CN": "等级 {0}    经验  {1} / {2}"
   },
   "ui.survivor.result.score": {
-    "en-US": "Run Score  {0}",
-    "zh-CN": "本局分数  {0}"
+    "zh-CN": "本局获得  {0}  /  持有金币  {1}",
+    "en-US": "Collected  {0}  /  Gold  {1}"
   },
   "ui.survivor.result.retry": {
     "en-US": "Save failed: {0}. Select Play Again or Main Menu to retry.",
@@ -154,5 +154,29 @@
   "ui.survivor.weapon.upgrade_detail": {
     "zh-CN": "Lv.{0} → Lv.{1}\n伤害 {2} → {3}\n射击间隔 {4} → {5} 秒",
     "en-US": "Lv.{0} → Lv.{1}\nDamage {2} → {3}\nFire interval {4} → {5}s"
+  },
+  "ui.survivor.gold.owned": {
+    "zh-CN": "持有金币",
+    "en-US": "Gold"
+  },
+  "ui.survivor.gold.help": {
+    "zh-CN": "击败敌人有概率掉落金币，拾取后永久保留。",
+    "en-US": "Enemies may drop gold. Collected gold is kept permanently."
+  },
+  "ui.survivor.gold.future": {
+    "zh-CN": "金币将用于后续开放的局外成长。",
+    "en-US": "Gold will be used for future permanent upgrades."
+  },
+  "ui.survivor.gold.back": {
+    "zh-CN": "返回",
+    "en-US": "Back"
+  },
+  "ui.survivor.gold.start": {
+    "zh-CN": "开始生存",
+    "en-US": "Start Survival"
+  },
+  "ui.survivor.gold.error": {
+    "zh-CN": "金币读取失败：{0}",
+    "en-US": "Unable to read gold: {0}"
   }
 }

@@ -46,13 +46,17 @@ namespace Game
         internal bool Active, Paused;
         internal int Health, MaximumHealth, Kills;
         internal long Score;
+        /// <summary>本局已落盘金币与累计余额，不从旧积分兑换。</summary>
+        internal long RunGold, GoldBalance;
+        public long CollectedGold => RunGold;
+        public long TotalGold => GoldBalance;
         /// <summary>结束结果内部保留，外部读取副本。</summary>
         internal SurvivorResultData Result;
         /// <summary>当前可选强化编号，每次读取返回副本。</summary>
         internal int[] Choices=Array.Empty<int>();
         public SurvivorHudSnapshot Snapshot => new SurvivorHudSnapshot(Active,Paused,State,Health,MaximumHealth,Kills,Score);
         public int[] UpgradeChoices => (int[])Choices.Clone();
-        public SurvivorResultData ResultSnapshot => Result==null?null:new SurvivorResultData { RunId=Result.RunId,Score=Result.Score,SurvivalSeconds=Result.SurvivalSeconds,Kills=Result.Kills,Level=Result.Level,Outcome=Result.Outcome };
+        public SurvivorResultData ResultSnapshot => Result==null?null:new SurvivorResultData { RunId=Result.RunId,Score=Result.Score,Gold=Result.Gold,SurvivalSeconds=Result.SurvivalSeconds,Kills=Result.Kills,Level=Result.Level,Outcome=Result.Outcome };
         protected override void OnInit() { }
     }
 }

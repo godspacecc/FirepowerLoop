@@ -14,6 +14,8 @@ namespace Game
         [JsonProperty(Required = Required.Always)] public long RunId;
         /// <summary>最终分数。</summary>
         [JsonProperty(Required = Required.Always)] public long Score;
+        /// <summary>本局已拾取金币；旧结果缺省为零，不兑换分数。</summary>
+        public long Gold;
         /// <summary>实际存活秒数，不含暂停。</summary>
         [JsonProperty(Required = Required.Always)] public double SurvivalSeconds;
         /// <summary>本局击杀数。</summary>
@@ -80,7 +82,7 @@ namespace Game
                     var previous = document.Results.FirstOrDefault(item => item.RunId == snapshot.RunId);
                     if (previous != null)
                     {
-                        if (previous.Score != snapshot.Score || previous.SurvivalSeconds != snapshot.SurvivalSeconds ||
+                        if (previous.Score != snapshot.Score || previous.Gold != snapshot.Gold || previous.SurvivalSeconds != snapshot.SurvivalSeconds ||
                             previous.Kills != snapshot.Kills || previous.Level != snapshot.Level || previous.Outcome != snapshot.Outcome)
                             throw new InvalidDataException("相同幸存者局的结果发生冲突");
                         return true;
@@ -121,7 +123,7 @@ namespace Game
 
         /// <summary>排除负数、非有限时间以及未结束或未知结果。</summary>
         private static bool IsValid(SurvivorResultData result) => result != null && result.RunId > 0 &&
-            result.Score >= 0 && result.Kills >= 0 && result.Level >= 1 && result.SurvivalSeconds >= 0 &&
+            result.Score >= 0 && result.Gold >= 0 && result.Kills >= 0 && result.Level >= 1 && result.SurvivalSeconds >= 0 &&
             !double.IsNaN(result.SurvivalSeconds) && !double.IsInfinity(result.SurvivalSeconds) &&
             (result.Outcome == "failed" || result.Outcome == "abandoned");
     }

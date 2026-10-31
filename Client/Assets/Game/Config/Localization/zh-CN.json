@@ -900,9 +900,9 @@
   "ui.survivor.restart": "再来一局",
   "ui.survivor.hud.health": "生命  {0} / {1}",
   "ui.survivor.time": "生存时间  {0}",
-  "ui.survivor.hud.score": "分数  {0}",
+  "ui.survivor.hud.score": "本局金币  {0}",
   "ui.survivor.hud.experience": "等级 {0}    经验  {1} / {2}",
-  "ui.survivor.result.score": "本局分数  {0}",
+  "ui.survivor.result.score": "本局获得  {0}  /  持有金币  {1}",
   "ui.survivor.result.retry": "保存失败：{0}。点击再来一局或返回主菜单重试。",
   "ui.survivor.upgrade.progress": "等级 {0} → {1}\n累计效果 {2} → {3}",
   "ui.survivor.weapon.Rifle": "基础步枪",
@@ -922,5 +922,11 @@
   "ui.survivor.upgrade.8.title": "弹夹容量提升",
   "ui.survivor.upgrade.9.title": "换弹加速",
   "ui.survivor.upgrade.magazine_detail": "弹夹容量：{0} 发 → {1} 发\n本次增加 {2} 发（基础容量的10%）",
-  "ui.survivor.upgrade.reload_detail": "换弹时间：{0} 秒 → {1} 秒\n本次缩短 {2} 秒"
+  "ui.survivor.upgrade.reload_detail": "换弹时间：{0} 秒 → {1} 秒\n本次缩短 {2} 秒",
+  "ui.survivor.gold.owned": "持有金币",
+  "ui.survivor.gold.help": "击败敌人有概率掉落金币，拾取后永久保留。",
+  "ui.survivor.gold.future": "金币将用于后续开放的局外成长。",
+  "ui.survivor.gold.back": "返回",
+  "ui.survivor.gold.start": "开始生存",
+  "ui.survivor.gold.error": "金币读取失败：{0}"
 }

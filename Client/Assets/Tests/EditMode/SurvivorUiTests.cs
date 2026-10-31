@@ -9,6 +9,14 @@ namespace Game.Tests
     public sealed class SurvivorUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Survivor/";
+        /// <summary>入口引用必须由正式生成器反序列化回绑，静态标签不混入动态余额。</summary>
+        [Test] public void GoldEntryHasGeneratedReferencesAndDynamicBalance()
+        {
+            var ui=Bound<SurvivorEntryUI>(Root+"SurvivorEntry.prefab");
+            Assert.That(ui.BalanceText,Is.Not.Null);Assert.That(ui.ErrorText,Is.Not.Null);
+            Assert.That(ui.BtnStart,Is.Not.Null);Assert.That(ui.BtnBack,Is.Not.Null);
+            Assert.That(ui.BalanceText.GetComponent<LocalizedText>(),Is.Null);
+        }
         /// <summary>新强化只复用既有卡片，实际容量与换弹单位必须完整放入说明区。</summary>
         [Test] public void RifleUpgradeTextFitsExistingCard()
         {

@@ -62,7 +62,7 @@ namespace Game
             if(!s.Active || s.Finished){Hide();return;}
             UI.HealthText.text=Loc.T("ui.survivor.hud.health",s.Health,s.MaximumHealth);
             UI.TimeText.text=Loc.T("ui.survivor.time",FormatTime(s.SurvivalSeconds));
-            UI.ScoreText.text=Loc.T("ui.survivor.hud.score",s.Score.ToString("N0"));
+            UI.ScoreText.text=Loc.T("ui.survivor.hud.score",this.GetModel<SurvivorModel>().CollectedGold.ToString("N0"));
             UI.HealthBar.value=s.MaximumHealth>0?Mathf.Clamp01((float)s.Health/s.MaximumHealth):0;
             UI.ExperienceBar.value=s.RequiredExperience>0?Mathf.Clamp01((float)s.Experience/s.RequiredExperience):0;
             UI.BtnPause.interactable=!s.Paused;
