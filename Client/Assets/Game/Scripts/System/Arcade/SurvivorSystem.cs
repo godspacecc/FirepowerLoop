@@ -208,14 +208,7 @@ namespace Game
             AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
-            foreach(var e in enemies.Values)
-            {
-                view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
-                view.SetEnemyScale(e.Id,Shape(e.ConfigId)?.VisualScale??Vector3.one);
-                view.SetEnemyGroundEntry(e.Id,e.GroundEntry);
-                if(!e.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
-                    view.SetEnemyMelee(e.Id,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining,(player-e.Position).normalized);
-            }
+            if(!SyncEnemyPresentations())return;
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
                 else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
@@ -306,7 +299,7 @@ namespace Game
                     if(!enemies.TryGetValue(id,out var e))continue;
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(e.GroundEntry.Active?!TryGroundBodySweep(e,old,b.Position,b.SourceWeaponId=="survivor.drone"?droneVisual.VisualOffset.y:.75f,out _):Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
-                    e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;TryDropGold(e);
+                    e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);presentedEnemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;TryDropGold(e);
                         if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))
                             AddExperienceDrop(e.Position);}
                     break;

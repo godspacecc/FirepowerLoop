@@ -12,6 +12,8 @@ namespace Game
         /// <summary>只保存尚未创建成功的出生请求；成功创建后全部进入持续追击，不按距离休眠。</summary>
         private readonly SurvivorHordeState horde=new SurvivorHordeState();
         private readonly List<SurvivorActivationRequest> activationRequests=new List<SurvivorActivationRequest>();
+        /// <summary>仅记录已借出显示实例的身份；权威敌人始终留在enemies中持续模拟。</summary>
+        private readonly HashSet<int> presentedEnemies=new HashSet<int>();
         private bool hordeInitialized;
         private float hordeWaveClock;
         private int nearbySpawnSequence,hordeWaveSide;
@@ -29,7 +31,7 @@ namespace Game
         /// <summary>局结束清理所有模拟层，不触碰死亡与奖励事务。</summary>
         private void ResetHorde()
         {
-            horde.Clear();activationRequests.Clear();enemySpatial.Clear();enemyCandidates.Clear();expiredBullets.Clear();groundEntryCandidates.Clear();
+            horde.Clear();presentedEnemies.Clear();activationRequests.Clear();enemySpatial.Clear();enemyCandidates.Clear();expiredBullets.Clear();groundEntryCandidates.Clear();
             hordeInitialized=spatialFrameReady=false;hordeWaveClock=0;nearbySpawnSequence=hordeWaveSide=hordeWarmIndex=0;
         }
         /// <summary>入口调用，每帧最多预热一个角色；失败仍属于加载事务，不交接半准备的战场。</summary>
@@ -85,9 +87,44 @@ namespace Game
         private bool WakeHordeEnemy(ArcadeEnemyRuntime enemy)
         {
             using var sample=HordeWakeMarker.Auto();
+            if(!WantsEnemyPresentation(enemy,view.TryGetSurvivorViewBounds(out var bounds),bounds))
+            {enemies.Add(enemy.Id,enemy);return true;}
             if(!view.TryWakeSurvivorEnemy(enemy.Id,enemy.ConfigId,enemy.Position,enemy.Health,enemy.MaxHealth,enemy.AttackSequence,out var error))
             {LastError=error??"尸潮角色展开失败";Model.Paused=true;input.Disable();Publish();return false;}
-            enemies.Add(enemy.Id,enemy);view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);return true;
+            enemies.Add(enemy.Id,enemy);presentedEnemies.Add(enemy.Id);view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);return true;
+        }
+        /// <summary>显示准备带覆盖身体半径及短时移动；退出边界更宽，避免相机边缘反复借还。相机不可用时保守显示。</summary>
+        private bool WantsEnemyPresentation(ArcadeEnemyRuntime enemy,bool hasBounds,Rect bounds)
+        {
+            if(!hasBounds)return true;
+            float margin=(presentedEnemies.Contains(enemy.Id)?6f:3f)+EnemyRadius(enemy)+Mathf.Max(0,enemy.Speed)*.25f;
+            return enemy.Position.x>=bounds.xMin-margin&&enemy.Position.x<=bounds.xMax+margin&&
+                enemy.Position.y>=bounds.yMin-margin&&enemy.Position.y<=bounds.yMax+margin;
+        }
+        /// <summary>只同步近场表现；远处保持全部追击和命中逻辑，回收不经过死亡或掉落。恢复失败保留权威状态并暂停。</summary>
+        private bool SyncEnemyPresentations()
+        {
+            bool hasBounds=view.TryGetSurvivorViewBounds(out var bounds);
+            foreach(var enemy in enemies.Values)
+            {
+                if(!WantsEnemyPresentation(enemy,hasBounds,bounds))
+                {
+                    if(presentedEnemies.Remove(enemy.Id))view.SuspendSurvivorEnemy(enemy.Id);
+                    continue;
+                }
+                if(!presentedEnemies.Contains(enemy.Id))
+                {
+                    if(hasBounds&&!view.TryWakeSurvivorEnemy(enemy.Id,enemy.ConfigId,enemy.Position,enemy.Health,enemy.MaxHealth,enemy.AttackSequence,out var error))
+                    {LastError=error??"敌人显示恢复失败";Model.Paused=true;input.Disable();Publish();return false;}
+                    presentedEnemies.Add(enemy.Id);
+                }
+                view.SetEnemy(enemy.Id,enemy.ConfigId,enemy.Position,enemy.Health,enemy.MaxHealth,false,enemy.AttackSequence);
+                view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);
+                view.SetEnemyGroundEntry(enemy.Id,enemy.GroundEntry);
+                if(!enemy.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId))
+                    view.SetEnemyMelee(enemy.Id,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,(player-enemy.Position).normalized);
+            }
+            return true;
         }
         /// <summary>当前模式已取消属性时间成长；仍从配置计算出生属性，不改变共用敌人定义。</summary>
         private ArcadeEnemyRuntime CreateHordeEnemy(SurvivorActivationRequest request,Vector2 position)

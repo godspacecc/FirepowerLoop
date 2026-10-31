@@ -516,14 +516,54 @@ namespace Game.Tests
             }
             Assert.That(previous,Is.InRange(2,6));Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);
         }
+        [Test] public void VisibilityFarBirthKeepsLogicWithoutCreatingPresentation()
+        {
+            PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            state.Add(0,kind,25,20,2,1);Call("TickHorde",.01f);
+            Assert.AreEqual(1,Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Count);
+            Assert.AreEqual(0,view.Wakes,"视野外出生只建逻辑，不借用角色实例");
+        }
+        [Test] public void VisibilitySwitchPreservesIdentityHealthAndPursuit()
+        {
+            PrepareHordeCheck();var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            var e=new ArcadeEnemyRuntime{Id=902,ConfigId=config.EnemyId,Position=Vector2.zero,Health=23,MaxHealth=100,Speed=2};active.Add(e.Id,e);
+            Call("SyncEnemyPresentations");Assert.AreEqual(1,view.Wakes);
+            e.Position=new Vector2(25,20);Call("SyncEnemyPresentations");Call("SyncEnemyPresentations");Assert.AreEqual(1,view.Suspends);
+            float before=e.Position.magnitude;Call("TickEnemies",.1f);Assert.Less(e.Position.magnitude,before);
+            view.Bounds=new Rect(20,15,10,10);Call("SyncEnemyPresentations");Assert.AreEqual(2,view.Wakes);
+            Assert.AreSame(e,active[902]);Assert.AreEqual(23,e.Health);Assert.AreEqual(23,view.LastWakeHealth);
+            Assert.AreEqual(0,model.Kills);Assert.AreEqual(0,Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Count);
+        }
+        [Test] public void VisibilityUsesDifferentEnterAndExitBounds()
+        {
+            PrepareHordeCheck();var e=new ArcadeEnemyRuntime{Id=903,ConfigId=config.EnemyId,Position=Vector2.zero,Health=10,MaxHealth=10};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("SyncEnemyPresentations");
+            e.Position=new Vector2(9,0);Call("SyncEnemyPresentations");Assert.AreEqual(0,view.Suspends);
+            e.Position=new Vector2(20,0);Call("SyncEnemyPresentations");Assert.AreEqual(1,view.Suspends);
+            e.Position=new Vector2(9,0);Call("SyncEnemyPresentations");Assert.AreEqual(1,view.Wakes);
+            e.Position=new Vector2(6,0);Call("SyncEnemyPresentations");Assert.AreEqual(2,view.Wakes);
+        }
+        [Test] public void VisibilityWakeFailureKeepsAuthorityAndStopsPlay()
+        {
+            PrepareHordeCheck();var e=new ArcadeEnemyRuntime{Id=904,ConfigId=config.EnemyId,Position=Vector2.zero,Health=23,MaxHealth=100};
+            var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");active.Add(e.Id,e);view.FailWakeAfter=0;
+            Call("SyncEnemyPresentations");Assert.IsTrue(model.Paused);Assert.IsNotEmpty(system.LastError);Assert.AreSame(e,active[904]);Assert.AreEqual(23,e.Health);
+        }
+        [Test] public void VisibilityHiddenEnemyStillTakesProjectileDamageAndDropsExperience()
+        {
+            PrepareHordeCheck();KillOne(new Vector2(25,20));
+            Assert.AreEqual(1,model.Kills);Assert.AreEqual(0,view.Wakes);
+            Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));
+            Assert.AreEqual(new Vector2(25,20),Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Position);
+        }
         private sealed class TestView:IArcadeCombatViewPort
         {
             public bool HordeEnabled;
             public Rect Bounds;
-            public int Wakes,Suspends,FailWakeAfter=int.MaxValue;
+            public int Wakes,Suspends,LastWakeHealth,FailWakeAfter=int.MaxValue;
             public bool TryGetSurvivorViewBounds(out Rect bounds){bounds=Bounds;return HordeEnabled;}
             public bool TryWakeSurvivorEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,out string error)
-            {error=Wakes>=FailWakeAfter?"模拟展开失败":null;if(error!=null)return false;Wakes++;return true;}
+            {error=Wakes>=FailWakeAfter?"模拟展开失败":null;if(error!=null)return false;Wakes++;LastWakeHealth=health;return true;}
             public void SuspendSurvivorEnemy(int id){Suspends++;}
             public int WarmCalls;
             public bool WarmFailure;
