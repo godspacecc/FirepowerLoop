@@ -41,30 +41,80 @@ namespace Game
             EditorGUIUtility.PingObject(asset);
         }
 
-        [MenuItem("Tools/本地化/扫描字符集", false, 325)]
+        /// <summary>收集候选字符并预览差异，用户确认后才更新清单，不重建字体。</summary>
+        [MenuItem("Tools/本地化/更新字体字符清单", false, 325)]
         public static void ScanAndUpdateCharset()
         {
-            var builder = new StringBuilder();
-            var charsetAbsolutePath = Path.Combine(Application.dataPath, "..", CharsetPath);
-            if (File.Exists(charsetAbsolutePath))
+            string temporaryPath = null;
+            bool written = false;
+            try
             {
-                builder.Append(File.ReadAllText(charsetAbsolutePath));
-            }
-
-            foreach (string path in Directory.GetFiles(Application.dataPath, "*", SearchOption.AllDirectories)
-                         .Select(path => "Assets" + path.Substring(Application.dataPath.Length).Replace("\\", "/"))
-                         .Where(ShouldScanAssetPath))
-            {
-                var absolutePath = Path.Combine(Application.dataPath, "..", path);
-                if (File.Exists(absolutePath))
+                string target = Path.GetFullPath(Path.Combine(Application.dataPath, "..", CharsetPath));
+                byte[] originalBytes = File.Exists(target) ? File.ReadAllBytes(target) : null;
+                string original = originalBytes == null ? string.Empty : File.ReadAllText(target);
+                var builder = new StringBuilder(original);
+                int fileCount = 0;
+                foreach (string path in Directory.GetFiles(Application.dataPath, "*", SearchOption.AllDirectories)
+                             .Select(path => "Assets" + path.Substring(Application.dataPath.Length).Replace("\\", "/"))
+                             .Where(ShouldScanAssetPath).OrderBy(path => path, StringComparer.Ordinal))
                 {
-                    builder.Append(File.ReadAllText(absolutePath));
+                    builder.Append(File.ReadAllText(Path.Combine(Application.dataPath, "..", path)));
+                    fileCount++;
                 }
+                string candidate = NormalizeCharset(builder.ToString());
+                if (string.Equals(original, candidate, StringComparison.Ordinal))
+                {
+                    EditorUtility.DisplayDialog("更新字体字符清单", "清单内容无变化，已跳过写入和刷新。", "确定");
+                    return;
+                }
+                var previous = new HashSet<int>(EnumerateCodePoints(NormalizeCharset(original)));
+                int[] all = EnumerateCodePoints(candidate).ToArray();
+                int[] added = all.Where(code => !previous.Contains(code)).ToArray();
+                string summary = $"读取文件：{fileCount}\n原有有效字符：{previous.Count}\n新增：{added.Length}\n合计：{all.Length}\n" +
+                    "保留旧有效字符；按现有规则去重、排序并过滤不可渲染字符。\n" +
+                    "范围：本地化文件、UI Prefab、游戏场景的原始文本，可能含字段名，也可能漏掉转义文字；这不是显示字符完整性保证。\n" +
+                    "仅更新3500hz.txt，不重建或应用字体。";
+                string reportDirectory = Path.GetFullPath(Path.Combine(Application.dataPath, "../..", "Backup/Artifacts",
+                    "FontCharsetPreview-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N").Substring(0, 8)));
+                Directory.CreateDirectory(reportDirectory);
+                string reportPath = Path.Combine(reportDirectory, "charset-preview.txt");
+                File.WriteAllText(reportPath, summary + "\n\n新增字符（逐项Unicode码点）：\n" +
+                    string.Join("\n", added.Select(code => $"U+{code:X4}  {char.ConvertFromUtf32(code)}")) +
+                    "\n\n完整候选清单：\n" + candidate, Encoding.UTF8);
+                string sample = string.Concat(added.Take(100).Select(char.ConvertFromUtf32));
+                while (true)
+                {
+                    int choice = EditorUtility.DisplayDialogComplex("预览字体字符清单",
+                        summary + "\n\n新增字符预览（最多100个）：\n" + sample +
+                        "\n\n完整差异报告：" + reportPath + "\n确认后才会写入。",
+                        "确认写入", "取消", "查看完整报告位置");
+                    if (choice == 1) return;
+                    if (choice == 2) { EditorUtility.RevealInFinder(reportPath); continue; }
+                    break;
+                }
+                // 预览期间清单可能被其他工具改动；不覆盖新的内容。
+                if (originalBytes == null ? File.Exists(target) :
+                    !File.Exists(target) || !File.ReadAllBytes(target).SequenceEqual(originalBytes))
+                    throw new IOException("预览期间字符清单已被外部修改，请重新扫描核对。");
+                temporaryPath = target + "." + Guid.NewGuid().ToString("N") + ".tmp";
+                File.WriteAllText(temporaryPath, candidate, Encoding.UTF8);
+                if (originalBytes == null) File.Move(temporaryPath, target);
+                else File.Replace(temporaryPath, target, null);
+                written = true;
+                AssetDatabase.Refresh();
+                Debug.Log($"[本地化] 字符清单已更新，未重建字体：{CharsetPath}；预览报告：{reportPath}");
             }
-
-            File.WriteAllText(charsetAbsolutePath, NormalizeCharset(builder.ToString()), Encoding.UTF8);
-            AssetDatabase.Refresh();
-            Debug.Log($"[本地化] 已更新字符集：{CharsetPath}");
+            catch (Exception exception)
+            {
+                string message = (written ? "清单已写入，但资源刷新失败：" : "字符清单未更新：") + exception.Message;
+                Debug.LogError($"[本地化] {message}");
+                EditorUtility.DisplayDialog("更新字体字符清单", message, "确定");
+            }
+            finally
+            {
+                try { if (temporaryPath != null && File.Exists(temporaryPath)) File.Delete(temporaryPath); }
+                catch (Exception exception) { Debug.LogWarning($"[本地化] 临时文件清理失败：{temporaryPath}；{exception.Message}"); }
+            }
         }
 
         [MenuItem("Tools/本地化/更新中文 TMP 字体资源", false, 326)]
