@@ -33,6 +33,9 @@ namespace Game
         [SerializeField] private LineRenderer purpleWeaponTail;
         private float purpleTailLength;
 
+        /// <summary>缓存视觉子节点原始比例；只缩放外观，不影响根节点与碰撞盒。</summary>
+        private Vector3[] originalVisualScales;
+
         private int projectileRuntimeId;
         private Action<int, Collider> collisionHandler;
         /// <summary>只缓存本实例的原始颜色块和粒子渐变；换色不创建材质，回池复用可完整恢复。</summary>
@@ -71,19 +74,30 @@ namespace Game
         }
 
         /// <summary>按配置资源名切换纯视觉子物体；敌方弹和未配置资源保持原弹体。</summary>
-        public void SetArcadePresentation(string visualResourceName, bool hostile)
+        public void SetArcadePresentation(string visualResourceName, bool hostile, float visualScale = 1f)
         {
             visualResourceName=ArcadeWeaponPowerVisual.Split(visualResourceName,out var powerLevel);
             ApplyPowerColor(hostile?0:powerLevel);
             bool rocket=visualResourceName=="ArcadePanzerschreckRocket",ray=visualResourceName=="ArcadeRaygunBolt";
             purpleTailLength=rocket?.8f:.45f;
             if(purpleWeaponTail!=null){purpleWeaponTail.enabled=!hostile&&powerLevel>=2&&(rocket||ray);purpleWeaponTail.startWidth=rocket?.07f:.05f;}
+            if (originalVisualScales == null)
+            {
+                originalVisualScales = new Vector3[arcadeVisuals.Length];
+                for (int i = 0; i < arcadeVisuals.Length; i++)
+                    if (arcadeVisuals[i].VisualRoot != null)
+                        originalVisualScales[i] = arcadeVisuals[i].VisualRoot.transform.localScale;
+            }
             var matched = false;
             for (var index = 0; index < arcadeVisuals.Length; index++)
             {
                 var binding = arcadeVisuals[index];
                 var active = !matched && !hostile && !string.IsNullOrWhiteSpace(visualResourceName) &&
                              string.Equals(binding.ResourceName, visualResourceName, StringComparison.Ordinal);
+                // 本次只调整已预览的普通步枪弹；其他武器、敌弹及池复用恢复原比例。
+                if (binding.VisualRoot != null)
+                    binding.VisualRoot.transform.localScale = originalVisualScales[index] *
+                        (active && visualResourceName == "ArcadeBulletBasic" ? visualScale : 1f);
                 SetActive(binding.VisualRoot, active);
                 if (active) matched = true;
             }

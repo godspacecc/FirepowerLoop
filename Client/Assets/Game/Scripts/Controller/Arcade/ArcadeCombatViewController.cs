@@ -861,7 +861,8 @@ namespace Game
                 if (progress >= 1f) projectileMuzzleDepartures.Remove(id);
             }
             projectilePresentation.TrySetProjectile(id, displayed,
-                mapRoot.TransformDirection(new Vector3(direction.x, 0f, direction.y)), visualResourceName, hostile, out _);
+                mapRoot.TransformDirection(new Vector3(direction.x, 0f, direction.y)), visualResourceName, hostile,
+                fromPlayerWeapon && !hostile ? .7f : 1f, out _);
         }
 
         public void RemoveProjectile(int id)

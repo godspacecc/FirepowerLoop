@@ -218,6 +218,10 @@ namespace Game
 
         /// <summary>普通枪使用短子弹；显式弓箭、特殊模型和敌方沿用原箭载体，仅切换表现，不参与二维命中。</summary>
         public bool TrySetProjectile(int runtimeId, Vector3 position, Vector3 direction, string visualResourceName, bool hostile, out string error)
+            => TrySetProjectile(runtimeId, position, direction, visualResourceName, hostile, 1f, out error);
+
+        /// <summary>每次同步显式覆盖视觉比例，复用实例时不会继承上一颗弹的大小。</summary>
+        public bool TrySetProjectile(int runtimeId, Vector3 position, Vector3 direction, string visualResourceName, bool hostile, float visualScale, out string error)
         {
             error = null;
             if (runtimeId <= 0 || currentScene == null || currentMapInstanceId <= 0 || string.IsNullOrWhiteSpace(arcadeProjectileAddress))
@@ -237,7 +241,7 @@ namespace Game
 
             if (activeViews.TryGetValue(runtimeId, out var existing) && existing != null && arcadeProjectileAddresses.TryGetValue(runtimeId, out var existingAddress) && existingAddress == address)
             {
-                existing.SetArcadePresentation(visualResourceName, hostile);
+                existing.SetArcadePresentation(visualResourceName, hostile, visualScale);
                 existing.ApplyPose(position, direction);
                 return true;
             }
@@ -264,7 +268,7 @@ namespace Game
             view.transform.SetParent(currentScene.DynamicObjectRoot, true);
             view.gameObject.SetActive(true);
             view.Bind(runtimeId, null);
-            view.SetArcadePresentation(visualResourceName, hostile);
+            view.SetArcadePresentation(visualResourceName, hostile, visualScale);
             view.ApplyPose(position, direction);
             activeViews[runtimeId] = view;
             arcadeProjectileAddresses[runtimeId] = address;

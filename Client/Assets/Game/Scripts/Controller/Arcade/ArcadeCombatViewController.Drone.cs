@@ -10,7 +10,7 @@ namespace Game
         {
             if(projectilePresentation==null||mapRoot==null)return;
             projectilePresentation.TrySetProjectile(id,mapRoot.TransformPoint(World(position,height)),
-                mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y)),resource,false,out _);
+                mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y)),resource,false,.55f,out _);
         }
 
         /// <summary>复用已有异步效果资源事务，切换阶段时释放旧机体，爆炸不拥有伤害逻辑。</summary>
