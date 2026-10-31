@@ -448,39 +448,24 @@ namespace Game.Tests
         [Test] public void HordeExpansionUsesFrameBudgetWithoutLosingPopulation()
         {
             PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
-            state.Add(0,kind,view.Bounds.xMax+config.HordePrepareMargin/2,0,0,10000);Call("TickHorde",.01f);
+            state.Add(0,kind,view.Bounds.xMax+3,0,0,10000);Call("TickHorde",.01f);
             var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(config.HordeActivationBudget,active.Count);Assert.AreEqual(10000,state.TotalCount+active.Count);
         }
         [Test] public void HordeWakeFailureDoesNotConsumeGroup()
         {
             PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
-            state.Add(0,kind,view.Bounds.xMax+config.HordePrepareMargin/2,0,0,7);view.FailWakeAfter=0;Call("TickHorde",.01f);
+            state.Add(0,kind,view.Bounds.xMax+3,0,0,7);view.FailWakeAfter=0;Call("TickHorde",.01f);
             Assert.AreEqual(7,state.TotalCount);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));Assert.IsTrue(model.Paused);Assert.IsNotEmpty(system.LastError);
-        }
-        [Test] public void HordePartialWakeFailureCommitsEarlierTransfers()
-        {
-            PrepareHordeCheck();var dormant=Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies");
-            dormant.Add(101,new ArcadeEnemyRuntime{Id=101,ConfigId=config.EnemyId,Position=new Vector2(5,0),Health=20,MaxHealth=100});
-            dormant.Add(102,new ArcadeEnemyRuntime{Id=102,ConfigId=config.EnemyId,Position=new Vector2(6,0),Health=30,MaxHealth=100});view.FailWakeAfter=1;
-            Call("TickHorde",.01f);Assert.IsFalse(dormant.ContainsKey(101));Assert.IsTrue(dormant.ContainsKey(102));
-            view.FailWakeAfter=int.MaxValue;model.Paused=false;Call("TickHorde",.01f);
-            Assert.IsEmpty(dormant);var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(2,active.Count);Assert.AreEqual(20,active[101].Health);Assert.AreEqual(30,active[102].Health);
-        }
-        [Test] public void HordeRetirementAndReturnPreserveDamagedIdentity()
-        {
-            PrepareHordeCheck();var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var enemy=new ArcadeEnemyRuntime{Id=101,ConfigId=config.EnemyId,Position=new Vector2(29,20),Health=23,MaxHealth=100};active.Add(enemy.Id,enemy);
-            Call("TickHorde",config.HordeFarTickSeconds);Assert.IsEmpty(active);Assert.AreEqual(1,view.Suspends);
-            view.Bounds=new Rect(25,16,8,8);Call("TickHorde",.01f);Assert.AreSame(enemy,active[101]);Assert.AreEqual(23,active[101].Health);
         }
         [Test] public void HordePausedFrameDoesNotAdvanceOrExpand()
         {
             PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");state.Add(0,config.EnemyId,12,0,2,100);model.Paused=true;
-            Call("TickFrame",1f);Assert.AreEqual(100,state.TotalCount);Assert.AreEqual(0,view.Wakes);Assert.AreEqual(0,Get<float>("hordeFarClock"));
+            Call("TickFrame",1f);Assert.AreEqual(100,state.TotalCount);Assert.AreEqual(0,view.Wakes);Assert.AreEqual(1000,Get<float>("hordeWaveClock"));
         }
-        [Test] public void HordeStopClearsBothSimulationLayers()
+        [Test] public void HordeStopClearsPendingAndActiveEnemies()
         {
-            PrepareHordeCheck();Get<SurvivorHordeState>("horde").Add(0,config.EnemyId,12,0,2,100);Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies").Add(101,new ArcadeEnemyRuntime{Id=101});
-            system.Stop();Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies"));Assert.IsFalse(Get<bool>("hordeInitialized"));
+            PrepareHordeCheck();Get<SurvivorHordeState>("horde").Add(0,config.EnemyId,12,0,2,100);Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(101,new ArcadeEnemyRuntime{Id=101});
+            system.Stop();Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));Assert.IsFalse(Get<bool>("hordeInitialized"));
         }
         [Test] public void HordePrewarmIsIncrementalAndDoesNotSpawnAuthority()
         {
@@ -498,48 +483,22 @@ namespace Game.Tests
             Call("SpawnHordeWave");Assert.AreEqual(1,state.TotalCount);
             Call("SpawnHordeWave");Assert.AreEqual(2,state.TotalCount);Assert.AreEqual(2,state.GroupCount);
         }
-        [Test] public void ScatterUnawareFarRecordsDoNotChasePlayer()
+        [Test] public void PursuitCreatesFarEnemiesWithoutWaitingForCamera()
         {
-            PrepareHordeCheck();var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
-            var state=Get<SurvivorHordeState>("horde");state.Add(0,kind,25,20,2,1);
-            Call("TickHorde",config.HordeFarTickSeconds);
-            var next=state.Reserve(24,19,26,21,1);Assert.AreEqual(1,next.Length);
-            Assert.AreEqual(25,next[0].X);Assert.AreEqual(20,next[0].Y);
+            PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            state.Add(0,kind,25,20,2,1);Call("TickHorde",.01f);
+            Assert.AreEqual(1,Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Count);Assert.AreEqual(0,state.TotalCount);
         }
-        [Test] public void ScatterWandersLocallyThenRemembersDiscovery()
+        [Test] public void PursuitDoesNotRetireFarDamagedEnemy()
         {
-            PrepareHordeCheck();var p=new Vector2(25,20);Set("player",Vector2.zero);
-            var e=new ArcadeEnemyRuntime{Id=501,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
-            Assert.IsTrue((bool)Call("TickScatterWander",e,.25f));Assert.IsFalse(e.SurvivorAlerted);
-            Assert.LessOrEqual(Vector2.Distance(p,e.Position),2*config.SurvivorWanderSpeedRatio*.25f+.001f);
-            Set("player",e.Position+Vector2.right);Assert.IsFalse((bool)Call("TickScatterWander",e,.25f));Assert.IsTrue(e.SurvivorAlerted);
-            Set("player",Vector2.zero);Assert.IsFalse((bool)Call("TickScatterWander",e,.25f));Assert.IsTrue(e.SurvivorAlerted);
+            PrepareHordeCheck();var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var e=new ArcadeEnemyRuntime{Id=901,ConfigId=config.EnemyId,Position=new Vector2(25,20),Health=23,MaxHealth=100,Speed=2};active.Add(e.Id,e);
+            Call("TickHorde",.25f);Assert.AreSame(e,active[901]);Assert.AreEqual(0,view.Suspends);Assert.AreEqual(23,e.Health);
         }
-        [Test] public void ScatterDamageAlertsOutsideNoticeRange()
+        [Test] public void PursuitFarEnemyMovesTowardPlayerImmediately()
         {
-            PrepareHordeCheck();Set("player",Vector2.zero);
-            var e=new ArcadeEnemyRuntime{Id=502,ConfigId=config.EnemyId,Position=new Vector2(25,20),SurvivorRoaming=true,Health=99,MaxHealth=100};
-            Assert.IsFalse((bool)Call("TickScatterWander",e,.01f));Assert.IsTrue(e.SurvivorAlerted);
-        }
-        [Test] public void ScatterUnawareDormantIdentityRemainsAtOriginalPosition()
-        {
-            PrepareHordeCheck();var p=new Vector2(25,20);var e=new ArcadeEnemyRuntime{Id=503,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
-            Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies").Add(e.Id,e);Call("TickHorde",config.HordeFarTickSeconds);
-            Assert.AreEqual(p,e.Position);view.Bounds=new Rect(21,16,8,8);Call("TickHorde",.01f);
-            Assert.AreSame(e,Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies")[503]);Assert.IsFalse(e.SurvivorAlerted);
-        }
-        [Test] public void ScatterDamageImmediatelyBeforeRetirementPreservesAlert()
-        {
-            PrepareHordeCheck();var e=new ArcadeEnemyRuntime{Id=504,ConfigId=config.EnemyId,Position=new Vector2(25,20),SurvivorRoaming=true,Health=99,MaxHealth=100,Speed=2};
-            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("TickHorde",config.HordeFarTickSeconds);
-            Assert.IsTrue(e.SurvivorAlerted);Assert.AreSame(e,Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies")[504]);
-        }
-        [Test] public void ScatterFacingFollowsWanderMovement()
-        {
-            PrepareHordeCheck();var p=new Vector2(25,20);Set("player",Vector2.zero);
-            var e=new ArcadeEnemyRuntime{Id=505,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
-            Assert.IsTrue((bool)Call("TickScatterWander",e,.25f));Assert.Greater((e.Position-p).sqrMagnitude,0);
-            Assert.Greater(Vector2.Dot(e.SurvivorWanderFacing,(e.Position-p).normalized),.999f);
+            PrepareHordeCheck();Set("player",Vector2.zero);var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            state.Add(0,kind,25,20,2,1);Call("TickHorde",.01f);var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(1,active.Count);
+            var e=active.Values.Single();float before=e.Position.magnitude;Call("TickEnemies",.25f);Assert.Less(e.Position.magnitude,before);
         }
         private sealed class TestView:IArcadeCombatViewPort
         {

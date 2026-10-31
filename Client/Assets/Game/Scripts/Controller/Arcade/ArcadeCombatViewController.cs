@@ -11,9 +11,6 @@ namespace Game
     public interface IArcadeCombatViewPort : IUtility
     {
         bool IsActive { get; }
-        /// <summary>未警觉游荡只投影权威移动方向，不朝未发现的玩家转身。</summary>
-        void SetSurvivorWanderingEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,Vector2 direction)
-            =>SetEnemy(id,configId,position,health,maximum,false,sequence);
         /// <summary>幸存者远近场使用完整相机地面范围；未知相机不进行角色休眠。</summary>
         bool TryGetSurvivorViewBounds(out Rect bounds){bounds=default;return false;}
         /// <summary>返回完整表现创建结果，失败时权威远场记录不得丢弃。</summary>
@@ -763,13 +760,6 @@ namespace Game
             entry.View?.Instance?.GetComponent<PlayerView>()?.SetArcadeRescueActive(active);
         }
 
-        /// <summary>幸存者游荡不使用普通敌人的朝玩家默认方向，仍复用同一个正式表现池。</summary>
-        public void SetSurvivorWanderingEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,Vector2 direction)
-        {
-            if(enemyPresentation==null||mapRoot==null)return;
-            enemyPresentation.TrySetEnemy(id,configId,mapRoot.TransformPoint(World(position,0)),
-                mapRoot.TransformDirection(new Vector3(direction.x,0,direction.y)),health,maximum,out _,false,sequence);
-        }
         public void SetEnemy(int id, string configId, Vector2 position, int currentHealth, int maximumHealth,
             bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false)
         {

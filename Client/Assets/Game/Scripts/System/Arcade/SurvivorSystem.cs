@@ -210,13 +210,11 @@ namespace Game
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             foreach(var e in enemies.Values)
             {
-                bool wandering=e.SurvivorRoaming&&!e.SurvivorAlerted;
-                if(wandering)view.SetSurvivorWanderingEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,e.AttackSequence,e.SurvivorWanderFacing);
-                else view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
+                view.SetEnemy(e.Id,e.ConfigId,e.Position,e.Health,e.MaxHealth,false,e.AttackSequence);
                 view.SetEnemyScale(e.Id,Shape(e.ConfigId)?.VisualScale??Vector3.one);
                 view.SetEnemyGroundEntry(e.Id,e.GroundEntry);
                 if(!e.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(e.ConfigId))
-                    view.SetEnemyMelee(e.Id,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining,wandering?e.SurvivorWanderFacing:(player-e.Position).normalized);
+                    view.SetEnemyMelee(e.Id,e.MeleeWindupSeconds,e.MeleeWindupRemaining,e.MeleeRecoveryRemaining,(player-e.Position).normalized);
             }
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);

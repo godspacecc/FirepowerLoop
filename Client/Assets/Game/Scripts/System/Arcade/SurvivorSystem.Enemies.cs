@@ -69,7 +69,6 @@ namespace Game
             {
                 if(SurvivorGroundEntryRules.Advance(ref e.GroundEntry,dt))
                 {e.Position=SurvivorGroundEntryRules.Position(e.GroundEntry);continue;}
-                if(TickScatterWander(e,dt))continue;
                 bool configured=enemyConfigs.TryGetValue(e.ConfigId??string.Empty,out var definition)&&e.ConfigId!=config.EnemyId;
                 float distance=Vector2.Distance(e.Position,player);
                 if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*dt);

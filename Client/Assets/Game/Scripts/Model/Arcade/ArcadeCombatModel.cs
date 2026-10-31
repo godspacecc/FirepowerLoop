@@ -21,12 +21,6 @@ namespace Game
         public FirepowerLoop.Arcade.ArcadeOutsideEntryState OutsideEntry;
         /// <summary>幸存者场内爬出进度，其他玩法保持零值。</summary>
         public SurvivorGroundEntryState GroundEntry;
-        /// <summary>仅幸存者散布敌人启用游荡，警觉状态随同一个体跨休眠保存。</summary>
-        public bool SurvivorRoaming, SurvivorAlerted;
-        /// <summary>游荡锚点不跟随玩家移动，不进入共用闯关或网络状态。</summary>
-        public Vector2 SurvivorWanderOrigin;
-        /// <summary>游荡采用实际行进朝向，停止时保留，避免模型始终盯着尚未发现的玩家。</summary>
-        public Vector2 SurvivorWanderFacing=Vector2.right;
         /// <summary>存活目标资格；身体是否与攻击相交由各空间命中入口裁决。</summary>
         public bool CanBeAttacked => Health > 0;
         /// <summary>当前地图特色敌人的现身及一次重生状态，不写入轮前存档。</summary>

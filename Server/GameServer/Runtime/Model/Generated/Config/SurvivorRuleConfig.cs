@@ -52,14 +52,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         HordeWaveCount = _buf.ReadInt();
         HordeWaveSeconds = _buf.ReadFloat();
         HordeNearEvery = _buf.ReadInt();
-        HordeFarTickSeconds = _buf.ReadFloat();
         HordeActivationBudget = _buf.ReadInt();
-        HordePrepareMargin = _buf.ReadFloat();
-        HordeRetireMargin = _buf.ReadFloat();
         HordeSpawnAttempts = _buf.ReadInt();
-        SurvivorNoticeRadius = _buf.ReadFloat();
-        SurvivorWanderRadius = _buf.ReadFloat();
-        SurvivorWanderSpeedRatio = _buf.ReadFloat();
     }
 
     public static SurvivorRuleConfig DeserializeSurvivorRuleConfig(ByteBuf _buf)
@@ -103,14 +97,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly int HordeWaveCount;
     public readonly float HordeWaveSeconds;
     public readonly int HordeNearEvery;
-    public readonly float HordeFarTickSeconds;
     public readonly int HordeActivationBudget;
-    public readonly float HordePrepareMargin;
-    public readonly float HordeRetireMargin;
     public readonly int HordeSpawnAttempts;
-    public readonly float SurvivorNoticeRadius;
-    public readonly float SurvivorWanderRadius;
-    public readonly float SurvivorWanderSpeedRatio;
    
     public const int __ID__ = -595115244;
     public override int GetTypeId() => __ID__;
@@ -158,14 +146,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "HordeWaveCount:" + HordeWaveCount + ","
         + "HordeWaveSeconds:" + HordeWaveSeconds + ","
         + "HordeNearEvery:" + HordeNearEvery + ","
-        + "HordeFarTickSeconds:" + HordeFarTickSeconds + ","
         + "HordeActivationBudget:" + HordeActivationBudget + ","
-        + "HordePrepareMargin:" + HordePrepareMargin + ","
-        + "HordeRetireMargin:" + HordeRetireMargin + ","
         + "HordeSpawnAttempts:" + HordeSpawnAttempts + ","
-        + "SurvivorNoticeRadius:" + SurvivorNoticeRadius + ","
-        + "SurvivorWanderRadius:" + SurvivorWanderRadius + ","
-        + "SurvivorWanderSpeedRatio:" + SurvivorWanderSpeedRatio + ","
         + "}";
     }
 }

@@ -8,12 +8,6 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>来自幸存者权威规则表的 Id。</summary>
         public string Id { get; private set; }
-        /// <summary>发现玩家的距离，仍须视线无遮挡。</summary>
-        public float SurvivorNoticeRadius { get; private set; }
-        /// <summary>未警觉时绕出生点游荡的半径。</summary>
-        public float SurvivorWanderRadius { get; private set; }
-        /// <summary>游荡速度占正常追击速度的比例。</summary>
-        public float SurvivorWanderSpeedRatio { get; private set; }
 
         /// <summary>来自权威表的尸潮参数 HordeGridSize。</summary>
         public int HordeGridSize { get; private set; }
@@ -25,14 +19,8 @@ namespace FirepowerLoop.Arcade
         public float HordeWaveSeconds { get; private set; }
         /// <summary>来自权威表的尸潮参数 HordeNearEvery。</summary>
         public int HordeNearEvery { get; private set; }
-        /// <summary>来自权威表的尸潮参数 HordeFarTickSeconds。</summary>
-        public float HordeFarTickSeconds { get; private set; }
         /// <summary>来自权威表的尸潮参数 HordeActivationBudget。</summary>
         public int HordeActivationBudget { get; private set; }
-        /// <summary>来自权威表的尸潮参数 HordePrepareMargin。</summary>
-        public float HordePrepareMargin { get; private set; }
-        /// <summary>来自权威表的尸潮参数 HordeRetireMargin。</summary>
-        public float HordeRetireMargin { get; private set; }
         /// <summary>来自权威表的尸潮参数 HordeSpawnAttempts。</summary>
         public int HordeSpawnAttempts { get; private set; }
         /// <summary>来自幸存者权威规则表的 LayoutId。</summary>
@@ -104,22 +92,14 @@ namespace FirepowerLoop.Arcade
         {
             if (tables == null || tables.TbSurvivorRule.DataList.Count != 1) throw new ArgumentException("幸存者规则必须恰好一行");
             var r = tables.TbSurvivorRule.DataList[0];
-            if(!(r.SurvivorNoticeRadius>0)||float.IsInfinity(r.SurvivorNoticeRadius))throw new ArgumentException("SurvivorNoticeRadius 必须为有限正数");
-            if(!(r.SurvivorWanderRadius>0)||float.IsInfinity(r.SurvivorWanderRadius))throw new ArgumentException("SurvivorWanderRadius 必须为有限正数");
-            if(!(r.SurvivorWanderSpeedRatio>0)||float.IsInfinity(r.SurvivorWanderSpeedRatio))throw new ArgumentException("SurvivorWanderSpeedRatio 必须为有限正数");
-            if(r.SurvivorWanderSpeedRatio>1)throw new ArgumentException("游荡速度不能超过追击速度");
             if(r.HordeSeedCount!=1||r.HordeWaveCount!=1)throw new ArgumentException("分散模式每个出生记录必须为单个敌人");
             if (!(r.HordeGridSize>0)) throw new ArgumentException("尸潮 HordeGridSize 必须为有限正数");
             if (!(r.HordeSeedCount>0)) throw new ArgumentException("尸潮 HordeSeedCount 必须为有限正数");
             if (!(r.HordeWaveCount>0)) throw new ArgumentException("尸潮 HordeWaveCount 必须为有限正数");
             if (!(r.HordeWaveSeconds>0) || float.IsInfinity(r.HordeWaveSeconds)) throw new ArgumentException("尸潮 HordeWaveSeconds 必须为有限正数");
             if (!(r.HordeNearEvery>0)) throw new ArgumentException("尸潮 HordeNearEvery 必须为有限正数");
-            if (!(r.HordeFarTickSeconds>0) || float.IsInfinity(r.HordeFarTickSeconds)) throw new ArgumentException("尸潮 HordeFarTickSeconds 必须为有限正数");
             if (!(r.HordeActivationBudget>0)) throw new ArgumentException("尸潮 HordeActivationBudget 必须为有限正数");
-            if (!(r.HordePrepareMargin>0) || float.IsInfinity(r.HordePrepareMargin)) throw new ArgumentException("尸潮 HordePrepareMargin 必须为有限正数");
-            if (!(r.HordeRetireMargin>0) || float.IsInfinity(r.HordeRetireMargin)) throw new ArgumentException("尸潮 HordeRetireMargin 必须为有限正数");
             if (!(r.HordeSpawnAttempts>0)) throw new ArgumentException("尸潮 HordeSpawnAttempts 必须为有限正数");
-            if(r.HordeRetireMargin<=r.HordePrepareMargin)throw new ArgumentException("尸潮退出余量必须大于准备余量");
             if(r.RifleMagazineCapacity<=0 || new[]{r.RifleReloadSeconds,r.RifleMinimumReloadSeconds}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<=0) || r.RifleMinimumReloadSeconds>r.RifleReloadSeconds)
                 throw new ArgumentException("步枪弹夹容量与换弹时长配置无效");
             if (float.IsNaN(r.PlayerMaxHealth) || float.IsInfinity(r.PlayerMaxHealth) || r.PlayerMaxHealth <= 0) throw new ArgumentException("幸存者 PlayerMaxHealth 必须为有限正数");
@@ -162,19 +142,13 @@ namespace FirepowerLoop.Arcade
             }
             return new SurvivorConfiguration {
                 Id = r.Id,
-                SurvivorNoticeRadius=r.SurvivorNoticeRadius,
-                SurvivorWanderRadius=r.SurvivorWanderRadius,
-                SurvivorWanderSpeedRatio=r.SurvivorWanderSpeedRatio,
 
                 HordeGridSize=r.HordeGridSize,
                 HordeSeedCount=r.HordeSeedCount,
                 HordeWaveCount=r.HordeWaveCount,
                 HordeWaveSeconds=r.HordeWaveSeconds,
                 HordeNearEvery=r.HordeNearEvery,
-                HordeFarTickSeconds=r.HordeFarTickSeconds,
                 HordeActivationBudget=r.HordeActivationBudget,
-                HordePrepareMargin=r.HordePrepareMargin,
-                HordeRetireMargin=r.HordeRetireMargin,
                 HordeSpawnAttempts=r.HordeSpawnAttempts,
                 WeaponSlots=r.WeaponSlots,
                 RifleMagazineCapacity=r.RifleMagazineCapacity,
