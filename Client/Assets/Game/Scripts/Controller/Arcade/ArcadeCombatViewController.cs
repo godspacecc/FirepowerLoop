@@ -19,6 +19,10 @@ namespace Game
         void Begin(int arenaNumber, float arenaHalfWidth, float arenaHalfHeight,
             IReadOnlyList<ArcadeObstacleDefinition> obstacles);
         void End();
+        /// <summary>仅幸存者开局接管昼夜光照。</summary>
+        void BeginSurvivorDayNight() { }
+        /// <summary>只读幸存者本局有效时间，供昼夜表现投影。</summary>
+        void SetSurvivorTime(double elapsedSeconds) { }
         /// <summary>只显示本机区域入口和剩余物品；不能从此端口领取、计时或发放积分。</summary>
         void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters parameters,
             bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds) { }
@@ -330,6 +334,7 @@ namespace Game
 
         public void End()
         {
+            ReleaseSurvivorDayNight();
             enemyPresentation?.SetHerdActivityPaused(false);
             earlyStage=null;
             ReleaseElectricTowerFeedback();
