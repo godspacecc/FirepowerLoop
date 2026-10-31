@@ -19,7 +19,7 @@ namespace Game
             var rows=tables.TbSurvivorEnemy.DataList;
             if(rows.Count==0)throw new ArgumentException("幸存者敌池不能为空");
             var entries=rows.Select(r=>new SurvivorEnemyDefinition(r.Id,r.EnemyId,r.UnlockSeconds,r.Weight,
-                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier,new Vector3(r.ScaleX,r.ScaleY,r.ScaleZ))).ToArray();
+                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier,new Vector3(r.ScaleX,r.ScaleY,r.ScaleZ),r.AttackCooldownSeconds)).ToArray();
             if(entries.Select(e=>e.Id).Distinct().Count()!=entries.Length ||
                 entries.Any(e=>tables.TbEnemy.GetOrDefault(e.EnemyId)==null) ||
                 !entries.Any(e=>e.UnlockSeconds==0))
@@ -56,14 +56,16 @@ namespace Game
         /// <summary>已采用的本模式三轴体型；占地及受击使用水平最大比例。</summary>
         public Vector3 VisualScale { get; }
         public float BodyRadiusMultiplier => Mathf.Max(VisualScale.x,VisualScale.z);
-        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,int weight,float health,float damage,float speed,Vector3 scale)
+        /// <summary>幸存者独立命中后冷却，来自本模式权威表。</summary>
+        public float AttackCooldownSeconds { get; }
+        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,int weight,float health,float damage,float speed,Vector3 scale,float cooldown)
         {
             if(string.IsNullOrWhiteSpace(id)||string.IsNullOrWhiteSpace(enemyId)||weight<=0 ||
-                new[]{unlock,health,damage,speed,scale.x,scale.y,scale.z}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)) ||
-                unlock<0||health<=0||damage<=0||speed<=0||scale.x<=0||scale.y<=0||scale.z<=0)
+                new[]{unlock,health,damage,speed,scale.x,scale.y,scale.z,cooldown}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)) ||
+                unlock<0||health<=0||damage<=0||speed<=0||scale.x<=0||scale.y<=0||scale.z<=0||cooldown<=0)
                 throw new ArgumentException("幸存者敌池参数无效");
             Id=id;EnemyId=enemyId;UnlockSeconds=unlock;Weight=weight;HealthMultiplier=health;
-            DamageMultiplier=damage;SpeedMultiplier=speed;VisualScale=scale;
+            DamageMultiplier=damage;SpeedMultiplier=speed;VisualScale=scale;AttackCooldownSeconds=cooldown;
         }
     }
 }

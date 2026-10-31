@@ -60,8 +60,8 @@ namespace Game.Tests
         {
             Prepare();Set("enemyRandom",new FixedRandom());model.State.Advance(120,false);Call("Spawn");
             var e=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
-            Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(55));
-            Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f).Within(.001));
+            Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.gaunt"));Assert.That(e.MaxHealth,Is.EqualTo(90));
+            Assert.That(e.Speed,Is.EqualTo(1.8f*1.7f).Within(.001));Assert.That(e.Damage,Is.EqualTo(12));
         }
         /// <summary>无隐藏出生点时不生成；已有敌人达到旧上限时仍可生成。</summary>
         [Test] public void HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies()
@@ -90,12 +90,24 @@ namespace Game.Tests
             Assert.That(model.Health,Is.EqualTo(90));
         }
         private sealed class FixedRandom:System.Random {public override double NextDouble()=>.999;}
+        /// <summary>三类丧尸在本模式均为1秒冷却，不修改闯关瘦削原有的2秒配置。</summary>
+        [TestCase("enemy.arcade.zombie.shambler")]
+        [TestCase("enemy.arcade.zombie.gaunt")]
+        [TestCase("enemy.arcade.zombie.bloated")]
+        public void ApprovedModeCooldownIsOneSecond(string id)
+        {
+            Prepare();var e=new ArcadeEnemyRuntime{Id=11,ConfigId=id,Position=new Vector2(.7f,0),Damage=10};
+            Assert.That(provider.TryGetEnemy(id,out var shared,out var error),Is.True,error);
+            Assert.That(shared.AttackCooldownSeconds,Is.EqualTo(id=="enemy.arcade.zombie.gaunt"?2f:1f),"闯关原值保持");
+            Call("TickMeleeEnemy",e,.01f);Call("TickMeleeEnemy",e,.5f);
+            Assert.That(e.AttackCooldown,Is.EqualTo(1f));
+        }
         [Test] public void HeavySpawnUsesHighHealthSlowSpeedAndLargeBody()
         {
             Prepare();Set("enemyRandom",new FixedRandom());model.State.Advance(240,false);Call("Spawn");
             var e=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Values.Single();
             Assert.That(e.ConfigId,Is.EqualTo("enemy.arcade.zombie.bloated"));
-            Assert.That(e.MaxHealth,Is.EqualTo(300));Assert.That(e.Speed,Is.EqualTo(1.43f).Within(.001));
+            Assert.That(e.Damage,Is.EqualTo(15));Assert.That(e.MaxHealth,Is.EqualTo(300));Assert.That(e.Speed,Is.EqualTo(1.98f).Within(.001));
             Assert.That(Call("EnemyRadius",e),Is.EqualTo(Get<ArcadeConfigCatalogDefinition>("catalog").Rule.EnemyContactRadius*1.5f));
         }
         [Test] public void RealFrameProjectsHeavyScaleAndChecksFullSpawnBody()

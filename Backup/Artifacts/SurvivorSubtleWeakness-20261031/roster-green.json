@@ -1,0 +1,59 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 9,
+      "PassedTests": 9,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.9302539"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.ApprovedProportionsAndHeavyUnlockComeFromModeConfig",
+        "Status": "Passed",
+        "Duration": "00:00:00.3470000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.InvalidTimeAndRandomInputAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00.1220000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.OnlyApprovedEnemiesAndFastMultipliersRemain",
+        "Status": "Passed",
+        "Duration": "00:00:00.0250000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.0f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(0.0d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(119.99d,0.99f,\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(120.0d,0.99f,\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(240.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyRosterTests.UnlocksOnlyAtConfirmedTimes(360.0d,0.99f,\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:00.0070000"
+      }
+    ]
+  }
+}

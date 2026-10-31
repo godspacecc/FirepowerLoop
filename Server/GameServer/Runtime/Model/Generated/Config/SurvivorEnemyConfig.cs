@@ -27,6 +27,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         ScaleX = _buf.ReadFloat();
         ScaleY = _buf.ReadFloat();
         ScaleZ = _buf.ReadFloat();
+        AttackCooldownSeconds = _buf.ReadFloat();
     }
 
     public static SurvivorEnemyConfig DeserializeSurvivorEnemyConfig(ByteBuf _buf)
@@ -45,6 +46,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly float ScaleX;
     public readonly float ScaleY;
     public readonly float ScaleZ;
+    public readonly float AttackCooldownSeconds;
    
     public const int __ID__ = -2055649804;
     public override int GetTypeId() => __ID__;
@@ -67,6 +69,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "ScaleX:" + ScaleX + ","
         + "ScaleY:" + ScaleY + ","
         + "ScaleZ:" + ScaleZ + ","
+        + "AttackCooldownSeconds:" + AttackCooldownSeconds + ","
         + "}";
     }
 }

@@ -92,7 +92,7 @@ namespace Game
             enemy.MeleeWindupRemaining=Math.Max(0,enemy.MeleeWindupRemaining-dt);
             if(enemy.MeleeWindupRemaining>0)return;
             enemy.MeleeWindupActive=false;enemy.MeleeRecoveryRemaining=FirepowerLoop.Arcade.ArcadeMeleeRules.RecoverySeconds;
-            enemy.AttackCooldown=definition.AttackCooldownSeconds;enemy.AttackSequence++;
+            enemy.AttackCooldown=Shape(enemy.ConfigId)?.AttackCooldownSeconds??definition.AttackCooldownSeconds;enemy.AttackSequence++;
             if(hurtClock>0)return;
             Model.Health=Math.Max(0,Model.Health-enemy.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;
         }

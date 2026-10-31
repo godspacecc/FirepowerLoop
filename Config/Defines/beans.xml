@@ -695,5 +695,7 @@
         <var name="ScaleX" type="float"/>
         <var name="ScaleY" type="float"/>
         <var name="ScaleZ" type="float"/>
+        <!-- 模式独立攻击冷却，不能改写闯关共用敌人原值。 -->
+        <var name="AttackCooldownSeconds" type="float"/>
     </bean>
 </beans>

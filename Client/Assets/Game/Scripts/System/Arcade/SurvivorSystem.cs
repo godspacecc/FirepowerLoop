@@ -225,7 +225,8 @@ namespace Game
                     (x,z)=>view.IsArenaSpawnHidden(new Vector2(x,z),radius),out outsideEntry))continue;
                 var position=new Vector2(outsideEntry.StartX,outsideEntry.StartZ);
                 if(Vector2.Distance(position,player)<config.MinimumSpawnDistance)continue;
-                double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,selected.MaxHP*choice.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute));
+                // 倍率乘积先取最近整数，避免0.9的浮点误差把90血截成89。
+                double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,Math.Round(selected.MaxHP*choice.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute),MidpointRounding.AwayFromZero));
                 var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,OutsideEntry=outsideEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);break;
             }
         }

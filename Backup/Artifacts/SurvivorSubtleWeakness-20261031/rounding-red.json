@@ -1,0 +1,85 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 14,
+      "PassedTests": 13,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:21.5143613"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApproachingExactMeleeBoundaryStillStartsAndHits",
+        "Status": "Passed",
+        "Duration": "00:00:01.6690000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.shambler\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.2170000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.gaunt\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.3440000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ApprovedModeCooldownIsOneSecond(\"enemy.arcade.zombie.bloated\")",
+        "Status": "Passed",
+        "Duration": "00:00:01.2530000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HeavySpawnUsesHighHealthSlowSpeedAndLargeBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.2100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.HiddenSpawnFailureSkipsButFormerAliveLimitAllowsEnemies",
+        "Status": "Passed",
+        "Duration": "00:00:01.2930000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.LargeBodyCannotUseNarrowGapThatSmallBodyCanTraverse",
+        "Status": "Passed",
+        "Duration": "00:00:01.3640000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ProjectileHitsEnlargedBodyBeyondOrdinaryRadius",
+        "Status": "Passed",
+        "Duration": "00:00:01.2980000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.RealFrameProjectsHeavyScaleAndChecksFullSpawnBody",
+        "Status": "Passed",
+        "Duration": "00:00:01.4640000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.0d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.3860000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.7d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.2750000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnStatsStayFixedOverSurvivalTime(0.999d)",
+        "Status": "Passed",
+        "Duration": "00:00:01.3050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.SpawnUsesUnlockedRosterAndPerModeStats",
+        "Status": "Failed",
+        "Duration": "00:00:01.6940000",
+        "Message": "  Expected: 90\r\n  But was:  89\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorEnemyCombatTests.ZombieGrabDamagesAfterWindupAndCancelsOutOfRange",
+        "Status": "Passed",
+        "Duration": "00:00:01.7440000"
+      }
+    ]
+  }
+}
