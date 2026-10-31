@@ -265,7 +265,7 @@ namespace Game.Tests
             Assert.That(view.BtnNewGame.gameObject.activeSelf, Is.False, "已有进度或待处理结果时不能直接覆盖开新局");
             Assert.That(view.BtnContinue.gameObject.activeSelf, Is.True);
             Assert.That(view.BtnContinue.GetComponentInChildren<TMPro.TMP_Text>(true).text,
-                Is.EqualTo(hasResult ? "查看本局结果" : "继续本局"));
+                Is.EqualTo("闯关模式"));
             Assert.That(view.ButtonGroup.parent.Find("RunSummaryText"), Is.Null, "主菜单不重复展示详情框中的本局摘要");
             var details = Object.FindObjectOfType<ArcadeResumeUI>(true);
             Assert.That(details, Is.Not.Null);

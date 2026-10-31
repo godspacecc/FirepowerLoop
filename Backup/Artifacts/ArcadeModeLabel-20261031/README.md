@@ -1,0 +1,5 @@
+# 开始页固定闯关模式名称
+
+用户要求开始页始终显示“闯关模式”，进入现有详情界面后再选择继续。只将StartUICtrl的入口文案固定为既有ui.survivor.arcade，中文“闯关模式”、英文“Arcade Mode”；不改Prefab布局或存档/点击流程。
+
+验证使用现有真实EditMode方法，includePassingTests=true：SavedRun_ShowsProgressOrResultInsteadOfOfferingToOverwrite最多2个参数用例；ContinueClick_ReusesPreparedViewAndValidatedSave最多1项。原始回执见tests.json。独立审查通过，未打包。

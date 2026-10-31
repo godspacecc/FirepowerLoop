@@ -138,8 +138,9 @@ namespace Game
             UI.BtnContinue.interactable = !startingRun;
             UI.BtnOnline.interactable = !startingRun;
             UI.BtnSetting.interactable = !startingRun;
+            // 开始页统一显示模式名，继续与结算操作留在进入后的详情界面。
             UI.BtnContinue.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text =
-                Loc.T(pending.IsValid && pending.Data.HasResult ? "ui.start.run_result" : "ui.start.run_continue");
+                Loc.T("ui.survivor.arcade");
         }
 
         private void RefreshUpdateText()
