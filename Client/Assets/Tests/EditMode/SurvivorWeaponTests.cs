@@ -15,6 +15,17 @@ namespace Game.Tests
         }
         private static object Call(object obj,string method,params object[] args)=>obj.GetType().GetMethod(method).Invoke(obj,args);
         private static int Slots(object obj)=>(int)obj.GetType().GetProperty("UsedSlots").GetValue(obj);
+        /// <summary>有限项目选满后剩余两项仍能选择，不因不足三张卡卡住升级。</summary>
+        [Test] public void TwoRemainingChoicesStayStableAndCanBeSelected()
+        {
+            var state = new SurvivorRunState(10,5);
+            state.AddExperience(10);
+            var choices = state.OfferWeighted(new[]{3,8},new[]{10,10},7,0);
+            Assert.That(choices, Is.EquivalentTo(new[]{3,8}));
+            Assert.That(state.OfferWeighted(new[]{3,8},new[]{10,10},99,0), Is.EqualTo(choices));
+            Assert.That(state.Choose(0,choices[0]),Is.True);
+            Assert.That(state.PendingChoices,Is.Zero);
+        }
         [Test] public void StartsWithOneLevelOneRifle(){var s=NewLoadout();Assert.That(Slots(s),Is.EqualTo(1));Assert.That(Call(s,"LevelOf","Rifle"),Is.EqualTo(1));Assert.That(Call(s,"LevelOf","Drone"),Is.Zero);}
         [Test] public void AcquiringThenUpgradingDroneUsesOnlyOneSlot(){var s=NewLoadout();Assert.That(Call(s,"TryUpgrade","Drone",5),Is.True);Assert.That(Call(s,"TryUpgrade","Drone",5),Is.True);Assert.That(Call(s,"LevelOf","Drone"),Is.EqualTo(2));Assert.That(Slots(s),Is.EqualTo(2));}
         [Test] public void FullSlotsRejectNewWeaponButAllowOwnedUpgrade(){var s=NewLoadout(2);Call(s,"TryUpgrade","Drone",5);Assert.That(Call(s,"CanUpgrade","Turret",5),Is.False);Assert.That(Call(s,"TryUpgrade","Turret",5),Is.False);Assert.That(Call(s,"TryUpgrade","Drone",5),Is.True);}

@@ -98,7 +98,8 @@ namespace FirepowerLoop.Arcade
             if (!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.ExperienceVisualPrefabName,false,out var experienceAddress,out var experienceError))
                 throw new ArgumentException("幸存者经验模型无效："+experienceError);
             var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight)).ToArray();
-            if (upgrades.Select(x => x.Kind).Distinct().Count() != upgrades.Length || upgrades.Count(x => x.MaxLevel == 0) < 3) throw new ArgumentException("幸存者需要至少三种无限强化且类型不重复");
+            // 有限项目选满后仍须有可选项；停用项不计入兜底候选。
+            if (upgrades.Select(x => x.Kind).Distinct().Count() != upgrades.Length || !upgrades.Any(x => x.MaxLevel == 0 && x.Weight > 0)) throw new ArgumentException("幸存者需要至少一种启用的无限强化且类型不重复");
             if(r.WeaponSlots<1||r.WeaponSlots>3)throw new ArgumentException("幸存者武器槽必须为1至3");
             var weaponLevels=tables.TbSurvivorWeaponLevel.DataList.Select(x=>new SurvivorWeaponLevelDefinition(x.Kind,x.Level,x.Damage,x.FireIntervalSeconds,x.Range,x.ProjectileSpeed,x.ProjectileLifetimeSeconds)).ToArray();
             foreach(var kind in new[]{"Rifle","Drone"})
@@ -106,7 +107,8 @@ namespace FirepowerLoop.Arcade
                 var levels=weaponLevels.Where(x=>x.Kind==kind).OrderBy(x=>x.Level).ToArray();
                 if(levels.Length==0 || !levels.Select(x=>x.Level).SequenceEqual(Enumerable.Range(1,levels.Length)))throw new ArgumentException("武器等级必须从1连续配置且不重复");
                 var upgrade=upgrades.SingleOrDefault(x=>x.Kind==kind);
-                if(upgrade==null || upgrade.MaxLevel!=(kind=="Rifle"?levels.Length-1:levels.Length))throw new ArgumentException("武器升级上限与等级表不一致");
+                // 主武器可以只提供基础能力；辅助武器仍必须具备完整升级链。
+                if((upgrade==null && kind!="Rifle") || (upgrade!=null && upgrade.MaxLevel!=(kind=="Rifle"?levels.Length-1:levels.Length)))throw new ArgumentException("武器升级上限与等级表不一致");
             }
             return new SurvivorConfiguration {
                 Id = r.Id,
@@ -155,7 +157,7 @@ namespace FirepowerLoop.Arcade
         public float MaximumBonus { get; }
         /// <summary>强化配置 MaxLevel。</summary>
         public int MaxLevel { get; }
-        /// <summary>候选无放回抽取权重。</summary>
+        /// <summary>候选无放回抽取权重；零表示停用，保留配置顺序与旧文案编号。</summary>
         public int Weight { get; }
         /// <summary>武器候选使用独立装备等级，不把全局属性层数当武器等级。</summary>
         public bool IsWeapon => Kind=="Rifle"||Kind=="Drone";
@@ -165,7 +167,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<=0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
             Id = id; Kind = kind; AmountPerLevel = amountPerLevel; MaximumBonus = maximumBonus; MaxLevel = maxLevel;Weight=weight;
         }
         /// <summary>返回累计加成；伤害/射速/移速为比例，生命/拾取为绝对值。</summary>

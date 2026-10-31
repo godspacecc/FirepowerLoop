@@ -131,6 +131,8 @@ namespace Game
         {
             var m=Model;if(!m.Active||config==null||upgradeId<1||upgradeId>config.Upgrades.Count)return false;
             var definition=config.Upgrades[upgradeId-1];
+            // 停用项即使收到旧选择请求也不能再获得。
+            if(definition.Weight<=0)return false;
             if(definition.IsWeapon&&(m.Loadout==null||!m.Loadout.CanUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind))))return false;
             if(!m.State.Choose(revision,upgradeId))return false;
             if(definition.IsWeapon)
@@ -146,7 +148,7 @@ namespace Game
         private void Offer()
         {
             var m=Model;var ids=Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
-                var u=config.Upgrades[id-1];return u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel;
+                var u=config.Upgrades[id-1];return u.Weight>0 && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
             }).ToArray();
             int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
             m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);

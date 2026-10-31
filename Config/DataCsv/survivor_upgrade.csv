@@ -1,11 +1,11 @@
 ##var,Weight,Id,Kind,AmountPerLevel,MaximumBonus,MaxLevel
 ##type,int,string,string,float,float,int
-,10,survivor.damage,Damage,0.15,20,0
-,10,survivor.fireRate,FireRate,0.1,4,0
+,0,survivor.damage,Damage,0.15,20,0
+,0,survivor.fireRate,FireRate,0.1,4,0
 ,10,survivor.health,Health,10,10000,0
 ,10,survivor.moveSpeed,MoveSpeed,0.08,0.8,10
 ,10,survivor.pickup,Pickup,0.25,3,12
-,12,survivor.rifle,Rifle,1,5,4
+,0,survivor.rifle,Rifle,1,5,4
 ,15,survivor.drone,Drone,1,5,5
 ,10,survivor.magazine,Magazine,0.1,2147483647,0
 ,10,survivor.reload,Reload,0.2,1,5

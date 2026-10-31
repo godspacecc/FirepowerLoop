@@ -11,6 +11,21 @@ namespace Game.Tests
     public sealed class SurvivorConfigTests
     {
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
+        /// <summary>主武器固定基础能力，强化池只保留玩家属性、弹药与辅助武器。</summary>
+        [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
+        {
+            var config = SurvivorConfiguration.FromTables(Load());
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload" }));
+            Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
+            Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
+        }
+        /// <summary>有限强化全部选满后允许只剩生命和弹夹，不强制补回伤害类选项。</summary>
+        [Test] public void ConfigurationAllowsTwoUnlimitedChoicesAndNoRifleUpgrade()
+        {
+            var tables = Load();
+            tables.TbSurvivorUpgrade.DataList.RemoveAll(x => x.Kind == "Rifle" || x.Kind == "Damage" || x.Kind == "FireRate");
+            Assert.DoesNotThrow(() => SurvivorConfiguration.FromTables(tables));
+        }
         /// <summary>时间成长允许关闭；负数及非有限值仍拒绝开局。</summary>
         [TestCase("EnemyHealthGrowthPerMinute")] [TestCase("EnemyDamageGrowthPerMinute")] [TestCase("EnemySpeedGrowthPerMinute")]
         public void TimeGrowthAllowsZeroAndRejectsInvalidValues(string field)
@@ -77,7 +92,7 @@ namespace Game.Tests
         {
             var config = SurvivorConfiguration.FromTables(Load());
             var unlimited = config.Upgrades.Where(x => x.MaxLevel == 0 && x.Kind!="Magazine").ToArray();
-            Assert.That(unlimited.Length, Is.GreaterThanOrEqualTo(3));
+            Assert.That(unlimited.Length, Is.GreaterThanOrEqualTo(1));
             foreach (var option in unlimited)
             {
                 Assert.That(option.BonusAtLevel(0), Is.Zero);

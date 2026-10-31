@@ -22,6 +22,35 @@ namespace Game.Tests
         private PlayerInputCtrl input;
         private string root;
         private const BindingFlags Flags=BindingFlags.Instance|BindingFlags.NonPublic;
+        /// <summary>正式抽取排除停用项，旧请求不能偷偷提升主武器。</summary>
+        [Test] public void DisabledMainWeaponChoicesAreNotOfferedOrAccepted()
+        {
+            model.State.AddExperience(config.InitialExperienceThreshold);Call("Offer");
+            foreach(int id in model.UpgradeChoices)Assert.That(config.Upgrades[id-1].Weight,Is.GreaterThan(0));
+            foreach(string kind in new[]{"Rifle","Damage","FireRate"})
+            {
+                int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind==kind);
+                Assert.That(model.UpgradeChoices,Has.No.Member(id));
+                Assert.That(system.Choose(0,id),Is.False);
+            }
+            Assert.That(model.WeaponLevel("Rifle"),Is.EqualTo(1));
+        }
+        /// <summary>全部有限项升满后，生命和弹夹仍能完成下一次强化并恢复游戏。</summary>
+        [Test] public void MaxedLimitedUpgradesLeaveTwoUsableChoices()
+        {
+            for(int i=0;i<5;i++)model.Loadout.TryUpgrade("Drone",5);
+            foreach(int id in Enumerable.Range(1,config.Upgrades.Count).Where(i=>config.Upgrades[i-1].Weight>0&&!config.Upgrades[i-1].IsWeapon&&config.Upgrades[i-1].MaxLevel>0))
+                for(int level=0;level<config.Upgrades[id-1].MaxLevel;level++)
+                {
+                    model.State.AddExperience(model.State.RequiredExperience);
+                    model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+                    Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
+                }
+            model.State.AddExperience(model.State.RequiredExperience);Call("Offer");
+            Assert.That(model.UpgradeChoices.Select(i=>config.Upgrades[i-1].Kind),Is.EquivalentTo(new[]{"Health","Magazine"}));
+            Assert.That(system.Choose(model.State.ChoiceRevision,model.UpgradeChoices[0]),Is.True);
+            Assert.That(model.Paused,Is.False);
+        }
         private void Set(string name,object value)=>typeof(SurvivorSystem).GetField(name,Flags).SetValue(system,value);
         private T Get<T>(string name)=>(T)typeof(SurvivorSystem).GetField(name,Flags).GetValue(system);
         private object Call(string name,params object[] args)=>typeof(SurvivorSystem).GetMethod(name,Flags).Invoke(system,args);

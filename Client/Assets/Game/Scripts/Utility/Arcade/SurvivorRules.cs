@@ -73,7 +73,7 @@ namespace Game
         public int[] OfferWeighted(int[] eligibleIds,int[] weights,int seed,int preferredId)
         {
             if(Finished || PendingChoices==0)return Array.Empty<int>();
-            if(offer.Length==3)return (int[])offer.Clone();
+            if(offer.Length>0)return (int[])offer.Clone();
             if(eligibleIds==null || weights==null || eligibleIds.Length!=weights.Length)throw new ArgumentException("候选与权重必须对应");
             var candidates=new List<(int Id,int Weight)>();
             var seen=new HashSet<int>();
@@ -82,11 +82,13 @@ namespace Game
                 if(eligibleIds[i]<=0 || weights[i]<=0 || !seen.Add(eligibleIds[i]))throw new ArgumentException("候选编号和权重必须为正且不重复");
                 candidates.Add((eligibleIds[i],weights[i]));
             }
-            if(candidates.Count<3)return Array.Empty<int>();
+            // 后期有限强化耗尽时按剩余数量提供选择，不能阻塞升级事务。
+            if(candidates.Count==0)return Array.Empty<int>();
+            int choiceCount=Math.Min(3,candidates.Count);
             var chosen=new List<int>();var random=new Random(seed);
             int preferred=candidates.FindIndex(x=>x.Id==preferredId);
             if(preferred>=0){chosen.Add(preferredId);candidates.RemoveAt(preferred);}
-            while(chosen.Count<3)
+            while(chosen.Count<choiceCount)
             {
                 long total=candidates.Sum(x=>(long)x.Weight);double roll=random.NextDouble()*total;
                 int index=0;while(index<candidates.Count-1&&roll>=candidates[index].Weight){roll-=candidates[index].Weight;index++;}
