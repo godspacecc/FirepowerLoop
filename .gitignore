@@ -152,23 +152,5 @@ Client/UserSettings/
 /server-transaction-check.log
 /Tools/Blender/OutfitPreview/Runtime/config-generation.log
 
-# Backup开发中间产物：最终预览、报告、日志和制作脚本仍正常纳入版本控制。
-/Backup/Artifacts/**/.scratch/
-/Backup/Artifacts/**/frames/
-/Backup/Artifacts/**/*-frames/
-/Backup/Artifacts/**/commit-source*/
-/Backup/Artifacts/**/commit-snapshot*/
-/Backup/Artifacts/**/authority-generation/
-/Backup/Artifacts/**/baseline-current/
-/Backup/Artifacts/**/analysis-libs/
-/Backup/Artifacts/**/bin/
-/Backup/Artifacts/**/obj*/
-/Backup/Artifacts/**/__pycache__/
-/Backup/Artifacts/**/*.index
-/Backup/Artifacts/**/*.index.lock
-/Backup/Artifacts/**/before-[0-9]*
-/Backup/Artifacts/**/*.before
-/Backup/Artifacts/**/*.dll
-/Backup/Artifacts/**/*.pdb
-/Backup/Artifacts/**/commit-base.txt
-/Backup/Artifacts/**/commit-env.txt
+# 开发预览、验证及临时资料仅本地保留；已跟踪文件不受忽略规则影响。
+/Backup/Artifacts/
