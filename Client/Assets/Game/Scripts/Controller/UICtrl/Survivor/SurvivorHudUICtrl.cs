@@ -43,8 +43,11 @@ namespace Game
         private void RefreshJoystick()
         {
             if(UI==null)return;
+            // PC通过Esc暂停，触屏模式保留按钮；跟随输入模式切换即时刷新。
+            bool mobile=this.GetSystem<MobileInputSystem>().IsMobileInputMode;
+            UI.BtnPause.gameObject.SetActive(mobile);
             var state=this.GetModel<SurvivorModel>().Snapshot;
-            bool visible=IsShow()&&state.Active&&!state.Finished&&!state.Paused&&!UIHelper.HasUIOpen&&this.GetSystem<MobileInputSystem>().IsMobileInputMode;
+            bool visible=IsShow()&&state.Active&&!state.Finished&&!state.Paused&&!UIHelper.HasUIOpen&&mobile;
             if(!visible&&UI.MoveJoystickRoot.activeSelf)UI.MoveJoystick.OnPointerUp(null);
             UI.MoveJoystickRoot.SetActive(visible);
             if(UI.JoystickLayoutArea.rect.width<=0||UI.JoystickLayoutArea.rect.height<=0)return;
