@@ -492,6 +492,55 @@ namespace Game.Tests
         {
             PrepareHordeCheck();view.WarmFailure=true;Assert.IsFalse(system.TryPrepareHordePresentation(out var complete,out var error));Assert.IsFalse(complete);Assert.IsNotEmpty(error);Assert.AreEqual(0,Get<int>("hordeWarmIndex"));
         }
+        [Test] public void ScatterPeripheralAddsOnlyOneAtDifferentPositions()
+        {
+            PrepareHordeCheck();view.SpawnHidden=p=>true;var state=Get<SurvivorHordeState>("horde");
+            Call("SpawnHordeWave");Assert.AreEqual(1,state.TotalCount);
+            Call("SpawnHordeWave");Assert.AreEqual(2,state.TotalCount);Assert.AreEqual(2,state.GroupCount);
+        }
+        [Test] public void ScatterUnawareFarRecordsDoNotChasePlayer()
+        {
+            PrepareHordeCheck();var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            var state=Get<SurvivorHordeState>("horde");state.Add(0,kind,25,20,2,1);
+            Call("TickHorde",config.HordeFarTickSeconds);
+            var next=state.Reserve(24,19,26,21,1);Assert.AreEqual(1,next.Length);
+            Assert.AreEqual(25,next[0].X);Assert.AreEqual(20,next[0].Y);
+        }
+        [Test] public void ScatterWandersLocallyThenRemembersDiscovery()
+        {
+            PrepareHordeCheck();var p=new Vector2(25,20);Set("player",Vector2.zero);
+            var e=new ArcadeEnemyRuntime{Id=501,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
+            Assert.IsTrue((bool)Call("TickScatterWander",e,.25f));Assert.IsFalse(e.SurvivorAlerted);
+            Assert.LessOrEqual(Vector2.Distance(p,e.Position),2*config.SurvivorWanderSpeedRatio*.25f+.001f);
+            Set("player",e.Position+Vector2.right);Assert.IsFalse((bool)Call("TickScatterWander",e,.25f));Assert.IsTrue(e.SurvivorAlerted);
+            Set("player",Vector2.zero);Assert.IsFalse((bool)Call("TickScatterWander",e,.25f));Assert.IsTrue(e.SurvivorAlerted);
+        }
+        [Test] public void ScatterDamageAlertsOutsideNoticeRange()
+        {
+            PrepareHordeCheck();Set("player",Vector2.zero);
+            var e=new ArcadeEnemyRuntime{Id=502,ConfigId=config.EnemyId,Position=new Vector2(25,20),SurvivorRoaming=true,Health=99,MaxHealth=100};
+            Assert.IsFalse((bool)Call("TickScatterWander",e,.01f));Assert.IsTrue(e.SurvivorAlerted);
+        }
+        [Test] public void ScatterUnawareDormantIdentityRemainsAtOriginalPosition()
+        {
+            PrepareHordeCheck();var p=new Vector2(25,20);var e=new ArcadeEnemyRuntime{Id=503,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies").Add(e.Id,e);Call("TickHorde",config.HordeFarTickSeconds);
+            Assert.AreEqual(p,e.Position);view.Bounds=new Rect(21,16,8,8);Call("TickHorde",.01f);
+            Assert.AreSame(e,Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies")[503]);Assert.IsFalse(e.SurvivorAlerted);
+        }
+        [Test] public void ScatterDamageImmediatelyBeforeRetirementPreservesAlert()
+        {
+            PrepareHordeCheck();var e=new ArcadeEnemyRuntime{Id=504,ConfigId=config.EnemyId,Position=new Vector2(25,20),SurvivorRoaming=true,Health=99,MaxHealth=100,Speed=2};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("TickHorde",config.HordeFarTickSeconds);
+            Assert.IsTrue(e.SurvivorAlerted);Assert.AreSame(e,Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies")[504]);
+        }
+        [Test] public void ScatterFacingFollowsWanderMovement()
+        {
+            PrepareHordeCheck();var p=new Vector2(25,20);Set("player",Vector2.zero);
+            var e=new ArcadeEnemyRuntime{Id=505,ConfigId=config.EnemyId,Position=p,SurvivorWanderOrigin=p,SurvivorRoaming=true,Health=100,MaxHealth=100,Speed=2};
+            Assert.IsTrue((bool)Call("TickScatterWander",e,.25f));Assert.Greater((e.Position-p).sqrMagnitude,0);
+            Assert.Greater(Vector2.Dot(e.SurvivorWanderFacing,(e.Position-p).normalized),.999f);
+        }
         private sealed class TestView:IArcadeCombatViewPort
         {
             public bool HordeEnabled;

@@ -39,7 +39,7 @@ namespace Game
         {
             complete=false;error=null;if(enemyRoster==null){error="尸潮敌池尚未准备";return false;}
             if(hordeWarmIndex>=enemyRoster.Entries.Count){complete=true;return true;}
-            int desired=Math.Max(config.HordeSeedCount,config.HordeWaveCount);
+            int desired=Math.Max(config.HordeActivationBudget,config.HordeGridSize);
             if(!view.TryPrewarmSurvivorEnemy(enemyRoster.Entries[hordeWarmIndex].EnemyId,desired,out bool warmed,out error))return false;
             if(warmed)hordeWarmIndex++;
             complete=hordeWarmIndex>=enemyRoster.Entries.Count;
@@ -67,34 +67,26 @@ namespace Game
             var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
             return (choice.EnemyId,enemyConfigs[choice.EnemyId].MoveSpeed*choice.SpeedMultiplier);
         }
-        /// <summary>地图铺怪只在首次有效战斗帧创建轻量记录；视野内不凭空补出站立敌人。</summary>
+        /// <summary>地图分散铺怪只在首次有效战斗帧创建轻量记录；视野内不凭空补出站立敌人。</summary>
         private void InitializeHorde()
         {
             foreach(var field in sizedNavigation.Values)field.SetTarget(player);
             SurvivorHordeRules.Seed(horde,config.HordeGridSize,config.HordeGridSize,HalfWidth-2,HalfHeight-2,
                 player.x,player.y,config.MinimumSpawnDistance,config.HordeSeedCount,config.HordeSpawnAttempts,unchecked((int)runId),
                 (x,y)=>HordeFloor(x,y)&&view.IsArenaSpawnHidden(new Vector2(x,y),2),HordeChoice);
-            hordeInitialized=true;hordeWaveClock=config.HordeWaveSeconds;
+            hordeInitialized=true;hordeWaveClock=NextScatterInterval();
         }
-        /// <summary>每潮轮换地图边缘方向，有限尝试；失败不积累集中补刷欠账。</summary>
+        /// <summary>外围随机选择地图边缘方向，有限尝试；失败不积累集中补刷欠账。</summary>
         private void SpawnHordeWave()
         {
-            int side=hordeWaveSide++%4;
+            int side=enemyRandom.Next(4);hordeWaveSide++;
             for(int i=0;i<config.HordeSpawnAttempts;i++)
             {
                 float x=((float)enemyRandom.NextDouble()*2-1)*(HalfWidth-3),y=((float)enemyRandom.NextDouble()*2-1)*(HalfHeight-3);
                 if(side==0)x=-HalfWidth+3;else if(side==1)y=HalfHeight-3;else if(side==2)x=HalfWidth-3;else y=-HalfHeight+3;
                 if(!HordeFloor(x,y)||!view.IsArenaSpawnHidden(new Vector2(x,y),2))continue;
-                var choice=HordeChoice(side);horde.Add(side,choice.EnemyId,x,y,choice.Speed,config.HordeWaveCount);return;
+                var choice=HordeChoice(side);horde.Add(side,choice.EnemyId,x,y,choice.Speed,1);return;
             }
-        }
-        /// <summary>远场沿共享导航低频前进，未准备好的新群在可见边界外等候展开。</summary>
-        private (float X,float Y) MoveHordeGroup(int region,string enemyId,float x,float y,float distance)
-        {
-            float radius=catalog.Rule.EnemyContactRadius*(Shape(enemyId)?.BodyRadiusMultiplier??1);
-            var field=sizedNavigation.TryGetValue(radius,out var sized)?sized:navigation;
-            var next=field.Move(new Vector2(x,y),player,distance);
-            return view.IsArenaSpawnHidden(next,2)?(next.x,next.y):(x,y);
         }
         /// <summary>表现失败不扣人数、不丢失原个体；暂停并给出真实错误。</summary>
         private bool WakeHordeEnemy(ArcadeEnemyRuntime enemy)
@@ -109,7 +101,7 @@ namespace Game
         {
             var shape=Shape(request.EnemyId);var definition=enemyConfigs[request.EnemyId];double minutes=Model.State.ElapsedSeconds/60;
             int health=(int)Math.Min(int.MaxValue,Math.Round(definition.MaxHP*shape.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute),MidpointRounding.AwayFromZero));
-            return new ArcadeEnemyRuntime{Id=checked(++identity),ConfigId=request.EnemyId,AttackKind=definition.AttackKind,Position=position,Health=health,MaxHealth=health,
+            return new ArcadeEnemyRuntime{SurvivorRoaming=true,SurvivorWanderOrigin=position,Id=checked(++identity),ConfigId=request.EnemyId,AttackKind=definition.AttackKind,Position=position,Health=health,MaxHealth=health,
                 Damage=(int)Math.Min(int.MaxValue,definition.AttackDamage*shape.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=request.Speed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};
         }
         /// <summary>已有弹丸可能触及的角色不休眠，避免切层后弹丸穿过本应命中的敌人。</summary>
@@ -134,13 +126,15 @@ namespace Game
             float margin=Mathf.Max(config.HordePrepareMargin,config.PlayerMoveSpeed*(float)(1+Bonus("MoveSpeed"))*config.HordeFarTickSeconds+2);
             var prepare=ExpandHordeBounds(visible,margin);var retire=ExpandHordeBounds(visible,Mathf.Max(config.HordeRetireMargin,margin+2));
             hordeFarClock+=dt;hordeWaveClock-=dt;
-            if(hordeWaveClock<=0){SpawnHordeWave();hordeWaveClock=config.HordeWaveSeconds;}
+            if(hordeWaveClock<=0){SpawnHordeWave();hordeWaveClock=NextScatterInterval();}
             if(hordeFarClock>=config.HordeFarTickSeconds)
             {
                 float elapsed=hordeFarClock;hordeFarClock=0;
-                horde.Advance(elapsed,MoveHordeGroup);
+                // 未发现的新生远场记录保持空间分布，只有已警觉的个体低频追踪。
                 foreach(var enemy in dormantEnemies.Values)
                 {
+                    if(enemy.SurvivorRoaming&&enemy.Health<enemy.MaxHealth)enemy.SurvivorAlerted=true;
+                    if(enemy.SurvivorRoaming&&!enemy.SurvivorAlerted)continue;
                     var next=NavigationFor(enemy).Move(enemy.Position,player,enemy.Speed*elapsed);
                     // 在准备带内停止低频移动，优先交回完整模拟，防止跨过玩家或穿过弹丸。
                     if(!prepare.Contains(enemy.Position))enemy.Position=next;
@@ -148,7 +142,7 @@ namespace Game
                 hordeTransfers.Clear();
                 foreach(var enemy in enemies.Values)
                     if(!retire.Contains(enemy.Position)&&!enemy.GroundEntry.Active&&!enemy.MeleeWindupActive&&enemy.MeleeRecoveryRemaining<=0&&!HordeProjectileThreat(enemy))hordeTransfers.Add(enemy.Id);
-                foreach(int id in hordeTransfers){var enemy=enemies[id];view.SuspendSurvivorEnemy(id);dormantEnemies.Add(id,enemy);enemies.Remove(id);}
+                foreach(int id in hordeTransfers){var enemy=enemies[id];if(enemy.SurvivorRoaming&&enemy.Health<enemy.MaxHealth)enemy.SurvivorAlerted=true;view.SuspendSurvivorEnemy(id);dormantEnemies.Add(id,enemy);enemies.Remove(id);}
             }
             int budget=config.HordeActivationBudget;hordeTransfers.Clear();
             foreach(var pair in dormantEnemies)
@@ -169,13 +163,30 @@ namespace Game
             else horde.Reserve(prepare.xMin,prepare.yMin,prepare.xMax,prepare.yMax,budget,activationRequests);
             foreach(var request in activationRequests)
             {
-                // 固定令牌生成小范围落点，避免整群共用一点；安全失败保留群人数等待后续帧。
-                float angle=(float)(request.Id*2.399963229728653% (Math.PI*2));
-                var p=new Vector2(request.X,request.Y)+new Vector2(Mathf.Cos(angle),Mathf.Sin(angle))*1.4f;
-                if(!HordeFloor(p.x,p.y,false))p=new Vector2(request.X,request.Y);
+                // 出生时已经分散，不再把共用中心展开为紧密圆环。
+                var p=new Vector2(request.X,request.Y);
                 if(!HordeFloor(p.x,p.y,false)){horde.Defer(request.Id);continue;}
                 var enemy=CreateHordeEnemy(request,p);if(!WakeHordeEnemy(enemy))return true;
                 horde.Commit(request.Id);
+            }
+            return true;
+        }
+        /// <summary>外围逐只错时补充，失败不欠账；平均间隔由权威配置控制。</summary>
+        private float NextScatterInterval()=>config.HordeWaveSeconds*(.65f+(float)enemyRandom.NextDouble()*.7f);
+
+        /// <summary>未发现时局部缓行，不重建全图导航；发现或受伤后持续追击，跨休眠不失忆。</summary>
+        private bool TickScatterWander(ArcadeEnemyRuntime enemy,float dt)
+        {
+            if(!enemy.SurvivorRoaming||enemy.SurvivorAlerted)return false;
+            if(enemy.Health<enemy.MaxHealth||(Vector2.Distance(enemy.Position,player)<=config.SurvivorNoticeRadius&&!Blocked(enemy.Position,player)))
+            {enemy.SurvivorAlerted=true;return false;}
+            float phase=(float)(Model.State.ElapsedSeconds*.22+enemy.Id*2.39996323);
+            var target=enemy.SurvivorWanderOrigin+new Vector2(Mathf.Cos(phase),Mathf.Sin(phase))*config.SurvivorWanderRadius;
+            var next=Vector2.MoveTowards(enemy.Position,target,enemy.Speed*config.SurvivorWanderSpeedRatio*dt);
+            if(NavigationFor(enemy).CanTravel(enemy.Position,next))
+            {
+                if((next-enemy.Position).sqrMagnitude>.000001f)enemy.SurvivorWanderFacing=(next-enemy.Position).normalized;
+                enemy.Position=next;
             }
             return true;
         }

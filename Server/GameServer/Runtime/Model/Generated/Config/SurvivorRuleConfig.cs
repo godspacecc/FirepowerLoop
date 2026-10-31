@@ -57,6 +57,9 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         HordePrepareMargin = _buf.ReadFloat();
         HordeRetireMargin = _buf.ReadFloat();
         HordeSpawnAttempts = _buf.ReadInt();
+        SurvivorNoticeRadius = _buf.ReadFloat();
+        SurvivorWanderRadius = _buf.ReadFloat();
+        SurvivorWanderSpeedRatio = _buf.ReadFloat();
     }
 
     public static SurvivorRuleConfig DeserializeSurvivorRuleConfig(ByteBuf _buf)
@@ -105,6 +108,9 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly float HordePrepareMargin;
     public readonly float HordeRetireMargin;
     public readonly int HordeSpawnAttempts;
+    public readonly float SurvivorNoticeRadius;
+    public readonly float SurvivorWanderRadius;
+    public readonly float SurvivorWanderSpeedRatio;
    
     public const int __ID__ = -595115244;
     public override int GetTypeId() => __ID__;
@@ -157,6 +163,9 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "HordePrepareMargin:" + HordePrepareMargin + ","
         + "HordeRetireMargin:" + HordeRetireMargin + ","
         + "HordeSpawnAttempts:" + HordeSpawnAttempts + ","
+        + "SurvivorNoticeRadius:" + SurvivorNoticeRadius + ","
+        + "SurvivorWanderRadius:" + SurvivorWanderRadius + ","
+        + "SurvivorWanderSpeedRatio:" + SurvivorWanderSpeedRatio + ","
         + "}";
     }
 }

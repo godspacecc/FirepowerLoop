@@ -8,6 +8,13 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>来自幸存者权威规则表的 Id。</summary>
         public string Id { get; private set; }
+        /// <summary>发现玩家的距离，仍须视线无遮挡。</summary>
+        public float SurvivorNoticeRadius { get; private set; }
+        /// <summary>未警觉时绕出生点游荡的半径。</summary>
+        public float SurvivorWanderRadius { get; private set; }
+        /// <summary>游荡速度占正常追击速度的比例。</summary>
+        public float SurvivorWanderSpeedRatio { get; private set; }
+
         /// <summary>来自权威表的尸潮参数 HordeGridSize。</summary>
         public int HordeGridSize { get; private set; }
         /// <summary>来自权威表的尸潮参数 HordeSeedCount。</summary>
@@ -97,6 +104,11 @@ namespace FirepowerLoop.Arcade
         {
             if (tables == null || tables.TbSurvivorRule.DataList.Count != 1) throw new ArgumentException("幸存者规则必须恰好一行");
             var r = tables.TbSurvivorRule.DataList[0];
+            if(!(r.SurvivorNoticeRadius>0)||float.IsInfinity(r.SurvivorNoticeRadius))throw new ArgumentException("SurvivorNoticeRadius 必须为有限正数");
+            if(!(r.SurvivorWanderRadius>0)||float.IsInfinity(r.SurvivorWanderRadius))throw new ArgumentException("SurvivorWanderRadius 必须为有限正数");
+            if(!(r.SurvivorWanderSpeedRatio>0)||float.IsInfinity(r.SurvivorWanderSpeedRatio))throw new ArgumentException("SurvivorWanderSpeedRatio 必须为有限正数");
+            if(r.SurvivorWanderSpeedRatio>1)throw new ArgumentException("游荡速度不能超过追击速度");
+            if(r.HordeSeedCount!=1||r.HordeWaveCount!=1)throw new ArgumentException("分散模式每个出生记录必须为单个敌人");
             if (!(r.HordeGridSize>0)) throw new ArgumentException("尸潮 HordeGridSize 必须为有限正数");
             if (!(r.HordeSeedCount>0)) throw new ArgumentException("尸潮 HordeSeedCount 必须为有限正数");
             if (!(r.HordeWaveCount>0)) throw new ArgumentException("尸潮 HordeWaveCount 必须为有限正数");
@@ -150,6 +162,10 @@ namespace FirepowerLoop.Arcade
             }
             return new SurvivorConfiguration {
                 Id = r.Id,
+                SurvivorNoticeRadius=r.SurvivorNoticeRadius,
+                SurvivorWanderRadius=r.SurvivorWanderRadius,
+                SurvivorWanderSpeedRatio=r.SurvivorWanderSpeedRatio,
+
                 HordeGridSize=r.HordeGridSize,
                 HordeSeedCount=r.HordeSeedCount,
                 HordeWaveCount=r.HordeWaveCount,

@@ -670,6 +670,13 @@
         <var name="HordePrepareMargin" type="float"/>
         <var name="HordeRetireMargin" type="float"/>
         <var name="HordeSpawnAttempts" type="int"/>
+        <!-- 发现玩家的距离，仍须视线无遮挡 -->
+        <var name="SurvivorNoticeRadius" type="float"/>
+        <!-- 未警觉时绕出生点游荡的半径 -->
+        <var name="SurvivorWanderRadius" type="float"/>
+        <!-- 游荡速度占正常追击速度的比例 -->
+        <var name="SurvivorWanderSpeedRatio" type="float"/>
+
     </bean>
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorUpgradeConfig" group="e">
