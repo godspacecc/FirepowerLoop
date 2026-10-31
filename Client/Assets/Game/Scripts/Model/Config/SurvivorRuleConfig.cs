@@ -45,6 +45,16 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         RifleMagazineCapacity = _buf.ReadInt();
         RifleReloadSeconds = _buf.ReadFloat();
         RifleMinimumReloadSeconds = _buf.ReadFloat();
+        HordeGridSize = _buf.ReadInt();
+        HordeSeedCount = _buf.ReadInt();
+        HordeWaveCount = _buf.ReadInt();
+        HordeWaveSeconds = _buf.ReadFloat();
+        HordeNearEvery = _buf.ReadInt();
+        HordeFarTickSeconds = _buf.ReadFloat();
+        HordeActivationBudget = _buf.ReadInt();
+        HordePrepareMargin = _buf.ReadFloat();
+        HordeRetireMargin = _buf.ReadFloat();
+        HordeSpawnAttempts = _buf.ReadInt();
     }
 
     public static SurvivorRuleConfig DeserializeSurvivorRuleConfig(ByteBuf _buf)
@@ -82,6 +92,16 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly int RifleMagazineCapacity;
     public readonly float RifleReloadSeconds;
     public readonly float RifleMinimumReloadSeconds;
+    public readonly int HordeGridSize;
+    public readonly int HordeSeedCount;
+    public readonly int HordeWaveCount;
+    public readonly float HordeWaveSeconds;
+    public readonly int HordeNearEvery;
+    public readonly float HordeFarTickSeconds;
+    public readonly int HordeActivationBudget;
+    public readonly float HordePrepareMargin;
+    public readonly float HordeRetireMargin;
+    public readonly int HordeSpawnAttempts;
    
     public const int __ID__ = -595115244;
     public override int GetTypeId() => __ID__;
@@ -123,6 +143,16 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "RifleMagazineCapacity:" + RifleMagazineCapacity + ","
         + "RifleReloadSeconds:" + RifleReloadSeconds + ","
         + "RifleMinimumReloadSeconds:" + RifleMinimumReloadSeconds + ","
+        + "HordeGridSize:" + HordeGridSize + ","
+        + "HordeSeedCount:" + HordeSeedCount + ","
+        + "HordeWaveCount:" + HordeWaveCount + ","
+        + "HordeWaveSeconds:" + HordeWaveSeconds + ","
+        + "HordeNearEvery:" + HordeNearEvery + ","
+        + "HordeFarTickSeconds:" + HordeFarTickSeconds + ","
+        + "HordeActivationBudget:" + HordeActivationBudget + ","
+        + "HordePrepareMargin:" + HordePrepareMargin + ","
+        + "HordeRetireMargin:" + HordeRetireMargin + ","
+        + "HordeSpawnAttempts:" + HordeSpawnAttempts + ","
         + "}";
     }
 }

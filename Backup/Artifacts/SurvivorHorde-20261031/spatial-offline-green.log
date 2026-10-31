@@ -1,0 +1,9 @@
+PASS LongSegmentFindsIntermediateCells
+PASS PaddingIncludesLargeBodiesAcrossBoundary
+PASS StableIdOrderDoesNotDependOnInsertion
+PASS RebuildClearRemovesDeadEnemy
+PASS QueryRespectsRange
+PASS EmptyIndexClearsReusedOutput
+PASS DuplicateIdsNeverDuplicateCandidates
+PASS CircleMatchesBruteForceAcrossNegativeCells
+Offline only: Tests=8 Failed=0

@@ -14,7 +14,12 @@ namespace Game
         /// <summary>同体型共用距离场，较胖敌人不能沿普通体型的窄缝穿墙。</summary>
         private readonly Dictionary<float,SurvivorNavigation> sizedNavigation=new();
         /// <summary>仅查询本局只读敌池中的已采用比例。</summary>
-        private SurvivorEnemyDefinition Shape(string configId)=>enemyRoster?.Entries.FirstOrDefault(x=>x.EnemyId==configId);
+        private SurvivorEnemyDefinition Shape(string configId)
+        {
+            if(enemyRoster==null)return null;
+            for(int i=0;i<enemyRoster.Entries.Count;i++)if(enemyRoster.Entries[i].EnemyId==configId)return enemyRoster.Entries[i];
+            return null;
+        }
         /// <summary>圆形命中及行走半径保守覆盖水平较宽的一轴。</summary>
         private float EnemyRadius(ArcadeEnemyRuntime enemy)=>catalog.Rule.EnemyContactRadius*(Shape(enemy.ConfigId)?.BodyRadiusMultiplier??1);
         /// <summary>抓挠范围随水平身体比例同步，保持手臂表现与规则相配。</summary>

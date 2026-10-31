@@ -1,0 +1,1 @@
+injected 10000 stationary far enemies at -27.5,0.5; samples=1327; active=True; error=; enemyViews=61

@@ -438,8 +438,72 @@ namespace Game.Tests
         {
             Set("ownsView",true);system.Stop();system.Stop();Assert.That(view.Ends,Is.EqualTo(1));Assert.That(model.Active,Is.False);Assert.That(arcade.Current.RunId,Is.EqualTo("unrelated-arcade"));Assert.That(Directory.Exists(root),Is.False);
         }
+        /// <summary>复用真实配置及敌池，开启可控相机范围供尸潮集成检查。</summary>
+        private void PrepareHordeCheck()
+        {
+            Call("Spawn");Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Clear();
+            view.HordeEnabled=true;view.Bounds=new Rect(-4,-4,8,8);view.SpawnHidden=p=>!view.Bounds.Contains(p);
+            Set("hordeInitialized",true);Set("hordeWaveClock",1000f);
+        }
+        [Test] public void HordeExpansionUsesFrameBudgetWithoutLosingPopulation()
+        {
+            PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            state.Add(0,kind,view.Bounds.xMax+config.HordePrepareMargin/2,0,0,10000);Call("TickHorde",.01f);
+            var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(config.HordeActivationBudget,active.Count);Assert.AreEqual(10000,state.TotalCount+active.Count);
+        }
+        [Test] public void HordeWakeFailureDoesNotConsumeGroup()
+        {
+            PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");var kind=Get<SurvivorEnemyRoster>("enemyRoster").Entries[0].EnemyId;
+            state.Add(0,kind,view.Bounds.xMax+config.HordePrepareMargin/2,0,0,7);view.FailWakeAfter=0;Call("TickHorde",.01f);
+            Assert.AreEqual(7,state.TotalCount);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));Assert.IsTrue(model.Paused);Assert.IsNotEmpty(system.LastError);
+        }
+        [Test] public void HordePartialWakeFailureCommitsEarlierTransfers()
+        {
+            PrepareHordeCheck();var dormant=Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies");
+            dormant.Add(101,new ArcadeEnemyRuntime{Id=101,ConfigId=config.EnemyId,Position=new Vector2(5,0),Health=20,MaxHealth=100});
+            dormant.Add(102,new ArcadeEnemyRuntime{Id=102,ConfigId=config.EnemyId,Position=new Vector2(6,0),Health=30,MaxHealth=100});view.FailWakeAfter=1;
+            Call("TickHorde",.01f);Assert.IsFalse(dormant.ContainsKey(101));Assert.IsTrue(dormant.ContainsKey(102));
+            view.FailWakeAfter=int.MaxValue;model.Paused=false;Call("TickHorde",.01f);
+            Assert.IsEmpty(dormant);var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");Assert.AreEqual(2,active.Count);Assert.AreEqual(20,active[101].Health);Assert.AreEqual(30,active[102].Health);
+        }
+        [Test] public void HordeRetirementAndReturnPreserveDamagedIdentity()
+        {
+            PrepareHordeCheck();var active=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");var enemy=new ArcadeEnemyRuntime{Id=101,ConfigId=config.EnemyId,Position=new Vector2(29,20),Health=23,MaxHealth=100};active.Add(enemy.Id,enemy);
+            Call("TickHorde",config.HordeFarTickSeconds);Assert.IsEmpty(active);Assert.AreEqual(1,view.Suspends);
+            view.Bounds=new Rect(25,16,8,8);Call("TickHorde",.01f);Assert.AreSame(enemy,active[101]);Assert.AreEqual(23,active[101].Health);
+        }
+        [Test] public void HordePausedFrameDoesNotAdvanceOrExpand()
+        {
+            PrepareHordeCheck();var state=Get<SurvivorHordeState>("horde");state.Add(0,config.EnemyId,12,0,2,100);model.Paused=true;
+            Call("TickFrame",1f);Assert.AreEqual(100,state.TotalCount);Assert.AreEqual(0,view.Wakes);Assert.AreEqual(0,Get<float>("hordeFarClock"));
+        }
+        [Test] public void HordeStopClearsBothSimulationLayers()
+        {
+            PrepareHordeCheck();Get<SurvivorHordeState>("horde").Add(0,config.EnemyId,12,0,2,100);Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies").Add(101,new ArcadeEnemyRuntime{Id=101});
+            system.Stop();Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("dormantEnemies"));Assert.IsFalse(Get<bool>("hordeInitialized"));
+        }
+        [Test] public void HordePrewarmIsIncrementalAndDoesNotSpawnAuthority()
+        {
+            PrepareHordeCheck();bool complete=false;int calls=0;
+            while(!complete&&calls<10){int before=view.WarmCalls;Assert.IsTrue(system.TryPrepareHordePresentation(out complete,out var error),error);Assert.LessOrEqual(view.WarmCalls-before,1);calls++;}
+            Assert.IsTrue(complete);Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));Assert.AreEqual(0,Get<SurvivorHordeState>("horde").TotalCount);
+        }
+        [Test] public void HordePrewarmFailureRemainsAnEntryFailure()
+        {
+            PrepareHordeCheck();view.WarmFailure=true;Assert.IsFalse(system.TryPrepareHordePresentation(out var complete,out var error));Assert.IsFalse(complete);Assert.IsNotEmpty(error);Assert.AreEqual(0,Get<int>("hordeWarmIndex"));
+        }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool HordeEnabled;
+            public Rect Bounds;
+            public int Wakes,Suspends,FailWakeAfter=int.MaxValue;
+            public bool TryGetSurvivorViewBounds(out Rect bounds){bounds=Bounds;return HordeEnabled;}
+            public bool TryWakeSurvivorEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,out string error)
+            {error=Wakes>=FailWakeAfter?"模拟展开失败":null;if(error!=null)return false;Wakes++;return true;}
+            public void SuspendSurvivorEnemy(int id){Suspends++;}
+            public int WarmCalls;
+            public bool WarmFailure;
+            public bool TryPrewarmSurvivorEnemy(string id,int count,out bool complete,out string error){WarmCalls++;complete=!WarmFailure&&WarmCalls>=2;error=WarmFailure?"模拟预热失败":null;return !WarmFailure;}
             public bool ReloadVisible;
             public bool AmmoVisible;
             public int AmmoCurrent,AmmoCapacity;

@@ -1,0 +1,315 @@
+=== FirepowerLoop Luban generation ===
+Config: "E:\GitHub\FirepowerLoop\Config\"
+Stage: "C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478"
+
+=== Generate client ===
+2026/10/31 18:06:19.952|INFO| ==========================================================================================
+2026/10/31 18:06:19.952|INFO|
+2026/10/31 18:06:19.952|INFO|  Luban is developed by Code Philosophy Technology Co., LTD. https://code-philosophy.com
+2026/10/31 18:06:19.952|INFO|
+2026/10/31 18:06:19.952|INFO| ==========================================================================================
+2026/10/31 18:06:20.028|INFO|load schema. collector: "default"
+2026/10/31 18:06:20.218|INFO|load datas begin
+2026/10/31 18:06:20.218|INFO|process code target:"cs-bin" begin
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbWeapon.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbItem.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbLoot.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbWeaponAppearance.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbEnemy.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbMapSpawn.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbPlayer.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/Tables.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbMapScenePart.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbProjectile.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/WeaponKind.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbMap.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbTestCmdEntry.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbTestCmdCategory.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeRule.cs 
+2026/10/31 18:06:20.454|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeWeapon.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeArena.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeBoss.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeEnemyGroup.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeTreasureRoom.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeDrone.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeUpgrade.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeSupportVisual.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeDrop.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeReward.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeRoundLayout.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/PlayerWeaponAttachPoint.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeSlayerMartItem.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadePowerup.cs 
+2026/10/31 18:06:20.465|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeSlayerMartRegion.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeSlayerChallenge.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeRoundReward.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeScoreShop.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeWeaponUpgrade.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeSlayerMartAbility.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbSurvivorRule.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeEarlyStage.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbSurvivorMapLayout.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbSurvivorWeaponLevel.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/MapSpawnObjectType.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeDockHitPose.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbSurvivorEnemy.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeArenaConfig.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeBossConfig.cs 
+2026/10/31 18:06:20.484|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbSurvivorUpgrade.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeCrateConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeChallengeConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeDroneConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeDockHitPoseConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeDropConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeEarlyStageConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeEnemyGroupConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeHazardConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeEnemyMemberConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ItemUseEffect.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TbArcadeChallenge.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeRewardConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeRuleConfig.cs 
+2026/10/31 18:06:20.497|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeLayoutEntryConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeSlayerChallengeConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeScoreShopConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeSlayerMartAbilityConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeRoundRewardConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeObstacleConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadePowerupConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeRoundLayoutConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeSupportVisualConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeTreasureRoomConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeSlayerMartRegionConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ItemType.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeWeaponConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeUpgradeConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeWeaponUpgradeConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeSlayerMartItemConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/EnemyConfig.cs 
+2026/10/31 18:06:20.513|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeTreasureRewardConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/MapConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/MapScenePartConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/MapSpawnConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ProjectileConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/PlayerConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/SurvivorEnemyConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/LootConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/Item.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TestCmdCategoryConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/TestCmdEntryConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/WeaponConfig.cs 
+2026/10/31 18:06:20.530|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/WeaponAppearanceConfig.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ItemActionKind.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeHazardKind.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/SurvivorRuleConfig.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeDropKind.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/SurvivorUpgradeConfig.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadePowerupBehavior.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeUpgradeKind.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeRewardTrigger.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeTreasureRewardKind.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/SurvivorWeaponLevelConfig.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ArcadeWeaponBehavior.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/ClothingSlot.cs 
+2026/10/31 18:06:20.544|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_code/EnemyAttackKind.cs 
+2026/10/31 18:06:20.544|INFO|process code target:"cs-bin" end
+2026/10/31 18:06:21.118|INFO|load datas end
+2026/10/31 18:06:21.118|INFO|validation begin
+2026/10/31 18:06:21.124|INFO|validation end
+2026/10/31 18:06:21.124|INFO|process data target:"bin" begin
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcaderoundlayout.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbmapscenepart.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbtestcmdcategory.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbprojectile.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbtestcmdentry.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbmap.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbloot.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbmapspawn.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbplayer.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeboss.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadechallenge.bytes 
+2026/10/31 18:06:21.145|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcaderule.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbsurvivorenemy.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadedockhitpose.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadesupportvisual.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbweapon.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadereward.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadedrone.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbenemy.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadepowerup.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeweapon.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeslayermartability.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeupgrade.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadetreasureroom.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeenemygroup.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbweaponappearance.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadedrop.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcaderoundreward.bytes 
+2026/10/31 18:06:21.154|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeweaponupgrade.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeearlystage.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeslayermartitem.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbsurvivorrule.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadearena.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeslayerchallenge.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadescoreshop.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbsurvivorupgrade.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbarcadeslayermartregion.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbsurvivorweaponlevel.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbitem.bytes 
+2026/10/31 18:06:21.172|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\client_data/tbsurvivormaplayout.bytes 
+2026/10/31 18:06:21.172|INFO|process data target:"bin" end
+2026/10/31 18:06:21.172|INFO|bye~
+
+=== Generate server ===
+2026/10/31 18:06:21.522|INFO| ==========================================================================================
+2026/10/31 18:06:21.522|INFO|
+2026/10/31 18:06:21.522|INFO|  Luban is developed by Code Philosophy Technology Co., LTD. https://code-philosophy.com
+2026/10/31 18:06:21.522|INFO|
+2026/10/31 18:06:21.522|INFO| ==========================================================================================
+2026/10/31 18:06:21.617|INFO|load schema. collector: "default"
+2026/10/31 18:06:21.813|INFO|load datas begin
+2026/10/31 18:06:21.813|INFO|process code target:"cs-bin" begin
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/EnemyAttackKind.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeWeapon.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbEnemy.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbProjectile.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeArena.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeDrop.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeChallenge.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeTreasureRoom.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeRule.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/Tables.cs 
+2026/10/31 18:06:22.049|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeBoss.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeWeaponBehavior.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadePowerup.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeEnemyGroup.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeUpgrade.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbAIConfig.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbStartZone.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbUnitConfig.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbStartProcess.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbStartMachine.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeUpgradeKind.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeSupportVisual.cs 
+2026/10/31 18:06:22.062|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeDrone.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbStartScene.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeRoundLayout.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeSlayerMartItem.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeReward.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeSlayerMartRegion.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeWeaponUpgrade.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeSlayerChallenge.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeRoundReward.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeTreasureRewardKind.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeSlayerMartAbility.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeEarlyStage.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeScoreShop.cs 
+2026/10/31 18:06:22.075|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbSurvivorRule.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbSurvivorMapLayout.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeRewardTrigger.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbSurvivorUpgrade.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbSurvivorWeaponLevel.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbArcadeDockHitPose.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/AIConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeArenaConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/TbSurvivorEnemy.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeBossConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeChallengeConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeCrateConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadePowerupBehavior.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeDockHitPoseConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeEarlyStageConfig.cs 
+2026/10/31 18:06:22.090|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeDroneConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeDropConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeHazardConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeEnemyMemberConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeEnemyGroupConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeLayoutEntryConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeObstacleConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadePowerupConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeHazardKind.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeRewardConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeRoundRewardConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeScoreShopConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeRoundLayoutConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeSlayerMartAbilityConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeSlayerChallengeConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeSlayerMartRegionConfig.cs 
+2026/10/31 18:06:22.107|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeDropKind.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeSlayerMartItemConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeTreasureRewardConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeRuleConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeTreasureRoomConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeSupportVisualConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/UnitConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeUpgradeConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeWeaponConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/EnemyConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ProjectileConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/ArcadeWeaponUpgradeConfig.cs 
+2026/10/31 18:06:22.123|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/StartProcessConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/StartMachineConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/StartSceneConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/SurvivorEnemyConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/SurvivorWeaponLevelConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/StartZoneConfig.cs 
+2026/10/31 18:06:22.138|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/SurvivorRuleConfig.cs 
+2026/10/31 18:06:22.158|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_code/SurvivorUpgradeConfig.cs 
+2026/10/31 18:06:22.158|INFO|process code target:"cs-bin" end
+2026/10/31 18:06:22.464|INFO|load datas end
+2026/10/31 18:06:22.464|INFO|validation begin
+2026/10/31 18:06:22.472|INFO|validation end
+2026/10/31 18:06:22.472|INFO|process data target:"bin" begin
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcaderoundlayout.bytes 
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeenemygroup.bytes 
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcaderule.bytes 
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadereward.bytes 
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeweapon.bytes 
+2026/10/31 18:06:22.494|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbprojectile.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadedrop.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadearena.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadedrone.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadesupportvisual.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadechallenge.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeupgrade.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbaiconfig.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadedockhitpose.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadepowerup.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbstartmachine.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbunitconfig.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeboss.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbsurvivorenemy.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeweaponupgrade.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbenemy.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcaderoundreward.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbstartzone.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeslayermartability.bytes 
+2026/10/31 18:06:22.496|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadescoreshop.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbsurvivorrule.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbstartprocess.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeearlystage.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadetreasureroom.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbsurvivorweaponlevel.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbsurvivormaplayout.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeslayermartregion.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeslayerchallenge.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbsurvivorupgrade.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbstartscene.bytes 
+2026/10/31 18:06:22.517|INFO|[new] C:\Users\ADMINI~1\AppData\Local\Temp\FirepowerLoopLubanGen_32419_11478\server_data/tbarcadeslayermartitem.bytes 
+2026/10/31 18:06:22.517|INFO|process data target:"bin" end
+2026/10/31 18:06:22.517|INFO|bye~
+
+=== Publish generated files ===
+
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+Localization published: zh-CN, en-US.
+=== Generation complete ===
+Client code: "E:\GitHub\FirepowerLoop\Config\..\Client\Assets\Game\Scripts\Model\Config"
+Client data: "E:\GitHub\FirepowerLoop\Config\..\Client\Assets\Game\Config"
+Server code: "E:\GitHub\FirepowerLoop\Config\..\Server\GameServer\Runtime\Model\Generated\Config"
+Server data: "E:\GitHub\FirepowerLoop\Config\..\Server\GameServer\Config\Luban"

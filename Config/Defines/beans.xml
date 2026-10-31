@@ -657,6 +657,17 @@
         <var name="RifleMagazineCapacity" type="int"/>
         <var name="RifleReloadSeconds" type="float"/>
         <var name="RifleMinimumReloadSeconds" type="float"/>
+        <!-- 尸潮分布及分帧预算；不设置存活总上限。 -->
+        <var name="HordeGridSize" type="int"/>
+        <var name="HordeSeedCount" type="int"/>
+        <var name="HordeWaveCount" type="int"/>
+        <var name="HordeWaveSeconds" type="float"/>
+        <var name="HordeNearEvery" type="int"/>
+        <var name="HordeFarTickSeconds" type="float"/>
+        <var name="HordeActivationBudget" type="int"/>
+        <var name="HordePrepareMargin" type="float"/>
+        <var name="HordeRetireMargin" type="float"/>
+        <var name="HordeSpawnAttempts" type="int"/>
     </bean>
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorUpgradeConfig" group="e">

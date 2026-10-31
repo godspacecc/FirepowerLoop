@@ -138,6 +138,49 @@ namespace Game
             ReleaseCommittedPrefabs();
         }
 
+        /// <summary>远场休眠不走死亡管线；池仅保留有限闲置实例，不限制活敌人数。</summary>
+        public void SuspendEnemy(int runtimeId)
+        {
+            if(!arcadeEnemies.TryGetValue(runtimeId,out var entry))return;
+            arcadeEnemies.Remove(runtimeId);RecycleArcadeEnemy(entry);
+            // 限制的是每种模型的闲置缓存，完整权威敌人仍由幸存者系统保留。
+            if(arcadeEnemyPool.TryGetValue(entry.ConfigId,out var pool))
+                while(pool.Count>16)ReleaseArcadeView(pool.Pop());
+        }
+
+        /// <summary>在加载界面期间分帧准备首批实例，避免第一波在可操作画面里集中冷启动。</summary>
+        public bool TryPrewarmEnemy(string configId,int desired,out bool complete,out string error)
+        {
+            complete=false;error=null;desired=Math.Max(0,Math.Min(16,desired));
+            int count=arcadeEnemyPool.TryGetValue(configId,out var pool)?pool.Count:0;
+            if(count>=desired){complete=true;return true;}
+            // 仅在幸存者尚未开始活动时使用保留令牌，归还后不留在活跃表现字典。
+            const int preparationId=int.MaxValue;
+            if(arcadeEnemies.ContainsKey(preparationId)){error="角色预热身份冲突";return false;}
+            // 现有池中先借出的对象不能增加缓存数量，暂借并在finally完整归还。
+            var held=new Stack<EnemyView>();
+            if(pool!=null)while(pool.Count>0)held.Push(pool.Pop());
+            try
+            {
+                if(!TrySetEnemy(preparationId,configId,arcadeRoot!=null?arcadeRoot.position:Vector3.zero,Vector3.forward,1,1,out error))return false;
+                if(arcadeEnemies.TryGetValue(preparationId,out var prepared)&&prepared.View!=null)
+                    foreach(var animator in prepared.View.GetComponentsInChildren<Animator>())
+                        if(animator.enabled&&animator.runtimeAnimatorController!=null)animator.Update(0);
+                SuspendEnemy(preparationId);
+            }
+            catch(Exception exception)
+            {
+                if(arcadeEnemies.ContainsKey(preparationId))SuspendEnemy(preparationId);
+                error="尸潮角色预热失败："+exception.Message;return false;
+            }
+            finally
+            {
+                if(!arcadeEnemyPool.TryGetValue(configId,out pool)){pool=new Stack<EnemyView>();arcadeEnemyPool.Add(configId,pool);}
+                while(held.Count>0)pool.Push(held.Pop());
+            }
+            complete=pool.Count>=desired;return true;
+        }
+
         /// <summary>创建或刷新真实 EnemyView；只更新表现，不注册 Unit、Combat 或 EnemySystem。</summary>
         public bool TrySetEnemy(int runtimeId, string configId, Vector3 position, Vector3 facing, int currentHealth, int maximumHealth, out string error, bool telegraph = false, int attackSequence = 0, bool persistentHealthBar = false)
         {

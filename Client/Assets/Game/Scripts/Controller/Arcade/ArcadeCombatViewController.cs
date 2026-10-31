@@ -11,6 +11,14 @@ namespace Game
     public interface IArcadeCombatViewPort : IUtility
     {
         bool IsActive { get; }
+        /// <summary>幸存者远近场使用完整相机地面范围；未知相机不进行角色休眠。</summary>
+        bool TryGetSurvivorViewBounds(out Rect bounds){bounds=default;return false;}
+        /// <summary>返回完整表现创建结果，失败时权威远场记录不得丢弃。</summary>
+        bool TryWakeSurvivorEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,out string error){error="表现端口未支持尸潮";return false;}
+        /// <summary>仅休眠表现，不发生死亡、掉落或击杀。</summary>
+        void SuspendSurvivorEnemy(int id) { }
+        /// <summary>加载界面预热首批角色，不创建权威敌人。</summary>
+        bool TryPrewarmSurvivorEnemy(string configId,int count,out bool complete,out string error){complete=true;error=null;return true;}
         /// <summary>自动武器只锁定已进入画面的目标；端口未提供可见性时安全停火。</summary>
         bool IsArenaTargetVisible(Vector2 position) => false;
         /// <summary>出生体积完全在扩大的相机视锥外才允许生成；未知镜头时安全等待。</summary>
@@ -682,6 +690,39 @@ namespace Game
             var point = camera.WorldToViewportPoint(mapRoot.TransformPoint(new Vector3(position.x, .8f, position.y)));
             return point.z >= camera.nearClipPlane && point.z <= camera.farClipPlane &&
                 point.x >= .05f && point.x <= .95f && point.y >= .05f && point.y <= .95f;
+        }
+
+        /// <summary>投影四个相机角到角色脚下平面；使用完整视野而非自动瞄准的内缩范围。</summary>
+        public bool TryGetSurvivorViewBounds(out Rect bounds)
+        {
+            bounds=default;var camera=Camera.main;
+            if(mapRoot==null||camera==null||!camera.isActiveAndEnabled)return false;
+            var plane=new Plane(mapRoot.up,mapRoot.position);
+            Vector2 min=new Vector2(float.MaxValue,float.MaxValue),max=new Vector2(float.MinValue,float.MinValue);
+            for(int i=0;i<4;i++)
+            {
+                var ray=camera.ViewportPointToRay(new Vector3(i%2,i/2,0));
+                if(!plane.Raycast(ray,out float distance)||distance<0)return false;
+                var local=mapRoot.InverseTransformPoint(ray.GetPoint(distance));var point=new Vector2(local.x,local.z);
+                min=Vector2.Min(min,point);max=Vector2.Max(max,point);
+            }
+            bounds=Rect.MinMaxRect(min.x,min.y,max.x,max.y);return true;
+        }
+
+        /// <summary>从预加载表现池唤醒；完整快照成功提交后规则层才扣远场人数。</summary>
+        public bool TryWakeSurvivorEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,out string error)
+        {
+            error=null;if(enemyPresentation==null||mapRoot==null||playerMotor==null){error="尸潮战场表现尚未准备";return false;}
+            var playerLocal=mapRoot.InverseTransformPoint(playerMotor.Position);
+            return enemyPresentation.TrySetEnemy(id,configId,mapRoot.TransformPoint(World(position,0)),
+                mapRoot.TransformDirection(new Vector3(playerLocal.x-position.x,0,playerLocal.z-position.y)),health,maximum,out error,false,sequence);
+        }
+        /// <summary>只归还角色表现，不经过共用死亡删除及掉落处理。</summary>
+        public void SuspendSurvivorEnemy(int id)=>enemyPresentation?.SuspendEnemy(id);
+        public bool TryPrewarmSurvivorEnemy(string configId,int count,out bool complete,out string error)
+        {
+            complete=false;error=null;if(enemyPresentation==null){error="尸潮预加载表现不可用";return false;}
+            return enemyPresentation.TryPrewarmEnemy(configId,count,out complete,out error);
         }
 
         public bool TryGetPlayerPosition(out Vector2 position)

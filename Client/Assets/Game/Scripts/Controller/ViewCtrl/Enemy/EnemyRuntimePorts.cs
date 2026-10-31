@@ -33,6 +33,10 @@ namespace Game
             int currentHealth, int maximumHealth, out string error, bool telegraph = false,
             int attackSequence = 0, bool persistentHealthBar = false);
         void RemoveEnemy(int runtimeId, bool playDeath = false);
+        /// <summary>幸存者远场休眠仅归还表现实例，不通知死亡或释放预加载配置。</summary>
+        void SuspendEnemy(int runtimeId) { }
+        /// <summary>加载阶段每次最多预热一个闲置角色；不注册战斗实体。</summary>
+        bool TryPrewarmEnemy(string configId,int desired,out bool complete,out string error){complete=true;error=null;return true;}
         /// <summary>只携带已经裁决的死亡方向与爆炸类别，旧端口保留动画降级。</summary>
         void RemoveEnemy(int runtimeId, bool playDeath, Vector3 direction, bool explosive) => RemoveEnemy(runtimeId, playDeath);
         void SetEnemyBurning(int runtimeId,float remainingSeconds) { }

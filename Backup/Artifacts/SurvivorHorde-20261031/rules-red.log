@@ -1,0 +1,11 @@
+FAIL MergeSameCellWithoutPerEnemyRecords: 缺少生产规则 SurvivorHordeState
+FAIL SpeciesAndPositionsStaySeparate: 缺少生产规则 SurvivorHordeState
+FAIL ReservationDoesNotConsumePopulation: 缺少生产规则 SurvivorHordeState
+FAIL RepeatedReservationKeepsIdentity: 缺少生产规则 SurvivorHordeState
+FAIL CommitIsExactlyOnce: 缺少生产规则 SurvivorHordeState
+FAIL OutsideBoundsDoesNotReserve: 缺少生产规则 SurvivorHordeState
+FAIL NoFormerSixtyEnemyCap: 缺少生产规则 SurvivorHordeState
+FAIL ResetInvalidatesOldReservations: 缺少生产规则 SurvivorHordeState
+FAIL OverflowCannotPartiallyMutate: 缺少生产规则 SurvivorHordeState
+FAIL InvalidInputCannotMutate: 缺少生产规则 SurvivorHordeState
+Scope=SurvivorHordeRulesChecks Tests=10 Failed=10

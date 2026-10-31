@@ -1,0 +1,11 @@
+PASS MergeSameCellWithoutPerEnemyRecords
+PASS SpeciesAndPositionsStaySeparate
+PASS ReservationDoesNotConsumePopulation
+PASS RepeatedReservationKeepsIdentity
+PASS CommitIsExactlyOnce
+PASS OutsideBoundsDoesNotReserve
+PASS NoFormerSixtyEnemyCap
+PASS ResetInvalidatesOldReservations
+PASS OverflowCannotPartiallyMutate
+PASS InvalidInputCannotMutate
+Scope=SurvivorHordeRulesChecks Tests=10 Failed=0

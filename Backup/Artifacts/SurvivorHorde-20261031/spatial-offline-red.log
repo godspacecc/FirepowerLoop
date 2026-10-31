@@ -1,0 +1,223 @@
+FAIL LongSegmentFindsIntermediateCells: NUnit.Framework.AssertionException:   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.LongSegmentFindsIntermediateCells() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 12
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL PaddingIncludesLargeBodiesAcrossBoundary: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.PaddingIncludesLargeBodiesAcrossBoundary() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 13
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL StableIdOrderDoesNotDependOnInsertion: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.StableIdOrderDoesNotDependOnInsertion() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 14
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL RebuildClearRemovesDeadEnemy: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  4)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.RebuildClearRemovesDeadEnemy() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 15
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL QueryRespectsRange: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  4)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  5)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.QueryRespectsRange() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 16
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL EmptyIndexClearsReusedOutput: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  4)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  5)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  6)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.EmptyIndexClearsReusedOutput() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 17
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL DuplicateIdsNeverDuplicateCandidates: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  4)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  5)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  6)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  7)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.DuplicateIdsNeverDuplicateCandidates() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 18
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+FAIL CircleMatchesBruteForceAcrossNegativeCells: NUnit.Framework.AssertionException: Multiple failures or warnings in test:
+  1)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  2)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  3)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  4)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  5)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  6)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  7)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+  8)   缺少生产空间索引
+  Expected: not null
+  But was:  null
+
+
+   at NUnit.Framework.Assert.ReportFailure(String message)
+   at NUnit.Framework.Assert.ReportFailure(ConstraintResult result, String message, Object[] args)
+   at NUnit.Framework.Assert.That[TActual](TActual actual, IResolveConstraint expression, String message, Object[] args)
+   at NUnit.Framework.Assert.IsNotNull(Object anObject, String message, Object[] args)
+   at Game.Tests.SurvivorHordeSpatialTests.New() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 9
+   at Game.Tests.SurvivorHordeSpatialTests.CircleMatchesBruteForceAcrossNegativeCells() in E:\GitHub\FirepowerLoop\Client\Assets\Tests\EditMode\SurvivorHordeSpatialTests.cs:line 19
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Offline only: Tests=8 Failed=8

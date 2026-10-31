@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using QFramework;
@@ -68,6 +68,15 @@ namespace Game
                     await UniTask.NextFrame(linked.Token);
                 }
                 loading.ReportEntryPreparation(loadingRequest, .95f, "ui.loading.stage.Activate");
+                float warmDeadline=UnityEngine.Time.realtimeSinceStartup+30f;
+                while(true)
+                {
+                    linked.Token.ThrowIfCancellationRequested();
+                    if(!system.TryPrepareHordePresentation(out bool warmed,out error))throw new InvalidOperationException(error);
+                    if(warmed)break;
+                    if(UnityEngine.Time.realtimeSinceStartup>=warmDeadline)throw new TimeoutException("尸潮角色准备超时，请重试");
+                    await UniTask.NextFrame(linked.Token);
+                }
                 system.ConfirmBattlePrepared();
                 if (!this.GetSystem<AppStateSystem>().TryTransition(AppState.Playing))
                     throw new InvalidOperationException("幸存者战场无法进入可操作状态");

@@ -77,13 +77,15 @@ namespace Game
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
             navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();
+            // 拾取可达场也属于入口准备，不能等首批尸潮生成时在活动帧冷建整张网格。
+            pickupNavigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.PlayerRadius,obstacles);
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
             try{ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -171,6 +173,7 @@ namespace Game
         /// <summary>按本帧实际时间推进；单独接收时间以便在非运行态准确验证移动及暂停规则。</summary>
         private void TickFrame(float frameSeconds)
         {
+            using var sample=SurvivorFrameMarker.Auto();
             var m=Model;if(!m.Active||m.State.Finished)return;
             if(battlePrepared&&(!view.IsActive||!view.IsRoundLayoutReady||!string.IsNullOrEmpty(view.RoundLayoutLoadError)))
             {
@@ -189,9 +192,11 @@ namespace Game
             player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
-            if(spawnClock<=0){Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
+            if(navigation==null)navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);
             navigation.SetTarget(player);
-            TickEnemies(dt);
+            bool usesHorde=TickHorde(dt);if(m.Paused)return;
+            if(spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
+            TickEnemies(dt);RebuildHordeSpatial();
             AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
@@ -227,9 +232,17 @@ namespace Game
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
         private void Fire()
         {
-            if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;var candidates=enemies.Values.ToArray();
+            if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;
+            EnsureHordeSpatial();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
-            long target=SurvivorCombatRules.SelectTarget(player.x,player.y,Math.Min(config.AimRange,level.Range),candidates.Select(e=>(long)e.Id).ToArray(),candidates.Select(e=>e.Position.x).ToArray(),candidates.Select(e=>e.Position.y).ToArray(),candidates.Select(e=>view.IsArenaTargetVisible(e.Position)&&!Blocked(player,e.Position)&&CanAimGroundBody(e,player,.75f)).ToArray());
+            float range=Mathf.Min(config.AimRange,level.Range);enemySpatial.QueryCircle(player.x,player.y,range,enemyCandidates);
+            long target=0;float nearest=range*range;
+            foreach(int id in enemyCandidates)
+            {
+                if(!enemies.TryGetValue(id,out var e))continue;float distance=(e.Position-player).sqrMagnitude;
+                if(distance>nearest||!view.IsArenaTargetVisible(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
+                if(distance==nearest&&target!=0&&id>target)continue;target=id;nearest=distance;
+            }
             if(target==0||!TryConsumeRifleRound())return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
@@ -237,9 +250,16 @@ namespace Game
         private void TickDrone(float dt)
         {
             int levelNumber=Model.Loadout?.LevelOf("Drone")??0;if(levelNumber==0)return;
+            EnsureHordeSpatial();
             var level=config.WeaponLevel("Drone",levelNumber);droneFireClock-=dt;
             dronePosition=Vector2.Lerp(dronePosition,player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ),1-Mathf.Exp(-12*dt));
-            var target=enemies.Values.Where(e=>e.Health>0&&view.IsArenaTargetVisible(e.Position)&&Vector2.Distance(dronePosition,e.Position)<=level.Range&&!Blocked(dronePosition,e.Position)&&CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y)).OrderBy(e=>(e.Position-player).sqrMagnitude).ThenBy(e=>e.Id).FirstOrDefault();
+            enemySpatial.QueryCircle(dronePosition.x,dronePosition.y,level.Range,enemyCandidates);
+            ArcadeEnemyRuntime target=null;float nearest=float.MaxValue;
+            foreach(int id in enemyCandidates)
+            {
+                if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!view.IsArenaTargetVisible(e.Position)||Blocked(dronePosition,e.Position)||!CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y))continue;
+                float distance=(e.Position-player).sqrMagnitude;if(distance<nearest||(distance==nearest&&(target==null||id<target.Id))){target=e;nearest=distance;}
+            }
             if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&bullets.Count<config.MaxProjectiles){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
             view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
         }
@@ -267,9 +287,15 @@ namespace Game
         /// <summary>按弹道线段结算击杀，同落点与满额掉落合并经验而不丢失。</summary>
         private void AdvanceBullets(float dt)
         {
-            foreach(var b in bullets.Values.ToArray()){
+            EnsureHordeSpatial();
+            expiredBullets.Clear();
+            foreach(var b in bullets.Values){
                 var old=b.Position;b.Position+=b.Velocity*dt;b.RemainingSeconds-=dt;bool remove=b.RemainingSeconds<=0||Blocked(old,b.Position);
-                if(!remove)foreach(var e in enemies.Values.ToArray()){
+                // 站立身体走空间候选；少量爬出身体继续正式胶囊精判，避免截掉远离根节点的手臂。
+                enemySpatial.QuerySegment(old.x,old.y,b.Position.x,b.Position.y,maximumEnemyRadius,enemyCandidates);
+                if(!remove&&groundEntryCandidates.Count>0){foreach(int id in groundEntryCandidates)if(!enemyCandidates.Contains(id))enemyCandidates.Add(id);enemyCandidates.Sort();}
+                if(!remove)foreach(int id in enemyCandidates){
+                    if(!enemies.TryGetValue(id,out var e))continue;
                     var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
                     if(e.GroundEntry.Active?!TryGroundBodySweep(e,old,b.Position,b.SourceWeaponId=="survivor.drone"?droneVisual.VisualOffset.y:.75f,out _):Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
                     e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;TryDropGold(e);
@@ -277,8 +303,10 @@ namespace Game
                             AddExperienceDrop(e.Position);}
                     break;
                 }
-                if(remove){bullets.Remove(b.Id);view.RemoveProjectile(b.Id);}
+                if(remove){expiredBullets.Add(b.Id);view.RemoveProjectile(b.Id);}
             }
+            foreach(int id in expiredBullets)bullets.Remove(id);
+            spatialFrameReady=false;
         }
     }
 }
