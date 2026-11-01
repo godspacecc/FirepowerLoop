@@ -58,7 +58,7 @@ namespace Game.Tests
         {
             model.RifleCapacity=30;model.RifleRounds=0;model.RifleReloadDuration=2;model.RifleReloadRemaining=1.5f;
             Call("Publish");Assert.That(view.ReloadVisible,Is.True);Assert.That(view.ReloadProgress,Is.EqualTo(.25f));
-            Assert.That(view.AmmoVisible,Is.True);Assert.That(view.AmmoCurrent,Is.Zero);Assert.That(view.AmmoCapacity,Is.EqualTo(30));
+            Assert.That(view.AmmoVisible,Is.False);Assert.That(view.AmmoCurrent,Is.Zero);Assert.That(view.AmmoCapacity,Is.EqualTo(30));
             system.SetPaused(true);Assert.That(view.ReloadProgress,Is.EqualTo(.25f));
             model.RifleReloadRemaining=0;model.RifleRounds=30;Call("Publish");Assert.That(view.ReloadVisible,Is.False);
             Assert.That(view.AmmoCurrent,Is.EqualTo(30));

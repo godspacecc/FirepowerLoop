@@ -17,7 +17,7 @@ namespace Game
         {
             UI.WeaponSlots.AddItemRefreshListener((item,index)=>{
                 var box=item.GetComponent<SurvivorWeaponSlotBoxUI>();
-                box.NameText.text=index<weaponKinds.Length?Loc.T("ui.survivor.weapon.slot",Loc.T("ui.survivor.weapon."+weaponKinds[index]),this.GetModel<SurvivorModel>().WeaponLevel(weaponKinds[index])):Loc.T("ui.survivor.weapon.empty");
+                RenderWeaponSlot(box,this.GetModel<SurvivorModel>(),index<weaponKinds.Length?weaponKinds[index]:null);
             });
             this.RegisterEvent<MobileInputModeChangedEvent>(_=>{if(IsShow())RefreshJoystick();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_=>{if(IsShow())RefreshJoystick();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -68,6 +68,20 @@ namespace Game
             UI.BtnPause.interactable=!s.Paused;
             var model=this.GetModel<SurvivorModel>();weaponKinds=model.EquippedWeapons;
             UI.WeaponSlots.totalCount=model.WeaponSlotCapacity;UI.WeaponSlots.RefreshCells();
+        }
+        /// <summary>从权威模型完整覆盖槽状态；无人机无弹夹，空槽不沿用上次图标或进度。</summary>
+        internal static void RenderWeaponSlot(SurvivorWeaponSlotBoxUI box,SurvivorModel model,string kind)
+        {
+            bool rifle=kind=="Rifle",drone=kind=="Drone";
+            box.Icon.gameObject.SetActive(rifle||drone);
+            box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:null;
+            box.AmmoRing.gameObject.SetActive(rifle);
+            bool reloading=rifle&&model.RifleReloadTimeRemaining>0;
+            float amount=reloading?model.RifleReloadProgress:
+                model.RifleMagazineSize>0?Mathf.Clamp01((float)model.RifleAmmo/model.RifleMagazineSize):0f;
+            box.AmmoRing.fillAmount=rifle?amount:0f;
+            box.AmmoRing.color=reloading?new Color(.25f,.75f,1f):
+                amount<.25f?new Color(1f,.55f,.15f):new Color(1f,.94f,.72f);
         }
         /// <summary>使用累计分钟，不在一小时后回绕。</summary>
         internal static string FormatTime(double seconds){long t=(long)System.Math.Max(0,seconds);return $"{t/60:00}:{t%60:00}";}

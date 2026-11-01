@@ -171,7 +171,8 @@ namespace Game
             var m=Model;
             bool reloading=m.Active&&m.State!=null&&!m.State.Finished&&m.RifleReloadRemaining>0&&m.RifleReloadDuration>0;
             view?.SetPlayerReload(reloading,reloading?Mathf.Clamp01(1-m.RifleReloadRemaining/m.RifleReloadDuration):0f);
-            view?.SetPlayerAmmo(m.Active&&m.State!=null&&!m.State.Finished&&m.Health>0,m.RifleRounds,m.RifleCapacity);
+            // 余弹改由底部武器图标外圈显示，隐藏重复的头顶数字；换弹动作与进度仍保留。
+            view?.SetPlayerAmmo(false,m.RifleRounds,m.RifleCapacity);
             this.SendEvent<SurvivorChangedEvent>();
         }
         /// <summary>暂停时不推进敌人、子弹、刷怪或升级时钟。</summary>

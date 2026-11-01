@@ -37,6 +37,8 @@ namespace Game
         public int RifleAmmo => RifleRounds;
         public int RifleMagazineSize => RifleCapacity;
         public float RifleReloadTimeRemaining => RifleReloadRemaining;
+        /// <summary>只读换弹完成比例，供武器图标外圈显示；不推进换弹时间。</summary>
+        public float RifleReloadProgress => RifleReloadDuration>0?UnityEngine.Mathf.Clamp01(1-RifleReloadRemaining/RifleReloadDuration):0f;
         /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
         internal SurvivorLoadout Loadout;
         /// <summary>界面只读查询武器等级。</summary>
