@@ -43,6 +43,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         PickupRadius = _buf.ReadFloat();
         MinimumSpawnDistance = _buf.ReadFloat();
         AimRange = _buf.ReadFloat();
+        NightAimRange = _buf.ReadFloat();
         RifleMagazineCapacity = _buf.ReadInt();
         RifleReloadSeconds = _buf.ReadFloat();
         RifleMinimumReloadSeconds = _buf.ReadFloat();
@@ -91,6 +92,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly float PickupRadius;
     public readonly float MinimumSpawnDistance;
     public readonly float AimRange;
+    public readonly float NightAimRange;
     public readonly int RifleMagazineCapacity;
     public readonly float RifleReloadSeconds;
     public readonly float RifleMinimumReloadSeconds;
@@ -143,6 +145,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "PickupRadius:" + PickupRadius + ","
         + "MinimumSpawnDistance:" + MinimumSpawnDistance + ","
         + "AimRange:" + AimRange + ","
+        + "NightAimRange:" + NightAimRange + ","
         + "RifleMagazineCapacity:" + RifleMagazineCapacity + ","
         + "RifleReloadSeconds:" + RifleReloadSeconds + ","
         + "RifleMinimumReloadSeconds:" + RifleMinimumReloadSeconds + ","

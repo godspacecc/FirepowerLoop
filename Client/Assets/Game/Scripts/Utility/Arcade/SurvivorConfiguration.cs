@@ -90,6 +90,8 @@ namespace FirepowerLoop.Arcade
         public float MinimumSpawnDistance { get; private set; }
         /// <summary>来自幸存者权威规则表的 AimRange。</summary>
         public float AimRange { get; private set; }
+        /// <summary>深夜主角有效攻击及亮区半径。</summary>
+        public float NightAimRange { get; private set; }
         /// <summary>强化快照；MaxLevel为零表示可无限选择，效果由MaximumBonus渐近封顶。</summary>
         public IReadOnlyList<SurvivorUpgradeDefinition> Upgrades { get; private set; }
         /// <summary>从生成表复制并完整校验基础数值与引用，不暴露可变生成行。</summary>
@@ -97,6 +99,7 @@ namespace FirepowerLoop.Arcade
         {
             if (tables == null || tables.TbSurvivorRule.DataList.Count != 1) throw new ArgumentException("幸存者规则必须恰好一行");
             var r = tables.TbSurvivorRule.DataList[0];
+            if(float.IsNaN(r.NightAimRange)||float.IsInfinity(r.NightAimRange)||r.NightAimRange<=0||r.NightAimRange>r.AimRange)throw new ArgumentException("夜间攻击范围必须为不大于白天范围的有限正数");
             if(float.IsNaN(r.GoldDropMultiplier)||float.IsInfinity(r.GoldDropMultiplier)||r.GoldDropMultiplier<0||r.GoldDropMultiplier>1)throw new ArgumentException("金币倍率必须为0到1的有限值");
             if(r.HordeSeedCount!=1||r.HordeWaveCount!=1)throw new ArgumentException("分散模式每个出生记录必须为单个敌人");
             if (!(r.HordeGridSize>0)) throw new ArgumentException("尸潮 HordeGridSize 必须为有限正数");
@@ -195,6 +198,7 @@ namespace FirepowerLoop.Arcade
                 PickupRadius = r.PickupRadius,
                 MinimumSpawnDistance = r.MinimumSpawnDistance,
                 AimRange = r.AimRange,
+                NightAimRange = r.NightAimRange,
                 Upgrades = Array.AsReadOnly(upgrades)
             };
         }

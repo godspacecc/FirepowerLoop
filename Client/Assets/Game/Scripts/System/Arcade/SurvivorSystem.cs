@@ -99,6 +99,9 @@ namespace Game
         {
             if(!Model.Active||view==null||!view.IsActive||!view.IsRoundLayoutReady||!string.IsNullOrEmpty(view.RoundLayoutLoadError))
                 throw new InvalidOperationException(view?.RoundLayoutLoadError??"幸存者战场尚未准备完成");
+            view.SetPlayer(player,facing,true,false);
+            if(view.TryGetPlayerPosition(out var initialPlayer))player=Resolve(initialPlayer,catalog.Rule.PlayerRadius);
+            ProjectVisibility();
             battlePrepared=true;
         }
         /// <summary>失败可以用同一结果重试，不覆盖本局统计。</summary>
@@ -203,6 +206,7 @@ namespace Game
             player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
+            ProjectVisibility();
             if(navigation==null)navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);
             navigation.SetTarget(player);
             bool usesHorde=TickHorde(dt);if(m.Paused)return;
@@ -240,7 +244,7 @@ namespace Game
             if(fireClock>0)return;
             EnsureHordeSpatial();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
-            float range=Mathf.Min(config.AimRange,level.Range);enemySpatial.QueryCircle(player.x,player.y,range,enemyCandidates);
+            float range=Mathf.Min(CurrentAimRange,level.Range);enemySpatial.QueryCircle(player.x,player.y,range,enemyCandidates);
             long target=0;float nearest=range*range;
             foreach(int id in enemyCandidates)
             {
@@ -316,6 +320,12 @@ namespace Game
             var drop=drops[existing];
             drops[existing]=(drop.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,drop.Experience)+config.ExperiencePerKill);
         }
+        /// <summary>亮区与主角攻击边界来自同一份实时规则。</summary>
+        private float CurrentAimRange=>SurvivorDayNightRules.Range(config.AimRange,config.NightAimRange,Model.State.ElapsedSeconds);
+        /// <summary>使用投影后的实际玩家位置同步照明中心。</summary>
+        private void ProjectVisibility()=>view.SetSurvivorVisibility(SurvivorDayNightRules.NightWeight(Model.State.ElapsedSeconds),CurrentAimRange,player);
+        /// <summary>敌人中心和在途弹丸必须处于当前主角亮区内。</summary>
+        private bool InsidePlayerVisibility(Vector2 position)=>(position-player).sqrMagnitude<=CurrentAimRange*CurrentAimRange;
         /// <summary>强化弹结算由同一权威分部完成，不引入第二套命中来源。</summary>
         private void AdvanceBullets(float dt)=>AdvanceModifierBullets(dt);
     }

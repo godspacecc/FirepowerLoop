@@ -112,6 +112,8 @@ namespace Game
             foreach(var bullet in bullets.Values)
             {
                 var old=bullet.Position;
+                bool limited=bullet.SourceWeaponId!="survivor.drone";
+                if(limited&&!InsidePlayerVisibility(old)){expiredBullets.Add(bullet.Id);continue;}
                 float step=Mathf.Min(dt,Mathf.Max(0,bullet.RemainingSeconds));
                 var next=old+bullet.Velocity*step;bullet.RemainingSeconds-=dt;
                 modifierHits.Clear();
@@ -121,6 +123,7 @@ namespace Game
                 foreach(int id in enemyCandidates)
                 {
                     if(bullet.HitEnemyIds.Contains(id)||!enemies.TryGetValue(id,out var enemy))continue;
+                    if(limited&&!InsidePlayerVisibility(enemy.Position))continue;
                     float fraction;
                     if(enemy.GroundEntry.Active)
                     {
@@ -157,7 +160,7 @@ namespace Game
                     if(bullet.RemainingHits==0){remove=true;break;}
                 }
                 bullet.Position=next;
-                if(remove||bullet.RemainingSeconds<=0||Blocked(old,next))expiredBullets.Add(bullet.Id);
+                if(remove||bullet.RemainingSeconds<=0||Blocked(old,next)||(limited&&!InsidePlayerVisibility(next)))expiredBullets.Add(bullet.Id);
             }
             foreach(int id in expiredBullets)RemoveModifierProjectile(id);
             foreach(var child in pendingSplitShots){bullets.Add(child.Id,child);modifierShots.Add(child.Id,new ModifierShot{Child=true});splitShotCount++;}
@@ -179,7 +182,7 @@ namespace Game
             foreach(int id in blastCandidates)
             {
                 if(id==directTarget||!enemies.TryGetValue(id,out var enemy))continue;
-                if(Vector2.Distance(point,enemy.Position)>shot.BlastRadius||Blocked(point,enemy.Position)||!CanAimGroundBody(enemy,point,.75f))continue;
+                if(!InsidePlayerVisibility(enemy.Position)||Vector2.Distance(point,enemy.Position)>shot.BlastRadius||Blocked(point,enemy.Position)||!CanAimGroundBody(enemy,point,.75f))continue;
                 ApplyModifierDamage(enemy,shot.BlastDamage);
             }
             if(modifierBlasts.Count>=config.MaxBlastEffects)return;

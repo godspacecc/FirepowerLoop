@@ -654,6 +654,7 @@
         <var name="PickupRadius" type="float"/>
         <var name="MinimumSpawnDistance" type="float"/>
         <var name="AimRange" type="float"/>
+        <var name="NightAimRange" type="float"/>
         <!-- 步枪弹夹与无限备弹自动换弹参数。 -->
         <var name="RifleMagazineCapacity" type="int"/>
         <var name="RifleReloadSeconds" type="float"/>
