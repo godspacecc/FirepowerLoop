@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Game
 {
     /// <summary>幸存者只读HUD，不阻断战斗输入。</summary>
-    public sealed class SurvivorHudUICtrl : BaseUICtrl
+    public sealed partial class SurvivorHudUICtrl : BaseUICtrl
     {
         private SurvivorHudUI UI => (SurvivorHudUI)BaseUI;
         /// <summary>可见期更新与事件订阅由同一开关成对释放。</summary>
@@ -18,6 +18,8 @@ namespace Game
         protected override string Path() => "Survivor/SurvivorHud";
         protected override void OnInit()
         {
+            goldTextScale=UI.ScoreText.transform.localScale;
+            UI.GoldFlightList.AddItemRefreshListener(RefreshGoldFlight);
             UI.WeaponSlots.AddItemRefreshListener((item,index)=>{
                 var box=item.GetComponent<SurvivorWeaponSlotBoxUI>();
                 RenderWeaponSlot(box,this.GetModel<SurvivorModel>(),index<weaponKinds.Length?weaponKinds[index]:null);
@@ -39,6 +41,7 @@ namespace Game
         /// <summary>隐藏、卸载和遮挡都通过官方松手入口清零虚拟轴。</summary>
         private void ReleaseJoystick()
         {
+            ClearGoldPickupFeedback();
             if(joystickRegistered){UIHelper.BlockingUIChanged-=OnBlockingUiChanged;LifeCycle.UnregisterUpdate(RefreshVisibleHud);joystickRegistered=false;}
             if(UI!=null){UI.MoveJoystick.OnPointerUp(null);UI.MoveJoystickRoot.SetActive(false);}
         }
@@ -47,6 +50,7 @@ namespace Game
         {
             if(UI==null||!IsShow())return;
             RefreshJoystick();
+            AdvanceGoldPickups(Time.unscaledDeltaTime);
             if(Time.realtimeSinceStartup<nextClockSample)return;
             nextClockSample=Time.realtimeSinceStartup+1f;
             RenderLocalClock(System.DateTime.Now,false);
@@ -84,7 +88,7 @@ namespace Game
             if(!s.Active || s.Finished){Hide();return;}
             UI.HealthText.text=Loc.T("ui.survivor.hud.health",s.Health,s.MaximumHealth);
             UI.TimeText.text=Loc.T("ui.survivor.time",FormatTime(s.SurvivalSeconds));
-            UI.ScoreText.text=Loc.T("ui.survivor.hud.score",this.GetModel<SurvivorModel>().CollectedGold.ToString("N0"));
+            RefreshGoldNumber();
             UI.HealthBar.value=s.MaximumHealth>0?Mathf.Clamp01((float)s.Health/s.MaximumHealth):0;
             UI.ExperienceBar.value=s.RequiredExperience>0?Mathf.Clamp01((float)s.Experience/s.RequiredExperience):0;
             UI.BtnPause.interactable=!s.Paused;

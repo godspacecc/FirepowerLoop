@@ -17,8 +17,8 @@ namespace Game
         public CanvasGroup MoveOpacity;
         public TextMeshProUGUI ScoreText;
         public TextMeshProUGUI TimeText;
-        /// <summary>设备本地时间，与本局生存计时分开显示。</summary>
-        public TextMeshProUGUI ClockText;
         public CustomListView WeaponSlots;
+        public TextMeshProUGUI ClockText;
+        public CustomListView GoldFlightList;
     }
 }

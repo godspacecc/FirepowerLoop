@@ -34,6 +34,19 @@ namespace Game
             if (gold > 0) ShowPickup("gold", gold, total => Loc.T("ui.arcade.hud.gold", "+" + total));
         }
 
+        /// <summary>从权威金币拾取点飞入幸存者HUD；声音沿用地图所有权与现有冷却。</summary>
+        public void PlaySurvivorGoldPickup(long gold, Vector2 position)
+        {
+            if (!IsActive || gold <= 0) return;
+            var camera = Camera.main;
+            if (camera != null && mapRoot != null)
+            {
+                var screen = camera.WorldToScreenPoint(mapRoot.TransformPoint(new Vector3(position.x, .65f, position.y)));
+                if (screen.z > 0) UIHelper.GetUICtrl<SurvivorHudUICtrl>()?.TryPlayGoldPickup(gold, screen);
+            }
+            PlayPickupSound();
+        }
+
         /// <summary>通过正式产品 ID 解析现有名称，不从美术表现猜测道具。</summary>
         public void PlayProductPickup(string productId)
         {
@@ -67,6 +80,7 @@ namespace Game
         {
             ClearTreasurePickupFlash();
             pickupFeedback.Clear();
+            UIHelper.GetUICtrl<SurvivorHudUICtrl>()?.ClearGoldPickupFeedback();
             UIHelper.GetUICtrl<ArcadeHudUICtrl>()?.ClearScorePickupFeedback();
             UIHelper.GetUICtrl<FloatUICtrl>()?.RemoveTipsByPrefix("arcade.pickup.");
             if (pickupSound.IsValid) Game.Interface.GetSystem<AudioSystem>()?.Stop(pickupSound);

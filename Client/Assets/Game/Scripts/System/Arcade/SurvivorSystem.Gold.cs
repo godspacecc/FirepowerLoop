@@ -57,6 +57,7 @@ namespace Game
                 }
                 goldSequence++;Model.RunGold++;Model.GoldBalance=balance;LastError=null;
                 goldDrops.Remove(pair.Key);view.RemoveDrop(pair.Key);
+                view.PlaySurvivorGoldPickup(1,pair.Value);
             }
         }
     }

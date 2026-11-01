@@ -150,6 +150,40 @@ namespace Game.Tests
                 Assert.That(updates.Count,Is.EqualTo(before));
             }finally{LifeCycle.UnregisterUpdate(callback);Object.DestroyImmediate(instance);}
         }
+        /// <summary>密集金币最多复用十六个Box，到账显示与轻跳不修改真实余额，隐藏清理不重播。</summary>
+        [Test] public void GoldFlightsAreBoundedArriveAndClearWithoutChangingBalance()
+        {
+            const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            var architectureField=typeof(QFramework.Architecture<Game>).GetField("mArchitecture",BindingFlags.Static|BindingFlags.NonPublic);
+            var previous=architectureField.GetValue(null);var previousLoader=ResourceLoader.Current;
+            var cacheField=typeof(LocalizationLanguages).GetField("cachedConfig",BindingFlags.Static|BindingFlags.NonPublic);var previousCache=cacheField.GetValue(null);
+            GameObject root=null;
+            try{
+                ResourceLoader.Use(new LocalizationAssetResourceLoader());LocalizationLanguages.ResetForTests();
+                var arch=new Game();architectureField.SetValue(null,arch);arch.RegisterModel(new LocalizationModel());
+                var loc=new LocalizationUtility(false);loc.LoadFromJson("zh-CN",System.IO.File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));arch.RegisterUtility(loc);
+                var model=new SurvivorModel();arch.RegisterModel(model);
+                root=new GameObject("GoldTestCanvas",typeof(RectTransform),typeof(Canvas));root.GetComponent<Canvas>().renderMode=RenderMode.ScreenSpaceOverlay;
+                var ui=Object.Instantiate(Bound<SurvivorHudUI>(Root+"SurvivorHud.prefab"),root.transform);
+                var ctrl=new SurvivorHudUICtrl();typeof(BaseUICtrl).GetField("BaseUI",flags).SetValue(ctrl,ui);
+                typeof(SurvivorHudUICtrl).GetMethod("OnInit",flags).Invoke(ctrl,null);typeof(BaseUICtrl).GetField("_isActive",flags).SetValue(ctrl,true);Canvas.ForceUpdateCanvases();
+                Assert.That(ctrl.TryPlayGoldPickup(0,Vector2.zero),Is.False);
+                Assert.That(ctrl.TryPlayGoldPickup(1,new Vector2(float.NaN,0)),Is.False);
+                for(int i=0;i<100;i++){model.RunGold++;Assert.That(ctrl.TryPlayGoldPickup(1,new Vector2(Screen.width/2f,Screen.height/2f)),Is.True);}
+                Assert.That(model.CollectedGold,Is.EqualTo(100));Assert.That(ui.ScoreText.text,Is.EqualTo(Loc.T("ui.survivor.hud.score","0")));
+                Assert.That(ui.GoldFlightList.totalCount,Is.EqualTo(16));Assert.That(ui.GoldFlightList.transform.childCount,Is.EqualTo(16));
+                var advance=typeof(SurvivorHudUICtrl).GetMethod("AdvanceGoldPickups",flags);
+                advance.Invoke(ctrl,new object[]{.55f});Assert.That(ui.ScoreText.text,Is.EqualTo(Loc.T("ui.survivor.hud.score","100")));Assert.That(ui.GoldFlightList.totalCount,Is.Zero);
+                advance.Invoke(ctrl,new object[]{.15f});Assert.That(ui.ScoreText.transform.localScale.x,Is.EqualTo(1.22f).Within(.001f));
+                advance.Invoke(ctrl,new object[]{.5f});Assert.That(ui.ScoreText.transform.localScale.x,Is.EqualTo(1).Within(.001f));
+                for(int i=0;i<20;i++){model.RunGold++;ctrl.TryPlayGoldPickup(1,new Vector2(-1000,-1000));}
+                Assert.That(ui.GoldFlightList.transform.childCount,Is.EqualTo(16),"第二批复用原Box");
+                typeof(SurvivorHudUICtrl).GetMethod("OnHide",flags).Invoke(ctrl,null);
+                Assert.That(ui.GoldFlightList.totalCount,Is.Zero);Assert.That(ui.GoldFlightList.GetDraggableItems(),Is.Empty);
+                Assert.That(ui.ScoreText.transform.localScale.x,Is.EqualTo(1));Assert.That(model.CollectedGold,Is.EqualTo(120));
+                typeof(BaseUICtrl).GetField("_isActive",flags).SetValue(ctrl,false);Assert.That(ctrl.TryPlayGoldPickup(1,Vector2.zero),Is.False);
+            }finally{if(root!=null)Object.DestroyImmediate(root);architectureField.SetValue(null,previous);ResourceLoader.Use(previousLoader);cacheField.SetValue(null,previousCache);}
+        }
         [Test] public void Start_HasBoundSurvivorEntry()
         {
             var view=Bound<StartUI>("Assets/Game/Prefabs/UI/Home/Start.prefab");

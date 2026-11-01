@@ -340,13 +340,13 @@ namespace Game.Tests
                 typeof(SurvivorSystem).GetProperty("LastError").SetValue(system,error);
                 Call("TickGold",.1f);
                 Assert.That(coins.Count,Is.EqualTo(1));Assert.That(view.RemovedDrops,Is.Zero);
-                Assert.That(model.CollectedGold,Is.Zero);Assert.That(model.TotalGold,Is.Zero);
+                Assert.That(model.CollectedGold,Is.Zero);Assert.That(model.TotalGold,Is.Zero);Assert.That(view.GoldFeedbacks,Is.Zero,"失败不能播放成功反馈");
                 Assert.That(File.ReadAllText(path),Is.EqualTo(previous));
             }
             finally { File.SetAttributes(path,FileAttributes.Normal); }
             Call("TickGold",1f);Assert.That(coins.Count,Is.EqualTo(1));Assert.That(view.RemovedDrops,Is.Zero);
             Call("TickGold",1.1f);Call("TickGold",.1f);
-            Assert.That(coins,Is.Empty);Assert.That(view.RemovedDrops,Is.EqualTo(1));
+            Assert.That(coins,Is.Empty);Assert.That(view.RemovedDrops,Is.EqualTo(1));Assert.That(view.GoldFeedbacks,Is.EqualTo(1),"重试成功仅反馈一次");
             Assert.That(model.CollectedGold,Is.EqualTo(1));Assert.That(model.TotalGold,Is.EqualTo(1));
             Assert.That(gold.TryRead(out var balance,out var readError),Is.True,readError);Assert.That(balance,Is.EqualTo(1));
         }
@@ -358,6 +358,7 @@ namespace Game.Tests
             Assert.That(begin.Invoke(system,new object[]{null}),Is.True);
             var coins=Get<Dictionary<int,Vector2>>("goldDrops");coins.Add(700,Vector2.zero);
             Set("player",Vector2.zero);Call("TickGold",.1f);Call("TickGold",.1f);
+            Assert.That(view.GoldFeedbacks,Is.EqualTo(1),"成功领取必须反馈且不能重播");Assert.That(view.LastGoldPosition,Is.EqualTo(Vector2.zero));
             Assert.That(coins,Is.Empty);Assert.That(model.CollectedGold,Is.EqualTo(1));Assert.That(model.TotalGold,Is.EqualTo(1));
             Assert.That(new SurvivorGoldFileStore(1,root).TryRead(out var balance,out var error),Is.True,error);Assert.That(balance,Is.EqualTo(1));
             Assert.That(begin.Invoke(system,new object[]{null}),Is.True);Assert.That(model.CollectedGold,Is.Zero);Assert.That(model.TotalGold,Is.EqualTo(1));
@@ -828,7 +829,9 @@ namespace Game.Tests
             public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
-            public int PlayerWrites,CombatPoseWrites,Ends,RemovedDrops;
+            public int PlayerWrites,CombatPoseWrites,Ends,RemovedDrops,GoldFeedbacks;
+            public Vector2 LastGoldPosition;
+            public void PlaySurvivorGoldPickup(long amount,Vector2 position){GoldFeedbacks++;LastGoldPosition=position;}
             public bool IsActive=>true;
             public void Begin(int n,float w,float h,IReadOnlyList<ArcadeObstacleDefinition> o){}
             public void End(){Ends++;}
