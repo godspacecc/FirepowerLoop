@@ -15,13 +15,13 @@ namespace Game.Tests
         {
             var tables=Load();var config=SurvivorConfiguration.FromTables(tables);
             Assert.That(tables.TbSurvivorRule.Get("survivor.default").Id,Is.EqualTo("survivor.default"));
-            Assert.That(config.GoldDropMultiplier,Is.EqualTo(.1f));
+            Assert.That(config.GoldDropMultiplier,Is.EqualTo(.01f));
             Assert.That(config.ExperienceDropChance,Is.EqualTo(1f));
             foreach(var chance in new[]{.2236f,.2324f,.4743f,.5f})
-                Assert.That(chance*config.GoldDropMultiplier,Is.EqualTo(chance/10).Within(.000001));
+                Assert.That(chance*config.GoldDropMultiplier,Is.EqualTo(chance/100).Within(.000001));
             var capped=ArcadeEnemyDropRules.Chance(.2f,int.MaxValue,int.MaxValue,100,10,.5f);
             Assert.That(capped,Is.EqualTo(.5f));
-            Assert.That(capped*config.GoldDropMultiplier,Is.EqualTo(.05f).Within(.000001));
+            Assert.That(capped*config.GoldDropMultiplier,Is.EqualTo(.005f).Within(.000001));
             var source=File.ReadAllText(Path.Combine(Application.dataPath,"Game/Scripts/System/Arcade/SurvivorSystem.Gold.cs"));
             Assert.That(source,Does.Contain("r.EnemyDropMaxChance)*config.GoldDropMultiplier"));
             var member=typeof(global::SurvivorRuleConfig).GetField("GoldDropMultiplier");
