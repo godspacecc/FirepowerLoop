@@ -54,6 +54,22 @@ namespace Game.Tests
                 }
             }finally{Object.DestroyImmediate(instance);}
         }
+        [Test] public void WeaponModifierDescriptionsFitExistingCardsInBothLanguages()
+        {
+            var go=Object.Instantiate(Bound<SurvivorUpgradeBoxUI>(Root+"Box/SurvivorUpgrade.prefab").gameObject);
+            try {
+                var text=go.GetComponent<SurvivorUpgradeBoxUI>().DetailText;
+                foreach(var language in new[]{"zh-CN","en-US"})
+                {
+                    Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
+                    foreach(var kind in new[]{"Pierce","Explosion","Split"})
+                    {
+                        var value=string.Format(table["ui.survivor.modifier."+kind+".detail"],2,3,kind=="Explosion"?"1.8":"2",kind=="Explosion"?"2.2":kind=="Split"?"4":"3",45,55);
+                        Assert.That(text.GetPreferredValues(value,text.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(text.rectTransform.rect.height),language+" "+kind);
+                    }
+                }
+            }finally{Object.DestroyImmediate(go);}
+        }
         [Test] public void Start_HasBoundSurvivorEntry()
         {
             var view=Bound<StartUI>("Assets/Game/Prefabs/UI/Home/Start.prefab");

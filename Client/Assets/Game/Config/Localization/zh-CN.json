@@ -949,5 +949,12 @@
   "ui.character.error": "操作失败，请返回后重试。",
   "ui.character.insufficient": "金币不足。",
   "ui.character.read_failed": "金币记录无法读取，请检查存档。",
-  "ui.character.not_owned": "尚未拥有此角色。"
+  "ui.character.not_owned": "尚未拥有此角色。",
+  "ui.survivor.modifier.title": "{0} · {1}",
+  "ui.survivor.modifier.Pierce": "穿透",
+  "ui.survivor.modifier.Explosion": "爆炸",
+  "ui.survivor.modifier.Split": "分裂",
+  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n同一目标只命中一次",
+  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n首次触发，不重复直击",
+  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n首次触发，子弹不再强化"
 }

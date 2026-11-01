@@ -32,6 +32,9 @@ namespace Game
         /// <summary>已确认的紫火箭/射线短尾，使用显式材质；只从本次权威姿态采样。</summary>
         [SerializeField] private LineRenderer purpleWeaponTail;
         private float purpleTailLength;
+        /// <summary>随弹丸资源预加载的幸存者冲击模板，模板自身始终隐藏。</summary>
+        [SerializeField] private SurvivorBlastView survivorBlastTemplate;
+        public SurvivorBlastView SurvivorBlastTemplate => survivorBlastTemplate;
         /// <summary>普通弹的飞行曳光线，材质随正式Prefab预加载；每颗子弹只更新两个端点。</summary>
         [SerializeField] private LineRenderer flyingTracer;
         private float tracerLength, tracerDistance;
@@ -157,7 +160,7 @@ namespace Game
             if(level==appliedPowerLevel)return;
             if(powerRenderers==null)
             {
-                powerRenderers=Array.FindAll(GetComponentsInChildren<Renderer>(true), r => r != flyingTracer);originalPowerBlocks=new MaterialPropertyBlock[powerRenderers.Length];
+                powerRenderers=Array.FindAll(GetComponentsInChildren<Renderer>(true), r => r != flyingTracer && (survivorBlastTemplate==null || !r.transform.IsChildOf(survivorBlastTemplate.transform)));originalPowerBlocks=new MaterialPropertyBlock[powerRenderers.Length];
                 for(int i=0;i<powerRenderers.Length;i++){var block=new MaterialPropertyBlock();powerRenderers[i].GetPropertyBlock(block);originalPowerBlocks[i]=block;}
                 powerParticles=GetComponentsInChildren<ParticleSystem>(true);
                 originalStartColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];originalLifeColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];

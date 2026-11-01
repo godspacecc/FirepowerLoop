@@ -949,5 +949,12 @@
   "ui.character.error": "Unable to complete. Return and retry.",
   "ui.character.insufficient": "Not enough gold.",
   "ui.character.read_failed": "Unable to read your gold record.",
-  "ui.character.not_owned": "Character not owned."
+  "ui.character.not_owned": "Character not owned.",
+  "ui.survivor.modifier.title": "{0} · {1}",
+  "ui.survivor.modifier.Pierce": "Piercing",
+  "ui.survivor.modifier.Explosion": "Explosion",
+  "ui.survivor.modifier.Split": "Split",
+  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · Extra targets {2}→{3}\nOne hit per target",
+  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nFirst hit; excludes target",
+  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nFirst hit; no child modifiers"
 }

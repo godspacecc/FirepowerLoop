@@ -5,6 +5,13 @@ namespace Game
 {
     public sealed partial class ArcadeCombatViewController
     {
+        /// <summary>将局部爆心转换到地图坐标，表现池由既有投射物控制器拥有。</summary>
+        public void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity)
+        {
+            if(projectilePresentation==null||mapRoot==null)return;
+            projectilePresentation.SetSurvivorBlast(id,mapRoot.TransformPoint(World(position,0)),radius,progress,capacity);
+        }
+        public void RemoveSurvivorBlast(int id)=>projectilePresentation?.RemoveSurvivorBlast(id);
         /// <summary>在无人机高度显示支援弹丸；不改规则平面碰撞。</summary>
         public void SetDroneProjectile(int id,Vector2 position,Vector2 direction,string resource,float height)
         {

@@ -31,6 +31,9 @@ namespace Game
         void BeginSurvivorDayNight() { }
         /// <summary>只读幸存者本局有效时间，供昼夜表现投影。</summary>
         void SetSurvivorTime(double elapsedSeconds) { }
+        /// <summary>幸存者权威爆炸的纯视觉采样；容量只限制表现，不影响伤害。</summary>
+        void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
+        void RemoveSurvivorBlast(int id) { }
         /// <summary>只显示本机区域入口和剩余物品；不能从此端口领取、计时或发放积分。</summary>
         void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters parameters,
             bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds) { }

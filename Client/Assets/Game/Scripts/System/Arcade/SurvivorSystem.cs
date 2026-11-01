@@ -93,7 +93,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -142,7 +142,7 @@ namespace Game
             var m=Model;if(!m.Active||config==null||upgradeId<1||upgradeId>config.Upgrades.Count)return false;
             var definition=config.Upgrades[upgradeId-1];
             // 停用项即使收到旧选择请求也不能再获得。
-            if(definition.Weight<=0)return false;
+            if(definition.Weight<=0||!CanChooseModifier(definition,upgradeId))return false;
             if(definition.IsWeapon&&(m.Loadout==null||!m.Loadout.CanUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind))))return false;
             if(!m.State.Choose(revision,upgradeId))return false;
             if(definition.IsWeapon)
@@ -158,7 +158,7 @@ namespace Game
         private void Offer()
         {
             var m=Model;var ids=Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
-                var u=config.Upgrades[id-1];return u.Weight>0 && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
+                var u=config.Upgrades[id-1];return u.Weight>0 && CanChooseModifier(u,id) && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
             }).ToArray();
             int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
             m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
@@ -206,13 +206,13 @@ namespace Game
             bool usesHorde=TickHorde(dt);if(m.Paused)return;
             if(spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             TickEnemies(dt);RebuildHordeSpatial();
-            AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
+            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             if(!SyncEnemyPresentations())return;
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
-                else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,true);
+                else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,!IsSplitProjectile(b.Id));
             foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
             if(m.Health<=0)TryFinish(out _);else Publish();
         }
@@ -234,7 +234,7 @@ namespace Game
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
         private void Fire()
         {
-            if(fireClock>0||bullets.Count>=config.MaxProjectiles)return;
+            if(fireClock>0)return;
             EnsureHordeSpatial();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
             float range=Mathf.Min(config.AimRange,level.Range);enemySpatial.QueryCircle(player.x,player.y,range,enemyCandidates);
@@ -245,7 +245,9 @@ namespace Game
                 if(distance>nearest||!view.IsArenaTargetVisible(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
                 if(distance==nearest&&target!=0&&id>target)continue;target=id;nearest=distance;
             }
-            if(target==0||!TryConsumeRifleRound())return;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
+            EnsureRifleMagazine();
+            if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary()||!TryConsumeRifleRound())return;
+            facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
         /// <summary>常驻无人机优先保护玩家附近目标；升级暂停和结算时此入口不执行。</summary>
@@ -262,13 +264,13 @@ namespace Game
                 if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!view.IsArenaTargetVisible(e.Position)||Blocked(dronePosition,e.Position)||!CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y))continue;
                 float distance=(e.Position-player).sqrMagnitude;if(distance<nearest||(distance==nearest&&(target==null||id<target.Id))){target=e;nearest=distance;}
             }
-            if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&bullets.Count<config.MaxProjectiles){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
+            if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&CanFirePrimary()){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
             view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
         }
         /// <summary>全部武器共享弹丸预算及命中入口，弹丸保留发射时伤害。</summary>
         private void Shoot(Vector2 origin,Vector2 direction,SurvivorWeaponLevelDefinition level,string kind)
         {
-            var b=new ArcadeProjectileRuntime{Id=++identity,Position=origin,Velocity=direction*level.ProjectileSpeed,Damage=(int)Math.Min(int.MaxValue,level.Damage*(1+Bonus("Damage"))),RemainingSeconds=level.ProjectileLifetimeSeconds,SourceWeaponId=kind=="Drone"?"survivor.drone":config.WeaponId};bullets.Add(b.Id,b);
+            var b=new ArcadeProjectileRuntime{Id=++identity,Position=origin,Velocity=direction*level.ProjectileSpeed,Damage=(int)Math.Min(int.MaxValue,level.Damage*(1+Bonus("Damage"))),RemainingSeconds=level.ProjectileLifetimeSeconds,SourceWeaponId=kind=="Drone"?"survivor.drone":config.WeaponId};bullets.Add(b.Id,b);SnapshotModifiers(b,kind);
         }
         /// <summary>步进弹丸线段检查实体阻挡，防止穿越农场围栏。</summary>
         private bool Blocked(Vector2 from,Vector2 to){int steps=Math.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/.1f));for(int i=0;i<=steps;i++){var p=Vector2.Lerp(from,to,(float)i/steps);foreach(var o in obstacles)if(o.BlocksProjectiles&&Mathf.Abs(p.x-o.Center.x)<=o.HalfExtents.x&&Mathf.Abs(p.y-o.Center.y)<=o.HalfExtents.y)return true;}return false;}
@@ -286,29 +288,7 @@ namespace Game
             var drop=drops[existing];
             drops[existing]=(drop.Position,Math.Min(long.MaxValue-config.ExperiencePerKill,drop.Experience)+config.ExperiencePerKill);
         }
-        /// <summary>按弹道线段结算击杀，同落点与满额掉落合并经验而不丢失。</summary>
-        private void AdvanceBullets(float dt)
-        {
-            EnsureHordeSpatial();
-            expiredBullets.Clear();
-            foreach(var b in bullets.Values){
-                var old=b.Position;b.Position+=b.Velocity*dt;b.RemainingSeconds-=dt;bool remove=b.RemainingSeconds<=0||Blocked(old,b.Position);
-                // 站立身体走空间候选；少量爬出身体继续正式胶囊精判，避免截掉远离根节点的手臂。
-                enemySpatial.QuerySegment(old.x,old.y,b.Position.x,b.Position.y,maximumEnemyRadius,enemyCandidates);
-                if(!remove&&groundEntryCandidates.Count>0){foreach(int id in groundEntryCandidates)if(!enemyCandidates.Contains(id))enemyCandidates.Add(id);enemyCandidates.Sort();}
-                if(!remove)foreach(int id in enemyCandidates){
-                    if(!enemies.TryGetValue(id,out var e))continue;
-                    var segment=b.Position-old;float t=segment.sqrMagnitude==0?0:Mathf.Clamp01(Vector2.Dot(e.Position-old,segment)/segment.sqrMagnitude);
-                    if(e.GroundEntry.Active?!TryGroundBodySweep(e,old,b.Position,b.SourceWeaponId=="survivor.drone"?droneVisual.VisualOffset.y:.75f,out _):Vector2.Distance(e.Position,old+segment*t)>EnemyRadius(e))continue;
-                    e.Health=Math.Max(0,e.Health-b.Damage);remove=true;if(e.Health==0){enemies.Remove(e.Id);presentedEnemies.Remove(e.Id);view.RemoveEnemy(e.Id,true);Model.Kills++;TryDropGold(e);
-                        if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))
-                            AddExperienceDrop(e.Position);}
-                    break;
-                }
-                if(remove){expiredBullets.Add(b.Id);view.RemoveProjectile(b.Id);}
-            }
-            foreach(int id in expiredBullets)bullets.Remove(id);
-            spatialFrameReady=false;
-        }
+        /// <summary>强化弹结算由同一权威分部完成，不引入第二套命中来源。</summary>
+        private void AdvanceBullets(float dt)=>AdvanceModifierBullets(dt);
     }
 }

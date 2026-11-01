@@ -254,11 +254,11 @@ namespace Game
         /// <summary>
         /// 确定放弃
         /// </summary>
-        public static string ArcadeAbandonConfirm => Loc.T("ui.arcade.abandon.confirm");
+        public static string ArcadeAbandonConfirm2 => Loc.T("ui.arcade.abandon.confirm");
         /// <summary>
         /// 再次点击“放弃本局”确认清空本局数据
         /// </summary>
-        public static string ArcadeAbandonConfirm2 => Loc.T("ui.arcade.abandon_confirm");
+        public static string ArcadeAbandonConfirm => Loc.T("ui.arcade.abandon_confirm");
         /// <summary>
         /// 军械库入口 · 清场后开启
         /// </summary>
@@ -2152,6 +2152,54 @@ namespace Game
         /// </summary>
         public static string ArcadeVolcanoRound4 => Loc.T("ui.arcade.volcano.round.4");
         /// <summary>
+        /// {0} 金币 · 购买
+        /// </summary>
+        public static string CharacterBuy(object arg0) => Loc.T("ui.character.buy", arg0);
+        /// <summary>
+        /// 操作失败，请返回后重试。
+        /// </summary>
+        public static string CharacterError => Loc.T("ui.character.error");
+        /// <summary>
+        /// 金币不足。
+        /// </summary>
+        public static string CharacterInsufficient => Loc.T("ui.character.insufficient");
+        /// <summary>
+        /// 未解锁
+        /// </summary>
+        public static string CharacterLocked => Loc.T("ui.character.locked");
+        /// <summary>
+        /// 尚未拥有此角色。
+        /// </summary>
+        public static string CharacterNotOwned => Loc.T("ui.character.not_owned");
+        /// <summary>
+        /// 已拥有
+        /// </summary>
+        public static string CharacterOwned => Loc.T("ui.character.owned");
+        /// <summary>
+        /// 金币记录无法读取，请检查存档。
+        /// </summary>
+        public static string CharacterReadFailed => Loc.T("ui.character.read_failed");
+        /// <summary>
+        /// 选择
+        /// </summary>
+        public static string CharacterSelect => Loc.T("ui.character.select");
+        /// <summary>
+        /// 未解锁角色可在商店购买。
+        /// </summary>
+        public static string CharacterSelectHelp => Loc.T("ui.character.select_help");
+        /// <summary>
+        /// 选择角色
+        /// </summary>
+        public static string CharacterSelectTitle => Loc.T("ui.character.select_title");
+        /// <summary>
+        /// 已选择
+        /// </summary>
+        public static string CharacterSelected => Loc.T("ui.character.selected");
+        /// <summary>
+        /// 购买后永久解锁，角色只有外观差异。
+        /// </summary>
+        public static string CharacterShopHelp => Loc.T("ui.character.shop_help");
+        /// <summary>
         /// 基础内搭
         /// </summary>
         public static string ClothingEmpty => Loc.T("ui.clothing.empty");
@@ -3424,6 +3472,18 @@ namespace Game
         /// </summary>
         public static string SettingsWindowed => Loc.T("ui.settings.windowed");
         /// <summary>
+        /// 金币  {0}
+        /// </summary>
+        public static string ShopBalance(object arg0) => Loc.T("ui.shop.balance", arg0);
+        /// <summary>
+        /// 商品暂未开放
+        /// </summary>
+        public static string ShopEmpty => Loc.T("ui.shop.empty");
+        /// <summary>
+        /// 商店
+        /// </summary>
+        public static string ShopTitle => Loc.T("ui.shop.title");
+        /// <summary>
         /// 检查更新
         /// </summary>
         public static string StartCheckUpdate => Loc.T("ui.start.check_update");
@@ -3578,6 +3638,30 @@ namespace Game
         /// </summary>
         public static string SurvivorArcade => Loc.T("ui.survivor.arcade");
         /// <summary>
+        /// 默认主角
+        /// </summary>
+        public static string SurvivorCharacter0 => Loc.T("ui.survivor.character.0");
+        /// <summary>
+        /// 男衬衫
+        /// </summary>
+        public static string SurvivorCharacter1 => Loc.T("ui.survivor.character.1");
+        /// <summary>
+        /// 女商务装
+        /// </summary>
+        public static string SurvivorCharacter3 => Loc.T("ui.survivor.character.3");
+        /// <summary>
+        /// 女长外套
+        /// </summary>
+        public static string SurvivorCharacter4 => Loc.T("ui.survivor.character.4");
+        /// <summary>
+        /// 男连帽衫
+        /// </summary>
+        public static string SurvivorCharacter7 => Loc.T("ui.survivor.character.7");
+        /// <summary>
+        /// 男警服
+        /// </summary>
+        public static string SurvivorCharacter9 => Loc.T("ui.survivor.character.9");
+        /// <summary>
         /// 选择一项强化
         /// </summary>
         public static string SurvivorChoose => Loc.T("ui.survivor.choose");
@@ -3585,6 +3669,30 @@ namespace Game
         /// 进入幸存者模式失败，请重试
         /// </summary>
         public static string SurvivorErrorOpen => Loc.T("ui.survivor.error.open");
+        /// <summary>
+        /// 返回
+        /// </summary>
+        public static string SurvivorGoldBack => Loc.T("ui.survivor.gold.back");
+        /// <summary>
+        /// 金币读取失败：{0}
+        /// </summary>
+        public static string SurvivorGoldError(object arg0) => Loc.T("ui.survivor.gold.error", arg0);
+        /// <summary>
+        /// 金币将用于后续开放的局外成长。
+        /// </summary>
+        public static string SurvivorGoldFuture => Loc.T("ui.survivor.gold.future");
+        /// <summary>
+        /// 击败敌人有概率掉落金币，拾取后永久保留。
+        /// </summary>
+        public static string SurvivorGoldHelp => Loc.T("ui.survivor.gold.help");
+        /// <summary>
+        /// 持有金币
+        /// </summary>
+        public static string SurvivorGoldOwned => Loc.T("ui.survivor.gold.owned");
+        /// <summary>
+        /// 开始生存
+        /// </summary>
+        public static string SurvivorGoldStart => Loc.T("ui.survivor.gold.start");
         /// <summary>
         /// 等级 {0}    经验  {1} / {2}
         /// </summary>
@@ -3594,7 +3702,7 @@ namespace Game
         /// </summary>
         public static string SurvivorHudHealth(object arg0, object arg1) => Loc.T("ui.survivor.hud.health", arg0, arg1);
         /// <summary>
-        /// 分数  {0}
+        /// 本局金币  {0}
         /// </summary>
         public static string SurvivorHudScore(object arg0) => Loc.T("ui.survivor.hud.score", arg0);
         /// <summary>
@@ -3605,6 +3713,37 @@ namespace Game
         /// 幸存者模式
         /// </summary>
         public static string SurvivorMode => Loc.T("ui.survivor.mode");
+        /// <summary>
+        /// 爆炸
+        /// </summary>
+        public static string SurvivorModifierExplosion => Loc.T("ui.survivor.modifier.Explosion");
+        /// <summary>
+        /// Lv{0}→{1} · {2}→{3}米 · {4}→{5}%
+        /// 首次触发，不重复直击
+        /// </summary>
+        public static string SurvivorModifierExplosionDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Explosion.detail", arg0, arg1, arg2, arg3, arg4, arg5);
+        /// <summary>
+        /// 穿透
+        /// </summary>
+        public static string SurvivorModifierPierce => Loc.T("ui.survivor.modifier.Pierce");
+        /// <summary>
+        /// Lv{0}→{1} · 额外穿透 {2}→{3}人
+        /// 同一目标只命中一次
+        /// </summary>
+        public static string SurvivorModifierPierceDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.modifier.Pierce.detail", arg0, arg1, arg2, arg3);
+        /// <summary>
+        /// 分裂
+        /// </summary>
+        public static string SurvivorModifierSplit => Loc.T("ui.survivor.modifier.Split");
+        /// <summary>
+        /// Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%
+        /// 首次触发，子弹不再强化
+        /// </summary>
+        public static string SurvivorModifierSplitDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Split.detail", arg0, arg1, arg2, arg3, arg4, arg5);
+        /// <summary>
+        /// {0} · {1}
+        /// </summary>
+        public static string SurvivorModifierTitle(object arg0, object arg1) => Loc.T("ui.survivor.modifier.title", arg0, arg1);
         /// <summary>
         /// 战斗已暂停
         /// </summary>
@@ -3618,9 +3757,9 @@ namespace Game
         /// </summary>
         public static string SurvivorResultRetry(object arg0) => Loc.T("ui.survivor.result.retry", arg0);
         /// <summary>
-        /// 本局分数  {0}
+        /// 本局获得  {0}  /  持有金币  {1}
         /// </summary>
-        public static string SurvivorResultScore(object arg0) => Loc.T("ui.survivor.result.score", arg0);
+        public static string SurvivorResultScore(object arg0, object arg1) => Loc.T("ui.survivor.result.score", arg0, arg1);
         /// <summary>
         /// 本局结束
         /// </summary>
@@ -3674,10 +3813,33 @@ namespace Game
         /// </summary>
         public static string SurvivorUpgrade5Title => Loc.T("ui.survivor.upgrade.5.title");
         /// <summary>
+        /// 弹夹容量提升
+        /// </summary>
+        public static string SurvivorUpgrade8Title => Loc.T("ui.survivor.upgrade.8.title");
+        /// <summary>
+        /// 换弹加速
+        /// </summary>
+        public static string SurvivorUpgrade9Title => Loc.T("ui.survivor.upgrade.9.title");
+        /// <summary>
+        /// 弹夹容量：{0} 发 → {1} 发
+        /// 本次增加 {2} 发（基础容量的10%）
+        /// </summary>
+        public static string SurvivorUpgradeMagazineDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.magazine_detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 拾取半径：{0} 米 → {1} 米
+        /// 本次增加 {2} 米
+        /// </summary>
+        public static string SurvivorUpgradePickupDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.pickup_detail", arg0, arg1, arg2);
+        /// <summary>
         /// 等级 {0} → {1}
         /// 累计效果 {2} → {3}
         /// </summary>
         public static string SurvivorUpgradeProgress(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.upgrade.progress", arg0, arg1, arg2, arg3);
+        /// <summary>
+        /// 换弹时间：{0} 秒 → {1} 秒
+        /// 本次缩短 {2} 秒
+        /// </summary>
+        public static string SurvivorUpgradeReloadDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.reload_detail", arg0, arg1, arg2);
         /// <summary>
         /// 无人机
         /// </summary>

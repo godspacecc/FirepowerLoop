@@ -21,6 +21,12 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         AmountPerLevel = _buf.ReadFloat();
         MaximumBonus = _buf.ReadFloat();
         MaxLevel = _buf.ReadInt();
+        EffectCountBase = _buf.ReadInt();
+        EffectCountStep = _buf.ReadInt();
+        EffectRadiusBase = _buf.ReadFloat();
+        EffectRadiusStep = _buf.ReadFloat();
+        EffectDamageBase = _buf.ReadFloat();
+        EffectDamageStep = _buf.ReadFloat();
     }
 
     public static SurvivorUpgradeConfig DeserializeSurvivorUpgradeConfig(ByteBuf _buf)
@@ -34,6 +40,12 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     public readonly float AmountPerLevel;
     public readonly float MaximumBonus;
     public readonly int MaxLevel;
+    public readonly int EffectCountBase;
+    public readonly int EffectCountStep;
+    public readonly float EffectRadiusBase;
+    public readonly float EffectRadiusStep;
+    public readonly float EffectDamageBase;
+    public readonly float EffectDamageStep;
    
     public const int __ID__ = 382383880;
     public override int GetTypeId() => __ID__;
@@ -51,6 +63,12 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         + "AmountPerLevel:" + AmountPerLevel + ","
         + "MaximumBonus:" + MaximumBonus + ","
         + "MaxLevel:" + MaxLevel + ","
+        + "EffectCountBase:" + EffectCountBase + ","
+        + "EffectCountStep:" + EffectCountStep + ","
+        + "EffectRadiusBase:" + EffectRadiusBase + ","
+        + "EffectRadiusStep:" + EffectRadiusStep + ","
+        + "EffectDamageBase:" + EffectDamageBase + ","
+        + "EffectDamageStep:" + EffectDamageStep + ","
         + "}";
     }
 }

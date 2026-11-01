@@ -30,5 +30,12 @@
   "ui.survivor.character.7": {"zh-CN": "男连帽衫", "en-US": "Hoodie"},
   "ui.survivor.character.3": {"zh-CN": "女商务装", "en-US": "Business suit"},
   "ui.survivor.character.4": {"zh-CN": "女长外套", "en-US": "Long coat"},
-  "ui.survivor.character.9": {"zh-CN": "男警服", "en-US": "Police uniform"}
+  "ui.survivor.character.9": {"zh-CN": "男警服", "en-US": "Police uniform"},
+  "ui.survivor.modifier.title": {"zh-CN": "{0} · {1}", "en-US": "{0} · {1}"},
+  "ui.survivor.modifier.Pierce": {"zh-CN": "穿透", "en-US": "Piercing"},
+  "ui.survivor.modifier.Explosion": {"zh-CN": "爆炸", "en-US": "Explosion"},
+  "ui.survivor.modifier.Split": {"zh-CN": "分裂", "en-US": "Split"},
+  "ui.survivor.modifier.Pierce.detail": {"zh-CN": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n同一目标只命中一次", "en-US": "Lv{0}→{1} · Extra targets {2}→{3}\nOne hit per target"},
+  "ui.survivor.modifier.Explosion.detail": {"zh-CN": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n首次触发，不重复直击", "en-US": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nFirst hit; excludes target"},
+  "ui.survivor.modifier.Split.detail": {"zh-CN": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n首次触发，子弹不再强化", "en-US": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nFirst hit; no child modifiers"}
 }

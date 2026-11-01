@@ -53,6 +53,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         HordeNearEvery = _buf.ReadInt();
         HordeActivationBudget = _buf.ReadInt();
         HordeSpawnAttempts = _buf.ReadInt();
+        MaxSplitProjectiles = _buf.ReadInt();
+        MaxBlastEffects = _buf.ReadInt();
     }
 
     public static SurvivorRuleConfig DeserializeSurvivorRuleConfig(ByteBuf _buf)
@@ -98,6 +100,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public readonly int HordeNearEvery;
     public readonly int HordeActivationBudget;
     public readonly int HordeSpawnAttempts;
+    public readonly int MaxSplitProjectiles;
+    public readonly int MaxBlastEffects;
    
     public const int __ID__ = -595115244;
     public override int GetTypeId() => __ID__;
@@ -147,6 +151,8 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
         + "HordeNearEvery:" + HordeNearEvery + ","
         + "HordeActivationBudget:" + HordeActivationBudget + ","
         + "HordeSpawnAttempts:" + HordeSpawnAttempts + ","
+        + "MaxSplitProjectiles:" + MaxSplitProjectiles + ","
+        + "MaxBlastEffects:" + MaxBlastEffects + ","
         + "}";
     }
 }

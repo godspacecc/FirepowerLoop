@@ -65,6 +65,9 @@ namespace FirepowerLoop.Arcade
         public int MaxAliveEnemies { get; private set; }
         /// <summary>来自幸存者权威规则表的 MaxProjectiles。</summary>
         public int MaxProjectiles { get; private set; }
+        /// <summary>分裂弹与爆炸表现的独立预算，来自幸存者权威配置。</summary>
+        public int MaxSplitProjectiles { get; private set; }
+        public int MaxBlastEffects { get; private set; }
         /// <summary>来自幸存者权威规则表的 MaxDrops。</summary>
         public int MaxDrops { get; private set; }
         /// <summary>来自幸存者权威规则表的 InitialExperienceThreshold。</summary>
@@ -127,9 +130,14 @@ namespace FirepowerLoop.Arcade
                 throw new ArgumentException("幸存者经验掉率必须在0到1之间");
             if (!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.ExperienceVisualPrefabName,false,out var experienceAddress,out var experienceError))
                 throw new ArgumentException("幸存者经验模型无效："+experienceError);
-            var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight)).ToArray();
+            var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight,x.EffectCountBase,x.EffectCountStep,x.EffectRadiusBase,x.EffectRadiusStep,x.EffectDamageBase,x.EffectDamageStep)).ToArray();
             // 有限项目选满后仍须有可选项；停用项不计入兜底候选。
             if (upgrades.Select(x => x.Kind).Distinct().Count() != upgrades.Length || !upgrades.Any(x => x.MaxLevel == 0 && x.Weight > 0)) throw new ArgumentException("幸存者需要至少一种启用的无限强化且类型不重复");
+            if(r.MaxSplitProjectiles<0||r.MaxSplitProjectiles>=r.MaxProjectiles||r.MaxBlastEffects<1)
+                throw new ArgumentException("强化弹丸与特效预算无效");
+            foreach(var owner in new[]{"Rifle","Drone"})
+                foreach(var effect in new[]{"Pierce","Explosion","Split"})
+                    if(upgrades.Count(u=>u.Kind==owner+effect)!=1)throw new ArgumentException("武器强化必须完整配置");
             if(r.WeaponSlots<1||r.WeaponSlots>3)throw new ArgumentException("幸存者武器槽必须为1至3");
             var weaponLevels=tables.TbSurvivorWeaponLevel.DataList.Select(x=>new SurvivorWeaponLevelDefinition(x.Kind,x.Level,x.Damage,x.FireIntervalSeconds,x.Range,x.ProjectileSpeed,x.ProjectileLifetimeSeconds)).ToArray();
             foreach(var kind in new[]{"Rifle","Drone"})
@@ -170,6 +178,7 @@ namespace FirepowerLoop.Arcade
                 EnemySpeedGrowthPerMinute = r.EnemySpeedGrowthPerMinute,
                 MaxAliveEnemies = r.MaxAliveEnemies,
                 MaxProjectiles = r.MaxProjectiles,
+                MaxSplitProjectiles=r.MaxSplitProjectiles,MaxBlastEffects=r.MaxBlastEffects,
                 MaxDrops = r.MaxDrops,
                 InitialExperienceThreshold = r.InitialExperienceThreshold,
                 ExperienceThresholdGrowth = r.ExperienceThresholdGrowth,
@@ -201,14 +210,30 @@ namespace FirepowerLoop.Arcade
         public int Weight { get; }
         /// <summary>武器候选使用独立装备等级，不把全局属性层数当武器等级。</summary>
         public bool IsWeapon => Kind=="Rifle"||Kind=="Drone";
+        /// <summary>独立强化的武器归属与效果；基础武器升级不作为效果等级。</summary>
+        public bool IsModifier => ModifierKind!=null;
+        public string TargetWeapon => Kind.StartsWith("Rifle",StringComparison.Ordinal)?"Rifle":Kind.StartsWith("Drone",StringComparison.Ordinal)?"Drone":null;
+        public string ModifierKind => TargetWeapon!=null&&Kind.Length>TargetWeapon.Length?Kind.Substring(TargetWeapon.Length):null;
+        private readonly int effectCountBase,effectCountStep;
+        private readonly float effectRadiusBase,effectRadiusStep,effectDamageBase,effectDamageStep;
+        /// <summary>等级零表示尚未取得，所有数值从权威配置线性求值。</summary>
+        public int EffectCount(int level)=>level<=0?0:effectCountBase+(Math.Min(level,MaxLevel)-1)*effectCountStep;
+        public float EffectRadius(int level)=>level<=0?0:effectRadiusBase+(Math.Min(level,MaxLevel)-1)*effectRadiusStep;
+        public float EffectDamage(int level)=>level<=0?0:effectDamageBase+(Math.Min(level,MaxLevel)-1)*effectDamageStep;
         /// <summary>构造并拒绝未知类型及无效数值。</summary>
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel)
             :this(id,kind,amountPerLevel,maximumBonus,maxLevel,10) { }
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
-        public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight)
+        public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight,int countBase=0,int countStep=0,float radiusBase=0,float radiusStep=0,float damageBase=0,float damageStep=0)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
             Id = id; Kind = kind; AmountPerLevel = amountPerLevel; MaximumBonus = maximumBonus; MaxLevel = maxLevel;Weight=weight;
+            effectCountBase=countBase;effectCountStep=countStep;effectRadiusBase=radiusBase;effectRadiusStep=radiusStep;effectDamageBase=damageBase;effectDamageStep=damageStep;
+            if(IsModifier&&(maxLevel!=3||countBase<0||countStep<0||
+                new[]{radiusBase,radiusStep,damageBase,damageStep}.Any(v=>float.IsNaN(v)||float.IsInfinity(v)||v<0)||
+                (ModifierKind=="Pierce"&&countBase<1)||(ModifierKind=="Split"&&(countBase<2||damageBase<=0))||
+                (ModifierKind=="Explosion"&&(radiusBase<=0||damageBase<=0))||EffectCount(3)>16||EffectDamage(3)>1))
+                throw new ArgumentException("武器强化三级参数无效");
         }
         /// <summary>返回累计加成；伤害/射速/移速为比例，生命/拾取为绝对值。</summary>
         public double BonusAtLevel(int level)

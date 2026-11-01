@@ -668,6 +668,8 @@
         <var name="HordeActivationBudget" type="int"/>
         <var name="HordeSpawnAttempts" type="int"/>
 
+        <var name="MaxSplitProjectiles" type="int"/>
+        <var name="MaxBlastEffects" type="int"/>
     </bean>
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorUpgradeConfig" group="e">
@@ -677,6 +679,12 @@
         <var name="AmountPerLevel" type="float"/>
         <var name="MaximumBonus" type="float"/>
         <var name="MaxLevel" type="int"/>
+        <var name="EffectCountBase" type="int"/>
+        <var name="EffectCountStep" type="int"/>
+        <var name="EffectRadiusBase" type="float"/>
+        <var name="EffectRadiusStep" type="float"/>
+        <var name="EffectDamageBase" type="float"/>
+        <var name="EffectDamageStep" type="float"/>
     </bean>
     <!-- 幸存者独立武器逐级参数，不改变闯关限时支援。 -->
     <bean name="SurvivorWeaponLevelConfig" group="e">

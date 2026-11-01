@@ -294,6 +294,7 @@ namespace Game
 
         public void ClearArcadeProjectiles()
         {
+            ClearSurvivorBlasts();
             var ids = new List<int>(arcadeProjectileIds);
             for (var i = 0; i < ids.Count; i++)
                 RemoveProjectile(ids[i]);
@@ -325,6 +326,7 @@ namespace Game
 
         private void ReleaseAllViews()
         {
+            ClearSurvivorBlasts();
             var ids = new List<int>(activeViews.Keys);
             for (var i = 0; i < ids.Count; i++)
             {
