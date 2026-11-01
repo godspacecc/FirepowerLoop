@@ -8,6 +8,9 @@ namespace Game
         private SurvivorHudUI UI => (SurvivorHudUI)BaseUI;
         /// <summary>可见期更新与事件订阅由同一开关成对释放。</summary>
         private bool joystickRegistered;
+        /// <summary>实时时钟仅在可见期按秒采样、按分钟写文本，不受游戏时间缩放影响。</summary>
+        private float nextClockSample;
+        private long renderedClockMinute=long.MinValue;
         /// <summary>列表绑定只读取当前装备快照，空槽与已有武器共用同一Box。</summary>
         private string[] weaponKinds=System.Array.Empty<string>();
         public override bool BlocksGame => false;
@@ -23,11 +26,12 @@ namespace Game
             this.RegisterEvent<MobileControlLayoutChangedEvent>(_=>{if(IsShow())RefreshJoystick();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             UI.BtnPause.onClick.AddListener(() => this.GetSystem<HotKeySystem>().TryExecuteAction(HotKeyActionIds.TogglePause));
             this.RegisterEvent<SurvivorChangedEvent>(_ => { if(IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
-            this.RegisterEvent<LanguageChangedEvent>(_ => { if(IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
+            this.RegisterEvent<LanguageChangedEvent>(_ => { if(IsShow()){Refresh();RenderLocalClock(System.DateTime.Now,true);} }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
         protected override void OnShow()
         {
-            if(!joystickRegistered){UIHelper.BlockingUIChanged+=OnBlockingUiChanged;LifeCycle.RegisterUpdate(RefreshJoystick);joystickRegistered=true;}
+            if(!joystickRegistered){UIHelper.BlockingUIChanged+=OnBlockingUiChanged;LifeCycle.RegisterUpdate(RefreshVisibleHud);joystickRegistered=true;}
+            nextClockSample=Time.realtimeSinceStartup+1f;RenderLocalClock(System.DateTime.Now,true);
             Canvas.ForceUpdateCanvases();RefreshJoystick();Refresh();
         }
         protected override void OnHide()=>ReleaseJoystick();
@@ -35,8 +39,26 @@ namespace Game
         /// <summary>隐藏、卸载和遮挡都通过官方松手入口清零虚拟轴。</summary>
         private void ReleaseJoystick()
         {
-            if(joystickRegistered){UIHelper.BlockingUIChanged-=OnBlockingUiChanged;LifeCycle.UnregisterUpdate(RefreshJoystick);joystickRegistered=false;}
+            if(joystickRegistered){UIHelper.BlockingUIChanged-=OnBlockingUiChanged;LifeCycle.UnregisterUpdate(RefreshVisibleHud);joystickRegistered=false;}
             if(UI!=null){UI.MoveJoystick.OnPointerUp(null);UI.MoveJoystickRoot.SetActive(false);}
+        }
+        /// <summary>可见期回调与摇杆共同注册；暂停只冻结游戏计时，不冻结本地时钟。</summary>
+        private void RefreshVisibleHud()
+        {
+            if(UI==null||!IsShow())return;
+            RefreshJoystick();
+            if(Time.realtimeSinceStartup<nextClockSample)return;
+            nextClockSample=Time.realtimeSinceStartup+1f;
+            RenderLocalClock(System.DateTime.Now,false);
+        }
+        /// <summary>缓存完整日期分钟，支持跨午夜、系统校时与语言切换；同分钟不改文字。</summary>
+        internal bool RenderLocalClock(System.DateTime now,bool force)
+        {
+            long minute=now.Ticks/System.TimeSpan.TicksPerMinute;
+            if(!force&&minute==renderedClockMinute)return false;
+            renderedClockMinute=minute;
+            UI.ClockText.text=Loc.T("ui.survivor.hud.clock",now.ToString("HH:mm",System.Globalization.CultureInfo.InvariantCulture));
+            return true;
         }
         private void OnBlockingUiChanged(bool blocked)=>RefreshJoystick();
         /// <summary>使用闯关同一份移动布局设置；仅渲染移动摇杆。</summary>

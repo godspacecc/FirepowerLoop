@@ -3694,6 +3694,10 @@ namespace Game
         /// </summary>
         public static string SurvivorGoldStart => Loc.T("ui.survivor.gold.start");
         /// <summary>
+        /// 当前时间 {0}
+        /// </summary>
+        public static string SurvivorHudClock(object arg0) => Loc.T("ui.survivor.hud.clock", arg0);
+        /// <summary>
         /// 等级 {0}    经验  {1} / {2}
         /// </summary>
         public static string SurvivorHudExperience(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.hud.experience", arg0, arg1, arg2);
@@ -3790,6 +3794,18 @@ namespace Game
         /// </summary>
         public static string SurvivorUpgrade1Title => Loc.T("ui.survivor.upgrade.1.title");
         /// <summary>
+        /// 静养
+        /// </summary>
+        public static string SurvivorUpgrade17Title => Loc.T("ui.survivor.upgrade.17.title");
+        /// <summary>
+        /// 休整
+        /// </summary>
+        public static string SurvivorUpgrade18Title => Loc.T("ui.survivor.upgrade.18.title");
+        /// <summary>
+        /// 再生
+        /// </summary>
+        public static string SurvivorUpgrade19Title => Loc.T("ui.survivor.upgrade.19.title");
+        /// <summary>
         /// 缩短自动射击间隔
         /// </summary>
         public static string SurvivorUpgrade2Detail => Loc.T("ui.survivor.upgrade.2.detail");
@@ -3822,16 +3838,31 @@ namespace Game
         /// </summary>
         public static string SurvivorUpgrade5Title => Loc.T("ui.survivor.upgrade.5.title");
         /// <summary>
-        /// 弹夹容量提升
+        /// 扩容弹夹
         /// </summary>
         public static string SurvivorUpgrade8Title => Loc.T("ui.survivor.upgrade.8.title");
         /// <summary>
-        /// 换弹加速
+        /// 快速弹夹
         /// </summary>
         public static string SurvivorUpgrade9Title => Loc.T("ui.survivor.upgrade.9.title");
         /// <summary>
-        /// 弹夹容量：{0} 发 → {1} 发
-        /// 本次增加 {2} 发（基础容量的10%）
+        /// 持续回血：{1}% → {2}%/秒
+        /// 最大生命比例；恢复三选一
+        /// </summary>
+        public static string SurvivorUpgradeRecoveryalwaysDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoveryAlways.detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 无伤{0}秒回血：{1}% → {2}%/秒
+        /// 最大生命比例；恢复三选一
+        /// </summary>
+        public static string SurvivorUpgradeRecoverysafeDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoverySafe.detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 站定{0}秒回血：{1}% → {2}%/秒
+        /// 最大生命比例；恢复三选一
+        /// </summary>
+        public static string SurvivorUpgradeRecoverystillDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoveryStill.detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 容量：{0} → {1} 发（+{2}）
+        /// 每级基础容量+10%；与快速弹夹互斥
         /// </summary>
         public static string SurvivorUpgradeMagazineDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.magazine_detail", arg0, arg1, arg2);
         /// <summary>
@@ -3845,8 +3876,8 @@ namespace Game
         /// </summary>
         public static string SurvivorUpgradeProgress(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.upgrade.progress", arg0, arg1, arg2, arg3);
         /// <summary>
-        /// 换弹时间：{0} 秒 → {1} 秒
-        /// 本次缩短 {2} 秒
+        /// 换弹：{0} → {1} 秒（-{2}）
+        /// 与扩容弹夹互斥
         /// </summary>
         public static string SurvivorUpgradeReloadDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.reload_detail", arg0, arg1, arg2);
         /// <summary>

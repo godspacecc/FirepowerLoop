@@ -93,6 +93,63 @@ namespace Game.Tests
                 }
             }finally{Object.DestroyImmediate(go);}
         }
+        /// <summary>时钟采用独立本地时间，跨分钟及日期刷新，同分钟不重复写文本。</summary>
+        [Test] public void HudClockUpdatesAcrossMinutesWithoutRepeatedWrites()
+        {
+            var architectureField=typeof(QFramework.Architecture<Game>).GetField("mArchitecture",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic);
+            var previous=architectureField.GetValue(null);GameObject instance=null;
+            var previousLoader=ResourceLoader.Current;
+            var cacheField=typeof(LocalizationLanguages).GetField("cachedConfig",BindingFlags.Static|BindingFlags.NonPublic);
+            var previousCache=cacheField.GetValue(null);
+            try{
+                ResourceLoader.Use(new LocalizationAssetResourceLoader());LocalizationLanguages.ResetForTests();
+                var arch=new Game();architectureField.SetValue(null,arch);var languageModel=new LocalizationModel();arch.RegisterModel(languageModel);
+                var loc=new LocalizationUtility(false);loc.LoadFromJson("zh-CN",System.IO.File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));arch.RegisterUtility(loc);
+                instance=Object.Instantiate(Bound<SurvivorHudUI>(Root+"SurvivorHud.prefab").gameObject);
+                var ctrl=new SurvivorHudUICtrl();typeof(BaseUICtrl).GetField("BaseUI",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(ctrl,instance.GetComponent<SurvivorHudUI>());
+                var method=typeof(SurvivorHudUICtrl).GetMethod("RenderLocalClock",BindingFlags.Instance|BindingFlags.NonPublic);
+                Assert.That(method,Is.Not.Null,"本地时钟尚未接入");
+                var field=typeof(SurvivorHudUI).GetField("ClockText");Assert.That(field,Is.Not.Null);
+                var clock=(TMP_Text)field.GetValue(instance.GetComponent<SurvivorHudUI>());Assert.That(clock,Is.Not.Null);
+                Assert.That(method.Invoke(ctrl,new object[]{new System.DateTime(2026,11,1,23,59,1),false}),Is.EqualTo(true));
+                Assert.That(clock.text,Does.Contain("23:59"));
+                Assert.That(method.Invoke(ctrl,new object[]{new System.DateTime(2026,11,1,23,59,59),false}),Is.EqualTo(false));
+                Assert.That(method.Invoke(ctrl,new object[]{new System.DateTime(2026,11,2,0,0,0),false}),Is.EqualTo(true));
+                Assert.That(clock.text,Does.Contain("00:00"));
+                loc.LoadFromJson("en-US",System.IO.File.ReadAllText("Assets/Game/Config/Localization/en-US.json"));
+                languageModel.SetLanguageCode("en-US");
+                Assert.That(method.Invoke(ctrl,new object[]{new System.DateTime(2026,11,2,0,0,1),true}),Is.EqualTo(true),"语言切换必须强刷");
+                Assert.That(clock.text,Does.StartWith("Local time"));
+                arch.RegisterSystem(new MobileInputSystem());arch.RegisterModel(new MobileControlLayoutModel());
+                arch.RegisterModel(new SurvivorModel{Active=true,Paused=true,State=new SurvivorRunState(10,5)});
+                typeof(BaseUICtrl).GetField("_isActive",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(ctrl,true);
+                typeof(SurvivorHudUICtrl).GetField("renderedClockMinute",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(ctrl,long.MinValue);
+                var tick=typeof(SurvivorHudUICtrl).GetMethod("RefreshVisibleHud",BindingFlags.Instance|BindingFlags.NonPublic);
+                float oldScale=Time.timeScale;
+                try{
+                    Time.timeScale=0;clock.text="paused";tick.Invoke(ctrl,null);
+                    Assert.That(clock.text,Does.StartWith("Local time"),"暂停时仍使用真实时钟");
+                    clock.text="same-frame";tick.Invoke(ctrl,null);Assert.That(clock.text,Is.EqualTo("same-frame"),"采样间隔内不重复写");
+                }finally{Time.timeScale=oldScale;}
+            }finally{if(instance!=null)Object.DestroyImmediate(instance);architectureField.SetValue(null,previous);ResourceLoader.Use(previousLoader);cacheField.SetValue(null,previousCache);}
+        }
+        /// <summary>时钟随HUD可见期回调一起解除，重复隐藏不会残留或误删其他订阅。</summary>
+        [Test] public void HudClockUpdateIsReleasedOnHideAndUnload()
+        {
+            var instance=Object.Instantiate(Bound<SurvivorHudUI>(Root+"SurvivorHud.prefab").gameObject);
+            var ctrl=new SurvivorHudUICtrl();const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            typeof(BaseUICtrl).GetField("BaseUI",flags).SetValue(ctrl,instance.GetComponent<SurvivorHudUI>());
+            var callback=(System.Action)System.Delegate.CreateDelegate(typeof(System.Action),ctrl,typeof(SurvivorHudUICtrl).GetMethod("RefreshVisibleHud",flags));
+            var updates=(System.Collections.IList)typeof(LifeCycle).GetField("Updates",BindingFlags.Static|BindingFlags.NonPublic).GetValue(null);
+            try{
+                int before=updates.Count;LifeCycle.RegisterUpdate(callback);
+                typeof(SurvivorHudUICtrl).GetField("joystickRegistered",flags).SetValue(ctrl,true);
+                typeof(SurvivorHudUICtrl).GetMethod("OnHide",flags).Invoke(ctrl,null);
+                Assert.That(updates.Contains(callback),Is.False);Assert.That(updates.Count,Is.EqualTo(before));
+                typeof(SurvivorHudUICtrl).GetMethod("OnUnload",flags).Invoke(ctrl,null);
+                Assert.That(updates.Count,Is.EqualTo(before));
+            }finally{LifeCycle.UnregisterUpdate(callback);Object.DestroyImmediate(instance);}
+        }
         [Test] public void Start_HasBoundSurvivorEntry()
         {
             var view=Bound<StartUI>("Assets/Game/Prefabs/UI/Home/Start.prefab");

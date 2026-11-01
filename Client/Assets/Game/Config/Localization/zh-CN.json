@@ -964,5 +964,6 @@
   "ui.survivor.upgrade.19.title": "再生",
   "ui.survivor.upgrade.RecoveryStill.detail": "站定{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
   "ui.survivor.upgrade.RecoverySafe.detail": "无伤{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
-  "ui.survivor.upgrade.RecoveryAlways.detail": "持续回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一"
+  "ui.survivor.upgrade.RecoveryAlways.detail": "持续回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
+  "ui.survivor.hud.clock": "当前时间 {0}"
 }

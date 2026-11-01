@@ -964,5 +964,6 @@
   "ui.survivor.upgrade.19.title": "Regeneration",
   "ui.survivor.upgrade.RecoveryStill.detail": "Still {0}s: {1}→{2}% max HP/s\nMoving resets; one recovery",
   "ui.survivor.upgrade.RecoverySafe.detail": "Safe {0}s: {1}→{2}% max HP/s\nDamage resets; one recovery",
-  "ui.survivor.upgrade.RecoveryAlways.detail": "Heal {1}→{2}% max HP/s\nChoose one recovery"
+  "ui.survivor.upgrade.RecoveryAlways.detail": "Heal {1}→{2}% max HP/s\nChoose one recovery",
+  "ui.survivor.hud.clock": "Local time {0}"
 }
