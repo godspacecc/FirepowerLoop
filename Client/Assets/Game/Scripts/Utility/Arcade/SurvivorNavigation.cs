@@ -18,12 +18,25 @@ namespace Game
         /// <summary>全体敌人共用距离和广搜队列，不按帧创建寻路对象。</summary>
         private readonly int[] distance,queue;
         /// <summary>固定场地障碍快照与当前目标格。</summary>
-        private readonly IReadOnlyList<ArcadeObstacleDefinition> obstacles;
+        private readonly ObstacleBounds[] obstacles;
+        /// <summary>按当前体型一次缓存膨胀边界，保留原判定的浮点运算顺序及内缩量。</summary>
+        private readonly struct ObstacleBounds
+        {
+            public readonly double X,Y,HalfX,HalfY,MinX,MaxX,MinY,MaxY;
+            public ObstacleBounds(ArcadeObstacleDefinition obstacle,float bodyRadius)
+            {
+                X=obstacle.Center.x;Y=obstacle.Center.y;
+                HalfX=obstacle.HalfExtents.x+bodyRadius-.00001;HalfY=obstacle.HalfExtents.y+bodyRadius-.00001;
+                MinX=X-HalfX;MaxX=X+HalfX;MinY=Y-HalfY;MaxY=Y+HalfY;
+            }
+        }
         private int goal=-1;
         /// <summary>一次构建静态可行走网格。</summary>
         public SurvivorNavigation(float halfWidth,float halfHeight,float bodyRadius,IReadOnlyList<ArcadeObstacleDefinition> blocking)
         {
-            width=halfWidth;height=halfHeight;radius=bodyRadius;obstacles=blocking;
+            width=halfWidth;height=halfHeight;radius=bodyRadius;
+            obstacles=new ObstacleBounds[blocking.Count];
+            for(int i=0;i<obstacles.Length;i++)obstacles[i]=new ObstacleBounds(blocking[i],radius);
             columns=Mathf.FloorToInt((width-radius)*2/Cell)+1;rows=Mathf.FloorToInt((height-radius)*2/Cell)+1;
             walkable=new bool[columns*rows];distance=new int[walkable.Length];queue=new int[walkable.Length];connections=new byte[walkable.Length];
             for(int i=0;i<walkable.Length;i++)walkable[i]=Clear(Point(i));
@@ -43,20 +56,25 @@ namespace Game
         private bool Clear(Vector2 p)
         {
             if(Mathf.Abs(p.x)>width-radius+.001f||Mathf.Abs(p.y)>height-radius+.001f)return false;
-            foreach(var o in obstacles)if(Math.Abs((double)p.x-o.Center.x)<o.HalfExtents.x+radius-.00001&&Math.Abs((double)p.y-o.Center.y)<o.HalfExtents.y+radius-.00001)return false;
+            for(int i=0;i<obstacles.Length;i++){var o=obstacles[i];if(Math.Abs((double)p.x-o.X)<o.HalfX&&Math.Abs((double)p.y-o.Y)<o.HalfY)return false;}
             return true;
         }
         /// <summary>精确线段与膨胀矩形求交；仅触及边界允许通过，不依赖采样步长。</summary>
         public bool CanTravel(Vector2 a,Vector2 b)
         {
             if(!Clear(a)||!Clear(b))return false;
-            foreach(var obstacle in obstacles)
+            // Slab沿用float差值；筛选同时覆盖其舍入后的隐含终点，避免边缘误放行。
+            double dx=b.x-a.x,dy=b.y-a.y,endX=a.x+dx,endY=a.y+dy;
+            double minX=Math.Min(Math.Min(a.x,b.x),endX),maxX=Math.Max(Math.Max(a.x,b.x),endX);
+            double minY=Math.Min(Math.Min(a.y,b.y),endY),maxY=Math.Max(Math.Max(a.y,b.y),endY);
+            for(int i=0;i<obstacles.Length;i++)
             {
+                var obstacle=obstacles[i];
+                // 只排除包围盒严格分离的障碍，擦边仍交给原精确线段判定。
+                if(maxX<obstacle.MinX||minX>obstacle.MaxX||maxY<obstacle.MinY||minY>obstacle.MaxY)continue;
                 double enter=0,exit=1;
-                // 微小内缩只消除浮点舍入，保持贴边行走和子线段判定一致。
-                double hx=obstacle.HalfExtents.x+radius-0.00001,hy=obstacle.HalfExtents.y+radius-0.00001;
-                if(Slab(a.x,b.x-a.x,obstacle.Center.x-hx,obstacle.Center.x+hx,ref enter,ref exit)&&
-                   Slab(a.y,b.y-a.y,obstacle.Center.y-hy,obstacle.Center.y+hy,ref enter,ref exit)&&enter<exit)return false;
+                if(Slab(a.x,dx,obstacle.MinX,obstacle.MaxX,ref enter,ref exit)&&
+                   Slab(a.y,dy,obstacle.MinY,obstacle.MaxY,ref enter,ref exit)&&enter<exit)return false;
             }
             return true;
         }

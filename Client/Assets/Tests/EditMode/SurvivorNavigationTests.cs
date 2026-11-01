@@ -6,7 +6,7 @@ using NUnit.Framework;
 using UnityEngine;
 namespace Game.Tests
 {
-    /// <summary>真实农场导航三项限定测试，每项覆盖全部配置入口。</summary>
+    /// <summary>真实农场导航与缓存边界限定测试，每项覆盖全部配置入口。</summary>
     public sealed class SurvivorNavigationTests
     {
         private SurvivorNavigation navigation;
@@ -27,6 +27,43 @@ namespace Game.Tests
             counted.Scans=0;
             for(int i=0;i<20;i++)cached.SetTarget(Resolve(new Vector2(layout.SpawnX+(i%2)*.8f,layout.SpawnY)));
             Assert.That(counted.Scans,Is.Zero,"玩家换格时应复用静态通路，不能重新扫描全图障碍");
+        }
+        /// <summary>追击热路径不为只读障碍枚举分配临时对象。</summary>
+        [Test] public void TravelChecksDoNotAllocateAfterConstruction()
+        {
+            var a=Resolve(new Vector2(-13,-16));var b=Resolve(new Vector2(13,-16));
+            for(int i=0;i<20;i++)navigation.CanTravel(a,b);
+            long before=System.GC.GetAllocatedBytesForCurrentThread();
+            for(int i=0;i<1000;i++)navigation.CanTravel(a,b);
+            long allocated=System.GC.GetAllocatedBytesForCurrentThread()-before;
+            Assert.That(allocated,Is.Zero,"重复追击检测不能产生枚举器垃圾");
+        }
+        /// <summary>构建后追击只读缓存边界，不反复枚举权威障碍集合。</summary>
+        [Test] public void TravelChecksReuseCachedObstacleBounds()
+        {
+            var counted=new CountingObstacles(obstacles);var cached=new SurvivorNavigation(width,height,radius,counted);
+            counted.Scans=0;cached.CanTravel(new Vector2(-10,-10),new Vector2(-9,-10));
+            Assert.That(counted.Scans,Is.Zero,"路径检查应复用构建时的障碍边界快照");
+        }
+        /// <summary>缓存筛选仍保留贴边可过、穿越和起点在障碍内不可过的精确规则。</summary>
+        [Test] public void CachedBoundsPreserveGrazingAndCrossingRules()
+        {
+            var nav=new SurvivorNavigation(10,10,.5f,new[]{new ArcadeObstacleDefinition(0,0,1,1,true)});
+            Assert.That(nav.CanTravel(new Vector2(-3,1.5f),new Vector2(3,1.5f)),Is.True);
+            Assert.That(nav.CanTravel(new Vector2(-3,1.499f),new Vector2(3,1.499f)),Is.False);
+            Assert.That(nav.CanTravel(new Vector2(0,0),new Vector2(3,3)),Is.False);
+            Assert.That(nav.CanTravel(new Vector2(3,3),new Vector2(3,3)),Is.True);
+            Assert.That(nav.CanTravel(new Vector2(-3,-3),new Vector2(3,3)),Is.False);
+        }
+        /// <summary>快速排除必须覆盖float差值舍入后的隐含终点，不能放行旧算法挡住的贴边线段。</summary>
+        [Test] public void BroadphaseIncludesRoundedSegmentEndpoint()
+        {
+            var nav=new SurvivorNavigation(20,20,.24f,new[]{new ArcadeObstacleDefinition(0,0,.1f,1,true)});
+            var a=new Vector2(-15,0);var b=new Vector2(-.3399900197982788f,0);
+            // 与旧Slab保持相同表达式，兼容Mono保留中间精度及严格float运行时。
+            double half=.1f+.24f-.00001,delta=b.x-a.x;
+            bool baselineAllows=(-half-a.x)/delta>=1;
+            Assert.That(nav.CanTravel(a,b),Is.EqualTo(baselineAllows));
         }
         /// <summary>统计规则读取静态障碍的次数，避免依赖机器速度的耗时断言。</summary>
         private sealed class CountingObstacles:System.Collections.Generic.IReadOnlyList<ArcadeObstacleDefinition>
