@@ -1,0 +1,8 @@
+Source: normal Play Boot -> SurvivorSceneFlowSystem.StartAsync, then controlled reflection sampling of real SurvivorSystem -> ArcadeCombatViewController -> EnemyCtrl/ProjectileCtrl. Not an unmodified full-match recording.
+Loader=Game.YooAssetResourceLoader
+Map=DynamicObjectRoot
+Start=True | 
+Caster: sampled 40 frames via real system methods; active hostile=0 enemy blasts=0
+Stop/End active hostile=0 pool=0 blasts=0 blastpool=0
+
+Fireball ParticleSystems explicitly Simulate age at 0.1 seconds per sampled frame. No production effect changes.

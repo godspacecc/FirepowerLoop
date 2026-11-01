@@ -25,8 +25,8 @@ namespace Game.Tests
         [TestCase(0d,.99f,"enemy.arcade.zombie.shambler")]
         [TestCase(119.99d,.99f,"enemy.arcade.zombie.shambler")]
         [TestCase(120d,.99f,"enemy.arcade.zombie.gaunt")]
-        [TestCase(240d,.99f,"enemy.arcade.zombie.bloated")]
-        [TestCase(360d,.99f,"enemy.arcade.zombie.bloated")]
+        [TestCase(240d,.99f,"enemy.arcade.zombie.shield")]
+        [TestCase(360d,.99f,"enemy.arcade.zombie.shield")]
         public void UnlocksOnlyAtConfirmedTimes(double seconds,float roll,string expected)
             =>Assert.That(Value<string>(Select(Load(),seconds,roll),"EnemyId"),Is.EqualTo(expected));
         [Test] public void OnlyApprovedEnemiesAndFastMultipliersRemain()
@@ -34,7 +34,7 @@ namespace Game.Tests
             var pool=Load();var fast=Select(pool,120,.99f);
             var entries=(System.Collections.IEnumerable)pool.GetType().GetProperty("Entries").GetValue(pool);
             var ids=entries.Cast<object>().Select(e=>Value<string>(e,"EnemyId")).ToArray();
-            Assert.That(ids,Is.EquivalentTo(new[]{"enemy.arcade.zombie.shambler","enemy.arcade.zombie.gaunt","enemy.arcade.zombie.bloated"}));
+            Assert.That(ids,Is.EquivalentTo(new[]{"enemy.arcade.zombie.shambler","enemy.arcade.zombie.gaunt","enemy.arcade.zombie.bloated","enemy.arcade.zombie.exploder","enemy.arcade.zombie.caster","enemy.arcade.zombie.shield"}));
             Assert.That(Value<float>(fast,"HealthMultiplier"),Is.LessThan(1));
             Assert.That(Value<float>(fast,"SpeedMultiplier"),Is.GreaterThan(1));
         }
@@ -46,7 +46,7 @@ namespace Game.Tests
         }
         [Test] public void ApprovedProportionsAndHeavyUnlockComeFromModeConfig()
         {
-            var pool=Load();var fast=Select(pool,120,.99f);var heavy=Select(pool,240,.99f);
+            var pool=Load();var fast=Select(pool,120,.99f);var heavy=Select(pool,240,.85f);
             Assert.That(heavy.GetType().GetProperty("VisualScale"),Is.Not.Null,"缺少本模式体型配置");
             Assert.That(Value<Vector3>(fast,"VisualScale"),Is.EqualTo(new Vector3(.9f,.82f,.9f)));
             Assert.That(Value<Vector3>(heavy,"VisualScale"),Is.EqualTo(new Vector3(1.5f,1.2f,1.4f)));
@@ -58,23 +58,25 @@ namespace Game.Tests
         [TestCase(119.999d,100,0,0)]
         [TestCase(120d,60,40,0)]
         [TestCase(239.999d,60,40,0)]
-        [TestCase(240d,50,35,15)]
-        [TestCase(359.999d,50,35,15)]
-        [TestCase(360d,35,40,25)]
-        [TestCase(479.999d,35,40,25)]
-        [TestCase(480d,20,45,35)]
-        [TestCase(599.999d,20,45,35)]
-        [TestCase(600d,10,50,40)]
-        [TestCase(36000d,10,50,40)]
+        [TestCase(240d,45,30,15)]
+        [TestCase(359.999d,45,30,15)]
+        [TestCase(360d,30,30,20)]
+        [TestCase(479.999d,30,30,20)]
+        [TestCase(480d,20,30,25)]
+        [TestCase(599.999d,20,30,25)]
+        [TestCase(600d,10,30,30)]
+        [TestCase(36000d,10,30,30)]
         public void TimePhasesProduceApprovedMix(double seconds,int normal,int fast,int heavy)
         {
-            var pool=Load();var counts=new int[3];
+            var pool=Load();var counts=new int[3];int specials=0;
             for(int i=0;i<1000;i++)
             {
                 string id=Value<string>(Select(pool,seconds,(i+.5f)/1000),"EnemyId");
+                if(id.EndsWith("exploder")||id.EndsWith("caster")||id.EndsWith("shield")){specials++;continue;}
                 counts[id=="enemy.arcade.zombie.shambler"?0:id=="enemy.arcade.zombie.gaunt"?1:2]++;
             }
             Assert.That(counts,Is.EqualTo(new[]{normal*10,fast*10,heavy*10}));
+            Assert.That(specials,Is.EqualTo((100-normal-fast-heavy)*10));
         }
         [TestCase(0)] [TestCase(-1)] [TestCase(101)]
         public void BrokenPhasePercentagesRejectEntry(int normalPercent)

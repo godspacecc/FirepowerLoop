@@ -19,7 +19,7 @@ namespace Game
             var rows=tables.TbSurvivorEnemy.DataList;
             if(rows.Count==0)throw new ArgumentException("幸存者敌池不能为空");
             var entries=rows.Select(r=>new SurvivorEnemyDefinition(r.Id,r.EnemyId,r.UnlockSeconds,r.PhaseSeconds,r.PhaseWeights,
-                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier,new Vector3(r.ScaleX,r.ScaleY,r.ScaleZ),r.AttackCooldownSeconds)).ToArray();
+                r.HealthMultiplier,r.DamageMultiplier,r.SpeedMultiplier,new Vector3(r.ScaleX,r.ScaleY,r.ScaleZ),r.AttackCooldownSeconds,r.SpecialKind,r.TriggerRange,r.WindupSeconds,r.BlastRadius,r.SpecialDamage,r.ProjectileSpeed,r.ProjectileLifetime,r.ShieldReduction,r.ShieldHalfAngle,r.TurnDegreesPerSecond)).ToArray();
             if(entries.Select(e=>e.Id).Distinct().Count()!=entries.Length ||
                 entries.Any(e=>tables.TbEnemy.GetOrDefault(e.EnemyId)==null) ||
                 !entries.Any(e=>e.UnlockSeconds==0))
@@ -69,12 +69,31 @@ namespace Game
         public float BodyRadiusMultiplier => Mathf.Max(VisualScale.x,VisualScale.z);
         /// <summary>幸存者独立命中后冷却，来自本模式权威表。</summary>
         public float AttackCooldownSeconds { get; }
-        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,float phaseSeconds,int[] phaseWeights,float health,float damage,float speed,Vector3 scale,float cooldown)
+        /// <summary>本模式特殊行为及数值由权威敌池读取，普通敌人全部留空或零。</summary>
+        public string SpecialKind { get; }
+        public float TriggerRange { get; }
+        public float WindupSeconds { get; }
+        public float BlastRadius { get; }
+        public int SpecialDamage { get; }
+        public float ProjectileSpeed { get; }
+        public float ProjectileLifetime { get; }
+        public float ShieldReduction { get; }
+        public float ShieldHalfAngle { get; }
+        public float TurnDegreesPerSecond { get; }
+        public SurvivorEnemyDefinition(string id,string enemyId,float unlock,float phaseSeconds,int[] phaseWeights,float health,float damage,float speed,Vector3 scale,float cooldown,string specialKind="",float triggerRange=0,float windup=0,float blastRadius=0,int specialDamage=0,float projectileSpeed=0,float projectileLifetime=0,float shieldReduction=0,float shieldHalfAngle=0,float turnDegrees=0)
         {
             if(string.IsNullOrWhiteSpace(id)||string.IsNullOrWhiteSpace(enemyId)||phaseWeights==null||phaseWeights.Length==0||phaseWeights.Any(w=>w<0||w>100)||
                 new[]{unlock,phaseSeconds,health,damage,speed,scale.x,scale.y,scale.z,cooldown}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)) ||
                 unlock<0||phaseSeconds<=0||health<=0||damage<=0||speed<=0||scale.x<=0||scale.y<=0||scale.z<=0||cooldown<=0)
                 throw new ArgumentException("幸存者敌池参数无效");
+            if(new[]{triggerRange,windup,blastRadius,projectileSpeed,projectileLifetime,shieldReduction,shieldHalfAngle,turnDegrees}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<0)||specialDamage<0||
+                (!string.IsNullOrEmpty(specialKind)&&specialKind!="Exploder"&&specialKind!="Caster"&&specialKind!="Shield")||
+                (specialKind=="Exploder"&&(triggerRange<=0||windup<=0||blastRadius<=0||specialDamage<=0))||
+                (specialKind=="Caster"&&(triggerRange<=0||windup<=0||projectileSpeed<=0||projectileLifetime<=0||specialDamage<=0))||
+                (specialKind=="Shield"&&(shieldReduction<=0||shieldReduction>=1||shieldHalfAngle<=0||shieldHalfAngle>180||turnDegrees<=0)))
+                throw new ArgumentException("幸存者特殊敌人参数无效");
+            SpecialKind=specialKind;TriggerRange=triggerRange;WindupSeconds=windup;BlastRadius=blastRadius;SpecialDamage=specialDamage;
+            ProjectileSpeed=projectileSpeed;ProjectileLifetime=projectileLifetime;ShieldReduction=shieldReduction;ShieldHalfAngle=shieldHalfAngle;TurnDegreesPerSecond=turnDegrees;
             Id=id;EnemyId=enemyId;UnlockSeconds=unlock;PhaseSeconds=phaseSeconds;PhaseWeights=Array.AsReadOnly((int[])phaseWeights.Clone());HealthMultiplier=health;
             DamageMultiplier=damage;SpeedMultiplier=speed;VisualScale=scale;AttackCooldownSeconds=cooldown;
         }

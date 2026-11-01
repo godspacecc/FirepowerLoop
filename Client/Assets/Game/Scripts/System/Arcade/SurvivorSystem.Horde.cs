@@ -124,7 +124,9 @@ namespace Game
                 elementStatuses.TryGetValue(enemy.Id,out var element);
                 view.SetEnemyElementState(enemy.Id,element!=null&&element.BurnRemaining>0,element!=null&&element.FrostRemaining>0);
                 if(!enemy.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId))
-                    view.SetEnemyMelee(enemy.Id,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,(player-enemy.Position).normalized);
+                    view.SetEnemyMelee(enemy.Id,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,SpecialFacing(enemy));
+                // 特殊快照最后覆盖通用空闲近战，避免法术前摇被同帧清零。
+                ProjectSpecialEnemy(enemy);
             }
             return true;
         }

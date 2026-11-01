@@ -7,3 +7,6 @@
 ,enemy.arcade.zombie.shambler,ArcadeZombieShambler,weapon.zombie-claw,100,10,8,0.9,1,2.2,,Melee,0,0.4,,,,0,0,0,0,true
 ,enemy.arcade.zombie.gaunt,ArcadeZombieGaunt,weapon.zombie-claw,100,8,12,0.9,2,1.8,,Melee,0,0.4,,,,0,0,0,0,true
 ,enemy.arcade.zombie.bloated,ArcadeZombieBloated,weapon.zombie-claw,20,10,8,0.9,1,2.2,,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.exploder,ArcadeZombieExploder,weapon.zombie-claw,60,10,8,0.9,1,2.97,,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.caster,ArcadeZombieCaster,weapon.zombie-claw,80,10,8,0.9,1,1.76,,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.shield,ArcadeZombieShield,weapon.zombie-claw,150,10,8,0.9,1,1.43,,Melee,0,0.4,,,,0,0,0,0,false

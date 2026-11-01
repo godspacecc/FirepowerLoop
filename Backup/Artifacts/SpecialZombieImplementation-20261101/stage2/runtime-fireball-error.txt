@@ -1,0 +1,2 @@
+System.Exception: 幸存者配置无效: YooAssets not initialize !
+  at Script.Run () [0x001b6] in <9ade5570a3a34bf6a006dac510e57ddd>:0 

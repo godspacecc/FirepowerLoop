@@ -1,0 +1,6 @@
+Start=True | 
+Natural registered lifecycle: warning=True fireball=True blast=True special states=True caster sampled windup=True
+Gate: active=True UI=False error=
+Before active restart hostile=1 blasts=1
+RestartAsync=True | 
+After restart hostile=0 hostile pool=0 blasts=0 blast pool=0 special states=0

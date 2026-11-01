@@ -735,6 +735,17 @@
         <var name="ScaleZ" type="float"/>
         <!-- 模式独立攻击冷却，不能改写闯关共用敌人原值。 -->
         <var name="AttackCooldownSeconds" type="float"/>
+        <!-- 幸存者特殊行为参数；普通敌人留零，不改变闯关规则。 -->
+        <var name="SpecialKind" type="string"/>
+        <var name="TriggerRange" type="float"/>
+        <var name="WindupSeconds" type="float"/>
+        <var name="BlastRadius" type="float"/>
+        <var name="SpecialDamage" type="int"/>
+        <var name="ProjectileSpeed" type="float"/>
+        <var name="ProjectileLifetime" type="float"/>
+        <var name="ShieldReduction" type="float"/>
+        <var name="ShieldHalfAngle" type="float"/>
+        <var name="TurnDegreesPerSecond" type="float"/>
     </bean>
     <!-- 永久角色商品，仅改变整套外观。 -->
     <bean name="SurvivorCharacterConfig" group="e">

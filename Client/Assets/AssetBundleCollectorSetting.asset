@@ -276,6 +276,30 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieExploder.prefab
+        CollectorGUID: 9ce21ff45c6696e4ab2819e364d9cd1d
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieCaster.prefab
+        CollectorGUID: 767ea45e02821c94daf944ef3d7f5f25
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShield.prefab
+        CollectorGUID: 23307836e09542c4d9ad88faf498afb0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab
         CollectorGUID: 8332b259d783cb14884847e11bc1d168
         CollectorType: 0

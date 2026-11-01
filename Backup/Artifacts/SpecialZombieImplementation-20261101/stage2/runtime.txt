@@ -1,0 +1,11 @@
+Source: normal Play Boot -> SurvivorSceneFlowSystem.StartAsync, then controlled reflection sampling of real SurvivorSystem -> ArcadeCombatViewController -> EnemyCtrl/ProjectileCtrl. Not an unmodified full-match recording.
+Loader=Game.YooAssetResourceLoader
+Map=DynamicObjectRoot
+Start=True | 
+Real LoadAsset success: Prefabs/Characters/ArcadeZombieExploder -> ArcadeZombieExploder
+Real LoadAsset success: Prefabs/Characters/ArcadeZombieCaster -> ArcadeZombieCaster
+Real LoadAsset success: Prefabs/Characters/ArcadeZombieShield -> ArcadeZombieShield
+Exploder: sampled 40 frames via real system methods; active hostile=0 enemy blasts=0
+Caster: sampled 40 frames via real system methods; active hostile=0 enemy blasts=0
+Shield: sampled 40 frames via real system methods; active hostile=0 enemy blasts=0
+Stop/End active hostile=0 pool=0 blasts=0 blastpool=0

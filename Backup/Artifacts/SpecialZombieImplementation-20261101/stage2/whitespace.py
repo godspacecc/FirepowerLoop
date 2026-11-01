@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('Client/Assets/AssetBundleCollectorSetting.asset');s=p.read_text(encoding='utf-8-sig');start=s.index('      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieExploder.prefab');end=s.index('      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab',start);s=s[:start]+s[start:end].replace('        UserData: \n','        UserData:\n')+s[end:];p.write_text(s,encoding='utf-8')

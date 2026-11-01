@@ -1,0 +1,11 @@
+{
+  "mode": "EditMode",
+  "includePassingTests": true,
+  "scopes": {
+    "SurvivorSpecialEnemyTests": 17,
+    "SurvivorEnemyRosterTests": 24,
+    "SurvivorEnemyCombatTests": 15,
+    "SurvivorElementTests": 23
+  },
+  "enumeration": "RQL tests source method inventory plus source Test/TestCase counts (parameter expansion) recorded in tool calls."
+}

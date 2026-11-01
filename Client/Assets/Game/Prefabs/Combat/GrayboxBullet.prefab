@@ -486,6 +486,10 @@ MonoBehaviour:
   purpleWeaponTail: {fileID: 0}
   survivorBlastTemplate: {fileID: 8639030074355516291, guid: e413bff87dcce144fa16f9bafccc92f1,
     type: 3}
+  survivorHostileFireballTemplate: {fileID: 2225504466050469864, guid: 5dc8d4481a3dbb74db372be4a52fb008,
+    type: 3}
+  survivorEnemyBlastTemplate: {fileID: 7640517285636973802, guid: e46369f8d2c2e9247a1d64536c7fd728,
+    type: 3}
   flyingTracer: {fileID: 7049445927985150146}
 --- !u!1 &4154101457348271561
 GameObject:

@@ -36,6 +36,14 @@ namespace Game
         /// <summary>幸存者权威爆炸的纯视觉采样；容量只限制表现，不影响伤害。</summary>
         void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
         void RemoveSurvivorBlast(int id) { }
+        /// <summary>投影特殊敌人的权威朝向、预警进度与目标；不由动画结算伤害。</summary>
+        void SetSurvivorEnemySpecial(int id,string kind,Vector2 direction,bool warning,float progress,Vector2 target,float radius) { }
+        /// <summary>敌方火球独立身份与生命周期；退出由End统一释放。</summary>
+        void SetSurvivorHostileProjectile(int id,Vector2 position,Vector2 direction) { }
+        void RemoveSurvivorHostileProjectile(int id) { }
+        /// <summary>敌人自爆独立表现预算；可以复用爆炸模板，不能挤占玩家强化爆炸实例。</summary>
+        void SetSurvivorEnemyBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
+        void RemoveSurvivorEnemyBlast(int id) { }
         /// <summary>燃烧弹飞行轨迹只作视觉投影；关闭时归还当前地图的有界池。</summary>
         void SetSurvivorMolotov(int id,Vector2 position,float height,float rotation,bool active) { }
         /// <summary>火区半径和年龄由规则提供；表现端不裁决范围伤害。</summary>

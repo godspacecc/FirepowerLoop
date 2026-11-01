@@ -29,6 +29,16 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         ScaleY = _buf.ReadFloat();
         ScaleZ = _buf.ReadFloat();
         AttackCooldownSeconds = _buf.ReadFloat();
+        SpecialKind = _buf.ReadString();
+        TriggerRange = _buf.ReadFloat();
+        WindupSeconds = _buf.ReadFloat();
+        BlastRadius = _buf.ReadFloat();
+        SpecialDamage = _buf.ReadInt();
+        ProjectileSpeed = _buf.ReadFloat();
+        ProjectileLifetime = _buf.ReadFloat();
+        ShieldReduction = _buf.ReadFloat();
+        ShieldHalfAngle = _buf.ReadFloat();
+        TurnDegreesPerSecond = _buf.ReadFloat();
     }
 
     public static SurvivorEnemyConfig DeserializeSurvivorEnemyConfig(ByteBuf _buf)
@@ -49,6 +59,16 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly float ScaleY;
     public readonly float ScaleZ;
     public readonly float AttackCooldownSeconds;
+    public readonly string SpecialKind;
+    public readonly float TriggerRange;
+    public readonly float WindupSeconds;
+    public readonly float BlastRadius;
+    public readonly int SpecialDamage;
+    public readonly float ProjectileSpeed;
+    public readonly float ProjectileLifetime;
+    public readonly float ShieldReduction;
+    public readonly float ShieldHalfAngle;
+    public readonly float TurnDegreesPerSecond;
    
     public const int __ID__ = -2055649804;
     public override int GetTypeId() => __ID__;
@@ -73,6 +93,16 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "ScaleY:" + ScaleY + ","
         + "ScaleZ:" + ScaleZ + ","
         + "AttackCooldownSeconds:" + AttackCooldownSeconds + ","
+        + "SpecialKind:" + SpecialKind + ","
+        + "TriggerRange:" + TriggerRange + ","
+        + "WindupSeconds:" + WindupSeconds + ","
+        + "BlastRadius:" + BlastRadius + ","
+        + "SpecialDamage:" + SpecialDamage + ","
+        + "ProjectileSpeed:" + ProjectileSpeed + ","
+        + "ProjectileLifetime:" + ProjectileLifetime + ","
+        + "ShieldReduction:" + ShieldReduction + ","
+        + "ShieldHalfAngle:" + ShieldHalfAngle + ","
+        + "TurnDegreesPerSecond:" + TurnDegreesPerSecond + ","
         + "}";
     }
 }

@@ -154,7 +154,7 @@ namespace Game
                     var point=Vector2.Lerp(old,next,hit.Fraction);
                     if(Blocked(old,point)){remove=true;break;}
                     bullet.HitEnemyIds.Add(hit.Id);
-                    ApplyModifierDamage(enemy,bullet.Damage);
+                    ApplyModifierDamage(enemy,bullet.Damage,enemy.Position-bullet.Velocity);
                     if(modifierShots.TryGetValue(bullet.Id,out var shot)&&!shot.Child&&!shot.Triggered)
                     {
                         shot.Triggered=true;ApplyElementHit(enemy,shot);
@@ -172,11 +172,12 @@ namespace Game
             pendingSplitShots.Clear();spatialFrameReady=false;
         }
         /// <summary>所有伤害共用一次死亡提交，连锁命中不能重复掉落。</summary>
-        private void ApplyModifierDamage(ArcadeEnemyRuntime enemy,int damage)
+        private void ApplyModifierDamage(ArcadeEnemyRuntime enemy,int damage,Vector2? source=null)
         {
             if(damage<=0||!enemies.ContainsKey(enemy.Id))return;
+            damage=ShieldDamage(enemy,damage,source);
             enemy.Health=Math.Max(0,enemy.Health-damage);if(enemy.Health>0)return;
-            elementStatuses.Remove(enemy.Id);enemies.Remove(enemy.Id);presentedEnemies.Remove(enemy.Id);view.RemoveEnemy(enemy.Id,true);Model.Kills++;TryDropGold(enemy);
+            specialEnemies.Remove(enemy.Id);elementStatuses.Remove(enemy.Id);enemies.Remove(enemy.Id);presentedEnemies.Remove(enemy.Id);view.RemoveEnemy(enemy.Id,true);Model.Kills++;TryDropGold(enemy);
             if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))AddExperienceDrop(enemy.Position);
         }
         /// <summary>爆炸查询局部候选，排除直接命中目标；特效预算不足仍结算伤害。</summary>
@@ -188,7 +189,7 @@ namespace Game
             {
                 if(id==directTarget||!enemies.TryGetValue(id,out var enemy))continue;
                 if(!InsidePlayerVisibility(enemy.Position)||Vector2.Distance(point,enemy.Position)>shot.BlastRadius||Blocked(point,enemy.Position)||!CanAimGroundBody(enemy,point,.75f))continue;
-                ApplyModifierDamage(enemy,shot.BlastDamage);
+                ApplyModifierDamage(enemy,shot.BlastDamage,point);
             }
             if(modifierBlasts.Count>=config.MaxBlastEffects)return;
             var blast=new ModifierBlast{Id=++identity,Position=point,Radius=shot.BlastRadius};

@@ -102,7 +102,7 @@ namespace Game.Tests
             for(int i=0;i<10;i++)Call("TickEnemies",.05f);
             Assert.That(model.Health,Is.EqualTo(90));
         }
-        private sealed class FixedRandom:System.Random {public override double NextDouble()=>.999;}
+        private sealed class FixedRandom:System.Random {public override double NextDouble()=>.85;}
         /// <summary>三类丧尸在本模式均为1秒冷却，不修改闯关瘦削原有的2秒配置。</summary>
         [TestCase("enemy.arcade.zombie.shambler")]
         [TestCase("enemy.arcade.zombie.gaunt")]

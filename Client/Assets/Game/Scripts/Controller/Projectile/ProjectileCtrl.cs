@@ -294,6 +294,7 @@ namespace Game
 
         public void ClearArcadeProjectiles()
         {
+            ClearSurvivorSpecialVisuals();
             ClearSurvivorBlasts();
             var ids = new List<int>(arcadeProjectileIds);
             for (var i = 0; i < ids.Count; i++)
@@ -315,6 +316,19 @@ namespace Game
                 return false;
             }
 
+            // 特殊敌人的依赖随短弹载体预载；缺失时回滚入口，不能到开战后静默丢表现。
+            if (prefabAddress == "Prefabs/Combat/GrayboxBullet" &&
+                (view.SurvivorHostileFireballTemplate == null || view.SurvivorEnemyBlastTemplate == null))
+            {
+                error = "投射物准备失败：缺少特殊敌人火球或爆燃模板";
+                return false;
+            }
+            // 短爆燃随既有短弹地址预载，缺失依赖必须在准备阶段回滚。
+            if(prefabAddress=="Prefabs/Combat/GrayboxBullet")
+            {
+                if(view.SurvivorBlastTemplate==null){error="投射物准备失败：缺少幸存者短爆燃模板";return false;}
+                if(!view.SurvivorBlastTemplate.Validate(out error))return false;
+            }
             return view.Validate(out error);
         }
 
@@ -326,6 +340,7 @@ namespace Game
 
         private void ReleaseAllViews()
         {
+            ClearSurvivorSpecialVisuals();
             ClearSurvivorBlasts();
             var ids = new List<int>(activeViews.Keys);
             for (var i = 0; i < ids.Count; i++)

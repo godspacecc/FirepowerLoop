@@ -35,6 +35,12 @@ namespace Game
         /// <summary>随弹丸资源预加载的幸存者冲击模板，模板自身始终隐藏。</summary>
         [SerializeField] private SurvivorBlastView survivorBlastTemplate;
         public SurvivorBlastView SurvivorBlastTemplate => survivorBlastTemplate;
+        /// <summary>随弹丸准备事务加载的敌方法术火球依赖。</summary>
+        [SerializeField] private GameObject survivorHostileFireballTemplate;
+        public GameObject SurvivorHostileFireballTemplate => survivorHostileFireballTemplate;
+        /// <summary>特殊敌人独立爆炸，复用已确认的爆燃资源。</summary>
+        [SerializeField] private GameObject survivorEnemyBlastTemplate;
+        public GameObject SurvivorEnemyBlastTemplate => survivorEnemyBlastTemplate;
         /// <summary>普通弹的飞行曳光线，材质随正式Prefab预加载；每颗子弹只更新两个端点。</summary>
         [SerializeField] private LineRenderer flyingTracer;
         private float tracerLength, tracerDistance;

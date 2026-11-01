@@ -14,6 +14,11 @@ namespace Game
         /// <summary>只显示幸存者权威爆炸，默认端口可以忽略特效。</summary>
         void SetSurvivorBlast(int id,Vector3 position,float radius,float progress,int capacity) { }
         void RemoveSurvivorBlast(int id) { }
+        /// <summary>敌弹与敌爆具有独立实例及容量，不占用玩家强化表现池。</summary>
+        void SetSurvivorHostileProjectile(int id,Vector3 position,Vector3 direction) { }
+        void RemoveSurvivorHostileProjectile(int id) { }
+        void SetSurvivorEnemyBlast(int id,Vector3 position,float radius,float progress,int capacity) { }
+        void RemoveSurvivorEnemyBlast(int id) { }
         void RemoveProjectile(int runtimeId);
         void ClearArcadeProjectiles();
     }

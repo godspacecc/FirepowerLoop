@@ -70,6 +70,13 @@ namespace Game
                 float moveSeconds=ElementMovementSeconds(e,dt);
                 if(SurvivorGroundEntryRules.Advance(ref e.GroundEntry,dt))
                 {e.Position=SurvivorGroundEntryRules.Position(e.GroundEntry);continue;}
+                if(TickSpecialEnemy(e,dt))
+                {
+                    var specialShape=Shape(e.ConfigId);
+                    if(e.Health>0&&specialShape!=null&&!SpecialState(e).Warning&&(player-e.Position).sqrMagnitude>specialShape.TriggerRange*specialShape.TriggerRange)
+                        e.Position=NavigationFor(e).Move(e.Position,player,e.Speed*moveSeconds);
+                    continue;
+                }
                 bool configured=enemyConfigs.TryGetValue(e.ConfigId??string.Empty,out var definition)&&e.ConfigId!=config.EnemyId;
                 float distance=Vector2.Distance(e.Position,player);
                 if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*moveSeconds);
@@ -82,6 +89,7 @@ namespace Game
                 else if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius)
                 {DamageSurvivor(e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;e.AttackSequence++;}
             }
+            FlushSpecialDeaths();
         }
 
         /// <summary>新增近战敌人按共用配置起手，离开范围取消；命中后采用既有收招停步。</summary>

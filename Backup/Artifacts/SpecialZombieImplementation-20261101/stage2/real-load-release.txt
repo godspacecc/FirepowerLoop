@@ -1,0 +1,6 @@
+Prefabs/Characters/ArcadeZombieExploder loaded via YooAssetResourceLoader valid=True
+Prefabs/Characters/ArcadeZombieExploder handle released
+Prefabs/Characters/ArcadeZombieCaster loaded via YooAssetResourceLoader valid=True
+Prefabs/Characters/ArcadeZombieCaster handle released
+Prefabs/Characters/ArcadeZombieShield loaded via YooAssetResourceLoader valid=True
+Prefabs/Characters/ArcadeZombieShield handle released
