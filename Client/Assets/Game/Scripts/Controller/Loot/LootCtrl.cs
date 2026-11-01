@@ -194,6 +194,12 @@ namespace Game
                 view.SetArcadeOpacity(opacity);
         }
 
+        /// <summary>由现有掉落实例校准贴地高度，不新增加载、实例或拾取状态。</summary>
+        public void GroundDrop(int runtimeId, float groundY)
+        {
+            if (arcadeDrops.TryGetValue(runtimeId, out var view) && view != null) view.GroundArcadePresentation(groundY);
+        }
+
         /// <summary>仅奖励房请求模型校准；普通地面掉落仍保留资源原始展示大小。</summary>
         public void FitDropVisual(int runtimeId, float maxSize)
         {

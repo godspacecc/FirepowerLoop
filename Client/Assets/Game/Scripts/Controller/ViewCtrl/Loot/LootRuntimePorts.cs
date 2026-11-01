@@ -24,6 +24,9 @@ namespace Game
         /// <summary>奖励房校准当前实例的视觉尺寸与底面；不改变掉落根、拾取范围或资源本体。</summary>
         void FitDropVisual(int runtimeId, float maxSize) { }
 
+        /// <summary>普通掉落按可见实体底部贴地，地面高度由地图表现提供。</summary>
+        void GroundDrop(int runtimeId, float groundY) { }
+
         void RemoveDrop(int runtimeId);
         /// <summary>地图空投只按已同步的阶段控制箱子、名称和武器显隐。</summary>
         void SetDropDelivery(int runtimeId,bool airdrop,float remaining,float duration) { }

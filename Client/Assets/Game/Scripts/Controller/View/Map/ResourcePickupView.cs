@@ -69,6 +69,8 @@ namespace Game
         private string currentDisplayName = string.Empty;
         private int currentDisplayAmount = 1;
         private GameObject activeArcadeVisual;
+        /// <summary>缓存实体渲染器，逐帧贴地不重复分配组件数组；替换模型时失效。</summary>
+        private Renderer[] arcadeGroundRenderers;
         private GameObject activeArcadeLootBeam;
         /// <summary>正式拾取模板持有箱体；所有实例、回池与地图释放继续归本 View 管理。</summary>
         [SerializeField] private ArcadeWeaponDeliveryView weaponDelivery;
@@ -170,6 +172,7 @@ namespace Game
                 activeArcadeVisual.transform.localRotation=deliveryOriginalWeaponRotation;
             }
             if(deliveryActive&&activeArcadeLootBeam!=null)activeArcadeLootBeam.SetActive(true);
+            arcadeGroundRenderers=null;
             deliveryActive=false;weaponDelivery?.ResetPresentation();
         }
 
@@ -215,8 +218,27 @@ namespace Game
         }
 
         /// <summary>释放当前实例化视觉并恢复通用方块；可安全重复调用。</summary>
+        /// <summary>按当前模型底面校准普通掉落根高度，保留1厘米间隙；不改水平位置、旋转或拾取权威。</summary>
+        public void GroundArcadePresentation(float groundY)
+        {
+            if (float.IsNaN(groundY) || float.IsInfinity(groundY) || deliveryActive) return;
+            float bottom=float.PositiveInfinity;
+            if (activeArcadeVisual != null)
+            {
+                arcadeGroundRenderers ??= activeArcadeVisual.GetComponentsInChildren<Renderer>();
+                foreach (var renderer in arcadeGroundRenderers)
+                    if (renderer != null && renderer.enabled && renderer.gameObject.activeInHierarchy &&
+                        (renderer is MeshRenderer || renderer is SkinnedMeshRenderer))
+                        bottom=Mathf.Min(bottom,renderer.bounds.min.y);
+            }
+            else if (defaultRenderer != null && defaultRenderer.enabled) bottom=defaultRenderer.bounds.min.y;
+            if (float.IsInfinity(bottom) || float.IsNaN(bottom)) return;
+            transform.position += Vector3.up*(groundY+.01f-bottom);
+        }
+
         public void ClearArcadePresentation()
         {
+            arcadeGroundRenderers=null;
             deliveryActive=false;weaponDelivery?.ResetPresentation();
             ReleaseOpacityMaterials();
             ActiveArcadeVisualPrefabAddress = null;

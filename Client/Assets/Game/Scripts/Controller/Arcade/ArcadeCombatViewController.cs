@@ -882,15 +882,17 @@ namespace Game
         public void SetDrop(int id, ArcadeDropDefinition definition, Vector2 position)
         {
             if (lootPresentation == null || mapRoot == null) return;
-            lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(position, 0.3f)),
-                ResolveDropDisplayName(definition), definition.Amount, definition.VisualPrefabAddress, out _);
+            if (lootPresentation.TrySetDrop(id, mapRoot.TransformPoint(World(position, 0.3f)),
+                ResolveDropDisplayName(definition), definition.Amount, definition.VisualPrefabAddress, out _) && !string.IsNullOrEmpty(survivorEnvironmentAddress))
+                lootPresentation.GroundDrop(id,mapRoot.TransformPoint(World(position,0)).y);
         }
 
         /// <summary>经验只显示晶体，不显示名称或数量；累计经验仍由幸存者权威结算。</summary>
         public void SetExperienceDrop(int id,string visualPrefabName,Vector2 position,long experience)
         {
             if (lootPresentation == null || mapRoot == null) return;
-            lootPresentation.TrySetDrop(id,mapRoot.TransformPoint(World(position,.3f)),string.Empty,(int)Math.Min(int.MaxValue,experience),visualPrefabName,out _);
+            if (lootPresentation.TrySetDrop(id,mapRoot.TransformPoint(World(position,.3f)),string.Empty,(int)Math.Min(int.MaxValue,experience),visualPrefabName,out _))
+                lootPresentation.GroundDrop(id,mapRoot.TransformPoint(World(position,0)).y);
         }
 
         public void RemoveDrop(int id) => lootPresentation?.RemoveDrop(id);
