@@ -272,8 +272,33 @@ namespace Game
         {
             var b=new ArcadeProjectileRuntime{Id=++identity,Position=origin,Velocity=direction*level.ProjectileSpeed,Damage=(int)Math.Min(int.MaxValue,level.Damage*(1+Bonus("Damage"))),RemainingSeconds=level.ProjectileLifetimeSeconds,SourceWeaponId=kind=="Drone"?"survivor.drone":config.WeaponId};bullets.Add(b.Id,b);SnapshotModifiers(b,kind);
         }
-        /// <summary>步进弹丸线段检查实体阻挡，防止穿越农场围栏。</summary>
-        private bool Blocked(Vector2 from,Vector2 to){int steps=Math.Max(1,Mathf.CeilToInt(Vector2.Distance(from,to)/.1f));for(int i=0;i<=steps;i++){var p=Vector2.Lerp(from,to,(float)i/steps);foreach(var o in obstacles)if(o.BlocksProjectiles&&Mathf.Abs(p.x-o.Center.x)<=o.HalfExtents.x&&Mathf.Abs(p.y-o.Center.y)<=o.HalfExtents.y)return true;}return false;}
+        /// <summary>先排除无关障碍，再沿用原0.1米采样判断，保持墙体阻挡规则。</summary>
+        private bool Blocked(Vector2 from, Vector2 to)
+        {
+            int steps = Math.Max(1, Mathf.CeilToInt(Vector2.Distance(from, to) / .1f));
+            // Lerp的末点可能因浮点运算与to略有差异；同时包含实际采样末点，避免边缘漏判。
+            var sampledEnd = Vector2.Lerp(from, to, 1f);
+            float minX = Mathf.Min(from.x, Mathf.Min(to.x, sampledEnd.x));
+            float maxX = Mathf.Max(from.x, Mathf.Max(to.x, sampledEnd.x));
+            float minY = Mathf.Min(from.y, Mathf.Min(to.y, sampledEnd.y));
+            float maxY = Mathf.Max(from.y, Mathf.Max(to.y, sampledEnd.y));
+            foreach (var obstacle in obstacles)
+            {
+                if (!obstacle.BlocksProjectiles) continue;
+                // 用原Abs差值比较，不改写成center±half，保留边界舍入和包含端点的语义。
+                if ((minX > obstacle.Center.x && Mathf.Abs(minX - obstacle.Center.x) > obstacle.HalfExtents.x) ||
+                    (maxX < obstacle.Center.x && Mathf.Abs(maxX - obstacle.Center.x) > obstacle.HalfExtents.x) ||
+                    (minY > obstacle.Center.y && Mathf.Abs(minY - obstacle.Center.y) > obstacle.HalfExtents.y) ||
+                    (maxY < obstacle.Center.y && Mathf.Abs(maxY - obstacle.Center.y) > obstacle.HalfExtents.y)) continue;
+                for (int i = 0; i <= steps; i++)
+                {
+                    var point = Vector2.Lerp(from, to, (float)i / steps);
+                    if (Mathf.Abs(point.x - obstacle.Center.x) <= obstacle.HalfExtents.x &&
+                        Mathf.Abs(point.y - obstacle.Center.y) <= obstacle.HalfExtents.y) return true;
+                }
+            }
+            return false;
+        }
         /// <summary>仅将完全同坐标经验累加到同一晶体；满额时沿用既有合并保全经验机制。</summary>
         private void AddExperienceDrop(Vector2 position)
         {
