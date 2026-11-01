@@ -38,6 +38,31 @@ namespace Game.Tests
                 Assert.That(system.TryReadCharacterShop(out shop,out error),Is.True);Assert.That(shop.Balance,Is.EqualTo(50));
             } finally {Directory.Delete(root,true);}
         }
+        /// <summary>购买末尾角色后立即前置，多次购买仍保持组内配置顺序；重读保持一致。</summary>
+        [Test] public void OwnedCharactersComeFirstWithoutChangingOrderWithinGroups()
+        {
+            var root=Path.Combine(Path.GetTempPath(),"CharacterOrder-"+Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root,"Saves"));
+            try{
+                File.WriteAllText(Path.Combine(root,"Saves","survivor-gold-1.json"),"{\"Version\":1,\"Balance\":1000,\"ActiveRun\":\"run\",\"Sequence\":0}");
+                var arch=new Game();arch.RegisterModel(new SurvivorModel());
+                arch.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))))));
+                var system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(arch);
+                typeof(SurvivorSystem).GetField("goldStore",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(system,new SurvivorGoldFileStore(1,root));
+                Assert.That(system.TryReadCharacterShop(out var snapshot,out var error),Is.True,error);
+                Assert.That(snapshot.Products.Select(p=>p.AppearanceId),Is.EqualTo(new[]{1,7,3,4,9}));
+                Assert.That(system.TryPurchaseCharacter("survivor.character.9",out error),Is.True,error);
+                Assert.That(system.TryReadCharacterShop(out snapshot,out error),Is.True,error);
+                Assert.That(snapshot.Products.Select(p=>p.AppearanceId),Is.EqualTo(new[]{9,1,7,3,4}));
+                Assert.That(system.TryPurchaseCharacter("survivor.character.7",out error),Is.True,error);
+                Assert.That(system.TryReadCharacterShop(out snapshot,out error),Is.True,error);
+                Assert.That(snapshot.Products.Select(p=>p.AppearanceId),Is.EqualTo(new[]{7,9,1,3,4}));
+                Assert.That(snapshot.Products.Select(p=>p.Owned),Is.EqualTo(new[]{true,true,false,false,false}));
+                Assert.That(system.TryReadCharacterShop(out var again,out error),Is.True,error);
+                Assert.That(again.Products.Select(p=>p.Id),Is.EqualTo(snapshot.Products.Select(p=>p.Id)));
+                Assert.That(again.Balance,Is.EqualTo(600));
+            }finally{Directory.Delete(root,true);}
+        }
         [Test] public void RealPlayerWholeBodiesApplyWithoutChangingScale()
         {
             string path=AssetDatabase.GUIDToAssetPath(AssetDatabase.FindAssets("GrayboxPlayer t:Prefab").First());

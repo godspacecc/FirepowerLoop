@@ -41,7 +41,8 @@ namespace Game
             if(!this.GetUtility<IRuntimeConfigProvider>().TryGetSurvivorCharacters(out var products,out error))return false;
             goldStore??=new SurvivorGoldFileStore(1);
             if(!goldStore.TryReadSnapshot(out var balance,out var owned,out error))return false;
-            snapshot=new SurvivorCharacterShopSnapshot(balance,products.Select(p=>new SurvivorCharacterProduct(p.Id,p.AppearanceId,p.Price,p.NameKey,owned.Contains(p.Id))).ToArray());
+            // 已拥有角色优先；稳定排序保留两组各自的配置顺序，商店与选人共用。
+            snapshot=new SurvivorCharacterShopSnapshot(balance,products.Select(p=>new SurvivorCharacterProduct(p.Id,p.AppearanceId,p.Price,p.NameKey,owned.Contains(p.Id))).OrderByDescending(p=>p.Owned).ToArray());
             Model.GoldBalance=balance;return true;
         }
         /// <summary>UI只传稳定身份，配置决定价格；同文件事务成功后才发布。</summary>
