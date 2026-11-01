@@ -65,6 +65,8 @@ namespace Game
         void SetEnemyMelee(int id,float duration,float remaining,float recovery,Vector2 direction) { }
         /// <summary>幸存者实例体型与攻击快照独立，不修改源Prefab。</summary>
         void SetEnemyScale(int id,Vector3 scale) { }
+        /// <summary>仅投影当前幸存者敌人的元素状态。</summary>
+        void SetEnemyElementState(int id,bool fire,bool frost) { }
         /// <summary>消费幸存者场内爬出进度，不在表现层推进计时。</summary>
         void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state) { }
         void SetHerdActivityPaused(bool paused) { }
@@ -796,6 +798,8 @@ namespace Game
 
         /// <summary>把已提交的模式体型交给实例拥有者，不改共用Prefab。</summary>
         public void SetEnemyScale(int id,Vector3 scale) => enemyPresentation?.SetPresentationScale(id,scale);
+        /// <summary>沿既有地图与敌人拥有者投影元素状态。</summary>
+        public void SetEnemyElementState(int id,bool fire,bool frost)=>enemyPresentation?.SetElementState(id,fire,frost);
         public void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state)
         {
             if(mapRoot==null||!state.Started)return;

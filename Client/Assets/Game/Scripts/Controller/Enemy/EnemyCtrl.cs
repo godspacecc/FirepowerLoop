@@ -299,6 +299,10 @@ namespace Game
         public void SetMeleeAttack(int runtimeId,float duration,float remaining,float recovery,Vector3 direction)
         {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetMeleeAttack(duration,remaining,recovery,direction);}
 
+        /// <summary>敌人实例只消费状态，不自行计时伤害或创建异步资源。</summary>
+        public void SetElementState(int runtimeId,bool fire,bool frost)
+        {if(arcadeEnemies.TryGetValue(runtimeId,out var entry))entry.View?.SetElementState(fire,frost);}
+
         /// <summary>每帧均相对源比例投影，不能累乘；源Prefab与其它模式不受影响。</summary>
         public void SetPresentationScale(int runtimeId,Vector3 scale)
         {
@@ -362,6 +366,7 @@ namespace Game
                 return;
             groundEntries?.Interrupt(runtimeId);
             arcadeEnemies.Remove(runtimeId);
+            entry.View?.ResetElementFeedback();
             if (playDeath && entry.View != null)
             {
                 if (explosive && arcadeRoot != null && entry.View.ExplosionDeathTemplate != null)
@@ -443,6 +448,7 @@ namespace Game
                 if (!ValidatePrefab(prefabResult.Prefab, out var readyView, out var prefabError))
                     return FailPrepared(prefabError);
                 if(survivorIds.Contains(enemyId)&&!readyView.ValidateGroundEntry(out var groundError))return FailPrepared(groundError);
+                if(survivorIds.Contains(enemyId)&&!readyView.ValidateElementFeedback(out var elementError))return FailPrepared(elementError);
             }
 
             arcadeCandidateRoot = context.Scene.DynamicObjectRoot;
@@ -803,9 +809,12 @@ namespace Game
                 dyingArcadeEnemies.RemoveAt(i);
             }
 
+            var appState=architecture.GetModel<AppStateModel>();
+            bool elementsPaused=herdActivityPaused||survivor==null||!survivor.Active||survivor.Paused||appState==null||appState.CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen;
             foreach (var entry in arcadeEnemies.Values)
             {
                 entry.View?.TickCombatFeedback(seconds);
+                entry.View?.TickElementFeedback(elementsPaused?0:Mathf.Min(seconds,.05f));
                 if (entry.View == null || entry.PersistentHealthBar)
                     continue;
                 var before = entry.HealthBarRevealRemaining;

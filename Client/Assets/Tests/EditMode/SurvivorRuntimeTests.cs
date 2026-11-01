@@ -808,6 +808,9 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public int ElementStateWrites;
+            public bool LastElementFire,LastElementFrost;
+            public void SetEnemyElementState(int id,bool fire,bool frost){ElementStateWrites++;LastElementFire=fire;LastElementFrost=frost;}
             public bool HordeEnabled;
             public Rect Bounds;
             public int Wakes,Suspends,LastWakeHealth,FailWakeAfter=int.MaxValue;

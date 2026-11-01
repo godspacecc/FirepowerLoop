@@ -121,6 +121,8 @@ namespace Game
                 view.SetEnemy(enemy.Id,enemy.ConfigId,enemy.Position,enemy.Health,enemy.MaxHealth,false,enemy.AttackSequence);
                 view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);
                 view.SetEnemyGroundEntry(enemy.Id,enemy.GroundEntry);
+                elementStatuses.TryGetValue(enemy.Id,out var element);
+                view.SetEnemyElementState(enemy.Id,element!=null&&element.BurnRemaining>0,element!=null&&element.FrostRemaining>0);
                 if(!enemy.GroundEntry.Active&&FirepowerLoop.Arcade.ArcadeMeleeRules.IsZombie(enemy.ConfigId))
                     view.SetEnemyMelee(enemy.Id,enemy.MeleeWindupSeconds,enemy.MeleeWindupRemaining,enemy.MeleeRecoveryRemaining,(player-enemy.Position).normalized);
             }

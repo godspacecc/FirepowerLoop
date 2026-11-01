@@ -104,6 +104,20 @@ namespace Game.Tests
                 Assert.That(u.StatusStrength(1),Is.EqualTo(.2f).Within(.000001));Assert.That(u.StatusStrength(2),Is.EqualTo(.3f).Within(.000001));Assert.That(u.StatusStrength(3),Is.EqualTo(.4f).Within(.000001));
             }
         }
+        [TestCase("RifleFire")][TestCase("RifleFrost")]
+        public void ProjectionRestoresHiddenStateOnWakeAndClearsAtExpiry(string kind)
+        {
+            Grant(kind);var enemy=Target();Hit();
+            var view=typeof(SurvivorRuntimeTests).GetField("view",Flags).GetValue(fixture);
+            T Read<T>(string field)=>(T)view.GetType().GetField(field).GetValue(view);
+            void Write(string field,object value)=>view.GetType().GetField(field).SetValue(view,value);
+            Call("SyncEnemyPresentations");Assert.That(Read<bool>(kind=="RifleFire"?"LastElementFire":"LastElementFrost"),Is.True);
+            Write("HordeEnabled",true);Write("Bounds",new Rect(-4,-4,8,8));enemy.Position=new Vector2(20,20);
+            int before=Read<int>("ElementStateWrites");Call("SyncEnemyPresentations");Assert.That(Read<int>("ElementStateWrites"),Is.EqualTo(before));
+            Write("Bounds",new Rect(16,16,8,8));Call("SyncEnemyPresentations");Assert.That(Read<bool>(kind=="RifleFire"?"LastElementFire":"LastElementFrost"),Is.True);
+            if(kind=="RifleFire")Call("AdvanceElementDamage",3f);else Call("ElementMovementSeconds",enemy,2f);
+            Call("SyncEnemyPresentations");Assert.That(Read<bool>("LastElementFire"),Is.False);Assert.That(Read<bool>("LastElementFrost"),Is.False);
+        }
         [Test] public void ExplosionDamageDoesNotSpreadBurn()
         {
             Grant("RifleFire");Grant("RifleExplosion");Target();var side=new ArcadeEnemyRuntime{Id=901,Health=1000,Position=new Vector2(.8f,.8f)};enemies.Add(side.Id,side);

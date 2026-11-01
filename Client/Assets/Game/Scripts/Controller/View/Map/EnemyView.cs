@@ -205,6 +205,7 @@ namespace Game
         {
             // 对象池复用后，即使新敌人的生命值相同，也必须首次刷新。
             hasHealthDisplaySnapshot = false;
+            ResetElementFeedback();
             ResetGroundEntry();
             ResetDockSeaEntry();
             ResetMeleeAttack();
@@ -431,6 +432,7 @@ namespace Game
 
         private void OnDisable()
         {
+            ResetElementFeedback();
             ResetGroundEntry();
             ResetDockSeaEntry();
             ResetHerdImpact();
@@ -819,7 +821,7 @@ namespace Game
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
         public void LateTickCombatFeedback(){ApplyDockSeaEntry();ApplyGroundEntry();PhysicalReaction?.LateTick();if(!dockSampling&&!groundSampling){ApplyMeleeAttack();ApplyHerdImpact();}}
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){ResetGroundEntry();ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){ResetElementFeedback();ResetGroundEntry();ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
         public bool IsHerdCorpse=>PhysicalReaction?.IsHerdDeath==true;
 
         /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>

@@ -125,6 +125,24 @@ namespace Game.Tests
             }
         }
 
+        /// <summary>正式敌人地址的真实收集依赖必须包含采用版元素Prefab、材质、纹理和着色器。</summary>
+        [Test] public void SurvivorElementDependenciesAreCollectedWithEnemyPrefabs()
+        {
+            var setting=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/AssetBundleCollectorSetting.asset");
+            var result=setting.GetType().GetMethod("BeginCollect").Invoke(setting,new object[]{"DefaultPackage",false,false});
+            var assets=((IEnumerable)Read(result,"CollectAssets")).Cast<object>().ToDictionary(a=>(string)Read(a,"Address"),StringComparer.Ordinal);
+            var report=new System.Collections.Generic.List<string>();
+            foreach(var name in new[]{"ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeZombieBloated"})
+            {
+                string address="Prefabs/Characters/"+name;Assert.That(assets.ContainsKey(address),Is.True,address);var asset=assets[address];Assert.That(Tags(asset),Does.Contain("arcade"));
+                string path=(string)Read(asset,"AssetInfo").GetType().GetField("AssetPath").GetValue(Read(asset,"AssetInfo"));Assert.That(path,Is.EqualTo("Assets/Game/"+address+".prefab"));
+                var dependencies=((IEnumerable)asset.GetType().GetField("DependAssets").GetValue(asset)).Cast<object>().Select(a=>(string)a.GetType().GetField("AssetPath").GetValue(a)).ToArray();
+                foreach(var required in new[]{"Assets/Game/Prefabs/Combat/SurvivorEnemyElements.prefab","Assets/Game/Art/Survivor/Elements/ElementFire.mat","Assets/Game/Art/Survivor/Elements/ElementFrost.mat","Assets/Game/Art/Survivor/Elements/ElementFireSoft.png","Assets/Game/Art/Survivor/Elements/ElementFrostSoft.png"})Assert.That(dependencies,Does.Contain(required),address);
+                Assert.That(dependencies.Any(p=>p.EndsWith("ParticlesUnlit.shader",StringComparison.Ordinal)),Is.True,address);
+                report.Add(address+" | "+Read(asset,"BundleName")+" | "+string.Join(";",Tags(asset).Cast<string>()));report.AddRange(dependencies.Where(p=>p.Contains("SurvivorEnemyElements")||p.Contains("Survivor/Elements")||p.EndsWith("ParticlesUnlit.shader")));
+            }
+            string file=Path.GetFullPath(Path.Combine(UnityEngine.Application.dataPath,"../..","Backup/Artifacts/SurvivorElementVisuals-20261101/source-collection.txt"));Directory.CreateDirectory(Path.GetDirectoryName(file));File.WriteAllLines(file,report);
+        }
         private static void AssertTags(string address, string tag) => Assert.That(Tags(Find(address)), Does.Contain(tag), address);
         private static object Read(object asset, string name) => asset.GetType().GetProperty(name).GetValue(asset);
         private static IEnumerable Tags(object asset) => (IEnumerable)Read(asset, "AssetTags");

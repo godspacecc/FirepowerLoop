@@ -86,7 +86,8 @@ namespace Game.Tests
             {
                 Set("root",owner);Set("roundEnemyRoot",owner);Set("roundLayoutReady",true);
                 Set("enemyPresentation",new FlameTemplatePort());
-                controller.SetEnemyContent(10,1,0,false);controller.SetEnemyBurning(10,.65f);
+                // 类型1已改为正式载桶敌人，不再属于本测试验证的专属轮廓路径。
+                controller.SetEnemyContent(10,2,0,false);controller.SetEnemyBurning(10,.65f);
                 var feedback=owner.GetComponentInChildren<EnemyFlameFeedback>();Assert.That(feedback,Is.Not.Null);Assert.That(feedback.IsBurning,Is.True);
                 controller.RemoveEnemy(10,true,Vector2.up,false,true);
                 Assert.That(controller.HasRoundEnemyContent(10),Is.False);Assert.That(feedback.IsBurning,Is.True);

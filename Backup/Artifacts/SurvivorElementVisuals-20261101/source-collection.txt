@@ -1,0 +1,21 @@
+Prefabs/Characters/ArcadeZombieShambler | assets_game_prefabs_characters_arcadezombieshambler.bundle | arcade
+Assets/Game/Prefabs/Combat/SurvivorEnemyElements.prefab
+Assets/Game/Art/Survivor/Elements/ElementFire.mat
+Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+Assets/Game/Art/Survivor/Elements/ElementFireSoft.png
+Assets/Game/Art/Survivor/Elements/ElementFrost.mat
+Assets/Game/Art/Survivor/Elements/ElementFrostSoft.png
+Prefabs/Characters/ArcadeZombieGaunt | assets_game_prefabs_characters_arcadezombiegaunt.bundle | arcade
+Assets/Game/Prefabs/Combat/SurvivorEnemyElements.prefab
+Assets/Game/Art/Survivor/Elements/ElementFire.mat
+Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+Assets/Game/Art/Survivor/Elements/ElementFireSoft.png
+Assets/Game/Art/Survivor/Elements/ElementFrost.mat
+Assets/Game/Art/Survivor/Elements/ElementFrostSoft.png
+Prefabs/Characters/ArcadeZombieBloated | assets_game_prefabs_characters_arcadezombiebloated.bundle | arcade
+Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+Assets/Game/Prefabs/Combat/SurvivorEnemyElements.prefab
+Assets/Game/Art/Survivor/Elements/ElementFire.mat
+Assets/Game/Art/Survivor/Elements/ElementFireSoft.png
+Assets/Game/Art/Survivor/Elements/ElementFrost.mat
+Assets/Game/Art/Survivor/Elements/ElementFrostSoft.png

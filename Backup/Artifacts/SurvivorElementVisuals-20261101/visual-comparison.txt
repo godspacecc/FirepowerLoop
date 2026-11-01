@@ -1,0 +1,6 @@
+frame 0: RGB mean delta [0.0, 0.0, 0.0]
+frame 10: RGB mean delta [0.0, 0.0, 0.0]
+frame 30: RGB mean delta [0.008546153846153846, 0.0037707692307692308, 0.5414046153846154]
+frame 50: RGB mean delta [0.00772, 0.0034676923076923075, 0.5415969230769231]
+frame 75: RGB mean delta [0.0, 0.0, 0.0]
+frame 99: RGB mean delta [0.0, 0.0, 0.0]

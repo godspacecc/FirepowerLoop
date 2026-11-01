@@ -1,0 +1,10 @@
+loader=Game.YooAssetResourceLoader
+mode=DefaultPackage
+playMode=EditorSimulateMode
+Prefabs/Characters/ArcadeZombieShambler : PASS prefab, serialized particles/materials/textures/shader, body references
+Prefabs/Characters/ArcadeZombieGaunt : PASS prefab, serialized particles/materials/textures/shader, body references
+Prefabs/Characters/ArcadeZombieBloated : PASS prefab, serialized particles/materials/textures/shader, body references
+released=True
+released=True
+released=True
+completed=3; failed=False
