@@ -246,7 +246,7 @@ namespace Game
                 if(distance==nearest&&target!=0&&id>target)continue;target=id;nearest=distance;
             }
             EnsureRifleMagazine();
-            if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary()||!TryConsumeRifleRound())return;
+            if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary())return;
             facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             ShootRifleVolley(level);view.SetPlayerFireSequence(++fireSequence,fireClock);
         }

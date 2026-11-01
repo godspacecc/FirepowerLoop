@@ -15,7 +15,7 @@ namespace Game.Tests
         [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "DronePierce", "DroneExplosion", "DroneSplit", "RifleMultishot" }));
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot" }));
             Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
         }

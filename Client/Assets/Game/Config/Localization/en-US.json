@@ -955,8 +955,8 @@
   "ui.survivor.modifier.Explosion": "Explosion",
   "ui.survivor.modifier.Split": "Split",
   "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · Extra targets {2}→{3}\nOne hit per target",
-  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nFirst hit; excludes target",
-  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nFirst hit; no child modifiers",
+  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nExcludes Split; first hit only",
+  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nExcludes Explosion; no recursion",
   "ui.survivor.modifier.Multishot": "Multishot",
-  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · Shots {2}→{3}\nFull damage; costs 1 round"
+  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · Shots {2}→{3}\nFull damage; 1 round per shot"
 }

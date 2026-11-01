@@ -136,7 +136,8 @@ namespace FirepowerLoop.Arcade
             if(r.MaxSplitProjectiles<0||r.MaxSplitProjectiles>=r.MaxProjectiles||r.MaxBlastEffects<1)
                 throw new ArgumentException("强化弹丸与特效预算无效");
             if(upgrades.Count(x=>x.Kind=="RifleMultishot")!=1)throw new ArgumentException("缺少或重复步枪多重射击");
-            foreach(var owner in new[]{"Rifle","Drone"})
+            if(upgrades.Any(u=>u.IsModifier&&u.TargetWeapon!="Rifle"&&u.Weight>0))throw new ArgumentException("弹丸强化只允许主武器启用");
+            foreach(var owner in new[]{"Rifle"})
                 foreach(var effect in new[]{"Pierce","Explosion","Split"})
                     if(upgrades.Count(u=>u.Kind==owner+effect)!=1)throw new ArgumentException("武器强化必须完整配置");
             if(r.WeaponSlots<1||r.WeaponSlots>3)throw new ArgumentException("幸存者武器槽必须为1至3");

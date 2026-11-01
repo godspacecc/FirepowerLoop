@@ -115,7 +115,7 @@ namespace Game.Tests
         }
         [Test] public void SplitChildrenDoNotRecurseAndRespectBudget()
         {
-            GrantModifier("RifleSplit");GrantModifier("RifleExplosion");GrantModifier("RiflePierce");
+            GrantModifier("RifleSplit");GrantModifier("RiflePierce");
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1000,Position=new Vector2(0,.7f)});
             Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");Call("AdvanceBullets",.06f);
             var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
@@ -129,17 +129,22 @@ namespace Game.Tests
         }
         [Test] public void ModifierBudgetsPreservePrimaryFireAndBlastDamage()
         {
-            GrantModifier("RifleSplit");GrantModifier("RifleExplosion");
+            GrantModifier("RifleSplit");
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
             foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=100000,Position=new Vector2(0,.7f)});
-            foes.Add(91,new ArcadeEnemyRuntime{Id=91,Health=100000,Position=new Vector2(1.2f,.7f)});
             for(int i=0;i<30;i++){Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");Call("AdvanceBullets",.001f);}
             var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
             Assert.That(shots.Count,Is.EqualTo(config.MaxSplitProjectiles));
-            Assert.That(Get<System.Collections.ICollection>("modifierBlasts").Count,Is.EqualTo(config.MaxBlastEffects));
-            Assert.That(foes[91].Health,Is.EqualTo(100000-30*12),"视觉预算满后伤害不能丢");
             while(shots.Count<config.MaxProjectiles)Call("Shoot",new Vector2(8,8),Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");
             Assert.That(Call("CanFirePrimary"),Is.True);Assert.That(shots.Count,Is.EqualTo(config.MaxProjectiles-1));
+            // 两个分支互斥，另起独立战斗验证爆炸预算，避免旧分裂弹继续命中干扰范围伤害断言。
+            Cleanup();Setup();GrantModifier("RifleExplosion");
+            foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=100000,Position=new Vector2(0,.7f)});
+            foes.Add(91,new ArcadeEnemyRuntime{Id=91,Health=100000,Position=new Vector2(1.2f,.7f)});
+            for(int i=0;i<30;i++){Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");Call("AdvanceBullets",.001f);}
+            Assert.That(Get<System.Collections.ICollection>("modifierBlasts").Count,Is.EqualTo(config.MaxBlastEffects));
+            Assert.That(foes[91].Health,Is.EqualTo(100000-30*12),"视觉预算满后伤害不能丢");
             system.Stop();Assert.That(Get<System.Collections.ICollection>("modifierBlasts").Count,Is.Zero);
         }
         [Test] public void FullBudgetWithoutValidShotKeepsChildren()
@@ -160,20 +165,23 @@ namespace Game.Tests
         }
         [Test] public void InFlightExplosionAndSplitKeepLaunchLevel()
         {
-            GrantModifier("RifleExplosion");GrantModifier("RifleSplit");
-            Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");
-            GrantModifier("RifleExplosion");GrantModifier("RifleSplit");
-            var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
-            foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=100,Position=new Vector2(0,.7f)});
-            foes.Add(91,new ArcadeEnemyRuntime{Id=91,Health=100,Position=new Vector2(1.2f,.7f)});
-            Call("AdvanceBullets",.06f);
-            Assert.That(foes[91].Health,Is.EqualTo(88));
-            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
-            Assert.That(shots.Count,Is.EqualTo(2));Assert.That(shots.Values.All(b=>b.Damage==12),Is.True);
+            foreach(string branch in new[]{"RifleExplosion","RifleSplit"}){
+                Cleanup();Setup();GrantModifier(branch);
+                Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");
+                GrantModifier(branch);
+                var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+                foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=100,Position=new Vector2(0,.7f)});
+                foes.Add(91,new ArcadeEnemyRuntime{Id=91,Health=100,Position=new Vector2(1.2f,.7f)});
+                Call("AdvanceBullets",.06f);
+                Assert.That(foes[91].Health,Is.EqualTo(branch=="RifleExplosion"?88:100));
+                var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+                Assert.That(shots.Count,Is.EqualTo(branch=="RifleSplit"?2:0));
+                Assert.That(shots.Values.All(b=>b.Damage==12),Is.True);
+            }
         }
         [Test] public void ModifierShotsAndBlastRespectSolidObstacles()
         {
-            GrantModifier("RiflePierce");GrantModifier("RifleExplosion");GrantModifier("RifleSplit");
+            GrantModifier("RiflePierce");GrantModifier("RifleExplosion");
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
             foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=100,Position=new Vector2(0,2.5f)});
             Set("obstacles",new[]{new ArcadeObstacleDefinition(0,.2f,10,.05f,true)});
@@ -187,7 +195,7 @@ namespace Game.Tests
         }
         [Test] public void SimultaneousModifierShotsCommitOneKillAndDrop()
         {
-            GrantModifier("RifleExplosion");GrantModifier("RifleSplit");GrantModifier("RiflePierce");
+            GrantModifier("RifleExplosion");GrantModifier("RiflePierce");
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
             foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1,MaxHealth=1,Position=new Vector2(0,.7f)});
             for(int i=0;i<4;i++)Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");
@@ -195,29 +203,28 @@ namespace Game.Tests
             Assert.That(model.Kills,Is.EqualTo(1));
             Assert.That(Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Sum(x=>x.Experience),Is.EqualTo(config.ExperiencePerKill));
         }
-        /// <summary>无人机三项升满后使用自己的伤害，步枪仍保持未强化。</summary>
-        [Test] public void MaxDroneModifiersUseDroneDamageWithoutChangingRifle()
+        /// <summary>无人机不接受弹丸强化，历史等级也不应影响新发射的子弹。</summary>
+        [Test] public void DroneRejectsAllProjectileModifiersAndIgnoresLegacyLevels()
         {
             model.Loadout.TryUpgrade("Drone",5);
-            foreach(var effect in new[]{"Pierce","Explosion","Split"})for(int level=0;level<3;level++)GrantModifier("Drone"+effect);
-            var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
-            foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1000,Position=new Vector2(0,.7f)});
-            foes.Add(91,new ArcadeEnemyRuntime{Id=91,Health=1000,Position=new Vector2(1.2f,.7f)});
-            var drone=config.WeaponLevel("Drone",1);
-            Call("Shoot",Vector2.zero,Vector2.up,drone,"Drone");
-            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
-            Assert.That(shots.Values.Single().RemainingHits,Is.EqualTo(4));
-            Call("AdvanceBullets",.001f);
-            Assert.That(foes[90].Health,Is.EqualTo(1000-drone.Damage));
-            Assert.That(foes[91].Health,Is.EqualTo(1000-(int)Math.Floor(drone.Damage*.55+1e-6)));
-            var children=shots.Values.Where(b=>b.Damage<drone.Damage).ToArray();
-            Assert.That(children.Length,Is.EqualTo(4));
-            Assert.That(children.All(b=>b.Damage==(int)Math.Floor(drone.Damage*.45+1e-6)),Is.True);
-            Call("Shoot",new Vector2(8,8),Vector2.up,config.WeaponLevel("Rifle",1),"Rifle");
-            Assert.That(shots.Values.Single(b=>b.SourceWeaponId!="survivor.drone").RemainingHits,Is.EqualTo(1));
+            foreach(var effect in new[]{"Pierce","Explosion","Split"}){
+                int id=ModifierId("Drone"+effect);Assert.That(config.Upgrades[id-1].Weight,Is.Zero);
+                model.State.AddExperience(model.State.RequiredExperience);model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+                Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.False);
+                // 人工模拟旧等级：真实发射也不得继续携带无人机弹丸强化。
+                Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
+            }
+            model.State.AddExperience(model.State.RequiredExperience);Call("Offer");
+            Assert.That(model.UpgradeChoices.Any(id=>config.Upgrades[id-1].IsModifier&&config.Upgrades[id-1].TargetWeapon=="Drone"),Is.False);
+            Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Drone",1),"Drone");
+            var shot=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Values.Single();
+            Assert.That(shot.RemainingHits,Is.EqualTo(1));
+            var snapshot=Get<System.Collections.IDictionary>("modifierShots")[shot.Id];var type=snapshot.GetType();
+            Assert.That(type.GetField("SplitCount").GetValue(snapshot),Is.EqualTo(0));
+            Assert.That(type.GetField("BlastDamage").GetValue(snapshot),Is.EqualTo(0));
         }
-        /// <summary>每级只增加一条步枪弹道，整轮扣一发；无人机仍为单弹。</summary>
-        [Test] public void RifleMultishotAddsOneLanePerLevelAndConsumesOneRound()
+        /// <summary>每级只增加一条步枪弹道，每颗扣一发；无人机仍为单弹。</summary>
+        [Test] public void RifleMultishotAddsOneLanePerLevelAndConsumesMatchingRounds()
         {
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
             foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1000,Position=new Vector2(0,3)});
@@ -226,7 +233,7 @@ namespace Game.Tests
                 GrantModifier("RifleMultishot");shots.Clear();Set("fireClock",0f);
                 model.RifleCapacity=30;model.RifleRounds=30;model.RifleReloadRemaining=0;
                 Call("Fire");Assert.That(shots.Count,Is.EqualTo(level+1));
-                Assert.That(model.RifleRounds,Is.EqualTo(29));
+                Assert.That(model.RifleRounds,Is.EqualTo(30-level-1));
                 Assert.That(shots.Values.All(b=>b.Damage==config.WeaponLevel("Rifle",1).Damage),Is.True);
                 Assert.That(shots.Values.Sum(b=>b.Velocity.x),Is.EqualTo(0).Within(.001));
                 var angles=shots.Values.Select(b=>Mathf.Atan2(b.Velocity.x,b.Velocity.y)*Mathf.Rad2Deg).OrderBy(a=>a).ToArray();
@@ -242,7 +249,7 @@ namespace Game.Tests
         [Test] public void MultishotRespectsCapacityAndCopiesPiercingToEachLane()
         {
             for(int i=0;i<4;i++)GrantModifier("RifleMultishot");
-            GrantModifier("RiflePierce");GrantModifier("RifleExplosion");GrantModifier("RifleSplit");
+            GrantModifier("RiflePierce");GrantModifier("RifleExplosion");
             var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
             foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1000,Position=new Vector2(0,3)});
             var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
@@ -251,7 +258,7 @@ namespace Game.Tests
             var snapshots=Get<System.Collections.IDictionary>("modifierShots");
             foreach(var shot in shots.Values){
                 var snapshot=snapshots[shot.Id];var type=snapshot.GetType();
-                Assert.That(type.GetField("SplitCount").GetValue(snapshot),Is.EqualTo(2));
+                Assert.That(type.GetField("SplitCount").GetValue(snapshot),Is.EqualTo(0));
                 Assert.That(type.GetField("BlastDamage").GetValue(snapshot),Is.EqualTo(12));
             }
             shots.Clear();
@@ -262,6 +269,38 @@ namespace Game.Tests
             var last=shots.Values.OrderByDescending(b=>b.Id).First();
             Assert.That(last.Velocity.x,Is.EqualTo(0).Within(.001));
             Set("fireClock",0f);Call("Fire");Assert.That(model.RifleRounds,Is.EqualTo(ammo-1));
+        }
+        /// <summary>双向分支互斥不影响继续升级或叠加穿透、多重；旧请求也必须被拒绝。</summary>
+        [Test] public void BodyBranchLocksRivalButKeepsChosenUpgrades()
+        {
+            foreach(var chosen in new[]{"RifleExplosion","RifleSplit"}){
+                model.State=new SurvivorRunState(10,5);
+                string rival=chosen=="RifleExplosion"?"RifleSplit":"RifleExplosion";
+                GrantModifier(chosen);
+                int rivalId=ModifierId(rival);
+                Assert.That(Call("CanChooseModifier",config.Upgrades[rivalId-1],rivalId),Is.False);
+                GrantModifier(chosen);GrantModifier(chosen);
+                GrantModifier("RiflePierce");GrantModifier("RifleMultishot");
+                model.State.AddExperience(model.State.RequiredExperience);Call("Offer");
+                Assert.That(model.UpgradeChoices,Has.No.Member(rivalId));
+                model.State.OfferWeighted(new[]{rivalId},new[]{1},1,0);
+                Assert.That(system.Choose(model.State.ChoiceRevision,rivalId),Is.False);
+                int id=ModifierId(chosen);Assert.That(Call("CanChooseModifier",config.Upgrades[id-1],id),Is.False);
+            }
+        }
+        /// <summary>齐射数量受剩余弹药约束，每颗扣一发，打空后正常换弹。</summary>
+        [Test] public void MultishotConsumesActualRoundsAndReloadsAfterPartialVolley()
+        {
+            for(int i=0;i<4;i++)GrantModifier("RifleMultishot");
+            var foes=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            foes.Add(90,new ArcadeEnemyRuntime{Id=90,Health=1000,Position=new Vector2(0,3)});
+            var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets");
+            for(int rounds=1;rounds<=5;rounds++){
+                shots.Clear();Set("fireClock",0f);model.RifleRounds=rounds;model.RifleCapacity=30;model.RifleReloadRemaining=0;
+                Call("Fire");Assert.That(shots.Count,Is.EqualTo(rounds));
+                Assert.That(model.RifleRounds,Is.Zero);Assert.That(model.RifleReloadRemaining,Is.GreaterThan(0));
+                Set("fireClock",0f);Call("Fire");Assert.That(shots.Count,Is.EqualTo(rounds));
+            }
         }
         private int ModifierId(string kind)
         {

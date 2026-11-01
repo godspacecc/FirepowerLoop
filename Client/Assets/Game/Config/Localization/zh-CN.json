@@ -955,8 +955,8 @@
   "ui.survivor.modifier.Explosion": "爆炸",
   "ui.survivor.modifier.Split": "分裂",
   "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n同一目标只命中一次",
-  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n首次触发，不重复直击",
-  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n首次触发，子弹不再强化",
+  "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n与分裂互斥；首次触发",
+  "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n与爆炸互斥；子弹不递归",
   "ui.survivor.modifier.Multishot": "多重射击",
-  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · 弹道 {2}→{3}\n每颗原伤害，每次消耗1发"
+  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · 弹道 {2}→{3}\n每颗原伤害，每颗消耗1发"
 }

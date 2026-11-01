@@ -3719,7 +3719,7 @@ namespace Game
         public static string SurvivorModifierExplosion => Loc.T("ui.survivor.modifier.Explosion");
         /// <summary>
         /// Lv{0}→{1} · {2}→{3}米 · {4}→{5}%
-        /// 首次触发，不重复直击
+        /// 与分裂互斥；首次触发
         /// </summary>
         public static string SurvivorModifierExplosionDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Explosion.detail", arg0, arg1, arg2, arg3, arg4, arg5);
         /// <summary>
@@ -3728,7 +3728,7 @@ namespace Game
         public static string SurvivorModifierMultishot => Loc.T("ui.survivor.modifier.Multishot");
         /// <summary>
         /// Lv{0}→{1} · 弹道 {2}→{3}
-        /// 每颗原伤害，每次消耗1发
+        /// 每颗原伤害，每颗消耗1发
         /// </summary>
         public static string SurvivorModifierMultishotDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.modifier.Multishot.detail", arg0, arg1, arg2, arg3);
         /// <summary>
@@ -3746,7 +3746,7 @@ namespace Game
         public static string SurvivorModifierSplit => Loc.T("ui.survivor.modifier.Split");
         /// <summary>
         /// Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%
-        /// 首次触发，子弹不再强化
+        /// 与爆炸互斥；子弹不递归
         /// </summary>
         public static string SurvivorModifierSplitDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Split.detail", arg0, arg1, arg2, arg3, arg4, arg5);
         /// <summary>

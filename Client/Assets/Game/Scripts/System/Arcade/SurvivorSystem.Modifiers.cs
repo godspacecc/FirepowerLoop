@@ -30,7 +30,7 @@ namespace Game
         /// <summary>表现用短冲击时长，沿用已确认的0.4秒预览。</summary>
         private const float ModifierBlastSeconds=.4f;
 
-        /// <summary>一次扣弹对应一轮步枪齐射；预算不足时按实际条数对称展开，不抢占更多主弹。</summary>
+        /// <summary>齐射按实际弹丸逐颗扣弹；余弹和预算共同限制条数，打空后自动换弹。</summary>
         private void ShootRifleVolley(SurvivorWeaponLevelDefinition level)
         {
             int count=1;float spacing=0;
@@ -38,8 +38,9 @@ namespace Game
                 var upgrade=config.Upgrades[i];if(upgrade.Kind!="RifleMultishot")continue;
                 count+=upgrade.EffectCount(Model.State.UpgradeLevel(i+1));spacing=upgrade.EffectAngleDegrees;break;
             }
-            count=Math.Min(count,config.MaxProjectiles-bullets.Count);
+            count=Math.Min(count,Math.Min(Model.RifleRounds,config.MaxProjectiles-bullets.Count));
             for(int i=0;i<count;i++){
+                if(!TryConsumeRifleRound())break;
                 float angle=(i-(count-1)*.5f)*spacing*Mathf.Deg2Rad;
                 var direction=new Vector2(facing.x*Mathf.Cos(angle)-facing.y*Mathf.Sin(angle),facing.x*Mathf.Sin(angle)+facing.y*Mathf.Cos(angle));
                 Shoot(player,direction,level,"Rifle");
@@ -48,7 +49,15 @@ namespace Game
 
         /// <summary>只允许已拥有且该效果未满级的武器进入候选或接受选择。</summary>
         private bool CanChooseModifier(SurvivorUpgradeDefinition definition,int id)
-            =>!definition.IsModifier||(Model.Loadout!=null&&Model.Loadout.LevelOf(definition.TargetWeapon)>0&&Model.State.UpgradeLevel(id)<definition.MaxLevel);
+        {
+            if(!definition.IsModifier)return true;
+            if(definition.TargetWeapon!="Rifle"||definition.Weight<=0||Model.Loadout==null||Model.Loadout.LevelOf("Rifle")==0||Model.State.UpgradeLevel(id)>=definition.MaxLevel)return false;
+            // 弹体分支只在首次选择时确定；穿透、多重不参与互斥。
+            string rival=definition.ModifierKind=="Explosion"?"Split":definition.ModifierKind=="Split"?"Explosion":null;
+            if(rival!=null)for(int i=0;i<config.Upgrades.Count;i++)
+                if(config.Upgrades[i].TargetWeapon=="Rifle"&&config.Upgrades[i].ModifierKind==rival&&Model.State.UpgradeLevel(i+1)>0)return false;
+            return true;
+        }
 
         /// <summary>卡片只读查询所属武器与独立效果等级，不修改候选或战斗。</summary>
         public bool TryGetModifierUpgrade(int id,out SurvivorUpgradeDefinition definition,out int level)
@@ -64,7 +73,7 @@ namespace Game
             var shot=new ModifierShot();bullet.RemainingHits=1;
             for(int i=0;i<config.Upgrades.Count;i++)
             {
-                var u=config.Upgrades[i];if(!u.IsModifier||u.TargetWeapon!=owner)continue;
+                var u=config.Upgrades[i];if(owner!="Rifle"||!u.IsModifier||u.Weight<=0||u.TargetWeapon!=owner)continue;
                 int level=Model.State.UpgradeLevel(i+1);if(level<=0)continue;
                 switch(u.ModifierKind)
                 {
