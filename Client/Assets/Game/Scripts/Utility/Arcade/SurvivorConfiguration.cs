@@ -8,6 +8,8 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>来自幸存者权威规则表的 Id。</summary>
         public string Id { get; private set; }
+        /// <summary>幸存者金币最终封顶概率的独立倍率，不影响经验和闯关。</summary>
+        public float GoldDropMultiplier { get; private set; }
 
         /// <summary>来自权威表的尸潮参数 HordeGridSize。</summary>
         public int HordeGridSize { get; private set; }
@@ -95,6 +97,7 @@ namespace FirepowerLoop.Arcade
         {
             if (tables == null || tables.TbSurvivorRule.DataList.Count != 1) throw new ArgumentException("幸存者规则必须恰好一行");
             var r = tables.TbSurvivorRule.DataList[0];
+            if(float.IsNaN(r.GoldDropMultiplier)||float.IsInfinity(r.GoldDropMultiplier)||r.GoldDropMultiplier<0||r.GoldDropMultiplier>1)throw new ArgumentException("金币倍率必须为0到1的有限值");
             if(r.HordeSeedCount!=1||r.HordeWaveCount!=1)throw new ArgumentException("分散模式每个出生记录必须为单个敌人");
             if (!(r.HordeGridSize>0)) throw new ArgumentException("尸潮 HordeGridSize 必须为有限正数");
             if (!(r.HordeSeedCount>0)) throw new ArgumentException("尸潮 HordeSeedCount 必须为有限正数");
@@ -182,6 +185,7 @@ namespace FirepowerLoop.Arcade
                 MaxProjectiles = r.MaxProjectiles,
                 MaxSplitProjectiles=r.MaxSplitProjectiles,MaxBlastEffects=r.MaxBlastEffects,
                 MaxDrops = r.MaxDrops,
+                GoldDropMultiplier = r.GoldDropMultiplier,
                 InitialExperienceThreshold = r.InitialExperienceThreshold,
                 ExperienceThresholdGrowth = r.ExperienceThresholdGrowth,
                 ExperiencePerKill = r.ExperiencePerKill,

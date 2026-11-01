@@ -10,6 +10,26 @@ namespace Game.Tests
     /// <summary>只验证幸存者独立配置读取与强化边界。</summary>
     public sealed class SurvivorConfigTests
     {
+        /// <summary>独立金币倍率在强度封顶后生效，经验与共享闯关规则保持原值。</summary>
+        [Test] public void GoldRateScalesAfterCapWithoutChangingExperienceOrArcade()
+        {
+            var tables=Load();var config=SurvivorConfiguration.FromTables(tables);
+            Assert.That(tables.TbSurvivorRule.Get("survivor.default").Id,Is.EqualTo("survivor.default"));
+            Assert.That(config.GoldDropMultiplier,Is.EqualTo(.1f));
+            Assert.That(config.ExperienceDropChance,Is.EqualTo(1f));
+            foreach(var chance in new[]{.2236f,.2324f,.4743f,.5f})
+                Assert.That(chance*config.GoldDropMultiplier,Is.EqualTo(chance/10).Within(.000001));
+            var capped=ArcadeEnemyDropRules.Chance(.2f,int.MaxValue,int.MaxValue,100,10,.5f);
+            Assert.That(capped,Is.EqualTo(.5f));
+            Assert.That(capped*config.GoldDropMultiplier,Is.EqualTo(.05f).Within(.000001));
+            var source=File.ReadAllText(Path.Combine(Application.dataPath,"Game/Scripts/System/Arcade/SurvivorSystem.Gold.cs"));
+            Assert.That(source,Does.Contain("r.EnemyDropMaxChance)*config.GoldDropMultiplier"));
+            var member=typeof(global::SurvivorRuleConfig).GetField("GoldDropMultiplier");
+            foreach(var value in new[]{-.1f,1.1f,float.NaN,float.PositiveInfinity}) {
+                member.SetValue(tables.TbSurvivorRule.DataList[0],value);
+                Assert.Throws<ArgumentException>(()=>SurvivorConfiguration.FromTables(tables));
+            }
+        }
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
         /// <summary>正式源生成后的路线分组、恢复强度及等待时间必须与采用玩法一致。</summary>
         [Test] public void RecoveryAndMagazineRoutesUseAuthoritativeValues()

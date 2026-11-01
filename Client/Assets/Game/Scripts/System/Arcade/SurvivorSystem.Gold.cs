@@ -34,12 +34,12 @@ namespace Game
             goldVisual=new ArcadeDropDefinition(source.Id,source.MinArena,source.MaxArena,source.Weight,source.Kind,source.ProductId,source.VisualPrefabAddress,1,0,0);
             return true;
         }
-        /// <summary>沿用敌人强度掉率，成功生成一份金币；预算满时不创建不可显示的金币。</summary>
+        /// <summary>敌人强度概率封顶后乘幸存者独立倍率，成功生成一份金币；预算满时不创建不可显示的金币。</summary>
         private void TryDropGold(ArcadeEnemyRuntime enemy)
         {
             if(goldDrops.Count>=config.MaxDrops)return;
             var r=catalog.Rule;
-            if(goldRandom.NextDouble()>=ArcadeEnemyDropRules.Chance(r.DropChance,enemy.MaxHealth,enemy.Damage,r.EnemyDropHealthUnit,r.EnemyDropDamageUnit,r.EnemyDropMaxChance))return;
+            if(goldRandom.NextDouble()>=ArcadeEnemyDropRules.Chance(r.DropChance,enemy.MaxHealth,enemy.Damage,r.EnemyDropHealthUnit,r.EnemyDropDamageUnit,r.EnemyDropMaxChance)*config.GoldDropMultiplier)return;
             goldDrops.Add(++identity,enemy.Position);
         }
         /// <summary>保存成功才消除拾取物；失败保留金币，限频重试并沿现有提示展示。</summary>

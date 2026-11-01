@@ -16,6 +16,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     public SurvivorRuleConfig(ByteBuf _buf) 
     {
         Id = _buf.ReadString();
+        GoldDropMultiplier = _buf.ReadFloat();
         WeaponSlots = _buf.ReadInt();
         LayoutId = _buf.ReadString();
         LayoutId_Ref = null;
@@ -63,6 +64,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     }
 
     public readonly string Id;
+    public readonly float GoldDropMultiplier;
     public readonly int WeaponSlots;
     public readonly string LayoutId;
     public ArcadeRoundLayoutConfig LayoutId_Ref;
@@ -117,6 +119,7 @@ public sealed partial class SurvivorRuleConfig : Luban.BeanBase
     {
         return "{ "
         + "Id:" + Id + ","
+        + "GoldDropMultiplier:" + GoldDropMultiplier + ","
         + "WeaponSlots:" + WeaponSlots + ","
         + "LayoutId:" + LayoutId + ","
         + "EnemyId:" + EnemyId + ","
