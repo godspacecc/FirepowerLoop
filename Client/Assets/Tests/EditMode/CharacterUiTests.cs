@@ -52,8 +52,11 @@ namespace Game.Tests
                 choices[1].BtnAction.onClick.Invoke();Assert.That(architecture.GetModel<SurvivorModel>().SelectedCharacter,Is.EqualTo(1));
                 select.BtnClose.onClick.Invoke();select.BtnStart.onClick.Invoke();Assert.That(starts,Is.Zero);
                 selectController.Show();selectController.Configure(()=>starts++);select.BtnStart.onClick.Invoke();select.BtnStart.onClick.Invoke();Assert.That(starts,Is.EqualTo(1));
+                architecture.GetModel<SurvivorModel>().SelectedCharacter=0;
                 selectController.Show();selectController.Configure(()=>starts++);Assert.That(choices[1].ActionText.text,Is.EqualTo("已选择"));
-                Assert.That(File.ReadAllText(path),Is.EqualTo(purchased));
+                var beforeSelection=Newtonsoft.Json.Linq.JObject.Parse(purchased);var afterSelection=Newtonsoft.Json.Linq.JObject.Parse(File.ReadAllText(path));
+                beforeSelection.Remove("SelectedCharacterProductId");afterSelection.Remove("SelectedCharacterProductId");
+                Assert.That(Newtonsoft.Json.Linq.JToken.DeepEquals(beforeSelection,afterSelection),Is.True,"选择不得改动余额、购买记录或领取水位");
 
 
             }

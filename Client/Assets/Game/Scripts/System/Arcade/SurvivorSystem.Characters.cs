@@ -54,17 +54,30 @@ namespace Game
             if(!goldStore.TryPurchase(product.Id,product.Price,out var balance,out error))return false;
             Model.GoldBalance=balance;Publish();return true;
         }
+        /// <summary>进入选人界面时恢复上次选择；配置移除或所有权失效只回退默认，不改写存档。</summary>
+        public bool TryRestoreSelectedCharacter(out string error)
+        {
+            if(Model.Active){error="character.run_active";return false;}
+            if(!TryReadCharacterShop(out var shop,out error))return false;
+            if(!goldStore.TryReadSelectedCharacter(out var productId,out error))return false;
+            var selected=shop.Products.FirstOrDefault(p=>p.Id==productId&&p.Owned);
+            Model.SelectedCharacter=selected?.AppearanceId??0;return true;
+        }
         /// <summary>默认0免费；收费外观必须在当前有效目录内且已拥有，开局再次执行。</summary>
         public bool TrySelectCharacter(int appearanceId,out string error)
         {
             error=null;
             if(Model.Active){error="character.run_active";return false;}
+            string selectedProductId="";
             if(appearanceId!=0) {
                 if(!TryReadCharacterShop(out var shop,out error))return false;
                 var product=shop.Products.FirstOrDefault(p=>p.AppearanceId==appearanceId);
                 if(product==null){error="character.unknown";return false;}
                 if(!product.Owned){error="character.not_owned";return false;}
+                selectedProductId=product.Id;
             }
+            goldStore??=new SurvivorGoldFileStore(1);
+            if(!goldStore.TryRememberCharacter(selectedProductId,out error))return false;
             Model.SelectedCharacter=appearanceId;return true;
         }
     }

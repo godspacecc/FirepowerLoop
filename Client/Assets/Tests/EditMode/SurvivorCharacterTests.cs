@@ -13,6 +13,34 @@ namespace Game.Tests
     /// <summary>角色购买业务、真实人物绑定和真实收集器的限定检查。</summary>
     public sealed class SurvivorCharacterTests
     {
+        /// <summary>角色选择跨系统实例恢复，保存失败不改变选中项，失效商品回到免费默认角色。</summary>
+        [Test] public void RememberedCharacterRestoresAcrossSessionsAndRejectsFailedWrites()
+        {
+            var root=Path.Combine(Path.GetTempPath(),"RememberCharacter-"+Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(Path.Combine(root,"Saves"));var path=Path.Combine(root,"Saves","survivor-gold-1.json");
+            const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+            try{
+                File.WriteAllText(path,"{\"Version\":1,\"Balance\":1000,\"ActiveRun\":\"run\",\"Sequence\":0}");
+                var arch=new Game();var model=new SurvivorModel();arch.RegisterModel(model);
+                arch.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes"))))));
+                var system=new SurvivorSystem();((ICanSetArchitecture)system).SetArchitecture(arch);typeof(SurvivorSystem).GetField("goldStore",flags).SetValue(system,new SurvivorGoldFileStore(1,root));
+                Assert.That(system.TryReadCharacterShop(out var shop,out var error),Is.True,error);var chosen=shop.Products.First(p=>p.AppearanceId==1);
+                Assert.That(system.TryRestoreSelectedCharacter(out error),Is.True,error);Assert.That(model.SelectedCharacter,Is.Zero,"旧账本缺少偏好时默认角色");
+                Assert.That(system.TryPurchaseCharacter(chosen.Id,out error),Is.True,error);Assert.That(system.TrySelectCharacter(1,out error),Is.True,error);
+                var restore=typeof(SurvivorSystem).GetMethod("TryRestoreSelectedCharacter");Assert.That(restore,Is.Not.Null,"尚未提供跨会话恢复");
+                var next=new SurvivorSystem();((ICanSetArchitecture)next).SetArchitecture(arch);typeof(SurvivorSystem).GetField("goldStore",flags).SetValue(next,new SurvivorGoldFileStore(1,root));model.SelectedCharacter=0;
+                Assert.That(restore.Invoke(next,new object[]{null}),Is.True);Assert.That(model.SelectedCharacter,Is.EqualTo(1));
+                var saved=File.ReadAllText(path);Assert.That(next.TrySelectCharacter(9,out error),Is.False);Assert.That(File.ReadAllText(path),Is.EqualTo(saved));
+                try{File.SetAttributes(path,FileAttributes.ReadOnly);Assert.That(next.TrySelectCharacter(0,out error),Is.False);Assert.That(model.SelectedCharacter,Is.EqualTo(1));Assert.That(File.ReadAllText(path),Is.EqualTo(saved));}
+                finally{File.SetAttributes(path,FileAttributes.Normal);}
+                var document=Newtonsoft.Json.Linq.JObject.Parse(saved);document["SelectedCharacterProductId"]=shop.Products.First(p=>p.AppearanceId==9).Id;File.WriteAllText(path,document.ToString());
+                Assert.That(restore.Invoke(next,new object[]{null}),Is.True);Assert.That(model.SelectedCharacter,Is.Zero,"未拥有商品不能恢复为选中项");
+                document["SelectedCharacterProductId"]="removed.product";File.WriteAllText(path,document.ToString());
+                Assert.That(restore.Invoke(next,new object[]{null}),Is.True);Assert.That(model.SelectedCharacter,Is.Zero);
+                Assert.That(next.TrySelectCharacter(0,out error),Is.True,error);model.SelectedCharacter=1;
+                Assert.That(restore.Invoke(next,new object[]{null}),Is.True);Assert.That(model.SelectedCharacter,Is.Zero,"默认角色也要记住");
+            }finally{if(File.Exists(path))File.SetAttributes(path,FileAttributes.Normal);if(Directory.Exists(root))Directory.Delete(root,true);}
+        }
         [Test] public void PurchaseSelectionAndStopUseAuthoritativeCatalog()
         {
             var root=Path.Combine(Path.GetTempPath(),"CharacterBusiness-"+Guid.NewGuid().ToString("N"));

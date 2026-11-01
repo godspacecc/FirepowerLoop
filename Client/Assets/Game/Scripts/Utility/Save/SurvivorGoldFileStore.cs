@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
@@ -23,6 +23,8 @@ namespace Game
             /// <summary>V2累计支出与永久所有权，和余额一并提交。</summary>
             public long Spent;
             public List<string> OwnedProducts=new List<string>();
+            /// <summary>上次有效角色的稳定商品身份；空串表示免费默认角色，兼容旧文件缺字段。</summary>
+            public string SelectedCharacterProductId="";
         }
         /// <summary>使用独立目录；测试可注入临时根目录。</summary>
         public SurvivorGoldFileStore(long playerId,string root=null)
@@ -62,6 +64,22 @@ namespace Game
         {
             lock(Gate){balance=0;productIds=Array.Empty<string>();error=null;try{var d=Read();balance=d.Balance;productIds=d.OwnedProducts.ToArray();return true;}catch(Exception){error="wallet.read_failed";return false;}}
         }
+        /// <summary>读取选择偏好，不覆盖坏档；具体目录和所有权仍由系统复核。</summary>
+        public bool TryReadSelectedCharacter(out string productId,out string error)
+        {
+            lock(Gate){productId="";error=null;try{productId=Read().SelectedCharacterProductId;return true;}catch(Exception){error="wallet.read_failed";return false;}}
+        }
+        /// <summary>选择与当前所有权在同一账本事务内验证，保存成功后才允许更新内存选择。</summary>
+        public bool TryRememberCharacter(string productId,out string error)
+        {
+            lock(Gate){error=null;try{
+                if(productId==null||productId.Length>96){error="character.unknown";return false;}
+                var d=Read();
+                if(productId.Length>0&&!d.OwnedProducts.Contains(productId)){error="character.not_owned";return false;}
+                if(d.SelectedCharacterProductId==productId)return true;
+                d.SelectedCharacterProductId=productId;Write(d);return true;
+            }catch(Exception){error="wallet.transaction_failed";return false;}}
+        }
         /// <summary>返回所有权副本；坏档不伪造默认账本。</summary>
         public bool TryReadOwned(out string[] productIds,out string error)
         {
@@ -97,6 +115,8 @@ namespace Game
             if(!File.Exists(path))return new Document();
             var json=JObject.Parse(File.ReadAllText(path));
             var d=json.ToObject<Document>();
+            if(json.TryGetValue("SelectedCharacterProductId",out var selected)&&(selected.Type!=JTokenType.String||d.SelectedCharacterProductId==null||d.SelectedCharacterProductId.Length>96))
+                throw new InvalidDataException("角色选择记录无效");
             // V2必须明确携带购买记录，不能把缺字段或类型转换当作空所有权覆盖。
             if(d!=null&&d.Version==2&&(json["Spent"]?.Type!=JTokenType.Integer||
                 json["OwnedProducts"]?.Type!=JTokenType.Array||json["OwnedProducts"].Any(x=>x.Type!=JTokenType.String)))

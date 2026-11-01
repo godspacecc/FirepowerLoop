@@ -39,7 +39,7 @@ namespace Game
             this.RegisterEvent<LanguageChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<SurvivorChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
-        protected override void OnShow() { errorCode = null; start = null; Refresh(); }
+        protected override void OnShow() { start = null; this.GetSystem<SurvivorSystem>().TryRestoreSelectedCharacter(out errorCode); Refresh(); }
         /// <summary>重复打开也显式刷新，不依赖重复Show触发生命周期。</summary>
         public void RefreshContent() { errorCode = null; Refresh(); }
         /// <summary>读取失败保留未知余额并清除旧商品，绝不伪造零金币。</summary>
