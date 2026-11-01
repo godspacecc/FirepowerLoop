@@ -203,6 +203,8 @@ namespace Game
         /// <summary>新用途初始化存活表现；调用方须先保持实例不可见，随后再绑定本次武器和生命状态。</summary>
         public void BeginPresentationUse()
         {
+            // 对象池复用后，即使新敌人的生命值相同，也必须首次刷新。
+            hasHealthDisplaySnapshot = false;
             ResetGroundEntry();
             ResetDockSeaEntry();
             ResetMeleeAttack();
@@ -459,14 +461,34 @@ namespace Game
             navMeshAgent.stoppingDistance = Mathf.Max(0f, stoppingDistance);
         }
 
+        /// <summary>缓存上次实际应用的生命快照，跳过每帧重复的血条写入。</summary>
+        private bool hasHealthDisplaySnapshot;
+        /// <summary>快照对应的显示引用；更换血条时必须重新应用。</summary>
+        private Image healthDisplaySnapshotFill;
+        /// <summary>上次应用的当前生命。</summary>
+        private int healthDisplaySnapshotCurrent;
+        /// <summary>上次应用的生命上限。</summary>
+        private int healthDisplaySnapshotMaximum;
+
+        /// <summary>仅在生命快照变化、首次显示或复用后写入血条。</summary>
         public void SetHealthDisplay(int current, int maximum)
         {
-            if (healthBarFill != null)
+            if (healthBarFill == null)
             {
-                HealthFillUtility.Apply(
-                    healthBarFill,
-                    CalculateHealthFill(current, maximum));
+                hasHealthDisplaySnapshot = false;
+                healthDisplaySnapshotFill = null;
+                return;
             }
+
+            if (hasHealthDisplaySnapshot && healthDisplaySnapshotFill == healthBarFill &&
+                healthDisplaySnapshotCurrent == current && healthDisplaySnapshotMaximum == maximum)
+                return;
+
+            HealthFillUtility.Apply(healthBarFill, CalculateHealthFill(current, maximum));
+            healthDisplaySnapshotFill = healthBarFill;
+            healthDisplaySnapshotCurrent = current;
+            healthDisplaySnapshotMaximum = maximum;
+            hasHealthDisplaySnapshot = true;
         }
 
         public void SetHealthBarVisible(bool visible)

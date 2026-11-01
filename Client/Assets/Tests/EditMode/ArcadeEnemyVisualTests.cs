@@ -13,6 +13,72 @@ namespace Game.Tests
     /// <summary>验证街机专用敌人配置与正式 Prefab 的视觉隔离、组件契约和资源依赖。</summary>
     public sealed class ArcadeEnemyVisualTests
     {
+        /// <summary>不变的血量不再反复写入无Sprite血条。</summary>
+        [Test]
+        public void EnemyHealthDisplaySkipsUnchangedGeometry()
+        {
+            var holder = new GameObject("HealthDisplayCheck");
+            holder.SetActive(false);
+            try
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab");
+                var view = UnityEngine.Object.Instantiate(prefab, holder.transform).GetComponent<EnemyView>();
+                view.SetHealthDisplay(50, 100);
+                var fill = view.HealthBarFill;
+                Assert.That(fill, Is.Not.Null);
+                Assert.That(fill.sprite, Is.Null);
+                // 写入哨兵值以观察Apply是否再次执行；Unity会吞掉相同几何赋值，hasChanged不能证明未调用。
+                fill.fillAmount = .123f;
+                view.SetHealthDisplay(50, 100);
+                Assert.That(fill.fillAmount, Is.EqualTo(.123f), "同值快照不应再次写入血条");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(holder); }
+        }
+
+        /// <summary>血量、上限、复用和更换显示引用均须正确刷新。</summary>
+        [Test]
+        public void EnemyHealthDisplayRefreshesChangesAndReuse()
+        {
+            var holder = new GameObject("HealthDisplayReuse");
+            holder.SetActive(false);
+            try
+            {
+                var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(
+                    "Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab");
+                var view = UnityEngine.Object.Instantiate(prefab, holder.transform).GetComponent<EnemyView>();
+                view.SetHealthDisplay(50, 100);
+                Assert.That(view.HealthBarFill.fillAmount, Is.EqualTo(.5f));
+                view.SetHealthDisplay(50, 200);
+                Assert.That(view.HealthBarFill.fillAmount, Is.EqualTo(.25f));
+                view.SetHealthDisplay(100, 200);
+                Assert.That(view.HealthBarFill.fillAmount, Is.EqualTo(.5f));
+                view.HealthBarFill.fillAmount = .1f;
+                view.BeginPresentationUse();
+                view.SetHealthDisplay(100, 200);
+                Assert.That(view.HealthBarFill.fillAmount, Is.EqualTo(.5f), "复用首次快照必须强制应用");
+
+                var replacement = new GameObject("ReplacementFill", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+                replacement.transform.SetParent(holder.transform);
+                var image = replacement.GetComponent<UnityEngine.UI.Image>();
+                var serialized = new SerializedObject(view);
+                serialized.FindProperty("healthBarFill").objectReferenceValue = image;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                view.SetHealthDisplay(100, 200);
+                Assert.That(image.fillAmount, Is.EqualTo(.5f), "新显示引用不可继承旧引用缓存");
+
+                serialized.FindProperty("healthBarFill").objectReferenceValue = null;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                view.SetHealthDisplay(100, 200);
+                image.fillAmount = .1f;
+                serialized.FindProperty("healthBarFill").objectReferenceValue = image;
+                serialized.ApplyModifiedPropertiesWithoutUndo();
+                view.SetHealthDisplay(100, 200);
+                Assert.That(image.fillAmount, Is.EqualTo(.5f), "引用缺失后恢复也须首次刷新");
+            }
+            finally { UnityEngine.Object.DestroyImmediate(holder); }
+        }
+
         private static readonly string[] EnemyIds =
         {
             "enemy.arcade.basic",
