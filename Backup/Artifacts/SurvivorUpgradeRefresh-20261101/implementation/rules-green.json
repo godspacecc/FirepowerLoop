@@ -1,0 +1,64 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 10,
+      "PassedTests": 10,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.0919593"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.CandidatesRespectPositiveWeightAndDoNotRepeatOtherCards",
+        "Status": "Passed",
+        "Duration": "00:00:00.0560000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.FinishedRunCannotRefresh",
+        "Status": "Passed",
+        "Duration": "00:00:00.0150000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.InvalidSlotDoesNotSpend(-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.InvalidSlotDoesNotSpend(3)",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.NoAlternativeDoesNotSpendOrChangeRevision",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.NoPendingChoiceCannotRefresh",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.OldRefreshAndOldSelectionAreRejected",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.RefreshChangesOnlyRequestedSlotAndKeepsPendingExperience",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.ThreeRefreshesAreSharedAcrossSlotsAndDoNotResetAfterChoosing",
+        "Status": "Passed",
+        "Duration": "00:00:00.0010000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshTests.UiAvailabilityUsesSameAlternativeRule",
+        "Status": "Passed",
+        "Duration": "00:00:00"
+      }
+    ]
+  }
+}

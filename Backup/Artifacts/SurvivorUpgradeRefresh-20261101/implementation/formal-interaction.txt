@@ -1,0 +1,5 @@
+Formal Prefab + generated View + actual UI Controller callbacks
+pointer click refresh PASS; no selection; other two cards unchanged; all count labels=2,2,2
+before=20,21,10
+after=3,21,10
+isolated capture, no gameplay save; temporary source-font atlas; no asset substitution for resource loading

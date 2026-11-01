@@ -1,16 +1,53 @@
 using System;
+using UnityEngine;
 namespace Game
 {
     /// <summary>复用卡片完整覆盖展示和回调；不保存业务状态或创建列表项。</summary>
     public static class SurvivorUpgradeBoxCtrl
     {
+        /// <summary>整卡选择与独立刷新分别绑定；复用时覆盖全部装饰、计数、可用状态与回调。</summary>
+        public static void Bind(SurvivorUpgradeBoxUI view,int id,int revision,SurvivorSystem system,Action<int,int> choose,int slot,int remaining,bool canRefresh,Action<int,int> refresh)
+        {
+            BindDetails(view,id,revision,system,choose);
+            view.FireBadge.SetActive(false);view.FrostBadge.SetActive(false);view.PierceBadge.SetActive(false);
+            var accent=new Color(.82f,.66f,.35f);int level=0;string category="player";
+            if(system.TryGetModifierUpgrade(id,out var modifier,out level))
+            {
+                string kind=modifier.ModifierKind;category=kind=="Multishot"?"multishot":"modifier";
+                view.FireBadge.SetActive(kind=="Fire");view.FrostBadge.SetActive(kind=="Frost");view.PierceBadge.SetActive(kind=="Pierce");
+                if(kind=="Fire")accent=new Color(.94f,.46f,.22f);else if(kind=="Frost")accent=new Color(.42f,.76f,.85f);
+                if(kind=="Fire"||kind=="Frost"||kind=="Pierce"||kind=="Multishot")
+                {
+                    string F(float v)=>v.ToString("0.##");
+                    string Number(int at)=>kind=="Fire"||kind=="Frost"?F(modifier.StatusStrength(at)*100):modifier.EffectCount(at).ToString();
+                    string amount=level==0?Number(1):Loc.T("ui.survivor.cards.next.stat",Number(level),Number(level+1));
+                    string stat=Loc.T("ui.survivor.cards."+kind+".stat",amount);
+                    string route=kind=="Multishot"?Loc.T("ui.survivor.cards.compatible"):Loc.T("ui.survivor.cards.route.RifleTip");
+                    view.DetailText.text="<line-height=43>"+Loc.T("ui.survivor.cards."+kind+".trigger",F(modifier.StatusDurationSeconds))+"\n<size=26><color=#"+ColorUtility.ToHtmlStringRGB(accent)+">"+stat+"</color></size>\n<size=17><color=#91A6A8>"+Loc.T("ui.survivor.cards."+kind+".note")+"</color></size>\n<size=16><color=#7D9196>"+route+"</color></size></line-height>";
+                }
+            }
+            else if(system.TryGetWeaponUpgrade(id,out _,out level,out _,out _))category="weapon";
+            else
+            {
+                system.TryGetUpgradeDetails(id,out level,out _,out _,out _);
+                if(system.TryGetRifleUpgradeDetails(id,out _,out _,out _))category="magazine";
+                else if(system.TryGetRecoveryUpgradeDetails(id,out _,out _,out _,out _))category="recovery";
+            }
+            view.CategoryText.text=Loc.T("ui.survivor.cards.category."+category);
+            view.LevelText.text=level==0?Loc.T("ui.survivor.cards.first"):Loc.T("ui.survivor.cards.level",level,level+1);
+            view.Accent.color=new Color(accent.r,accent.g,accent.b,.72f);
+            view.RefreshCountText.text=remaining.ToString();view.RefreshCountText.color=canRefresh?new Color(.94f,.89f,.78f):new Color(.39f,.47f,.49f);
+            foreach(var shape in view.BtnRefresh.GetComponentsInChildren<SurvivorUpgradeShape>())
+                if(shape.name=="IconStroke"||shape.name=="RefreshArrow")shape.color=canRefresh?new Color(.94f,.89f,.78f):new Color(.39f,.47f,.49f);
+            view.BtnRefresh.interactable=canRefresh;view.BtnRefresh.onClick.RemoveAllListeners();view.BtnRefresh.onClick.AddListener(()=>refresh(revision,slot));
+        }
         /// <summary>以稳定强化编号读取本地化文本，捕获当轮版本防止旧回调重复选择。</summary>
-        public static void Bind(SurvivorUpgradeBoxUI view, int id, int revision, SurvivorSystem system, Action<int, int> choose)
+        private static void BindDetails(SurvivorUpgradeBoxUI view, int id, int revision, SurvivorSystem system, Action<int, int> choose)
         {
             if(system.TryGetModifierUpgrade(id,out var modifier,out int modifierLevel))
             {
                 int nextLevel=modifierLevel+1;string effect=modifier.ModifierKind;
-                view.TitleText.text=Loc.T("ui.survivor.modifier.title",Loc.T("ui.survivor.weapon."+modifier.TargetWeapon),Loc.T("ui.survivor.modifier."+effect));
+                view.TitleText.text=Loc.T("ui.survivor.modifier."+effect);
                 string F(float value)=>value.ToString("0.##");
                 view.DetailText.text=(effect=="Fire"||effect=="Frost")?Loc.T("ui.survivor.modifier."+effect+".detail",F(modifier.StatusDurationSeconds),F(modifier.StatusStrength(modifierLevel)*100),F(modifier.StatusStrength(nextLevel)*100)):
                     effect=="Multishot"?Loc.T("ui.survivor.modifier.Multishot.detail",modifierLevel,nextLevel,1+modifier.EffectCount(modifierLevel),1+modifier.EffectCount(nextLevel)):
@@ -22,7 +59,7 @@ namespace Game
             if(system.TryGetWeaponUpgrade(id,out var kind,out int weaponLevel,out var before,out var after))
             {
                 string name=Loc.T("ui.survivor.weapon."+kind);
-                view.TitleText.text=Loc.T(weaponLevel==0?"ui.survivor.weapon.acquire":"ui.survivor.weapon.upgrade",name);
+                view.TitleText.text=kind=="Drone"?Loc.T("ui.survivor.cards.support"):name;
                 view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.acquire_detail",after.Damage,after.FireIntervalSeconds.ToString("0.00")):
                     Loc.T("ui.survivor.weapon.upgrade_detail",weaponLevel,weaponLevel+1,before.Damage,after.Damage,before.FireIntervalSeconds.ToString("0.00"),after.FireIntervalSeconds.ToString("0.00"));
                 view.BtnSelect.interactable=true;view.BtnSelect.onClick.RemoveAllListeners();view.BtnSelect.onClick.AddListener(()=>choose(revision,id));return;

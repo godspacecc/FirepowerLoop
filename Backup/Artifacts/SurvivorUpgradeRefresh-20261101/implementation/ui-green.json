@@ -1,0 +1,39 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 5,
+      "PassedTests": 5,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:06.9150896"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.ActualConfigProvidesRunBudgetAndStableStringKey",
+        "Status": "Passed",
+        "Duration": "00:00:01.8400000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.AllEnabledCardsFitBothLanguagesAndResetDecoration",
+        "Status": "Passed",
+        "Duration": "00:00:01.0920000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.RefreshClickDoesNotSelectAndRebindDoesNotDuplicateListeners",
+        "Status": "Passed",
+        "Duration": "00:00:00.9120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.SystemRefreshPreservesOtherCardsPausingAndSnapshotBudget",
+        "Status": "Passed",
+        "Duration": "00:00:01"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.UsedBudgetDisablesOnlyRefreshAndPreservesCardChoice",
+        "Status": "Passed",
+        "Duration": "00:00:00.9550000"
+      }
+    ]
+  }
+}

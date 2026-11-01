@@ -1,0 +1,6 @@
+loader=Game.YooAssetResourceLoader
+mode=DefaultPackage
+playMode=EditorSimulateMode
+Prefabs/UI/Survivor/SurvivorUpgrade : PASS host, external Box, generated references, shared count, icon, font and card feedback
+released=True
+completed=1; failed=False

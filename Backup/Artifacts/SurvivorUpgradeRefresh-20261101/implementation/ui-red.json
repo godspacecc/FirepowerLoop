@@ -1,0 +1,37 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 4,
+      "PassedTests": 1,
+      "FailedTests": 3,
+      "SkippedTests": 0,
+      "Duration": "00:00:05.7385732"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.ActualConfigProvidesRunBudgetAndStableStringKey",
+        "Status": "Passed",
+        "Duration": "00:00:01.6650000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.RefreshClickDoesNotSelectAndRebindDoesNotDuplicateListeners",
+        "Status": "Failed",
+        "Duration": "00:00:01.0300000",
+        "Message": "  卡片刷新绑定尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.SystemRefreshPreservesOtherCardsPausingAndSnapshotBudget",
+        "Status": "Failed",
+        "Duration": "00:00:00.9150000",
+        "Message": "  卡片刷新绑定尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorRefreshUiTests.UsedBudgetDisablesOnlyRefreshAndPreservesCardChoice",
+        "Status": "Failed",
+        "Duration": "00:00:00.9880000",
+        "Message": "  卡片刷新绑定尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

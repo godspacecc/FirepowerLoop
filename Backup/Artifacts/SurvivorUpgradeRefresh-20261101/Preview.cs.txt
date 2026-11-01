@@ -1,0 +1,52 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEngine.UI;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using TMPro;using UnityEngine.TextCore.LowLevel;using Game;using Object=UnityEngine.Object;
+public class Script
+{
+static readonly List<Object> owned=new();
+static void DisableScripts(GameObject root){foreach(var b in root.GetComponentsInChildren<MonoBehaviour>(true))if(!(b is TMP_Text)&&!(b is UnityEngine.UI.Graphic)&&!(b is Button))b.enabled=false;foreach(var layout in root.GetComponentsInChildren<LayoutGroup>(true))layout.enabled=false;}
+static void Font(GameObject root,TMP_FontAsset font){foreach(var t in root.GetComponentsInChildren<TMP_Text>(true)){t.font=font;t.fontSharedMaterial=font.material;t.enableAutoSizing=false;}}
+static TMP_Text Label(Transform parent,TMP_Text source,string text,float x,float y,float width,float height,float size)
+{var t=Object.Instantiate(source,parent,false);t.name="TEMP_Label";var rect=t.rectTransform;rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.anchoredPosition=new Vector2(x,y);rect.sizeDelta=new Vector2(width,height);t.fontSize=size;t.text=text;t.alignment=TextAlignmentOptions.Center;return t;}
+static void Capture(Camera camera,string path)
+{
+var rt=RenderTexture.GetTemporary(1920,1080,24);var previous=RenderTexture.active;var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);
+try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1920,1080),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}
+finally{camera.targetTexture=null;RenderTexture.active=previous;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}
+}
+public static object Main()
+{
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("需在正确项目编辑状态预览");
+var scene=EditorSceneManager.NewPreviewScene();try
+{
+var cameraObject=new GameObject("TEMP_PreviewCamera");SceneManager.MoveGameObjectToScene(cameraObject,scene);var camera=cameraObject.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=5;camera.transform.position=new Vector3(0,0,-10);camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.black;camera.cullingMask=1<<31;
+var go=new GameObject("TEMP_Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));SceneManager.MoveGameObjectToScene(go,scene);var canvas=go.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
+var background=new GameObject("TEMP_Background",typeof(RectTransform),typeof(Image));background.transform.SetParent(go.transform,false);var br=(RectTransform)background.transform;br.anchorMin=Vector2.zero;br.anchorMax=Vector2.one;br.offsetMin=br.offsetMax=Vector2.zero;
+var texture=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Game/Art/UI/ArcadeBackgrounds/survivor-loading.png");var sprite=Sprite.Create(texture,new Rect(0,0,texture.width,texture.height),new Vector2(.5f,.5f));owned.Add(sprite);background.GetComponent<Image>().sprite=sprite;
+var host=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorUpgrade.prefab"),go.transform,false);DisableScripts(host);var ui=host.GetComponent<SurvivorUpgradeUI>();
+var boxPrefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/Box/SurvivorUpgrade.prefab");var source=boxPrefab.GetComponent<SurvivorUpgradeBoxUI>();
+// 临时字库与atlas只用于候选，绝不向正式动态字库填入新字符。
+var font=TMP_FontAsset.CreateFontAsset(source.DetailText.font.sourceFontFile,72,9,GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);owned.Add(font);owned.Add(font.material);Font(host,font);
+foreach(var label in host.GetComponentsInChildren<TMP_Text>(true))
+{if(label.text=="等级提升")label.text="选择强化";else if(label.text=="选择一项强化")label.text="选择一张卡片，强化本局能力";else if(label.text=="战斗已暂停"){label.rectTransform.anchoredPosition=new Vector2(0,-420);label.fontSize=20;}}
+var cards=new SurvivorUpgradeBoxUI[3];
+for(int i=0;i<3;i++)
+{
+var card=Object.Instantiate(boxPrefab,ui.Cards.transform,false);DisableScripts(card);Font(card,font);var rect=(RectTransform)card.transform;rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.sizeDelta=new Vector2(420,390);rect.anchoredPosition=new Vector2((i-1)*460,0);var box=card.GetComponent<SurvivorUpgradeBoxUI>();cards[i]=box;
+box.DetailText.fontSize=20;box.DetailText.rectTransform.sizeDelta=new Vector2(360,150);box.DetailText.rectTransform.anchoredPosition=new Vector2(0,10);box.DetailText.alignment=TextAlignmentOptions.Center;
+}
+var counter=Label(host.transform,cards[0].DetailText,"本局剩余刷新 3 次",0,-270,700,36,22);
+var refresh=Object.Instantiate(cards[0].BtnSelect,host.transform,false);refresh.name="TEMP_Refresh";var rr=(RectTransform)refresh.transform;rr.anchorMin=rr.anchorMax=new Vector2(.5f,.5f);rr.anchoredPosition=new Vector2(0,-335);rr.sizeDelta=new Vector2(340,64);var refreshText=refresh.GetComponentInChildren<TMP_Text>(true);refreshText.fontSize=26;refreshText.alignment=TextAlignmentOptions.Center;refreshText.text="刷新选项";refresh.GetComponent<Image>().color=new Color(.15f,.29f,.35f,1);var colors=refresh.colors;colors.normalColor=Color.white;colors.highlightedColor=Color.white;colors.pressedColor=new Color(.8f,.85f,.9f,1);colors.disabledColor=new Color(.6f,.6f,.6f,1);refresh.colors=colors;
+foreach(var mark in refresh.GetComponentsInChildren<Transform>(true))if(mark.name=="PrimaryMark")mark.gameObject.SetActive(false);
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorUpgradeRefresh-20261101";Directory.CreateDirectory(dir);
+var titles=new[]{"燃烧弹头","冰霜弹头","穿甲弹头"};var details=new[]{"命中后燃烧 3 秒\n每秒造成子弹伤害的 20%\n与冰霜弹头、穿甲弹头互斥","命中后减速 2 秒\n移动速度降低 20%\n与燃烧弹头、穿甲弹头互斥","额外穿透 1 个敌人\n同一颗子弹不会重复命中同一目标\n与燃烧弹头、冰霜弹头互斥"};
+for(int i=0;i<3;i++){cards[i].TitleText.text=titles[i];cards[i].DetailText.text=details[i];}
+foreach(var transform in go.GetComponentsInChildren<Transform>(true))transform.gameObject.layer=31;
+Capture(camera,Path.Combine(dir,"preview-available.png"));
+titles=new[]{"疾步训练","拾取磁场","扩容弹匣"};details=new[]{"移动速度提升 8%\n更快穿过敌群，拉开安全距离","拾取半径：2 米 → 2.25 米\n经验与金币都能在更远处拾取","弹匣容量：30 发 → 33 发\n每级增加基础容量的 10%\n与快速弹匣互斥"};
+for(int i=0;i<3;i++){cards[i].TitleText.text=titles[i];cards[i].DetailText.text=details[i];}
+counter.text="本局剩余刷新 0 次";refresh.interactable=false;refresh.GetComponent<Image>().color=new Color(.18f,.22f,.25f,1);refreshText.color=new Color(.52f,.57f,.60f,1);refreshText.text="刷新已用尽";Capture(camera,Path.Combine(dir,"preview-exhausted.png"));
+foreach(var atlas in font.atlasTextures)if(atlas!=null)owned.Add(atlas);
+return new{dir,descriptionFontBefore=source.DetailText.fontSize,descriptionFontAfter=20,refreshes="整局共享3次",formalAssetsChanged=false};
+}
+finally{EditorSceneManager.ClosePreviewScene(scene);foreach(var item in owned)if(item!=null)Object.DestroyImmediate(item);owned.Clear();}
+}
+}

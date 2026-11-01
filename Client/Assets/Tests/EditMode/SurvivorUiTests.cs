@@ -21,7 +21,7 @@ namespace Game.Tests
                     Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
                     foreach(var kind in new[]{"Fire","Frost"})
                     {
-                        string title=string.Format(table["ui.survivor.modifier.title"],table["ui.survivor.weapon.Rifle"],table["ui.survivor.modifier."+kind]);
+                        string title=table["ui.survivor.modifier."+kind];
                         Assert.That(ui.TitleText.GetPreferredValues(title,ui.TitleText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.TitleText.rectTransform.rect.height),title);
                         foreach(var level in new[]{new[]{0,20},new[]{30,40}})
                         {

@@ -17,14 +17,22 @@ namespace Game
         public long Experience { get; private set; }
         public int PendingChoices { get; private set; }
         public int ChoiceRevision { get; private set; }
+        /// <summary>整局共用刷新次数；升级不补充，仅创建新局时由权威配置赋值。</summary>
+        public int RemainingRefreshes { get; private set; }
         public double ElapsedSeconds { get; private set; }
         public bool Finished { get; private set; }
         public long RequiredExperience => (long)baseExperience+(long)(Level-1)*experienceGrowth;
 
-        public SurvivorRunState(int baseExperience,int experienceGrowth)
+        /// <summary>保留不含刷新预算的纯规则构造入口；正式本局必须显式传入配置预算。</summary>
+        public SurvivorRunState(int baseExperience,int experienceGrowth):this(baseExperience,experienceGrowth,0) { }
+
+        /// <summary>创建独立本局规则，刷新预算由调用方权威配置提供。</summary>
+        public SurvivorRunState(int baseExperience,int experienceGrowth,int refreshes)
         {
             if(baseExperience<=0 || experienceGrowth<0) throw new ArgumentOutOfRangeException(nameof(baseExperience));
+            if(refreshes<0)throw new ArgumentOutOfRangeException(nameof(refreshes));
             this.baseExperience=baseExperience; this.experienceGrowth=experienceGrowth;
+            RemainingRefreshes=refreshes;
         }
 
         /// <summary>使用等差级数及二分处理巨额经验，避免大量连升阻塞主线程。</summary>
@@ -95,6 +103,29 @@ namespace Game
                 chosen.Add(candidates[index].Id);candidates.RemoveAt(index);
             }
             offer=chosen.ToArray();return (int[])offer.Clone();
+        }
+
+        /// <summary>查询指定卡槽能否刷新；排除整组已显示项，保持另外两张及候选唯一。</summary>
+        public bool CanRefresh(int revision,int slot,int[] eligibleIds,int[] weights)
+            => RefreshCandidates(revision,slot,eligibleIds,weights).Length>0;
+
+        /// <summary>成功替换单槽后才扣共享次数并更新版本；不消费经验或升级机会。</summary>
+        public bool TryRefresh(int revision,int slot,int[] eligibleIds,int[] weights,int seed)
+        {
+            var candidates=RefreshCandidates(revision,slot,eligibleIds,weights);
+            if(candidates.Length==0)return false;
+            double roll=new Random(seed).NextDouble()*candidates.Sum(i=>(long)weights[i]);
+            int selected=candidates[0];
+            foreach(int index in candidates){selected=index;if(roll<weights[index])break;roll-=weights[index];}
+            offer[slot]=eligibleIds[selected];RemainingRefreshes--;ChoiceRevision++;return true;
+        }
+
+        /// <summary>可用性与提交共用校验，不允许旧版本、结束局、重复候选或无效权重消耗次数。</summary>
+        private int[] RefreshCandidates(int revision,int slot,int[] ids,int[] weights)
+        {
+            if(Finished||PendingChoices<=0||RemainingRefreshes<=0||revision!=ChoiceRevision||slot<0||slot>=offer.Length||ids==null||weights==null||ids.Length!=weights.Length)return Array.Empty<int>();
+            var seen=new HashSet<int>();
+            return Enumerable.Range(0,ids.Length).Where(i=>ids[i]>0&&weights[i]>0&&!offer.Contains(ids[i])&&seen.Add(ids[i])).ToArray();
         }
 
         /// <summary>选择事务以版本防连点；只允许当前真实选项，每次消耗一个升级机会。</summary>

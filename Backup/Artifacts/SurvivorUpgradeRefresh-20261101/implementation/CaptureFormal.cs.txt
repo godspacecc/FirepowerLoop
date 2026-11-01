@@ -1,0 +1,43 @@
+using System;using System.IO;using System.Linq;using System.Reflection;using UnityEngine;using UnityEngine.UI;using UnityEngine.EventSystems;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using TMPro;using Game;using QFramework;using Object=UnityEngine.Object;
+public class Script
+{
+static void Capture(Camera camera,string path)
+{var rt=RenderTexture.GetTemporary(1920,1080,24);var old=RenderTexture.active;var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1920,1080),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+
+public static object Main()
+{
+const BindingFlags flags=BindingFlags.Instance|BindingFlags.NonPublic;
+if(EditorApplication.isPlaying)throw new Exception("只允许编辑态隔离实拍");
+var fixtureType=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Game.Tests.SurvivorRuntimeTests")).First(t=>t!=null);var fixture=Activator.CreateInstance(fixtureType);
+var archField=typeof(Architecture<Game.Game>).GetField("mArchitecture",BindingFlags.Static|BindingFlags.NonPublic);var oldArch=archField.GetValue(null);var oldLoader=ResourceLoader.Current;
+var languageCache=typeof(LocalizationLanguages).GetField("cachedConfig",BindingFlags.Static|BindingFlags.NonPublic);var oldLanguages=languageCache.GetValue(null);
+var scene=EditorSceneManager.NewPreviewScene();TMP_FontAsset font=null;var ctrl=new SurvivorUpgradeUICtrl();GameObject host=null;bool setup=false;
+try
+{
+var loaderType=AppDomain.CurrentDomain.GetAssemblies().Select(a=>a.GetType("Game.Tests.LocalizationAssetResourceLoader")).First(t=>t!=null);ResourceLoader.Use((IResourceLoader)Activator.CreateInstance(loaderType));LocalizationLanguages.ResetForTests();
+fixtureType.GetMethod("Setup").Invoke(fixture,null);setup=true;var arch=(Game.Game)fixtureType.GetField("architecture",flags).GetValue(fixture);archField.SetValue(null,arch);arch.RegisterSystem((SurvivorSystem)fixtureType.GetField("system",flags).GetValue(fixture));arch.RegisterModel(new LocalizationModel());var loc=new LocalizationUtility(false);loc.LoadFromJson("zh-CN",File.ReadAllText("Assets/Game/Config/Localization/zh-CN.json"));arch.RegisterUtility(loc);
+var model=(SurvivorModel)fixtureType.GetField("model",flags).GetValue(fixture);var config=(FirepowerLoop.Arcade.SurvivorConfiguration)fixtureType.GetField("config",flags).GetValue(fixture);
+int Find(string k)=>config.Upgrades.ToList().FindIndex(u=>u.Kind==k)+1;
+var state=new SurvivorRunState(10,5,config.UpgradeRefreshes);typeof(SurvivorModel).GetField("State",flags).SetValue(model,state);state.AddExperience(10);var choices=state.OfferWeighted(new[]{Find("RifleFire"),Find("RifleFrost"),Find("RiflePierce")},new[]{1,1,1},1,Find("RifleFire"));typeof(SurvivorModel).GetField("Choices",flags).SetValue(model,choices);typeof(SurvivorModel).GetField("Paused",flags).SetValue(model,true);
+var cameraGo=new GameObject("IsolatedCaptureCamera");SceneManager.MoveGameObjectToScene(cameraGo,scene);var camera=cameraGo.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=5;camera.transform.position=new Vector3(0,0,-10);camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.04f,.07f,.08f);camera.cullingMask=1<<31;
+var go=new GameObject("IsolatedCanvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler),typeof(GraphicRaycaster));SceneManager.MoveGameObjectToScene(go,scene);var canvas=go.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
+host=(GameObject)PrefabUtility.InstantiatePrefab(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorUpgrade.prefab"),scene);host.transform.SetParent(go.transform,false);var ui=host.GetComponent<SurvivorUpgradeUI>();
+// 同源临时字库用于隔离截图，不扩写正式动态字体图集。
+font=TMP_FontAsset.CreateFontAsset(ui.Cards.itemPrefab.GetComponent<SurvivorUpgradeBoxUI>().DetailText.font.sourceFontFile,72,9,UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);
+typeof(BaseUICtrl).GetField("BaseUI",flags).SetValue(ctrl,ui);typeof(BaseUICtrl).GetField("_isActive",flags).SetValue(ctrl,true);typeof(SurvivorUpgradeUICtrl).GetMethod("OnInit",flags).Invoke(ctrl,null);typeof(SurvivorUpgradeUICtrl).GetMethod("OnShow",flags).Invoke(ctrl,null);
+foreach(var text in go.GetComponentsInChildren<TMP_Text>(true)){text.font=font;text.fontSharedMaterial=font.material;}foreach(var tr in go.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorUpgradeRefresh-20261101/implementation";Capture(camera,dir+"/formal-ui.png");
+var cards=ui.Cards.GetDraggableItems().Select(t=>t.GetComponent<SurvivorUpgradeBoxUI>()).ToArray();var pointer=new PointerEventData(EventSystem.current){button=PointerEventData.InputButton.Left};cards[1].BtnSelect.OnPointerEnter(pointer);Capture(camera,dir+"/formal-hover.png");cards[1].BtnSelect.OnPointerExit(pointer);
+var before=model.UpgradeChoices;int pending=state.PendingChoices;
+cards[0].BtnRefresh.OnPointerClick(pointer);var after=model.UpgradeChoices;
+if(before[1]!=after[1]||before[2]!=after[2]||before[0]==after[0]||model.Snapshot.RemainingRefreshes!=2||state.PendingChoices!=pending||!model.Snapshot.Paused)throw new Exception("真实Controller单卡刷新不符");Capture(camera,dir+"/formal-refreshed.png");
+File.WriteAllLines(dir+"/formal-interaction.txt",new[]{"Formal Prefab + generated View + actual UI Controller callbacks","pointer click refresh PASS; no selection; other two cards unchanged; all count labels="+string.Join(",",cards.Select(c=>c.RefreshCountText.text)),"before="+string.Join(",",before),"after="+string.Join(",",after),"isolated capture, no gameplay save; temporary source-font atlas; no asset substitution for resource loading"});return new{before,after,remaining=model.Snapshot.RemainingRefreshes,paused=model.Snapshot.Paused};
+}
+catch(Exception ex){throw new Exception(ex.ToString()+"\nINNER="+ex.InnerException?.ToString(),ex);}
+finally
+{
+if(host!=null){typeof(SurvivorUpgradeUICtrl).GetMethod("OnHide",flags).Invoke(ctrl,null);typeof(BaseUICtrl).GetField("_isActive",flags).SetValue(ctrl,false);}
+EditorSceneManager.ClosePreviewScene(scene);if(font!=null){foreach(var tex in font.atlasTextures)if(tex!=null)Object.DestroyImmediate(tex);Object.DestroyImmediate(font.material);Object.DestroyImmediate(font);}if(setup)fixtureType.GetMethod("Cleanup").Invoke(fixture,null);archField.SetValue(null,oldArch);ResourceLoader.Use(oldLoader);languageCache.SetValue(null,oldLanguages);
+}
+}
+}

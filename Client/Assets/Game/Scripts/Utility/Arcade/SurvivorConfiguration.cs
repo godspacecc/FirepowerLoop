@@ -8,6 +8,8 @@ namespace FirepowerLoop.Arcade
     {
         /// <summary>来自幸存者权威规则表的 Id。</summary>
         public string Id { get; private set; }
+        /// <summary>本局跨升级共用的强化刷新预算，来自权威规则表。</summary>
+        public int UpgradeRefreshes { get; private set; }
         /// <summary>幸存者金币最终封顶概率的独立倍率，不影响经验和闯关。</summary>
         public float GoldDropMultiplier { get; private set; }
 
@@ -123,6 +125,7 @@ namespace FirepowerLoop.Arcade
             if (float.IsNaN(r.MaxProjectiles) || float.IsInfinity(r.MaxProjectiles) || r.MaxProjectiles <= 0) throw new ArgumentException("幸存者 MaxProjectiles 必须为有限正数");
             if (float.IsNaN(r.MaxDrops) || float.IsInfinity(r.MaxDrops) || r.MaxDrops <= 0) throw new ArgumentException("幸存者 MaxDrops 必须为有限正数");
             if (float.IsNaN(r.InitialExperienceThreshold) || float.IsInfinity(r.InitialExperienceThreshold) || r.InitialExperienceThreshold <= 0) throw new ArgumentException("幸存者 InitialExperienceThreshold 必须为有限正数");
+            if(r.UpgradeRefreshes<0)throw new ArgumentException("幸存者 UpgradeRefreshes 不可为负");
             if (float.IsNaN(r.ExperienceThresholdGrowth) || float.IsInfinity(r.ExperienceThresholdGrowth) || r.ExperienceThresholdGrowth <= 0) throw new ArgumentException("幸存者 ExperienceThresholdGrowth 必须为有限正数");
             if (float.IsNaN(r.ExperiencePerKill) || float.IsInfinity(r.ExperiencePerKill) || r.ExperiencePerKill <= 0) throw new ArgumentException("幸存者 ExperiencePerKill 必须为有限正数");
             if (float.IsNaN(r.PickupRadius) || float.IsInfinity(r.PickupRadius) || r.PickupRadius <= 0) throw new ArgumentException("幸存者 PickupRadius 必须为有限正数");
@@ -191,6 +194,7 @@ namespace FirepowerLoop.Arcade
                 GoldDropMultiplier = r.GoldDropMultiplier,
                 InitialExperienceThreshold = r.InitialExperienceThreshold,
                 ExperienceThresholdGrowth = r.ExperienceThresholdGrowth,
+                UpgradeRefreshes = r.UpgradeRefreshes,
                 ExperiencePerKill = r.ExperiencePerKill,
                 ExperienceDropChance = r.ExperienceDropChance,
                 ExperienceVisualPrefabName = r.ExperienceVisualPrefabName,

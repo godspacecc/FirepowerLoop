@@ -82,7 +82,7 @@ namespace Game
             if(Model.Active){error="幸存者局已经开始";return false;}
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
             if(!TryPrepare(out error)||!TrySelectCharacter(Model.SelectedCharacter,out error))return false;
-            Stop();if(!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth);
+            Stop();if(!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth,config.UpgradeRefreshes);
             m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
             m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;m.RunCharacter=m.SelectedCharacter;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
@@ -163,12 +163,31 @@ namespace Game
         /// <summary>已有武器只提供升级，满槽/满级过滤；首次选择保底无人机。</summary>
         private void Offer()
         {
-            var m=Model;var ids=Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
-                var u=config.Upgrades[id-1];return u.Weight>0 && CanChooseRoute(u) && CanChooseModifier(u,id) && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
-            }).ToArray();
+            var m=Model;var ids=EligibleUpgradeIds();
             int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
             m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
             m.Paused=menuPaused||m.State.PendingChoices>0;
+        }
+        /// <summary>初次候选与逐卡刷新统一使用武器归属、互斥、启用和满级过滤。</summary>
+        private int[] EligibleUpgradeIds()
+        {
+            var m=Model;return Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
+                var u=config.Upgrades[id-1];return u.Weight>0 && CanChooseRoute(u) && CanChooseModifier(u,id) && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
+            }).ToArray();
+        }
+        /// <summary>界面查询单卡是否存在合法替代项；不改变候选与次数。</summary>
+        public bool CanRefreshUpgrade(int revision,int slot)
+        {
+            if(!Model.Active||Model.State==null||config==null)return false;
+            var ids=EligibleUpgradeIds();return Model.State.CanRefresh(revision,slot,ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray());
+        }
+        /// <summary>仅替换指定槽位，失败不扣次数；成功同步快照，仍保持升级及菜单暂停。</summary>
+        public bool RefreshUpgrade(int revision,int slot)
+        {
+            var m=Model;if(!m.Active||m.State==null||config==null)return false;
+            var ids=EligibleUpgradeIds();
+            if(!m.State.TryRefresh(revision,slot,ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision+7919)))return false;
+            Offer();Publish();return true;
         }
         private Vector2 Resolve(Vector2 position,float radius)=>ArcadeCombatSystem.ResolvePosition(position,radius,HalfWidth,HalfHeight,obstacles);
         /// <summary>将权威换弹计时投影到既有角色进度圈与动作；暂停只重绘，不推进计时。</summary>

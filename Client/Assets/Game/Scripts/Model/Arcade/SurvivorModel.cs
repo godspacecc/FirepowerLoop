@@ -10,12 +10,15 @@ namespace Game
     {
         public readonly bool Active, Paused, Finished;
         public readonly int Health, MaximumHealth, Level, Kills, ChoiceRevision;
+        /// <summary>三个卡槽共享的剩余刷新次数。</summary>
+        public readonly int RemainingRefreshes;
         public readonly long Experience, RequiredExperience, Score;
         public readonly double SurvivalSeconds;
         public SurvivorHudSnapshot(bool active, bool paused, SurvivorRunState state, int health, int maximumHealth, int kills, long score)
         {
             Active=active; Paused=paused; Finished=state?.Finished??false;
             Health=health; MaximumHealth=maximumHealth; Kills=kills; Score=score;
+            RemainingRefreshes=state?.RemainingRefreshes??0;
             Level=state?.Level??1; ChoiceRevision=state?.ChoiceRevision??0;
             Experience=state?.Experience??0; RequiredExperience=state?.RequiredExperience??0;
             SurvivalSeconds=state?.ElapsedSeconds??0;

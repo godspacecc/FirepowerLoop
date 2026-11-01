@@ -629,6 +629,8 @@
     <!-- 独立幸存者规则，数值仅以本表为权威。 -->
     <bean name="SurvivorRuleConfig" group="e">
         <var name="Id" type="string"/>
+        <!-- 本局强化刷新次数，跨升级共用，不涉及经验或金币。 -->
+        <var name="UpgradeRefreshes" type="int"/>
         <var name="GoldDropMultiplier" type="float"/>
         <var name="WeaponSlots" type="int"/>
         <var name="LayoutId" type="string#ref=TbSurvivorMapLayout"/>

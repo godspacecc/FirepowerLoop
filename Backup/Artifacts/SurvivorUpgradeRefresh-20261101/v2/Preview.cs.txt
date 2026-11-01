@@ -1,0 +1,91 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEngine.UI;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using TMPro;using UnityEngine.TextCore.LowLevel;using Game;using Object=UnityEngine.Object;
+public sealed class PreviewShape:MaskableGraphic
+{
+public Vector2[] points;
+protected override void OnPopulateMesh(VertexHelper helper)
+{
+helper.Clear();if(points==null||points.Length<3)return;var r=rectTransform.rect;var center=UIVertex.simpleVert;center.color=color;center.position=r.center;helper.AddVert(center);
+for(int i=0;i<points.Length;i++){var v=UIVertex.simpleVert;v.color=color;v.position=new Vector3(r.xMin+points[i].x*r.width,r.yMin+points[i].y*r.height,0);helper.AddVert(v);}for(int i=0;i<points.Length;i++)helper.AddTriangle(0,1+i,1+(i+1)%points.Length);
+}
+}
+public class Script
+{
+static readonly List<Object> owned=new();static TMP_FontAsset font;static Transform canvas;
+static readonly Color cream=new Color(.94f,.89f,.78f),muted=new Color(.57f,.65f,.66f),gold=new Color(.82f,.66f,.35f);
+static Vector2[] Corners(float w,float h,float cut)=>new[]{new Vector2(cut/w,0),new Vector2(1-cut/w,0),new Vector2(1,cut/h),new Vector2(1,1-cut/h),new Vector2(1-cut/w,1),new Vector2(cut/w,1),new Vector2(0,1-cut/h),new Vector2(0,cut/h)};
+static PreviewShape Shape(Transform parent,string name,float x,float y,float w,float h,Color color,Vector2[] points)
+{var go=new GameObject(name,typeof(RectTransform),typeof(CanvasRenderer),typeof(PreviewShape));go.transform.SetParent(parent,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(w,h);var g=go.GetComponent<PreviewShape>();g.points=points;g.color=color;g.raycastTarget=false;g.SetVerticesDirty();return g;}
+static PreviewShape Panel(Transform parent,string name,float x,float y,float w,float h,Color fill,float cut=8)=>Shape(parent,name,x,y,w,h,fill,Corners(w,h,cut));
+static TMP_Text Text(Transform parent,string value,float x,float y,float w,float h,float size,Color color,TextAlignmentOptions align=TextAlignmentOptions.Center)
+{var go=new GameObject("TEMP_Text",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(parent,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(w,h);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSharedMaterial=font.material;t.fontSize=size;t.text=value;t.color=color;t.alignment=align;t.enableAutoSizing=false;t.raycastTarget=false;return t;}
+static Image Icon(Transform parent,Sprite sprite,float x,float y,float size,Color color)
+{var go=new GameObject("TEMP_Icon",typeof(RectTransform),typeof(Image));go.transform.SetParent(parent,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=Vector2.one*size;var image=go.GetComponent<Image>();image.sprite=sprite;image.preserveAspect=true;image.color=color;image.raycastTarget=false;return image;}
+static Button Button(Transform parent,string value,float x,float y,float w,float h,bool primary,bool hovered=false)
+{
+var shadow=Panel(parent,"TEMP_ButtonShadow",x,y-5,w,h,new Color(0,0,0,.4f),5);
+var edge=Panel(parent,"TEMP_ButtonBorder",x,y,w,h,primary?(hovered?new Color(1,.88f,.6f):gold):new Color(.37f,.47f,.49f),5);edge.raycastTarget=true;
+var face=Panel(edge.transform,"TEMP_ButtonFace",0,0,w-4,h-4,primary?(hovered?new Color(.98f,.81f,.5f):new Color(.85f,.70f,.43f)):new Color(.16f,.24f,.27f),4);
+Panel(edge.transform,"TEMP_ButtonTopBevel",0,h*.5f-4,w-14,2,primary?new Color(1,.92f,.7f,.7f):new Color(.5f,.64f,.66f,.4f),0);
+Panel(edge.transform,"TEMP_ButtonBottomBevel",0,-h*.5f+5,w-14,3,new Color(0,0,0,.15f),0);
+Text(edge.transform,value,0,0,w-40,h-4,23,primary?new Color(.14f,.18f,.18f):cream);
+var button=edge.gameObject.AddComponent<Button>();button.targetGraphic=face;var c=button.colors;c.normalColor=Color.white;c.highlightedColor=Color.white;c.pressedColor=new Color(.78f,.80f,.80f,1);button.colors=c;
+if(primary)Shape(edge.transform,"TEMP_ChooseArrow",w*.5f-27,0,8,12,new Color(.2f,.25f,.24f),new[]{new Vector2(0,0),new Vector2(1,.5f),new Vector2(0,1)});
+return button;
+}
+static void EffectBadge(Transform parent,int kind,Color accent)
+{
+if(kind==0)
+{
+Shape(parent,"TEMP_Flame",40,135,104,132,new Color(accent.r,accent.g,accent.b,.28f),new[]{new Vector2(.14f,.12f),new Vector2(.03f,.35f),new Vector2(.18f,.6f),new Vector2(.27f,.43f),new Vector2(.38f,.84f),new Vector2(.64f,1),new Vector2(.59f,.66f),new Vector2(.82f,.78f),new Vector2(.94f,.44f),new Vector2(.84f,.13f),new Vector2(.55f,0),new Vector2(.3f,.02f)});
+}
+else if(kind==1)
+{
+for(int i=0;i<6;i++){var ray=Panel(parent,"TEMP_FrostRay",23,136,112,3,new Color(accent.r,accent.g,accent.b,.28f),0);ray.rectTransform.localRotation=Quaternion.Euler(0,0,30+i*30);}
+Shape(parent,"TEMP_IceFacet",46,152,65,100,new Color(accent.r,accent.g,accent.b,.27f),new[]{new Vector2(0,.15f),new Vector2(.27f,.85f),new Vector2(.62f,1),new Vector2(1,.4f),new Vector2(.76f,0)});
+}
+else
+{
+for(int i=0;i<3;i++){var streak=Panel(parent,"TEMP_PierceTrail",-45-i*13,135-i*20,68,5,new Color(accent.r,accent.g,accent.b,.25f),0);streak.rectTransform.localRotation=Quaternion.Euler(0,0,35);}
+var plate=Panel(parent,"TEMP_PiercedPlate",55,142,38,113,new Color(.43f,.49f,.48f,.22f),3);plate.rectTransform.localRotation=Quaternion.Euler(0,0,-22);
+}
+}
+static void Capture(Camera camera,string path)
+{var rt=RenderTexture.GetTemporary(1920,1080,24);var old=RenderTexture.active;var tex=new Texture2D(1920,1080,TextureFormat.RGB24,false);try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1920,1080),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+public static object Main()
+{
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("仅允许正确项目编辑态临时预览");var scene=EditorSceneManager.NewPreviewScene();try
+{
+var cameraGo=new GameObject("TEMP_Camera");SceneManager.MoveGameObjectToScene(cameraGo,scene);var camera=cameraGo.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=5;camera.transform.position=new Vector3(0,0,-10);camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.black;camera.cullingMask=1<<31;
+var go=new GameObject("TEMP_Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));SceneManager.MoveGameObjectToScene(go,scene);canvas=go.transform;var ui=go.GetComponent<Canvas>();ui.renderMode=RenderMode.ScreenSpaceCamera;ui.worldCamera=camera;ui.planeDistance=1;var scaler=go.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);scaler.matchWidthOrHeight=.5f;
+var texture=AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/Game/Art/UI/ArcadeBackgrounds/survivor-loading.png");var bg=Sprite.Create(texture,new Rect(0,0,texture.width,texture.height),new Vector2(.5f,.5f));owned.Add(bg);var background=Icon(canvas,bg,0,0,1920,Color.white);background.preserveAspect=false;background.rectTransform.sizeDelta=new Vector2(1920,1080);Panel(canvas,"TEMP_PauseShade",0,0,1920,1080,new Color(.025f,.055f,.075f,.77f),0);
+var source=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/Box/SurvivorUpgrade.prefab").GetComponent<SurvivorUpgradeBoxUI>();font=TMP_FontAsset.CreateFontAsset(source.DetailText.font.sourceFontFile,72,9,GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);owned.Add(font);owned.Add(font.material);
+Panel(canvas,"TEMP_FrameShadow",0,-9,1440,912,new Color(0,0,0,.23f),16);Panel(canvas,"TEMP_FrameBorder",0,0,1434,906,new Color(.36f,.42f,.39f,.56f),14);Panel(canvas,"TEMP_Frame",0,0,1430,902,new Color(.055f,.10f,.125f,.96f),13);
+Panel(canvas,"TEMP_HeaderLeft",-177,397,75,1,new Color(gold.r,gold.g,gold.b,.5f),0);Panel(canvas,"TEMP_HeaderRight",177,397,75,1,new Color(gold.r,gold.g,gold.b,.5f),0);
+var caption=Text(canvas,"幸存者 · 本局强化",0,397,330,28,16,gold);caption.characterSpacing=3;
+Text(canvas,"选择你的强化",0,343,1000,68,44,cream);Text(canvas,"选择 1 项，继续抵挡尸潮",0,291,900,36,21,muted);
+var ammo=AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Game/Art/UI/Items/IconAmmoBullet.png");var accents=new[]{new Color(.94f,.46f,.22f),new Color(.42f,.76f,.85f),new Color(.86f,.73f,.42f)};
+string[] names={"燃烧弹头","冰霜弹头","穿甲弹头"},triggers={"命中后燃烧 3 秒","命中后减速 2 秒","可击穿额外目标"},stats={"20% 弹伤 / 秒","降低 20% 移速","额外穿透 1 个敌人"},notes={"重复命中刷新持续时间","重复命中刷新持续时间","同一颗子弹不重复命中同一目标"},locks={"与冰霜、穿甲弹头互斥","与燃烧、穿甲弹头互斥","与燃烧、冰霜弹头互斥"};
+var chooseButtons=new List<Button>();
+for(int i=0;i<3;i++)
+{
+float x=(i-1)*440;Panel(canvas,"TEMP_CardShadow",x,-27,404,544,new Color(0,0,0,.3f),10);var card=Panel(canvas,"TEMP_CardBorder",x,-18,404,544,new Color(.33f,.40f,.42f),10);Panel(card.transform,"TEMP_CardFace",0,0,400,540,new Color(.105f,.16f,.19f),8);
+Panel(card.transform,"TEMP_IconField",0,148,370,192,new Color(.075f,.125f,.15f),5);Panel(card.transform,"TEMP_Accent",0,269,340,2,new Color(accents[i].r,accents[i].g,accents[i].b,.72f),0);
+Text(card.transform,"弹头改装",-115,235,130,28,16,muted,TextAlignmentOptions.Left);Text(card.transform,"首次获得",115,235,130,28,16,muted,TextAlignmentOptions.Right);
+EffectBadge(card.transform,i,accents[i]);Icon(card.transform,ammo,-8,145,152,Color.white);
+Text(card.transform,names[i],0,35,350,60,34,cream);Panel(card.transform,"TEMP_Divider",0,-12,328,1,new Color(.39f,.47f,.46f,.4f),0);
+Text(card.transform,triggers[i],0,-55,350,34,20,cream);Text(card.transform,stats[i],0,-98,350,42,26,accents[i]);Text(card.transform,notes[i],0,-143,350,34,17,muted);
+Text(card.transform,locks[i],0,-179,350,28,16,new Color(.49f,.57f,.59f));chooseButtons.Add(Button(card.transform,"选择强化",0,-226,332,60,true));
+}
+var footer=Panel(canvas,"TEMP_RefreshBarBorder",0,-380,1288,84,new Color(.29f,.37f,.38f,.6f),7);Panel(footer.transform,"TEMP_RefreshBar",0,0,1284,80,new Color(.065f,.115f,.14f),5);
+Text(footer.transform,"刷新机会",-514,0,170,38,20,cream);
+var pips=new List<PreviewShape>();for(int i=0;i<3;i++)pips.Add(Panel(footer.transform,"TEMP_RefreshPip",-392+i*22,0,12,24,gold,2));
+var count=Text(footer.transform,"3 / 3",-251,0,120,42,27,cream);Text(footer.transform,"整局共享 · 升级不补充",15,0,390,34,18,muted);var reroll=Button(footer.transform,"刷新选项",484,0,252,54,false);
+Text(canvas,"战斗已暂停，选择后继续",0,-487,1000,32,18,muted);
+foreach(var tr in go.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorUpgradeRefresh-20261101/v2";Directory.CreateDirectory(dir);Capture(camera,Path.Combine(dir,"preview.png"));
+var first=chooseButtons[0];var face=first.targetGraphic;var initial=face.color;face.color=new Color(.98f,.81f,.5f);first.GetComponent<PreviewShape>().color=new Color(1,.9f,.67f);Text(first.transform,"悬停状态示意",0,49,200,24,14,gold);Capture(camera,Path.Combine(dir,"hover-preview.png"));
+face.color=initial;Object.DestroyImmediate(first.transform.GetComponentsInChildren<TMP_Text>().First(t=>t.text=="悬停状态示意").gameObject);first.GetComponent<PreviewShape>().color=gold;
+count.text="0 / 3";foreach(var pip in pips)pip.color=new Color(.23f,.31f,.33f);reroll.interactable=false;reroll.targetGraphic.color=new Color(.10f,.16f,.18f);reroll.GetComponentInChildren<TMP_Text>().text="刷新已用尽";reroll.GetComponentInChildren<TMP_Text>().color=new Color(.39f,.47f,.49f);Capture(camera,Path.Combine(dir,"exhausted-preview.png"));
+foreach(var atlas in font.atlasTextures)if(atlas!=null)owned.Add(atlas);return new{dir,buttons=chooseButtons.Count+1,descriptionFont=20,sourceAmmo="IconAmmoBullet",formalAssetsChanged=false};
+}finally{EditorSceneManager.ClosePreviewScene(scene);foreach(var item in owned)if(item!=null)Object.DestroyImmediate(item);owned.Clear();}
+}
+}

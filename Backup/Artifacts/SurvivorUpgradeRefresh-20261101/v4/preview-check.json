@@ -1,0 +1,8 @@
+{
+  "middle_card_unchanged": true,
+  "right_card_unchanged": true,
+  "Client/Assets/Game/Prefabs/UI/Survivor/SurvivorUpgrade.prefab": true,
+  "Client/Assets/Game/Prefabs/UI/Survivor/Box/SurvivorUpgrade.prefab": true,
+  "Client/Assets/Game/Scripts/Controller/UICtrl/Survivor/SurvivorUpgradeBoxCtrl.cs": true,
+  "Config/DataCsv/survivor_rule.csv": true
+}

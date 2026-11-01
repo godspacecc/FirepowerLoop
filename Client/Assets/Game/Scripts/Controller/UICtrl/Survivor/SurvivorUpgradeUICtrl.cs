@@ -9,12 +9,14 @@ namespace Game
         /// <summary>列表刷新前固定当前候选及版本，旧卡片不能提交新一轮选择。</summary>
         private int[] choices = System.Array.Empty<int>();
         private int revision;
+        /// <summary>整局剩余预算的同一份展示快照，三个刷新按钮同步显示。</summary>
+        private int remainingRefreshes;
         protected override string Path() => "Survivor/SurvivorUpgrade";
         public override UILayer Layer() => UILayer.Dialog;
         protected override void OnInit()
         {
             UI.Cards.AddItemRefreshListener((item, index) =>
-                SurvivorUpgradeBoxCtrl.Bind(item.GetComponent<SurvivorUpgradeBoxUI>(), choices[index], revision, this.GetSystem<SurvivorSystem>(), Select));
+                SurvivorUpgradeBoxCtrl.Bind(item.GetComponent<SurvivorUpgradeBoxUI>(), choices[index], revision, this.GetSystem<SurvivorSystem>(), Select,index,remainingRefreshes,this.GetSystem<SurvivorSystem>().CanRefreshUpgrade(revision,index),RefreshCard));
             this.RegisterEvent<SurvivorChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<LanguageChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
@@ -25,6 +27,7 @@ namespace Game
             var model = this.GetModel<SurvivorModel>();
             choices = model.UpgradeChoices;
             revision = model.Snapshot.ChoiceRevision;
+            remainingRefreshes=model.Snapshot.RemainingRefreshes;
             if (!model.Snapshot.Active || model.Snapshot.Finished || choices.Length == 0) { Hide(); return; }
             UI.Cards.totalCount = choices.Length;
             UI.Cards.RefreshCells();
@@ -34,6 +37,12 @@ namespace Game
         {
             this.GetSystem<SurvivorSystem>().Choose(choiceRevision, id);
             if (IsShow()) Refresh();
+        }
+        /// <summary>提交单槽刷新，失效或无替代项时只重画当前权威快照。</summary>
+        private void RefreshCard(int choiceRevision,int slot)
+        {
+            this.GetSystem<SurvivorSystem>().RefreshUpgrade(choiceRevision,slot);
+            if(IsShow())Refresh();
         }
         protected override void OnHide()
         {

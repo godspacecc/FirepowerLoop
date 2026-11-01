@@ -44,24 +44,24 @@
     "zh-CN": "缩短自动射击间隔"
   },
   "ui.survivor.upgrade.3.title": {
-    "en-US": "Health Up",
-    "zh-CN": "生命提升"
+    "zh-CN": "强健体魄",
+    "en-US": "Vitality"
   },
   "ui.survivor.upgrade.3.detail": {
     "en-US": "Increase maximum health",
     "zh-CN": "提高生命上限"
   },
   "ui.survivor.upgrade.4.title": {
-    "en-US": "Move Speed Up",
-    "zh-CN": "移速提升"
+    "zh-CN": "疾步训练",
+    "en-US": "Fleet Foot"
   },
   "ui.survivor.upgrade.4.detail": {
     "en-US": "Move faster",
     "zh-CN": "提高移动速度"
   },
   "ui.survivor.upgrade.5.title": {
-    "en-US": "Pickup Range Up",
-    "zh-CN": "拾取提升"
+    "zh-CN": "拾取磁场",
+    "en-US": "Pickup Magnet"
   },
   "ui.survivor.upgrade.5.detail": {
     "en-US": "Collect experience from farther away",
@@ -104,11 +104,11 @@
     "zh-CN": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
   },
   "ui.survivor.upgrade.8.title": {
-    "zh-CN": "扩容弹夹",
+    "zh-CN": "扩容弹匣",
     "en-US": "Extended Magazine"
   },
   "ui.survivor.upgrade.9.title": {
-    "zh-CN": "快速弹夹",
+    "zh-CN": "快速弹匣",
     "en-US": "Quick Magazine"
   },
   "ui.survivor.upgrade.magazine_detail": {
@@ -240,15 +240,15 @@
     "en-US": "Character not owned."
   },
   "ui.survivor.upgrade.17.title": {
-    "zh-CN": "静养",
+    "zh-CN": "静养生息",
     "en-US": "Stillness"
   },
   "ui.survivor.upgrade.18.title": {
-    "zh-CN": "休整",
-    "en-US": "Recuperation"
+    "zh-CN": "无伤休整",
+    "en-US": "Safe Recovery"
   },
   "ui.survivor.upgrade.19.title": {
-    "zh-CN": "再生",
+    "zh-CN": "自愈体质",
     "en-US": "Regeneration"
   },
   "ui.survivor.upgrade.RecoveryStill.detail": {
@@ -264,12 +264,12 @@
     "en-US": "Heal {1}→{2}% max HP/s\nChoose one recovery"
   },
   "ui.survivor.modifier.Fire": {
-    "zh-CN": "火焰弹头",
-    "en-US": "Incendiary"
+    "zh-CN": "燃烧弹头",
+    "en-US": "Incendiary Rounds"
   },
   "ui.survivor.modifier.Frost": {
     "zh-CN": "冰霜弹头",
-    "en-US": "Frost"
+    "en-US": "Frost Rounds"
   },
   "ui.survivor.modifier.Fire.detail": {
     "zh-CN": "燃烧{0}秒：弹伤{1}%→{2}%/秒\n火焰／冰霜／穿透三选一",
@@ -278,5 +278,129 @@
   "ui.survivor.modifier.Frost.detail": {
     "zh-CN": "减速{0}秒：{1}%→{2}%\n火焰／冰霜／穿透三选一",
     "en-US": "Slow {0}s: {1}→{2}%\nChoose Fire, Frost or Piercing"
+  },
+  "ui.survivor.cards.caption": {
+    "zh-CN": "幸存者 · 本局强化",
+    "en-US": "SURVIVOR · FIELD UPGRADES"
+  },
+  "ui.survivor.cards.title": {
+    "zh-CN": "选择你的强化",
+    "en-US": "Choose Your Upgrade"
+  },
+  "ui.survivor.cards.instruction": {
+    "zh-CN": "点击一张卡片，获得强化",
+    "en-US": "Click a card to gain its upgrade"
+  },
+  "ui.survivor.cards.paused": {
+    "zh-CN": "战斗已暂停，点击卡片后继续",
+    "en-US": "Battle paused. Choose a card to continue."
+  },
+  "ui.survivor.cards.first": {
+    "zh-CN": "首次获得",
+    "en-US": "NEW"
+  },
+  "ui.survivor.cards.level": {
+    "zh-CN": "Lv.{0} → Lv.{1}",
+    "en-US": "Lv.{0} → Lv.{1}"
+  },
+  "ui.survivor.cards.category.modifier": {
+    "zh-CN": "弹头改装",
+    "en-US": "AMMUNITION"
+  },
+  "ui.survivor.cards.category.multishot": {
+    "zh-CN": "射击改装",
+    "en-US": "FIRE CONTROL"
+  },
+  "ui.survivor.cards.category.player": {
+    "zh-CN": "生存训练",
+    "en-US": "SURVIVAL"
+  },
+  "ui.survivor.cards.category.weapon": {
+    "zh-CN": "支援武器",
+    "en-US": "SUPPORT"
+  },
+  "ui.survivor.cards.category.magazine": {
+    "zh-CN": "弹匣改装",
+    "en-US": "MAGAZINE"
+  },
+  "ui.survivor.cards.category.recovery": {
+    "zh-CN": "生命恢复",
+    "en-US": "RECOVERY"
+  },
+  "ui.survivor.cards.support": {
+    "zh-CN": "支援无人机",
+    "en-US": "Support Drone"
+  },
+  "ui.survivor.cards.route.Magazine": {
+    "zh-CN": "与另一种弹匣互斥",
+    "en-US": "Choose one magazine route"
+  },
+  "ui.survivor.cards.route.Recovery": {
+    "zh-CN": "三种生命恢复互斥",
+    "en-US": "Choose one recovery route"
+  },
+  "ui.survivor.cards.route.RifleTip": {
+    "zh-CN": "燃烧、冰霜、穿甲三选一",
+    "en-US": "Choose Incendiary, Frost or Piercing"
+  },
+  "ui.survivor.cards.route.RifleSpecial": {
+    "zh-CN": "爆破与分裂弹头互斥",
+    "en-US": "Choose Explosive or Splitting"
+  },
+  "ui.survivor.cards.Fire.trigger": {
+    "zh-CN": "命中后燃烧 {0} 秒",
+    "en-US": "Burn on hit for {0}s"
+  },
+  "ui.survivor.cards.Fire.stat": {
+    "zh-CN": "{0}% 弹伤 / 秒",
+    "en-US": "{0}% shot damage / sec"
+  },
+  "ui.survivor.cards.Fire.note": {
+    "zh-CN": "重复命中刷新持续时间",
+    "en-US": "Hits refresh duration"
+  },
+  "ui.survivor.cards.Frost.trigger": {
+    "zh-CN": "命中后减速 {0} 秒",
+    "en-US": "Slow on hit for {0}s"
+  },
+  "ui.survivor.cards.Frost.stat": {
+    "zh-CN": "降低 {0}% 移速",
+    "en-US": "{0}% movement slow"
+  },
+  "ui.survivor.cards.Frost.note": {
+    "zh-CN": "重复命中刷新持续时间",
+    "en-US": "Hits refresh duration"
+  },
+  "ui.survivor.cards.Pierce.trigger": {
+    "zh-CN": "可击穿额外目标",
+    "en-US": "Shots pass through enemies"
+  },
+  "ui.survivor.cards.Pierce.stat": {
+    "zh-CN": "额外穿透 {0} 个敌人",
+    "en-US": "Pierce {0} extra enemies"
+  },
+  "ui.survivor.cards.Pierce.note": {
+    "zh-CN": "同一颗子弹不重复命中同一目标",
+    "en-US": "One hit per target per bullet"
+  },
+  "ui.survivor.cards.Multishot.trigger": {
+    "zh-CN": "一轮射击发射多颗子弹",
+    "en-US": "Fire multiple rounds per shot"
+  },
+  "ui.survivor.cards.Multishot.stat": {
+    "zh-CN": "每轮额外发射 {0} 颗",
+    "en-US": "{0} extra rounds per shot"
+  },
+  "ui.survivor.cards.Multishot.note": {
+    "zh-CN": "按实际发射颗数消耗弹药",
+    "en-US": "Consumes ammo for every round"
+  },
+  "ui.survivor.cards.compatible": {
+    "zh-CN": "可与当前任一弹头搭配",
+    "en-US": "Compatible with any round type"
+  },
+  "ui.survivor.cards.next.stat": {
+    "zh-CN": "{0} → {1}",
+    "en-US": "{0} → {1}"
   }
 }
