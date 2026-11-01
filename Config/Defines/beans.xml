@@ -686,6 +686,9 @@
         <var name="EffectDamageBase" type="float"/>
         <var name="EffectDamageStep" type="float"/>
         <var name="EffectAngleDegrees" type="float"/>
+        <!-- 同组首次选择后锁定路线；恢复等待时间以有效战斗秒计。 -->
+        <var name="ExclusiveGroup" type="string"/>
+        <var name="ActivationDelaySeconds" type="float"/>
     </bean>
     <!-- 幸存者独立武器逐级参数，不改变闯关限时支援。 -->
     <bean name="SurvivorWeaponLevelConfig" group="e">

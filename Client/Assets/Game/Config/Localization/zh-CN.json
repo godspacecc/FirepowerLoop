@@ -919,10 +919,10 @@
   "ui.online.error.disabled": "账号已停用",
   "ui.online.error.banned": "账号已封禁",
   "ui.survivor.upgrade.pickup_detail": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米",
-  "ui.survivor.upgrade.8.title": "弹夹容量提升",
-  "ui.survivor.upgrade.9.title": "换弹加速",
-  "ui.survivor.upgrade.magazine_detail": "弹夹容量：{0} 发 → {1} 发\n本次增加 {2} 发（基础容量的10%）",
-  "ui.survivor.upgrade.reload_detail": "换弹时间：{0} 秒 → {1} 秒\n本次缩短 {2} 秒",
+  "ui.survivor.upgrade.8.title": "扩容弹夹",
+  "ui.survivor.upgrade.9.title": "快速弹夹",
+  "ui.survivor.upgrade.magazine_detail": "容量：{0} → {1} 发（+{2}）\n每级基础容量+10%；与快速弹夹互斥",
+  "ui.survivor.upgrade.reload_detail": "换弹：{0} → {1} 秒（-{2}）\n与扩容弹夹互斥",
   "ui.survivor.gold.owned": "持有金币",
   "ui.survivor.gold.help": "击败敌人有概率掉落金币，拾取后永久保留。",
   "ui.survivor.gold.future": "金币将用于后续开放的局外成长。",
@@ -958,5 +958,11 @@
   "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n与分裂互斥；首次触发",
   "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n与爆炸互斥；子弹不递归",
   "ui.survivor.modifier.Multishot": "多重射击",
-  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · 弹道 {2}→{3}\n每颗原伤害，每颗消耗1发"
+  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · 弹道 {2}→{3}\n每颗原伤害，每颗消耗1发",
+  "ui.survivor.upgrade.17.title": "静养",
+  "ui.survivor.upgrade.18.title": "休整",
+  "ui.survivor.upgrade.19.title": "再生",
+  "ui.survivor.upgrade.RecoveryStill.detail": "站定{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
+  "ui.survivor.upgrade.RecoverySafe.detail": "无伤{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
+  "ui.survivor.upgrade.RecoveryAlways.detail": "持续回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一"
 }

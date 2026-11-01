@@ -36,6 +36,9 @@ namespace Game
             // 使用原有卡片展示新强化的实际发数/秒数，不增加战斗HUD。
             if(valid&&system.TryGetRifleUpgradeDetails(id,out bool magazine,out var rifleCurrent,out var rifleNext))
                 view.DetailText.text=Loc.T(magazine?"ui.survivor.upgrade.magazine_detail":"ui.survivor.upgrade.reload_detail",Format(rifleCurrent),Format(rifleNext),Format(Math.Abs(rifleNext-rifleCurrent)));
+            // 恢复条件和每秒比例来自战斗快照，沿用原卡片布局。
+            if(valid&&system.TryGetRecoveryUpgradeDetails(id,out var recoveryKind,out var delay,out var recoveryCurrent,out var recoveryNext))
+                view.DetailText.text=Loc.T("ui.survivor.upgrade."+recoveryKind+".detail",delay.ToString("0.#"),recoveryCurrent.ToString("0.#"),recoveryNext.ToString("0.#"));
             view.BtnSelect.interactable = valid;
             view.BtnSelect.onClick.RemoveAllListeners();
             view.BtnSelect.onClick.AddListener(() => choose(revision, id));

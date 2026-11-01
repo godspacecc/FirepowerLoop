@@ -919,10 +919,10 @@
   "ui.online.error.disabled": "This account is disabled.",
   "ui.online.error.banned": "This account is banned.",
   "ui.survivor.upgrade.pickup_detail": "Pickup radius: {0} m → {1} m\nIncrease: {2} m",
-  "ui.survivor.upgrade.8.title": "Magazine capacity",
-  "ui.survivor.upgrade.9.title": "Faster reload",
-  "ui.survivor.upgrade.magazine_detail": "Magazine: {0} → {1} rounds\n+{2} rounds (10% of base capacity)",
-  "ui.survivor.upgrade.reload_detail": "Reload: {0} s → {1} s\nReduction: {2} s",
+  "ui.survivor.upgrade.8.title": "Extended Magazine",
+  "ui.survivor.upgrade.9.title": "Quick Magazine",
+  "ui.survivor.upgrade.magazine_detail": "Ammo {0}→{1} (+{2}; 10% base)\nExcludes Quick Magazine",
+  "ui.survivor.upgrade.reload_detail": "Reload {0}→{1}s (-{2}s)\nExcludes Extended Magazine",
   "ui.survivor.gold.owned": "Gold",
   "ui.survivor.gold.help": "Enemies may drop gold. Collected gold is kept permanently.",
   "ui.survivor.gold.future": "Gold will be used for future permanent upgrades.",
@@ -958,5 +958,11 @@
   "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nExcludes Split; first hit only",
   "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nExcludes Explosion; no recursion",
   "ui.survivor.modifier.Multishot": "Multishot",
-  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · Shots {2}→{3}\nFull damage; 1 round per shot"
+  "ui.survivor.modifier.Multishot.detail": "Lv{0}→{1} · Shots {2}→{3}\nFull damage; 1 round per shot",
+  "ui.survivor.upgrade.17.title": "Stillness",
+  "ui.survivor.upgrade.18.title": "Recuperation",
+  "ui.survivor.upgrade.19.title": "Regeneration",
+  "ui.survivor.upgrade.RecoveryStill.detail": "Still {0}s: {1}→{2}% max HP/s\nMoving resets; one recovery",
+  "ui.survivor.upgrade.RecoverySafe.detail": "Safe {0}s: {1}→{2}% max HP/s\nDamage resets; one recovery",
+  "ui.survivor.upgrade.RecoveryAlways.detail": "Heal {1}→{2}% max HP/s\nChoose one recovery"
 }

@@ -9,6 +9,29 @@ namespace Game.Tests
     public sealed class SurvivorUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Survivor/";
+        /// <summary>三类恢复首级与末级条件和比例完整容纳于正式卡片，不改变布局。</summary>
+        [Test] public void RecoveryDescriptionsFitExistingCardsInBothLanguages()
+        {
+            var instance=Object.Instantiate(Bound<SurvivorUpgradeBoxUI>(Root+"Box/SurvivorUpgrade.prefab").gameObject);
+            try
+            {
+                var ui=instance.GetComponent<SurvivorUpgradeBoxUI>();
+                foreach(var language in new[]{"zh-CN","en-US"})
+                {
+                    Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
+                    foreach(var row in new[]{new[]{"17","Still","2","1","5"},new[]{"18","Safe","5","0.6","3"},new[]{"19","Always","0","0.3","1.5"}})
+                    {
+                        var title=table["ui.survivor.upgrade."+row[0]+".title"];
+                        Assert.That(ui.TitleText.GetPreferredValues(title,ui.TitleText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.TitleText.rectTransform.rect.height),title);
+                        foreach(var level in new[]{new[]{"0",row[3]},new[]{"1.2",row[4]}})
+                        {
+                            var value=string.Format(table["ui.survivor.upgrade.Recovery"+row[1]+".detail"],row[2],level[0],level[1]);
+                            Assert.That(ui.DetailText.GetPreferredValues(value,ui.DetailText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.DetailText.rectTransform.rect.height),value);
+                        }
+                    }
+                }
+            }finally{Object.DestroyImmediate(instance);}
+        }
         /// <summary>入口引用必须由正式生成器反序列化回绑，静态标签不混入动态余额。</summary>
         [Test] public void GoldEntryHasGeneratedReferencesAndDynamicBalance()
         {

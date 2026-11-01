@@ -130,7 +130,7 @@ namespace FirepowerLoop.Arcade
                 throw new ArgumentException("幸存者经验掉率必须在0到1之间");
             if (!global::Game.ResourceAddress.TryFromFileName(global::Game.ResourceAddressKind.SceneObjectPrefab,r.ExperienceVisualPrefabName,false,out var experienceAddress,out var experienceError))
                 throw new ArgumentException("幸存者经验模型无效："+experienceError);
-            var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight,x.EffectCountBase,x.EffectCountStep,x.EffectRadiusBase,x.EffectRadiusStep,x.EffectDamageBase,x.EffectDamageStep,x.EffectAngleDegrees)).ToArray();
+            var upgrades = tables.TbSurvivorUpgrade.DataList.Select(x => new SurvivorUpgradeDefinition(x.Id, x.Kind, x.AmountPerLevel, x.MaximumBonus, x.MaxLevel,x.Weight,x.EffectCountBase,x.EffectCountStep,x.EffectRadiusBase,x.EffectRadiusStep,x.EffectDamageBase,x.EffectDamageStep,x.EffectAngleDegrees,x.ExclusiveGroup,x.ActivationDelaySeconds)).ToArray();
             // 有限项目选满后仍须有可选项；停用项不计入兜底候选。
             if (upgrades.Select(x => x.Kind).Distinct().Count() != upgrades.Length || !upgrades.Any(x => x.MaxLevel == 0 && x.Weight > 0)) throw new ArgumentException("幸存者需要至少一种启用的无限强化且类型不重复");
             if(r.MaxSplitProjectiles<0||r.MaxSplitProjectiles>=r.MaxProjectiles||r.MaxBlastEffects<1)
@@ -220,6 +220,12 @@ namespace FirepowerLoop.Arcade
         public float EffectAngleDegrees { get; }
         private readonly int effectCountBase,effectCountStep;
         private readonly float effectRadiusBase,effectRadiusStep,effectDamageBase,effectDamageStep;
+        /// <summary>同组首次选择即锁定；空组不参与互斥。</summary>
+        public string ExclusiveGroup { get; }
+        /// <summary>恢复触发前需要连续满足条件的有效战斗秒。</summary>
+        public float ActivationDelaySeconds { get; }
+        /// <summary>恢复比例按当前最大生命每秒计算。</summary>
+        public bool IsRecovery=>Kind=="RecoveryStill"||Kind=="RecoverySafe"||Kind=="RecoveryAlways";
         /// <summary>等级零表示尚未取得，所有数值从权威配置线性求值。</summary>
         public int EffectCount(int level)=>level<=0?0:effectCountBase+(Math.Min(level,MaxLevel)-1)*effectCountStep;
         public float EffectRadius(int level)=>level<=0?0:effectRadiusBase+(Math.Min(level,MaxLevel)-1)*effectRadiusStep;
@@ -228,9 +234,11 @@ namespace FirepowerLoop.Arcade
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel)
             :this(id,kind,amountPerLevel,maximumBonus,maxLevel,10) { }
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
-        public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight,int countBase=0,int countStep=0,float radiusBase=0,float radiusStep=0,float damageBase=0,float damageStep=0,float angleDegrees=0)
+        public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight,int countBase=0,int countStep=0,float radiusBase=0,float radiusStep=0,float damageBase=0,float damageStep=0,float angleDegrees=0,string exclusiveGroup="",float activationDelaySeconds=0)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot","RecoveryStill","RecoverySafe","RecoveryAlways" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
+            if(float.IsNaN(activationDelaySeconds)||float.IsInfinity(activationDelaySeconds)||activationDelaySeconds<0)throw new ArgumentException("恢复等待时间必须是有限非负数");
+            ExclusiveGroup=exclusiveGroup??string.Empty;ActivationDelaySeconds=activationDelaySeconds;
             Id = id; Kind = kind; AmountPerLevel = amountPerLevel; MaximumBonus = maximumBonus; MaxLevel = maxLevel;Weight=weight;
             EffectAngleDegrees=angleDegrees;effectCountBase=countBase;effectCountStep=countStep;effectRadiusBase=radiusBase;effectRadiusStep=radiusStep;effectDamageBase=damageBase;effectDamageStep=damageStep;
             if(IsModifier&&(maxLevel!=(ModifierKind=="Multishot"?4:3)||countBase<0||countStep<0||

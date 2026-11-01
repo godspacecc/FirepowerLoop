@@ -93,7 +93,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -125,7 +125,7 @@ namespace Game
             if(!TryGetUpgradeDetails(id,out _,out var currentBonus,out var nextBonus,out _)||config.Upgrades[id-1].Kind!="Pickup")return false;
             currentRadius=config.PickupRadius+Bonus("Pickup");nextRadius=currentRadius+nextBonus-currentBonus;return true;
         }
-        public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升","Magazine"=>"弹夹容量提升","Reload"=>"换弹加速",_=>"强化"};}
+        public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升","Magazine"=>"扩容弹夹","Reload"=>"快速弹夹","RecoveryStill"=>"静养","RecoverySafe"=>"休整","RecoveryAlways"=>"再生",_=>"强化"};}
         /// <summary>武器卡片读当前及下一等级，未获取时当前参数为空。</summary>
         public bool TryGetWeaponUpgrade(int id,out string kind,out int level,out SurvivorWeaponLevelDefinition current,out SurvivorWeaponLevelDefinition next)
         {
@@ -142,7 +142,7 @@ namespace Game
             var m=Model;if(!m.Active||config==null||upgradeId<1||upgradeId>config.Upgrades.Count)return false;
             var definition=config.Upgrades[upgradeId-1];
             // 停用项即使收到旧选择请求也不能再获得。
-            if(definition.Weight<=0||!CanChooseModifier(definition,upgradeId))return false;
+            if(definition.Weight<=0||!CanChooseRoute(definition)||!CanChooseModifier(definition,upgradeId))return false;
             if(definition.IsWeapon&&(m.Loadout==null||!m.Loadout.CanUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind))))return false;
             if(!m.State.Choose(revision,upgradeId))return false;
             if(definition.IsWeapon)
@@ -151,6 +151,7 @@ namespace Game
                 if(definition.Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0){dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=facing;droneFireClock=0;}
                 m.Loadout.TryUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind));
             }
+            if(definition.IsRecovery&&m.State.UpgradeLevel(upgradeId)==1)ResetRecovery();
             UpdateRifleCapacity();int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
         }
         private double Bonus(string kind){double value=0;for(int i=0;i<config.Upgrades.Count;i++)if(config.Upgrades[i].Kind==kind)value+=config.Upgrades[i].BonusAtLevel(Model.State.UpgradeLevel(i+1));return value;}
@@ -158,7 +159,7 @@ namespace Game
         private void Offer()
         {
             var m=Model;var ids=Enumerable.Range(1,config.Upgrades.Count).Where(id=>{
-                var u=config.Upgrades[id-1];return u.Weight>0 && CanChooseModifier(u,id) && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
+                var u=config.Upgrades[id-1];return u.Weight>0 && CanChooseRoute(u) && CanChooseModifier(u,id) && (u.IsWeapon?m.Loadout!=null&&m.Loadout.CanUpgrade(u.Kind,config.MaximumWeaponLevel(u.Kind)):u.MaxLevel==0||m.State.UpgradeLevel(id)<u.MaxLevel);
             }).ToArray();
             int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
             m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
@@ -197,6 +198,7 @@ namespace Game
             if(!string.IsNullOrEmpty(view.RoundLayoutLoadError)){if(LastError!=view.RoundLayoutLoadError){LastError=view.RoundLayoutLoadError;m.Paused=true;Publish();}return;}
             if(!view.IsRoundLayoutReady||m.Paused||this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen)return;
             if(frameSeconds<=0)return;
+            recoveryDamagedThisFrame=false;var previousPlayer=player;
             float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
             player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
@@ -208,6 +210,7 @@ namespace Game
             TickEnemies(dt);RebuildHordeSpatial();
             AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
+            AdvanceRecovery(dt,input.MoveInput.sqrMagnitude>.0001f||(player-previousPlayer).sqrMagnitude>.000001f);
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);
             if(!SyncEnemyPresentations())return;
             foreach(var b in bullets.Values)

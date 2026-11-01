@@ -35,8 +35,8 @@ namespace Game.Tests
             }
             Assert.That(model.WeaponLevel("Rifle"),Is.EqualTo(1));
         }
-        /// <summary>全部有限项升满后，生命和弹夹仍能完成下一次强化并恢复游戏。</summary>
-        [Test] public void MaxedLimitedUpgradesLeaveTwoUsableChoices()
+        /// <summary>快速弹夹等有限项升满后，生命仍能完成下一次强化，不因只剩一项而卡住。</summary>
+        [Test] public void MaxedLimitedUpgradesLeaveUsableHealthChoice()
         {
             for(int i=0;i<5;i++)model.Loadout.TryUpgrade("Drone",5);
             foreach(int id in Enumerable.Range(1,config.Upgrades.Count).Where(i=>config.Upgrades[i-1].Weight>0&&!config.Upgrades[i-1].IsWeapon&&config.Upgrades[i-1].MaxLevel>0))
@@ -47,7 +47,7 @@ namespace Game.Tests
                     Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
                 }
             model.State.AddExperience(model.State.RequiredExperience);Call("Offer");
-            Assert.That(model.UpgradeChoices.Select(i=>config.Upgrades[i-1].Kind),Is.EquivalentTo(new[]{"Health","Magazine"}));
+            Assert.That(model.UpgradeChoices.Select(i=>config.Upgrades[i-1].Kind),Is.EquivalentTo(new[]{"Health"}));
             Assert.That(system.Choose(model.State.ChoiceRevision,model.UpgradeChoices[0]),Is.True);
             Assert.That(model.Paused,Is.False);
         }

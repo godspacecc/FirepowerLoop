@@ -11,11 +11,26 @@ namespace Game.Tests
     public sealed class SurvivorConfigTests
     {
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
+        /// <summary>正式源生成后的路线分组、恢复强度及等待时间必须与采用玩法一致。</summary>
+        [Test] public void RecoveryAndMagazineRoutesUseAuthoritativeValues()
+        {
+            var config=SurvivorConfiguration.FromTables(Load());
+            foreach(var kind in new[]{"Magazine","Reload"})Assert.That(config.Upgrades.Single(x=>x.Kind==kind).ExclusiveGroup,Is.EqualTo("Magazine"));
+            foreach(var row in new[]{("RecoveryStill",2f,.01), ("RecoverySafe",5f,.006), ("RecoveryAlways",0f,.003)})
+            {
+                var u=config.Upgrades.Single(x=>x.Kind==row.Item1);
+                Assert.That(u.ExclusiveGroup,Is.EqualTo("Recovery"));Assert.That(u.ActivationDelaySeconds,Is.EqualTo(row.Item2));
+                Assert.That(u.MaxLevel,Is.EqualTo(5));Assert.That(u.BonusAtLevel(1),Is.EqualTo(row.Item3).Within(.000001));
+                Assert.That(u.BonusAtLevel(5),Is.EqualTo(row.Item3*5).Within(.000001));
+            }
+            foreach(var invalid in new[]{-1f,float.NaN,float.PositiveInfinity})
+                Assert.Throws<ArgumentException>(()=>new SurvivorUpgradeDefinition("invalid","RecoverySafe",.006f,.03f,5,10,activationDelaySeconds:invalid));
+        }
         /// <summary>主武器固定基础能力，强化池只保留玩家属性、弹药与辅助武器。</summary>
         [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot" }));
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways" }));
             Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
         }
@@ -45,7 +60,7 @@ namespace Game.Tests
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
-            Assert.That(config.Upgrades.Count, Is.EqualTo(16));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(19));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
             Assert.That(config.RifleMagazineCapacity,Is.EqualTo(30));Assert.That(config.RifleReloadSeconds,Is.EqualTo(2f));Assert.That(config.RifleMinimumReloadSeconds,Is.EqualTo(1f));
             var magazine=config.Upgrades.Single(x=>x.Kind=="Magazine");
