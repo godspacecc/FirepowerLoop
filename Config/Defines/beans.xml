@@ -691,6 +691,10 @@
         <!-- 同组首次选择后锁定路线；恢复等待时间以有效战斗秒计。 -->
         <var name="ExclusiveGroup" type="string"/>
         <var name="ActivationDelaySeconds" type="float"/>
+        <!-- 元素弹头持续时间与各级强度，火焰为每秒弹伤比例，冰霜为减速比例。 -->
+        <var name="StatusDurationSeconds" type="float"/>
+        <var name="StatusStrengthBase" type="float"/>
+        <var name="StatusStrengthStep" type="float"/>
     </bean>
     <!-- 幸存者独立武器逐级参数，不改变闯关限时支援。 -->
     <bean name="SurvivorWeaponLevelConfig" group="e">

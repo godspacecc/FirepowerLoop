@@ -31,6 +31,9 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         EffectAngleDegrees = _buf.ReadFloat();
         ExclusiveGroup = _buf.ReadString();
         ActivationDelaySeconds = _buf.ReadFloat();
+        StatusDurationSeconds = _buf.ReadFloat();
+        StatusStrengthBase = _buf.ReadFloat();
+        StatusStrengthStep = _buf.ReadFloat();
     }
 
     public static SurvivorUpgradeConfig DeserializeSurvivorUpgradeConfig(ByteBuf _buf)
@@ -53,6 +56,9 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     public readonly float EffectAngleDegrees;
     public readonly string ExclusiveGroup;
     public readonly float ActivationDelaySeconds;
+    public readonly float StatusDurationSeconds;
+    public readonly float StatusStrengthBase;
+    public readonly float StatusStrengthStep;
    
     public const int __ID__ = 382383880;
     public override int GetTypeId() => __ID__;
@@ -79,6 +85,9 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         + "EffectAngleDegrees:" + EffectAngleDegrees + ","
         + "ExclusiveGroup:" + ExclusiveGroup + ","
         + "ActivationDelaySeconds:" + ActivationDelaySeconds + ","
+        + "StatusDurationSeconds:" + StatusDurationSeconds + ","
+        + "StatusStrengthBase:" + StatusStrengthBase + ","
+        + "StatusStrengthStep:" + StatusStrengthStep + ","
         + "}";
     }
 }

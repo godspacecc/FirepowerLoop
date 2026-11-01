@@ -954,7 +954,7 @@
   "ui.survivor.modifier.Pierce": "Piercing",
   "ui.survivor.modifier.Explosion": "Explosion",
   "ui.survivor.modifier.Split": "Split",
-  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · Extra targets {2}→{3}\nOne hit per target",
+  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · Extra targets {2}→{3}\nChoose Fire, Frost or Piercing",
   "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nExcludes Split; first hit only",
   "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nExcludes Explosion; no recursion",
   "ui.survivor.modifier.Multishot": "Multishot",
@@ -965,5 +965,9 @@
   "ui.survivor.upgrade.RecoveryStill.detail": "Still {0}s: {1}→{2}% max HP/s\nMoving resets; one recovery",
   "ui.survivor.upgrade.RecoverySafe.detail": "Safe {0}s: {1}→{2}% max HP/s\nDamage resets; one recovery",
   "ui.survivor.upgrade.RecoveryAlways.detail": "Heal {1}→{2}% max HP/s\nChoose one recovery",
-  "ui.survivor.hud.clock": "Local time {0}"
+  "ui.survivor.hud.clock": "Local time {0}",
+  "ui.survivor.modifier.Fire": "Incendiary",
+  "ui.survivor.modifier.Frost": "Frost",
+  "ui.survivor.modifier.Fire.detail": "Burn {0}s: {1}→{2}% shot dmg/s\nChoose Fire, Frost or Piercing",
+  "ui.survivor.modifier.Frost.detail": "Slow {0}s: {1}→{2}%\nChoose Fire, Frost or Piercing"
 }

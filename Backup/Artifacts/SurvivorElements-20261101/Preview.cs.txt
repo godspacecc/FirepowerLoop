@@ -1,0 +1,79 @@
+using System;using Object=UnityEngine.Object;
+using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using System.IO;using System.Linq;using System.Collections.Generic;
+public class Script{
+    private static void CreateSkinProxies(Actor actor, List<Object> owned)
+    {
+        foreach (var source in actor.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!source.enabled || !source.gameObject.activeInHierarchy || source.sharedMesh == null || source.bones.Length == 0) continue;
+            var original = source.sharedMesh;
+            var output = Object.Instantiate(original); output.name = "TEMP_FormalSampledSkin"; owned.Add(output);
+            var proxy = new GameObject("TEMP_FormalSampledSkin", typeof(MeshFilter), typeof(MeshRenderer)); proxy.transform.SetParent(source.transform, false);
+            proxy.GetComponent<MeshFilter>().sharedMesh = output; proxy.GetComponent<MeshRenderer>().sharedMaterials = source.sharedMaterials;
+            var skin = new Skin { Source = source, Output = output, Vertices = original.vertices, Normals = original.normals,
+                Weights = original.boneWeights, Bindposes = original.bindposes, Bones = source.bones };
+            if (skin.Weights.Length != skin.Vertices.Length || skin.Normals.Length != skin.Vertices.Length || skin.Bindposes.Length != skin.Bones.Length)
+                throw new InvalidOperationException("正式蒙皮数据不完整：" + source.name);
+            skin.Positions = new Vector3[skin.Vertices.Length]; skin.Directions = new Vector3[skin.Vertices.Length]; skin.Matrices = new Matrix4x4[skin.Bones.Length];
+            actor.Skins.Add(skin); source.enabled = false;
+        }
+        if (actor.Skins.Count == 0) throw new InvalidOperationException("正式演员缺少可采样蒙皮：" + actor.Root.name);
+    }
+
+    private static void UpdateSkin(Skin skin)
+    {
+        for (int i = 0; i < skin.Bones.Length; i++) skin.Matrices[i] = skin.Source.transform.worldToLocalMatrix * skin.Bones[i].localToWorldMatrix * skin.Bindposes[i];
+        for (int i = 0; i < skin.Vertices.Length; i++)
+        {
+            var weight = skin.Weights[i]; var vertex = skin.Vertices[i]; var normal = skin.Normals[i]; var matrices = skin.Matrices;
+            skin.Positions[i] = matrices[weight.boneIndex0].MultiplyPoint3x4(vertex) * weight.weight0 + matrices[weight.boneIndex1].MultiplyPoint3x4(vertex) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyPoint3x4(vertex) * weight.weight2 + matrices[weight.boneIndex3].MultiplyPoint3x4(vertex) * weight.weight3;
+            skin.Directions[i] = (matrices[weight.boneIndex0].MultiplyVector(normal) * weight.weight0 + matrices[weight.boneIndex1].MultiplyVector(normal) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyVector(normal) * weight.weight2 + matrices[weight.boneIndex3].MultiplyVector(normal) * weight.weight3).normalized;
+        }
+        skin.Output.vertices = skin.Positions; skin.Output.normals = skin.Directions; skin.Output.RecalculateBounds();
+    }
+
+
+private sealed class Actor {public GameObject Root; public readonly List<Skin> Skins=new List<Skin>();}
+    private sealed class Skin
+    {
+        public SkinnedMeshRenderer Source;
+        public Mesh Output;
+        public Vector3[] Vertices, Normals, Positions, Directions;
+        public BoneWeight[] Weights;
+        public Matrix4x4[] Bindposes, Matrices;
+        public Transform[] Bones;
+    }
+
+
+static List<Object> owned=new List<Object>();
+static Material Mat(Color color){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=color;m.SetFloat("_Smoothness",.1f);owned.Add(m);return m;}
+static ParticleSystem Aura(Transform parent,bool fire){
+var go=new GameObject(fire?"TEMP_Burn":"TEMP_Frost");go.transform.SetParent(parent,false);go.transform.localPosition=new Vector3(0,fire?.9f:.3f,0);
+var ps=go.AddComponent<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);var main=ps.main;main.loop=true;main.duration=2;main.startLifetime=fire?.85f:1;main.startSpeed=fire?1.1f:.16f;main.startSize=fire?.3f:.08f;main.maxParticles=80;main.simulationSpace=ParticleSystemSimulationSpace.Local;
+main.startColor=fire?Color.white:new Color(.45f,.9f,1,.9f);ps.useAutoRandomSeed=false;ps.randomSeed=37;
+if(fire){main.startSize3D=true;main.startSizeX=.28f;main.startSizeY=.55f;main.startSizeZ=.28f;}
+var emission=ps.emission;emission.rateOverTime=fire?40:18;var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Cone;shape.angle=fire?12:30;shape.radius=fire?.25f:.4f;go.transform.localRotation=Quaternion.Euler(-90,0,0);
+var color=ps.colorOverLifetime;color.enabled=true;var gradient=new Gradient();gradient.SetKeys(new[]{new GradientColorKey(fire?new Color(1,.9f,.18f):new Color(.7f,1,1),0),new GradientColorKey(fire?new Color(1,.22f,.015f):new Color(.2f,.65f,1),.6f)},new[]{new GradientAlphaKey(0,0),new GradientAlphaKey(.85f,.15f),new GradientAlphaKey(0,1)});color.color=gradient;
+var size=ps.sizeOverLifetime;size.enabled=true;size.size=new ParticleSystem.MinMaxCurve(1,AnimationCurve.EaseInOut(0,1,1,.1f));
+var tex=new Texture2D(32,32,TextureFormat.RGBA32,false);owned.Add(tex);for(int y=0;y<32;y++)for(int x=0;x<32;x++){float r=Vector2.Distance(new Vector2(x,y),new Vector2(15.5f,15.5f))/15.5f;tex.SetPixel(x,y,new Color(1,1,1,Mathf.Pow(Mathf.Clamp01(1-r),fire?1.3f:.6f)));}tex.Apply();
+var mat=new Material(Shader.Find("Universal Render Pipeline/Particles/Unlit"));owned.Add(mat);mat.SetTexture("_BaseMap",tex);mat.SetTexture("_MainTex",tex);mat.SetFloat("_Surface",1);mat.SetFloat("_Blend",0);mat.SetFloat("_SrcBlend",5);mat.SetFloat("_DstBlend",10);mat.SetFloat("_ZWrite",0);mat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");mat.renderQueue=3000;go.GetComponent<ParticleSystemRenderer>().sharedMaterial=mat;
+return ps;}
+static void Capture(Camera camera,string path){var rt=RenderTexture.GetTemporary(1000,650,24);var old=RenderTexture.active;var tex=new Texture2D(1000,650,TextureFormat.RGB24,false);try{camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1000,650),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+public static object Main(){if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("需在本项目编辑状态预览");var scene=EditorSceneManager.NewPreviewScene();try{
+var root=new GameObject("TEMP_ElementsPreview");SceneManager.MoveGameObjectToScene(root,scene);
+var ground=GameObject.CreatePrimitive(PrimitiveType.Cube);ground.transform.SetParent(root.transform);ground.transform.position=new Vector3(0,-.12f,0);ground.transform.localScale=new Vector3(12,.2f,10);ground.GetComponent<Renderer>().sharedMaterial=Mat(new Color(.19f,.24f,.21f));
+var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);hero.transform.position=new Vector3(-2.7f,0,-.4f);hero.transform.rotation=Quaternion.Euler(0,150,0);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+var presenter=hero.GetComponent<Game.CharacterWeaponPresenter>();if(presenter==null||!presenter.SetWeaponId("arcade.weapon.basic"))throw new Exception("hero weapon missing");presenter.SetManualPoseSampling(true);var ha=presenter.BodyAnimator;ha.enabled=true;ha.Rebind();ha.Update(0);ha.enabled=false;presenter.Current.Animations.Idle.Clip.SampleAnimation(ha.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);var heroActor=new Actor{Root=hero};CreateSkinProxies(heroActor,owned);foreach(var skin in heroActor.Skins)UpdateSkin(skin);
+var actors=new Actor[2];var animators=new Animator[2];var walks=new AnimationClip[2];var auras=new ParticleSystem[2];
+for(int i=0;i<2;i++){var z=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),root.transform);z.transform.position=new Vector3(i==0?-.4f:2.1f,0,.6f);z.transform.rotation=Quaternion.Euler(0,180,0);foreach(var b in z.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;var a=z.GetComponentInChildren<Animator>(true);a.Rebind();a.Update(0);a.enabled=false;animators[i]=a;walks[i]=a.runtimeAnimatorController.animationClips.First(c=>c.name.Contains("GroundWalk"));walks[i].SampleAnimation(a.gameObject,0);actors[i]=new Actor{Root=z};CreateSkinProxies(actors[i],owned);auras[i]=Aura(z.transform,i==0);
+if(i==1)foreach(var skin in actors[i].Skins){var materials=skin.Source.sharedMaterials.Select(m=>{var copy=new Material(m);owned.Add(copy);if(copy.HasProperty("_BaseColor"))copy.SetColor("_BaseColor",Color.Lerp(copy.GetColor("_BaseColor"),new Color(.4f,.85f,1),.24f));return copy;}).ToArray();skin.Source.transform.Find("TEMP_FormalSampledSkin").GetComponent<MeshRenderer>().sharedMaterials=materials;}}
+var light=new GameObject("TEMP_Light");light.transform.SetParent(root.transform);light.transform.rotation=Quaternion.Euler(42,-30,0);light.AddComponent<Light>().type=LightType.Directional;light.GetComponent<Light>().intensity=1.8f;
+var cameraObject=new GameObject("TEMP_Camera");cameraObject.transform.SetParent(root.transform);var camera=cameraObject.AddComponent<Camera>();camera.scene=scene;camera.cameraType=CameraType.Preview;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.08f,.11f,.13f);camera.orthographic=true;camera.orthographicSize=2.8f;camera.transform.position=new Vector3(0,4,-9);camera.transform.LookAt(new Vector3(0,.9f,0));
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorElements-20261101/frames";Directory.CreateDirectory(dir);
+for(int frame=0;frame<100;frame++){float time=frame/20f;for(int i=0;i<2;i++){float duration=i==0?3:2;float active=Mathf.Clamp(time-.5f,0,duration);float motion=i==0?time:time-active*.2f;actors[i].Root.transform.position=new Vector3(i==0?-.4f:2.1f,0,.8f-motion*.38f);walks[i].SampleAnimation(animators[i].gameObject,motion*.6f);foreach(var skin in actors[i].Skins)UpdateSkin(skin);
+if(time>=.5f&&time<.5f+duration)auras[i].Simulate(time-.5f,true,true,true);else auras[i].Clear(true);
+if(i==1){float blend=time>=.5f&&time<2.5f?.24f:0;foreach(var skin in actors[i].Skins){var source=skin.Source.sharedMaterials;var mats=skin.Source.transform.Find("TEMP_FormalSampledSkin").GetComponent<MeshRenderer>().sharedMaterials;for(int k=0;k<mats.Length;k++)if(mats[k].HasProperty("_BaseColor"))mats[k].SetColor("_BaseColor",Color.Lerp(source[k].GetColor("_BaseColor"),new Color(.4f,.85f,1),blend));}}}
+Capture(camera,Path.Combine(dir,frame.ToString("D3")+".png"));}return dir;
+}finally{EditorSceneManager.ClosePreviewScene(scene);foreach(var o in owned)if(o!=null)Object.DestroyImmediate(o);owned.Clear();}}}

@@ -9,6 +9,29 @@ namespace Game.Tests
     public sealed class SurvivorUiTests
     {
         private const string Root="Assets/Game/Prefabs/UI/Survivor/";
+        /// <summary>元素弹头条件、强度和三选一说明完整容纳于既有正式卡片。</summary>
+        [Test] public void ElementDescriptionsFitExistingCardsInBothLanguages()
+        {
+            var go=Object.Instantiate(Bound<SurvivorUpgradeBoxUI>(Root+"Box/SurvivorUpgrade.prefab").gameObject);
+            try
+            {
+                var ui=go.GetComponent<SurvivorUpgradeBoxUI>();
+                foreach(var language in new[]{"zh-CN","en-US"})
+                {
+                    Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
+                    foreach(var kind in new[]{"Fire","Frost"})
+                    {
+                        string title=string.Format(table["ui.survivor.modifier.title"],table["ui.survivor.weapon.Rifle"],table["ui.survivor.modifier."+kind]);
+                        Assert.That(ui.TitleText.GetPreferredValues(title,ui.TitleText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.TitleText.rectTransform.rect.height),title);
+                        foreach(var level in new[]{new[]{0,20},new[]{30,40}})
+                        {
+                            string value=string.Format(table["ui.survivor.modifier."+kind+".detail"],kind=="Fire"?3:2,level[0],level[1]);
+                            Assert.That(ui.DetailText.GetPreferredValues(value,ui.DetailText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.DetailText.rectTransform.rect.height),value);
+                        }
+                    }
+                }
+            }finally{Object.DestroyImmediate(go);}
+        }
         /// <summary>三类恢复首级与末级条件和比例完整容纳于正式卡片，不改变布局。</summary>
         [Test] public void RecoveryDescriptionsFitExistingCardsInBothLanguages()
         {

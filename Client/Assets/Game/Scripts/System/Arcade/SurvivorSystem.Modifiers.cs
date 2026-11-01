@@ -12,6 +12,9 @@ namespace Game
             public bool Child,Triggered;
             public int SplitCount,SplitDamage,BlastDamage;
             public float BlastRadius;
+            /// <summary>发射时固定的元素持续时间、每秒伤害与减速比例。</summary>
+            public float FireSeconds,FrostSeconds,FrostSlowFraction;
+            public double FireDamagePerSecond;
         }
         /// <summary>权威爆炸仅记录视觉寿命；伤害在触发帧已完成。</summary>
         private sealed class ModifierBlast
@@ -52,7 +55,7 @@ namespace Game
         {
             if(!definition.IsModifier)return true;
             if(definition.TargetWeapon!="Rifle"||definition.Weight<=0||Model.Loadout==null||Model.Loadout.LevelOf("Rifle")==0||Model.State.UpgradeLevel(id)>=definition.MaxLevel)return false;
-            // 弹体分支只在首次选择时确定；穿透、多重不参与互斥。
+            // 弹体分支只在首次选择时确定；穿透另与元素弹头同组，多重不参与互斥。
             string rival=definition.ModifierKind=="Explosion"?"Split":definition.ModifierKind=="Split"?"Explosion":null;
             if(rival!=null)for(int i=0;i<config.Upgrades.Count;i++)
                 if(config.Upgrades[i].TargetWeapon=="Rifle"&&config.Upgrades[i].ModifierKind==rival&&Model.State.UpgradeLevel(i+1)>0)return false;
@@ -65,7 +68,7 @@ namespace Game
             definition=null;level=0;
             if(config==null||Model.State==null||id<1||id>config.Upgrades.Count)return false;
             var value=config.Upgrades[id-1];if(!value.IsModifier)return false;
-            definition=value;level=Model.State.UpgradeLevel(id);return CanChooseModifier(value,id);
+            definition=value;level=Model.State.UpgradeLevel(id);return CanChooseRoute(value)&&CanChooseModifier(value,id);
         }
         /// <summary>将所属武器的等级转换为发射时快照，之后的强化不影响在途弹。</summary>
         private void SnapshotModifiers(ArcadeProjectileRuntime bullet,string owner)
@@ -77,6 +80,8 @@ namespace Game
                 int level=Model.State.UpgradeLevel(i+1);if(level<=0)continue;
                 switch(u.ModifierKind)
                 {
+                    case "Fire":shot.FireSeconds=u.StatusDurationSeconds;shot.FireDamagePerSecond=(double)bullet.Damage*u.StatusStrength(level);break;
+                    case "Frost":shot.FrostSeconds=u.StatusDurationSeconds;shot.FrostSlowFraction=u.StatusStrength(level);break;
                     case "Pierce":bullet.RemainingHits+=u.EffectCount(level);break;
                     case "Explosion":shot.BlastRadius=u.EffectRadius(level);shot.BlastDamage=ScaledModifierDamage(bullet.Damage,u.EffectDamage(level));break;
                     case "Split":shot.SplitCount=u.EffectCount(level);shot.SplitDamage=ScaledModifierDamage(bullet.Damage,u.EffectDamage(level));break;
@@ -152,7 +157,7 @@ namespace Game
                     ApplyModifierDamage(enemy,bullet.Damage);
                     if(modifierShots.TryGetValue(bullet.Id,out var shot)&&!shot.Child&&!shot.Triggered)
                     {
-                        shot.Triggered=true;
+                        shot.Triggered=true;ApplyElementHit(enemy,shot);
                         TriggerModifierBlast(point,hit.Id,shot);
                         QueueModifierChildren(bullet,point,hit.Id,shot);
                     }
@@ -171,7 +176,7 @@ namespace Game
         {
             if(damage<=0||!enemies.ContainsKey(enemy.Id))return;
             enemy.Health=Math.Max(0,enemy.Health-damage);if(enemy.Health>0)return;
-            enemies.Remove(enemy.Id);presentedEnemies.Remove(enemy.Id);view.RemoveEnemy(enemy.Id,true);Model.Kills++;TryDropGold(enemy);
+            elementStatuses.Remove(enemy.Id);enemies.Remove(enemy.Id);presentedEnemies.Remove(enemy.Id);view.RemoveEnemy(enemy.Id,true);Model.Kills++;TryDropGold(enemy);
             if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))AddExperienceDrop(enemy.Position);
         }
         /// <summary>爆炸查询局部候选，排除直接命中目标；特效预算不足仍结算伤害。</summary>
@@ -218,7 +223,7 @@ namespace Game
         private void ClearModifiers()
         {
             foreach(var blast in modifierBlasts)view?.RemoveSurvivorBlast(blast.Id);
-            modifierBlasts.Clear();modifierShots.Clear();pendingSplitShots.Clear();modifierHits.Clear();blastCandidates.Clear();splitShotCount=0;
+            ClearElements();modifierBlasts.Clear();modifierShots.Clear();pendingSplitShots.Clear();modifierHits.Clear();blastCandidates.Clear();splitShotCount=0;
         }
     }
 }

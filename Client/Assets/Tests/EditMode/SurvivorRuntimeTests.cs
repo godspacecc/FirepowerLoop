@@ -800,10 +800,11 @@ namespace Game.Tests
         }
         [Test] public void VisibilityHiddenEnemyStillTakesProjectileDamageAndDropsExperience()
         {
-            PrepareHordeCheck();KillOne(new Vector2(25,20));
+            // 镜头外但仍在当前攻击亮区内，不能用超出昼夜射程的点检验隐藏表现。
+            PrepareHordeCheck();KillOne(new Vector2(12,8));
             Assert.AreEqual(1,model.Kills);Assert.AreEqual(0,view.Wakes);
             Assert.IsEmpty(Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies"));
-            Assert.AreEqual(new Vector2(25,20),Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Position);
+            Assert.AreEqual(new Vector2(12,8),Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops").Values.Single().Position);
         }
         private sealed class TestView:IArcadeCombatViewPort
         {

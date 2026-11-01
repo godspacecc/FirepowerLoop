@@ -954,7 +954,7 @@
   "ui.survivor.modifier.Pierce": "穿透",
   "ui.survivor.modifier.Explosion": "爆炸",
   "ui.survivor.modifier.Split": "分裂",
-  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n同一目标只命中一次",
+  "ui.survivor.modifier.Pierce.detail": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n火焰／冰霜／穿透三选一",
   "ui.survivor.modifier.Explosion.detail": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n与分裂互斥；首次触发",
   "ui.survivor.modifier.Split.detail": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n与爆炸互斥；子弹不递归",
   "ui.survivor.modifier.Multishot": "多重射击",
@@ -965,5 +965,9 @@
   "ui.survivor.upgrade.RecoveryStill.detail": "站定{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
   "ui.survivor.upgrade.RecoverySafe.detail": "无伤{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
   "ui.survivor.upgrade.RecoveryAlways.detail": "持续回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
-  "ui.survivor.hud.clock": "当前时间 {0}"
+  "ui.survivor.hud.clock": "当前时间 {0}",
+  "ui.survivor.modifier.Fire": "火焰弹头",
+  "ui.survivor.modifier.Frost": "冰霜弹头",
+  "ui.survivor.modifier.Fire.detail": "燃烧{0}秒：弹伤{1}%→{2}%/秒\n火焰／冰霜／穿透三选一",
+  "ui.survivor.modifier.Frost.detail": "减速{0}秒：{1}%→{2}%\n火焰／冰霜／穿透三选一"
 }

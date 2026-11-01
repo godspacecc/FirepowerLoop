@@ -1,0 +1,1 @@
+{"result":{"Summary":{"Status":"Passed","TotalTests":1,"PassedTests":1,"FailedTests":0,"SkippedTests":0,"Duration":"00:00:02.0222822"},"Results":[{"Name":"Game.Tests.SurvivorElementTests.FireFreezesDuringPauseAndUpgradeChoice","Status":"Passed","Duration":"00:00:01.0640000"}]}}

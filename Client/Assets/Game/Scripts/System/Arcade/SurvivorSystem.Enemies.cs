@@ -67,15 +67,16 @@ namespace Game
             foreach(var field in sizedNavigation.Values)field.SetTarget(player);
             foreach(var e in enemies.Values)
             {
+                float moveSeconds=ElementMovementSeconds(e,dt);
                 if(SurvivorGroundEntryRules.Advance(ref e.GroundEntry,dt))
                 {e.Position=SurvivorGroundEntryRules.Position(e.GroundEntry);continue;}
                 bool configured=enemyConfigs.TryGetValue(e.ConfigId??string.Empty,out var definition)&&e.ConfigId!=config.EnemyId;
                 float distance=Vector2.Distance(e.Position,player);
-                if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*dt);
+                if(!configured)e.Position=navigation.Move(e.Position,player,e.Speed*moveSeconds);
                 else if(!e.MeleeWindupActive&&e.MeleeRecoveryRemaining<=0)
                 {
-                    float approach=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance,MeleeReach(e,definition),e.Speed,dt,e.MeleeRecoveryRemaining);
-                    e.Position=NavigationFor(e).Move(e.Position,player,e.Speed*approach);
+                    float approach=FirepowerLoop.Arcade.ArcadeMeleeRules.ApproachSeconds(distance,MeleeReach(e,definition),e.Speed*(dt>0?moveSeconds/dt:1),dt,e.MeleeRecoveryRemaining);
+                    e.Position=NavigationFor(e).Move(e.Position,player,e.Speed*(dt>0?moveSeconds/dt:1)*approach);
                 }
                 if(configured)TickMeleeEnemy(e,dt);
                 else if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius)

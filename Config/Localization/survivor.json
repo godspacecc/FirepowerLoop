@@ -262,5 +262,21 @@
   "ui.survivor.upgrade.RecoveryAlways.detail": {
     "zh-CN": "持续回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
     "en-US": "Heal {1}→{2}% max HP/s\nChoose one recovery"
+  },
+  "ui.survivor.modifier.Fire": {
+    "zh-CN": "火焰弹头",
+    "en-US": "Incendiary"
+  },
+  "ui.survivor.modifier.Frost": {
+    "zh-CN": "冰霜弹头",
+    "en-US": "Frost"
+  },
+  "ui.survivor.modifier.Fire.detail": {
+    "zh-CN": "燃烧{0}秒：弹伤{1}%→{2}%/秒\n火焰／冰霜／穿透三选一",
+    "en-US": "Burn {0}s: {1}→{2}% shot dmg/s\nChoose Fire, Frost or Piercing"
+  },
+  "ui.survivor.modifier.Frost.detail": {
+    "zh-CN": "减速{0}秒：{1}%→{2}%\n火焰／冰霜／穿透三选一",
+    "en-US": "Slow {0}s: {1}→{2}%\nChoose Fire, Frost or Piercing"
   }
 }
