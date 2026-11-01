@@ -29,6 +29,8 @@ namespace Game
         private readonly Dictionary<int,ArcadeProjectileRuntime> bullets=new();
         private readonly Dictionary<int,(Vector2 Position,long Experience)> drops=new();
         private Vector2 player, facing=Vector2.up;
+        /// <summary>仅记住最近成功射击的目标，用于两发间保持瞄准，不扩大目标搜索频率。</summary>
+        private int rifleFacingTarget;
         private float spawnClock,fireClock,hurtClock;
         private int identity,fireSequence;
         /// <summary>全敌人共享农场距离场，场内爬出后沿同一静态障碍追击。</summary>
@@ -93,7 +95,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -241,21 +243,41 @@ namespace Game
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>
         private void Fire()
         {
-            if(fireClock>0)return;
+            if(fireClock>0){UpdateFacingBetweenRifleShots();return;}
             EnsureHordeSpatial();
             var level=config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle"));
             float range=Mathf.Min(CurrentAimRange,level.Range);enemySpatial.QueryCircle(player.x,player.y,range,enemyCandidates);
             long target=0;float nearest=range*range;
             foreach(int id in enemyCandidates)
             {
-                if(!enemies.TryGetValue(id,out var e))continue;float distance=(e.Position-player).sqrMagnitude;
+                if(!enemies.TryGetValue(id,out var e)||e.Health<=0)continue;float distance=(e.Position-player).sqrMagnitude;
                 if(distance>nearest||!view.IsArenaTargetVisible(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
                 if(distance==nearest&&target!=0&&id>target)continue;target=id;nearest=distance;
             }
             EnsureRifleMagazine();
-            if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary())return;
-            facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
+            if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary()){FaceMovementWhenNotFiring();return;}
+            rifleFacingTarget=(int)target;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             ShootRifleVolley(level);view.SetPlayerFireSequence(++fireSequence,fireClock);
+        }
+        /// <summary>冷却只检查上次目标；失去射程、视线、生命或可用弹药立即恢复移动朝向。</summary>
+        private void UpdateFacingBetweenRifleShots()
+        {
+            if(rifleFacingTarget!=0&&Model.RifleReloadRemaining<=0&&Model.RifleRounds>0&&
+                enemies.TryGetValue(rifleFacingTarget,out var enemy)&&enemy.Health>0){
+                float range=Mathf.Min(CurrentAimRange,config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle")).Range);
+                var direction=enemy.Position-player;
+                if(direction.sqrMagnitude<=range*range&&view.IsArenaTargetVisible(enemy.Position)&&!Blocked(player,enemy.Position)&&CanAimGroundBody(enemy,player,.75f)){
+                    if(direction.sqrMagnitude>.0001f)facing=direction.normalized;
+                    return;
+                }
+            }
+            FaceMovementWhenNotFiring();
+        }
+        /// <summary>无有效射击时跟随移动输入，松开输入保留最后朝向；不新增位移或消耗弹药。</summary>
+        private void FaceMovementWhenNotFiring()
+        {
+            rifleFacingTarget=0;var movement=input.MoveInput;
+            if(movement.sqrMagnitude>.0001f)facing=movement.normalized;
         }
         /// <summary>常驻无人机优先保护玩家附近目标；升级暂停和结算时此入口不执行。</summary>
         private void TickDrone(float dt)

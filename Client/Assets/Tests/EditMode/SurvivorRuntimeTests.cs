@@ -504,6 +504,33 @@ namespace Game.Tests
             var drops=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
             Assert.That(drops.Values.Single().Position,Is.EqualTo(start));
         }
+        /// <summary>没有射击目标时跟随移动输入；松开方向保持，换弹不锁住旧瞄准方向。</summary>
+        [Test] public void IdleAndReloadFacingFollowsMovementAndStopKeepsDirection()
+        {
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.right);Call("Fire");
+            Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.right));
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.zero);Call("Fire");
+            Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.right));
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,new ArcadeEnemyRuntime{Id=901,Health=100,Position=new Vector2(0,4)});
+            Call("EnsureRifleMagazine");model.RifleReloadRemaining=1;
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.left);Call("Fire");
+            Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.left));Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets"),Is.Empty);
+        }
+        /// <summary>两发间只跟踪上次有效目标，不向移动方向抖动；目标离屏或死亡立即恢复移动朝向。</summary>
+        [Test] public void ContinuousFireKeepsAimUntilTargetOrAmmoBecomesInvalid()
+        {
+            var enemy=new ArcadeEnemyRuntime{Id=901,Health=100,Position=new Vector2(0,4)};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(901,enemy);
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.right);Call("Fire");
+            Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.up));int count=Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Count;
+            enemy.Position=new Vector2(1,4);Call("Fire");
+            Assert.That(Vector2.Distance(Get<Vector2>("facing"),enemy.Position.normalized),Is.LessThan(.001f));
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets").Count,Is.EqualTo(count),"冷却阶段不额外发射");
+            view.TargetVisible=false;Call("Fire");Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.right));
+            view.TargetVisible=true;Set("fireClock",0f);Call("Fire");enemy.Health=0;Call("Fire");Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.right));
+            enemy.Health=100;Set("fireClock",0f);Call("Fire");model.RifleReloadRemaining=1;
+            typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.down);Call("Fire");Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.down));
+        }
         [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
         {
             UIHelper.ResetForTests();
@@ -516,6 +543,7 @@ namespace Game.Tests
             Assert.That(Get<Vector2>("player").x,Is.GreaterThan(0));
             Assert.That(view.PlayerWrites,Is.EqualTo(1),"同帧第二次零位移会清空腿部动画速度");
             Assert.That(view.CombatPoseWrites,Is.EqualTo(1),"末尾仍需刷新本帧射击朝向和保护状态");
+            Assert.That(view.LastCombatFacing,Is.EqualTo(Vector2.right));
         }
         [Test] public void PauseFreezesClockEnemiesAndInputPresentation()
         {
@@ -841,7 +869,8 @@ namespace Game.Tests
             public void End(){Ends++;}
             public bool TryScreenToArena(Vector2 s,out Vector2 p){p=default;return false;}
             public void SetPlayer(Vector2 p,Vector2 f,bool v,bool i){PlayerWrites++;}
-            public void SetPlayerCombatState(Vector2 facing,bool invulnerable){CombatPoseWrites++;}
+            public Vector2 LastCombatFacing;
+            public void SetPlayerCombatState(Vector2 facing,bool invulnerable){CombatPoseWrites++;LastCombatFacing=facing;}
             public void SetPlayerHealth(int c,int m){}
             public void SetEnemy(int id,string c,Vector2 p,int hp,int max,bool t=false,int seq=0,bool bar=false){}
             public void RemoveEnemy(int id,bool death=false){}
