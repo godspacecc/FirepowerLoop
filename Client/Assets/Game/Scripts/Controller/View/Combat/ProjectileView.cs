@@ -32,6 +32,13 @@ namespace Game
         /// <summary>已确认的紫火箭/射线短尾，使用显式材质；只从本次权威姿态采样。</summary>
         [SerializeField] private LineRenderer purpleWeaponTail;
         private float purpleTailLength;
+        /// <summary>普通弹的飞行曳光线，材质随正式Prefab预加载；每颗子弹只更新两个端点。</summary>
+        [SerializeField] private LineRenderer flyingTracer;
+        private float tracerLength, tracerDistance;
+        private Vector3 tracerPreviousPosition;
+        private bool tracerHasPosition;
+        private int tracerPowerLevel = -1;
+
 
         /// <summary>缓存视觉子节点原始比例；只缩放外观，不影响根节点与碰撞盒。</summary>
         private Vector3[] originalVisualScales;
@@ -56,6 +63,11 @@ namespace Game
 
         public void Bind(int runtimeId, Action<int, Collider> onCollision)
         {
+            if (projectileRuntimeId != runtimeId)
+            {
+                tracerHasPosition = false;
+                tracerDistance = 0f;
+            }
             projectileRuntimeId = runtimeId;
             collisionHandler = onCollision;
             EnsureComponents();
@@ -65,6 +77,14 @@ namespace Game
         public void ApplyPose(Vector3 position, Vector3 direction)
         {
             transform.position = position;
+            if (flyingTracer != null && flyingTracer.enabled)
+            {
+                if (tracerHasPosition) tracerDistance += Vector3.Distance(position, tracerPreviousPosition);
+                tracerPreviousPosition = position;
+                tracerHasPosition = true;
+                flyingTracer.SetPosition(0, position);
+                flyingTracer.SetPosition(1, position - direction.normalized * Mathf.Min(tracerDistance, tracerLength));
+            }
             if(purpleWeaponTail!=null&&purpleWeaponTail.enabled&&direction.sqrMagnitude>.0001f)
             {purpleWeaponTail.SetPosition(0,position);purpleWeaponTail.SetPosition(1,position-direction.normalized*purpleTailLength);}
             if (direction.sqrMagnitude > 0.0001f)
@@ -88,6 +108,25 @@ namespace Game
                     if (arcadeVisuals[i].VisualRoot != null)
                         originalVisualScales[i] = arcadeVisuals[i].VisualRoot.transform.localScale;
             }
+            bool tracing = flyingTracer != null && !hostile && visualResourceName == "ArcadeBulletBasic";
+            if (flyingTracer != null)
+            {
+                if (flyingTracer.enabled != tracing) { tracerHasPosition = false; tracerDistance = 0f; }
+                flyingTracer.enabled = tracing;
+                tracerLength = visualScale < .6f ? .8f : 1.05f;
+                flyingTracer.startWidth = visualScale < .6f ? .025f : .035f;
+                if (tracing && tracerPowerLevel != powerLevel)
+                {
+                    tracerPowerLevel = powerLevel;
+                    var head = powerLevel >= 2 ? new Color(.8f,.12f,1f) :
+                        powerLevel == 1 ? new Color(1f,.07f,.04f) : new Color(1f,.97f,.7f);
+                    var tail = powerLevel == 0 ? new Color(1f,.65f,.15f) : head;
+                    var gradient = new Gradient();
+                    gradient.SetKeys(new[]{new GradientColorKey(head,0),new GradientColorKey(tail,1)},
+                        new[]{new GradientAlphaKey(1,0),new GradientAlphaKey(.65f,.35f),new GradientAlphaKey(0,1)});
+                    flyingTracer.colorGradient = gradient;
+                }
+            }
             var matched = false;
             for (var index = 0; index < arcadeVisuals.Length; index++)
             {
@@ -98,7 +137,7 @@ namespace Game
                 if (binding.VisualRoot != null)
                     binding.VisualRoot.transform.localScale = originalVisualScales[index] *
                         (active && visualResourceName == "ArcadeBulletBasic" ? visualScale : 1f);
-                SetActive(binding.VisualRoot, active);
+                SetActive(binding.VisualRoot, active && !tracing);
                 if (active) matched = true;
             }
             if (defaultArcadeRenderer != null) defaultArcadeRenderer.enabled = !matched;
@@ -118,7 +157,7 @@ namespace Game
             if(level==appliedPowerLevel)return;
             if(powerRenderers==null)
             {
-                powerRenderers=GetComponentsInChildren<Renderer>(true);originalPowerBlocks=new MaterialPropertyBlock[powerRenderers.Length];
+                powerRenderers=Array.FindAll(GetComponentsInChildren<Renderer>(true), r => r != flyingTracer);originalPowerBlocks=new MaterialPropertyBlock[powerRenderers.Length];
                 for(int i=0;i<powerRenderers.Length;i++){var block=new MaterialPropertyBlock();powerRenderers[i].GetPropertyBlock(block);originalPowerBlocks[i]=block;}
                 powerParticles=GetComponentsInChildren<ParticleSystem>(true);
                 originalStartColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];originalLifeColors=new ParticleSystem.MinMaxGradient[powerParticles.Length];
