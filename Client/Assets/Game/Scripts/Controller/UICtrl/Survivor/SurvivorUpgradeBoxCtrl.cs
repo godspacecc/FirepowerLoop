@@ -12,7 +12,8 @@ namespace Game
                 int nextLevel=modifierLevel+1;string effect=modifier.ModifierKind;
                 view.TitleText.text=Loc.T("ui.survivor.modifier.title",Loc.T("ui.survivor.weapon."+modifier.TargetWeapon),Loc.T("ui.survivor.modifier."+effect));
                 string F(float value)=>value.ToString("0.##");
-                view.DetailText.text=effect=="Pierce"?Loc.T("ui.survivor.modifier.Pierce.detail",modifierLevel,nextLevel,modifier.EffectCount(modifierLevel),modifier.EffectCount(nextLevel)):
+                view.DetailText.text=effect=="Multishot"?Loc.T("ui.survivor.modifier.Multishot.detail",modifierLevel,nextLevel,1+modifier.EffectCount(modifierLevel),1+modifier.EffectCount(nextLevel)):
+                    effect=="Pierce"?Loc.T("ui.survivor.modifier.Pierce.detail",modifierLevel,nextLevel,modifier.EffectCount(modifierLevel),modifier.EffectCount(nextLevel)):
                     effect=="Explosion"?Loc.T("ui.survivor.modifier.Explosion.detail",modifierLevel,nextLevel,F(modifier.EffectRadius(modifierLevel)),F(modifier.EffectRadius(nextLevel)),F(modifier.EffectDamage(modifierLevel)*100),F(modifier.EffectDamage(nextLevel)*100)):
                     Loc.T("ui.survivor.modifier.Split.detail",modifierLevel,nextLevel,modifier.EffectCount(modifierLevel),modifier.EffectCount(nextLevel),F(modifier.EffectDamage(modifierLevel)*100),F(modifier.EffectDamage(nextLevel)*100));
                 view.BtnSelect.interactable=true;view.BtnSelect.onClick.RemoveAllListeners();view.BtnSelect.onClick.AddListener(()=>choose(revision,id));return;

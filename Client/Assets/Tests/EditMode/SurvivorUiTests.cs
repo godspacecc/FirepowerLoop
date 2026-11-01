@@ -62,7 +62,7 @@ namespace Game.Tests
                 foreach(var language in new[]{"zh-CN","en-US"})
                 {
                     Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
-                    foreach(var kind in new[]{"Pierce","Explosion","Split"})
+                    foreach(var kind in new[]{"Pierce","Explosion","Split","Multishot"})
                     {
                         var value=string.Format(table["ui.survivor.modifier."+kind+".detail"],2,3,kind=="Explosion"?"1.8":"2",kind=="Explosion"?"2.2":kind=="Split"?"4":"3",45,55);
                         Assert.That(text.GetPreferredValues(value,text.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(text.rectTransform.rect.height),language+" "+kind);

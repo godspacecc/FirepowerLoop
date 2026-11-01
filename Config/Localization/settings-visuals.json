@@ -37,5 +37,7 @@
   "ui.survivor.modifier.Split": {"zh-CN": "分裂", "en-US": "Split"},
   "ui.survivor.modifier.Pierce.detail": {"zh-CN": "Lv{0}→{1} · 额外穿透 {2}→{3}人\n同一目标只命中一次", "en-US": "Lv{0}→{1} · Extra targets {2}→{3}\nOne hit per target"},
   "ui.survivor.modifier.Explosion.detail": {"zh-CN": "Lv{0}→{1} · {2}→{3}米 · {4}→{5}%\n首次触发，不重复直击", "en-US": "Lv{0}→{1} · {2}→{3}m · {4}→{5}%\nFirst hit; excludes target"},
-  "ui.survivor.modifier.Split.detail": {"zh-CN": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n首次触发，子弹不再强化", "en-US": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nFirst hit; no child modifiers"}
+  "ui.survivor.modifier.Split.detail": {"zh-CN": "Lv{0}→{1} · {2}→{3}颗 · {4}→{5}%\n首次触发，子弹不再强化", "en-US": "Lv{0}→{1} · {2}→{3} shots · {4}→{5}%\nFirst hit; no child modifiers"},
+  "ui.survivor.modifier.Multishot": {"zh-CN": "多重射击", "en-US": "Multishot"},
+  "ui.survivor.modifier.Multishot.detail": {"zh-CN": "Lv{0}→{1} · 弹道 {2}→{3}\n每颗原伤害，每次消耗1发", "en-US": "Lv{0}→{1} · Shots {2}→{3}\nFull damage; costs 1 round"}
 }

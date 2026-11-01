@@ -3723,6 +3723,15 @@ namespace Game
         /// </summary>
         public static string SurvivorModifierExplosionDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Explosion.detail", arg0, arg1, arg2, arg3, arg4, arg5);
         /// <summary>
+        /// 多重射击
+        /// </summary>
+        public static string SurvivorModifierMultishot => Loc.T("ui.survivor.modifier.Multishot");
+        /// <summary>
+        /// Lv{0}→{1} · 弹道 {2}→{3}
+        /// 每颗原伤害，每次消耗1发
+        /// </summary>
+        public static string SurvivorModifierMultishotDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.modifier.Multishot.detail", arg0, arg1, arg2, arg3);
+        /// <summary>
         /// 穿透
         /// </summary>
         public static string SurvivorModifierPierce => Loc.T("ui.survivor.modifier.Pierce");

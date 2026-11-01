@@ -27,6 +27,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         EffectRadiusStep = _buf.ReadFloat();
         EffectDamageBase = _buf.ReadFloat();
         EffectDamageStep = _buf.ReadFloat();
+        EffectAngleDegrees = _buf.ReadFloat();
     }
 
     public static SurvivorUpgradeConfig DeserializeSurvivorUpgradeConfig(ByteBuf _buf)
@@ -46,6 +47,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
     public readonly float EffectRadiusStep;
     public readonly float EffectDamageBase;
     public readonly float EffectDamageStep;
+    public readonly float EffectAngleDegrees;
    
     public const int __ID__ = 382383880;
     public override int GetTypeId() => __ID__;
@@ -69,6 +71,7 @@ public sealed partial class SurvivorUpgradeConfig : Luban.BeanBase
         + "EffectRadiusStep:" + EffectRadiusStep + ","
         + "EffectDamageBase:" + EffectDamageBase + ","
         + "EffectDamageStep:" + EffectDamageStep + ","
+        + "EffectAngleDegrees:" + EffectAngleDegrees + ","
         + "}";
     }
 }

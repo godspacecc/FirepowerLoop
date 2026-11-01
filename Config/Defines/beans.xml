@@ -685,6 +685,7 @@
         <var name="EffectRadiusStep" type="float"/>
         <var name="EffectDamageBase" type="float"/>
         <var name="EffectDamageStep" type="float"/>
+        <var name="EffectAngleDegrees" type="float"/>
     </bean>
     <!-- 幸存者独立武器逐级参数，不改变闯关限时支援。 -->
     <bean name="SurvivorWeaponLevelConfig" group="e">

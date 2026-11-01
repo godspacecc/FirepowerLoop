@@ -248,7 +248,7 @@ namespace Game
             EnsureRifleMagazine();
             if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary()||!TryConsumeRifleRound())return;
             facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
-            Shoot(player,facing,level,"Rifle");view.SetPlayerFireSequence(++fireSequence,fireClock);
+            ShootRifleVolley(level);view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
         /// <summary>常驻无人机优先保护玩家附近目标；升级暂停和结算时此入口不执行。</summary>
         private void TickDrone(float dt)

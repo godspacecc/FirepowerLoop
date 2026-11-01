@@ -30,6 +30,22 @@ namespace Game
         /// <summary>表现用短冲击时长，沿用已确认的0.4秒预览。</summary>
         private const float ModifierBlastSeconds=.4f;
 
+        /// <summary>一次扣弹对应一轮步枪齐射；预算不足时按实际条数对称展开，不抢占更多主弹。</summary>
+        private void ShootRifleVolley(SurvivorWeaponLevelDefinition level)
+        {
+            int count=1;float spacing=0;
+            for(int i=0;i<config.Upgrades.Count;i++){
+                var upgrade=config.Upgrades[i];if(upgrade.Kind!="RifleMultishot")continue;
+                count+=upgrade.EffectCount(Model.State.UpgradeLevel(i+1));spacing=upgrade.EffectAngleDegrees;break;
+            }
+            count=Math.Min(count,config.MaxProjectiles-bullets.Count);
+            for(int i=0;i<count;i++){
+                float angle=(i-(count-1)*.5f)*spacing*Mathf.Deg2Rad;
+                var direction=new Vector2(facing.x*Mathf.Cos(angle)-facing.y*Mathf.Sin(angle),facing.x*Mathf.Sin(angle)+facing.y*Mathf.Cos(angle));
+                Shoot(player,direction,level,"Rifle");
+            }
+        }
+
         /// <summary>只允许已拥有且该效果未满级的武器进入候选或接受选择。</summary>
         private bool CanChooseModifier(SurvivorUpgradeDefinition definition,int id)
             =>!definition.IsModifier||(Model.Loadout!=null&&Model.Loadout.LevelOf(definition.TargetWeapon)>0&&Model.State.UpgradeLevel(id)<definition.MaxLevel);
