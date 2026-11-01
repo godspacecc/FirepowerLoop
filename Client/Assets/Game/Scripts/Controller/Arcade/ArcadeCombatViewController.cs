@@ -36,6 +36,13 @@ namespace Game
         /// <summary>幸存者权威爆炸的纯视觉采样；容量只限制表现，不影响伤害。</summary>
         void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
         void RemoveSurvivorBlast(int id) { }
+        /// <summary>燃烧弹飞行轨迹只作视觉投影；关闭时归还当前地图的有界池。</summary>
+        void SetSurvivorMolotov(int id,Vector2 position,float height,float rotation,bool active) { }
+        /// <summary>火区半径和年龄由规则提供；表现端不裁决范围伤害。</summary>
+        void SetSurvivorFireZone(int id,Vector2 position,float radius,float age,bool active) { }
+        /// <summary>幸存者额外等待燃烧弹依赖；测试替身不加载资源。</summary>
+        bool IsSurvivorMolotovReady => true;
+        string SurvivorMolotovLoadError => null;
         /// <summary>只显示本机区域入口和剩余物品；不能从此端口领取、计时或发放积分。</summary>
         void SetTreasureRoom(FirepowerLoop.Arcade.ArcadeTreasureRoomParameters parameters,
             bool inRoom, bool discovered, bool open, IReadOnlyList<int> remainingIds) { }

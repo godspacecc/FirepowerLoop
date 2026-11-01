@@ -38,7 +38,7 @@ namespace Game.Tests
         /// <summary>快速弹夹等有限项升满后，生命仍能完成下一次强化，不因只剩一项而卡住。</summary>
         [Test] public void MaxedLimitedUpgradesLeaveUsableHealthChoice()
         {
-            for(int i=0;i<5;i++)model.Loadout.TryUpgrade("Drone",5);
+            for(int i=0;i<5;i++){model.Loadout.TryUpgrade("Drone",5);model.Loadout.TryUpgrade("Molotov",5);}
             foreach(int id in Enumerable.Range(1,config.Upgrades.Count).Where(i=>config.Upgrades[i-1].Weight>0&&!config.Upgrades[i-1].IsWeapon&&config.Upgrades[i-1].MaxLevel>0))
                 for(int level=0;level<config.Upgrades[id-1].MaxLevel;level++)
                 {
@@ -51,6 +51,75 @@ namespace Game.Tests
             Assert.That(system.Choose(model.State.ChoiceRevision,model.UpgradeChoices[0]),Is.True);
             Assert.That(model.Paused,Is.False);
         }
+        /// <summary>燃烧弹完整落地后固定持续三秒，独立结算且不消耗步枪弹夹。</summary>
+        [Test] public void MolotovBurnsForThreeSecondsWithoutSpendingRifleAmmo()
+        {
+            Assert.That(config.Upgrades.Any(x=>x.Kind=="Molotov"),Is.True);
+            model.Loadout.TryUpgrade("Molotov",5);
+            var enemy=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(enemy.Id,enemy);
+            int ammo=model.RifleRounds;
+            Call("TickMolotov",.01f);Call("TickMolotov",.8f);Call("TickMolotov",3f);
+            Assert.That(enemy.Health,Is.EqualTo(64));Assert.That(model.RifleRounds,Is.EqualTo(ammo));
+            Call("TickMolotov",.1f);Assert.That(enemy.Health,Is.EqualTo(64));
+        }
+        /// <summary>无有效屏内目标保持就绪，升级提高火区输出但固定五秒投掷一次。</summary>
+        [Test] public void MolotovWaitsForVisibleTargetAndKeepsFiveSecondInterval()
+        {
+            model.Loadout.TryUpgrade("Molotov",5);Call("TickMolotov",10f);
+            Assert.That(view.MolotovLaunched,Is.Empty);
+            var enemy=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=new Vector2(0,2)};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(enemy.Id,enemy);Set("spatialFrameReady",false);
+            view.TargetVisible=false;Call("TickMolotov",10f);Assert.That(view.MolotovLaunched,Is.Empty);
+            view.TargetVisible=true;Call("TickMolotov",.01f);Assert.That(view.MolotovLaunched.Count,Is.EqualTo(1));
+            Call("TickMolotov",.8f);Call("TickMolotov",3f);Assert.That(enemy.Health,Is.EqualTo(964));
+            Assert.That(view.LastFireZoneRadius,Is.EqualTo(1.2f));
+            for(int i=0;i<4;i++)model.Loadout.TryUpgrade("Molotov",5);
+            Call("TickMolotov",1.19f);Assert.That(view.MolotovLaunched.Count,Is.EqualTo(1));
+            Call("TickMolotov",.02f);Assert.That(view.MolotovLaunched.Count,Is.EqualTo(2));
+            Assert.That(Get<float>("molotovClock"),Is.EqualTo(5f));
+            Call("TickMolotov",.8f);Call("TickMolotov",3f);
+            Assert.That(enemy.Health,Is.EqualTo(820));Assert.That(view.LastFireZoneRadius,Is.EqualTo(2.1f));
+        }
+        /// <summary>暂停入口冻结在途与燃烧时间，停止时显式回收两类表现及领域实体。</summary>
+        [Test] public void MolotovPauseAndStopClearActiveEffects()
+        {
+            model.Loadout.TryUpgrade("Molotov",5);
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(900,new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=new Vector2(0,2)});
+            Call("TickMolotov",.01f);Call("TickMolotov",.8f);
+            // 独立制造在途与燃烧同时存在，以检查停止事务两种回收分支。
+            Set("molotovClock",0f);Call("TickMolotov",.01f);
+            var flights=Get<System.Collections.IList>("molotovFlights");var zones=Get<System.Collections.IList>("molotovZones");
+            Assert.That(flights.Count,Is.EqualTo(1));Assert.That(zones.Count,Is.EqualTo(1));
+            float Age(object value)=>(float)value.GetType().GetField("Age").GetValue(value);
+            float flightAge=Age(flights[0]),zoneAge=Age(zones[0]),cooldown=Get<float>("molotovClock");
+            system.SetPaused(true);Call("TickFrame",1f);
+            Assert.That(Age(flights[0]),Is.EqualTo(flightAge));Assert.That(Age(zones[0]),Is.EqualTo(zoneAge));Assert.That(Get<float>("molotovClock"),Is.EqualTo(cooldown));
+            int bottlesRemoved=view.MolotovRemovals,zonesRemoved=view.FireZoneRemovals;
+            system.Stop();Assert.That(flights,Is.Empty);Assert.That(zones,Is.Empty);
+            Assert.That(view.ActiveMolotov,Is.Empty);Assert.That(view.ActiveFireZones,Is.Empty);
+            Assert.That(view.MolotovRemovals,Is.EqualTo(bottlesRemoved+1));Assert.That(view.FireZoneRemovals,Is.EqualTo(zonesRemoved+1));
+        }
+        /// <summary>火区沿用实体障碍与真实爬出身体判定，不能穿墙或提前伤害地下敌人。</summary>
+        [Test] public void MolotovFireRespectsWallsAndUndergroundBodies()
+        {
+            model.Loadout.TryUpgrade("Molotov",5);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            var visible=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)};
+            enemies.Add(visible.Id,visible);Call("TickMolotov",.01f);Call("TickMolotov",.8f);
+            // 落地后加入附近目标，固定投掷落点，不让选敌规则代替火区命中验证。
+            var behindWall=new ArcadeEnemyRuntime{Id=901,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(.8f,2)};
+            var underground=new ArcadeEnemyRuntime{Id=902,ConfigId="enemy.arcade.zombie.shambler",Health=100,MaxHealth=100,Position=new Vector2(-.8f,2),GroundEntry=new SurvivorGroundEntryState{Started=true,StartX=-.8f,StartZ=2,ForwardZ=1,Age=0}};
+            enemies.Add(behindWall.Id,behindWall);enemies.Add(underground.Id,underground);
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(.4f,2,.05f,.3f,true)});Set("spatialFrameReady",false);
+            var provider=architecture.GetUtility<IRuntimeConfigProvider>();
+            Assert.That(provider.TryGetDockHitPose("Prefabs/Characters/ArcadeZombieShambler",out var poses,out var error),Is.True,error);
+            Get<Dictionary<string,ArcadeHitPoseSequence>>("groundHitPoses")[underground.ConfigId]=poses;
+            Assert.That((bool)Call("CanAimGroundBody",underground,new Vector2(0,2),.75f),Is.False,"使用正式身体采样确认该敌人仍在地下");
+            Call("TickMolotov",3f);
+            Assert.That(new[]{visible.Health,behindWall.Health,underground.Health},Is.EqualTo(new[]{64,100,100}),"地面目标受伤，墙后和地下目标不受伤");
+        }
+
         private void Set(string name,object value)=>typeof(SurvivorSystem).GetField(name,Flags).SetValue(system,value);
         private T Get<T>(string name)=>(T)typeof(SurvivorSystem).GetField(name,Flags).GetValue(system);
         private object Call(string name,params object[] args)=>typeof(SurvivorSystem).GetMethod(name,Flags).Invoke(system,args);
@@ -836,6 +905,13 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public readonly HashSet<int> MolotovLaunched=new HashSet<int>(),ActiveMolotov=new HashSet<int>(),ActiveFireZones=new HashSet<int>();
+            public int MolotovRemovals,FireZoneRemovals;
+            public float LastFireZoneRadius;
+            public void SetSurvivorMolotov(int id,Vector2 position,float height,float rotation,bool active)
+            {if(active){MolotovLaunched.Add(id);ActiveMolotov.Add(id);}else{ActiveMolotov.Remove(id);MolotovRemovals++;}}
+            public void SetSurvivorFireZone(int id,Vector2 position,float radius,float age,bool active)
+            {LastFireZoneRadius=radius;if(active)ActiveFireZones.Add(id);else{ActiveFireZones.Remove(id);FireZoneRemovals++;}}
             public int ElementStateWrites;
             public bool LastElementFire,LastElementFrost;
             public void SetEnemyElementState(int id,bool fire,bool frost){ElementStateWrites++;LastElementFire=fire;LastElementFrost=frost;}

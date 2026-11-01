@@ -1,0 +1,35 @@
+using System;using System.IO;using System.Collections.Generic;using UnityEngine;using UnityEditor;using Game;
+public class Script
+{
+static readonly List<ResourceLoadHandle> handles=new();static readonly List<string> report=new();static int completed;static bool ended;static double started;
+static string file="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorMolotov-20261101/implementation/runtime-load.txt";
+public static object Main()
+{
+if(!Application.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||!(ResourceLoader.Current is YooAssetResourceLoader))throw new Exception("需要正常Play中的真实YooAsset加载器");
+if(File.Exists(file))File.Delete(file);started=EditorApplication.timeSinceStartup;report.Add("loader="+ResourceLoader.Current.GetType().FullName);report.Add("mode="+YooAsset.YooAssets.GetPackage("DefaultPackage").PackageName);
+report.Add("playMode="+typeof(YooAsset.ResourcePackage).GetField("_playMode",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).GetValue(YooAsset.YooAssets.GetPackage("DefaultPackage")));
+foreach(string address in new[]{"Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet","Prefabs/UI/Survivor/SurvivorHud"})
+{
+var handle=ResourceLoader.LoadAssetAsync<GameObject>(address,asset=>
+{
+if(ended)return;
+try{if(asset==null)throw new Exception("asset null");
+if(address.Contains("Obstacle")){
+var template=asset.transform.Find("Content/SurvivorMolotov");var zone=template==null?null:template.GetComponentInChildren<SurvivorFireZoneVisual>(true);if(zone==null||!zone.IsValid)throw new Exception("Molotov template invalid");
+if(template.Find("Bottle").localScale!=Vector3.one*.45f)throw new Exception("Bottle size mismatch");
+foreach(var ps in zone.GetComponentsInChildren<ParticleSystem>(true)){var mat=ps.GetComponent<ParticleSystemRenderer>().sharedMaterial;if(mat==null||mat.shader==null||!mat.shader.isSupported)throw new Exception("Particle material invalid");}
+var material=zone.Scorch.GetComponent<Renderer>().sharedMaterial;if(material.GetTexture("_BaseMap")==null||material.GetColor("_BaseColor").a>.131f)throw new Exception("Scorch invalid");
+}else{var hud=asset.GetComponent<SurvivorHudUI>();var slot=hud.WeaponSlots.itemPrefab.GetComponent<SurvivorWeaponSlotBoxUI>();if(slot.MolotovIcon==null)throw new Exception("Molotov icon null");}
+report.Add(address+" : PASS actual YooAsset prefab and serialized dependencies");}catch(Exception ex){report.Add(address+" : FAIL "+ex.Message);}completed++;
+});handles.Add(handle);
+}
+EditorApplication.update+=Poll;return "2个异步真实加载已发起";
+}
+static void Poll()
+{
+if(completed<2&&EditorApplication.timeSinceStartup-started<30)return;
+ended=true;EditorApplication.update-=Poll;
+foreach(var handle in handles){ResourceLoader.Release(handle);report.Add("released="+(!(handle.RawHandle is YooAsset.AssetHandle raw)||!raw.IsValid));}
+report.Add("completed="+completed+"; failed="+report.Exists(s=>s.Contains("FAIL")));File.WriteAllLines(file,report);
+}
+}

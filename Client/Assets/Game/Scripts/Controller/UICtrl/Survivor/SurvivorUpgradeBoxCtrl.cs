@@ -62,6 +62,10 @@ namespace Game
                 view.TitleText.text=kind=="Drone"?Loc.T("ui.survivor.cards.support"):name;
                 view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.acquire_detail",after.Damage,after.FireIntervalSeconds.ToString("0.00")):
                     Loc.T("ui.survivor.weapon.upgrade_detail",weaponLevel,weaponLevel+1,before.Damage,after.Damage,before.FireIntervalSeconds.ToString("0.00"),after.FireIntervalSeconds.ToString("0.00"));
+                // 投掷武器展示火区每秒伤害和半径，避免误读成单颗子弹伤害或射速成长。
+                if(kind=="Molotov")
+                    view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.Molotov.acquire_detail",after.FireIntervalSeconds.ToString("0.#"),after.AreaDurationSeconds.ToString("0.#"),after.Damage,after.AreaRadius.ToString("0.##")):
+                        Loc.T("ui.survivor.weapon.Molotov.upgrade_detail",before.Damage,after.Damage,before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"));
                 view.BtnSelect.interactable=true;view.BtnSelect.onClick.RemoveAllListeners();view.BtnSelect.onClick.AddListener(()=>choose(revision,id));return;
             }
             view.TitleText.text = Loc.T("ui.survivor.upgrade." + id + ".title");

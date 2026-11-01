@@ -1,0 +1,60 @@
+using System;
+using System.IO;
+using Game;
+using UnityEngine;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using Object=UnityEngine.Object;
+public static class AuthorMolotovAssets
+{
+ const string Folder="Assets/Game/Art/Arcade/VFX/SurvivorMolotov";
+ static GameObject Part(Transform parent,PrimitiveType type,Vector3 position,Vector3 scale,Material material)
+ {var go=GameObject.CreatePrimitive(type);go.transform.SetParent(parent,false);go.transform.localPosition=position;go.transform.localScale=scale;go.GetComponent<Renderer>().sharedMaterial=material;Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
+ static Material Mat(string name,Color color)
+ {var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=color;AssetDatabase.CreateAsset(m,Folder+"/"+name+".mat");return m;}
+ public static string Run()
+ {
+  if(EditorApplication.isPlaying)throw new Exception("仅编辑态制作");
+  if(AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/SurvivorMolotov.prefab")!=null)throw new Exception("正式资源已存在，禁止重复覆盖");
+  Directory.CreateDirectory(Folder);AssetDatabase.Refresh();
+  var previous=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);SceneManager.SetActiveScene(scene);
+  var old=RenderTexture.active;RenderTexture rt=null;Texture2D image=null;Camera camera=null;
+  try
+  {
+   var green=Mat("BottleGreen",new Color(.16f,.3f,.09f));var cloth=Mat("Cloth",new Color(.8f,.68f,.35f));
+   var texture=new Texture2D(128,128,TextureFormat.RGBA32,false);
+   for(int y=0;y<128;y++)for(int x=0;x<128;x++){float dx=(x-63.5f)/63.5f,dy=(y-63.5f)/63.5f;float a=1-Mathf.SmoothStep(.2f,1,Mathf.Sqrt(dx*dx+dy*dy));a*=.75f+.25f*Mathf.PerlinNoise(x*.08f,y*.08f);texture.SetPixel(x,y,new Color(1,1,1,a));}texture.Apply();
+   File.WriteAllBytes(Folder+"/SoftScorch.png",texture.EncodeToPNG());Object.DestroyImmediate(texture);AssetDatabase.ImportAsset(Folder+"/SoftScorch.png");
+   var ti=(TextureImporter)AssetImporter.GetAtPath(Folder+"/SoftScorch.png");ti.wrapMode=TextureWrapMode.Clamp;ti.alphaIsTransparency=true;ti.mipmapEnabled=false;ti.SaveAndReimport();
+   var scorchMat=new Material(Shader.Find("Universal Render Pipeline/Unlit"));scorchMat.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/SoftScorch.png"));scorchMat.SetColor("_BaseColor",new Color(.12f,.09f,.045f,.13f));scorchMat.SetFloat("_Surface",1);scorchMat.SetFloat("_SrcBlend",(float)UnityEngine.Rendering.BlendMode.SrcAlpha);scorchMat.SetFloat("_DstBlend",(float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);scorchMat.SetFloat("_ZWrite",0);scorchMat.SetFloat("_Cull",0);scorchMat.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");scorchMat.SetOverrideTag("RenderType","Transparent");scorchMat.renderQueue=3000;AssetDatabase.CreateAsset(scorchMat,Folder+"/SoftScorch.mat");
+   var root=new GameObject("SurvivorMolotov");var bottle=new GameObject("Bottle");bottle.transform.SetParent(root.transform,false);bottle.transform.localScale=Vector3.one*.45f;
+   Part(bottle.transform,PrimitiveType.Cylinder,Vector3.zero,new Vector3(.19f,.18f,.19f),green);
+   Part(bottle.transform,PrimitiveType.Cylinder,new Vector3(0,.24f,0),new Vector3(.07f,.1f,.07f),green);
+   Part(bottle.transform,PrimitiveType.Cube,new Vector3(.05f,.34f,0),new Vector3(.16f,.045f,.045f),cloth);
+   var zone=new GameObject("FireZone");zone.transform.SetParent(root.transform,false);var visual=zone.AddComponent<SurvivorFireZoneVisual>();
+   var scorch=Part(zone.transform,PrimitiveType.Quad,new Vector3(0,.015f,0),new Vector3(2.4f,2.4f,1),scorchMat);scorch.name="SoftScorch";scorch.transform.localRotation=Quaternion.Euler(90,0,0);scorch.GetComponent<Renderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;visual.Scorch=scorch.transform;
+   var flame=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/FirstBatch/Prefabs/FlamePath.prefab"),zone.transform);flame.name="Flames";flame.transform.localPosition=new Vector3(0,.08f,0);flame.transform.localRotation=Quaternion.identity;
+   foreach(var renderer in flame.GetComponentsInChildren<MeshRenderer>())Object.DestroyImmediate(renderer.gameObject);
+   var ps=flame.GetComponentInChildren<ParticleSystem>();ps.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);ps.transform.localRotation=Quaternion.identity;ps.transform.localPosition=Vector3.zero;
+   var main=ps.main;main.playOnAwake=false;main.stopAction=ParticleSystemStopAction.None;main.loop=true;main.startSpeed=.45f;main.startSize=.65f;main.startLifetime=.8f;main.maxParticles=180;main.simulationSpace=ParticleSystemSimulationSpace.World;
+   var shape=ps.shape;shape.shapeType=ParticleSystemShapeType.Circle;shape.radius=1.2f;shape.radiusThickness=1;shape.scale=Vector3.one;shape.position=Vector3.zero;shape.rotation=new Vector3(90,0,0);var velocity=ps.velocityOverLifetime;velocity.enabled=false;var emission=ps.emission;emission.rateOverTime=55;ps.useAutoRandomSeed=false;ps.randomSeed=15;visual.Flames=ps;
+   var flash=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/FirstBatch/Prefabs/FireImpact.prefab"),zone.transform);flash.name="Impact";flash.transform.localPosition=new Vector3(0,.15f,0);flash.transform.localScale=Vector3.one*.65f;visual.ImpactRoot=flash.transform;visual.ImpactParticles=flash.GetComponentsInChildren<ParticleSystem>(true);
+   foreach(var p in visual.ImpactParticles){p.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);var m=p.main;m.playOnAwake=false;m.loop=false;m.stopAction=ParticleSystemStopAction.None;m.maxParticles=Mathf.Min(48,m.maxParticles);p.useAutoRandomSeed=false;p.randomSeed=16;}
+   root.SetActive(false);var prefab=PrefabUtility.SaveAsPrefabAsset(root,Folder+"/SurvivorMolotov.prefab");
+   const string contentPath="Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab";var content=PrefabUtility.LoadPrefabContents(contentPath);
+   try{if(content.transform.Find("Content/SurvivorMolotov")!=null)throw new Exception("重复模板");var nested=(GameObject)PrefabUtility.InstantiatePrefab(prefab,content.transform.Find("Content"));nested.name="SurvivorMolotov";PrefabUtility.SaveAsPrefabAsset(content,contentPath);}finally{PrefabUtility.UnloadPrefabContents(content);}
+   root.SetActive(true);zone.SetActive(false);bottle.transform.localRotation=Quaternion.Euler(0,0,-32);
+   foreach(var t in bottle.GetComponentsInChildren<Transform>())t.gameObject.layer=31;
+   camera=new GameObject("IconCamera",typeof(Camera)).GetComponent<Camera>();camera.orthographic=true;camera.orthographicSize=.19f;camera.transform.position=new Vector3(0,.075f,-2);camera.transform.rotation=Quaternion.identity;camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=Color.clear;
+   var light=new GameObject("IconLight",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=2;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(30,20,0);
+   rt=new RenderTexture(192,192,24,RenderTextureFormat.ARGB32);camera.targetTexture=rt;camera.Render();RenderTexture.active=rt;image=new Texture2D(192,192,TextureFormat.RGBA32,false);image.ReadPixels(new Rect(0,0,192,192),0,0);image.Apply();File.WriteAllBytes(Folder+"/MolotovIcon.png",image.EncodeToPNG());AssetDatabase.ImportAsset(Folder+"/MolotovIcon.png");
+   var iconImporter=(TextureImporter)AssetImporter.GetAtPath(Folder+"/MolotovIcon.png");iconImporter.textureType=TextureImporterType.Sprite;iconImporter.spriteImportMode=SpriteImportMode.Single;iconImporter.alphaIsTransparency=true;iconImporter.mipmapEnabled=false;iconImporter.SaveAndReimport();
+   const string slotPath="Assets/Game/Prefabs/UI/Survivor/Box/SurvivorWeaponSlot.prefab";var slot=PrefabUtility.LoadPrefabContents(slotPath);
+   try{slot.GetComponent<ReferenceCollector>().Add("MolotovIcon",AssetDatabase.LoadAssetAtPath<Sprite>(Folder+"/MolotovIcon.png"));PrefabUtility.SaveAsPrefabAsset(slot,slotPath);}finally{PrefabUtility.UnloadPrefabContents(slot);}
+   BoxUICodeSpawner.AutoUpdateBoxUI(AssetDatabase.LoadAssetAtPath<GameObject>(slotPath));AssetDatabase.SaveAssets();
+   return "Approved small bottle (45%), transparent scorch, bounded fire zone and generated slot reference authored; no new dynamic address.";
+  }
+  finally{if(camera!=null)camera.targetTexture=null;RenderTexture.active=old;if(rt!=null){rt.Release();Object.DestroyImmediate(rt);}if(image!=null)Object.DestroyImmediate(image);SceneManager.SetActiveScene(previous);EditorSceneManager.CloseScene(scene,true);}
+ }
+}

@@ -150,8 +150,8 @@ namespace FirepowerLoop.Arcade
                 foreach(var effect in new[]{"Pierce","Explosion","Split"})
                     if(upgrades.Count(u=>u.Kind==owner+effect)!=1)throw new ArgumentException("武器强化必须完整配置");
             if(r.WeaponSlots<1||r.WeaponSlots>3)throw new ArgumentException("幸存者武器槽必须为1至3");
-            var weaponLevels=tables.TbSurvivorWeaponLevel.DataList.Select(x=>new SurvivorWeaponLevelDefinition(x.Kind,x.Level,x.Damage,x.FireIntervalSeconds,x.Range,x.ProjectileSpeed,x.ProjectileLifetimeSeconds)).ToArray();
-            foreach(var kind in new[]{"Rifle","Drone"})
+            var weaponLevels=tables.TbSurvivorWeaponLevel.DataList.Select(x=>new SurvivorWeaponLevelDefinition(x.Kind,x.Level,x.Damage,x.FireIntervalSeconds,x.Range,x.ProjectileSpeed,x.ProjectileLifetimeSeconds,x.AreaRadius,x.AreaDurationSeconds)).ToArray();
+            foreach(var kind in new[]{"Rifle","Drone","Molotov"})
             {
                 var levels=weaponLevels.Where(x=>x.Kind==kind).OrderBy(x=>x.Level).ToArray();
                 if(levels.Length==0 || !levels.Select(x=>x.Level).SequenceEqual(Enumerable.Range(1,levels.Length)))throw new ArgumentException("武器等级必须从1连续配置且不重复");
@@ -223,7 +223,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>候选无放回抽取权重；零表示停用，保留配置顺序与旧文案编号。</summary>
         public int Weight { get; }
         /// <summary>武器候选使用独立装备等级，不把全局属性层数当武器等级。</summary>
-        public bool IsWeapon => Kind=="Rifle"||Kind=="Drone";
+        public bool IsWeapon => Kind=="Rifle"||Kind=="Drone"||Kind=="Molotov";
         /// <summary>独立强化的武器归属与效果；基础武器升级不作为效果等级。</summary>
         public bool IsModifier => ModifierKind!=null;
         public string TargetWeapon => Kind.StartsWith("Rifle",StringComparison.Ordinal)?"Rifle":Kind.StartsWith("Drone",StringComparison.Ordinal)?"Drone":null;
@@ -253,7 +253,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight,int countBase=0,int countStep=0,float radiusBase=0,float radiusStep=0,float damageBase=0,float damageStep=0,float angleDegrees=0,string exclusiveGroup="",float activationDelaySeconds=0,float statusDurationSeconds=0,float statusStrengthBase=0,float statusStrengthStep=0)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot","RecoveryStill","RecoverySafe","RecoveryAlways","RifleFire","RifleFrost" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Molotov","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot","RecoveryStill","RecoverySafe","RecoveryAlways","RifleFire","RifleFrost" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
             if(float.IsNaN(activationDelaySeconds)||float.IsInfinity(activationDelaySeconds)||activationDelaySeconds<0)throw new ArgumentException("恢复等待时间必须是有限非负数");
             ExclusiveGroup=exclusiveGroup??string.Empty;ActivationDelaySeconds=activationDelaySeconds;
             StatusDurationSeconds=statusDurationSeconds;this.statusStrengthBase=statusStrengthBase;this.statusStrengthStep=statusStrengthStep;
@@ -290,9 +290,14 @@ namespace FirepowerLoop.Arcade
         public float Range { get; }
         public float ProjectileSpeed { get; }
         public float ProjectileLifetimeSeconds { get; }
-        public SurvivorWeaponLevelDefinition(string kind,int level,int damage,float interval,float range,float speed,float lifetime)
+        /// <summary>火区半径与持续时间；燃烧弹Damage为每秒伤害，ProjectileLifetimeSeconds为飞行时长。</summary>
+        public float AreaRadius { get; }
+        public float AreaDurationSeconds { get; }
+        public SurvivorWeaponLevelDefinition(string kind,int level,int damage,float interval,float range,float speed,float lifetime,float areaRadius=0,float areaDurationSeconds=0)
         {
-            if((kind!="Rifle"&&kind!="Drone")||level<1||damage<1||new[]{interval,range,speed,lifetime}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<=0))throw new ArgumentException("幸存者武器等级参数无效");
+            if((kind!="Rifle"&&kind!="Drone"&&kind!="Molotov")||level<1||damage<1||new[]{interval,range,speed,lifetime}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<=0))throw new ArgumentException("幸存者武器等级参数无效");
+            if(new[]{areaRadius,areaDurationSeconds}.Any(x=>float.IsNaN(x)||float.IsInfinity(x)||x<0)||(kind=="Molotov"&&(areaRadius<=0||areaDurationSeconds<=0)))throw new ArgumentException("火区参数无效");
+            AreaRadius=areaRadius;AreaDurationSeconds=areaDurationSeconds;
             Kind=kind;Level=level;Damage=damage;FireIntervalSeconds=interval;Range=range;ProjectileSpeed=speed;ProjectileLifetimeSeconds=lifetime;
         }
     }

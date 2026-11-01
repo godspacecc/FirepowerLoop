@@ -24,6 +24,8 @@ public sealed partial class SurvivorWeaponLevelConfig : Luban.BeanBase
         Range = _buf.ReadFloat();
         ProjectileSpeed = _buf.ReadFloat();
         ProjectileLifetimeSeconds = _buf.ReadFloat();
+        AreaRadius = _buf.ReadFloat();
+        AreaDurationSeconds = _buf.ReadFloat();
     }
 
     public static SurvivorWeaponLevelConfig DeserializeSurvivorWeaponLevelConfig(ByteBuf _buf)
@@ -39,6 +41,8 @@ public sealed partial class SurvivorWeaponLevelConfig : Luban.BeanBase
     public readonly float Range;
     public readonly float ProjectileSpeed;
     public readonly float ProjectileLifetimeSeconds;
+    public readonly float AreaRadius;
+    public readonly float AreaDurationSeconds;
    
     public const int __ID__ = 1776513460;
     public override int GetTypeId() => __ID__;
@@ -58,6 +62,8 @@ public sealed partial class SurvivorWeaponLevelConfig : Luban.BeanBase
         + "Range:" + Range + ","
         + "ProjectileSpeed:" + ProjectileSpeed + ","
         + "ProjectileLifetimeSeconds:" + ProjectileLifetimeSeconds + ","
+        + "AreaRadius:" + AreaRadius + ","
+        + "AreaDurationSeconds:" + AreaDurationSeconds + ","
         + "}";
     }
 }

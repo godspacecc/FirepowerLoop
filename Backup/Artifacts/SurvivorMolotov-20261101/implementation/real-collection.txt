@@ -1,0 +1,2 @@
+Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet | arcade | Assets/Game/Art/Arcade/VFX/SurvivorMolotov/SurvivorMolotov.prefab;Assets/Game/Art/Arcade/VFX/SurvivorMolotov/SoftScorch.mat;Assets/Game/Art/Arcade/VFX/SurvivorMolotov/SoftScorch.png;Assets/Game/Art/Arcade/VFX/SurvivorMolotov/BottleGreen.mat;Assets/Game/Art/Arcade/VFX/SurvivorMolotov/Cloth.mat
+Prefabs/UI/Survivor/SurvivorHud | arcade | Assets/Game/Art/Arcade/VFX/SurvivorMolotov/MolotovIcon.png

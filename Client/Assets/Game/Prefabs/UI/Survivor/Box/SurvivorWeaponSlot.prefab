@@ -162,7 +162,7 @@ GameObject:
   - component: {fileID: 7894295949931449507}
   - component: {fileID: 8143724651456095867}
   - component: {fileID: 5355224626680796305}
-  - component: {fileID: -6061079589779708148}
+  - component: {fileID: 2345264179027120431}
   m_Layer: 0
   m_Name: SurvivorWeaponSlot
   m_TagString: Untagged
@@ -254,7 +254,10 @@ MonoBehaviour:
   - key: DroneIcon
     gameObject: {fileID: 21300000, guid: e245d2a3429406a4abf9db9086787633, type: 3}
     TypeName: UnityEngine.Sprite
---- !u!114 &-6061079589779708148
+  - key: MolotovIcon
+    gameObject: {fileID: 21300000, guid: 668fb7f9394475c4c9db77b95ac074dc, type: 3}
+    TypeName: UnityEngine.Sprite
+--- !u!114 &2345264179027120431
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -270,3 +273,4 @@ MonoBehaviour:
   AmmoRing: {fileID: 8197924732127337467}
   RifleIcon: {fileID: 21300000, guid: b94dfe2c610d30b498b3e25a8d0710af, type: 3}
   DroneIcon: {fileID: 21300000, guid: e245d2a3429406a4abf9db9086787633, type: 3}
+  MolotovIcon: {fileID: 21300000, guid: 668fb7f9394475c4c9db77b95ac074dc, type: 3}

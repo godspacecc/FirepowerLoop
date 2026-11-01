@@ -98,9 +98,9 @@ namespace Game
         /// <summary>从权威模型完整覆盖槽状态；无人机无弹夹，空槽不沿用上次图标或进度。</summary>
         internal static void RenderWeaponSlot(SurvivorWeaponSlotBoxUI box,SurvivorModel model,string kind)
         {
-            bool rifle=kind=="Rifle",drone=kind=="Drone";
-            box.Icon.gameObject.SetActive(rifle||drone);
-            box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:null;
+            bool rifle=kind=="Rifle",drone=kind=="Drone",molotov=kind=="Molotov";
+            box.Icon.gameObject.SetActive(rifle||drone||molotov);
+            box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:molotov?box.MolotovIcon:null;
             box.AmmoRing.gameObject.SetActive(rifle);
             bool reloading=rifle&&model.RifleReloadTimeRemaining>0;
             float amount=reloading?model.RifleReloadProgress:

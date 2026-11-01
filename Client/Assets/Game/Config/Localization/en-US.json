@@ -1000,5 +1000,8 @@
   "ui.survivor.cards.Multishot.stat": "{0} extra rounds per shot",
   "ui.survivor.cards.Multishot.note": "Consumes ammo for every round",
   "ui.survivor.cards.compatible": "Compatible with any round type",
-  "ui.survivor.cards.next.stat": "{0} → {1}"
+  "ui.survivor.cards.next.stat": "{0} → {1}",
+  "ui.survivor.weapon.Molotov": "Molotov",
+  "ui.survivor.weapon.Molotov.acquire_detail": "Auto-throw every {0}s · Burns for {1}s\n{2} damage/s · {3}m radius",
+  "ui.survivor.weapon.Molotov.upgrade_detail": "Damage/s {0} → {1}\nBurn radius {2} → {3}m"
 }

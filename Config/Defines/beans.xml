@@ -708,6 +708,8 @@
         <var name="Range" type="float"/>
         <var name="ProjectileSpeed" type="float"/>
         <var name="ProjectileLifetimeSeconds" type="float"/>
+        <var name="AreaRadius" type="float"/>
+        <var name="AreaDurationSeconds" type="float"/>
     </bean>
     <!-- 正式骨骼胶囊采样：帧→胶囊→两端点与半径，双端共用，不以计时免伤替代空间命中。 -->
     <bean name="ArcadeDockHitPoseConfig" group="e">

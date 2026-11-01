@@ -1000,5 +1000,8 @@
   "ui.survivor.cards.Multishot.stat": "每轮额外发射 {0} 颗",
   "ui.survivor.cards.Multishot.note": "按实际发射颗数消耗弹药",
   "ui.survivor.cards.compatible": "可与当前任一弹头搭配",
-  "ui.survivor.cards.next.stat": "{0} → {1}"
+  "ui.survivor.cards.next.stat": "{0} → {1}",
+  "ui.survivor.weapon.Molotov": "燃烧弹",
+  "ui.survivor.weapon.Molotov.acquire_detail": "每{0}秒自动投掷 · 火区持续{1}秒\n每秒伤害 {2} · 半径 {3}米",
+  "ui.survivor.weapon.Molotov.upgrade_detail": "每秒伤害 {0} → {1}\n燃烧半径 {2} → {3}米"
 }

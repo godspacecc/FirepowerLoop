@@ -402,5 +402,17 @@
   "ui.survivor.cards.next.stat": {
     "zh-CN": "{0} → {1}",
     "en-US": "{0} → {1}"
+  },
+  "ui.survivor.weapon.Molotov": {
+    "zh-CN": "燃烧弹",
+    "en-US": "Molotov"
+  },
+  "ui.survivor.weapon.Molotov.acquire_detail": {
+    "zh-CN": "每{0}秒自动投掷 · 火区持续{1}秒\n每秒伤害 {2} · 半径 {3}米",
+    "en-US": "Auto-throw every {0}s · Burns for {1}s\n{2} damage/s · {3}m radius"
+  },
+  "ui.survivor.weapon.Molotov.upgrade_detail": {
+    "zh-CN": "每秒伤害 {0} → {1}\n燃烧半径 {2} → {3}米",
+    "en-US": "Damage/s {0} → {1}\nBurn radius {2} → {3}m"
   }
 }

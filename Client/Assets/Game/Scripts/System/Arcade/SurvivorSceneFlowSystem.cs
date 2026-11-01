@@ -59,10 +59,10 @@ namespace Game
                 loading.ReportEntryPreparation(loadingRequest, .85f, "ui.arcade.island.loading");
                 var view = this.GetUtility<IArcadeCombatViewPort>();
                 float deadline = UnityEngine.Time.realtimeSinceStartup + 30f;
-                while (!view.IsRoundLayoutReady)
+                while (!view.IsRoundLayoutReady || !view.IsSurvivorMolotovReady)
                 {
-                    if (!string.IsNullOrEmpty(view.RoundLayoutLoadError))
-                        throw new InvalidOperationException(view.RoundLayoutLoadError);
+                    if (!string.IsNullOrEmpty(view.RoundLayoutLoadError ?? view.SurvivorMolotovLoadError))
+                        throw new InvalidOperationException(view.RoundLayoutLoadError ?? view.SurvivorMolotovLoadError);
                     if (UnityEngine.Time.realtimeSinceStartup >= deadline)
                         throw new TimeoutException("草地战场准备超时，请重试");
                     await UniTask.NextFrame(linked.Token);

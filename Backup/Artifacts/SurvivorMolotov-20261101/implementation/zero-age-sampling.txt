@@ -1,0 +1,1 @@
+zero age followed by 0.3 seconds particles=16

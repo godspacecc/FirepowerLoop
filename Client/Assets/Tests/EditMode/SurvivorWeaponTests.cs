@@ -7,6 +7,7 @@ namespace Game.Tests
     /// <summary>武器槽权威规则的限定测试，不加载地图或访问正式存档。</summary>
     public sealed class SurvivorWeaponTests
     {
+        [Test] public void MolotovIsAnIndependentFiveLevelWeapon() { var d=new FirepowerLoop.Arcade.SurvivorUpgradeDefinition("survivor.molotov","Molotov",1,5,5); Assert.That(d.IsWeapon,Is.True); var s=NewLoadout(); for(int i=0;i<5;i++) Assert.That(Call(s,"TryUpgrade","Molotov",5),Is.True); Assert.That(Slots(s),Is.EqualTo(2)); Assert.That(Call(s,"TryUpgrade","Molotov",5),Is.False); }
         private object NewLoadout(int slots=3)
         {
             var type=typeof(ArcadeCombatSystem).Assembly.GetType("Game.SurvivorLoadout");

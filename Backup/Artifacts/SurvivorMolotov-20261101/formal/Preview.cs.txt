@@ -1,0 +1,50 @@
+using System;
+using System.IO;
+using System.Linq;
+using Game;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using Object=UnityEngine.Object;
+public static class MolotovFormalPreview
+{
+ static TMP_FontAsset font;
+ static void Label(Transform parent,string text,float x,float y,int size,float width=900){var go=new GameObject("Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(parent,false);var rt=(RectTransform)go.transform;rt.sizeDelta=new Vector2(width,80);rt.anchoredPosition=new Vector2(x,y);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSize=size;t.alignment=TextAlignmentOptions.Center;t.text=text;}
+ public static string Run(){
+  if(EditorApplication.isPlaying)throw new Exception("仅编辑态");var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+  var old=RenderTexture.active;var rt=new RenderTexture(960,540,24);var tex=new Texture2D(960,540,TextureFormat.RGB24,false);Camera cam=null;var mats=new System.Collections.Generic.List<Material>();Texture2D scorch=null;
+  Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;mats.Add(m);return m;}
+  GameObject Part(Transform parent,PrimitiveType type,Vector3 pos,Vector3 scale,Material m){var go=GameObject.CreatePrimitive(type);go.transform.SetParent(parent,false);go.transform.localPosition=pos;go.transform.localScale=scale;go.GetComponent<Renderer>().sharedMaterial=m;Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
+  try{
+   SceneManager.SetActiveScene(scene);cam=new GameObject("Camera",typeof(Camera)).GetComponent<Camera>();cam.orthographic=true;cam.orthographicSize=5.6f;cam.transform.position=new Vector3(0,11,-10);cam.transform.LookAt(new Vector3(0,0,.8f));cam.cullingMask=1<<31;cam.targetTexture=rt;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.13f,.16f,.18f);
+   var light=new GameObject("Light",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.4f;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(40,-20,0);
+   Part(null,PrimitiveType.Cube,new Vector3(0,-.1f,0),new Vector3(22,.15f,18),Mat(new Color(.22f,.26f,.25f)));
+   var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));hero.transform.position=new Vector3(0,0,-3);var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+   var canvas=new GameObject("Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=1;var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
+   font=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab").GetComponent<SurvivorHudUI>().TimeText.font;
+   Label(canvas.transform,"燃烧弹 · 正式资源实拍",0,440,38,1800);Label(canvas.transform,"一级：较小火区 / 较低伤害",-490,340,30);Label(canvas.transform,"高等级：更大火区 / 更高伤害",490,340,30);
+   Label(canvas.transform,"自动投掷 → 落地持续燃烧；升级提高伤害和范围",0,-370,28,1800);Label(canvas.transform,"正式主角同框 · 已缩小瓶子 · 左右为等级对比，不代表同时投两枚",0,-445,23,1800);
+   var targets=new[]{new Vector2(-3,1.5f),new Vector2(3,1.5f)};
+   var formalRoot=new GameObject("FormalMolotovRuntime");var formalView=new ArcadeCombatViewController();
+   typeof(ArcadeCombatViewController).GetField("root",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).SetValue(formalView,formalRoot);
+   typeof(ArcadeCombatViewController).GetMethod("BindMolotovVisuals",System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic).Invoke(formalView,new object[]{AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/SurvivorMolotov/SurvivorMolotov.prefab").transform});
+   var model=new SurvivorModel();int slotIndex=0;
+   foreach(string kind in new[]{"Rifle","Drone","Molotov"}){var slot=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/Box/SurvivorWeaponSlot.prefab"),canvas.transform);var rect=slot.GetComponent<RectTransform>();rect.anchorMin=rect.anchorMax=new Vector2(.5f,.5f);rect.anchoredPosition=new Vector2(690+slotIndex*78,460);rect.sizeDelta=new Vector2(66,66);typeof(SurvivorHudUICtrl).GetMethod("RenderWeaponSlot",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).Invoke(null,new object[]{slot.GetComponent<SurvivorWeaponSlotBoxUI>(),model,kind});slotIndex++;}
+   foreach(var root in scene.GetRootGameObjects())foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
+   string folder=Path.GetFullPath("../Backup/Artifacts/SurvivorMolotov-20261101/formal");
+   for(int f=0;f<108;f++){
+    float time=f/24f;for(int i=0;i<2;i++){
+     float t=Mathf.Clamp01((time-.25f)/.8f);bool flying=time>=.25f&&t<1;
+     formalView.SetSurvivorMolotov(i,Vector2.Lerp(new Vector2(0,-3),targets[i],t),.8f*(1-t)+4*t*(1-t),t*540,flying);
+     float age=time-1.05f;formalView.SetSurvivorFireZone(i,targets[i],i==0?1.2f:2.1f,Mathf.Max(0,age),age>=0&&age<3);
+    }
+    foreach(var child in formalRoot.GetComponentsInChildren<Transform>(true))child.gameObject.layer=31;
+    Canvas.ForceUpdateCanvases();cam.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,960,540),0,0);tex.Apply();File.WriteAllBytes(folder+"/frame-"+f.ToString("D3")+".png",tex.EncodeToPNG());
+   }
+   return "108 frame formal prefab + actual view port comparison; Boot dirty="+prior.isDirty;
+  }finally{if(cam!=null)cam.targetTexture=null;RenderTexture.active=old;Object.DestroyImmediate(tex);Object.DestroyImmediate(rt);SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);foreach(var m in mats)Object.DestroyImmediate(m);if(scorch!=null)Object.DestroyImmediate(scorch);}
+ }
+}

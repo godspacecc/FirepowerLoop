@@ -59,6 +59,7 @@ namespace Game
                 if(barrelBlastTemplate==null)throw new InvalidOperationException("桶专属紫色爆炸模板缺失");
                 if(candidate.Find("VortexBarrelVisual")==null)throw new InvalidOperationException("正式紫桶及浓雾模板缺失");
                 contentTemplates=candidate;
+                BindMolotovVisuals(candidate.Find("SurvivorMolotov"));
                 var bombTemplate=candidate.Find("BombBlast");
                 if(bombTemplate==null)throw new InvalidOperationException("公共炸弹三阶段模板缺失");
                 BindBombVisual(bombTemplate);
@@ -78,6 +79,7 @@ namespace Game
                 if(generation==contentGeneration)
                 {
                     contentLoadFailed = true;
+                    ClearMolotovVisuals();
                     ClearBombVisuals();
                     ClearDashVisuals();
                     exitCues.Clear(); exitCueElapsed = 0;
@@ -132,6 +134,7 @@ namespace Game
         }
         private void ReleaseContent()
         {
+            ClearMolotovVisuals();
             contentGeneration++;
             bulletImpactTemplate=null;
             projectileBlastTemplate=null;
