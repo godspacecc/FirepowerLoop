@@ -73,7 +73,10 @@ namespace Game
                 if(TickSpecialEnemy(e,dt))
                 {
                     var specialShape=Shape(e.ConfigId);
-                    if(e.Health>0&&specialShape!=null&&!SpecialState(e).Warning&&(player-e.Position).sqrMagnitude>specialShape.TriggerRange*specialShape.TriggerRange)
+                    // 法术射程内若仍隔墙，沿现有体型导航绕行，不能停在墙后反复空放。
+                    if(e.Health>0&&specialShape!=null&&!SpecialState(e).Warning&&
+                        ((player-e.Position).sqrMagnitude>specialShape.TriggerRange*specialShape.TriggerRange||
+                         specialShape.SpecialKind=="Caster"&&CasterShotBlocked(e,player)))
                         e.Position=NavigationFor(e).Move(e.Position,player,e.Speed*moveSeconds);
                     continue;
                 }

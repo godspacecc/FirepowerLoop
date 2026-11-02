@@ -73,6 +73,64 @@ namespace Game.Tests
             Set("player",new Vector2(5,0));Call("TickSpecialEnemy",e,.81f);
             var shots=Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles");Assert.That(shots.Count,Is.EqualTo(1));Assert.That(shots.Values.Single().Velocity.x,Is.EqualTo(0).Within(.001));
         }
+        /// <summary>射程内的厚墙与薄墙都阻止法术起手，不能空耗攻击。</summary>
+        [TestCase(.5f)] [TestCase(.001f)]
+        public void CasterDoesNotAttackThroughWalls(float halfThickness)
+        {
+            Prepare();Set("player",new Vector2(0,5));
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(0,2.55f,.5f,halfThickness,true)});
+            var e=AddCaster();Call("TickSpecialEnemy",e,.01f);Call("TickSpecialEnemy",e,1f);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles"),Is.Empty);
+            Assert.That(CasterWarning(e),Is.False);Assert.That(e.AttackSequence,Is.Zero);
+        }
+        /// <summary>已在射程内仍须绕墙追击，通路恢复后能正常施法。</summary>
+        [Test] public void CasterWalksAroundWallInsideAttackRange()
+        {
+            Prepare();Set("player",new Vector2(0,5));
+            var walls=new[]{new ArcadeObstacleDefinition(0,2.5f,.5f,.5f,true)};Set("obstacles",walls);
+            var nav=new SurvivorNavigation(20,20,.3f,walls);nav.SetTarget(new Vector2(0,5));Set("navigation",nav);
+            var e=AddCaster();Call("TickEnemies",.05f);
+            Assert.That(e.Position.sqrMagnitude,Is.GreaterThan(0),"不能在射程内隔墙停步");
+            for(int i=0;i<400&&Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles").Count==0;i++)Call("TickEnemies",.05f);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles").Count,Is.EqualTo(1),"绕墙后应重新起手并发射");
+        }
+        /// <summary>玩家在前摇期间躲到墙后，取消攻击；重新可见时需完整前摇。</summary>
+        [Test] public void CasterCancelsWindupWhenPlayerMovesBehindWall()
+        {
+            Prepare();Set("player",new Vector2(0,5));
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(2,0,.1f,1,true)});
+            var e=AddCaster();Call("TickSpecialEnemy",e,.01f);Assert.That(CasterWarning(e),Is.True);
+            Set("player",new Vector2(5,0));Call("TickSpecialEnemy",e,.81f);
+            Assert.That(CasterWarning(e),Is.False);Assert.That(e.AttackSequence,Is.Zero);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles"),Is.Empty);
+            Set("player",new Vector2(0,5));Call("TickSpecialEnemy",e,.01f);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles"),Is.Empty);
+            Call("TickSpecialEnemy",e,.81f);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles").Count,Is.EqualTo(1));
+        }
+        /// <summary>释放前还要检查锁定落点的射线，不能朝后来被遮挡的旧位置发射。</summary>
+        [Test] public void CasterRechecksCapturedShotBeforeRelease()
+        {
+            Prepare();Set("player",new Vector2(0,5));var e=AddCaster();Call("TickSpecialEnemy",e,.01f);
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(0,2.55f,.5f,.001f,true)});
+            Set("player",new Vector2(5,0));Call("TickSpecialEnemy",e,.81f);
+            Assert.That(CasterWarning(e),Is.False);Assert.That(e.AttackSequence,Is.Zero);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles"),Is.Empty);
+        }
+        /// <summary>不阻挡子弹的装饰物不影响远程攻击。</summary>
+        [Test] public void CasterCanShootThroughNonblockingDecoration()
+        {
+            Prepare();Set("player",new Vector2(0,5));Set("obstacles",new[]{new ArcadeObstacleDefinition(0,2.5f,.5f,.5f,false)});
+            var e=AddCaster();Call("TickSpecialEnemy",e,.01f);Call("TickSpecialEnemy",e,.81f);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("hostileProjectiles").Count,Is.EqualTo(1));
+        }
+        private ArcadeEnemyRuntime AddCaster()
+        {
+            var e=new ArcadeEnemyRuntime{Id=11,ConfigId="enemy.arcade.zombie.caster",Health=80,Speed=2.2f};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);return e;
+        }
+        private bool CasterWarning(ArcadeEnemyRuntime e)
+        {var state=Call("SpecialState",e);return (bool)state.GetType().GetField("Warning").GetValue(state);}
         [TestCase(false,85)] [TestCase(true,100)]
         public void HostileSweepCannotTunnelThroughPlayerOrWall(bool wall,int health)
         {

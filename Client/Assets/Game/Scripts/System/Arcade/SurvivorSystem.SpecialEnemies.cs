@@ -46,6 +46,9 @@ namespace Game
                 return false;
             }
             state.Cooldown=Mathf.Max(0,state.Cooldown-dt);
+            // 施法起手与释放共用火球的精确挡墙规则；目标躲到墙后或旧落点被挡时重新追击。
+            if(shape.SpecialKind=="Caster"&&(CasterShotBlocked(enemy,player)||state.Warning&&CasterShotBlocked(enemy,state.Target)))
+            {state.Warning=false;state.Remaining=0;return true;}
             if(state.Warning)
             {
                 state.Remaining=Mathf.Max(0,state.Remaining-dt);
@@ -74,6 +77,9 @@ namespace Game
             }
             return true;
         }
+        /// <summary>与火球碰撞使用同一条连续射线，薄墙和端点遮挡也不能发起远程攻击。</summary>
+        private bool CasterShotBlocked(ArcadeEnemyRuntime enemy,Vector2 target)
+            =>HostileWallSweep(enemy.Position,target-enemy.Position)<=1;
         /// <summary>自毁不经过击杀、经验和金币事务，遍历结束再移除，保证一次性。</summary>
         private void FlushSpecialDeaths()
         {
