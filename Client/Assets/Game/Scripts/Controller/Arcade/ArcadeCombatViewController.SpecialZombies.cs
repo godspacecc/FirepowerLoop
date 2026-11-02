@@ -3,6 +3,8 @@ namespace Game
 {
     public sealed partial class ArcadeCombatViewController
     {
+        /// <summary>转发完整盾装备快照，不保存领域耐久。</summary>
+        public void SetSurvivorEnemyShield(int id,bool intact)=>enemyPresentation?.SetSurvivorShield(id,intact);
         /// <summary>完整状态在普通追踪后投影，盾牌朝向始终由规则方向决定。</summary>
         public void SetSurvivorEnemySpecial(int id,string kind,Vector2 direction,bool warning,float progress,Vector2 target,float radius)
         {

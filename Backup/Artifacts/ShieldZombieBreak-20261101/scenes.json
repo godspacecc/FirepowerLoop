@@ -1,0 +1,13 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1 result\n{path:Assets/Game/Scenes/Main.unity,name:Main,isLoaded:true,buildIndex:-1,isDirty:false,rootCount:6,roots:[GameObject#40588(Main Camera),GameObject#40578(Directional Light),GameObject#40568(GameStart),GameObject#40602(PoolRoot),GameObject#40624(UIRoot),GameObject#40606(AudioRoot)]}"
+      }
+    ],
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

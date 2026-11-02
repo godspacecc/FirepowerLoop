@@ -743,8 +743,8 @@
         <var name="SpecialDamage" type="int"/>
         <var name="ProjectileSpeed" type="float"/>
         <var name="ProjectileLifetime" type="float"/>
-        <var name="ShieldReduction" type="float"/>
-        <var name="ShieldHalfAngle" type="float"/>
+        <!-- 盾耐久：全方向及持续伤害先扣盾，破盾当次不溢出。 -->
+        <var name="ShieldDurability" type="int"/>
         <var name="TurnDegreesPerSecond" type="float"/>
     </bean>
     <!-- 永久角色商品，仅改变整套外观。 -->

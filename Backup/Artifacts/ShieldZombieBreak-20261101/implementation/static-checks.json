@@ -1,0 +1,18 @@
+{
+  "enemyCsvDiffs": [
+    {
+      "id": "enemy.arcade.zombie.shield",
+      "field": "MoveSpeed",
+      "before": "1.43",
+      "after": "2.2"
+    }
+  ],
+  "sixEnemyRosterOtherValuesUnchanged": true,
+  "oldShieldRuleReferences": 0,
+  "generationExitCode": 0,
+  "generatedTargets": {
+    "clientTables": 41,
+    "serverTables": 37
+  },
+  "unityTests": "pending root runner"
+}

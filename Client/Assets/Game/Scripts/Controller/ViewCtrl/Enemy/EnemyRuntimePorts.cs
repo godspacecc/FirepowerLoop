@@ -60,6 +60,8 @@ namespace Game
         /// <summary>表现分层由最终伤害确定，旧实现仍可回退到既有死亡入口。</summary>
         void RemoveEnemy(int runtimeId,bool playDeath,Vector3 direction,bool explosive,bool flameKill,int impactKind)=>RemoveEnemy(runtimeId,playDeath,direction,explosive,flameKill);
         /// <summary>同步特殊敌人完整表现快照，不拥有攻击规则。</summary>
+        /// <summary>同步权威盾装备状态，唤醒时也必须重新应用。</summary>
+        void SetSurvivorShield(int id,bool intact) { }
         void SetSurvivorSpecial(int id,string kind,Vector3 direction,bool warning,float progress,float radius) { }
         void ClearArcadeEnemies();
     }

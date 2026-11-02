@@ -1,0 +1,13 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1 result\n{path:Assets/Game/Scenes/Boot.unity,name:Boot,isLoaded:true,buildIndex:0,isDirty:false,rootCount:5,roots:[GameObject#46440(Main Camera),GameObject#46424(Directional Light),GameObject#46466(HotUpdateCanvas),GameObject#46552(Launcher),GameObject#46582(EventSystem)]}"
+      }
+    ],
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

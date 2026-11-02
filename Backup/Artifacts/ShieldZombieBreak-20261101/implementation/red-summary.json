@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "Status": "Failed",
+    "TotalTests": 21,
+    "PassedTests": 9,
+    "FailedTests": 12,
+    "SkippedTests": 0,
+    "Duration": "00:00:26.1413383"
+  },
+  "visual": {
+    "Status": "Failed",
+    "TotalTests": 5,
+    "PassedTests": 4,
+    "FailedTests": 1,
+    "SkippedTests": 0,
+    "Duration": "00:01:28.7094411"
+  }
+}

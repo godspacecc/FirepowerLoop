@@ -1,0 +1,144 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":21,\"PassedTests\":9,\"FailedTests\":12,\"SkippedTests\":0,\"Duration\":\"00:00:26.1413383\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.AllSixPhaseWeightsMatchApprovedMix\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.3850000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.BlastUsesExplosionOriginForShieldDirection\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.2550000\",\"Message\":\"  Expected: 1000\\r\\n  But was:  980\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.BreakingShieldAbsorbsWholeHitThenHealthTakesNextHit\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1230000\",\"Message\":\"  Expected: 200\\r\\n  But was:  199\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.CasterWindupFiresAtCapturedPosition\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1430000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ExploderWarnsThenSelfDestructsWithoutRewards\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.0970000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.GroundEntryCannotStartSpecialAttack\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1370000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.HostileSweepCannotTunnelThroughPlayerOrWall(False,85)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1630000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.HostileSweepCannotTunnelThroughPlayerOrWall(True,100)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1460000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.KilledWarningEnemyCannotExplode\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1430000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.PausedFrameAndStopFreezeThenClearSpecialState\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1150000\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.RealProjectilePathRespectsShield(\\u0022Rifle\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.2620000\",\"Message\":\"  Expected: 1000\\r\\n  But was:  993\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.RealProjectilePathRespectsShield(\\u0022Drone\\u0022)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1170000\",\"Message\":\"  Expected: 1000\\r\\n  But was:  998\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsActualContinuousDamage(False)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.2730000\",\"Message\":\"  Expected: 200\\r\\n  But was:  193\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsActualContinuousDamage(True)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.5320000\",\"Message\":\"  Expected: 200\\r\\n  But was:  197\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsDirectionlessBurn\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1350000\",\"Message\":\"  Expected: 200\\r\\n  But was:  100\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldKeepsHealthAndMatchesOrdinaryMovement\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.0690000\",\"Message\":\"  Expected: 2.20000005f\\r\\n  But was:  1.42999995f\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldProjectionDoesNotRestoreDamageAndStopResetsShield\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1180000\",\"Message\":\"  Expected: True\\r\\n  But was:  False\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(0.0f,1.0f,0)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1850000\",\"Message\":\"  Expected: 200\\r\\n  But was:  180\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(1.0f,0.0f,0)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1730000\",\"Message\":\"  Expected: 200\\r\\n  But was:  100\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(0.0f,-1.0f,0)\",\"Status\":\"Failed\",\"Duration\":\"00:00:01.1640000\",\"Message\":\"  Expected: 200\\r\\n  But was:  100\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialEnemyTests.SpecialRosterContainsSixIndependentEnemies\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1910000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 21,
+          "PassedTests": 9,
+          "FailedTests": 12,
+          "SkippedTests": 0,
+          "Duration": "00:00:26.1413383"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.AllSixPhaseWeightsMatchApprovedMix",
+            "Status": "Passed",
+            "Duration": "00:00:01.3850000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.BlastUsesExplosionOriginForShieldDirection",
+            "Status": "Failed",
+            "Duration": "00:00:01.2550000",
+            "Message": "  Expected: 1000\r\n  But was:  980\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.BreakingShieldAbsorbsWholeHitThenHealthTakesNextHit",
+            "Status": "Failed",
+            "Duration": "00:00:01.1230000",
+            "Message": "  Expected: 200\r\n  But was:  199\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.CasterWindupFiresAtCapturedPosition",
+            "Status": "Passed",
+            "Duration": "00:00:01.1430000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ExploderWarnsThenSelfDestructsWithoutRewards",
+            "Status": "Passed",
+            "Duration": "00:00:01.0970000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.GroundEntryCannotStartSpecialAttack",
+            "Status": "Passed",
+            "Duration": "00:00:01.1370000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.HostileSweepCannotTunnelThroughPlayerOrWall(False,85)",
+            "Status": "Passed",
+            "Duration": "00:00:01.1630000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.HostileSweepCannotTunnelThroughPlayerOrWall(True,100)",
+            "Status": "Passed",
+            "Duration": "00:00:01.1460000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.KilledWarningEnemyCannotExplode",
+            "Status": "Passed",
+            "Duration": "00:00:01.1430000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.PausedFrameAndStopFreezeThenClearSpecialState",
+            "Status": "Passed",
+            "Duration": "00:00:01.1150000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.RealProjectilePathRespectsShield(\"Rifle\")",
+            "Status": "Failed",
+            "Duration": "00:00:01.2620000",
+            "Message": "  Expected: 1000\r\n  But was:  993\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.RealProjectilePathRespectsShield(\"Drone\")",
+            "Status": "Failed",
+            "Duration": "00:00:01.1170000",
+            "Message": "  Expected: 1000\r\n  But was:  998\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsActualContinuousDamage(False)",
+            "Status": "Failed",
+            "Duration": "00:00:01.2730000",
+            "Message": "  Expected: 200\r\n  But was:  193\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsActualContinuousDamage(True)",
+            "Status": "Failed",
+            "Duration": "00:00:01.5320000",
+            "Message": "  Expected: 200\r\n  But was:  197\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsDirectionlessBurn",
+            "Status": "Failed",
+            "Duration": "00:00:01.1350000",
+            "Message": "  Expected: 200\r\n  But was:  100\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldKeepsHealthAndMatchesOrdinaryMovement",
+            "Status": "Failed",
+            "Duration": "00:00:01.0690000",
+            "Message": "  Expected: 2.20000005f\r\n  But was:  1.42999995f\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldProjectionDoesNotRestoreDamageAndStopResetsShield",
+            "Status": "Failed",
+            "Duration": "00:00:01.1180000",
+            "Message": "  Expected: True\r\n  But was:  False\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(0.0f,1.0f,0)",
+            "Status": "Failed",
+            "Duration": "00:00:01.1850000",
+            "Message": "  Expected: 200\r\n  But was:  180\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(1.0f,0.0f,0)",
+            "Status": "Failed",
+            "Duration": "00:00:01.1730000",
+            "Message": "  Expected: 200\r\n  But was:  100\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource(0.0f,-1.0f,0)",
+            "Status": "Failed",
+            "Duration": "00:00:01.1640000",
+            "Message": "  Expected: 200\r\n  But was:  100\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialEnemyTests.SpecialRosterContainsSixIndependentEnemies",
+            "Status": "Passed",
+            "Duration": "00:00:01.1910000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

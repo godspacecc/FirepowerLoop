@@ -35,8 +35,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         SpecialDamage = _buf.ReadInt();
         ProjectileSpeed = _buf.ReadFloat();
         ProjectileLifetime = _buf.ReadFloat();
-        ShieldReduction = _buf.ReadFloat();
-        ShieldHalfAngle = _buf.ReadFloat();
+        ShieldDurability = _buf.ReadInt();
         TurnDegreesPerSecond = _buf.ReadFloat();
     }
 
@@ -65,8 +64,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly int SpecialDamage;
     public readonly float ProjectileSpeed;
     public readonly float ProjectileLifetime;
-    public readonly float ShieldReduction;
-    public readonly float ShieldHalfAngle;
+    public readonly int ShieldDurability;
     public readonly float TurnDegreesPerSecond;
    
     public const int __ID__ = -2055649804;
@@ -99,8 +97,7 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "SpecialDamage:" + SpecialDamage + ","
         + "ProjectileSpeed:" + ProjectileSpeed + ","
         + "ProjectileLifetime:" + ProjectileLifetime + ","
-        + "ShieldReduction:" + ShieldReduction + ","
-        + "ShieldHalfAngle:" + ShieldHalfAngle + ","
+        + "ShieldDurability:" + ShieldDurability + ","
         + "TurnDegreesPerSecond:" + TurnDegreesPerSecond + ","
         + "}";
     }

@@ -140,6 +140,9 @@ namespace Game
 
         /// <summary>远场休眠不走死亡管线；池仅保留有限闲置实例，不限制活敌人数。</summary>
         /// <summary>由权威方向最后覆盖普通追踪；同帧完整状态保证唤醒恢复。</summary>
+        /// <summary>只更新对应已显示实体，远场规则仍由System保留。</summary>
+        public void SetSurvivorShield(int id,bool intact)
+        { if(arcadeEnemies.TryGetValue(id,out var e))e.View?.SetSurvivorShield(intact); }
         public void SetSurvivorSpecial(int id,string kind,Vector3 direction,bool warning,float progress,float radius)
         { if(arcadeEnemies.TryGetValue(id,out var e))e.View?.SetSurvivorSpecial(kind,direction,warning,progress,radius); }
 

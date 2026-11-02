@@ -1,0 +1,112 @@
+{
+  "SurvivorSpecialEnemyTests": {
+    "maximum": 21,
+    "methods": [
+      {
+        "method": "SpecialRosterContainsSixIndependentEnemies",
+        "expanded": 1
+      },
+      {
+        "method": "ExploderWarnsThenSelfDestructsWithoutRewards",
+        "expanded": 1
+      },
+      {
+        "method": "KilledWarningEnemyCannotExplode",
+        "expanded": 1
+      },
+      {
+        "method": "ShieldUsesIncomingSource",
+        "expanded": 3
+      },
+      {
+        "method": "ShieldAbsorbsDirectionlessBurn",
+        "expanded": 1
+      },
+      {
+        "method": "CasterWindupFiresAtCapturedPosition",
+        "expanded": 1
+      },
+      {
+        "method": "HostileSweepCannotTunnelThroughPlayerOrWall",
+        "expanded": 2
+      },
+      {
+        "method": "RealProjectilePathRespectsShield",
+        "expanded": 2
+      },
+      {
+        "method": "BlastUsesExplosionOriginForShieldDirection",
+        "expanded": 1
+      },
+      {
+        "method": "BreakingShieldAbsorbsWholeHitThenHealthTakesNextHit",
+        "expanded": 1
+      },
+      {
+        "method": "PausedFrameAndStopFreezeThenClearSpecialState",
+        "expanded": 1
+      },
+      {
+        "method": "GroundEntryCannotStartSpecialAttack",
+        "expanded": 1
+      },
+      {
+        "method": "AllSixPhaseWeightsMatchApprovedMix",
+        "expanded": 1
+      },
+      {
+        "method": "ShieldProjectionDoesNotRestoreDamageAndStopResetsShield",
+        "expanded": 1
+      },
+      {
+        "method": "ShieldKeepsHealthAndMatchesOrdinaryMovement",
+        "expanded": 1
+      },
+      {
+        "method": "ShieldAbsorbsActualContinuousDamage",
+        "expanded": 2
+      }
+    ],
+    "includePassingTests": true
+  },
+  "SurvivorSpecialVisualTests": {
+    "maximum": 6,
+    "methods": [
+      {
+        "method": "FormalPrefabKeepsBodyAndClearsWarning",
+        "expanded": 3
+      },
+      {
+        "method": "BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt",
+        "expanded": 2
+      },
+      {
+        "method": "ExactAddressesAndSerializedDependenciesAreCollected",
+        "expanded": 1
+      }
+    ],
+    "includePassingTests": true
+  },
+  "SurvivorSpecialFacingTests": {
+    "maximum": 5,
+    "methods": [
+      {
+        "method": "LateralChaseProjectsCurrentTarget",
+        "expanded": 2
+      },
+      {
+        "method": "CasterLocksWindupThenFacesNewTargetDuringCooldown",
+        "expanded": 1
+      },
+      {
+        "method": "ShieldProjectionKeepsAuthorityTurnLimit",
+        "expanded": 1
+      },
+      {
+        "method": "CoincidentTargetKeepsSafeFacing",
+        "expanded": 1
+      }
+    ],
+    "includePassingTests": true
+  }
+}

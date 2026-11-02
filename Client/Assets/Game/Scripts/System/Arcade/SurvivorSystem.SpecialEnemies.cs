@@ -11,6 +11,8 @@ namespace Game
             public Vector2 Facing=Vector2.up,Target;
             public float Remaining,Cooldown;
             public bool Warning;
+            /// <summary>本局剩余盾耐久，完整投影不得重置；零表示已破盾。</summary>
+            public int ShieldRemaining;
         }
         private readonly Dictionary<int,SpecialEnemyState> specialEnemies=new();
         private readonly Dictionary<int,ArcadeProjectileRuntime> hostileProjectiles=new();
@@ -20,10 +22,10 @@ namespace Game
         /// <summary>仅实体首次需要特殊规则时建状态，避免普通尸潮增加逐敌字典开销。</summary>
         private SpecialEnemyState SpecialState(ArcadeEnemyRuntime enemy)
         {
-            if(!specialEnemies.TryGetValue(enemy.Id,out var state))specialEnemies.Add(enemy.Id,state=new SpecialEnemyState());
+            if(!specialEnemies.TryGetValue(enemy.Id,out var state))specialEnemies.Add(enemy.Id,state=new SpecialEnemyState{ShieldRemaining=Shape(enemy.ConfigId)?.ShieldDurability??0});
             return state;
         }
-        /// <summary>盾牌朝向限速旋转，近战动画同样消费该方向，不能瞬间转向封死背面。</summary>
+        /// <summary>盾牌朝向限速旋转供近战动画消费，不再作为伤害过滤条件。</summary>
         private Vector2 SpecialFacing(ArcadeEnemyRuntime enemy)
             =>Shape(enemy.ConfigId)?.SpecialKind=="Shield"?SpecialState(enemy).Facing:(player-enemy.Position).normalized;
         /// <summary>返回true代表特殊攻击接管本帧移动与近战；爬出阶段由调用者阻断。</summary>
@@ -78,13 +80,15 @@ namespace Game
             {if(enemies.Remove(id)){presentedEnemies.Remove(id);elementStatuses.Remove(id);specialEnemies.Remove(id);view.RemoveEnemy(id,false);}}
             specialDeaths.Clear();
         }
-        /// <summary>所有直接弹丸及范围爆炸在统一扣血前按来源方向减伤；持续灼烧不传来源。</summary>
+        /// <summary>所有来源先消耗盾耐久；击碎当次完整吸收，不向生命溢出。</summary>
         private int ShieldDamage(ArcadeEnemyRuntime enemy,int damage,Vector2? source)
         {
-            var shape=Shape(enemy.ConfigId);if(shape?.SpecialKind!="Shield"||!source.HasValue)return damage;
-            var incoming=source.Value-enemy.Position;
-            if(incoming.sqrMagnitude<=.000001f||Vector2.Angle(SpecialState(enemy).Facing,incoming)>shape.ShieldHalfAngle)return damage;
-            return Math.Max(1,(int)Math.Floor(damage*(double)(1-shape.ShieldReduction)+.00001));
+            if(Shape(enemy.ConfigId)?.SpecialKind!="Shield")return damage;
+            var state=SpecialState(enemy);if(state.ShieldRemaining<=0)return damage;
+            state.ShieldRemaining=Math.Max(0,state.ShieldRemaining-damage);
+            // 立即更新近场装备；远场恢复时仍由完整权威投影覆盖。
+            view.SetSurvivorEnemyShield(enemy.Id,state.ShieldRemaining>0);
+            return 0;
         }
         /// <summary>线段圆首次接触，快弹不能从玩家身上跨过。</summary>
         private static float PlayerSweep(Vector2 from,Vector2 segment,Vector2 center,float radius)
@@ -143,6 +147,7 @@ namespace Game
             var direction=state.Facing;
             if(shape.SpecialKind!="Shield"&&!state.Warning&&(player-enemy.Position).sqrMagnitude>.000001f)
                 direction=(player-enemy.Position).normalized;
+            if(shape.SpecialKind=="Shield")view.SetSurvivorEnemyShield(enemy.Id,state.ShieldRemaining>0);
             view.SetSurvivorEnemySpecial(enemy.Id,shape.SpecialKind,direction,state.Warning,state.Warning?Mathf.Clamp01(1-state.Remaining/shape.WindupSeconds):0,state.Target,shape.BlastRadius);
         }
         /// <summary>重开与退出清空敌方弹体、预警、方向及延迟自毁，不能污染复用身份。</summary>

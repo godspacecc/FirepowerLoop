@@ -55,16 +55,16 @@ namespace Game.Tests
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("TickSpecialEnemy",e,.01f);
             e.Health=0;Call("TickSpecialEnemy",e,2f);Assert.That(model.Health,Is.EqualTo(100));
         }
-        [TestCase(0f,1f,20)] [TestCase(1f,0f,100)] [TestCase(0f,-1f,100)]
+        [TestCase(0f,1f,0)] [TestCase(1f,0f,0)] [TestCase(0f,-1f,0)]
         public void ShieldUsesIncomingSource(float x,float y,int damage)
         {
             Prepare();var e=new ArcadeEnemyRuntime{Id=11,ConfigId="enemy.arcade.zombie.shield",Position=Vector2.zero,Health=200};
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("ApplyModifierDamage",e,100,(Vector2?)new Vector2(x,y));Assert.That(e.Health,Is.EqualTo(200-damage));
         }
-        [Test] public void ShieldDoesNotReduceDirectionlessBurn()
+        [Test] public void ShieldAbsorbsDirectionlessBurn()
         {
             Prepare();var e=new ArcadeEnemyRuntime{Id=11,ConfigId="enemy.arcade.zombie.shield",Position=Vector2.zero,Health=200};
-            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("ApplyModifierDamage",e,100,null);Assert.That(e.Health,Is.EqualTo(100));
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("ApplyModifierDamage",e,100,null);Assert.That(e.Health,Is.EqualTo(200));
         }
         [Test] public void CasterWindupFiresAtCapturedPosition()
         {
@@ -86,7 +86,7 @@ namespace Game.Tests
             Prepare();var e=new ArcadeEnemyRuntime{Id=900,ConfigId="enemy.arcade.zombie.shield",Health=1000,Position=Vector2.zero};
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
             var level=config.WeaponLevel(owner,1);Call("Shoot",new Vector2(0,1),Vector2.down,level,owner);Call("AdvanceBullets",.2f);
-            Assert.That(e.Health,Is.EqualTo(1000-Math.Max(1,(int)Math.Floor(level.Damage*.2+.00001))));
+            Assert.That(e.Health,Is.EqualTo(1000));
         }
         [Test] public void BlastUsesExplosionOriginForShieldDirection()
         {
@@ -94,15 +94,15 @@ namespace Game.Tests
             Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("RebuildHordeSpatial");
             var type=typeof(SurvivorSystem).GetNestedType("ModifierShot",BindingFlags.NonPublic);var shot=Activator.CreateInstance(type);
             type.GetField("BlastRadius").SetValue(shot,3f);type.GetField("BlastDamage").SetValue(shot,100);
-            Call("TriggerModifierBlast",Vector2.up,0,shot);Assert.That(e.Health,Is.EqualTo(980));
+            Call("TriggerModifierBlast",Vector2.up,0,shot);Assert.That(e.Health,Is.EqualTo(1000));
         }
-        [Test] public void ShieldTurnsGraduallyAndMinimumDamageRemainsOne()
+        [Test] public void BreakingShieldAbsorbsWholeHitThenHealthTakesNextHit()
         {
-            Prepare();Set("player",Vector2.down*5);var e=new ArcadeEnemyRuntime{Id=11,ConfigId="enemy.arcade.zombie.shield",Health=200};
-            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("TickSpecialEnemy",e,.1f);
-            Call("ApplyModifierDamage",e,1,(Vector2?)Vector2.up);Assert.That(e.Health,Is.EqualTo(199));
-            Call("ApplyModifierDamage",e,100,(Vector2?)Vector2.down);Assert.That(e.Health,Is.EqualTo(99));
-            Call("TickSpecialEnemy",e,1.5f);Call("ApplyModifierDamage",e,100,(Vector2?)Vector2.down);Assert.That(e.Health,Is.EqualTo(79));
+            Prepare();var e=new ArcadeEnemyRuntime{Id=11,ConfigId="enemy.arcade.zombie.shield",Health=200};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
+            Call("ApplyModifierDamage",e,1,(Vector2?)Vector2.up);Assert.That(e.Health,Is.EqualTo(200));
+            Call("ApplyModifierDamage",e,150,(Vector2?)Vector2.down);Assert.That(e.Health,Is.EqualTo(200));
+            Call("ApplyModifierDamage",e,25,null);Assert.That(e.Health,Is.EqualTo(175));
         }
         [Test] public void PausedFrameAndStopFreezeThenClearSpecialState()
         {
@@ -130,9 +130,51 @@ namespace Game.Tests
                 Assert.That(counts,Is.EqualTo(expected[phase].Select(x=>x*10).ToArray()));
             }
         }
+        /// <summary>完整投影不补盾；退出后新实体从配置恢复耐久。</summary>
+        [Test] public void ShieldProjectionDoesNotRestoreDamageAndStopResetsShield()
+        {
+            Prepare();var e=new ArcadeEnemyRuntime{Id=901,ConfigId="enemy.arcade.zombie.shield",Health=200};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
+            Call("ApplyModifierDamage",e,100,null);Call("ProjectSpecialEnemy",e);Call("ProjectSpecialEnemy",e);
+            Assert.That(((View)Get<IArcadeCombatViewPort>("view")).ShieldIntact,Is.False);
+            system.Stop();Prepare();Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("ProjectSpecialEnemy",e);
+            Assert.That(((View)Get<IArcadeCombatViewPort>("view")).ShieldIntact,Is.True);
+            Call("ApplyModifierDamage",e,99,null);Call("ApplyModifierDamage",e,1,null);Assert.That(e.Health,Is.EqualTo(200));
+            Call("ApplyModifierDamage",e,10,null);Assert.That(e.Health,Is.EqualTo(190));
+        }
+        /// <summary>盾牌生命保留150，实际配置行走速度与普通一致。</summary>
+        [Test] public void ShieldKeepsHealthAndMatchesOrdinaryMovement()
+        {
+            Prepare();var roster=Get<SurvivorEnemyRoster>("enemyRoster");var shield=roster.Entries.Single(e=>e.SpecialKind=="Shield");
+            var normal=roster.Entries.Single(e=>e.Id=="shambler");var definitions=Get<Dictionary<string,EnemyConfigDefinition>>("enemyConfigs");
+            Assert.That(definitions[shield.EnemyId].MaxHP*shield.HealthMultiplier,Is.EqualTo(150));
+            Assert.That(definitions[shield.EnemyId].MoveSpeed*shield.SpeedMultiplier,Is.EqualTo(definitions[normal.EnemyId].MoveSpeed*normal.SpeedMultiplier));
+        }
+        /// <summary>真实灼烧与火区都必须先扣盾，不能走生命旁路。</summary>
+        [TestCase(false)] [TestCase(true)]
+        public void ShieldAbsorbsActualContinuousDamage(bool molotov)
+        {
+            Prepare();var e=new ArcadeEnemyRuntime{Id=901,ConfigId="enemy.arcade.zombie.shield",Health=200};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);Call("RebuildHordeSpatial");
+            if(molotov)
+            {
+                var t=typeof(SurvivorSystem).GetNestedType("MolotovZone",BindingFlags.NonPublic);var zone=Activator.CreateInstance(t);
+                t.GetField("Level").SetValue(zone,config.WeaponLevel("Molotov",1));Call("AdvanceMolotovZone",zone,.25f);
+            }
+            else
+            {
+                var t=typeof(SurvivorSystem).GetNestedType("ModifierShot",BindingFlags.NonPublic);var shot=Activator.CreateInstance(t);
+                t.GetField("FireSeconds").SetValue(shot,3f);t.GetField("FireDamagePerSecond").SetValue(shot,7d);
+                Call("ApplyElementHit",e,shot);Call("AdvanceElementDamage",1f);
+            }
+            Assert.That(e.Health,Is.EqualTo(200));var state=Call("SpecialState",e);
+            Assert.That((int)state.GetType().GetField("ShieldRemaining").GetValue(state),Is.LessThan(100).And.GreaterThan(0));
+        }
         private sealed class View:IArcadeCombatViewPort
         {
             public bool Hidden=true,Visible=true;
+            public bool ShieldIntact;
+            public void SetSurvivorEnemyShield(int id,bool intact){ShieldIntact=intact;}
             public float SpawnRadius;public Vector3 Scale;
             public bool GroundStarted;
             public void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state){GroundStarted=state.Started;}

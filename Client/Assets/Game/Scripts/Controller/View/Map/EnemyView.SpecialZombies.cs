@@ -7,6 +7,15 @@ namespace Game
         [SerializeField] private LineRenderer survivorWarning;
         /// <summary>仅记住上一帧抬手显示，以便取消时撤手；不是业务施法状态。</summary>
         private bool survivorCasting;
+        /// <summary>首次使用缓存正式钢板与两条十字装饰；不包含身体Renderer。</summary>
+        private Renderer[] survivorShieldRenderers;
+        /// <summary>仅应用装备可见性，身体与受击组件保持原状。</summary>
+        public void SetSurvivorShield(bool intact)
+        {
+            if(survivorShieldRenderers==null)
+                survivorShieldRenderers=System.Array.FindAll(GetComponentsInChildren<Renderer>(true),r=>r.name=="ShieldSteel"||r.name=="ShieldCross");
+            foreach(var renderer in survivorShieldRenderers)if(renderer!=null)renderer.enabled=intact;
+        }
         /// <summary>消费完整权威快照；红圈不计时、不判定伤害，朝向覆盖追踪。</summary>
         public void SetSurvivorSpecial(string kind,Vector3 direction,bool warning,float progress,float radius)
         {
@@ -26,7 +35,7 @@ namespace Game
                 survivorCasting=warning;
             }
         }
-        /// <summary>死亡、休眠与回池必须立即关闭前摇，禁止下一身份继承。</summary>
+        /// <summary>死亡、禁用与回池只清前摇；装备复原限定在新用途或显式回池。</summary>
         private void ResetSurvivorSpecial()
         { if(survivorWarning!=null)survivorWarning.enabled=false;survivorCasting=false; }
     }

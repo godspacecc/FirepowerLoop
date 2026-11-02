@@ -1,8 +1,8 @@
-##var,Id,EnemyId,UnlockSeconds,PhaseSeconds,PhaseWeights,HealthMultiplier,DamageMultiplier,SpeedMultiplier,ScaleX,ScaleY,ScaleZ,AttackCooldownSeconds,SpecialKind,TriggerRange,WindupSeconds,BlastRadius,SpecialDamage,ProjectileSpeed,ProjectileLifetime,ShieldReduction,ShieldHalfAngle,TurnDegreesPerSecond
-##type,string,string#ref=TbEnemy,float,float,"(array#sep=;),int",float,float,float,float,float,float,float,string,float,float,float,int,float,float,float,float,float
-,shambler,enemy.arcade.zombie.shambler,0,120,100;60;45;30;20;10,1,1,1,1,1,1,1,,0,0,0,0,0,0,0,0,0
-,gaunt,enemy.arcade.zombie.gaunt,120,120,0;40;30;30;30;30,0.9,1.5,1.7,0.9,0.82,0.9,1,,0,0,0,0,0,0,0,0,0
-,bloated,enemy.arcade.zombie.bloated,240,120,0;0;15;20;25;30,15,1.5,0.9,1.5,1.2,1.4,1,,0,0,0,0,0,0,0,0,0
-,exploder,enemy.arcade.zombie.exploder,240,120,0;0;5;7;8;10,1,1,1,1,1,1,1,Exploder,1.7,1,1.5,25,0,0,0,0,0
-,caster,enemy.arcade.zombie.caster,360,120,0;0;0;6;8;10,1,1,1,1,1,1,3,Caster,10,.8,0,15,7,2.5,0,0,0
-,shield,enemy.arcade.zombie.shield,240,120,0;0;5;7;9;10,1,1,1,1,1,1,1,Shield,0,0,0,0,0,0,.8,60,120
+##var,Id,EnemyId,UnlockSeconds,PhaseSeconds,PhaseWeights,HealthMultiplier,DamageMultiplier,SpeedMultiplier,ScaleX,ScaleY,ScaleZ,AttackCooldownSeconds,SpecialKind,TriggerRange,WindupSeconds,BlastRadius,SpecialDamage,ProjectileSpeed,ProjectileLifetime,ShieldDurability,TurnDegreesPerSecond
+##type,string,string#ref=TbEnemy,float,float,"(array#sep=;),int",float,float,float,float,float,float,float,string,float,float,float,int,float,float,int,float
+,shambler,enemy.arcade.zombie.shambler,0,120,100;60;45;30;20;10,1,1,1,1,1,1,1,,0,0,0,0,0,0,0,0
+,gaunt,enemy.arcade.zombie.gaunt,120,120,0;40;30;30;30;30,0.9,1.5,1.7,0.9,0.82,0.9,1,,0,0,0,0,0,0,0,0
+,bloated,enemy.arcade.zombie.bloated,240,120,0;0;15;20;25;30,15,1.5,0.9,1.5,1.2,1.4,1,,0,0,0,0,0,0,0,0
+,exploder,enemy.arcade.zombie.exploder,240,120,0;0;5;7;8;10,1,1,1,1,1,1,1,Exploder,1.7,1,1.5,25,0,0,0,0
+,caster,enemy.arcade.zombie.caster,360,120,0;0;0;6;8;10,1,1,1,1,1,1,3,Caster,10,.8,0,15,7,2.5,0,0
+,shield,enemy.arcade.zombie.shield,240,120,0;0;5;7;9;10,1,1,1,1,1,1,1,Shield,0,0,0,0,0,0,100,120

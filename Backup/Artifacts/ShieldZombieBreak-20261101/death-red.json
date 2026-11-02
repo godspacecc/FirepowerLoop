@@ -1,0 +1,39 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":2,\"PassedTests\":0,\"FailedTests\":2,\"SkippedTests\":0,\"Duration\":\"00:00:01.5104348\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt(False)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3450000\",\"Message\":\"  \\u6B7B\\u4EA1\\u4E0D\\u80FD\\u590D\\u539F\\u5DF2\\u7834\\u76FE\\u88C5\\u5907\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt(True)\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.0040000\",\"Message\":\"  \\u6B7B\\u4EA1\\u4E0D\\u80FD\\u590D\\u539F\\u5DF2\\u7834\\u76FE\\u88C5\\u5907\\r\\n  Expected: False\\r\\n  But was:  True\\r\\n\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 2,
+          "PassedTests": 0,
+          "FailedTests": 2,
+          "SkippedTests": 0,
+          "Duration": "00:00:01.5104348"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt(False)",
+            "Status": "Failed",
+            "Duration": "00:00:00.3450000",
+            "Message": "  死亡不能复原已破盾装备\r\n  Expected: False\r\n  But was:  True\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt(True)",
+            "Status": "Failed",
+            "Duration": "00:00:00.0040000",
+            "Message": "  死亡不能复原已破盾装备\r\n  Expected: False\r\n  But was:  True\r\n"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

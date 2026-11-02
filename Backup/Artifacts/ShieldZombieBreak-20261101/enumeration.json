@@ -1,0 +1,13 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "19 results\nfullName\nGame.Tests.SurvivorSpecialEnemyTests.AllSixPhaseWeightsMatchApprovedMix\nGame.Tests.SurvivorSpecialEnemyTests.BlastUsesExplosionOriginForShieldDirection\nGame.Tests.SurvivorSpecialEnemyTests.BreakingShieldAbsorbsWholeHitThenHealthTakesNextHit\nGame.Tests.SurvivorSpecialEnemyTests.CasterWindupFiresAtCapturedPosition\nGame.Tests.SurvivorSpecialEnemyTests.ExploderWarnsThenSelfDestructsWithoutRewards\nGame.Tests.SurvivorSpecialEnemyTests.GroundEntryCannotStartSpecialAttack\nGame.Tests.SurvivorSpecialEnemyTests.HostileSweepCannotTunnelThroughPlayerOrWall\nGame.Tests.SurvivorSpecialEnemyTests.KilledWarningEnemyCannotExplode\nGame.Tests.SurvivorSpecialEnemyTests.PausedFrameAndStopFreezeThenClearSpecialState\nGame.Tests.SurvivorSpecialEnemyTests.RealProjectilePathRespectsShield\nGame.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsActualContinuousDamage\nGame.Tests.SurvivorSpecialEnemyTests.ShieldAbsorbsDirectionlessBurn\nGame.Tests.SurvivorSpecialEnemyTests.ShieldKeepsHealthAndMatchesOrdinaryMovement\nGame.Tests.SurvivorSpecialEnemyTests.ShieldProjectionDoesNotRestoreDamageAndStopResetsShield\nGame.Tests.SurvivorSpecialEnemyTests.ShieldUsesIncomingSource\nGame.Tests.SurvivorSpecialEnemyTests.SpecialRosterContainsSixIndependentEnemies\nGame.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt\nGame.Tests.SurvivorSpecialVisualTests.ExactAddressesAndSerializedDependenciesAreCollected\nGame.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning"
+      }
+    ],
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

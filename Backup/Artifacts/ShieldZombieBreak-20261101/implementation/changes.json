@@ -1,0 +1,97 @@
+[
+  {
+    "path": "Config/Defines/beans.xml",
+    "beforeSha256": "0483996542be051daeb589a66faa62a6249a93adbc6a165dcd07d36b320b8ed8",
+    "afterSha256": "a0ed2b401e2db96b2698dc5a508d103960897e72b6d807efdefd496cd985619d"
+  },
+  {
+    "path": "Config/DataCsv/enemy.csv",
+    "beforeSha256": "07ea926b1288d999c109e842f321cb926edd603f633bf5ca9aaff7c2272afe3e",
+    "afterSha256": "862cb9af9c2e03ac58935ad3794ccd041e954c6b1452008271d1b7d8bf0a8b33"
+  },
+  {
+    "path": "Config/DataCsv/survivor_enemy.csv",
+    "beforeSha256": "9372b1d9897e5bf842a388662cc4dcd655737754814a927d67baa5221c2bab88",
+    "afterSha256": "5a04ba97b6b3e39ea1de64bc5af057ccc98640e9344f210eed9264631cff5168"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Utility/Arcade/SurvivorEnemyRoster.cs",
+    "beforeSha256": "583a01e31cfc8c1049a3d6ff68732cad443ea8300fb61e456e4219555bceed90",
+    "afterSha256": "154cfbf83b320365d31eef9d64da9cd3d911ce08a18d974cbdbd7a151e7fffa7"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/System/Arcade/SurvivorSystem.SpecialEnemies.cs",
+    "beforeSha256": "26a0b6048bea7055315dee2a2bb6dfbbfb4cf18851a46e798a83057bd310e283",
+    "afterSha256": "a187611c3697bfd5d7e7c076c1d0cb856d2c35c35dd2d9a78eb37af9865e2e30"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.cs",
+    "beforeSha256": "1dd6dfe3e19d4fd616e24703b73f7a369ddca721d613d8ddcb4f73efc32feef3",
+    "afterSha256": "89336c043acf0017b347f18ee09f498ea49e2eb9421106e89040bd8d714a47c0"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/Arcade/ArcadeCombatViewController.SpecialZombies.cs",
+    "beforeSha256": "94b381aad2c5e980511e0b02755e9e58940b63e4e9a391b71dbb9b1a4e5acc33",
+    "afterSha256": "62df1f563e184bf19e78f5d39ca8b7161079cee0f32bfb90ac1b69fca1e2cd8b"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/ViewCtrl/Enemy/EnemyRuntimePorts.cs",
+    "beforeSha256": "72ea575151846e444764b371f0c961892aa1abb630208ef5f4fa3a4cbbdcce3b",
+    "afterSha256": "03697eb56252f50afc6b838e525f4bba8b768e85cea837c865b2f8bf02efce6d"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/Enemy/EnemyCtrl.cs",
+    "beforeSha256": "7ec6512eeff085cb2cbeb1eb87b2ecad40b73a41d23d7cf6372d6e62739ea6e7",
+    "afterSha256": "4c34dfb0e84a994421d2669cc6ebc6e5e2ee5b056f559521a8e78c5f91d321a4"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/Map/EnemyView.SpecialZombies.cs",
+    "beforeSha256": "8b96580b7fa227a995fe3527b6df68105d5bb24022403e58b741653d74ac0359",
+    "afterSha256": "439d503aa02a78143631079a35bd46c8a84a046fcef45bf270295444e6845b27"
+  },
+  {
+    "path": "Client/Assets/Tests/EditMode/SurvivorSpecialEnemyTests.cs",
+    "beforeSha256": "7265582b964d3ee5c0868ee1216f75482ef58020edff8c24f21d4de54e3f194f",
+    "afterSha256": "15ce7cdb61bb6dc47266961e84ef87300efebe8547b86403f45954c0d3113fba"
+  },
+  {
+    "path": "Client/Assets/Tests/EditMode/SurvivorSpecialVisualTests.cs",
+    "beforeSha256": "dee753a69de095cbcc8344fd4ee4dd4bbc66ba7d2755d67b6ecaf2255c7a0172",
+    "afterSha256": "f78b5b9cfefd818c8b7ad630f9cab786d8e2f40a0cde6e82eb2ca99325b89dca"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Model/Config/SurvivorEnemyConfig.cs",
+    "beforeSha256": "c9e8fb65b9fc8f65c712f85b5ecf6ece275c59d25a704f1b440193215d25e55a",
+    "afterSha256": "ef2fc6e4303b5d341ae6f8ef1002512059b907a8a6b4fae02a5087c2d49d976b"
+  },
+  {
+    "path": "Client/Assets/Game/Config/tbenemy.bytes",
+    "beforeSha256": "8bfbb561c55286258a2139a12d08a36cdaccab50bd90e5419f94adf475b882d3",
+    "afterSha256": "2dac16132e59d9ef461516aac74fa67a30040e4e10e32d9deed06516de79d46d"
+  },
+  {
+    "path": "Client/Assets/Game/Config/tbsurvivorenemy.bytes",
+    "beforeSha256": "9b83859c8ed87f9025774fc81f05accbdc1285ed16649a57de53a244c19f7f35",
+    "afterSha256": "28757f32c17f71badf71f3ffc2c63118cbeaf5732bf578a06581119ac14a4d57"
+  },
+  {
+    "path": "Server/GameServer/Runtime/Model/Generated/Config/SurvivorEnemyConfig.cs",
+    "beforeSha256": "e1b784e4ab04ae6d92bdc856138d6d750e2f736a68d6ae160b7bb0f58bcdbdd5",
+    "afterSha256": "545eac0db8addc057b2e8e7b8bc14973791f98903e20dd0e09e6dd37112f364f"
+  },
+  {
+    "path": "Server/GameServer/Config/Luban/tbenemy.bytes",
+    "beforeSha256": "8bfbb561c55286258a2139a12d08a36cdaccab50bd90e5419f94adf475b882d3",
+    "afterSha256": "2dac16132e59d9ef461516aac74fa67a30040e4e10e32d9deed06516de79d46d"
+  },
+  {
+    "path": "Server/GameServer/Config/Luban/tbsurvivorenemy.bytes",
+    "beforeSha256": "9b83859c8ed87f9025774fc81f05accbdc1285ed16649a57de53a244c19f7f35",
+    "afterSha256": "28757f32c17f71badf71f3ffc2c63118cbeaf5732bf578a06581119ac14a4d57"
+  },
+  {
+    "path": "Client/Assets/Game/Scripts/Controller/View/Map/EnemyView.cs",
+    "beforeSha256": "826609e41bfed95b865ec2f8e4d1d9bbd4fc824b0f6327849e68298e19bffde3",
+    "afterSha256": "6f8b3bd847e6f1c21e0d4eb627d8b678fa9b75f3c180a6dabb9376f91c476cbe"
+  }
+]

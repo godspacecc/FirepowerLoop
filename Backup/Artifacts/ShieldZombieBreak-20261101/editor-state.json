@@ -1,0 +1,13 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "1 result\n{isPlaying:true,isPaused:false,isCompiling:false,isUpdating:false,unityVersion:2022.3.55f1c1,projectPath:\"E:\\\\GitHub\\\\FirepowerLoop\\\\Client\",selection:\"Object[][0]\"}"
+      }
+    ],
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

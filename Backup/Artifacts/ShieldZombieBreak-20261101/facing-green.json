@@ -1,0 +1,52 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Passed\",\"TotalTests\":5,\"PassedTests\":5,\"FailedTests\":0,\"SkippedTests\":0,\"Duration\":\"00:00:06.9244349\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorSpecialFacingTests.CasterLocksWindupThenFacesNewTargetDuringCooldown\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1580000\"},{\"Name\":\"Game.Tests.SurvivorSpecialFacingTests.CoincidentTargetKeepsSafeFacing\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1820000\"},{\"Name\":\"Game.Tests.SurvivorSpecialFacingTests.LateralChaseProjectsCurrentTarget(\\u0022exploder\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1270000\"},{\"Name\":\"Game.Tests.SurvivorSpecialFacingTests.LateralChaseProjectsCurrentTarget(\\u0022caster\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1060000\"},{\"Name\":\"Game.Tests.SurvivorSpecialFacingTests.ShieldProjectionKeepsAuthorityTurnLimit\",\"Status\":\"Passed\",\"Duration\":\"00:00:01.1350000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Passed",
+          "TotalTests": 5,
+          "PassedTests": 5,
+          "FailedTests": 0,
+          "SkippedTests": 0,
+          "Duration": "00:00:06.9244349"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorSpecialFacingTests.CasterLocksWindupThenFacesNewTargetDuringCooldown",
+            "Status": "Passed",
+            "Duration": "00:00:01.1580000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialFacingTests.CoincidentTargetKeepsSafeFacing",
+            "Status": "Passed",
+            "Duration": "00:00:01.1820000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialFacingTests.LateralChaseProjectsCurrentTarget(\"exploder\")",
+            "Status": "Passed",
+            "Duration": "00:00:01.1270000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialFacingTests.LateralChaseProjectsCurrentTarget(\"caster\")",
+            "Status": "Passed",
+            "Duration": "00:00:01.1060000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialFacingTests.ShieldProjectionKeepsAuthorityTurnLimit",
+            "Status": "Passed",
+            "Duration": "00:00:01.1350000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}

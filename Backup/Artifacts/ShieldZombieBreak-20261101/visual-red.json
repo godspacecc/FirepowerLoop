@@ -1,0 +1,53 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"result\":{\"Summary\":{\"Status\":\"Failed\",\"TotalTests\":5,\"PassedTests\":4,\"FailedTests\":1,\"SkippedTests\":0,\"Duration\":\"00:01:28.7094411\"},\"Results\":[{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt\",\"Status\":\"Failed\",\"Duration\":\"00:00:00.3280000\",\"Message\":\"  Expected: not null\\r\\n  But was:  null\\r\\n\"},{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.ExactAddressesAndSerializedDependenciesAreCollected\",\"Status\":\"Passed\",\"Duration\":\"00:01:26.7470000\"},{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\\u0022Exploder\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0340000\"},{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\\u0022Caster\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0150000\"},{\"Name\":\"Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\\u0022Shield\\u0022)\",\"Status\":\"Passed\",\"Duration\":\"00:00:00.0030000\"}]}}"
+      }
+    ],
+    "structuredContent": {
+      "result": {
+        "Summary": {
+          "Status": "Failed",
+          "TotalTests": 5,
+          "PassedTests": 4,
+          "FailedTests": 1,
+          "SkippedTests": 0,
+          "Duration": "00:01:28.7094411"
+        },
+        "Results": [
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.BrokenShieldHidesOnlyEquipmentAndReuseRestoresIt",
+            "Status": "Failed",
+            "Duration": "00:00:00.3280000",
+            "Message": "  Expected: not null\r\n  But was:  null\r\n"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.ExactAddressesAndSerializedDependenciesAreCollected",
+            "Status": "Passed",
+            "Duration": "00:01:26.7470000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\"Exploder\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0340000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\"Caster\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0150000"
+          },
+          {
+            "Name": "Game.Tests.SurvivorSpecialVisualTests.FormalPrefabKeepsBodyAndClearsWarning(\"Shield\")",
+            "Status": "Passed",
+            "Duration": "00:00:00.0030000"
+          }
+        ]
+      }
+    },
+    "isError": false
+  },
+  "id": 2,
+  "jsonrpc": "2.0"
+}
