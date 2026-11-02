@@ -292,6 +292,30 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieEnchantHealth.prefab
+        CollectorGUID: 64ad570f427db3548a61ff9517e10ab0
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieEnchantSpeed.prefab
+        CollectorGUID: 71d3475582e7f8e4b85086eadf13bb33
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
+      - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieEnchantShield.prefab
+        CollectorGUID: 0501304297e20324bb21b37e1fa07ba7
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieShield.prefab
         CollectorGUID: 23307836e09542c4d9ad88faf498afb0
         CollectorType: 0

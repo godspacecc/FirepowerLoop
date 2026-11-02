@@ -37,6 +37,6 @@ namespace Game
         }
         /// <summary>死亡、禁用与回池只清前摇；装备复原限定在新用途或显式回池。</summary>
         private void ResetSurvivorSpecial()
-        { if(survivorWarning!=null)survivorWarning.enabled=false;survivorCasting=false; }
+        { ResetSurvivorEnchantment();if(survivorWarning!=null)survivorWarning.enabled=false;survivorCasting=false; }
     }
 }

@@ -233,7 +233,7 @@ namespace Game
             navigation.SetTarget(player);
             bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
             if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
-            AdvanceElementDamage(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
+            AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
             AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             AdvanceRecovery(dt,input.MoveInput.sqrMagnitude>.0001f||(player-previousPlayer).sqrMagnitude>.000001f);
@@ -259,7 +259,7 @@ namespace Game
                 var position=SurvivorGroundEntryRules.Position(groundEntry);
                 // 倍率乘积先取最近整数，避免0.9的浮点误差把90血截成89。
                 double minutes=Model.State.ElapsedSeconds/60;int health=(int)Math.Min(int.MaxValue,Math.Round(selected.MaxHP*choice.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute),MidpointRounding.AwayFromZero));
-                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,GroundEntry=groundEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);
+                var e=new ArcadeEnemyRuntime{Id=++identity,ConfigId=choice.EnemyId,AttackKind=selected.AttackKind,Position=position,GroundEntry=groundEntry,Health=health,MaxHealth=health,Damage=(int)Math.Min(int.MaxValue,selected.AttackDamage*choice.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=selected.MoveSpeed*choice.SpeedMultiplier*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};enemies.Add(e.Id,e);EnchantStateFor(e);
             }
         }
         /// <summary>只对画面内、射程内无遮挡的最近目标发射，弹丸保留发射时伤害。</summary>

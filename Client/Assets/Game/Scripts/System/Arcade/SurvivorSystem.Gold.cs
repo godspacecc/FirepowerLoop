@@ -39,7 +39,7 @@ namespace Game
         {
             if(missionMode||goldDrops.Count>=config.MaxDrops)return;
             var r=catalog.Rule;
-            if(goldRandom.NextDouble()>=ArcadeEnemyDropRules.Chance(r.DropChance,enemy.MaxHealth,enemy.Damage,r.EnemyDropHealthUnit,r.EnemyDropDamageUnit,r.EnemyDropMaxChance)*config.GoldDropMultiplier)return;
+            if(goldRandom.NextDouble()>=ArcadeEnemyDropRules.Chance(r.DropChance,EnchantBirthHealth(enemy),enemy.Damage,r.EnemyDropHealthUnit,r.EnemyDropDamageUnit,r.EnemyDropMaxChance)*config.GoldDropMultiplier)return;
             goldDrops.Add(++identity,enemy.Position);
         }
         /// <summary>保存成功才消除拾取物；失败保留金币，限频重试并沿现有提示展示。</summary>

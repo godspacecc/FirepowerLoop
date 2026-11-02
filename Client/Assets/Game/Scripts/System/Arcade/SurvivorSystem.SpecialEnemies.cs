@@ -33,6 +33,7 @@ namespace Game
         {
             var shape=Shape(enemy.ConfigId);if(shape==null||string.IsNullOrEmpty(shape.SpecialKind))return false;
             if(enemy.Health<=0||!enemies.ContainsKey(enemy.Id))return true;
+            if(IsEnchantKind(shape.SpecialKind))return false;
             var state=SpecialState(enemy);var delta=player-enemy.Position;
             if(shape.SpecialKind=="Shield")
             {
@@ -77,12 +78,13 @@ namespace Game
         private void FlushSpecialDeaths()
         {
             foreach(int id in specialDeaths)
-            {if(enemies.Remove(id)){presentedEnemies.Remove(id);elementStatuses.Remove(id);specialEnemies.Remove(id);view.RemoveEnemy(id,false);}}
+            {if(enemies.Remove(id)){presentedEnemies.Remove(id);elementStatuses.Remove(id);specialEnemies.Remove(id);enchantments.Remove(id);view.RemoveEnemy(id,false);}}
             specialDeaths.Clear();
         }
         /// <summary>所有来源先消耗盾耐久；击碎当次完整吸收，不向生命溢出。</summary>
         private int ShieldDamage(ArcadeEnemyRuntime enemy,int damage,Vector2? source)
         {
+            if(AbsorbEnchantShield(enemy,damage))return 0;
             if(Shape(enemy.ConfigId)?.SpecialKind!="Shield")return damage;
             var state=SpecialState(enemy);if(state.ShieldRemaining<=0)return damage;
             state.ShieldRemaining=Math.Max(0,state.ShieldRemaining-damage);
@@ -141,7 +143,8 @@ namespace Game
         /// <summary>恢复近场显示时重新投影完整状态，暂停期间由主循环冻结。</summary>
         private void ProjectSpecialEnemy(ArcadeEnemyRuntime enemy)
         {
-            var shape=Shape(enemy.ConfigId);if(shape==null||string.IsNullOrEmpty(shape.SpecialKind))return;
+            ProjectEnchantment(enemy);
+            var shape=Shape(enemy.ConfigId);if(shape==null||string.IsNullOrEmpty(shape.SpecialKind)||IsEnchantKind(shape.SpecialKind))return;
             var state=SpecialState(enemy);
             // 盾牌及前摇保留权威锁定方向；追击和施法冷却则朝当前目标，避免旧方向造成横向滑行。
             var direction=state.Facing;
@@ -155,7 +158,7 @@ namespace Game
         {
             foreach(int id in hostileProjectiles.Keys)view?.RemoveSurvivorHostileProjectile(id);
             foreach(var blast in specialBlasts)view?.RemoveSurvivorEnemyBlast(blast.Id);specialBlasts.Clear();
-            hostileProjectiles.Clear();specialEnemies.Clear();specialDeaths.Clear();expiredHostileProjectiles.Clear();
+            hostileProjectiles.Clear();specialEnemies.Clear();enchantments.Clear();specialDeaths.Clear();expiredHostileProjectiles.Clear();
         }
     }
 }

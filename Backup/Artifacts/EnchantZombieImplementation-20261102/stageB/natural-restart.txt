@@ -1,0 +1,5 @@
+Natural registered TickFrame after controlled roster injection: health=1 speed=1 shield=20 maxHealth=180
+Consumed enchant shield; repeated full projection kept two rings, native steel/cross stayed hidden
+Natural shield regrant restored blue marker; all three sources killed through shared damage; target retained all three grants. Active waves=3
+Paused 500ms real time, active pulse ages unchanged
+RestartAsync=True; enchant pulse pool=0, authority states=0, old target destroyed or inactive=True

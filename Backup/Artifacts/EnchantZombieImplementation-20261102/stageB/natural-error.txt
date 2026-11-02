@@ -1,0 +1,3 @@
+
+System.Exception: No first natural triple grant
+  at Script.Run () [0x0055e] in <6a9075d0f378418fae95306063fafd4c>:0 

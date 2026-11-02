@@ -1,0 +1,6 @@
+Prefabs/Characters/ArcadeZombieEnchantHealth loaded=ArcadeZombieEnchantHealth validHandle=True markerTemplate=True
+Prefabs/Characters/ArcadeZombieEnchantHealth probe-owned handle released once
+Prefabs/Characters/ArcadeZombieEnchantSpeed loaded=ArcadeZombieEnchantSpeed validHandle=True markerTemplate=True
+Prefabs/Characters/ArcadeZombieEnchantSpeed probe-owned handle released once
+Prefabs/Characters/ArcadeZombieEnchantShield loaded=ArcadeZombieEnchantShield validHandle=True markerTemplate=True
+Prefabs/Characters/ArcadeZombieEnchantShield probe-owned handle released once

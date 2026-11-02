@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('Client/Assets/Game/Scripts/Controller/Enemy/EnemyCtrl.cs');s=p.read_text(encoding='utf8');needle='if(survivorIds.Contains(enemyId)&&!readyView.ValidateElementFeedback(out var elementError))return FailPrepared(elementError);';s=s.replace(needle,needle+'\n                if(survivorIds.Contains(enemyId)&&readyView.SurvivorEnchantRingTemplate==null)return FailPrepared("敌人准备失败：附魔标识模板缺失 "+config.Id);');p.write_text(s,encoding='utf8')

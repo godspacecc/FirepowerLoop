@@ -1,0 +1,3 @@
+Prefabs/Characters/ArcadeZombieEnchantHealth unique=1 tags=arcade
+Prefabs/Characters/ArcadeZombieEnchantSpeed unique=1 tags=arcade
+Prefabs/Characters/ArcadeZombieEnchantShield unique=1 tags=arcade

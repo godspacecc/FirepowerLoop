@@ -11869,8 +11869,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dd511799c2673494fb384b019031729f, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4955890779644251449
 GameObject:
   m_ObjectHideFlags: 0
@@ -12388,6 +12388,10 @@ MonoBehaviour:
   damageNumberEmitter: {fileID: 2999992158788061900}
   dockSeaEntryClip: {fileID: 0}
   dockSeaEntryRippleMaterial: {fileID: 0}
+  survivorEnchantRingTemplate: {fileID: 2301485098042960833, guid: a18a4e86dd3329044a0fa0e1f8d1ef14,
+    type: 3}
+  groundEntrySoilMaterial: {fileID: 0}
+  survivorWarning: {fileID: 0}
 --- !u!195 &5340292875593954837
 NavMeshAgent:
   m_ObjectHideFlags: 0

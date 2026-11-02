@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('Client/Assets/Game/Scripts/Controller/View/Map/EnemyView.Enchantments.cs');s=p.read_text(encoding='utf8').replace('   if(survivorEnchantRingTemplate==null)return;','   if(survivorEnchantRingTemplate==null)return;\n   // 普通零快照不创建对象，密集尸潮只为实际获得附魔的目标分配三条环。\n   if(enchantReceived==null&&state.HealthStacks<=0&&state.SpeedStacks<=0&&state.ShieldRemaining<=0)return;');p.write_text(s,encoding='utf8')

@@ -10,3 +10,7 @@
 ,enemy.arcade.zombie.exploder,ArcadeZombieExploder,weapon.zombie-claw,60,10,8,0.9,1,2.97,,Melee,0,0.4,,,,0,0,0,0,false
 ,enemy.arcade.zombie.caster,ArcadeZombieCaster,weapon.zombie-claw,80,10,8,0.9,1,1.76,,Melee,0,0.4,,,,0,0,0,0,false
 ,enemy.arcade.zombie.shield,ArcadeZombieShield,weapon.zombie-claw,150,10,8,0.9,1,2.2,,Melee,0,0.4,,,,0,0,0,0,false
+
+,enemy.arcade.zombie.enchant.health,ArcadeZombieEnchantHealth,weapon.zombie-claw,80,10,8,0.9,1,1.76,,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.enchant.speed,ArcadeZombieEnchantSpeed,weapon.zombie-claw,80,10,8,0.9,1,1.76,,Melee,0,0.4,,,,0,0,0,0,false
+,enemy.arcade.zombie.enchant.shield,ArcadeZombieEnchantShield,weapon.zombie-claw,80,10,8,0.9,1,1.76,,Melee,0,0.4,,,,0,0,0,0,false

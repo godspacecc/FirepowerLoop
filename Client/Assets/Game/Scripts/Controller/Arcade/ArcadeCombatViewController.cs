@@ -39,6 +39,10 @@ namespace Game
         /// <summary>投影特殊敌人的权威朝向、预警进度与目标；不由动画结算伤害。</summary>
         /// <summary>完整盾装备快照，由规则决定完整或破坏，不在显示端计时。</summary>
         void SetSurvivorEnemyShield(int id,bool intact) { }
+        /// <summary>附魔完整只读投影，阶段A默认无表现；不与原生盾装备共享开关。</summary>
+        void SetSurvivorEnemyEnchantment(int id,SurvivorEnchantSnapshot snapshot) { }
+        /// <summary>权威脉冲通知，仅供未来已确认表现使用。</summary>
+        void PlaySurvivorEnchantPulse(int id,string kind,Vector2 position,float radius) { }
         void SetSurvivorEnemySpecial(int id,string kind,Vector2 direction,bool warning,float progress,Vector2 target,float radius) { }
         /// <summary>敌方火球独立身份与生命周期；退出由End统一释放。</summary>
         void SetSurvivorHostileProjectile(int id,Vector2 position,Vector2 direction) { }

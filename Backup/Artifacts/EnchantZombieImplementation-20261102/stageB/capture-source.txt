@@ -1,0 +1,1 @@
+Formal Prefabs loaded through normal Boot YooAsset map preparation. System-interface controlled sample: injected roster -> SurvivorSystem.AdvanceEnchantments -> real snapshot and pulse ports -> EnemyCtrl; no visual stand-ins. 3x40 PNG at 10fps. Paused normal game, manually sampled 1.3s presentation ages. Same formal player and camera. Not an unmodified full-match recording.

@@ -37,6 +37,13 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         ProjectileLifetime = _buf.ReadFloat();
         ShieldDurability = _buf.ReadInt();
         TurnDegreesPerSecond = _buf.ReadFloat();
+        EnchantIntervalSeconds = _buf.ReadFloat();
+        EnchantRadius = _buf.ReadFloat();
+        EnchantHealthFraction = _buf.ReadFloat();
+        EnchantSpeedFraction = _buf.ReadFloat();
+        EnchantMaxStacks = _buf.ReadInt();
+        EnchantShieldGain = _buf.ReadInt();
+        EnchantShieldCap = _buf.ReadInt();
     }
 
     public static SurvivorEnemyConfig DeserializeSurvivorEnemyConfig(ByteBuf _buf)
@@ -66,6 +73,13 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
     public readonly float ProjectileLifetime;
     public readonly int ShieldDurability;
     public readonly float TurnDegreesPerSecond;
+    public readonly float EnchantIntervalSeconds;
+    public readonly float EnchantRadius;
+    public readonly float EnchantHealthFraction;
+    public readonly float EnchantSpeedFraction;
+    public readonly int EnchantMaxStacks;
+    public readonly int EnchantShieldGain;
+    public readonly int EnchantShieldCap;
    
     public const int __ID__ = -2055649804;
     public override int GetTypeId() => __ID__;
@@ -99,6 +113,13 @@ public sealed partial class SurvivorEnemyConfig : Luban.BeanBase
         + "ProjectileLifetime:" + ProjectileLifetime + ","
         + "ShieldDurability:" + ShieldDurability + ","
         + "TurnDegreesPerSecond:" + TurnDegreesPerSecond + ","
+        + "EnchantIntervalSeconds:" + EnchantIntervalSeconds + ","
+        + "EnchantRadius:" + EnchantRadius + ","
+        + "EnchantHealthFraction:" + EnchantHealthFraction + ","
+        + "EnchantSpeedFraction:" + EnchantSpeedFraction + ","
+        + "EnchantMaxStacks:" + EnchantMaxStacks + ","
+        + "EnchantShieldGain:" + EnchantShieldGain + ","
+        + "EnchantShieldCap:" + EnchantShieldCap + ","
         + "}";
     }
 }

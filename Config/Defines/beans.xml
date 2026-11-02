@@ -746,6 +746,15 @@
         <!-- 盾耐久：全方向及持续伤害先扣盾，破盾当次不溢出。 -->
         <var name="ShieldDurability" type="int"/>
         <var name="TurnDegreesPerSecond" type="float"/>
+        <!-- 附魔专用脉冲与线性层数参数，普通敌人为零。 -->
+        <var name="EnchantIntervalSeconds" type="float"/>
+        <var name="EnchantRadius" type="float"/>
+        <var name="EnchantHealthFraction" type="float"/>
+        <var name="EnchantSpeedFraction" type="float"/>
+        <var name="EnchantMaxStacks" type="int"/>
+        <var name="EnchantShieldGain" type="int"/>
+        <var name="EnchantShieldCap" type="int"/>
+
     </bean>
     <!-- 永久角色商品，仅改变整套外观。 -->
     <bean name="SurvivorCharacterConfig" group="e">

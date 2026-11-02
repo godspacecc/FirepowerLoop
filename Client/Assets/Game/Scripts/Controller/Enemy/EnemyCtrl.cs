@@ -11,7 +11,7 @@ namespace Game
     /// 为街机敌人准备与复用表现对象，不创建旧战斗或 AI 权威状态。
     /// 负责候选提交与失败回滚，不决定地图出生配置或重新生成导航数据。
     /// </summary>
-    public sealed class EnemyCtrl : IController, IArcadeEnemyPresentationPort
+    public sealed partial class EnemyCtrl : IController, IArcadeEnemyPresentationPort
     {
         internal const float ArcadeHealthBarRevealSeconds = 2.5f;
         private readonly IArchitecture architecture;
@@ -414,6 +414,7 @@ namespace Game
 
         public void ClearArcadeEnemies()
         {
+            ClearEnchantPulses();
             explosionDeaths?.Clear();
             groundEntries?.Clear();
             var values = new List<ArcadeEnemyPresentationEntry>(arcadeEnemies.Values);
@@ -460,6 +461,7 @@ namespace Game
                     return FailPrepared(prefabError);
                 if(survivorIds.Contains(enemyId)&&!readyView.ValidateGroundEntry(out var groundError))return FailPrepared(groundError);
                 if(survivorIds.Contains(enemyId)&&!readyView.ValidateElementFeedback(out var elementError))return FailPrepared(elementError);
+                if(survivorIds.Contains(enemyId)&&readyView.SurvivorEnchantRingTemplate==null)return FailPrepared("敌人准备失败：附魔标识模板缺失 "+config.Id);
             }
 
             arcadeCandidateRoot = context.Scene.DynamicObjectRoot;
@@ -518,6 +520,7 @@ namespace Game
 
         private void ReleaseArcadePresentation()
         {
+            ClearEnchantPulses();
             groundEntries?.Dispose();groundEntries=null;
             explosionDeaths?.Dispose();
             explosionDeaths = null;
@@ -822,6 +825,7 @@ namespace Game
 
             var appState=architecture.GetModel<AppStateModel>();
             bool elementsPaused=herdActivityPaused||survivor==null||!survivor.Active||survivor.Paused||appState==null||appState.CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen;
+            TickEnchantPulses(seconds,elementsPaused);
             foreach (var entry in arcadeEnemies.Values)
             {
                 entry.View?.TickCombatFeedback(seconds);

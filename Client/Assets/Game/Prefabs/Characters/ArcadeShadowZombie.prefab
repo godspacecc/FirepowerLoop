@@ -17148,6 +17148,10 @@ MonoBehaviour:
   damageNumberEmitter: {fileID: 313529781685337131}
   dockSeaEntryClip: {fileID: 0}
   dockSeaEntryRippleMaterial: {fileID: 0}
+  survivorEnchantRingTemplate: {fileID: 2301485098042960833, guid: a18a4e86dd3329044a0fa0e1f8d1ef14,
+    type: 3}
+  groundEntrySoilMaterial: {fileID: 0}
+  survivorWarning: {fileID: 0}
 --- !u!195 &534334360790731581
 NavMeshAgent:
   m_ObjectHideFlags: 0

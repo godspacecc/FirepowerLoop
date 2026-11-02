@@ -37,9 +37,9 @@ namespace Game.Tests
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();}
         private void Prepare(){Assert.That(Call("PrepareEnemyRoster",new object[]{null}),Is.True);}
-        [Test] public void SpecialRosterContainsSixIndependentEnemies()
+        [Test] public void SpecialRosterContainsNineIndependentEnemies()
         {
-            Prepare();Assert.That(Get<SurvivorEnemyRoster>("enemyRoster").Entries.Count,Is.EqualTo(6));
+            Prepare();Assert.That(Get<SurvivorEnemyRoster>("enemyRoster").Entries.Count,Is.EqualTo(9));
         }
         [Test] public void ExploderWarnsThenSelfDestructsWithoutRewards()
         {
@@ -123,10 +123,10 @@ namespace Game.Tests
         [Test] public void AllSixPhaseWeightsMatchApprovedMix()
         {
             Prepare();var roster=Get<SurvivorEnemyRoster>("enemyRoster");
-            int[][] expected={new[]{100,0,0,0,0,0},new[]{60,40,0,0,0,0},new[]{45,30,15,5,0,5},new[]{30,30,20,7,6,7},new[]{20,30,25,8,8,9},new[]{10,30,30,10,10,10}};
+            int[][] expected={new[]{100,0,0,0,0,0,0,0,0},new[]{60,40,0,0,0,0,0,0,0},new[]{45,30,15,5,0,5,0,0,0},new[]{21,30,20,7,6,7,3,3,3},new[]{14,27,25,8,8,9,3,3,3},new[]{10,21,30,10,10,10,3,3,3}};
             for(int phase=0;phase<6;phase++)
             {
-                var counts=new int[6];for(int i=0;i<1000;i++){var choice=roster.Select(phase*120,(i+.5f)/1000);counts[roster.Entries.ToList().IndexOf(choice)]++;}
+                var counts=new int[9];for(int i=0;i<1000;i++){var choice=roster.Select(phase*120,(i+.5f)/1000);counts[roster.Entries.ToList().IndexOf(choice)]++;}
                 Assert.That(counts,Is.EqualTo(expected[phase].Select(x=>x*10).ToArray()));
             }
         }

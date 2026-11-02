@@ -1,0 +1,1 @@
+StartAsync=True error= Loader=Game.YooAssetResourceLoader; TryPrepare reads normal result once; all result writes redirected immediately after Start before any finalization.

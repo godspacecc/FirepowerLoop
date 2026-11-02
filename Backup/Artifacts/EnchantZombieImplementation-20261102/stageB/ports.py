@@ -1,0 +1,2 @@
+from pathlib import Path
+p=Path('Client/Assets/Game/Scripts/Controller/ViewCtrl/Enemy/EnemyRuntimePorts.cs');s=p.read_text(encoding='utf-8-sig').replace('    public interface IArcadeEnemyPresentationPort : IUtility\n    {','    public interface IArcadeEnemyPresentationPort : IUtility\n    {\n        /// <summary>附魔快照与波纹只属于表现，不持有规则层数。</summary>\n        void SetSurvivorEnchantment(int id,SurvivorEnchantSnapshot snapshot) { }\n        void PlaySurvivorEnchantPulse(int id,string kind,Vector3 position,float radius) { }');p.write_text(s,encoding='utf8')

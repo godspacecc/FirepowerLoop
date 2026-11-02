@@ -88,10 +88,10 @@ namespace Game
         {
             using var sample=HordeWakeMarker.Auto();
             if(!WantsEnemyPresentation(enemy,view.TryGetSurvivorViewBounds(out var bounds),bounds))
-            {enemies.Add(enemy.Id,enemy);return true;}
+            {enemies.Add(enemy.Id,enemy);EnchantStateFor(enemy);return true;}
             if(!view.TryWakeSurvivorEnemy(enemy.Id,enemy.ConfigId,enemy.Position,enemy.Health,enemy.MaxHealth,enemy.AttackSequence,out var error))
             {LastError=error??"尸潮角色展开失败";Model.Paused=true;input.Disable();Publish();return false;}
-            enemies.Add(enemy.Id,enemy);presentedEnemies.Add(enemy.Id);view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);return true;
+            enemies.Add(enemy.Id,enemy);EnchantStateFor(enemy);presentedEnemies.Add(enemy.Id);view.SetEnemyScale(enemy.Id,Shape(enemy.ConfigId)?.VisualScale??Vector3.one);return true;
         }
         /// <summary>显示准备带覆盖身体半径及短时移动；退出边界更宽，避免相机边缘反复借还。相机不可用时保守显示。</summary>
         private bool WantsEnemyPresentation(ArcadeEnemyRuntime enemy,bool hasBounds,Rect bounds)
@@ -135,8 +135,9 @@ namespace Game
         {
             var shape=Shape(request.EnemyId);var definition=enemyConfigs[request.EnemyId];double minutes=Model.State.ElapsedSeconds/60;
             int health=(int)Math.Min(int.MaxValue,Math.Round(definition.MaxHP*shape.HealthMultiplier*(1+minutes*config.EnemyHealthGrowthPerMinute),MidpointRounding.AwayFromZero));
-            return new ArcadeEnemyRuntime{Id=checked(++identity),ConfigId=request.EnemyId,AttackKind=definition.AttackKind,Position=position,Health=health,MaxHealth=health,
+            var enemy=new ArcadeEnemyRuntime{Id=checked(++identity),ConfigId=request.EnemyId,AttackKind=definition.AttackKind,Position=position,Health=health,MaxHealth=health,
                 Damage=(int)Math.Min(int.MaxValue,definition.AttackDamage*shape.DamageMultiplier*(1+minutes*config.EnemyDamageGrowthPerMinute)),Speed=request.Speed*(float)(1+minutes*config.EnemySpeedGrowthPerMinute)};
+            return enemy;
         }
         /// <summary>按出生预算分帧创建全图敌人；距离和相机只用于安全出生，不限制追击资格。</summary>
         private bool TickHorde(float dt)

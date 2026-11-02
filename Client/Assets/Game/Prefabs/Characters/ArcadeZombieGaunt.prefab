@@ -5768,8 +5768,11 @@ MonoBehaviour:
   dockSeaEntryClip: {fileID: 7400000, guid: e08273a01a8030c47a17513abaf6fd06, type: 2}
   dockSeaEntryRippleMaterial: {fileID: 2100000, guid: 70e2eaf89c39419408159d6e5a9e5e36,
     type: 2}
+  survivorEnchantRingTemplate: {fileID: 2301485098042960833, guid: a18a4e86dd3329044a0fa0e1f8d1ef14,
+    type: 3}
   groundEntrySoilMaterial: {fileID: 2100000, guid: 0e788d1b81b5f9744b10de9942bb7490,
     type: 2}
+  survivorWarning: {fileID: 0}
 --- !u!195 &8868214356065552605
 NavMeshAgent:
   m_ObjectHideFlags: 0

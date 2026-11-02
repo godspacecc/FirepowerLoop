@@ -1,0 +1,4 @@
+from pathlib import Path
+p=Path('Backup/Artifacts/EnchantZombieImplementation-20261102/stageB/Natural.cs');s=p.read_text(encoding='utf8');needle='log.Add("Natural shield regrant restored blue marker;';insert='''
+ var beforeWake=state;ep.SuspendEnemy(900004);C(s,"SyncEnemyPresentations");ep.TryGetEnemyPresentationRoot(900004,out target);rings=target.GetComponentsInChildren<LineRenderer>(true).Where(x=>x.name.StartsWith("EnchantReceived")).ToArray();if(!s.TryGetEnchantSnapshot(900004,out state)||state.HealthStacks!=beforeWake.HealthStacks||state.SpeedStacks!=beforeWake.SpeedStacks||state.ShieldRemaining!=beforeWake.ShieldRemaining||rings.Count(x=>x.enabled)!=3)throw new Exception("Suspend/wake changed authority or lost rings");log.Add("Suspend/wake reapplied all three markers without adding stacks or durability");
+ ''';s=s.replace(needle,insert+needle);p.write_text(s,encoding='utf8')
