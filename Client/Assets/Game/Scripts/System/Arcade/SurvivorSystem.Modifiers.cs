@@ -53,6 +53,7 @@ namespace Game
         /// <summary>只允许已拥有且该效果未满级的武器进入候选或接受选择。</summary>
         private bool CanChooseModifier(SurvivorUpgradeDefinition definition,int id)
         {
+            if(definition.Kind=="DroneFlame")return Model.Loadout?.LevelOf("Drone")>0 && Model.State.UpgradeLevel(id)==0;
             if(!definition.IsModifier)return true;
             if(definition.TargetWeapon!="Rifle"||definition.Weight<=0||Model.Loadout==null||Model.Loadout.LevelOf("Rifle")==0||Model.State.UpgradeLevel(id)>=definition.MaxLevel)return false;
             // 弹体分支只在首次选择时确定；穿透另与元素弹头同组，多重不参与互斥。

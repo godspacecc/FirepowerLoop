@@ -1,0 +1,23 @@
+using System;using System.IO;using System.Reflection;using Game;using UnityEngine;using UnityEditor;using FirepowerLoop.Arcade;
+public class DroneFlameRuntime {
+static ArcadeCombatViewController view;static GameObject host;static double begin;
+static string report="E:/GitHub/FirepowerLoop/Backup/Artifacts/DroneFlame-20261102/formal/runtime-load.txt";
+public static string Run(){
+if(!Application.isPlaying||!(ResourceLoader.Current is YooAssetResourceLoader))throw new Exception("需要运行中的真实YooAsset加载器");
+view=new ArcadeCombatViewController();host=new GameObject("DroneAssetCheck");typeof(ArcadeCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,host);
+var definition=new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,"Prefabs/SceneObjects/ArcadeSupportDroneVisual",false,new Vector3(0,1.6f,0),0,0,0,0,0,0);
+begin=EditorApplication.timeSinceStartup;view.SetDrone(1,definition,Vector2.zero,Vector2.up,(int)ArcadeDronePhase.Following,1);
+EditorApplication.update+=Poll;return "验证正式SetDrone异步加载与改装显示"; }
+static void Poll(){if(host.transform.childCount==0 && EditorApplication.timeSinceStartup-begin<30)return;EditorApplication.update-=Poll;
+string result;try{
+var assembly=host.transform.GetChild(0).Find("FlameRetrofit");if(assembly.gameObject.activeSelf)throw new Exception("普通机体显示喷嘴");
+view.SetDroneFlame(true,Vector2.zero,Vector2.up,false,0);var ps=assembly.GetComponentInChildren<ParticleSystem>(true);
+if(!assembly.gameObject.activeSelf||ps.particleCount!=0)throw new Exception("改装待机错误");
+view.SetDroneFlame(true,Vector2.zero,Vector2.up,true,.3f);if(ps.particleCount==0)throw new Exception("没有火焰");
+foreach(var r in assembly.GetComponentsInChildren<Renderer>(true))if(r.sharedMaterial==null||!r.sharedMaterial.shader.isSupported)throw new Exception("喷嘴或火焰材质不可用");
+view.SetDroneFlame(true,Vector2.zero,Vector2.up,false,0);if(!assembly.gameObject.activeSelf||ps.particleCount!=0)throw new Exception("停火状态错误");
+view.SetDroneFlame(false,Vector2.zero,Vector2.up,false,0);if(assembly.gameObject.activeSelf)throw new Exception("退出显示残留");result="PASS Game.YooAssetResourceLoader; actual SetDrone + SetDroneFlame; default hidden; upgraded idle visible; firing emits; idle clears particles; reset hidden; materials supported";
+}catch(Exception ex){result="FAIL "+ex.Message;}
+finally{typeof(ArcadeCombatViewController).GetMethod("ReleaseAllEffectVisuals",BindingFlags.Instance|BindingFlags.NonPublic).Invoke(view,null);UnityEngine.Object.Destroy(host);}
+File.WriteAllText(report,result);}
+}

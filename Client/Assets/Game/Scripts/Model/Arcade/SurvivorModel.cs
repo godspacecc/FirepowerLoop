@@ -46,6 +46,9 @@ namespace Game
         public float RifleReloadProgress => RifleReloadDuration>0?UnityEngine.Mathf.Clamp01(1-RifleReloadRemaining/RifleReloadDuration):0f;
         /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
         internal SurvivorLoadout Loadout;
+        /// <summary>本局已取得的无人机喷火改装快照，无额外武器槽。</summary>
+        internal FirepowerLoop.Arcade.SurvivorUpgradeDefinition DroneFlameUpgrade;
+        public bool DroneFlameUpgraded => DroneFlameUpgrade!=null;
         /// <summary>导弹使用独立发射冷却，与步枪弹药和射速无关。</summary>
         internal float RocketClock, RocketInterval;
         public float SupportCooldownTimeRemaining(string kind) => kind=="RocketSupport" ? RocketClock : 0;

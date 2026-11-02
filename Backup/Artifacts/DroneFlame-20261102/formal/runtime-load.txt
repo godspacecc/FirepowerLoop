@@ -1,0 +1,1 @@
+PASS Game.YooAssetResourceLoader; actual SetDrone + SetDroneFlame; default hidden; upgraded idle visible; firing emits; idle clears particles; reset hidden; materials supported

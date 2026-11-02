@@ -52,6 +52,74 @@ namespace Game.Tests
             Assert.That(model.RifleRounds,Is.EqualTo(17));
         }
 
+        /// <summary>只有已装备无人机能抽取改装，提交后保留原武器等级及槽位。</summary>
+        [Test] public void DroneFlameRequiresOwnedDroneAndCanOnlyBeChosenOnce()
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="DroneFlame");
+            Assert.That((int[])Call("EligibleUpgradeIds"),Has.No.Member(id));
+            model.State.AddExperience(config.InitialExperienceThreshold);
+            model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.False);
+            model.Loadout.TryUpgrade("Drone",5);model.Loadout.TryUpgrade("Drone",5);
+            Assert.That((int[])Call("EligibleUpgradeIds"),Does.Contain(id));
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.True);
+            Assert.That(model.DroneFlameUpgraded,Is.True);
+            Assert.That(model.WeaponLevel("Drone"),Is.EqualTo(2));Assert.That(model.UsedWeaponSlots,Is.EqualTo(2));
+            Assert.That((int[])Call("EligibleUpgradeIds"),Has.No.Member(id));
+            model.State.AddExperience(model.State.RequiredExperience);
+            model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.False);
+        }
+
+        /// <summary>喷火不再生成无人机子弹；锥内多个身体持续受伤，升级增加伤害，暂停及退出清理。</summary>
+        [Test] public void DroneFlameReplacesBulletsAndScalesConeDamageWithDroneLevel()
+        {
+            model.Loadout.TryUpgrade("Drone",5);
+            int droneId=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="Drone");
+            Assert.That(system.TryGetDroneFlameUpgradeDamage(droneId,out _,out _),Is.False);
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="DroneFlame");
+            model.State.AddExperience(config.InitialExperienceThreshold);model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.True);
+            Assert.That(system.TryGetDroneFlameUpgradeDamage(droneId,out var currentDps,out var nextDps),Is.True);
+            Assert.That(currentDps,Is.EqualTo(24f));Assert.That(nextDps,Is.EqualTo(36f));
+            Assert.That(system.TryGetDroneFlameUpgradeDamage(id,out _,out _),Is.False);
+            var tuning=Get<ArcadeConfigCatalogDefinition>("catalog").Rule.Drone;
+            var origin=new Vector2(tuning.OffsetX,tuning.OffsetZ);
+            Set("dronePosition",origin);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            Vector2[] offsets={Vector2.up,new Vector2(.25f,1.8f),Vector2.right*2,Vector2.up*4,new Vector2(-.5f,2)};
+            for(int i=0;i<offsets.Length;i++)
+                enemies[i+1]=new ArcadeEnemyRuntime{Id=i+1,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=origin+offsets[i]};
+            var underground=new ArcadeEnemyRuntime{Id=6,ConfigId="enemy.arcade.zombie.shambler",Health=1000,MaxHealth=1000,
+                Position=origin+Vector2.up*2,GroundEntry=new SurvivorGroundEntryState{Started=true,ForwardZ=1,Age=0}};
+            var provider=architecture.GetUtility<IRuntimeConfigProvider>();
+            Assert.That(provider.TryGetDockHitPose("Prefabs/Characters/ArcadeZombieShambler",out var poses,out var error),Is.True,error);
+            Get<Dictionary<string,ArcadeHitPoseSequence>>("groundHitPoses")[underground.ConfigId]=poses;
+            enemies.Add(6,underground);
+            Set("droneVisual",new ArcadePowerupDefinition("survivor.drone",global::ArcadePowerupBehavior.Drone,"",false,new Vector3(0,1.6f,0),0,0,0,0,0,0));
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(origin.x-.25f,origin.y+1,.05f,.2f,true)});
+            model.RifleRounds=17;
+            Call("TickDrone",.2f);
+            int damage=1000-enemies[1].Health;
+            Assert.That(damage,Is.GreaterThan(0));
+            Assert.That(enemies[2].Health,Is.EqualTo(enemies[1].Health));
+            Assert.That(new[]{enemies[3].Health,enemies[4].Health,enemies[5].Health},Is.EqualTo(new[]{1000,1000,1000}));
+            Assert.That(underground.Health,Is.EqualTo(1000),"地下身体不能被喷火命中");
+            Assert.That(view.FlameEquipped && view.FlameEmitting,Is.True);
+            Assert.That(Get<Dictionary<int,ArcadeProjectileRuntime>>("bullets"),Is.Empty);
+            system.SetPaused(true);Call("TickFrame",.2f);
+            Assert.That(enemies[1].Health,Is.EqualTo(1000-damage));
+            system.SetPaused(false);
+            model.Loadout.TryUpgrade("Drone",5);
+            Call("TickDrone",.2f);
+            Assert.That(1000-damage-enemies[1].Health,Is.GreaterThan(damage));
+            Assert.That(model.UsedWeaponSlots,Is.EqualTo(2));Assert.That(model.RifleRounds,Is.EqualTo(17));
+            view.TargetVisible=false;Call("TickDrone",.2f);
+            Assert.That(view.FlameEquipped,Is.True);Assert.That(view.FlameEmitting,Is.False);
+            system.Stop();
+            Assert.That(view.FlameEquipped,Is.False);Assert.That(model.DroneFlameUpgraded,Is.False);
+        }
+
         /// <summary>只看到一只敌人时保持就绪，邻居必须同时在屏内且在当前射程中。</summary>
         [Test] public void MissileNeedsTwoVisibleEnemiesInsideLockRange()
         {
@@ -1068,6 +1136,9 @@ namespace Game.Tests
             public void PlaySurvivorPlayerHit(Vector2 push){PlayerHitCount++;PlayerHitPush=push;}
             public void PlaySurvivorEnemyHit(int id,Vector2 push){EnemyHitCount++;EnemyHitPush=push;}
 
+            public bool FlameEquipped,FlameEmitting;
+            public void SetDroneFlame(bool upgraded,Vector2 position,Vector2 direction,bool emitting,float dt)
+            {FlameEquipped=upgraded;FlameEmitting=emitting;}
             public bool MissileActive;
             public Vector2 MissilePoint;
             public float MissileAge;

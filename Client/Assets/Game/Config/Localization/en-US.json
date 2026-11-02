@@ -1025,5 +1025,8 @@
   "ui.survivor.weapon.SlimeBottle.upgrade_detail": "Radius {0} → {1}m\nSlow {2}% → {3}%\nRestores on exit; excludes Molotov",
   "ui.survivor.weapon.RocketSupport": "Missile Strike",
   "ui.survivor.weapon.RocketSupport.acquire_detail": "Call a missile down on a group of enemies\nDamage {0} · Cooldown {1}s",
-  "ui.survivor.weapon.RocketSupport.upgrade_detail": "Damage {0} → {1}\nBlast radius {2} → {3}m"
+  "ui.survivor.weapon.RocketSupport.upgrade_detail": "Damage {0} → {1}\nBlast radius {2} → {3}m",
+  "ui.survivor.upgrade.DroneFlame.title": "Flamethrower Retrofit",
+  "ui.survivor.upgrade.DroneFlame.detail": "Keeps the current drone level\nReplaces gunfire with a short-range flame cone",
+  "ui.survivor.weapon.Drone.flame_upgrade_detail": "Flame damage per second {0} → {1}"
 }

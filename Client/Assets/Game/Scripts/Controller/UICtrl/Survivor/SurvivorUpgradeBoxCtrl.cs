@@ -63,6 +63,8 @@ namespace Game
                 view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.acquire_detail",after.Damage,after.FireIntervalSeconds.ToString("0.00")):
                     Loc.T("ui.survivor.weapon.upgrade_detail",weaponLevel,weaponLevel+1,before.Damage,after.Damage,before.FireIntervalSeconds.ToString("0.00"),after.FireIntervalSeconds.ToString("0.00"));
                 // 投掷武器展示火区每秒伤害和半径，避免误读成单颗子弹伤害或射速成长。
+                if(kind=="Drone" && system.TryGetDroneFlameUpgradeDamage(id,out var currentDps,out var nextDps))
+                    view.DetailText.text=Loc.T("ui.survivor.weapon.Drone.flame_upgrade_detail",currentDps.ToString("0.##"),nextDps.ToString("0.##"));
                 if(kind=="Molotov")
                     view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.Molotov.acquire_detail",after.FireIntervalSeconds.ToString("0.#"),after.AreaDurationSeconds.ToString("0.#"),after.Damage,after.AreaRadius.ToString("0.##")):
                         Loc.T("ui.survivor.weapon.Molotov.upgrade_detail",before.Damage,after.Damage,before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"));
@@ -85,6 +87,7 @@ namespace Game
             bool valid=system.TryGetUpgradeDetails(id,out int level,out double current,out double next,out bool percentage);
             string Format(double value)=>percentage?(value*100).ToString("0.#")+"%":value.ToString("0.##");
             view.DetailText.text=valid?Loc.T("ui.survivor.upgrade.progress",level,level+1,Format(current),Format(next)):string.Empty;
+            if(valid&&stableKind=="DroneFlame")view.DetailText.text=Loc.T("ui.survivor.upgrade.DroneFlame.detail");
             // 拾取显示实际半径和本次增量，避免把累计加成误读成最终距离。
             if(valid&&system.TryGetPickupUpgradeDetails(id,out var radius,out var nextRadius))
                 view.DetailText.text=Loc.T("ui.survivor.upgrade.pickup_detail",Format(radius),Format(nextRadius),Format(nextRadius-radius));

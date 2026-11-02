@@ -1025,5 +1025,8 @@
   "ui.survivor.weapon.SlimeBottle.upgrade_detail": "半径 {0} → {1} 米\n减速 {2}% → {3}%\n离开立即恢复；与燃烧瓶互斥",
   "ui.survivor.weapon.RocketSupport": "导弹支援",
   "ui.survivor.weapon.RocketSupport.acquire_detail": "锁定敌群，呼叫导弹从上方落下\n伤害 {0} · 冷却 {1}秒",
-  "ui.survivor.weapon.RocketSupport.upgrade_detail": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米"
+  "ui.survivor.weapon.RocketSupport.upgrade_detail": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米",
+  "ui.survivor.upgrade.DroneFlame.title": "喷火改装",
+  "ui.survivor.upgrade.DroneFlame.detail": "无人机保留当前等级\n点射改为近距离锥形喷火",
+  "ui.survivor.weapon.Drone.flame_upgrade_detail": "喷火每秒伤害 {0} → {1}"
 }

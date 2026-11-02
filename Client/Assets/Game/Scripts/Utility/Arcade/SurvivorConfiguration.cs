@@ -227,7 +227,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>独立强化的武器归属与效果；基础武器升级不作为效果等级。</summary>
         public bool IsModifier => ModifierKind!=null;
         public string TargetWeapon => Kind.StartsWith("Rifle",StringComparison.Ordinal)?"Rifle":Kind.StartsWith("Drone",StringComparison.Ordinal)?"Drone":null;
-        public string ModifierKind => TargetWeapon!=null&&Kind.Length>TargetWeapon.Length?Kind.Substring(TargetWeapon.Length):null;
+        public string ModifierKind => Kind!="DroneFlame"&&TargetWeapon!=null&&Kind.Length>TargetWeapon.Length?Kind.Substring(TargetWeapon.Length):null;
         /// <summary>多重射击相邻弹道角度，来自权威配置。</summary>
         public float EffectAngleDegrees { get; }
         private readonly int effectCountBase,effectCountStep;
@@ -253,7 +253,7 @@ namespace FirepowerLoop.Arcade
         /// <summary>正式配置显式传入权重；旧构造仅保留既有调用兼容。</summary>
         public SurvivorUpgradeDefinition(string id, string kind, float amountPerLevel, float maximumBonus, int maxLevel,int weight,int countBase=0,int countStep=0,float radiusBase=0,float radiusStep=0,float damageBase=0,float damageStep=0,float angleDegrees=0,string exclusiveGroup="",float activationDelaySeconds=0,float statusDurationSeconds=0,float statusStrengthBase=0,float statusStrengthStep=0)
         {
-            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Molotov","SlimeBottle","RocketSupport","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot","RecoveryStill","RecoverySafe","RecoveryAlways","RifleFire","RifleFrost" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
+            if (string.IsNullOrWhiteSpace(id) || !new[] { "Damage", "FireRate", "Health", "MoveSpeed", "Pickup","Rifle","Drone","Molotov","SlimeBottle","RocketSupport","DroneFlame","Magazine","Reload","RiflePierce","RifleExplosion","RifleSplit","DronePierce","DroneExplosion","DroneSplit","RifleMultishot","RecoveryStill","RecoverySafe","RecoveryAlways","RifleFire","RifleFrost" }.Contains(kind) || float.IsNaN(amountPerLevel) || float.IsInfinity(amountPerLevel) || amountPerLevel <= 0 || float.IsNaN(maximumBonus) || float.IsInfinity(maximumBonus) || maximumBonus <= 0 || maxLevel < 0 || weight<0) throw new ArgumentException("幸存者强化配置无效");
             if(float.IsNaN(activationDelaySeconds)||float.IsInfinity(activationDelaySeconds)||activationDelaySeconds<0)throw new ArgumentException("恢复等待时间必须是有限非负数");
             ExclusiveGroup=exclusiveGroup??string.Empty;ActivationDelaySeconds=activationDelaySeconds;
             StatusDurationSeconds=statusDurationSeconds;this.statusStrengthBase=statusStrengthBase;this.statusStrengthStep=statusStrengthStep;
@@ -261,6 +261,9 @@ namespace FirepowerLoop.Arcade
                 ((kind=="RifleFire"||kind=="RifleFrost")&&(maxLevel!=3||statusDurationSeconds<=0||statusStrengthBase<=0||statusStrengthBase+2*statusStrengthStep>=1)))throw new ArgumentException("元素弹头参数无效");
             Id = id; Kind = kind; AmountPerLevel = amountPerLevel; MaximumBonus = maximumBonus; MaxLevel = maxLevel;Weight=weight;
             EffectAngleDegrees=angleDegrees;effectCountBase=countBase;effectCountStep=countStep;effectRadiusBase=radiusBase;effectRadiusStep=radiusStep;effectDamageBase=damageBase;effectDamageStep=damageStep;
+            if(kind=="DroneFlame" && (maxLevel!=1 || !(radiusBase>0 && radiusBase<=32) || !(damageBase>0 && damageBase<=100)
+                || !(angleDegrees>0 && angleDegrees<=180) || !(activationDelaySeconds>=.05f && activationDelaySeconds<=1)))
+                throw new ArgumentException("无人机喷火改装参数无效");
             if(IsModifier&&(maxLevel!=(ModifierKind=="Multishot"?4:3)||countBase<0||countStep<0||
                 new[]{radiusBase,radiusStep,damageBase,damageStep,angleDegrees}.Any(v=>float.IsNaN(v)||float.IsInfinity(v)||v<0)||
                 (ModifierKind=="Multishot"&&(countBase!=1||countStep!=1||angleDegrees<=0||angleDegrees>30))||(ModifierKind=="Pierce"&&countBase<1)||(ModifierKind=="Split"&&(countBase<2||damageBase<=0))||

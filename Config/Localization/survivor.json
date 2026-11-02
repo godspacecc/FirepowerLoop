@@ -414,5 +414,17 @@
   "ui.survivor.weapon.RocketSupport.upgrade_detail": {
     "zh-CN": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米",
     "en-US": "Damage {0} → {1}\nBlast radius {2} → {3}m"
+  },
+  "ui.survivor.upgrade.DroneFlame.title": {
+    "zh-CN": "喷火改装",
+    "en-US": "Flamethrower Retrofit"
+  },
+  "ui.survivor.upgrade.DroneFlame.detail": {
+    "zh-CN": "无人机保留当前等级\n点射改为近距离锥形喷火",
+    "en-US": "Keeps the current drone level\nReplaces gunfire with a short-range flame cone"
+  },
+  "ui.survivor.weapon.Drone.flame_upgrade_detail": {
+    "zh-CN": "喷火每秒伤害 {0} → {1}",
+    "en-US": "Flame damage per second {0} → {1}"
   }
 }

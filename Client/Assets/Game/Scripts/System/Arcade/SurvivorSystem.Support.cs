@@ -70,11 +70,11 @@ namespace Game
         private bool MissileCanHit(int id,Vector2 center,out ArcadeEnemyRuntime enemy)
         {
             return enemies.TryGetValue(id,out enemy) && enemy.Health>0 &&
-                !MissileBlastBlocked(center,enemy.Position) && CanAimGroundBody(enemy,center,.75f);
+                !ProjectileWallBetween(center,enemy.Position) && CanAimGroundBody(enemy,center,.75f);
         }
 
         /// <summary>连续线段检测爆炸波与实体墙体的相交，薄墙也能挡住范围伤害。</summary>
-        private bool MissileBlastBlocked(Vector2 center,Vector2 target)
+        private bool ProjectileWallBetween(Vector2 center,Vector2 target)
         {
             foreach(var obstacle in obstacles)
             {

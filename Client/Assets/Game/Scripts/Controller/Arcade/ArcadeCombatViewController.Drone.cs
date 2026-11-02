@@ -43,6 +43,43 @@ namespace Game
             if(entry.IsDrone)ApplyDroneAppearance(entry);
         }
 
+        private static readonly string SurvivorDroneKey=$"powerup:1:{((int)global::ArcadePowerupBehavior.Drone)}";
+
+        /// <summary>只在幸存者无人机实例上绑定一次，普通机体与改装使用相同的资源租约。</summary>
+        private static void BindDroneNozzle(EffectVisualEntry entry)
+        {
+            if(entry.DisplayName!="survivor.drone")return;
+            entry.Nozzle=entry.Instance.transform.Find("FlameRetrofit")?.gameObject;
+            entry.NozzleFlame=entry.Nozzle?.GetComponentInChildren<ParticleSystem>(true);
+            if(entry.NozzleFlame==null)throw new System.InvalidOperationException("幸存者无人机缺少喷火改装组件");
+            SampleDroneNozzle(entry,0);
+        }
+
+        /// <summary>机体位置和朝向由 SetDrone 统一投影；是否装备与是否开火独立控制。</summary>
+        public void SetDroneFlame(bool upgraded,Vector2 position,Vector2 direction,bool emitting,float dt)
+        {
+            if(!effectVisuals.TryGetValue(SurvivorDroneKey,out var entry) || entry.DisplayName!="survivor.drone")return;
+            entry.NozzleEnabled=upgraded;
+            entry.NozzleEmitting=upgraded&&emitting;
+            if(entry.Instance!=null && entry.Nozzle==null)BindDroneNozzle(entry);
+            SampleDroneNozzle(entry,dt);
+        }
+
+        /// <summary>喷嘴只在改装后显示；停火清空粒子，暂停没有采样，不推进表现。</summary>
+        private static void SampleDroneNozzle(EffectVisualEntry entry,float dt)
+        {
+            if(entry.Nozzle==null)return;
+            if(entry.Nozzle.activeSelf!=entry.NozzleEnabled)entry.Nozzle.SetActive(entry.NozzleEnabled);
+            if(!entry.NozzleEmitting)
+            {
+                if(entry.FlameStarted)entry.NozzleFlame.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);
+                entry.FlameStarted=false;
+                return;
+            }
+            entry.NozzleFlame.Simulate(dt,false,!entry.FlameStarted,false);
+            entry.FlameStarted=true;
+        }
+
         /// <summary>普通、红、紫按已确认预览着色；恢复普通时清除覆盖，不实例化共享材质。</summary>
         private static void ApplyDroneAppearance(EffectVisualEntry entry)
         {

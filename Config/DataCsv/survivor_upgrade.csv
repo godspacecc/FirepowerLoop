@@ -18,3 +18,4 @@
 ,15,survivor.molotov,Molotov,1,5,5,0,0,0,0,0,0,0,Throwable,0,0,0,0
 ,15,survivor.slimeBottle,SlimeBottle,1,5,5,0,0,0,0,0,0,0,Throwable,0,3,.3,.05
 ,15,survivor.rocketSupport,RocketSupport,1,5,5,0,0,0,0,0,0,0,,0,0,0,0
+,10,survivor.drone.flame,DroneFlame,1,1,1,0,0,3.2,0,2,0,50,,0.2,0,0,0

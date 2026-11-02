@@ -1,0 +1,1 @@
+Prefabs/SceneObjects/ArcadeSupportDroneVisual | Assets/Game/Prefabs/SceneObjects/ArcadeSupportDroneVisual.prefab | arcade | default hidden | Assets/Game/Art/Arcade/VFX/DroneFlameRetrofit/Steel.mat | Assets/Game/Art/Arcade/VFX/DroneFlameRetrofit/Collar.mat | Assets/Game/Art/Arcade/VFX/DroneFlameRetrofit/Bore.mat | Assets/Game/Art/Arcade/VFX/FirstBatch/Materials/Fire.mat

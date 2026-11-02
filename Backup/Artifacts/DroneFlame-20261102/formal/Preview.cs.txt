@@ -1,0 +1,53 @@
+using System;
+using System.IO;
+using System.Linq;
+using Game;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using Object=UnityEngine.Object;
+public static class DroneFlameFormal
+{
+ static TMP_FontAsset font;
+ static void Label(Transform parent,string text,float x,float y,int size,float width=900){var go=new GameObject("Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(parent,false);var rt=(RectTransform)go.transform;rt.sizeDelta=new Vector2(width,80);rt.anchoredPosition=new Vector2(x,y);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSize=size;t.alignment=TextAlignmentOptions.Center;t.text=text;}
+ public static string Run(){
+  var prior=SceneManager.GetActiveScene();var scene=EditorApplication.isPlaying?SceneManager.CreateScene("DroneFlameCapture"):EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+  var old=RenderTexture.active;var rt=new RenderTexture(960,540,24);var tex=new Texture2D(960,540,TextureFormat.RGB24,false);Camera cam=null;var mats=new System.Collections.Generic.List<Material>();Texture2D scorch=null;
+  Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;mats.Add(m);return m;}
+  GameObject Part(Transform parent,PrimitiveType type,Vector3 pos,Vector3 scale,Material m){var go=GameObject.CreatePrimitive(type);go.transform.SetParent(parent,false);go.transform.localPosition=pos;go.transform.localScale=scale;go.GetComponent<Renderer>().sharedMaterial=m;Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
+  try{
+   SceneManager.SetActiveScene(scene);cam=new GameObject("Camera",typeof(Camera)).GetComponent<Camera>();cam.orthographic=true;cam.orthographicSize=5.6f;cam.transform.position=new Vector3(0,11,-10);cam.transform.LookAt(new Vector3(0,0,.8f));cam.cullingMask=1<<31;cam.targetTexture=rt;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.13f,.16f,.18f);
+   var light=new GameObject("Light",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.4f;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(40,-20,0);
+   Part(null,PrimitiveType.Cube,new Vector3(0,-.1f,0),new Vector3(22,.15f,18),Mat(new Color(.22f,.26f,.25f)));
+   var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));hero.transform.position=new Vector3(0,0,-3);var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+   var canvas=new GameObject("Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=1;var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
+   font=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab").GetComponent<SurvivorHudUI>().TimeText.font;
+   Label(canvas.transform,"无人机喷火改装 · 正式喷嘴实拍",0,440,38,1800);
+   Label(canvas.transform,"改装前：远距离点射",-425,337,30);Label(canvas.transform,"改装后：近距离喷火",425,337,30);
+   Label(canvas.transform,"右侧：升级前隐藏 → 改装后装上 → 遇敌喷火",0,-390,28,1800);
+   GameObject Load(string path,Vector3 at){var g=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));g.transform.position=at;foreach(var m in g.GetComponentsInChildren<MonoBehaviour>(true))m.enabled=false;return g;}
+   var left=new Vector3(-3,1.6f,-2);var right=new Vector3(3,1.6f,-2);
+   Transform nozzle=null;GameObject modified=null;
+   for(int j=0;j<2;j++){var drone=Load("Assets/Game/Prefabs/SceneObjects/ArcadeSupportDroneVisual.prefab",j==0?left:right);if(j==1)modified=drone;foreach(var fx in drone.GetComponentsInChildren<ParticleSystem>(true))fx.Stop(true,ParticleSystemStopBehavior.StopEmittingAndClear);}
+   var view=new ArcadeCombatViewController();var vt=typeof(ArcadeCombatViewController);var flags=System.Reflection.BindingFlags.NonPublic|System.Reflection.BindingFlags.Instance;
+   var et=vt.GetNestedType("EffectVisualEntry",System.Reflection.BindingFlags.NonPublic);var entry=Activator.CreateInstance(et,true);et.GetField("Instance").SetValue(entry,modified);et.GetField("DisplayName").SetValue(entry,"survivor.drone");
+   ((System.Collections.IDictionary)vt.GetField("effectVisuals",flags).GetValue(view)).Add("powerup:1:"+(int)global::ArcadePowerupBehavior.Drone,entry);
+   vt.GetMethod("BindDroneNozzle",System.Reflection.BindingFlags.Static|System.Reflection.BindingFlags.NonPublic).Invoke(null,new object[]{entry});
+   var enemies=new GameObject[4];for(int j=0;j<4;j++){enemies[j]=Load("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab",Vector3.zero);enemies[j].transform.rotation=Quaternion.Euler(0,180,0);}
+   var bullet=Part(null,PrimitiveType.Cube,left,new Vector3(.055f,.055f,.5f),Mat(new Color(1,.85f,.28f)));
+   foreach(var root in scene.GetRootGameObjects())foreach(var tr in root.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+   string folder=Path.GetFullPath("../Backup/Artifacts/DroneFlame-20261102/formal");
+   for(int f=0;f<108;f++){float t=f/20f;float z=Mathf.Lerp(3.9f,.55f,Mathf.Clamp01((t-.4f)/2.6f));
+    for(int j=0;j<4;j++){var at=j<2?left:right;enemies[j].transform.position=new Vector3(at.x+(j>=2?-1.4f:0)+(j%2==0?-.43f:.43f),0,z+(j%2)*.18f);}
+    Vector3 aim=enemies[0].transform.position+Vector3.up*.85f;float shot=(t%.45f)/.45f;bullet.transform.position=Vector3.Lerp(left,aim,shot);bullet.transform.rotation=Quaternion.LookRotation(aim-left);
+    var delta=enemies[2].transform.position-right;var direction=new Vector2(delta.x,delta.z).normalized;modified.transform.rotation=Quaternion.LookRotation(new Vector3(direction.x,0,direction.y));
+    view.SetDroneFlame(t>=1.15f,new Vector2(right.x,right.z),direction,z<1.45f&&t<4.6f,1f/20);
+    Canvas.ForceUpdateCanvases();cam.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,960,540),0,0);tex.Apply();File.WriteAllBytes(folder+"/frame-"+f.ToString("D3")+".png",tex.EncodeToPNG());
+   }
+   return "100 frame support concept; Boot dirty="+prior.isDirty;
+  }finally{if(cam!=null)cam.targetTexture=null;RenderTexture.active=old;Object.DestroyImmediate(tex);Object.DestroyImmediate(rt);SceneManager.SetActiveScene(prior);if(EditorApplication.isPlaying)SceneManager.UnloadSceneAsync(scene);else EditorSceneManager.CloseScene(scene,true);foreach(var m in mats)Object.DestroyImmediate(m);if(scorch!=null)Object.DestroyImmediate(scorch);}
+ }
+}

@@ -96,7 +96,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();ClearSupport();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();ClearSupport();ClearDroneFlame();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -163,6 +163,7 @@ namespace Game
                 if(definition.Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0){dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=facing;droneFireClock=0;}
                 m.Loadout.TryUpgrade(definition.Kind,config.MaximumWeaponLevel(definition.Kind));
             }
+            if(definition.Kind=="DroneFlame")m.DroneFlameUpgrade=definition;
             if(definition.IsRecovery&&m.State.UpgradeLevel(upgradeId)==1)ResetRecovery();
             UpdateRifleCapacity();int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
         }
@@ -314,6 +315,13 @@ namespace Game
             EnsureHordeSpatial();
             var level=config.WeaponLevel("Drone",levelNumber);droneFireClock-=dt;
             dronePosition=Vector2.Lerp(dronePosition,player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ),1-Mathf.Exp(-12*dt));
+            if(Model.DroneFlameUpgraded)
+            {
+                TickDroneFlame(dt,level,Model.DroneFlameUpgrade);
+                view.SetDrone(1,droneVisual,dronePosition,droneFacing,(int)ArcadeDronePhase.Following,1);
+                view.SetDroneFlame(true,dronePosition,droneFacing,droneFlameEmitting,dt);
+                return;
+            }
             enemySpatial.QueryCircle(dronePosition.x,dronePosition.y,level.Range,enemyCandidates);
             ArcadeEnemyRuntime target=null;float nearest=float.MaxValue;
             foreach(int id in enemyCandidates)

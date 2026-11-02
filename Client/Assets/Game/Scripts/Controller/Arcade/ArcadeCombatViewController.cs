@@ -220,6 +220,8 @@ namespace Game
         /// <summary>任务设施与地图共享句柄所有权，入口等待真实实例。</summary>
         void SetMissionFacility(Vector2 position) { }
         bool IsMissionFacilityReady=>false;
+        /// <summary>改装控制喷嘴显隐，喷火时才根据战斗时间推进粒子。</summary>
+        void SetDroneFlame(bool upgraded,Vector2 position,Vector2 direction,bool emitting,float dt) { }
         void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
         /// <summary>紫级副机单独同步；旧表现端仍可显示主机。</summary>
         void SetDroneUnit(long ownerPlayerId,int unitIndex,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
@@ -1323,7 +1325,7 @@ namespace Game
                 entry.Instance.name = $"Effect_{entry.DisplayName}";
                 entry.Instance.transform.localPosition = entry.LocalPosition;
                 if (entry.HasShotDirection) entry.Instance.transform.localRotation = entry.LocalRotation;
-                if(entry.IsDrone)ApplyDroneAppearance(entry);
+                if(entry.IsDrone){ApplyDroneAppearance(entry);BindDroneNozzle(entry);}
                   ApplyWeaponEvolution(entry);
                 ApplyRewardPortalAppearance(entry);
                 ApplyMissionSupplyAppearance(entry);
@@ -1397,6 +1399,10 @@ namespace Game
 
         private sealed class EffectVisualEntry
         {
+            /// <summary>改装状态随地图的无人机实例回收；异步到达后恢复已确认的外观。</summary>
+            public bool NozzleEnabled, NozzleEmitting, FlameStarted;
+            public GameObject Nozzle;
+            public ParticleSystem NozzleFlame;
             public string Key;
             public string DisplayName;
             public string Address;
