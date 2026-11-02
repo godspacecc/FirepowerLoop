@@ -1,0 +1,15 @@
+address=Prefabs/Combat/GrayboxBullet
+path=Assets/Game/Prefabs/Combat/GrayboxBullet.prefab
+tags=arcade
+bundle=assets_game_prefabs_combat_grayboxbullet.bundle
+duplicate count=1
+source BeginCollect(false,false) PASS; no build
+material=Assets/Game/Art/Arcade/VFX/FirstBatch/Materials/BlastGlow.mat
+texture=Assets/Game/Art/Effects/ArcadeARPG/Textures/basicglow.png
+material=Assets/Game/Art/Arcade/VFX/FirstBatch/Materials/Fire.mat
+texture=Assets/Game/Art/Arcade/VFX/FirstBatch/Textures/FireAtlas.png
+material=Assets/Game/Art/Arcade/VFX/FirstBatch/Materials/BlastSmoke.mat
+texture=Assets/Game/Art/Arcade/VFX/FirstBatch/Textures/Smoke.png
+Packages/com.unity.render-pipelines.universal/Shaders/Particles/ParticlesUnlit.shader
+Assets/Game/Prefabs/Combat/SurvivorWeaponBlast.prefab
+Packages/com.unity.render-pipelines.universal/Shaders/Lit.shader

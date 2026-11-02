@@ -1,0 +1,4 @@
+Formal SurvivorWeaponBlast prefab sampled through actual SurvivorBlastView.Apply; temporary isolated scene, not gameplay capture.
+Left=adopted temporary preview; middle=formal authoritative progress; right=formal pause from 2.08 to 2.60s, then resume.
+heroHeight=2; radius=1.4m; 78 frames at20fps; pauseHeld=True
+Right particle time held=0.1299999; all formal systems manually paused; no source assets saved.

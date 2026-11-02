@@ -1,0 +1,11 @@
+{
+  "base": "5d3ac5c39734bd17ae9adc7959532a4c3cb3c9d3",
+  "files": {
+    "Client/Assets/Game/Prefabs/Combat/SurvivorWeaponBlast.prefab": "6feff4a936eb472407e1cad375b087528685df3d7ee78e4c1b2ac1f8805e6635",
+    "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab": "51e2a8ea4a3ec4c5e50a1b152348cde7b245d6b8e843d530fc59b4781ace9249",
+    "Client/Assets/Game/Scripts/Controller/View/Combat/SurvivorBlastView.cs": "63bcfe7a2439f84979e4211f07b16dee83b22ed4e839a4e4e4e3c052ebdf9989",
+    "Client/Assets/Game/Scripts/System/Arcade/SurvivorSystem.Modifiers.cs": "e7504f74995bacea06fdb97bc582356c2d94f0e4c388f9dcefaed3023b47b245",
+    "Config/DataCsv/survivor_upgrade.csv": "9e9a9c7fa0b8cbc04c99d153e429c63195d4d531584fcd795263f6063277eccf",
+    "Client/Assets/Game/Prefabs/Combat/GrayboxBullet.prefab": "77bc98c8eac29365d050a88ecc14612aecc45b6c8f1650b55c22376f23d3ecb1"
+  }
+}

@@ -1,0 +1,36 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEditor;using Game;using Object=UnityEngine.Object;
+public class Script{
+static void ScaleColor(ParticleSystem ps,float alpha)
+{var main=ps.main;var source=main.startColor;if(source.mode==ParticleSystemGradientMode.Color){var c=source.color;c.a*=alpha;main.startColor=c;}else if(source.mode==ParticleSystemGradientMode.TwoColors){var a=source.colorMin;var b=source.colorMax;a.a*=alpha;b.a*=alpha;main.startColor=new ParticleSystem.MinMaxGradient(a,b);}}
+static void Tune(ParticleSystem ps)
+{
+var main=ps.main;
+if(ps.name=="ImpactFlash"){main.startLifetime=.14f;var s=main.startSize;main.startSize=s.mode==ParticleSystemCurveMode.Constant?new ParticleSystem.MinMaxCurve(s.constant*1.12f):new ParticleSystem.MinMaxCurve(s.constantMin*1.12f,s.constantMax*1.12f);}
+else if(ps.name=="Burst"){main.startLifetime=.28f;var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.75f)));e.SetBursts(bursts);}
+else if(ps.name=="Smoke"){main.startLifetime=.4f;ScaleColor(ps,.42f);var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.45f)));e.SetBursts(bursts);}
+}
+
+public static object Main()
+{
+if(EditorApplication.isPlaying||Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets")throw new Exception("只允许本项目编辑态制作");
+const string path="Assets/Game/Prefabs/Combat/SurvivorWeaponBlast.prefab";
+var root=PrefabUtility.LoadPrefabContents(path);try
+{
+while(root.transform.childCount>0)Object.DestroyImmediate(root.transform.GetChild(0).gameObject);
+var template=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/ProjectileBlast");
+var fx=Object.Instantiate(template.gameObject,root.transform,false);fx.name="ShortBlastParticles";fx.transform.localPosition=Vector3.zero;fx.transform.localRotation=Quaternion.identity;fx.transform.localScale=Vector3.one;fx.SetActive(true);
+foreach(var ps in fx.GetComponentsInChildren<ParticleSystem>(true))
+{
+ps.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);
+if(ps.name=="Sparks"){Object.DestroyImmediate(ps.gameObject);continue;}
+Tune(ps);var main=ps.main;main.loop=false;main.playOnAwake=false;main.stopAction=ParticleSystemStopAction.None;
+}
+var view=root.GetComponent<SurvivorBlastView>();var so=new SerializedObject(view);var array=so.FindProperty("particles");var systems=fx.GetComponentsInChildren<ParticleSystem>(true);array.arraySize=systems.Length;for(int i=0;i<systems.Length;i++)array.GetArrayElementAtIndex(i).objectReferenceValue=systems[i];so.ApplyModifiedPropertiesWithoutUndo();
+root.SetActive(false);if(!view.Validate(out var error))throw new Exception(error);
+PrefabUtility.SaveAsPrefabAsset(root,path);
+}finally{PrefabUtility.UnloadPrefabContents(root);}
+AssetDatabase.ImportAsset(path,ImportAssetOptions.ForceUpdate);
+var bullet=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxBullet.prefab").GetComponent<ProjectileView>();if(bullet.SurvivorBlastTemplate==null||!bullet.SurvivorBlastTemplate.Validate(out var missing))throw new Exception("原弹丸引用未保留");
+return new{path,referenced=true,particles=bullet.SurvivorBlastTemplate.GetComponentsInChildren<ParticleSystem>(true).Length};
+}
+}

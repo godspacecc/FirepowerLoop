@@ -1,0 +1,7 @@
+Preview only; no formal assets or config changed.
+Current source=Assets/Game/Prefabs/Combat/SurvivorWeaponBlast.prefab
+Arcade source=Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab
+Radius=1.4; root scale matches arcade clamp(1.4/2.8)=0.5; official hero measured height=2
+Candidate: flash .14s, size x1.12; burst .28s count x.75; smoke .4s alpha x.42 count x.45; sparks suppressed in both arcade/candidate as runtime.
+Fixed seeds matched across old arcade / candidate; triggers=.45,1.95,2.13,2.31s; 78 frames@20fps, no audio proposed in this visual clip.
+Particle peak per system: arcade=16 candidate=12

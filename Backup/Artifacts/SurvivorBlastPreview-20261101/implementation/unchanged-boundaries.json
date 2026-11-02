@@ -1,0 +1,6 @@
+{
+  "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab": true,
+  "Client/Assets/Game/Scripts/System/Arcade/SurvivorSystem.Modifiers.cs": true,
+  "Config/DataCsv/survivor_upgrade.csv": true,
+  "Client/Assets/Game/Prefabs/Combat/GrayboxBullet.prefab": true
+}

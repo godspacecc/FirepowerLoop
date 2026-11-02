@@ -1,0 +1,7 @@
+{
+  "Client/Assets/Game/Prefabs/Combat/SurvivorWeaponBlast.prefab": true,
+  "Client/Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab": false,
+  "Client/Assets/Game/Scripts/Controller/View/Combat/SurvivorBlastView.cs": true,
+  "Client/Assets/Game/Scripts/System/Arcade/SurvivorSystem.Modifiers.cs": false,
+  "Config/DataCsv/survivor_upgrade.csv": false
+}

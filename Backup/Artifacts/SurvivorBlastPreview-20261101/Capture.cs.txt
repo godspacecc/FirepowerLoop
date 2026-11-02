@@ -1,0 +1,120 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using UnityEngine.UI;using TMPro;using Game;using Object=UnityEngine.Object;
+public class Script
+{
+    private static void CreateSkinProxies(Actor actor, List<Object> owned)
+    {
+        foreach (var source in actor.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!source.enabled || !source.gameObject.activeInHierarchy || source.sharedMesh == null || source.bones.Length == 0) continue;
+            var original = source.sharedMesh;
+            var output = Object.Instantiate(original); output.name = "TEMP_FormalSampledSkin"; owned.Add(output);
+            var proxy = new GameObject("TEMP_FormalSampledSkin", typeof(MeshFilter), typeof(MeshRenderer)); proxy.transform.SetParent(source.transform, false);
+            proxy.GetComponent<MeshFilter>().sharedMesh = output; proxy.GetComponent<MeshRenderer>().sharedMaterials = source.sharedMaterials;
+            var skin = new Skin { Source = source, Output = output, Vertices = original.vertices, Normals = original.normals,
+                Weights = original.boneWeights, Bindposes = original.bindposes, Bones = source.bones };
+            if (skin.Weights.Length != skin.Vertices.Length || skin.Normals.Length != skin.Vertices.Length || skin.Bindposes.Length != skin.Bones.Length)
+                throw new InvalidOperationException("正式蒙皮数据不完整：" + source.name);
+            skin.Positions = new Vector3[skin.Vertices.Length]; skin.Directions = new Vector3[skin.Vertices.Length]; skin.Matrices = new Matrix4x4[skin.Bones.Length];
+            actor.Skins.Add(skin); source.enabled = false;
+        }
+        if (actor.Skins.Count == 0) throw new InvalidOperationException("正式演员缺少可采样蒙皮：" + actor.Root.name);
+    }
+
+    private static void UpdateSkin(Skin skin)
+    {
+        for (int i = 0; i < skin.Bones.Length; i++) skin.Matrices[i] = skin.Source.transform.worldToLocalMatrix * skin.Bones[i].localToWorldMatrix * skin.Bindposes[i];
+        for (int i = 0; i < skin.Vertices.Length; i++)
+        {
+            var weight = skin.Weights[i]; var vertex = skin.Vertices[i]; var normal = skin.Normals[i]; var matrices = skin.Matrices;
+            skin.Positions[i] = matrices[weight.boneIndex0].MultiplyPoint3x4(vertex) * weight.weight0 + matrices[weight.boneIndex1].MultiplyPoint3x4(vertex) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyPoint3x4(vertex) * weight.weight2 + matrices[weight.boneIndex3].MultiplyPoint3x4(vertex) * weight.weight3;
+            skin.Directions[i] = (matrices[weight.boneIndex0].MultiplyVector(normal) * weight.weight0 + matrices[weight.boneIndex1].MultiplyVector(normal) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyVector(normal) * weight.weight2 + matrices[weight.boneIndex3].MultiplyVector(normal) * weight.weight3).normalized;
+        }
+        skin.Output.vertices = skin.Positions; skin.Output.normals = skin.Directions; skin.Output.RecalculateBounds();
+    }
+
+
+private sealed class Actor {public GameObject Root; public readonly List<Skin> Skins=new List<Skin>();}
+    private sealed class Skin
+    {
+        public SkinnedMeshRenderer Source;
+        public Mesh Output;
+        public Vector3[] Vertices, Normals, Positions, Directions;
+        public BoneWeight[] Weights;
+        public Matrix4x4[] Bindposes, Matrices;
+        public Transform[] Bones;
+    }
+
+
+
+static readonly List<Object> owned=new();
+static Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;m.SetFloat("_Smoothness",.1f);owned.Add(m);return m;}
+static TMP_Text Text(Transform canvas,TMP_FontAsset font,string value,float x,float y,float w,int size,Color color)
+{var go=new GameObject("TEMP_Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(canvas,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(w,45);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSharedMaterial=font.material;t.fontSize=size;t.text=value;t.color=color;t.alignment=TextAlignmentOptions.Center;t.raycastTarget=false;return t;}
+static void ScaleColor(ParticleSystem ps,float alpha)
+{var main=ps.main;var source=main.startColor;if(source.mode==ParticleSystemGradientMode.Color){var c=source.color;c.a*=alpha;main.startColor=c;}else if(source.mode==ParticleSystemGradientMode.TwoColors){var a=source.colorMin;var b=source.colorMax;a.a*=alpha;b.a*=alpha;main.startColor=new ParticleSystem.MinMaxGradient(a,b);}}
+static void Tune(ParticleSystem ps)
+{
+var main=ps.main;
+if(ps.name=="ImpactFlash"){main.startLifetime=.14f;var s=main.startSize;main.startSize=s.mode==ParticleSystemCurveMode.Constant?new ParticleSystem.MinMaxCurve(s.constant*1.12f):new ParticleSystem.MinMaxCurve(s.constantMin*1.12f,s.constantMax*1.12f);}
+else if(ps.name=="Burst"){main.startLifetime=.28f;var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.75f)));e.SetBursts(bursts);}
+else if(ps.name=="Smoke"){main.startLifetime=.4f;ScaleColor(ps,.42f);var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.45f)));e.SetBursts(bursts);}
+}
+static void Capture(Camera camera,string path)
+{var rt=RenderTexture.GetTemporary(1280,720,24);var old=RenderTexture.active;var tex=new Texture2D(1280,720,TextureFormat.RGB24,false);try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1280,720),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+public static object Main()
+{
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("只允许本项目编辑态临时预览");var scene=EditorSceneManager.NewPreviewScene();var ambient=RenderSettings.ambientLight;var ambientMode=RenderSettings.ambientMode;
+try
+{
+var root=new GameObject("TEMP_Comparison");SceneManager.MoveGameObjectToScene(root,scene);
+var cameraGo=new GameObject("TEMP_Camera");cameraGo.transform.SetParent(root.transform);var camera=cameraGo.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=5.7f;camera.transform.position=new Vector3(0,17,-16);camera.transform.LookAt(new Vector3(0,0,.2f));camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.035f,.06f,.08f);camera.cullingMask=1<<31;
+var lightGo=new GameObject("TEMP_Light");lightGo.transform.SetParent(root.transform);lightGo.transform.rotation=Quaternion.Euler(48,-25,0);var light=lightGo.AddComponent<Light>();light.type=LightType.Directional;light.intensity=1.25f;light.cullingMask=1<<31;RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.58f,.61f,.66f);
+var canvasGo=new GameObject("TEMP_Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));canvasGo.transform.SetParent(root.transform);var canvas=canvasGo.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;var scaler=canvasGo.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1280,720);
+var source=AssetDatabase.LoadAssetAtPath<Font>("Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal.otf");var font=TMP_FontAsset.CreateFontAsset(source,72,9,UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);owned.Add(font);owned.Add(font.material);
+Text(canvasGo.transform,font,"临时动态对比 · 同镜头 / 同半径 / 正式主角",0,330,1100,20,new Color(.75f,.82f,.83f));
+var labels=new[]{"当前幸存者","闯关原版","候选：短爆燃"};var colors=new[]{new Color(.7f,.78f,.8f),new Color(.7f,.78f,.8f),new Color(.97f,.75f,.36f)};
+for(int col=0;col<3;col++)Text(canvasGo.transform,font,labels[col],(col-1)*410,284,395,26,colors[col]);
+var phase=Text(canvasGo.transform,font,"单次命中",0,238,950,18,new Color(.67f,.75f,.76f));
+Text(canvasGo.transform,font,"伤害半径 1.4 米；主角尺寸不变。这里只比较视觉，伤害规则不变。",0,-326,1210,18,new Color(.67f,.75f,.76f));
+float heroHeight=0;
+for(int col=0;col<3;col++)
+{
+float x=(col-1)*6.5f;var floor=GameObject.CreatePrimitive(PrimitiveType.Cube);floor.name="TEMP_FarmGround";floor.transform.SetParent(root.transform);floor.transform.position=new Vector3(x,-.11f,.2f);floor.transform.localScale=new Vector3(6.12f,.15f,6.8f);floor.GetComponent<Renderer>().sharedMaterial=Mat(new Color(.27f,.30f,.19f));Object.DestroyImmediate(floor.GetComponent<Collider>());
+var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);hero.transform.position=new Vector3(x-1.8f,0,-.85f);hero.transform.rotation=Quaternion.Euler(0,120,0);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+var presenter=hero.GetComponent<CharacterWeaponPresenter>();if(presenter==null||!presenter.SetWeaponId("arcade.weapon.basic"))throw new Exception("正式主角武器缺失");presenter.SetManualPoseSampling(true);var a=presenter.BodyAnimator;a.enabled=true;a.Rebind();a.Update(0);a.enabled=false;presenter.Current.Animations.Idle.Clip.SampleAnimation(a.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);var actor=new Actor{Root=hero};CreateSkinProxies(actor,owned);foreach(var skin in actor.Skins)UpdateSkin(skin);
+var renderers=hero.GetComponentsInChildren<MeshRenderer>(true).Where(r=>r.enabled).ToArray();var bounds=renderers[0].bounds;foreach(var r in renderers)bounds.Encapsulate(r.bounds);heroHeight=bounds.size.y;
+}
+var template=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/ProjectileBlast");var oldTemplate=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Combat/GrayboxBullet.prefab").GetComponent<ProjectileView>().SurvivorBlastTemplate;
+var times=new[]{.45f,1.95f,2.13f,2.31f};var positions=new Vector3[3,times.Length];var old=new SurvivorBlastView[times.Length];var systems=new ParticleSystem[2,times.Length][];var roots=new GameObject[2,times.Length];
+for(int col=0;col<3;col++)for(int shot=0;shot<times.Length;shot++)
+{
+var origin=new Vector3((col-1)*6.5f+.45f+(shot==2?.3f:shot==3?-.28f:0),0,.55f+(shot==2?.22f:shot==3?-.18f:0));positions[col,shot]=origin;
+if(col==0){old[shot]=Object.Instantiate(oldTemplate,root.transform);old[shot].gameObject.SetActive(false);continue;}
+var fx=Object.Instantiate(template.gameObject,root.transform);fx.name=col==1?"TEMP_Arcade":"TEMP_Candidate";fx.transform.position=origin+Vector3.up*.75f;fx.transform.localScale=Vector3.one*.5f;fx.SetActive(true);roots[col-1,shot]=fx;
+var particles=fx.GetComponentsInChildren<ParticleSystem>(true);systems[col-1,shot]=particles;
+for(int k=0;k<particles.Length;k++){var ps=particles[k];ps.Stop(false,ParticleSystemStopBehavior.StopEmittingAndClear);ps.useAutoRandomSeed=false;ps.randomSeed=(uint)(700+k*19+shot);if(col==2)Tune(ps);if(ps.name=="Sparks")ps.gameObject.SetActive(false);}
+}
+foreach(var tr in root.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SurvivorBlastPreview-20261101";Directory.CreateDirectory(dir+"/frames");int[] peak=new int[2];
+for(int frame=0;frame<78;frame++)
+{
+float time=frame/20f;phase.text=time<1.7f?"单次命中 · 比较爆心与消散":"连续三次命中 · 比较烟雾遮挡";
+for(int shot=0;shot<times.Length;shot++)
+{
+float age=time-times[shot];bool visible=age>=0&&age<.4f;old[shot].gameObject.SetActive(visible);if(visible)old[shot].Apply(positions[0,shot],1.4f,age/.4f);
+for(int mode=0;mode<2;mode++)
+{
+bool active=age>=0&&age<1.6f;roots[mode,shot].SetActive(active);if(!active)continue;
+foreach(var ps in systems[mode,shot])if(ps.name!="Sparks"){ps.Simulate(age,false,true,false);ps.Pause(false);peak[mode]=Math.Max(peak[mode],ps.particleCount);}
+}
+}
+Capture(camera,dir+"/frames/"+frame.ToString("D3")+".png");
+}
+foreach(var atlas in font.atlasTextures)owned.Add(atlas);
+File.WriteAllLines(dir+"/preview-evidence.txt",new[]{"Preview only; no formal assets or config changed.","Current source="+AssetDatabase.GetAssetPath(oldTemplate),"Arcade source="+AssetDatabase.GetAssetPath(template),"Radius=1.4; root scale matches arcade clamp(1.4/2.8)=0.5; official hero measured height="+heroHeight,"Candidate: flash .14s, size x1.12; burst .28s count x.75; smoke .4s alpha x.42 count x.45; sparks suppressed in both arcade/candidate as runtime.","Fixed seeds matched across old arcade / candidate; triggers=.45,1.95,2.13,2.31s; 78 frames@20fps, no audio proposed in this visual clip.","Particle peak per system: arcade="+peak[0]+" candidate="+peak[1]});return new{frames=78,heroHeight,peak,formalAssetsChanged=false};
+}
+finally{RenderSettings.ambientLight=ambient;RenderSettings.ambientMode=ambientMode;EditorSceneManager.ClosePreviewScene(scene);foreach(var o in owned)if(o!=null)Object.DestroyImmediate(o);owned.Clear();}
+}
+}

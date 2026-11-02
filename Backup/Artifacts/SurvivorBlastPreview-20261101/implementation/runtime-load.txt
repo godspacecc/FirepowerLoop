@@ -1,0 +1,6 @@
+loader=Game.YooAssetResourceLoader
+mode=DefaultPackage
+playMode=EditorSimulateMode
+Prefabs/Combat/GrayboxBullet : PASS real projectile, original short-blast reference, 3 particle systems/materials/textures/shader and manual clock settings
+released=True
+completed=1; failed=False

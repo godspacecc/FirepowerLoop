@@ -1,0 +1,20 @@
+{
+  "EditMode": true,
+  "includePassingTests": true,
+  "visual_class": "SurvivorBlastVisualTests",
+  "visual_cases": 8,
+  "visual_passed": 8,
+  "rules_methods": [
+    "ExplosionExcludesDirectTargetAndOnlyTriggersOnce",
+    "ModifierBudgetsPreservePrimaryFireAndBlastDamage",
+    "InFlightExplosionAndSplitKeepLaunchLevel",
+    "ModifierShotsAndBlastRespectSolidObstacles",
+    "SimultaneousModifierShotsCommitOneKillAndDrop"
+  ],
+  "rules_cases": 5,
+  "rules_passed": 5,
+  "red_visual_cases": 8,
+  "red_failed": 8,
+  "red_reason": "正式资源尚为LineRenderer，ParticleSystem数量0而非3",
+  "initial_transport_timeout": "未记为测试结果；检查Unity空闲后重跑同一有效短类"
+}
