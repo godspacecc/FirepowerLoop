@@ -878,6 +878,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/SceneObjects/MissionGeneratorVisual.prefab
+        CollectorGUID: a76b544da40db404a8cb02516f09a789
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: arcade
+        UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeDocksVisual.prefab
         CollectorGUID: d9d388a735fd02d4fb1c34f91e5a7705
         CollectorType: 0

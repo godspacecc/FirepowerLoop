@@ -1014,5 +1014,16 @@
   "ui.mission.west": "W",
   "ui.mission.completed": "Mission complete · Score {0}",
   "ui.mission.failed": "Mission ended · Score {0}",
-  "ui.mission.clear": "Clear remaining enemies"
+  "ui.mission.clear": "Clear remaining enemies",
+  "ui.mission.entry": "Clear the entry",
+  "ui.mission.encounter": "{0} encounter · Clear enemies",
+  "ui.mission.site.0": "Western horde",
+  "ui.mission.site.1": "Eastern rush",
+  "ui.mission.site.2": "Central shields",
+  "ui.mission.facility": "Generator: {0} {1}m",
+  "ui.mission.activate": "Starting generator: {0}s",
+  "ui.mission.return_facility": "Return to generator to defend",
+  "ui.mission.defend": "Defend generator: {0}s",
+  "ui.mission.breakthrough": "Northern area: {0} {1}m",
+  "ui.mission.wave": "Breakthrough · Wave {0}"
 }

@@ -28,6 +28,30 @@ public sealed partial class MissionRuleConfig : Luban.BeanBase
         Supply3Y = _buf.ReadFloat();
         ExitX = _buf.ReadFloat();
         ExitY = _buf.ReadFloat();
+        EntryCount = _buf.ReadInt();
+        Search1Count = _buf.ReadInt();
+        Search2Count = _buf.ReadInt();
+        Search3Count = _buf.ReadInt();
+        DefendCount = _buf.ReadInt();
+        BreakthroughWaves = _buf.ReadInt();
+        BreakthroughCount = _buf.ReadInt();
+        AliveCap = _buf.ReadInt();
+        SpawnInterval = _buf.ReadFloat();
+        ActivationSeconds = _buf.ReadFloat();
+        DefendSeconds = _buf.ReadFloat();
+        FacilityRadius = _buf.ReadFloat();
+        FacilityX = _buf.ReadFloat();
+        FacilityY = _buf.ReadFloat();
+        BreakthroughX = _buf.ReadFloat();
+        BreakthroughY = _buf.ReadFloat();
+        EntryRoster = _buf.ReadString();
+        Search1Roster = _buf.ReadString();
+        Search2Roster = _buf.ReadString();
+        Search3Roster = _buf.ReadString();
+        DefendRoster = _buf.ReadString();
+        Breakthrough1Roster = _buf.ReadString();
+        Breakthrough2Roster = _buf.ReadString();
+        Breakthrough3Roster = _buf.ReadString();
     }
 
     public static MissionRuleConfig DeserializeMissionRuleConfig(ByteBuf _buf)
@@ -47,6 +71,30 @@ public sealed partial class MissionRuleConfig : Luban.BeanBase
     public readonly float Supply3Y;
     public readonly float ExitX;
     public readonly float ExitY;
+    public readonly int EntryCount;
+    public readonly int Search1Count;
+    public readonly int Search2Count;
+    public readonly int Search3Count;
+    public readonly int DefendCount;
+    public readonly int BreakthroughWaves;
+    public readonly int BreakthroughCount;
+    public readonly int AliveCap;
+    public readonly float SpawnInterval;
+    public readonly float ActivationSeconds;
+    public readonly float DefendSeconds;
+    public readonly float FacilityRadius;
+    public readonly float FacilityX;
+    public readonly float FacilityY;
+    public readonly float BreakthroughX;
+    public readonly float BreakthroughY;
+    public readonly string EntryRoster;
+    public readonly string Search1Roster;
+    public readonly string Search2Roster;
+    public readonly string Search3Roster;
+    public readonly string DefendRoster;
+    public readonly string Breakthrough1Roster;
+    public readonly string Breakthrough2Roster;
+    public readonly string Breakthrough3Roster;
    
     public const int __ID__ = -311625750;
     public override int GetTypeId() => __ID__;
@@ -70,6 +118,30 @@ public sealed partial class MissionRuleConfig : Luban.BeanBase
         + "Supply3Y:" + Supply3Y + ","
         + "ExitX:" + ExitX + ","
         + "ExitY:" + ExitY + ","
+        + "EntryCount:" + EntryCount + ","
+        + "Search1Count:" + Search1Count + ","
+        + "Search2Count:" + Search2Count + ","
+        + "Search3Count:" + Search3Count + ","
+        + "DefendCount:" + DefendCount + ","
+        + "BreakthroughWaves:" + BreakthroughWaves + ","
+        + "BreakthroughCount:" + BreakthroughCount + ","
+        + "AliveCap:" + AliveCap + ","
+        + "SpawnInterval:" + SpawnInterval + ","
+        + "ActivationSeconds:" + ActivationSeconds + ","
+        + "DefendSeconds:" + DefendSeconds + ","
+        + "FacilityRadius:" + FacilityRadius + ","
+        + "FacilityX:" + FacilityX + ","
+        + "FacilityY:" + FacilityY + ","
+        + "BreakthroughX:" + BreakthroughX + ","
+        + "BreakthroughY:" + BreakthroughY + ","
+        + "EntryRoster:" + EntryRoster + ","
+        + "Search1Roster:" + Search1Roster + ","
+        + "Search2Roster:" + Search2Roster + ","
+        + "Search3Roster:" + Search3Roster + ","
+        + "DefendRoster:" + DefendRoster + ","
+        + "Breakthrough1Roster:" + Breakthrough1Roster + ","
+        + "Breakthrough2Roster:" + Breakthrough2Roster + ","
+        + "Breakthrough3Roster:" + Breakthrough3Roster + ","
         + "}";
     }
 }

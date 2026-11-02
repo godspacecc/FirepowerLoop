@@ -205,6 +205,9 @@ namespace Game
         /// <summary>任务出口预载后按权威状态显示，实例就绪才允许撤离。</summary>
         void SetMissionExit(bool visible,Vector2 position) { }
         bool IsMissionExitReady=>false;
+        /// <summary>任务设施与地图共享句柄所有权，入口等待真实实例。</summary>
+        void SetMissionFacility(Vector2 position) { }
+        bool IsMissionFacilityReady=>false;
         void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
         /// <summary>紫级副机单独同步；旧表现端仍可显示主机。</summary>
         void SetDroneUnit(long ownerPlayerId,int unitIndex,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
@@ -1245,6 +1248,7 @@ namespace Game
                     DisplayName = displayName,
                     IsMissionSupply = key.StartsWith("mission-supply:",StringComparison.Ordinal),
                     IsMissionExit = key == "mission-exit",
+                    IsMissionFacility = key == "mission-facility",
                     Address = address
                 };
                 effectVisuals.Add(key, entry);
@@ -1271,7 +1275,7 @@ namespace Game
             {
                 if (!entry.Released)
                     Log.Error($"[ArcadeCombatViewController] 强化视觉加载异常：{entry.Address} / {exception.Message}");
-                if((entry.IsMissionSupply||entry.IsMissionExit)&&!entry.Released)missionSupplyLoadError="任务物资加载失败："+exception.Message;
+                if((entry.IsMissionSupply||entry.IsMissionExit||entry.IsMissionFacility)&&!entry.Released)missionSupplyLoadError="任务物资加载失败："+exception.Message;
                 ReleaseEffectVisual(entry);
                 return;
             }
@@ -1282,7 +1286,7 @@ namespace Game
             if(entry.IsMissionSupply)prefab=MissionSupplyTemplate(prefab);
             if (!ValidateEffectVisualPrefab(prefab, entry.Address, out string error))
             {
-                if(entry.IsMissionSupply||entry.IsMissionExit)missionSupplyLoadError=error;
+                if(entry.IsMissionSupply||entry.IsMissionExit||entry.IsMissionFacility)missionSupplyLoadError=error;
                 Log.Error($"[ArcadeCombatViewController] {error}");
                 ReleaseEffectVisual(entry.Key);
                 return;
@@ -1303,7 +1307,7 @@ namespace Game
             }
             catch (Exception exception)
             {
-                if(entry.IsMissionSupply||entry.IsMissionExit)missionSupplyLoadError="任务物资实例化失败："+exception.Message;
+                if(entry.IsMissionSupply||entry.IsMissionExit||entry.IsMissionFacility)missionSupplyLoadError="任务物资实例化失败："+exception.Message;
                 Log.Error($"[ArcadeCombatViewController] 强化视觉实例化失败：{entry.Address} / {exception.Message}");
                 ReleaseEffectVisual(entry);
             }
@@ -1386,6 +1390,8 @@ namespace Game
             public bool IsMissionSupply;
             /// <summary>任务出口预载时隐藏，清场后显现，迟到回调沿用最新状态。</summary>
             public bool IsMissionExit, MissionExitVisible;
+            /// <summary>发电机加载失败同样终止任务入场事务。</summary>
+            public bool IsMissionFacility;
             public bool IsStagePortal;
             public float PortalSeconds,PortalAppearSeconds;
             public bool IsDrone;

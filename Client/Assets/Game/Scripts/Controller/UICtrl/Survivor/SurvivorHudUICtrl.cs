@@ -93,14 +93,35 @@ namespace Game
             if (mission.IsMission)
             {
                 UI.ScoreText.text = Loc.T("ui.mission.progress", mission.MissionCollected, mission.MissionSupplyCount, mission.MissionRemainingEnemies);
-                UI.TimeText.text = mission.MissionCollected == mission.MissionSupplyCount && !mission.MissionReadyToExtract
-                    ? Loc.T("ui.mission.clear") : FormatMissionTarget(mission.MissionTargetOffset, mission.MissionReadyToExtract);
+                UI.TimeText.text = FormatMissionPhase(mission);
             }
             UI.HealthBar.value=s.MaximumHealth>0?Mathf.Clamp01((float)s.Health/s.MaximumHealth):0;
             UI.ExperienceBar.value=s.RequiredExperience>0?Mathf.Clamp01((float)s.Experience/s.RequiredExperience):0;
             UI.BtnPause.interactable=!s.Paused;
             var model=this.GetModel<SurvivorModel>();weaponKinds=model.EquippedWeapons;
             UI.WeaponSlots.totalCount=model.WeaponSlotCapacity;UI.WeaponSlots.RefreshCells();
+        }
+        /// <summary>阶段由任务权威提供；当前目标与范围提示不改变规则。</summary>
+        private static string FormatMissionPhase(SurvivorSystem mission)
+        {
+            var offset=mission.MissionTargetOffset;
+            switch(mission.MissionPhase)
+            {
+                case MissionPhase.Entry:return Loc.T("ui.mission.entry");
+                case MissionPhase.Search:return mission.MissionCanCollect?FormatMissionTarget(offset,false):Loc.T("ui.mission.encounter",Loc.T("ui.mission.site."+mission.MissionCurrentSearchIndex));
+                case MissionPhase.Activate:
+                    return offset.magnitude>mission.MissionFacilityRadius?FormatMissionDestination(offset,"ui.mission.facility"):Loc.T("ui.mission.activate",Mathf.CeilToInt(mission.MissionPhaseSecondsRemaining));
+                case MissionPhase.Defend:
+                    return offset.magnitude>mission.MissionFacilityRadius?Loc.T("ui.mission.return_facility"):mission.MissionPhaseSecondsRemaining>0?Loc.T("ui.mission.defend",Mathf.CeilToInt(mission.MissionPhaseSecondsRemaining)):Loc.T("ui.mission.clear");
+                case MissionPhase.Breakthrough:return mission.MissionWaveIndex==0?FormatMissionDestination(offset,"ui.mission.breakthrough"):Loc.T("ui.mission.wave",mission.MissionWaveIndex);
+                default:return FormatMissionTarget(offset,true);
+            }
+        }
+        /// <summary>设施及突破点沿用现有方向文本，不创建新的屏幕布局。</summary>
+        private static string FormatMissionDestination(Vector2 offset,string key)
+        {
+            string direction=Mathf.Abs(offset.x)>Mathf.Abs(offset.y)?(offset.x>=0?"east":"west"):(offset.y>=0?"north":"south");
+            return Loc.T(key,Loc.T("ui.mission."+direction),Mathf.CeilToInt(offset.magnitude));
         }
         /// <summary>复用现有文字栏提示目标方位和距离，不在界面推进收集或撤离规则。</summary>
         internal static string FormatMissionTarget(Vector2 offset, bool extraction)

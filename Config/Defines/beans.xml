@@ -763,5 +763,29 @@
         <var name="Supply2X" type="float"/><var name="Supply2Y" type="float"/>
         <var name="Supply3X" type="float"/><var name="Supply3Y" type="float"/>
         <var name="ExitX" type="float"/><var name="ExitY" type="float"/>
+        <var name="EntryCount" type="int"/>
+        <var name="Search1Count" type="int"/>
+        <var name="Search2Count" type="int"/>
+        <var name="Search3Count" type="int"/>
+        <var name="DefendCount" type="int"/>
+        <var name="BreakthroughWaves" type="int"/>
+        <var name="BreakthroughCount" type="int"/>
+        <var name="AliveCap" type="int"/>
+        <var name="SpawnInterval" type="float"/>
+        <var name="ActivationSeconds" type="float"/>
+        <var name="DefendSeconds" type="float"/>
+        <var name="FacilityRadius" type="float"/>
+        <var name="FacilityX" type="float"/>
+        <var name="FacilityY" type="float"/>
+        <var name="BreakthroughX" type="float"/>
+        <var name="BreakthroughY" type="float"/>
+        <var name="EntryRoster" type="string"/>
+        <var name="Search1Roster" type="string"/>
+        <var name="Search2Roster" type="string"/>
+        <var name="Search3Roster" type="string"/>
+        <var name="DefendRoster" type="string"/>
+        <var name="Breakthrough1Roster" type="string"/>
+        <var name="Breakthrough2Roster" type="string"/>
+        <var name="Breakthrough3Roster" type="string"/>
     </bean>
 </beans>

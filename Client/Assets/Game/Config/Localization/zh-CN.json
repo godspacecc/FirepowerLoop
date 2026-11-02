@@ -1014,5 +1014,16 @@
   "ui.mission.west": "西",
   "ui.mission.completed": "任务完成 · 分数 {0}",
   "ui.mission.failed": "任务结束 · 分数 {0}",
-  "ui.mission.clear": "消灭剩余敌人"
+  "ui.mission.clear": "消灭剩余敌人",
+  "ui.mission.entry": "清理入口敌人",
+  "ui.mission.encounter": "{0}遭遇 · 清除敌人",
+  "ui.mission.site.0": "西侧尸群",
+  "ui.mission.site.1": "东侧追击",
+  "ui.mission.site.2": "中央盾阵",
+  "ui.mission.facility": "前往发电机：{0} {1}米",
+  "ui.mission.activate": "启动发电机：{0}秒",
+  "ui.mission.return_facility": "返回发电机附近继续防守",
+  "ui.mission.defend": "守住发电机：{0}秒",
+  "ui.mission.breakthrough": "前往北区：{0} {1}米",
+  "ui.mission.wave": "北区突破 · 第{0}波"
 }

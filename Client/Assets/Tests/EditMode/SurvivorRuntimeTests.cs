@@ -917,6 +917,9 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool IsMissionExitReady=>true;
+            public bool IsMissionFacilityReady=>true;
+            public bool IsMissionSupplyReady(int id)=>true;
             public readonly HashSet<int> MolotovLaunched=new HashSet<int>(),ActiveMolotov=new HashSet<int>(),ActiveFireZones=new HashSet<int>();
             public int MolotovRemovals,FireZoneRemovals;
             public float LastFireZoneRadius;

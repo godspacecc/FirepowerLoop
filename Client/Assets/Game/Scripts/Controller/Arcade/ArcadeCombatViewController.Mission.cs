@@ -31,6 +31,14 @@ namespace Game
         {
             if(entry.IsMissionExit&&entry.Instance!=null)entry.Instance.SetActive(entry.MissionExitVisible);
         }
+        /// <summary>只创建采用版柴油机的纯显示实例，不附带旧电塔行为。</summary>
+        public void SetMissionFacility(Vector2 position)
+        {
+            if(!string.IsNullOrEmpty(missionSupplyLoadError))return;
+            SetEffectVisual("mission-facility","mission-facility","Prefabs/SceneObjects/MissionGeneratorVisual",position,Vector3.zero);
+        }
+        /// <summary>设施须加载完毕才允许入场，避免在不可见目标处防守。</summary>
+        public bool IsMissionFacilityReady=>effectVisuals.TryGetValue("mission-facility",out var entry)&&entry.Instance!=null;
         /// <summary>入口必须等到实例实际存在，不能把请求发出视为准备完成。</summary>
         public bool IsMissionSupplyReady(int id)=>effectVisuals.TryGetValue("mission-supply:"+id,out var entry)&&entry.Instance!=null;
         /// <summary>只克隆已确认箱体子树，排除根触发器、拾取行为、名称和无关模型。</summary>

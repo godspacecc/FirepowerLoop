@@ -246,10 +246,12 @@ namespace Game
             if(m.Health<=0)TryFinish(out _);else {if(missionMode)TickMission(dt);Publish();}
         }
         /// <summary>从玩家所在可达地面爬出，不限制存活数量；没有安全落点时等待下一次刷新。</summary>
-        private void Spawn()
+        private void Spawn()=>SpawnEnemy(null);
+        // 任务可指定敌人；普通生存继续按原有权重选取。
+        private void SpawnEnemy(SurvivorEnemyDefinition missionChoice)
         {
             if(enemyRoster==null&&!PrepareEnemyRoster(out var rosterError)){LastError=rosterError;Model.Paused=true;input.Disable();Publish();return;}
-            var choice=enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
+            var choice=missionChoice??enemyRoster.Select(Model.State.ElapsedSeconds,(float)Math.Min(enemyRandom.NextDouble(),.99999994));
             var selected=enemyConfigs[choice.EnemyId];
             float radius=catalog.Rule.EnemyContactRadius*choice.BodyRadiusMultiplier;
             if(!TryGroundSpawn(radius,out var groundEntry))return;

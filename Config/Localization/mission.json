@@ -1,13 +1,90 @@
 {
-  "ui.mission.mode": { "zh-CN": "任务模式", "en-US": "Mission Mode" },
-  "ui.mission.clear": { "zh-CN": "消灭剩余敌人", "en-US": "Clear remaining enemies" },
-  "ui.mission.progress": { "zh-CN": "物资 {0}/{1} · 敌人 {2}", "en-US": "Supplies {0}/{1} · Enemies {2}" },
-  "ui.mission.search": { "zh-CN": "搜索：{0} {1}米", "en-US": "Search: {0} {1}m" },
-  "ui.mission.extract": { "zh-CN": "撤离：{0} {1}米", "en-US": "Extract: {0} {1}m" },
-  "ui.mission.north": { "zh-CN": "北", "en-US": "N" },
-  "ui.mission.south": { "zh-CN": "南", "en-US": "S" },
-  "ui.mission.east": { "zh-CN": "东", "en-US": "E" },
-  "ui.mission.west": { "zh-CN": "西", "en-US": "W" },
-  "ui.mission.completed": { "zh-CN": "任务完成 · 分数 {0}", "en-US": "Mission complete · Score {0}" },
-  "ui.mission.failed": { "zh-CN": "任务结束 · 分数 {0}", "en-US": "Mission ended · Score {0}" }
+  "ui.mission.mode": {
+    "zh-CN": "任务模式",
+    "en-US": "Mission Mode"
+  },
+  "ui.mission.clear": {
+    "zh-CN": "消灭剩余敌人",
+    "en-US": "Clear remaining enemies"
+  },
+  "ui.mission.progress": {
+    "zh-CN": "物资 {0}/{1} · 敌人 {2}",
+    "en-US": "Supplies {0}/{1} · Enemies {2}"
+  },
+  "ui.mission.search": {
+    "zh-CN": "搜索：{0} {1}米",
+    "en-US": "Search: {0} {1}m"
+  },
+  "ui.mission.extract": {
+    "zh-CN": "撤离：{0} {1}米",
+    "en-US": "Extract: {0} {1}m"
+  },
+  "ui.mission.north": {
+    "zh-CN": "北",
+    "en-US": "N"
+  },
+  "ui.mission.south": {
+    "zh-CN": "南",
+    "en-US": "S"
+  },
+  "ui.mission.east": {
+    "zh-CN": "东",
+    "en-US": "E"
+  },
+  "ui.mission.west": {
+    "zh-CN": "西",
+    "en-US": "W"
+  },
+  "ui.mission.completed": {
+    "zh-CN": "任务完成 · 分数 {0}",
+    "en-US": "Mission complete · Score {0}"
+  },
+  "ui.mission.failed": {
+    "zh-CN": "任务结束 · 分数 {0}",
+    "en-US": "Mission ended · Score {0}"
+  },
+  "ui.mission.entry": {
+    "zh-CN": "清理入口敌人",
+    "en-US": "Clear the entry"
+  },
+  "ui.mission.encounter": {
+    "zh-CN": "{0}遭遇 · 清除敌人",
+    "en-US": "{0} encounter · Clear enemies"
+  },
+  "ui.mission.site.0": {
+    "zh-CN": "西侧尸群",
+    "en-US": "Western horde"
+  },
+  "ui.mission.site.1": {
+    "zh-CN": "东侧追击",
+    "en-US": "Eastern rush"
+  },
+  "ui.mission.site.2": {
+    "zh-CN": "中央盾阵",
+    "en-US": "Central shields"
+  },
+  "ui.mission.facility": {
+    "zh-CN": "前往发电机：{0} {1}米",
+    "en-US": "Generator: {0} {1}m"
+  },
+  "ui.mission.activate": {
+    "zh-CN": "启动发电机：{0}秒",
+    "en-US": "Starting generator: {0}s"
+  },
+  "ui.mission.return_facility": {
+    "zh-CN": "返回发电机附近继续防守",
+    "en-US": "Return to generator to defend"
+  },
+  "ui.mission.defend": {
+    "zh-CN": "守住发电机：{0}秒",
+    "en-US": "Defend generator: {0}s"
+  },
+  "ui.mission.breakthrough": {
+    "zh-CN": "前往北区：{0} {1}米",
+    "en-US": "Northern area: {0} {1}m"
+  },
+  "ui.mission.wave": {
+    "zh-CN": "北区突破 · 第{0}波",
+    "en-US": "Breakthrough · Wave {0}"
+  }
 }
