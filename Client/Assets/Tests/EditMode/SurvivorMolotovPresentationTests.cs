@@ -12,6 +12,27 @@ namespace Game.Tests
 {
     public sealed class SurvivorMolotovPresentationTests
     {
+        /// <summary>正式粘液模板作为Content真实依赖，表现池可复用并在地图释放时清空。</summary>
+        [Test] public void SlimeTemplateIsCollectedBoundedAndReleased()
+        {
+            const string path="Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/SurvivorSlimeBottle.prefab";
+            Assert.That(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content/SurvivorSlimeBottle"),Is.Not.Null);
+            var setting=AssetDatabase.LoadAssetAtPath<Object>("Assets/AssetBundleCollectorSetting.asset");
+            var result=setting.GetType().GetMethod("BeginCollect").Invoke(setting,new object[]{"DefaultPackage",false,false});
+            var entry=((IEnumerable)Read(result,"CollectAssets")).Cast<object>().Single(a=>(string)Read(a,"Address")=="Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet");
+            Assert.That(((IEnumerable)Read(entry,"AssetTags")).Cast<string>(),Does.Contain("arcade"));
+            var deps=((IEnumerable)entry.GetType().GetField("DependAssets").GetValue(entry)).Cast<object>().Select(x=>(string)x.GetType().GetField("AssetPath").GetValue(x)).ToArray();
+            foreach(var name in new[]{"SurvivorSlimeBottle.prefab","Slime.mat","BottleGreen.mat","BottleCap.mat","SlimePool.asset"})Assert.That(deps,Does.Contain(path.Replace("SurvivorSlimeBottle.prefab",name)));
+            var root=new GameObject("SlimePresentationTest");var view=new ArcadeCombatViewController();typeof(ArcadeCombatViewController).GetField("root",BindingFlags.Instance|BindingFlags.NonPublic).SetValue(view,root);
+            try {
+                Call(view,"BindSlimeBottleVisuals",AssetDatabase.LoadAssetAtPath<GameObject>(path).transform);
+                for(int i=0;i<12;i++){view.SetSurvivorSlimeBottle(i,Vector2.zero,1,90,true);view.SetSurvivorSlimeZone(i,Vector2.zero,1.2f,.2f,true);}
+                var bottles=(IDictionary)Field(view,"slimeBottleBottles");var zones=(IDictionary)Field(view,"slimeBottleZones");
+                Assert.That(bottles.Count,Is.EqualTo(2));Assert.That(zones.Count,Is.EqualTo(4));var zone=(SurvivorSlimeZoneVisual)zones[0];Assert.That(zone.IsValid,Is.True);
+                view.SetSurvivorSlimeZone(0,Vector2.zero,1.2f,3,false);view.SetSurvivorSlimeZone(20,Vector2.one,2.1f,.2f,true);Assert.That(zones[20],Is.SameAs(zone));Assert.That(zone.Pool.localScale.x,Is.EqualTo(1.75f).Within(.00001));
+                Call(view,"ClearSlimeBottleVisuals");Assert.That(root.transform.childCount,Is.Zero);
+            }finally{Call(view,"ClearSlimeBottleVisuals");Object.DestroyImmediate(root);}
+        }
         private const string Template="Assets/Game/Art/Arcade/VFX/SurvivorMolotov/SurvivorMolotov.prefab";
         private static object Read(object value,string name)=>value.GetType().GetProperty(name).GetValue(value);
         private static void Call(object value,string name,params object[] args)=>value.GetType().GetMethod(name,BindingFlags.Instance|BindingFlags.NonPublic).Invoke(value,args);
@@ -45,6 +66,7 @@ namespace Game.Tests
             try
             {
                 Call(view,"BindMolotovVisuals",AssetDatabase.LoadAssetAtPath<GameObject>(Template).transform);
+                Call(view,"BindSlimeBottleVisuals",AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/SurvivorSlimeBottle.prefab").transform);
                 Assert.That(view.IsSurvivorMolotovReady,Is.True);
                 for(int i=0;i<12;i++){view.SetSurvivorMolotov(i,Vector2.zero,1,90,true);view.SetSurvivorFireZone(i,Vector2.zero,1.2f,.3f,true);}
                 var bottles=(IDictionary)Field(view,"molotovBottles");var zones=(IDictionary)Field(view,"molotovZones");Assert.That(bottles.Count,Is.EqualTo(2));Assert.That(zones.Count,Is.EqualTo(4));

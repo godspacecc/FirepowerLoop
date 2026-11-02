@@ -2416,6 +2416,94 @@ namespace Game
         /// </summary>
         public static string LoadingTitle => Loc.T("ui.loading.title");
         /// <summary>
+        /// 启动发电机：{0}秒
+        /// </summary>
+        public static string MissionActivate(object arg0) => Loc.T("ui.mission.activate", arg0);
+        /// <summary>
+        /// 前往北区：{0} {1}米
+        /// </summary>
+        public static string MissionBreakthrough(object arg0, object arg1) => Loc.T("ui.mission.breakthrough", arg0, arg1);
+        /// <summary>
+        /// 消灭剩余敌人
+        /// </summary>
+        public static string MissionClear => Loc.T("ui.mission.clear");
+        /// <summary>
+        /// 任务完成 · 分数 {0}
+        /// </summary>
+        public static string MissionCompleted(object arg0) => Loc.T("ui.mission.completed", arg0);
+        /// <summary>
+        /// 守住发电机：{0}秒
+        /// </summary>
+        public static string MissionDefend(object arg0) => Loc.T("ui.mission.defend", arg0);
+        /// <summary>
+        /// 东
+        /// </summary>
+        public static string MissionEast => Loc.T("ui.mission.east");
+        /// <summary>
+        /// {0}遭遇 · 清除敌人
+        /// </summary>
+        public static string MissionEncounter(object arg0) => Loc.T("ui.mission.encounter", arg0);
+        /// <summary>
+        /// 清理入口敌人
+        /// </summary>
+        public static string MissionEntry => Loc.T("ui.mission.entry");
+        /// <summary>
+        /// 撤离：{0} {1}米
+        /// </summary>
+        public static string MissionExtract(object arg0, object arg1) => Loc.T("ui.mission.extract", arg0, arg1);
+        /// <summary>
+        /// 前往发电机：{0} {1}米
+        /// </summary>
+        public static string MissionFacility(object arg0, object arg1) => Loc.T("ui.mission.facility", arg0, arg1);
+        /// <summary>
+        /// 任务结束 · 分数 {0}
+        /// </summary>
+        public static string MissionFailed(object arg0) => Loc.T("ui.mission.failed", arg0);
+        /// <summary>
+        /// 任务模式
+        /// </summary>
+        public static string MissionMode => Loc.T("ui.mission.mode");
+        /// <summary>
+        /// 北
+        /// </summary>
+        public static string MissionNorth => Loc.T("ui.mission.north");
+        /// <summary>
+        /// 物资 {0}/{1} · 敌人 {2}
+        /// </summary>
+        public static string MissionProgress(object arg0, object arg1, object arg2) => Loc.T("ui.mission.progress", arg0, arg1, arg2);
+        /// <summary>
+        /// 返回发电机附近继续防守
+        /// </summary>
+        public static string MissionReturnFacility => Loc.T("ui.mission.return_facility");
+        /// <summary>
+        /// 搜索：{0} {1}米
+        /// </summary>
+        public static string MissionSearch(object arg0, object arg1) => Loc.T("ui.mission.search", arg0, arg1);
+        /// <summary>
+        /// 西侧尸群
+        /// </summary>
+        public static string MissionSite0 => Loc.T("ui.mission.site.0");
+        /// <summary>
+        /// 东侧追击
+        /// </summary>
+        public static string MissionSite1 => Loc.T("ui.mission.site.1");
+        /// <summary>
+        /// 中央盾阵
+        /// </summary>
+        public static string MissionSite2 => Loc.T("ui.mission.site.2");
+        /// <summary>
+        /// 南
+        /// </summary>
+        public static string MissionSouth => Loc.T("ui.mission.south");
+        /// <summary>
+        /// 北区突破 · 第{0}波
+        /// </summary>
+        public static string MissionWave(object arg0) => Loc.T("ui.mission.wave", arg0);
+        /// <summary>
+        /// 西
+        /// </summary>
+        public static string MissionWest => Loc.T("ui.mission.west");
+        /// <summary>
         /// 交互
         /// </summary>
         public static string MobileInteract => Loc.T("ui.mobile.interact");
@@ -3638,6 +3726,130 @@ namespace Game
         /// </summary>
         public static string SurvivorArcade => Loc.T("ui.survivor.arcade");
         /// <summary>
+        /// 重复命中刷新持续时间
+        /// </summary>
+        public static string SurvivorCardsFireNote => Loc.T("ui.survivor.cards.Fire.note");
+        /// <summary>
+        /// {0}% 弹伤 / 秒
+        /// </summary>
+        public static string SurvivorCardsFireStat(object arg0) => Loc.T("ui.survivor.cards.Fire.stat", arg0);
+        /// <summary>
+        /// 命中后燃烧 {0} 秒
+        /// </summary>
+        public static string SurvivorCardsFireTrigger(object arg0) => Loc.T("ui.survivor.cards.Fire.trigger", arg0);
+        /// <summary>
+        /// 重复命中刷新持续时间
+        /// </summary>
+        public static string SurvivorCardsFrostNote => Loc.T("ui.survivor.cards.Frost.note");
+        /// <summary>
+        /// 降低 {0}% 移速
+        /// </summary>
+        public static string SurvivorCardsFrostStat(object arg0) => Loc.T("ui.survivor.cards.Frost.stat", arg0);
+        /// <summary>
+        /// 命中后减速 {0} 秒
+        /// </summary>
+        public static string SurvivorCardsFrostTrigger(object arg0) => Loc.T("ui.survivor.cards.Frost.trigger", arg0);
+        /// <summary>
+        /// 按实际发射颗数消耗弹药
+        /// </summary>
+        public static string SurvivorCardsMultishotNote => Loc.T("ui.survivor.cards.Multishot.note");
+        /// <summary>
+        /// 每轮额外发射 {0} 颗
+        /// </summary>
+        public static string SurvivorCardsMultishotStat(object arg0) => Loc.T("ui.survivor.cards.Multishot.stat", arg0);
+        /// <summary>
+        /// 一轮射击发射多颗子弹
+        /// </summary>
+        public static string SurvivorCardsMultishotTrigger => Loc.T("ui.survivor.cards.Multishot.trigger");
+        /// <summary>
+        /// 同一颗子弹不重复命中同一目标
+        /// </summary>
+        public static string SurvivorCardsPierceNote => Loc.T("ui.survivor.cards.Pierce.note");
+        /// <summary>
+        /// 额外穿透 {0} 个敌人
+        /// </summary>
+        public static string SurvivorCardsPierceStat(object arg0) => Loc.T("ui.survivor.cards.Pierce.stat", arg0);
+        /// <summary>
+        /// 可击穿额外目标
+        /// </summary>
+        public static string SurvivorCardsPierceTrigger => Loc.T("ui.survivor.cards.Pierce.trigger");
+        /// <summary>
+        /// 幸存者 · 本局强化
+        /// </summary>
+        public static string SurvivorCardsCaption => Loc.T("ui.survivor.cards.caption");
+        /// <summary>
+        /// 弹匣改装
+        /// </summary>
+        public static string SurvivorCardsCategoryMagazine => Loc.T("ui.survivor.cards.category.magazine");
+        /// <summary>
+        /// 弹头改装
+        /// </summary>
+        public static string SurvivorCardsCategoryModifier => Loc.T("ui.survivor.cards.category.modifier");
+        /// <summary>
+        /// 射击改装
+        /// </summary>
+        public static string SurvivorCardsCategoryMultishot => Loc.T("ui.survivor.cards.category.multishot");
+        /// <summary>
+        /// 生存训练
+        /// </summary>
+        public static string SurvivorCardsCategoryPlayer => Loc.T("ui.survivor.cards.category.player");
+        /// <summary>
+        /// 生命恢复
+        /// </summary>
+        public static string SurvivorCardsCategoryRecovery => Loc.T("ui.survivor.cards.category.recovery");
+        /// <summary>
+        /// 支援武器
+        /// </summary>
+        public static string SurvivorCardsCategoryWeapon => Loc.T("ui.survivor.cards.category.weapon");
+        /// <summary>
+        /// 可与当前任一弹头搭配
+        /// </summary>
+        public static string SurvivorCardsCompatible => Loc.T("ui.survivor.cards.compatible");
+        /// <summary>
+        /// 首次获得
+        /// </summary>
+        public static string SurvivorCardsFirst => Loc.T("ui.survivor.cards.first");
+        /// <summary>
+        /// 点击一张卡片，获得强化
+        /// </summary>
+        public static string SurvivorCardsInstruction => Loc.T("ui.survivor.cards.instruction");
+        /// <summary>
+        /// Lv.{0} → Lv.{1}
+        /// </summary>
+        public static string SurvivorCardsLevel(object arg0, object arg1) => Loc.T("ui.survivor.cards.level", arg0, arg1);
+        /// <summary>
+        /// {0} → {1}
+        /// </summary>
+        public static string SurvivorCardsNextStat(object arg0, object arg1) => Loc.T("ui.survivor.cards.next.stat", arg0, arg1);
+        /// <summary>
+        /// 战斗已暂停，点击卡片后继续
+        /// </summary>
+        public static string SurvivorCardsPaused => Loc.T("ui.survivor.cards.paused");
+        /// <summary>
+        /// 与另一种弹匣互斥
+        /// </summary>
+        public static string SurvivorCardsRouteMagazine => Loc.T("ui.survivor.cards.route.Magazine");
+        /// <summary>
+        /// 三种生命恢复互斥
+        /// </summary>
+        public static string SurvivorCardsRouteRecovery => Loc.T("ui.survivor.cards.route.Recovery");
+        /// <summary>
+        /// 爆破与分裂弹头互斥
+        /// </summary>
+        public static string SurvivorCardsRouteRiflespecial => Loc.T("ui.survivor.cards.route.RifleSpecial");
+        /// <summary>
+        /// 燃烧、冰霜、穿甲三选一
+        /// </summary>
+        public static string SurvivorCardsRouteRifletip => Loc.T("ui.survivor.cards.route.RifleTip");
+        /// <summary>
+        /// 支援无人机
+        /// </summary>
+        public static string SurvivorCardsSupport => Loc.T("ui.survivor.cards.support");
+        /// <summary>
+        /// 选择你的强化
+        /// </summary>
+        public static string SurvivorCardsTitle => Loc.T("ui.survivor.cards.title");
+        /// <summary>
         /// 默认主角
         /// </summary>
         public static string SurvivorCharacter0 => Loc.T("ui.survivor.character.0");
@@ -3718,7 +3930,7 @@ namespace Game
         /// </summary>
         public static string SurvivorMode => Loc.T("ui.survivor.mode");
         /// <summary>
-        /// 爆炸
+        /// 爆破弹头
         /// </summary>
         public static string SurvivorModifierExplosion => Loc.T("ui.survivor.modifier.Explosion");
         /// <summary>
@@ -3726,6 +3938,24 @@ namespace Game
         /// 与分裂互斥；首次触发
         /// </summary>
         public static string SurvivorModifierExplosionDetail(object arg0, object arg1, object arg2, object arg3, object arg4, object arg5) => Loc.T("ui.survivor.modifier.Explosion.detail", arg0, arg1, arg2, arg3, arg4, arg5);
+        /// <summary>
+        /// 燃烧弹头
+        /// </summary>
+        public static string SurvivorModifierFire => Loc.T("ui.survivor.modifier.Fire");
+        /// <summary>
+        /// 燃烧{0}秒：弹伤{1}%→{2}%/秒
+        /// 火焰／冰霜／穿透三选一
+        /// </summary>
+        public static string SurvivorModifierFireDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.modifier.Fire.detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 冰霜弹头
+        /// </summary>
+        public static string SurvivorModifierFrost => Loc.T("ui.survivor.modifier.Frost");
+        /// <summary>
+        /// 减速{0}秒：{1}%→{2}%
+        /// 火焰／冰霜／穿透三选一
+        /// </summary>
+        public static string SurvivorModifierFrostDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.modifier.Frost.detail", arg0, arg1, arg2);
         /// <summary>
         /// 多重射击
         /// </summary>
@@ -3736,16 +3966,16 @@ namespace Game
         /// </summary>
         public static string SurvivorModifierMultishotDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.modifier.Multishot.detail", arg0, arg1, arg2, arg3);
         /// <summary>
-        /// 穿透
+        /// 穿甲弹头
         /// </summary>
         public static string SurvivorModifierPierce => Loc.T("ui.survivor.modifier.Pierce");
         /// <summary>
         /// Lv{0}→{1} · 额外穿透 {2}→{3}人
-        /// 同一目标只命中一次
+        /// 火焰／冰霜／穿透三选一
         /// </summary>
         public static string SurvivorModifierPierceDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.modifier.Pierce.detail", arg0, arg1, arg2, arg3);
         /// <summary>
-        /// 分裂
+        /// 分裂弹头
         /// </summary>
         public static string SurvivorModifierSplit => Loc.T("ui.survivor.modifier.Split");
         /// <summary>
@@ -3786,85 +4016,62 @@ namespace Game
         /// </summary>
         public static string SurvivorTime(object arg0) => Loc.T("ui.survivor.time", arg0);
         /// <summary>
-        /// 提高子弹伤害
+        /// 强健体魄
         /// </summary>
-        public static string SurvivorUpgrade1Detail => Loc.T("ui.survivor.upgrade.1.detail");
+        public static string SurvivorUpgradeHealthTitle => Loc.T("ui.survivor.upgrade.Health.title");
         /// <summary>
-        /// 火力提升
+        /// 扩容弹匣
         /// </summary>
-        public static string SurvivorUpgrade1Title => Loc.T("ui.survivor.upgrade.1.title");
+        public static string SurvivorUpgradeMagazineTitle => Loc.T("ui.survivor.upgrade.Magazine.title");
         /// <summary>
-        /// 静养
+        /// 疾步训练
         /// </summary>
-        public static string SurvivorUpgrade17Title => Loc.T("ui.survivor.upgrade.17.title");
+        public static string SurvivorUpgradeMovespeedTitle => Loc.T("ui.survivor.upgrade.MoveSpeed.title");
         /// <summary>
-        /// 休整
+        /// 拾取磁场
         /// </summary>
-        public static string SurvivorUpgrade18Title => Loc.T("ui.survivor.upgrade.18.title");
-        /// <summary>
-        /// 再生
-        /// </summary>
-        public static string SurvivorUpgrade19Title => Loc.T("ui.survivor.upgrade.19.title");
-        /// <summary>
-        /// 缩短自动射击间隔
-        /// </summary>
-        public static string SurvivorUpgrade2Detail => Loc.T("ui.survivor.upgrade.2.detail");
-        /// <summary>
-        /// 射速提升
-        /// </summary>
-        public static string SurvivorUpgrade2Title => Loc.T("ui.survivor.upgrade.2.title");
-        /// <summary>
-        /// 提高生命上限
-        /// </summary>
-        public static string SurvivorUpgrade3Detail => Loc.T("ui.survivor.upgrade.3.detail");
-        /// <summary>
-        /// 生命提升
-        /// </summary>
-        public static string SurvivorUpgrade3Title => Loc.T("ui.survivor.upgrade.3.title");
-        /// <summary>
-        /// 提高移动速度
-        /// </summary>
-        public static string SurvivorUpgrade4Detail => Loc.T("ui.survivor.upgrade.4.detail");
-        /// <summary>
-        /// 移速提升
-        /// </summary>
-        public static string SurvivorUpgrade4Title => Loc.T("ui.survivor.upgrade.4.title");
-        /// <summary>
-        /// 扩大经验拾取范围
-        /// </summary>
-        public static string SurvivorUpgrade5Detail => Loc.T("ui.survivor.upgrade.5.detail");
-        /// <summary>
-        /// 拾取提升
-        /// </summary>
-        public static string SurvivorUpgrade5Title => Loc.T("ui.survivor.upgrade.5.title");
-        /// <summary>
-        /// 扩容弹夹
-        /// </summary>
-        public static string SurvivorUpgrade8Title => Loc.T("ui.survivor.upgrade.8.title");
-        /// <summary>
-        /// 快速弹夹
-        /// </summary>
-        public static string SurvivorUpgrade9Title => Loc.T("ui.survivor.upgrade.9.title");
+        public static string SurvivorUpgradePickupTitle => Loc.T("ui.survivor.upgrade.Pickup.title");
         /// <summary>
         /// 持续回血：{1}% → {2}%/秒
         /// 最大生命比例；恢复三选一
         /// </summary>
         public static string SurvivorUpgradeRecoveryalwaysDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoveryAlways.detail", arg0, arg1, arg2);
         /// <summary>
+        /// 自愈体质
+        /// </summary>
+        public static string SurvivorUpgradeRecoveryalwaysTitle => Loc.T("ui.survivor.upgrade.RecoveryAlways.title");
+        /// <summary>
         /// 无伤{0}秒回血：{1}% → {2}%/秒
         /// 最大生命比例；恢复三选一
         /// </summary>
         public static string SurvivorUpgradeRecoverysafeDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoverySafe.detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 无伤休整
+        /// </summary>
+        public static string SurvivorUpgradeRecoverysafeTitle => Loc.T("ui.survivor.upgrade.RecoverySafe.title");
         /// <summary>
         /// 站定{0}秒回血：{1}% → {2}%/秒
         /// 最大生命比例；恢复三选一
         /// </summary>
         public static string SurvivorUpgradeRecoverystillDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.RecoveryStill.detail", arg0, arg1, arg2);
         /// <summary>
+        /// 静养生息
+        /// </summary>
+        public static string SurvivorUpgradeRecoverystillTitle => Loc.T("ui.survivor.upgrade.RecoveryStill.title");
+        /// <summary>
+        /// 快速弹匣
+        /// </summary>
+        public static string SurvivorUpgradeReloadTitle => Loc.T("ui.survivor.upgrade.Reload.title");
+        /// <summary>
         /// 容量：{0} → {1} 发（+{2}）
         /// 每级基础容量+10%；与快速弹夹互斥
         /// </summary>
         public static string SurvivorUpgradeMagazineDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.magazine_detail", arg0, arg1, arg2);
+        /// <summary>
+        /// 移速 {0} → {1} 米/秒
+        /// 本次 +{2} 米/秒
+        /// </summary>
+        public static string SurvivorUpgradeMoveSpeedDetail(object arg0, object arg1, object arg2) => Loc.T("ui.survivor.upgrade.move_speed_detail", arg0, arg1, arg2);
         /// <summary>
         /// 拾取半径：{0} 米 → {1} 米
         /// 本次增加 {2} 米
@@ -3885,9 +4092,39 @@ namespace Game
         /// </summary>
         public static string SurvivorWeaponDrone => Loc.T("ui.survivor.weapon.Drone");
         /// <summary>
+        /// 燃烧瓶
+        /// </summary>
+        public static string SurvivorWeaponMolotov => Loc.T("ui.survivor.weapon.Molotov");
+        /// <summary>
+        /// 每{0}秒自动投掷 · 火区持续{1}秒
+        /// 每秒伤害 {2} · 半径 {3}米
+        /// </summary>
+        public static string SurvivorWeaponMolotovAcquireDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.weapon.Molotov.acquire_detail", arg0, arg1, arg2, arg3);
+        /// <summary>
+        /// 每秒伤害 {0} → {1}
+        /// 燃烧半径 {2} → {3}米
+        /// </summary>
+        public static string SurvivorWeaponMolotovUpgradeDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.weapon.Molotov.upgrade_detail", arg0, arg1, arg2, arg3);
+        /// <summary>
         /// 基础步枪
         /// </summary>
         public static string SurvivorWeaponRifle => Loc.T("ui.survivor.weapon.Rifle");
+        /// <summary>
+        /// 粘液瓶
+        /// </summary>
+        public static string SurvivorWeaponSlimebottle => Loc.T("ui.survivor.weapon.SlimeBottle");
+        /// <summary>
+        /// 每{0}秒投掷，绿池持续{1}秒
+        /// 半径{2}米，减速{3}%
+        /// 与燃烧瓶互斥；不造成伤害
+        /// </summary>
+        public static string SurvivorWeaponSlimebottleAcquireDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.weapon.SlimeBottle.acquire_detail", arg0, arg1, arg2, arg3);
+        /// <summary>
+        /// 半径 {0} → {1} 米
+        /// 减速 {2}% → {3}%
+        /// 离开立即恢复；与燃烧瓶互斥
+        /// </summary>
+        public static string SurvivorWeaponSlimebottleUpgradeDetail(object arg0, object arg1, object arg2, object arg3) => Loc.T("ui.survivor.weapon.SlimeBottle.upgrade_detail", arg0, arg1, arg2, arg3);
         /// <summary>
         /// 获得{0}
         /// </summary>

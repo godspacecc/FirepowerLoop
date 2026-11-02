@@ -1,0 +1,3 @@
+Boot Play; Game.YooAssetResourceLoader
+Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet real loaded; Content/SurvivorSlimeBottle valid with bottle, mesh, materials,12 drops
+Prefabs/UI/Survivor/SurvivorHud real loaded; generated HUD component valid

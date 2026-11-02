@@ -1,0 +1,17 @@
+using UnityEngine;using UnityEditor;using System;using Game;
+public class Script {
+static Material Mat(string path,Color c,bool transparent=false){var m=new Material(Shader.Find("Universal Render Pipeline/Unlit"));m.SetColor("_BaseColor",c);if(transparent){m.SetFloat("_Surface",1);m.SetFloat("_SrcBlend",5);m.SetFloat("_DstBlend",10);m.SetFloat("_ZWrite",0);m.SetFloat("_Cull",0);m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");m.renderQueue=3000;}AssetDatabase.CreateAsset(m,path);return m;}
+static GameObject Part(PrimitiveType kind,Transform parent,Vector3 p,Vector3 scale,Material m){var g=GameObject.CreatePrimitive(kind);g.transform.SetParent(parent,false);g.transform.localPosition=p;g.transform.localScale=scale;UnityEngine.Object.DestroyImmediate(g.GetComponent<Collider>());g.GetComponent<Renderer>().sharedMaterial=m;return g;}
+public static object Main(){
+string dir="Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle";System.IO.Directory.CreateDirectory(Application.dataPath+"/Game/Art/Arcade/VFX/SurvivorSlimeBottle");AssetDatabase.Refresh();
+var green=Mat(dir+"/BottleGreen.mat",new Color(.15f,.62f,.08f));var cap=Mat(dir+"/BottleCap.mat",new Color(.68f,.63f,.3f));var slime=Mat(dir+"/Slime.mat",new Color(.25f,.8f,.06f,.62f),true);
+var root=new GameObject("SurvivorSlimeBottle");try{
+var bottle=new GameObject("Bottle");bottle.transform.SetParent(root.transform,false);bottle.transform.localScale=Vector3.one*.45f;
+Part(PrimitiveType.Cylinder,bottle.transform,Vector3.zero,new Vector3(.19f,.18f,.19f),green);Part(PrimitiveType.Cylinder,bottle.transform,new Vector3(0,.24f,0),new Vector3(.07f,.1f,.07f),green);Part(PrimitiveType.Cylinder,bottle.transform,new Vector3(0,.34f,0),new Vector3(.085f,.025f,.085f),cap);
+var mesh=new Mesh();var verts=new Vector3[65];var tris=new int[192];verts[0]=new Vector3(0,.045f,0);for(int i=0;i<64;i++){float a=i*Mathf.PI*2/64;float r=1.2f*(.94f+.06f*Mathf.Sin(a*7));verts[i+1]=new Vector3(Mathf.Cos(a)*r,.02f,Mathf.Sin(a)*r);tris[i*3]=0;tris[i*3+1]=i+1;tris[i*3+2]=(i+1)%64+1;}mesh.vertices=verts;mesh.triangles=tris;mesh.RecalculateNormals();AssetDatabase.CreateAsset(mesh,dir+"/SlimePool.asset");
+var zone=new GameObject("SlimeZone");zone.transform.SetParent(root.transform,false);var v=zone.AddComponent<SurvivorSlimeZoneVisual>();
+var pool=new GameObject("Pool",typeof(MeshFilter),typeof(MeshRenderer));pool.transform.SetParent(zone.transform,false);pool.GetComponent<MeshFilter>().sharedMesh=mesh;pool.GetComponent<MeshRenderer>().sharedMaterial=slime;pool.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;v.Pool=pool.transform;v.Drops=new Transform[12];for(int i=0;i<12;i++){float a=i*2.4f;v.Drops[i]=Part(PrimitiveType.Sphere,pool.transform,new Vector3(Mathf.Cos(a)*(.3f+i*.055f),.04f,Mathf.Sin(a)*(.3f+i*.055f)),new Vector3(.12f,.025f,.1f),slime).transform;}v.Sample(1.2f,0);bottle.SetActive(false);zone.SetActive(false);
+var asset=PrefabUtility.SaveAsPrefabAsset(root,dir+"/SurvivorSlimeBottle.prefab");
+string content="Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab";var c=PrefabUtility.LoadPrefabContents(content);try{var instance=(GameObject)PrefabUtility.InstantiatePrefab(asset,c.transform.Find("Content"));instance.name="SurvivorSlimeBottle";PrefabUtility.SaveAsPrefabAsset(c,content);}finally{PrefabUtility.UnloadPrefabContents(c);}AssetDatabase.SaveAssets();return "created formal confirmed slime template and Content dependency";
+}finally{UnityEngine.Object.DestroyImmediate(root);}}
+}

@@ -27,46 +27,6 @@
     "en-US": "Could not start Survivor Mode. Please retry.",
     "zh-CN": "进入幸存者模式失败，请重试"
   },
-  "ui.survivor.upgrade.1.title": {
-    "en-US": "Damage Up",
-    "zh-CN": "火力提升"
-  },
-  "ui.survivor.upgrade.1.detail": {
-    "en-US": "Increase bullet damage",
-    "zh-CN": "提高子弹伤害"
-  },
-  "ui.survivor.upgrade.2.title": {
-    "en-US": "Fire Rate Up",
-    "zh-CN": "射速提升"
-  },
-  "ui.survivor.upgrade.2.detail": {
-    "en-US": "Fire automatically more often",
-    "zh-CN": "缩短自动射击间隔"
-  },
-  "ui.survivor.upgrade.3.title": {
-    "zh-CN": "强健体魄",
-    "en-US": "Vitality"
-  },
-  "ui.survivor.upgrade.3.detail": {
-    "en-US": "Increase maximum health",
-    "zh-CN": "提高生命上限"
-  },
-  "ui.survivor.upgrade.4.title": {
-    "zh-CN": "疾步训练",
-    "en-US": "Fleet Foot"
-  },
-  "ui.survivor.upgrade.4.detail": {
-    "en-US": "Move faster",
-    "zh-CN": "提高移动速度"
-  },
-  "ui.survivor.upgrade.5.title": {
-    "zh-CN": "拾取磁场",
-    "en-US": "Pickup Magnet"
-  },
-  "ui.survivor.upgrade.5.detail": {
-    "en-US": "Collect experience from farther away",
-    "zh-CN": "扩大经验拾取范围"
-  },
   "ui.survivor.result.title": {
     "en-US": "Run Complete",
     "zh-CN": "本局结束"
@@ -102,14 +62,6 @@
   "ui.survivor.upgrade.pickup_detail": {
     "en-US": "Pickup radius: {0} m → {1} m\nIncrease: {2} m",
     "zh-CN": "拾取半径：{0} 米 → {1} 米\n本次增加 {2} 米"
-  },
-  "ui.survivor.upgrade.8.title": {
-    "zh-CN": "扩容弹匣",
-    "en-US": "Extended Magazine"
-  },
-  "ui.survivor.upgrade.9.title": {
-    "zh-CN": "快速弹匣",
-    "en-US": "Quick Magazine"
   },
   "ui.survivor.upgrade.magazine_detail": {
     "zh-CN": "容量：{0} → {1} 发（+{2}）\n每级基础容量+10%；与快速弹夹互斥",
@@ -238,18 +190,6 @@
   "ui.character.not_owned": {
     "zh-CN": "尚未拥有此角色。",
     "en-US": "Character not owned."
-  },
-  "ui.survivor.upgrade.17.title": {
-    "zh-CN": "静养生息",
-    "en-US": "Stillness"
-  },
-  "ui.survivor.upgrade.18.title": {
-    "zh-CN": "无伤休整",
-    "en-US": "Safe Recovery"
-  },
-  "ui.survivor.upgrade.19.title": {
-    "zh-CN": "自愈体质",
-    "en-US": "Regeneration"
   },
   "ui.survivor.upgrade.RecoveryStill.detail": {
     "zh-CN": "站定{0}秒回血：{1}% → {2}%/秒\n最大生命比例；恢复三选一",
@@ -404,7 +344,7 @@
     "en-US": "{0} → {1}"
   },
   "ui.survivor.weapon.Molotov": {
-    "zh-CN": "燃烧弹",
+    "zh-CN": "燃烧瓶",
     "en-US": "Molotov"
   },
   "ui.survivor.weapon.Molotov.acquire_detail": {
@@ -414,5 +354,53 @@
   "ui.survivor.weapon.Molotov.upgrade_detail": {
     "zh-CN": "每秒伤害 {0} → {1}\n燃烧半径 {2} → {3}米",
     "en-US": "Damage/s {0} → {1}\nBurn radius {2} → {3}m"
+  },
+  "ui.survivor.upgrade.Health.title": {
+    "zh-CN": "强健体魄",
+    "en-US": "Vitality"
+  },
+  "ui.survivor.upgrade.MoveSpeed.title": {
+    "zh-CN": "疾步训练",
+    "en-US": "Fleet Foot"
+  },
+  "ui.survivor.upgrade.Pickup.title": {
+    "zh-CN": "拾取磁场",
+    "en-US": "Pickup Magnet"
+  },
+  "ui.survivor.upgrade.Magazine.title": {
+    "zh-CN": "扩容弹匣",
+    "en-US": "Extended Magazine"
+  },
+  "ui.survivor.upgrade.Reload.title": {
+    "zh-CN": "快速弹匣",
+    "en-US": "Quick Magazine"
+  },
+  "ui.survivor.upgrade.RecoveryStill.title": {
+    "zh-CN": "静养生息",
+    "en-US": "Stillness"
+  },
+  "ui.survivor.upgrade.RecoverySafe.title": {
+    "zh-CN": "无伤休整",
+    "en-US": "Safe Recovery"
+  },
+  "ui.survivor.upgrade.RecoveryAlways.title": {
+    "zh-CN": "自愈体质",
+    "en-US": "Regeneration"
+  },
+  "ui.survivor.upgrade.move_speed_detail": {
+    "zh-CN": "移速 {0} → {1} 米/秒\n本次 +{2} 米/秒",
+    "en-US": "Speed {0} → {1} m/s\nThis upgrade +{2} m/s"
+  },
+  "ui.survivor.weapon.SlimeBottle": {
+    "zh-CN": "粘液瓶",
+    "en-US": "Slime Bottle"
+  },
+  "ui.survivor.weapon.SlimeBottle.acquire_detail": {
+    "zh-CN": "每{0}秒投掷，绿池持续{1}秒\n半径{2}米，减速{3}%\n与燃烧瓶互斥；不造成伤害",
+    "en-US": "Throw every {0}s; pool lasts {1}s\nRadius {2}m; slow {3}%\nExcludes Molotov; no damage"
+  },
+  "ui.survivor.weapon.SlimeBottle.upgrade_detail": {
+    "zh-CN": "半径 {0} → {1} 米\n减速 {2}% → {3}%\n离开立即恢复；与燃烧瓶互斥",
+    "en-US": "Radius {0} → {1}m\nSlow {2}% → {3}%\nRestores on exit; excludes Molotov"
   }
 }

@@ -1,0 +1,103 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using UnityEngine.UI;using TMPro;using Game;using Object=UnityEngine.Object;
+public class Script
+{
+    private static void CreateSkinProxies(Actor actor, List<Object> owned)
+    {
+        foreach (var source in actor.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!source.enabled || !source.gameObject.activeInHierarchy || source.sharedMesh == null || source.bones.Length == 0) continue;
+            var original = source.sharedMesh;
+            var output = Object.Instantiate(original); output.name = "TEMP_FormalSampledSkin"; owned.Add(output);
+            var proxy = new GameObject("TEMP_FormalSampledSkin", typeof(MeshFilter), typeof(MeshRenderer)); proxy.transform.SetParent(source.transform, false);
+            proxy.GetComponent<MeshFilter>().sharedMesh = output; proxy.GetComponent<MeshRenderer>().sharedMaterials = source.sharedMaterials;
+            var skin = new Skin { Source = source, Output = output, Vertices = original.vertices, Normals = original.normals,
+                Weights = original.boneWeights, Bindposes = original.bindposes, Bones = source.bones };
+            if (skin.Weights.Length != skin.Vertices.Length || skin.Normals.Length != skin.Vertices.Length || skin.Bindposes.Length != skin.Bones.Length)
+                throw new InvalidOperationException("正式蒙皮数据不完整：" + source.name);
+            skin.Positions = new Vector3[skin.Vertices.Length]; skin.Directions = new Vector3[skin.Vertices.Length]; skin.Matrices = new Matrix4x4[skin.Bones.Length];
+            actor.Skins.Add(skin); source.enabled = false;
+        }
+        if (actor.Skins.Count == 0) throw new InvalidOperationException("正式演员缺少可采样蒙皮：" + actor.Root.name);
+    }
+
+    private static void UpdateSkin(Skin skin)
+    {
+        for (int i = 0; i < skin.Bones.Length; i++) skin.Matrices[i] = skin.Source.transform.worldToLocalMatrix * skin.Bones[i].localToWorldMatrix * skin.Bindposes[i];
+        for (int i = 0; i < skin.Vertices.Length; i++)
+        {
+            var weight = skin.Weights[i]; var vertex = skin.Vertices[i]; var normal = skin.Normals[i]; var matrices = skin.Matrices;
+            skin.Positions[i] = matrices[weight.boneIndex0].MultiplyPoint3x4(vertex) * weight.weight0 + matrices[weight.boneIndex1].MultiplyPoint3x4(vertex) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyPoint3x4(vertex) * weight.weight2 + matrices[weight.boneIndex3].MultiplyPoint3x4(vertex) * weight.weight3;
+            skin.Directions[i] = (matrices[weight.boneIndex0].MultiplyVector(normal) * weight.weight0 + matrices[weight.boneIndex1].MultiplyVector(normal) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyVector(normal) * weight.weight2 + matrices[weight.boneIndex3].MultiplyVector(normal) * weight.weight3).normalized;
+        }
+        skin.Output.vertices = skin.Positions; skin.Output.normals = skin.Directions; skin.Output.RecalculateBounds();
+    }
+
+
+private sealed class Actor {public GameObject Root; public readonly List<Skin> Skins=new List<Skin>();}
+    private sealed class Skin
+    {
+        public SkinnedMeshRenderer Source;
+        public Mesh Output;
+        public Vector3[] Vertices, Normals, Positions, Directions;
+        public BoneWeight[] Weights;
+        public Matrix4x4[] Bindposes, Matrices;
+        public Transform[] Bones;
+    }
+
+
+
+static readonly List<Object> owned=new();
+static Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;m.SetFloat("_Smoothness",.1f);owned.Add(m);return m;}
+static TMP_Text Text(Transform canvas,TMP_FontAsset font,string value,float x,float y,float w,int size,Color color)
+{var go=new GameObject("TEMP_Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(canvas,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(w,45);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSharedMaterial=font.material;t.fontSize=size;t.text=value;t.color=color;t.alignment=TextAlignmentOptions.Center;t.raycastTarget=false;return t;}
+static void ScaleColor(ParticleSystem ps,float alpha)
+{var main=ps.main;var source=main.startColor;if(source.mode==ParticleSystemGradientMode.Color){var c=source.color;c.a*=alpha;main.startColor=c;}else if(source.mode==ParticleSystemGradientMode.TwoColors){var a=source.colorMin;var b=source.colorMax;a.a*=alpha;b.a*=alpha;main.startColor=new ParticleSystem.MinMaxGradient(a,b);}}
+static void Tune(ParticleSystem ps)
+{
+var main=ps.main;
+if(ps.name=="ImpactFlash"){main.startLifetime=.14f;var s=main.startSize;main.startSize=s.mode==ParticleSystemCurveMode.Constant?new ParticleSystem.MinMaxCurve(s.constant*1.12f):new ParticleSystem.MinMaxCurve(s.constantMin*1.12f,s.constantMax*1.12f);}
+else if(ps.name=="Burst"){main.startLifetime=.28f;var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.75f)));e.SetBursts(bursts);}
+else if(ps.name=="Smoke"){main.startLifetime=.4f;ScaleColor(ps,.42f);var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.45f)));e.SetBursts(bursts);}
+}
+static void Capture(Camera camera,string path)
+{var rt=RenderTexture.GetTemporary(1280,720,24);var old=RenderTexture.active;var tex=new Texture2D(1280,720,TextureFormat.RGB24,false);try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1280,720),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+public static object Main(){
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("仅本项目编辑态预览");
+var scene=EditorSceneManager.NewPreviewScene();var ambient=RenderSettings.ambientLight;var am=RenderSettings.ambientMode;
+try{
+var root=new GameObject("TEMP_Slime");SceneManager.MoveGameObjectToScene(root,scene);
+GameObject Part(PrimitiveType type,Transform parent,Vector3 pos,Vector3 scale,Material mat){var g=GameObject.CreatePrimitive(type);g.transform.SetParent(parent,false);g.transform.localPosition=pos;g.transform.localScale=scale;g.GetComponent<Renderer>().sharedMaterial=mat;Object.DestroyImmediate(g.GetComponent<Collider>());return g;}
+var cg=new GameObject("TEMP_Camera");cg.transform.SetParent(root.transform);var camera=cg.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=4.35f;camera.transform.position=new Vector3(0,12,-11);camera.transform.LookAt(new Vector3(0,0,.2f));camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.035f,.06f,.08f);
+var lg=new GameObject("TEMP_Light");lg.transform.SetParent(root.transform);lg.transform.rotation=Quaternion.Euler(48,-25,0);var light=lg.AddComponent<Light>();light.type=LightType.Directional;light.intensity=1.3f;light.cullingMask=1<<31;RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.58f,.61f,.66f);
+Part(PrimitiveType.Cube,root.transform,new Vector3(0,-.12f,0),new Vector3(18,.2f,11),Mat(new Color(.23f,.27f,.2f)));
+for(int i=-7;i<=7;i++)Part(PrimitiveType.Cube,root.transform,new Vector3(i,-.012f,0),new Vector3(.012f,.005f,9),Mat(new Color(.29f,.32f,.25f)));
+for(int i=-4;i<=4;i++)Part(PrimitiveType.Cube,root.transform,new Vector3(0,-.012f,i),new Vector3(16,.005f,.012f),Mat(new Color(.29f,.32f,.25f)));
+var cv=new GameObject("TEMP_Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));cv.transform.SetParent(root.transform);var canvas=cv.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;var sc=cv.GetComponent<CanvasScaler>();sc.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;sc.referenceResolution=new Vector2(1280,720);
+var font=TMP_FontAsset.CreateFontAsset(AssetDatabase.LoadAssetAtPath<Font>("Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal.otf"),72,9,UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);owned.Add(font);owned.Add(font.material);
+Text(cv.transform,font,"粘液瓶 · 临时动态预览（尚未接入游戏）",0,330,1200,27,Color.white);
+Text(cv.transform,font,"绿色小瓶抛出 → 落地摊开 → 低矮半透明粘液",0,290,1200,20,new Color(.7f,.9f,.65f));
+Text(cv.transform,font,"正式主角同框 / 瓶高约30厘米 / 地面格线1米",0,-290,1240,20,new Color(.75f,.82f,.8f));
+Text(cv.transform,font,"预览一级：半径1.2米 · 存在3秒 · 区域内减速30% · 无伤害",0,-330,1240,20,new Color(.75f,.82f,.8f));
+var phase=Text(cv.transform,font,"准备投掷",0,247,1200,22,new Color(.9f,.96f,.72f));
+var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);hero.transform.position=new Vector3(-2.8f,0,-1.2f);hero.transform.rotation=Quaternion.Euler(0,80,0);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);var a=presenter.BodyAnimator;a.enabled=true;a.Rebind();a.Update(0);a.enabled=false;presenter.Current.Animations.Idle.Clip.SampleAnimation(a.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);var actor=new Actor{Root=hero};CreateSkinProxies(actor,owned);foreach(var skin in actor.Skins)UpdateSkin(skin);
+var zombie=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),root.transform);foreach(var b in zombie.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;zombie.transform.rotation=Quaternion.Euler(0,90,0);foreach(var anim in zombie.GetComponentsInChildren<Animator>(true)){anim.enabled=true;anim.Rebind();anim.Update(0);anim.enabled=false;}
+var za=new Actor{Root=zombie};CreateSkinProxies(za,owned);foreach(var skin in za.Skins)UpdateSkin(skin);
+var bottle=new GameObject("TEMP_Bottle");bottle.transform.SetParent(root.transform);bottle.transform.localScale=Vector3.one*.45f;var green=Mat(new Color(.15f,.62f,.08f));Part(PrimitiveType.Cylinder,bottle.transform,Vector3.zero,new Vector3(.19f,.18f,.19f),green);Part(PrimitiveType.Cylinder,bottle.transform,new Vector3(0,.24f,0),new Vector3(.07f,.1f,.07f),green);Part(PrimitiveType.Cylinder,bottle.transform,new Vector3(0,.34f,0),new Vector3(.085f,.025f,.085f),Mat(new Color(.68f,.63f,.3f)));
+var slime=new Material(Shader.Find("Universal Render Pipeline/Unlit"));owned.Add(slime);slime.SetColor("_BaseColor",new Color(.25f,.8f,.06f,.62f));slime.SetFloat("_Surface",1);slime.SetFloat("_SrcBlend",5);slime.SetFloat("_DstBlend",10);slime.SetFloat("_ZWrite",0);slime.SetFloat("_Cull",0);slime.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");slime.renderQueue=3000;
+// 仅临时网格：不规则低矮液面，最大边界严格为一级半径。
+var mesh=new Mesh();owned.Add(mesh);var verts=new Vector3[65];var tris=new int[64*3];verts[0]=new Vector3(0,.045f,0);for(int i=0;i<64;i++){float ang=i*Mathf.PI*2/64;float r=1.2f*(.94f+.06f*Mathf.Sin(ang*7));verts[i+1]=new Vector3(Mathf.Cos(ang)*r,.02f,Mathf.Sin(ang)*r);tris[i*3]=0;tris[i*3+1]=i+1;tris[i*3+2]=(i+1)%64+1;}mesh.vertices=verts;mesh.triangles=tris;mesh.RecalculateNormals();
+var pool=new GameObject("TEMP_Pool",typeof(MeshFilter),typeof(MeshRenderer));pool.transform.SetParent(root.transform);pool.transform.position=new Vector3(.4f,0,0);pool.GetComponent<MeshFilter>().sharedMesh=mesh;pool.GetComponent<MeshRenderer>().sharedMaterial=slime;pool.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;
+var drops=new GameObject[12];for(int i=0;i<12;i++){float ang=i*2.4f;drops[i]=Part(PrimitiveType.Sphere,pool.transform,new Vector3(Mathf.Cos(ang)*(.3f+i*.055f),.04f,Mathf.Sin(ang)*(.3f+i*.055f)),new Vector3(.12f,.025f,.1f),slime);}
+foreach(var t in root.GetComponentsInChildren<Transform>(true))t.gameObject.layer=31;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/SlimeBottlePreview-20261102";Directory.CreateDirectory(dir+"/frames");float zx=-2.5f;bool entered=false,exited=false; float walkTime=0; var walk=AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerGroundWalk.anim"); var zombieAnimator=zombie.GetComponentInChildren<Animator>(true);
+for(int f=0;f<125;f++){float t=f/20f;float age=t-1.05f;bool active=age>=0&&age<3;float fly=Mathf.Clamp01((t-.25f)/.8f);bottle.SetActive(t<1.05f);bottle.transform.position=Vector3.Lerp(new Vector3(-2.55f,1,-1.2f),new Vector3(.4f,.12f,0),fly)+Vector3.up*Mathf.Sin(fly*Mathf.PI)*1.5f;bottle.transform.rotation=Quaternion.Euler(40+fly*400,30,30);
+pool.SetActive(active);float spread=Mathf.Lerp(.18f,1,Mathf.Clamp01(age/.16f));pool.transform.localScale=Vector3.one*spread;
+bool inside=active&&Mathf.Abs(zx-.4f)<=1.2f;float speed=inside?2.1f:3; if(t>=1.1f&&zx<4.5f)zx+=speed/20f;zombie.transform.position=new Vector3(zx,0,0); walkTime+=(inside?.7f:1f)/20f; walk.SampleAnimation(zombieAnimator.gameObject,walkTime%walk.length); foreach(var skin in za.Skins)UpdateSkin(skin); if(inside)entered=true;if(entered&&!inside)exited=true;
+phase.text=t<.25f?"准备投掷":t<1.05f?"小瓶沿弧线抛出":inside?"丧尸进入粘液：速度70% · 不造成伤害":exited?"离开区域：立即恢复100%速度":active?"落地摊开 · 丧尸接近（正常速度）":"粘液消失 · 每5秒自动投掷一次";
+Capture(camera,dir+"/frames/"+f.ToString("D3")+".png");}
+foreach(var atlas in font.atlasTextures)owned.Add(atlas);File.WriteAllText(dir+"/evidence.txt","Temporary Unity preview only. Formal assets untouched. Hero and zombie are official prefab clones; bottle and pool are temporary meshes. 125 frames@20fps. Pool exists1.05-4.05sec; radius1.2m; speed3m/s outside,2.1m/s inside. No damage simulated. Official ShamblerGroundWalk.anim sampled each frame with CPU skin proxy; step frequency70% inside and100% outside. Gameplay recurrence5sec described; clip demonstrates single throw. All temporary scene objects cleaned.");return new{frames=125,entered,exited};
+}finally{RenderSettings.ambientLight=ambient;RenderSettings.ambientMode=am;EditorSceneManager.ClosePreviewScene(scene);foreach(var o in owned)if(o!=null)Object.DestroyImmediate(o);owned.Clear();}}
+}

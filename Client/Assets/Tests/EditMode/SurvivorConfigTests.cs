@@ -30,6 +30,25 @@ namespace Game.Tests
                 Assert.Throws<ArgumentException>(()=>SurvivorConfiguration.FromTables(tables));
             }
         }
+        /// <summary>正式粘液表保持零伤害、五秒冷却及独立投掷路线。</summary>
+        [Test] public void SlimeBottleUsesConfirmedFiveLevelsAndRetiresPlaceholders()
+        {
+            var c=SurvivorConfiguration.FromTables(Load());
+            Assert.That(c.Upgrades.Count,Is.EqualTo(17));
+            foreach(var retired in new[]{"Damage","FireRate","Rifle","DronePierce","DroneExplosion","DroneSplit"})
+                Assert.That(c.Upgrades.Any(x=>x.Kind==retired),Is.False,retired);
+            Assert.That(c.MaximumWeaponLevel("Rifle"),Is.EqualTo(1));
+            var u=c.Upgrades.Single(x=>x.Kind=="SlimeBottle");
+            Assert.That(u.ExclusiveGroup,Is.EqualTo("Throwable"));
+            Assert.That(c.Upgrades.Single(x=>x.Kind=="Molotov").ExclusiveGroup,Is.EqualTo(u.ExclusiveGroup));
+            for(int n=1;n<=5;n++) {
+                var w=c.WeaponLevel("SlimeBottle",n);
+                Assert.That(w.Damage,Is.Zero);Assert.That(w.FireIntervalSeconds,Is.EqualTo(5));
+                Assert.That(w.AreaDurationSeconds,Is.EqualTo(3));
+                Assert.That(w.AreaRadius,Is.EqualTo(1.2f+(n-1)*.225f).Within(.00001));
+                Assert.That(u.StatusStrength(n),Is.EqualTo(.3f+(n-1)*.05f).Within(.00001));
+            }
+        }
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
         /// <summary>正式源生成后的路线分组、恢复强度及等待时间必须与采用玩法一致。</summary>
         [Test] public void RecoveryAndMagazineRoutesUseAuthoritativeValues()
@@ -50,7 +69,7 @@ namespace Game.Tests
         [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost" }));
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost", "Molotov", "SlimeBottle" }));
             Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
         }
@@ -58,7 +77,7 @@ namespace Game.Tests
         [Test] public void ConfigurationAllowsTwoUnlimitedChoicesAndNoRifleUpgrade()
         {
             var tables = Load();
-            tables.TbSurvivorUpgrade.DataList.RemoveAll(x => x.Kind == "Rifle" || x.Kind == "Damage" || x.Kind == "FireRate");
+            Assert.That(tables.TbSurvivorUpgrade.DataList.Any(x=>x.Kind=="Rifle"||x.Kind=="Damage"||x.Kind=="FireRate"),Is.False);
             Assert.DoesNotThrow(() => SurvivorConfiguration.FromTables(tables));
         }
         /// <summary>时间成长允许关闭；负数及非有限值仍拒绝开局。</summary>
@@ -80,7 +99,7 @@ namespace Game.Tests
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
-            Assert.That(config.Upgrades.Count, Is.EqualTo(21));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(17));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
             Assert.That(config.RifleMagazineCapacity,Is.EqualTo(30));Assert.That(config.RifleReloadSeconds,Is.EqualTo(2f));Assert.That(config.RifleMinimumReloadSeconds,Is.EqualTo(1f));
             var magazine=config.Upgrades.Single(x=>x.Kind=="Magazine");

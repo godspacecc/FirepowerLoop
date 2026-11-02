@@ -13,6 +13,68 @@ namespace Game.Tests
     /// <summary>幸存者限定方法验证；真实配置、假表现、独立临时存档。</summary>
     public sealed class SurvivorRuntimeTests
     {
+        /// <summary>粘液池不伤血，区域减速不叠加，离开立即恢复。</summary>
+        [Test] public void SlimeZonesSlowWithoutDamageAndRestoreOutside()
+        {
+            model.Loadout.TryUpgrade("SlimeBottle",5);
+            var e=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
+            Call("TickSlimeBottle",.01f);Call("TickSlimeBottle",.8f);
+            Assert.That((float)CallResult("SlimeMovementFraction",e),Is.EqualTo(.3f).Within(.00001));
+            e.Position=new Vector2(20,20);Assert.That((float)CallResult("SlimeMovementFraction",e),Is.Zero);
+            Assert.That(e.Health,Is.EqualTo(100));Call("ClearSlimeBottle");
+            e.Position=new Vector2(0,2);Assert.That((float)CallResult("SlimeMovementFraction",e),Is.Zero);
+        }
+        /// <summary>两片粘液与冰霜取更强值，不相乘；到期停止后恢复原速。</summary>
+        [Test] public void SlimeOverlapAndFrostUseStrongestAndExpire()
+        {
+            model.Loadout.TryUpgrade("SlimeBottle",5);
+            var e=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)};
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(e.Id,e);
+            Call("TickSlimeBottle",.01f);Call("TickSlimeBottle",.8f);
+            Set("slimeBottleClock",0f);Call("TickSlimeBottle",.01f);Call("TickSlimeBottle",.8f);
+            Assert.That((float)CallResult("ElementMovementSeconds",e,.1f),Is.EqualTo(.07f).Within(.00001));
+            var states=(System.Collections.IDictionary)typeof(SurvivorSystem).GetField("elementStatuses",Flags).GetValue(system);
+            var type=typeof(SurvivorSystem).GetNestedType("ElementStatus",BindingFlags.NonPublic);var frost=Activator.CreateInstance(type);
+            type.GetField("FrostRemaining").SetValue(frost,2f);type.GetField("SlowFraction").SetValue(frost,.5f);states.Add(e.Id,frost);
+            Assert.That((float)CallResult("ElementMovementSeconds",e,.1f),Is.EqualTo(.05f).Within(.00001));
+            Call("TickSlimeBottle",3f);Assert.That((float)CallResult("SlimeMovementFraction",e),Is.Zero);
+            Assert.That(e.Health,Is.EqualTo(100));
+        }
+        /// <summary>投掷路线在选择及刷新共用拒绝门槛，步枪燃烧弹头仍兼容。</summary>
+        [Test] public void SlimeRouteRejectsMolotovAndKeepsRifleFire()
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="SlimeBottle");
+            model.State.AddExperience(model.State.RequiredExperience);model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.True);
+            Assert.That((bool)CallResult("CanChooseRoute",config.Upgrades.Single(x=>x.Kind=="Molotov")),Is.False);
+            Assert.That((bool)CallResult("CanChooseRoute",config.Upgrades.Single(x=>x.Kind=="RifleFire")),Is.True);
+            system.Stop();Assert.That(Get<System.Collections.IList>("slimeBottleZones").Count,Is.Zero);
+        }
+        /// <summary>移速卡使用真实战斗速度，删除前置行后标题仍以类型绑定。</summary>
+        [Test] public void MoveSpeedCardUsesMetersPerSecondAndStableKind()
+        {
+            int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind=="MoveSpeed");
+            Assert.That(system.TryGetMoveSpeedUpgradeDetails(id,out var before,out var after),Is.True);
+            Assert.That(before,Is.EqualTo(6.5).Within(.00001));Assert.That(after,Is.EqualTo(7.02).Within(.00001));
+            Assert.That(system.TryGetUpgradeKind(id,out var kind),Is.True);Assert.That(kind,Is.EqualTo("MoveSpeed"));
+            Assert.That(system.TryGetUpgradeKind(config.Upgrades.Count+1,out _),Is.False);
+        }
+        /// <summary>暂停冻结在途、区域和冷却；停止及复用不残留上一局粘液。</summary>
+        [Test] public void SlimePauseStopAndReuseClearEffects()
+        {
+            model.Loadout.TryUpgrade("SlimeBottle",5);
+            Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies").Add(900,new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)});
+            Call("TickSlimeBottle",.01f);Call("TickSlimeBottle",.8f);Set("slimeBottleClock",0f);Call("TickSlimeBottle",.01f);
+            var flights=Get<System.Collections.IList>("slimeBottleFlights");var zones=Get<System.Collections.IList>("slimeBottleZones");
+            Assert.That(flights.Count,Is.EqualTo(1));Assert.That(zones.Count,Is.EqualTo(1));
+            float Age(object x)=>(float)x.GetType().GetField("Age").GetValue(x);
+            float flightAge=Age(flights[0]),zoneAge=Age(zones[0]),clock=Get<float>("slimeBottleClock");
+            system.SetPaused(true);Call("TickFrame",1f);Assert.That(Age(flights[0]),Is.EqualTo(flightAge));Assert.That(Age(zones[0]),Is.EqualTo(zoneAge));Assert.That(Get<float>("slimeBottleClock"),Is.EqualTo(clock));
+            system.Stop();Assert.That(flights,Is.Empty);Assert.That(zones,Is.Empty);Assert.That(model.MolotovCooldownTimeRemaining,Is.Zero);
+            model.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");Call("TickSlimeBottle",.1f);Assert.That(flights,Is.Empty);Assert.That(zones,Is.Empty);
+        }
+        private object CallResult(string name,params object[] args)=>typeof(SurvivorSystem).GetMethod(name,Flags).Invoke(system,args);
         private Game architecture;
         private SurvivorSystem system;
         private SurvivorModel model;
@@ -29,9 +91,8 @@ namespace Game.Tests
             foreach(int id in model.UpgradeChoices)Assert.That(config.Upgrades[id-1].Weight,Is.GreaterThan(0));
             foreach(string kind in new[]{"Rifle","Damage","FireRate"})
             {
-                int id=Enumerable.Range(1,config.Upgrades.Count).Single(i=>config.Upgrades[i-1].Kind==kind);
-                Assert.That(model.UpgradeChoices,Has.No.Member(id));
-                Assert.That(system.Choose(0,id),Is.False);
+                Assert.That(config.Upgrades.Any(x=>x.Kind==kind),Is.False);
+                Assert.That(system.Choose(0,config.Upgrades.Count+1),Is.False);
             }
             Assert.That(model.WeaponLevel("Rifle"),Is.EqualTo(1));
         }
@@ -149,7 +210,7 @@ namespace Game.Tests
         /// <summary>新强化不能给未拥有的武器，满级及旧请求不能再次领取。</summary>
         [Test] public void ModifierChoicesRespectWeaponOwnershipAndCap()
         {
-            int drone=ModifierId("DronePierce"),rifle=ModifierId("RiflePierce");
+            int drone=config.Upgrades.Count+1,rifle=ModifierId("RiflePierce");
             model.State.AddExperience(model.State.RequiredExperience);
             model.State.OfferWeighted(new[]{drone},new[]{1},1,0);
             Assert.That(system.Choose(model.State.ChoiceRevision,drone),Is.False);
@@ -288,13 +349,8 @@ namespace Game.Tests
         [Test] public void DroneRejectsAllProjectileModifiersAndIgnoresLegacyLevels()
         {
             model.Loadout.TryUpgrade("Drone",5);
-            foreach(var effect in new[]{"Pierce","Explosion","Split"}){
-                int id=ModifierId("Drone"+effect);Assert.That(config.Upgrades[id-1].Weight,Is.Zero);
-                model.State.AddExperience(model.State.RequiredExperience);model.State.OfferWeighted(new[]{id},new[]{1},1,0);
-                Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.False);
-                // 人工模拟旧等级：真实发射也不得继续携带无人机弹丸强化。
-                Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
-            }
+            foreach(var effect in new[]{"Pierce","Explosion","Split"})
+                Assert.That(config.Upgrades.Any(x=>x.Kind=="Drone"+effect),Is.False);
             model.State.AddExperience(model.State.RequiredExperience);Call("Offer");
             Assert.That(model.UpgradeChoices.Any(id=>config.Upgrades[id-1].IsModifier&&config.Upgrades[id-1].TargetWeapon=="Drone"),Is.False);
             Call("Shoot",Vector2.zero,Vector2.up,config.WeaponLevel("Drone",1),"Drone");

@@ -53,9 +53,10 @@ namespace Game
         /// <summary>只缩短本帧行走距离，跨越到期点时精确分段，基础速度和攻击计时不变。</summary>
         private float ElementMovementSeconds(ArcadeEnemyRuntime enemy,float dt)
         {
-            if(!elementStatuses.TryGetValue(enemy.Id,out var state)||state.FrostRemaining<=0)return dt;
+            float slime=SlimeMovementFraction(enemy);
+            if(!elementStatuses.TryGetValue(enemy.Id,out var state)||state.FrostRemaining<=0)return dt*(1-slime);
             float slowed=Math.Min(dt,state.FrostRemaining);state.FrostRemaining=Math.Max(0,state.FrostRemaining-dt);
-            return dt-slowed*state.SlowFraction;
+            return slowed*(1-Math.Max(slime,state.SlowFraction))+(dt-slowed)*(1-slime);
         }
         /// <summary>退出或重开清除状态与复用候选，不能残留到下一局相同编号的敌人。</summary>
         private void ClearElements(){elementStatuses.Clear();elementStatusIds.Clear();}

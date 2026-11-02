@@ -66,15 +66,24 @@ namespace Game
                 if(kind=="Molotov")
                     view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.Molotov.acquire_detail",after.FireIntervalSeconds.ToString("0.#"),after.AreaDurationSeconds.ToString("0.#"),after.Damage,after.AreaRadius.ToString("0.##")):
                         Loc.T("ui.survivor.weapon.Molotov.upgrade_detail",before.Damage,after.Damage,before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"));
+                if(kind=="SlimeBottle")
+                {
+                    system.TryGetSlimeUpgradeStrength(id,out var slow,out var nextSlow);
+                    view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.SlimeBottle.acquire_detail",after.FireIntervalSeconds.ToString("0.#"),after.AreaDurationSeconds.ToString("0.#"),after.AreaRadius.ToString("0.##"),(nextSlow*100).ToString("0.#")):
+                        Loc.T("ui.survivor.weapon.SlimeBottle.upgrade_detail",before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"),(slow*100).ToString("0.#"),(nextSlow*100).ToString("0.#"));
+                }
                 view.BtnSelect.interactable=true;view.BtnSelect.onClick.RemoveAllListeners();view.BtnSelect.onClick.AddListener(()=>choose(revision,id));return;
             }
-            view.TitleText.text = Loc.T("ui.survivor.upgrade." + id + ".title");
+            system.TryGetUpgradeKind(id,out var stableKind);
+            view.TitleText.text = Loc.T("ui.survivor.upgrade." + stableKind + ".title");
             bool valid=system.TryGetUpgradeDetails(id,out int level,out double current,out double next,out bool percentage);
             string Format(double value)=>percentage?(value*100).ToString("0.#")+"%":value.ToString("0.##");
             view.DetailText.text=valid?Loc.T("ui.survivor.upgrade.progress",level,level+1,Format(current),Format(next)):string.Empty;
             // 拾取显示实际半径和本次增量，避免把累计加成误读成最终距离。
             if(valid&&system.TryGetPickupUpgradeDetails(id,out var radius,out var nextRadius))
                 view.DetailText.text=Loc.T("ui.survivor.upgrade.pickup_detail",Format(radius),Format(nextRadius),Format(nextRadius-radius));
+            if(valid&&system.TryGetMoveSpeedUpgradeDetails(id,out var speed,out var nextSpeed))
+                view.DetailText.text=Loc.T("ui.survivor.upgrade.move_speed_detail",speed.ToString("0.##"),nextSpeed.ToString("0.##"),(nextSpeed-speed).ToString("0.##"));
             // 使用原有卡片展示新强化的实际发数/秒数，不增加战斗HUD。
             if(valid&&system.TryGetRifleUpgradeDetails(id,out bool magazine,out var rifleCurrent,out var rifleNext))
                 view.DetailText.text=Loc.T(magazine?"ui.survivor.upgrade.magazine_detail":"ui.survivor.upgrade.reload_detail",Format(rifleCurrent),Format(rifleNext),Format(Math.Abs(rifleNext-rifleCurrent)));

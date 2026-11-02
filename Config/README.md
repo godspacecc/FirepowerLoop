@@ -4,7 +4,7 @@
 
 设置界面新增文案以 `Localization/settings-visuals.json` 为权威源；`gen.bat` 完成双端生成后调用 `publish-localization.ps1`，仅发布其中声明的键到客户端两种语言 JSON，其它历史文案保留。
 
-退役文案以 `Localization/retired-keys.json` 的明确键清单为权威源，发布时同步从两种语言删除，保留其它键的行序和格式；退役键不得同时出现在增补源中。当前清单525键，覆盖已移除的基地、远征、背包、制造、文明、地图道具、火把和旧物品文案，不删除现役街机、衣物与敌人武器文案。完成正式发布后，通过 Unity 菜单 `Tools/本地化/生成文本常量`（`Game.LocalizationTextGenerator.GenerateTexts()`）重生 `TextsGenerated.cs`，不手改生成成员。
+退役文案以 `Localization/retired-keys.json` 的明确键清单为权威源，发布时同步从两种语言删除，保留其它键的行序和格式；退役键不得同时出现在增补源中。当前清单548键，覆盖已移除的基地、远征、背包、制造、文明、地图道具、火把和旧物品文案，不删除现役街机、衣物与敌人武器文案。完成正式发布后，通过 Unity 菜单 `Tools/本地化/生成文本常量`（`Game.LocalizationTextGenerator.GenerateTexts()`）重生 `TextsGenerated.cs`，不手改生成成员。
 
 - Schema：`Defines/*.xml`
 - 数据：`DataCsv/*.csv`

@@ -1,0 +1,7 @@
+Address: Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet
+Tags: arcade
+Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/SurvivorSlimeBottle.prefab
+Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/Slime.mat
+Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/BottleGreen.mat
+Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/SlimePool.asset
+Assets/Game/Art/Arcade/VFX/SurvivorSlimeBottle/BottleCap.mat

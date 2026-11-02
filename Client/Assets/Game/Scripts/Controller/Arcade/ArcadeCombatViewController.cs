@@ -53,6 +53,9 @@ namespace Game
         /// <summary>燃烧弹飞行轨迹只作视觉投影；关闭时归还当前地图的有界池。</summary>
         void SetSurvivorMolotov(int id,Vector2 position,float height,float rotation,bool active) { }
         /// <summary>火区半径和年龄由规则提供；表现端不裁决范围伤害。</summary>
+        /// <summary>粘液投掷与区域由同一权威时钟采样。</summary>
+        void SetSurvivorSlimeBottle(int id,Vector2 position,float height,float rotation,bool active) { }
+        void SetSurvivorSlimeZone(int id,Vector2 position,float radius,float age,bool active) { }
         void SetSurvivorFireZone(int id,Vector2 position,float radius,float age,bool active) { }
         /// <summary>幸存者额外等待燃烧弹依赖；测试替身不加载资源。</summary>
         bool IsSurvivorMolotovReady => true;

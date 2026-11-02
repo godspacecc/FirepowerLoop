@@ -1,0 +1,5 @@
+SlimeOverlapAndFrostUseStrongestAndExpire PASS
+SlimeRouteRejectsMolotovAndKeepsRifleFire PASS
+SlimeZonesSlowWithoutDamageAndRestoreOutside PASS
+MolotovBurnsForThreeSecondsWithoutSpendingRifleAmmo PASS
+MolotovPauseAndStopClearActiveEffects PASS

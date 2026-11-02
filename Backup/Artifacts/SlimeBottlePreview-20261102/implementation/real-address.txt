@@ -1,0 +1,1 @@
+BeginCollect(DefaultPackage,true,false): unique address Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet | Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab | arcade

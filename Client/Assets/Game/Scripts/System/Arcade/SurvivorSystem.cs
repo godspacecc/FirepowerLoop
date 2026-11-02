@@ -96,7 +96,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -131,7 +131,13 @@ namespace Game
             if(!TryGetUpgradeDetails(id,out _,out var currentBonus,out var nextBonus,out _)||config.Upgrades[id-1].Kind!="Pickup")return false;
             currentRadius=config.PickupRadius+Bonus("Pickup");nextRadius=currentRadius+nextBonus-currentBonus;return true;
         }
-        public string GetUpgradeName(int id){if(config==null||id<1||id>config.Upgrades.Count)return "未知强化";return config.Upgrades[id-1].Kind switch{"Damage"=>"伤害提升","FireRate"=>"射速提升","Health"=>"生命提升","MoveSpeed"=>"移速提升","Pickup"=>"拾取范围提升","Magazine"=>"扩容弹夹","Reload"=>"快速弹夹","RecoveryStill"=>"静养","RecoverySafe"=>"休整","RecoveryAlways"=>"再生",_=>"强化"};}
+        /// <summary>标题只以当前快照的稳定类型寻址，不依赖表行顺序。</summary>
+        public bool TryGetUpgradeKind(int id,out string kind)
+        {kind=null;if(config==null||id<1||id>config.Upgrades.Count)return false;kind=config.Upgrades[id-1].Kind;return true;}
+        /// <summary>速度卡读取与实际移动相同的基础速度和加成。</summary>
+        public bool TryGetMoveSpeedUpgradeDetails(int id,out double current,out double next)
+        {current=next=0;if(!TryGetUpgradeDetails(id,out _,out var before,out var after,out _)||config.Upgrades[id-1].Kind!="MoveSpeed")return false;current=config.PlayerMoveSpeed*(1+before);next=config.PlayerMoveSpeed*(1+after);return true;}
+
         /// <summary>武器卡片读当前及下一等级，未获取时当前参数为空。</summary>
         public bool TryGetWeaponUpgrade(int id,out string kind,out int level,out SurvivorWeaponLevelDefinition current,out SurvivorWeaponLevelDefinition next)
         {
@@ -234,7 +240,7 @@ namespace Game
             bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
             if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
-            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);AdvanceBullets(dt);
+            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             AdvanceRecovery(dt,input.MoveInput.sqrMagnitude>.0001f||(player-previousPlayer).sqrMagnitude>.000001f);
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);

@@ -20997,6 +20997,7 @@ Transform:
   - {fileID: 8661719081588839403}
   - {fileID: 7149028631327078743}
   - {fileID: 4417477542829539341}
+  - {fileID: 6754847358590495478}
   m_Father: {fileID: 4992934783816381790}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8086380897225338224
@@ -28944,4 +28945,78 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8039471914822961208, guid: 0136ba334ac0cb4448dd23fc3770f48c,
     type: 3}
   m_PrefabInstance: {fileID: 9018217344767870208}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &9198860320654903016
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 4769388891324588384}
+    m_Modifications:
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3282512146194342373, guid: c3008758fbdf72344b26cda7242da19f,
+        type: 3}
+      propertyPath: m_Name
+      value: SurvivorSlimeBottle
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: c3008758fbdf72344b26cda7242da19f, type: 3}
+--- !u!4 &6754847358590495478 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2456400627292957726, guid: c3008758fbdf72344b26cda7242da19f,
+    type: 3}
+  m_PrefabInstance: {fileID: 9198860320654903016}
   m_PrefabAsset: {fileID: 0}

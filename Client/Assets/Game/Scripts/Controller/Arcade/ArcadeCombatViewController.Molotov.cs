@@ -13,7 +13,7 @@ namespace Game
         private readonly Stack<SurvivorFireZoneVisual> idleMolotovZones = new();
         private Transform molotovBottleTemplate;
         private SurvivorFireZoneVisual molotovZoneTemplate;
-        public bool IsSurvivorMolotovReady => root != null && molotovBottleTemplate != null && molotovZoneTemplate != null;
+        public bool IsSurvivorMolotovReady => root != null && molotovBottleTemplate != null && molotovZoneTemplate != null && IsSurvivorSlimeBottleReady;
         public string SurvivorMolotovLoadError => contentLoadFailed ? "燃烧弹公共资源加载失败，请重试。" : null;
 
         /// <summary>在 Content 事务通过代次检查后校验模板；失败沿用地图加载错误出口。</summary>

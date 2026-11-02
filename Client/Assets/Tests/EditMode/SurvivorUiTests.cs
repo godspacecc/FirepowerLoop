@@ -42,7 +42,7 @@ namespace Game.Tests
                 foreach(var language in new[]{"zh-CN","en-US"})
                 {
                     Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
-                    foreach(var row in new[]{new[]{"17","Still","2","1","5"},new[]{"18","Safe","5","0.6","3"},new[]{"19","Always","0","0.3","1.5"}})
+                    foreach(var row in new[]{new[]{"RecoveryStill","Still","2","1","5"},new[]{"RecoverySafe","Safe","5","0.6","3"},new[]{"RecoveryAlways","Always","0","0.3","1.5"}})
                     {
                         var title=table["ui.survivor.upgrade."+row[0]+".title"];
                         Assert.That(ui.TitleText.GetPreferredValues(title,ui.TitleText.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(ui.TitleText.rectTransform.rect.height),title);
@@ -73,7 +73,7 @@ namespace Game.Tests
                 foreach(var language in new[]{"zh-CN","en-US"})
                 {
                     Assert.That(RuntimeJson.TryParseStringTable(System.IO.File.ReadAllText("Assets/Game/Config/Localization/"+language+".json"),out var table),Is.True);
-                    Assert.That(table["ui.survivor.upgrade.8.title"],Is.Not.Empty);Assert.That(table["ui.survivor.upgrade.9.title"],Is.Not.Empty);
+                    Assert.That(table["ui.survivor.upgrade.Magazine.title"],Is.Not.Empty);Assert.That(table["ui.survivor.upgrade.Reload.title"],Is.Not.Empty);
                     foreach(var value in new[]{string.Format(table["ui.survivor.upgrade.magazine_detail"],"30","33","3"),string.Format(table["ui.survivor.upgrade.reload_detail"],"2","1.8","0.2")})
                         Assert.That(text.GetPreferredValues(value,text.rectTransform.rect.width,float.PositiveInfinity).y,Is.LessThanOrEqualTo(text.rectTransform.rect.height),value);
                 }
