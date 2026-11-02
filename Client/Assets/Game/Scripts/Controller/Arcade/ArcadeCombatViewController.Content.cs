@@ -58,6 +58,7 @@ namespace Game
                 barrelBlastTemplate=candidate.Find("VortexBarrelBlast");
                 if(barrelBlastTemplate==null)throw new InvalidOperationException("桶专属紫色爆炸模板缺失");
                 if(candidate.Find("VortexBarrelVisual")==null)throw new InvalidOperationException("正式紫桶及浓雾模板缺失");
+                BindMissileTemplate(candidate);
                 contentTemplates=candidate;
                 BindMolotovVisuals(candidate.Find("SurvivorMolotov"));
                 BindSlimeBottleVisuals(candidate.Find("SurvivorSlimeBottle"));
@@ -80,7 +81,7 @@ namespace Game
                 if(generation==contentGeneration)
                 {
                     contentLoadFailed = true;
-                    ClearMolotovVisuals();ClearSlimeBottleVisuals();
+                    ClearMissileVisual();ClearMolotovVisuals();ClearSlimeBottleVisuals();
                     ClearBombVisuals();
                     ClearDashVisuals();
                     exitCues.Clear(); exitCueElapsed = 0;
@@ -135,7 +136,7 @@ namespace Game
         }
         private void ReleaseContent()
         {
-            ClearMolotovVisuals();ClearSlimeBottleVisuals();
+            ClearMissileVisual();ClearMolotovVisuals();ClearSlimeBottleVisuals();
             contentGeneration++;
             bulletImpactTemplate=null;
             projectileBlastTemplate=null;

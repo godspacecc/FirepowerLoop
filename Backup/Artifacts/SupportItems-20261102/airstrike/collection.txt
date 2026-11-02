@@ -1,0 +1,3 @@
+Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet | Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab | arcade | MissileStrike/Amber.mat
+Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet | Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab | arcade | MissileStrike/Casing.mat
+Prefabs/UI/Survivor/SurvivorHud | Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab | arcade | IconAmmoRocket.png

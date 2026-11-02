@@ -13,6 +13,96 @@ namespace Game.Tests
     /// <summary>幸存者限定方法验证；真实配置、假表现、独立临时存档。</summary>
     public sealed class SurvivorRuntimeTests
     {
+        /// <summary>从上方跨墙锁定，预警与垂降冻结落点，离屏后按原落点炸一次。</summary>
+        [Test] public void MissileLocksGroupAcrossWallAndHitsOnlyAfterDescent()
+        {
+            Assert.That(model.Loadout.TryUpgrade("RocketSupport",5),Is.True);
+            Assert.That(model.Loadout.UsedSlots,Is.EqualTo(2));
+            Assert.That(model.Loadout.LevelOf("Rifle"),Is.EqualTo(1));
+            model.RifleRounds=17;
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            var near=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=new Vector2(0,2)};
+            enemies.Add(near.Id,near);
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(0,1,3,.05f,true)});
+            Call("TickSupport",.01f);
+            Assert.That(view.MissileActive,Is.False);
+            var second=new ArcadeEnemyRuntime{Id=901,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=new Vector2(.5f,2)};
+            enemies.Add(second.Id,second);
+            Call("TickSupport",.3f);
+            Assert.That(view.MissileActive,Is.True);
+            Assert.That(view.MissilePoint,Is.EqualTo(near.Position));
+            Assert.That(view.MissileAge,Is.Zero);
+            Assert.That(model.SupportCooldownTimeRemaining("RocketSupport"),Is.EqualTo(5));
+            Set("player",new Vector2(8,8));
+            view.TargetVisible=false;
+            Call("TickSupport",.75f);
+            Assert.That(view.MissileAge,Is.EqualTo(.75f));
+            system.SetPaused(true);Call("TickFrame",1f);
+            Assert.That(view.MissileAge,Is.EqualTo(.75f));
+            system.SetPaused(false);
+            second.Position=new Vector2(4,4);Set("spatialFrameReady",false);
+            Call("TickSupport",.89f);
+            Assert.That(view.MissilePoint,Is.EqualTo(near.Position));
+            Assert.That(view.MissileExplosions,Is.Zero);
+            Call("TickSupport",.02f);
+            Assert.That(view.MissileActive,Is.False);
+            Assert.That(view.MissileExplosions,Is.EqualTo(1));
+            Assert.That(near.Health,Is.EqualTo(1000-config.WeaponLevel("RocketSupport",1).Damage));
+            Assert.That(second.Health,Is.EqualTo(1000));
+            Assert.That(model.RifleRounds,Is.EqualTo(17));
+        }
+
+        /// <summary>只看到一只敌人时保持就绪，邻居必须同时在屏内且在当前射程中。</summary>
+        [Test] public void MissileNeedsTwoVisibleEnemiesInsideLockRange()
+        {
+            model.Loadout.TryUpgrade("RocketSupport",5);
+            float range=Mathf.Min(config.AimRange,config.WeaponLevel("RocketSupport",1).Range);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            var first=new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,Position=new Vector2(0,range-.5f)};
+            var other=new ArcadeEnemyRuntime{Id=901,ConfigId=config.EnemyId,Health=100,Position=new Vector2(0,range-.25f)};
+            enemies.Add(first.Id,first);enemies.Add(other.Id,other);
+            view.TargetVisibility=position=>position==first.Position;
+            Call("TickSupport",.3f);
+            Assert.That(view.MissileActive,Is.False,"离屏邻居不能触发预警");
+            Assert.That(model.SupportCooldownTimeRemaining("RocketSupport"),Is.Zero);
+            view.TargetVisibility=null;
+            other.Position=new Vector2(0,range+.25f);Set("spatialFrameReady",false);
+            Call("TickSupport",.3f);
+            Assert.That(view.MissileActive,Is.False,"射程外的邻居不能计入敌群");
+            Assert.That(model.SupportCooldownTimeRemaining("RocketSupport"),Is.Zero);
+            other.Position=new Vector2(0,range-.25f);Set("spatialFrameReady",false);
+            Call("TickSupport",.3f);
+            Assert.That(view.MissileActive,Is.True);
+            Assert.That(model.SupportCooldownTimeRemaining("RocketSupport"),Is.GreaterThan(0));
+        }
+
+        /// <summary>爆心与身体间的墙挡住伤害；新一轮空袭可在预警时退出。</summary>
+        [Test] public void MissileBlastRespectsWallAndStopClearsPendingStrike()
+        {
+            model.Loadout.TryUpgrade("RocketSupport",5);
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            for(int id=900;id<903;id++)
+                enemies[id]=new ArcadeEnemyRuntime{Id=id,ConfigId=config.EnemyId,Health=1000,MaxHealth=1000,Position=new Vector2((id-900)*.3f,2)};
+            Set("obstacles",new[]{new ArcadeObstacleDefinition(.45f,2,.03f,.5f,true)});
+            Call("TickSupport",.01f);
+            Assert.That(view.MissilePoint,Is.EqualTo(enemies[900].Position),"锁点在薄墙左侧");
+            var underground=new ArcadeEnemyRuntime{Id=903,ConfigId="enemy.arcade.zombie.shambler",Health=1000,MaxHealth=1000,
+                Position=new Vector2(-.8f,2),GroundEntry=new SurvivorGroundEntryState{Started=true,StartX=-.8f,StartZ=2,ForwardZ=1,Age=0}};
+            var provider=architecture.GetUtility<IRuntimeConfigProvider>();
+            Assert.That(provider.TryGetDockHitPose("Prefabs/Characters/ArcadeZombieShambler",out var poses,out var error),Is.True,error);
+            Get<Dictionary<string,ArcadeHitPoseSequence>>("groundHitPoses")[underground.ConfigId]=poses;
+            enemies.Add(underground.Id,underground);
+            Call("TickSupport",1.66f);
+            Assert.That(underground.Health,Is.EqualTo(1000),"地下身体避开爆炸");
+            Assert.That(enemies[902].Health,Is.EqualTo(1000),"薄墙阻挡爆心到右侧敌人的范围伤害");
+            Assert.That(enemies[900].Health,Is.LessThan(1000));
+            Call("TickSupport",5f);Assert.That(view.MissileActive,Is.True);
+            system.Stop();
+            Assert.That(view.MissileActive,Is.False);
+            Assert.That(view.MissileExplosions,Is.EqualTo(1));
+            Assert.That(model.SupportCooldownTimeRemaining("RocketSupport"),Is.Zero);
+        }
+
         /// <summary>粘液池不伤血，区域减速不叠加，离开立即恢复。</summary>
         [Test] public void SlimeZonesSlowWithoutDamageAndRestoreOutside()
         {
@@ -973,6 +1063,14 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public bool MissileActive;
+            public Vector2 MissilePoint;
+            public float MissileAge;
+            public int MissileExplosions;
+            public void SetMissileStrike(Vector2 point,float radius,float age,bool active)
+            {MissilePoint=point;MissileAge=age;MissileActive=active;}
+            public void PlayProjectileExplosion(Vector2 point,float radius){MissileExplosions++;}
+
             public bool IsMissionExitReady=>true;
             public bool IsMissionFacilityReady=>true;
             public bool IsMissionSupplyReady(int id)=>true;
@@ -1005,7 +1103,8 @@ namespace Game.Tests
             public Func<Vector2,bool> SpawnHidden=p=>true;
             public bool IsArenaSpawnHidden(Vector2 position,float radius)=>SpawnHidden(position);
             public bool TargetVisible=true;
-            public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible;
+            public Func<Vector2,bool> TargetVisibility;
+            public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible && (TargetVisibility?.Invoke(position)??true);
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
             public int PlayerWrites,CombatPoseWrites,Ends,RemovedDrops,GoldFeedbacks;

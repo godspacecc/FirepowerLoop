@@ -35,6 +35,8 @@ namespace Game
         void SetSurvivorVisibility(float night, float radius, Vector2 center) { }
         /// <summary>幸存者权威爆炸的纯视觉采样；容量只限制表现，不影响伤害。</summary>
         void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
+        /// <summary>显示导弹预警与垂直下落；年龄由战斗系统推进。</summary>
+        void SetMissileStrike(Vector2 point,float radius,float age,bool active) { }
         void RemoveSurvivorBlast(int id) { }
         /// <summary>投影特殊敌人的权威朝向、预警进度与目标；不由动画结算伤害。</summary>
         /// <summary>完整盾装备快照，由规则决定完整或破坏，不在显示端计时。</summary>

@@ -44,6 +44,11 @@ namespace Game
         public float RifleReloadProgress => RifleReloadDuration>0?UnityEngine.Mathf.Clamp01(1-RifleReloadRemaining/RifleReloadDuration):0f;
         /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
         internal SurvivorLoadout Loadout;
+        /// <summary>导弹使用独立发射冷却，与步枪弹药和射速无关。</summary>
+        internal float RocketClock, RocketInterval;
+        public float SupportCooldownTimeRemaining(string kind) => kind=="RocketSupport" ? RocketClock : 0;
+        public float SupportCooldownProgress(string kind) => kind=="RocketSupport" && RocketInterval>0
+            ? UnityEngine.Mathf.Clamp01(1-RocketClock/RocketInterval) : 1;
         /// <summary>系统提交的燃烧弹冷却显示快照；HUD不自行推进时间。</summary>
         internal float MolotovCooldownRemaining, MolotovCooldownDuration;
         public float MolotovCooldownTimeRemaining => MolotovCooldownRemaining;

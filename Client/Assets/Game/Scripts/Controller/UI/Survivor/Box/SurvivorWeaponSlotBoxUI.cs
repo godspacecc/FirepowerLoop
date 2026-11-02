@@ -10,5 +10,6 @@ namespace Game
         public Sprite RifleIcon;
         public Sprite DroneIcon;
         public Sprite MolotovIcon;
+        public Sprite MissileIcon;
     }
 }

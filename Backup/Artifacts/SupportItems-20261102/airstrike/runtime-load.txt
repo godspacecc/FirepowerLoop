@@ -1,0 +1,8 @@
+loader=Game.YooAssetResourceLoader
+mode=DefaultPackage
+playMode=EditorSimulateMode
+Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/UI/Survivor/SurvivorHud : PASS actual YooAsset prefab and serialized dependencies
+released=True
+released=True
+completed=2; failed=False

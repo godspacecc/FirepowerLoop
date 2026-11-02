@@ -34,7 +34,7 @@ namespace Game.Tests
         [Test] public void SlimeBottleUsesConfirmedFiveLevelsAndRetiresPlaceholders()
         {
             var c=SurvivorConfiguration.FromTables(Load());
-            Assert.That(c.Upgrades.Count,Is.EqualTo(17));
+            Assert.That(c.Upgrades.Count,Is.EqualTo(18));
             foreach(var retired in new[]{"Damage","FireRate","Rifle","DronePierce","DroneExplosion","DroneSplit"})
                 Assert.That(c.Upgrades.Any(x=>x.Kind==retired),Is.False,retired);
             Assert.That(c.MaximumWeaponLevel("Rifle"),Is.EqualTo(1));
@@ -47,6 +47,21 @@ namespace Game.Tests
                 Assert.That(w.AreaDurationSeconds,Is.EqualTo(3));
                 Assert.That(w.AreaRadius,Is.EqualTo(1.2f+(n-1)*.225f).Within(.00001));
                 Assert.That(u.StatusStrength(n),Is.EqualTo(.3f+(n-1)*.05f).Within(.00001));
+            }
+        }
+        /// <summary>正式表提供导弹独立五级伤害、爆炸半径和固定发射冷却。</summary>
+        [Test] public void MissileLevelsIncreaseDamageAndBlastRadius()
+        {
+            var config=SurvivorConfiguration.FromTables(Load());
+            Assert.That(config.MaximumWeaponLevel("RocketSupport"),Is.EqualTo(5));
+            var previous=config.WeaponLevel("RocketSupport",1);
+            for(int level=2;level<=5;level++)
+            {
+                var next=config.WeaponLevel("RocketSupport",level);
+                Assert.That(next.Damage,Is.GreaterThan(previous.Damage));
+                Assert.That(next.FireIntervalSeconds,Is.EqualTo(previous.FireIntervalSeconds));
+                Assert.That(next.AreaRadius,Is.GreaterThan(previous.AreaRadius));
+                previous=next;
             }
         }
         private static Tables Load() => new Tables(n => new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes"))));
@@ -69,7 +84,7 @@ namespace Game.Tests
         [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost", "Molotov", "SlimeBottle" }));
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost", "Molotov", "SlimeBottle", "RocketSupport" }));
             Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
         }
@@ -99,7 +114,7 @@ namespace Game.Tests
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
-            Assert.That(config.Upgrades.Count, Is.EqualTo(17));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(18));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
             Assert.That(config.RifleMagazineCapacity,Is.EqualTo(30));Assert.That(config.RifleReloadSeconds,Is.EqualTo(2f));Assert.That(config.RifleMinimumReloadSeconds,Is.EqualTo(1f));
             var magazine=config.Upgrades.Single(x=>x.Kind=="Magazine");

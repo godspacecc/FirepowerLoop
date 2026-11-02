@@ -66,6 +66,12 @@ namespace Game
                 if(kind=="Molotov")
                     view.DetailText.text=weaponLevel==0?Loc.T("ui.survivor.weapon.Molotov.acquire_detail",after.FireIntervalSeconds.ToString("0.#"),after.AreaDurationSeconds.ToString("0.#"),after.Damage,after.AreaRadius.ToString("0.##")):
                         Loc.T("ui.survivor.weapon.Molotov.upgrade_detail",before.Damage,after.Damage,before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"));
+                if(kind=="RocketSupport")
+                {
+                    string key="ui.survivor.weapon.RocketSupport";
+                    view.DetailText.text=weaponLevel==0?Loc.T(key+".acquire_detail",after.Damage,after.FireIntervalSeconds.ToString("0.#")):
+                        Loc.T(key+".upgrade_detail",before.Damage,after.Damage,before.AreaRadius.ToString("0.##"),after.AreaRadius.ToString("0.##"));
+                }
                 if(kind=="SlimeBottle")
                 {
                     system.TryGetSlimeUpgradeStrength(id,out var slow,out var nextSlow);

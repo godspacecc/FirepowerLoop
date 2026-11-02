@@ -402,5 +402,17 @@
   "ui.survivor.weapon.SlimeBottle.upgrade_detail": {
     "zh-CN": "半径 {0} → {1} 米\n减速 {2}% → {3}%\n离开立即恢复；与燃烧瓶互斥",
     "en-US": "Radius {0} → {1}m\nSlow {2}% → {3}%\nRestores on exit; excludes Molotov"
+  },
+  "ui.survivor.weapon.RocketSupport": {
+    "zh-CN": "导弹支援",
+    "en-US": "Missile Strike"
+  },
+  "ui.survivor.weapon.RocketSupport.acquire_detail": {
+    "zh-CN": "锁定敌群，呼叫导弹从上方落下\n伤害 {0} · 冷却 {1}秒",
+    "en-US": "Call a missile down on a group of enemies\nDamage {0} · Cooldown {1}s"
+  },
+  "ui.survivor.weapon.RocketSupport.upgrade_detail": {
+    "zh-CN": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米",
+    "en-US": "Damage {0} → {1}\nBlast radius {2} → {3}m"
   }
 }

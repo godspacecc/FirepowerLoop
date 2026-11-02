@@ -96,7 +96,7 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();ClearSupport();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -240,7 +240,7 @@ namespace Game
             bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
             if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
-            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);AdvanceBullets(dt);
+            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);TickSupport(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
             AdvanceRecovery(dt,input.MoveInput.sqrMagnitude>.0001f||(player-previousPlayer).sqrMagnitude>.000001f);
             TickGold(dt);Offer();view.SetPlayerCombatState(facing,hurtClock>0);view.SetPlayerHealth(m.Health,m.MaximumHealth);

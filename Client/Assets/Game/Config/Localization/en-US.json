@@ -1022,5 +1022,8 @@
   "ui.survivor.upgrade.move_speed_detail": "Speed {0} → {1} m/s\nThis upgrade +{2} m/s",
   "ui.survivor.weapon.SlimeBottle": "Slime Bottle",
   "ui.survivor.weapon.SlimeBottle.acquire_detail": "Throw every {0}s; pool lasts {1}s\nRadius {2}m; slow {3}%\nExcludes Molotov; no damage",
-  "ui.survivor.weapon.SlimeBottle.upgrade_detail": "Radius {0} → {1}m\nSlow {2}% → {3}%\nRestores on exit; excludes Molotov"
+  "ui.survivor.weapon.SlimeBottle.upgrade_detail": "Radius {0} → {1}m\nSlow {2}% → {3}%\nRestores on exit; excludes Molotov",
+  "ui.survivor.weapon.RocketSupport": "Missile Strike",
+  "ui.survivor.weapon.RocketSupport.acquire_detail": "Call a missile down on a group of enemies\nDamage {0} · Cooldown {1}s",
+  "ui.survivor.weapon.RocketSupport.upgrade_detail": "Damage {0} → {1}\nBlast radius {2} → {3}m"
 }

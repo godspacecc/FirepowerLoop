@@ -1,0 +1,54 @@
+using System;
+using System.IO;
+using System.Linq;
+using Game;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using UnityEditor;
+using UnityEditor.SceneManagement;
+using UnityEngine.SceneManagement;
+using Object=UnityEngine.Object;
+public static class FormalMissileCapture
+{
+ static TMP_FontAsset font;
+ static void Label(Transform parent,string text,float x,float y,int size,float width=900){var go=new GameObject("Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(parent,false);var rt=(RectTransform)go.transform;rt.sizeDelta=new Vector2(width,80);rt.anchoredPosition=new Vector2(x,y);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSize=size;t.alignment=TextAlignmentOptions.Center;t.text=text;}
+ public static string Run(){
+  if(EditorApplication.isPlaying)throw new Exception("仅编辑态");var prior=SceneManager.GetActiveScene();var scene=EditorSceneManager.NewScene(NewSceneSetup.EmptyScene,NewSceneMode.Additive);
+  var old=RenderTexture.active;var rt=new RenderTexture(960,540,24);var tex=new Texture2D(960,540,TextureFormat.RGB24,false);Camera cam=null;var mats=new System.Collections.Generic.List<Material>();Texture2D scorch=null;
+  Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;mats.Add(m);return m;}
+  GameObject Part(Transform parent,PrimitiveType type,Vector3 pos,Vector3 scale,Material m){var go=GameObject.CreatePrimitive(type);go.transform.SetParent(parent,false);go.transform.localPosition=pos;go.transform.localScale=scale;go.GetComponent<Renderer>().sharedMaterial=m;Object.DestroyImmediate(go.GetComponent<Collider>());return go;}
+  try{
+   SceneManager.SetActiveScene(scene);cam=new GameObject("Camera",typeof(Camera)).GetComponent<Camera>();cam.orthographic=true;cam.orthographicSize=5.6f;cam.transform.position=new Vector3(0,11,-10);cam.transform.LookAt(new Vector3(0,0,.8f));cam.cullingMask=1<<31;cam.targetTexture=rt;cam.clearFlags=CameraClearFlags.SolidColor;cam.backgroundColor=new Color(.13f,.16f,.18f);
+   var light=new GameObject("Light",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.4f;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(40,-20,0);
+   Part(null,PrimitiveType.Cube,new Vector3(0,-.1f,0),new Vector3(22,.15f,18),Mat(new Color(.22f,.26f,.25f)));
+   var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"));hero.transform.position=new Vector3(0,0,-3);var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+   var canvas=new GameObject("Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler)).GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=cam;canvas.planeDistance=1;var scaler=canvas.GetComponent<CanvasScaler>();scaler.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;scaler.referenceResolution=new Vector2(1920,1080);
+   font=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab").GetComponent<SurvivorHudUI>().TimeText.font;
+   Label(canvas.transform,"导弹支援 · 正式资源实拍",0,440,38,1800);
+   Label(canvas.transform,"主角：步枪",-470,337,32);Label(canvas.transform,"导弹支援：垂直落弹",470,337,32);
+   Label(canvas.transform,"锁定敌群落点 → 导弹从上方落下 → 范围爆炸",0,-405,30,1800);
+   GameObject Load(string path,Vector3 at){var g=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(path));g.transform.position=at;foreach(var m in g.GetComponentsInChildren<MonoBehaviour>(true))m.enabled=false;return g;}
+   var gunPos=new Vector3(-1,.85f,-2.5f);var rocketPos=new Vector3(1,.85f,-2.5f);var near=new Vector3(-3,.8f,.45f);var far=new Vector3(3.1f,.15f,1.7f);var metal=Mat(new Color(.12f,.18f,.19f));
+   for(int i=0;i<5;i++){var at=i<2?near+Vector3.right*((i-.5f)*.75f):far+new Vector3((i-3)*.74f,0,i==3?.65f:0);at.y=0;var e=Load("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab",at);e.transform.LookAt(new Vector3(0,0,-3));}
+   var content=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content");
+   var runtime=new GameObject("MissileCapture");var view=new ArcadeCombatViewController();var flags=System.Reflection.BindingFlags.Instance|System.Reflection.BindingFlags.NonPublic;
+   typeof(ArcadeCombatViewController).GetField("root",flags).SetValue(view,runtime);
+   typeof(ArcadeCombatViewController).GetMethod("BindMissileTemplate",flags).Invoke(view,new object[]{content});
+   var blast=Object.Instantiate(content.Find("ProjectileBlast").gameObject);blast.transform.position=far;blast.transform.localScale*=1.6f;var particles=blast.GetComponentsInChildren<ParticleSystem>(true);
+   foreach(var root in scene.GetRootGameObjects())foreach(var tr in root.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+   string folder=Path.GetFullPath("../Backup/Artifacts/SupportItems-20261102/airstrike/formal");
+   Vector3 PathAt(float t){float angle=Mathf.PI*2*t/5;return new Vector3(-.45f+2.0f*Mathf.Sin(angle),0,-1.8f-.98f*Mathf.Cos(angle));}
+   Vector3 SideAt(float t){return Vector3.Cross(Vector3.up,(PathAt(t+.01f)-PathAt(t)).normalized);}
+   for(int f=0;f<100;f++){float time=f/20f;hero.transform.position=PathAt(time);hero.transform.forward=(PathAt(time+.01f)-PathAt(time)).normalized;
+    var motion=presenter.Current.Animations.MoveForward;motion.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,time%motion.Clip.length);presenter.ApplyOffhandGrip(motion);
+    float age=time-1.25f;float impact=age-SurvivorSystem.MissileWarningSeconds-SurvivorSystem.MissileDescentSeconds;
+    view.SetMissileStrike(new Vector2(far.x,far.z),1.6f,Mathf.Max(0,age),age>=0 && impact<0);
+    foreach(var tr in runtime.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+    blast.SetActive(impact>=0 && impact<.8f);if(blast.activeSelf)foreach(var ps in particles)ps.Simulate(impact,false,true,false);
+    Canvas.ForceUpdateCanvases();cam.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,960,540),0,0);tex.Apply();File.WriteAllBytes(folder+"/frame-"+f.ToString("D3")+".png",tex.EncodeToPNG());
+   }
+   return "100 frame support concept; Boot dirty="+prior.isDirty;
+  }finally{if(cam!=null)cam.targetTexture=null;RenderTexture.active=old;Object.DestroyImmediate(tex);Object.DestroyImmediate(rt);SceneManager.SetActiveScene(prior);EditorSceneManager.CloseScene(scene,true);foreach(var m in mats)Object.DestroyImmediate(m);if(scorch!=null)Object.DestroyImmediate(scorch);}
+ }
+}

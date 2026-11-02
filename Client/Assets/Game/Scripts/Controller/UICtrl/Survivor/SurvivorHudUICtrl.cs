@@ -135,15 +135,17 @@ namespace Game
         internal static void RenderWeaponSlot(SurvivorWeaponSlotBoxUI box,SurvivorModel model,string kind)
         {
             bool rifle=kind=="Rifle",drone=kind=="Drone",molotov=kind=="Molotov"||kind=="SlimeBottle";
-            box.Icon.gameObject.SetActive(rifle||drone||molotov);
+            bool missile=kind=="RocketSupport";
+            box.Icon.gameObject.SetActive(rifle||drone||molotov||missile);
             box.Icon.color=kind=="SlimeBottle"?new Color(.35f,1f,.2f):Color.white;
-            box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:molotov?box.MolotovIcon:null;
-            box.AmmoRing.gameObject.SetActive(rifle||molotov);
+            box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:molotov?box.MolotovIcon:missile?box.MissileIcon:null;
+            box.AmmoRing.gameObject.SetActive(rifle||molotov||missile);
             // 投掷冷却复用换弹外圈与颜色，仅消费系统快照，不增加UI计时器。
-            if(molotov)
+            if(molotov||missile)
             {
-                box.AmmoRing.fillAmount=model.MolotovCooldownProgress;
-                box.AmmoRing.color=model.MolotovCooldownTimeRemaining>0?new Color(.25f,.75f,1f):new Color(1f,.94f,.72f);
+                box.AmmoRing.fillAmount=missile?model.SupportCooldownProgress(kind):model.MolotovCooldownProgress;
+                bool cooling=(missile?model.SupportCooldownTimeRemaining(kind):model.MolotovCooldownTimeRemaining)>0;
+                box.AmmoRing.color=cooling?new Color(.25f,.75f,1f):new Color(1f,.94f,.72f);
                 return;
             }
             bool reloading=rifle&&model.RifleReloadTimeRemaining>0;

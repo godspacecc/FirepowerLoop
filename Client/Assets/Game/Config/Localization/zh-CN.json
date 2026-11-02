@@ -1022,5 +1022,8 @@
   "ui.survivor.upgrade.move_speed_detail": "移速 {0} → {1} 米/秒\n本次 +{2} 米/秒",
   "ui.survivor.weapon.SlimeBottle": "粘液瓶",
   "ui.survivor.weapon.SlimeBottle.acquire_detail": "每{0}秒投掷，绿池持续{1}秒\n半径{2}米，减速{3}%\n与燃烧瓶互斥；不造成伤害",
-  "ui.survivor.weapon.SlimeBottle.upgrade_detail": "半径 {0} → {1} 米\n减速 {2}% → {3}%\n离开立即恢复；与燃烧瓶互斥"
+  "ui.survivor.weapon.SlimeBottle.upgrade_detail": "半径 {0} → {1} 米\n减速 {2}% → {3}%\n离开立即恢复；与燃烧瓶互斥",
+  "ui.survivor.weapon.RocketSupport": "导弹支援",
+  "ui.survivor.weapon.RocketSupport.acquire_detail": "锁定敌群，呼叫导弹从上方落下\n伤害 {0} · 冷却 {1}秒",
+  "ui.survivor.weapon.RocketSupport.upgrade_detail": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米"
 }
