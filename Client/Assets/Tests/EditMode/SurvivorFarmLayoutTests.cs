@@ -43,7 +43,7 @@ namespace Game.Tests
         [Test] public void FormalFarmIsStaticAndFootprintsMatchEveryAuthorityObstacle()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");Assert.That(prefab,Is.Not.Null);
-            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
+            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true).Select(x=>x.GetType().FullName),Is.EquivalentTo(new[]{"Game.SurvivorBarnRoof"}));Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
             Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.InRange(1,24),"静态几何按材质合并，不能逐块石头保留绘制对象");
             var footprints=prefab.transform.Find("BlockingFootprints");Assert.That(footprints,Is.Not.Null);var layout=Layout();Assert.That(footprints.childCount,Is.EqualTo(layout.Obstacles.Count));
             for(int i=0;i<footprints.childCount;i++){
@@ -54,18 +54,20 @@ namespace Game.Tests
         }
         [Test] public void BarnsHayAndTreeTrunksHaveRealFootprints()
         {
-            var p=Layout();foreach(var point in new[]{new Vector2(-23,20),new Vector2(20,21),new Vector2(-24,13),new Vector2(22,-15),new Vector2(-22,-24)})
+            var p=Layout();foreach(var point in new[]{new Vector2(-23,20),new Vector2(15.7f,21),new Vector2(24.3f,21),new Vector2(17,17.7f),new Vector2(23,17.7f),new Vector2(17,24.3f),new Vector2(23,24.3f),new Vector2(-24,13),new Vector2(22,-15),new Vector2(-22,-24)})
                 Assert.That(p.IsWalkable(point.x,point.y,.5f,30.5f,30.5f),Is.False,point.ToString());
+            for(float z=16;z<=26;z+=.25f)Assert.That(p.IsWalkable(20,z,.5f,30.5f,30.5f),Is.True,"仓房前后通道 z="+z);
         }
         /// <summary>采用版实际请求地址和新布局表必须进入真实收集，不能只凭AssetDatabase存在。</summary>
         [Test] public void FarmAddressAndLayoutTableAreCollectedForEntry()
         {
             var setting=AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/AssetBundleCollectorSetting.asset");
-            object Read(object o,string key)=>o.GetType().GetProperty(key).GetValue(o);
+            object Read(object o,string key)=>o.GetType().GetProperty(key)?.GetValue(o)??o.GetType().GetField(key).GetValue(o);
             var result=setting.GetType().GetMethod("BeginCollect").Invoke(setting,new object[]{"DefaultPackage",true,false});
             var assets=((IEnumerable)Read(result,"CollectAssets")).Cast<object>().ToArray();
             foreach(var pair in new[]{(Config().EnvironmentPrefabAddress,"arcade"),("tbsurvivormaplayout.bytes","startup")}){
                 var asset=assets.SingleOrDefault(a=>(string)Read(a,"Address")==pair.Item1);Assert.That(asset,Is.Not.Null,pair.Item1);
+                Assert.That((string)Read(Read(asset,"AssetInfo"),"AssetPath"),Is.EqualTo(pair.Item2=="arcade"?"Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab":"Assets/Game/Config/tbsurvivormaplayout.bytes"));
                 Assert.That(((IEnumerable)Read(asset,"AssetTags")).Cast<string>(),Does.Contain(pair.Item2));
             }
         }

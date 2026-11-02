@@ -12,13 +12,14 @@ var vertices=new List<Vector3>();var normals=new List<Vector3>();var triangles=n
 for(int cluster=0;cluster<indices.Length/18;cluster+=2)for(int j=0;j<18;j++){int old=indices[cluster*18+j];int next;if(!map.TryGetValue(old,out next)){next=vertices.Count;map.Add(old,next);vertices.Add(v[old]);normals.Add(n[old]);}triangles.Add(next);}
 var result=new Mesh();result.SetVertices(vertices);result.SetNormals(normals);result.SetTriangles(triangles,0);result.RecalculateBounds();return result;
 }
-static T Save<T>(T candidate,string path)where T:Object{var existing=AssetDatabase.LoadAssetAtPath<T>(path);if(existing==null){AssetDatabase.CreateAsset(candidate,path);owned.Remove(candidate);return candidate;}if(existing is Material material){if(candidate.name=="GrassBlades"){material.color=((Material)(Object)candidate).color;EditorUtility.SetDirty(material);AssetDatabase.SaveAssetIfDirty(material);}return existing;}EditorUtility.CopySerialized(candidate,existing);EditorUtility.SetDirty(existing);AssetDatabase.SaveAssetIfDirty(existing);return existing;}
+static T Save<T>(T candidate,string path)where T:Object{var existing=AssetDatabase.LoadAssetAtPath<T>(path);if(existing==null){AssetDatabase.CreateAsset(candidate,path);owned.Remove(candidate);return candidate;}if(existing is Material material){if(candidate.name=="GrassBlades"||candidate.name=="AccessibleBarnRoofTransparent"){material.color=((Material)(Object)candidate).color;EditorUtility.SetDirty(material);AssetDatabase.SaveAssetIfDirty(material);}return existing;}EditorUtility.CopySerialized(candidate,existing);EditorUtility.SetDirty(existing);AssetDatabase.SaveAssetIfDirty(existing);return existing;}
 static Bounds Union(IEnumerable<Renderer> renderers){bool first=true;var result=new Bounds();foreach(var r in renderers){if(first){result=r.bounds;first=false;}else result.Encapsulate(r.bounds);}return result;}
 /// <summary>从真实可见实体整理二维足迹，裁去玩家边界之外的部分。</summary>
 static List<(string name,Bounds bounds)> Footprints(){var result=new List<(string,Bounds)>();
 foreach(Transform t in root)if(t.name.StartsWith("StoneWall_",StringComparison.Ordinal))result.Add((t.name,Union(t.GetComponentsInChildren<Renderer>())));
 foreach(var group in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="FencePost"||r.name=="FenceRail").GroupBy(r=>Mathf.RoundToInt(r.transform.position.z)).OrderBy(g=>g.Key))result.Add(("Fence_"+group.Key,Union(group)));
 foreach(var wall in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="BarnWalls")){var point=wall.transform.position;result.Add(("Barn_"+point.x,Union(root.GetComponentsInChildren<MeshRenderer>().Where(r=>(r.name=="BarnWalls"||r.name=="BarnDoor"||r.name=="BarnPost")&&Vector3.Distance(r.transform.position,point)<6))));}
+foreach(var wall in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name.StartsWith("PassableBarnWall",StringComparison.Ordinal)))result.Add((wall.name,wall.bounds));
 foreach(var r in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="RoundHayBale"||r.name=="TreeTrunk"))result.Add((r.name,r.bounds));
 var clipped=new List<(string,Bounds)>();foreach(var part in result){var b=part.Item2;float minX=Mathf.Max(-30.48f,b.min.x),maxX=Mathf.Min(30.48f,b.max.x),minZ=Mathf.Max(-30.48f,b.min.z),maxZ=Mathf.Min(30.48f,b.max.z);if(maxX-minX<.001f||maxZ-minZ<.001f)continue;clipped.Add((part.Item1,new Bounds(new Vector3((minX+maxX)/2,0,(minZ+maxZ)/2),new Vector3(maxX-minX,1,maxZ-minZ))));}return clipped;}
 /// <summary>固定材质合并绘制组；正式环境没有业务组件、碰撞或摄像机。</summary>
@@ -29,15 +30,28 @@ var groups=new Dictionary<Material,List<CombineInstance>>();
 foreach(var r in sourceRenderers){Mesh mesh;var filter=r.GetComponent<MeshFilter>();if(filter!=null)mesh=filter.sharedMesh;else if(r is LineRenderer line){mesh=new Mesh();line.BakeMesh(mesh,camera,true);owned.Add(mesh);}else throw new InvalidOperationException("不支持的环境Renderer："+r.name);
 if(mesh==null)throw new InvalidOperationException("环境缺少Mesh："+r.name);var materials=r.sharedMaterials;for(int sub=0;sub<mesh.subMeshCount;sub++){var mat=materials[Mathf.Min(sub,materials.Length-1)];if(!groups.TryGetValue(mat,out var list)){list=new List<CombineInstance>();groups.Add(mat,list);}list.Add(new CombineInstance{mesh=mesh,subMeshIndex=sub,transform=root.worldToLocalMatrix*r.transform.localToWorldMatrix});}}
 var output=new GameObject("SurvivorFarmVisual");SceneManager.MoveGameObjectToScene(output,scene);int index=0;long vertices=0;
-foreach(var pair in groups.OrderBy(x=>x.Key.name,StringComparer.Ordinal)){var mat=Save(pair.Key,art+"/"+pair.Key.name+".mat");var mesh=new Mesh{name="SurvivorFarm_"+pair.Key.name,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};owned.Add(mesh);mesh.CombineMeshes(pair.Value.ToArray(),true,true);mesh.RecalculateBounds();vertices+=mesh.vertexCount;var saved=Save(mesh,art+"/"+mesh.name+".asset");var part=new GameObject("Part_"+(index++)+"_"+mat.name,typeof(MeshFilter),typeof(MeshRenderer));part.transform.SetParent(output.transform,false);part.GetComponent<MeshFilter>().sharedMesh=saved;part.GetComponent<MeshRenderer>().sharedMaterial=mat;if(mat.name=="GrassBlades")part.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;}
+foreach(var pair in groups.OrderBy(x=>x.Key.name,StringComparer.Ordinal)){var mat=Save(pair.Key,art+"/"+pair.Key.name+".mat");var mesh=new Mesh{name="SurvivorFarm_"+pair.Key.name,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};owned.Add(mesh);mesh.CombineMeshes(pair.Value.ToArray(),true,true);mesh.RecalculateBounds();vertices+=mesh.vertexCount;var saved=Save(mesh,art+"/"+mesh.name+".asset");var part=new GameObject("Part_"+(index++)+"_"+mat.name,typeof(MeshFilter),typeof(MeshRenderer));part.transform.SetParent(output.transform,false);part.GetComponent<MeshFilter>().sharedMesh=saved;part.GetComponent<MeshRenderer>().sharedMaterial=mat;if(mat.name=="AccessibleBarnTimber"){
+ part.name="AccessibleBarnRoof";
+ foreach(string planeName in new[]{"RoofPlaneLeft","RoofPlaneRight"}){
+ var source=root.Find(planeName);var plane=new GameObject(planeName).transform;plane.SetParent(part.transform,false);
+ plane.localPosition=source.localPosition;plane.localRotation=source.localRotation;plane.localScale=source.localScale;
+ }
+ var faded=Mat("AccessibleBarnRoofTransparent",new Color(mat.color.r,mat.color.g,mat.color.b,.32f));
+ faded.SetFloat("_Surface",1);faded.SetFloat("_SrcBlend",(float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+ faded.SetFloat("_DstBlend",(float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+ faded.SetFloat("_ZWrite",0);faded.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");faded.SetOverrideTag("RenderType","Transparent");
+ faded.renderQueue=(int)UnityEngine.Rendering.RenderQueue.Transparent;
+ part.AddComponent<Game.SurvivorBarnRoof>().TransparentMaterial=Save(faded,art+"/"+faded.name+".mat");
+}
+if(mat.name=="GrassBlades")part.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;}
 var markers=new GameObject("BlockingFootprints");markers.transform.SetParent(output.transform,false);var lines=new List<string>{"name|x|z|halfWidth|halfHeight"};string F(float f)=>f.ToString("0.######",CultureInfo.InvariantCulture);
 for(int i=0;i<footprints.Count;i++){var b=footprints[i].bounds;var marker=new GameObject(i.ToString("D2")+"_"+footprints[i].name);marker.transform.SetParent(markers.transform,false);marker.transform.localPosition=b.center;marker.transform.localScale=b.size;lines.Add(footprints[i].name+"|"+F(b.center.x)+"|"+F(b.center.z)+"|"+F(b.extents.x)+"|"+F(b.extents.z));}
 PrefabUtility.SaveAsPrefabAsset(output,"Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");
-var repo=Path.GetFullPath(Path.Combine(Application.dataPath,"../.."));var rows=File.ReadAllLines(Path.Combine(repo,"Config/DataCsv/arcade_round_layout.csv"));var header=rows.First(r=>r.StartsWith("##var,")).Split(',');var row=rows.Single(r=>r.StartsWith(",arena.22.round.1,")).Split(',');
+var repo=Path.GetFullPath(Path.Combine(Application.dataPath,"../.."));var rows=File.ReadAllLines(Path.Combine(repo,"Config/DataCsv/survivor_map_layout.csv"));var header=rows.First(r=>r.StartsWith("##var,")).Split(',');var row=rows.Single(r=>r.StartsWith(",arena.22.round.1,")).Split(',');
 void Cell(string name,string value){int at=Array.IndexOf(header,name);if(at<0)throw new InvalidOperationException("布局源字段缺失："+name);row[at]=value;}
 Cell("Obstacles",string.Join(";",footprints.Select(p=>F(p.bounds.center.x)+"|"+F(p.bounds.center.z)+"|"+F(p.bounds.extents.x)+"|"+F(p.bounds.extents.z))));Cell("MovementOnlyObstacleIndices","");Cell("WeaponSpawnPoints","");Cell("WeaponSpawnCount","0");
 File.WriteAllLines(Path.Combine(repo,"Config/DataCsv/survivor_map_layout.csv"),rows.Where(r=>r.StartsWith("##")).Concat(new[]{string.Join(",",row)}),new System.Text.UTF8Encoding(false));
-string batch=Path.Combine(repo,"Backup/Artifacts/SurvivorBoundary-20261101/applied");Directory.CreateDirectory(batch);File.WriteAllLines(Path.Combine(batch,"baked-footprints.tsv"),lines);File.WriteAllText(Path.Combine(batch,"bake-summary.txt"),"Render groups="+index+"; vertices="+vertices+"; footprints="+footprints.Count+"; source renderers="+sourceRenderers.Length);return new{renderGroups=index,vertices,footprints=footprints.Count};
+string batch=Path.Combine(repo,"Backup/Artifacts/SurvivorBarn-20261102/applied");Directory.CreateDirectory(batch);File.WriteAllLines(Path.Combine(batch,"baked-footprints.tsv"),lines);File.WriteAllText(Path.Combine(batch,"bake-summary.txt"),"Render groups="+index+"; vertices="+vertices+"; footprints="+footprints.Count+"; source renderers="+sourceRenderers.Length);return new{renderGroups=index,vertices,footprints=footprints.Count};
 }
 
 /// <summary>制作期间拥有的临时材质和网格，保存为正式资产后移交AssetDatabase。</summary>
@@ -65,7 +79,17 @@ fieldMesh.SetVertices(fv);fieldMesh.subMeshCount=3;for(int i=0;i<3;i++)fieldMesh
 var tv=new List<Vector3>();var tt=new List<int>();for(int i=0;i<=70;i++){float x=-35+i,z=-4+Mathf.Sin(x*.12f)*2;tv.Add(new Vector3(x,.014f,z-1.45f));tv.Add(new Vector3(x,.014f,z+1.45f));if(i<70){int at=i*2;tt.AddRange(new[]{at,at+1,at+2,at+2,at+1,at+3});}}var track=new Mesh();track.SetVertices(tv);track.SetTriangles(tt,0);track.RecalculateNormals();owned.Add(track);var trackObject=new GameObject("WindingEarthTrack");trackObject.transform.SetParent(root);trackObject.AddComponent<MeshFilter>().sharedMesh=track;trackObject.AddComponent<MeshRenderer>().sharedMaterial=dirt;
 Wall(mesh,-29,-15,5,stone);Wall(mesh,-9,5,5,stone);Wall(mesh,15,29,5,stone);Wall(mesh,-31,-22,-18,stone);Wall(mesh,21,30,-19,stone);
 Fence(-26,-25,4,wood);Fence(15,-24,5,wood);Fence(-6,24,6,wood);
-foreach(var p in new[]{new Vector3(-23,0,20),new Vector3(20,0,21)}){Cube("BarnWalls",p+new Vector3(0,1.8f,0),new Vector3(6,3.6f,4.5f),cream);Cube("BarnDoor",p+new Vector3(0,1.2f,-2.27f),new Vector3(1.8f,2.4f,.15f),wood);var roof1=Cube("BarnRoof",p+new Vector3(-1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof1.transform.rotation=Quaternion.Euler(0,0,25);var roof2=Cube("BarnRoof",p+new Vector3(1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof2.transform.rotation=Quaternion.Euler(0,0,-25);}
+var barnCenter=new Vector3(20,0,21);
+foreach(int side in new[]{-1,1}){
+ Cube("PassableBarnWallSide"+side,barnCenter+new Vector3(side*4.3f,1.8f,0),new Vector3(.4f,3.6f,7),cream);
+ foreach(int end in new[]{-1,1})Cube("PassableBarnWallEnd"+end+"_"+side,barnCenter+new Vector3(side*3,1.8f,end*3.3f),new Vector3(3,3.6f,.4f),cream);
+}
+var roofMaterial=Mat("AccessibleBarnTimber",wood.color);
+foreach(int side in new[]{-1,1}){
+ var slope=Cube(side<0?"RoofPlaneLeft":"RoofPlaneRight",barnCenter+new Vector3(side*2.35f,4.12f,0),new Vector3(4.98f,.16f,7.55f),roofMaterial);
+ slope.transform.rotation=Quaternion.Euler(0,0,-side*18);
+}
+foreach(var p in new[]{new Vector3(-23,0,20)}){Cube("BarnWalls",p+new Vector3(0,1.8f,0),new Vector3(6,3.6f,4.5f),cream);Cube("BarnDoor",p+new Vector3(0,1.2f,-2.27f),new Vector3(1.8f,2.4f,.15f),wood);var roof1=Cube("BarnRoof",p+new Vector3(-1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof1.transform.rotation=Quaternion.Euler(0,0,25);var roof2=Cube("BarnRoof",p+new Vector3(1.6f,4,0),new Vector3(3.6f,.35f,5.2f),wood);roof2.transform.rotation=Quaternion.Euler(0,0,-25);}
 foreach(var p in new[]{new Vector3(-24,.8f,13),new Vector3(-21,.8f,13),new Vector3(22,.8f,-15),new Vector3(25,.8f,-15),new Vector3(-22,.8f,-24)}){var g=GameObject.CreatePrimitive(PrimitiveType.Cylinder);g.name="RoundHayBale";g.transform.SetParent(root);g.transform.position=p;g.transform.rotation=Quaternion.Euler(90,0,0);g.transform.localScale=new Vector3(2,1.4f,2);g.GetComponent<Renderer>().sharedMaterial=hay;}
 var grovePoints=new[]{new Vector2(-39,18),new Vector2(-42,23),new Vector2(-38,27),new Vector2(-41,-17),new Vector2(-38,-22),new Vector2(39,14),new Vector2(42,18),new Vector2(39,24),new Vector2(40,-20),new Vector2(44,-24),new Vector2(-18,39),new Vector2(-12,42),new Vector2(-8,38),new Vector2(15,39),new Vector2(21,43),new Vector2(25,39)};
 for(int i=0;i<grovePoints.Length;i++){float x=grovePoints[i].x,z=grovePoints[i].y;Cube("TreeTrunk",new Vector3(x,1.8f,z),new Vector3(.65f,3.6f,.65f),wood);Lump("TreeCrown",mesh,new Vector3(x,4.5f,z),new Vector3(2.4f,3,2.2f),i%2==0?foliage:foliage2);Lump("TreeCrownSide",mesh,new Vector3(x+.9f,3.8f,z-.5f),new Vector3(1.7f,1.9f,1.8f),foliage);
@@ -77,7 +101,7 @@ var detailMesh=new Mesh();detailMesh.SetVertices(verticesDetail);detailMesh.SetT
 for(int k=0;k<45;k++){float x=(float)rng.NextDouble()*58-29,z=(float)rng.NextDouble()*50-25;Lump("SmallFieldStone",mesh,new Vector3(x,.12f,z),new Vector3(.2f+(float)rng.NextDouble()*.4f,.18f,.24f),stone[k%3]);}
 // Barn posts, roof slats, rolled hay seams and scattered stones are temporary preview geometry.
 var dark=Mat("BarnInterior",new Color(.15f,.13f,.08f));var warmWood=Mat("WeatheredBoards",new Color(.43f,.30f,.17f));
-foreach(var p in new[]{new Vector3(-23,0,20),new Vector3(20,0,21)}){
+foreach(var p in new[]{new Vector3(-23,0,20)}){
 for(int i=0;i<4;i++)Cube("BarnPost",p+new Vector3(-2.7f+i*1.8f,1.8f,-2.35f),new Vector3(.20f,3.8f,.20f),wood);
 Cube("OpenDoorShadow",p+new Vector3(0,1.1f,-2.38f),new Vector3(1.6f,2.2f,.03f),dark);
 for(int side=-1;side<=1;side+=2)for(int k=0;k<13;k++){var slat=Cube("RoofTimberSlat",p+new Vector3(side*1.6f,4.22f,-2.5f+k*.4f),new Vector3(3.65f,.09f,.34f),k%3==0?wood:warmWood);slat.transform.rotation=Quaternion.Euler(0,0,-side*25);}

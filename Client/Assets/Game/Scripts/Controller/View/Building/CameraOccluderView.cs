@@ -111,7 +111,7 @@ namespace Game
             return bounds;
         }
 
-        private sealed class FadeLease : IDisposable
+        internal sealed class FadeLease : IDisposable
         {
             private readonly Renderer renderer;
             private readonly Material[] originals;

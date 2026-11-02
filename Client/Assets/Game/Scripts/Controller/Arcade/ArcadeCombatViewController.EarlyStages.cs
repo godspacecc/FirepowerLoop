@@ -15,6 +15,8 @@ namespace Game
         private GameObject earlyHerdTemplate;
         /// <summary>仅当前幸存者现场生效，End清除，仍使用现有候选及句柄所有权。</summary>
         private string survivorEnvironmentAddress;
+        /// <summary>仅当前幸存者环境实例拥有的仓房屋面。</summary>
+        private SurvivorBarnRoof survivorBarnRoof;
         public void SetSurvivorEnvironment(string address)
         {
             if(root==null||roundContentRoot!=null||earlyStageLoad!=null)throw new InvalidOperationException("幸存者场地必须在布局加载前指定");
@@ -61,7 +63,7 @@ namespace Game
                 var cow=hasHerd?await herd.Task:null;
                 await stageTemplates;
                 if(!EarlyStageLoadIsCurrent(state))return;
-                if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Length>0||prefab.GetComponentsInChildren<Animator>(true).Length>0||
+                if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Any(component => string.IsNullOrEmpty(survivorEnvironmentAddress) || !(component is SurvivorBarnRoof))||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
                 if(hasHerd&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
                 ValidateFourRoundEnvironment(prefab,stage,layout);
@@ -72,6 +74,7 @@ namespace Game
                     for(int round=1;round<=4;round++)instance.transform.Find("Round_"+round).gameObject.SetActive(round==layout.RoundNumber);
                     BuildRoundEntryMarkers(layout);
                 }
+                if (!string.IsNullOrEmpty(survivorEnvironmentAddress)) survivorBarnRoof = instance.GetComponentInChildren<SurvivorBarnRoof>(true);
                 instance.SetActive(true);earlyHerdTemplate=cow;
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();ProjectNextStageEnemies();
             }
@@ -102,6 +105,8 @@ namespace Game
             ClearHerdViews();
             ClearNextStageEnemies();
             var state=earlyStageLoad;earlyStageLoad=null;earlyHerdTemplate=null;
+            if (survivorBarnRoof != null) survivorBarnRoof.Restore();
+            survivorBarnRoof=null;
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);
             if(state.HerdHandle.IsValid)ResourceLoader.Release(state.HerdHandle);
