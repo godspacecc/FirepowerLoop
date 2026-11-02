@@ -6,6 +6,8 @@ namespace Game
 {
     public interface IRuntimeConfigProvider : IUtility
     {
+        /// <summary>任务参数缺失时明确拒绝开局。</summary>
+        bool TryGetMission(out MissionConfiguration value,out string error){value=null;error="任务配置不可用";return false;}
         /// <summary>正式永久角色目录；缺配置明确拒绝购买。</summary>
         bool TryGetSurvivorCharacters(out SurvivorCharacterProduct[] products,out string error)
         {products=null;error="character.config_failed";return false;}

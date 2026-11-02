@@ -301,6 +301,7 @@ namespace Game
         }
 
         /// <summary>幸存者独立加载，配置错误回传开局流程，不写入闯关状态。</summary>
+        public bool TryGetMission(out MissionConfiguration value,out string error){value=null;try{value=new MissionConfiguration(cachedTables??tablesFactory());error=null;return true;}catch(Exception ex){error=ex.Message;return false;}}
         public bool TryGetSurvivor(out FirepowerLoop.Arcade.SurvivorConfiguration value, out string error)
         {
             value = null;

@@ -1003,5 +1003,16 @@
   "ui.survivor.cards.next.stat": "{0} → {1}",
   "ui.survivor.weapon.Molotov": "燃烧弹",
   "ui.survivor.weapon.Molotov.acquire_detail": "每{0}秒自动投掷 · 火区持续{1}秒\n每秒伤害 {2} · 半径 {3}米",
-  "ui.survivor.weapon.Molotov.upgrade_detail": "每秒伤害 {0} → {1}\n燃烧半径 {2} → {3}米"
+  "ui.survivor.weapon.Molotov.upgrade_detail": "每秒伤害 {0} → {1}\n燃烧半径 {2} → {3}米",
+  "ui.mission.mode": "任务模式",
+  "ui.mission.progress": "物资 {0}/{1} · 敌人 {2}",
+  "ui.mission.search": "搜索：{0} {1}米",
+  "ui.mission.extract": "撤离：{0} {1}米",
+  "ui.mission.north": "北",
+  "ui.mission.south": "南",
+  "ui.mission.east": "东",
+  "ui.mission.west": "西",
+  "ui.mission.completed": "任务完成 · 分数 {0}",
+  "ui.mission.failed": "任务结束 · 分数 {0}",
+  "ui.mission.clear": "消灭剩余敌人"
 }

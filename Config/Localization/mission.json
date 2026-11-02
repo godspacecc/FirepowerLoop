@@ -1,0 +1,13 @@
+{
+  "ui.mission.mode": { "zh-CN": "任务模式", "en-US": "Mission Mode" },
+  "ui.mission.clear": { "zh-CN": "消灭剩余敌人", "en-US": "Clear remaining enemies" },
+  "ui.mission.progress": { "zh-CN": "物资 {0}/{1} · 敌人 {2}", "en-US": "Supplies {0}/{1} · Enemies {2}" },
+  "ui.mission.search": { "zh-CN": "搜索：{0} {1}米", "en-US": "Search: {0} {1}m" },
+  "ui.mission.extract": { "zh-CN": "撤离：{0} {1}米", "en-US": "Extract: {0} {1}m" },
+  "ui.mission.north": { "zh-CN": "北", "en-US": "N" },
+  "ui.mission.south": { "zh-CN": "南", "en-US": "S" },
+  "ui.mission.east": { "zh-CN": "东", "en-US": "E" },
+  "ui.mission.west": { "zh-CN": "西", "en-US": "W" },
+  "ui.mission.completed": { "zh-CN": "任务完成 · 分数 {0}", "en-US": "Mission complete · Score {0}" },
+  "ui.mission.failed": { "zh-CN": "任务结束 · 分数 {0}", "en-US": "Mission ended · Score {0}" }
+}

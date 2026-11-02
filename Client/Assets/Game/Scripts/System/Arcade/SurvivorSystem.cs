@@ -64,9 +64,9 @@ namespace Game
                 // 经验模型由幸存者独立配置提供，不再借用金币掉落。
                 obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();
                 // 幸存者场内爬出不再依赖场外入口；地图障碍仍以同一权威布局为准。
-                store ??= new SurvivorResultFileStore(1);
+                store = new SurvivorResultFileStore(1, missionMode ? System.IO.Path.Combine(Application.persistentDataPath,"Mission") : null);
                 if (!store.TryRead(out _, out error)) return false;
-                if (!TryReadGold(out _, out error))
+                if (!missionMode && !TryReadGold(out _, out error))
                 {
                     // 默认角色同样校验钱包；表现层只接收稳定错误码，不暴露存档解析细节。
                     Log.Error($"[SurvivorSystem] 开局金币读取失败：{error}");
@@ -81,21 +81,22 @@ namespace Game
         {
             if(Model.Active){error="幸存者局已经开始";return false;}
             if(this.GetModel<MapSceneModel>().Status.Value!=MapLoadStatus.Loaded){error="战场尚未加载完成";return false;}
-            if(!TryPrepare(out error)||!TrySelectCharacter(Model.SelectedCharacter,out error))return false;
-            Stop();if(!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth,config.UpgradeRefreshes);
+            if(!TryPrepare(out error)||(!missionMode&&!TrySelectCharacter(Model.SelectedCharacter,out error)))return false;
+            bool startingMission=missionMode;Stop();missionMode=startingMission;if(!missionMode&&!BeginGoldRun(out error))return false;var m=Model;m.State=new SurvivorRunState(config.InitialExperienceThreshold,config.ExperienceThresholdGrowth,config.UpgradeRefreshes);
             m.Loadout=new SurvivorLoadout(config.WeaponSlots,"Rifle");EnsureRifleMagazine();
-            m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;m.RunCharacter=m.SelectedCharacter;
+            m.Health=m.MaximumHealth=config.PlayerMaxHealth;m.Kills=0;m.Score=0;m.Result=null;m.Active=true;m.Paused=false;m.RunCharacter=missionMode?0:m.SelectedCharacter;if(missionMode)m.RunGold=0;
             runId=DateTime.UtcNow.Ticks;saved=false;menuPaused=false;identity=fireSequence=0;spawnClock=fireClock=hurtClock=0;LastError=null;
             navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);PrepareSizedNavigation();
             // 拾取可达场也属于入口准备，不能等首批尸潮生成时在活动帧冷建整张网格。
             pickupNavigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.PlayerRadius,obstacles);
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
+            if(missionMode)BeginMission();
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
             try{this.SendEvent<SurvivorCharacterApplyEvent>();ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){ClearSpecialEnemies();ClearMolotov();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -110,7 +111,7 @@ namespace Game
         public bool TryFinish(out string error)
         {
             error=null;var m=Model;if(m.State==null){error="当前没有幸存者局";return false;}
-            if(m.Result==null){m.State.Finish();m.Paused=true;input.Disable();m.Choices=Array.Empty<int>();m.Result=new SurvivorResultData{RunId=runId,Score=0,Gold=m.RunGold,SurvivalSeconds=m.State.ElapsedSeconds,Kills=m.Kills,Level=m.State.Level,Outcome=m.Health<=0?"failed":"abandoned"};}
+            if(m.Result==null){m.State.Finish();m.Paused=true;input.Disable();m.Choices=Array.Empty<int>();m.Result=new SurvivorResultData{RunId=runId,Score=missionMode?m.Kills:0,Gold=m.RunGold,SurvivalSeconds=m.State.ElapsedSeconds,Kills=m.Kills,Level=m.State.Level,Outcome=m.Health<=0?"failed":missionMode&&mission!=null&&mission.Completed?"completed":"abandoned"};}
             if(!saved)saved=store.TrySave(m.Result,out error);LastError=error;Publish();return saved;
         }
         /// <summary>返回当前等级及下一等级的累计加成，只读查询供强化卡片展示。</summary>
@@ -230,8 +231,8 @@ namespace Game
             ProjectVisibility();
             if(navigation==null)navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);
             navigation.SetTarget(player);
-            bool usesHorde=TickHorde(dt);if(m.Paused)return;
-            if(spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
+            bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
+            if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             AdvanceElementDamage(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
             AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);AdvanceBullets(dt);
             foreach(var pair in drops.ToArray())if(Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
@@ -242,7 +243,7 @@ namespace Game
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
                 else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,!IsSplitProjectile(b.Id));
             foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
-            if(m.Health<=0)TryFinish(out _);else Publish();
+            if(m.Health<=0)TryFinish(out _);else {if(missionMode)TickMission(dt);Publish();}
         }
         /// <summary>从玩家所在可达地面爬出，不限制存活数量；没有安全落点时等待下一次刷新。</summary>
         private void Spawn()

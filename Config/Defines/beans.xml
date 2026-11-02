@@ -754,4 +754,14 @@
         <var name="Price" type="long"/>
         <var name="NameKey" type="string"/>
     </bean>
+    <!-- 单人农场任务规则。 -->
+    <bean name="MissionRuleConfig" group="e">
+        <var name="Id" type="string"/>
+        <var name="SupplyCount" type="int"/><var name="AmbushCount" type="int"/>
+        <var name="InteractionRadius" type="float"/>
+        <var name="Supply1X" type="float"/><var name="Supply1Y" type="float"/>
+        <var name="Supply2X" type="float"/><var name="Supply2Y" type="float"/>
+        <var name="Supply3X" type="float"/><var name="Supply3Y" type="float"/>
+        <var name="ExitX" type="float"/><var name="ExitY" type="float"/>
+    </bean>
 </beans>

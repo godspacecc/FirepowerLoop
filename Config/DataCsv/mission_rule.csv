@@ -1,0 +1,3 @@
+##var,Id,SupplyCount,AmbushCount,InteractionRadius,Supply1X,Supply1Y,Supply2X,Supply2Y,Supply3X,Supply3Y,ExitX,ExitY
+##type,string,int,int,float,float,float,float,float,float,float,float,float
+,mission.farm,3,12,2,8,0,0,8,-8,0,0,0

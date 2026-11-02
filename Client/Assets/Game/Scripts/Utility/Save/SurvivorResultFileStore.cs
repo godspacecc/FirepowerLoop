@@ -125,6 +125,6 @@ namespace Game
         private static bool IsValid(SurvivorResultData result) => result != null && result.RunId > 0 &&
             result.Score >= 0 && result.Gold >= 0 && result.Kills >= 0 && result.Level >= 1 && result.SurvivalSeconds >= 0 &&
             !double.IsNaN(result.SurvivalSeconds) && !double.IsInfinity(result.SurvivalSeconds) &&
-            (result.Outcome == "failed" || result.Outcome == "abandoned");
+            (result.Outcome == "failed" || result.Outcome == "abandoned" || result.Outcome == "completed");
     }
 }

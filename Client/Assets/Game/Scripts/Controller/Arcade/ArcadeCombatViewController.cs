@@ -198,6 +198,13 @@ namespace Game
         /// <summary>只投影无人机权威阶段与强度；不参与选敌、计时或伤害。</summary>
         void SetRoundReward(FirepowerLoop.Arcade.ArcadeRoundRewardState state,FirepowerLoop.Arcade.ArcadeRoundRewardTuning tuning) { }
         void SetStagePortal(bool visible,Vector2 position,float seconds,float appearSeconds) { }
+        /// <summary>任务箱表现及其真实异步就绪状态。</summary>
+        void SetMissionSupply(int id,bool visible,Vector2 position) { }
+        bool IsMissionSupplyReady(int id)=>false;
+        string MissionSupplyLoadError=>null;
+        /// <summary>任务出口预载后按权威状态显示，实例就绪才允许撤离。</summary>
+        void SetMissionExit(bool visible,Vector2 position) { }
+        bool IsMissionExitReady=>false;
         void SetDrone(long ownerPlayerId,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier) { }
         /// <summary>紫级副机单独同步；旧表现端仍可显示主机。</summary>
         void SetDroneUnit(long ownerPlayerId,int unitIndex,ArcadePowerupDefinition definition,Vector2 position,Vector2 direction,int phase,int powerTier)
@@ -375,6 +382,7 @@ namespace Game
 
         public void End()
         {
+            missionSupplyLoadError=null;
             ReleaseSurvivorDayNight();
             survivorEnvironmentAddress=null;
             enemyPresentation?.SetHerdActivityPaused(false);
@@ -1235,6 +1243,8 @@ namespace Game
                 {
                     Key = key,
                     DisplayName = displayName,
+                    IsMissionSupply = key.StartsWith("mission-supply:",StringComparison.Ordinal),
+                    IsMissionExit = key == "mission-exit",
                     Address = address
                 };
                 effectVisuals.Add(key, entry);
@@ -1250,17 +1260,18 @@ namespace Game
         private async UniTaskVoid LoadEffectVisualAsync(EffectVisualEntry entry)
         {
             var completion = new UniTaskCompletionSource<GameObject>();
-            entry.Handle = ResourceLoader.LoadAssetAsync<GameObject>(entry.Address,
-                prefab => completion.TrySetResult(prefab));
             GameObject prefab;
             try
             {
+                entry.Handle = ResourceLoader.LoadAssetAsync<GameObject>(entry.Address,
+                    asset => completion.TrySetResult(asset));
                 prefab = await completion.Task;
             }
             catch (Exception exception)
             {
                 if (!entry.Released)
                     Log.Error($"[ArcadeCombatViewController] 强化视觉加载异常：{entry.Address} / {exception.Message}");
+                if((entry.IsMissionSupply||entry.IsMissionExit)&&!entry.Released)missionSupplyLoadError="任务物资加载失败："+exception.Message;
                 ReleaseEffectVisual(entry);
                 return;
             }
@@ -1268,8 +1279,10 @@ namespace Game
             if (entry.Released || root == null || !effectVisuals.TryGetValue(entry.Key, out EffectVisualEntry current) ||
                 !ReferenceEquals(current, entry))
                 return;
+            if(entry.IsMissionSupply)prefab=MissionSupplyTemplate(prefab);
             if (!ValidateEffectVisualPrefab(prefab, entry.Address, out string error))
             {
+                if(entry.IsMissionSupply||entry.IsMissionExit)missionSupplyLoadError=error;
                 Log.Error($"[ArcadeCombatViewController] {error}");
                 ReleaseEffectVisual(entry.Key);
                 return;
@@ -1284,10 +1297,13 @@ namespace Game
                 if(entry.IsDrone)ApplyDroneAppearance(entry);
                   ApplyWeaponEvolution(entry);
                 ApplyRewardPortalAppearance(entry);
+                ApplyMissionSupplyAppearance(entry);
+                ApplyMissionExitAppearance(entry);
                 if (entry.ShieldFlashRemaining > 0f) ApplyShieldFlash(entry);
             }
             catch (Exception exception)
             {
+                if(entry.IsMissionSupply||entry.IsMissionExit)missionSupplyLoadError="任务物资实例化失败："+exception.Message;
                 Log.Error($"[ArcadeCombatViewController] 强化视觉实例化失败：{entry.Address} / {exception.Message}");
                 ReleaseEffectVisual(entry);
             }
@@ -1366,6 +1382,10 @@ namespace Game
             /// <summary>异步资源到达前也缓存无人机的最新强度。</summary>
             public FirepowerLoop.Arcade.ArcadeRoundRewardState RoundReward;
             public FirepowerLoop.Arcade.ArcadeRoundRewardTuning RewardTuning;
+            /// <summary>任务箱仅使用已确认的无碰撞子树，迟到加载同样应用。</summary>
+            public bool IsMissionSupply;
+            /// <summary>任务出口预载时隐藏，清场后显现，迟到回调沿用最新状态。</summary>
+            public bool IsMissionExit, MissionExitVisible;
             public bool IsStagePortal;
             public float PortalSeconds,PortalAppearSeconds;
             public bool IsDrone;

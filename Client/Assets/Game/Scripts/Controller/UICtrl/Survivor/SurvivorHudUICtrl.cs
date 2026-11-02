@@ -89,12 +89,27 @@ namespace Game
             UI.HealthText.text=Loc.T("ui.survivor.hud.health",s.Health,s.MaximumHealth);
             UI.TimeText.text=Loc.T("ui.survivor.time",FormatTime(s.SurvivalSeconds));
             RefreshGoldNumber();
+            var mission = this.GetSystem<SurvivorSystem>();
+            if (mission.IsMission)
+            {
+                UI.ScoreText.text = Loc.T("ui.mission.progress", mission.MissionCollected, mission.MissionSupplyCount, mission.MissionRemainingEnemies);
+                UI.TimeText.text = mission.MissionCollected == mission.MissionSupplyCount && !mission.MissionReadyToExtract
+                    ? Loc.T("ui.mission.clear") : FormatMissionTarget(mission.MissionTargetOffset, mission.MissionReadyToExtract);
+            }
             UI.HealthBar.value=s.MaximumHealth>0?Mathf.Clamp01((float)s.Health/s.MaximumHealth):0;
             UI.ExperienceBar.value=s.RequiredExperience>0?Mathf.Clamp01((float)s.Experience/s.RequiredExperience):0;
             UI.BtnPause.interactable=!s.Paused;
             var model=this.GetModel<SurvivorModel>();weaponKinds=model.EquippedWeapons;
             UI.WeaponSlots.totalCount=model.WeaponSlotCapacity;UI.WeaponSlots.RefreshCells();
         }
+        /// <summary>复用现有文字栏提示目标方位和距离，不在界面推进收集或撤离规则。</summary>
+        internal static string FormatMissionTarget(Vector2 offset, bool extraction)
+        {
+            string direction = Mathf.Abs(offset.x) > Mathf.Abs(offset.y)
+                ? (offset.x >= 0 ? "east" : "west") : (offset.y >= 0 ? "north" : "south");
+            return Loc.T(extraction ? "ui.mission.extract" : "ui.mission.search", Loc.T("ui.mission." + direction), Mathf.CeilToInt(offset.magnitude));
+        }
+
         /// <summary>从权威模型完整覆盖槽状态；无人机无弹夹，空槽不沿用上次图标或进度。</summary>
         internal static void RenderWeaponSlot(SurvivorWeaponSlotBoxUI box,SurvivorModel model,string kind)
         {

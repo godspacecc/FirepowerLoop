@@ -13,6 +13,8 @@ namespace Game
         public Button BtnOnline;
         public Button BtnSetting;
         public Button BtnSurvivor;
+        /// <summary>开始菜单中的单人任务入口，沿用正式菜单布局。</summary>
+        public Button BtnMission;
         public RectTransform ButtonGroup;
         public RedPointView UpdateRedPoint;
         public TextMeshProUGUI UpdateStatusText;

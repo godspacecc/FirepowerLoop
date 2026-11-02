@@ -1003,5 +1003,16 @@
   "ui.survivor.cards.next.stat": "{0} → {1}",
   "ui.survivor.weapon.Molotov": "Molotov",
   "ui.survivor.weapon.Molotov.acquire_detail": "Auto-throw every {0}s · Burns for {1}s\n{2} damage/s · {3}m radius",
-  "ui.survivor.weapon.Molotov.upgrade_detail": "Damage/s {0} → {1}\nBurn radius {2} → {3}m"
+  "ui.survivor.weapon.Molotov.upgrade_detail": "Damage/s {0} → {1}\nBurn radius {2} → {3}m",
+  "ui.mission.mode": "Mission Mode",
+  "ui.mission.progress": "Supplies {0}/{1} · Enemies {2}",
+  "ui.mission.search": "Search: {0} {1}m",
+  "ui.mission.extract": "Extract: {0} {1}m",
+  "ui.mission.north": "N",
+  "ui.mission.south": "S",
+  "ui.mission.east": "E",
+  "ui.mission.west": "W",
+  "ui.mission.completed": "Mission complete · Score {0}",
+  "ui.mission.failed": "Mission ended · Score {0}",
+  "ui.mission.clear": "Clear remaining enemies"
 }

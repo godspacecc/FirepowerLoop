@@ -27,6 +27,8 @@ namespace Game
             if(result==null){Hide();return;}
             UI.TimeText.text=Loc.T("ui.survivor.time",SurvivorHudUICtrl.FormatTime(result.SurvivalSeconds));
             UI.ScoreText.text=Loc.T("ui.survivor.result.score",result.Gold.ToString("N0"),this.GetModel<SurvivorModel>().TotalGold.ToString("N0"));
+            if(this.GetSystem<SurvivorSystem>().IsMission)
+                UI.ScoreText.text=Loc.T(result.Outcome=="completed"?"ui.mission.completed":"ui.mission.failed",result.Score.ToString("N0"));
             var error=this.GetSystem<SurvivorSystem>().LastError;
             UI.ErrorText.text=string.IsNullOrEmpty(error)?string.Empty:Loc.T("ui.survivor.result.retry",error);
             UI.ErrorText.gameObject.SetActive(!string.IsNullOrEmpty(error));

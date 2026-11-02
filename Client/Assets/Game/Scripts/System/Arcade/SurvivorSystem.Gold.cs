@@ -37,7 +37,7 @@ namespace Game
         /// <summary>敌人强度概率封顶后乘幸存者独立倍率，成功生成一份金币；预算满时不创建不可显示的金币。</summary>
         private void TryDropGold(ArcadeEnemyRuntime enemy)
         {
-            if(goldDrops.Count>=config.MaxDrops)return;
+            if(missionMode||goldDrops.Count>=config.MaxDrops)return;
             var r=catalog.Rule;
             if(goldRandom.NextDouble()>=ArcadeEnemyDropRules.Chance(r.DropChance,enemy.MaxHealth,enemy.Damage,r.EnemyDropHealthUnit,r.EnemyDropDamageUnit,r.EnemyDropMaxChance)*config.GoldDropMultiplier)return;
             goldDrops.Add(++identity,enemy.Position);
@@ -45,6 +45,7 @@ namespace Game
         /// <summary>保存成功才消除拾取物；失败保留金币，限频重试并沿现有提示展示。</summary>
         private void TickGold(float dt)
         {
+            if(missionMode)return;
             goldRetryRemaining=Math.Max(0,goldRetryRemaining-dt);
             foreach(var pair in goldDrops.ToArray())
             {

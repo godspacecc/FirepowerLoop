@@ -26,7 +26,13 @@ namespace Game
         }
 
         /// <summary>全部配置先校验，地图加载后才创建新局，失败释放本次现场。</summary>
-        public async UniTask<ArcadeSceneFlowResult> StartAsync(CancellationToken cancellationToken = default)
+        public UniTask<ArcadeSceneFlowResult> StartAsync(CancellationToken cancellationToken = default) => StartModeAsync(false, cancellationToken);
+
+        /// <summary>任务模式复用真实场景事务，但使用独立目标和结果，不进入局外钱包。</summary>
+        public UniTask<ArcadeSceneFlowResult> StartMissionAsync(CancellationToken cancellationToken = default) => StartModeAsync(true, cancellationToken);
+
+        /// <summary>从入口到战场就绪保持同一事务，失败清理本次现场并返回菜单。</summary>
+        private async UniTask<ArcadeSceneFlowResult> StartModeAsync(bool mission, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested || lifetime.IsCancellationRequested)
                 return ArcadeSceneFlowResult.Fail("幸存者开局已取消");
@@ -36,7 +42,15 @@ namespace Game
             if (this.GetModel<SurvivorModel>().Snapshot.Active)
                 return ArcadeSceneFlowResult.Fail("请先结束当前幸存者局");
             var system = this.GetSystem<SurvivorSystem>();
-            if (!system.TrySelectCharacter(this.GetModel<SurvivorModel>().SelectedCharacter,out error) || !system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
+            if (mission)
+            {
+                if (!system.TryPrepareMission(out error)) return ArcadeSceneFlowResult.Fail(error);
+            }
+            else
+            {
+                system.ResetMissionMode();
+                if (!system.TrySelectCharacter(this.GetModel<SurvivorModel>().SelectedCharacter,out error) || !system.TryPrepare(out error)) return ArcadeSceneFlowResult.Fail(error);
+            }
             busy = true;
             shownBattleError = null;
             bool entered = false;
@@ -54,7 +68,7 @@ namespace Game
                 entered = true;
                 linked.Token.ThrowIfCancellationRequested();
                 loading.ReportEntryPreparation(loadingRequest, .82f, "ui.loading.stage.Players");
-                if (!system.TryStart(out error)) throw new InvalidOperationException(error);
+                if (!(mission ? system.TryStartMission(out error) : system.TryStart(out error))) throw new InvalidOperationException(error);
                 // 场景句柄就绪并不等于农场资源就绪；错误仍属于这次入场事务。
                 loading.ReportEntryPreparation(loadingRequest, .85f, "ui.arcade.island.loading");
                 var view = this.GetUtility<IArcadeCombatViewPort>();
@@ -68,6 +82,18 @@ namespace Game
                     await UniTask.NextFrame(linked.Token);
                 }
                 loading.ReportEntryPreparation(loadingRequest, .95f, "ui.loading.stage.Activate");
+                if (mission)
+                {
+                    float supplyDeadline = UnityEngine.Time.realtimeSinceStartup + 30f;
+                    while (true)
+                    {
+                        linked.Token.ThrowIfCancellationRequested();
+                        if (!system.TryPrepareMissionPresentation(out bool suppliesReady, out error)) throw new InvalidOperationException(error);
+                        if (suppliesReady) break;
+                        if (UnityEngine.Time.realtimeSinceStartup >= supplyDeadline) throw new TimeoutException("任务物资准备超时，请重试");
+                        await UniTask.NextFrame(linked.Token);
+                    }
+                }
                 float warmDeadline=UnityEngine.Time.realtimeSinceStartup+30f;
                 while(true)
                 {
@@ -120,8 +146,9 @@ namespace Game
         /// <summary>先完成原局保存和释放，再走同一开局事务，防止复用旧敌人及强化。</summary>
         public async UniTask<ArcadeSceneFlowResult> RestartAsync(CancellationToken cancellationToken = default)
         {
+            bool mission = this.GetSystem<SurvivorSystem>().IsMission;
             var result = await ReturnToMenuAsync(cancellationToken);
-            return result.Success ? await StartAsync(cancellationToken) : result;
+            return result.Success ? await StartModeAsync(mission, cancellationToken) : result;
         }
 
         /// <summary>只打开已采用的升级窗口，领域状态决定候选与暂停。</summary>

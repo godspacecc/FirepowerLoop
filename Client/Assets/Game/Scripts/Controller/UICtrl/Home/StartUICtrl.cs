@@ -47,6 +47,7 @@ namespace Game
             BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
             BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
+            BindMenuButton(UI.BtnMission, OpenMission);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -142,6 +143,7 @@ namespace Game
             UI.ArcadeSoloText.text = Loc.T(pending.Status == SaveFileStatus.Missing ? "ui.start.new_game" : pending.IsValid && string.IsNullOrEmpty(pending.Data.Outcome) ? "ui.arcade.resume" : "ui.start.continue");
             UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
+            UI.BtnMission.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
             UI.BtnOnline.interactable = !startingRun;
@@ -186,7 +188,17 @@ namespace Game
         }
 
         /// <summary>幸存者入口先准备资源；失败恢复菜单，不读取或覆盖闯关存档。</summary>
-        private async UniTask StartSurvivorAsync()
+        private UniTask StartSurvivorAsync() => StartSelectedRunAsync(false);
+
+        /// <summary>任务入口直接使用基础角色进入本局，不打开局外角色商店。</summary>
+        private void OpenMission()
+        {
+            if (startingRun || !IsShow()) return;
+            StartSelectedRunAsync(true).Forget();
+        }
+
+        /// <summary>两个单人入口共用资源准备与失效检查，任务由独立规则开局。</summary>
+        private async UniTask StartSelectedRunAsync(bool mission)
         {
             if (startingRun) return;
             startingRun = true;
@@ -202,7 +214,8 @@ namespace Game
                 if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
                 await UniTask.NextFrame();
                 if (!IsCurrent()) return;
-                var result = await this.GetSystem<SurvivorSceneFlowSystem>().StartAsync();
+                var flow = this.GetSystem<SurvivorSceneFlowSystem>();
+                var result = mission ? await flow.StartMissionAsync() : await flow.StartAsync();
                 if (!result.Success) Notify.ShowFloatTips(FormatSurvivorEntryError(result.Error));
             }
             catch (Exception exception)
