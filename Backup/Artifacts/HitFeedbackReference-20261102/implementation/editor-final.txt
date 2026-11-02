@@ -1,0 +1,1 @@
+project=E:/GitHub/FirepowerLoop/Client/Assets; scene=Assets/Game/Scenes/Boot.unity; dirty=False; play=False; errors=0; warnings=10; logs=0

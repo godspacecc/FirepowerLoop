@@ -1,0 +1,94 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 16,
+      "PassedTests": 16,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6328696"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.ColdColorRestoresEveryMaterialAndSurvivesHitFlash(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.1120000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.ColdColorRestoresEveryMaterialAndSurvivesHitFlash(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.EffectFollowsCrawlingBodyWithoutChangingStandingScale",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieShambler\",True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieGaunt\",True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.1060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieBloated\",True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0910000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieShambler\",False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieGaunt\",False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.FormalEnemyStartsIdleShowsOnlyChosenEffectAndClears(\"ArcadeZombieBloated\",False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.HealthDisplayWithoutFillDoesNotRestartElementParticles",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.MissingParticleOrMaterialRejectsPreparationValidation",
+        "Status": "Passed",
+        "Duration": "00:00:00.0180000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.RealControllerBridgePausesAndClearsOnSuspendOrDeath(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0270000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.RealControllerBridgePausesAndClearsOnSuspendOrDeath(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.RepeatedSyncDoesNotRestartParticlesAndZeroTickFreezes",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.SourceEffectsHaveSerializedMaterialsTexturesAndNoAutoClock",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorElementVisualTests.ViewReuseDeathAndDisableClearElementState",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      }
+    ]
+  }
+}

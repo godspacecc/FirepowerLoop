@@ -461,6 +461,12 @@ namespace Game
                     return FailPrepared(prefabError);
                 if(survivorIds.Contains(enemyId)&&!readyView.ValidateGroundEntry(out var groundError))return FailPrepared(groundError);
                 if(survivorIds.Contains(enemyId)&&!readyView.ValidateElementFeedback(out var elementError))return FailPrepared(elementError);
+                if(context.Mode==MapPreparationMode.Survivor&&survivorIds.Contains(enemyId))
+                {
+                    var hit=readyView.GetComponentInChildren<SurvivorHitFeedbackView>(true);
+                    if(hit==null)return FailPrepared("幸存者丧尸缺少受击模板");
+                    if(!hit.Validate(out var hitError))return FailPrepared(hitError);
+                }
                 if(survivorIds.Contains(enemyId)&&readyView.SurvivorEnchantRingTemplate==null)return FailPrepared("敌人准备失败：附魔标识模板缺失 "+config.Id);
             }
 
@@ -828,6 +834,7 @@ namespace Game
             TickEnchantPulses(seconds,elementsPaused);
             foreach (var entry in arcadeEnemies.Values)
             {
+                entry.View?.TickSurvivorHitFeedback(elementsPaused?0:seconds);
                 entry.View?.TickCombatFeedback(seconds);
                 entry.View?.TickElementFeedback(elementsPaused?0:Mathf.Min(seconds,.05f));
                 if (entry.View == null || entry.PersistentHealthBar)

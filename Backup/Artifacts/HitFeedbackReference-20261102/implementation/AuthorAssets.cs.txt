@@ -1,0 +1,29 @@
+using System;using System.IO;using System.Linq;using UnityEngine;using UnityEngine.UI;using UnityEditor;using Game;using Object=UnityEngine.Object;
+public class Script
+{
+static void Backup(string path){string dest="E:/GitHub/FirepowerLoop/Backup/Artifacts/HitFeedbackReference-20261102/implementation/asset-before/"+path;Directory.CreateDirectory(Path.GetDirectoryName(dest));if(File.Exists(path)&&!File.Exists(dest))File.Copy(path,dest);}
+public static object Main(){
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("wrong editor");
+string art="Assets/Game/Art/Survivor/HitFeedback";Directory.CreateDirectory(art);AssetDatabase.Refresh();
+Material Material(string name,Color color,bool lit){var path=art+"/"+name+".mat";var m=AssetDatabase.LoadAssetAtPath<Material>(path);if(m==null){m=new Material(Shader.Find(lit?"Universal Render Pipeline/Lit":"Universal Render Pipeline/Unlit"));m.color=color;if(lit)m.SetFloat("_Smoothness",.1f);AssetDatabase.CreateAsset(m,path);}return m;}
+var light=Material("Contact",new Color(1,.88f,.6f),false);var blood=Material("Droplet",new Color(.36f,.035f,.035f),true);
+var template=new GameObject("SurvivorHitFeedback");try{
+var f=template.AddComponent<SurvivorHitFeedbackView>();Transform Sphere(string name,Material m){var g=GameObject.CreatePrimitive(PrimitiveType.Sphere);g.name=name;g.transform.SetParent(template.transform,false);Object.DestroyImmediate(g.GetComponent<Collider>());g.GetComponent<MeshRenderer>().sharedMaterial=m;g.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;g.GetComponent<MeshRenderer>().receiveShadows=false;g.SetActive(false);return g.transform;}
+var so=new SerializedObject(f);so.FindProperty("contactFlash").objectReferenceValue=Sphere("Contact",light);var a=so.FindProperty("droplets");a.arraySize=5;for(int j=0;j<5;j++)a.GetArrayElementAtIndex(j).objectReferenceValue=Sphere("Droplet"+j,blood);so.ApplyModifiedPropertiesWithoutUndo();
+PrefabUtility.SaveAsPrefabAsset(template,art+"/SurvivorHitFeedback.prefab");
+}finally{Object.DestroyImmediate(template);}
+var prefab=AssetDatabase.LoadAssetAtPath<GameObject>(art+"/SurvivorHitFeedback.prefab");
+foreach(string name in new[]{"GrayboxPlayer","ArcadeZombieShambler","ArcadeZombieGaunt","ArcadeZombieBloated","ArcadeZombieExploder","ArcadeZombieCaster","ArcadeZombieShield","ArcadeZombieEnchantHealth","ArcadeZombieEnchantSpeed","ArcadeZombieEnchantShield"}){
+string path="Assets/Game/Prefabs/Characters/"+name+".prefab";var source=AssetDatabase.LoadAssetAtPath<GameObject>(path);if(source==null)throw new Exception(path);if(source.GetComponentInChildren<SurvivorHitFeedbackView>(true)!=null)continue;Backup(path);var root=PrefabUtility.LoadPrefabContents(path);try{var child=(GameObject)PrefabUtility.InstantiatePrefab(prefab,root.transform);child.name="SurvivorHitFeedback";PrefabUtility.SaveAsPrefabAsset(root,path);}finally{PrefabUtility.UnloadPrefabContents(root);}}
+string hud="Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab";Backup(hud);var ui=PrefabUtility.LoadPrefabContents(hud);
+try{
+var old=ui.transform.Find("HurtEdges");if(old!=null)throw new Exception("HurtEdges already exists");
+var group=new GameObject("HurtEdges",typeof(RectTransform),typeof(SurvivorHurtEdgeView));group.transform.SetParent(ui.transform,false);group.transform.SetAsFirstSibling();var rect=(RectTransform)group.transform;rect.anchorMin=Vector2.zero;rect.anchorMax=Vector2.one;rect.offsetMin=rect.offsetMax=Vector2.zero;
+var edges=new Image[4];for(int i=0;i<4;i++){var g=new GameObject("Edge"+i,typeof(RectTransform),typeof(Image));g.transform.SetParent(group.transform,false);var r=(RectTransform)g.transform;var image=g.GetComponent<Image>();image.color=new Color(.8f,.05f,.06f,0);image.raycastTarget=false;edges[i]=image;
+if(i<2){r.anchorMin=new Vector2(i,0);r.anchorMax=new Vector2(i,1);r.pivot=new Vector2(i,.5f);r.sizeDelta=new Vector2(10,0);r.anchoredPosition=Vector2.zero;}
+else{float y=i==2?0:1;r.anchorMin=new Vector2(0,y);r.anchorMax=new Vector2(1,y);r.pivot=new Vector2(.5f,y);r.sizeDelta=new Vector2(0,7);r.anchoredPosition=Vector2.zero;}}
+var s=new SerializedObject(group.GetComponent<SurvivorHurtEdgeView>());var arr=s.FindProperty("edges");arr.arraySize=4;for(int i=0;i<4;i++)arr.GetArrayElementAtIndex(i).objectReferenceValue=edges[i];s.ApplyModifiedPropertiesWithoutUndo();
+ui.GetComponent<ReferenceCollector>().Add("HurtEdges",group.GetComponent<SurvivorHurtEdgeView>());PrefabUtility.SaveAsPrefabAsset(ui,hud);
+}finally{PrefabUtility.UnloadPrefabContents(ui);}
+AssetDatabase.SaveAssets();UICodeSpawner.AutoUpdateUI(AssetDatabase.LoadAssetAtPath<GameObject>(hud));return "正式反馈模板与HUD已制作，UI生成器已执行";
+}}

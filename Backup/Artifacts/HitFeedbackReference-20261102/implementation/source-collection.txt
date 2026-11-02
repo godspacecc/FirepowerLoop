@@ -1,0 +1,41 @@
+Prefabs/Characters/GrayboxPlayer | Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab | tags=startup | bundle=assets_game_prefabs_characters_grayboxplayer.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieShambler | Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieshambler.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieGaunt | Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombiegaunt.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieBloated | Assets/Game/Prefabs/Characters/ArcadeZombieBloated.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombiebloated.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieExploder | Assets/Game/Prefabs/Characters/ArcadeZombieExploder.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieexploder.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieCaster | Assets/Game/Prefabs/Characters/ArcadeZombieCaster.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombiecaster.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieShield | Assets/Game/Prefabs/Characters/ArcadeZombieShield.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieshield.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieEnchantHealth | Assets/Game/Prefabs/Characters/ArcadeZombieEnchantHealth.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieenchanthealth.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieEnchantSpeed | Assets/Game/Prefabs/Characters/ArcadeZombieEnchantSpeed.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieenchantspeed.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/Characters/ArcadeZombieEnchantShield | Assets/Game/Prefabs/Characters/ArcadeZombieEnchantShield.prefab | tags=arcade | bundle=assets_game_prefabs_characters_arcadezombieenchantshield.bundle
+Assets/Game/Art/Survivor/HitFeedback/SurvivorHitFeedback.prefab
+Assets/Game/Art/Survivor/HitFeedback/Droplet.mat
+Assets/Game/Art/Survivor/HitFeedback/Contact.mat
+Prefabs/UI/Survivor/SurvivorHud | Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab | tags=startup,arcade | bundle=assets_game_prefabs_ui_survivor.bundle

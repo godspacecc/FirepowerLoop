@@ -22,6 +22,7 @@ namespace Game
             if(root==null||roundContentRoot!=null||earlyStageLoad!=null)throw new InvalidOperationException("幸存者场地必须在布局加载前指定");
             if(string.IsNullOrWhiteSpace(address))throw new ArgumentException("幸存者场地地址缺失");
             survivorEnvironmentAddress=address;
+            playerMotor?.SetSurvivorHitFeedbackActive(true);
         }
         /// <summary>仅暂时接管旧静态底图的外壁，不触碰本轮动态碰撞或永久修改场景。</summary>
         private readonly Dictionary<Collider,bool> earlyBaseWalls=new();

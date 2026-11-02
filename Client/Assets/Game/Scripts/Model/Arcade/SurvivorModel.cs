@@ -4,6 +4,8 @@ namespace Game
 {
     /// <summary>独立幸存者状态通知；界面从模型读取当前快照。</summary>
     public readonly struct SurvivorChangedEvent { }
+    /// <summary>实际生命损失后的瞬时HUD提示，首次同步、治疗和无敌均不发送。</summary>
+    public readonly struct SurvivorPlayerHurtEvent { }
 
     /// <summary>幸存者展示快照，不向界面暴露可变规则状态。</summary>
     public readonly struct SurvivorHudSnapshot

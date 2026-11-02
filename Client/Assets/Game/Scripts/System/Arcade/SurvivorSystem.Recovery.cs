@@ -1,4 +1,5 @@
 using System;
+using QFramework;
 using FirepowerLoop.Arcade;
 namespace Game
 {
@@ -16,10 +17,14 @@ namespace Game
             return true;
         }
         /// <summary>所有实际生命损失统一重置无伤计时；零伤害和无敌未命中不打断。</summary>
-        private void DamageSurvivor(int damage)
+        private void DamageSurvivor(int damage)=>DamageSurvivorFrom(damage,null);
+        /// <summary>实际扣血后通知本次攻击来源；持续伤害缺少来源时只显示损伤提示。</summary>
+        private void DamageSurvivorFrom(int damage,UnityEngine.Vector2? source)
         {
             if(damage<=0||Model.Health<=0)return;
             Model.Health=Math.Max(0,Model.Health-damage);recoveryDamagedThisFrame=true;
+            if(source.HasValue)view.PlaySurvivorPlayerHit(player-source.Value);
+            this.SendEvent(new SurvivorPlayerHurtEvent());
             for(int i=0;i<config.Upgrades.Count;i++)
                 if(config.Upgrades[i].Kind=="RecoverySafe"&&Model.State.UpgradeLevel(i+1)>0){recoveryConditionSeconds=recoveryFraction=0;break;}
         }

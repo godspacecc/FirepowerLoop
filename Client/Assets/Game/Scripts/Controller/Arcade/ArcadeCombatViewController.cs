@@ -151,6 +151,9 @@ namespace Game
         /// <summary>普通枪弹实际撞障碍的接触反馈；不作为命中敌人或伤害事件。</summary>
         void PlayProjectileSurfaceImpact(Vector2 position, Vector2 incomingDirection) { }
         void SetPlayerHealth(int current, int maximum);
+        /// <summary>幸存者实际损伤后的水平推力，未知方向时不制造受力动作。</summary>
+        void PlaySurvivorPlayerHit(Vector2 push) { }
+        void PlaySurvivorEnemyHit(int id,Vector2 push) { }
         /// <summary>仅投影权威换弹状态，沿用主角动作与进度圈。</summary>
         void SetPlayerReload(bool active, float progress) { }
         /// <summary>幸存者弹夹快照，不改变其他模式的弹药规则。</summary>
@@ -396,6 +399,7 @@ namespace Game
         {
             missionSupplyLoadError=null;
             ReleaseSurvivorDayNight();
+            playerMotor?.SetSurvivorHitFeedbackActive(false);
             survivorEnvironmentAddress=null;
             enemyPresentation?.SetHerdActivityPaused(false);
             earlyStage=null;
@@ -764,11 +768,14 @@ namespace Game
         {
             error=null;if(enemyPresentation==null||mapRoot==null||playerMotor==null){error="尸潮战场表现尚未准备";return false;}
             var playerLocal=mapRoot.InverseTransformPoint(playerMotor.Position);
-            return enemyPresentation.TrySetEnemy(id,configId,mapRoot.TransformPoint(World(position,0)),
+            bool ready=enemyPresentation.TrySetEnemy(id,configId,mapRoot.TransformPoint(World(position,0)),
                 mapRoot.TransformDirection(new Vector3(playerLocal.x-position.x,0,playerLocal.z-position.y)),health,maximum,out error,false,sequence);
+            if(ready)EnableSurvivorEnemyHit(id);return ready;
         }
         /// <summary>只归还角色表现，不经过共用死亡删除及掉落处理。</summary>
         public void SuspendSurvivorEnemy(int id)=>enemyPresentation?.SuspendEnemy(id);
+        private void EnableSurvivorEnemyHit(int id)
+        {if(!string.IsNullOrEmpty(survivorEnvironmentAddress)&&enemyPresentation!=null&&enemyPresentation.TryGetEnemyPresentationRoot(id,out var owner))owner.GetComponent<EnemyView>()?.SetSurvivorHitFeedbackActive(true);}
         public bool TryPrewarmSurvivorEnemy(string configId,int count,out bool complete,out string error)
         {
             complete=false;error=null;if(enemyPresentation==null){error="尸潮预加载表现不可用";return false;}
@@ -784,7 +791,13 @@ namespace Game
             return true;
         }
 
-        /// <summary>按生命快照差值补齐街机玩家受击动画、闪红和伤害飘字；首次同步只建立基线。</summary>
+        /// <summary>只转换本次权威推力到地图世界轴，不从最近敌人猜测。</summary>
+        public void PlaySurvivorPlayerHit(Vector2 push)
+        {if(mapRoot!=null&&!string.IsNullOrEmpty(survivorEnvironmentAddress))playerMotor?.PlaySurvivorHurtFeedback(mapRoot.TransformDirection(new Vector3(push.x,0,push.y)));}
+        /// <summary>沿当前敌人表现所有权投影已裁决的顺推力反馈。</summary>
+        public void PlaySurvivorEnemyHit(int id,Vector2 push)
+        {if(mapRoot!=null&&enemyPresentation!=null&&!string.IsNullOrEmpty(survivorEnvironmentAddress)&&enemyPresentation.TryGetEnemyPresentationRoot(id,out var owner))owner.GetComponent<EnemyView>()?.PlaySurvivorHitFeedback(mapRoot.TransformDirection(new Vector3(push.x,0,push.y)));}
+        /// <summary>生命快照差值只用于既有提示与飘字，首次同步建立基线。</summary>
         public void SetPlayerHealth(int current, int maximum)
         {
             var damage = CalculateHealthLoss(hasPlayerHealthBaseline, lastPlayerHealth, current);
@@ -821,6 +834,7 @@ namespace Game
             enemyPresentation.TrySetEnemy(id, configId, mapRoot.TransformPoint(World(position, 0f)),
                 mapRoot.TransformDirection(facing), currentHealth, maximumHealth, out _, telegraph,
                 attackSequence, persistentHealthBar);
+            EnableSurvivorEnemyHit(id);
         }
 
         /// <summary>统一转换地图朝向，联机使用权威目标而非本机玩家。</summary>

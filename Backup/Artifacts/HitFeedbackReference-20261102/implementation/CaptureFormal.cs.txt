@@ -1,0 +1,113 @@
+using System;using System.IO;using System.Linq;using System.Collections.Generic;using UnityEngine;using UnityEditor;using UnityEditor.SceneManagement;using UnityEngine.SceneManagement;using UnityEngine.UI;using TMPro;using Game;using Object=UnityEngine.Object;
+public class Script
+{
+    private static void CreateSkinProxies(Actor actor, List<Object> owned)
+    {
+        foreach (var source in actor.Root.GetComponentsInChildren<SkinnedMeshRenderer>(true))
+        {
+            if (!source.enabled || !source.gameObject.activeInHierarchy || source.sharedMesh == null || source.bones.Length == 0) continue;
+            var original = source.sharedMesh;
+            var output = Object.Instantiate(original); output.name = "TEMP_FormalSampledSkin"; owned.Add(output);
+            var proxy = new GameObject("TEMP_FormalSampledSkin", typeof(MeshFilter), typeof(MeshRenderer)); proxy.transform.SetParent(source.transform, false);
+            proxy.GetComponent<MeshFilter>().sharedMesh = output; proxy.GetComponent<MeshRenderer>().sharedMaterials = source.sharedMaterials;
+            var skin = new Skin { Source = source, Output = output, Vertices = original.vertices, Normals = original.normals,
+                Weights = original.boneWeights, Bindposes = original.bindposes, Bones = source.bones };
+            if (skin.Weights.Length != skin.Vertices.Length || skin.Normals.Length != skin.Vertices.Length || skin.Bindposes.Length != skin.Bones.Length)
+                throw new InvalidOperationException("正式蒙皮数据不完整：" + source.name);
+            skin.Positions = new Vector3[skin.Vertices.Length]; skin.Directions = new Vector3[skin.Vertices.Length]; skin.Matrices = new Matrix4x4[skin.Bones.Length];
+            actor.Skins.Add(skin); source.enabled = false;
+        }
+        if (actor.Skins.Count == 0) throw new InvalidOperationException("正式演员缺少可采样蒙皮：" + actor.Root.name);
+    }
+
+    private static void UpdateSkin(Skin skin)
+    {
+        for (int i = 0; i < skin.Bones.Length; i++) skin.Matrices[i] = skin.Source.transform.worldToLocalMatrix * skin.Bones[i].localToWorldMatrix * skin.Bindposes[i];
+        for (int i = 0; i < skin.Vertices.Length; i++)
+        {
+            var weight = skin.Weights[i]; var vertex = skin.Vertices[i]; var normal = skin.Normals[i]; var matrices = skin.Matrices;
+            skin.Positions[i] = matrices[weight.boneIndex0].MultiplyPoint3x4(vertex) * weight.weight0 + matrices[weight.boneIndex1].MultiplyPoint3x4(vertex) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyPoint3x4(vertex) * weight.weight2 + matrices[weight.boneIndex3].MultiplyPoint3x4(vertex) * weight.weight3;
+            skin.Directions[i] = (matrices[weight.boneIndex0].MultiplyVector(normal) * weight.weight0 + matrices[weight.boneIndex1].MultiplyVector(normal) * weight.weight1 +
+                matrices[weight.boneIndex2].MultiplyVector(normal) * weight.weight2 + matrices[weight.boneIndex3].MultiplyVector(normal) * weight.weight3).normalized;
+        }
+        skin.Output.vertices = skin.Positions; skin.Output.normals = skin.Directions; skin.Output.RecalculateBounds();
+    }
+
+
+private sealed class Actor {public GameObject Root; public readonly List<Skin> Skins=new List<Skin>();}
+    private sealed class Skin
+    {
+        public SkinnedMeshRenderer Source;
+        public Mesh Output;
+        public Vector3[] Vertices, Normals, Positions, Directions;
+        public BoneWeight[] Weights;
+        public Matrix4x4[] Bindposes, Matrices;
+        public Transform[] Bones;
+    }
+
+
+
+static readonly List<Object> owned=new();
+static Material Mat(Color c){var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.color=c;m.SetFloat("_Smoothness",.1f);owned.Add(m);return m;}
+static TMP_Text Text(Transform canvas,TMP_FontAsset font,string value,float x,float y,float w,int size,Color color)
+{var go=new GameObject("TEMP_Label",typeof(RectTransform),typeof(TextMeshProUGUI));go.transform.SetParent(canvas,false);var r=(RectTransform)go.transform;r.anchorMin=r.anchorMax=new Vector2(.5f,.5f);r.anchoredPosition=new Vector2(x,y);r.sizeDelta=new Vector2(w,45);var t=go.GetComponent<TextMeshProUGUI>();t.font=font;t.fontSharedMaterial=font.material;t.fontSize=size;t.text=value;t.color=color;t.alignment=TextAlignmentOptions.Center;t.raycastTarget=false;return t;}
+static void ScaleColor(ParticleSystem ps,float alpha)
+{var main=ps.main;var source=main.startColor;if(source.mode==ParticleSystemGradientMode.Color){var c=source.color;c.a*=alpha;main.startColor=c;}else if(source.mode==ParticleSystemGradientMode.TwoColors){var a=source.colorMin;var b=source.colorMax;a.a*=alpha;b.a*=alpha;main.startColor=new ParticleSystem.MinMaxGradient(a,b);}}
+static void Tune(ParticleSystem ps)
+{
+var main=ps.main;
+if(ps.name=="ImpactFlash"){main.startLifetime=.14f;var s=main.startSize;main.startSize=s.mode==ParticleSystemCurveMode.Constant?new ParticleSystem.MinMaxCurve(s.constant*1.12f):new ParticleSystem.MinMaxCurve(s.constantMin*1.12f,s.constantMax*1.12f);}
+else if(ps.name=="Burst"){main.startLifetime=.28f;var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.75f)));e.SetBursts(bursts);}
+else if(ps.name=="Smoke"){main.startLifetime=.4f;ScaleColor(ps,.42f);var e=ps.emission;var bursts=new ParticleSystem.Burst[e.burstCount];e.GetBursts(bursts);for(int i=0;i<bursts.Length;i++)bursts[i].count=new ParticleSystem.MinMaxCurve(Mathf.Max(1,Mathf.Round(bursts[i].count.constant*.45f)));e.SetBursts(bursts);}
+}
+static void Capture(Camera camera,string path)
+{var rt=RenderTexture.GetTemporary(1280,720,24);var old=RenderTexture.active;var tex=new Texture2D(1280,720,TextureFormat.RGB24,false);try{camera.targetTexture=rt;Canvas.ForceUpdateCanvases();camera.Render();RenderTexture.active=rt;tex.ReadPixels(new Rect(0,0,1280,720),0,0);tex.Apply();File.WriteAllBytes(path,tex.EncodeToPNG());}finally{camera.targetTexture=null;RenderTexture.active=old;RenderTexture.ReleaseTemporary(rt);Object.DestroyImmediate(tex);}}
+public static object Main(){
+if(Application.dataPath!="E:/GitHub/FirepowerLoop/Client/Assets"||EditorApplication.isPlaying)throw new Exception("仅编辑态");
+var scene=EditorSceneManager.NewPreviewScene();var ambient=RenderSettings.ambientLight;var am=RenderSettings.ambientMode;
+try{
+var root=new GameObject("TEMP_NewHitCandidate");SceneManager.MoveGameObjectToScene(root,scene);
+GameObject Part(PrimitiveType type,Transform parent,Vector3 pos,Vector3 scale,Material mat){var g=GameObject.CreatePrimitive(type);g.transform.SetParent(parent,false);g.transform.localPosition=pos;g.transform.localScale=scale;g.GetComponent<Renderer>().sharedMaterial=mat;Object.DestroyImmediate(g.GetComponent<Collider>());return g;}
+var cg=new GameObject("TEMP_Camera");cg.transform.SetParent(root.transform);var camera=cg.AddComponent<Camera>();camera.scene=scene;camera.orthographic=true;camera.orthographicSize=2.7f;camera.transform.position=new Vector3(0,6,-10);camera.transform.LookAt(new Vector3(0,.7f,0));camera.cullingMask=1<<31;camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.025f,.04f,.065f);
+var lg=new GameObject("TEMP_Light");lg.transform.SetParent(root.transform);lg.transform.rotation=Quaternion.Euler(48,-25,0);var light=lg.AddComponent<Light>();light.type=LightType.Directional;light.intensity=1.35f;light.cullingMask=1<<31;RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;RenderSettings.ambientLight=new Color(.62f,.65f,.72f);
+Part(PrimitiveType.Cube,root.transform,new Vector3(0,-.1f,0),new Vector3(16,.15f,9),Mat(new Color(.12f,.17f,.2f)));
+var lineMat=Mat(new Color(.19f,.25f,.29f));for(int i=-6;i<=6;i++)Part(PrimitiveType.Cube,root.transform,new Vector3(i,-.02f,0),new Vector3(.012f,.01f,7),lineMat);for(int i=-3;i<=3;i++)Part(PrimitiveType.Cube,root.transform,new Vector3(0,-.02f,i),new Vector3(13,.01f,.012f),lineMat);
+Part(PrimitiveType.Cube,root.transform,new Vector3(0,.01f,0),new Vector3(.025f,.02f,7),Mat(new Color(.35f,.48f,.58f)));
+var cv=new GameObject("TEMP_Canvas",typeof(RectTransform),typeof(Canvas),typeof(CanvasScaler));cv.transform.SetParent(root.transform);var canvas=cv.GetComponent<Canvas>();canvas.renderMode=RenderMode.ScreenSpaceCamera;canvas.worldCamera=camera;canvas.planeDistance=1;var sc=cv.GetComponent<CanvasScaler>();sc.uiScaleMode=CanvasScaler.ScaleMode.ScaleWithScreenSize;sc.referenceResolution=new Vector2(1280,720);
+var font=TMP_FontAsset.CreateFontAsset(AssetDatabase.LoadAssetAtPath<Font>("Assets/Game/Fonts/Chinese/SourceHanSansCN-Normal.otf"),72,9,UnityEngine.TextCore.LowLevel.GlyphRenderMode.SDFAA,2048,2048,AtlasPopulationMode.Dynamic,true);owned.Add(font);owned.Add(font.material);
+Text(cv.transform,font,"采用版受击 · 正式资源隔离实拍（手动采样）",0,328,1250,29,Color.white);
+Text(cv.transform,font,"玩家受伤",-320,268,580,28,new Color(.68f,.86f,1));Text(cv.transform,font,"敌人受击",320,268,580,28,new Color(1,.79f,.62f));
+Text(cv.transform,font,"左侧来袭向右偏 / 右侧来袭向左偏",-320,-240,600,21,new Color(.76f,.85f,.92f));Text(cv.transform,font,"身体顺攻击推力偏倒 / 短亮点和液滴",320,-240,620,21,new Color(.92f,.8f,.72f));
+Text(cv.transform,font,"移动动作始终继续 · 无真实硬直、击退或无敌规则变化",0,-298,1240,22,Color.white);
+Text(cv.transform,font,"正式反馈代码：玩家 0.24 秒 / 敌人 0.30 秒 · 无声音 · 非整局游玩录像",0,-333,1240,19,new Color(.65f,.73f,.8f));
+var phase=Text(cv.transform,font,"",0,221,1250,23,new Color(1,.89f,.52f));
+var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);hero.transform.rotation=Quaternion.Euler(0,220,0);foreach(var b in hero.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;
+var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);var a=presenter.BodyAnimator;a.enabled=true;a.Rebind();a.Update(0);a.enabled=false;var pose=presenter.Current.Animations.MoveForward;pose.Clip.SampleAnimation(a.gameObject,.1f);presenter.ApplyOffhandGrip(pose);var actor=new Actor{Root=hero};CreateSkinProxies(actor,owned);
+var zombie=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/ArcadeZombieShambler.prefab"),root.transform);foreach(var b in zombie.GetComponentsInChildren<MonoBehaviour>(true))b.enabled=false;zombie.transform.rotation=Quaternion.Euler(0,220,0);var za=zombie.GetComponentInChildren<Animator>(true);za.enabled=true;za.Rebind();za.Update(0);za.enabled=false;var walk=AssetDatabase.LoadAssetAtPath<AnimationClip>("Assets/Game/Art/Enemies/Zombies/Civilian/ShamblerGroundWalk.anim");var enemy=new Actor{Root=zombie};CreateSkinProxies(enemy,owned);
+var hs=hero.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Spine_02");var zs=zombie.GetComponentsInChildren<Transform>(true).First(t=>t.name=="Torso");
+hero.GetComponent<PlayerView>().SetArcadePresentationActive(true);hero.GetComponent<PlayerView>().SetSurvivorHitFeedbackActive(true);zombie.GetComponent<EnemyView>().SetSurvivorHitFeedbackActive(true);
+var hf=hero.GetComponentInChildren<SurvivorHitFeedbackView>(true);var zf=zombie.GetComponentInChildren<SurvivorHitFeedbackView>(true);
+var formalHud=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/SurvivorHud.prefab").GetComponent<SurvivorHudUI>();
+var edge=Object.Instantiate(formalHud.HurtEdges,cv.transform,false);var er=(RectTransform)edge.transform;er.anchorMin=er.anchorMax=new Vector2(.5f,.5f);er.sizeDelta=new Vector2(610,400);er.anchoredPosition=new Vector2(-320,0);edge.Clear();
+foreach(var tr in root.GetComponentsInChildren<Transform>(true))tr.gameObject.layer=31;
+string dir="E:/GitHub/FirepowerLoop/Backup/Artifacts/HitFeedbackReference-20261102/implementation/formal";Directory.CreateDirectory(dir+"/frames");
+// 每次先恢复临时演员基线，避免未带曲线的骨骼累积偏转。
+var bones=hero.GetComponentsInChildren<Transform>(true).Concat(zombie.GetComponentsInChildren<Transform>(true)).Where(x=>x!=hero.transform&&x!=zombie.transform).ToArray();
+var rotations=bones.Select(x=>x.localRotation).ToArray();var positions=bones.Select(x=>x.localPosition).ToArray();
+var hh=hero.GetComponentsInChildren<Transform>(true).FirstOrDefault(x=>x.name=="Head"||x.name=="Head_01");var zh=zombie.GetComponentsInChildren<Transform>(true).FirstOrDefault(x=>x.name=="Head"||x.name=="Head_01");
+float[] hits={1f,3.4f,3.64f,3.88f,6f};int previousHit=-1;
+for(int f=0;f<216;f++){float t=f/30f;float age=99;int hitIndex=0;for(int j=0;j<hits.Length;j++)if(t>=hits[j]){age=t-hits[j];hitIndex=j;}float sign=hitIndex==4?-1:1;
+hero.transform.position=new Vector3(-2.1f,0,Mathf.Sin(t*1.3f)*.24f);zombie.transform.position=new Vector3(2.1f,0,Mathf.Sin(t*1.3f)*.24f);
+for(int bone=0;bone<bones.Length;bone++){bones[bone].localRotation=rotations[bone];bones[bone].localPosition=positions[bone];}
+pose.Clip.SampleAnimation(a.gameObject,t%pose.Clip.length);presenter.ApplyOffhandGrip(pose);walk.SampleAnimation(za.gameObject,t%walk.length);
+// 实际调用正式组件，不重新实现候选数学或特效。
+if(t>=hits[0]&&hitIndex!=previousHit){hf.Play(Vector3.right*sign);zf.Play(Vector3.right*sign);edge.Play();hf.Tick(age);zf.Tick(age);edge.Tick(age);previousHit=hitIndex;}
+else{hf.Tick(1f/30);zf.Tick(1f/30);edge.Tick(1f/30);}
+hf.ApplyPose();zf.ApplyPose();
+foreach(var s in actor.Skins)UpdateSkin(s);foreach(var s in enemy.Skins)UpdateSkin(s);
+phase.text=t<2.6f?"01  左侧来袭 → 身体向右偏倒":t<5.2f?"02  左侧连续来袭 → 每次顺推力受力":"03  右侧来袭 ← 身体向左偏倒";
+Capture(camera,dir+"/frames/"+f.ToString("D3")+".png");}
+foreach(var at in font.atlasTextures)owned.Add(at);return new{frames=216,fps=30,formalComponents=true};
+}finally{RenderSettings.ambientLight=ambient;RenderSettings.ambientMode=am;EditorSceneManager.ClosePreviewScene(scene);foreach(var o in owned)if(o!=null)Object.DestroyImmediate(o);owned.Clear();}}
+}

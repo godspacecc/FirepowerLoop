@@ -1,0 +1,28 @@
+loader=Game.YooAssetResourceLoader
+mode=DefaultPackage
+playMode=EditorSimulateMode
+Prefabs/Characters/GrayboxPlayer : real Play activation/OnDisable cleanup PASS
+Prefabs/Characters/GrayboxPlayer : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieShambler : real Play activation/OnDisable cleanup PASS
+Prefabs/Characters/ArcadeZombieShambler : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieGaunt : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieBloated : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieExploder : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieCaster : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieShield : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieEnchantHealth : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieEnchantSpeed : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/Characters/ArcadeZombieEnchantShield : PASS actual YooAsset prefab and serialized dependencies
+Prefabs/UI/Survivor/SurvivorHud : PASS actual YooAsset prefab and serialized dependencies
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+released=True
+completed=11; failed=False

@@ -1,0 +1,98 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 14,
+      "PassedTests": 0,
+      "FailedTests": 14,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6231713"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,1,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.1060000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,-1,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,1)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,-1)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,1,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,-1,0)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,1)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,-1)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0040000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0060000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0030000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(True)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0070000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(False)",
+        "Status": "Failed",
+        "Duration": "00:00:00.0050000",
+        "Message": "  SetSurvivorHitFeedbackActive尚未接入\r\n  Expected: not null\r\n  But was:  null\r\n"
+      }
+    ]
+  }
+}

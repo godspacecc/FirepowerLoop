@@ -321,6 +321,7 @@ namespace Game
         /// <summary>联机首次加载可关闭历史死亡补播，后续状态变化沿用正式死亡动画。</summary>
         public void SetAlivePresentation(bool alive,bool playTransition)
         {
+            if(!alive)survivorHit?.Clear();
             var changed = presentationAlive != alive;
             if(arcadePresentationActive)
             {
@@ -502,7 +503,7 @@ namespace Game
         /// </summary>
         public void SetArcadePresentationActive(bool active)
         {
-            if(!active)ResetHerdImpact();
+            if(!active){ResetHerdImpact();SetSurvivorHitFeedbackActive(false);}
             arcadePresentationActive = active;
             SetActive(arcadePlayerMarker, presentationAlive && active);
             if (active)
@@ -798,7 +799,7 @@ namespace Game
             }
             if(ApplyHerdImpact())return;
             if (animator == null || !animator.isActiveAndEnabled) return;
-            arcadeDamage?.ApplyHurtPose(animator);
+            if(survivorHitActive)survivorHit?.ApplyPose();else arcadeDamage?.ApplyHurtPose(animator);
             if(SwimmingPresentation){ApplySwimmingPresentation(Time.deltaTime);return;}
             if (GetComponent<CharacterWeaponPresenter>() != null && sharedWeaponAnimationActive) return;
             if (Time.time < projectileBodyRecoilEndTime)
@@ -975,8 +976,24 @@ namespace Game
             hand.rotation = handRotation;
         }
 
+        /// <summary>幸存者只启用已装配的局部受击；模式退出时清除临时状态。</summary>
+        public void SetSurvivorHitFeedbackActive(bool active)
+        {
+            if(active==survivorHitActive)return;
+            survivorHit=GetComponentInChildren<SurvivorHitFeedbackView>(true);
+            if(active&&survivorHit==null)throw new System.InvalidOperationException("玩家缺少幸存者受击模板");
+            survivorHitActive=active;
+            if(active)survivorHit.Bind(animator,true);else survivorHit?.Clear();
+        }
+        /// <summary>只响应本次实际损伤的世界推力，不触发全身受击或打断攻击。</summary>
+        public void PlaySurvivorHurtFeedback(Vector3 push){if(survivorHitActive&&presentationAlive)survivorHit.Play(push);}
+        /// <summary>当前玩家独占的幸存者反馈，模式退出时恢复骨骼。</summary>
+        private SurvivorHitFeedbackView survivorHit;
+        private bool survivorHitActive;
+
         public void PlayHurtFeedback()
         {
+            if(survivorHitActive)return;
             if(arcadePresentationActive){if(!presentationAlive)return;PrepareArcadeDamage();arcadeDamage?.Hurt();}
             // 街机以闪红和飘字提示受伤，保持权威移动、瞄准与射击的连续表现。
             // 普通地图及独立角色预览仍沿用原有全身受击动作，死亡继续走存活切换入口。
@@ -1028,6 +1045,7 @@ namespace Game
 
         public void TickCombatFeedback(float deltaTime)
         {
+            survivorHit?.Tick(deltaTime);
             arcadeDamage?.Tick(deltaTime);
             GetComponent<CharacterWeaponPresenter>()?.TickUpperBodyGunFire(deltaTime);
             if (singleAttackSpeedResetRemainingSeconds > 0f)
@@ -1131,6 +1149,7 @@ namespace Game
         private void OnDisable()
         {
             ResetHerdImpact();
+            survivorHit?.Clear();
             arcadeDamage?.Reset();
             RestoreFeedbackColors();
             colorFeedbackRemainingSeconds = 0f;

@@ -19,6 +19,7 @@ namespace Game
         protected override void OnInit()
         {
             goldTextScale=UI.ScoreText.transform.localScale;
+            this.RegisterEvent<SurvivorPlayerHurtEvent>(_=>{if(IsShow())UI.HurtEdges.Play();}).UnRegisterWhenGameObjectDestroyed(BaseUI);
             UI.GoldFlightList.AddItemRefreshListener(RefreshGoldFlight);
             UI.WeaponSlots.AddItemRefreshListener((item,index)=>{
                 var box=item.GetComponent<SurvivorWeaponSlotBoxUI>();
@@ -41,6 +42,7 @@ namespace Game
         /// <summary>隐藏、卸载和遮挡都通过官方松手入口清零虚拟轴。</summary>
         private void ReleaseJoystick()
         {
+            if(UI!=null)UI.HurtEdges.Clear();
             ClearGoldPickupFeedback();
             if(joystickRegistered){UIHelper.BlockingUIChanged-=OnBlockingUiChanged;LifeCycle.UnregisterUpdate(RefreshVisibleHud);joystickRegistered=false;}
             if(UI!=null){UI.MoveJoystick.OnPointerUp(null);UI.MoveJoystickRoot.SetActive(false);}
@@ -51,6 +53,8 @@ namespace Game
             if(UI==null||!IsShow())return;
             RefreshJoystick();
             AdvanceGoldPickups(Time.unscaledDeltaTime);
+            var combat=this.GetModel<SurvivorModel>().Snapshot;
+            UI.HurtEdges.Tick(combat.Active&&!combat.Paused&&!combat.Finished&&!UIHelper.HasUIOpen?Time.unscaledDeltaTime:0);
             if(Time.realtimeSinceStartup<nextClockSample)return;
             nextClockSample=Time.realtimeSinceStartup+1f;
             RenderLocalClock(System.DateTime.Now,false);

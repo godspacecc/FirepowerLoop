@@ -20,5 +20,6 @@ namespace Game
         public CustomListView WeaponSlots;
         public TextMeshProUGUI ClockText;
         public CustomListView GoldFlightList;
+        public SurvivorHurtEdgeView HurtEdges;
     }
 }

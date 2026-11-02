@@ -204,7 +204,9 @@ namespace Game
         public void BeginPresentationUse()
         {
             // 对象池复用后，即使新敌人的生命值相同，也必须首次刷新。
+            SetSurvivorHitFeedbackActive(false);
             hasHealthDisplaySnapshot = false;
+            survivorHit?.Clear();
             ResetSurvivorSpecial();
             // 新生恢复装备；死亡清前摇时不得让已破的盾重新出现。
             SetSurvivorShield(true);
@@ -435,6 +437,7 @@ namespace Game
 
         private void OnDisable()
         {
+            survivorHit?.Clear();
             ResetSurvivorSpecial();
             ResetElementFeedback();
             ResetGroundEntry();
@@ -774,6 +777,7 @@ namespace Game
         /// <summary>开始死亡表现并返回建议保留时长；无 Animator 时由调用方立即回收。</summary>
         public bool TryPlayDeathAnimation(out float durationSeconds)
         {
+            survivorHit?.Clear();
             ResetSurvivorSpecial();
             StopGroundEntryForDeath();
             StopDockSeaEntryForDeath();
@@ -801,6 +805,7 @@ namespace Game
         /// <summary>消费最终伤害的力度类别，沿用尸体寿命、碰撞关闭与统一物理预算。</summary>
         public bool TryPlayPhysicalDeathWithImpact(Vector3 direction, bool explosive, int impactKind, out float durationSeconds)
         {
+            survivorHit?.Clear();
             ResetSurvivorSpecial();
             bool preserveSampledPose = dockSampling||groundSampling;
             StopGroundEntryForDeath();
@@ -809,6 +814,7 @@ namespace Game
             var continuation=herdImpact;var continuedDirection=herdDirection;
             ResetHerdImpact();
             durationSeconds = 0f;
+            survivorHit?.Clear();
             if (PhysicalReaction == null || !(continuation.Active
                 ?PhysicalReaction.BeginHerdDeathFromImpact(continuedDirection,continuation)
                 :preserveSampledPose ? PhysicalReaction.BeginSampledPoseDeath(direction, explosive, impactKind)
@@ -825,9 +831,9 @@ namespace Game
         }
 
         /// <summary>由现有LateUpdate在动画后叠加回弹，不新增逐敌人Update。</summary>
-        public void LateTickCombatFeedback(){ApplyDockSeaEntry();ApplyGroundEntry();PhysicalReaction?.LateTick();if(!dockSampling&&!groundSampling){ApplyMeleeAttack();ApplyHerdImpact();}}
+        public void LateTickCombatFeedback(){ApplyDockSeaEntry();ApplyGroundEntry();PhysicalReaction?.LateTick();if(!dockSampling&&!groundSampling){ApplyMeleeAttack();ApplyHerdImpact();if(survivorHitActive)survivorHit?.ApplyPose();}}
         /// <summary>池管理显式复位，不依赖编辑态或禁用父节点下的OnDisable回调。</summary>
-        public void ResetPhysicalFeedback(){ResetSurvivorSpecial();SetSurvivorShield(true);ResetElementFeedback();ResetGroundEntry();ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
+        public void ResetPhysicalFeedback(){survivorHit?.Clear();ResetSurvivorSpecial();SetSurvivorShield(true);ResetElementFeedback();ResetGroundEntry();ResetDockSeaEntry();ResetMeleeAttack();ResetHerdImpact();corpseFade?.Reset();PhysicalReaction?.ResetForReuse();FlameFeedback?.ResetForReuse();}
         public bool IsHerdCorpse=>PhysicalReaction?.IsHerdDeath==true;
 
         /// <summary>预算只停止物理，保留尸体的显示寿命。</summary>
@@ -857,8 +863,23 @@ namespace Game
         /// <summary>死亡类型由战斗裁决传入，不根据画面相交或当前武器猜测。</summary>
         public void PlayFlameDeath(bool flameKill)=>FlameFeedback?.PlayDeath(flameKill);
 
+        /// <summary>实例独占的幸存者受击呈现器与当前用途开关，回池前清除。</summary>
+        private SurvivorHitFeedbackView survivorHit;
+        private bool survivorHitActive;
+        /// <summary>实例用途在普通模式与幸存者间切换时明确装配/清除，不修改源Prefab规则。</summary>
+        public void SetSurvivorHitFeedbackActive(bool active)
+        {
+            if(active==survivorHitActive)return;
+            survivorHit=GetComponentInChildren<SurvivorHitFeedbackView>(true);
+            if(active&&survivorHit==null)throw new System.InvalidOperationException("丧尸缺少幸存者受击模板");
+            survivorHitActive=active;
+            if(active)survivorHit.Bind(animator,false);else survivorHit?.Clear();
+        }
+        /// <summary>已裁决非致命损伤仅叠加顺推力动作，死亡继续交给原事务。</summary>
+        public void PlaySurvivorHitFeedback(Vector3 push){if(survivorHitActive&&!animationDead&&!isCorpse)survivorHit.Play(push);}
         public void PlayHitFeedback()
         {
+            if(survivorHitActive)return;
             if (PhysicalReaction != null && PhysicalReaction.IsReady && !animationDead)
                 PhysicalReaction.PlayHit(-transform.forward);
             else if (animator != null && !animationDead)
@@ -894,6 +915,8 @@ namespace Game
             return damageNumberEmitter.Validate(out error);
         }
 
+        /// <summary>幸存者新受击使用模式活动时钟，升级暂停不消耗亮点、液滴或偏倒。</summary>
+        public void TickSurvivorHitFeedback(float seconds)=>survivorHit?.Tick(seconds);
         public void TickCombatFeedback(float deltaTime)
         {
             TickMeleeAttack(deltaTime);

@@ -1063,6 +1063,11 @@ namespace Game.Tests
         }
         private sealed class TestView:IArcadeCombatViewPort
         {
+            public int PlayerHitCount,EnemyHitCount;
+            public Vector2 PlayerHitPush,EnemyHitPush;
+            public void PlaySurvivorPlayerHit(Vector2 push){PlayerHitCount++;PlayerHitPush=push;}
+            public void PlaySurvivorEnemyHit(int id,Vector2 push){EnemyHitCount++;EnemyHitPush=push;}
+
             public bool MissileActive;
             public Vector2 MissilePoint;
             public float MissileAge;

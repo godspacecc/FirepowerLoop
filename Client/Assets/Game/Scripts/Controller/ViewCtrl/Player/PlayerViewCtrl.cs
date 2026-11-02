@@ -373,6 +373,9 @@ namespace Game
             ViewRef?.PlayBowFireFeedback();
         }
 
+        /// <summary>仅投影当前幸存者模式的采用版反馈。</summary>
+        public void SetSurvivorHitFeedbackActive(bool active)=>ViewRef?.SetSurvivorHitFeedbackActive(active);
+        public void PlaySurvivorHurtFeedback(Vector3 push)=>ViewRef?.PlaySurvivorHurtFeedback(push);
         public void PlayHurtFeedback()
         {
             ViewRef?.PlayHurtFeedback();

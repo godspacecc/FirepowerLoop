@@ -1,0 +1,20 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Failed",
+      "TotalTests": 1,
+      "PassedTests": 0,
+      "FailedTests": 1,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.0779359"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.HealthSyncWithoutBarCannotCancelHitAndExplicitResetClears",
+        "Status": "Failed",
+        "Duration": "00:00:00.1520000",
+        "Message": "  生命同步无血条时不能关闭本模式受击\r\n  Expected: less than 0.0199999996f\r\n  But was:  28.5316792f\r\n"
+      }
+    ]
+  }
+}

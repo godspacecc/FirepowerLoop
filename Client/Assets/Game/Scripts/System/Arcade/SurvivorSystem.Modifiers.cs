@@ -176,7 +176,9 @@ namespace Game
         {
             if(damage<=0||!enemies.ContainsKey(enemy.Id))return;
             damage=ShieldDamage(enemy,damage,source);
-            enemy.Health=Math.Max(0,enemy.Health-damage);if(enemy.Health>0)return;
+            enemy.Health=Math.Max(0,enemy.Health-damage);
+            if(damage>0&&enemy.Health>0&&source.HasValue)view.PlaySurvivorEnemyHit(enemy.Id,enemy.Position-source.Value);
+            if(enemy.Health>0)return;
             specialEnemies.Remove(enemy.Id);elementStatuses.Remove(enemy.Id);enemies.Remove(enemy.Id);presentedEnemies.Remove(enemy.Id);view.RemoveEnemy(enemy.Id,true);Model.Kills++;TryDropGold(enemy);enchantments.Remove(enemy.Id);
             if(SurvivorCombatRules.ShouldDropExperience(config.ExperienceDropChance,Math.Min((float)experienceRandom.NextDouble(),.99999994f)))AddExperienceDrop(enemy.Position);
         }

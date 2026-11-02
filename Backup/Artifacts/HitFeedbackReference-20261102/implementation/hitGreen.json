@@ -1,0 +1,109 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 19,
+      "PassedTests": 19,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.7451361"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0660000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,-1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,-1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.FormalHudEdgesFreezeClearAndNeverBlockInput",
+        "Status": "Passed",
+        "Duration": "00:00:00.0270000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.NewAnimationBaselineIsPreservedAndDeathClears(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.NewAnimationBaselineIsPreservedAndDeathClears(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RealDamageUsesSourceAndZeroDamageDoesNotReplay",
+        "Status": "Passed",
+        "Duration": "00:00:01.2080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.UpgradePauseFreezesEnemyFeedbackThroughRealControllerClock",
+        "Status": "Passed",
+        "Duration": "00:00:00.0140000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      }
+    ]
+  }
+}

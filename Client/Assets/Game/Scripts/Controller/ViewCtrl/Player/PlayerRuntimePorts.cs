@@ -74,6 +74,9 @@ namespace Game
         }
 
         void PlayHurtFeedback();
+        /// <summary>幸存者采用版局部受击，不参与移动与生命规则。</summary>
+        void SetSurvivorHitFeedbackActive(bool active) { }
+        void PlaySurvivorHurtFeedback(Vector3 push) { }
         /// <summary>显示玩家受到的伤害数值；不改变生命状态。</summary>
         void ShowDamage(int damage) { }
         void TickCombatFeedback(float deltaTime);

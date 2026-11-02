@@ -90,7 +90,7 @@ namespace Game
                 }
                 if(configured)TickMeleeEnemy(e,dt);
                 else if(hurtClock<=0&&Vector2.Distance(e.Position,player)<=catalog.Rule.PlayerRadius+catalog.Rule.EnemyContactRadius)
-                {DamageSurvivor(e.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;e.AttackSequence++;}
+                {DamageSurvivorFrom(e.Damage,e.Position);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;e.AttackSequence++;}
             }
             FlushSpecialDeaths();
         }
@@ -112,7 +112,7 @@ namespace Game
             enemy.MeleeWindupActive=false;enemy.MeleeRecoveryRemaining=FirepowerLoop.Arcade.ArcadeMeleeRules.RecoverySeconds;
             enemy.AttackCooldown=Shape(enemy.ConfigId)?.AttackCooldownSeconds??definition.AttackCooldownSeconds;enemy.AttackSequence++;
             if(hurtClock>0)return;
-            DamageSurvivor(enemy.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;
+            DamageSurvivorFrom(enemy.Damage,enemy.Position);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;
         }
 
     }

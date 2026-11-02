@@ -57,7 +57,7 @@ namespace Game
                 if(shape.SpecialKind=="Exploder")
                 {
                     if(delta.sqrMagnitude<=shape.BlastRadius*shape.BlastRadius&&hurtClock<=0)
-                    {DamageSurvivor(shape.SpecialDamage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}
+                    {DamageSurvivorFrom(shape.SpecialDamage,enemy.Position);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}
                     if(specialBlasts.Count<config.MaxBlastEffects)
                     {var blast=new ModifierBlast{Id=++identity,Position=enemy.Position,Radius=shape.BlastRadius};specialBlasts.Add(blast);view.SetSurvivorEnemyBlast(blast.Id,blast.Position,blast.Radius,0,config.MaxBlastEffects);}
                     enemy.Health=0;specialDeaths.Add(enemy.Id);return true;
@@ -139,7 +139,7 @@ namespace Game
                 var segment=b.Velocity*Mathf.Min(dt,Mathf.Max(0,b.RemainingSeconds));
                 float wall=HostileWallSweep(b.Position,segment),hit=PlayerSweep(b.Position,segment,player,catalog.Rule.PlayerRadius);
                 if(hit<wall&&hit<=1)
-                {if(hurtClock<=0){DamageSurvivor(b.Damage);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}expiredHostileProjectiles.Add(b.Id);continue;}
+                {if(hurtClock<=0){DamageSurvivorFrom(b.Damage,b.Position-b.Velocity);hurtClock=catalog.Rule.ContactInvulnerabilitySeconds;}expiredHostileProjectiles.Add(b.Id);continue;}
                 b.Position+=segment;b.RemainingSeconds-=dt;
                 if(wall<=1||b.RemainingSeconds<=0){expiredHostileProjectiles.Add(b.Id);continue;}
                 view.SetSurvivorHostileProjectile(b.Id,b.Position,b.Velocity.normalized);

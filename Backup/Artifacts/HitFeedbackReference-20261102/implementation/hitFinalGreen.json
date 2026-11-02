@@ -1,0 +1,114 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 20,
+      "PassedTests": 20,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:02.7174485"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.1060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,-1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(True,0,-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,-1,0)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.BodyLeansAlongWorldPushAtAnyFacing(False,0,-1)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0020000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.DisablingModeRestoresPoseAndClearsTransientVisuals(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0030000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.FormalHudEdgesFreezeClearAndNeverBlockInput",
+        "Status": "Passed",
+        "Duration": "00:00:00.1590000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.HealthSyncWithoutBarCannotCancelHitAndExplicitResetClears",
+        "Status": "Passed",
+        "Duration": "00:00:00.0060000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.NewAnimationBaselineIsPreservedAndDeathClears(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0080000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.NewAnimationBaselineIsPreservedAndDeathClears(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RealDamageUsesSourceAndZeroDamageDoesNotReplay",
+        "Status": "Passed",
+        "Duration": "00:00:01.1650000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.RepeatedHitChangesDirectionWithoutSpawningOrMovingRoot(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.UpgradePauseFreezesEnemyFeedbackThroughRealControllerClock",
+        "Status": "Passed",
+        "Duration": "00:00:00.0100000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(True)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0050000"
+      },
+      {
+        "Name": "Game.Tests.SurvivorHitFeedbackTests.ZeroTimeDoesNotAccumulateAndCompletionRestoresPose(False)",
+        "Status": "Passed",
+        "Duration": "00:00:00.0040000"
+      }
+    ]
+  }
+}
