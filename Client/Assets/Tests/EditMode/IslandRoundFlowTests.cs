@@ -56,6 +56,43 @@ namespace Game.Tests
         private void Set(string name, object value) => typeof(ArcadeCombatSystem).GetField(name, Flags).SetValue(combat, value);
         private object Call(string name, params object[] values) => typeof(ArcadeCombatSystem).GetMethod(name, Flags).Invoke(combat, values);
 
+        [Test] public void ChapterRequiresSearchDefenseAndThreeClearedBatches()
+        {
+            Assert.That(architecture.GetUtility<IRuntimeConfigProvider>().TryGetMission(out runtime.ChapterRules, out var error), Is.True, error);
+            Call("BeginWave", runtime, 1);
+            Call("TickWaveTransition", runtime, 1f);
+            Assert.That(runtime.WaveClearAwarded, Is.False);
+            foreach (var site in new[] { new Vector2(-7,4), new Vector2(7,-4), new Vector2(-7,-4) })
+            {
+                runtime.Chapter.Advance(site, 1, runtime.SpawnQueue, 0);
+                Assert.That(runtime.SpawnQueue, Is.Not.Empty);
+                runtime.SpawnQueue.Clear();
+            }
+            Assert.That(runtime.Chapter.Ready, Is.True);
+            Call("BeginWave", runtime, 2);
+            runtime.Chapter.Advance(Vector2.zero, runtime.ChapterRules.ActivationSeconds, runtime.SpawnQueue, 0);
+            Assert.That(runtime.SpawnQueue, Is.Not.Empty);
+            runtime.Chapter.Advance(new Vector2(10,10), 1000f, runtime.SpawnQueue, 0);
+            Assert.That(runtime.Chapter.Ready, Is.False);
+            runtime.Chapter.Advance(Vector2.zero, runtime.ChapterRules.DefendSeconds, runtime.SpawnQueue, 0);
+            Call("TickWaveTransition", runtime, 1f);
+            Assert.That(runtime.WaveClearAwarded, Is.False, "防守结束仍需消灭敌人");
+            Call("BeginWave", runtime, 3);
+            var north = new Vector2(0,8);
+            runtime.Chapter.Advance(Vector2.zero, 1, runtime.SpawnQueue, 0);
+            Assert.That(runtime.SpawnQueue, Is.Empty);
+            for (int i=1; i<=3; i++)
+            {
+                runtime.Chapter.Advance(north, 1, runtime.SpawnQueue, 0);
+                Assert.That(runtime.Chapter.Wave, Is.EqualTo(i));
+                Assert.That(runtime.SpawnQueue, Is.Not.Empty);
+                runtime.SpawnQueue.Clear();
+                runtime.Chapter.Advance(north, 1, runtime.SpawnQueue, 1);
+                Assert.That(runtime.Chapter.Wave, Is.EqualTo(i));
+            }
+            Assert.That(runtime.Chapter.Ready, Is.True);
+        }
+
         [Test] public void ClearDoesNotAdvanceOnFireOrTimeout()
         {
             Call("BeginWave", runtime, 0); runtime.SpawnQueue.Clear();

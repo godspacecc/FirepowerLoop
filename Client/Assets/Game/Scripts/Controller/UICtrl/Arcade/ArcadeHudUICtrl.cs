@@ -182,6 +182,8 @@ namespace Game
             else if (combat.Resting) Set(UI.TextWave, Loc.T("ui.arcade.hud.rest", Mathf.CeilToInt(combat.RestSeconds)));
             if (combat.IslandAwaitingRoundExit) Set(UI.TextWave, Loc.T("ui.arcade.island.pickup"));
             if (combat.IslandTransitioning) Set(UI.TextWave, Loc.T("ui.arcade.island.loading"));
+            var chapterHint = this.GetSystem<ArcadeCombatSystem>()?.ChapterHint();
+            if (chapterHint != null) Set(UI.TextWave, chapterHint);
             RenderTimedStatus(combat.TemporaryWeaponNameKey, combat.TemporaryWeaponSeconds, combat.Powerups);
             SyncDesktopStage();
 

@@ -387,6 +387,9 @@ namespace Game
         public double HazardElapsedSeconds;
         public readonly List<FirepowerLoop.Arcade.ArcadeHazardState> Hazards = new List<FirepowerLoop.Arcade.ArcadeHazardState>();
         public readonly Dictionary<int, Vector2> HazardPreviousEnemyPositions = new Dictionary<int, Vector2>();
+        /// <summary>仅当前单人第一章持有的规则及轮内目标。</summary>
+        public MissionConfiguration ChapterRules;
+        public ArcadeChapterObjective Chapter;
         public readonly Queue<string> SpawnQueue = new Queue<string>();
         public readonly Dictionary<int, ArcadeEnemyRuntime> Enemies = new Dictionary<int, ArcadeEnemyRuntime>();
         public readonly Dictionary<int, ArcadeProjectileRuntime> Projectiles = new Dictionary<int, ArcadeProjectileRuntime>();

@@ -156,6 +156,7 @@ namespace Game
             var checkpoint = new ArcadeCheckpointSaveData { ArenaNumber = 1, GenerationSeed = seed };
             var candidate = CreateNewRunCandidate(runId, catalog.Rule.InitialLives, catalog.Rule.BaseWeaponId, checkpoint);
             candidate.IsCasualRoute = true;
+            candidate.ChapterRulesVersion = 1;
             candidate.CasualRouteVersion = FirepowerLoop.Arcade.ArcadeRouteRules.CurrentVersion;
             candidate.ScoreShopRulesVersion = catalog.ScoreShop == null ? 0 : 1;
             candidate.SlayerMartRulesVersion = slayerMartRulesVersion;

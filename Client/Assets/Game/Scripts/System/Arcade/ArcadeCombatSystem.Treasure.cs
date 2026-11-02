@@ -11,6 +11,8 @@ namespace Game
         /// <summary>活动权威帧处理房间时钟及空间接触；休闲前两场各构建一次配置实例，不新增房间存档点。</summary>
         private void TickTreasureRoom(ArcadeCombatRuntime runtime, float seconds)
         {
+            // 第一章走供电防守出口，不从旧奖励房跳过该轮。
+            if (runtime.Chapter != null) return;
             if (!runtime.TreasureInitialized)
             {
                 runtime.TreasureInitialized = true;

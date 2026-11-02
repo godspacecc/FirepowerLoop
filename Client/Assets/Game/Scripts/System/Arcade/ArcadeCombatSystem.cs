@@ -435,6 +435,9 @@ namespace Game
                 Dashes = ReadAmount(run.EmergencyResources, ArcadeRunDefaults.DashResourceId),
                 WaveIndex = -1
             };
+            if (!isChallenge && run.ChapterRulesVersion == 1 && UsesIslandRounds(runtime) &&
+                !provider.TryGetMission(out runtime.ChapterRules, out error))
+            { RejectArenaEntry(error ?? "第一章任务配置不可用"); return; }
             if(!ValidateOutsideFallback(runtime)){RejectArenaEntry("敌人入口没有合法场外通道，请检查地图配置");return;}
             runtime.PlayerHealth = runtime.PlayerMaxHealth;
             if (!isChallenge)
@@ -670,6 +673,13 @@ namespace Game
             TickFinalBossReinforcements(runtime, deltaTime);
             TickRoundContent(runtime, deltaTime);
             if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
+            if (runtime.Chapter != null)
+            {
+                int pending = runtime.SpawnQueue.Count;
+                runtime.Chapter.Advance(runtime.PlayerPosition, deltaTime, runtime.SpawnQueue, runtime.Enemies.Count);
+                // 新遭遇使用自己的入口预算，避免沿用已经发完上一批的通道计划。
+                if (runtime.SpawnQueue.Count > pending) runtime.IslandPassages = null;
+            }
             TickSpawning(runtime, deltaTime);
             TickEnemies(runtime, deltaTime);
             if (runtime.CompletionSubmitted || this.GetModel<ArcadeCombatModel>().Runtime != runtime) return;
@@ -1420,7 +1430,7 @@ namespace Game
             }
             if (runtime.IsFinalBoss || runtime.AwaitingExit || runtime.InTreasureRoom ||
                 runtime.ThemeBossStarted && !runtime.ThemeBossDefeated) return;
-            if (runtime.SpawnQueue.Count > 0 || runtime.Enemies.Count > 0) return;
+            if (runtime.SpawnQueue.Count > 0 || runtime.Enemies.Count > 0 || runtime.Chapter?.Ready == false) return;
             // 仅等待实际启用的奖励房；关闭海岛奖励房后照常开放普通下一轮出口。
             if (runtime.WaveIndex + 1 == runtime.TreasureRoom?.Parameters.WaveNumber &&
                 this.GetModel<ArcadeRunModel>().Current?.IsCasualRoute == true && !runtime.TreasureCompleted) return;
@@ -1587,6 +1597,7 @@ namespace Game
                 for (var index = 0; index < count; index++) runtime.SpawnQueue.Enqueue(member.EnemyId);
                 previousWeight += member.Count;
             }
+            BeginChapterObjective(runtime);
         }
 
         /// <summary>普通地图开场只建立错峰刷新计划，切轮或特殊现场取消旧计划。</summary>

@@ -179,6 +179,8 @@ namespace Game
         public int Version { get; set; } = CurrentVersion;
         /// <summary>缺失为原十场版本0，旧十三场为版本1；新正式局使用版本2的确认十关路线。</summary>
         public int CasualRouteVersion { get; set; }
+        /// <summary>新建单人闯关启用第一章目标，旧档缺省为零。</summary>
+        public int ChapterRulesVersion { get; set; }
         /// <summary>旧档缺省0，只有明确启用的新局采用版本1，不转换旧局金币。</summary>
         public int SlayerMartRulesVersion { get; set; }
         /// <summary>旧局缺省0保留原流程，新正式局启用积分三选一版本1。</summary>
@@ -233,6 +235,7 @@ namespace Game
         {
             Version = Version,
             CasualRouteVersion = CasualRouteVersion,
+            ChapterRulesVersion = ChapterRulesVersion,
             SlayerMartRulesVersion=SlayerMartRulesVersion,
             ScoreShopRulesVersion=ScoreShopRulesVersion,
             ScoreShop=ScoreShop?.Clone(), ScoreLifeTier=ScoreLifeTier,

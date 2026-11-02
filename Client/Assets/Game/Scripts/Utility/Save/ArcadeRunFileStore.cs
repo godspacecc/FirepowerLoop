@@ -222,6 +222,8 @@ namespace Game
         {
             if (data == null || data.Version != ArcadeRunSaveData.CurrentVersion || !ArcadeRunIdentity.IsValid(data.RunId) ||
                 !FirepowerLoop.Arcade.ArcadeRouteRules.IsValidVersion(data.CasualRouteVersion) ||
+                data.ChapterRulesVersion < 0 || data.ChapterRulesVersion > 1 ||
+                !data.IsCasualRoute && data.ChapterRulesVersion != 0 ||
                 !data.IsCasualRoute && data.CasualRouteVersion != 0 ||
                 data.CompletedArenaCount < 0 || data.NextArenaNumber != data.CompletedArenaCount + 1 ||
                 data.Score < 0 || data.ScoreMultiplier < 1 || data.MultiplierProgress < 0 || (data.HasResult ? data.RemainingLives < 0 : data.RemainingLives <= 0) || data.RunGold < 0 || data.EmergencyResources == null ||
