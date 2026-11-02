@@ -5,7 +5,9 @@ namespace Game
 {
     public enum MapPreparationMode
     {
-        ArcadePlayerOnly
+        ArcadePlayerOnly,
+        /// <summary>只准备幸存者所需资源，不能作为完整闯关现场复用。</summary>
+        Survivor
     }
 
     /// <summary>隐藏街机候选地图及其出生点契约，不承载存档或业务权威状态。</summary>
@@ -29,6 +31,9 @@ namespace Game
         public long MapInstanceId { get; }
         public MapContext Scene { get; }
         public IReadOnlyList<MapSpawnDefinition> Spawns { get; }
-        public MapPreparationMode Mode => MapPreparationMode.ArcadePlayerOnly;
+        public MapPreparationMode Mode { get; private set; } = MapPreparationMode.ArcadePlayerOnly;
+        /// <summary>幸存者沿用同一隐藏地图事务，仅缩小资源集合。</summary>
+        public static MapPreparationContext CreateSurvivor(string mapId, long mapInstanceId, MapContext scene, IReadOnlyList<MapSpawnDefinition> spawns)
+            => new MapPreparationContext(mapId, mapInstanceId, scene, spawns) { Mode = MapPreparationMode.Survivor };
     }
 }

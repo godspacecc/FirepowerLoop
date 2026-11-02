@@ -31,10 +31,17 @@ namespace Game
         }
 
         /// <summary>进入复用正式玩家和相机的街机地图；加载失败时保持原地图及街机存档不变。</summary>
-        public async UniTask<ArcadeSceneFlowResult> EnterArenaMapAsync(CancellationToken cancellationToken = default)
+        public UniTask<ArcadeSceneFlowResult> EnterArenaMapAsync(CancellationToken cancellationToken = default)
+            => EnterMapAsync(false, cancellationToken);
+
+        /// <summary>独立资源范围的幸存者入口，避免误复用闯关地图准备状态。</summary>
+        public UniTask<ArcadeSceneFlowResult> EnterSurvivorMapAsync(CancellationToken cancellationToken = default)
+            => EnterMapAsync(true, cancellationToken);
+
+        private async UniTask<ArcadeSceneFlowResult> EnterMapAsync(bool survivor, CancellationToken cancellationToken)
         {
             var map = this.GetModel<MapSceneModel>();
-            if (map.CurrentMapId == MapIds.Arcade && map.CurrentMode == MapPreparationMode.ArcadePlayerOnly &&
+            if (map.CurrentMapId == MapIds.Arcade && map.CurrentMode == (survivor ? MapPreparationMode.Survivor : MapPreparationMode.ArcadePlayerOnly) &&
                 map.CurrentHandle != null && map.CurrentHandle.IsValid)
             {
                 return ArcadeSceneFlowResult.Ok();
@@ -48,7 +55,7 @@ namespace Game
                 bool loadingWasVisible = UIHelper.GetUICtrl<LoadingUICtrl>()?.IsShow() == true;
                 var loading = UIHelper.ShowUI<LoadingUICtrl>();
                 if (!loadingWasVisible) loading.Hide();
-                var result = await this.GetSystem<MapSceneSystem>().LoadArcadeMapAsync(cancellationToken);
+                var result = survivor ? await this.GetSystem<MapSceneSystem>().LoadSurvivorMapAsync(cancellationToken) : await this.GetSystem<MapSceneSystem>().LoadArcadeMapAsync(cancellationToken);
                 if (result.Success) UIHelper.HideUI<StartUICtrl>();
                 return result.Success ? ArcadeSceneFlowResult.Ok() : ArcadeSceneFlowResult.Fail(result.Error);
             }

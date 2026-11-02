@@ -332,7 +332,7 @@ namespace Game
             var architecture = Game.Interface;
             var mapModel = architecture.GetModel<MapSceneModel>();
             var mapSystem = architecture.GetSystem<MapSceneSystem>();
-            if (mapModel.CurrentMapId != MapIds.Arcade || mapModel.CurrentMode != MapPreparationMode.ArcadePlayerOnly ||
+            if (mapModel.CurrentMapId != MapIds.Arcade || (mapModel.CurrentMode != MapPreparationMode.ArcadePlayerOnly && mapModel.CurrentMode != MapPreparationMode.Survivor) ||
                 mapModel.CurrentHandle?.Context?.DynamicObjectRoot == null)
                 throw new InvalidOperationException("街机表现启动失败：正式街机地图尚未提交");
             if (!architecture.GetUtility<IPlayerRuntimePortProvider>().TryGetMotorPort(

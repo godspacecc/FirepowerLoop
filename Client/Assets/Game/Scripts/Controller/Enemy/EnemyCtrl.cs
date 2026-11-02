@@ -435,10 +435,14 @@ namespace Game
                 return FailPrepared("敌人准备失败：" + (catalogError ?? "街机配置不可用"));
             var enemyIds = new HashSet<string>(StringComparer.Ordinal);
             var survivorIds = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var group in catalog.EnemyGroups)
-                foreach (var member in group.Members)
-                    if (!string.IsNullOrWhiteSpace(member.EnemyId))
-                        enemyIds.Add(member.EnemyId);
+            // 闯关与联机保持原集合；幸存者只准备自己的敌池。
+            if (context.Mode != MapPreparationMode.Survivor)
+            {
+                foreach (var group in catalog.EnemyGroups)
+                    foreach (var member in group.Members)
+                        if (!string.IsNullOrWhiteSpace(member.EnemyId))
+                            enemyIds.Add(member.EnemyId);
+            }
             // 独立模式敌池同样属于入场准备，不能依赖它恰好出现在闯关敌群里。
             if(provider.HasSurvivorEnemyRoster)
             {

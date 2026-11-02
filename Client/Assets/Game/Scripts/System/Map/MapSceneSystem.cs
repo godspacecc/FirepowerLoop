@@ -210,7 +210,11 @@ namespace Game
             return UnloadCurrentInternal(cancellationToken);
         }
 
-        private async UniTask<MapSceneResult> LoadMapInternal(string mapId, CancellationToken externalCancellationToken)
+        /// <summary>以独立资源范围准备幸存者地图，保留原事务提交与回滚。</summary>
+        public UniTask<MapSceneResult> LoadSurvivorMapAsync(CancellationToken cancellationToken = default)
+            => LoadMapInternal(MapIds.Arcade, cancellationToken, true);
+
+        private async UniTask<MapSceneResult> LoadMapInternal(string mapId, CancellationToken externalCancellationToken, bool survivor = false)
         {
             var model = this.GetModel<MapSceneModel>();
             if (busy)
@@ -299,7 +303,7 @@ namespace Game
                     return MapSceneResult.Fail(error, model.Status.Value);
                 }
 
-                context = MapPreparationContext.CreateArcade(mapId, nextMapInstanceId++, candidateHandle.Context, spawns);
+                context = survivor ? MapPreparationContext.CreateSurvivor(mapId, nextMapInstanceId++, candidateHandle.Context, spawns) : MapPreparationContext.CreateArcade(mapId, nextMapInstanceId++, candidateHandle.Context, spawns);
                 ReportStage(MapLoadingStage.Players);
                 ReportProgress(.85f);
                 var prepare = await PrepareControllers(context, token, ReportProgress);

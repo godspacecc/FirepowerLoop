@@ -245,7 +245,8 @@ namespace Game
             {
                 var visualAddresses = new List<string>();
                 for (var index = 0; index < catalog.Drops.Count; index++)
-                    visualAddresses.Add(catalog.Drops[index].VisualPrefabAddress);
+                    if (context.Mode != MapPreparationMode.Survivor || catalog.Drops[index].Id == "arcade.drop.gold.small")
+                        visualAddresses.Add(catalog.Drops[index].VisualPrefabAddress);
                 // 经验使用独立模型，但仍纳入同一地图资源准备与回滚事务。
                 if (provider.TryGetSurvivor(out var survivor, out _))
                     visualAddresses.Add(survivor.ExperienceVisualPrefabAddress);

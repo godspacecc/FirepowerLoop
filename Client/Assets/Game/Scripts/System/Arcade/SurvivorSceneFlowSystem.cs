@@ -49,7 +49,7 @@ namespace Game
                 // 同时覆盖菜单入口和结算后的再来一局；接管入口令牌，防止旧回调提前隐藏。
                 loading=UIHelper.ShowUI<LoadingUICtrl>();
                 loadingRequest=loading.BeginSurvivorEntryPreparation();
-                var result = await this.GetSystem<ArcadeSceneFlowSystem>().EnterArenaMapAsync(linked.Token);
+                var result = await this.GetSystem<ArcadeSceneFlowSystem>().EnterSurvivorMapAsync(linked.Token);
                 if (!result.Success) return result;
                 entered = true;
                 linked.Token.ThrowIfCancellationRequested();
