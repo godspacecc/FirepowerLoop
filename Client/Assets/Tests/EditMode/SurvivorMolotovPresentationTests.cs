@@ -56,11 +56,11 @@ namespace Game.Tests
             finally{Call(view,"ClearMolotovVisuals");Object.DestroyImmediate(root);}
         }
 
-        /// <summary>正式槽位图标必须由生成器绑定，投掷武器不显示步枪弹药圈。</summary>
-        [Test] public void MolotovSlotUsesBoundIconWithoutAmmoRing()
+        /// <summary>正式槽位图标必须由生成器绑定，投掷武器就绪时显示满圈。</summary>
+        [Test] public void MolotovSlotUsesBoundIconWithReadyRing()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/Box/SurvivorWeaponSlot.prefab");var go=Object.Instantiate(prefab);
-            try{var box=go.GetComponent<SurvivorWeaponSlotBoxUI>();Assert.That(box.MolotovIcon,Is.Not.Null);typeof(SurvivorHudUICtrl).GetMethod("RenderWeaponSlot",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{box,new SurvivorModel(),"Molotov"});Assert.That(box.Icon.sprite,Is.SameAs(box.MolotovIcon));Assert.That(box.Icon.gameObject.activeSelf,Is.True);Assert.That(box.AmmoRing.gameObject.activeSelf,Is.False);}
+            try{var box=go.GetComponent<SurvivorWeaponSlotBoxUI>();Assert.That(box.MolotovIcon,Is.Not.Null);typeof(SurvivorHudUICtrl).GetMethod("RenderWeaponSlot",BindingFlags.NonPublic|BindingFlags.Static).Invoke(null,new object[]{box,new SurvivorModel(),"Molotov"});Assert.That(box.Icon.sprite,Is.SameAs(box.MolotovIcon));Assert.That(box.Icon.gameObject.activeSelf,Is.True);Assert.That(box.AmmoRing.gameObject.activeSelf,Is.True);Assert.That(box.AmmoRing.fillAmount,Is.EqualTo(1f));}
             finally{Object.DestroyImmediate(go);}
         }
     }

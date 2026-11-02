@@ -22,6 +22,7 @@ namespace Game
         private void TickMolotov(float dt)
         {
             molotovClock=Mathf.Max(0,molotovClock-dt);
+            Model.MolotovCooldownRemaining=molotovClock;
             for(int i=molotovZones.Count-1;i>=0;i--)AdvanceMolotovZone(molotovZones[i],dt);
             for(int i=molotovFlights.Count-1;i>=0;i--)
             {
@@ -46,7 +47,8 @@ namespace Game
                 nearest=distance;target=e;
             }
             if(target==null)return;
-            var flight=new MolotovFlight{Id=++identity,Origin=player,Target=target.Position,Level=level};molotovFlights.Add(flight);molotovClock=level.FireIntervalSeconds;ProjectMolotov(flight);
+            var flight=new MolotovFlight{Id=++identity,Origin=player,Target=target.Position,Level=level};molotovFlights.Add(flight);molotovClock=level.FireIntervalSeconds;
+            Model.MolotovCooldownRemaining=Model.MolotovCooldownDuration=molotovClock;ProjectMolotov(flight);
         }
         /// <summary>抛物线只投影显示，落点由领域冻结，不产生物理碰撞伤害。</summary>
         private void ProjectMolotov(MolotovFlight f)
@@ -76,6 +78,7 @@ namespace Game
             foreach(var f in molotovFlights)view?.SetSurvivorMolotov(f.Id,f.Target,0,0,false);
             foreach(var z in molotovZones)view?.SetSurvivorFireZone(z.Id,z.Position,z.Level.AreaRadius,z.Age,false);
             molotovFlights.Clear();molotovZones.Clear();molotovClock=0;
+            Model.MolotovCooldownRemaining=Model.MolotovCooldownDuration=0;
         }
     }
 }

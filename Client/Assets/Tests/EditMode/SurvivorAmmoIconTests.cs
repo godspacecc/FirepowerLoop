@@ -31,6 +31,22 @@ namespace Game.Tests
                 Assert.That(go.transform.Find("Icon").gameObject.activeSelf,Is.False);
             }finally{Object.DestroyImmediate(go);}
         }
+        /// <summary>燃烧弹复用原外圈，在冷却和就绪之间切换，并完整恢复其它武器槽。</summary>
+        [Test] public void MolotovRingShowsCooldownAndReadyWithoutChangingOtherSlots()
+        {
+            var go=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Survivor/Box/SurvivorWeaponSlot.prefab"));
+            try{
+                var box=go.GetComponent<SurvivorWeaponSlotBoxUI>();var model=new SurvivorModel();
+                var render=typeof(SurvivorHudUICtrl).GetMethod("RenderWeaponSlot",BindingFlags.Static|BindingFlags.NonPublic);
+                render.Invoke(null,new object[]{box,model,"Molotov"});Assert.That(box.AmmoRing.gameObject.activeSelf,Is.True);
+                Set(model,"MolotovCooldownDuration",5f);Set(model,"MolotovCooldownRemaining",5f);
+                render.Invoke(null,new object[]{box,model,"Molotov"});Assert.That(box.AmmoRing.fillAmount,Is.Zero);
+                Set(model,"MolotovCooldownRemaining",2.5f);render.Invoke(null,new object[]{box,model,"Molotov"});Assert.That(box.AmmoRing.fillAmount,Is.EqualTo(.5f));Assert.That(box.AmmoRing.color,Is.EqualTo(new Color(.25f,.75f,1f)));
+                Set(model,"MolotovCooldownRemaining",0f);render.Invoke(null,new object[]{box,model,"Molotov"});Assert.That(box.AmmoRing.fillAmount,Is.EqualTo(1f));Assert.That(box.AmmoRing.color,Is.EqualTo(new Color(1f,.94f,.72f)));
+                render.Invoke(null,new object[]{box,model,"Drone"});Assert.That(box.AmmoRing.gameObject.activeSelf,Is.False);
+                render.Invoke(null,new object[]{box,model,null});Assert.That(box.AmmoRing.gameObject.activeSelf,Is.False);
+            }finally{Object.DestroyImmediate(go);}
+        }
         private static void Set(object target,string field,object value)=>target.GetType().GetField(field,BindingFlags.Instance|BindingFlags.NonPublic).SetValue(target,value);
     }
 }

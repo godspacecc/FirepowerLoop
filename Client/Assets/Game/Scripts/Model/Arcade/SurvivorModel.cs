@@ -44,6 +44,12 @@ namespace Game
         public float RifleReloadProgress => RifleReloadDuration>0?UnityEngine.Mathf.Clamp01(1-RifleReloadRemaining/RifleReloadDuration):0f;
         /// <summary>当前局独立武器槽，仅由幸存者系统写入。</summary>
         internal SurvivorLoadout Loadout;
+        /// <summary>系统提交的燃烧弹冷却显示快照；HUD不自行推进时间。</summary>
+        internal float MolotovCooldownRemaining, MolotovCooldownDuration;
+        public float MolotovCooldownTimeRemaining => MolotovCooldownRemaining;
+        /// <summary>冷却结束保持满圈，无目标等待时也可明确看到已就绪。</summary>
+        public float MolotovCooldownProgress => MolotovCooldownRemaining<=0?1f:
+            MolotovCooldownDuration>0?UnityEngine.Mathf.Clamp01(1-MolotovCooldownRemaining/MolotovCooldownDuration):0f;
         /// <summary>界面只读查询武器等级。</summary>
         public int WeaponLevel(string kind)=>Loadout?.LevelOf(kind)??0;
         /// <summary>包含主武器的总槽数与当前占用。</summary>

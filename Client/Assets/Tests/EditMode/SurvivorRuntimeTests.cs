@@ -120,6 +120,18 @@ namespace Game.Tests
             Assert.That(new[]{visible.Health,behindWall.Health,underground.Health},Is.EqualTo(new[]{64,100,100}),"地面目标受伤，墙后和地下目标不受伤");
         }
 
+        /// <summary>显示快照跟随真实投掷冷却，暂停冻结，无目标就绪和退出清理。</summary>
+        [Test] public void MolotovCooldownSnapshotTracksThrowPauseReadyAndStop()
+        {
+            model.Loadout.TryUpgrade("Molotov",5);Assert.That(model.MolotovCooldownProgress,Is.EqualTo(1f));
+            var enemies=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            enemies.Add(900,new ArcadeEnemyRuntime{Id=900,ConfigId=config.EnemyId,Health=100,MaxHealth=100,Position=new Vector2(0,2)});
+            Call("TickMolotov",.01f);Assert.That(model.MolotovCooldownProgress,Is.Zero);Assert.That(model.MolotovCooldownTimeRemaining,Is.EqualTo(5f));
+            enemies.Clear();Call("TickMolotov",2.5f);Assert.That(model.MolotovCooldownProgress,Is.EqualTo(.5f));
+            model.Paused=true;Call("TickFrame",1f);Assert.That(model.MolotovCooldownProgress,Is.EqualTo(.5f));
+            model.Paused=false;Call("TickMolotov",2.5f);Assert.That(model.MolotovCooldownProgress,Is.EqualTo(1f));Call("TickMolotov",1f);Assert.That(model.MolotovCooldownProgress,Is.EqualTo(1f));
+            system.Stop();Assert.That(model.MolotovCooldownTimeRemaining,Is.Zero);
+        }
         private void Set(string name,object value)=>typeof(SurvivorSystem).GetField(name,Flags).SetValue(system,value);
         private T Get<T>(string name)=>(T)typeof(SurvivorSystem).GetField(name,Flags).GetValue(system);
         private object Call(string name,params object[] args)=>typeof(SurvivorSystem).GetMethod(name,Flags).Invoke(system,args);

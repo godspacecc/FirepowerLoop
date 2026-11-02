@@ -116,7 +116,14 @@ namespace Game
             bool rifle=kind=="Rifle",drone=kind=="Drone",molotov=kind=="Molotov";
             box.Icon.gameObject.SetActive(rifle||drone||molotov);
             box.Icon.sprite=rifle?box.RifleIcon:drone?box.DroneIcon:molotov?box.MolotovIcon:null;
-            box.AmmoRing.gameObject.SetActive(rifle);
+            box.AmmoRing.gameObject.SetActive(rifle||molotov);
+            // 投掷冷却复用换弹外圈与颜色，仅消费系统快照，不增加UI计时器。
+            if(molotov)
+            {
+                box.AmmoRing.fillAmount=model.MolotovCooldownProgress;
+                box.AmmoRing.color=model.MolotovCooldownTimeRemaining>0?new Color(.25f,.75f,1f):new Color(1f,.94f,.72f);
+                return;
+            }
             bool reloading=rifle&&model.RifleReloadTimeRemaining>0;
             float amount=reloading?model.RifleReloadProgress:
                 model.RifleMagazineSize>0?Mathf.Clamp01((float)model.RifleAmmo/model.RifleMagazineSize):0f;
