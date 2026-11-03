@@ -114,6 +114,7 @@ namespace Game
 
         protected override void OnHide()
         {
+            this.GetSystem<ChallengeSceneFlowSystem>()?.CancelEntry();
             ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
@@ -123,6 +124,7 @@ namespace Game
 
         protected override void OnUnload()
         {
+            this.GetSystem<ChallengeSceneFlowSystem>()?.CancelEntry();
             ReleaseStartLoading();
             startGeneration++;
             startingRun = false;
@@ -175,12 +177,24 @@ namespace Game
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
         }
 
-        /// <summary>挑战地图尚未交付时明确反馈当前状态，不触发其他模式开局。</summary>
+        /// <summary>从原模式卡进入独立挑战；准备失败保留当前菜单。</summary>
         private void OpenChallenge()
         {
             if (startingRun || !IsShow()) return;
-            // 巨人城场景尚未交付，保持在模式选择中，不误用其他模式的地图和规则。
-            Notify.ShowFloatTips(Loc.T("ui.challenge.not_ready"));
+            StartChallengeAsync().Forget();
+        }
+
+        private async UniTask StartChallengeAsync()
+        {
+            startingRun=true;RefreshSaveButtons();
+            var owner=BaseUI;int generation=++startGeneration;
+            bool IsCurrent()=>owner!=null&&ReferenceEquals(owner,BaseUI)&&IsShow()&&generation==startGeneration;
+            try
+            {
+                var error=await this.GetSystem<ChallengeSceneFlowSystem>().EnterAsync(IsCurrent);
+                if(error!=null&&IsCurrent())Notify.ShowFloatTips(error);
+            }
+            finally{if(IsCurrent()){startingRun=false;RefreshSaveButtons();}}
         }
 
         /// <summary>每次从菜单进入都先选角；旧菜单会话的回调不能开局。</summary>

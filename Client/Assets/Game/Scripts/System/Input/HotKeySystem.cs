@@ -320,7 +320,7 @@ namespace Game
 
                     return;
                 case TogglePauseRouteAction.Resume:
-                    if (this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld() && this.GetSystem<AppStateSystem>().TryResume())
+                    if ((this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true || this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld()) && this.GetSystem<AppStateSystem>().TryResume())
                     {
                         UIHelper.HideUI<PauseUICtrl>();
                     }

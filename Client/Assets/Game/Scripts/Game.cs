@@ -121,6 +121,7 @@ namespace Game
             RegisterSystem(new ArcadeSceneFlowSystem());
             RegisterSystem(new SurvivorSystem());
             RegisterSystem(new ChallengeSystem());
+            RegisterSystem(new ChallengeSceneFlowSystem());
             RegisterSystem(new SurvivorSceneFlowSystem());
             RegisterSystem(new ServerTestCmdSystem());
             RegisterSystem(new TestCmdSystem());

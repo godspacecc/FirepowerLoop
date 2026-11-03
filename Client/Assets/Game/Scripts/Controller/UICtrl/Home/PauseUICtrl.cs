@@ -59,7 +59,7 @@ namespace Game
                 Hide();
                 return;
             }
-            UI.BtnContinue.interactable = this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
+            UI.BtnContinue.interactable = HasRecoverableWorld;
 
             RefreshOnlineAction();
             // 显隐变化后立即由 Prefab 布局计算标题、按钮组与背景高度，避免首帧保留上一张地图的尺寸。
@@ -67,19 +67,22 @@ namespace Game
         }
 
         private bool IsArcadeMap => this.GetModel<MapSceneModel>().CurrentMapId == MapIds.Arcade;
+        /// <summary>独立挑战使用自己的世界所有者，不伪装成旧街机地图。</summary>
+        private bool HasRecoverableWorld => this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true || this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
 
         /// <summary>暂停菜单只呈现街机继续与离开意图；离开事务完成前拒绝重复请求。</summary>
         private void RefreshOnlineAction()
         {
             UI.OnlineActionText.text = Loc.T("ui.pause.main_menu");
             UI.BtnOnline.interactable = !leavingMap;
-            UI.BtnContinue.interactable = !leavingMap && this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld();
+            UI.BtnContinue.interactable = !leavingMap && HasRecoverableWorld;
         }
 
         /// <summary>根据领域地图身份提交意图，不以按钮显示文字决定行为。</summary>
         private void OpenOnlineOrLeaveArcade()
         {
             if (leavingMap) return;
+            if (this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true) { this.GetSystem<ChallengeSceneFlowSystem>().ReturnToMenu(); return; }
             if (this.GetModel<SurvivorModel>().Snapshot.Active) { LeaveSurvivorAsync().Forget(); return; }
             if (!IsArcadeMap) { UIHelper.ShowUI<OnlineLoginUICtrl>(); return; }
             var run = this.GetModel<ArcadeRunModel>()?.Current;
@@ -156,7 +159,7 @@ namespace Game
         /// <summary>仅恢复完整活动世界；恢复失败保留暂停状态与菜单，不隐式读档。</summary>
         private void Resume()
         {
-            if (this.GetSystem<MapSceneSystem>().HasRecoverableCurrentWorld() &&
+            if (HasRecoverableWorld &&
                 this.GetSystem<AppStateSystem>().TryResume()) Hide();
         }
 

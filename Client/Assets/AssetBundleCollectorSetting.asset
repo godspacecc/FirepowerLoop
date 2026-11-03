@@ -255,6 +255,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData:
+      - CollectPath: Assets/Game/Art/Challenge/Crater/CraterMap.prefab
+        CollectorGUID: cedd2e8fa510ed04b84041787669f0c3
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData: 
       - CollectPath: Assets/Game/Prefabs/UI/Challenge/ChallengeHud.prefab
         CollectorGUID: def4e2ca204b7254ca587a01df82f076
         CollectorType: 0
