@@ -1038,5 +1038,13 @@
   "ui.mode.survivor": "幸存者",
   "ui.mode.solo.detail": "瞄准射击，推进任务\n搜索物资 · 防守 · 突围",
   "ui.mode.online.detail": "与伙伴一起闯关\n创建房间或加入房间",
-  "ui.mode.survivor.detail": "自动攻击，走位生存\n选择角色与本局强化"
+  "ui.mode.survivor.detail": "自动攻击，走位生存\n选择角色与本局强化",
+  "ui.mode.challenge": "经典挑战",
+  "ui.mode.challenge.detail": "巨人城废墟\n手动射击 · 换弹补给",
+  "ui.challenge.not_ready": "经典挑战正在制作，地图尚未开放。",
+  "ui.challenge.weapon.rifle": "步枪",
+  "ui.challenge.weapon.pistol": "手枪",
+  "ui.challenge.hud.ammo": "{0}   {1:00} / {2}",
+  "ui.challenge.hud.reload": "换弹中 {0:0.0} 秒",
+  "ui.challenge.hud.keys": "R 换弹     1 / 2 切枪"
 }

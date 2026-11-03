@@ -47,6 +47,7 @@ namespace Game
             BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
             BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
+            BindMenuButton(UI.BtnChallenge, OpenChallenge);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -142,6 +143,7 @@ namespace Game
             UI.ArcadeSoloText.text = Loc.T("ui.mode.solo");
             UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
+            UI.BtnChallenge.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
             UI.BtnOnline.interactable = !startingRun;
@@ -171,6 +173,14 @@ namespace Game
             UI.VersionText.text = showVersion ? $"v{snapshot.CurrentVersion}" : string.Empty;
 
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
+        }
+
+        /// <summary>挑战地图尚未交付时明确反馈当前状态，不触发其他模式开局。</summary>
+        private void OpenChallenge()
+        {
+            if (startingRun || !IsShow()) return;
+            // 巨人城场景尚未交付，保持在模式选择中，不误用其他模式的地图和规则。
+            Notify.ShowFloatTips(Loc.T("ui.challenge.not_ready"));
         }
 
         /// <summary>每次从菜单进入都先选角；旧菜单会话的回调不能开局。</summary>

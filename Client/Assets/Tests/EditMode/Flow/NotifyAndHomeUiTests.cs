@@ -1132,6 +1132,7 @@ namespace Game.Tests
             startUi.BtnOnline.transform.SetParent(startUi.ArcadeModePanel.transform, false);
             startUi.BtnShop = CreateButton(root.transform, "BtnShop", out _);
             startUi.BtnSurvivor = CreateButton(root.transform, "BtnSurvivor", out _);
+            startUi.BtnChallenge = CreateButton(startUi.ArcadeModePanel.transform, "BtnChallenge", out _);
             startUi.BtnCheckUpdate = CreateButton(root.transform, "BtnCheckUpdate", out _);
             startUi.BtnSetting = CreateButton(root.transform, "BtnSetting", out _);
             startUi.BtnExit = CreateButton(root.transform, "BtnExit", out _);

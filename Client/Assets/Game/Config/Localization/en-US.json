@@ -1038,5 +1038,13 @@
   "ui.mode.survivor": "Survivor",
   "ui.mode.solo.detail": "Aim and shoot through objectives\nSearch · Defend · Break through",
   "ui.mode.online.detail": "Fight alongside a friend\nHost or join a room",
-  "ui.mode.survivor.detail": "Auto-fire and survive\nChoose a character and upgrades"
+  "ui.mode.survivor.detail": "Auto-fire and survive\nChoose a character and upgrades",
+  "ui.mode.challenge": "Classic Challenge",
+  "ui.mode.challenge.detail": "Ruined Giant City\nManual fire · Reload and resupply",
+  "ui.challenge.not_ready": "Classic Challenge is in development. The map is not available yet.",
+  "ui.challenge.weapon.rifle": "Rifle",
+  "ui.challenge.weapon.pistol": "Pistol",
+  "ui.challenge.hud.ammo": "{0}   {1:00} / {2}",
+  "ui.challenge.hud.reload": "Reloading {0:0.0}s",
+  "ui.challenge.hud.keys": "R Reload     1 / 2 Switch"
 }

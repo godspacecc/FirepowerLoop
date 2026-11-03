@@ -10,17 +10,18 @@ namespace Game
         public Button BtnContinue;
         public Button BtnExit;
         public Button BtnNewGame;
-        public Button BtnOnline;
         public Button BtnSetting;
-        public Button BtnSurvivor;
         public RectTransform ButtonGroup;
         public RedPointView UpdateRedPoint;
         public TextMeshProUGUI UpdateStatusText;
         public TextMeshProUGUI VersionText;
         public Button BtnShop;
         public GameObject MainMenuPanel;
+        public Button BtnChallenge;
         public GameObject ArcadeModePanel;
         public Button BtnArcadeSolo;
+        public Button BtnOnline;
+        public Button BtnSurvivor;
         public Button BtnArcadeBack;
         public TextMeshProUGUI ArcadeSoloText;
     }

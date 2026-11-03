@@ -255,6 +255,14 @@ MonoBehaviour:
         FilterRuleName: CollectAll
         AssetTags: startup;arcade
         UserData:
+      - CollectPath: Assets/Game/Prefabs/UI/Challenge/ChallengeHud.prefab
+        CollectorGUID: def4e2ca204b7254ca587a01df82f076
+        CollectorType: 0
+        AddressRuleName: AddressByGameRelativePathNoExtension
+        PackRuleName: PackSeparately
+        FilterRuleName: CollectAll
+        AssetTags: startup
+        UserData:
     - GroupName: PrefabsCharacters
       GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
       AssetTags: 

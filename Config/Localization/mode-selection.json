@@ -38,5 +38,37 @@
   "ui.mode.survivor.detail": {
     "zh-CN": "自动攻击，走位生存\n选择角色与本局强化",
     "en-US": "Auto-fire and survive\nChoose a character and upgrades"
+  },
+  "ui.mode.challenge": {
+    "zh-CN": "经典挑战",
+    "en-US": "Classic Challenge"
+  },
+  "ui.mode.challenge.detail": {
+    "zh-CN": "巨人城废墟\n手动射击 · 换弹补给",
+    "en-US": "Ruined Giant City\nManual fire · Reload and resupply"
+  },
+  "ui.challenge.not_ready": {
+    "zh-CN": "经典挑战正在制作，地图尚未开放。",
+    "en-US": "Classic Challenge is in development. The map is not available yet."
+  },
+  "ui.challenge.weapon.rifle": {
+    "zh-CN": "步枪",
+    "en-US": "Rifle"
+  },
+  "ui.challenge.weapon.pistol": {
+    "zh-CN": "手枪",
+    "en-US": "Pistol"
+  },
+  "ui.challenge.hud.ammo": {
+    "zh-CN": "{0}   {1:00} / {2}",
+    "en-US": "{0}   {1:00} / {2}"
+  },
+  "ui.challenge.hud.reload": {
+    "zh-CN": "换弹中 {0:0.0} 秒",
+    "en-US": "Reloading {0:0.0}s"
+  },
+  "ui.challenge.hud.keys": {
+    "zh-CN": "R 换弹     1 / 2 切枪",
+    "en-US": "R Reload     1 / 2 Switch"
   }
 }
