@@ -1028,5 +1028,15 @@
   "ui.survivor.weapon.RocketSupport.upgrade_detail": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米",
   "ui.survivor.upgrade.DroneFlame.title": "喷火改装",
   "ui.survivor.upgrade.DroneFlame.detail": "无人机保留当前等级\n点射改为近距离锥形喷火",
-  "ui.survivor.weapon.Drone.flame_upgrade_detail": "喷火每秒伤害 {0} → {1}"
+  "ui.survivor.weapon.Drone.flame_upgrade_detail": "喷火每秒伤害 {0} → {1}",
+  "ui.mode.start": "开始游戏",
+  "ui.mode.category": "游戏模式",
+  "ui.mode.players.one": "1 人",
+  "ui.mode.players.two": "2 人",
+  "ui.mode.solo": "单人闯关",
+  "ui.mode.online": "双人联机",
+  "ui.mode.survivor": "幸存者",
+  "ui.mode.solo.detail": "瞄准射击，推进任务\n搜索物资 · 防守 · 突围",
+  "ui.mode.online.detail": "与伙伴一起闯关\n创建房间或加入房间",
+  "ui.mode.survivor.detail": "自动攻击，走位生存\n选择角色与本局强化"
 }

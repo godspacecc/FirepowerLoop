@@ -1,0 +1,42 @@
+{
+  "ui.mode.start": {
+    "zh-CN": "开始游戏",
+    "en-US": "Start Game"
+  },
+  "ui.mode.category": {
+    "zh-CN": "游戏模式",
+    "en-US": "Game Mode"
+  },
+  "ui.mode.players.one": {
+    "zh-CN": "1 人",
+    "en-US": "1 Player"
+  },
+  "ui.mode.players.two": {
+    "zh-CN": "2 人",
+    "en-US": "2 Players"
+  },
+  "ui.mode.solo": {
+    "zh-CN": "单人闯关",
+    "en-US": "Solo Campaign"
+  },
+  "ui.mode.online": {
+    "zh-CN": "双人联机",
+    "en-US": "Online Co-op"
+  },
+  "ui.mode.survivor": {
+    "zh-CN": "幸存者",
+    "en-US": "Survivor"
+  },
+  "ui.mode.solo.detail": {
+    "zh-CN": "瞄准射击，推进任务\n搜索物资 · 防守 · 突围",
+    "en-US": "Aim and shoot through objectives\nSearch · Defend · Break through"
+  },
+  "ui.mode.online.detail": {
+    "zh-CN": "与伙伴一起闯关\n创建房间或加入房间",
+    "en-US": "Fight alongside a friend\nHost or join a room"
+  },
+  "ui.mode.survivor.detail": {
+    "zh-CN": "自动攻击，走位生存\n选择角色与本局强化",
+    "en-US": "Auto-fire and survive\nChoose a character and upgrades"
+  }
+}

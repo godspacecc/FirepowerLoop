@@ -1028,5 +1028,15 @@
   "ui.survivor.weapon.RocketSupport.upgrade_detail": "Damage {0} → {1}\nBlast radius {2} → {3}m",
   "ui.survivor.upgrade.DroneFlame.title": "Flamethrower Retrofit",
   "ui.survivor.upgrade.DroneFlame.detail": "Keeps the current drone level\nReplaces gunfire with a short-range flame cone",
-  "ui.survivor.weapon.Drone.flame_upgrade_detail": "Flame damage per second {0} → {1}"
+  "ui.survivor.weapon.Drone.flame_upgrade_detail": "Flame damage per second {0} → {1}",
+  "ui.mode.start": "Start Game",
+  "ui.mode.category": "Game Mode",
+  "ui.mode.players.one": "1 Player",
+  "ui.mode.players.two": "2 Players",
+  "ui.mode.solo": "Solo Campaign",
+  "ui.mode.online": "Online Co-op",
+  "ui.mode.survivor": "Survivor",
+  "ui.mode.solo.detail": "Aim and shoot through objectives\nSearch · Defend · Break through",
+  "ui.mode.online.detail": "Fight alongside a friend\nHost or join a room",
+  "ui.mode.survivor.detail": "Auto-fire and survive\nChoose a character and upgrades"
 }

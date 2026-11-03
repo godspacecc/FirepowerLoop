@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Boot;
 using Cysharp.Threading.Tasks;
@@ -135,11 +135,11 @@ namespace Game
             var pending = this.GetSystem<ArcadeRunSystem>().PrepareMenuEntry();
             if (pending.IsValid)
                 UIHelper.PreloadUI<ArcadeResumeUICtrl>().PrepareMenuContent(pending.Data);
-            UI.BtnNewGame.gameObject.SetActive(pending.Status == SaveFileStatus.Missing);
-            UI.BtnContinue.gameObject.SetActive(pending.Status != SaveFileStatus.Missing);
+            UI.BtnNewGame.gameObject.SetActive(true);
+            UI.BtnContinue.gameObject.SetActive(false);
             UI.BtnArcadeSolo.interactable = !startingRun;
             UI.BtnArcadeBack.interactable = !startingRun;
-            UI.ArcadeSoloText.text = Loc.T(pending.Status == SaveFileStatus.Missing ? "ui.start.new_game" : pending.IsValid && string.IsNullOrEmpty(pending.Data.Outcome) ? "ui.arcade.resume" : "ui.start.continue");
+            UI.ArcadeSoloText.text = Loc.T("ui.mode.solo");
             UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;

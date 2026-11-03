@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -111,7 +111,7 @@ namespace Game.Tests
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PrefabPath);
             var ui = prefab.GetComponent<StartUI>();
             Assert.That(ui.ButtonGroup.GetComponentsInChildren<Button>(true).Select(b => b.name),
-                Is.EqualTo(new[] { "BtnNewGame", "BtnSurvivor", "BtnShop", "BtnContinue", "BtnSetting", "BtnExit" }));
+                Is.EqualTo(new[] { "BtnNewGame", "BtnShop", "BtnContinue", "BtnSetting", "BtnExit" }));
             Assert.That(ui.BtnCheckUpdate.transform.IsChildOf(ui.ButtonGroup), Is.False);
             Assert.That(ui.BtnExit.transform.IsChildOf(ui.ButtonGroup), Is.True);
             Assert.That(ui.VersionText.rectTransform.anchorMin.x, Is.EqualTo(0f));
