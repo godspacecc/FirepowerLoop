@@ -51,6 +51,7 @@ public partial class Tables
     public TbSurvivorEnemy TbSurvivorEnemy {get; }
     public TbSurvivorCharacter TbSurvivorCharacter {get; }
     public TbMissionRule TbMissionRule {get; }
+    public TbChallengeWeapon TbChallengeWeapon {get; }
 
     public Tables(System.Func<string, ByteBuf> loader)
     {
@@ -92,6 +93,7 @@ public partial class Tables
         TbSurvivorEnemy = new TbSurvivorEnemy(loader("tbsurvivorenemy"));
         TbSurvivorCharacter = new TbSurvivorCharacter(loader("tbsurvivorcharacter"));
         TbMissionRule = new TbMissionRule(loader("tbmissionrule"));
+        TbChallengeWeapon = new TbChallengeWeapon(loader("tbchallengeweapon"));
         ResolveRef();
     }
     
@@ -135,6 +137,7 @@ public partial class Tables
         TbSurvivorEnemy.ResolveRef(this);
         TbSurvivorCharacter.ResolveRef(this);
         TbMissionRule.ResolveRef(this);
+        TbChallengeWeapon.ResolveRef(this);
     }
 }
 

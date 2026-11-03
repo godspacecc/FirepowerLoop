@@ -797,4 +797,11 @@
         <var name="Breakthrough2Roster" type="string"/>
         <var name="Breakthrough3Roster" type="string"/>
     </bean>
+    <bean name="ChallengeWeaponConfig">
+        <var name="Id" type="string"/>
+        <var name="MagazineCapacity" type="int"/>
+        <var name="ReserveCapacity" type="int"/>
+        <var name="ReloadSeconds" type="float"/>
+        <var name="FireInterval" type="float"/>
+    </bean>
 </beans>

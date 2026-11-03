@@ -1,0 +1,5 @@
+##var,Id,MagazineCapacity,ReserveCapacity,ReloadSeconds,FireInterval
+##type,string,int,int,float,float
+##,独立挑战联调参数（非原作核定值）,,,,
+,challenge.rifle,30,90,2.5,0.1
+,challenge.pistol,12,36,1.8,0.25

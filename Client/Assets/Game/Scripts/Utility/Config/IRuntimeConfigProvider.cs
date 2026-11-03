@@ -34,6 +34,10 @@ namespace Game
         bool TryGetSurvivorEnemyRoster(out SurvivorEnemyRoster value,out string error)
         {value=null;error="幸存者敌池配置不可用";return false;}
 
+        /// <summary>独立经典挑战配置；未提供时明确拒绝进入，不借用旧模式武器。</summary>
+        bool TryGetChallenge(out ChallengeConfiguration value,out string error)
+        {value=null;error="挑战配置不可用";return false;}
+
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {
             value = default;

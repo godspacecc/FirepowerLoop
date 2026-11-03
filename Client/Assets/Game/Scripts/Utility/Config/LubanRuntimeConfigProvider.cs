@@ -291,6 +291,14 @@ namespace Game
             return true;
         }
 
+        /// <summary>挑战目录独立映射，不要求旧模式目录验证通过。</summary>
+        public bool TryGetChallenge(out ChallengeConfiguration value,out string error)
+        {
+            value=null;
+            try {value=new ChallengeConfiguration(cachedTables??tablesFactory());error=null;return true;}
+            catch(Exception exception) {error="挑战配置无效: "+exception.Message;return false;}
+        }
+
         public bool TryGetArcadeCatalog(out ArcadeConfigCatalogDefinition value, out string error)
         {
             value = null;

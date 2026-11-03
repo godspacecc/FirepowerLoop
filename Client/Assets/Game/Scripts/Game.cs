@@ -42,6 +42,7 @@ namespace Game
             RegisterModel(new ArcadeRunModel());
             RegisterModel(new ArcadeCombatModel());
             RegisterModel(new SurvivorModel());
+            RegisterModel(new ChallengeModel());
             RegisterModel(new MapSceneModel());
             RegisterModel(new UnitModel());
             RegisterModel(new PlayerModel());
@@ -119,6 +120,7 @@ namespace Game
             RegisterSystem(new MapSceneSystem(projectileCtrl, playerCtrl, enemyCtrl, lootCtrl));
             RegisterSystem(new ArcadeSceneFlowSystem());
             RegisterSystem(new SurvivorSystem());
+            RegisterSystem(new ChallengeSystem());
             RegisterSystem(new SurvivorSceneFlowSystem());
             RegisterSystem(new ServerTestCmdSystem());
             RegisterSystem(new TestCmdSystem());

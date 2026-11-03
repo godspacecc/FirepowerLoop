@@ -48,4 +48,5 @@
     <table name="TbSurvivorEnemy" value="SurvivorEnemyConfig" input="survivor_enemy.csv" group="e"/>
     <table name="TbSurvivorCharacter" value="SurvivorCharacterConfig" input="survivor_character.csv" group="e"/>
     <table name="TbMissionRule" value="MissionRuleConfig" input="mission_rule.csv" group="e"/>
+    <table name="TbChallengeWeapon" value="ChallengeWeaponConfig" input="challenge_weapon.csv" group="e"/>
 </tables>
