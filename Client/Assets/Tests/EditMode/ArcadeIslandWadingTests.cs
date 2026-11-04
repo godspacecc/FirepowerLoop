@@ -17,7 +17,7 @@ namespace Game.Tests
         private const BindingFlags Private = BindingFlags.Instance | BindingFlags.NonPublic;
         private Vector2 Water
         {
-            get { region.EntryFromFourSides(0, .5f, .95f, out var point); return new Vector2(point.X, point.Y); }
+            get { return new Vector2((region.Outer[0].X + region.Sand[0].X) * .5f, 0); }
         }
         private void Create(bool mobile = true, Camera camera = null)
         {
@@ -32,6 +32,19 @@ namespace Game.Tests
         private void Step(int id, Vector2 from)
         { Call("Set", id, from); Call("Set", id, from + Vector2.up * .25f); Call("Tick", .25f); }
         [TearDown] public void Cleanup() { (effect as IDisposable)?.Dispose(); if (root != null) Object.DestroyImmediate(root); }
+
+        [Test] public void DestroyedMapAllowsFinalTickAndRepeatedRelease()
+        {
+            Create();
+            Step(1, Water);
+            Assert.AreEqual(1, Count, "销毁前须有活跃水纹");
+            Object.DestroyImmediate(root);
+            Call("Tick", .1f);
+            Assert.Zero(Count);
+            Call("Clear");
+            Call("Dispose");
+            Call("Dispose");
+        }
 
         [Test] public void OnlyMovingWetEnemiesEmitAndRingsExpand()
         {

@@ -71,7 +71,7 @@ namespace Game
             if (seconds <= 0) return;
             foreach (var entry in entries)
             {
-                if (!entry.Root.activeSelf) continue;
+                if (entry.Root == null || !entry.Root.activeSelf) continue;
                 entry.Age += seconds;
                 if (entry.Age >= LifetimeSeconds) { Clear(entry); continue; }
                 entry.Mist.Simulate(seconds, false, false, false);
@@ -116,6 +116,8 @@ namespace Game
 
         private static void Clear(Entry entry)
         {
+            // 场景已卸载时，粒子随根节点一起销毁。
+            if (entry.Root == null) return;
             entry.Mist.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
             entry.Fragments.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);
             entry.Dust.Stop(false, ParticleSystemStopBehavior.StopEmittingAndClear);

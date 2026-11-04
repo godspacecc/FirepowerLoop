@@ -459,7 +459,8 @@ namespace Game
             this.GetSystem<AppStateSystem>().TryTransition(AppState.Loading);
             try
             {
-                TryDeactivateOld();
+                if (!TryDeactivateOld(out var deactivateError))
+                    throw new InvalidOperationException(deactivateError);
                 var unload = await UnloadHandleAsync(oldHandle, token);
                 if (!unload.Success)
                 {
@@ -1026,11 +1027,6 @@ namespace Game
                 error = $"停用旧地图失败：{e.Message}";
                 return false;
             }
-        }
-
-        private bool TryDeactivateOld()
-        {
-            return TryDeactivateOld(out _);
         }
 
         private bool TryRestoreOld(IMapContentHandle oldHandle, AppState oldState, out string error)

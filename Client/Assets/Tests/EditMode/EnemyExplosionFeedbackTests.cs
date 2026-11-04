@@ -54,6 +54,23 @@ namespace Game.Tests
             Pool.GetType().GetMethod("Tick").Invoke(Pool, new object[] { seconds });
         }
 
+        [Test] public void MapCanResumeOrReleaseAfterItsObjectsAreDestroyed()
+        {
+            var survivor = Spawn(1);
+            Spawn(2);
+            controller.RemoveEnemy(2, true, Vector3.forward, true);
+            controller.SetCurrentMapActive(false);
+            Assert.IsFalse(survivor.gameObject.activeSelf);
+            controller.SetCurrentMapActive(true);
+            Assert.IsTrue(survivor.gameObject.activeSelf);
+            controller.SetCurrentMapActive(false);
+            Object.DestroyImmediate(root);
+            typeof(EnemyCtrl).GetMethod("OnUpdate", Flags).Invoke(controller, null);
+            typeof(EnemyCtrl).GetMethod("OnLateUpdate", Flags).Invoke(controller, null);
+            controller.ReleaseCurrentMap();
+            Assert.IsNull(Pool);
+        }
+
         [Test] public void ExplosionEmitsOnceAndStaysAtDeathPositionWhenCorpseMoves()
         {
             var view = Spawn(1);

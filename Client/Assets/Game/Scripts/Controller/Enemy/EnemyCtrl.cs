@@ -23,6 +23,8 @@ namespace Game
         private readonly Dictionary<string, Stack<EnemyView>> arcadeEnemyPool = new Dictionary<string, Stack<EnemyView>>(StringComparer.Ordinal);
         private Transform arcadeCandidateRoot;
         private long arcadeCandidateMapInstanceId;
+        // 地图停用后暂停回调，恢复同一地图时继续。
+        private bool mapFeedbackSuspended;
         private Transform arcadeRoot;
         private long arcadeMapInstanceId;
         private bool stagedArcade;
@@ -89,6 +91,7 @@ namespace Game
                 return FailPrepared("敌人提交失败：街机候选上下文无效");
             ReleaseArcadePresentation();
             arcadeRoot = arcadeCandidateRoot;
+            mapFeedbackSuspended = false;
             arcadeMapInstanceId = arcadeCandidateMapInstanceId;
             CreateRagdollFloor();
             arcadeCandidateRoot = null;
@@ -110,6 +113,7 @@ namespace Game
 
         public void SetCurrentMapActive(bool activeState)
         {
+            mapFeedbackSuspended = !activeState;
             if (!activeState)
             {
                 explosionDeaths?.Clear();
@@ -808,6 +812,7 @@ namespace Game
 
         private void OnUpdate()
         {
+            if (mapFeedbackSuspended || arcadeRoot == null) return;
             TickArcadeFeedback(Time.deltaTime,Time.time);
         }
         /// <summary>统一表现步进；参数同时用于正式生命周期和有界隔离检查。</summary>
@@ -820,7 +825,12 @@ namespace Game
             for (var i = dyingArcadeEnemies.Count - 1; i >= 0; i--)
             {
                 var entry = dyingArcadeEnemies[i];
-                if(herdActivityPaused&&entry.View?.IsHerdCorpse==true){entry.ReleaseTime+=seconds;continue;}
+                if (entry.View == null)
+                {
+                    dyingArcadeEnemies.RemoveAt(i);
+                    continue;
+                }
+                if(herdActivityPaused&&entry.View.IsHerdCorpse){entry.ReleaseTime+=seconds;continue;}
                 entry.View?.TickCombatFeedback(seconds);
                 entry.View?.SetCorpseFade(entry.ReleaseTime - now);
                 if (entry.View != null && now < entry.ReleaseTime)
@@ -834,7 +844,8 @@ namespace Game
             TickEnchantPulses(seconds,elementsPaused);
             foreach (var entry in arcadeEnemies.Values)
             {
-                entry.View?.TickSurvivorHitFeedback(elementsPaused?0:seconds);
+                if (entry.View == null) continue;
+                entry.View.TickSurvivorHitFeedback(elementsPaused?0:seconds);
                 entry.View?.TickCombatFeedback(seconds);
                 entry.View?.TickElementFeedback(elementsPaused?0:Mathf.Min(seconds,.05f));
                 if (entry.View == null || entry.PersistentHealthBar)
@@ -848,9 +859,12 @@ namespace Game
 
         private void OnLateUpdate()
         {
-            foreach (var entry in arcadeEnemies.Values) entry.View?.LateTickCombatFeedback();
+            if (mapFeedbackSuspended || arcadeRoot == null) return;
+            foreach (var entry in arcadeEnemies.Values)
+                if (entry.View != null) entry.View.LateTickCombatFeedback();
             // 死亡失衡阶段仍需在Animator后交接骨骼，即使此帧没有主相机也要完成。
-            foreach (var entry in dyingArcadeEnemies) entry.View?.LateTickCombatFeedback();
+            foreach (var entry in dyingArcadeEnemies)
+                if (entry.View != null) entry.View.LateTickCombatFeedback();
             var camera = Camera.main;
             if (camera == null)
             {
@@ -858,7 +872,7 @@ namespace Game
             }
 
             foreach (var entry in arcadeEnemies.Values)
-                entry.View?.FaceWorldHuds(camera.transform.position, camera.transform.up);
+                if (entry.View != null) entry.View.FaceWorldHuds(camera.transform.position, camera.transform.up);
         }
 
         private sealed class ArcadeEnemyPresentationEntry

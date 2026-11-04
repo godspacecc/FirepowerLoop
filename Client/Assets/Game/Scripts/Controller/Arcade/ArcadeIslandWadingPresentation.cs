@@ -80,7 +80,7 @@ namespace Game
         /// <summary>重复快照只更新采样时间；水外或镜头外停止采样，超长位移作为新基线。</summary>
         public void Set(int id, Vector2 position)
         {
-            if (disposed || id <= 0) return;
+            if (disposed || parent == null || id <= 0) return;
             if (!region.IsShallow(position.x, position.y) || !Visible(position)) { ForgetActor(id); return; }
             int index = -1, free = -1;
             for (int i = 0; i < actors.Length; i++)
@@ -131,6 +131,7 @@ namespace Game
         /// <summary>预计算圆周只缩放，三片水花沿小抛物线落下；每帧复用顶点及颜色数组。</summary>
         private void Render()
         {
+            if (renderer == null) return;
             int active = 0;
             for (int slot = 0; slot < pulses.Length; slot++)
             {
@@ -166,10 +167,10 @@ namespace Game
         public void Remove(int id)
         { if (disposed) return; ForgetActor(id); for (int i = 0; i < pulses.Length; i++) if (pulses[i].Id == id) pulses[i] = default; Render(); }
         public void Clear()
-        { Array.Clear(actors, 0, actors.Length); Array.Clear(pulses, 0, pulses.Length); nextPulse = 0; renderer.enabled = false; }
+        { Array.Clear(actors, 0, actors.Length); Array.Clear(pulses, 0, pulses.Length); nextPulse = 0; if (renderer != null) renderer.enabled = false; }
         private static void Destroy(Object value)
         { if (value == null) return; if (Application.isPlaying) Object.Destroy(value); else Object.DestroyImmediate(value); }
         public void Dispose()
-        { if (disposed) return; disposed = true; root.SetActive(false); Destroy(root); Destroy(mesh); Destroy(material); }
+        { if (disposed) return; disposed = true; if (root != null) root.SetActive(false); Destroy(root); Destroy(mesh); Destroy(material); }
     }
 }
