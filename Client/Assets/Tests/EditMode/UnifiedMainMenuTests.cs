@@ -76,6 +76,8 @@ namespace Game.Tests
         [Test]
         public void ArcadeModeSelection_OnlyOffersOnlineInsideModeAndCanReturn()
         {
+            var resources = new CardResources();
+            architecture.RegisterSystem<OptionalGameplayResourceSystem>(resources);
             Invoke("OnInit");
             var view = instance.GetComponent<StartUI>();
             Assert.That(view.BtnOnline.gameObject.activeInHierarchy, Is.False);
@@ -84,13 +86,14 @@ namespace Game.Tests
             view.BtnNewGame.onClick.RemoveListener(sound);
             view.BtnArcadeBack.onClick.RemoveListener(sound);
             view.BtnNewGame.onClick.Invoke();
-            var panel = instance.transform.Find("ArcadeModePanel");
+            var panel = view.ArcadeModePanel.transform;
             Assert.That(panel, Is.Not.Null);
             Assert.That(panel.gameObject.activeSelf, Is.True);
             Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.False);
             Assert.That(view.BtnOnline.transform.IsChildOf(panel), Is.True);
             Assert.That(preparation.Requests, Is.Empty, "选择模式不能直接开始战斗");
-            panel.GetComponentsInChildren<UnityEngine.UI.Button>(true).Single(b => b.name == "BtnArcadeBack").onClick.Invoke();
+            Assert.That(view.CampaignResourceStatus.text, Does.Contain("5.0 MB"));
+            view.BtnArcadeBack.onClick.Invoke();
             Assert.That(panel.gameObject.activeSelf, Is.False);
             Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.True);
             var system = architecture.GetSystem<ArcadeRunSystem>();
@@ -100,8 +103,16 @@ namespace Game.Tests
             view.BtnContinue.onClick.Invoke();
             Assert.That(panel.gameObject.activeSelf, Is.True);
             view.BtnArcadeSolo.onClick.Invoke();
+            Assert.That(preparation.Requests.Count, Is.EqualTo(1));
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>()?.IsShow(), Is.Not.True);
+            preparation.Requests[0].TrySetResult(false);
+            Assert.That(view.ArcadeModePanel.activeSelf, Is.True);
+            Assert.That(view.CampaignResourceStatus.text, Does.Contain("5.0 MB"));
+            view.BtnArcadeSolo.onClick.Invoke();
+            resources.Ready = true;
+            preparation.Requests[1].TrySetResult(true);
             Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.True);
-            Assert.That(preparation.Requests, Is.Empty, "已有进度必须先进入详情，不能覆盖新开局");
+            Assert.That(view.CampaignResourceStatus.text, Is.EqualTo(Loc.T("ui.mode.solo.ready")));
         }
 
         [Test]
@@ -518,6 +529,14 @@ namespace Game.Tests
         }
 
         private void Invoke(string method) => typeof(StartUICtrl).GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic).Invoke(controller, null);
+
+        private sealed class CardResources : OptionalGameplayResourceSystem
+        {
+            public bool Ready;
+            public override OptionalGameplayResourceQuery QueryMap(string mapId) => new OptionalGameplayResourceQuery(
+                Ready ? OptionalGameplayResourceState.Ready : OptionalGameplayResourceState.NeedsDownload,
+                "test", Ready ? 0 : 1, Ready ? 0 : 5242880, "");
+        }
 
         private sealed class DeferredPreparation : IGameplayResourcePreparation
         {

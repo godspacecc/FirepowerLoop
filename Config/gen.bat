@@ -98,6 +98,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localiza
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-next-three.json" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\arcade-drop-carrier.json" || exit /b 1
 powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\survivor.json" || exit /b 1
+powershell -NoProfile -ExecutionPolicy Bypass -File "%CONF_ROOT%publish-localization.ps1" -Source "%CONF_ROOT%Localization\mode-selection.json" || exit /b 1
 echo === Generation complete ===
 echo Client code: "%CLIENT_CODE_DIR%"
 echo Client data: "%CLIENT_DATA_DIR%"

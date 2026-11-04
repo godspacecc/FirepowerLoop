@@ -259,6 +259,23 @@ namespace Game
             RefreshSaveButtons();
             UI.MainMenuPanel.SetActive(false);
             UI.ArcadeModePanel.SetActive(true);
+            RefreshCampaignResourceStatus();
+        }
+
+        /// <summary>模式选择页按本机当前清单显示缺失量；只查询，不启动下载。</summary>
+        private void RefreshCampaignResourceStatus()
+        {
+            var label = UI.CampaignResourceStatus;
+            if (label == null || !UI.ArcadeModePanel.activeInHierarchy) return;
+            var resources = this.GetSystem<OptionalGameplayResourceSystem>();
+            var query = resources != null ? resources.QueryMap(MapIds.Arcade) : default;
+            label.text = query.State switch
+            {
+                OptionalGameplayResourceState.Ready => Loc.T("ui.mode.solo.ready"),
+                OptionalGameplayResourceState.NeedsDownload => Loc.T("ui.mode.solo.download", ResourceDownloadSize.Format(query.TotalBytes)),
+                _ => Loc.T("ui.mode.solo.unavailable")
+            };
+            label.color = query.State == OptionalGameplayResourceState.Ready ? UI.ArcadeSoloText.color : new UnityEngine.Color(1f, .73f, .34f);
         }
 
         /// <summary>返回主菜单保留所有单人进度，开局准备中拒绝离开。</summary>
@@ -279,11 +296,6 @@ namespace Game
         {
             if (startingRun) return;
             var system = this.GetSystem<ArcadeRunSystem>();
-            if (system.InspectPending().Status != SaveFileStatus.Missing)
-            {
-                OnContinueClick();
-                return;
-            }
             startingRun = true;
             RefreshSaveButtons();
             var owner = BaseUI;
@@ -293,6 +305,12 @@ namespace Game
             {
                 var preparation = this.GetUtility<IGameplayResourcePreparation>();
                 if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
+                if (!IsCurrent()) return;
+                if (system.InspectPending().Status != SaveFileStatus.Missing)
+                {
+                    OnContinueClick();
+                    return;
+                }
                 startLoading = UIHelper.ShowUI<LoadingUICtrl>();
                 startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
                 // 先让加载界面完成一帧绘制，再执行可能同步耗时的落盘和场景准备。
@@ -317,6 +335,7 @@ namespace Game
                     ReleaseStartLoading();
                     startingRun = false;
                     RefreshSaveButtons();
+                    RefreshCampaignResourceStatus();
                 }
             }
         }
@@ -331,7 +350,6 @@ namespace Game
 
         private void OnContinueClick()
         {
-            if (startingRun) return;
             if (!ArcadeResumeUICtrl.TryOpenEntry(out var error)) Notify.ShowFloatTips(error);
         }
 
@@ -373,6 +391,7 @@ namespace Game
 
         private void OnLanguageChanged(LanguageChangedEvent evt)
         {
+            RefreshCampaignResourceStatus();
             RefreshSaveButtons();
             RefreshUpdateText();
         }

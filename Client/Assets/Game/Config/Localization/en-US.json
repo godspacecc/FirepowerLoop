@@ -1046,5 +1046,8 @@
   "ui.challenge.weapon.pistol": "Pistol",
   "ui.challenge.hud.ammo": "{0}   {1:00} / {2}",
   "ui.challenge.hud.reload": "Reloading {0:0.0}s",
-  "ui.challenge.hud.keys": "R Reload     1 / 2 Switch"
+  "ui.challenge.hud.keys": "R Reload     1 / 2 Switch",
+  "ui.mode.solo.ready": "Ready",
+  "ui.mode.solo.download": "Download · {0}",
+  "ui.mode.solo.unavailable": "Resources unavailable"
 }

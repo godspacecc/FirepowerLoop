@@ -24,5 +24,6 @@ namespace Game
         public Button BtnSurvivor;
         public Button BtnArcadeBack;
         public TextMeshProUGUI ArcadeSoloText;
+        public TextMeshProUGUI CampaignResourceStatus;
     }
 }

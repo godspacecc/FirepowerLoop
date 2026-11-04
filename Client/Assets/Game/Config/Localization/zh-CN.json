@@ -1046,5 +1046,8 @@
   "ui.challenge.weapon.pistol": "手枪",
   "ui.challenge.hud.ammo": "{0}   {1:00} / {2}",
   "ui.challenge.hud.reload": "换弹中 {0:0.0} 秒",
-  "ui.challenge.hud.keys": "R 换弹     1 / 2 切枪"
+  "ui.challenge.hud.keys": "R 换弹     1 / 2 切枪",
+  "ui.mode.solo.ready": "已就绪",
+  "ui.mode.solo.download": "点击下载 · {0}",
+  "ui.mode.solo.unavailable": "资源暂不可用"
 }

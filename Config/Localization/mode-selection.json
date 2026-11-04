@@ -15,6 +15,9 @@
     "zh-CN": "2 人",
     "en-US": "2 Players"
   },
+  "ui.mode.solo.ready": { "zh-CN": "已就绪", "en-US": "Ready" },
+  "ui.mode.solo.download": { "zh-CN": "点击下载 · {0}", "en-US": "Download · {0}" },
+  "ui.mode.solo.unavailable": { "zh-CN": "资源暂不可用", "en-US": "Resources unavailable" },
   "ui.mode.solo": {
     "zh-CN": "单人闯关",
     "en-US": "Solo Campaign"
