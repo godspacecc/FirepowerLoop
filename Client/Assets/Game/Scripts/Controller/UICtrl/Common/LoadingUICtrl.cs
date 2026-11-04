@@ -479,7 +479,7 @@ namespace Game
                 return;
             }
             Hide();
-            if (!success) Notify.ShowFloatTips(Loc.T("ui.optional.expedition.failed"));
+            if (!success) Notify.ShowFloatTips(Loc.T("ui.optional.content.failed"));
         }
 
         /// <summary>仅复制当前失败现场；原始错误独立附加，避免 Unity 日志批处理延迟造成漏报。</summary>

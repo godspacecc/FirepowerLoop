@@ -261,7 +261,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: startup
+        AssetTags: crater
         UserData: 
       - CollectPath: Assets/Game/Prefabs/UI/Challenge/ChallengeHud.prefab
         CollectorGUID: def4e2ca204b7254ca587a01df82f076
@@ -269,7 +269,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: startup
+        AssetTags: crater
         UserData:
     - GroupName: PrefabsCharacters
       GroupDesc: "\u89D2\u8272\u9884\u5236\u4F53"
@@ -282,7 +282,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade
+        AssetTags: campaign
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeShadowZombie.prefab
         CollectorGUID: e72d3187e4d9fcc4683f850e7bbf96b1
@@ -378,7 +378,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade
+        AssetTags: campaign
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeEnemyBrute.prefab
         CollectorGUID: f7840b33585af214ab1980d44a7f5f2c
@@ -386,7 +386,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade
+        AssetTags: campaign
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/GrayboxArcher.prefab
         CollectorGUID: 287ee895903b5c546a40ad4461b3a54b
@@ -410,7 +410,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: startup
+        AssetTags: game-player
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/Weapons/ArcadeBasicWeaponShared.prefab
         CollectorGUID: 2231aa87f77d13d408729f75c1f1de23
@@ -948,7 +948,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade
+        AssetTags: survivor
         UserData:
       - CollectPath: Assets/Game/Prefabs/SceneObjects/ArcadeGraveyardVisual.prefab
         CollectorGUID: 8ca247d77a48b4f47812bc1044f39dd0

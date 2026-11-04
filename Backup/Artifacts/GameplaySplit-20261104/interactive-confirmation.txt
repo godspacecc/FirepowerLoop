@@ -1,0 +1,4 @@
+0 Cancel result=False downloadCalls=0
+1 Confirm result=False downloadCalls=1
+2 Confirm result=True downloadCalls=2
+cached: no extra download; PASS

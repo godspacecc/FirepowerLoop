@@ -232,10 +232,10 @@ namespace Game
                 return MapSceneResult.Fail($"MapCatalog 不支持地图：{mapId}", model.Status.Value);
             }
 
-            // 基础与街机资源均由 Boot 统一准备；底层只检查就绪状态，不隐式联网下载。
+            // 玩法入口先准备对应下载组；底层只检查就绪状态，不隐式联网下载。
             var resources = this.GetSystem<OptionalGameplayResourceSystem>();
-            if (resources != null && resources.QueryMap(mapId).State != OptionalGameplayResourceState.Ready)
-                return MapSceneResult.Fail("地图资源尚未就绪，请重新启动游戏完成资源更新", model.Status.Value);
+            if (resources != null && resources.QueryMap(survivor ? OptionalGameplayResourceSystem.SurvivorScope : mapId).State != OptionalGameplayResourceState.Ready)
+                return MapSceneResult.Fail("地图资源尚未就绪，请返回玩法入口准备下载", model.Status.Value);
             var config = this.GetUtility<IRuntimeConfigProvider>();
             if (config == null)
             {

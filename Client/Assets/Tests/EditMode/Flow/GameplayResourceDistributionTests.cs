@@ -13,10 +13,24 @@ namespace Game.Tests
     public sealed class GameplayResourceDistributionTests
     {
         [Test]
-        public void BootDownloadsCoreAndArcadeTogether()
+        public void BootDownloadsCoreWithoutGameplay()
         {
             var field = typeof(Boot.ResourceBoot).GetField("StartupResourceTags", BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup", "arcade" }));
+            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup" }));
+        }
+
+        /// <summary>在真实收集结果中验证玩法专用资源和共用角色不随基础资源启动。</summary>
+        [Test]
+        public void ModeSpecificDownloadsExcludeOtherModes()
+        {
+            var assets = CollectAssets().Cast<object>().ToDictionary(x => (string)Read(x, "Address"));
+            foreach (var (address, tag) in new[] {
+                ("Prefabs/UI/Home/Start", "startup"), ("Prefabs/Characters/GrayboxPlayer", "game-player"),
+                ("Prefabs/Characters/ArcadeEnemyArcher", "campaign"), ("Prefabs/Characters/ArcadeEnemyBrute", "campaign"),
+                ("Prefabs/Characters/ArcadeEnemyBossArcher", "campaign"), ("Prefabs/SceneObjects/SurvivorFarmVisual", "survivor"),
+                ("Art/Challenge/Crater/CraterMap", "crater"), ("Prefabs/UI/Challenge/ChallengeHud", "crater")
+            })
+                Assert.That(Tags(assets[address]), Is.EquivalentTo(new[] { tag }), address);
         }
 
         /// <summary>街机场景必须随街机资源下载，不再沿用已退役地图的分包标签。</summary>
@@ -71,6 +85,7 @@ namespace Game.Tests
         {
             var player = Find("Prefabs/Characters/GrayboxPlayer");
             var enemy = Find("Prefabs/Characters/ArcadeEnemyBasic");
+            Assert.That(Tags(player), Is.EquivalentTo(new[] { "game-player" }));
             Assert.That(Tags(enemy), Does.Contain("arcade"));
             Assert.That(Tags(enemy), Does.Not.Contain("startup"));
             Assert.That(Read(enemy, "BundleName"), Is.Not.EqualTo(Read(player, "BundleName")));

@@ -184,6 +184,9 @@ namespace Game
             bool IsCurrent()=>owner!=null&&ReferenceEquals(owner,BaseUI)&&IsShow()&&generation==startGeneration;
             try
             {
+                var preparation = this.GetUtility<IGameplayResourcePreparation>();
+                if (preparation != null && !await preparation.PrepareAsync(OptionalGameplayResourceSystem.CraterScope, IsCurrent, token))
+                    return "挑战资源准备未完成";
                 return await this.GetSystem<ChallengeSceneFlowSystem>().EnterAsync(() => IsCurrent() && !token.IsCancellationRequested);
             }
             finally{if(IsCurrent()){startingRun=false;RefreshSaveButtons();}}
@@ -212,10 +215,10 @@ namespace Game
             bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
             try
             {
+                var preparation = this.GetUtility<IGameplayResourcePreparation>();
+                if (preparation != null && !await preparation.PrepareAsync(OptionalGameplayResourceSystem.SurvivorScope, IsCurrent)) return;
                 startLoading = UIHelper.ShowUI<LoadingUICtrl>();
                 startLoadingRequestId = startLoading.BeginSurvivorEntryPreparation();
-                var preparation = this.GetUtility<IGameplayResourcePreparation>();
-                if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
                 await UniTask.NextFrame();
                 if (!IsCurrent()) return;
                 var flow = this.GetSystem<SurvivorSceneFlowSystem>();
@@ -288,10 +291,10 @@ namespace Game
             bool IsCurrent() => generation == startGeneration && owner != null && ReferenceEquals(owner, BaseUI) && IsShow();
             try
             {
-                startLoading = UIHelper.ShowUI<LoadingUICtrl>();
-                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
                 var preparation = this.GetUtility<IGameplayResourcePreparation>();
                 if (preparation != null && !await preparation.PrepareAsync(MapIds.Arcade, IsCurrent)) return;
+                startLoading = UIHelper.ShowUI<LoadingUICtrl>();
+                startLoadingRequestId = startLoading.BeginEntryPreparation(MapIds.Arcade);
                 // 先让加载界面完成一帧绘制，再执行可能同步耗时的落盘和场景准备。
                 await UniTask.NextFrame();
                 if (!IsCurrent()) return;

@@ -29,7 +29,11 @@ namespace Game.Editor
             StartupTag,
             ArcadeTag,
             ArcadeOnlineTag,
-            DevelopmentTag
+            DevelopmentTag,
+            "game-player",
+            "campaign",
+            "survivor",
+            "crater"
         };
 
         private static readonly HashSet<string> FirstDownloadTags = new HashSet<string>(StringComparer.Ordinal)

@@ -65,9 +65,9 @@ namespace Game.Tests
             object Read(object o,string key)=>o.GetType().GetProperty(key)?.GetValue(o)??o.GetType().GetField(key).GetValue(o);
             var result=setting.GetType().GetMethod("BeginCollect").Invoke(setting,new object[]{"DefaultPackage",true,false});
             var assets=((IEnumerable)Read(result,"CollectAssets")).Cast<object>().ToArray();
-            foreach(var pair in new[]{(Config().EnvironmentPrefabAddress,"arcade"),("tbsurvivormaplayout.bytes","startup")}){
+            foreach(var pair in new[]{(Config().EnvironmentPrefabAddress,"survivor"),("tbsurvivormaplayout.bytes","startup")}){
                 var asset=assets.SingleOrDefault(a=>(string)Read(a,"Address")==pair.Item1);Assert.That(asset,Is.Not.Null,pair.Item1);
-                Assert.That((string)Read(Read(asset,"AssetInfo"),"AssetPath"),Is.EqualTo(pair.Item2=="arcade"?"Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab":"Assets/Game/Config/tbsurvivormaplayout.bytes"));
+                Assert.That((string)Read(Read(asset,"AssetInfo"),"AssetPath"),Is.EqualTo(pair.Item2=="survivor"?"Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab":"Assets/Game/Config/tbsurvivormaplayout.bytes"));
                 Assert.That(((IEnumerable)Read(asset,"AssetTags")).Cast<string>(),Does.Contain(pair.Item2));
             }
         }

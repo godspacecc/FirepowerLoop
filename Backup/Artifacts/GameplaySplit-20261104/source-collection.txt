@@ -1,0 +1,12 @@
+Prefabs/Characters/GrayboxPlayer | game-player | startup dependency=False
+Prefabs/Characters/Weapons/ArcadeRaygunWeaponShared | arcade | startup dependency=False
+Prefabs/Characters/Weapons/ArcadeSpreadWeaponShared | arcade | startup dependency=False
+Prefabs/SceneObjects/ArcadeScifiPlasmaRifle | arcade | startup dependency=False
+Prefabs/SceneObjects/ArcadeScifiShotgun | arcade | startup dependency=False
+Prefabs/Characters/ArcadeEnemyArcher | campaign | startup dependency=False
+Prefabs/Characters/ArcadeEnemyBrute | campaign | startup dependency=False
+Prefabs/Characters/ArcadeEnemyBossArcher | campaign | startup dependency=False
+Art/Challenge/Crater/CraterMap | crater | startup dependency=False
+Prefabs/UI/Challenge/ChallengeHud | crater | startup dependency=False
+Prefabs/SceneObjects/SurvivorFarmVisual | survivor | startup dependency=False
+Scenes/TaskSampleMap | arcade | startup dependency=False

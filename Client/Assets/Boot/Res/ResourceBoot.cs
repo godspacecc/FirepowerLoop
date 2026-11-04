@@ -20,11 +20,10 @@ namespace Boot
         /// <summary>资源清单允许比版本文件更长的传输时间，超时后仍自动降级。</summary>
         private const int REMOTE_MANIFEST_TIMEOUT_SECONDS = 15;
         private const string LAST_SUCCESSFUL_HOST_VERSION_KEY = "FirepowerLoop.LastSuccessfulHostVersion";
-        /// <summary>独立游戏在启动时统一准备基础与街机资源；在线下载和本地完整性校验共用此范围。</summary>
+        /// <summary>启动时仅准备基础资源，玩法内容由对应入口准备；在线下载和本地完整性校验共用此范围。</summary>
         private static readonly string[] StartupResourceTags =
         {
-            "startup",
-            "arcade"
+            "startup"
         };
         private const double DOWNLOAD_SPEED_SMOOTHING = 0.25d;
 
