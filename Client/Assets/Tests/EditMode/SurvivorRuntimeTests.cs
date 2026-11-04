@@ -867,6 +867,19 @@ namespace Game.Tests
                 Assert.That(model.RunGold,Is.EqualTo(cycle));
             }
         }
+        [Test] public void DrawWeightFallsOnlyAfterTwoActualChoices()
+        {
+            int id=config.Upgrades.ToList().FindIndex(u=>u.Kind=="RocketSupport")+1;
+            int other=config.Upgrades.ToList().FindIndex(u=>u.Kind=="MoveSpeed")+1;
+            foreach(int expected in new[]{150,150,135,120,120})
+            {
+                model.State.AddExperience(model.State.RequiredExperience);
+                model.State.OfferWeighted(new[]{id,other},new[]{15,10},1,0);
+                Assert.That(Call("UpgradeDrawWeight",id),Is.EqualTo(expected));
+                Assert.That(Call("UpgradeDrawWeight",other),Is.EqualTo(100));
+                Assert.That(model.State.Choose(model.State.ChoiceRevision,id),Is.True);
+            }
+        }
         [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
         {
             UIHelper.ResetForTests();

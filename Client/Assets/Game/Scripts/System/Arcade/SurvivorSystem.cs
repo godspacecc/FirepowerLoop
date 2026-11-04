@@ -169,12 +169,20 @@ namespace Game
             UpdateRifleCapacity();int maximum=config.PlayerMaxHealth+(int)Bonus("Health");m.Health+=maximum-m.MaximumHealth;m.MaximumHealth=maximum;Offer();Publish();return true;
         }
         private double Bonus(string kind){double value=0;for(int i=0;i<config.Upgrades.Count;i++)if(config.Upgrades[i].Kind==kind)value+=config.Upgrades[i].BonusAtLevel(Model.State.UpgradeLevel(i+1));return value;}
+        /// <summary>幸存者抽卡按实际选中次数降权；统一放大十倍，保留半点权重的精度。</summary>
+        private int UpgradeDrawWeight(int id)
+        {
+            int weight=config.Upgrades[id-1].Weight;
+            if(missionMode)return weight;
+            int chosen=Model.State.UpgradeLevel(id);
+            return weight*(chosen<2?10:chosen==2?9:8);
+        }
         /// <summary>已有武器只提供升级，满槽/满级过滤；首次选择保底无人机。</summary>
         private void Offer()
         {
             var m=Model;var ids=EligibleUpgradeIds();
             int preferred=m.State.ChoiceRevision==0?ids.FirstOrDefault(id=>config.Upgrades[id-1].Kind=="Drone"&&m.Loadout.LevelOf("Drone")==0):0;
-            m.Choices=m.State.OfferWeighted(ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
+            m.Choices=m.State.OfferWeighted(ids,ids.Select(UpgradeDrawWeight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision),preferred);
             m.Paused=menuPaused||m.State.PendingChoices>0;
         }
         /// <summary>初次候选与逐卡刷新统一使用武器归属、互斥、启用和满级过滤。</summary>
@@ -188,14 +196,14 @@ namespace Game
         public bool CanRefreshUpgrade(int revision,int slot)
         {
             if(!Model.Active||Model.State==null||config==null)return false;
-            var ids=EligibleUpgradeIds();return Model.State.CanRefresh(revision,slot,ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray());
+            var ids=EligibleUpgradeIds();return Model.State.CanRefresh(revision,slot,ids,ids.Select(UpgradeDrawWeight).ToArray());
         }
         /// <summary>仅替换指定槽位，失败不扣次数；成功同步快照，仍保持升级及菜单暂停。</summary>
         public bool RefreshUpgrade(int revision,int slot)
         {
             var m=Model;if(!m.Active||m.State==null||config==null)return false;
             var ids=EligibleUpgradeIds();
-            if(!m.State.TryRefresh(revision,slot,ids,ids.Select(id=>config.Upgrades[id-1].Weight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision+7919)))return false;
+            if(!m.State.TryRefresh(revision,slot,ids,ids.Select(UpgradeDrawWeight).ToArray(),unchecked((int)runId+m.State.ChoiceRevision+7919)))return false;
             Offer();Publish();return true;
         }
         private Vector2 Resolve(Vector2 position,float radius)=>ArcadeCombatSystem.ResolvePosition(position,radius,HalfWidth,HalfHeight,obstacles);
