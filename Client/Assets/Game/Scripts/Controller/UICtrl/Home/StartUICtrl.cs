@@ -181,18 +181,25 @@ namespace Game
         private void OpenChallenge()
         {
             if (startingRun || !IsShow()) return;
-            StartChallengeAsync().Forget();
+            StartChallengeFromCardAsync().Forget();
         }
 
-        private async UniTask StartChallengeAsync()
+        private async UniTask StartChallengeFromCardAsync()
         {
+            var error = await StartChallengeForTestsAsync(default);
+            if (error != null && IsShow()) Notify.ShowFloatTips(error);
+        }
+
+        /// <summary>测试指令沿用主菜单入场保护，仅在当前菜单仍有效时创建挑战现场。</summary>
+        internal async UniTask<string> StartChallengeForTestsAsync(System.Threading.CancellationToken token)
+        {
+            if (!IsShow() || startingRun) return "请先返回主菜单";
             startingRun=true;RefreshSaveButtons();
             var owner=BaseUI;int generation=++startGeneration;
             bool IsCurrent()=>owner!=null&&ReferenceEquals(owner,BaseUI)&&IsShow()&&generation==startGeneration;
             try
             {
-                var error=await this.GetSystem<ChallengeSceneFlowSystem>().EnterAsync(IsCurrent);
-                if(error!=null&&IsCurrent())Notify.ShowFloatTips(error);
+                return await this.GetSystem<ChallengeSceneFlowSystem>().EnterAsync(() => IsCurrent() && !token.IsCancellationRequested);
             }
             finally{if(IsCurrent()){startingRun=false;RefreshSaveButtons();}}
         }

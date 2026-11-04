@@ -41,6 +41,7 @@ namespace Game
         ,TerrainDiagnosticsComplete
         ,PlayerAppearanceChanged
         ,WeatherChanged
+        ,CraterOpened
     }
 
     public readonly struct TestCmdExecutionResult

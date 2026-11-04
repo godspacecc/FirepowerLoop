@@ -512,7 +512,7 @@ namespace Game
                 { RawText = submittedText, CancellationToken = executeCancellation.Token });
                 if (generation != submitGeneration || !IsShow() || UnityObjectState.IsMissing(UI)) return;
                 TraceKeyboardState($"execute.result.{result.Code}");
-                if (result.Success && result.Code == TestCmdResultCode.AppearanceGalleryOpened)
+                if (result.Success && (result.Code == TestCmdResultCode.AppearanceGalleryOpened || result.Code == TestCmdResultCode.CraterOpened))
                 {
                     Hide();
                     return;

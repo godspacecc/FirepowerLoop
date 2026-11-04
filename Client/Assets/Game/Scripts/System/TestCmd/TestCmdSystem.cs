@@ -99,6 +99,19 @@ namespace Game
                         result = Finish(body, jump.Success ? Result(true, true, TestCmdResultCode.ArcadeCommandComplete, jump.Message) : Warning(TestCmdResultCode.StateRejected, jump.Message), true);
                     }
                 }
+                else if (parts.Length >= 2 && string.Equals(parts[0], "arcade", StringComparison.OrdinalIgnoreCase) &&
+                         string.Equals(parts[1], "crater", StringComparison.OrdinalIgnoreCase))
+                {
+                    var menu = UIHelper.GetUICtrl<StartUICtrl>();
+                    if (parts.Length != 2)
+                        result = Finish(body, Warning(TestCmdResultCode.UsageError, "用法：#arcade crater"), true);
+                    else
+                    {
+                        var error = menu == null ? "请先返回主菜单" : await menu.StartChallengeForTestsAsync(cancellationToken);
+                        result = Finish(body, error == null ? Result(true, true, TestCmdResultCode.CraterOpened, "已进入巨人城废墟")
+                            : Warning(TestCmdResultCode.StateRejected, error), true);
+                    }
+                }
                 else result = ExecuteClientBody(body);
             }
 
@@ -475,6 +488,7 @@ namespace Game
                 case TestCmdResultCode.CameraModeChanged:
                 case TestCmdResultCode.MobileInputModeChanged:
                 case TestCmdResultCode.ArcadeCommandComplete:
+                case TestCmdResultCode.CraterOpened:
                 case TestCmdResultCode.AppearanceGalleryOpened:
                 case TestCmdResultCode.RuntimeLogOpenRequested:
                 case TestCmdResultCode.TerrainDiagnosticsComplete:

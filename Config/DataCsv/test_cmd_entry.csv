@@ -27,3 +27,4 @@
 ,arcade.god-on,arcade-game,1200,开启当前现场无敌,#arcade god on,仅当前现场生效；离场或新局清除。,语法：#arcade god on,示例：#arcade god on
 ,arcade.god-off,arcade-game,1300,关闭当前现场无敌,#arcade god off,关闭后恢复正式伤害规则。,语法：#arcade god off,示例：#arcade god off
 ,arcade.spawn,arcade-game,1400,生成指定敌人,"#arcade spawn ",生成1至20个指定配置敌人；超过存活上限或不支持的特殊现场拒绝。,语法：#arcade spawn <EnemyId> <数量>,示例：#arcade spawn enemy.arcade.basic 1
+,arcade.crater,arcade-game,1500,进入巨人城废墟,#arcade crater,从主菜单进入开发中的独立挑战地图。,用法：#arcade crater,示例：#arcade crater
