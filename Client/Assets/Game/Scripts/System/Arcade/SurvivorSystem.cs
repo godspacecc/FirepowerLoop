@@ -232,7 +232,8 @@ namespace Game
             if(frameSeconds<=0)return;
             recoveryDamagedThisFrame=false;var previousPlayer=player;
             float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
-            player=Resolve(player+input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt,catalog.Rule.PlayerRadius);
+            var movement=input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt;
+            if(movement.sqrMagnitude>0)player=Resolve(player+movement*ContactMoveMultiplier(),catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
             ProjectVisibility();

@@ -22,6 +22,19 @@ namespace Game
         }
         /// <summary>圆形命中及行走半径保守覆盖水平较宽的一轴。</summary>
         private float EnemyRadius(ArcadeEnemyRuntime enemy)=>catalog.Rule.EnemyContactRadius*(Shape(enemy.ConfigId)?.BodyRadiusMultiplier??1);
+        /// <summary>接触站稳的活敌人时保留七成实际移速，多名敌人只算一次。</summary>
+        private float ContactMoveMultiplier()
+        {
+            EnsureHordeSpatial();
+            enemySpatial.QueryCircle(player.x,player.y,catalog.Rule.PlayerRadius+maximumEnemyRadius,enemyCandidates);
+            foreach(int id in enemyCandidates)
+            {
+                if(!enemies.TryGetValue(id,out var enemy)||enemy.Health<=0||enemy.GroundEntry.Active||enemy.OutsideEntry.Active)continue;
+                float radius=catalog.Rule.PlayerRadius+EnemyRadius(enemy);
+                if((player-enemy.Position).sqrMagnitude<=radius*radius)return .7f;
+            }
+            return 1f;
+        }
         /// <summary>抓挠范围随水平身体比例同步，保持手臂表现与规则相配。</summary>
         private float MeleeReach(ArcadeEnemyRuntime enemy,EnemyConfigDefinition definition)=>definition.AttackRange*(Shape(enemy.ConfigId)?.BodyRadiusMultiplier??1);
         /// <summary>入场时预建不同占地的静态通路，避免后期首次混入大体型时卡一帧。</summary>

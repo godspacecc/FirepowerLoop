@@ -826,6 +826,20 @@ namespace Game.Tests
             enemy.Health=100;Set("fireClock",0f);Call("Fire");model.RifleReloadRemaining=1;
             typeof(PlayerInputCtrl).GetProperty("MoveInput").SetValue(input,Vector2.down);Call("Fire");Assert.That(Get<Vector2>("facing"),Is.EqualTo(Vector2.down));
         }
+        [Test] public void ContactSlowIsIndependentOfInvulnerabilityAndNeverStacks()
+        {
+            var crowd=Get<Dictionary<int,ArcadeEnemyRuntime>>("enemies");
+            Set("hurtClock",1f);
+            for(int id=1;id<=2;id++)
+                crowd.Add(id,new ArcadeEnemyRuntime{Id=id,Health=10,Position=Get<Vector2>("player")});
+            Assert.That(Call("ContactMoveMultiplier"),Is.EqualTo(.7f));
+            crowd[1].Health=0;
+            crowd[2].GroundEntry.Started=true;
+            Assert.That(Call("ContactMoveMultiplier"),Is.EqualTo(1f));
+            crowd[2].GroundEntry.Started=false;
+            Set("player",Get<Vector2>("player")+Vector2.right*10);
+            Assert.That(Call("ContactMoveMultiplier"),Is.EqualTo(1f));
+        }
         [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
         {
             UIHelper.ResetForTests();
