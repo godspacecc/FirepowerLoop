@@ -195,7 +195,7 @@ namespace Game.Editor
                 Debug.Log($"[AndroidBuildUtility] 本次快速打包类型：{(inputs.Kind == "HostBase" ? "完整包" : "启动包（首次下载资源）")}，复用准备版本：{inputs.Version}");
                 if (rebuildResources)
                 {
-                    string compilationFingerprint = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
+                    var compilationFingerprint = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
                     HybridCLRBuildUtility.CompileHotUpdateDll(BuildTarget.Android);
                     string game = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "HybridCLRData", "HotUpdateDlls", "Android", "Game.dll");
                     AndroidQuickAotUtility.ValidateGame(Path.Combine(inputs.AotDirectory, "baseline-game.bytes"), game);
@@ -392,7 +392,7 @@ namespace Game.Editor
                 previous.ApplyTestBuildOptions();
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
-                string compilationFingerprint = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
+                var compilationFingerprint = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
                 // HybridCLR专用构建负责生成裁剪AOT，无需先生成额外APK。
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
@@ -471,7 +471,7 @@ namespace Game.Editor
                 previous.ApplyTestBuildOptions();
 
                 timing.Run("PrepareOutputDirectories", context.PrepareDirectories);
-                string compilationFingerprint = timing.Run("CaptureQuickCompilationInputs", AndroidQuickBuildUtility.CaptureCompilationFingerprint);
+                var compilationFingerprint = timing.Run("CaptureQuickCompilationInputs", AndroidQuickBuildUtility.CaptureCompilationFingerprint);
                 timing.Run("GeneratePrePlayer", () => HybridCLRBuildUtility.GeneratePrePlayer(BuildTarget.Android));
                 // 专用AOT生成已经包含必要裁剪构建，不再额外生成预备APK。
                 timing.Run("GeneratePostPlayer", () => HybridCLRBuildUtility.GeneratePostPlayer(BuildTarget.Android));
@@ -564,7 +564,7 @@ namespace Game.Editor
                 timing.Run("ValidateAndroidHostConfig", ValidateAndroidHostConfig);
                 previous.ApplyTestBuildOptions();
                 var baseline = timing.Run("ValidateApkBaseline", () => AndroidQuickBuildUtility.LoadForHotUpdate(state));
-                string compilationInputs = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
+                var compilationInputs = AndroidQuickBuildUtility.CaptureCompilationFingerprint();
 
                 timing.Run("CompileHotUpdateDll", () => HybridCLRBuildUtility.CompileHotUpdateDll(BuildTarget.Android));
                 string game = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "HybridCLRData", "HotUpdateDlls", "Android", "Game.dll");
@@ -586,8 +586,8 @@ namespace Game.Editor
                 timing.Run("RevalidateAndroidBootBaselineBeforePublish", () => AndroidBootBuildGuard.ValidateBeforeHotUpdate(
                     state, Directory.GetParent(Application.dataPath).FullName));
                 timing.Run("RevalidateApkBaseline", () => AndroidQuickBuildUtility.LoadForHotUpdate(state));
-                if (compilationInputs != AndroidQuickBuildUtility.CaptureCompilationFingerprint() ||
-                    generatedInputs != AndroidQuickBuildUtility.CaptureGeneratedFingerprint())
+                AndroidQuickBuildUtility.RequireSameInputs(compilationInputs, AndroidQuickBuildUtility.CaptureCompilationFingerprint());
+                if (generatedInputs != AndroidQuickBuildUtility.CaptureGeneratedFingerprint())
                     throw new InvalidOperationException("热更新期间代码或生成资料变化，请重新生成热更新。");
                 resources.ValidateDirectory(package.OutputPackageDirectory);
                 timing.Run("SaveAndroidHostState", () => SaveAndroidHostState(version, "Host", package.OutputPackageDirectory, null, false));

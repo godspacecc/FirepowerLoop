@@ -68,6 +68,32 @@ namespace Game.Tests
             Assert.That(File.Exists(Path.Combine(root, "reserved.json")), Is.False);
         }
         [Test] public void ExhaustedVersionCodeFailsBeforeReservation() => Assert.Throws<InvalidOperationException>(() => Reserve("0.0.2", int.MaxValue));
+        [Test] public void InputChangesIdentifyAddedRemovedAndModifiedFiles()
+        {
+            var settings = Path.Combine(root, "ProjectSettings");
+            Directory.CreateDirectory(settings);
+            var config = Path.Combine(settings, "ProjectSettings.asset");
+            File.WriteAllText(config, "  bundleVersion: 1\nother: 1\n");
+            var changed = Path.Combine(root, "Font.asset");
+            var removed = Path.Combine(root, "Before.cs");
+            var added = Path.Combine(root, "After.cs");
+            File.WriteAllText(changed, "abc");
+            File.WriteAllText(removed, "class A {}");
+            object Snapshot() => Call("AndroidQuickBuildUtility", "SnapshotInputs", root,
+                Directory.GetFiles(root, "*", SearchOption.TopDirectoryOnly));
+            var before = Snapshot();
+            File.WriteAllText(config, "  bundleVersion: 2\nother: 1\n");
+            File.SetLastWriteTimeUtc(changed, DateTime.UtcNow.AddHours(-1));
+            Assert.DoesNotThrow(() => Call("AndroidQuickBuildUtility", "RequireSameInputs", before, Snapshot()));
+            File.WriteAllText(changed, "xyz");
+            File.Move(removed, added);
+            File.AppendAllText(config, "changed: true");
+            var error = Assert.Throws<InvalidOperationException>(() =>
+                Call("AndroidQuickBuildUtility", "RequireSameInputs", before, Snapshot()));
+            foreach (var detail in new[] { "新增：After.cs", "删除：Before.cs", "修改：Font.asset", "修改：ProjectSettings/ProjectSettings.asset" })
+                Assert.That(error.Message, Does.Contain(detail));
+        }
+
         [Test] public void MaterialFingerprintDetectsSameLengthContentChange()
         {
             string path = Path.Combine(root, "AOT.dll"); File.WriteAllText(path, "abc");

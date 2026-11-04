@@ -51,17 +51,17 @@ namespace Game.Editor
         private static string RecordPath => Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickInputs.json");
 
         /// <summary>完整首包资源验证成功后立即保存，最终 APK 或发布失败也不会丢失这轮输入。</summary>
-        public static AndroidQuickBuildInputs Capture(string version, string packageDirectory, string compilationFingerprint, string generatedFingerprint, string kind = "SmallHostBase")
+        public static AndroidQuickBuildInputs Capture(string version, string packageDirectory, IReadOnlyDictionary<string, string> compilationFingerprint, string generatedFingerprint, string kind = "SmallHostBase")
         {
-            if (compilationFingerprint != CaptureCompilationFingerprint())
-                throw new InvalidOperationException("编译 Game DLL 后运行时代码或编译配置发生变化，不能保存复用基线。" + RebuildHint);
+            RequireSameInputs(compilationFingerprint, CaptureCompilationFingerprint());
             if (generatedFingerprint != CaptureGeneratedFingerprint())
                 throw new InvalidOperationException("资源构建期间 DLL、AOT 清单或生成桥接发生变化，不能保存准备记录。");
             string aot = PreserveAotMetadata(version, HybridCLRBuildUtility.GetRuntimeListPath(), HybridCLRBuildUtility.GetGameDllDirectory(),
                 Path.Combine(ProjectRoot, "Library", "FirepowerLoopBuild", "AndroidQuickAot"));
             AndroidQuickAotUtility.Preserve(aot);
             var record = ReadCurrent(version, packageDirectory, aot, kind);
-            if (compilationFingerprint != CaptureCompilationFingerprint() || generatedFingerprint != CaptureGeneratedFingerprint())
+            RequireSameInputs(compilationFingerprint, CaptureCompilationFingerprint());
+            if (generatedFingerprint != CaptureGeneratedFingerprint())
                 throw new InvalidOperationException("登记快照期间源码、资源源文件或生成输入发生变化。");
             string immutableRecord = aot + ".json";
             string json = JsonUtility.ToJson(record, true);
@@ -160,8 +160,45 @@ namespace Game.Editor
         }
 
         /// <summary>在本轮 Game DLL 编译前登记手写输入，正常生成的 HybridCLR 文件单独在资源完成后登记。</summary>
-        public static string CaptureCompilationFingerprint() => FingerprintFiles(RuntimeInputs()
-            .Where(path => !IsGeneratedSource(path)).ToArray()) + "|" + SettingsFingerprint();
+        public static IReadOnlyDictionary<string, string> CaptureCompilationFingerprint() => SnapshotInputs(
+            ProjectRoot, RuntimeInputs().Where(path => !IsGeneratedSource(path)).ToArray());
+
+        /// <summary>单次读取每项输入，用工程相对路径保留可比较的内容摘要。</summary>
+        internal static IReadOnlyDictionary<string, string> SnapshotInputs(string root, string[] files)
+        {
+            var settings = Path.Combine(root, "ProjectSettings");
+            var entries = new SortedDictionary<string, string>(StringComparer.Ordinal);
+            using var hash = SHA256.Create();
+            foreach (var file in files.Concat(Directory.GetFiles(settings, "*", SearchOption.AllDirectories))
+                         .Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase))
+            {
+                var key = Path.GetRelativePath(root, file).Replace('\\', '/');
+                if (key == "ProjectSettings/ProjectSettings.asset")
+                    entries[key] = Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(NormalizedPlayerSettings(file))));
+                else
+                {
+                    using var input = File.OpenRead(file);
+                    entries[key] = Convert.ToBase64String(hash.ComputeHash(input));
+                }
+            }
+            return entries;
+        }
+
+        /// <summary>阻止复用发生变化的输入，同时报告具体路径；重命名显示为删除和新增。</summary>
+        internal static void RequireSameInputs(IReadOnlyDictionary<string, string> before, IReadOnlyDictionary<string, string> after)
+        {
+            var changes = new List<string>();
+            foreach (var item in before)
+            {
+                if (!after.TryGetValue(item.Key, out var current)) changes.Add("删除：" + item.Key);
+                else if (current != item.Value) changes.Add("修改：" + item.Key);
+            }
+            foreach (var item in after)
+                if (!before.ContainsKey(item.Key)) changes.Add("新增：" + item.Key);
+            if (changes.Count > 0)
+                throw new InvalidOperationException($"构建期间 {changes.Count} 个输入文件发生变化，已停止复用。\n" +
+                    string.Join("\n", changes));
+        }
 
         /// <summary>资源构建前绑定实际进入资源包的 DLL、AOT 清单与生成桥接，防止打包期间替换输入。</summary>
         public static string CaptureGeneratedFingerprint() => FingerprintFiles(
@@ -332,11 +369,14 @@ namespace Game.Editor
         public static string ComputeSettingsFingerprint(string root)
         {
             string directory = Path.Combine(root, "ProjectSettings");
-            string settings = File.ReadAllText(Path.Combine(directory, "ProjectSettings.asset"));
-            settings = System.Text.RegularExpressions.Regex.Replace(settings, @"(?m)^  (bundleVersion|AndroidBundleVersionCode):.*\r?\n", "");
+            string settings = NormalizedPlayerSettings(Path.Combine(directory, "ProjectSettings.asset"));
             using (var hash = SHA256.Create()) return Convert.ToBase64String(hash.ComputeHash(Encoding.UTF8.GetBytes(settings))) + "|" +
                 FingerprintFiles(Directory.GetFiles(directory, "*", SearchOption.AllDirectories).Where(p => Path.GetFileName(p) != "ProjectSettings.asset").ToArray());
         }
+
+        /// <summary>构建时允许递增版本号，其他设置须保持一致。</summary>
+        private static string NormalizedPlayerSettings(string path) =>
+            System.Text.RegularExpressions.Regex.Replace(File.ReadAllText(path), @"(?m)^  (bundleVersion|AndroidBundleVersionCode):.*\r?\n", "");
 
         /// <summary>按路径与内容计算哈希，检测同长度修改、文件增删和重命名；不使用修改时间判等。</summary>
         public static string FingerprintFiles(string[] files)
