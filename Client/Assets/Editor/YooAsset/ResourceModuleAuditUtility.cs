@@ -36,10 +36,7 @@ namespace Game.Editor
             "crater"
         };
 
-        private static readonly HashSet<string> FirstDownloadTags = new HashSet<string>(StringComparer.Ordinal)
-        {
-            StartupTag
-        };
+        private static readonly HashSet<string> FirstDownloadTags = new HashSet<string>(Boot.ResourceBoot.GetStartupResourceTags(), StringComparer.Ordinal);
 
         /// <summary>选择已有报告进行只读分析；自动模式按文件修改时间选择，不代表最新发布版本。</summary>
         [MenuItem("Tools/打包/资源/分析最新模块体积", false, 190)]
@@ -308,7 +305,7 @@ namespace Game.Editor
                 $"版本: {result.PackageVersion}",
                 $"构建时间（报告记录）: {result.BuildDate}",
                 $"Bundle: {result.BundleCount} 个，共 {ToMiB(result.TotalBytes):F2} MiB",
-                $"启动资源(startup): {ToMiB(result.FirstDownloadBytes):F2} MiB"
+                $"首次下载（含幸存者）: {ToMiB(result.FirstDownloadBytes):F2} MiB"
             };
             foreach (var tag in result.TagBytes.OrderBy(pair => pair.Key, StringComparer.Ordinal))
                 lines.Add($"{tag.Key}: {ToMiB(tag.Value):F2} MiB");

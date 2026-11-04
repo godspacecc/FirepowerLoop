@@ -11,10 +11,10 @@ namespace Game.Tests
     public sealed class StartupGameplayResourceTests
     {
         [Test]
-        public void StartupDownloadsOnlyCoreResources()
+        public void StartupIncludesDefaultSurvivorResources()
         {
             var tags = typeof(Boot.ResourceBoot).GetField("StartupResourceTags", BindingFlags.Static | BindingFlags.NonPublic);
-            Assert.That(tags.GetValue(null), Is.EquivalentTo(new[] { "startup" }));
+            Assert.That(tags.GetValue(null), Is.EquivalentTo(new[] { "startup", "arcade", "game-player", "survivor" }));
         }
 
         [Test]

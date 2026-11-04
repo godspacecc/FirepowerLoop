@@ -24,14 +24,12 @@ namespace Game.Tests
                 source.IndexOf("string.Equals(currentVersion, targetVersion, StringComparison.Ordinal)", System.StringComparison.Ordinal),
                 Is.LessThan(source.IndexOf("PreDownloadContentAsync(targetVersion, timeoutSeconds)", System.StringComparison.Ordinal)));
             Assert.That(source, Does.Contain("MandatoryResourceTags,"));
-            Assert.That(source, Does.Contain("\"startup\""));
-            Assert.That(source, Does.Contain("\"arcade\""));
-            Assert.That(source, Does.Contain("\"arcade-online\""));
+            Assert.That(source, Does.Contain("GetStartupResourceTags()"));
             Assert.That(source, Does.Not.Contain("CreateResourceDownloader(DownloadingMaxNumber, FailedTryAgain)"));
             Assert.That(source, Does.Not.Contain("UpdatePackageManifestAsync"));
             Assert.That(source, Does.Not.Contain("BeginDownload"));
             Assert.That(source, Does.Not.Contain("ClearCacheFilesAsync"));
-            Assert.That(source, Does.Not.Contain("Boot"));
+            Assert.That(source, Does.Not.Contain("BeginStartup"));
         }
 
         [Test]

@@ -16,10 +16,7 @@ namespace Game
         /// <summary>
         /// 首页更新提示只关心进入当前开放玩法所需的资源；其它功能模块由各自入口按需下载。
         /// </summary>
-        private static readonly string[] MandatoryResourceTags =
-        {
-            "startup"
-        };
+        private static readonly string[] MandatoryResourceTags = Boot.ResourceBoot.GetStartupResourceTags();
 
         public bool CanCheck => YooAssets.TryGetPackage(PackageName) != null;
 

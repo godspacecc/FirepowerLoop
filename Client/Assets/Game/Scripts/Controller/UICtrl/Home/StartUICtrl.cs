@@ -51,10 +51,6 @@ namespace Game
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
             BindMenuButton(UI.BtnContinue, OpenArcadeMode);
-            if (UI.BtnOnline != null)
-            {
-                BindMenuButton(UI.BtnOnline, OnOnlineClick);
-            }
             BindMenuButton(UI.BtnCheckUpdate, OnCheckUpdateClick);
             BindMenuButton(UI.BtnSetting, OnSettingClick);
             BindMenuButton(UI.BtnExit, OnExitClick);
@@ -146,7 +142,7 @@ namespace Game
             UI.BtnSurvivor.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
-            UI.BtnOnline.interactable = !startingRun;
+            UI.BtnOnline.interactable = false; // 双人联机暂未开放。
             UI.BtnSetting.interactable = !startingRun;
             // 开始页统一显示模式名，继续与结算操作留在进入后的详情界面。
             UI.BtnContinue.GetComponentInChildren<TMPro.TextMeshProUGUI>(true).text =
@@ -363,13 +359,6 @@ namespace Game
         private void OnCheckUpdateClick()
         {
             CheckUpdate(true).Forget();
-        }
-
-        private void OnOnlineClick()
-        {
-            if (ClientReleasePolicy.OfflineSinglePlayer) return;
-            if (startingRun) return;
-            OnlineLoginUICtrl.ShowForArcadeLobby();
         }
 
         /// <summary>只在开始页有效且未开局时打开角色商店。</summary>

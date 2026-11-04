@@ -13,10 +13,10 @@ namespace Game.Tests
     public sealed class GameplayResourceDistributionTests
     {
         [Test]
-        public void BootDownloadsCoreWithoutGameplay()
+        public void BootIncludesSurvivorAndExcludesCampaign()
         {
             var field = typeof(Boot.ResourceBoot).GetField("StartupResourceTags", BindingFlags.NonPublic | BindingFlags.Static);
-            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup" }));
+            Assert.That(field.GetValue(null), Is.EqualTo(new[] { "startup", "arcade", "game-player", "survivor" }));
         }
 
         /// <summary>在真实收集结果中验证玩法专用资源和共用角色不随基础资源启动。</summary>

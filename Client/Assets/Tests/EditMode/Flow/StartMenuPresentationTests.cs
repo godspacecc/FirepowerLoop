@@ -158,8 +158,8 @@ namespace Game.Tests
                 var ctrl = new StartUICtrl();
                 typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, ui);
                 typeof(StartUICtrl).GetMethod("OnInit", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, null);
-                var buttons = new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnOnline, ui.BtnCheckUpdate, ui.BtnSetting, ui.BtnExit };
-                var methods = new[] { "OpenArcadeMode", "OpenArcadeMode", "OnOnlineClick", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
+                var buttons = new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnCheckUpdate, ui.BtnSetting, ui.BtnExit };
+                var methods = new[] { "OpenArcadeMode", "OpenArcadeMode", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
                 int businessCalls = 0;
                 for (int i = 0; i < buttons.Length; i++)
                 {
@@ -172,7 +172,8 @@ namespace Game.Tests
                     Assert.That(loader.Requests.Count, Is.EqualTo(before + 1), buttons[i].name);
                     Assert.That(loader.Requests.Last(), Is.EqualTo("Audio/Sound/FoundationClick"));
                 }
-                Assert.That(businessCalls, Is.EqualTo(6));
+                Assert.That(businessCalls, Is.EqualTo(5));
+                Assert.That(ui.BtnOnline.interactable, Is.False);
             }
             finally
             {

@@ -20,11 +20,14 @@ namespace Boot
         /// <summary>资源清单允许比版本文件更长的传输时间，超时后仍自动降级。</summary>
         private const int REMOTE_MANIFEST_TIMEOUT_SECONDS = 15;
         private const string LAST_SUCCESSFUL_HOST_VERSION_KEY = "FirepowerLoop.LastSuccessfulHostVersion";
-        /// <summary>启动时仅准备基础资源，玩法内容由对应入口准备；在线下载和本地完整性校验共用此范围。</summary>
+        /// <summary>启动时准备基础资源和默认开放的幸存者，闯关专用内容由卡片入口准备；在线下载和本地完整性校验共用此范围。</summary>
         private static readonly string[] StartupResourceTags =
         {
-            "startup"
+            "startup", "arcade", "game-player", "survivor"
         };
+
+        /// <summary>更新大小估算和资源审计使用与实际启动相同的标签范围。</summary>
+        public static string[] GetStartupResourceTags() => (string[])StartupResourceTags.Clone();
         private const double DOWNLOAD_SPEED_SMOOTHING = 0.25d;
 
         [Header("编辑器资源模式")]

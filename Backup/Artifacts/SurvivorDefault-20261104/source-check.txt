@@ -1,0 +1,6 @@
+Scenes/TaskSampleMap | startup dependency=True
+Prefabs/Characters/ArcadeEnemyArcher | startup dependency=False
+Prefabs/Characters/ArcadeEnemyBossArcher | startup dependency=False
+Prefabs/Characters/ArcadeEnemyBrute | startup dependency=False
+Prefabs/Characters/GrayboxPlayer | startup dependency=True
+Prefabs/SceneObjects/SurvivorFarmVisual | startup dependency=True

@@ -54,7 +54,7 @@ namespace Game.Tests
                 else Assert.That(dependencies,Does.Contain(Template.Replace("SurvivorMolotov.prefab","MolotovIcon.png")));
                 report.Add(address+" | arcade | "+string.Join(";",dependencies.Where(p=>p.Contains("SurvivorMolotov"))));
             }
-            var tags=(string[])typeof(Boot.ResourceBoot).GetField("StartupResourceTags",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);Assert.That(tags,Does.Not.Contain("arcade"));
+            var tags=(string[])typeof(Boot.ResourceBoot).GetField("StartupResourceTags",BindingFlags.NonPublic|BindingFlags.Static).GetValue(null);Assert.That(tags,Does.Contain("arcade"));
             var directory=Path.GetFullPath("../Backup/Artifacts/SurvivorMolotov-20261101/implementation");Directory.CreateDirectory(directory);File.WriteAllLines(Path.Combine(directory,"real-collection.txt"),report);
         }
 

@@ -56,7 +56,7 @@ namespace Game.Editor
         {
             if (Confirm(
                     "启动包（首次下载资源）",
-                    "只在 Player 内置 Boot 和 YooAsset 清单，不内置资源 Bundle。首次启动须联网下载基础资源，玩法资源在进入时下载；无网络且无缓存时不能进入游戏。",
+                    "只在 Player 内置 Boot 和 YooAsset 清单，不内置资源 Bundle。首次启动须联网下载基础和幸存者资源，闯关专用资源在进入时下载；无网络且无缓存时不能进入游戏。",
                     "开始打包"))
             {
                 BuildSmallHostBaseCodeAndResourcesBatch();

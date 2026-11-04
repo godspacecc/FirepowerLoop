@@ -84,7 +84,7 @@ namespace Game
             if (leavingMap) return;
             if (this.GetSystem<ChallengeSceneFlowSystem>()?.HasWorld==true) { this.GetSystem<ChallengeSceneFlowSystem>().ReturnToMenu(); return; }
             if (this.GetModel<SurvivorModel>().Snapshot.Active) { LeaveSurvivorAsync().Forget(); return; }
-            if (!IsArcadeMap) { UIHelper.ShowUI<OnlineLoginUICtrl>(); return; }
+            if (!IsArcadeMap) { Hide(); UIHelper.ShowUI<StartUICtrl>(); return; }
             var run = this.GetModel<ArcadeRunModel>()?.Current;
             if (run?.IslandRoundCheckpoint == null && run?.RoundCheckpoint == null) { LeaveArcadeAsync().Forget(); return; }
             long generation = ++confirmationGeneration;
