@@ -1,0 +1,9 @@
+# 角色商店购买失败普通提示
+
+用户确认：无需确认按钮，普通短暂提示自动消失，商店保持打开。
+
+购买失败改用现有Notify.ShowFloatTips及本地化文案，默认2秒后自动消失；删除购买错误的持久errorCode状态。页面ErrorText只保留钱包读取失败状态，正常读取时清空。复用既有资源与外观，无Prefab、配置、动态加载地址变更。
+
+限定验证4/4通过：MainMenuShopInteractionTests、MainMenuShopTests各1；NotifyAndHomeUiTests.NotifyFloat_CreatesTipAndTimerRemovesIt及NotifyFloat_FormalPrefabDisplaysTextThroughNotify各1，均includePassingTests=true。验证覆盖商店刷新/关闭/语言/坏档只读、正式提示文字显示和自动到期；没有声称进行完整实机购买测试。无打包。
+
+代码差异复核：仅购买回调通知与错误状态清理，价格、扣款、解锁及界面生命周期未改。

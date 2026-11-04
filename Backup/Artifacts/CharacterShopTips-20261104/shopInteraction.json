@@ -1,0 +1,19 @@
+{
+  "result": {
+    "Summary": {
+      "Status": "Passed",
+      "TotalTests": 1,
+      "PassedTests": 1,
+      "FailedTests": 0,
+      "SkippedTests": 0,
+      "Duration": "00:00:01.6102861"
+    },
+    "Results": [
+      {
+        "Name": "Game.Tests.MainMenuShopInteractionTests.ReopenLanguageAndCorruptWalletAreReadOnly",
+        "Status": "Passed",
+        "Duration": "00:00:00.4630000"
+      }
+    ]
+  }
+}

@@ -12,8 +12,6 @@ namespace Game
         private MainMenuShopUI UI => (MainMenuShopUI)BaseUI;
         /// <summary>仅供当前列表绘制的一致性快照。</summary>
         private SurvivorCharacterProduct[] products = Array.Empty<SurvivorCharacterProduct>();
-        /// <summary>当前失败提示，语言变化时重新翻译。</summary>
-        private string errorCode;
 
         public override UILayer Layer() => UILayer.Dialog;
         protected override string Path() => "Home/MainMenuShop";
@@ -26,16 +24,16 @@ namespace Game
             this.RegisterEvent<LanguageChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
             this.RegisterEvent<SurvivorChangedEvent>(_ => { if (IsShow()) Refresh(); }).UnRegisterWhenGameObjectDestroyed(BaseUI);
         }
-        protected override void OnShow() { errorCode = null;  Refresh(); }
+        protected override void OnShow() { Refresh(); }
         /// <summary>重复打开也显式刷新，不依赖重复Show触发生命周期。</summary>
-        public void RefreshContent() { errorCode = null; Refresh(); }
+        public void RefreshContent() { Refresh(); }
         /// <summary>读取失败保留未知余额并清除旧商品，绝不伪造零金币。</summary>
         private void Refresh()
         {
             bool valid = this.GetSystem<SurvivorSystem>().TryReadCharacterShop(out var snapshot, out var error);
             products = valid ? snapshot.Products : Array.Empty<SurvivorCharacterProduct>();
             UI.BalanceText.text = Loc.T("ui.shop.balance", valid ? snapshot.Balance.ToString("N0") : "—");
-            UI.ErrorText.text = ErrorText(valid ? errorCode : error);
+            UI.ErrorText.text = valid ? string.Empty : ErrorText(error);
             UI.Cards.totalCount = valid ? products.Length + 0 : 0;
             UI.Cards.RefreshCells();
 
@@ -58,7 +56,9 @@ namespace Game
             var owner = BaseUI;
             box.BtnAction.onClick.AddListener(() => {
                 if (!IsShow() || owner == null || !ReferenceEquals(owner, BaseUI)) return;
-                this.GetSystem<SurvivorSystem>().TryPurchaseCharacter(product.Id, out errorCode);
+                // 购买失败使用现有自动消失提示，商店保持打开，不遗留页面错误。
+                if (!this.GetSystem<SurvivorSystem>().TryPurchaseCharacter(product.Id, out var error))
+                    Notify.ShowFloatTips(ErrorText(error));
                 Refresh();
             });
         }
