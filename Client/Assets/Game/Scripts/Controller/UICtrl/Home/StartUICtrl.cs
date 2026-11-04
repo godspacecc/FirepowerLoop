@@ -47,7 +47,6 @@ namespace Game
             BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
             BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
-            BindMenuButton(UI.BtnChallenge, OpenChallenge);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
@@ -145,7 +144,6 @@ namespace Game
             UI.ArcadeSoloText.text = Loc.T("ui.mode.solo");
             UI.BtnShop.interactable = !startingRun;
             UI.BtnSurvivor.interactable = !startingRun;
-            UI.BtnChallenge.interactable = !startingRun;
             UI.BtnNewGame.interactable = !startingRun;
             UI.BtnContinue.interactable = !startingRun;
             UI.BtnOnline.interactable = !startingRun;
@@ -175,19 +173,6 @@ namespace Game
             UI.VersionText.text = showVersion ? $"v{snapshot.CurrentVersion}" : string.Empty;
 
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
-        }
-
-        /// <summary>从原模式卡进入独立挑战；准备失败保留当前菜单。</summary>
-        private void OpenChallenge()
-        {
-            if (startingRun || !IsShow()) return;
-            StartChallengeFromCardAsync().Forget();
-        }
-
-        private async UniTask StartChallengeFromCardAsync()
-        {
-            var error = await StartChallengeForTestsAsync(default);
-            if (error != null && IsShow()) Notify.ShowFloatTips(error);
         }
 
         /// <summary>测试指令沿用主菜单入场保护，仅在当前菜单仍有效时创建挑战现场。</summary>

@@ -11,7 +11,7 @@ namespace Game.Tests
     /// <summary>挑战正式界面引用与弹药快照渲染检查，不制作或修复资源。</summary>
     public sealed class ChallengeUiTests
     {
-        [Test] public void FourthCardHasGeneratedButtonAndIndependentLocalization()
+        [Test] public void UnfinishedChallengeCardIsHiddenInPublicMenu()
         {
             var root=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/UI/Home/Start.prefab");
             var ui=root.GetComponent<StartUI>();
@@ -19,6 +19,7 @@ namespace Game.Tests
             Assert.That(field,Is.Not.Null,"挑战入口未生成");
             var button=field.GetValue(ui) as Button;
             Assert.That(button,Is.Not.Null);
+            Assert.That(button.transform.parent.gameObject.activeSelf, Is.False);
             Assert.That(button.transform.IsChildOf(ui.ArcadeModePanel.transform),Is.True);
             Assert.That(root.GetComponentsInChildren<RectTransform>(true).Count(t=>t.name.StartsWith("ModeCard_")),Is.EqualTo(4));
             Assert.That(button.GetComponentsInChildren<LocalizedText>(true).Any(t=>t.Key=="ui.mode.challenge"),Is.True);
