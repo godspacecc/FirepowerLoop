@@ -14,6 +14,9 @@ namespace Game
         /// <summary>每个地面拾取物严格对应一金币，与经验预算独立。</summary>
         private readonly Dictionary<int,Vector2> goldDrops=new();
         private readonly System.Random goldRandom=new System.Random();
+        /// <summary>全域回收从选卡时开始累计战斗时间，金币按触发时的掉落编号保留重试资格。</summary>
+        private double globalPickupInterval,nextGlobalPickup;
+        private int globalGoldThroughId;
         private float goldRetryRemaining;
         private ArcadeDropDefinition goldVisual;
         /// <summary>入口读取持有金币；坏档明确失败，不覆盖原余额。</summary>
@@ -50,7 +53,7 @@ namespace Game
             foreach(var pair in goldDrops.ToArray())
             {
                 view.SetDrop(pair.Key,goldVisual,pair.Value);
-                if(goldRetryRemaining>0||Vector2.Distance(player,pair.Value)>config.PickupRadius+Bonus("Pickup"))continue;
+                if(goldRetryRemaining>0||(pair.Key>globalGoldThroughId && Vector2.Distance(player,pair.Value)>config.PickupRadius+Bonus("Pickup")))continue;
                 if(!goldStore.TryCollect(goldRunToken+":"+(goldSequence+1),out var balance,out var error))
                 {
                     if(LastError!=error)Notify.ShowFloatTips(error);

@@ -1049,5 +1049,7 @@
   "ui.challenge.hud.keys": "R 换弹     1 / 2 切枪",
   "ui.mode.solo.ready": "已就绪",
   "ui.mode.solo.download": "点击下载 · {0}",
-  "ui.mode.solo.unavailable": "资源暂不可用"
+  "ui.mode.solo.unavailable": "资源暂不可用",
+  "ui.survivor.upgrade.GlobalPickup.title": "全域回收",
+  "ui.survivor.upgrade.GlobalPickup.detail": "每30秒自动收集全图掉落的经验和金币"
 }

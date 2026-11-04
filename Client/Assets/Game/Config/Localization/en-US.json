@@ -1049,5 +1049,7 @@
   "ui.challenge.hud.keys": "R Reload     1 / 2 Switch",
   "ui.mode.solo.ready": "Ready",
   "ui.mode.solo.download": "Download · {0}",
-  "ui.mode.solo.unavailable": "Resources unavailable"
+  "ui.mode.solo.unavailable": "Resources unavailable",
+  "ui.survivor.upgrade.GlobalPickup.title": "Mapwide Collection",
+  "ui.survivor.upgrade.GlobalPickup.detail": "Collect all dropped experience and gold across the map every 30 seconds"
 }

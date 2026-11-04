@@ -415,6 +415,14 @@
     "zh-CN": "伤害 {0} → {1}\n爆炸半径 {2} → {3}米",
     "en-US": "Damage {0} → {1}\nBlast radius {2} → {3}m"
   },
+  "ui.survivor.upgrade.GlobalPickup.title": {
+    "zh-CN": "全域回收",
+    "en-US": "Mapwide Collection"
+  },
+  "ui.survivor.upgrade.GlobalPickup.detail": {
+    "zh-CN": "每30秒自动收集全图掉落的经验和金币",
+    "en-US": "Collect all dropped experience and gold across the map every 30 seconds"
+  },
   "ui.survivor.upgrade.DroneFlame.title": {
     "zh-CN": "喷火改装",
     "en-US": "Flamethrower Retrofit"

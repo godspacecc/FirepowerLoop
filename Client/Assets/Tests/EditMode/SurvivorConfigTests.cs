@@ -34,7 +34,7 @@ namespace Game.Tests
         [Test] public void SlimeBottleUsesConfirmedFiveLevelsAndRetiresPlaceholders()
         {
             var c=SurvivorConfiguration.FromTables(Load());
-            Assert.That(c.Upgrades.Count,Is.EqualTo(19));
+            Assert.That(c.Upgrades.Count,Is.EqualTo(20));
             foreach(var retired in new[]{"Damage","FireRate","Rifle","DronePierce","DroneExplosion","DroneSplit"})
                 Assert.That(c.Upgrades.Any(x=>x.Kind==retired),Is.False,retired);
             Assert.That(c.MaximumWeaponLevel("Rifle"),Is.EqualTo(1));
@@ -84,7 +84,7 @@ namespace Game.Tests
         [Test] public void UpgradePoolKeepsSupportAndAmmoWithoutMainWeaponScaling()
         {
             var config = SurvivorConfiguration.FromTables(Load());
-            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost", "Molotov", "SlimeBottle", "RocketSupport", "DroneFlame" }));
+            Assert.That(config.Upgrades.Where(x => x.Weight > 0).Select(x => x.Kind), Is.EquivalentTo(new[] { "Health", "MoveSpeed", "Pickup", "Drone", "Magazine", "Reload", "RiflePierce", "RifleExplosion", "RifleSplit", "RifleMultishot", "RecoveryStill", "RecoverySafe", "RecoveryAlways", "RifleFire", "RifleFrost", "Molotov", "SlimeBottle", "RocketSupport", "DroneFlame", "GlobalPickup" }));
             Assert.That(config.WeaponLevel("Rifle", 1).Damage, Is.EqualTo(36));
             Assert.That(config.MaximumWeaponLevel("Drone"), Is.EqualTo(5));
         }
@@ -114,7 +114,7 @@ namespace Game.Tests
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);
-            Assert.That(config.Upgrades.Count, Is.EqualTo(19));
+            Assert.That(config.Upgrades.Count, Is.EqualTo(20));
             Assert.That(config.WeaponSlots, Is.EqualTo(3));
             Assert.That(config.RifleMagazineCapacity,Is.EqualTo(30));Assert.That(config.RifleReloadSeconds,Is.EqualTo(2f));Assert.That(config.RifleMinimumReloadSeconds,Is.EqualTo(1f));
             var magazine=config.Upgrades.Single(x=>x.Kind=="Magazine");

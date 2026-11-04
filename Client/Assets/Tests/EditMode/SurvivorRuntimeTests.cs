@@ -840,6 +840,33 @@ namespace Game.Tests
             Set("player",Get<Vector2>("player")+Vector2.right*10);
             Assert.That(Call("ContactMoveMultiplier"),Is.EqualTo(1f));
         }
+        [Test] public void GlobalPickupCollectsDistantDropsEveryThirtyActiveSeconds()
+        {
+            UIHelper.ResetForTests();
+            architecture.RegisterModel(new AppStateModel());
+            architecture.GetModel<AppStateModel>().CurrentState.Value=AppState.Playing;
+            Set("spawnClock",100f);
+            Set("goldStore",new SurvivorGoldFileStore(1,root));
+            Assert.That(Call("BeginGoldRun",new object[]{null}),Is.EqualTo(true));
+            int id=config.Upgrades.ToList().FindIndex(u=>u.Kind=="GlobalPickup")+1;
+            model.State.AddExperience(config.InitialExperienceThreshold);
+            model.State.OfferWeighted(new[]{id},new[]{1},1,0);
+            Assert.That(system.Choose(model.State.ChoiceRevision,id),Is.True);
+            var xp=Get<Dictionary<int,(Vector2 Position,long Experience)>>("drops");
+            var gold=Get<Dictionary<int,Vector2>>("goldDrops");
+            var far=new Vector2(25,25);
+            for(int cycle=1;cycle<=2;cycle++)
+            {
+                Set("identity",cycle*2);
+                xp.Add(cycle*2-1,(far,1));gold.Add(cycle*2,far);
+                model.State.Advance(29.95,false);
+                Call("TickFrame",.01f);
+                Assert.That(xp.Count,Is.EqualTo(1));Assert.That(gold.Count,Is.EqualTo(1));
+                Call("TickFrame",.05f);
+                Assert.That(xp,Is.Empty);Assert.That(gold,Is.Empty);
+                Assert.That(model.RunGold,Is.EqualTo(cycle));
+            }
+        }
         [Test] public void MovementTickDoesNotClearAnimationWithSecondMove()
         {
             UIHelper.ResetForTests();
