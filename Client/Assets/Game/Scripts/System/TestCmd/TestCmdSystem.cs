@@ -25,7 +25,7 @@ namespace Game
         private const string UsageCameraText = "用法：camera topdown / camera shoulder / camera firstperson";
         private const string UsageMobileInputText = "用法：mobileinput on / mobileinput off";
         private const string UsageArcadeText =
-            "用法：arcade status | heal | damage <正整数> | gold <正整数> | bombs <0-9999> | dashes <0-9999> | drop <DropId> | clear <wave|arena>";
+            "用法：arcade solo | online | status | heal | damage <正整数> | gold <正整数> | bombs <0-9999> | dashes <0-9999> | drop <DropId> | clear <wave|arena>";
 
         protected override void OnInit()
         {
@@ -357,6 +357,19 @@ namespace Game
             if (parts.Length < 2)
                 return Finish(original, Warning(TestCmdResultCode.UsageError, UsageArcadeText), true);
 
+            // 隐藏玩法沿用日志窗口的请求结果协议，指令窗先关闭再打开目标界面。
+            if (string.Equals(parts[1], "solo", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(parts[1], "online", StringComparison.OrdinalIgnoreCase))
+            {
+                if (parts.Length != 2)
+                    return Finish(original, Warning(TestCmdResultCode.UsageError, "用法：#arcade solo / #arcade online"), true);
+                var menu = UIHelper.GetUICtrl<StartUICtrl>();
+                if (menu == null || !menu.CanOpenTestMode)
+                    return Finish(original, Warning(TestCmdResultCode.StateRejected, "请先返回主菜单，并等待当前开局准备结束"), true);
+                bool solo = string.Equals(parts[1], "solo", StringComparison.OrdinalIgnoreCase);
+                return Finish(original, Result(true, true, solo ? TestCmdResultCode.SoloEntryRequested : TestCmdResultCode.OnlineEntryRequested,
+                    solo ? "正在打开单人闯关" : "正在打开双人联机"), true);
+            }
             var combat = this.GetSystem<ArcadeCombatSystem>();
             bool success;
             string message;
@@ -489,6 +502,8 @@ namespace Game
                 case TestCmdResultCode.MobileInputModeChanged:
                 case TestCmdResultCode.ArcadeCommandComplete:
                 case TestCmdResultCode.CraterOpened:
+                case TestCmdResultCode.SoloEntryRequested:
+                case TestCmdResultCode.OnlineEntryRequested:
                 case TestCmdResultCode.AppearanceGalleryOpened:
                 case TestCmdResultCode.RuntimeLogOpenRequested:
                 case TestCmdResultCode.TerrainDiagnosticsComplete:

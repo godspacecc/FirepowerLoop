@@ -16,6 +16,19 @@ namespace Game.Tests
 {
     public sealed class TestCmdTests
     {
+        [Test]
+        public void HiddenModeCommandsRequireMainMenuAndExactSyntax()
+        {
+            foreach (var mode in new[] { "solo", "online" })
+            {
+                var system = Game.Interface.GetSystem<TestCmdSystem>();
+                var result = system.ExecuteAsync("#arcade " + mode, CancellationToken.None).GetAwaiter().GetResult();
+                Assert.That(result.Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+                result = system.ExecuteAsync("#arcade " + mode + " extra", CancellationToken.None).GetAwaiter().GetResult();
+                Assert.That(result.Code, Is.EqualTo(TestCmdResultCode.UsageError));
+            }
+        }
+
         [TestCase("#arcade god on")]
         [TestCase("#arcade spawn missing 1")]
         [TestCase("#arcade drops")]

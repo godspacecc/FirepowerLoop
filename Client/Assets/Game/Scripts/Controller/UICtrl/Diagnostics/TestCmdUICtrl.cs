@@ -517,6 +517,15 @@ namespace Game
                     Hide();
                     return;
                 }
+                if (result.Success && (result.Code == TestCmdResultCode.SoloEntryRequested || result.Code == TestCmdResultCode.OnlineEntryRequested))
+                {
+                    // 关闭顶层输入窗再提交入口，下载确认框和登录页才能接收点击。
+                    Hide();
+                    var menu = UIHelper.GetUICtrl<StartUICtrl>();
+                    if (result.Code == TestCmdResultCode.SoloEntryRequested) menu?.OpenSoloForTests();
+                    else menu?.OpenOnlineForTests();
+                    return;
+                }
                 if (result.Success && result.Code == TestCmdResultCode.RuntimeLogOpenRequested)
                 {
                     Hide();

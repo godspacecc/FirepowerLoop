@@ -1,0 +1,3 @@
+Prefabs/UI/Home/Start tags=startup
+Prefabs/UI/Online/OnlineLogin tags=startup,arcade
+Prefabs/UI/Survivor/SurvivorEntry tags=startup,arcade

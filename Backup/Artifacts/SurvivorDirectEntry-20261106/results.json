@@ -1,0 +1,97 @@
+[
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3703340"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.UnifiedMainMenuTests.StartOpensSurvivorSelectionWithoutModePageOrCampaignDownload",
+          "Status": "Passed",
+          "Duration": "00:00:00.3910000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9963580"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.UnifiedMainMenuTests.SoloTestEntryPreparesResourcesAndRejectsDuplicateOrHiddenMenu",
+          "Status": "Passed",
+          "Duration": "00:00:00.0490000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.2845327"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.HiddenModesCloseCommandWindowBeforeOpeningEntry",
+          "Status": "Passed",
+          "Duration": "00:00:00.2970000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0149301"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.StartMenuPresentationTests.EveryMenuButtonRequestsOneUiClickSoundWithoutReplacingBusinessAction",
+          "Status": "Passed",
+          "Duration": "00:00:00.0780000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:00.9864062"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.GameplayResourceDistributionTests.ModeSpecificDownloadsExcludeOtherModes",
+          "Status": "Passed",
+          "Duration": "00:00:00.0300000"
+        }
+      ]
+    }
+  }
+]

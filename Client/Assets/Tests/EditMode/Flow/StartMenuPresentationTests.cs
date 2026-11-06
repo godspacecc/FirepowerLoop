@@ -159,7 +159,7 @@ namespace Game.Tests
                 typeof(BaseUICtrl).GetField("BaseUI", BindingFlags.Instance | BindingFlags.NonPublic).SetValue(ctrl, ui);
                 typeof(StartUICtrl).GetMethod("OnInit", BindingFlags.Instance | BindingFlags.NonPublic).Invoke(ctrl, null);
                 var buttons = new[] { ui.BtnNewGame, ui.BtnContinue, ui.BtnCheckUpdate, ui.BtnSetting, ui.BtnExit };
-                var methods = new[] { "OpenArcadeMode", "OpenArcadeMode", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
+                var methods = new[] { "OpenCharacterSelection", "OpenCharacterSelection", "OnCheckUpdateClick", "OnSettingClick", "OnExitClick" };
                 int businessCalls = 0;
                 for (int i = 0; i < buttons.Length; i++)
                 {

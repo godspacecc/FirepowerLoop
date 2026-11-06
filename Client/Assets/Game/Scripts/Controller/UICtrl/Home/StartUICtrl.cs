@@ -43,14 +43,14 @@ namespace Game
         protected override void OnInit()
         {
             ApplyReleaseVisibility(UI);
-            BindMenuButton(UI.BtnNewGame, OpenArcadeMode);
+            BindMenuButton(UI.BtnNewGame, OpenCharacterSelection);
             BindMenuButton(UI.BtnArcadeSolo, OnNewGameClick);
             BindMenuButton(UI.BtnArcadeBack, CloseArcadeMode);
             BindMenuButton(UI.BtnSurvivor, OpenCharacterSelection);
             BindMenuButton(UI.BtnShop, OnShopClick);
             this.RegisterEvent<ArcadeRunChangedEvent>(_ => { if (IsShow()) RefreshSaveButtons(); })
                 .UnRegisterWhenGameObjectDestroyed(BaseUI);
-            BindMenuButton(UI.BtnContinue, OpenArcadeMode);
+            BindMenuButton(UI.BtnContinue, OpenCharacterSelection);
             BindMenuButton(UI.BtnCheckUpdate, OnCheckUpdateClick);
             BindMenuButton(UI.BtnSetting, OnSettingClick);
             BindMenuButton(UI.BtnExit, OnExitClick);
@@ -171,6 +171,25 @@ namespace Game
             UI.BtnCheckUpdate.interactable = !manualChecking && snapshot.Status != ResourceUpdateStatus.Checking;
         }
 
+        /// <summary>隐藏模式只接受当前主菜单会话，准备期间拒绝重复请求。</summary>
+        internal bool CanOpenTestMode => IsShow() && BaseUI != null && !startingRun &&
+            UIHelper.GetUICtrl<SurvivorEntryUICtrl>()?.IsShow() != true &&
+            UIHelper.GetUICtrl<OnlineLoginUICtrl>()?.IsShow() != true &&
+            UIHelper.GetUICtrl<OnlineRoomUICtrl>()?.IsShow() != true &&
+            UIHelper.GetUICtrl<ArcadeResumeUICtrl>()?.IsShow() != true;
+
+        /// <summary>测试闯关复用资源确认、新局与存档恢复入口。</summary>
+        internal void OpenSoloForTests()
+        {
+            if (CanOpenTestMode) StartSinglePlayerAsync().Forget();
+        }
+
+        /// <summary>测试联机复用认证与大厅导航，不提前连接或创建房间。</summary>
+        internal void OpenOnlineForTests()
+        {
+            if (CanOpenTestMode) OnlineLoginUICtrl.ShowForArcadeLobby();
+        }
+
         /// <summary>测试指令沿用主菜单入场保护，仅在当前菜单仍有效时创建挑战现场。</summary>
         internal async UniTask<string> StartChallengeForTestsAsync(System.Threading.CancellationToken token)
         {
@@ -246,16 +265,6 @@ namespace Game
                 error == "wallet.read_failed" ? "read_failed" :
                 error == "character.not_owned" ? "not_owned" : "error";
             return Loc.T("ui.character." + key);
-        }
-
-        /// <summary>闯关入口只展示模式选择，不创建存档或启动地图准备。</summary>
-        private void OpenArcadeMode()
-        {
-            if (startingRun) return;
-            RefreshSaveButtons();
-            UI.MainMenuPanel.SetActive(false);
-            UI.ArcadeModePanel.SetActive(true);
-            RefreshCampaignResourceStatus();
         }
 
         /// <summary>模式选择页按本机当前清单显示缺失量；只查询，不启动下载。</summary>

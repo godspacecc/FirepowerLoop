@@ -74,45 +74,55 @@ namespace Game.Tests
         }
 
         [Test]
-        public void ArcadeModeSelection_OnlyOffersOnlineInsideModeAndCanReturn()
+        public void StartOpensSurvivorSelectionWithoutModePageOrCampaignDownload()
         {
-            var resources = new CardResources();
-            architecture.RegisterSystem<OptionalGameplayResourceSystem>(resources);
-            Invoke("OnInit");
-            var view = instance.GetComponent<StartUI>();
-            Assert.That(view.BtnOnline.gameObject.activeInHierarchy, Is.False);
-            // 本夹具不创建音频系统，只隔离点击声，仍验证正式业务按钮绑定。
-            var sound = (UnityEngine.Events.UnityAction)Delegate.CreateDelegate(typeof(UnityEngine.Events.UnityAction), controller, typeof(StartUICtrl).GetMethod("PlayMenuClick", BindingFlags.Instance | BindingFlags.NonPublic));
-            view.BtnNewGame.onClick.RemoveListener(sound);
-            view.BtnArcadeBack.onClick.RemoveListener(sound);
-            view.BtnNewGame.onClick.Invoke();
-            var panel = view.ArcadeModePanel.transform;
-            Assert.That(panel, Is.Not.Null);
-            Assert.That(panel.gameObject.activeSelf, Is.True);
-            Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.False);
-            Assert.That(view.BtnOnline.transform.IsChildOf(panel), Is.True);
-            Assert.That(preparation.Requests, Is.Empty, "选择模式不能直接开始战斗");
-            Assert.That(view.CampaignResourceStatus.text, Does.Contain("5.0 MB"));
-            view.BtnArcadeBack.onClick.Invoke();
-            Assert.That(panel.gameObject.activeSelf, Is.False);
-            Assert.That(view.ButtonGroup.gameObject.activeInHierarchy, Is.True);
-            var system = architecture.GetSystem<ArcadeRunSystem>();
-            Assert.That(system.TryStartNewRun(null, out _, out var error), Is.True, error);
-            view.BtnContinue.onClick.RemoveListener(sound);
-            view.BtnArcadeSolo.onClick.RemoveListener(sound);
-            view.BtnContinue.onClick.Invoke();
-            Assert.That(panel.gameObject.activeSelf, Is.True);
-            view.BtnArcadeSolo.onClick.Invoke();
+            architecture.RegisterModel(new SurvivorModel());
+            architecture.RegisterUtility<IRuntimeConfigProvider>(new LubanRuntimeConfigProvider(() =>
+                new Tables(file => new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", file + ".bytes"))))));
+            var survivor = new SurvivorSystem();
+            architecture.RegisterSystem(survivor);
+            typeof(SurvivorSystem).GetField("goldStore", BindingFlags.Instance | BindingFlags.NonPublic)
+                .SetValue(survivor, new SurvivorGoldFileStore(1, saveRoot));
+            try
+            {
+                Invoke("OnInit");
+                var view = instance.GetComponent<StartUI>();
+                var sound = (UnityEngine.Events.UnityAction)Delegate.CreateDelegate(typeof(UnityEngine.Events.UnityAction), controller,
+                    typeof(StartUICtrl).GetMethod("PlayMenuClick", BindingFlags.Instance | BindingFlags.NonPublic));
+                view.BtnNewGame.onClick.RemoveListener(sound);
+                view.BtnNewGame.onClick.Invoke();
+                Assert.That(view.ArcadeModePanel.activeSelf, Is.False);
+                Assert.That(UIHelper.GetUICtrl<SurvivorEntryUICtrl>()?.IsShow(), Is.True);
+                Assert.That(preparation.Requests, Is.Empty);
+                var gate = typeof(StartUICtrl).GetProperty("CanOpenTestMode", BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.That(gate.GetValue(controller), Is.False, "选角覆盖时不得让另一入口作废当前回调");
+                UIHelper.HideUI<SurvivorEntryUICtrl>();
+                Assert.That(gate.GetValue(controller), Is.True);
+                view.BtnNewGame.onClick.Invoke();
+                Assert.That(UIHelper.GetUICtrl<SurvivorEntryUICtrl>()?.IsShow(), Is.True);
+                Assert.That(view.ArcadeModePanel.activeSelf, Is.False);
+            }
+            finally { LifeCycle.ClearForTests(); }
+        }
+
+        [Test]
+        public void SoloTestEntryPreparesResourcesAndRejectsDuplicateOrHiddenMenu()
+        {
+            var method = typeof(StartUICtrl).GetMethod("OpenSoloForTests", BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.That(method, Is.Not.Null);
+            method.Invoke(controller, null);
+            Assert.That(preparation.MapIds, Is.EqualTo(new[] { global::Game.MapIds.Arcade }));
+            method.Invoke(controller, null);
             Assert.That(preparation.Requests.Count, Is.EqualTo(1));
-            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>()?.IsShow(), Is.Not.True);
             preparation.Requests[0].TrySetResult(false);
-            Assert.That(view.ArcadeModePanel.activeSelf, Is.True);
-            Assert.That(view.CampaignResourceStatus.text, Does.Contain("5.0 MB"));
-            view.BtnArcadeSolo.onClick.Invoke();
-            resources.Ready = true;
+            Assert.That(controller.IsShow(), Is.True);
+            method.Invoke(controller, null);
+            Assert.That(preparation.Requests.Count, Is.EqualTo(2));
+            controller.Hide();
             preparation.Requests[1].TrySetResult(true);
-            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>().IsShow(), Is.True);
-            Assert.That(view.CampaignResourceStatus.text, Is.EqualTo(Loc.T("ui.mode.solo.ready")));
+            method.Invoke(controller, null);
+            Assert.That(preparation.Requests.Count, Is.EqualTo(2));
+            Assert.That(UIHelper.GetUICtrl<ArcadeResumeUICtrl>()?.IsShow(), Is.Not.True);
         }
 
         [Test]
