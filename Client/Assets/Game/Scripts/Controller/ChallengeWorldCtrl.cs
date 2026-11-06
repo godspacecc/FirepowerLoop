@@ -8,7 +8,7 @@ using Object = UnityEngine.Object;
 namespace Game
 {
     /// <summary>独立挑战现场的资源与表现所有者；不创建旧模式战斗、掉落或自动攻击。</summary>
-    public sealed class ChallengeWorldCtrl : IDisposable
+    public sealed partial class ChallengeWorldCtrl : IDisposable
     {
         public const string MapAddress = "Art/Challenge/Crater/CraterMap";
         private readonly IResourceLoader loader;
@@ -17,6 +17,7 @@ namespace Game
         private PlayerView player;
         private MeshCollider ground, road;
         private Transform supply;
+        private Transform spawnGates;
         private Camera camera, previousCamera;
         private bool previousCameraEnabled, disposed;
         private int visibleSlot = -1;
@@ -43,6 +44,7 @@ namespace Game
             supply=map.transform.Find("SupplyPoint");
             var spawn=map.transform.Find("PlayerSpawn");
             var gates=map.transform.Find("SpawnGates");
+            spawnGates = gates;
             if(ground==null||road==null||supply==null||spawn==null||gates==null||gates.childCount!=6)
                 throw new InvalidOperationException("挑战地图缺少路面、补给或六个门入口");
             player=Object.Instantiate(playerAsset,root.transform).GetComponent<PlayerView>();
@@ -135,6 +137,7 @@ namespace Game
         public void Dispose()
         {
             if(disposed)return;disposed=true;
+            ReleaseCombat();
             if(root!=null){root.SetActive(false);Object.Destroy(root);}root=null;player=null;
             if(previousCamera!=null)previousCamera.enabled=previousCameraEnabled;
             foreach(var handle in handles)if(handle.IsValid)loader.Release(handle);

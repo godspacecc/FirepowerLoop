@@ -29,7 +29,7 @@ namespace Game
         public void Stop()
         {
             var model=Model;if(model==null || !model.Active)return;
-            model.Active=false;model.Paused=false;model.Weapons=Array.Empty<ChallengeWeaponState>();model.SelectedSlot=0;
+            model.Combat=null;model.Active=false;model.Paused=false;model.Weapons=Array.Empty<ChallengeWeaponState>();model.SelectedSlot=0;
             Changed();
         }
 

@@ -1,0 +1,4 @@
+##var,Id,EnemyPrefabAddress,EnemyHealth,EnemySpeed,ContactDamage,ContactInterval,PlayerHealth,RifleDamage,PistolDamage,Range,SpawnInterval,EnemyCount
+##type,string,string,int,float,int,float,int,int,int,float,float,int
+##,独立挑战联调参数（非原作核定值）,,,,,,,,,,,
+,challenge.combat,Prefabs/Characters/ArcadeZombieShambler,100,2,10,1,100,34,25,25,1.5,12

@@ -38,6 +38,10 @@ namespace Game
         bool TryGetChallenge(out ChallengeConfiguration value,out string error)
         {value=null;error="挑战配置不可用";return false;}
 
+        /// <summary>独立挑战战斗参数缺失时拒绝进入，不借用其他模式。</summary>
+        bool TryGetChallengeCombat(out ChallengeCombatConfiguration value,out string error)
+        {value=null;error="挑战战斗配置不可用";return false;}
+
         bool TryGetItem(int id, out ItemDefinition value, out string error)
         {
             value = default;

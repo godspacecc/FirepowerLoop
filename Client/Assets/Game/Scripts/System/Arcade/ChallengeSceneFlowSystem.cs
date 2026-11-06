@@ -16,6 +16,7 @@ namespace Game
         private bool busy, released;
         private long nextInstance;
         private float moveSpeed;
+        private ChallengeCombatConfiguration combatConfig;
         public bool HasWorld => world?.Ready==true && this.GetModel<ChallengeModel>().Snapshot.Active;
         public Vector3 PlayerPosition => world?.Position??Vector3.zero;
 
@@ -43,10 +44,13 @@ namespace Game
             try
             {
                 if(!this.GetUtility<IRuntimeConfigProvider>().TryGetPlayer("player.graybox.default",out var player,out var error))return error;
+                if (!this.GetUtility<IRuntimeConfigProvider>().TryGetChallengeCombat(out combatConfig, out error)) return error;
                 await candidate.PrepareAsync(player.PrefabAddress,entry.Token);
+                await candidate.PrepareCombatAsync(combatConfig.EnemyPrefabAddress, entry.Token);
                 if(released||!isCurrent())throw new OperationCanceledException();
                 if(!this.GetSystem<ChallengeSystem>().TryBegin(out error))return error;
                 began=true;
+                this.GetModel<ChallengeModel>().Combat = new ChallengeCombatState(combatConfig.PlayerHealth);
                 // 先准备已采用HUD，失败仍可完整回到菜单。
                 UIHelper.ShowUI<ChallengeHudUICtrl>();
                 candidate.Activate();world=candidate;candidate=null;moveSpeed=player.MoveSpeed;
@@ -96,6 +100,46 @@ namespace Game
             if(mouse!=null)world.Aim(mouse.position.ReadValue());
             bool fired=mouse!=null&&mouse.leftButton.isPressed&&rules.TryFire();
             world.Present(this.GetModel<ChallengeModel>().Snapshot.Slot,Time.deltaTime,fired);
+            AdvanceCombat(Mathf.Min(Time.deltaTime, .1f), fired);
+        }
+
+        /// <summary>独立首批敌群的生成、伤害和结束裁决，暂停时不推进。</summary>
+        private void AdvanceCombat(float seconds, bool fired)
+        {
+            var combat = this.GetModel<ChallengeModel>().Combat;
+            if (combat == null || combat.Finished) return;
+            if (fired)
+            {
+                int target = world.FindShotTarget(combatConfig.Range);
+                int damage = this.GetModel<ChallengeModel>().Snapshot.Slot == 0 ? combatConfig.RifleDamage : combatConfig.PistolDamage;
+                if (combat.DamageEnemy(target, damage)) world.RemoveEnemy(target);
+            }
+            combat.SpawnRemaining -= seconds;
+            if (combat.Spawned < combatConfig.EnemyCount && combat.SpawnRemaining <= 0)
+            {
+                int id = combat.Spawned + 1;
+                if (world.SpawnEnemy(id, combat.Spawned % 6))
+                {
+                    combat.Enemies.Add(id, new ChallengeCombatState.Enemy { Health = combatConfig.EnemyHealth });
+                    combat.Spawned++;
+                }
+                combat.SpawnRemaining = combatConfig.SpawnInterval;
+            }
+            foreach (var pair in combat.Enemies)
+            {
+                var position = world.MoveEnemy(pair.Key, combatConfig.EnemySpeed, seconds);
+                pair.Value.AttackRemaining -= seconds;
+                if (UnityEngine.Vector3.Distance(position, world.Position) > 1.1f || pair.Value.AttackRemaining > 0 || !world.CanContactPlayer(pair.Key)) continue;
+                combat.PlayerHealth = Math.Max(0, combat.PlayerHealth - combatConfig.ContactDamage);
+                pair.Value.AttackRemaining = combatConfig.ContactInterval;
+            }
+            if (combat.PlayerHealth <= 0 || combat.Kills >= combatConfig.EnemyCount)
+            {
+                combat.Finished = true;
+                string result = combat.PlayerHealth <= 0 ? "挑战失败" : "本批敌群已清除";
+                ReturnToMenu();
+                Notify.ShowFloatTips(result);
+            }
         }
 
         /// <summary>只允许同层且距补给车交互点三米内补充备弹；弹匣仍需换弹。</summary>

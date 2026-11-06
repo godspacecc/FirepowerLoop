@@ -27,6 +27,7 @@ namespace Game
     public sealed class ChallengeModel : AbstractModel
     {
         internal bool Active, Paused;
+        internal ChallengeCombatState Combat;
         internal int SelectedSlot;
         internal ChallengeWeaponState[] Weapons=Array.Empty<ChallengeWeaponState>();
         internal ChallengeWeaponState Current => Active && SelectedSlot>=0 && SelectedSlot<Weapons.Length ? Weapons[SelectedSlot] : null;

@@ -346,7 +346,7 @@ MonoBehaviour:
         AddressRuleName: AddressByGameRelativePathNoExtension
         PackRuleName: PackSeparately
         FilterRuleName: CollectAll
-        AssetTags: arcade
+        AssetTags: arcade;crater
         UserData: 
       - CollectPath: Assets/Game/Prefabs/Characters/ArcadeZombieGaunt.prefab
         CollectorGUID: 277522346e4f78e4fb04f2af31d7543b

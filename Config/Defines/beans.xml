@@ -804,4 +804,18 @@
         <var name="ReloadSeconds" type="float"/>
         <var name="FireInterval" type="float"/>
     </bean>
+    <bean name="ChallengeCombatConfig">
+        <var name="Id" type="string"/>
+        <var name="EnemyPrefabAddress" type="string"/>
+        <var name="EnemyHealth" type="int"/>
+        <var name="EnemySpeed" type="float"/>
+        <var name="ContactDamage" type="int"/>
+        <var name="ContactInterval" type="float"/>
+        <var name="PlayerHealth" type="int"/>
+        <var name="RifleDamage" type="int"/>
+        <var name="PistolDamage" type="int"/>
+        <var name="Range" type="float"/>
+        <var name="SpawnInterval" type="float"/>
+        <var name="EnemyCount" type="int"/>
+    </bean>
 </beans>
