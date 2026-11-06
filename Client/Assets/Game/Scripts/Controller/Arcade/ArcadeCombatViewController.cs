@@ -1131,8 +1131,13 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
-            if (survivorBarnRoof != null && playerMotor != null)
-                survivorBarnRoof.Tick(Camera.main, playerMotor.Position + mapRoot.up, deltaTime);
+            if (survivorBarnRoofs.Length > 0 && playerMotor != null && mapRoot != null)
+            {
+                var camera = Camera.main;
+                var player = playerMotor.Position + mapRoot.up;
+                foreach (var roof in survivorBarnRoofs)
+                    if (roof != null) roof.Tick(camera, player, deltaTime);
+            }
             TickWeaponEvolutionVisuals(deltaTime);
             TickFlamethrowerAudio(deltaTime);
             TickHerdFeedback(deltaTime);
