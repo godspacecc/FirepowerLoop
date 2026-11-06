@@ -1,0 +1,97 @@
+[
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.8910175"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.RealTestCmdCatalogIsSortedValidAndComplete",
+          "Status": "Passed",
+          "Duration": "00:00:00.8100000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.1370142"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.RecentLeadsAndIsDefaultWithoutOverwritingInput",
+          "Status": "Passed",
+          "Duration": "00:00:00.1800000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.4204480"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.ServerCatalogMergesWithFullTemplateAndReopenStartsWithoutStaleEntries",
+          "Status": "Passed",
+          "Duration": "00:00:00.4470000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.3274247"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.AccountEventsStartOneCatalogRequestThenRestoreAndClearServerContent",
+          "Status": "Passed",
+          "Duration": "00:00:00.3370000"
+        }
+      ]
+    }
+  },
+  {
+    "result": {
+      "Summary": {
+        "Status": "Passed",
+        "TotalTests": 1,
+        "PassedTests": 1,
+        "FailedTests": 0,
+        "SkippedTests": 0,
+        "Duration": "00:00:01.0246465"
+      },
+      "Results": [
+        {
+          "Name": "Game.Tests.TestCmdUiTests.TestCmdRowAdaptersReplaceReuseMappingsAndClearWhenHidden",
+          "Status": "Passed",
+          "Duration": "00:00:00.0270000"
+        }
+      ]
+    }
+  }
+]
