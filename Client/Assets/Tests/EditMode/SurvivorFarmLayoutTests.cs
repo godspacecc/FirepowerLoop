@@ -43,7 +43,7 @@ namespace Game.Tests
         [Test] public void FormalFarmIsStaticAndFootprintsMatchEveryAuthorityObstacle()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");Assert.That(prefab,Is.Not.Null);
-            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true).Select(x=>x.GetType().FullName),Is.EquivalentTo(new[]{"Game.SurvivorBarnRoof"}));Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
+            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true).Select(x=>x.GetType().FullName),Is.EquivalentTo(new[]{"Game.SurvivorBarnRoof","Game.SurvivorBarnRoof"}));Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
             Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.InRange(1,24),"静态几何按材质合并，不能逐块石头保留绘制对象");
             var footprints=prefab.transform.Find("BlockingFootprints");Assert.That(footprints,Is.Not.Null);var layout=Layout();Assert.That(footprints.childCount,Is.EqualTo(layout.Obstacles.Count));
             for(int i=0;i<footprints.childCount;i++){
@@ -54,8 +54,9 @@ namespace Game.Tests
         }
         [Test] public void BarnsHayAndTreeTrunksHaveRealFootprints()
         {
-            var p=Layout();foreach(var point in new[]{new Vector2(-23,20),new Vector2(15.7f,21),new Vector2(24.3f,21),new Vector2(17,17.7f),new Vector2(23,17.7f),new Vector2(17,24.3f),new Vector2(23,24.3f),new Vector2(-24,13),new Vector2(22,-15),new Vector2(-22,-24)})
+            var p=Layout();foreach(var point in new[]{new Vector2(-27.3f,20),new Vector2(-18.7f,20),new Vector2(-26,16.7f),new Vector2(-20,16.7f),new Vector2(-26,23.3f),new Vector2(-20,23.3f),new Vector2(15.7f,21),new Vector2(24.3f,21),new Vector2(17,17.7f),new Vector2(23,17.7f),new Vector2(17,24.3f),new Vector2(23,24.3f),new Vector2(-24,13),new Vector2(22,-15),new Vector2(-22,-24)})
                 Assert.That(p.IsWalkable(point.x,point.y,.5f,30.5f,30.5f),Is.False,point.ToString());
+            for(float z=15;z<=29.5f;z+=.25f)Assert.That(p.IsWalkable(-23,z,.5f,30.5f,30.5f),Is.True,"西仓房双门至后方边界通达 z="+z);
             for(float z=16;z<=26;z+=.25f)Assert.That(p.IsWalkable(20,z,.5f,30.5f,30.5f),Is.True,"仓房前后通道 z="+z);
         }
         /// <summary>采用版实际请求地址和新布局表必须进入真实收集，不能只凭AssetDatabase存在。</summary>

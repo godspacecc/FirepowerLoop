@@ -9,6 +9,56 @@ namespace Game.Tests
     {
         [TestCase(true)]
         [TestCase(false)]
+        public void BothBarnsFadeIndependentlyAndReleaseTogether(bool orthographic)
+        {
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");
+            var farm = Object.Instantiate(prefab);
+            var cameraObject = new GameObject("two barn test camera", typeof(Camera));
+            var view = new ArcadeCombatViewController();
+            try
+            {
+                var roofs = farm.GetComponentsInChildren<SurvivorBarnRoof>();
+                Assert.That(roofs.Length, Is.EqualTo(2));
+                const System.Reflection.BindingFlags hidden = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+                var field = typeof(ArcadeCombatViewController).GetField("survivorBarnRoofs", hidden);
+                Assert.That(field, Is.Not.Null);
+                field.SetValue(view, roofs);
+                var originals = new[] { roofs[0].GetComponent<MeshRenderer>().sharedMaterial, roofs[1].GetComponent<MeshRenderer>().sharedMaterial };
+                var camera = cameraObject.GetComponent<Camera>();
+                camera.orthographic = orthographic;
+                for (int current = 0; current < roofs.Length; current++)
+                {
+                    var plane = roofs[current].transform.Find("RoofPlaneLeft");
+                    camera.transform.SetPositionAndRotation(plane.position + Vector3.up * 10, Quaternion.LookRotation(Vector3.down, Vector3.forward));
+                    foreach (var roof in roofs) roof.Tick(camera, plane.position - Vector3.up * 4, 1);
+                    Assert.That(roofs[current].Opacity, Is.EqualTo(.32f).Within(.001f));
+                    Assert.That(roofs[1-current].Opacity, Is.EqualTo(1));
+                    Assert.That(roofs[1-current].GetComponent<MeshRenderer>().sharedMaterial, Is.SameAs(originals[1-current]));
+                }
+                // 分别保持两屋淡化后，通过真实场地释放路径检查全部归还。
+                foreach (var roof in roofs)
+                {
+                    var plane = roof.transform.Find("RoofPlaneLeft");
+                    camera.transform.SetPositionAndRotation(plane.position + Vector3.up * 10, Quaternion.LookRotation(Vector3.down, Vector3.forward));
+                    roof.Tick(camera, plane.position - Vector3.up * 4, 1);
+                }
+                typeof(ArcadeCombatViewController).GetMethod("ReleaseEarlyStageLoad", hidden).Invoke(view, null);
+                for (int i = 0; i < roofs.Length; i++)
+                {
+                    Assert.That(roofs[i].Opacity, Is.EqualTo(1));
+                    Assert.That(roofs[i].GetComponent<MeshRenderer>().sharedMaterial, Is.SameAs(originals[i]));
+                }
+                Assert.That((SurvivorBarnRoof[])field.GetValue(view), Is.Empty);
+            }
+            finally
+            {
+                Object.DestroyImmediate(cameraObject);
+                Object.DestroyImmediate(farm);
+            }
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
         public void ActualRoofFadesOnlyBetweenCameraAndPlayerAndRestores(bool orthographic)
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");

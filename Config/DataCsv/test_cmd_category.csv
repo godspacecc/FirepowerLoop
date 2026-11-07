@@ -1,6 +1,7 @@
 ##var,Id,Order,LabelText
 ##type,string,int,string
-,diagnostics,350,诊断工具
-,network-diagnostics,400,网络诊断
-,camera-view,500,相机视角
-,arcade-game,600,街机小游戏
+,mode-entry,100,模式入口
+,arcade-game,200,战斗测试
+,stage-items,300,关卡与道具
+,camera-view,400,视角与操作
+,diagnostics,500,运行诊断

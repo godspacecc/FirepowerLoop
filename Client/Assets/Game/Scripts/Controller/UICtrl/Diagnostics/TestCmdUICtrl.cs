@@ -29,8 +29,8 @@ namespace Game
         private bool keyboardExceptionReported;
         private int keyboardSubmitCallbackDepth;
 
-        private const string NoResultText = "暂无结果。";
-        private const string RecentLabelText = "最近";
+        private const string NoResultText = "尚未执行指令。";
+        private const string RecentLabelText = "最近使用";
         private const string EmptyRecentText = "暂无最近指令";
         private const string UnknownHistoryDescriptionText = "该历史指令没有可用的配置说明。";
 
@@ -238,14 +238,14 @@ namespace Game
                 cancellationToken.IsCancellationRequested || !IsShow() || UnityObjectState.IsMissing(UI) || !IsAuthenticated()) return;
             if (snapshot.Status == ServerTestCmdCatalogStatus.Available)
             {
-                serverCatalogCategories = snapshot.Categories.Select(x => new TestCmdCategoryDefinition(x.Id, x.Order, x.LabelText)).ToArray();
+                serverCatalogCategories = snapshot.Categories.Select(x => new TestCmdCategoryDefinition(x.Id, x.Order, x.Id == "server.general" ? "服务器工具" : x.LabelText)).ToArray();
                 serverCatalogEntries = snapshot.Entries.Select(x => new TestCmdEntryDefinition(x.Id, x.CategoryId, x.Order, x.LabelText,
                     x.CommandTemplate, x.DescriptionText, x.UsageText, x.ExampleText)).ToArray();
             }
             else
             {
                 string status = string.IsNullOrWhiteSpace(snapshot.StatusText) ? "服务器目录获取失败" : snapshot.StatusText;
-                serverCatalogCategories = new[] { new TestCmdCategoryDefinition("server.status", int.MaxValue - 1, "服务器") };
+                serverCatalogCategories = new[] { new TestCmdCategoryDefinition("server.status", int.MaxValue - 1, "服务器工具") };
                 serverCatalogEntries = new[] { new TestCmdEntryDefinition("server.status", "server.status", 0, status, string.Empty, status, string.Empty, string.Empty) };
             }
             RebuildMergedCatalog();

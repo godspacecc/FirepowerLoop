@@ -113,7 +113,7 @@ namespace Game.Tests
 
             Assert.That(GetPrivateEnumerableCount(ctrl, "categories"), Is.EqualTo(6));
             TestCmdCategoryBoxUI serverCategory = CreateRefreshedCategory(ctrl, 5);
-            Assert.That(serverCategory.TextLabel.text, Is.EqualTo("服务器"));
+            Assert.That(serverCategory.TextLabel.text, Is.EqualTo("服务器工具"));
             serverCategory.BtnSelect.onClick.Invoke();
             TestCmdEntryBoxUI ping = CreateRefreshedEntry(ctrl, 0);
             ping.BtnSelect.onClick.Invoke();
@@ -141,7 +141,7 @@ namespace Game.Tests
             yield return null;
             Assert.That(GetPrivate<string>(ctrl, "selectedCategoryId"), Is.EqualTo(TestCmdModel.RecentCategoryId));
             Assert.That(GetPrivateEnumerableCount(ctrl, "categories"), Is.EqualTo(6));
-            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近"));
+            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近使用"));
 
             UIHelper.HideUI<TestCmdUICtrl>();
             ctrl = UIHelper.ShowUI<TestCmdUICtrl>();
@@ -624,7 +624,7 @@ namespace Game.Tests
             Assert.That(entries.Select(item => item.Id), Is.Unique);
 
             // 验证实际生成目录覆盖全部客户端指令，不锁定中文文案以免正常说明更新导致误报。
-            var requiredTemplates = new[] { "#log", "#terrain", "#terrain instancing off", "#terrain instancing restore", "#mobileinput on", "#mobileinput off", "#netlog on", "#netlog off", "#camera topdown", "#camera shoulder", "#camera firstperson", "#arcade status", "#arcade heal", "#arcade damage ", "#arcade gold ", "#arcade bombs ", "#arcade dashes ", "#arcade drop ", "#arcade drop arcade.drop.first_person", "#arcade clear wave", "#arcade clear arena", "#unitbar on", "#unitbar off" };
+            var requiredTemplates = new[] { "#arcade solo", "#arcade online", "#arcade crater", "#log", "#terrain", "#terrain instancing off", "#terrain instancing restore", "#mobileinput on", "#mobileinput off", "#netlog on", "#netlog off", "#camera topdown", "#camera shoulder", "#camera firstperson", "#arcade status", "#arcade heal", "#arcade damage ", "#arcade gold ", "#arcade bombs ", "#arcade dashes ", "#arcade drop ", "#arcade clear wave", "#arcade clear arena", "#unitbar on", "#unitbar off" };
             Assert.That(entries.Select(item => item.CommandTemplate), Is.SupersetOf(requiredTemplates));
             var categoryIds = new HashSet<string>(categories.Select(item => item.Id));
             foreach (var entry in entries)
@@ -731,7 +731,7 @@ namespace Game.Tests
             Assert.That(GetPrivate<string>(ctrl, "selectedCategoryId"), Is.EqualTo(TestCmdModel.RecentCategoryId));
             Assert.That(GetPrivate<string>(ctrl, "selectedEntryId"), Is.Null);
             Assert.That(ui.InputCommand.text, Is.Empty);
-            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近"));
+            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近使用"));
             Assert.That(CreateRefreshedCategory(ctrl, 1).TextLabel.text, Is.EqualTo("背包物品"));
             Assert.That(CreateRefreshedCategory(ctrl, 2).TextLabel.text, Is.EqualTo("玩家状态"));
             Assert.That(CreateRefreshedCategory(ctrl, 3).TextLabel.text, Is.EqualTo("玩家属性"));
@@ -763,7 +763,7 @@ namespace Game.Tests
             var ui = GetBaseUI<TestCmdUI>(ctrl);
             Assert.That(network.Pending<C2G_GetServerTestCmdCatalog>(), Is.Empty);
             Assert.That(GetPrivateEnumerableCount(ctrl, "categories"), Is.EqualTo(5));
-            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近"));
+            Assert.That(CreateRefreshedCategory(ctrl, 0).TextLabel.text, Is.EqualTo("最近使用"));
             Assert.That(GetPrivateEnumerableCount(ctrl, "entries"), Is.EqualTo(1));
             Assert.That(GetPrivate<string>(ctrl, "selectedEntryId"), Is.EqualTo("#clone 1 1"));
             Assert.That(ui.InputCommand.text, Is.Empty);
@@ -793,7 +793,7 @@ namespace Game.Tests
             Assert.That(ui.TextExample.text, Is.EqualTo("示例：$ping"));
             Assert.That(ui.InputCommand.text, Is.EqualTo("$ping"));
             Assert.That(GetPrivateEnumerableCount(ctrl, "categories"), Is.EqualTo(6));
-            Assert.That(CreateRefreshedCategory(ctrl, 5).TextLabel.text, Is.EqualTo("服务器"));
+            Assert.That(CreateRefreshedCategory(ctrl, 5).TextLabel.text, Is.EqualTo("服务器工具"));
             Assert.That(GetPrivateEnumerableCount(ctrl, "entries"), Is.EqualTo(2));
             Assert.That(CreateRefreshedEntry(ctrl, 1).TextCommand.text, Is.EqualTo("$ping"));
 
