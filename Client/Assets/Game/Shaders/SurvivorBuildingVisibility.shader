@@ -8,7 +8,9 @@ Shader "Game/Survivor/Building Visibility"
         _Smoothness ("Smoothness", Range(0,1)) = 0.5
         [HideInInspector] _BuildingSight ("Shared Sight Distances", 2D) = "black" {}
         [HideInInspector] _BuildingSightOrigin ("Eye XZ, Radius and Height", Vector) = (0,0,0,0)
-        [HideInInspector] _BuildingSurfaceParameters ("Interior Projection and Opacity", Vector) = (0,1,0,0)
+        [HideInInspector] _BuildingSightCone ("Forward XZ, Cone Cosine and Local Radius", Vector) = (0,0,0,0)
+        [HideInInspector] _BuildingSightGroundHeight ("Ground Height", Float) = 0
+        [HideInInspector] _BuildingSightOpacity ("Visible Surface Opacity", Range(0,1)) = 1
     }
     SubShader
     {
@@ -19,9 +21,11 @@ Shader "Game/Survivor/Building Visibility"
         TEXTURE2D(_BuildingSight);
         SAMPLER(sampler_BuildingSight);
         float4 _BuildingSightOrigin;
-        float4 _BuildingSurfaceParameters;
+        float4 _BuildingSightCone;
+        float _BuildingSightGroundHeight;
+        half _BuildingSightOpacity;
 
-        half VisibleBuildingSurface(float2 worldXZ, bool interior)
+        half VisibleBuildingSurface(float2 worldXZ)
         {
             float radius = _BuildingSightOrigin.z;
             float2 offset = worldXZ - _BuildingSightOrigin.xy;
@@ -30,13 +34,16 @@ Shader "Game/Survivor/Building Visibility"
                 return 0;
             if (distanceSquared < 0.000001)
                 return 1;
+            float distanceToEye = sqrt(distanceSquared);
+            // 角色自身脚边保留可读性；索敌仍按实际朝向限制。
+            if (distanceSquared > _BuildingSightCone.w &&
+                dot(_BuildingSightCone.xy, _BuildingSightCone.xy) > 0.5 &&
+                dot(_BuildingSightCone.xy, offset) < distanceToEye * _BuildingSightCone.z)
+                return 0;
             float angle = frac(atan2(offset.y, offset.x) * 0.1591549431);
             float4 encoded = SAMPLE_TEXTURE2D_LOD(_BuildingSight, sampler_BuildingSight, float2(angle, 0.5), 0);
-            float2 firstObstacle = float2(dot(encoded.rg, float2(65280, 255)),
-                dot(encoded.ba, float2(65280, 255))) * (radius / 65535.0);
-            // 实体表面允许淡出第一个阻挡体的厚度；屋顶只开到该阻挡体之前。
-            float limit = interior ? firstObstacle.x : firstObstacle.y + 0.035;
-            return sqrt(distanceSquared) <= limit ? 1 : 0;
+            float firstObstacle = dot(encoded.rg, float2(65280, 255)) * (radius / 65535.0);
+            return distanceToEye <= firstObstacle ? 1 : 0;
         }
         ENDHLSL
 
@@ -67,14 +74,17 @@ Shader "Game/Survivor/Building Visibility"
             {
                 half4 color;
                 LitPassFragment(input, color);
-                bool interior = _BuildingSurfaceParameters.x > 0.5;
                 // 所有表面都检查它在镜头中盖住的位置，避免透明后露出仍不可见的房间。
                 float3 towardCamera = GetWorldSpaceNormalizeViewDir(input.positionWS);
-                float2 coveredXZ = input.positionWS.xz - towardCamera.xz *
-                    ((input.positionWS.y - _BuildingSightOrigin.w) / max(towardCamera.y, 0.001));
-                half visible = VisibleBuildingSurface(coveredXZ, true);
-                if (!interior) visible *= VisibleBuildingSurface(input.positionWS.xz, false);
-                color.a = lerp(1, _BuildingSurfaceParameters.y, visible);
+                // 从低墙下方地面连续过渡到高处的眼高平面，取样始终位于表面之后。
+                float height = input.positionWS.y - _BuildingSightGroundHeight;
+                float eyeHeight = max(0, _BuildingSightOrigin.w - _BuildingSightGroundHeight);
+                float behind = height - clamp(height - eyeHeight * 0.5, 0, eyeHeight);
+                float2 coveredXZ = input.positionWS.xz -
+                    towardCamera.xz * (behind / max(towardCamera.y, 0.001));
+                half visible = behind > 0.001 && towardCamera.y > 0.001
+                    ? VisibleBuildingSurface(coveredXZ) : 0;
+                color.a = lerp(1, _BuildingSightOpacity, visible);
                 return color;
             }
             ENDHLSL

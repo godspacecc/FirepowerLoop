@@ -96,6 +96,7 @@ namespace Game
         /// <summary>显示准备带覆盖身体半径及短时移动；退出边界更宽，避免相机边缘反复借还。相机不可用时保守显示。</summary>
         private bool WantsEnemyPresentation(ArcadeEnemyRuntime enemy,bool hasBounds,Rect bounds)
         {
+            if(!view.IsSurvivorPointVisible(enemy.Position))return false;
             if(!hasBounds)return true;
             float margin=(presentedEnemies.Contains(enemy.Id)?6f:3f)+EnemyRadius(enemy)+Mathf.Max(0,enemy.Speed)*.25f;
             return enemy.Position.x>=bounds.xMin-margin&&enemy.Position.x<=bounds.xMax+margin&&

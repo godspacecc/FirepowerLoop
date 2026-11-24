@@ -10,10 +10,13 @@ namespace Game
         /// <summary>屋顶依据其所覆盖的室内位置取样，实体墙依据自身位置取样。</summary>
         public bool RevealInterior = true;
 
-        private const float RevealOpacity = .13f;
+        private const float RoofOpacity = .13f;
+        private const float WallOpacity = .44f;
         private static readonly int SightId = Shader.PropertyToID("_BuildingSight");
         private static readonly int OriginId = Shader.PropertyToID("_BuildingSightOrigin");
-        private static readonly int ParametersId = Shader.PropertyToID("_BuildingSurfaceParameters");
+        private static readonly int ConeId = Shader.PropertyToID("_BuildingSightCone");
+        private static readonly int GroundId = Shader.PropertyToID("_BuildingSightGroundHeight");
+        private static readonly int OpacityId = Shader.PropertyToID("_BuildingSightOpacity");
 
         private MeshRenderer surface;
         private Material original;
@@ -44,11 +47,13 @@ namespace Game
                 surface.GetPropertyBlock(originalBlock);
                 surface.sharedMaterial = faded;
             }
-            opacity = Mathf.MoveTowards(opacity, RevealOpacity, Mathf.Max(0f, seconds) * 4f);
+            opacity = Mathf.MoveTowards(opacity, RevealInterior ? RoofOpacity : WallOpacity, Mathf.Max(0f, seconds) * 4f);
             surface.GetPropertyBlock(block);
             block.SetTexture(SightId, sight.Texture);
             block.SetVector(OriginId, sight.Origin);
-            block.SetVector(ParametersId, new Vector4(RevealInterior ? 1f : 0f, opacity, 0f, 0f));
+            block.SetVector(ConeId, sight.Cone);
+            block.SetFloat(GroundId, sight.GroundHeight);
+            block.SetFloat(OpacityId, opacity);
             surface.SetPropertyBlock(block);
         }
 

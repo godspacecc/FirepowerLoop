@@ -989,6 +989,33 @@ namespace Game.Tests
             view.TargetVisible=true;Call("Fire");Call("TickDrone",.01f);
             Assert.That(bullets.Count,Is.EqualTo(2),"进入画面后步枪和无人机都应恢复攻击");
         }
+        [Test] public void RifleDoesNotAcquireOrRetainTargetsOutsidePlayerSight()
+        {
+            var enemy = new ArcadeEnemyRuntime { Id = 901, Health = 100, MaxHealth = 100, Position = new Vector2(0, 4) };
+            Get<Dictionary<int, ArcadeEnemyRuntime>>("enemies").Add(enemy.Id, enemy);
+            var bullets = Get<Dictionary<int, ArcadeProjectileRuntime>>("bullets");
+            view.SightVisible = false;
+            Call("Fire");
+            Assert.That(bullets, Is.Empty, "在镜头内但角色看不见时不能自动开火");
+            view.SightVisible = true;
+            Call("Fire");
+            Assert.That(Get<int>("rifleFacingTarget"), Is.EqualTo(enemy.Id));
+            int previousShots = bullets.Count;
+            view.SightVisible = false;
+            Call("Fire");
+            Assert.That(Get<int>("rifleFacingTarget"), Is.Zero, "离开视野时解除锁定");
+            Assert.That(bullets.Count, Is.EqualTo(previousShots), "已经发射的子弹不依赖重新锁定");
+        }
+        [Test] public void RifleProjectileStopsAtWallBeforeHittingEnemy()
+        {
+            Set("obstacles", new[] { new ArcadeObstacleDefinition(0, 2, 3, .25f, true) });
+            var enemy = new ArcadeEnemyRuntime { Id = 901, Health = 100, MaxHealth = 100, Position = new Vector2(0, 4) };
+            Get<Dictionary<int, ArcadeEnemyRuntime>>("enemies").Add(enemy.Id, enemy);
+            Call("Shoot", Vector2.zero, Vector2.up, config.WeaponLevel("Rifle", 1), "Rifle");
+            Call("AdvanceBullets", .35f);
+            Assert.That(enemy.Health, Is.EqualTo(100));
+            Assert.That(Get<Dictionary<int, ArcadeProjectileRuntime>>("bullets"), Is.Empty);
+        }
         [Test] public void ExactOverlapKeepsOneDropWithAllExperience()
         {
             KillOne();KillOne();
@@ -1235,6 +1262,8 @@ namespace Game.Tests
             public bool TargetVisible=true;
             public Func<Vector2,bool> TargetVisibility;
             public bool IsArenaTargetVisible(Vector2 position)=>TargetVisible && (TargetVisibility?.Invoke(position)??true);
+            public bool SightVisible = true;
+            public bool IsSurvivorPointVisible(Vector2 position) => SightVisible;
             public bool Ready=true;
             public bool IsRoundLayoutReady=>Ready;
             public int PlayerWrites,CombatPoseWrites,Ends,RemovedDrops,GoldFeedbacks;

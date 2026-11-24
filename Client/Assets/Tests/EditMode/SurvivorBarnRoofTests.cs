@@ -13,6 +13,42 @@ namespace Game.Tests
         private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
 
         [Test]
+        public void ForwardSightTurnsWithPlayerAndStopsAtSolidWall()
+        {
+            var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
+            ArcadeCombatViewController view = null;
+            try
+            {
+                view = Prepare(farm);
+                var heading = typeof(ArcadeCombatViewController).GetMethod("SetSurvivorSightDirection");
+                var visible = typeof(ArcadeCombatViewController).GetMethod("IsSurvivorPointVisible");
+                Assert.That(heading, Is.Not.Null, "视线应接收角色朝向");
+                Assert.That(visible, Is.Not.Null, "目标显示与建筑应共用场地视线");
+                var outside = new Vector2(23.1f, 25.1f);
+                heading.Invoke(view, new object[] { Vector2.down });
+                view.SetSurvivorVisibility(1f, 6f, outside);
+                view.TickSurvivorBuildingVisibility(1f);
+                bool Seen(Vector2 point) => (bool)visible.Invoke(view, new object[] { point });
+                Assert.That(Seen(outside + Vector2.down * .25f), Is.True);
+                Assert.That(Seen(outside + Vector2.down * 2f), Is.False, "射线停在实墙");
+                Assert.That(Seen(outside + Vector2.up), Is.False, "背后不在前方视野内");
+                Assert.That(Seen(outside + Vector2.up * .25f), Is.False, "角色近身表现不扩大索敌视野");
+                heading.Invoke(view, new object[] { Vector2.up });
+                view.TickSurvivorBuildingVisibility(0f);
+                Assert.That(Seen(outside + Vector2.up), Is.True, "原地转身也刷新视野");
+                heading.Invoke(view, new object[] { Vector2.down });
+                view.SetSurvivorVisibility(1f, 6f, new Vector2(20f, 25.1f));
+                view.TickSurvivorBuildingVisibility(1f);
+                Assert.That(Seen(new Vector2(20f, 22f)), Is.True, "门洞后的可见内容");
+            }
+            finally
+            {
+                if (view != null) Release(view);
+                Object.DestroyImmediate(farm);
+            }
+        }
+
+        [Test]
         public void FormalFarmBindsBothRoofAndWallSurfacesToVisibility()
         {
             var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath);
@@ -25,7 +61,7 @@ namespace Game.Tests
         }
 
         [Test]
-        public void UpperWallFadesThroughItsThicknessButKeepsInteriorBlocked()
+        public void UpperWallAndRoofShareFirstObstruction()
         {
             var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
             ArcadeCombatViewController view = null;
@@ -45,18 +81,14 @@ namespace Game.Tests
                 var sight = (Texture2D)wallBlock.GetTexture("_BuildingSight");
                 Assert.That(sight, Is.Not.Null);
                 Assert.That(roofBlock.GetTexture("_BuildingSight"), Is.SameAs(sight));
-                Assert.That(wallBlock.GetVector("_BuildingSurfaceParameters").x, Is.Zero);
-                Assert.That(roofBlock.GetVector("_BuildingSurfaceParameters").x, Is.EqualTo(1f));
-                Assert.That(wallBlock.GetVector("_BuildingSurfaceParameters").y, Is.EqualTo(.13f).Within(.001f));
+                Assert.That(wallBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.44f).Within(.001f));
+                Assert.That(roofBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.13f).Within(.001f));
 
-                Vector2 limits = ReadRay(sight, Vector2.down, 6f);
-                Assert.That(limits.x, Is.EqualTo(.6f).Within(.015f), "最先命中墙的外侧");
-                Assert.That(limits.y, Is.EqualTo(1f).Within(.015f), "墙的内侧表面也能淡出");
+                Assert.That(ReadRay(sight, Vector2.down, 6f), Is.EqualTo(.6f).Within(.015f), "最先命中墙的外侧");
 
                 view.SetSurvivorVisibility(1f, 6f, new Vector2(center.x, player.y));
                 view.TickSurvivorBuildingVisibility(1f);
-                limits = ReadRay(sight, Vector2.down, 6f);
-                Assert.That(limits.x, Is.EqualTo(6f).Within(.015f), "通过门洞时同一视线延伸到室内");
+                Assert.That(ReadRay(sight, Vector2.down, 6f), Is.EqualTo(6f).Within(.015f), "通过门洞时同一视线延伸到室内");
             }
             finally
             {
@@ -113,11 +145,11 @@ namespace Game.Tests
         private static void Release(ArcadeCombatViewController view) =>
             typeof(ArcadeCombatViewController).GetMethod("ReleaseEarlyStageLoad", Hidden).Invoke(view, null);
 
-        private static Vector2 ReadRay(Texture2D field, Vector2 direction, float radius)
+        private static float ReadRay(Texture2D field, Vector2 direction, float radius)
         {
             float angle = Mathf.Repeat(Mathf.Atan2(direction.y, direction.x) / (2f * Mathf.PI), 1f);
             var color = (Color32)field.GetPixel(Mathf.FloorToInt(angle * field.width), 0);
-            return new Vector2(color.r * 256 + color.g, color.b * 256 + color.a) * (radius / 65535f);
+            return (color.r * 256 + color.g) * (radius / 65535f);
         }
     }
 }

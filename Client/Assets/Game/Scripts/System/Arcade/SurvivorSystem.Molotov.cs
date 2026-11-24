@@ -41,7 +41,7 @@ namespace Game
             enemySpatial.QueryCircle(player.x,player.y,range,molotovCandidates);
             foreach(int id in molotovCandidates)
             {
-                if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!view.IsArenaTargetVisible(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
+                if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!CanSeeTarget(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
                 float distance=(e.Position-player).sqrMagnitude;
                 if(distance>nearest||(distance==nearest&&target!=null&&id>target.Id))continue;
                 nearest=distance;target=e;

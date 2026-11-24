@@ -90,6 +90,7 @@ namespace Game
             // 拾取可达场也属于入口准备，不能等首批尸潮生成时在活动帧冷建整张网格。
             pickupNavigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.PlayerRadius,obstacles);
             player=Resolve(new Vector2(layout.SpawnX,layout.SpawnY),catalog.Rule.PlayerRadius);
+            facing=Vector2.up;
             if(missionMode)BeginMission();
             dronePosition=player+new Vector2(catalog.Rule.Drone.OffsetX,catalog.Rule.Drone.OffsetZ);droneFacing=Vector2.up;droneFireClock=0;
             try{this.SendEvent<SurvivorCharacterApplyEvent>();ownsView=true;view.Begin(layout.ArenaConfigNumber,HalfWidth,HalfHeight,obstacles);view.BeginSurvivorDayNight();view.SetSurvivorEnvironment(config.EnvironmentPrefabAddress);view.SetRoundLayout(layout);view.SetPlayerWeapon(weapon);input.Enable();Publish();return true;}
@@ -105,6 +106,7 @@ namespace Game
             view.SetPlayer(player,facing,true,false);
             if(view.TryGetPlayerPosition(out var initialPlayer))player=Resolve(initialPlayer,catalog.Rule.PlayerRadius);
             ProjectVisibility();
+            view.TickSurvivorBuildingVisibility(0f);
             battlePrepared=true;
         }
         /// <summary>失败可以用同一结果重试，不覆盖本局统计。</summary>
@@ -243,6 +245,8 @@ namespace Game
             float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
             var movement=input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt;
             if(movement.sqrMagnitude>0)player=Resolve(player+movement*ContactMoveMultiplier(),catalog.Rule.PlayerRadius);
+            if(input.MoveInput.sqrMagnitude>.0001f)facing=input.MoveInput.normalized;
+            var sightHeading=facing;
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
             ProjectVisibility();
@@ -252,7 +256,14 @@ namespace Game
             bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
             if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
-            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);TickSupport(dt);AdvanceBullets(dt);
+            AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();
+            // 自动射击能在可见范围内调整朝向，最终表现使用该帧的真实面向。
+            if (facing != sightHeading)
+            {
+                view.SetSurvivorSightDirection(facing);
+                view.TickSurvivorBuildingVisibility(0f);
+            }
+            TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);TickSupport(dt);AdvanceBullets(dt);
             bool collectAll=globalPickupInterval>0 && m.State.ElapsedSeconds>=nextGlobalPickup;
             if(collectAll){nextGlobalPickup+=globalPickupInterval;globalGoldThroughId=identity;}
             foreach(var pair in drops.ToArray())if(collectAll||Vector2.Distance(player,pair.Value.Position)<=config.PickupRadius+Bonus("Pickup")){m.State.AddExperience(pair.Value.Experience);drops.Remove(pair.Key);view.RemoveDrop(pair.Key);}
@@ -262,7 +273,10 @@ namespace Game
             foreach(var b in bullets.Values)
                 if(b.SourceWeaponId=="survivor.drone")view.SetDroneProjectile(b.Id,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,droneVisual.VisualOffset.y);
                 else view.SetProjectile(b.Id,false,b.Position,b.Velocity.normalized,weapon.ProjectileVisualResourceName,!IsSplitProjectile(b.Id));
-            foreach(var d in drops)view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
+            foreach(var d in drops)
+                if(view.IsSurvivorPointVisible(d.Value.Position))
+                    view.SetExperienceDrop(d.Key,config.ExperienceVisualPrefabAddress,d.Value.Position,d.Value.Experience);
+                else view.RemoveDrop(d.Key);
             if(m.Health<=0)TryFinish(out _);else {if(missionMode)TickMission(dt);Publish();}
         }
         /// <summary>从玩家所在可达地面爬出，不限制存活数量；没有安全落点时等待下一次刷新。</summary>
@@ -293,12 +307,15 @@ namespace Game
             foreach(int id in enemyCandidates)
             {
                 if(!enemies.TryGetValue(id,out var e)||e.Health<=0)continue;float distance=(e.Position-player).sqrMagnitude;
-                if(distance>nearest||!view.IsArenaTargetVisible(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
+                if(distance>nearest||!CanSeeTarget(e.Position)||Blocked(player,e.Position)||!CanAimGroundBody(e,player,.75f))continue;
                 if(distance==nearest&&target!=0&&id>target)continue;target=id;nearest=distance;
             }
             EnsureRifleMagazine();
             if(target==0||Model.RifleReloadRemaining>0||Model.RifleRounds<=0||!CanFirePrimary()){FaceMovementWhenNotFiring();return;}
-            rifleFacingTarget=(int)target;facing=(enemies[(int)target].Position-player).normalized;fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
+            rifleFacingTarget=(int)target;
+            var aim=enemies[rifleFacingTarget].Position-player;
+            if(aim.sqrMagnitude>.0001f)facing=aim.normalized;
+            fireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));
             ShootRifleVolley(level);view.SetPlayerFireSequence(++fireSequence,fireClock);
         }
         /// <summary>冷却只检查上次目标；失去射程、视线、生命或可用弹药立即恢复移动朝向。</summary>
@@ -308,7 +325,7 @@ namespace Game
                 enemies.TryGetValue(rifleFacingTarget,out var enemy)&&enemy.Health>0){
                 float range=Mathf.Min(CurrentAimRange,config.WeaponLevel("Rifle",Model.Loadout.LevelOf("Rifle")).Range);
                 var direction=enemy.Position-player;
-                if(direction.sqrMagnitude<=range*range&&view.IsArenaTargetVisible(enemy.Position)&&!Blocked(player,enemy.Position)&&CanAimGroundBody(enemy,player,.75f)){
+                if(direction.sqrMagnitude<=range*range&&CanSeeTarget(enemy.Position)&&!Blocked(player,enemy.Position)&&CanAimGroundBody(enemy,player,.75f)){
                     if(direction.sqrMagnitude>.0001f)facing=direction.normalized;
                     return;
                 }
@@ -339,7 +356,7 @@ namespace Game
             ArcadeEnemyRuntime target=null;float nearest=float.MaxValue;
             foreach(int id in enemyCandidates)
             {
-                if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!view.IsArenaTargetVisible(e.Position)||Blocked(dronePosition,e.Position)||!CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y))continue;
+                if(!enemies.TryGetValue(id,out var e)||e.Health<=0||!CanSeeTarget(e.Position)||Blocked(dronePosition,e.Position)||!CanAimGroundBody(e,dronePosition,droneVisual.VisualOffset.y))continue;
                 float distance=(e.Position-player).sqrMagnitude;if(distance<nearest||(distance==nearest&&(target==null||id<target.Id))){target=e;nearest=distance;}
             }
             if(target!=null){droneFacing=(target.Position-dronePosition).normalized;if(droneFireClock<=0&&CanFirePrimary()){Shoot(dronePosition,droneFacing,level,"Drone");droneFireClock=level.FireIntervalSeconds/(float)(1+Bonus("FireRate"));}}
@@ -394,7 +411,13 @@ namespace Game
         /// <summary>亮区与主角攻击边界来自同一份实时规则。</summary>
         private float CurrentAimRange=>SurvivorDayNightRules.Range(config.AimRange,config.NightAimRange,Model.State.ElapsedSeconds);
         /// <summary>使用投影后的实际玩家位置同步照明中心。</summary>
-        private void ProjectVisibility()=>view.SetSurvivorVisibility(SurvivorDayNightRules.NightWeight(Model.State.ElapsedSeconds),CurrentAimRange,player);
+        private void ProjectVisibility()
+        {
+            view.SetSurvivorSightDirection(facing);
+            view.SetSurvivorVisibility(SurvivorDayNightRules.NightWeight(Model.State.ElapsedSeconds),CurrentAimRange,player);
+        }
+        /// <summary>自动索敌只在俯视画面和角色视线同时可达时选择目标。</summary>
+        private bool CanSeeTarget(Vector2 position) => view.IsArenaTargetVisible(position) && view.IsSurvivorPointVisible(position);
         /// <summary>敌人中心和在途弹丸必须处于当前主角亮区内。</summary>
         private bool InsidePlayerVisibility(Vector2 position)=>(position-player).sqrMagnitude<=CurrentAimRange*CurrentAimRange;
         /// <summary>强化弹结算由同一权威分部完成，不引入第二套命中来源。</summary>

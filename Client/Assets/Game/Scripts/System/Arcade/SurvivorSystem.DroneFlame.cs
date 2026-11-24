@@ -42,7 +42,7 @@ namespace Game
             foreach(int id in droneFlameCandidates)
             {
                 if(!enemies.TryGetValue(id,out var enemy) || enemy.Health<=0 ||
-                    (enemy.Position-player).sqrMagnitude>visibleRange*visibleRange || !view.IsArenaTargetVisible(enemy.Position) ||
+                    (enemy.Position-player).sqrMagnitude>visibleRange*visibleRange || !CanSeeTarget(enemy.Position) ||
                     ProjectileWallBetween(dronePosition,enemy.Position) || !CanAimGroundBody(enemy,dronePosition,droneVisual.VisualOffset.y))continue;
                 droneFlameTargets.Add(enemy);
                 float distance=(enemy.Position-dronePosition).sqrMagnitude;

@@ -17,20 +17,30 @@ namespace Game
         private string survivorEnvironmentAddress;
         /// <summary>仅当前幸存者环境实例拥有的可淡出建筑表面。</summary>
         private SurvivorBuildingSurface[] survivorBuildingSurfaces = Array.Empty<SurvivorBuildingSurface>();
-        /// <summary>正式农场的阻挡足迹包含模型高度，沿用幸存者昼夜圆形范围。</summary>
+        /// <summary>正式农场的阻挡足迹包含模型高度，沿用幸存者昼夜距离。</summary>
         private readonly List<Bounds> survivorSightBlockers = new();
         private Vector2 survivorBuildingSightCenter;
+        private Vector2 survivorSightDirection;
         private float survivorBuildingSightRadius;
         private const float SurvivorSightEyeHeight = 1.55f;
         private SurvivorVisibilityField survivorVisibilityField;
 
-        /// <summary>在幸存者提交本帧位置和范围后，按需生成一份场地视线供所有表面使用。</summary>
+        /// <summary>提交最终面向，供建筑、敌人及物品共用。</summary>
+        public void SetSurvivorSightDirection(Vector2 direction) => survivorSightDirection = direction;
+
+        public bool IsSurvivorPointVisible(Vector2 position) =>
+            mapRoot == null || survivorVisibilityField == null ||
+            survivorVisibilityField.IsVisible(mapRoot.TransformPoint(new Vector3(position.x, 0f, position.y)));
+
+        /// <summary>提交本帧位置、面向和范围后刷新场地视线。</summary>
         public void TickSurvivorBuildingVisibility(float deltaTime)
         {
-            if (survivorBuildingSurfaces.Length == 0 || mapRoot == null || survivorBuildingSightRadius <= 0f) return;
+            if (survivorVisibilityField == null || mapRoot == null || survivorBuildingSightRadius <= 0f) return;
             var eye = mapRoot.TransformPoint(new Vector3(
                 survivorBuildingSightCenter.x, SurvivorSightEyeHeight, survivorBuildingSightCenter.y));
-            bool updated = false;
+            var ground = mapRoot.TransformPoint(new Vector3(survivorBuildingSightCenter.x, 0f, survivorBuildingSightCenter.y));
+            var heading = mapRoot.TransformDirection(new Vector3(survivorSightDirection.x, 0f, survivorSightDirection.y));
+            survivorVisibilityField.Update(eye, survivorBuildingSightRadius, new Vector2(heading.x, heading.z), ground.y);
             foreach (var surface in survivorBuildingSurfaces)
             {
                 if (surface == null) continue;
@@ -38,11 +48,6 @@ namespace Game
                 {
                     surface.Restore();
                     continue;
-                }
-                if (!updated)
-                {
-                    survivorVisibilityField.Update(eye, survivorBuildingSightRadius);
-                    updated = true;
                 }
                 surface.ApplyVisibility(survivorVisibilityField, deltaTime);
             }
@@ -155,6 +160,7 @@ namespace Game
             survivorBuildingSurfaces = Array.Empty<SurvivorBuildingSurface>();
             survivorVisibilityField?.Dispose();
             survivorVisibilityField = null;
+            survivorSightDirection = Vector2.zero;
             survivorSightBlockers.Clear();
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);

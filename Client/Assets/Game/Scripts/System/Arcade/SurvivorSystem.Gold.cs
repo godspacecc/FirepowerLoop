@@ -52,7 +52,8 @@ namespace Game
             goldRetryRemaining=Math.Max(0,goldRetryRemaining-dt);
             foreach(var pair in goldDrops.ToArray())
             {
-                view.SetDrop(pair.Key,goldVisual,pair.Value);
+                if(view.IsSurvivorPointVisible(pair.Value))view.SetDrop(pair.Key,goldVisual,pair.Value);
+                else view.RemoveDrop(pair.Key);
                 if(goldRetryRemaining>0||(pair.Key>globalGoldThroughId && Vector2.Distance(player,pair.Value)>config.PickupRadius+Bonus("Pickup")))continue;
                 if(!goldStore.TryCollect(goldRunToken+":"+(goldSequence+1),out var balance,out var error))
                 {

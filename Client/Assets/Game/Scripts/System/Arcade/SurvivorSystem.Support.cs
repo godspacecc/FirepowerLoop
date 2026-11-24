@@ -51,14 +51,14 @@ namespace Game
             {
                 int index=(missileSearchOffset+i)%missileTargets.Count;
                 if(!enemies.TryGetValue(missileTargets[index],out var candidate) || candidate.Health<=0 ||
-                    !view.IsArenaTargetVisible(candidate.Position) || !CanAimGroundBody(candidate,candidate.Position,.75f))continue;
+                    !CanSeeTarget(candidate.Position) || !CanAimGroundBody(candidate,candidate.Position,.75f))continue;
                 if(sampled++>=MissileSampleBudget){missileSearchOffset=index;break;}
                 var center=candidate.Position;
                 enemySpatial.QueryCircle(center.x,center.y,definition.AreaRadius,missileNeighbors);
                 int count=0;
                 foreach(int id in missileNeighbors)
                     if(MissileCanHit(id,center,out var neighbor) && (neighbor.Position-player).sqrMagnitude<=lockRange*lockRange &&
-                        view.IsArenaTargetVisible(neighbor.Position))count++;
+                        CanSeeTarget(neighbor.Position))count++;
                 float distance=(center-player).sqrMagnitude;
                 if(count<2 || count<bestCount || count==bestCount && distance>=bestDistance)continue;
                 impact=center;bestCount=count;bestDistance=distance;
