@@ -37,6 +37,52 @@ namespace Game.Tests
         }
         [TearDown] public void Cleanup(){system.Stop();input.Dispose();}
         private void Prepare(){Assert.That(Call("PrepareEnemyRoster",new object[]{null}),Is.True);}
+        [Test]
+        public void SpawnSwitchPausesBothSpawnPathsAndExistingEnemiesKeepMoving()
+        {
+            Prepare();
+            var app = new AppStateModel();
+            app.CurrentState.Value = AppState.Playing;
+            ((IBelongToArchitecture)system).GetArchitecture().RegisterModel(app);
+            var catalog = Get<ArcadeConfigCatalogDefinition>("catalog");
+            Set("weapon", catalog.Weapons.Single(x => x.Id == config.WeaponId));
+            Set("battlePrepared", true);
+            var port = new View { Visible = false, HasBounds = true };
+            Set("view", port);
+            model.Loadout = new SurvivorLoadout(config.WeaponSlots, "Rifle");
+            const string enemyId = "enemy.arcade.zombie.shambler";
+            var existing = new ArcadeEnemyRuntime { Id = 100, ConfigId = enemyId, Health = 100, Speed = 2f, Position = new Vector2(4f, 0f) };
+            var enemies = Get<Dictionary<int, ArcadeEnemyRuntime>>("enemies");
+            enemies.Add(existing.Id, existing);
+            var horde = Get<SurvivorHordeState>("horde");
+            horde.Add(0, enemyId, 10f, 0f, 2f, 1);
+            Set("hordeInitialized", true);
+            Set("hordeWaveClock", 1f);
+            Set("spawnClock", 0.02f);
+            Assert.That(Call("TrySetSpawningForTests", false, null), Is.True);
+            Call("TickFrame", 0.05f);
+
+            Assert.That(enemies.Count, Is.EqualTo(1));
+            Assert.That(existing.Position.x, Is.LessThan(4f));
+            Assert.That(horde.TotalCount, Is.EqualTo(1));
+            Assert.That(Get<float>("hordeWaveClock"), Is.EqualTo(1f));
+            Assert.That(Get<float>("spawnClock"), Is.EqualTo(0.02f));
+
+            Assert.That(Call("TrySetSpawningForTests", true, null), Is.True);
+            Call("TickFrame", 0.05f);
+            Assert.That(horde.TotalCount, Is.Zero);
+            Assert.That(enemies.Count, Is.EqualTo(2));
+            port.HasBounds = false;
+            Set("hordeInitialized", false);
+            Set("spawnClock", 0f);
+            Call("TickFrame", 0.05f);
+            Assert.That(enemies.Count, Is.EqualTo(3));
+
+            Assert.That(Call("TrySetSpawningForTests", false, null), Is.True);
+            system.Stop();
+            Assert.That(Get<bool>("spawningEnabled"), Is.True);
+        }
+
         /// <summary>同一敌种在4分钟与60分钟出生时，生命、伤害和移速均不增长。</summary>
         [TestCase(0d,0d)] [TestCase(.7d,.35d)] [TestCase(.999d,.999d)]
         public void SpawnStatsStayFixedOverSurvivalTime(double sample,double lateSample)
@@ -154,7 +200,9 @@ namespace Game.Tests
         }
         private sealed class View:IArcadeCombatViewPort
         {
-            public bool Hidden=true,Visible=true;
+            public bool Hidden=true,Visible=true,HasBounds;
+            public bool TryGetSurvivorViewBounds(out Rect bounds){bounds=new Rect(-20f,-20f,40f,40f);return HasBounds;}
+            public bool TryWakeSurvivorEnemy(int id,string configId,Vector2 position,int health,int maximum,int sequence,out string error){error=null;return true;}
             public float SpawnRadius;public Vector3 Scale;
             public bool GroundStarted;
             public void SetEnemyGroundEntry(int id,SurvivorGroundEntryState state){GroundStarted=state.Started;}

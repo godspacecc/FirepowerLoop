@@ -17,6 +17,34 @@ namespace Game.Tests
     public sealed class TestCmdTests
     {
         [Test]
+        public void SurvivorSpawnCommandRequiresOnOrOffAndAnActiveSurvivalRun()
+        {
+            var system = Game.Interface.GetSystem<TestCmdSystem>();
+            TestCmdExecutionResult Execute(string suffix) =>
+                system.ExecuteAsync("#survivor spawn " + suffix, CancellationToken.None).GetAwaiter().GetResult();
+
+            Assert.That(Execute("off").Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+            Assert.That(Execute("off extra").Code, Is.EqualTo(TestCmdResultCode.UsageError));
+            Assert.That(Execute("toggle").Code, Is.EqualTo(TestCmdResultCode.UsageError));
+
+            var survivor = Game.Interface.GetSystem<SurvivorSystem>();
+            var model = Game.Interface.GetModel<SurvivorModel>();
+            model.State = new SurvivorRunState(10, 5);
+            model.Active = true;
+            model.Paused = true;
+            var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+            typeof(SurvivorSystem).GetField("battlePrepared", flags).SetValue(survivor, true);
+            Assert.That(Execute("off").Success, Is.True);
+            Assert.That(Execute("ON").Success, Is.True);
+            var missionMode = typeof(SurvivorSystem).GetField("missionMode", flags);
+            missionMode.SetValue(survivor, true);
+            Assert.That(Execute("off").Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+            missionMode.SetValue(survivor, false);
+            model.State.Finish();
+            Assert.That(Execute("off").Code, Is.EqualTo(TestCmdResultCode.StateRejected));
+        }
+
+        [Test]
         public void HiddenModeCommandsRequireMainMenuAndExactSyntax()
         {
             foreach (var mode in new[] { "solo", "online" })

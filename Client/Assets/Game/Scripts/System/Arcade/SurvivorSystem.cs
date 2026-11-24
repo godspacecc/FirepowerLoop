@@ -39,6 +39,8 @@ namespace Game
         private bool ownsView,saved;
         /// <summary>入口确认完整战场后才提交；用于区分正常等待和开局后的场地丢失。</summary>
         private bool battlePrepared;
+        /// <summary>本局测试刷怪开关；关闭时冻结近场与远场出生调度。</summary>
+        private bool spawningEnabled = true;
         // 菜单暂停独立于升级暂停，选择强化不能解除菜单暂停。
         private bool menuPaused;
         public string LastError {get;private set;}
@@ -97,7 +99,21 @@ namespace Game
             catch(Exception ex){Stop();error=ex.Message;return false;}
         }
         /// <summary>释放现场，不修改闯关进度；正常退出必须先结算。</summary>
-        public void Stop(){globalPickupInterval=0;globalGoldThroughId=0;missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();ClearSupport();ClearDroneFlame();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+        public void Stop(){spawningEnabled=true;globalPickupInterval=0;globalGoldThroughId=0;missionMode=false;mission=null;missionSupplies=null;ClearSpecialEnemies();ClearMolotov();ClearSlimeBottle();ClearSupport();ClearDroneFlame();rifleFacingTarget=0;ResetRecovery();ResetHorde();battlePrepared=false;input?.Disable();if(ownsView)view?.End();ownsView=false;enemies.Clear();bullets.Clear();ClearModifiers();drops.Clear();goldDrops.Clear();goldRunToken=null;goldSequence=0;sizedNavigation.Clear();navigation=null;pickupNavigation=null;Model.Active=false;Model.Paused=false;Model.Loadout=null;Model.RifleRounds=Model.RifleCapacity=0;Model.RifleReloadRemaining=Model.RifleReloadDuration=0;Model.Choices=Array.Empty<int>();}
+
+        /// <summary>允许在幸存者生存局暂停期间切换刷怪，离场后恢复默认。</summary>
+        internal bool TrySetSpawningForTests(bool enabled, out string message)
+        {
+            if (missionMode || !battlePrepared || !Model.Active || Model.State == null || Model.State.Finished)
+            {
+                message = "请在已进入战场且尚未结算的幸存者生存局使用刷怪指令。";
+                return false;
+            }
+
+            spawningEnabled = enabled;
+            message = enabled ? "本局已恢复刷怪。" : "本局已暂停刷怪，场上的敌人会继续行动。";
+            return true;
+        }
         /// <summary>加载页释放之前复核完整战场；未准备好的现场不得交给玩家。</summary>
         public void ConfirmBattlePrepared()
         {
@@ -242,7 +258,8 @@ namespace Game
             if(!view.IsRoundLayoutReady||!view.IsSurvivorMolotovReady||m.Paused||this.GetModel<AppStateModel>().CurrentState.Value!=AppState.Playing||UIHelper.HasUIOpen)return;
             if(frameSeconds<=0)return;
             recoveryDamagedThisFrame=false;var previousPlayer=player;
-            float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
+            float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);fireClock-=dt;hurtClock-=dt;
+            if (missionMode || spawningEnabled) spawnClock -= dt;
             var movement=input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt;
             if(movement.sqrMagnitude>0)player=Resolve(player+movement*ContactMoveMultiplier(),catalog.Rule.PlayerRadius);
             view.SetPlayer(player,facing,true,hurtClock>0);
@@ -251,8 +268,18 @@ namespace Game
             view.TickSurvivorBuildingVisibility(dt);
             if(navigation==null)navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);
             navigation.SetTarget(player);
-            bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;
-            if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
+            if (!missionMode && spawningEnabled)
+            {
+                bool usesHorde = TickHorde(dt);
+                if (m.Paused) return;
+                if (spawnClock <= 0f)
+                {
+                    if (!usesHorde || ++nearbySpawnSequence % config.HordeNearEvery == 0) Spawn();
+                    if (m.Paused) return;
+                    spawnClock = SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds, config.SpawnIntervalSeconds,
+                        config.MinimumSpawnIntervalSeconds, config.SpawnIntervalReductionPerMinute);
+                }
+            }
             AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
             AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();
             TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);TickSupport(dt);AdvanceBullets(dt);

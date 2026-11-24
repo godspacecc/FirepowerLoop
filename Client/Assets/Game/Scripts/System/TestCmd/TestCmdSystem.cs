@@ -150,6 +150,11 @@ namespace Game
                 return ExecuteArcade(trimmed, parts);
             }
 
+            if (string.Equals(parts[0], "survivor", StringComparison.OrdinalIgnoreCase))
+            {
+                return ExecuteSurvivorSpawn(trimmed, parts);
+            }
+
             if (string.Equals(parts[0], "log", StringComparison.OrdinalIgnoreCase))
             {
                 return ExecuteRuntimeLog(trimmed, parts);
@@ -418,6 +423,22 @@ namespace Game
                 true);
         }
 
+        /// <summary>校验刷怪开关参数后交由幸存者系统处理当前战斗。</summary>
+        private TestCmdExecutionResult ExecuteSurvivorSpawn(string original, string[] parts)
+        {
+            if (parts.Length != 3 || !string.Equals(parts[1], "spawn", StringComparison.OrdinalIgnoreCase))
+                return Finish(original, Warning(TestCmdResultCode.UsageError, "用法：#survivor spawn on / off"), true);
+
+            bool enabled = string.Equals(parts[2], "on", StringComparison.OrdinalIgnoreCase);
+            if (!enabled && !string.Equals(parts[2], "off", StringComparison.OrdinalIgnoreCase))
+                return Finish(original, Warning(TestCmdResultCode.UsageError, "用法：#survivor spawn on / off"), true);
+
+            bool success = this.GetSystem<SurvivorSystem>().TrySetSpawningForTests(enabled, out var message);
+            return Finish(original, success
+                ? Result(true, true, TestCmdResultCode.SurvivorSpawnChanged, message)
+                : Warning(TestCmdResultCode.StateRejected, message), true);
+        }
+
         private static bool IsDecimalIntegerShape(string value)
         {
             if (string.IsNullOrEmpty(value))
@@ -501,6 +522,7 @@ namespace Game
                 case TestCmdResultCode.CameraModeChanged:
                 case TestCmdResultCode.MobileInputModeChanged:
                 case TestCmdResultCode.ArcadeCommandComplete:
+                case TestCmdResultCode.SurvivorSpawnChanged:
                 case TestCmdResultCode.CraterOpened:
                 case TestCmdResultCode.SoloEntryRequested:
                 case TestCmdResultCode.OnlineEntryRequested:
