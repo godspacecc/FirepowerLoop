@@ -17,6 +17,34 @@ namespace Game
         private string survivorEnvironmentAddress;
         /// <summary>仅当前幸存者环境实例拥有的仓房屋面。</summary>
         private SurvivorBarnRoof[] survivorBarnRoofs = Array.Empty<SurvivorBarnRoof>();
+        /// <summary>正式农场的阻挡足迹包含模型高度，沿用幸存者昼夜圆形范围。</summary>
+        private readonly List<Bounds> survivorRoofBlockers = new();
+        private Vector2 survivorRoofSightCenter;
+        private float survivorRoofSightRadius;
+        private const float SurvivorRoofEyeHeight = 1.55f;
+
+        /// <summary>在幸存者提交本帧位置和可视距离后，刷新场地屋顶。</summary>
+        public void TickSurvivorRoofVisibility(float deltaTime)
+        {
+            if (survivorBarnRoofs.Length == 0 || mapRoot == null || survivorRoofSightRadius <= 0f) return;
+            var eye = mapRoot.TransformPoint(new Vector3(
+                survivorRoofSightCenter.x, SurvivorRoofEyeHeight, survivorRoofSightCenter.y));
+            foreach (var roof in survivorBarnRoofs)
+                if (roof != null) roof.TickVisibility(eye, survivorRoofSightRadius, survivorRoofBlockers, deltaTime);
+        }
+
+        /// <summary>静态网格按材质合并，阻挡范围直接读取同源烘焙的物体包围盒。</summary>
+        private void PrepareSurvivorRoofVisibility(GameObject environment)
+        {
+            survivorBarnRoofs = environment.GetComponentsInChildren<SurvivorBarnRoof>(true);
+            if (survivorBarnRoofs.Length == 0) return;
+            var footprints = environment.transform.Find("BlockingFootprints");
+            if (footprints == null || footprints.childCount == 0)
+                throw new InvalidOperationException("幸存者仓房缺少视野阻挡数据");
+            survivorRoofBlockers.Clear();
+            foreach (Transform footprint in footprints)
+                survivorRoofBlockers.Add(new Bounds(footprint.position, footprint.lossyScale));
+        }
         public void SetSurvivorEnvironment(string address)
         {
             if(root==null||roundContentRoot!=null||earlyStageLoad!=null)throw new InvalidOperationException("幸存者场地必须在布局加载前指定");
@@ -75,7 +103,7 @@ namespace Game
                     for(int round=1;round<=4;round++)instance.transform.Find("Round_"+round).gameObject.SetActive(round==layout.RoundNumber);
                     BuildRoundEntryMarkers(layout);
                 }
-                if (!string.IsNullOrEmpty(survivorEnvironmentAddress)) survivorBarnRoofs = instance.GetComponentsInChildren<SurvivorBarnRoof>(true);
+                if (!string.IsNullOrEmpty(survivorEnvironmentAddress)) PrepareSurvivorRoofVisibility(instance);
                 instance.SetActive(true);earlyHerdTemplate=cow;
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();ProjectNextStageEnemies();
             }
@@ -109,6 +137,7 @@ namespace Game
             foreach (var roof in survivorBarnRoofs)
                 if (roof != null) roof.Restore();
             survivorBarnRoofs = Array.Empty<SurvivorBarnRoof>();
+            survivorRoofBlockers.Clear();
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);
             if(state.HerdHandle.IsValid)ResourceLoader.Release(state.HerdHandle);

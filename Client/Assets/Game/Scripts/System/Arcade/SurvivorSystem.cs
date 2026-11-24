@@ -246,6 +246,7 @@ namespace Game
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
             ProjectVisibility();
+            view.TickSurvivorRoofVisibility(dt);
             if(navigation==null)navigation=new SurvivorNavigation(HalfWidth,HalfHeight,catalog.Rule.EnemyContactRadius,obstacles);
             navigation.SetTarget(player);
             bool usesHorde=!missionMode&&TickHorde(dt);if(m.Paused)return;

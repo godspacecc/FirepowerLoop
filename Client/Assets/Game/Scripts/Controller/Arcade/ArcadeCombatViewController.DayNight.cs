@@ -119,9 +119,11 @@ namespace Game
         /// <summary>主角周围保持可见，远处随夜色压暗；攻击范围由System唯一决定。</summary>
         public void SetSurvivorVisibility(float night, float radius, Vector2 center)
         {
-            if (!survivorOwnsAmbient || survivorSun == null || survivorPlayerLight == null ||
-                float.IsNaN(night) || float.IsInfinity(night) || float.IsNaN(radius) || float.IsInfinity(radius) || radius <= 0 ||
+            if (float.IsNaN(night) || float.IsInfinity(night) || float.IsNaN(radius) || float.IsInfinity(radius) || radius <= 0 ||
                 float.IsNaN(center.x) || float.IsInfinity(center.x) || float.IsNaN(center.y) || float.IsInfinity(center.y)) return;
+            survivorRoofSightRadius = radius;
+            survivorRoofSightCenter = center;
+            if (!survivorOwnsAmbient || survivorSun == null || survivorPlayerLight == null) return;
             night = Mathf.Clamp01(night);
             survivorSun.intensity = Mathf.Lerp(survivorBaseSun,.015f,night);
             survivorSkyFill.intensity = Mathf.Lerp(survivorBaseSky,.005f,night);
@@ -141,6 +143,7 @@ namespace Game
         /// <summary>先归还全局光照，再由 End 销毁本局根；重复释放不触碰其它模式。</summary>
         private void ReleaseSurvivorDayNight()
         {
+            survivorRoofSightRadius = 0f;
             if (survivorLightingPipeline != null)
             {
                 if (QualitySettings.renderPipeline == survivorLightingPipeline) QualitySettings.renderPipeline = survivorPreviousPipeline;

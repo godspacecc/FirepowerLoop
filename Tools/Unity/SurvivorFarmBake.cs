@@ -20,7 +20,7 @@ foreach(Transform t in root)if(t.name.StartsWith("StoneWall_",StringComparison.O
 foreach(var group in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="FencePost"||r.name=="FenceRail").GroupBy(r=>Mathf.RoundToInt(r.transform.position.z)).OrderBy(g=>g.Key))result.Add(("Fence_"+group.Key,Union(group)));
 foreach(var wall in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name.StartsWith("PassableBarnWall",StringComparison.Ordinal)))result.Add((wall.name,wall.bounds));
 foreach(var r in root.GetComponentsInChildren<MeshRenderer>().Where(r=>r.name=="RoundHayBale"||r.name=="TreeTrunk"))result.Add((r.name,r.bounds));
-var clipped=new List<(string,Bounds)>();foreach(var part in result){var b=part.Item2;float minX=Mathf.Max(-30.48f,b.min.x),maxX=Mathf.Min(30.48f,b.max.x),minZ=Mathf.Max(-30.48f,b.min.z),maxZ=Mathf.Min(30.48f,b.max.z);if(maxX-minX<.001f||maxZ-minZ<.001f)continue;clipped.Add((part.Item1,new Bounds(new Vector3((minX+maxX)/2,0,(minZ+maxZ)/2),new Vector3(maxX-minX,1,maxZ-minZ))));}return clipped;}
+var clipped=new List<(string,Bounds)>();foreach(var part in result){var b=part.Item2;float minX=Mathf.Max(-30.48f,b.min.x),maxX=Mathf.Min(30.48f,b.max.x),minZ=Mathf.Max(-30.48f,b.min.z),maxZ=Mathf.Min(30.48f,b.max.z);if(maxX-minX<.001f||maxZ-minZ<.001f)continue;clipped.Add((part.Item1,new Bounds(new Vector3((minX+maxX)/2,b.center.y,(minZ+maxZ)/2),new Vector3(maxX-minX,b.size.y,maxZ-minZ))));}return clipped;}
 /// <summary>固定材质合并绘制组；正式环境没有业务组件、碰撞或摄像机。</summary>
 static object SaveConfirmed(Scene scene){
 const string art="Assets/Game/Art/Survivor/Farm";Folder(art);var footprints=Footprints();var sourceRenderers=root.GetComponentsInChildren<Renderer>();
@@ -36,11 +36,10 @@ foreach(var pair in groups.OrderBy(x=>x.Key.name,StringComparer.Ordinal)){var ma
  var source=root.Find(planeName+suffix);var plane=new GameObject(planeName).transform;plane.SetParent(part.transform,false);
  plane.localPosition=source.localPosition;plane.localRotation=source.localRotation;plane.localScale=source.localScale;
  }
- var faded=Mat("AccessibleBarnRoofTransparent",new Color(mat.color.r,mat.color.g,mat.color.b,.32f));
- faded.SetFloat("_Surface",1);faded.SetFloat("_SrcBlend",(float)UnityEngine.Rendering.BlendMode.SrcAlpha);
- faded.SetFloat("_DstBlend",(float)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
- faded.SetFloat("_ZWrite",0);faded.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");faded.SetOverrideTag("RenderType","Transparent");
- faded.renderQueue=(int)UnityEngine.Rendering.RenderQueue.Transparent;
+ var visibilityShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/Game/Shaders/SurvivorBarnRoof.shader");
+ if(visibilityShader==null)throw new InvalidOperationException("仓房视野着色器缺失");
+ var faded=new Material(visibilityShader){name="AccessibleBarnRoofTransparent",color=mat.color};
+ faded.CopyMatchingPropertiesFromMaterial(mat);owned.Add(faded);
  part.AddComponent<Game.SurvivorBarnRoof>().TransparentMaterial=Save(faded,art+"/"+faded.name+".mat");
 }
 if(mat.name=="GrassBlades")part.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;}

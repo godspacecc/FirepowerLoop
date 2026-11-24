@@ -33,6 +33,7 @@ namespace Game
         void SetSurvivorTime(double elapsedSeconds) { }
         /// <summary>投影权威昼夜权重、主角攻击半径和中心，不在表现层推进战斗。</summary>
         void SetSurvivorVisibility(float night, float radius, Vector2 center) { }
+        void TickSurvivorRoofVisibility(float deltaTime) { }
         /// <summary>幸存者权威爆炸的纯视觉采样；容量只限制表现，不影响伤害。</summary>
         void SetSurvivorBlast(int id,Vector2 position,float radius,float progress,int capacity) { }
         /// <summary>显示导弹预警与垂直下落；年龄由战斗系统推进。</summary>
@@ -1131,13 +1132,6 @@ namespace Game
         /// <summary>街机玩家不走普通玩家就绪事件，由街机表现帧统一推进本机与远端受击恢复。</summary>
         public void TickPlayerFeedback(float deltaTime)
         {
-            if (survivorBarnRoofs.Length > 0 && playerMotor != null && mapRoot != null)
-            {
-                var camera = Camera.main;
-                var player = playerMotor.Position + mapRoot.up;
-                foreach (var roof in survivorBarnRoofs)
-                    if (roof != null) roof.Tick(camera, player, deltaTime);
-            }
             TickWeaponEvolutionVisuals(deltaTime);
             TickFlamethrowerAudio(deltaTime);
             TickHerdFeedback(deltaTime);

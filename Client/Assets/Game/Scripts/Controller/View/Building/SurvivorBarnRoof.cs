@@ -1,63 +1,185 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
 {
-    /// <summary>由幸存者战场驱动，仅淡化挡住主角的仓房屋面。</summary>
+    /// <summary>仅在玩家从圆形视野内能看到的位置淡化仓房屋顶。</summary>
     public sealed class SurvivorBarnRoof : MonoBehaviour
     {
-        /// <summary>沿用正式透明表面参数，保留屋顶原纹理。</summary>
+        /// <summary>由农场预制件直接引用，随农场一起收集。</summary>
         public Material TransparentMaterial;
+
+        private const int MaskSize = 128;
+        private const float RevealOpacity = .10f;
+        // 现有谷仓屋檐比室内墙体宽，屋外地面不应从屋檐上开洞。
+        private const float EaveInset = .3f;
+        private static readonly int MaskId = Shader.PropertyToID("_RoofVisibilityMask");
+        private static readonly int AreaId = Shader.PropertyToID("_RoofVisibilityArea");
+        private static readonly int EyeHeightId = Shader.PropertyToID("_RoofEyeHeight");
+        private static readonly int OpacityId = Shader.PropertyToID("_RoofOpacity");
+
+        private readonly List<Bounds> nearbyBlockers = new();
         private MeshRenderer roof;
-        private Transform leftPlane, rightPlane;
-        private CameraOccluderView.FadeLease fade;
-        /// <summary>当前不透明度，组件停用时恢复。</summary>
+        private Material original;
+        private Material faded;
+        private MaterialPropertyBlock block;
+        private MaterialPropertyBlock originalBlock;
+        private Texture2D mask;
+        private byte[] pixels;
+        private Vector3 lastEye;
+        private float lastRadius = -1f;
+        private bool anyVisible;
+
+        /// <summary>无遮挡处的最低不透明度，屋顶未淡化时为 1。</summary>
         public float Opacity { get; private set; } = 1f;
 
-        /// <summary>从主角实际屏幕位置生成视线，兼容正交及透视镜头。</summary>
-        public void Tick(Camera camera, Vector3 player, float seconds)
+        /// <summary>以眼高平面生成本屋的可见区域，立体障碍以实际高度参与遮挡。</summary>
+        public void TickVisibility(Vector3 eye, float radius, IReadOnlyList<Bounds> blockers, float seconds)
         {
-            if (!isActiveAndEnabled) return;
+            if (!isActiveAndEnabled || TransparentMaterial == null || radius <= 0f) return;
             if (roof == null) roof = GetComponent<MeshRenderer>();
-            if (roof == null || TransparentMaterial == null) return;
-            bool covered = false;
-            if (camera != null)
+            if (roof == null) return;
+            var footprint = roof.bounds;
+            footprint.Expand(new Vector3(-2f * EaveInset, 0f, -2f * EaveInset));
+            var min = footprint.min;
+            var size = footprint.size;
+            var eyeOnRoof = new Vector3(eye.x, footprint.center.y, eye.z);
+            if (footprint.SqrDistance(eyeOnRoof) > radius * radius)
             {
-                Vector3 viewport = camera.WorldToViewportPoint(player);
-                if (viewport.z > camera.nearClipPlane)
+                Restore();
+                return;
+            }
+
+            // 场地阻挡在本局中固定；静止时复用当前范围，昼夜半径变化仍会重算。
+            if ((lastEye - eye).sqrMagnitude >= .0004f || Mathf.Abs(lastRadius - radius) >= .02f)
+            {
+                lastEye = eye;
+                lastRadius = radius;
+                anyVisible = UpdateMask(eye, radius, blockers, min, size);
+            }
+
+            if (!anyVisible)
+            {
+                ReleaseMaterial();
+                return;
+            }
+
+            if (faded == null)
+            {
+                original = roof.sharedMaterial;
+                faded = new Material(TransparentMaterial) { hideFlags = HideFlags.DontSave };
+                faded.CopyMatchingPropertiesFromMaterial(original);
+                block ??= new MaterialPropertyBlock();
+                originalBlock ??= new MaterialPropertyBlock();
+                roof.GetPropertyBlock(originalBlock);
+                roof.sharedMaterial = faded;
+            }
+            Opacity = Mathf.MoveTowards(Opacity, RevealOpacity, Mathf.Max(0f, seconds) * 4f);
+            roof.GetPropertyBlock(block);
+            block.SetTexture(MaskId, mask);
+            block.SetVector(AreaId, new Vector4(min.x, min.z, 1f / size.x, 1f / size.z));
+            block.SetFloat(EyeHeightId, eye.y);
+            block.SetFloat(OpacityId, Opacity);
+            roof.SetPropertyBlock(block);
+        }
+
+        /// <summary>单通道贴图把对应地面位置的可见性映射到屋顶。</summary>
+        private bool UpdateMask(Vector3 eye, float radius, IReadOnlyList<Bounds> blockers, Vector3 min, Vector3 size)
+        {
+            nearbyBlockers.Clear();
+            float radiusSquared = radius * radius;
+            // 只有位于玩家与本屋之间的包围盒才可能截断这些视线。
+            var lower = Vector3.Min(eye, min);
+            var upper = Vector3.Max(eye, min + size);
+            foreach (var bounds in blockers)
+            {
+                var low = bounds.min;
+                var high = bounds.max;
+                if (eye.y >= low.y && eye.y <= high.y && lower.x <= high.x && upper.x >= low.x &&
+                    lower.z <= high.z && upper.z >= low.z && bounds.SqrDistance(eye) <= radiusSquared)
+                    nearbyBlockers.Add(bounds);
+            }
+            pixels ??= new byte[MaskSize * MaskSize];
+            bool visible = false;
+            for (int z = 0; z < MaskSize; z++)
+            {
+                for (int x = 0; x < MaskSize; x++)
                 {
-                    Ray ray = camera.ViewportPointToRay(viewport);
-                    float distance = Vector3.Dot(player - ray.origin, ray.direction);
-                    if (leftPlane == null) leftPlane = transform.Find("RoofPlaneLeft");
-                    if (rightPlane == null) rightPlane = transform.Find("RoofPlaneRight");
-                    covered = CrossesPlane(leftPlane, ray, distance) || CrossesPlane(rightPlane, ray, distance);
+                    float dx = min.x + (x + .5f) * size.x / MaskSize - eye.x;
+                    float dz = min.z + (z + .5f) * size.z / MaskSize - eye.z;
+                    bool seen = dx * dx + dz * dz <= radiusSquared && !Blocked(eye, dx, dz);
+                    pixels[z * MaskSize + x] = seen ? byte.MaxValue : (byte)0;
+                    visible |= seen;
                 }
             }
-            Opacity = Mathf.MoveTowards(Opacity, covered ? .32f : 1f, Mathf.Max(0,seconds) * 3f);
-            if (Opacity >= 1f) { Restore(); return; }
-            fade ??= new CameraOccluderView.FadeLease(roof, TransparentMaterial);
-            fade.Apply(Opacity);
+            if (!visible) return false;
+            mask ??= new Texture2D(MaskSize, MaskSize, TextureFormat.R8, false, true)
+            {
+                name = "仓房屋顶视野", wrapMode = TextureWrapMode.Clamp,
+                filterMode = FilterMode.Bilinear, hideFlags = HideFlags.DontSave
+            };
+            mask.SetPixelData(pixels, 0);
+            mask.Apply(false, false);
+            return true;
         }
 
-        /// <summary>视线与实际屋面矩形相交且交点在主角前方时才淡化。</summary>
-        private static bool CrossesPlane(Transform plane, Ray ray, float distance)
+        /// <summary>在眼高处沿视线检测实体，保留门洞及低于视线的障碍。</summary>
+        private bool Blocked(Vector3 eye, float dx, float dz)
         {
-            if (plane == null) return false;
-            Vector3 origin = plane.InverseTransformPoint(ray.origin);
-            Vector3 direction = plane.worldToLocalMatrix.MultiplyVector(ray.direction);
-            var localRay = new Ray(origin, direction.normalized);
-            var box = new Bounds(Vector3.zero, Vector3.one);
-            if (box.Contains(origin)) return distance > 0;
-            if (!box.IntersectRay(localRay, out float hit)) return false;
-            Vector3 worldHit = plane.TransformPoint(localRay.GetPoint(hit));
-            return Vector3.Dot(worldHit - ray.origin, ray.direction) < distance;
+            // 倒数在每条视线上只计算一次；平行轴单独判断，避免边界处产生 NaN。
+            float inverseX = dx == 0 ? 0 : 1f / dx;
+            float inverseZ = dz == 0 ? 0 : 1f / dz;
+            foreach (var bounds in nearbyBlockers)
+            {
+                var min = bounds.min;
+                var max = bounds.max;
+                float enter = 0f, exit = 1f;
+                if (ClipAxis(eye.x, inverseX, min.x, max.x, ref enter, ref exit) &&
+                    ClipAxis(eye.z, inverseZ, min.z, max.z, ref enter, ref exit))
+                    return true;
+            }
+            return false;
         }
 
-        /// <summary>恢复不透明材质与阴影，并释放临时材质。</summary>
+        private static bool ClipAxis(float origin, float inverse, float min, float max, ref float enter, ref float exit)
+        {
+            if (inverse == 0f) return origin >= min && origin <= max;
+            float a = (min - origin) * inverse;
+            float b = (max - origin) * inverse;
+            enter = Mathf.Max(enter, Mathf.Min(a, b));
+            exit = Mathf.Min(exit, Mathf.Max(a, b));
+            return enter <= exit;
+        }
+
+        /// <summary>恢复原屋顶材质，并归还场地实例持有的临时贴图。</summary>
         public void Restore()
         {
-            fade?.Dispose();
-            fade = null;
+            ReleaseMaterial();
+            Release(mask);
+            mask = null;
+            lastRadius = -1f;
+            anyVisible = false;
+        }
+
+        private void ReleaseMaterial()
+        {
             Opacity = 1f;
+            if (faded == null) return;
+            if (roof != null)
+            {
+                roof.sharedMaterial = original;
+                roof.SetPropertyBlock(originalBlock);
+            }
+            Release(faded);
+            faded = null;
+            original = null;
+        }
+
+        private static void Release(Object asset)
+        {
+            if (asset == null) return;
+            if (Application.isPlaying) Destroy(asset);
+            else DestroyImmediate(asset);
         }
 
         private void OnDisable() => Restore();
