@@ -15,35 +15,51 @@ namespace Game
         private GameObject earlyHerdTemplate;
         /// <summary>仅当前幸存者现场生效，End清除，仍使用现有候选及句柄所有权。</summary>
         private string survivorEnvironmentAddress;
-        /// <summary>仅当前幸存者环境实例拥有的仓房屋面。</summary>
-        private SurvivorBarnRoof[] survivorBarnRoofs = Array.Empty<SurvivorBarnRoof>();
+        /// <summary>仅当前幸存者环境实例拥有的可淡出建筑表面。</summary>
+        private SurvivorBuildingSurface[] survivorBuildingSurfaces = Array.Empty<SurvivorBuildingSurface>();
         /// <summary>正式农场的阻挡足迹包含模型高度，沿用幸存者昼夜圆形范围。</summary>
-        private readonly List<Bounds> survivorRoofBlockers = new();
-        private Vector2 survivorRoofSightCenter;
-        private float survivorRoofSightRadius;
-        private const float SurvivorRoofEyeHeight = 1.55f;
+        private readonly List<Bounds> survivorSightBlockers = new();
+        private Vector2 survivorBuildingSightCenter;
+        private float survivorBuildingSightRadius;
+        private const float SurvivorSightEyeHeight = 1.55f;
+        private SurvivorVisibilityField survivorVisibilityField;
 
-        /// <summary>在幸存者提交本帧位置和可视距离后，刷新场地屋顶。</summary>
-        public void TickSurvivorRoofVisibility(float deltaTime)
+        /// <summary>在幸存者提交本帧位置和范围后，按需生成一份场地视线供所有表面使用。</summary>
+        public void TickSurvivorBuildingVisibility(float deltaTime)
         {
-            if (survivorBarnRoofs.Length == 0 || mapRoot == null || survivorRoofSightRadius <= 0f) return;
+            if (survivorBuildingSurfaces.Length == 0 || mapRoot == null || survivorBuildingSightRadius <= 0f) return;
             var eye = mapRoot.TransformPoint(new Vector3(
-                survivorRoofSightCenter.x, SurvivorRoofEyeHeight, survivorRoofSightCenter.y));
-            foreach (var roof in survivorBarnRoofs)
-                if (roof != null) roof.TickVisibility(eye, survivorRoofSightRadius, survivorRoofBlockers, deltaTime);
+                survivorBuildingSightCenter.x, SurvivorSightEyeHeight, survivorBuildingSightCenter.y));
+            bool updated = false;
+            foreach (var surface in survivorBuildingSurfaces)
+            {
+                if (surface == null) continue;
+                if (!surface.IsInRange(eye, survivorBuildingSightRadius))
+                {
+                    surface.Restore();
+                    continue;
+                }
+                if (!updated)
+                {
+                    survivorVisibilityField.Update(eye, survivorBuildingSightRadius);
+                    updated = true;
+                }
+                surface.ApplyVisibility(survivorVisibilityField, deltaTime);
+            }
         }
 
         /// <summary>静态网格按材质合并，阻挡范围直接读取同源烘焙的物体包围盒。</summary>
-        private void PrepareSurvivorRoofVisibility(GameObject environment)
+        private void PrepareSurvivorBuildingVisibility(GameObject environment)
         {
-            survivorBarnRoofs = environment.GetComponentsInChildren<SurvivorBarnRoof>(true);
-            if (survivorBarnRoofs.Length == 0) return;
+            survivorBuildingSurfaces = environment.GetComponentsInChildren<SurvivorBuildingSurface>(true);
+            if (survivorBuildingSurfaces.Length == 0) return;
             var footprints = environment.transform.Find("BlockingFootprints");
             if (footprints == null || footprints.childCount == 0)
                 throw new InvalidOperationException("幸存者仓房缺少视野阻挡数据");
-            survivorRoofBlockers.Clear();
+            survivorSightBlockers.Clear();
             foreach (Transform footprint in footprints)
-                survivorRoofBlockers.Add(new Bounds(footprint.position, footprint.lossyScale));
+                survivorSightBlockers.Add(new Bounds(footprint.position, footprint.lossyScale));
+            survivorVisibilityField = new SurvivorVisibilityField(survivorSightBlockers);
         }
         public void SetSurvivorEnvironment(string address)
         {
@@ -92,7 +108,7 @@ namespace Game
                 var cow=hasHerd?await herd.Task:null;
                 await stageTemplates;
                 if(!EarlyStageLoadIsCurrent(state))return;
-                if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Any(component => string.IsNullOrEmpty(survivorEnvironmentAddress) || !(component is SurvivorBarnRoof))||prefab.GetComponentsInChildren<Animator>(true).Length>0||
+                if(prefab==null||prefab.GetComponentsInChildren<Renderer>(true).Length==0||prefab.GetComponentsInChildren<Collider>(true).Length>0||prefab.GetComponentsInChildren<MonoBehaviour>(true).Any(component => string.IsNullOrEmpty(survivorEnvironmentAddress) || !(component is SurvivorBuildingSurface))||prefab.GetComponentsInChildren<Animator>(true).Length>0||
                     prefab.GetComponentsInChildren<Renderer>(true).Any(r=>r.sharedMaterials.Any(m=>m==null||m.shader==null)))throw new InvalidOperationException("已确认场地环境资源不完整");
                 if(hasHerd&&(cow==null||cow.GetComponent<ArcadeHerdVisual>()==null||!cow.GetComponent<ArcadeHerdVisual>().Validate(out _)||cow.GetComponentsInChildren<Collider>(true).Length>0))throw new InvalidOperationException("已确认牛模板资源不完整");
                 ValidateFourRoundEnvironment(prefab,stage,layout);
@@ -103,7 +119,7 @@ namespace Game
                     for(int round=1;round<=4;round++)instance.transform.Find("Round_"+round).gameObject.SetActive(round==layout.RoundNumber);
                     BuildRoundEntryMarkers(layout);
                 }
-                if (!string.IsNullOrEmpty(survivorEnvironmentAddress)) PrepareSurvivorRoofVisibility(instance);
+                if (!string.IsNullOrEmpty(survivorEnvironmentAddress)) PrepareSurvivorBuildingVisibility(instance);
                 instance.SetActive(true);earlyHerdTemplate=cow;
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();ProjectHerds();ProjectNextStageEnemies();
             }
@@ -134,10 +150,12 @@ namespace Game
             ClearHerdViews();
             ClearNextStageEnemies();
             var state=earlyStageLoad;earlyStageLoad=null;earlyHerdTemplate=null;
-            foreach (var roof in survivorBarnRoofs)
-                if (roof != null) roof.Restore();
-            survivorBarnRoofs = Array.Empty<SurvivorBarnRoof>();
-            survivorRoofBlockers.Clear();
+            foreach (var surface in survivorBuildingSurfaces)
+                if (surface != null) surface.Restore();
+            survivorBuildingSurfaces = Array.Empty<SurvivorBuildingSurface>();
+            survivorVisibilityField?.Dispose();
+            survivorVisibilityField = null;
+            survivorSightBlockers.Clear();
             if(state==null||state.Released)return;state.Released=true;
             if(state.EnvironmentHandle.IsValid)ResourceLoader.Release(state.EnvironmentHandle);
             if(state.HerdHandle.IsValid)ResourceLoader.Release(state.HerdHandle);

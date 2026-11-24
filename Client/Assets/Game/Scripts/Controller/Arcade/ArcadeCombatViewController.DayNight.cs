@@ -121,8 +121,8 @@ namespace Game
         {
             if (float.IsNaN(night) || float.IsInfinity(night) || float.IsNaN(radius) || float.IsInfinity(radius) || radius <= 0 ||
                 float.IsNaN(center.x) || float.IsInfinity(center.x) || float.IsNaN(center.y) || float.IsInfinity(center.y)) return;
-            survivorRoofSightRadius = radius;
-            survivorRoofSightCenter = center;
+            survivorBuildingSightRadius = radius;
+            survivorBuildingSightCenter = center;
             if (!survivorOwnsAmbient || survivorSun == null || survivorPlayerLight == null) return;
             night = Mathf.Clamp01(night);
             survivorSun.intensity = Mathf.Lerp(survivorBaseSun,.015f,night);
@@ -143,7 +143,7 @@ namespace Game
         /// <summary>先归还全局光照，再由 End 销毁本局根；重复释放不触碰其它模式。</summary>
         private void ReleaseSurvivorDayNight()
         {
-            survivorRoofSightRadius = 0f;
+            survivorBuildingSightRadius = 0f;
             if (survivorLightingPipeline != null)
             {
                 if (QualitySettings.renderPipeline == survivorLightingPipeline) QualitySettings.renderPipeline = survivorPreviousPipeline;

@@ -43,7 +43,7 @@ namespace Game.Tests
         [Test] public void FormalFarmIsStaticAndFootprintsMatchEveryAuthorityObstacle()
         {
             var prefab=AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");Assert.That(prefab,Is.Not.Null);
-            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true).Select(x=>x.GetType().FullName),Is.EquivalentTo(new[]{"Game.SurvivorBarnRoof","Game.SurvivorBarnRoof"}));Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
+            Assert.That(prefab.GetComponentsInChildren<Collider>(true),Is.Empty);Assert.That(prefab.GetComponentsInChildren<MonoBehaviour>(true).Select(x=>x.GetType().FullName),Is.EquivalentTo(new[]{"Game.SurvivorBuildingSurface","Game.SurvivorBuildingSurface","Game.SurvivorBuildingSurface"}));Assert.That(prefab.GetComponentsInChildren<Animator>(true),Is.Empty);
             Assert.That(prefab.GetComponentsInChildren<Renderer>(true).Length,Is.InRange(1,24),"静态几何按材质合并，不能逐块石头保留绘制对象");
             var footprints=prefab.transform.Find("BlockingFootprints");Assert.That(footprints,Is.Not.Null);var layout=Layout();Assert.That(footprints.childCount,Is.EqualTo(layout.Obstacles.Count));
             for(int i=0;i<footprints.childCount;i++){

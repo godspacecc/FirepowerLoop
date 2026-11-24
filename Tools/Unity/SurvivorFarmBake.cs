@@ -29,6 +29,10 @@ var groups=new Dictionary<Material,List<CombineInstance>>();
 foreach(var r in sourceRenderers){Mesh mesh;var filter=r.GetComponent<MeshFilter>();if(filter!=null)mesh=filter.sharedMesh;else if(r is LineRenderer line){mesh=new Mesh();line.BakeMesh(mesh,camera,true);owned.Add(mesh);}else throw new InvalidOperationException("不支持的环境Renderer："+r.name);
 if(mesh==null)throw new InvalidOperationException("环境缺少Mesh："+r.name);var materials=r.sharedMaterials;for(int sub=0;sub<mesh.subMeshCount;sub++){var mat=materials[Mathf.Min(sub,materials.Length-1)];if(!groups.TryGetValue(mat,out var list)){list=new List<CombineInstance>();groups.Add(mat,list);}list.Add(new CombineInstance{mesh=mesh,subMeshIndex=sub,transform=root.worldToLocalMatrix*r.transform.localToWorldMatrix});}}
 var output=new GameObject("SurvivorFarmVisual");SceneManager.MoveGameObjectToScene(output,scene);int index=0;long vertices=0;
+var visibilityShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/Game/Shaders/SurvivorBuildingVisibility.shader");
+if(visibilityShader==null)throw new InvalidOperationException("建筑视野着色器缺失");
+var faded=new Material(visibilityShader){name="AccessibleBarnRoofTransparent"};owned.Add(faded);
+var visibilityMaterial=Save(faded,art+"/"+faded.name+".mat");
 foreach(var pair in groups.OrderBy(x=>x.Key.name,StringComparer.Ordinal)){var mat=Save(pair.Key,art+"/"+pair.Key.name+".mat");var mesh=new Mesh{name="SurvivorFarm_"+pair.Key.name,indexFormat=UnityEngine.Rendering.IndexFormat.UInt32};owned.Add(mesh);mesh.CombineMeshes(pair.Value.ToArray(),true,true);mesh.RecalculateBounds();vertices+=mesh.vertexCount;var saved=Save(mesh,art+"/"+mesh.name+".asset");var part=new GameObject("Part_"+(index++)+"_"+mat.name,typeof(MeshFilter),typeof(MeshRenderer));part.transform.SetParent(output.transform,false);part.GetComponent<MeshFilter>().sharedMesh=saved;part.GetComponent<MeshRenderer>().sharedMaterial=mat;if(mat.name.StartsWith("AccessibleBarnTimber",StringComparison.Ordinal)){
  string suffix=mat.name.EndsWith("West",StringComparison.Ordinal)?"West":"";
  part.name="AccessibleBarnRoof"+suffix;
@@ -36,11 +40,11 @@ foreach(var pair in groups.OrderBy(x=>x.Key.name,StringComparer.Ordinal)){var ma
  var source=root.Find(planeName+suffix);var plane=new GameObject(planeName).transform;plane.SetParent(part.transform,false);
  plane.localPosition=source.localPosition;plane.localRotation=source.localRotation;plane.localScale=source.localScale;
  }
- var visibilityShader=AssetDatabase.LoadAssetAtPath<Shader>("Assets/Game/Shaders/SurvivorBarnRoof.shader");
- if(visibilityShader==null)throw new InvalidOperationException("仓房视野着色器缺失");
- var faded=new Material(visibilityShader){name="AccessibleBarnRoofTransparent",color=mat.color};
- faded.CopyMatchingPropertiesFromMaterial(mat);owned.Add(faded);
- part.AddComponent<Game.SurvivorBarnRoof>().TransparentMaterial=Save(faded,art+"/"+faded.name+".mat");
+ part.AddComponent<Game.SurvivorBuildingSurface>().TransparentMaterial=visibilityMaterial;
+}
+if(mat.name=="FarmPlaster"){
+ var walls=part.AddComponent<Game.SurvivorBuildingSurface>();
+ walls.RevealInterior=false;walls.TransparentMaterial=visibilityMaterial;
 }
 if(mat.name=="GrassBlades")part.GetComponent<MeshRenderer>().shadowCastingMode=UnityEngine.Rendering.ShadowCastingMode.Off;}
 var markers=new GameObject("BlockingFootprints");markers.transform.SetParent(output.transform,false);var lines=new List<string>{"name|x|z|halfWidth|halfHeight"};string F(float f)=>f.ToString("0.######",CultureInfo.InvariantCulture);

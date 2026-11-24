@@ -6,94 +6,118 @@ using UnityEngine;
 
 namespace Game.Tests
 {
-    /// <summary>在正式仓房实例上验证门洞遮挡、独立淡化与材质回收。</summary>
+    /// <summary>以正式农场验证墙体与屋顶共用的视线，以及退出清理。</summary>
     public sealed class SurvivorBarnRoofTests
     {
+        private const string FarmPath = "Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab";
+        private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
+
         [Test]
-        public void OutsideDoorRevealsOnlyVisibleRoofPixels()
+        public void FormalFarmBindsBothRoofAndWallSurfacesToVisibility()
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");
-            var farm = Object.Instantiate(prefab);
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath);
+            var surfaces = prefab.GetComponentsInChildren<SurvivorBuildingSurface>();
+            Assert.That(surfaces.Count(surface => surface.RevealInterior), Is.EqualTo(2));
+            var wall = surfaces.Single(surface => !surface.RevealInterior);
+            Assert.That(wall.GetComponent<MeshRenderer>().name, Does.EndWith("FarmPlaster"));
+            Assert.That(surfaces.Select(surface => surface.TransparentMaterial).Distinct().Single().shader.name,
+                Is.EqualTo("Game/Survivor/Building Visibility"));
+        }
+
+        [Test]
+        public void UpperWallFadesThroughItsThicknessButKeepsInteriorBlocked()
+        {
+            var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
+            ArcadeCombatViewController view = null;
             try
             {
-                var roof = farm.GetComponentInChildren<SurvivorBarnRoof>();
-                var renderer = roof.GetComponent<MeshRenderer>();
-                var original = renderer.sharedMaterial;
-                var center = renderer.bounds.center;
-                var opening = new Vector3(center.x, 1.2f, center.z - 4.5f);
-                float wallZ = center.z - 3.5f;
-                var walls = new[] {
-                    new Bounds(new Vector3(center.x - 3,1.5f,wallZ), new Vector3(3,3,.2f)),
-                    new Bounds(new Vector3(center.x + 3,1.5f,wallZ), new Vector3(3,3,.2f)),
-                    new Bounds(new Vector3(center.x, .2f,center.z-2), new Vector3(.5f,.4f,.5f))
-                };
-                roof.TickVisibility(opening, 6f, walls, 1f);
-                var properties = new MaterialPropertyBlock();
-                renderer.GetPropertyBlock(properties);
-                var mask = properties.GetTexture("_RoofVisibilityMask") as Texture2D;
-                Assert.That(mask, Is.Not.Null);
-                Assert.That(mask.GetPixelBilinear(.5f,.3f).r, Is.GreaterThan(.9f), "门洞与低箱后方可见");
-                Assert.That(mask.GetPixelBilinear(.06f,.12f).r, Is.LessThan(.1f), "端墙后方保持遮蔽");
-                Assert.That(mask.GetPixelBilinear(.5f,.95f).r, Is.LessThan(.1f), "超出圆形距离保持遮蔽");
-                walls[2] = new Bounds(new Vector3(center.x, 1.5f,center.z-2), new Vector3(.5f,3,.5f));
-                roof.TickVisibility(opening + Vector3.right * .03f, 6f, walls, 1f);
-                Assert.That(mask.GetPixelBilinear(.5f,.3f).r, Is.LessThan(.1f), "高箱后方保持遮蔽");
-                roof.Restore();
-                Assert.That(renderer.sharedMaterial, Is.SameAs(original));
+                view = Prepare(farm);
+                var surfaces = farm.GetComponentsInChildren<SurvivorBuildingSurface>();
+                var wall = surfaces.Single(surface => !surface.RevealInterior).GetComponent<MeshRenderer>();
+                var roof = surfaces.First(surface => surface.RevealInterior).GetComponent<MeshRenderer>();
+                var center = roof.bounds.center;
+                var player = new Vector2(center.x + 3.1f, center.z + 4.1f);
+                view.SetSurvivorVisibility(1f, 6f, player);
+                view.TickSurvivorBuildingVisibility(1f);
+
+                var wallBlock = ReadBlock(wall);
+                var roofBlock = ReadBlock(roof);
+                var sight = (Texture2D)wallBlock.GetTexture("_BuildingSight");
+                Assert.That(sight, Is.Not.Null);
+                Assert.That(roofBlock.GetTexture("_BuildingSight"), Is.SameAs(sight));
+                Assert.That(wallBlock.GetVector("_BuildingSurfaceParameters").x, Is.Zero);
+                Assert.That(roofBlock.GetVector("_BuildingSurfaceParameters").x, Is.EqualTo(1f));
+                Assert.That(wallBlock.GetVector("_BuildingSurfaceParameters").y, Is.EqualTo(.13f).Within(.001f));
+
+                Vector2 limits = ReadRay(sight, Vector2.down, 6f);
+                Assert.That(limits.x, Is.EqualTo(.6f).Within(.015f), "最先命中墙的外侧");
+                Assert.That(limits.y, Is.EqualTo(1f).Within(.015f), "墙的内侧表面也能淡出");
+
+                view.SetSurvivorVisibility(1f, 6f, new Vector2(center.x, player.y));
+                view.TickSurvivorBuildingVisibility(1f);
+                limits = ReadRay(sight, Vector2.down, 6f);
+                Assert.That(limits.x, Is.EqualTo(6f).Within(.015f), "通过门洞时同一视线延伸到室内");
+            }
+            finally
+            {
+                if (view != null) Release(view);
+                Object.DestroyImmediate(farm);
+            }
+        }
+
+        [Test]
+        public void LeavingRangeAndReleasingFarmRestoreOriginalMaterials()
+        {
+            var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
+            try
+            {
+                var view = Prepare(farm);
+                var renderers = farm.GetComponentsInChildren<SurvivorBuildingSurface>()
+                    .Select(surface => surface.GetComponent<MeshRenderer>()).ToArray();
+                var originals = renderers.Select(renderer => renderer.sharedMaterial).ToArray();
+                var roof = renderers.First(renderer => renderer.GetComponent<SurvivorBuildingSurface>().RevealInterior);
+
+                view.SetSurvivorVisibility(1f, 6f, new Vector2(roof.bounds.center.x, roof.bounds.center.z));
+                view.TickSurvivorBuildingVisibility(1f);
+                Assert.That(roof.sharedMaterial, Is.Not.SameAs(originals[System.Array.IndexOf(renderers, roof)]));
+
+                view.SetSurvivorVisibility(1f, 6f, new Vector2(0, -25));
+                view.TickSurvivorBuildingVisibility(1f);
+                CollectionAssert.AreEqual(originals, renderers.Select(renderer => renderer.sharedMaterial));
+
+                view.SetSurvivorVisibility(1f, 6f, new Vector2(roof.bounds.center.x, roof.bounds.center.z));
+                view.TickSurvivorBuildingVisibility(1f);
+                Release(view);
+                CollectionAssert.AreEqual(originals, renderers.Select(renderer => renderer.sharedMaterial));
+                Assert.That(renderers.All(renderer => ReadBlock(renderer).GetTexture("_BuildingSight") == null), Is.True);
             }
             finally { Object.DestroyImmediate(farm); }
         }
 
-        [Test]
-        public void FarmWallsControlBothRoofsAndReleaseRestoresMaterials()
+        private static ArcadeCombatViewController Prepare(GameObject farm)
         {
-            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/SurvivorFarmVisual.prefab");
-            var farm = Object.Instantiate(prefab);
-            try
-            {
-                const BindingFlags hidden = BindingFlags.Instance | BindingFlags.NonPublic;
-                var type = typeof(ArcadeCombatViewController);
-                var view = new ArcadeCombatViewController();
-                type.GetField("mapRoot", hidden).SetValue(view, farm.transform);
-                type.GetMethod("PrepareSurvivorRoofVisibility", hidden).Invoke(view, new object[] { farm });
-                var blockers = (System.Collections.Generic.List<Bounds>)type.GetField("survivorRoofBlockers", hidden).GetValue(view);
-                Assert.That(blockers[0].max.y, Is.LessThan(1.55f), "正式低石墙低于视线");
-                Assert.That(blockers[8].max.y, Is.GreaterThan(3f), "正式仓房墙壁高于视线");
+            var view = new ArcadeCombatViewController();
+            var type = typeof(ArcadeCombatViewController);
+            type.GetField("mapRoot", Hidden).SetValue(view, farm.transform);
+            type.GetMethod("PrepareSurvivorBuildingVisibility", Hidden).Invoke(view, new object[] { farm });
+            return view;
+        }
 
-                var roofs = farm.GetComponentsInChildren<SurvivorBarnRoof>();
-                Assert.That(roofs.Length, Is.EqualTo(2));
-                var renderers = roofs.Select(roof => roof.GetComponent<MeshRenderer>()).ToArray();
-                var originals = renderers.Select(renderer => renderer.sharedMaterial).ToArray();
-                for (int i = 0; i < roofs.Length; i++)
-                {
-                    var center = renderers[i].bounds.center;
-                    view.SetSurvivorVisibility(1, 5f, new Vector2(center.x + 5.1f, center.z));
-                    view.TickSurvivorRoofVisibility(1f);
-                    Assert.That(roofs[i].Opacity, Is.EqualTo(1f), "侧墙不能从屋外看到室内");
+        private static MaterialPropertyBlock ReadBlock(Renderer renderer)
+        {
+            var block = new MaterialPropertyBlock();
+            renderer.GetPropertyBlock(block);
+            return block;
+        }
 
-                    view.SetSurvivorVisibility(1, 5f, new Vector2(center.x, center.z + 4.4f));
-                    view.TickSurvivorRoofVisibility(.05f);
-                    Assert.That(roofs[i].Opacity, Is.InRange(.11f, .99f));
-                    Assert.That(roofs[1-i].Opacity, Is.EqualTo(1f));
-                    view.TickSurvivorRoofVisibility(1f);
-                    Assert.That(roofs[i].Opacity, Is.EqualTo(.1f).Within(.001f));
-                    Assert.That(renderers[i].sharedMaterial.shader.name, Is.EqualTo("Game/Survivor/Barn Roof Visibility"));
-                    Assert.That(renderers[1-i].sharedMaterial, Is.SameAs(originals[1-i]));
-                }
+        private static void Release(ArcadeCombatViewController view) =>
+            typeof(ArcadeCombatViewController).GetMethod("ReleaseEarlyStageLoad", Hidden).Invoke(view, null);
 
-                type.GetMethod("ReleaseEarlyStageLoad", hidden).Invoke(view, null);
-                for (int i = 0; i < roofs.Length; i++)
-                {
-                    Assert.That(roofs[i].Opacity, Is.EqualTo(1f));
-                    Assert.That(renderers[i].sharedMaterial, Is.SameAs(originals[i]));
-                    var properties = new MaterialPropertyBlock();
-                    renderers[i].GetPropertyBlock(properties);
-                    Assert.That(properties.GetTexture("_RoofVisibilityMask"), Is.Null);
-                }
-                Assert.That((SurvivorBarnRoof[])type.GetField("survivorBarnRoofs", hidden).GetValue(view), Is.Empty);
-                Assert.That(blockers, Is.Empty);
-            }
-            finally { Object.DestroyImmediate(farm); }
+        private static Vector2 ReadRay(Texture2D field, Vector2 direction, float radius)
+        {
+            float angle = Mathf.Repeat(Mathf.Atan2(direction.y, direction.x) / (2f * Mathf.PI), 1f);
+            var color = (Color32)field.GetPixel(Mathf.FloorToInt(angle * field.width), 0);
+            return new Vector2(color.r * 256 + color.g, color.b * 256 + color.a) * (radius / 65535f);
         }
     }
 }
