@@ -245,8 +245,6 @@ namespace Game
             float dt=Mathf.Min(frameSeconds,.05f);view.TickPlayerFeedback(dt);m.State.Advance(dt,false);view.SetSurvivorTime(m.State.ElapsedSeconds);spawnClock-=dt;fireClock-=dt;hurtClock-=dt;
             var movement=input.MoveInput*(float)(config.PlayerMoveSpeed*(1+Bonus("MoveSpeed")))*dt;
             if(movement.sqrMagnitude>0)player=Resolve(player+movement*ContactMoveMultiplier(),catalog.Rule.PlayerRadius);
-            if(input.MoveInput.sqrMagnitude>.0001f)facing=input.MoveInput.normalized;
-            var sightHeading=facing;
             view.SetPlayer(player,facing,true,hurtClock>0);
             if(view.TryGetPlayerPosition(out var actualPlayer))player=Resolve(actualPlayer,catalog.Rule.PlayerRadius);
             ProjectVisibility();
@@ -257,12 +255,6 @@ namespace Game
             if(!missionMode&&spawnClock<=0){if(!usesHorde||++nearbySpawnSequence%config.HordeNearEvery==0)Spawn();if(m.Paused)return;spawnClock=SurvivorCombatRules.SpawnInterval(m.State.ElapsedSeconds,config.SpawnIntervalSeconds,config.MinimumSpawnIntervalSeconds,config.SpawnIntervalReductionPerMinute);}
             AdvanceElementDamage(dt);AdvanceEnchantments(dt);TickEnemies(dt);AdvanceHostileProjectiles(dt);RebuildHordeSpatial();
             AdvanceModifierEffects(dt);AdvanceRifleReload(dt);Fire();
-            // 自动射击能在可见范围内调整朝向，最终表现使用该帧的真实面向。
-            if (facing != sightHeading)
-            {
-                view.SetSurvivorSightDirection(facing);
-                view.TickSurvivorBuildingVisibility(0f);
-            }
             TickDrone(dt);TickMolotov(dt);TickSlimeBottle(dt);TickSupport(dt);AdvanceBullets(dt);
             bool collectAll=globalPickupInterval>0 && m.State.ElapsedSeconds>=nextGlobalPickup;
             if(collectAll){nextGlobalPickup+=globalPickupInterval;globalGoldThroughId=identity;}
@@ -413,7 +405,6 @@ namespace Game
         /// <summary>使用投影后的实际玩家位置同步照明中心。</summary>
         private void ProjectVisibility()
         {
-            view.SetSurvivorSightDirection(facing);
             view.SetSurvivorVisibility(SurvivorDayNightRules.NightWeight(Model.State.ElapsedSeconds),CurrentAimRange,player);
         }
         /// <summary>自动索敌只在俯视画面和角色视线同时可达时选择目标。</summary>

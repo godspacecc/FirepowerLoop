@@ -13,33 +13,25 @@ namespace Game.Tests
         private const BindingFlags Hidden = BindingFlags.Instance | BindingFlags.NonPublic;
 
         [Test]
-        public void ForwardSightTurnsWithPlayerAndStopsAtSolidWall()
+        public void CircularSightCoversAllDirectionsAndStopsAtSolidWall()
         {
             var farm = Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>(FarmPath));
             ArcadeCombatViewController view = null;
             try
             {
                 view = Prepare(farm);
-                var heading = typeof(ArcadeCombatViewController).GetMethod("SetSurvivorSightDirection");
-                var visible = typeof(ArcadeCombatViewController).GetMethod("IsSurvivorPointVisible");
-                Assert.That(heading, Is.Not.Null, "视线应接收角色朝向");
-                Assert.That(visible, Is.Not.Null, "目标显示与建筑应共用场地视线");
                 var outside = new Vector2(23.1f, 25.1f);
-                heading.Invoke(view, new object[] { Vector2.down });
                 view.SetSurvivorVisibility(1f, 6f, outside);
                 view.TickSurvivorBuildingVisibility(1f);
-                bool Seen(Vector2 point) => (bool)visible.Invoke(view, new object[] { point });
-                Assert.That(Seen(outside + Vector2.down * .25f), Is.True);
-                Assert.That(Seen(outside + Vector2.down * 2f), Is.False, "射线停在实墙");
-                Assert.That(Seen(outside + Vector2.up), Is.False, "背后不在前方视野内");
-                Assert.That(Seen(outside + Vector2.up * .25f), Is.False, "角色近身表现不扩大索敌视野");
-                heading.Invoke(view, new object[] { Vector2.up });
-                view.TickSurvivorBuildingVisibility(0f);
-                Assert.That(Seen(outside + Vector2.up), Is.True, "原地转身也刷新视野");
-                heading.Invoke(view, new object[] { Vector2.down });
+                Assert.That(view.IsSurvivorPointVisible(outside + Vector2.down * .25f), Is.True);
+                Assert.That(view.IsSurvivorPointVisible(outside + Vector2.down * 2f), Is.False, "射线停在实墙");
+                Assert.That(view.IsSurvivorPointVisible(outside + Vector2.up), Is.True, "背后也在圆形范围内");
+                Assert.That(view.IsSurvivorPointVisible(outside + Vector2.right), Is.True, "侧面也在圆形范围内");
+                Assert.That(view.IsSurvivorPointVisible(outside + Vector2.right * 6.5f), Is.False, "圆外不可见");
+
                 view.SetSurvivorVisibility(1f, 6f, new Vector2(20f, 25.1f));
                 view.TickSurvivorBuildingVisibility(1f);
-                Assert.That(Seen(new Vector2(20f, 22f)), Is.True, "门洞后的可见内容");
+                Assert.That(view.IsSurvivorPointVisible(new Vector2(20f, 22f)), Is.True, "门洞后的可见内容");
             }
             finally
             {

@@ -4,14 +4,11 @@ using UnityEngine;
 
 namespace Game
 {
-    /// <summary>同一份前方视线用于建筑淡出、角色和道具显示以及自动瞄准。</summary>
+    /// <summary>同一份玩家周围视线用于建筑淡出、角色和道具显示以及自动瞄准。</summary>
     internal sealed class SurvivorVisibilityField : IDisposable
     {
         private const int RayCount = 2048;
         private const float FullCircle = 2f * Mathf.PI;
-        private const float HalfAngle = 48f;
-        private const float OwnFootprintRadius = .55f;
-        private static readonly float AngleCosine = Mathf.Cos(HalfAngle * Mathf.Deg2Rad);
         private static readonly Vector2[] Directions = BuildDirections();
         private readonly IReadOnlyList<Bounds> blockers;
         private readonly List<Bounds> inRange = new();
@@ -19,19 +16,16 @@ namespace Game
         private Texture2D texture;
         private Vector3 eye;
         private float radius;
-        private Vector2 heading;
 
         internal Texture2D Texture => texture;
         internal Vector4 Origin => new(eye.x, eye.z, radius, eye.y);
-        internal Vector4 Cone => new(heading.x, heading.y, AngleCosine, OwnFootprintRadius * OwnFootprintRadius);
         internal float GroundHeight { get; private set; }
 
         internal SurvivorVisibilityField(IReadOnlyList<Bounds> blockers) => this.blockers = blockers;
 
         /// <summary>实体足迹在本局固定，只在玩家移动或昼夜范围变化时刷新。</summary>
-        internal void Update(Vector3 nextEye, float nextRadius, Vector2 nextHeading, float groundHeight)
+        internal void Update(Vector3 nextEye, float nextRadius, float groundHeight)
         {
-            heading = nextHeading.normalized;
             GroundHeight = groundHeight;
             if (texture != null && (eye - nextEye).sqrMagnitude < .0004f && Mathf.Abs(radius - nextRadius) < .02f) return;
             eye = nextEye;
@@ -76,7 +70,6 @@ namespace Game
             if (squared > radius * radius) return false;
             if (squared < .000001f) return true;
             float distance = Mathf.Sqrt(squared);
-            if (heading != Vector2.zero && Vector2.Dot(heading, offset) < distance * AngleCosine) return false;
             float angle = Mathf.Repeat(Mathf.Atan2(offset.y, offset.x) / FullCircle, 1f);
             var sample = distances[Mathf.Min(RayCount - 1, Mathf.FloorToInt(angle * RayCount))];
             return distance <= (sample.r * 256 + sample.g) * (radius / 65535f);

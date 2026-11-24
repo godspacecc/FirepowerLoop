@@ -14,7 +14,6 @@ namespace Game
         private const float WallOpacity = .44f;
         private static readonly int SightId = Shader.PropertyToID("_BuildingSight");
         private static readonly int OriginId = Shader.PropertyToID("_BuildingSightOrigin");
-        private static readonly int ConeId = Shader.PropertyToID("_BuildingSightCone");
         private static readonly int GroundId = Shader.PropertyToID("_BuildingSightGroundHeight");
         private static readonly int OpacityId = Shader.PropertyToID("_BuildingSightOpacity");
 
@@ -51,7 +50,6 @@ namespace Game
             surface.GetPropertyBlock(block);
             block.SetTexture(SightId, sight.Texture);
             block.SetVector(OriginId, sight.Origin);
-            block.SetVector(ConeId, sight.Cone);
             block.SetFloat(GroundId, sight.GroundHeight);
             block.SetFloat(OpacityId, opacity);
             surface.SetPropertyBlock(block);

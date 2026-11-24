@@ -8,7 +8,6 @@ Shader "Game/Survivor/Building Visibility"
         _Smoothness ("Smoothness", Range(0,1)) = 0.5
         [HideInInspector] _BuildingSight ("Shared Sight Distances", 2D) = "black" {}
         [HideInInspector] _BuildingSightOrigin ("Eye XZ, Radius and Height", Vector) = (0,0,0,0)
-        [HideInInspector] _BuildingSightCone ("Forward XZ, Cone Cosine and Local Radius", Vector) = (0,0,0,0)
         [HideInInspector] _BuildingSightGroundHeight ("Ground Height", Float) = 0
         [HideInInspector] _BuildingSightOpacity ("Visible Surface Opacity", Range(0,1)) = 1
     }
@@ -21,7 +20,6 @@ Shader "Game/Survivor/Building Visibility"
         TEXTURE2D(_BuildingSight);
         SAMPLER(sampler_BuildingSight);
         float4 _BuildingSightOrigin;
-        float4 _BuildingSightCone;
         float _BuildingSightGroundHeight;
         half _BuildingSightOpacity;
 
@@ -35,11 +33,6 @@ Shader "Game/Survivor/Building Visibility"
             if (distanceSquared < 0.000001)
                 return 1;
             float distanceToEye = sqrt(distanceSquared);
-            // 角色自身脚边保留可读性；索敌仍按实际朝向限制。
-            if (distanceSquared > _BuildingSightCone.w &&
-                dot(_BuildingSightCone.xy, _BuildingSightCone.xy) > 0.5 &&
-                dot(_BuildingSightCone.xy, offset) < distanceToEye * _BuildingSightCone.z)
-                return 0;
             float angle = frac(atan2(offset.y, offset.x) * 0.1591549431);
             float4 encoded = SAMPLE_TEXTURE2D_LOD(_BuildingSight, sampler_BuildingSight, float2(angle, 0.5), 0);
             float firstObstacle = dot(encoded.rg, float2(65280, 255)) * (radius / 65535.0);
