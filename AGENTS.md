@@ -12,7 +12,7 @@ Boot 场景脏状态可按测试需要从磁盘重载，丢弃临时未保存变
 
 预览图片、视频、音频及验证报告、日志统一保存到仓库根目录 `Backup/Artifacts/`，按批次分目录；制作工具输出与文档链接同步使用该位置。候选美术资源仍放 `Client/Assets/Art/`，正式美术仍放 `Client/Assets/Game/Art/`。目录用途见 [备用资料说明](Backup/README.md)。
 
-美术选材先查游戏已用的 `Client/Assets/Game/`，再查已下载、尚未使用的 `Client/Assets/Art/`，最后查 Unity Package Manager → My Assets 中已购买、尚未下载的资源。三处均无合适资源时告知用户。详见 [美术资源库使用约定](Docs/美术资源库使用约定.md)。
+美术选材先查游戏已用的 `Client/Assets/Game/`，再查已下载、尚未使用的 `Client/Assets/Art/`，最后查 Unity Package Manager → My Assets 中已购买、尚未下载的资源。三处均无合适资源时告知用户。用于浏览选型的原包素材按发布商和包名放入 `Client/Assets/Art/`，供项目内正式维护的第三方原件归入 `Client/Assets/ThirdParty/`。每批同步更新 [美术资源来源总目录](Docs/美术资源来源总目录.md)。详见 [美术资源库使用约定](Docs/美术资源库使用约定.md)。
 
 备用素材 `Client/Assets/Art/` 与正式资源 `Client/Assets/Game/` 不互相引用。选中备用素材后，将所需资源和依赖整理为 Game 内的独立副本。需要引用正式角色、脚本或材质的对照场景及其配套素材放在 `Client/Assets/Editor/ArtPreviews/`。自制关卡无需在 Art 保留副本。
 
