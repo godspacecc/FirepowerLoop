@@ -131,7 +131,7 @@ public static class ArcadeIslandPassageAuthoring
                 new[] { 0,2,1,1,2,3,4,5,6,5,7,6,0,4,2,2,4,6,1,3,5,3,7,5,0,1,4,1,5,4,2,6,3,3,6,7 });
             var foot = MeshObject(owner, "SolidRockFoot", mesh, rock, false);
             foot.transform.localPosition = new Vector3(o.X, 0, o.Y);
-            var boulder = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/CoastStudy/PolyHaven/boulder_01.fbx")
+            var boulder = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ThirdParty/Poly Haven/Coast Study/boulder_01.fbx")
                 .GetComponentsInChildren<MeshFilter>(true).Single(f => f.name.EndsWith("LOD3", StringComparison.Ordinal)).sharedMesh;
             for (int stone = 0; stone < 5; stone++)
             {
@@ -172,7 +172,7 @@ public static class ArcadeIslandPassageAuthoring
     /// <summary>海边用不连续低礁石表现可见岸线，保留第二轮正东的码头平路。</summary>
     private static void CoastRocks(Transform owner, int round)
     {
-        var source = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Art/CoastStudy/PolyHaven/boulder_01.fbx")
+        var source = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/ThirdParty/Poly Haven/Coast Study/boulder_01.fbx")
             .GetComponentsInChildren<MeshFilter>(true).Single(f => f.name.EndsWith("LOD3", StringComparison.Ordinal)).sharedMesh;
         var region = new ArcadeIslandRegion(19.5f, 19.5f, round);
         for (int i = 0; i < region.Outer.Count; i += 4)

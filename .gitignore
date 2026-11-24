@@ -125,6 +125,30 @@ Client/UserSettings/
 /Tools/ProtocolGenerator/bin/
 /Client/Assets/HybridCLRGenerate/
 /Client/Assets/Art
+# 海岸样板迁移前仅本机保存的第三方候选素材
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/Bushes02.fbx*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/GrassPlant04.fbx*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/PathGround01.tif*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/PathGround01_N.png*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/diffuseGrassPlant02_N.png*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/diffuseGrassPlant04.png*
+/Client/Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment/diffuseGrassPlant04_N.png*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/aerial_beach_01_ao_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/aerial_beach_01_diff_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/aerial_beach_01_nor_gl_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/aerial_beach_01_rough_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/coast_rocks_02.fbx*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/coast_rocks_02_ao_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/coast_rocks_02_diff_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/coast_rocks_02_nor_gl_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/coast_rocks_02_rough_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/fern_02_diff_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/fern_02_rough_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/sand_rocks_small_01_ao_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/sand_rocks_small_01_diff_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/sand_rocks_small_01_nor_gl_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/sand_rocks_small_01_rough_1k.jpg*
+/Client/Assets/ThirdParty/Poly Haven/Coast Study/weathered_brown_planks_rough_1k.jpg*
 /Client/Assets/Tests/Results~
 
 !/Server/GameServer/ET.sln

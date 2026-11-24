@@ -6,11 +6,17 @@ import re
 import shutil
 
 ROOT = Path(__file__).resolve().parents[3]
-STUDY = ROOT / "Client/Assets/Art/CoastStudy"
+ASSETS = ROOT / "Client/Assets"
+STUDY = ASSETS / "Art/CoastStudy"
+ISLAND = ASSETS / "Game/Art/Arcade/Island/FixedRounds"
 OUTPUT = ROOT / "Backup/Artifacts/CoastArtStudy-20261021"
 OUTPUT.mkdir(parents=True, exist_ok=True)
 guid_paths = {}
-for meta in STUDY.rglob("*.meta"):
+source_roots = (STUDY, ASSETS / "ThirdParty/Poly Haven/Coast Study",
+                ASSETS / "ThirdParty/ALP_Assets/Nature Package - Forest Environment")
+source_metas = [meta for source in source_roots for meta in source.rglob("*.meta")]
+source_metas.extend(ISLAND / name for name in ("Sea.mat.meta", "CoastStudyWater.shader.meta"))
+for meta in source_metas:
     match = re.search(r"^guid: (\w+)", meta.read_text(encoding="utf-8"), re.M)
     if match:
         guid_paths[match[1]] = Path(str(meta)[:-5])
@@ -36,7 +42,7 @@ for asset in assets:
         raise RuntimeError(f"Missing sample meta: {meta}")
     files.add(meta)
     for parent in asset.parents:
-        if parent == STUDY.parent:
+        if parent == ASSETS:
             break
         folder_meta = Path(str(parent) + ".meta")
         if folder_meta.exists():

@@ -15,6 +15,8 @@ public static class ArcadeCoastArtStudy
 {
     private const string Folder="Assets/Art/CoastStudy";
     private const string Generated=Folder+"/Generated";
+    private const string PolyHaven="Assets/ThirdParty/Poly Haven/Coast Study";
+    private const string Forest="Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment";
     private static Transform root;
     private static Material sand,wetSand,stone,wood,iron,bark,leaf,leafLight,leafDry,fern,grass;
     private static GameObject rockSource,fernSource,grassSource;
@@ -32,7 +34,7 @@ public static class ArcadeCoastArtStudy
             throw new InvalidOperationException("请先保留当前脏场景，不能用样板覆盖");
         Directory.CreateDirectory(Generated);
         AssetDatabase.Refresh();
-        PrepareTextures();
+
         var previousScene=SceneManager.GetActiveScene();
         var previousTarget=RenderTexture.active;
         var previousPipeline=QualitySettings.renderPipeline;
@@ -45,10 +47,10 @@ public static class ArcadeCoastArtStudy
             SceneManager.SetActiveScene(scene);
             root=new GameObject("CoastArtStudy_仅样板未接入正式地图").transform;
             Materials();
-            var rockAsset=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/PolyHaven/boulder_01.fbx");
+            var rockAsset=AssetDatabase.LoadAssetAtPath<GameObject>(PolyHaven+"/boulder_01.fbx");
             rockSource=rockAsset!=null?rockAsset.GetComponentsInChildren<MeshFilter>().OrderByDescending(m=>m.name.Contains("LOD2")).First().gameObject:null;
-            fernSource=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/PolyHaven/fern_02.fbx");
-            grassSource=AssetDatabase.LoadAssetAtPath<GameObject>(Folder+"/Forest/GrassPlant02.fbx");
+            fernSource=AssetDatabase.LoadAssetAtPath<GameObject>(PolyHaven+"/fern_02.fbx");
+            grassSource=AssetDatabase.LoadAssetAtPath<GameObject>(Forest+"/GrassPlant02.fbx");
             if(rockSource==null||fernSource==null)throw new InvalidOperationException("海岸岩石或蕨类源模型未导入");
             Ground();
             Borders();
@@ -93,32 +95,16 @@ public static class ArcadeCoastArtStudy
         }
     }
 
-    /// <summary>只配置新样板贴图的导入设置，保留第三方源缓存及正式资源。</summary>
-    private static void PrepareTextures()
-    {
-        foreach(string path in AssetDatabase.FindAssets("t:Texture2D",new[]{Folder}).Select(AssetDatabase.GUIDToAssetPath))
-        {
-            var importer=(TextureImporter)AssetImporter.GetAtPath(path);
-            bool normal=path.Contains("_nor_gl_")||path.EndsWith("_N.png");
-            bool changed=importer.maxTextureSize!=2048||importer.textureType!=(normal?TextureImporterType.NormalMap:TextureImporterType.Default);
-            importer.maxTextureSize=2048;importer.wrapMode=TextureWrapMode.Repeat;
-            importer.textureType=normal?TextureImporterType.NormalMap:TextureImporterType.Default;
-            importer.sRGBTexture=!normal;importer.alphaIsTransparency=!normal;
-            importer.anisoLevel=8;
-            if(changed)importer.SaveAndReimport();
-        }
-    }
-
     private static Material Lit(string name,Color tint,string texture=null,float smooth=.12f)
     {
         var m=new Material(Shader.Find("Universal Render Pipeline/Lit"));m.name=name;
         m.SetColor("_BaseColor",tint);m.SetFloat("_Smoothness",smooth);
         if(texture!=null)
         {
-            m.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/PolyHaven/"+texture+"_diff_1k.jpg"));
-            var normal=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/PolyHaven/"+texture+"_nor_gl_1k.jpg");
+            m.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(PolyHaven+"/"+texture+"_diff_1k.jpg"));
+            var normal=AssetDatabase.LoadAssetAtPath<Texture2D>(PolyHaven+"/"+texture+"_nor_gl_1k.jpg");
             m.SetTexture("_BumpMap",normal);m.SetFloat("_BumpScale",.75f);m.EnableKeyword("_NORMALMAP");
-            var ao=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/PolyHaven/"+texture+"_ao_1k.jpg");
+            var ao=AssetDatabase.LoadAssetAtPath<Texture2D>(PolyHaven+"/"+texture+"_ao_1k.jpg");
             m.SetTexture("_OcclusionMap",ao);m.SetFloat("_OcclusionStrength",.75f);m.EnableKeyword("_OCCLUSIONMAP");
         }
         return Save(m,name);
@@ -136,11 +122,11 @@ public static class ArcadeCoastArtStudy
         leafDry=Lit("PalmDry",new Color(.43f,.34f,.13f),null,.12f);
         foreach(var m in new[]{leaf,leafLight,leafDry}){m.shader=Shader.Find("CoastStudy/Foliage");m.SetFloat("_Cull",0);EditorUtility.SetDirty(m);}
         fern=Lit("Fern",new Color(.78f,.93f,.62f),"fern_02");fern.shader=Shader.Find("CoastStudy/Foliage");fern.SetFloat("_Cull",0);
-        var fernAlpha=AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/PolyHaven/fern_02_diff_1k.png");
+        var fernAlpha=AssetDatabase.LoadAssetAtPath<Texture2D>(PolyHaven+"/fern_02_diff_1k.png");
         if(fernAlpha!=null)fern.SetTexture("_BaseMap",fernAlpha);
         fern.SetFloat("_AlphaClip",1);fern.SetFloat("_Cutoff",.35f);fern.EnableKeyword("_ALPHATEST_ON");fern.renderQueue=2450;EditorUtility.SetDirty(fern);
         grass=Lit("Grass",new Color(.54f,.73f,.35f));grass.shader=Shader.Find("CoastStudy/Foliage");grass.SetFloat("_Cull",0);
-        grass.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Folder+"/Forest/diffuseGrassPlant02.png"));
+        grass.SetTexture("_BaseMap",AssetDatabase.LoadAssetAtPath<Texture2D>(Forest+"/diffuseGrassPlant02.png"));
         grass.SetFloat("_AlphaClip",1);grass.SetFloat("_Cutoff",.42f);grass.EnableKeyword("_ALPHATEST_ON");
         grass.renderQueue=2450;EditorUtility.SetDirty(grass);
         palms=new[]{PalmMesh(0),PalmMesh(1),PalmMesh(2)};
@@ -170,7 +156,7 @@ public static class ArcadeCoastArtStudy
         water.transform.position=new Vector3(28,-.18f,0);
         var plane=PrimitiveMesh(PrimitiveType.Plane);water.GetComponent<MeshFilter>().sharedMesh=plane;
         water.transform.localScale=new Vector3(9,1,10);
-        water.GetComponent<Renderer>().sharedMaterial=Save(new Material(Shader.Find("CoastStudy/Water")),"Sea");
+        water.GetComponent<Renderer>().sharedMaterial=AssetDatabase.LoadAssetAtPath<Material>("Assets/Game/Art/Arcade/Island/FixedRounds/Sea.mat");
         // 浅滩湿沙窄带覆盖地表边缘，接水面而不是绘制硬直线。
         v.Clear();t.Clear();uv.Clear();
         for(int j=0;j<=140;j++)
