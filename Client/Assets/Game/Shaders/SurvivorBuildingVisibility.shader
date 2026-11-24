@@ -9,6 +9,7 @@ Shader "Game/Survivor/Building Visibility"
         [HideInInspector] _BuildingSight ("Shared Sight Distances", 2D) = "black" {}
         [HideInInspector] _BuildingSightOrigin ("Eye XZ, Radius and Height", Vector) = (0,0,0,0)
         [HideInInspector] _BuildingSightGroundHeight ("Ground Height", Float) = 0
+        [HideInInspector] _BuildingSightWallHeight ("Continuous Wall Height", Float) = 0
         [HideInInspector] _BuildingSightOpacity ("Visible Surface Opacity", Range(0,1)) = 1
     }
     SubShader
@@ -21,6 +22,7 @@ Shader "Game/Survivor/Building Visibility"
         SAMPLER(sampler_BuildingSight);
         float4 _BuildingSightOrigin;
         float _BuildingSightGroundHeight;
+        float _BuildingSightWallHeight;
         half _BuildingSightOpacity;
 
         half VisibleBuildingSurface(float2 worldXZ)
@@ -36,7 +38,7 @@ Shader "Game/Survivor/Building Visibility"
             float angle = frac(atan2(offset.y, offset.x) * 0.1591549431);
             float4 encoded = SAMPLE_TEXTURE2D_LOD(_BuildingSight, sampler_BuildingSight, float2(angle, 0.5), 0);
             float firstObstacle = dot(encoded.rg, float2(65280, 255)) * (radius / 65535.0);
-            return distanceToEye <= firstObstacle ? 1 : 0;
+            return saturate((firstObstacle - distanceToEye) / 0.14);
         }
         ENDHLSL
 
@@ -63,21 +65,42 @@ Shader "Game/Survivor/Building Visibility"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitInput.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/Shaders/LitForwardPass.hlsl"
 
+            // 对墙和屋面查询同一个可见范围。垂直墙带把覆盖段延伸至墙脚。
+            half CoveredVisibility(float3 positionWS, float3 normalWS)
+            {
+                float3 viewDirection = GetWorldSpaceNormalizeViewDir(positionWS);
+                bool fullWallStrip = _BuildingSightWallHeight > 0 &&
+                    dot(normalWS.xz, viewDirection.xz) > 0 &&
+                    dot(normalWS.xz, _BuildingSightOrigin.xy - positionWS.xz) < 0;
+                if (fullWallStrip)
+                {
+                    positionWS.y = _BuildingSightGroundHeight + _BuildingSightWallHeight;
+                    viewDirection = GetWorldSpaceNormalizeViewDir(positionWS);
+                }
+
+                float height = positionWS.y - _BuildingSightGroundHeight;
+                if (height < 0.025 || viewDirection.y <= 0.001)
+                    return 0;
+                float sightHeight = max(0, _BuildingSightOrigin.w - _BuildingSightGroundHeight);
+                float nearest = fullWallStrip ? 0.025 : max(0.025, height - sightHeight);
+                float2 direction = viewDirection.xz / viewDirection.y;
+                float2 nearPoint = positionWS.xz - direction * nearest;
+                float2 farPoint = positionWS.xz - direction * height;
+                half visible = 0;
+                [loop] for (int i = 0; i <= 8; ++i)
+                {
+                    visible = max(visible, VisibleBuildingSurface(lerp(nearPoint, farPoint, i * 0.125)));
+                    if (visible >= 1)
+                        break;
+                }
+                return visible;
+            }
+
             half4 BuildingFragment(Varyings input) : SV_Target
             {
                 half4 color;
                 LitPassFragment(input, color);
-                // 所有表面都检查它在镜头中盖住的位置，避免透明后露出仍不可见的房间。
-                float3 towardCamera = GetWorldSpaceNormalizeViewDir(input.positionWS);
-                // 从低墙下方地面连续过渡到高处的眼高平面，取样始终位于表面之后。
-                float height = input.positionWS.y - _BuildingSightGroundHeight;
-                float eyeHeight = max(0, _BuildingSightOrigin.w - _BuildingSightGroundHeight);
-                float behind = height - clamp(height - eyeHeight * 0.5, 0, eyeHeight);
-                float2 coveredXZ = input.positionWS.xz -
-                    towardCamera.xz * (behind / max(towardCamera.y, 0.001));
-                half visible = behind > 0.001 && towardCamera.y > 0.001
-                    ? VisibleBuildingSurface(coveredXZ) : 0;
-                color.a = lerp(1, _BuildingSightOpacity, visible);
+                color.a = lerp(1, _BuildingSightOpacity, CoveredVisibility(input.positionWS, input.normalWS));
                 return color;
             }
             ENDHLSL

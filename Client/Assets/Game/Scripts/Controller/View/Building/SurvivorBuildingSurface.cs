@@ -7,14 +7,14 @@ namespace Game
     {
         /// <summary>由场地预制件引用，随场地一起收集的透明表面材质。</summary>
         public Material TransparentMaterial;
-        /// <summary>屋顶依据其所覆盖的室内位置取样，实体墙依据自身位置取样。</summary>
+        /// <summary>屋顶按面覆盖，竖墙在挡住可见区域时按连续墙段覆盖。</summary>
         public bool RevealInterior = true;
 
-        private const float RoofOpacity = .13f;
-        private const float WallOpacity = .44f;
+        private const float VisibleOpacity = .48f;
         private static readonly int SightId = Shader.PropertyToID("_BuildingSight");
         private static readonly int OriginId = Shader.PropertyToID("_BuildingSightOrigin");
         private static readonly int GroundId = Shader.PropertyToID("_BuildingSightGroundHeight");
+        private static readonly int WallHeightId = Shader.PropertyToID("_BuildingSightWallHeight");
         private static readonly int OpacityId = Shader.PropertyToID("_BuildingSightOpacity");
 
         private MeshRenderer surface;
@@ -23,6 +23,7 @@ namespace Game
         private MaterialPropertyBlock block;
         private MaterialPropertyBlock originalBlock;
         private float opacity = 1f;
+        private float wallHeight;
 
         internal bool IsInRange(Vector3 eye, float radius)
         {
@@ -39,6 +40,7 @@ namespace Game
             if (faded == null)
             {
                 original = surface.sharedMaterial;
+                wallHeight = RevealInterior ? 0f : surface.bounds.size.y;
                 faded = new Material(TransparentMaterial) { hideFlags = HideFlags.DontSave };
                 faded.CopyMatchingPropertiesFromMaterial(original);
                 block ??= new MaterialPropertyBlock();
@@ -46,11 +48,12 @@ namespace Game
                 surface.GetPropertyBlock(originalBlock);
                 surface.sharedMaterial = faded;
             }
-            opacity = Mathf.MoveTowards(opacity, RevealInterior ? RoofOpacity : WallOpacity, Mathf.Max(0f, seconds) * 4f);
+            opacity = Mathf.MoveTowards(opacity, VisibleOpacity, Mathf.Max(0f, seconds) * 4f);
             surface.GetPropertyBlock(block);
             block.SetTexture(SightId, sight.Texture);
             block.SetVector(OriginId, sight.Origin);
             block.SetFloat(GroundId, sight.GroundHeight);
+            block.SetFloat(WallHeightId, wallHeight);
             block.SetFloat(OpacityId, opacity);
             surface.SetPropertyBlock(block);
         }

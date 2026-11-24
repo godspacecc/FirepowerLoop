@@ -73,8 +73,10 @@ namespace Game.Tests
                 var sight = (Texture2D)wallBlock.GetTexture("_BuildingSight");
                 Assert.That(sight, Is.Not.Null);
                 Assert.That(roofBlock.GetTexture("_BuildingSight"), Is.SameAs(sight));
-                Assert.That(wallBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.44f).Within(.001f));
-                Assert.That(roofBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.13f).Within(.001f));
+                Assert.That(wallBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.48f).Within(.001f));
+                Assert.That(wallBlock.GetFloat("_BuildingSightWallHeight"), Is.EqualTo(wall.bounds.size.y).Within(.001f));
+                Assert.That(roofBlock.GetFloat("_BuildingSightWallHeight"), Is.Zero);
+                Assert.That(roofBlock.GetFloat("_BuildingSightOpacity"), Is.EqualTo(.48f).Within(.001f));
 
                 Assert.That(ReadRay(sight, Vector2.down, 6f), Is.EqualTo(.6f).Within(.015f), "最先命中墙的外侧");
 
