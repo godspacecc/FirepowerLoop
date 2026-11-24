@@ -341,8 +341,8 @@ public static class RemainingStagesPreview
     static void DockArt()
     {
         Dock();
-        var weathered=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/CoastStudy/Generated/WeatheredWood.mat");
-        var metal=AssetDatabase.LoadAssetAtPath<Material>("Assets/Art/CoastStudy/Generated/RustIron.mat");
+        var weathered=AssetDatabase.LoadAssetAtPath<Material>("Assets/Editor/ArtPreviews/CoastStudy/Generated/WeatheredWood.mat");
+        var metal=AssetDatabase.LoadAssetAtPath<Material>("Assets/Editor/ArtPreviews/CoastStudy/Generated/RustIron.mat");
         var waterSource=File.ReadAllText("Assets/Game/Art/Arcade/Island/FixedRounds/CoastStudyWater.shader").Replace("CoastStudy/Water","Hidden/TempDockWaterCandidate")
             .Replace("float d=p.x-Shore(p.y); clip(d+0.24);","float d=8;")
             .Replace("float foam=(1-smoothstep(0.025,0.14,abs(d-0.06-Noise(p*4.2)*0.2)))*0.9;","float foam=0;");

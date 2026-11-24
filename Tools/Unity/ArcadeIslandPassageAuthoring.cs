@@ -14,7 +14,7 @@ public static class ArcadeIslandPassageAuthoring
     private const string Island = "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeIslandVisualSet.prefab";
     private const string Bank = "Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab";
     private const string Folder = "Assets/Game/Art/Arcade/Island/FixedRounds";
-    private const string Study = "Assets/Art/CoastStudy/Generated/";
+    private const string Study = "Assets/Editor/ArtPreviews/CoastStudy/Generated/";
     private static Material rock, sand, wood;
     private static Mesh[] palms;
     private static Material[] palmMaterials;

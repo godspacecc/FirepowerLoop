@@ -14,6 +14,8 @@ Boot 场景脏状态可按测试需要从磁盘重载，丢弃临时未保存变
 
 美术选材先查游戏已用的 `Client/Assets/Game/`，再查已下载、尚未使用的 `Client/Assets/Art/`，最后查 Unity Package Manager → My Assets 中已购买、尚未下载的资源。三处均无合适资源时告知用户。详见 [美术资源库使用约定](Docs/美术资源库使用约定.md)。
 
+备用素材 `Client/Assets/Art/` 与正式资源 `Client/Assets/Game/` 不互相引用。选中备用素材后，将所需资源和依赖整理为 Game 内的独立副本。需要引用正式角色、脚本或材质的对照场景及其配套素材放在 `Client/Assets/Editor/ArtPreviews/`。自制关卡无需在 Art 保留副本。
+
 对两个工程的公共修复分别审查和应用，不建立自动同步或共享框架。
 
 ## 协作与预览规则（全项目、长期生效）

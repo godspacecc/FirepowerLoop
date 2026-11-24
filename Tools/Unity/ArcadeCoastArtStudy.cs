@@ -13,7 +13,7 @@ using Object=UnityEngine.Object;
 /// <summary>独立海岸美术样板；只保存备用目录场景与截图，不替换正式地图、不运行战斗或写入存档。</summary>
 public static class ArcadeCoastArtStudy
 {
-    private const string Folder="Assets/Art/CoastStudy";
+    private const string Folder="Assets/Editor/ArtPreviews/CoastStudy";
     private const string Generated=Folder+"/Generated";
     private const string PolyHaven="Assets/ThirdParty/Poly Haven/Coast Study";
     private const string Forest="Assets/ThirdParty/ALP_Assets/Nature Package - Forest Environment";

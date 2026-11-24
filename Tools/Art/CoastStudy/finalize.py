@@ -7,7 +7,7 @@ import shutil
 
 ROOT = Path(__file__).resolve().parents[3]
 ASSETS = ROOT / "Client/Assets"
-STUDY = ASSETS / "Art/CoastStudy"
+STUDY = ASSETS / "Editor/ArtPreviews/CoastStudy"
 ISLAND = ASSETS / "Game/Art/Arcade/Island/FixedRounds"
 OUTPUT = ROOT / "Backup/Artifacts/CoastArtStudy-20261021"
 OUTPUT.mkdir(parents=True, exist_ok=True)
