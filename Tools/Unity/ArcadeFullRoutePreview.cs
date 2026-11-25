@@ -44,10 +44,12 @@ public static class ArcadeFullRoutePreview
             var light=new GameObject("FullRoutePreviewLight",typeof(Light)).GetComponent<Light>();light.type=LightType.Directional;light.intensity=1.8f;light.cullingMask=1<<31;light.transform.rotation=Quaternion.Euler(55,-30,0);
             rt=new RenderTexture(1400,1000,24);tex=new Texture2D(1400,1000,TextureFormat.RGB24,false);camera.targetTexture=rt;
             string directory=Path.GetFullPath(Path.Combine(Application.dataPath,"../Temp/FullRoutePreview"));Directory.CreateDirectory(directory);
-            foreach(var p in catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber!=1&&(arenaFilter==0||p.ArenaConfigNumber==arenaFilter)))
+            foreach(var p in catalog.RoundLayouts.Where(p=>arenaFilter==0||p.ArenaConfigNumber==arenaFilter))
             {
                 view=new SurvivorCombatViewController();var root=new GameObject("FullRoutePreview_"+p.Id);Set(view,"root",root);
-                view.ConfigureRoundBounds(catalog.Rule.ArenaHalfWidth,catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
+                var stage=catalog.EarlyStages.SingleOrDefault(item=>item.ArenaConfigNumber==p.ArenaConfigNumber);
+                Set(view,"earlyStage",stage);
+                view.ConfigureRoundBounds(stage?.HalfWidth??catalog.Rule.ArenaHalfWidth,stage?.HalfHeight??catalog.Rule.ArenaHalfHeight,catalog.Rule.PlayerRadius);
                 view.SetRoundLayout(p);
                 if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"轮级表现尚未完成");
                 if(p.SpecialKind!=0||p.BossKind!=0){view.RecordRoundEnemyPosition(1,new Vector2(0,-5));view.SetEnemyContent(1,p.SpecialKind,p.BossKind,true);view.SetRoundEnemyHealth(1,70,100);}

@@ -65,7 +65,7 @@ public static class ArenaBoundaryAuditPreview
             var lightObject = new GameObject("TemporaryBoundaryLight", typeof(Light));
             var light = lightObject.GetComponent<Light>(); light.type = LightType.Directional; light.intensity = 1.3f;
             light.cullingMask = 1 << 30; lightObject.transform.rotation = Quaternion.Euler(48, -32, 0);
-            foreach (var layout in catalog.RoundLayouts.Where(layout => layout.ArenaConfigNumber != 1))
+            foreach (var layout in catalog.RoundLayouts)
             {
                 view.End();
                 var root = new GameObject("BoundaryAuditRuntime"); root.transform.SetParent(map.DynamicObjectRoot, false);

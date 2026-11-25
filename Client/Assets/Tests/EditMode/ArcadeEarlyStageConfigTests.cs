@@ -17,14 +17,14 @@ namespace Game.Tests
         [Test] public void FarmIsTheOnlyConfiguredArenaAndHasNoCampaignExit()
         {
             var farm = catalog.Arenas.Single();
-            Assert.That(farm.ArenaNumber, Is.EqualTo(22));
+            Assert.That(farm.ArenaNumber, Is.EqualTo(1));
             Assert.That(farm.NextArenaNumbers, Is.Empty);
             Assert.That(catalog.RoundLayouts.Select(layout => layout.ArenaConfigNumber).Distinct(),
                 Is.EquivalentTo(new[] { farm.ArenaNumber }));
         }
         [Test] public void FarmFourYardsConnectThroughGatesAndBreachesButWallsAndShedsBlockMovement()
         {
-            var rounds=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==22).ToArray();Assert.That(rounds.Length,Is.EqualTo(4));
+            var rounds=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==1).ToArray();Assert.That(rounds.Length,Is.EqualTo(4));
             foreach(var p in rounds)
             {
                 Assert.That(p.FitsArena(30.5f,30.5f,.55f),Is.True,p.Id);

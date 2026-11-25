@@ -110,7 +110,7 @@ namespace Game.Tests
         {
             var provider = new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetSurvivor(out var config, out var error), Is.True, error);
-            Assert.That(config.LayoutId, Is.EqualTo("arena.22.round.1"));
+            Assert.That(config.LayoutId, Is.EqualTo("arena.1.round.1"));
             Assert.That(config.EnemyHealthGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemyDamageGrowthPerMinute,Is.Zero);
             Assert.That(config.EnemySpeedGrowthPerMinute,Is.Zero);

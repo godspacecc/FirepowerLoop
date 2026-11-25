@@ -76,8 +76,8 @@ namespace Game
                 roundEnemyRoot=RoundGroup(roundContentRoot.transform,"DedicatedEnemies");
                 if(earlyStage!=null&&earlyStage.ArenaConfigNumber==layout.ArenaConfigNumber)
                 {LoadConfirmedEarlyStage(layout).Forget();return;}
-                if(layout.ArenaConfigNumber!=1)BuildRoundEnvironment(layout);
-                if (layout.ArenaConfigNumber != 1) BuildRoundEntryMarkers(layout);
+                BuildRoundEnvironment(layout);
+                BuildRoundEntryMarkers(layout);
                 roundLayoutReady=true;roundLayoutLoadError=null;SyncRoundContentEnvironment();
             }
             catch(Exception e)
@@ -297,7 +297,7 @@ namespace Game
         {
             if(roundContentRoot==null)return;
             roundContentRoot.SetActive(!contentInRoom);
-            if(roundLayout?.ArenaConfigNumber!=1 && !contentInRoom && roundLayoutReady)
+            if(roundLayout != null && !contentInRoom && roundLayoutReady)
             {
                 HideEarlyStageBaseWalls();
                 HideBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);

@@ -64,7 +64,7 @@ namespace FirepowerLoop.Arcade
         public float ExitY { get; }
         public float ExitSpacing { get; }
         /// <summary>有固定入口的地图沿用入口坐标，其余主题保留四向出口。</summary>
-        public int ExitCount => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries.Count : ExitDirectionCount;
+        public int ExitCount => Entries.Count > 0 ? Entries.Count : ExitDirectionCount;
         /// <summary>只按活动战斗时间换入场通道，由权威推进且不附带预警。</summary>
         public float EntrySegmentSeconds { get; }
         /// <summary>普通敌人场外起点距场地边界的米数；特殊地图为零。</summary>
@@ -81,7 +81,7 @@ namespace FirepowerLoop.Arcade
         }
         /// <summary>规则与表现共用入口及四向落点。</summary>
         public MapPoint2D GetExitPosition(int direction, float halfWidth, float halfHeight, float playerRadius)
-            => ArenaConfigNumber>=21&&ArenaConfigNumber<=25 ? Entries[direction] : DirectionalExit(direction, ExitX, ExitY,
+            => Entries.Count > 0 ? Entries[direction] : DirectionalExit(direction, ExitX, ExitY,
                 halfWidth, halfHeight, playerRadius);
 
         /// <summary>把北侧出口依次旋转到四边。</summary>

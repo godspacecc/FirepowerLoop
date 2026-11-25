@@ -71,7 +71,7 @@ namespace Game.Tests
         {
             var exposed = new List<string>();
             Assert.That(catalog.RoundLayouts, Is.Not.Empty);
-            foreach (var layout in catalog.RoundLayouts.Where(layout => layout.ArenaConfigNumber != 1))
+            foreach (var layout in catalog.RoundLayouts)
             {
                 Start(layout); Assert.That(view.IsRoundLayoutReady, Is.True, layout.Id + " " + view.RoundLayoutLoadError);
                 for (int i = 0; i < 3; i++) Invoke("ReapplyBaseArenaOverlay");
@@ -80,7 +80,7 @@ namespace Game.Tests
             Assert.That(exposed, Is.Empty, "全部正式轮布局都必须保持覆盖：" + string.Join(",", exposed));
         }
 
-        [TestCase(22)]
+        [TestCase(1)]
         public void ConfirmedEnvironmentTakesOverOnlyAfterAllResourcesAreReady(int arena)
         {
             loader.DelayEnvironment = true; Start(arena);
@@ -94,7 +94,7 @@ namespace Game.Tests
         [Test]
         public void ShopRegionKeepsBaseHiddenWhenOverlayIsReapplied()
         {
-            Start(22);
+            Start(1);
             view.SetSlayerMartRegion(new ArcadeSlayerMartRegionLayout(1, 8, 6, 0, 0, 0, -4, 1, new[] { new ArcadeSlayerMartPoint(2, 2) }), new[] { 1 });
             Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();
             Assert.That(root.GetComponentsInChildren<Renderer>(true).Any(r => r.name == "NorthWall" && r.enabled), Is.True, "保留商店本身的正式墙体");
@@ -103,9 +103,9 @@ namespace Game.Tests
         [Test]
         public void ContentLoadFailureCannotExposeAnAlreadyReadyEnvironment()
         {
-            Start(22); AssertBaseHidden(); loader.FailContent = true;
+            Start(1); AssertBaseHidden(); loader.FailContent = true;
             LogAssert.Expect(LogType.Error, new Regex(".*前两场内容加载失败.*"));
-            Invoke("LoadContentAsync", 22);
+            Invoke("LoadContentAsync", 1);
             Assert.That(view.IsRoundLayoutReady, Is.True, "公共效果加载失败不能撤销已准备好的农场环境");
             AssertBaseHidden();
         }
@@ -115,7 +115,7 @@ namespace Game.Tests
         {
             baseRenderers[0].enabled = false;
             var original = baseRenderers.Select(r => r.enabled).ToArray();
-            Start(22);
+            Start(1);
             Set("contentTemplates", AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/SceneObjects/Arcade/ArcadeObstacleVisualSet.prefab").transform.Find("Content"));
             view.SetTreasureRoom(null, true, false, false, Array.Empty<int>());
             Invoke("ReapplyBaseArenaOverlay"); AssertBaseHidden();

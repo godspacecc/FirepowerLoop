@@ -15,16 +15,16 @@ namespace Game.Tests
         {
             var provider=new LubanRuntimeConfigProvider(Load);
             Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);
-            Assert.That(catalog.Arenas.Select(arena => arena.ArenaNumber), Is.EquivalentTo(new[] { 22 }));
+            Assert.That(catalog.Arenas.Select(arena => arena.ArenaNumber), Is.EquivalentTo(new[] { 1 }));
             Assert.That(catalog.RoundLayouts.Count, Is.EqualTo(4));
-            Assert.That(catalog.RoundLayouts.All(layout => layout.ArenaConfigNumber == 22), Is.True);
+            Assert.That(catalog.RoundLayouts.All(layout => layout.ArenaConfigNumber == 1), Is.True);
             Assert.That(catalog.EnemyGroups.Any(group => group.Id.StartsWith("arcade.group.zombie.island.", StringComparison.Ordinal)), Is.False);
             Assert.That(catalog.TreasureRooms, Is.Empty);
             foreach(var arena in catalog.Arenas)
             {
                 var group=catalog.RoundLayouts.Where(p=>p.ArenaConfigNumber==arena.ArenaNumber).ToArray();
                 Assert.That(group.Select(p=>p.RoundNumber),Is.EquivalentTo(new[]{1,2,3,4}));
-                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(arena.ArenaNumber>=21&&arena.ArenaNumber<=25?1:4));
+                Assert.That(group.Select(p=>string.Join(";",p.Obstacles.Select(o=>$"{o.X}|{o.Y}|{o.HalfWidth}|{o.HalfHeight}"))).Distinct().Count(),Is.EqualTo(1), "农场地图的四个布局共用固定障碍");
             }
         }
         [Test] public void AllGeneratedEntrancesSpawnAndExitsHaveMultiplayerRoutes()

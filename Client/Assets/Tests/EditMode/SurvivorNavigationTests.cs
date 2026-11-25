@@ -13,7 +13,7 @@ namespace Game.Tests
         private ArcadeRoundLayoutParameters layout;
         private ArcadeObstacleDefinition[] obstacles;
         private float width,height,radius;
-        [SetUp] public void Setup(){var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);layout=catalog.RoundLayouts.Single(x=>x.Id=="arena.22.round.1");var stage=catalog.EarlyStages.Single(x=>x.ArenaConfigNumber==22);width=stage.HalfWidth;height=stage.HalfHeight;radius=catalog.Rule.EnemyContactRadius;obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();navigation=new SurvivorNavigation(width,height,radius,obstacles);}
+        [SetUp] public void Setup(){var provider=new LubanRuntimeConfigProvider(()=>new Tables(n=>new ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath,"Game/Config",n+".bytes")))));Assert.That(provider.TryGetArcadeCatalog(out var catalog,out var error),Is.True,error);layout=catalog.RoundLayouts.Single(x=>x.Id=="arena.1.round.1");var stage=catalog.EarlyStages.Single(x=>x.ArenaConfigNumber==1);width=stage.HalfWidth;height=stage.HalfHeight;radius=catalog.Rule.EnemyContactRadius;obstacles=layout.Obstacles.Select(o=>new ArcadeObstacleDefinition(o.X,o.Y,o.HalfWidth,o.HalfHeight,o.BlocksProjectiles)).ToArray();navigation=new SurvivorNavigation(width,height,radius,obstacles);}
         private Vector2 Resolve(Vector2 p)=>SurvivorSystem.ResolvePosition(p,radius,width,height,obstacles);
         private void Chase(Vector2 target,bool retarget)
         {

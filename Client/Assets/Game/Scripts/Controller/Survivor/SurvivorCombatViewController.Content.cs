@@ -103,7 +103,7 @@ namespace Game
         {
             if(slayerMartRegionRoot!=null){HideBaseArena();if(contentEnvironment!=null)contentEnvironment.SetActive(false);return;}
             if(contentTemplates==null || root==null)return;
-            if (roundLayout != null && contentArena > 1)
+            if (roundLayout != null)
             {
                 if (contentEnvironment != null) contentEnvironment.SetActive(contentInRoom);
                 if (contentInRoom && contentEnvironment == null)

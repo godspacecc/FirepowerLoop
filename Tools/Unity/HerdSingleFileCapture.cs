@@ -30,10 +30,10 @@ public static class HerdSingleFileCapture
             var system=fixtureType.GetField("system",Hidden).GetValue(fixture);var runtime=fixtureType.GetField("runtime",Hidden).GetValue(fixture);var runtimeType=runtime.GetType();
             runtimeType.GetField("PlayerPosition").SetValue(runtime,new Vector2(-29,-17));runtimeType.GetField("PlayerInvulnerability").SetValue(runtime,100f);
             var catalog=(ArcadeConfigCatalogDefinition)system.GetType().GetField("catalog",Hidden).GetValue(system);
-            var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==22);
+            var stage=catalog.EarlyStages.Single(p=>p.ArenaConfigNumber==1);
             ResourceLoader.Use(new Loader());view=new SurvivorCombatViewController();var root=new GameObject("ConfirmedFarmIntegration");
             typeof(SurvivorCombatViewController).GetField("root",Hidden).SetValue(view,root);typeof(SurvivorCombatViewController).GetField("earlyStage",Hidden).SetValue(view,stage);
-            view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);view.SetRoundLayout(catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==22&&p.RoundNumber==1));
+            view.ConfigureRoundBounds(stage.HalfWidth,stage.HalfHeight,.55f);view.SetRoundLayout(catalog.RoundLayouts.Single(p=>p.ArenaConfigNumber==1&&p.RoundNumber==1));
             if(!view.IsRoundLayoutReady)throw new InvalidOperationException(view.RoundLayoutLoadError??"场地未就绪");
             var hero=Object.Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Game/Prefabs/Characters/GrayboxPlayer.prefab"),root.transform);
             var presenter=hero.GetComponent<CharacterWeaponPresenter>();presenter.SetWeaponId("arcade.weapon.basic");presenter.SetManualPoseSampling(true);presenter.BodyAnimator.Rebind();presenter.BodyAnimator.Update(0);presenter.Current.Animations.Idle.Clip.SampleAnimation(presenter.BodyAnimator.gameObject,.1f);presenter.ApplyOffhandGrip(presenter.Current.Animations.Idle);

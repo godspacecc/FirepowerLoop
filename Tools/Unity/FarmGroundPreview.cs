@@ -259,8 +259,8 @@ public static class FarmGroundPreview
             var provider = new Game.LubanRuntimeConfigProvider(() => new global::Tables(n =>
                 new Luban.ByteBuf(File.ReadAllBytes(Path.Combine(Application.dataPath, "Game/Config", n + ".bytes")))));
             if (!provider.TryGetArcadeCatalog(out var catalog, out var error)) throw new InvalidOperationException(error);
-            var stage = catalog.EarlyStages.Single(p => p.ArenaConfigNumber == 22);
-            var layouts = catalog.RoundLayouts.Where(p => p.ArenaConfigNumber == 22).OrderBy(p => p.RoundNumber).ToArray();
+            var stage = catalog.EarlyStages.Single(p => p.ArenaConfigNumber == 1);
+            var layouts = catalog.RoundLayouts.Where(p => p.ArenaConfigNumber == 1).OrderBy(p => p.RoundNumber).ToArray();
             if (layouts.Length != 4) throw new InvalidOperationException("农场必须明确限定为四个布局");
             foreach (var layout in layouts)
             {

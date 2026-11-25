@@ -36,7 +36,7 @@ namespace Game.Tests
                     Assert.That(root.GetComponentsInChildren<Transform>(true).Any(t=>t.name=="ConfirmedEarlyEnvironment"),Is.True,p.Id);
                     Assert.That(root.GetComponentsInChildren<Renderer>(true).Length,Is.GreaterThan(0),p.Id);
                 }
-                else if(p.ArenaConfigNumber!=1)
+                else
                 {
                     Assert.That(root.transform.Find("RoundContent_"+p.Id+"/Environment_"+p.ThemeKey+"/ThemeDecor/ThemeGround"),Is.Not.Null,p.Id);
                     Assert.That(root.GetComponentsInChildren<Renderer>(true).Length,Is.GreaterThan(p.Obstacles.Count),p.Id);

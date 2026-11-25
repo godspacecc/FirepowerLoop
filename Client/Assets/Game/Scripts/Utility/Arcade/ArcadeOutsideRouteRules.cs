@@ -8,7 +8,7 @@ namespace FirepowerLoop.Arcade
         public static bool TryStart(ArcadeRoundLayoutParameters layout,int entryIndex,float halfWidth,float halfHeight,float radius,out ArcadeOutsideEntryState state)
         {
             state=default;
-            if(layout==null||layout.ArenaConfigNumber==1||layout.ArenaConfigNumber==21||layout.OutsideEntryDistance<=0||entryIndex<0||entryIndex>=layout.Entries.Count||
+            if(layout==null||layout.ArenaConfigNumber==21||layout.OutsideEntryDistance<=0||entryIndex<0||entryIndex>=layout.Entries.Count||
                 halfWidth<=0||halfHeight<=0||radius<=0)return false;
             var entry=layout.Entries[entryIndex];
             if(!layout.IsWalkable(entry.X,entry.Y,radius,halfWidth,halfHeight))return false;

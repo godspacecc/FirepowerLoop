@@ -15,7 +15,7 @@ namespace Game
         {
             if (root == null || !root.activeSelf) return;
             bool hasContent = contentEnvironment != null && contentEnvironment.activeSelf;
-            bool hasRound = roundLayoutReady && roundLayout != null && roundLayout.ArenaConfigNumber != 1 &&
+            bool hasRound = roundLayoutReady && roundLayout != null &&
                 roundContentRoot != null && roundContentRoot.activeSelf;
             bool hasShop = slayerMartRegionReady && slayerMartRegionRoot != null && slayerMartRegionRoot.activeSelf;
             if (hasContent || hasRound || hasShop) HideBaseArena();
